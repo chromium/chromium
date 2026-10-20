@@ -183,7 +183,7 @@ TEST_P(CSSAnimationsTest, RetargetedTransition) {
     </style>
     <div id='test'>TEST</div>
   )HTML");
-  Element* element = GetDocument().getElementById(AtomicString("test"));
+  Element* element = GetElementById("test");
   element->setAttribute(html_names::kClassAttr, AtomicString("contrast1"));
   UpdateAllLifecyclePhasesForTest();
   ElementAnimations* animations = element->GetElementAnimations();
@@ -217,7 +217,7 @@ TEST_P(CSSAnimationsTest, IncompatibleRetargetedTransition) {
     </style>
     <div id='test'>TEST</div>
   )HTML");
-  Element* element = GetDocument().getElementById(AtomicString("test"));
+  Element* element = GetElementById("test");
   element->setAttribute(html_names::kClassAttr, AtomicString("saturate"));
   UpdateAllLifecyclePhasesForTest();
   ElementAnimations* animations = element->GetElementAnimations();
@@ -257,7 +257,7 @@ TEST_P(CSSAnimationsTest, AnimationFlags_Transitions) {
     </style>
     <div id=test></div>
   )HTML");
-  Element* element = GetDocument().getElementById(AtomicString("test"));
+  Element* element = GetElementById("test");
   EXPECT_FALSE(element->ComputedStyleRef().HasCurrentFilterAnimation());
 
   // Newly created transition:
@@ -294,7 +294,7 @@ TEST_P(CSSAnimationsTest, AnimationFlags_Animations) {
     </style>
     <div id=test></div>
   )HTML");
-  Element* element = GetDocument().getElementById(AtomicString("test"));
+  Element* element = GetElementById("test");
   EXPECT_FALSE(element->ComputedStyleRef().HasCurrentOpacityAnimation());
   EXPECT_FALSE(element->ComputedStyleRef().HasCurrentTransformAnimation());
 
@@ -358,7 +358,7 @@ TEST_P(CSSAnimationsTest, AnimationFlags_StaticBackdropFilter) {
     </style>
     <div id=test></div>
   )HTML");
-  Element* element = GetDocument().getElementById(AtomicString("test"));
+  Element* element = GetElementById("test");
   enum class Result { kNoAnimation, kStatic, kDynamic };
   auto backdrop_filter_animation = [&](const char* classes) {
     element->setAttribute(html_names::kClassAttr, AtomicString(classes));
@@ -410,7 +410,7 @@ TEST_P(CSSAnimationsTest, NoneBackdropFilterAnimationIsStackingContext) {
     </style>
     <div id=test></div>
   )HTML");
-  Element* element = GetDocument().getElementById(AtomicString("test"));
+  Element* element = GetElementById("test");
   auto is_stacking_context = [&](const char* classes) {
     element->setAttribute(html_names::kClassAttr, AtomicString(classes));
     UpdateAllLifecyclePhasesForTest();
@@ -815,7 +815,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_Transitions) {
     SCOPED_TRACE(html);
 
     SetBodyInnerHTML(html);
-    Element* element = GetDocument().getElementById(AtomicString("test"));
+    Element* element = GetElementById("test");
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -832,7 +832,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_Transitions_Compositor) {
     SCOPED_TRACE(html);
 
     SetBodyInnerHTML(html);
-    Element* element = GetDocument().getElementById(AtomicString("test"));
+    Element* element = GetElementById("test");
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -857,7 +857,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_CSSAnimations) {
     SCOPED_TRACE(html);
 
     SetBodyInnerHTML(html);
-    Element* element = GetDocument().getElementById(AtomicString("test"));
+    Element* element = GetElementById("test");
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -874,7 +874,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_CSSAnimations_Compositor) {
     SCOPED_TRACE(html);
 
     SetBodyInnerHTML(html);
-    Element* element = GetDocument().getElementById(AtomicString("test"));
+    Element* element = GetElementById("test");
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -898,7 +898,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_JSAnimations) {
     SCOPED_TRACE(data.property);
 
     SetBodyInnerHTML("<div id=test>Test</div>");
-    Element* element = GetDocument().getElementById(AtomicString("test"));
+    Element* element = GetElementById("test");
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -920,7 +920,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_JSAnimations_Compositor) {
     SCOPED_TRACE(data.property);
 
     SetBodyInnerHTML("<div id=test>Test</div>");
-    Element* element = GetDocument().getElementById(AtomicString("test"));
+    Element* element = GetElementById("test");
     ASSERT_TRUE(element);
     EXPECT_FALSE(data.get_flag(element->ComputedStyleRef()));
 
@@ -955,7 +955,7 @@ TEST_P(CSSAnimationsTest, CompositedAnimationUpdateCausesPaintInvalidation) {
     <div id=test>Test</div>
   )HTML");
 
-  Element* element = GetDocument().getElementById(AtomicString("test"));
+  Element* element = GetElementById("test");
   LayoutObject* lo = element->GetLayoutObject();
   ASSERT_TRUE(element);
 
@@ -1037,7 +1037,7 @@ TEST_P(CSSAnimationsTest, UpdateAnimationFlags_AnimatingElement) {
     <div id=test>Test</div>
   )HTML");
 
-  Element* element = GetDocument().getElementById(AtomicString("test"));
+  Element* element = GetElementById("test");
   ASSERT_TRUE(element);
 
   Element* before = element->GetPseudoElement(kPseudoIdBefore);
@@ -1135,7 +1135,7 @@ TEST_P(CSSAnimationsTest, CSSTransitionBlockedByAnimationUseCounter) {
     <div id=test class=animate>Test</div>
   )HTML");
 
-  Element* element = GetDocument().getElementById(AtomicString("test"));
+  Element* element = GetElementById("test");
   ASSERT_TRUE(element);
 
   // Verify that we see animation effects.
@@ -1199,7 +1199,7 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
       <div id='test'>TEST</div>
     )HTML");
 
-    element_ = GetDocument().getElementById(AtomicString("test"));
+    element_ = GetElementById("test");
     UpdateAllLifecyclePhasesForTest();
     ElementAnimations* animations = element_->GetElementAnimations();
     EXPECT_FALSE(animations);
@@ -1609,7 +1609,7 @@ TEST_P(CSSAnimationsTest, LingeringTimelineAttachments) {
     </div>
   )HTML");
 
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  Element* scroller = GetElementById("scroller");
   ASSERT_TRUE(scroller);
 
   ElementAnimations* element_animations = scroller->GetElementAnimations();
@@ -2026,7 +2026,7 @@ TEST_P(CSSAnimationsTest, OpacityUnchangedWhileDeferred) {
     <div id="target"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
 
   // The animation must be waiting on a deferred start time.
   ElementAnimations* animations = target->GetElementAnimations();
@@ -2065,7 +2065,7 @@ TEST_P(CSSAnimationsTest, AnimationTriggerNames) {
     <div id="target"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
 
   ElementAnimations* animations = target->GetElementAnimations();
   ASSERT_EQ(2u, animations->Animations().size());
@@ -2282,8 +2282,8 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerOnceOnly) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  Element* target = GetElementById("target");
+  Element* scroller = GetElementById("scroller");
 
   TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(
       TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
@@ -2322,7 +2322,7 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerAbsolutePositioned) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById(AtomicString("triggered"));
+  Element* target = GetElementById("triggered");
   ASSERT_TRUE(target);
 
   ElementAnimations* animations = target->GetElementAnimations();
@@ -2366,8 +2366,8 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewOnly) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  Element* target = GetElementById("target");
+  Element* scroller = GetElementById("scroller");
 
   TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(
       TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
@@ -2414,8 +2414,8 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerScrollOnce) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  Element* target = GetElementById("target");
+  Element* scroller = GetElementById("scroller");
 
   TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(
       TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
@@ -2465,8 +2465,8 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewAlternate) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  Element* target = GetElementById("target");
+  Element* scroller = GetElementById("scroller");
 
   TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(
       TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
@@ -2517,8 +2517,8 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewRepeat) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  Element* target = GetElementById("target");
+  Element* scroller = GetElementById("scroller");
 
   TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(
       TestTriggerAssociations(*target, *scroller, AtomicString("--trigger")));
@@ -2577,7 +2577,7 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerNamedTimeline) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
 
   TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(GetTrigger(*target));
 
@@ -2632,7 +2632,7 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeTimeline) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
 
   target->setAttribute(html_names::kClassAttr, AtomicString("view_trigger"));
   UpdateAllLifecyclePhasesForTest();
@@ -2727,7 +2727,7 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerChangeRangeStart) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
 
   const TimelineTrigger::RangeBoundary* normal =
       MakeGarbageCollected<TimelineTrigger::RangeBoundary>(String("normal"));
@@ -2806,7 +2806,7 @@ TEST_P(CSSAnimationsTriggerTest, NonTriggerChange) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   ElementAnimations* animations = target->GetElementAnimations();
   CSSAnimation* animation =
       DynamicTo<CSSAnimation>((*animations->Animations().begin()).key.Get());
@@ -2876,7 +2876,7 @@ TEST_P(CSSAnimationsTriggerTest, DeviceScaleFactor) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
 
   TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(GetTrigger(*target));
   const RangeBoundary* activation_range_start = trigger->ActivationRangeStart();
@@ -2941,8 +2941,8 @@ TEST_P(CSSAnimationsTriggerTest, ChangeTriggerName) {
       </div>
     </div>
   )HTML");
-  Element* target = GetDocument().getElementById(AtomicString("target"));
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  Element* target = GetElementById("target");
+  Element* scroller = GetElementById("scroller");
   ElementAnimations* animations = target->GetElementAnimations();
   CSSAnimation* animation =
       DynamicTo<CSSAnimation>((*animations->Animations().begin()).key.Get());
@@ -3042,11 +3042,11 @@ TEST_P(CSSAnimationsTriggerTest, ChangeTriggerAttachments) {
       </div>
     </div>
   )HTML");
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
 
-  Element* source1 = GetDocument().getElementById(AtomicString("source1"));
-  Element* source2 = GetDocument().getElementById(AtomicString("source2"));
-  Element* source3 = GetDocument().getElementById(AtomicString("source3"));
+  Element* source1 = GetElementById("source1");
+  Element* source2 = GetElementById("source2");
+  Element* source3 = GetElementById("source3");
 
   AnimationTrigger* trigger1 = source1->NamedTriggers()->begin()->value.Get();
   AnimationTrigger* trigger2 = source2->NamedTriggers()->begin()->value.Get();
@@ -3125,11 +3125,11 @@ TEST_P(CSSAnimationsTriggerTest, SameTriggerNameDifferentSource) {
         <div class="space"></div>
       </div>
   )HTML");
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
 
-  Element* subject1 = GetDocument().getElementById(AtomicString("subject1"));
-  Element* subject2 = GetDocument().getElementById(AtomicString("subject2"));
-  Element* subject3 = GetDocument().getElementById(AtomicString("subject3"));
+  Element* subject1 = GetElementById("subject1");
+  Element* subject2 = GetElementById("subject2");
+  Element* subject3 = GetElementById("subject3");
 
   ElementAnimations* animations = target->GetElementAnimations();
   CSSAnimation* animation =
@@ -3209,7 +3209,7 @@ TEST_P(CSSAnimationsTriggerTest, UnequalAnimationAttachments) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   const CSSProperty& transform_property =
       CSSProperty::Get(CSSPropertyID::kTransform);
   const CSSProperty& opacity_property =
@@ -3310,7 +3310,7 @@ TEST_P(CSSAnimationsTriggerTest, CoordinatedTimelineTriggerDeclarations) {
     </div>
   )HTML");
 
-  Element* source = GetDocument().getElementById(AtomicString("source"));
+  Element* source = GetElementById("source");
 
   const auto test_timeline_type = [&](TimelineTrigger* trigger, bool is_view,
                                       bool is_scroll, bool is_document) {
@@ -3415,7 +3415,7 @@ TEST_P(CSSAnimationsTriggerTest, NestedScopeAvoidsTriggerUpdates) {
     <div id="target"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(target->NamedTriggers()->size(), 1);
   EXPECT_EQ(GetDocument()
                 .GetDocumentAnimations()
@@ -3602,7 +3602,7 @@ TEST_P(CSSAnimationsTest, CSSTimelineTreeScopeMismatch_Count) {
     </div>
   )HTML");
 
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
@@ -3632,7 +3632,7 @@ TEST_P(CSSAnimationsTest, CSSTimelineTreeScopeMismatch_CountWithFlag) {
     </div>
   )HTML");
 
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
@@ -3712,18 +3712,12 @@ TEST_P(CSSAnimationsTest, SVGColorAnimationVisitedCurrentColor) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* window = GetDocument().domWindow();
-  Element* flood_visited =
-      GetDocument().getElementById(AtomicString("flood_visited"));
-  Element* flood_unvisited =
-      GetDocument().getElementById(AtomicString("flood_unvisited"));
-  Element* lighting_visited =
-      GetDocument().getElementById(AtomicString("lighting_visited"));
-  Element* lighting_unvisited =
-      GetDocument().getElementById(AtomicString("lighting_unvisited"));
-  Element* stop_visited =
-      GetDocument().getElementById(AtomicString("stop_visited"));
-  Element* stop_unvisited =
-      GetDocument().getElementById(AtomicString("stop_unvisited"));
+  Element* flood_visited = GetElementById("flood_visited");
+  Element* flood_unvisited = GetElementById("flood_unvisited");
+  Element* lighting_visited = GetElementById("lighting_visited");
+  Element* lighting_unvisited = GetElementById("lighting_unvisited");
+  Element* stop_visited = GetElementById("stop_visited");
+  Element* stop_unvisited = GetElementById("stop_unvisited");
 
   EXPECT_EQ(
       window->getComputedStyle(flood_unvisited)
@@ -3806,18 +3800,12 @@ TEST_P(CSSAnimationsTest, SVGColorTransitionVisitedCurrentColor) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* flood_visited =
-      GetDocument().getElementById(AtomicString("flood_visited"));
-  Element* flood_unvisited =
-      GetDocument().getElementById(AtomicString("flood_unvisited"));
-  Element* lighting_visited =
-      GetDocument().getElementById(AtomicString("lighting_visited"));
-  Element* lighting_unvisited =
-      GetDocument().getElementById(AtomicString("lighting_unvisited"));
-  Element* stop_visited =
-      GetDocument().getElementById(AtomicString("stop_visited"));
-  Element* stop_unvisited =
-      GetDocument().getElementById(AtomicString("stop_unvisited"));
+  Element* flood_visited = GetElementById("flood_visited");
+  Element* flood_unvisited = GetElementById("flood_unvisited");
+  Element* lighting_visited = GetElementById("lighting_visited");
+  Element* lighting_unvisited = GetElementById("lighting_unvisited");
+  Element* stop_visited = GetElementById("stop_visited");
+  Element* stop_unvisited = GetElementById("stop_unvisited");
 
   flood_visited->classList().Add(AtomicString("transition_active"));
   flood_unvisited->classList().Add(AtomicString("transition_active"));
@@ -4197,7 +4185,7 @@ TEST_P(CSSAnimationsTest, AttrTaintedRegisteredPropertyNeutralKeyframe) {
     <div id="control"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_TRUE(target);
   const CSSVariableData* target_data =
       target ? target->GetComputedStyle()->GetVariableData(AtomicString("--n"))
@@ -4207,7 +4195,7 @@ TEST_P(CSSAnimationsTest, AttrTaintedRegisteredPropertyNeutralKeyframe) {
     EXPECT_TRUE(target_data->IsAttrTainted());
   }
 
-  Element* control = GetDocument().getElementById(AtomicString("control"));
+  Element* control = GetElementById("control");
   EXPECT_TRUE(control);
   const CSSVariableData* control_data =
       control
@@ -4243,7 +4231,7 @@ TEST_P(CSSAnimationsTest, AttrTaintedRegisteredPropertyNeutralEndKeyframe) {
     <div id="control"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_TRUE(target);
   const CSSVariableData* target_data =
       target ? target->GetComputedStyle()->GetVariableData(AtomicString("--n"))
@@ -4253,7 +4241,7 @@ TEST_P(CSSAnimationsTest, AttrTaintedRegisteredPropertyNeutralEndKeyframe) {
     EXPECT_TRUE(target_data->IsAttrTainted());
   }
 
-  Element* control = GetDocument().getElementById(AtomicString("control"));
+  Element* control = GetElementById("control");
   EXPECT_TRUE(control);
   const CSSVariableData* control_data =
       control
@@ -4284,7 +4272,7 @@ TEST_P(CSSAnimationsTest, AttrTaintedRegisteredPropertyKeyframeValue) {
     <div id="target" data-value="42"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_TRUE(target);
   const CSSVariableData* data =
       target ? target->GetComputedStyle()->GetVariableData(AtomicString("--n"))
@@ -4316,7 +4304,7 @@ TEST_P(CSSAnimationsTest,
     <div id="target" data-value="42"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_TRUE(target);
   const CSSVariableData* data =
       target ? target->GetComputedStyle()->GetVariableData(AtomicString("--n"))
@@ -4348,7 +4336,7 @@ TEST_P(CSSAnimationsTest, AttrTaintedRegisteredPropertyCompositionAdd) {
     <div id="target" data-value="42"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_TRUE(target);
   const CSSVariableData* data =
       target ? target->GetComputedStyle()->GetVariableData(AtomicString("--n"))
@@ -4378,7 +4366,7 @@ TEST_P(CSSAnimationsTest, AttrTaintedRegisteredPropertyLength) {
     <div id="target" data-value="42px"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_TRUE(target);
   const CSSVariableData* data =
       target ? target->GetComputedStyle()->GetVariableData(AtomicString("--p"))
@@ -4413,7 +4401,7 @@ TEST_P(CSSAnimationsTest, AttrTaintedInheritedRegisteredProperty) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_TRUE(target);
   const CSSVariableData* data =
       target ? target->GetComputedStyle()->GetVariableData(AtomicString("--n"))
@@ -4444,7 +4432,7 @@ TEST_P(CSSAnimationsTest, ReplaceAnimationWithoutAttrDoesNotTaint) {
     <div id="target" data-value="42"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_TRUE(target);
   const CSSVariableData* data =
       target ? target->GetComputedStyle()->GetVariableData(AtomicString("--n"))
@@ -4483,13 +4471,13 @@ TEST_P(CSSAnimationsTest, AttrTaintedStyleQueryUrlBlocking) {
     <div id="control"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_TRUE(target);
   if (target && target->GetComputedStyle()) {
     EXPECT_FALSE(target->GetComputedStyle()->HasBackgroundImage());
   }
 
-  Element* control = GetDocument().getElementById(AtomicString("control"));
+  Element* control = GetElementById("control");
   EXPECT_TRUE(control);
   if (control && control->GetComputedStyle()) {
     EXPECT_TRUE(control->GetComputedStyle()->HasBackgroundImage());

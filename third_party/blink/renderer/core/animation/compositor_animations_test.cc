@@ -225,8 +225,8 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
         text
       </span>
     )HTML");
-    element_ = GetDocument().getElementById(AtomicString("test"));
-    inline_ = GetDocument().getElementById(AtomicString("inline"));
+    element_ = GetElementById("test");
+    inline_ = GetElementById("inline");
 
     helper_.Initialize(nullptr, nullptr, nullptr);
     helper_.Resize(gfx::Size(800, 600));
@@ -738,7 +738,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       </div>
     </div>
   )HTML");
-  Element* target = GetDocument().getElementById(AtomicString("parent"));
+  Element* target = GetElementById("parent");
   target->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
   UpdateAllLifecyclePhasesForTest();
@@ -1232,7 +1232,7 @@ TEST_P(AnimationCompositorAnimationsTest, ForceReduceMotion) {
     </style>
     <div id='test' style='animation: slide 2s linear'></div>
   )HTML");
-  element_ = GetDocument().getElementById(AtomicString("test"));
+  element_ = GetElementById("test");
   Animation* animation = element_->getAnimations()[0];
 
   // The effect should snap between keyframes at the halfway points.
@@ -1267,7 +1267,7 @@ TEST_P(AnimationCompositorAnimationsTest,
     </style>
     <div id='test' style='animation: slide 1s linear'></div>
   )HTML");
-  element_ = GetDocument().getElementById(AtomicString("test"));
+  element_ = GetElementById("test");
   Animation* animation = element_->getAnimations()[0];
 
   // As the page has indicated support for reduce motion, the effect should not
@@ -1308,7 +1308,7 @@ TEST_P(AnimationCompositorAnimationsTest,
     <div id='child-anim' style='animation: slide 1s linear'></div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  element_ = GetDocument().getElementById(AtomicString("parent-anim"));
+  element_ = GetElementById("parent-anim");
   Animation* animation = element_->getAnimations()[0];
 
   // As the parent document does not support reduce motion, the effect will jump
@@ -2534,7 +2534,7 @@ TEST_P(AnimationCompositorAnimationsTest,
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
 
   // We will not get a layout object if our parent has content-visibility:
   // hidden.
@@ -2773,7 +2773,7 @@ TEST_P(AnimationCompositorAnimationsTest, UnsupportedSVGCSSProperty) {
     </svg>
   )HTML");
 
-  Element* element = GetDocument().getElementById(AtomicString("rect"));
+  Element* element = GetElementById("rect");
   Animation& animation =
       *element->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty,
@@ -2887,7 +2887,7 @@ TEST_P(AnimationCompositorAnimationsTest, Fragmented) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   Animation& animation =
       *target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_TRUE(target->GetLayoutObject()->IsFragmented());
@@ -2961,7 +2961,7 @@ TEST_P(AnimationCompositorAnimationsTest,
     </style>
     <div id="target"></div>
   )HTML");
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(CompositorAnimations::kNoFailure,
@@ -3135,7 +3135,7 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletProperties) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById(AtomicString("target1"));
+  Element* target = GetElementById("target1");
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(
@@ -3152,7 +3152,7 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletProperties) {
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
             target->GetElementAnimations()->CompositedClipPathStatus());
 
-  target = GetDocument().getElementById(AtomicString("target2"));
+  target = GetElementById("target2");
   animation = target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(
       Animation::NativePaintWorkletProperties::kBackgroundColorPaintWorklet,
@@ -3166,7 +3166,7 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletProperties) {
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
             target->GetElementAnimations()->CompositedClipPathStatus());
 
-  target = GetDocument().getElementById(AtomicString("target3"));
+  target = GetElementById("target3");
   animation = target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(Animation::NativePaintWorkletProperties::kClipPathPaintWorklet,
             animation->GetNativePaintWorkletReasons());
@@ -3179,7 +3179,7 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletProperties) {
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
             target->GetElementAnimations()->CompositedClipPathStatus());
 
-  target = GetDocument().getElementById(AtomicString("target4"));
+  target = GetElementById("target4");
 
   EXPECT_EQ(2U, target->GetElementAnimations()->Animations().size());
   auto it = target->GetElementAnimations()->Animations().begin();
@@ -3240,7 +3240,7 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletForcedColorsMode) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(Animation::NativePaintWorkletProperties::kNoPaintWorklet,
@@ -3277,7 +3277,7 @@ TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
     <div id="target"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
 
@@ -3428,13 +3428,13 @@ TEST_P(AnimationCompositorAnimationsTest,
     <div id="target3"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
-  Element* target2 = GetDocument().getElementById(AtomicString("target2"));
+  Element* target2 = GetElementById("target2");
   Animation* animation2 =
       target2->GetElementAnimations()->Animations().begin()->key;
-  Element* target3 = GetDocument().getElementById(AtomicString("target3"));
+  Element* target3 = GetElementById("target3");
   Animation* animation3 =
       target3->GetElementAnimations()->Animations().begin()->key;
 
@@ -3545,7 +3545,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   // The clip animation being lower in composite order can't be composited.
   // The multi-property animation also can't be composited due to the overlap
   // of affected properties.
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_EQ(2U, target->GetElementAnimations()->Animations().size());
   HeapVector<Member<Animation>> animations = target->getAnimations();
   EXPECT_EQ(CompositorAnimations::kTargetHasIncompatibleAnimations,
@@ -3614,7 +3614,7 @@ TEST_P(AnimationCompositorAnimationsTest, StaticNonCompositableProperty) {
     <div id="target"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(CompositorAnimations::kNoFailure,
@@ -3641,7 +3641,7 @@ TEST_P(AnimationCompositorAnimationsTest, StaticCompositableProperty) {
     <div id="target"></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_TRUE(CompositorAnimations::kAnimationHasNoVisibleChange &
@@ -3665,7 +3665,7 @@ TEST_P(AnimationCompositorAnimationsTest, EmptyKeyframes) {
     </style>
     <div id="target"></div>
   )HTML");
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_TRUE(CompositorAnimations::kAnimationHasNoVisibleChange &
@@ -3692,7 +3692,7 @@ TEST_P(AnimationCompositorAnimationsTest, StaticPropertiesPlusStartDelay) {
     </style>
     <div id="target"></div>
   )HTML");
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(CompositorAnimations::kNoFailure,
@@ -3749,8 +3749,8 @@ TEST_P(AnimationCompositorAnimationsTest,
     <div id="target2"></div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* target1 = GetDocument().getElementById(AtomicString("target1"));
-  Element* target2 = GetDocument().getElementById(AtomicString("target2"));
+  Element* target1 = GetElementById("target1");
+  Element* target2 = GetElementById("target2");
   Animation* animation1 =
       target1->GetElementAnimations()->Animations().begin()->key;
   Animation* animation2 =
@@ -3811,8 +3811,8 @@ TEST_P(AnimationCompositorAnimationsTest,
     </div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* container = GetDocument().getElementById(AtomicString("container"));
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* container = GetElementById("container");
+  Element* target = GetElementById("target");
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
 
@@ -3852,7 +3852,7 @@ TEST_P(AnimationCompositorAnimationsTest, NeutralKeyframeCompositeAdd) {
     <div id="target"></div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
 
@@ -3887,7 +3887,7 @@ TEST_P(AnimationCompositorAnimationsTest,
     </style>
     <div id="target"></div>
   )HTML");
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   Animation* animation =
       target->GetElementAnimations()->Animations().begin()->key;
   EXPECT_EQ(CompositorAnimations::kNoFailure,
@@ -4541,7 +4541,7 @@ TEST_P(AnimationCompositorAnimationsTest, ClipExpanderUpdate) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   const auto* properties =
       target->GetLayoutObject()->FirstFragment().PaintProperties();
   gfx::RectF rect = properties->MaskClip()->LayoutClipRect().Rect();

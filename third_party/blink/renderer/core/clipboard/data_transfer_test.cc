@@ -33,7 +33,7 @@ TEST_P(DataTransferTest, NodeImage) {
     </style>
     <div id=sample></div>
   )HTML");
-  Element* sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* sample = GetElementById("sample");
   const std::unique_ptr<DragImage> image =
       DataTransfer::NodeImage(GetFrame(), *sample);
   EXPECT_EQ(gfx::Size(100, 100), image->Size());
@@ -47,7 +47,7 @@ TEST_P(DataTransferTest, NodeImageWithNestedElement) {
     </style>
     <div id=sample><span>Green when dragged</span></div>
   )HTML");
-  Element* sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* sample = GetElementById("sample");
   const std::unique_ptr<DragImage> image =
       DataTransfer::NodeImage(GetFrame(), *sample);
   EXPECT_EQ(Color::FromRGB(0, 255, 0),
@@ -64,7 +64,7 @@ TEST_P(DataTransferTest, NodeImageWithPsuedoClassWebKitDrag) {
     </style>
     <div id=sample></div>
   )HTML");
-  Element* sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* sample = GetElementById("sample");
   const std::unique_ptr<DragImage> image =
       DataTransfer::NodeImage(GetFrame(), *sample);
   EXPECT_EQ(gfx::Size(200, 200), image->Size())
@@ -79,7 +79,7 @@ TEST_P(DataTransferTest, NodeImageWithoutDraggedLayoutObject) {
     </style>
     <div id=sample></div>
   )HTML");
-  Element* sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* sample = GetElementById("sample");
   const std::unique_ptr<DragImage> image =
       DataTransfer::NodeImage(GetFrame(), *sample);
   EXPECT_EQ(nullptr, image.get()) << ":-webkit-drag blows away layout object";
@@ -93,7 +93,7 @@ TEST_P(DataTransferTest, NodeImageWithChangingLayoutObject) {
     </style>
     <span id=sample>foo</span>
   )HTML");
-  Element* sample = GetDocument().getElementById(AtomicString("sample"));
+  Element* sample = GetElementById("sample");
   UpdateAllLifecyclePhasesForTest();
   LayoutObject* before_layout_object = sample->GetLayoutObject();
   const std::unique_ptr<DragImage> image =
@@ -121,7 +121,7 @@ TEST_P(DataTransferTest, NodeImageExceedsViewportBounds) {
     </style>
     <div id='node'></div>
   )HTML");
-  Element& node = *GetDocument().getElementById(AtomicString("node"));
+  Element& node = *GetElementById("node");
   const auto image = DataTransfer::NodeImage(GetFrame(), node);
   EXPECT_EQ(gfx::Size(2000, 2000), image->Size());
 }
@@ -144,14 +144,14 @@ TEST_P(DataTransferTest, NodeImageUnderScrollOffset) {
       cc::ScrollSourceType::kNone);
 
   // The first div should be offset by the scroll offset.
-  Element& first = *GetDocument().getElementById(AtomicString("first"));
+  Element& first = *GetElementById("first");
   const auto first_image = DataTransfer::NodeImage(GetFrame(), first);
   const int first_height = 500;
   EXPECT_EQ(gfx::Size(500, first_height), first_image->Size());
 
   // The second div should also be offset by the scroll offset. In addition,
   // the second div should be clipped by the viewport.
-  Element& second = *GetDocument().getElementById(AtomicString("second"));
+  Element& second = *GetElementById("second");
   const auto second_image = DataTransfer::NodeImage(GetFrame(), second);
   EXPECT_EQ(gfx::Size(800, 900), second_image->Size());
 }
@@ -167,7 +167,7 @@ TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactor) {
   )HTML");
   const int page_scale_factor = 2;
   GetPage().SetPageScaleFactor(page_scale_factor);
-  Element& node = *GetDocument().getElementById(AtomicString("node"));
+  Element& node = *GetElementById("node");
   const auto image = DataTransfer::NodeImage(GetFrame(), node);
   const int node_width = 200;
   const int node_height = 141;
@@ -199,7 +199,7 @@ TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactorTooLarge) {
   )HTML");
   const int page_scale_factor = 2;
   GetPage().SetPageScaleFactor(page_scale_factor);
-  Element& node = *GetDocument().getElementById(AtomicString("node"));
+  Element& node = *GetElementById("node");
   const auto image = DataTransfer::NodeImage(GetFrame(), node);
   const int node_width = 800;
   const int node_height = 601;
@@ -238,8 +238,7 @@ TEST_P(DataTransferTest, NodeImageWithPageScaleFactor) {
   )HTML");
   const int page_scale_factor = 2;
   GetPage().SetPageScaleFactor(page_scale_factor);
-  Element& blue_green =
-      *GetDocument().getElementById(AtomicString("bluegreen"));
+  Element& blue_green = *GetElementById("bluegreen");
   const auto image = DataTransfer::NodeImage(GetFrame(), blue_green);
   const int blue_green_width = 2;
   const int blue_green_height = 1;
@@ -282,7 +281,7 @@ TEST_P(DataTransferTest, NodeImageFullyOffscreen) {
       ScrollOffset(0, scroll_amount), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
 
-  Element& target = *GetDocument().getElementById(AtomicString("target"));
+  Element& target = *GetElementById("target");
   const auto image = DataTransfer::NodeImage(GetFrame(), target);
 
   EXPECT_EQ(gfx::Size(200, 100), image->Size());
@@ -304,7 +303,7 @@ TEST_P(DataTransferTest, NodeImageWithScrolling) {
     <div id="target" draggable="true" ondragstart="drag(event)"></div>
   )HTML");
 
-  Element& target = *GetDocument().getElementById(AtomicString("target"));
+  Element& target = *GetElementById("target");
   const auto image = DataTransfer::NodeImage(GetFrame(), target);
 
   EXPECT_EQ(gfx::Size(200, 100), image->Size());
@@ -329,7 +328,7 @@ TEST_P(DataTransferTest, NodeImageInOffsetStackingContext) {
       <div id="drag" draggable="true"></div>
     </div>
   )HTML");
-  Element& drag = *GetDocument().getElementById(AtomicString("drag"));
+  Element& drag = *GetElementById("drag");
   const auto image = DataTransfer::NodeImage(GetFrame(), drag);
   constexpr int drag_width = 5;
   constexpr int drag_height = 5;
@@ -368,7 +367,7 @@ TEST_P(DataTransferTest, NodeImageWithLargerPositionedDescendant) {
       <div id="child"></div>
     </div>
   )HTML");
-  Element& drag = *GetDocument().getElementById(AtomicString("drag"));
+  Element& drag = *GetElementById("drag");
   const auto image = DataTransfer::NodeImage(GetFrame(), drag);
 
   // The positioned #child should expand the dragged image's size.
@@ -392,8 +391,7 @@ TEST_P(DataTransferTest, NodeImageOutOfView) {
     </div>
   )HTML");
 
-  auto image = DataTransfer::NodeImage(
-      GetFrame(), *GetDocument().getElementById(AtomicString("drag")));
+  auto image = DataTransfer::NodeImage(GetFrame(), *GetElementById("drag"));
   EXPECT_EQ(gfx::Size(100, 100), image->Size());
   SkColor green = SkColorSetRGB(0, 0x80, 0);
   const SkBitmap& bitmap = image->Bitmap();
@@ -418,8 +416,7 @@ TEST_P(DataTransferTest, NodeImageFixedChild) {
       ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
       cc::ScrollSourceType::kNone);
 
-  auto image = DataTransfer::NodeImage(
-      GetFrame(), *GetDocument().getElementById(AtomicString("drag")));
+  auto image = DataTransfer::NodeImage(GetFrame(), *GetElementById("drag"));
   EXPECT_EQ(gfx::Size(100, 100), image->Size());
   SkColor green = SkColorSetRGB(0, 0x80, 0);
   SkColor blue = SkColorSetRGB(0, 0, 0xFF);
@@ -470,7 +467,7 @@ TEST_P(DataTransferTest, NodeImageTranslatedOutOfView) {
   const int viewport_height = 6;
 
   GetDocument().View()->Resize(viewport_width, viewport_height);
-  Element& drag = *GetDocument().getElementById(AtomicString("drag"));
+  Element& drag = *GetElementById("drag");
   const auto image = DataTransfer::NodeImage(GetFrame(), drag);
 
   // The drag image size should be unchanged.
@@ -498,7 +495,7 @@ TEST_P(DataTransferTest, DragImageWithVeryLargeWidthAndHeight) {
     </style>
       <div id="drag" draggable="true"></div>
   )HTML");
-  Element& drag = *GetDocument().getElementById(AtomicString("drag"));
+  Element& drag = *GetElementById("drag");
   const auto image = DataTransfer::NodeImage(GetFrame(), drag);
   const int scale_dimension = 64 * 128;
   const int drag_width = image->Size().width() > scale_dimension
@@ -521,7 +518,7 @@ TEST_P(DataTransferTest, DragImageWithVeryLargeWidth) {
     </style>
       <div id="drag" draggable="true"></div>
   )HTML");
-  Element& drag = *GetDocument().getElementById(AtomicString("drag"));
+  Element& drag = *GetElementById("drag");
   const auto image = DataTransfer::NodeImage(GetFrame(), drag);
   const int scale_dimension = 64 * 128;
   const int drag_width = image->Size().width() > scale_dimension

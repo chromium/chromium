@@ -407,12 +407,12 @@ TEST_F(ContainerQueryTest, ContainerQueryEvaluation) {
       <div id=div></div>
     </div>
   )HTML");
-  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* div = GetElementById("div");
   ASSERT_TRUE(div);
   EXPECT_EQ(2, div->ComputedStyleRef().ZIndex());
 
   // Check that dependent elements are responsive to changes:
-  Element* container = GetDocument().getElementById(AtomicString("container"));
+  Element* container = GetElementById("container");
   ASSERT_TRUE(container);
   container->setAttribute(html_names::kClassAttr, AtomicString("adjust"));
   UpdateAllLifecyclePhasesForTest();
@@ -459,8 +459,8 @@ TEST_F(ContainerQueryTest, QueryZoom) {
     </div>
   )HTML");
 
-  Element* target1 = GetDocument().getElementById(AtomicString("target1"));
-  Element* target2 = GetDocument().getElementById(AtomicString("target2"));
+  Element* target1 = GetElementById("target1");
+  Element* target2 = GetElementById("target2");
   ASSERT_TRUE(target1);
   ASSERT_TRUE(target2);
 
@@ -526,9 +526,9 @@ TEST_F(ContainerQueryTest, QueryFontRelativeWithZoom) {
     </div>
   )HTML");
 
-  Element* em_target = GetDocument().getElementById(AtomicString("em-target"));
-  Element* ex_target = GetDocument().getElementById(AtomicString("ex-target"));
-  Element* ch_target = GetDocument().getElementById(AtomicString("ch-target"));
+  Element* em_target = GetElementById("em-target");
+  Element* ex_target = GetElementById("ex-target");
+  Element* ch_target = GetElementById("ch-target");
   ASSERT_TRUE(em_target);
   ASSERT_TRUE(ex_target);
   ASSERT_TRUE(ch_target);
@@ -588,8 +588,7 @@ TEST_F(ContainerQueryTest, ContainerUnitsViewportFallback) {
     </div>
   )HTML");
 
-  Element* inline_target =
-      GetDocument().getElementById(AtomicString("inline_target"));
+  Element* inline_target = GetElementById("inline_target");
   ASSERT_TRUE(inline_target);
   EXPECT_EQ(ComputedValueString(inline_target, "--cqw"), "10px");
   EXPECT_EQ(ComputedValueString(inline_target, "--cqi"), "10px");
@@ -602,8 +601,7 @@ TEST_F(ContainerQueryTest, ContainerUnitsViewportFallback) {
   EXPECT_EQ(ComputedValueString(inline_target, "--cqmax"),
             ComputedValueString(inline_target, "--fallback-max-cqi-vh"));
 
-  Element* size_target =
-      GetDocument().getElementById(AtomicString("size_target"));
+  Element* size_target = GetElementById("size_target");
   ASSERT_TRUE(size_target);
   EXPECT_EQ(ComputedValueString(size_target, "--cqw"), "10px");
   EXPECT_EQ(ComputedValueString(size_target, "--cqi"), "10px");
@@ -642,8 +640,8 @@ TEST_F(ContainerQueryTest, OldStyleForTransitions) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById(AtomicString("container"));
-  target = GetDocument().getElementById(AtomicString("target"));
+  Element* container = GetElementById("container");
+  target = GetElementById("target");
   ASSERT_TRUE(target);
   ASSERT_TRUE(container);
 
@@ -713,8 +711,8 @@ TEST_F(ContainerQueryTest, TransitionAppearingInFinalPass) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById(AtomicString("container"));
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* container = GetElementById("container");
+  Element* target = GetElementById("target");
   ASSERT_TRUE(target);
   ASSERT_TRUE(container);
 
@@ -784,8 +782,8 @@ TEST_F(ContainerQueryTest, TransitionTemporarilyAppearing) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById(AtomicString("container"));
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* container = GetElementById("container");
+  Element* target = GetElementById("target");
   ASSERT_TRUE(target);
   ASSERT_TRUE(container);
 
@@ -856,8 +854,8 @@ TEST_F(ContainerQueryTest, RedefiningAnimations) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById(AtomicString("container"));
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* container = GetElementById("container");
+  Element* target = GetElementById("target");
   ASSERT_TRUE(target);
   ASSERT_TRUE(container);
 
@@ -923,8 +921,8 @@ TEST_F(ContainerQueryTest, UnsetAnimation) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById(AtomicString("container"));
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* container = GetElementById("container");
+  Element* target = GetElementById("target");
   ASSERT_TRUE(target);
   ASSERT_TRUE(container);
 
@@ -1172,10 +1170,10 @@ TEST_F(ContainerQueryTest, CQDependentContentVisibilityHidden) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* ancestor = GetDocument().getElementById(AtomicString("ancestor"));
+  Element* ancestor = GetElementById("ancestor");
   ancestor->SetInlineStyleProperty(CSSPropertyID::kWidth, "200px");
 
-  Element* locker = GetDocument().getElementById(AtomicString("locker"));
+  Element* locker = GetElementById("locker");
   locker->setAttribute(html_names::kClassAttr, AtomicString("locked"));
   locker->SetInnerHTMLWithoutTrustedTypes("<span>Visible?</span>");
 
@@ -1222,10 +1220,10 @@ TEST_F(ContainerQueryTest, QueryViewportDependency) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target1 = GetDocument().getElementById(AtomicString("target1"));
-  Element* target2 = GetDocument().getElementById(AtomicString("target2"));
-  Element* target3 = GetDocument().getElementById(AtomicString("target3"));
-  Element* target4 = GetDocument().getElementById(AtomicString("target4"));
+  Element* target1 = GetElementById("target1");
+  Element* target2 = GetElementById("target2");
+  Element* target3 = GetElementById("target3");
+  Element* target4 = GetElementById("target4");
 
   ASSERT_TRUE(target1);
   ASSERT_TRUE(target2);

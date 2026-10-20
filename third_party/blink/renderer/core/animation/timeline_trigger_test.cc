@@ -86,7 +86,7 @@ TEST_F(TimelineTriggerTest, ComputeBoundariesTest) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   TimelineTrigger* trigger =
       DynamicTo<TimelineTrigger>(target->NamedTriggers()->begin()->value.Get());
   EXPECT_NE(trigger, nullptr);
@@ -238,12 +238,12 @@ class TimelineTriggerPlayBackwardsForwardsTest : public TimelineTriggerTest {
 TEST_F(TimelineTriggerPlayBackwardsForwardsTest, BackwardsInterruptsForwards) {
   Initialize("play-forwards play-backwards");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   ElementAnimations* animations = target->GetElementAnimations();
   CSSAnimation* animation =
       DynamicTo<CSSAnimation>((*animations->Animations().begin()).key.Get());
-  Element* subject = GetDocument().getElementById(AtomicString("subject"));
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  Element* subject = GetElementById("subject");
+  Element* scroller = GetElementById("scroller");
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -295,10 +295,10 @@ TEST_F(TimelineTriggerPlayBackwardsForwardsTest,
        PlayForwardsFinishedAtEndNoOp) {
   Initialize("play-forwards");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   CSSAnimation* animation = DynamicTo<CSSAnimation>(
       (*target->GetElementAnimations()->Animations().begin()).key.Get());
-  Element* subject = GetDocument().getElementById(AtomicString("subject"));
+  Element* subject = GetElementById("subject");
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -323,10 +323,10 @@ TEST_F(TimelineTriggerPlayBackwardsForwardsTest,
        PlayForwardsReversesFinishedAtStart) {
   Initialize("play-forwards");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   CSSAnimation* animation = DynamicTo<CSSAnimation>(
       (*target->GetElementAnimations()->Animations().begin()).key.Get());
-  Element* subject = GetDocument().getElementById(AtomicString("subject"));
+  Element* subject = GetElementById("subject");
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -356,10 +356,10 @@ TEST_F(TimelineTriggerPlayBackwardsForwardsTest,
        PlayBackwardsFinishedAtStartNoOp) {
   Initialize("play-backwards");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   CSSAnimation* animation = DynamicTo<CSSAnimation>(
       (*target->GetElementAnimations()->Animations().begin()).key.Get());
-  Element* subject = GetDocument().getElementById(AtomicString("subject"));
+  Element* subject = GetElementById("subject");
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -385,10 +385,10 @@ TEST_F(TimelineTriggerPlayBackwardsForwardsTest,
        PlayBackwardsReversesFinishedAtEnd) {
   Initialize("play-backwards");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   CSSAnimation* animation = DynamicTo<CSSAnimation>(
       (*target->GetElementAnimations()->Animations().begin()).key.Get());
-  Element* subject = GetDocument().getElementById(AtomicString("subject"));
+  Element* subject = GetElementById("subject");
 
   UpdateAllLifecyclePhasesForTest();
 
@@ -491,17 +491,15 @@ TEST_F(TimelineTriggerTest, ScrollAndTimeDrivenAnimationReplay) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* sda_target =
-      GetDocument().getElementById(AtomicString("sda-target"));
+  Element* sda_target = GetElementById("sda-target");
   CSSAnimation* sda = DynamicTo<CSSAnimation>(
       (*sda_target->GetElementAnimations()->Animations().begin()).key.Get());
-  Element* tda_target =
-      GetDocument().getElementById(AtomicString("tda-target"));
+  Element* tda_target = GetElementById("tda-target");
   CSSAnimation* tda = DynamicTo<CSSAnimation>(
       (*tda_target->GetElementAnimations()->Animations().begin()).key.Get());
 
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
-  Element* wrapper = GetDocument().getElementById(AtomicString("wrapper"));
+  Element* scroller = GetElementById("scroller");
+  Element* wrapper = GetElementById("wrapper");
 
   // Retrieve the trigger from wrapper.
   TimelineTrigger* trigger = DynamicTo<TimelineTrigger>(

@@ -41,9 +41,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
     )HTML");
   }
 
-  Element& ContainerElement() {
-    return *GetDocument().getElementById(AtomicString("container"));
-  }
+  Element& ContainerElement() { return *GetElementById("container"); }
 
   const ContainerQuery* ParseContainer(String query) {
     String rule = "@container " + query + " {}";
@@ -620,7 +618,7 @@ TEST_F(ContainerQueryEvaluatorTest, SizeInvalidation) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById(AtomicString("container"));
+  Element* container = GetElementById("container");
   ASSERT_TRUE(container);
   ASSERT_TRUE(container->GetContainerQueryEvaluator());
 
@@ -725,7 +723,7 @@ TEST_F(ContainerQueryEvaluatorTest, EvaluatorDisplayNone) {
   )HTML");
 
   // Inner container
-  Element* inner = GetDocument().getElementById(AtomicString("inner"));
+  Element* inner = GetElementById("inner");
   ASSERT_TRUE(inner);
   EXPECT_TRUE(inner->GetContainerQueryEvaluator());
 
@@ -738,7 +736,7 @@ TEST_F(ContainerQueryEvaluatorTest, EvaluatorDisplayNone) {
   ASSERT_TRUE(inner->GetContainerQueryEvaluator());
 
   // Outer container
-  Element* outer = GetDocument().getElementById(AtomicString("outer"));
+  Element* outer = GetElementById("outer");
   ASSERT_TRUE(outer);
   EXPECT_TRUE(outer->GetContainerQueryEvaluator());
   EXPECT_TRUE(inner->GetContainerQueryEvaluator());
@@ -774,7 +772,7 @@ TEST_F(ContainerQueryEvaluatorTest, Printing) {
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   EXPECT_NE(
       target->ComputedStyleRef().VisitedDependentColor(GetCSSPropertyColor()),
       Color(0, 128, 0));
@@ -1026,7 +1024,7 @@ TEST_F(ContainerQueryEvaluatorTest, DisplayContentsStyleQueryInvalidation) {
     </div>
   )HTML");
 
-  Element* container = GetDocument().getElementById(AtomicString("container"));
+  Element* container = GetElementById("container");
   ASSERT_TRUE(container);
   ContainerQueryEvaluator* evaluator = container->GetContainerQueryEvaluator();
   ASSERT_TRUE(evaluator);

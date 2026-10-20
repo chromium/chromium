@@ -59,8 +59,7 @@ TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFound) {
   SetBodyInnerHTML(R"HTML(
     <div id="first_div">Hello</div>
   )HTML");
-  Element* div_element =
-      GetDocument().getElementById(AtomicString("first_div"));
+  Element* div_element = GetElementById("first_div");
 
   DOMNodeId target_node_id = div_element->GetDomNodeId();
   NodeAnnotationSelector* selector =
@@ -93,8 +92,7 @@ TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFoundMultipleTextNodes) {
     </div>
     Other text to make sure we are not returning the whole document.
   )HTML");
-  Element* div_element =
-      GetDocument().getElementById(AtomicString("first_div"));
+  Element* div_element = GetElementById("first_div");
 
   DOMNodeId target_node_id = div_element->GetDomNodeId();
   NodeAnnotationSelector* selector =
@@ -132,8 +130,7 @@ TEST_F(NodeAnnotationSelectorTest,
     </span>
     Other text to make sure we are not returning the whole document.
   )HTML");
-  Element* span_element =
-      GetDocument().getElementById(AtomicString("first_span"));
+  Element* span_element = GetElementById("first_span");
 
   DOMNodeId target_node_id = span_element->GetDomNodeId();
   NodeAnnotationSelector* selector =
@@ -168,8 +165,7 @@ TEST_F(NodeAnnotationSelectorTest, FindRangeNodeFoundButNoText) {
       </div>
     Other text to make sure we are not returning the whole document.
   )HTML");
-  Element* div_element =
-      GetDocument().getElementById(AtomicString("first_div"));
+  Element* div_element = GetElementById("first_div");
 
   DOMNodeId target_node_id = div_element->GetDomNodeId();
   NodeAnnotationSelector* selector =
@@ -190,8 +186,7 @@ TEST_F(NodeAnnotationSelectorTest, FindRangeNodeNotFound) {
     <div id="first_div">Hello</div>
     Other text to make sure we are not returning the whole document.
   )HTML");
-  Element* div_element =
-      GetDocument().getElementById(AtomicString("first_div"));
+  Element* div_element = GetElementById("first_div");
 
   DOMNodeId target_node_id =
       div_element->GetDomNodeId() + 9999;  // a non-existent node id
@@ -215,8 +210,7 @@ TEST_F(NodeAnnotationSelectorTest, FindRangeNodeIsDisconnected) {
     </div>
     Other text to make sure we are not returning the whole document.
   )HTML");
-  Element* div_element =
-      GetDocument().getElementById(AtomicString("first_div"));
+  Element* div_element = GetElementById("first_div");
 
   NodeAnnotationSelector* selector =
       MakeGarbageCollected<NodeAnnotationSelector>(div_element->GetDomNodeId());

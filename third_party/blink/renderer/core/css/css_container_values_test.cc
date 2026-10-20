@@ -81,9 +81,7 @@ class CSSContainerValuesTest : public PageTestBase {
   }
 
  private:
-  Element& ContainerElement() {
-    return *GetDocument().getElementById(AtomicString("container"));
-  }
+  Element& ContainerElement() { return *GetElementById("container"); }
 };
 
 TEST_F(CSSContainerValuesTest, StickyHorizontalTbLtr) {

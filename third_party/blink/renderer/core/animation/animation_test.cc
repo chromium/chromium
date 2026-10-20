@@ -3026,7 +3026,7 @@ TEST_P(AnimationAnimationTestCompositing,
     <div id ='target'></div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   WeakPersistent<AnimationTimeline> timeline =
       MakeGarbageCollected<ViewTimeline>(&GetDocument(), target,
                                          ScrollSnapshotTimeline::ScrollAxis::kY,

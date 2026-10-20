@@ -300,8 +300,7 @@ TEST_F(CSSPropertyValueSetTest, RemoveEquivalentPropertiesWithAll) {
 TEST_F(CSSPropertyValueSetTest,
        RemoveEquivalentPropertiesPreservingShorthands) {
   SetBodyInnerHTML(R"HTML(<div id="target" style="margin: 10px"></div>)HTML");
-  auto* target_style =
-      GetDocument().getElementById(AtomicString("target"))->style();
+  auto* target_style = GetElementById("target")->style();
 
   auto* properties =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
@@ -327,8 +326,7 @@ TEST_F(CSSPropertyValueSetTest,
 TEST_F(CSSPropertyValueSetTest,
        RemoveEquivalentPropertiesPreservingShorthandsCustomProperty) {
   SetBodyInnerHTML(R"HTML(<div id="target" style="--x: foo"></div>)HTML");
-  auto* target_style =
-      GetDocument().getElementById(AtomicString("target"))->style();
+  auto* target_style = GetElementById("target")->style();
 
   auto* properties =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
@@ -351,8 +349,7 @@ TEST_F(CSSPropertyValueSetTest,
 TEST_F(CSSPropertyValueSetTest,
        RemoveEquivalentPropertiesPreservingShorthandsWithAll) {
   SetBodyInnerHTML(R"HTML(<div id="target" style="all: revert"></div>)HTML");
-  auto* target_style =
-      GetDocument().getElementById(AtomicString("target"))->style();
+  auto* target_style = GetElementById("target")->style();
 
   auto* properties =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);

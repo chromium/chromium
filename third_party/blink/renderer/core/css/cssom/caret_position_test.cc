@@ -53,7 +53,7 @@ TEST_F(CaretPositionTest, offsetNodeAndOffset) {
       "<span id='s1'>s1</span>"
       "<span id='s2'>s2</span>"
       "</div>");
-  Element* const s0 = GetDocument().getElementById(AtomicString("s0"));
+  Element* const s0 = GetElementById("s0");
   auto* caret_position = MakeGarbageCollected<CaretPosition>(s0, 1);
   EXPECT_EQ(s0, caret_position->offsetNode());
   EXPECT_EQ(1u, caret_position->offset());
@@ -61,7 +61,7 @@ TEST_F(CaretPositionTest, offsetNodeAndOffset) {
 
 TEST_F(CaretPositionTest, offsetNodeAndOffsetInShadowDom) {
   SetBodyContent("<div id='host'></div>");
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
@@ -78,7 +78,7 @@ TEST_F(CaretPositionTest, offsetNodeAndOffsetInShadowDom) {
 
 TEST_F(CaretPositionTest, offsetNodeAndOffsetInClosedShadowTree) {
   SetBodyContent("<div id='host'></div>");
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ASSERT_TRUE(host);
 
   ShadowRoot& shadow_root =
@@ -112,7 +112,7 @@ TEST_F(CaretPositionTest, getClientRect) {
       "<span id='s1'>s1</span>"
       "<span id='s2'>s2</span>"
       "</div>");
-  Element* const s0 = GetDocument().getElementById(AtomicString("s0"));
+  Element* const s0 = GetElementById("s0");
   auto* caret_position = MakeGarbageCollected<CaretPosition>(s0, 1);
   EXPECT_EQ(s0, caret_position->offsetNode());
   EXPECT_EQ(1u, caret_position->offset());

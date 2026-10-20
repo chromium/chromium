@@ -88,8 +88,8 @@ TEST_F(CSSStyleSheetTest,
 TEST_F(CSSStyleSheetTest, AdoptedStyleSheetMediaQueryEvalChange) {
   SetBodyInnerHTML("<div id=green></div><div id=blue></div>");
 
-  Element* green = GetDocument().getElementById(AtomicString("green"));
-  Element* blue = GetDocument().getElementById(AtomicString("blue"));
+  Element* green = GetElementById("green");
+  Element* blue = GetElementById("blue");
 
   CSSStyleSheetInit* init = CSSStyleSheetInit::Create();
   CSSStyleSheet* sheet =
@@ -353,7 +353,7 @@ TEST_F(CSSStyleSheetTest,
 TEST_F(CSSStyleSheetTest,
        ConstructableStyleSheetCacheHitMutatesRulesAndUpdatesActiveStyle) {
   SetBodyInnerHTML("<div id='target'>Hello</div>");
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   ASSERT_TRUE(target);
 
   // Warm cache with red style.

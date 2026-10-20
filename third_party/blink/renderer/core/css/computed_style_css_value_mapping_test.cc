@@ -20,7 +20,7 @@ TEST_F(ComputedStyleCSSValueMappingTest, GetVariablesOnOldStyle) {
       "<div id=target style='--x:red'></div>");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   ASSERT_TRUE(target);
 
   auto before = ComputedStyleCSSValueMapping::GetVariables(

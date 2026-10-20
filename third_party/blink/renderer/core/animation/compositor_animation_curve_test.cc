@@ -26,7 +26,7 @@ class CompositorAnimationCurveTest : public PageTestBase {
   // may affect multiple properties.
   Animation* GetAnimation() {
     UpdateAllLifecyclePhasesForTest();
-    Element* target = GetDocument().getElementById(AtomicString("target"));
+    Element* target = GetElementById("target");
     ElementAnimations* element_animations = target->GetElementAnimations();
     EXPECT_TRUE(element_animations);
     EXPECT_EQ(element_animations->Animations().size(), 1u);

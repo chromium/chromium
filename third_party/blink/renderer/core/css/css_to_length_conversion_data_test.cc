@@ -266,7 +266,7 @@ TEST_F(CSSToLengthConversionDataTest, StyleLessContainerUnitConversion) {
 TEST_F(CSSToLengthConversionDataTest, SetLineHeightSize) {
   CSSToLengthConversionData data = ConversionData();
   EXPECT_FLOAT_EQ(100.0f, ConvertPx(data, "1lh"));
-  Element* div = GetDocument().getElementById(AtomicString("div"));
+  Element* div = GetElementById("div");
   ASSERT_TRUE(div);
   SetLineHeightSize(*div, data);
   EXPECT_FLOAT_EQ(200.0f, ConvertPx(data, "1lh"));
