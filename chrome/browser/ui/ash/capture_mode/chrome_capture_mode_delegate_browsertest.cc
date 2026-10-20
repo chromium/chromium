@@ -209,6 +209,34 @@ IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
           mount_path));
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,
+                       OdfsSubdirFileRedirected) {
+  ChromeCaptureModeDelegate* delegate = ChromeCaptureModeDelegate::Get();
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  // Mount ODFS.
+  file_manager::test::FakeProvidedFileSystemOneDrive* provided_file_system =
+      file_manager::test::MountFakeProvidedFileSystemOneDrive(
+          browser()->GetProfile());
+  ASSERT_TRUE(provided_file_system);
+  EXPECT_FALSE(delegate->GetOneDriveMountPointPath().empty());
+  EXPECT_FALSE(delegate->GetOneDriveVirtualPath().empty());
+
+  // Check that a file going to a OneDrive subdirectory will be redirected to
+  // /tmp with its relative subdirectory path preserved.
+  const std::string test_subdir_name = "Screenshots";
+  const std::string test_file_name = "capture_mode_delegate.test";
+  base::FilePath original_file = delegate->GetOneDriveVirtualPath()
+                                     .Append(test_subdir_name)
+                                     .Append(test_file_name);
+  base::FilePath redirected_path = delegate->RedirectFilePath(original_file);
+  EXPECT_NE(redirected_path, original_file);
+  base::FilePath tmp_dir;
+  ASSERT_TRUE(base::GetTempDir(&tmp_dir));
+  EXPECT_TRUE(tmp_dir.IsParent(redirected_path));
+  EXPECT_EQ(redirected_path.BaseName().value(), test_file_name);
+  EXPECT_EQ(redirected_path.DirName().BaseName().value(), test_subdir_name);
+}
+
 // The OCR service is not supported on ChromeOS browser tests, so we can't check
 // the real detected text.
 IN_PROC_BROWSER_TEST_F(ChromeCaptureModeDelegateBrowserTest,

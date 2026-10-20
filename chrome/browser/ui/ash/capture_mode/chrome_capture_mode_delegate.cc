@@ -737,8 +737,8 @@ base::FilePath ChromeCaptureModeDelegate::RedirectFilePath(
     return odfs_temp_dir_.path().Append(path.BaseName());
   }
   if (!odfs_path.empty() && odfs_path.IsParent(path)) {
-    base::FilePath ret = path;
-    if (odfs_path.AppendRelativePath(odfs_temp_dir_.path(), &ret)) {
+    base::FilePath ret = odfs_temp_dir_.path();
+    if (odfs_path.AppendRelativePath(path, &ret)) {
       return ret;
     }
   }
