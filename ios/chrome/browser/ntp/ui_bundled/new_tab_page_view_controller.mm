@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
 #import "ios/chrome/common/material_timing.h"
+#import "ios/chrome/common/ui/animations/radial_wipe_animation.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -214,6 +215,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   NSLayoutConstraint* _collectionViewTopConstraint;
   // The height of the feed top section before it was closed/removed.
   CGFloat _lastClosedPromoHeight;
+  // Animation used to hide the Magic Stack and Discover feed.
+  RadialWipeAnimation* _radialWipeAnimation;
 }
 
 // Properties synthesized from NewTabPageScrollConsumer.
@@ -808,6 +811,42 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     ]];
   }
   return _moduleLayoutGuide;
+}
+
+- (void)animateHideMagicStackAndFeedWithCompletion:(ProceduralBlock)completion {
+  NSMutableArray<UIView*>* targetViews = [NSMutableArray array];
+  if (self.magicStackVisible && self.magicStackCollectionView.view) {
+    [targetViews addObject:self.magicStackCollectionView.view];
+  }
+  if (self.feedHeaderViewController.view) {
+    [targetViews addObject:self.feedHeaderViewController.view];
+  }
+  if (self.feedTopSectionVisible && self.feedTopSectionViewController.view) {
+    [targetViews addObject:self.feedTopSectionViewController.view];
+  }
+  if (self.feedVisible) {
+    if (_feedContainer) {
+      [targetViews addObject:_feedContainer];
+    }
+    [targetViews addObjectsFromArray:self.collectionView.visibleCells];
+  }
+  if (targetViews.count == 0) {
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+  _radialWipeAnimation =
+      [[RadialWipeAnimation alloc] initWithWindow:self.view
+                                      targetViews:targetViews];
+  _radialWipeAnimation.type = RadialWipeAnimationType::kHideTarget;
+  _radialWipeAnimation.startPoint = CGPointMake(0.5, 0);
+  // Required by CHECK(!_window.userInteractionEnabled) in RadialWipeAnimation.
+  self.view.userInteractionEnabled = NO;
+  __weak __typeof(self) weakSelf = self;
+  [_radialWipeAnimation animateWithCompletion:^{
+    [weakSelf didCompleteRadialWipeWithCompletion:completion];
+  }];
 }
 
 #pragma mark - NewTabPageScrollConsumer
@@ -2079,6 +2118,17 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   // positioned, in particular during a rotation while a ViewController is
   // presented in front of the NTP.
   [self updateFakeOmniboxOnNewWidth:width];
+}
+
+- (void)didCompleteRadialWipeWithCompletion:(ProceduralBlock)completion {
+  _radialWipeAnimation = nil;
+  self.view.userInteractionEnabled = YES;
+  // Reset `hidden` on the Magic Stack view before pref changes remove it from
+  // the hierarchy, so it remains visible if re-enabled via "Undo".
+  self.magicStackCollectionView.view.hidden = NO;
+  if (completion) {
+    completion();
+  }
 }
 
 #pragma mark - Helpers

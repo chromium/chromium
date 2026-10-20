@@ -5567,6 +5567,12 @@ You can restart anytime.
       <message name="IDS_IOS_NTP_CUSTOMIZATION_PROMO_TITLE" desc="The title of the NTP customization promo sheet. [iOS only]">
           Try a focused new tab page
       </message>
+      <message name="IDS_IOS_NTP_CUSTOMIZATION_SNACKBAR_ACTION" desc="The message of the snackbar action to undo the NTP customization. [iOS only]">
+          Undo
+      </message>
+      <message name="IDS_IOS_NTP_CUSTOMIZATION_SNACKBAR_MESSAGE" desc="The message of the displayed snackbar once the NTP customization is done. [iOS only]">
+          Focused new tab page applied
+      </message>
       <message name="IDS_IOS_NTP_FEED_SIGNIN_FULL_PROMO_BODY" desc="The text on the body of the new tab page Feed Signin Promo, explaining that users will see more relevant content if they enable sync. [iOS only]">
         Sync for the most relevant content based on your interests.
       </message>

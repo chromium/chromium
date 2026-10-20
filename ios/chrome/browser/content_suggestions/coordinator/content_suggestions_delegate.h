@@ -44,6 +44,10 @@ class GURL;
 // (for example, when selecting "Search" from the app icon long-press menu).
 - (BOOL)isNTPBypassed;
 
+// Triggers the radial wipe animation to hide the Magic Stack and Discover feed,
+// disables both modules, and shows an undo snackbar.
+- (void)applyFocusedNTPWithUndoSnackbar;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_COORDINATOR_CONTENT_SUGGESTIONS_DELEGATE_H_

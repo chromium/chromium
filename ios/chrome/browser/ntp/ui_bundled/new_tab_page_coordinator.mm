@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/discover_feed/model/discover_feed_observer_bridge.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_observer.h"
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
@@ -164,6 +165,7 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -1543,6 +1545,13 @@ using ntp_tiles::AimButtonRefactorArm;
          startupParameters.postOpeningAction != NO_ACTION;
 }
 
+- (void)applyFocusedNTPWithUndoSnackbar {
+  __weak __typeof(self) weakSelf = self;
+  [self.NTPViewController animateHideMagicStackAndFeedWithCompletion:^{
+    [weakSelf disableMagicStackAndFeedWithUndoSnackbar];
+  }];
+}
+
 #pragma mark - FeedSignInPromoDelegate
 
 - (void)showSignInUIFromSource:(FeedSignInPromoSource)source {
@@ -2555,6 +2564,55 @@ using ntp_tiles::AimButtonRefactorArm;
           attachmentList:attachments];
 
   ShowComposebox(self.browser, params);
+}
+
+// Disables the Magic Stack and Discover feed and presents an undo snackbar.
+- (void)disableMagicStackAndFeedWithUndoSnackbar {
+  PrefService* prefService = self.prefService;
+  Browser* browser = self.browser;
+  if (!self.started || !prefService || !browser) {
+    return;
+  }
+  DiscoverFeedVisibilityBrowserAgent* feedVisibilityAgent =
+      DiscoverFeedVisibilityBrowserAgent::FromBrowser(browser);
+  BOOL wasMagicStackEnabled =
+      prefService->GetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled);
+  BOOL wasFeedEnabled = feedVisibilityAgent->IsEnabled();
+  self.prefService->SetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
+                               false);
+  feedVisibilityAgent->SetEnabled(false);
+  __weak __typeof(self) weakSelf = self;
+  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
+  action.title =
+      l10n_util::GetNSString(IDS_IOS_NTP_CUSTOMIZATION_SNACKBAR_ACTION);
+  action.handler = ^{
+    [weakSelf restoreMagicStackEnabled:wasMagicStackEnabled
+                           feedEnabled:wasFeedEnabled];
+  };
+  SnackbarMessage* message = [[SnackbarMessage alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_NTP_CUSTOMIZATION_SNACKBAR_MESSAGE)];
+  message.action = action;
+  message.completionHandler = ^(BOOL triggeredByUserAction) {
+    if (!triggeredByUserAction) {
+      [weakSelf presentCustomizationButtonBubble];
+    }
+  };
+  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  [snackbarHandler showSnackbarMessage:message];
+}
+
+// Restores the Magic Stack and Discover feed visibility when Undo is tapped.
+- (void)restoreMagicStackEnabled:(BOOL)magicStackEnabled
+                     feedEnabled:(BOOL)feedEnabled {
+  if (!self.started || !self.prefService || !self.browser) {
+    return;
+  }
+  self.prefService->SetBoolean(ntp_tiles::prefs::kMagicStackHomeModuleEnabled,
+                               magicStackEnabled);
+  DiscoverFeedVisibilityBrowserAgent::FromBrowser(self.browser)
+      ->SetEnabled(feedEnabled);
 }
 
 #pragma mark - HomeCustomizationDelegate

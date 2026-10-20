@@ -1498,7 +1498,9 @@ using segmentation_platform::TipIdentifier;
                     didFinishWithAccept:(BOOL)didAccept {
   [_tipsNTPCustomizationCoordinator stop];
   _tipsNTPCustomizationCoordinator = nil;
-  // TODO(crbug.com/571447764): Trigger the undo snackbar.
+  if (didAccept) {
+    [self.delegate applyFocusedNTPWithUndoSnackbar];
+  }
 }
 
 #pragma mark - Helpers
