@@ -26,6 +26,7 @@ fuzztest_add_configs = fuzzing_engine_add_configs + [
 
 config("fuzztest_internal_config") {
   cflags = [
+    "-Wno-extra-semi",
     "-Wno-unused-result",  #crbug.com/500385597
     "-Wno-unused-private-field",
     "-Wno-unreachable-code-aggressive",
@@ -114,6 +115,9 @@ if (use_centipede) {
   source_set("centipede_runner_no_main") {
     testonly = true
     sources = [
+      "src/centipede/engine_abi.h",
+      "src/centipede/engine_worker.cc",
+      "src/centipede/engine_worker_abi.h",
       "src/centipede/runner.cc",
       "src/centipede/runner.h",
       "src/centipede/runner_dl_info.cc",
