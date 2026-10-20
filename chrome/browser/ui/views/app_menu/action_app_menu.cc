@@ -989,7 +989,6 @@ void ActionAppMenu::PopulateCustomRow(views::MenuItemView* view_parent,
                                       actions::BaseAction* custom_action_item) {
   switch (custom_action_item->GetActionItem()->GetActionId().value()) {
     case kActionZoomSubmenu:
-      view_parent->set_children_use_full_width(true);
       view_parent->AddChildView(std::make_unique<AppMenuZoomView>(
           browser_window_interface_, &action_view_controller_,
           command_to_action_map_, custom_action_item, metrics_));
