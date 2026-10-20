@@ -27,6 +27,7 @@
 #expandButton {
   --cr-expand-button-icon-size: 16px;
   --cr-expand-button-size: 24px;
+  --cr-icon-button-focus-outline-color: transparent;
   --cr-section-vertical-padding: 0;
   color: var(--cr-secondary-text-color);
   flex: 1;
@@ -42,10 +43,13 @@
 }
 
 #expandButton::part(icon) {
+  --cr-icon-button-focus-outline-color: transparent;
+  box-shadow: none;
   margin-block: -4px;
   margin-inline-end: 8px;
   margin-inline-start: 2px;
   order: -1;
+  outline: none;
 }
 
 #expandButton[disabled]::part(icon) {
@@ -65,7 +69,6 @@
   display: inline-flex;
 }
 
-:host-context(html:not(.focus-outline-visible)) #expandButton::part(icon),
 :host-context(html:not(.focus-outline-visible)) #menuButton {
   --cr-icon-button-focus-outline-color: transparent;
 }

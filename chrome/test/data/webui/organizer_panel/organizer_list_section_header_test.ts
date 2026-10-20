@@ -5,6 +5,7 @@
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 import type {OrganizerListSectionHeaderElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -175,5 +176,139 @@ suite('OrganizerListSectionHeaderTest', () => {
     await microtasksFinished();
     assertTrue(header.$.showSomeCheck.hasAttribute('invisible'));
     assertFalse(header.$.showAllCheck.hasAttribute('invisible'));
+  });
+
+  test('collapses and expands with left and right arrow keys', async () => {
+    header.expanded = true;
+    await microtasksFinished();
+
+    header.$.expandButton.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'ArrowLeft',
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertFalse(header.expanded);
+
+    header.$.expandButton.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'ArrowRight',
+      bubbles: true,
+      composed: true,
+    }));
+    await microtasksFinished();
+    assertTrue(header.expanded);
+  });
+
+  test(
+      'does not collapse or expand with arrow keys when disabled', async () => {
+        header.disabled = true;
+        header.expanded = true;
+        await microtasksFinished();
+
+        header.$.expandButton.dispatchEvent(new KeyboardEvent('keydown', {
+          key: 'ArrowLeft',
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+        assertTrue(header.expanded);
+
+        header.expanded = false;
+        await microtasksFinished();
+
+        header.$.expandButton.dispatchEvent(new KeyboardEvent('keydown', {
+          key: 'ArrowRight',
+          bubbles: true,
+          composed: true,
+        }));
+        await microtasksFinished();
+        assertFalse(header.expanded);
+      });
+
+  test('tab navigation on expand button', async () => {
+    header.expanded = true;
+    await microtasksFinished();
+
+    // Tab on expand button focuses menu button when visible
+    header.$.expandButton.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    assertEquals(header.$.menuButton, getDeepActiveElement());
+
+    // When menu button is hidden (section collapsed), Tab fires
+    // focus-next-section
+    header.expanded = false;
+    await microtasksFinished();
+
+    const nextSectionPromise = eventToPromise('focus-next-section', header);
+    header.$.expandButton.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    await nextSectionPromise;
+
+    // Shift+Tab fires focus-previous-section
+    const prevSectionPromise = eventToPromise('focus-previous-section', header);
+    header.$.expandButton.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    await prevSectionPromise;
+  });
+
+  test('tab navigation on menu button', async () => {
+    header.expanded = true;
+    await microtasksFinished();
+
+    // Shift+Tab on menu button returns focus to expand button
+    header.focusMenuButton();
+    assertEquals(header.$.menuButton, getDeepActiveElement());
+
+    header.$.menuButton.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    assertEquals(header.$.expandButton.$.icon, getDeepActiveElement());
+
+    // Tab on menu button fires focus-next-section
+    const nextSectionPromise = eventToPromise('focus-next-section', header);
+    header.$.menuButton.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      composed: true,
+      cancelable: true,
+    }));
+    await nextSectionPromise;
+  });
+
+  test('focus method delegates to expand button', () => {
+    header.focus();
+    assertEquals(header.$.expandButton.$.icon, getDeepActiveElement());
+  });
+
+  test('disables focus ring on expand button icon', async () => {
+    document.documentElement.classList.add('focus-outline-visible');
+    header.focus();
+    await microtasksFinished();
+
+    const expandIcon = header.$.expandButton.$.icon;
+    assertEquals(
+        'transparent',
+        getComputedStyle(expandIcon)
+            .getPropertyValue('--cr-icon-button-focus-outline-color')
+            .trim());
+    assertEquals('none', getComputedStyle(expandIcon).boxShadow);
+    document.documentElement.classList.remove('focus-outline-visible');
   });
 });

@@ -15,6 +15,7 @@ import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {MouseHoverableMixinLit} from '//resources/cr_elements/mouse_hoverable_mixin_lit.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
+import {isRTL} from '//resources/js/util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -84,6 +85,68 @@ export class OrganizerListSectionHeaderElement extends
     // still triggers :focus-visible; track keyboard vs mouse input so CSS can
     // hide the focus ring on mouse clicks.
     FocusOutlineManager.forDocument(document);
+  }
+
+  override focus() {
+    this.$.expandButton.focus();
+  }
+
+  focusMenuButton() {
+    this.$.menuButton.focus();
+  }
+
+  isMenuButtonVisible(): boolean {
+    return this.expanded && !this.disabled;
+  }
+
+  protected onExpandButtonKeydown_(e: KeyboardEvent) {
+    const isRtl = isRTL();
+    const forwardKey = isRtl ? 'ArrowLeft' : 'ArrowRight';
+    const backwardKey = isRtl ? 'ArrowRight' : 'ArrowLeft';
+
+    if (e.key === forwardKey) {
+      if (!this.disabled && !this.expanded) {
+        this.expanded = true;
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      return;
+    }
+
+    if (e.key === backwardKey) {
+      if (!this.disabled && this.expanded) {
+        this.expanded = false;
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      return;
+    }
+
+    if (e.key === 'Tab') {
+      if (!e.shiftKey) {
+        if (this.isMenuButtonVisible()) {
+          this.focusMenuButton();
+        } else {
+          this.fire('focus-next-section');
+        }
+      } else {
+        this.fire('focus-previous-section');
+      }
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }
+
+  protected onMenuButtonKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Tab') {
+      if (!e.shiftKey) {
+        this.fire('focus-next-section');
+      } else {
+        this.focus();
+      }
+      e.preventDefault();
+      e.stopPropagation();
+    }
   }
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
