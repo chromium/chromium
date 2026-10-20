@@ -54,6 +54,7 @@
 #include "ui/display/mac/ca_display_link_mac.h"
 #include "ui/display/mac/display_link_mac.h"
 #include "ui/display/mac/vsync_provider_mac.h"
+#include "ui/gfx/switches.h"
 #endif
 
 namespace viz {
@@ -135,7 +136,9 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
   if (ui::DisplayLinkMac::SupportsCADisplayLinkInGPU()) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     if (!command_line->HasSwitch("in-process-gpu") &&
-        !command_line->HasSwitch("single-process-tests")) {
+        !command_line->HasSwitch("single-process") &&
+        !command_line->HasSwitch("single-process-tests") &&
+        !command_line->HasSwitch(switches::kHeadless)) {
       auto update_vsync_displays_cb =
           base::BindRepeating(&FrameSinkManagerImpl::UpdateVSyncDisplays,
                               weak_factory_.GetWeakPtr());
