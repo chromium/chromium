@@ -17,24 +17,10 @@ user's identity are all examples of model-layer concepts. Chrome on iOS also
 treats **web page content as model data**—an entire layer unto itself
 (`//ios/web/`).
 
-The distinction between model and user interface ("view") is central to the
-classic Model-View-Controller (MVC) pattern. In MVC, part of the Controller role
-is to update model data in response to user activity and to update the user
-interface in response to changes in model data. In UIKit, view controllers
-(`UIViewController` subclasses) frequently absorb this responsibility alongside
-view management, layout, and navigation.
-
-To prevent this accretion of responsibilities in view controllers, Chrome on iOS
-divides feature architecture across three core patterns:
-
-- **[Coordinators](coordinators.md)** handle feature **encapsulation**,
-  navigation, interaction with other parts of the UI, and **dependency
-  injection**.
-- **View Controllers** and **Model Objects** sit on either side of a strict
-  boundary: view controllers have no direct model-layer dependencies, and
-  model-layer code is never coupled to specific UI implementations.
-- **Mediators** handle the interactions between the Model and UI layers while
-  keeping them **decoupled**.
+Between these two layers is the coordinator layer, where mediators keep them
+**decoupled**: view controllers have no direct model-layer dependencies, and
+model-layer code is never coupled to specific UI implementations (see
+[Patterns of Structure](README.md#patterns-of-structure)).
 
 The Mediator pattern is one of the classic behavioral patterns from *Design
 Patterns* (Gamma et al.), which defines a mediator as "an object that
@@ -160,9 +146,8 @@ Notice that in the example above, the coordinator passes the specific
 `ReadingListService*` into the mediator rather than passing the `ProfileIOS*`
 (or `Browser*`) from which the `ReadingListService` was retrieved.
 
-This is the
-**[line in the sand](coordinators.md#core-guidelines-and-boundaries)**
-principle: "backbone container" objects that can vend arbitrary services and
+This is the **[line in the sand](README.md#line-in-the-sand)** principle:
+"backbone container" objects that can vend arbitrary services and
 dependencies—such as `Browser`, `ProfileIOS`, `SceneState`, `ProfileState`,
 `AppState`, `ApplicationContext`, or `CommandDispatcher`—are passed down through
 the coordinator hierarchy, but are **never passed out of a coordinator** to its
@@ -309,6 +294,23 @@ being implicitly synchronized with a specific prior model state:
 
 // GOOD: Each update carries the complete current value.
 - (void)setReceivedBytes:(int64_t)receivedBytes;
+
+@end
+```
+
+For the same reason, consumer updates identify items in a collection by stable
+identifiers, not by position. An index identifies the right item only if the
+consumer's items exactly match the model's at the moment of the update; an
+identifier doesn't depend on the consumer's prior state:
+
+```objectivec
+@protocol BookmarkListConsumer <NSObject>
+
+// BAD: Correct only if the consumer's list exactly matches the model's.
+- (void)removeBookmarkAtIndex:(NSUInteger)index;
+
+// GOOD: Identifies the bookmark regardless of the consumer's prior state.
+- (void)removeBookmarkWithUUID:(const base::Uuid&)uuid;
 
 @end
 ```
@@ -933,7 +935,7 @@ ______________________________________________________________________
 - **Consumer Data Source (`*DataSource`)**: An Objective-C protocol that is part
   of the UI layer and implemented by a mediator, allowing a consumer to obtain
   transient interaction-time decisions on demand.
-- **Mediator (`*Mediator`)**: A controller-layer object created and owned by a
+- **Mediator (`*Mediator`)**: A coordinator-layer object created and owned by a
   [coordinator](coordinators.md) that observes and mutates model-layer objects
   and communicates with the UI layer over decoupled protocols.
 - **Mutation-Observation Cycle**: The unidirectional data flow in which a view
@@ -956,23 +958,14 @@ ______________________________________________________________________
 
 ## Connecting Patterns
 
-Mediators work in concert with several complementary architectural patterns
-across Chrome on iOS:
+See [Mediator](README.md#mediator) in the architecture overview for how
+mediators relate to the other patterns.
 
-- **[Coordinators](coordinators.md)**: Controller-layer objects that encapsulate
-  a UI feature, manage the lifecycle of its mediator and view controller,
-  extract model dependencies from backbone containers, and wire the mediator and
-  view controller together.
-- **Deep Models**: Rich model-layer classes (such as C++ keyed services,
-  `WebStateList`, browser agents, and tab helpers) that encapsulate domain
-  state, persistence, and operations and notify observers when their state
-  changes.
-- **Isolated View Controllers**: View controllers that have no direct
-  dependencies on the model layer or concrete mediator classes, rendering state
-  received via consumer protocols and reporting user actions via mutator and
-  command protocols.
-- **[UI Commands and Disintermediated Dispatch](commands.md)**: Objective-C
-  protocols defining feature- and application-level UI actions routed through
-  `CommandDispatcher` (or passed as local command handlers), allowing mediators
-  and view controllers to trigger broader UI transitions without coupling to
-  coordinators.
+*Motivated by [Layers](README.md#layers),
+[Decoupling](README.md#problem-decomposition),
+[Deep Model](README.md#deep-model),
+[Isolated View Controller](README.md#isolated-view-controller),
+[Coordinator](coordinators.md), and
+[Mutation-Observation Cycle](#the-mutation-observation-cycle).*
+
+*Motivates [State-Independent Consumer](#state-independence).*

@@ -1,16 +1,17 @@
 # UI Commands and Disintermediated Dispatch
 
 > **Core Principle:** In order for encapsulated coordinators to trigger UI
-> changes outside of their own scope without coupling components together,
+> changes outside of their own features without coupling components together,
 > Chrome on iOS sends **UI Commands** via **Disintermediated Dispatch**.
 
-## Architectural Motivation
+______________________________________________________________________
 
-In Chrome on iOS, **[coordinators](coordinators.md)** encapsulate self-contained
-UI features (often managing a **[mediator](mediators.md)** for model interaction
-and a **view controller** for view management). Frequently, a feature or
-model-layer component needs to request a UI change outside of its own scope—for
-example, presenting the Settings UI or opening the Reading List.
+## Motivating Ideas
+
+**[Coordinators](coordinators.md)** encapsulate the UI features of Chrome on iOS
+(see [Patterns of Structure](README.md#patterns-of-structure)). Frequently, a
+feature or model-layer component needs to request a UI change in another
+feature—for example, presenting the Settings UI or opening the Reading List.
 
 Because of encapsulation and decoupling:
 
@@ -44,10 +45,10 @@ to reason about.
 
 ______________________________________________________________________
 
-## Overview
+## Architectural Overview
 
-**UI Commands** form the public API of the UI layer. To trigger a UI change
-outside the current component's scope:
+**UI Commands** form the public API of the UI layer. To trigger a UI change in
+another feature:
 
 1. Define a **UI command**—an Objective-C method returning `void`—inside a
    functional **command protocol**.
@@ -344,21 +345,19 @@ that `dispatcher` is currently dispatching for `ProtocolName` and returns
 routing system, whereas `id<SomeCommands>` handlers expose only a single command
 protocol. To keep dependencies narrow, explicit, and easy to mock in tests,
 `Browser` and `CommandDispatcher` are
-[restricted to the coordinator layer](mediators.md#the-line-in-the-sand-for-dependencies):
+[restricted to coordinators](mediators.md#the-line-in-the-sand-for-dependencies):
 
-- **Inside the coordinator layer:** Coordinators are initialized with a
-  `Browser*` and obtain the `CommandDispatcher*` via
-  `self.browser->GetCommandDispatcher()`. Never pass command handlers into an
-  object that is already initialized with a `Browser*`, as doing so is
-  redundant—it can generate the handlers it needs directly from the `Browser`'s
-  dispatcher.
-- **Outside the coordinator layer:** Never pass `Browser*` or
-  `CommandDispatcher*` into mediators, view controllers, views, or model
-  objects, as that would allow them to configure dispatch or invoke arbitrary
-  commands without declaring those dependencies. Instead, coordinators extract
-  the specific command handlers those objects require using
-  `HandlerForProtocol()` and inject them as explicit `id<SomeCommands>`
-  dependencies.
+- **Coordinators:** Each is initialized with a `Browser*` and obtains the
+  `CommandDispatcher*` via `self.browser->GetCommandDispatcher()`. Never pass
+  command handlers into an object that is already initialized with a `Browser*`,
+  as doing so is redundant—it can generate the handlers it needs directly from
+  the `Browser`'s dispatcher.
+- **All other objects:** Never pass `Browser*` or `CommandDispatcher*` into
+  mediators, view controllers, views, or model objects, as that would allow them
+  to configure dispatch or invoke arbitrary commands without declaring those
+  dependencies. Instead, coordinators extract the specific command handlers
+  those objects require using `HandlerForProtocol()` and inject them as explicit
+  `id<SomeCommands>` dependencies.
 - **Never bypass the dispatcher for shared command protocols:** Do not pass an
   object that happens to conform to a shared command protocol (such as `self`)
   directly as a handler. Always pass the `CommandDispatcher` coerced via
@@ -504,7 +503,7 @@ ______________________________________________________________________
 - **Command Protocol:** An Objective-C protocol grouping functionally related UI
   commands (`*Commands`). Shared command protocols live in
   `//ios/chrome/browser/shared/public/commands/`.
-- **[Coordinator](coordinators.md):** A controller-layer object that
+- **[Coordinator](coordinators.md):** A coordinator-layer object that
   encapsulates a UI feature, manages the lifecycle of its mediator(s), view
   controller(s), and child coordinators, and configures command dispatch.
 - **Disintermediated Dispatch:** A structural pattern that connects message
@@ -523,22 +522,10 @@ ______________________________________________________________________
 
 ## Connecting Patterns
 
-UI commands and disintermediated dispatch work in concert with several
-complementary architectural patterns across Chrome on iOS:
+See [UI Command](README.md#ui-command) in the architecture overview for how UI
+commands relate to the other patterns.
 
-- **[Coordinators](coordinators.md)**: Controller-layer objects that encapsulate
-  UI features, register command targets on `CommandDispatcher` during `-start`
-  and unregister them in `-stop`, and inject type-safe command handlers into
-  their mediators and view controllers.
-- **[Mediators](mediators.md)**: Coordinator-owned objects that mediate between
-  the model layer and the UI layer, handling model mutations via mutator
-  protocols and invoking injected command handlers when model events require
-  broader UI transitions.
-- **[Mutation-Observation Cycle](mediators.md#the-mutation-observation-cycle)**:
-  The unidirectional data flow used for model mutations and model-driven UI
-  updates, complementing UI commands (which are reserved strictly for inducing
-  UI-level changes).
-- **Isolated View Controllers**: View controllers that manage views and user
-  interactions without depending on coordinators or the model layer, invoking
-  injected command handlers (`id<SomeCommands>`) to trigger navigation,
-  presentation, or dismissal.
+*Motivated by [Decoupling](README.md#problem-decomposition),
+[Abstraction](README.md#problem-decomposition),
+[Isolated View Controller](README.md#isolated-view-controller), and
+[Coordinator](coordinators.md).*

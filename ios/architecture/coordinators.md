@@ -9,29 +9,13 @@ ______________________________________________________________________
 
 ## Motivating Ideas
 
-UIKit is designed around view controllers (`UIViewController` instances and
-subclasses) as the basic building block of an application. In practice, view
-controllers tend to accrete responsibilities far beyond their intended role:
-
-- Under the classic Model-View-Controller (MVC) pattern, a controller should
-  only handle user input and UI events.
-- In UIKit, view controllers also handle view setup, layout, configuration, and
-  updates (View responsibilities), and frequently manipulate data and service
-  objects directly (Model responsibilities).
-- Furthermore, when view controllers create and present other view controllers,
-  they become coupled to the lifecycle, presentation mechanics, and dependencies
-  of those child features.
-
-To prevent view controllers from becoming monolithic catch-alls, Chrome on iOS
-separates these responsibilities across a triad of patterns:
-
-- **Isolated View Controllers** manage views, layout, and user interactions
-  without any direct knowledge of the model layer.
-- **[Mediators](mediators.md)** encapsulate business logic and mediate between
-  **Deep Models** and view controllers.
-- **Coordinators** encapsulate entire UI features, assemble and own the
-  feature's objects, inject their dependencies, and manage interactions with the
-  rest of the application.
+UIKit view controllers tend to accrete responsibilities far beyond their
+intended role; Chrome on iOS divides those responsibilities among isolated view
+controllers, [mediators](mediators.md), and coordinators (see
+[Patterns of Structure](README.md#patterns-of-structure)). Coordinators
+encapsulate entire UI features: they assemble and own the feature's objects,
+inject their dependencies, and manage interactions with the rest of the
+application.
 
 The user interface of Chrome on iOS is decomposed into discrete, focused, and
 autonomous **features**—such as the omnibox, the toolbar, the overflow menu, or
@@ -74,11 +58,11 @@ to a single `UIViewController`:
 - Conversely, not every presented `UIViewController` constitutes a separate UI
   feature requiring its own coordinator.
 
-### Coordinator Scale
+### Coordinator Scope
 
-Almost all coordinators operate at the **browser scale**—meaning they are scoped
-to a specific `Browser` instance (such as a window's regular or incognito
-browser) and manage UI for that browser.
+Almost all coordinators are **browser-scoped**: each is tied to a specific
+`Browser` instance (such as a window's regular or incognito browser) and manages
+UI for that browser.
 
 Coordinators are never instantiated per tab; per-tab model state is managed in
 the model layer (e.g., by tab helpers). Some long-lived coordinators present
@@ -101,7 +85,7 @@ into three subdirectories under `//ios/chrome/browser/<feature_name>/`:
 
 - `model/`: Model-layer classes (such as keyed services, tab helpers, and
   browser agents).
-- `coordinator/`: Controller-layer classes, including both **coordinators** and
+- `coordinator/`: Coordinator-layer classes, including both **coordinators** and
   **[mediators](mediators.md)**.
 - `ui/`: UI-layer classes, including views and view controllers.
 
@@ -521,11 +505,11 @@ ______________________________________________________________________
 Each window (**scene**) in the application has an independent coordinator
 hierarchy forming an explicit ownership tree: a parent coordinator creates and
 owns child coordinators, which in turn create and own their own children. Each
-scene contains multiple browsers, and most coordinators are browser-scale; thus
+scene contains multiple browsers, and most coordinators are browser-scoped; thus
 for each browser there is an independent hierarchy of coordinators. Above the
-root of these browser-scale coordinator hierarchies are a small number of
-non-browser-scale coordinators (such as the scene's root coordinator, or
-coordinators whose UI spans multiple browsers). These can be implemented as
+root of these browser-scoped coordinator hierarchies are a small number of
+coordinators that aren't browser-scoped (such as the scene's root coordinator,
+or coordinators whose UI spans multiple browsers). These can be implemented as
 subclasses of [`RootCoordinator`][rootcoordinator], which conforms to the same
 informal `-start` and `-stop` protocol as
 [`ChromeCoordinator`][chromecoordinator] without requiring a single `Browser`
@@ -534,9 +518,9 @@ dependency.
 This hierarchy serves two primary architectural purposes:
 
 1. **Encapsulating complexity**: Decomposing the application into a tree of
-   self-contained features bounds the scope of each coordinator and normalizes
-   inter-feature interactions. Individual features can be modified, refactored,
-   or replaced without affecting surrounding features.
+   self-contained features limits what each coordinator is responsible for and
+   normalizes inter-feature interactions. Individual features can be modified,
+   refactored, or replaced without affecting surrounding features.
 2. **Abstracting UIKit view controller relationships**: UIKit has two distinct
    mechanisms for composing view controllers:
 
@@ -703,8 +687,7 @@ ______________________________________________________________________
   - Push domain state and persistence into **model-layer services, browser
     agents, and tab helpers**.
 - **Coordinators are a strict boundary
-  ("[line in the sand](mediators.md#the-line-in-the-sand-for-dependencies)") for
-  backbone containers.**
+  ("[line in the sand](README.md#line-in-the-sand)") for backbone containers.**
   - Backbone container objects—`Browser`, `ProfileIOS`, `CommandDispatcher`,
     `SceneState`, `ProfileState`, `AppState`, and `ApplicationContext`—must
     **not** be passed into mediators, view controllers, or views.
@@ -748,7 +731,7 @@ ______________________________________________________________________
   - Avoid protocols that only exist for one object to forward a call to another
     object. Connect the caller directly to the handler or target protocol
     instead.
-- **Scope coordinators to logical features, not individual
+- **Create coordinators for logical features, not individual
   `UIViewController`s.** Not every presented view controller constitutes a
   separate feature requiring its own coordinator. For example, consider the
   common case of displaying an alert—depending on the context, it may or may not
@@ -790,7 +773,7 @@ ______________________________________________________________________
   `ProfileIOS`, `CommandDispatcher`, `SceneState`, `ProfileState`, `AppState`,
   `ApplicationContext`) from which model services and dispatchers are retrieved.
   They are used by coordinators to extract dependencies and must not be passed
-  past the coordinator layer into mediators or view controllers.
+  on to mediators or view controllers.
 - **Base View Controller**: A `UIViewController` passed to a coordinator that
   defines the UI context in which the coordinator's feature operates (for
   example, the view controller on top of which the feature is presented, or
@@ -813,38 +796,25 @@ ______________________________________________________________________
   ([`RootCoordinator`][rootcoordinator]) that conforms to the same informal
   `-start` and `-stop` lifecycle protocol as
   [`ChromeCoordinator`][chromecoordinator] without requiring a single `Browser`
-  dependency, used for non-browser-scale coordinators near the root of a scene.
+  dependency, used for coordinators near the root of a scene that aren't
+  browser-scoped.
 
 ______________________________________________________________________
 
 ## Connecting Patterns
 
-Coordinators work in concert with several complementary architectural patterns
-across Chrome on iOS:
+See [Coordinator](README.md#coordinator) in the architecture overview for how
+coordinators relate to the other patterns.
 
-- **[Mediators](mediators.md)**: Coordinator-owned objects that encapsulate
-  business logic and mediate between the model layer and view controllers,
-  keeping model dependencies out of the UI layer.
-- **Deep Models**: Rich model-layer classes (such as C++ keyed services, browser
-  agents, and tab helpers) that encapsulate domain state, persistence, and
-  operations rather than acting as passive data structures.
-- **Isolated View Controllers**: View controllers that have no direct
-  dependencies on the model layer or other UI features, rendering state pushed
-  to them and reporting user interactions through abstract protocols.
-- **[Mutation-Observation Cycle](mediators.md#the-mutation-observation-cycle)**:
-  The unidirectional data flow between UI and model: a view controller requests
-  a model change via a **mutator** protocol on its mediator, the mediator
-  updates the underlying model, the model notifies the mediator via an
-  **observer** interface, and the mediator pushes updated UI state back to the
-  view controller.
-- **[State-Independent Consumer](mediators.md#state-independence)**: A protocol
-  implemented by a view controller and called by its mediator to push
-  self-contained UI configuration data, identifying items by stable identifiers
-  so that updates don't depend on the consumer's prior state.
-- **[UI Commands and Disintermediated Dispatch](commands.md)**: Objective-C
-  protocols defining UI-level actions that are routed through a central
-  `CommandDispatcher` via `HandlerForProtocol()`, allowing callers to trigger UI
-  changes without knowing which coordinator or object implements them.
+*Motivated by [Encapsulation](README.md#problem-decomposition),
+[Abstraction](README.md#problem-decomposition),
+[Dependency Injection](README.md#dependency-injection),
+[Line in the Sand](README.md#line-in-the-sand), and
+[Isolated View Controller](README.md#isolated-view-controller).*
+
+*Motivates [Mediator](mediators.md), [UI Command](commands.md), and idioms such
+as [view controller containment](#view-controller-containment) and
+[transition handlers](#presentation-and-containment-mechanics).*
 
 [chromecoordinator]: /ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h
 [rootcoordinator]: /ios/chrome/browser/shared/coordinator/root_coordinator/root_coordinator.h
