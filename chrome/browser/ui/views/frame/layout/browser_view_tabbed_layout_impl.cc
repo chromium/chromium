@@ -474,6 +474,13 @@ BrowserViewTabbedLayoutImpl::CalculateHorizontalLayout(
             vertical_tab_strip->GetMinimumSize().width(),
             base::ClampCeil(
                 params.leading_exclusion.ContentWithPadding().width()));
+        if (layout_data_->organizer_panel_animation.location ==
+            OrganizerPanelLocation::kVerticalTabStrip) {
+          min_vertical_tab_strip_width =
+              std::max(min_vertical_tab_strip_width,
+                       organizer_panel::kOrganizerPanelMinWidth -
+                           organizer_panel::kOrganizerPanelMinOverlap);
+        }
       } else {
         min_vertical_tab_strip_width =
             vertical_tab_strip->GetMinimumSize().width();
@@ -1564,9 +1571,9 @@ void BrowserViewTabbedLayoutImpl::DoPreLayoutComputations(
   layout_data_ = std::make_unique<TransientLayoutData>(params);
   layout_data_->window_state = delegate().GetBrowserWindowState();
   layout_data_->tab_strip_type = delegate().GetTabStripType();
+  layout_data_->organizer_panel_animation = CalculateOrganizerPanelAnimation();
   layout_data_->horizontal_layout =
       CalculateHorizontalLayout(layout_data_->revised_params);
-  layout_data_->organizer_panel_animation = CalculateOrganizerPanelAnimation();
   layout_data_->vertical_tab_strip_animation =
       CalculateVerticalTabStripAnimation();
   layout_data_->separator_info = CalculateSeparatorInfo();
