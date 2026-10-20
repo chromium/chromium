@@ -198,14 +198,17 @@ class NativeAccountLinkingHandlerTest : public testing::Test {
 TEST_F(NativeAccountLinkingHandlerTest,
        OnAccountLinkingResult_SuccessWithInvalidInstrumentId_MutatesToError) {
   // We expect the mocked abstract method DoOnAccountLinkingResult to receive
-  // the mutated failure payload instead of the success payload.
+  // the mutated failure payload instead of the success payload. The billing
+  // customer number is passed through untouched by the sanitisation.
   EXPECT_CALL(*handler_, DoOnAccountLinkingResult(AccountLinkingResult{
-                             false, 0, AccountLinkingResultCode::kResultError}))
+                             false, 0, AccountLinkingResultCode::kResultError,
+                             /*billing_customer_number=*/987}))
       .Times(1);
 
   // Directly pipe in a success with an invalid instrument ID
   handler_->OnAccountLinkingResult(
-      AccountLinkingResult{true, 0, AccountLinkingResultCode::kResultOk});
+      AccountLinkingResult{true, 0, AccountLinkingResultCode::kResultOk,
+                           /*billing_customer_number=*/987});
 
   // Verify the base class gracefully traps this edge-case and translates
   // it to a generic flow failure metric.

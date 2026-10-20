@@ -16,6 +16,9 @@ struct AccountLinkingResult {
   int64_t instrument_id = 0;
   AccountLinkingResultCode error_code =
       AccountLinkingResultCode::kCouldNotInvoke;
+  // The externalized Payments customer id returned by the instrument manager.
+  // 0 when the instrument manager did not provide one.
+  int64_t billing_customer_number = 0;
 
   bool operator==(const AccountLinkingResult& other) const = default;
 };

@@ -187,6 +187,9 @@ void FacilitatedPaymentsApiClientAndroid::OnInvokeInstrumentManagerResult(
       Java_AccountLinkingResult_getInstrumentId(env, jaccount_linking_result);
   int error_code =
       Java_AccountLinkingResult_getErrorCode(env, jaccount_linking_result);
+  int64_t billing_customer_number =
+      Java_AccountLinkingResult_getBillingCustomerNumber(
+          env, jaccount_linking_result);
 
   if (error_code <
           static_cast<int>(AccountLinkingResultCode::kCouldNotInvoke) ||
@@ -197,7 +200,8 @@ void FacilitatedPaymentsApiClientAndroid::OnInvokeInstrumentManagerResult(
   std::move(invoke_instrument_manager_callback_)
       .Run(AccountLinkingResult{
           is_successful, instrument_id,
-          static_cast<AccountLinkingResultCode>(error_code)});
+          static_cast<AccountLinkingResultCode>(error_code),
+          billing_customer_number});
 }
 
 bool FacilitatedPaymentsApiClientAndroid::IsAnyCallbackPending() const {

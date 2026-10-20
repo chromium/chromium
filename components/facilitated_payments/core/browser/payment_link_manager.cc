@@ -674,8 +674,13 @@ void PaymentLinkManager::OnAccountLinkingResult(const GURL& payment_link_url,
 
   if (autofill::PaymentsDataManager* payments_data_manager =
           client_->GetPaymentsDataManager()) {
+    // Prefer the billing customer number carried in the instrument manager
+    // result: for a user who had no instruments before linking, Chrome Sync has
+    // not delivered `PaymentsCustomerData` yet and the synced value is 0.
     initiate_payment_request_details_->billing_customer_number_ =
-        autofill::payments::GetBillingCustomerId(*payments_data_manager);
+        result.billing_customer_number > 0
+            ? result.billing_customer_number
+            : autofill::payments::GetBillingCustomerId(*payments_data_manager);
   } else {
     Reset();
     return;

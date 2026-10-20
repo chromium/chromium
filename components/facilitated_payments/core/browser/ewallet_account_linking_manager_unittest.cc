@@ -115,6 +115,27 @@ TEST_F(EwalletAccountLinkingManagerTest,
       /*expected_bucket_count=*/1);
 }
 
+// Verify that the billing customer number carried in the result is passed
+// through to the callback unchanged.
+TEST_F(EwalletAccountLinkingManagerTest,
+       DoOnAccountLinkingResult_PassesThroughBillingCustomerNumber) {
+  base::HistogramTester histogram_tester;
+  base::MockCallback<base::OnceCallback<void(AccountLinkingResult)>> result_cb;
+
+  AccountLinkingResult expected{true, 12345,
+                                AccountLinkingResultCode::kResultOk, 987};
+  EXPECT_CALL(result_cb, Run(expected));
+
+  manager_->TriggerAccountLinking(result_cb.Get());
+
+  test_api(*manager_).DoOnAccountLinkingResult(expected);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.AccountLinking.Result",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
 TEST_F(EwalletAccountLinkingManagerTest, DoOnAccountLinkingResult_Canceled) {
   base::HistogramTester histogram_tester;
   test_api(*manager_).DoOnAccountLinkingResult(AccountLinkingResult{

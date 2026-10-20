@@ -124,6 +124,10 @@ class PaymentLinkManagerTest : public testing::Test {
   }
 
  protected:
+  static constexpr char kShopeePayPaymentLink[] =
+      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
+      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd";
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   signin::IdentityTestEnvironment identity_test_env_;
@@ -709,6 +713,88 @@ TEST_F(PaymentLinkManagerTest, OnAccountLinkingResult_SuccessLoadsRiskData) {
           payment_link_url,
           AccountLinkingResult{true, 12345,
                                AccountLinkingResultCode::kResultOk});
+}
+
+// Verify that the billing customer number carried in the instrument manager
+// result is used when nothing has been synced yet.
+TEST_F(PaymentLinkManagerTest,
+       OnAccountLinkingResult_CarriedBillingCustomerNumber_UsedWhenSyncEmpty) {
+  EXPECT_CALL(client_, LoadRiskData);
+
+  test_api(*payment_link_manager_)
+      .OnAccountLinkingResult(
+          GURL(kShopeePayPaymentLink),
+          AccountLinkingResult{true, 12345, AccountLinkingResultCode::kResultOk,
+                               987});
+
+  EXPECT_EQ(test_api(*payment_link_manager_)
+                .initiate_payment_request_details()
+                ->billing_customer_number_,
+            987);
+}
+
+// Verify that the carried billing customer number overrides a different
+// positive synced value.
+TEST_F(PaymentLinkManagerTest,
+       OnAccountLinkingResult_CarriedBillingCustomerNumber_OverridesSync) {
+  payments_data_manager_.SetPaymentsCustomerData(
+      std::make_unique<autofill::PaymentsCustomerData>("555"));
+
+  EXPECT_CALL(client_, LoadRiskData);
+
+  test_api(*payment_link_manager_)
+      .OnAccountLinkingResult(
+          GURL(kShopeePayPaymentLink),
+          AccountLinkingResult{true, 12345, AccountLinkingResultCode::kResultOk,
+                               987});
+
+  EXPECT_EQ(test_api(*payment_link_manager_)
+                .initiate_payment_request_details()
+                ->billing_customer_number_,
+            987);
+}
+
+// Verify that the synced billing customer number is used when the instrument
+// manager result does not carry one.
+TEST_F(PaymentLinkManagerTest,
+       OnAccountLinkingResult_NoCarriedBillingCustomerNumber_FallsBackToSync) {
+  payments_data_manager_.SetPaymentsCustomerData(
+      std::make_unique<autofill::PaymentsCustomerData>("555"));
+
+  EXPECT_CALL(client_, LoadRiskData);
+
+  test_api(*payment_link_manager_)
+      .OnAccountLinkingResult(
+          GURL(kShopeePayPaymentLink),
+          AccountLinkingResult{true, 12345,
+                               AccountLinkingResultCode::kResultOk});
+
+  EXPECT_EQ(test_api(*payment_link_manager_)
+                .initiate_payment_request_details()
+                ->billing_customer_number_,
+            555);
+}
+
+// Verify that 0 is still sent when neither the instrument manager result nor
+// Sync provides a billing customer number.
+TEST_F(
+    PaymentLinkManagerTest,
+    OnAccountLinkingResult_NoBillingCustomerNumberFromEitherSource_SendsZero) {
+  EXPECT_CALL(client_, LoadRiskData);
+
+  test_api(*payment_link_manager_)
+      .OnAccountLinkingResult(
+          GURL(kShopeePayPaymentLink),
+          AccountLinkingResult{true, 12345,
+                               AccountLinkingResultCode::kResultOk});
+
+  ASSERT_TRUE(test_api(*payment_link_manager_)
+                  .initiate_payment_request_details()
+                  ->billing_customer_number_.has_value());
+  EXPECT_EQ(test_api(*payment_link_manager_)
+                .initiate_payment_request_details()
+                ->billing_customer_number_,
+            0);
 }
 
 // Test that OnAccountLinkingResult aborts quietly on cancellation.
