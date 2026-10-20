@@ -22,10 +22,6 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/views_switches.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/test/scoped_os_info_override_win.h"
-#endif
-
 class DefaultBrowserModalDialogManagerInteractiveTest
     : public InteractiveBrowserTest,
       public testing::WithParamInterface<bool> {
@@ -84,10 +80,6 @@ class DefaultBrowserModalDialogManagerInteractiveTest
     return steps;
   }
 
-#if BUILDFLAG(IS_WIN)
-  base::test::ScopedOSInfoOverride win11_os_{
-      base::test::ScopedOSInfoOverride::Type::kWin11Pro};
-#endif
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
 };

@@ -27,10 +27,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/test/scoped_os_info_override_win.h"
-#endif
-
 namespace default_browser {
 
 class DefaultBrowserNotificationObserverTest : public testing::Test {
@@ -101,10 +97,6 @@ class DefaultBrowserNotificationObserverTest : public testing::Test {
   }
 
  private:
-#if BUILDFLAG(IS_WIN)
-  base::test::ScopedOSInfoOverride win11_os_{
-      base::test::ScopedOSInfoOverride::Type::kWin11Pro};
-#endif
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;

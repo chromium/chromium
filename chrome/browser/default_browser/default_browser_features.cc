@@ -19,41 +19,29 @@
 #include "base/i18n/win/preferred_languages.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #endif
 
 namespace default_browser {
-
-namespace {
-
-bool IsWin11OrGreater() {
-#if BUILDFLAG(IS_WIN)
-  return base::win::GetVersion() >= base::win::Version::WIN11;
-#else
-  return false;
-#endif
-}
-
-}  // namespace
 
 bool IsDefaultBrowserFrameworkEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBrowserFramework);
 }
 
 bool IsDefaultBrowserChangedOsNotificationEnabled() {
-  return IsWin11OrGreater() &&
-         base::FeatureList::IsEnabled(kDefaultBrowserChangedOsNotification);
+#if BUILDFLAG(IS_WIN)
+  return base::FeatureList::IsEnabled(kDefaultBrowserChangedOsNotification);
+#else
+  return false;
+#endif
 }
 
 bool IsDefaultBrowserPromptSurfacesEnabled() {
-  return IsWin11OrGreater() &&
-         base::FeatureList::IsEnabled(kDefaultBrowserPromptSurfaces);
-}
-
-bool IsPerformDefaultBrowserCheckValidationsEnabled() {
-  return IsWin11OrGreater() &&
-         base::FeatureList::IsEnabled(kPerformDefaultBrowserCheckValidations);
+#if BUILDFLAG(IS_WIN)
+  return base::FeatureList::IsEnabled(kDefaultBrowserPromptSurfaces);
+#else
+  return false;
+#endif
 }
 
 bool IsDefaultBrowserModalSticky() {
@@ -155,7 +143,7 @@ GURL GetDefaultBrowserVisualGuideURL() {
 
 BASE_FEATURE(kDefaultBrowserFramework, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDefaultBrowserPromptSurfaces, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDefaultBrowserPromptSurfaces, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr inline auto kDefaultBrowserPromptSurfaceOptions =
     std::to_array<base::FeatureParam<DefaultBrowserPromptSurface>::Option>({
@@ -167,13 +155,12 @@ constexpr inline auto kDefaultBrowserPromptSurfaceOptions =
          "modal_dialog_without_settings_illustration"},
     });
 
-BASE_FEATURE_ENUM_PARAM(
-    DefaultBrowserPromptSurface,
-    kDefaultBrowserPromptSurfaceParam,
-    &kDefaultBrowserPromptSurfaces,
-    "prompt_surface",
-    DefaultBrowserPromptSurface::kModalDialogWithSettingsIllustration,
-    kDefaultBrowserPromptSurfaceOptions);
+BASE_FEATURE_ENUM_PARAM(DefaultBrowserPromptSurface,
+                        kDefaultBrowserPromptSurfaceParam,
+                        &kDefaultBrowserPromptSurfaces,
+                        "prompt_surface",
+                        DefaultBrowserPromptSurface::kInfobar,
+                        kDefaultBrowserPromptSurfaceOptions);
 
 BASE_FEATURE(kDefaultBrowserStickyModal, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -185,10 +172,10 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE(kPerformDefaultBrowserCheckValidations,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDefaultBrowserChangedOsNotification,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDefaultBrowserSetterSelection, base::FEATURE_DISABLED_BY_DEFAULT);
 

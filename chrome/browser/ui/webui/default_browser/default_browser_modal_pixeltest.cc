@@ -16,10 +16,6 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/test/scoped_os_info_override_win.h"
-#endif
-
 namespace default_browser {
 
 // Baseline Gerrit CL number of the most recent CL that modified the UI.
@@ -55,10 +51,6 @@ class DefaultBrowserModalPixelTest : public InteractiveBrowserTest {
   }
 
  private:
-#if BUILDFLAG(IS_WIN)
-  base::test::ScopedOSInfoOverride win11_os_{
-      base::test::ScopedOSInfoOverride::Type::kWin11Pro};
-#endif
   base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<views::Widget> dialog_widget_;
