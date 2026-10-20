@@ -10742,8 +10742,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ORGANIZER_PANEL_SHOW_ALL" desc="The label for the menu item in an organizer panel list section header that shows all items in the section.">
         Show all
       </message>
-      <message name="IDS_ORGANIZER_PANEL_SHOW_SOME" desc="The label for the menu item in an organizer panel list section header that limits the section to showing a few items.">
-        Show some
+      <message name="IDS_ORGANIZER_PANEL_SHOW_SOME" desc="The label for the menu item in an organizer panel list section header that limits the section to showing the most recent items.">
+        Show most recent
       </message>
       <message name="IDS_ORGANIZER_PANEL_OPTIONS" desc="The tooltip for the button in an organizer panel section header that opens the options menu.">
         Options

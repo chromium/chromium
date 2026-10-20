@@ -108,14 +108,14 @@ suite('OrganizerListSectionHeaderTest', () => {
     assertTrue(isVisible(menuButton));
   });
 
-  test('opens menu with show some and show all options', async () => {
+  test('opens menu with show most recent and show all options', async () => {
     const menu = header.$.menu;
     const menuButton = header.$.menuButton;
     const showSomeButton = header.$.showSomeButton;
     const showAllButton = header.$.showAllButton;
 
     assertFalse(menu.open);
-    assertEquals('Show some', showSomeButton.textContent.trim());
+    assertEquals('Show most recent', showSomeButton.textContent.trim());
     assertEquals('Show all', showAllButton.textContent.trim());
     assertEquals('menuitemradio', showSomeButton.getAttribute('role'));
     assertEquals('menuitemradio', showAllButton.getAttribute('role'));
