@@ -120,6 +120,10 @@ message Signer {
   // The version of the draft-ietf-plants-merkle-tree-certs specification that
   // this signer implements.
   SpecVersion spec_version = 15;
+
+  // Submission URL prefix. Entries are submitted to the signer by appending
+  // the endpoint path to this prefix. Only applicable to mirrors.
+  string submission_prefix = 16;
 }
 
 message SignerSet {
