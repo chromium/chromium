@@ -6,30 +6,41 @@
 #define NET_DEVICE_BOUND_SESSIONS_SINGLE_SIGN_ON_KEY_MANAGER_H_
 
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/generate_key_param.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_service.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
+
+namespace unexportable_keys {
+class UnexportableKeyService;
+}  // namespace unexportable_keys
 
 namespace net::device_bound_sessions {
 
 // Client-side storage of Identity Provider pre-provisioned keys for DBSC-SSO,
-// handed to Relying Party registrations.
+// handed to Relying Party registrations, and generation of Relying Party keys
+// on Secure-Session-GenerateKey certified with the IdP's attestation key (AIK).
 class NET_EXPORT SingleSignOnKeyManager {
  public:
   // Maximum number of pre-provisioned keys per Identity Provider site.
   static constexpr size_t kMaxPreProvisionedKeysPerIdentityProvider = 10;
 
+  // `key_service` must outlive `this`.
   explicit SingleSignOnKeyManager(
+      unexportable_keys::UnexportableKeyService& key_service,
       SessionService::CookieAccessCallback has_cookie_access_cb);
   ~SingleSignOnKeyManager();
 
@@ -37,6 +48,23 @@ class NET_EXPORT SingleSignOnKeyManager {
   SingleSignOnKeyManager& operator=(const SingleSignOnKeyManager&) = delete;
   SingleSignOnKeyManager(SingleSignOnKeyManager&&) = delete;
   SingleSignOnKeyManager& operator=(SingleSignOnKeyManager&&) = delete;
+
+  // Returns whether a Secure-Session-GenerateKey request may start. The IdP at
+  // `provider_origin` needs access to its cookies on `rp_origin`. Its stored
+  // keys plus in-flight requests must stay below
+  // `kMaxPreProvisionedKeysPerIdentityProvider`.
+  bool CanGenerateKey(const url::Origin& provider_origin,
+                      const url::Origin& rp_origin) const;
+
+  // Generates an RP signing key, certifies it with the IdP's AIK `idp_aik` and
+  // stores it as a pre-provisioned key. Call only after `CanGenerateKey()`
+  // returned true. `callback` receives the serialized binding statement or an
+  // error, and never runs before `GenerateKey()` returns. If `this` is
+  // destroyed before the request finishes, `callback` is dropped.
+  void GenerateKey(unexportable_keys::UnexportableAttestationKeyId idp_aik,
+                   GenerateKeyParam param,
+                   url::Origin provider_origin,
+                   SessionService::KeyBindingCallback callback);
 
   // Adds a pre-provisioned key to the in-memory store.
   //
@@ -75,6 +103,12 @@ class NET_EXPORT SingleSignOnKeyManager {
       const SessionService::OriginAndSiteMatcher& matcher);
 
  private:
+  class GenerateKeyRequest;
+  struct GeneratedKey;
+
+  // Whether `CountKeys()` includes in-flight `GenerateKey()` requests.
+  enum class InFlightRequests { kCount, kIgnore };
+
   struct PreProvisionedKeyEntry {
     url::Origin provider_origin;
     net::SchemefulSite provider_site;
@@ -88,8 +122,26 @@ class NET_EXPORT SingleSignOnKeyManager {
   bool CanAddPreProvisionedKey(const url::Origin& provider_origin,
                                const url::Origin& rp_origin) const;
 
+  // Returns the number of keys stored for `provider_site`, plus its in-flight
+  // `GenerateKey()` requests if `in_flight_requests` is `kCount`.
+  size_t CountKeys(const net::SchemefulSite& provider_site,
+                   InFlightRequests in_flight_requests) const;
+
+  // Called once `request` has finished. Stores the generated key unless
+  // `request`'s site data was cleared or `AddPreProvisionedKey()` rejects it.
+  // Destroys `request` and passes the binding statement or an error to
+  // `callback`.
+  void OnGenerateKeyDone(GenerateKeyRequest* request,
+                         SessionService::KeyBindingCallback callback,
+                         SessionErrorOr<GeneratedKey> result);
+
+  const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   SessionService::CookieAccessCallback has_cookie_access_cb_;
   std::vector<PreProvisionedKeyEntry> pre_provisioned_keys_;
+  // In-flight `GenerateKey()` requests. They count towards the per-IdP limit
+  // in `CanGenerateKey()`, and destroying `this` cancels them.
+  absl::flat_hash_set<std::unique_ptr<GenerateKeyRequest>>
+      generate_key_requests_;
 };
 
 }  // namespace net::device_bound_sessions

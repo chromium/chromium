@@ -219,7 +219,7 @@ SessionServiceImpl::SessionServiceImpl(
       session_store_(store),
       restricted_sites_(restricted_sites),
       client_cert_handler_(std::move(client_cert_handler)),
-      sso_key_manager_(std::move(has_cookie_access_cb)) {
+      sso_key_manager_(key_service, std::move(has_cookie_access_cb)) {
   ignore_signing_quota_ = !features::kDeviceBoundSessionsSigningQuota.Get();
   CHECK(context_);
   CHECK(client_cert_handler_);

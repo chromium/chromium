@@ -81,6 +81,11 @@ class NET_EXPORT SessionService {
   using OriginAndSiteMatcher =
       base::RepeatingCallback<bool(const url::Origin&, const SchemefulSite&)>;
 
+  // Receives the value of the Secure-Session-KeyBinding request header (the
+  // Base64URL-encoded JSON binding statement) or an error.
+  using KeyBindingCallback =
+      base::OnceCallback<void(SessionErrorOr<std::string>)>;
+
   // Indicates the reason for deferring. Exactly one of
   // `is_pending_initialization` or `session_id` will be truthy.
   struct NET_EXPORT DeferralParams {
