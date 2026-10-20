@@ -161,7 +161,7 @@ bool IOSSendTabToSelfInfoBarDelegate::Accept() {
 }
 
 bool IOSSendTabToSelfInfoBarDelegate::Cancel() {
-  model_->DismissEntry(guid_);
+  model_->DismissEntryNotification(guid_);
   return true;
 }
 

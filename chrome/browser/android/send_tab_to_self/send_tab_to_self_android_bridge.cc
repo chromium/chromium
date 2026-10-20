@@ -223,7 +223,7 @@ static void JNI_SendTabToSelfAndroidBridge_DismissEntry(
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)
           ->GetSendTabToSelfModel();
   if (model->IsReady()) {
-    model->DismissEntry(guid);
+    model->DismissEntryNotification(guid);
   }
 }
 

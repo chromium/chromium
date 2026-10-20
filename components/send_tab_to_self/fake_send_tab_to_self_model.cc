@@ -117,7 +117,7 @@ const SendTabToSelfEntry* FakeSendTabToSelfModel::SendEntry(
   return result;
 }
 
-void FakeSendTabToSelfModel::DismissEntry(std::string_view guid) {
+void FakeSendTabToSelfModel::DismissEntryNotification(std::string_view guid) {
   last_dismissed_guid_ = std::string(guid);
   auto it = entries_.find(guid);
   if (it != entries_.end()) {

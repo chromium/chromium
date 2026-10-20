@@ -673,7 +673,9 @@ TEST_F(SendTabToSelfBridgeTest, MarkEntryOpenedInformsServer) {
   EXPECT_TRUE(uploaded_opened_entity.specifics.send_tab_to_self().opened());
 }
 
-TEST_F(SendTabToSelfBridgeTest, DismissEntryInformsServer) {
+// Verifies that dismissing an entry's notification uploads the updated
+// `notification_dismissed` state to the sync server.
+TEST_F(SendTabToSelfBridgeTest, DismissEntryNotificationInformsServer) {
   InitializeBridge();
 
   SendTabToSelfEntry entry("guid", GURL("http://g.com/"), "title",
@@ -689,7 +691,7 @@ TEST_F(SendTabToSelfBridgeTest, DismissEntryInformsServer) {
   syncer::EntityData uploaded_dismissed_entity;
   EXPECT_CALL(*processor(), Put("guid", _, _))
       .WillOnce(SaveArgPointeeMove<1>(&uploaded_dismissed_entity));
-  bridge()->DismissEntry("guid");
+  bridge()->DismissEntryNotification("guid");
   EXPECT_TRUE(uploaded_dismissed_entity.specifics.send_tab_to_self()
                   .notification_dismissed());
 }
@@ -1043,6 +1045,8 @@ TEST_F(SendTabToSelfBridgeTest,
       "Sharing.SendTabToSelf.TimeOpenedToActivated", base::TimeDelta(), 1);
 }
 
+// Verifies that an entry's notification dismissal state is persisted across
+// bridge restarts.
 TEST_F(SendTabToSelfBridgeTest, PreserveDissmissalAfterRestartBridge) {
   InitializeBridge();
 
@@ -1056,7 +1060,7 @@ TEST_F(SendTabToSelfBridgeTest, PreserveDissmissalAfterRestartBridge) {
 
   EXPECT_CALL(*processor(), Put(_, _, _));
 
-  bridge()->DismissEntry(specifics.guid());
+  bridge()->DismissEntryNotification(specifics.guid());
 
   ShutdownBridge();
 
@@ -2874,6 +2878,9 @@ TEST_F(SendTabToSelfBridgeTest, DeleteAllEntriesPersists) {
   EXPECT_EQ(0ul, bridge()->GetAllGuids().size());
 }
 
+// Verifies that `GetUnopenedEntriesTargetedToLocalDevice` returns unopened
+// entries targeted to the local device even if their notification was
+// dismissed.
 TEST_F(SendTabToSelfBridgeTest, GetUnopenedEntriesTargetedToLocalDevice) {
   InitializeBridge();
 
@@ -2919,7 +2926,7 @@ TEST_F(SendTabToSelfBridgeTest, GetUnopenedEntriesTargetedToLocalDevice) {
                               std::move(remote_input));
 
   bridge()->MarkEntryOpened("guid3");
-  bridge()->DismissEntry("guid4");
+  bridge()->DismissEntryNotification("guid4");
 
   std::vector<const SendTabToSelfEntry*> unopened_entries =
       bridge()->GetUnopenedEntriesTargetedToLocalDevice();

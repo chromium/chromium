@@ -111,7 +111,7 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
       NavigationHistory navigation_history,
       base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation,
       ShareEntryPoint entry_point) override;
-  void DismissEntry(std::string_view guid) override;
+  void DismissEntryNotification(std::string_view guid) override;
   void MarkEntryOpened(std::string_view guid) override;
   void MarkEntryActivated(std::string_view guid,
                           ShareActivatedEntryPoint entry_point) override;

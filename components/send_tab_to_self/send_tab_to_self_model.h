@@ -88,9 +88,9 @@ class SendTabToSelfModel {
       base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation,
       ShareEntryPoint entry_point) = 0;
 
-  // Dismiss entry with key `guid`. Allows clients to modify the state
-  // of the model as driven by user behaviors.
-  virtual void DismissEntry(std::string_view guid) = 0;
+  // Marks the notification for the entry with key `guid` as dismissed. The
+  // entry itself remains unopened in the model.
+  virtual void DismissEntryNotification(std::string_view guid) = 0;
 
   // If an entry with `guid` exists, marks it as opened.
   // Otherwise, the guid is queued in-memory, and if an entry with

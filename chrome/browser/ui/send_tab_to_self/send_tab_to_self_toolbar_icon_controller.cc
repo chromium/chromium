@@ -93,7 +93,7 @@ void SendTabToSelfToolbarIconController::DismissEntries(
   auto* model = SendTabToSelfSyncServiceFactory::GetForProfile(profile_)
                     ->GetSendTabToSelfModel();
   for (const std::string& guid : guids) {
-    model->DismissEntry(guid);
+    model->DismissEntryNotification(guid);
   }
 }
 

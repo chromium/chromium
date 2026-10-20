@@ -611,7 +611,7 @@ const SendTabToSelfEntry* SendTabToSelfBridge::SendEntry(
   return result;
 }
 
-void SendTabToSelfBridge::DismissEntry(std::string_view guid) {
+void SendTabToSelfBridge::DismissEntryNotification(std::string_view guid) {
   SendTabToSelfEntry* entry = GetMutableEntryByGUID(guid);
   // Assure that an entry with that guid exists.
   if (!entry) {
