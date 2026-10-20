@@ -682,6 +682,22 @@ TEST_F(PersistentMemoryAllocatorTest, MaliciousTest) {
   // Test where loop goes back to the beginning.
   UNSAFE_TODO(header4[3]) = block1;
   CountIterables();  // loop: 1-2-3-4-1
+
+  // Test where a block header has an unaligned or header-only size.
+  uint32_t* header1 =
+      reinterpret_cast<uint32_t*>(UNSAFE_TODO(mem_segment_.data() + block1));
+  const uint32_t original_size1 = *header1;
+  *header1 = 21;  // Not a multiple of kAllocAlignment (8).
+  EXPECT_EQ(nullptr, allocator_->GetAsObject<TestObject1>(block1));
+  EXPECT_EQ(nullptr, allocator_->GetAsArray<char>(
+                         block1, 1, PersistentMemoryAllocator::kSizeAny));
+  EXPECT_EQ(0U, allocator_->GetType(block1));
+
+  *header1 = 16;  // Equal to sizeof(BlockHeader), zero data bytes.
+  EXPECT_EQ(nullptr, allocator_->GetAsArray<char>(
+                         block1, 1, PersistentMemoryAllocator::kSizeAny));
+  EXPECT_EQ(0U, allocator_->GetType(block1));
+  *header1 = original_size1;
 }
 
 //----- LocalPersistentMemoryAllocator -----------------------------------------

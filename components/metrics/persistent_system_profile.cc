@@ -43,6 +43,10 @@ constexpr char kFieldTrialDeletionSentinel[] = "";
 
 static_assert(sizeof(RecordHeader) == sizeof(base::subtle::Atomic32),
               "bad RecordHeader size");
+static_assert(base::PersistentMemoryAllocator::kAllocAlignment %
+                      sizeof(RecordHeader) ==
+                  0,
+              "RecordHeader size must divide kAllocAlignment");
 
 // Calculate the size of a record based on the amount of data. This adds room
 // for the record header and rounds up to the next multiple of the record-header
@@ -62,6 +66,7 @@ PersistentSystemProfile::RecordAllocator::RecordAllocator(
       alloc_reference_(0),
       alloc_size_(0),
       end_offset_(0) {
+  Reset();
   AddSegment(min_size);
 }
 
@@ -83,8 +88,11 @@ void PersistentSystemProfile::RecordAllocator::Reset() {
     RecordHeader* header =
         reinterpret_cast<RecordHeader*>(allocator_->GetAsArray<char>(
             alloc_reference_, kTypeIdSystemProfile, sizeof(RecordHeader)));
-    DCHECK(header);
-    base::subtle::NoBarrier_Store(&header->as_atomic, 0);
+    // `header` may be null if the underlying persistent memory is corrupted
+    // concurrently after `NextSegment()` validated the block.
+    if (header) {
+      base::subtle::NoBarrier_Store(&header->as_atomic, 0);
+    }
   }
 
   // Reset member variables.
@@ -121,9 +129,8 @@ bool PersistentSystemProfile::RecordAllocator::HasMoreData() const {
     return false;
   }
 
-  char* block =
-      allocator_->GetAsArray<char>(alloc_reference_, kTypeIdSystemProfile,
-                                   base::PersistentMemoryAllocator::kSizeAny);
+  char* block = allocator_->GetAsArray<char>(alloc_reference_,
+                                             kTypeIdSystemProfile, alloc_size_);
   if (!block) {
     return false;
   }
@@ -153,9 +160,13 @@ bool PersistentSystemProfile::RecordAllocator::Read(RecordType* type,
 
 bool PersistentSystemProfile::RecordAllocator::NextSegment() const {
   base::PersistentMemoryAllocator::Iterator iter(allocator_, alloc_reference_);
-  alloc_reference_ = iter.GetNextOfType(kTypeIdSystemProfile, &alloc_size_);
+  uint32_t ref = iter.GetNextOfType(kTypeIdSystemProfile, &alloc_size_);
+  if (!ref) {
+    return false;
+  }
+  alloc_reference_ = ref;
   end_offset_ = 0;
-  return alloc_reference_ != 0;
+  return true;
 }
 
 bool PersistentSystemProfile::RecordAllocator::AddSegment(size_t min_size) {
@@ -167,9 +178,6 @@ bool PersistentSystemProfile::RecordAllocator::AddSegment(size_t min_size) {
                          alloc_reference_, kTypeIdSystemProfile, 1)));
     return true;
   }
-
-  DCHECK_EQ(0U, alloc_reference_);
-  DCHECK_EQ(0U, end_offset_);
 
   size_t size =
       std::max(CalculateRecordSize(min_size), kSystemProfileAllocSize);
@@ -184,15 +192,15 @@ bool PersistentSystemProfile::RecordAllocator::AddSegment(size_t min_size) {
 
   alloc_reference_ = ref;
   alloc_size_ = new_alloc_size;
+  end_offset_ = 0;
   return true;
 }
 
 bool PersistentSystemProfile::RecordAllocator::WriteData(RecordType type,
                                                          const char** data,
                                                          size_t* data_size) {
-  char* block =
-      allocator_->GetAsArray<char>(alloc_reference_, kTypeIdSystemProfile,
-                                   base::PersistentMemoryAllocator::kSizeAny);
+  char* block = allocator_->GetAsArray<char>(alloc_reference_,
+                                             kTypeIdSystemProfile, alloc_size_);
   if (!block) {
     return false;  // It's bad if there is no accessible block.
   }
@@ -236,9 +244,8 @@ bool PersistentSystemProfile::RecordAllocator::ReadData(
     std::string* record) const {
   DCHECK_GT(alloc_size_, end_offset_);
 
-  char* block =
-      allocator_->GetAsArray<char>(alloc_reference_, kTypeIdSystemProfile,
-                                   base::PersistentMemoryAllocator::kSizeAny);
+  char* block = allocator_->GetAsArray<char>(alloc_reference_,
+                                             kTypeIdSystemProfile, alloc_size_);
   if (!block) {
     *type = kUnusedSpace;
     return true;  // No more data.

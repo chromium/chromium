@@ -937,7 +937,9 @@ PersistentMemoryAllocator::GetBlock(Reference ref,
       return nullptr;
     }
     const uint32_t block_size = block->size;
-    if (block_size < size) {
+    if (block_size < size || block_size <= sizeof(BlockHeader) ||
+        block_size % kAllocAlignment != 0) {
+      // The serialized `block_size` either underflows or misaligns the block.
       return nullptr;
     }
     // Find a validate the end of the block.
