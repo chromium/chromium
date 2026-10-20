@@ -10,6 +10,7 @@
 
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
+#include "remoting/base/registry_test_helper_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace remoting {
@@ -37,11 +38,21 @@ TEST_F(RegistryUtilWinTest, WriteDefaultStringValue) {
   EXPECT_TRUE(
       WriteDefaultStringValue(HKEY_CURRENT_USER, kTestKeyPath, kTestValue));
 
-  base::win::RegKey key(HKEY_CURRENT_USER, kTestKeyPath, KEY_READ);
-  ASSERT_TRUE(key.Valid());
-  std::wstring read_value;
-  EXPECT_EQ(key.ReadValue(nullptr, &read_value), ERROR_SUCCESS);
-  EXPECT_EQ(read_value, kTestValue);
+  EXPECT_EQ(
+      RegistryTestHelperWin::ReadStringValue(HKEY_CURRENT_USER, kTestKeyPath),
+      kTestValue);
+}
+
+TEST_F(RegistryUtilWinTest, WriteDefaultStringValueOverwritesExistingValue) {
+  ASSERT_TRUE(
+      WriteDefaultStringValue(HKEY_CURRENT_USER, kTestKeyPath, L"Initial"));
+
+  EXPECT_TRUE(
+      WriteDefaultStringValue(HKEY_CURRENT_USER, kTestKeyPath, kTestValue));
+
+  EXPECT_EQ(
+      RegistryTestHelperWin::ReadStringValue(HKEY_CURRENT_USER, kTestKeyPath),
+      kTestValue);
 }
 
 TEST_F(RegistryUtilWinTest, WriteDefaultStringValueBothViews) {
@@ -49,36 +60,52 @@ TEST_F(RegistryUtilWinTest, WriteDefaultStringValueBothViews) {
                                       kTestValue,
                                       KEY_WOW64_32KEY | KEY_WOW64_64KEY));
 
-  for (REGSAM view : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
-    base::win::RegKey key(HKEY_LOCAL_MACHINE, kTestKeyPath, KEY_READ | view);
-    ASSERT_TRUE(key.Valid());
-    std::wstring read_value;
-    EXPECT_EQ(key.ReadValue(nullptr, &read_value), ERROR_SUCCESS);
-    EXPECT_EQ(read_value, kTestValue);
+  for (REGSAM view : kBothRegistryViews) {
+    EXPECT_EQ(
+        RegistryTestHelperWin::ReadStringValue(HKEY_LOCAL_MACHINE, kTestKeyPath,
+                                               /*value_name=*/nullptr, view),
+        kTestValue);
   }
 }
 
 TEST_F(RegistryUtilWinTest, DeleteKey) {
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       WriteDefaultStringValue(HKEY_CURRENT_USER, kTestKeyPath, kTestValue));
 
   DeleteKey(HKEY_CURRENT_USER, kTestKeyPath);
 
-  base::win::RegKey key(HKEY_CURRENT_USER, kTestKeyPath, KEY_READ);
-  EXPECT_FALSE(key.Valid());
+  EXPECT_FALSE(
+      RegistryTestHelperWin::KeyExists(HKEY_CURRENT_USER, kTestKeyPath));
+}
+
+TEST_F(RegistryUtilWinTest, DeleteKeySingleComponentWithSubkeys) {
+  ASSERT_TRUE(WriteDefaultStringValue(
+      HKEY_CURRENT_USER, L"TopLevelTestKey\\NestedChild", kTestValue));
+
+  DeleteKey(HKEY_CURRENT_USER, L"TopLevelTestKey");
+
+  EXPECT_FALSE(
+      RegistryTestHelperWin::KeyExists(HKEY_CURRENT_USER, L"TopLevelTestKey"));
+}
+
+TEST_F(RegistryUtilWinTest, DeleteKeyNonExistentKeyIsNoOp) {
+  DeleteKey(HKEY_CURRENT_USER, kTestKeyPath);
+
+  EXPECT_FALSE(
+      RegistryTestHelperWin::KeyExists(HKEY_CURRENT_USER, kTestKeyPath));
 }
 
 TEST_F(RegistryUtilWinTest, DeleteKeyBothViews) {
-  EXPECT_TRUE(WriteDefaultStringValue(HKEY_LOCAL_MACHINE, kTestKeyPath,
+  ASSERT_TRUE(WriteDefaultStringValue(HKEY_LOCAL_MACHINE, kTestKeyPath,
                                       kTestValue,
                                       KEY_WOW64_32KEY | KEY_WOW64_64KEY));
 
   DeleteKey(HKEY_LOCAL_MACHINE, kTestKeyPath,
             KEY_WOW64_32KEY | KEY_WOW64_64KEY);
 
-  for (REGSAM view : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
-    base::win::RegKey key(HKEY_LOCAL_MACHINE, kTestKeyPath, KEY_READ | view);
-    EXPECT_FALSE(key.Valid());
+  for (REGSAM view : kBothRegistryViews) {
+    EXPECT_FALSE(RegistryTestHelperWin::KeyExists(HKEY_LOCAL_MACHINE,
+                                                  kTestKeyPath, view));
   }
 }
 
@@ -86,73 +113,118 @@ TEST_F(RegistryUtilWinTest, DeleteKeyIfEmptyNonExistentKey) {
   EXPECT_TRUE(DeleteKeyIfEmpty(HKEY_CURRENT_USER, kTestKeyPath));
 }
 
-TEST_F(RegistryUtilWinTest, DeleteKeyIfEmptyWithValues) {
-  EXPECT_TRUE(
+TEST_F(RegistryUtilWinTest, DeleteKeyIfEmptyWithDefaultValue) {
+  ASSERT_TRUE(
       WriteDefaultStringValue(HKEY_CURRENT_USER, kTestKeyPath, kTestValue));
 
-  // Should not delete because the key has a default value.
   EXPECT_TRUE(DeleteKeyIfEmpty(HKEY_CURRENT_USER, kTestKeyPath));
 
-  base::win::RegKey key(HKEY_CURRENT_USER, kTestKeyPath, KEY_READ);
-  EXPECT_TRUE(key.Valid());
+  EXPECT_TRUE(
+      RegistryTestHelperWin::KeyExists(HKEY_CURRENT_USER, kTestKeyPath));
+}
+
+TEST_F(RegistryUtilWinTest, DeleteKeyIfEmptyWithNamedValue) {
+  {
+    base::win::RegKey key;
+    ASSERT_EQ(key.Create(HKEY_CURRENT_USER, kTestKeyPath, KEY_SET_VALUE),
+              ERROR_SUCCESS);
+    ASSERT_EQ(key.WriteValue(L"NamedValue", kTestValue), ERROR_SUCCESS);
+  }
+
+  EXPECT_TRUE(DeleteKeyIfEmpty(HKEY_CURRENT_USER, kTestKeyPath));
+
+  EXPECT_TRUE(
+      RegistryTestHelperWin::KeyExists(HKEY_CURRENT_USER, kTestKeyPath));
 }
 
 TEST_F(RegistryUtilWinTest, DeleteKeyIfEmptyWithSubkeys) {
-  base::win::RegKey subkey;
   std::wstring child_path = std::wstring(kTestKeyPath) + L"\\ChildKey";
-  ASSERT_EQ(subkey.Create(HKEY_CURRENT_USER, child_path.c_str(), KEY_WRITE),
-            ERROR_SUCCESS);
+  {
+    base::win::RegKey subkey;
+    ASSERT_EQ(subkey.Create(HKEY_CURRENT_USER, child_path.c_str(), KEY_WRITE),
+              ERROR_SUCCESS);
+  }
 
-  // Should not delete because the parent has a subkey.
   EXPECT_TRUE(DeleteKeyIfEmpty(HKEY_CURRENT_USER, kTestKeyPath));
 
-  base::win::RegKey key(HKEY_CURRENT_USER, kTestKeyPath, KEY_READ);
-  EXPECT_TRUE(key.Valid());
+  EXPECT_TRUE(
+      RegistryTestHelperWin::KeyExists(HKEY_CURRENT_USER, kTestKeyPath));
 }
 
 TEST_F(RegistryUtilWinTest, DeleteKeyIfEmptyWhenTrulyEmpty) {
-  base::win::RegKey key;
-  ASSERT_EQ(key.Create(HKEY_CURRENT_USER, kTestKeyPath, KEY_WRITE),
-            ERROR_SUCCESS);
-  key.Close();
+  {
+    base::win::RegKey key;
+    ASSERT_EQ(key.Create(HKEY_CURRENT_USER, kTestKeyPath, KEY_WRITE),
+              ERROR_SUCCESS);
+  }
 
   EXPECT_TRUE(DeleteKeyIfEmpty(HKEY_CURRENT_USER, kTestKeyPath));
 
-  base::win::RegKey verify_key(HKEY_CURRENT_USER, kTestKeyPath, KEY_READ);
-  EXPECT_FALSE(verify_key.Valid());
+  EXPECT_FALSE(
+      RegistryTestHelperWin::KeyExists(HKEY_CURRENT_USER, kTestKeyPath));
 }
 
 TEST_F(RegistryUtilWinTest, DeleteKeyIfEmptyWithWow64Access) {
-  for (REGSAM view : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
-    base::win::RegKey key;
-    ASSERT_EQ(key.Create(HKEY_LOCAL_MACHINE, kTestKeyPath, KEY_WRITE | view),
-              ERROR_SUCCESS);
-    key.Close();
+  for (REGSAM view : kBothRegistryViews) {
+    {
+      base::win::RegKey key;
+      ASSERT_EQ(key.Create(HKEY_LOCAL_MACHINE, kTestKeyPath, KEY_WRITE | view),
+                ERROR_SUCCESS);
+    }
 
     EXPECT_TRUE(DeleteKeyIfEmpty(HKEY_LOCAL_MACHINE, kTestKeyPath, view));
 
-    base::win::RegKey verify_key(HKEY_LOCAL_MACHINE, kTestKeyPath,
-                                 KEY_READ | view);
-    EXPECT_FALSE(verify_key.Valid());
+    EXPECT_FALSE(RegistryTestHelperWin::KeyExists(HKEY_LOCAL_MACHINE,
+                                                  kTestKeyPath, view));
   }
 }
 
 TEST_F(RegistryUtilWinTest, DeleteKeyIfEmptyBothViews) {
-  for (REGSAM view : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+  for (REGSAM view : kBothRegistryViews) {
     base::win::RegKey key;
     ASSERT_EQ(key.Create(HKEY_LOCAL_MACHINE, kTestKeyPath, KEY_WRITE | view),
               ERROR_SUCCESS);
-    key.Close();
   }
 
   EXPECT_TRUE(DeleteKeyIfEmpty(HKEY_LOCAL_MACHINE, kTestKeyPath,
                                KEY_WOW64_32KEY | KEY_WOW64_64KEY));
 
-  for (REGSAM view : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
-    base::win::RegKey verify_key(HKEY_LOCAL_MACHINE, kTestKeyPath,
-                                 KEY_READ | view);
-    EXPECT_FALSE(verify_key.Valid());
+  for (REGSAM view : kBothRegistryViews) {
+    EXPECT_FALSE(RegistryTestHelperWin::KeyExists(HKEY_LOCAL_MACHINE,
+                                                  kTestKeyPath, view));
   }
+}
+
+TEST_F(RegistryUtilWinTest, DeleteKeyPreservesPredefinedKeyOverride) {
+  std::wstring key1 = L"Software\\ChromotingTest\\DeleteTarget";
+  std::wstring key2 = L"Software\\ChromotingTest\\PreserveTarget";
+  ASSERT_TRUE(WriteDefaultStringValue(HKEY_LOCAL_MACHINE, key1, L"Val1"));
+  ASSERT_TRUE(WriteDefaultStringValue(HKEY_LOCAL_MACHINE, key2, L"Val2"));
+
+  DeleteKey(HKEY_LOCAL_MACHINE, key1);
+
+  EXPECT_FALSE(RegistryTestHelperWin::KeyExists(HKEY_LOCAL_MACHINE, key1));
+  EXPECT_EQ(RegistryTestHelperWin::ReadStringValue(HKEY_LOCAL_MACHINE, key2),
+            L"Val2");
+}
+
+TEST_F(RegistryUtilWinTest, DeleteKeyIfEmptyPreservesPredefinedKeyOverride) {
+  std::wstring empty_key = L"Software\\ChromotingTest\\EmptyKey";
+  std::wstring preserve_key = L"Software\\ChromotingTest\\PreserveKey";
+  {
+    base::win::RegKey key;
+    ASSERT_EQ(key.Create(HKEY_LOCAL_MACHINE, empty_key.c_str(), KEY_WRITE),
+              ERROR_SUCCESS);
+  }
+  ASSERT_TRUE(
+      WriteDefaultStringValue(HKEY_LOCAL_MACHINE, preserve_key, L"Val"));
+
+  EXPECT_TRUE(DeleteKeyIfEmpty(HKEY_LOCAL_MACHINE, empty_key));
+
+  EXPECT_FALSE(RegistryTestHelperWin::KeyExists(HKEY_LOCAL_MACHINE, empty_key));
+  EXPECT_EQ(
+      RegistryTestHelperWin::ReadStringValue(HKEY_LOCAL_MACHINE, preserve_key),
+      L"Val");
 }
 
 }  // namespace remoting

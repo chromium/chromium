@@ -62,13 +62,22 @@ void DeleteKey(HKEY root_key,
     return;
   }
 
-  base::win::RegKey root;
-  if (root.Open(root_key, L"", KEY_QUERY_VALUE | wow64_access) ==
-      ERROR_SUCCESS) {
-    LONG result = root.DeleteKey(key_path.c_str());
-    if (result != ERROR_SUCCESS && result != ERROR_FILE_NOT_FOUND) {
-      LOG(ERROR) << "Failed to delete key " << key_path << ": " << result;
+  // Open `key_path` directly rather than opening L"" on `root_key`. Opening and
+  // closing a handle to the root of an overridden predefined key (e.g., via
+  // RegOverridePredefKey in unit tests) breaks the override mapping.
+  base::win::RegKey key;
+  LONG open_res =
+      key.Open(root_key, key_path.c_str(), KEY_QUERY_VALUE | wow64_access);
+  if (open_res != ERROR_SUCCESS) {
+    if (open_res != ERROR_FILE_NOT_FOUND) {
+      LOG(ERROR) << "Failed to open key " << key_path << ": " << open_res;
     }
+    return;
+  }
+
+  LONG delete_res = key.DeleteKey(L"");
+  if (delete_res != ERROR_SUCCESS && delete_res != ERROR_FILE_NOT_FOUND) {
+    LOG(ERROR) << "Failed to delete key " << key_path << ": " << delete_res;
   }
 }
 
@@ -97,26 +106,18 @@ bool DeleteKeyIfEmpty(HKEY root_key,
   LONG query_res = ::RegQueryInfoKeyW(
       key.Handle(), nullptr, nullptr, nullptr, &subkey_count, nullptr, nullptr,
       &value_count, nullptr, nullptr, nullptr, nullptr);
-  key.Close();
-
   if (query_res != ERROR_SUCCESS) {
     return false;
   }
 
   if (subkey_count == 0 && value_count == 0) {
-    base::win::RegKey root;
-    if (root.Open(root_key, L"", KEY_QUERY_VALUE | wow64_access) !=
-        ERROR_SUCCESS) {
-      return false;
-    }
-    LONG delete_res = root.DeleteKey(key_path.c_str(),
-                                     base::win::RegKey::RecursiveDelete(false));
+    LONG delete_res =
+        key.DeleteKey(L"", base::win::RegKey::RecursiveDelete(false));
     if (delete_res != ERROR_SUCCESS && delete_res != ERROR_FILE_NOT_FOUND) {
       LOG(ERROR) << "Failed to delete empty key " << key_path << ": "
                  << delete_res;
       return false;
     }
-    return true;
   }
 
   return true;

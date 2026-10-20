@@ -419,6 +419,13 @@ static_library("test_support") {
     "//testing/gtest",
     "//third_party/protobuf:protobuf_lite",
   ]
+
+  if (is_win) {
+    sources += [
+      "registry_test_helper_win.cc",
+      "registry_test_helper_win.h",
+    ]
+  }
 }
 
 proto_library("test_proto") {
