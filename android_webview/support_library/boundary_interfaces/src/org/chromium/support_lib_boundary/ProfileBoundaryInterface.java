@@ -8,6 +8,7 @@ import android.os.CancellationSignal;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebStorage;
 
 import org.jspecify.annotations.NullMarked;
@@ -15,8 +16,12 @@ import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.InvocationHandler;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /** Boundary interface for Profile. */
 @NullMarked
@@ -106,6 +111,10 @@ public interface ProfileBoundaryInterface {
     void clearOriginMatchedHeader(String headerName, @Nullable String headerValue);
 
     void clearAllOriginMatchedHeaders();
+
+    Runnable addHeaderInterceptor(
+            Consumer<BiConsumer<@RequestMatcherConfig Integer, Object>> buildRequestMatcherConfig,
+            Function<WebResourceRequest, Map<String, @Nullable String>> headerInterceptor);
 
     void preconnect(String url);
 

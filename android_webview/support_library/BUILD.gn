@@ -7,13 +7,16 @@ import("//build/config/android/rules.gni")
 
 android_library("support_lib_glue_java") {
   sources = [
+    "java/src/org/chromium/support_lib_glue/RequestMatcherBuilder.java",
     "java/src/org/chromium/support_lib_glue/SupportLibDropDataContentProviderAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibHeaderInterceptorAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibHttpCache.java",
     "java/src/org/chromium/support_lib_glue/SupportLibJsReplyProxyAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibNavigationParametersAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibNavigationRedirectParametersAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibOriginMatchedHeader.java",
     "java/src/org/chromium/support_lib_glue/SupportLibProfile.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibProfileHeaderInterceptorHandle.java",
     "java/src/org/chromium/support_lib_glue/SupportLibProfileStore.java",
     "java/src/org/chromium/support_lib_glue/SupportLibProxyControllerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibReflectionUtil.java",
@@ -41,6 +44,7 @@ android_library("support_lib_glue_java") {
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewChromium.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewCookieManagerAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibWebViewHeaderInterceptorHandle.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewNavigationAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewNavigationClientAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibWebViewNavigationListenerAdapter.java",

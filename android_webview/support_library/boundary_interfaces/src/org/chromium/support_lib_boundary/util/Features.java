@@ -550,4 +550,8 @@ public class Features {
     // Page.snapshotState
     public static final String NAVIGATION_LISTENER_NAVIGATION_STATE =
             "NAVIGATION_LISTENER_NAVIGATION_STATE";
+
+    // WebViewCompat.addHeaderInterceptor
+    // Profile.addHeaderInterceptor
+    public static final String HEADER_INTERCEPTOR = "HEADER_INTERCEPTOR";
 }

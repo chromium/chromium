@@ -11,10 +11,9 @@ import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import androidx.annotation.Nullable;
 
 import com.android.webview.chromium.CallbackConverter;
 import com.android.webview.chromium.SharedWebViewChromium;
@@ -25,7 +24,9 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.js_injection.mojom.DocumentInjectionTime;
+import org.chromium.support_lib_boundary.RequestMatcherConfig;
 import org.chromium.support_lib_boundary.SpeculativeLoadingParametersBoundaryInterface;
 import org.chromium.support_lib_boundary.VisualStateCallbackBoundaryInterface;
 import org.chromium.support_lib_boundary.WebMessageBoundaryInterface;
@@ -35,7 +36,11 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
+import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Support library glue version of WebViewChromium.
@@ -598,6 +603,38 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                     .getNavigationClient()
                     .clearAndSetListener(
                             new SupportLibWebViewNavigationClientAdapter(webViewNavigationClient));
+        }
+    }
+
+    @Override
+    public Runnable addHeaderInterceptor(
+            Consumer<BiConsumer<@RequestMatcherConfig Integer, Object>> buildRequestMatcherConfig,
+            Function<WebResourceRequest, Map<String, @Nullable String>> headerInterceptor) {
+        recordApiCall(ApiCall.WEBVIEW_ADD_HEADER_INTERCEPTOR);
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.WEBVIEW_ADD_HEADER_INTERCEPTOR")) {
+            SharedWebViewChromium sharedWebViewChromium = mSharedWebViewChromium.get();
+            if (sharedWebViewChromium == null) {
+                throw new IllegalStateException(
+                        "Support lib method called on WebView that no longer exists.");
+            }
+
+            if (headerInterceptor == null) {
+                throw new NullPointerException("The HeaderInterceptor shouldn't be null");
+            }
+
+            RequestMatcherBuilder requestMatcherBuilder = new RequestMatcherBuilder();
+            buildRequestMatcherConfig.accept(requestMatcherBuilder);
+
+            int id =
+                    sharedWebViewChromium
+                            .getAwContents()
+                            .getHeaderInterceptorStore()
+                            .addInterceptor(
+                                    new SupportLibHeaderInterceptorAdapter(headerInterceptor),
+                                    requestMatcherBuilder.getUrlPatterns());
+
+            return new SupportLibWebViewHeaderInterceptorHandle(mSharedWebViewChromium, id);
         }
     }
 }

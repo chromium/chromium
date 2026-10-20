@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebViewClient;
 
 import androidx.annotation.IntDef;
@@ -19,7 +20,11 @@ import org.jspecify.annotations.Nullable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.InvocationHandler;
+import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 @NullMarked
 public interface WebViewProviderBoundaryInterface {
@@ -115,4 +120,8 @@ public interface WebViewProviderBoundaryInterface {
     void removeWebMessageListener(String jsObjectName, String worldName);
 
     int getJavaScriptWorld(String worldName);
+
+    Runnable addHeaderInterceptor(
+            Consumer<BiConsumer<@RequestMatcherConfig Integer, Object>> buildRequestMatcherConfig,
+            Function<WebResourceRequest, Map<String, @Nullable String>> headerInterceptor);
 }

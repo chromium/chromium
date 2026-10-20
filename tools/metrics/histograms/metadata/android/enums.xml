@@ -1008,6 +1008,8 @@ chromium-metrics-reviews@google.com.
   <int value="231" label="PageState.getPage"/>
   <int value="232" label="Navigation.snapshotState"/>
   <int value="233" label="Page.snapshotState"/>
+  <int value="234" label="Profile.addHeaderInterceptor"/>
+  <int value="235" label="WebViewCompat.addHeaderInterceptor"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
