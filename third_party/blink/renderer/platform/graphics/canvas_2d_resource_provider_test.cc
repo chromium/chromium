@@ -172,43 +172,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                                              : "ManualSyncTokens";
                          });
 
-TEST_P(Canvas2DResourceProviderSyncTokenTest, UnusedResources) {
-  base::test::ScopedFeatureList feature_list{kCanvas2DReclaimUnusedResources};
-
-  auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
-
-  auto resource = provider->ProduceCanvasResource(/*surface=*/nullptr);
-  MemoryManagedPaintRecorder recorder(provider->Size(), nullptr);
-  recorder.getRecordingCanvas().clear(SkColors::kWhite);
-  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
-  auto new_resource = provider->ProduceCanvasResource(/*surface=*/nullptr);
-  ASSERT_NE(resource, new_resource);
-
-  if (base::FeatureList::IsEnabled(
-          features::kUseAutomaticSyncTokenManagement)) {
-    EXPECT_FALSE(GetSyncToken(resource.get()).HasData());
-    EXPECT_FALSE(GetSyncToken(new_resource.get()).HasData());
-  } else {
-    ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
-  }
-
-  EXPECT_FALSE(
-      provider->unused_resources_reclaim_timer_is_running_for_testing());
-  EnsureResourceRecycled(std::move(resource));
-  // The reclaim task has been posted.
-  EXPECT_TRUE(
-      provider->unused_resources_reclaim_timer_is_running_for_testing());
-
-  // There is a ready-to-reuse resource
-  EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
-  task_environment_.FastForwardBy(
-      Canvas2DResourceProvider::kUnusedResourceExpirationTime);
-  // The resource is freed, don't repost the task.
-  EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
-  EXPECT_FALSE(
-      provider->unused_resources_reclaim_timer_is_running_for_testing());
-}
-
 TEST_P(Canvas2DResourceProviderSyncTokenTest,
        DontReclaimUnusedResourcesWhenFeatureIsDisabled) {
   base::test::ScopedFeatureList feature_list;

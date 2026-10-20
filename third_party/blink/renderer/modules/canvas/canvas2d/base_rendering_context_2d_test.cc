@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -56,6 +57,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
@@ -438,7 +440,8 @@ class BaseRenderingContext2DSharedImageTest : public testing::Test {
     CanvasResource::DropRefOnOwningThread(std::move(resource));
   }
 
-  test::TaskEnvironment task_environment_;
+  test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform_;
 };
@@ -582,6 +585,44 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
   } else {
     EXPECT_NE(sync_token, GetSyncToken(resource_again.get()));
   }
+}
+
+TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest, UnusedResources) {
+  base::test::ScopedFeatureList feature_list{kCanvas2DReclaimUnusedResources};
+  V8TestingScope scope;
+  auto* context = CreateBackedContext(scope, RasterMode::kGPU);
+  auto* provider = context->GetSharedImageProviderForTesting();
+
+  auto resource = context->PaintRenderingResultsToResource(kBackBuffer,
+                                                           FlushReason::kOther);
+  context->fillRect(0, 0, 1, 1);
+  auto new_resource = context->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
+  ASSERT_NE(resource, new_resource);
+
+  if (base::FeatureList::IsEnabled(
+          ::features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_FALSE(GetSyncToken(resource.get()).HasData());
+    EXPECT_FALSE(GetSyncToken(new_resource.get()).HasData());
+  } else {
+    ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
+  }
+
+  EXPECT_FALSE(
+      provider->unused_resources_reclaim_timer_is_running_for_testing());
+  EnsureResourceRecycled(std::move(resource));
+  // The reclaim task has been posted.
+  EXPECT_TRUE(
+      provider->unused_resources_reclaim_timer_is_running_for_testing());
+
+  // There is a ready-to-reuse resource.
+  EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
+  task_environment_.FastForwardBy(
+      Canvas2DResourceProvider::kUnusedResourceExpirationTime);
+  // The resource is freed, don't repost the task.
+  EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
+  EXPECT_FALSE(
+      provider->unused_resources_reclaim_timer_is_running_for_testing());
 }
 
 }  // namespace
