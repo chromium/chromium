@@ -16,5 +16,3 @@ requirements.
 1. **Read Guidelines**: Read the local file `components/sync/protocol/README.md`
    completely before evaluating the change.
 2. **Evaluate Changes**: Check the diff against EVERY guideline in the README.
-3. **Citations**: When citing guidelines in review comments, link to
-   `https://chromium.googlesource.com/chromium/src/+/main/components/sync/protocol/README.md`.
