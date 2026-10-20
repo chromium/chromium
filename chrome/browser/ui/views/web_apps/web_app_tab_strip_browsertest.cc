@@ -85,7 +85,6 @@
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_features.h"
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
@@ -159,16 +158,12 @@ class TabAddedAndRemovedWaiter : public TabStripModelObserver {
 }  // namespace
 namespace web_app {
 
-class WebAppTabStripBrowserTest : public WebAppBrowserTestBase,
-                                  public testing::WithParamInterface<
-                                      apps::test::LinkCapturingFeatureVersion> {
+class WebAppTabStripBrowserTestBase : public WebAppBrowserTestBase {
  public:
-  WebAppTabStripBrowserTest() = default;
-  ~WebAppTabStripBrowserTest() override = default;
-
-  void SetUp() override {
+  explicit WebAppTabStripBrowserTestBase(
+      apps::test::LinkCapturingFeatureVersion link_capturing_version) {
     std::vector<base::test::FeatureRefAndParams> enabled_features =
-        apps::test::GetFeaturesToEnableLinkCapturingUX(link_capturing_version_);
+        apps::test::GetFeaturesToEnableLinkCapturingUX(link_capturing_version);
     enabled_features.emplace_back(blink::features::kDesktopPWAsTabStrip,
                                   base::FieldTrialParams());
     enabled_features.emplace_back(features::kDesktopPWAsTabStripSettings,
@@ -177,16 +172,16 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase,
         blink::features::kDesktopPWAsTabStripCustomizations,
         base::FieldTrialParams());
     features_.InitWithFeaturesAndParameters(enabled_features, {});
+  }
+  ~WebAppTabStripBrowserTestBase() override = default;
 
+  void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     WebAppBrowserTestBase::SetUp();
   }
 
  protected:
-  const apps::test::LinkCapturingFeatureVersion link_capturing_version_ =
-      GetParam();
-
   struct App {
     STACK_ALLOCATED();
 
@@ -294,6 +289,14 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase,
 
  private:
   base::test::ScopedFeatureList features_;
+};
+
+class WebAppTabStripBrowserTest : public WebAppTabStripBrowserTestBase,
+                                  public testing::WithParamInterface<
+                                      apps::test::LinkCapturingFeatureVersion> {
+ public:
+  WebAppTabStripBrowserTest() : WebAppTabStripBrowserTestBase(GetParam()) {}
+  ~WebAppTabStripBrowserTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
@@ -1547,126 +1550,45 @@ using WebAppTabStripForOnTaskBrowserTestParam =
     std::tuple<apps::test::LinkCapturingFeatureVersion, bool>;
 
 class WebAppTabStripForOnTaskBrowserTest
-    : public WebAppBrowserTestBase,
+    : public WebAppTabStripBrowserTestBase,
       public testing::WithParamInterface<
           WebAppTabStripForOnTaskBrowserTestParam> {
  public:
-  WebAppTabStripForOnTaskBrowserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features =
-        apps::test::GetFeaturesToEnableLinkCapturingUX(link_capturing_version_);
-    enabled_features.emplace_back(blink::features::kDesktopPWAsTabStrip,
-                                  base::FieldTrialParams());
-    enabled_features.emplace_back(features::kDesktopPWAsTabStripSettings,
-                                  base::FieldTrialParams());
-    enabled_features.emplace_back(
-        blink::features::kDesktopPWAsTabStripCustomizations,
-        base::FieldTrialParams());
-
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (is_unified_locked_state_controller_enabled_) {
-      enabled_features.emplace_back(features::kUseUnifiedLockedStateController,
-                                    base::FieldTrialParams());
-    } else {
-      disabled_features.push_back(features::kUseUnifiedLockedStateController);
-    }
-
-    features_.InitWithFeaturesAndParameters(enabled_features,
-                                            disabled_features);
+  WebAppTabStripForOnTaskBrowserTest()
+      : WebAppTabStripBrowserTestBase(std::get<0>(GetParam())) {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kUseUnifiedLockedStateController,
+        is_unified_locked_state_controller_enabled_);
   }
   ~WebAppTabStripForOnTaskBrowserTest() override = default;
-
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->Start());
-
-    WebAppBrowserTestBase::SetUp();
-  }
 
  protected:
   const bool is_unified_locked_state_controller_enabled_ =
       std::get<1>(GetParam());
 
-  webapps::AppId InstallTestWebApp(GURL start_url, bool await_metric = true) {
-    page_load_metrics::PageLoadMetricsTestWaiter metrics_waiter(
-        browser()->tab_strip_model()->GetActiveWebContents());
-    if (await_metric) {
-      metrics_waiter.AddWebFeatureExpectation(
-          blink::mojom::WebFeature::kWebAppTabbed);
-    }
-    webapps::AppId app_id = InstallWebAppFromPage(
-        browser(), start_url, {.launch_or_reparent_page_to_app = true});
-    if (await_metric) {
-      metrics_waiter.Wait();
-    }
-    return app_id;
-  }
-
-  void OpenUrlAndWait(BrowserWindowInterface* app_browser, GURL url) {
-    TabStripModel* tab_strip = app_browser->GetTabStripModel();
-
-    content::WaitForLoadStop(tab_strip->GetActiveWebContents());
-
-    NavigateParams params(app_browser, url,
-                          ui::PageTransition::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::CURRENT_TAB;
-    ui_test_utils::NavigateToURL(&params);
-  }
-
-  WebAppRegistrar& registrar() {
-    return WebAppProvider::GetForTest(profile())->registrar_unsafe();
-  }
-
-  void CloseTabFor(BrowserView* browser_view,
-                   int index,
-                   CloseTabSource source = CloseTabSource::kFromMouse) {
-    if (auto* base_region = views::AsViewClass<BaseTabStripRegionView>(
-            browser_view->tab_strip_view())) {
-      auto* controller = base_region->GetTabStripCollectionController();
-      ASSERT_NE(controller, nullptr);
-      controller->CloseTab(
-          browser_view->browser()->GetTabStripModel()->GetTabAtIndex(index),
-          source);
-    } else {
-      auto* tab_strip = browser_view->horizontal_tab_strip_for_testing();
-      ASSERT_NE(tab_strip, nullptr);
-      tab_strip->CloseTab(tab_strip->tab_at(index), source);
-    }
-  }
-
-  void PinWindow(aura::Window* window,
-                 bool trusted,
-                 bool locked_for_on_task = false) {
-    if (trusted && is_unified_locked_state_controller_enabled_) {
-      BrowserView* browser_view =
-          BrowserView::GetBrowserViewForNativeWindow(window);
-      ASSERT_TRUE(browser_view);
-      BrowserWindowInterface* browser = browser_view->browser();
-      ASSERT_TRUE(browser);
-
+  void PinWindow(BrowserWindowInterface* browser) {
+    if (is_unified_locked_state_controller_enabled_) {
       auto* controller = chromeos::LockedStateController::From(browser);
       ASSERT_TRUE(controller);
-      if (locked_for_on_task) {
-        controller->Lock(chromeos::LockedState::kOnTaskLocked);
-      } else {
-        controller->Lock(chromeos::LockedState::kExtensionLocked);
-      }
+      controller->Lock(chromeos::LockedState::kOnTaskLocked);
     } else {
-      if (!is_unified_locked_state_controller_enabled_) {
-        BrowserView* browser_view =
-            BrowserView::GetBrowserViewForNativeWindow(window);
-        ASSERT_TRUE(browser_view);
-        BrowserWindowInterface* browser = browser_view->browser();
-        ASSERT_TRUE(browser);
-        ash::boca::OnTaskLockedController::From(browser)
-            ->set_locked_for_on_task(locked_for_on_task);
-      }
-      ash::PinWindow(window, trusted);
+      ash::boca::OnTaskLockedController::From(browser)->set_locked_for_on_task(
+          true);
+      ash::PinWindow(browser->GetWindow()->GetNativeWindow(),
+                     /*trusted=*/true);
+      // TODO(crbug.com/429215055): This should happen as a part of pin state
+      // transition.
+      // The legacy path requires manual notification of command controller.
+      // In the unified controller path, Lock() internally triggers the
+      // delegate's EnterLockedFullscreen, which handles this.
+      chrome::BrowserCommandController::From(browser)
+          ->LockedFullscreenStateChanged();
     }
+    ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(browser));
   }
 
  private:
-  const apps::test::LinkCapturingFeatureVersion link_capturing_version_ =
-      std::get<0>(GetParam());
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(WebAppTabStripForOnTaskBrowserTest,
@@ -1677,30 +1599,13 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripForOnTaskBrowserTest,
   const webapps::AppId app_id = InstallTestWebApp(start_url);
   BrowserWindowInterface* const app_browser =
       FindWebAppBrowser(browser()->GetProfile(), app_id);
-  if (!is_unified_locked_state_controller_enabled_) {
-    ash::boca::OnTaskLockedController::From(app_browser)
-        ->set_locked_for_on_task(true);
-  }
 
   const TabStripModel* const tab_strip_model = app_browser->GetTabStripModel();
   ASSERT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
   ASSERT_EQ(tab_strip_model->count(), 1);
   ASSERT_TRUE(tab_strip_model->IsTabPinned(0));
 
-  PinWindow(app_browser->GetWindow()->GetNativeWindow(), /*trusted=*/true,
-            /*locked_for_on_task=*/true);
-  // TODO(crbug.com/429215055): This should happen as a part of pin state
-  // transition.
-  const bool use_unified_controller =
-      is_unified_locked_state_controller_enabled_;
-  if (!use_unified_controller) {
-    // The legacy path requires manual notification of command controller.
-    // In the unified controller path, Lock() internally triggers the
-    // delegate's EnterLockedFullscreen, which handles this.
-    chrome::BrowserCommandController::From(app_browser)
-        ->LockedFullscreenStateChanged();
-  }
-  ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(app_browser));
+  PinWindow(app_browser);
 
   // Open another tab so we can test tab close behavior on both home and
   // non-home tabs.
