@@ -131,7 +131,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   ~Canvas2DResourceProvider() override;
 
-  gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
   bool unused_resources_reclaim_timer_is_running_for_testing() const;
   bool HasUnusedResourcesForTesting() const;
   bool IsSingleBuffered() const;
@@ -140,11 +139,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   bool IsSoftware() const { return is_software_; }
 
   viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
-  const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
-  const gfx::HDRMetadata& GetHdrMetadata() const { return hdr_metadata_; }
-  SkAlphaType GetAlphaType() const { return alpha_type_; }
-  gfx::Size Size() const { return size_; }
-
 
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
   base::ByteSize EstimatedSizeInBytes() const;
@@ -196,6 +190,8 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   void ClearUnusedResources();
   bool IsGpuContextLost() const;
+  const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
+  gfx::Size Size() const { return size_; }
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -280,7 +276,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   gfx::Size size_;
   viz::SharedImageFormat format_;
-  SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
   gfx::HDRMetadata hdr_metadata_;
 

@@ -338,11 +338,6 @@ bool Canvas2DResourceProvider::IsValid() const {
   return !IsGpuContextLost();
 }
 
-gpu::SharedImageUsageSet Canvas2DResourceProvider::GetSharedImageUsageFlags()
-    const {
-  return image_pool_->GetImageInfo().usage;
-}
-
 void Canvas2DResourceProvider::EnsureWriteAccess() {
   DCHECK(resource_);
   // In software mode, we don't need write access to the resource during
@@ -655,7 +650,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       size_(size),
       format_(format),
-      alpha_type_(alpha_type),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
       context_lost_callback_(std::move(context_lost_callback)) {
@@ -760,7 +754,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
               : nullptr),
       size_(size),
       format_(format),
-      alpha_type_(alpha_type),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
       context_lost_callback_(std::move(context_lost_callback)) {
