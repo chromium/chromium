@@ -19,7 +19,14 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_page_context_monitor.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_voice_focused_web_state_tracker.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -135,6 +142,27 @@ class FakeTtcSessionControllerObserver : public TtcSessionControllerObserver {
 // Test fixture for `TtcSessionController`.
 class TtcSessionControllerTest : public PlatformTest {
  protected:
+  // Inserts and activates a realized fake `WebState` with `profile` and `url`
+  // into `browser`, returning a non-owning pointer to the created tab.
+  web::FakeWebState* InsertActiveEligibleTab(Browser& browser,
+                                             ProfileIOS* profile,
+                                             const GURL& url) {
+    auto tab = std::make_unique<web::FakeWebState>();
+    tab->SetBrowserState(profile);
+    tab->SetIsRealized(true);
+    tab->SetCurrentURL(url);
+    tab->SetContentsMimeType("text/html");
+    for (web::ContentWorld world : {web::ContentWorld::kIsolatedWorld,
+                                    web::ContentWorld::kPageContentWorld}) {
+      tab->SetWebFramesManager(world,
+                               std::make_unique<web::FakeWebFramesManager>());
+    }
+    web::FakeWebState* tab_ptr = tab.get();
+    browser.GetWebStateList()->InsertWebState(
+        std::move(tab), WebStateList::InsertionParams::Automatic().Activate());
+    return tab_ptr;
+  }
+
   // Simulates completion of an asynchronous page context extraction for
   // `controller`'s active monitor using `url` and `title`.
   void SimulateMonitorExtraction(TtcSessionController& controller,
@@ -501,23 +529,21 @@ TEST_F(TtcSessionControllerTest,
   controller.Disconnect();
 }
 
-// Tests that `TtcSessionController` monitors the initial active `WebState` on
-// session start and forwards extracted `AnnotatedPageContent` updates to the
+// Tests that `TtcSessionController` tracks active `WebState` changes within the
+// active `Browser` and forwards extracted `AnnotatedPageContent` updates to the
 // backend.
 TEST_F(TtcSessionControllerTest,
-       TestInitialActiveWebStateContextForwardedToBackend) {
+       TestActiveWebStateContextForwardedToBackendOnTabSwitch) {
   std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile.get());
+  SceneState* scene_state = [[SceneState alloc] init];
+  scene_state.activationLevel = SceneActivationLevelForegroundActive;
+  TestBrowser browser(profile.get(), scene_state);
+  browser_list->AddBrowser(&browser);
+
   const GURL first_url("https://example.com/first");
-  web::FakeWebState first_tab;
-  first_tab.SetBrowserState(profile.get());
-  first_tab.SetIsRealized(true);
-  first_tab.SetCurrentURL(first_url);
-  first_tab.SetContentsMimeType("text/html");
-  for (web::ContentWorld world : {web::ContentWorld::kIsolatedWorld,
-                                  web::ContentWorld::kPageContentWorld}) {
-    first_tab.SetWebFramesManager(
-        world, std::make_unique<web::FakeWebFramesManager>());
-  }
+  web::FakeWebState* first_tab_ptr =
+      InsertActiveEligibleTab(browser, profile.get(), first_url);
 
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
@@ -526,16 +552,30 @@ TEST_F(TtcSessionControllerTest,
   ttc::MockTtcBackend* mock_backend_ptr = mock_backend.get();
   auto conversation =
       std::make_unique<TtcConversation>(fake_audio, std::move(mock_backend));
-  TtcSessionController controller(std::move(conversation), &first_tab);
+  TtcSessionController controller(
+      std::move(conversation),
+      std::make_unique<TtcVoiceFocusedWebStateTracker>(browser_list));
 
-  EXPECT_EQ(controller.GetVoiceFocusedWebState(), &first_tab);
+  EXPECT_EQ(controller.GetVoiceFocusedWebState(), first_tab_ptr);
   controller.StartSession();
-  EXPECT_EQ(controller.GetVoiceFocusedWebState(), &first_tab);
+  EXPECT_EQ(controller.GetVoiceFocusedWebState(), first_tab_ptr);
 
   EXPECT_CALL(*mock_backend_ptr,
               SendContextUpdate(first_url, "First Tab", testing::_))
       .Times(1);
   SimulateMonitorExtraction(controller, first_url, "First Tab");
+
+  // Inserts and activates a second tab; the monitor must switch to the new tab
+  // and forward its `AnnotatedPageContent` to the backend.
+  const GURL second_url("https://example.com/second");
+  web::FakeWebState* second_tab_ptr =
+      InsertActiveEligibleTab(browser, profile.get(), second_url);
+  EXPECT_EQ(controller.GetVoiceFocusedWebState(), second_tab_ptr);
+
+  EXPECT_CALL(*mock_backend_ptr,
+              SendContextUpdate(second_url, "Second Tab", testing::_))
+      .Times(1);
+  SimulateMonitorExtraction(controller, second_url, "Second Tab");
 
   // Error responses and responses without `AnnotatedPageContent` must not
   // forward context updates to the backend.
@@ -559,11 +599,14 @@ TEST_F(TtcSessionControllerTest,
       .Times(1);
   controller.OnPageContextFetched(base::ok(std::move(fallback_context)));
 
-  controller.StopSession();
+  // Closing all tabs clears the controller's focused `WebState`.
+  CloseAllWebStates(*browser.GetWebStateList(),
+                    WebStateList::ClosingReason::kDefault);
   EXPECT_EQ(controller.GetVoiceFocusedWebState(), nullptr);
 
   controller.Disconnect();
   EXPECT_EQ(controller.GetVoiceFocusedWebState(), nullptr);
+  browser_list->RemoveBrowser(&browser);
 }
 
 }  // namespace

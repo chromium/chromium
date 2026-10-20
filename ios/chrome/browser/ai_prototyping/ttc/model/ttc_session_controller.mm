@@ -24,28 +24,10 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_utils.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
 
 namespace {
-
-// Returns the active `WebState` of the most active regular `Browser` in
-// `browser_list`, or `nullptr` if none exists.
-web::WebState* GetInitialActiveWebState(BrowserList* browser_list) {
-  if (!browser_list) {
-    return nullptr;
-  }
-  Browser* browser =
-      browser_list_utils::GetMostActiveSceneBrowser(browser_list);
-  if (!browser) {
-    return nullptr;
-  }
-  WebStateList* web_state_list = browser->GetWebStateList();
-  return web_state_list ? web_state_list->GetActiveWebState() : nullptr;
-}
 
 // Returns the string representation of `lifecycle`.
 std::string SessionLifecycleToString(TTCSessionLifecycle lifecycle) {
@@ -104,6 +86,31 @@ void TtcSessionController::OnConversationError(ttc::ErrorCode error) {
   }
 }
 
+#pragma mark - TtcVoiceFocusedWebStateTracker::Observer
+
+void TtcSessionController::OnVoiceFocusedWebStateChanged(
+    web::WebState* web_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (lifecycle_ == TTCSessionLifecycle::kFinished) {
+    return;
+  }
+  web::WebState* current_web_state =
+      page_context_monitor_ ? page_context_monitor_->web_state() : nullptr;
+  if (current_web_state == web_state) {
+    return;
+  }
+  if (page_context_monitor_) {
+    page_context_monitor_->Disconnect();
+    page_context_monitor_.reset();
+  }
+  // TODO(b/555804152): Signal to the backend when page context is invalidated
+  // or cannot be extracted for the focused WebState.
+  if (web_state) {
+    page_context_monitor_ =
+        std::make_unique<TtcPageContextMonitor>(*web_state, this);
+  }
+}
+
 #pragma mark - TtcPageContextMonitor::Delegate
 
 void TtcSessionController::OnPageContextFetched(
@@ -136,10 +143,11 @@ void TtcSessionController::OnPageContextFetched(
 
 TtcSessionController::TtcSessionController(
     std::unique_ptr<TtcConversation> conversation,
-    web::WebState* active_web_state)
+    std::unique_ptr<TtcVoiceFocusedWebStateTracker>
+        voice_focused_web_state_tracker)
     : conversation_(std::move(conversation)),
-      initial_web_state_(active_web_state ? active_web_state->GetWeakPtr()
-                                          : nullptr) {
+      voice_focused_web_state_tracker_(
+          std::move(voice_focused_web_state_tracker)) {
   CHECK(conversation_);
   conversation_->set_delegate(this);
   RegisterBackgroundObserver();
@@ -148,10 +156,13 @@ TtcSessionController::TtcSessionController(
 TtcSessionController::TtcSessionController(
     std::unique_ptr<ttc::TtcBackend> backend,
     BrowserList* browser_list)
-    : TtcSessionController(std::make_unique<TtcConversation>(
-                               [[TTCAudioSessionController alloc] init],
-                               std::move(backend)),
-                           GetInitialActiveWebState(browser_list)) {}
+    : TtcSessionController(
+          std::make_unique<TtcConversation>(
+              [[TTCAudioSessionController alloc] init],
+              std::move(backend)),
+          browser_list
+              ? std::make_unique<TtcVoiceFocusedWebStateTracker>(browser_list)
+              : nullptr) {}
 
 TtcSessionController::TtcSessionController()
     : TtcSessionController(std::make_unique<TtcConversation>()) {}
@@ -176,8 +187,9 @@ void TtcSessionController::set_journal(TTCJournal* journal) {
 
 web::WebState* TtcSessionController::GetVoiceFocusedWebState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return page_context_monitor_ ? page_context_monitor_->web_state()
-                               : initial_web_state_.get();
+  return voice_focused_web_state_tracker_
+             ? voice_focused_web_state_tracker_->GetActiveWebState()
+             : nullptr;
 }
 
 #pragma mark - Session Lifecycle
@@ -193,9 +205,12 @@ void TtcSessionController::StartSession() {
   }
   // The backend queues outgoing frames until the connection is established, so
   // page context extraction can start before initialization completes.
-  if (!page_context_monitor_ && initial_web_state_) {
-    page_context_monitor_ =
-        std::make_unique<TtcPageContextMonitor>(*initial_web_state_, this);
+  if (voice_focused_web_state_tracker_ &&
+      !voice_focused_web_state_tracker_observation_.IsObserving()) {
+    voice_focused_web_state_tracker_observation_.Observe(
+        voice_focused_web_state_tracker_.get());
+    OnVoiceFocusedWebStateChanged(
+        voice_focused_web_state_tracker_->GetActiveWebState());
   }
 }
 
@@ -205,7 +220,11 @@ void TtcSessionController::StopSession() {
     page_context_monitor_->Disconnect();
     page_context_monitor_.reset();
   }
-  initial_web_state_.reset();
+  voice_focused_web_state_tracker_observation_.Reset();
+  if (voice_focused_web_state_tracker_) {
+    voice_focused_web_state_tracker_->Disconnect();
+    voice_focused_web_state_tracker_.reset();
+  }
   conversation_->Stop();
   SetLifecycle(TTCSessionLifecycle::kFinished);
 }
