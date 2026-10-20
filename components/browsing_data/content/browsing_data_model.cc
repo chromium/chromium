@@ -110,6 +110,7 @@ GetDataOwner::GetOwningOriginOrHost<blink::StorageKey>(
     case BrowsingDataModel::StorageType::kSharedStorage:
     case BrowsingDataModel::StorageType::kLocalStorage:
     case BrowsingDataModel::StorageType::kCdmStorage:
+    case BrowsingDataModel::StorageType::kSharedWorker:
       return GetOwnerBasedOnScheme(data_key.origin());
     default:
       NOTREACHED() << "Unexpected StorageType: "
@@ -246,6 +247,15 @@ void StorageRemoverHelper::Visitor::operator()<blink::StorageKey>(
                                       helper->GetCompleteCallback())));
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+  // Terminate all active shared workers belonging to this StorageKey when
+  // kBrowsingDataModelSharedWorkerKeyWithoutURL is enabled.
+  if (types.Has(BrowsingDataModel::StorageType::kSharedWorker)) {
+    if (content::SharedWorkerService* shared_worker_service =
+            helper->storage_partition_->GetSharedWorkerService()) {
+      shared_worker_service->TerminateWorkersForStorageKey(storage_key);
+    }
+  }
 }
 
 template <>

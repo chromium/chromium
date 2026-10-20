@@ -92,6 +92,12 @@ class CONTENT_EXPORT SharedWorkerService {
       const blink::StorageKey& storage_key,
       const blink::mojom::SharedWorkerSameSiteCookies same_site_cookies) = 0;
 
+  // Terminates all shared workers matching the given storage key. Used when
+  // clearing browsing data for a site/partition without requiring individual
+  // worker URLs or names to be tracked.
+  virtual void TerminateWorkersForStorageKey(
+      const blink::StorageKey& storage_key) = 0;
+
   // Drops all shared workers and references to processes for shared workers
   // synchronously.
   virtual void Shutdown() = 0;

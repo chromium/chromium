@@ -75,6 +75,8 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
                        const blink::StorageKey& storage_key,
                        const blink::mojom::SharedWorkerSameSiteCookies
                            same_site_cookies) override;
+  void TerminateWorkersForStorageKey(
+      const blink::StorageKey& storage_key) override;
   void Shutdown() override;
 
   // Uses |url_loader_factory| to load workers' scripts instead of

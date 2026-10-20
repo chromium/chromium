@@ -18,4 +18,8 @@ BASE_FEATURE(kPasswordRemovalExtensionErrorKillSwitch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+BASE_FEATURE(kBrowsingDataModelSharedWorkerKeyWithoutURL,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace browsing_data::features

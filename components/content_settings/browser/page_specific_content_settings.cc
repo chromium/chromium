@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/browsing_data/content/cookie_helper.h"
+#include "components/browsing_data/core/features.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/permission_settings_info.h"
@@ -840,10 +841,20 @@ void PageSpecificContentSettings::SharedWorkerAccessed(
   PageSpecificContentSettings* settings = GetForFrame(
       content::RenderFrameHost::FromID(render_process_id, render_frame_id));
   if (settings) {
-    settings->OnBrowsingDataAccessed(
-        browsing_data::SharedWorkerInfo{worker_url, name, storage_key,
-                                        same_site_cookies},
-        BrowsingDataModel::StorageType::kSharedWorker, blocked_by_policy);
+    // Keying shared workers by StorageKey avoids retaining potentially large or
+    // unique worker URLs and names in memory across the lifetime of the page.
+    if (base::FeatureList::IsEnabled(
+            browsing_data::features::
+                kBrowsingDataModelSharedWorkerKeyWithoutURL)) {
+      settings->OnBrowsingDataAccessed(
+          storage_key, BrowsingDataModel::StorageType::kSharedWorker,
+          blocked_by_policy);
+    } else {
+      settings->OnBrowsingDataAccessed(
+          browsing_data::SharedWorkerInfo{worker_url, name, storage_key,
+                                          same_site_cookies},
+          BrowsingDataModel::StorageType::kSharedWorker, blocked_by_policy);
+    }
   }
 }
 

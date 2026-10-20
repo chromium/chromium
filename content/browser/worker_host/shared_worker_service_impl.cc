@@ -113,6 +113,22 @@ bool SharedWorkerServiceImpl::TerminateWorker(
   return false;
 }
 
+void SharedWorkerServiceImpl::TerminateWorkersForStorageKey(
+    const blink::StorageKey& storage_key) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Collect matching hosts first because DestroyHost() mutates `worker_hosts_`.
+  std::vector<SharedWorkerHost*> hosts_to_destroy;
+  for (const auto& host : worker_hosts_) {
+    if (host->instance().creator_storage_key() == storage_key) {
+      hosts_to_destroy.push_back(host.get());
+    }
+  }
+  for (SharedWorkerHost* host : hosts_to_destroy) {
+    DestroyHost(host);
+  }
+}
+
 void SharedWorkerServiceImpl::Shutdown() {
   worker_hosts_.clear();
   shared_worker_hosts_.clear();

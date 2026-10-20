@@ -22,6 +22,12 @@ BASE_DECLARE_FEATURE(kDbdPasswordRemovalOnAndroid);
 BASE_DECLARE_FEATURE(kPasswordRemovalExtensionErrorKillSwitch);
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+// When enabled, Shared Workers are tracked in BrowsingDataModel using their
+// blink::StorageKey rather than individual SharedWorkerInfo entries, avoiding
+// unbounded URL/name string retention in memory.
+BASE_DECLARE_FEATURE(kBrowsingDataModelSharedWorkerKeyWithoutURL);
+
 }  // namespace browsing_data::features
 
 #endif  // COMPONENTS_BROWSING_DATA_CORE_FEATURES_H_
