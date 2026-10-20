@@ -342,7 +342,6 @@ class GlicInitializationBenchmark
       // Use real Gaia sign-in with the OTA rather than fake IdentityManager.
       glic_test_environment().SetForceSigninAndModelExecutionCapability(false);
       disabled.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-      disabled.push_back(syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
     }
 
     feature_list_.InitWithFeatures(enabled, disabled);
