@@ -30,14 +30,16 @@
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_ukm_helper.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -178,14 +180,18 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
     test_ukm_recorder_ = std::make_unique<ukm::TestUkmRecorder>();
     client_->test_ukm_recorder_ = test_ukm_recorder_.get();
 
-    Profile* profile = ProfileManager::GetActiveUserProfile();
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    ASSERT_TRUE(active_session);
+    Profile* profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            active_session->account_id()));
+    ASSERT_TRUE(profile);
     app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile);
     instance_registry_ = &app_service_proxy_->InstanceRegistry();
     capability_cache_ =
         apps::AppCapabilityAccessCacheWrapper::Get()
-            .GetAppCapabilityAccessCache(user_manager::UserManager::Get()
-                                             ->GetActiveUser()
-                                             ->GetAccountId());
+            .GetAppCapabilityAccessCache(active_session->account_id());
   }
 
   // This function creates an app with given id and name, and adds the app into

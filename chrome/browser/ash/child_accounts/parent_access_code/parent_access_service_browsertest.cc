@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_test_utils.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_method_short.h"
 #include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
@@ -28,10 +27,14 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/mojom/date_time_handler.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/new_date_time_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/test_helper.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -149,11 +152,16 @@ class ParentAccessServiceTest : public MixinBasedInProcessBrowserTest {
         ->mutable_parentaccesscodeconfig()
         ->set_value(config_string);
 
-    const user_manager::UserManager* const user_manager =
-        user_manager::UserManager::Get();
-    EXPECT_TRUE(user_manager->GetActiveUser()->IsChild());
-    Profile* child_profile =
-        ProfileHelper::Get()->GetProfileByUser(user_manager->GetActiveUser());
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    ASSERT_TRUE(active_session);
+    const user_manager::User* active_user =
+        user_manager::UserManager::Get()->FindUser(
+            active_session->account_id());
+    ASSERT_TRUE(active_user);
+    EXPECT_TRUE(active_user->IsChild());
+    Profile* child_profile = Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByUser(active_user));
 
     logged_in_user_mixin_.GetUserPolicyTestHelper()->RefreshPolicyAndWait(
         child_profile);
@@ -374,12 +382,16 @@ IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest,
 
 IN_PROC_BROWSER_TEST_F(ParentAccessServiceTest,
                        TimezoneModificationRequiresParentApproval) {
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  const AccountId& account_id = active_session->account_id();
   const user_manager::User* const active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
+      user_manager::UserManager::Get()->FindUser(account_id);
   ASSERT_TRUE(active_user);
   ASSERT_TRUE(active_user->IsChild());
-  const AccountId& account_id = active_user->GetAccountId();
-  Profile* child_profile = ProfileHelper::Get()->GetProfileByUser(active_user);
+  Profile* child_profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByUser(active_user));
   ASSERT_TRUE(child_profile);
 
   extensions::PrefsUtil prefs_util(child_profile);

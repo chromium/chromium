@@ -27,6 +27,8 @@
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -322,8 +324,10 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubGeolocationBrowsertestCheckSystemSettingsLink,
   // Add another/secondary user to the session and log in.
   ash::UserAddingScreen::Get()->Start();
   AddUser(secondary_user_);
-  EXPECT_EQ(secondary_user_,
-            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  EXPECT_EQ(secondary_user_, active_session->account_id());
   ash::SystemWebAppManager::Get(
       Profile::FromBrowserContext(
           ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(

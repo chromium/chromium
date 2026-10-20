@@ -15,7 +15,8 @@
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 
@@ -45,9 +46,10 @@ class FeatureDiscoveryDurationReporterBrowserTest : public LoginManagerTest {
   void SetUpOnMainThread() override {
     LoginManagerTest::SetUpOnMainThread();
     LoginUser(account_id1_);
-    EXPECT_EQ(
-        account_id1_,
-        user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
+    const session_manager::Session* primary_session =
+        session_manager::SessionManager::Get()->GetPrimarySession();
+    ASSERT_TRUE(primary_session);
+    EXPECT_EQ(account_id1_, primary_session->account_id());
   }
 
   void TearDownOnMainThread() override {
@@ -156,8 +158,8 @@ IN_PROC_BROWSER_TEST_F(FeatureDiscoveryDurationReporterBrowserTest,
   // Fetch the cumulated time from the pref service and check it is non-zero.
   PrefService* primary_user_pref =
       Profile::FromBrowserContext(
-          BrowserContextHelper::Get()->GetBrowserContextByUser(
-              user_manager::UserManager::Get()->GetPrimaryUser()))
+          BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+              account_id1_))
           ->GetPrefs();
   const base::Value* duration_value =
       primary_user_pref->GetDict("FeatureDiscoveryReporterObservedFeatures")

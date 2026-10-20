@@ -38,6 +38,8 @@
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 #include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -1681,7 +1683,9 @@ IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest,
 
   // Switch back to Account 1. Verify that the toast should not show.
   user_manager::UserManager::Get()->SwitchActiveUser(account_id1_);
-  EXPECT_EQ(account_id1_,
-            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  EXPECT_EQ(account_id1_, active_session->account_id());
   EXPECT_EQ(ash::AppListToastType::kNone, app_list_test_api_.GetToastType());
 }

@@ -2117,7 +2117,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
   prefs.InitUserPrefsForTesting(
       static_cast<sync_preferences::PrefServiceSyncable*>(
           GetActiveUserProfile()->GetPrefs()),
-      user_manager::UserManager::Get()->GetActiveUser(),
+      BrowserContextHelper::Get()->GetUserByBrowserContext(
+          GetActiveUserProfile()),
       UserSessionManager::GetInstance()->GetDefaultIMEState(
           GetActiveUserProfile()));
 
