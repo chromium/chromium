@@ -36,7 +36,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatures;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
@@ -546,30 +545,11 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     }
 
     /**
-     * Get location bar background on focus height increase.
-     *
-     * @see #getLocationBarBackgroundOnFocusHeightIncrease(Context, ...)
+     * Returns the amount of pixels the location bar background should increase in height by when
+     * the omnibox is focused.
      */
     public @Px int getLocationBarBackgroundOnFocusHeightIncrease() {
-        return getLocationBarBackgroundOnFocusHeightIncrease(mContext);
-    }
-
-    /**
-     * Get toolbar side padding.
-     *
-     * @see #getToolbarSidePadding(Context, ...)
-     */
-    public @Px int getToolbarSidePadding() {
-        return getToolbarSidePadding(mContext);
-    }
-
-    /**
-     * Get toolbar side padding for ntp.
-     *
-     * @see #getToolbarSidePaddingForNtp(Context, ...)
-     */
-    public @Px int getToolbarSidePaddingForNtp() {
-        return getToolbarSidePaddingForNtp(mContext);
+        return mCache.getDimen(R.dimen.location_bar_background_on_focus_height_increase);
     }
 
     /** Get suggestion decoration icon size width. */
@@ -998,31 +978,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         TypedValue themeRes = new TypedValue();
         context.getTheme().resolveAttribute(attributeResId, themeRes, true);
         return themeRes.resourceId;
-    }
-
-    /**
-     * Returns the amount of pixels the location bar background should increase in height by when
-     * the omnibox is focused.
-     */
-    public static @Px int getLocationBarBackgroundOnFocusHeightIncrease(Context context) {
-        return context.getResources()
-                .getDimensionPixelSize(R.dimen.location_bar_background_on_focus_height_increase);
-    }
-
-    /** Returns the amount of pixels for the toolbar's side padding when the omnibox is focused. */
-    public static @Px int getToolbarSidePadding(Context context) {
-        return context.getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding);
-    }
-
-    /**
-     * Returns the amount of pixels for the toolbar's side padding when the omnibox is pinned on the
-     * top of the screen in NTP.
-     */
-    public static @Px int getToolbarSidePaddingForNtp(Context context) {
-        if (ChromeFeatures.NtpAurora.isEnabled()) {
-            return getToolbarSidePadding(context);
-        }
-        return context.getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding_ntp);
     }
 
     /**

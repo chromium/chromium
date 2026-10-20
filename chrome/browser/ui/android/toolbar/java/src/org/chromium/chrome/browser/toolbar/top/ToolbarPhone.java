@@ -355,12 +355,17 @@ public class ToolbarPhone extends ToolbarLayout
      */
     public ToolbarPhone(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mToolbarSidePadding = OmniboxResourceProvider.getToolbarSidePadding(context);
-        mToolbarSidePaddingForNtp = OmniboxResourceProvider.getToolbarSidePaddingForNtp(context);
         mIsAuroraEnabled = NewTabPageUtils.isNtpAuroraEnabled();
+        mToolbarSidePadding = getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding);
+        mToolbarSidePaddingForNtp =
+                mIsAuroraEnabled
+                        ? mToolbarSidePadding
+                        : getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding_ntp);
         mIsToolbarUiRefactorEnabled = ToolbarVariationUtils.isToolbarUiRefactorEnabled(context);
         mBackgroundHeightIncreaseWhenFocus =
-                OmniboxResourceProvider.getLocationBarBackgroundOnFocusHeightIncrease(context);
+                getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.location_bar_background_on_focus_height_increase);
         mToolbarBackgroundColorForNtp =
                 ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(getContext());
         mLocationBarBackgroundColorForNtp =
