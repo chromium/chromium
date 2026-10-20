@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_BUTTON_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -52,6 +53,7 @@ class ContextualTasksButton
   float GetCornerRadiusFor(ToolbarButton::Edge edge) const override;
   bool IsTrailing() const;
   bool IsSidePanelRightAligned() const;
+  bool IsHighlighted() const;
   ui::Layer* GetDropShadowLayerForTesting() const;
 
   // ui::SimpleMenuModel::Delegate:
@@ -83,6 +85,7 @@ class ContextualTasksButton
   void OnShouldUpdateVisibility(bool should_show);
   void OnEligibilityChange(bool is_eligible);
   void MaybeUpdateVisibility();
+  void UpdateHighlight();
   void MaybeShowFeaturePromo();
   void UpdateDropShadow(bool force_paint = false, float initial_opacity = 1.0f);
   void UpdateDropShadowLayerBounds();
@@ -95,6 +98,8 @@ class ContextualTasksButton
   base::CallbackListSubscription eligibility_change_subscription_;
   base::CallbackListSubscription vertical_tabs_subscription_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
+
+  std::optional<Button::ScopedAnchorHighlight> anchor_highlight_;
 
   // Since the contextual tasks button is not a standard shape, it requires a
   // LayerOwner to paint the custom drop shadow.

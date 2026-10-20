@@ -142,6 +142,10 @@ void ContextualTasksEphemeralButtonController::OnWillBeDestroyed() {
 void ContextualTasksEphemeralButtonController::OnTaskAssociatedToTab(
     const base::Uuid& task_id,
     SessionID tab_id) {
+  if (contextual_tasks::IsContextualTasksPinningV2Enabled() && IsPanelOpen() &&
+      GetCurrentTabSessionId() == tab_id) {
+    MarkActiveTaskTabsEligible();
+  }
   MaybeNotifyVisibilityShouldChange();
 }
 
@@ -164,6 +168,9 @@ void ContextualTasksEphemeralButtonController::OnEntryShown(
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     is_contextual_tasks_panel_open_ = true;
     is_hiding_contextual_tasks_panel_ = false;
+    if (contextual_tasks::IsContextualTasksPinningV2Enabled()) {
+      MarkActiveTaskTabsEligible();
+    }
     CancelAutoDismissTimersForActiveTask();
     MaybeNotifyVisibilityShouldChange();
   }
@@ -173,11 +180,11 @@ void ContextualTasksEphemeralButtonController::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
   is_hiding_contextual_tasks_panel_ = true;
-  if (!IsActiveTabAssociatedToTask()) {
-    return;
-  }
-
-  if (reason == SidePanelEntryHideReason::kBackgrounded) {
+  if (!IsActiveTabAssociatedToTask() ||
+      reason == SidePanelEntryHideReason::kBackgrounded) {
+    if (contextual_tasks::IsContextualTasksPinningV2Enabled()) {
+      MaybeNotifyVisibilityShouldChange();
+    }
     return;
   }
 
@@ -263,10 +270,11 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
     return false;
   }
 
+  const bool is_pinned = contextual_tasks::GetEffectivePinState(
+      browser_window_interface_->GetProfile());
   if (!base::FeatureList::IsEnabled(
           contextual_tasks::kEphemeralPinningVisibleWhenPermanentlyPinned) &&
-      contextual_tasks::GetEffectivePinState(
-          browser_window_interface_->GetProfile())) {
+      is_pinned) {
     return false;
   }
 
@@ -294,7 +302,7 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
   }
 
   // The ephemeral toolbar button should show if the contextual task side panel
-  // was closed on this tab, or on any other tab sharing its task.
+  // was shown or closed on this tab, or on any other tab sharing its task.
   bool should_show_button = std::ranges::any_of(
       GetContextualTasksService()->GetTabsAssociatedWithTask(
           current_task->GetTaskId()),
@@ -303,7 +311,8 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
       });
 
   if (contextual_tasks::kShowEntryPoint.Get() ==
-      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+          contextual_tasks::EntryPointOption::kToolbarEphemeralBranded &&
+      (!contextual_tasks::IsContextualTasksPinningV2Enabled() || is_pinned)) {
     should_show_button &=
         (!is_contextual_tasks_panel_open_ || is_hiding_contextual_tasks_panel_);
   }
@@ -387,6 +396,15 @@ void ContextualTasksEphemeralButtonController::DismissEphemeralButtonForTab(
     if (ui_service) {
       ui_service->DestroyClosedSidePanel(browser_window_interface_);
     }
+    if (contextual_tasks::IsContextualTasksPinningV2Enabled()) {
+      if (auto* panel_controller =
+              contextual_tasks::ContextualTasksPanelController::From(
+                  browser_window_interface_);
+          panel_controller &&
+          panel_controller->IsPanelOpenForContextualTask()) {
+        panel_controller->Close();
+      }
+    }
   } else if (task.has_value()) {
     service->DisassociateAllTabsFromTask(task->GetTaskId());
     if (auto* panel_controller =
@@ -420,6 +438,27 @@ void ContextualTasksEphemeralButtonController::
   for (SessionID tab_id :
        service->GetTabsAssociatedWithTask(current_task->GetTaskId())) {
     ephemeral_button_auto_dismiss_timers_.erase(tab_id);
+  }
+}
+
+void ContextualTasksEphemeralButtonController::MarkActiveTaskTabsEligible() {
+  if (!IsActiveTabAssociatedToTask()) {
+    return;
+  }
+
+  contextual_tasks::ContextualTasksService* service =
+      GetContextualTasksService();
+  std::optional<contextual_tasks::ContextualTask> current_task =
+      service->GetContextualTaskForTab(GetCurrentTabSessionId().value());
+  if (!current_task.has_value()) {
+    return;
+  }
+
+  for (SessionID tab_id :
+       service->GetTabsAssociatedWithTask(current_task->GetTaskId())) {
+    if (!std::ranges::contains(ephemeral_button_eligible_tabs_, tab_id)) {
+      ephemeral_button_eligible_tabs_.emplace_back(tab_id);
+    }
   }
 }
 

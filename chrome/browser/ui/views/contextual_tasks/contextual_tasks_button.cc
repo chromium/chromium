@@ -324,6 +324,7 @@ ContextualTasksButton::ContextualTasksButton(
 }
 
 ContextualTasksButton::~ContextualTasksButton() {
+  anchor_highlight_.reset();
   ClearDropShadow();
 }
 
@@ -594,6 +595,10 @@ ContextualTasksButton::Shape ContextualTasksButton::GetShape() const {
                                    : Shape::kFlatEdgeLeft;
 }
 
+bool ContextualTasksButton::IsHighlighted() const {
+  return anchor_highlight_.has_value();
+}
+
 ui::Layer* ContextualTasksButton::GetDropShadowLayerForTesting() const {
   return drop_shadow_painted_layer_ ? drop_shadow_painted_layer_->layer()
                                     : nullptr;
@@ -655,6 +660,7 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
                               true);
   } else {
     if (!will_be_visible) {
+      anchor_highlight_.reset();
       if (layer() && layer()->GetAnimator()) {
         layer()->GetAnimator()->AbortAllAnimations();
       }
@@ -671,6 +677,30 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
       UpdateDropShadow();
     }
     SetVisible(will_be_visible);
+  }
+  UpdateHighlight();
+}
+
+void ContextualTasksButton::UpdateHighlight() {
+  if (!contextual_tasks::IsContextualTasksPinningV2Enabled()) {
+    anchor_highlight_.reset();
+    return;
+  }
+  ContextualTasksEphemeralButtonController* const ephemeral_controller =
+      ContextualTasksEphemeralButtonController::From(browser_window_interface_);
+  auto* const panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(
+          browser_window_interface_);
+  const bool should_highlight =
+      GetVisible() && ephemeral_controller &&
+      ephemeral_controller->IsPanelOpen() && panel_controller &&
+      panel_controller->IsPanelOpenForContextualTask();
+  if (should_highlight) {
+    if (!anchor_highlight_.has_value()) {
+      anchor_highlight_ = AddAnchorHighlight();
+    }
+  } else {
+    anchor_highlight_.reset();
   }
 }
 
