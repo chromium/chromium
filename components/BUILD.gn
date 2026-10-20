@@ -463,7 +463,6 @@ test("components_unittests") {
       "//components/browser_sync:unit_tests",
       "//components/enterprise:unit_tests",
       "//components/enterprise/common:unit_tests",
-      "//components/enterprise/connectors/core:cloud_content_scanning_unit_tests",
       "//components/enterprise/connectors/core:unit_tests",
       "//components/enterprise/data_protection:unit_tests",
       "//components/enterprise/isolated_mode:unit_tests",
@@ -473,6 +472,11 @@ test("components_unittests") {
       "//components/update_client:unit_tests",
       "//components/visited_url_ranking/internal:unit_tests",
     ]
+    if (enterprise_cloud_content_analysis || is_android) {
+      deps += [
+        "//components/enterprise/connectors/core:cloud_content_scanning_unit_tests",
+      ]
+    }
   }
 
   if (use_blink) {
