@@ -81,6 +81,8 @@ source_set("test_support") {
     "//ui/display",
   ]
 
+  frameworks = [ "ScreenTime.framework" ]
+
   sources = [
     "test_web_thread.cc",
     "url_test_util.mm",
