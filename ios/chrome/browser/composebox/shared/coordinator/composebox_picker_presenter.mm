@@ -319,24 +319,35 @@ constexpr int kChromeIOSProductId = 71720513;
   [self.metricsRecorder
       recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
         forAttachmentType:MobileFuseboxPickerAttachmentType::kDrive];
-  [self.delegate composeboxPickerPresenter:self didPickDriveItems:items];
+  if ([self.delegate respondsToSelector:@selector(composeboxPickerPresenter:
+                                                  didPickDriveItems:)]) {
+    [self.delegate composeboxPickerPresenter:self didPickDriveItems:items];
+  }
 }
 
 - (void)driveFilePickerDidCancel {
   [self.metricsRecorder
       recordPickerOutcome:MobileFuseboxPickerOutcome::kManualUserExit
         forAttachmentType:MobileFuseboxPickerAttachmentType::kDrive];
-  [self.delegate composeboxPickerPresenterDidCancelDrivePicker:self];
+  if ([self.delegate
+          respondsToSelector:
+              @selector(composeboxPickerPresenterDidCancelDrivePicker:)]) {
+    [self.delegate composeboxPickerPresenterDidCancelDrivePicker:self];
+  }
 }
 
 #pragma mark - UIImagePickerControllerDelegate
 
 - (void)imagePickerController:(UIImagePickerController*)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString*, id>*)info {
-  __weak __typeof(self) weakSelf = self;
-  [self dismissPickerWithCompletion:^{
-    [weakSelf.delegate composeboxPickerPresenterDidDismissCamera:weakSelf];
-  }];
+  if ([self.delegate
+          respondsToSelector:@selector(
+                                 composeboxPickerPresenterDidDismissCamera:)]) {
+    __weak __typeof(self) weakSelf = self;
+    [self dismissPickerWithCompletion:^{
+      [weakSelf.delegate composeboxPickerPresenterDidDismissCamera:weakSelf];
+    }];
+  }
 
   UIImage* image = info[UIImagePickerControllerOriginalImage];
   if (!image) {
@@ -351,15 +362,19 @@ constexpr int kChromeIOSProductId = 71720513;
         forAttachmentType:MobileFuseboxPickerAttachmentType::kCamera];
 
   NSItemProvider* provider = [[NSItemProvider alloc] initWithObject:image];
-  [self.delegate
-      composeboxPickerPresenter:self
-                  didPickImages:@[
-                    [[ComposeboxPickerImageResult alloc]
-                        initWithImageProvider:provider
-                                      assetID:nil
-                                       source:ComposeboxInputItemSource::
-                                                  kCameraPicker]
-                  ]];
+  if ([self.delegate
+          respondsToSelector:@selector(
+                                 composeboxPickerPresenter:didPickImages:)]) {
+    [self.delegate
+        composeboxPickerPresenter:self
+                    didPickImages:@[
+                      [[ComposeboxPickerImageResult alloc]
+                          initWithImageProvider:provider
+                                        assetID:nil
+                                         source:ComposeboxInputItemSource::
+                                                    kCameraPicker]
+                    ]];
+  }
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController*)picker {
@@ -367,10 +382,14 @@ constexpr int kChromeIOSProductId = 71720513;
       recordPickerOutcome:MobileFuseboxPickerOutcome::kManualUserExit
         forAttachmentType:MobileFuseboxPickerAttachmentType::kCamera];
 
-  __weak __typeof(self) weakSelf = self;
-  [self dismissPickerWithCompletion:^{
-    [weakSelf.delegate composeboxPickerPresenterDidDismissCamera:weakSelf];
-  }];
+  if ([self.delegate
+          respondsToSelector:@selector(
+                                 composeboxPickerPresenterDidDismissCamera:)]) {
+    __weak __typeof(self) weakSelf = self;
+    [self dismissPickerWithCompletion:^{
+      [weakSelf.delegate composeboxPickerPresenterDidDismissCamera:weakSelf];
+    }];
+  }
 }
 
 #pragma mark - PHPickerViewControllerDelegate
@@ -401,8 +420,11 @@ constexpr int kChromeIOSProductId = 71720513;
                                              source:ComposeboxInputItemSource::
                                                         kGalleryPicker]];
   }
-
-  [self.delegate composeboxPickerPresenter:self didPickImages:imageItems];
+  if ([self.delegate
+          respondsToSelector:@selector(
+                                 composeboxPickerPresenter:didPickImages:)]) {
+    [self.delegate composeboxPickerPresenter:self didPickImages:imageItems];
+  }
 }
 
 #pragma mark - UIDocumentPickerDelegate
@@ -419,8 +441,10 @@ constexpr int kChromeIOSProductId = 71720513;
   [self.metricsRecorder
       recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
         forAttachmentType:MobileFuseboxPickerAttachmentType::kFile];
-
-  [self.delegate composeboxPickerPresenter:self didPickFilesWithURLs:urls];
+  if ([self.delegate respondsToSelector:@selector(composeboxPickerPresenter:
+                                                  didPickFilesWithURLs:)]) {
+    [self.delegate composeboxPickerPresenter:self didPickFilesWithURLs:urls];
+  }
 }
 
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController*)controller {
@@ -437,7 +461,11 @@ constexpr int kChromeIOSProductId = 71720513;
     [self.metricsRecorder
         recordPickerOutcome:MobileFuseboxPickerOutcome::kManualUserExit
           forAttachmentType:MobileFuseboxPickerAttachmentType::kTabs];
-    [self.delegate composeboxPickerPresenterDidCancelTabPicker:self];
+    if ([self.delegate
+            respondsToSelector:
+                @selector(composeboxPickerPresenterDidCancelTabPicker:)]) {
+      [self.delegate composeboxPickerPresenterDidCancelTabPicker:self];
+    }
     return;
   }
   std::set<web::WebStateID> currentIDs =
@@ -456,9 +484,14 @@ constexpr int kChromeIOSProductId = 71720513;
         recordPickerOutcome:MobileFuseboxPickerOutcome::kAttachmentAdded
           forAttachmentType:MobileFuseboxPickerAttachmentType::kTabs];
   }
-  [self.delegate composeboxPickerPresenter:self
-         handleSelectedTabsWithWebStateIDs:selection->selected_ids
-                         cachedWebStateIDs:selection->cached_ids];
+  if ([self.delegate
+          respondsToSelector:@selector(composeboxPickerPresenter:
+                                       handleSelectedTabsWithWebStateIDs:
+                                       cachedWebStateIDs:)]) {
+    [self.delegate composeboxPickerPresenter:self
+           handleSelectedTabsWithWebStateIDs:selection->selected_ids
+                           cachedWebStateIDs:selection->cached_ids];
+  }
 }
 
 /// Returns the primary identity if the browser is regular and the user is
