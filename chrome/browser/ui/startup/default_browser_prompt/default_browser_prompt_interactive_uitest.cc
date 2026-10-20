@@ -62,8 +62,10 @@ class DefaultBrowserPromptInteractiveTest
     : public WebUiInteractiveTestMixin<InteractiveBrowserTest> {
  public:
   DefaultBrowserPromptInteractiveTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        default_browser::kDefaultBrowserFramework);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{default_browser::kDefaultBrowserFramework,
+                               default_browser::kDefaultBrowserPromptSurfaces});
   }
 
   void SetUp() override {

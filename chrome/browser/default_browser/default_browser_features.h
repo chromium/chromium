@@ -32,6 +32,9 @@ bool IsDefaultBrowserChangedOsNotificationEnabled();
 // Returns whether the experimental default browser prompt surfaces are enabled.
 bool IsDefaultBrowserPromptSurfacesEnabled();
 
+// Returns whether default browser check validations are enabled.
+bool IsPerformDefaultBrowserCheckValidationsEnabled();
+
 // Returns whether the modal dialog default browser prompt should remain open
 // after clicking the confirm action and switch to a retry state on focus
 // return. Since this queries `kDefaultBrowserStickyModal`, it must only be
