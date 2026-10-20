@@ -879,6 +879,34 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("com_squareup_leakcanary_leakcanary_object_watcher_java") {
+    jar_path = "cipd/libs/com_squareup_leakcanary_leakcanary_object_watcher/leakcanary-object-watcher.jar"
+    output_name = "com_squareup_leakcanary_leakcanary_object_watcher"
+    supports_android = true
+    requires_android = true
+    enable_bytecode_checks = false
+    deps = [
+      ":com_squareup_leakcanary_leakcanary_gc_java",
+      ":com_squareup_leakcanary_shark_log_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  android_aar_prebuilt(
+      "com_squareup_leakcanary_leakcanary_object_watcher_android_core_java") {
+    aar_path = "cipd/libs/com_squareup_leakcanary_leakcanary_object_watcher_android_core/leakcanary-object-watcher-android-core.aar"
+    info_path = "committed/libs/com_squareup_leakcanary_leakcanary_object_watcher_android_core/com_squareup_leakcanary_leakcanary_object_watcher_android_core.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":com_squareup_curtains_curtains_java",
+      ":com_squareup_leakcanary_leakcanary_android_utils_java",
+      ":com_squareup_leakcanary_leakcanary_object_watcher_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_squareup_leakcanary_shark_java") {
     jar_path = "cipd/libs/com_squareup_leakcanary_shark/shark.jar"
     output_name = "com_squareup_leakcanary_shark"
@@ -1852,27 +1880,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("com_squareup_leakcanary_leakcanary_object_watcher_java") {
-    jar_path = "cipd/libs/com_squareup_leakcanary_leakcanary_object_watcher/leakcanary-object-watcher.jar"
-    output_name = "com_squareup_leakcanary_leakcanary_object_watcher"
-    supports_android = true
-    requires_android = true
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.template
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":com_squareup_leakcanary_leakcanary_gc_java",
-      ":com_squareup_leakcanary_shark_log_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt(
       "com_squareup_leakcanary_leakcanary_object_watcher_android_java") {
     aar_path = "cipd/libs/com_squareup_leakcanary_leakcanary_object_watcher_android/leakcanary-object-watcher-android.aar"
@@ -1906,27 +1913,6 @@ if (!limit_android_deps) {
     ]
     deps = [
       ":com_squareup_leakcanary_leakcanary_object_watcher_android_core_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-    ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  android_aar_prebuilt(
-      "com_squareup_leakcanary_leakcanary_object_watcher_android_core_java") {
-    aar_path = "cipd/libs/com_squareup_leakcanary_leakcanary_object_watcher_android_core/leakcanary-object-watcher-android-core.aar"
-    info_path = "committed/libs/com_squareup_leakcanary_leakcanary_object_watcher_android_core/com_squareup_leakcanary_leakcanary_object_watcher_android_core.info"
-    enable_bytecode_checks = false
-
-    # To remove visibility constraint, add this dependency to
-    # //third_party/android_deps/build.gradle.template
-    visibility = [
-      ":*",
-      "//third_party/androidx:*",
-    ]
-    deps = [
-      ":com_squareup_curtains_curtains_java",
-      ":com_squareup_leakcanary_leakcanary_android_utils_java",
-      ":com_squareup_leakcanary_leakcanary_object_watcher_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
