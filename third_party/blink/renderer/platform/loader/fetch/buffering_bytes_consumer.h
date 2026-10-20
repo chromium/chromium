@@ -75,7 +75,8 @@ class PLATFORM_EXPORT BufferingBytesConsumer final
   Result EndRead(size_t read_size) override;
   scoped_refptr<BlobDataHandle> DrainAsBlobDataHandle(BlobSizePolicy) override;
   scoped_refptr<EncodedFormData> DrainAsFormData() override;
-  mojo::ScopedDataPipeConsumerHandle DrainAsDataPipe() override;
+  mojo::ScopedDataPipeConsumerHandle DrainAsDataPipe(
+      DrainedDataPipeClient** client) override;
   void SetClient(BytesConsumer::Client*) override;
   void ClearClient() override;
   void Cancel() override;

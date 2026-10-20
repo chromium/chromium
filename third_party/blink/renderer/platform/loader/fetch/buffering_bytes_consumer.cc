@@ -153,10 +153,14 @@ scoped_refptr<EncodedFormData> BufferingBytesConsumer::DrainAsFormData() {
   return bytes_consumer_->DrainAsFormData();
 }
 
-mojo::ScopedDataPipeConsumerHandle BufferingBytesConsumer::DrainAsDataPipe() {
+mojo::ScopedDataPipeConsumerHandle BufferingBytesConsumer::DrainAsDataPipe(
+    DrainedDataPipeClient** client) {
   if (buffering_state_ != BufferingState::kStarted)
-    return bytes_consumer_->DrainAsDataPipe();
+    return bytes_consumer_->DrainAsDataPipe(client);
 
+  if (client) {
+    *client = nullptr;
+  }
   // We intentionally return an empty handle here, because returning a DataPipe
   // may activate back pressure.
   return {};

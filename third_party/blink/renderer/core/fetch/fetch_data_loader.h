@@ -18,6 +18,7 @@
 namespace blink {
 
 class BytesConsumer;
+class DrainedDataPipeClient;
 class FormData;
 class TextResourceDecoderOptions;
 
@@ -48,9 +49,12 @@ class CORE_EXPORT FetchDataLoader : public GarbageCollected<FetchDataLoader> {
     virtual void DidFetchDataLoadedString(const String&) { NOTREACHED(); }
     // This is called synchronously from FetchDataLoader::Start() to provide
     // the target data pipe.  This may be a pipe extracted from the consumer
-    // or a new pipe that data will be copied into.
+    // or a new pipe that data will be copied into. `drained_pipe_client` is
+    // only non-null in the former case, when the consumer has an object that
+    // must be told what is done with the pipe contents.
     virtual void DidFetchDataStartedDataPipe(
-        mojo::ScopedDataPipeConsumerHandle handle) {
+        mojo::ScopedDataPipeConsumerHandle handle,
+        DrainedDataPipeClient* drained_pipe_client) {
       NOTREACHED();
     }
     // This is called after all data are read from |handle| and written

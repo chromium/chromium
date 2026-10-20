@@ -368,7 +368,8 @@ TEST_F(DataPipeBytesConsumerTest, DrainPipeBeforeComplete) {
   Result rv = consumer->BeginRead(buffer);
   EXPECT_EQ(Result::kShouldWait, rv);
 
-  mojo::ScopedDataPipeConsumerHandle drained = consumer->DrainAsDataPipe();
+  mojo::ScopedDataPipeConsumerHandle drained =
+      consumer->DrainAsDataPipe(nullptr);
   EXPECT_EQ(PublicState::kReadableOrWaiting, consumer->GetPublicState());
 
   rv = consumer->BeginRead(buffer);
@@ -404,7 +405,8 @@ TEST_F(DataPipeBytesConsumerTest, CompleteBeforeDrainPipe) {
   rv = consumer->BeginRead(buffer);
   EXPECT_EQ(Result::kShouldWait, rv);
 
-  mojo::ScopedDataPipeConsumerHandle drained = consumer->DrainAsDataPipe();
+  mojo::ScopedDataPipeConsumerHandle drained =
+      consumer->DrainAsDataPipe(nullptr);
   EXPECT_EQ(PublicState::kClosed, consumer->GetPublicState());
 
   rv = consumer->BeginRead(buffer);

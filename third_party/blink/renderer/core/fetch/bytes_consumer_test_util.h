@@ -25,7 +25,8 @@ class BytesConsumerTestUtil {
     MOCK_METHOD1(EndRead, Result(size_t));
     MOCK_METHOD1(DrainAsBlobDataHandle,
                  scoped_refptr<BlobDataHandle>(BlobSizePolicy));
-    MOCK_METHOD0(DrainAsDataPipe, mojo::ScopedDataPipeConsumerHandle());
+    MOCK_METHOD1(DrainAsDataPipe,
+                 mojo::ScopedDataPipeConsumerHandle(DrainedDataPipeClient**));
     MOCK_METHOD0(DrainAsFormData, scoped_refptr<EncodedFormData>());
     MOCK_METHOD1(SetClient, void(Client*));
     MOCK_METHOD0(ClearClient, void());

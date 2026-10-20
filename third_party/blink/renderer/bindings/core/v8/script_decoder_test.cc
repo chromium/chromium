@@ -51,6 +51,11 @@ class DummyResponseBodyLoaderClient
   void DidFinishLoadingBody() override { NOTREACHED(); }
   void DidFailLoadingBody() override { NOTREACHED(); }
   void DidCancelLoadingBody() override { NOTREACHED(); }
+  void WillCreateBlobFromDrainedDataPipe() override { NOTREACHED(); }
+  void DidCreateBlobFromDrainedDataPipe(
+      const scoped_refptr<BlobDataHandle>&) override {
+    NOTREACHED();
+  }
 
   const Deque<Vector<char>>& raw_data() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

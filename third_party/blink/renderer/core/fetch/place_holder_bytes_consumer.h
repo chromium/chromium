@@ -22,7 +22,8 @@ class CORE_EXPORT PlaceHolderBytesConsumer final : public BytesConsumer {
   scoped_refptr<BlobDataHandle> DrainAsBlobDataHandle(
       BlobSizePolicy policy) override;
   scoped_refptr<EncodedFormData> DrainAsFormData() override;
-  mojo::ScopedDataPipeConsumerHandle DrainAsDataPipe() override;
+  mojo::ScopedDataPipeConsumerHandle DrainAsDataPipe(
+      DrainedDataPipeClient** client) override;
   void SetClient(BytesConsumer::Client* client) override;
   void ClearClient() override;
   void Cancel() override;

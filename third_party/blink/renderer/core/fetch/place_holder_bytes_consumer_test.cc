@@ -30,7 +30,7 @@ TEST_F(PlaceHolderBytesConsumerTest, Construct) {
   EXPECT_FALSE(consumer->DrainAsBlobDataHandle(
       BlobSizePolicy::kAllowBlobWithInvalidSize));
   EXPECT_FALSE(consumer->DrainAsFormData());
-  EXPECT_FALSE(consumer->DrainAsDataPipe());
+  EXPECT_FALSE(consumer->DrainAsDataPipe(nullptr));
 
   Result result = consumer->BeginRead(buffer);
   EXPECT_EQ(result, Result::kShouldWait);
@@ -82,11 +82,11 @@ TEST_F(PlaceHolderBytesConsumerTest, DrainAsDataPipe) {
   EXPECT_FALSE(consumer->DrainAsBlobDataHandle(
       BlobSizePolicy::kAllowBlobWithInvalidSize));
   EXPECT_FALSE(consumer->DrainAsFormData());
-  EXPECT_FALSE(consumer->DrainAsDataPipe());
+  EXPECT_FALSE(consumer->DrainAsDataPipe(nullptr));
 
   consumer->Update(actual_bytes_consumer);
 
-  EXPECT_TRUE(consumer->DrainAsDataPipe());
+  EXPECT_TRUE(consumer->DrainAsDataPipe(nullptr));
 }
 
 TEST_F(PlaceHolderBytesConsumerTest, Cancel) {

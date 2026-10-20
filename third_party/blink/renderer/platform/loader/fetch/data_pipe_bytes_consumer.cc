@@ -134,7 +134,11 @@ BytesConsumer::Result DataPipeBytesConsumer::EndRead(size_t read) {
   return Result::kOk;
 }
 
-mojo::ScopedDataPipeConsumerHandle DataPipeBytesConsumer::DrainAsDataPipe() {
+mojo::ScopedDataPipeConsumerHandle DataPipeBytesConsumer::DrainAsDataPipe(
+    DrainedDataPipeClient** client) {
+  if (client) {
+    *client = nullptr;
+  }
   DCHECK(!is_in_two_phase_read_);
   watcher_.Cancel();
   mojo::ScopedDataPipeConsumerHandle data_pipe = std::move(data_pipe_);

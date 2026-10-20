@@ -116,13 +116,22 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
     }
     return form_data;
   }
-  mojo::ScopedDataPipeConsumerHandle DrainAsDataPipe() override {
+  mojo::ScopedDataPipeConsumerHandle DrainAsDataPipe(
+      DrainedDataPipeClient** client) override {
+    if (client) {
+      *client = nullptr;
+    }
     if (loader_->IsAborted()) {
       return {};
     }
-    auto handle = bytes_consumer_->DrainAsDataPipe();
-    if (handle && bytes_consumer_->GetPublicState() == PublicState::kClosed) {
-      HandleResult(Result::kDone);
+    auto handle = bytes_consumer_->DrainAsDataPipe(nullptr);
+    if (handle) {
+      if (client) {
+        *client = loader_.Get();
+      }
+      if (bytes_consumer_->GetPublicState() == PublicState::kClosed) {
+        HandleResult(Result::kDone);
+      }
     }
     return handle;
   }
@@ -409,7 +418,7 @@ mojo::ScopedDataPipeConsumerHandle ResponseBodyLoader::DrainAsDataPipe(
 
   *client = nullptr;
   DCHECK(bytes_consumer_);
-  auto data_pipe = bytes_consumer_->DrainAsDataPipe();
+  auto data_pipe = bytes_consumer_->DrainAsDataPipe(nullptr);
   if (!data_pipe) {
     return data_pipe;
   }
@@ -535,6 +544,20 @@ void ResponseBodyLoader::Start() {
 
   started_ = true;
   OnStateChange();
+}
+
+void ResponseBodyLoader::WillCreateBlobFromDrainedDataPipe() {
+  // Called synchronously from a drain, which is refused once aborted.
+  CHECK(!aborted_);
+  client_->WillCreateBlobFromDrainedDataPipe();
+}
+
+void ResponseBodyLoader::DidCreateBlobFromDrainedDataPipe(
+    const scoped_refptr<BlobDataHandle>& blob) {
+  if (aborted_) {
+    return;
+  }
+  client_->DidCreateBlobFromDrainedDataPipe(blob);
 }
 
 void ResponseBodyLoader::Abort() {

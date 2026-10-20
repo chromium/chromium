@@ -78,8 +78,8 @@ class FetchDataLoaderTest : public testing::Test {
         scoped_refptr<base::SingleThreadTaskRunner> task_runner)
         : task_runner_(std::move(task_runner)) {}
 
-    void DidFetchDataStartedDataPipe(
-        mojo::ScopedDataPipeConsumerHandle handle) override {
+    void DidFetchDataStartedDataPipe(mojo::ScopedDataPipeConsumerHandle handle,
+                                     DrainedDataPipeClient*) override {
       DataPipeBytesConsumer::CompletionNotifier* notifier;
       destination_ = MakeGarbageCollected<DataPipeBytesConsumer>(
           task_runner_, std::move(handle), &notifier);
@@ -147,7 +147,7 @@ TEST_F(FetchDataLoaderBlobTest, LoadAsBlob) {
                   BytesConsumer::BlobSizePolicy::kDisallowBlobWithInvalidSize))
       .WillOnce(Return(ByMove(nullptr)));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, DrainAsDataPipe());
+  EXPECT_CALL(*consumer, DrainAsDataPipe(_));
   EXPECT_CALL(*consumer, GetPublicState())
       .WillOnce(Return(BytesConsumer::PublicState::kReadableOrWaiting));
   EXPECT_CALL(checkpoint, Call(2));
@@ -200,7 +200,7 @@ TEST_F(FetchDataLoaderBlobTest, LoadAsBlobFailed) {
                   BytesConsumer::BlobSizePolicy::kDisallowBlobWithInvalidSize))
       .WillOnce(Return(ByMove(nullptr)));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, DrainAsDataPipe());
+  EXPECT_CALL(*consumer, DrainAsDataPipe(_));
   EXPECT_CALL(*consumer, GetPublicState())
       .WillOnce(Return(BytesConsumer::PublicState::kReadableOrWaiting));
   EXPECT_CALL(checkpoint, Call(2));
@@ -248,7 +248,7 @@ TEST_F(FetchDataLoaderBlobTest, LoadAsBlobCancel) {
                   BytesConsumer::BlobSizePolicy::kDisallowBlobWithInvalidSize))
       .WillOnce(Return(ByMove(nullptr)));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, DrainAsDataPipe());
+  EXPECT_CALL(*consumer, DrainAsDataPipe(_));
   EXPECT_CALL(*consumer, GetPublicState())
       .WillOnce(Return(BytesConsumer::PublicState::kReadableOrWaiting));
   EXPECT_CALL(checkpoint, Call(2));
@@ -290,7 +290,7 @@ TEST_F(FetchDataLoaderBlobTest, LoadAsBlobNoClientCallbacksAfterCancel) {
                   BytesConsumer::BlobSizePolicy::kDisallowBlobWithInvalidSize))
       .WillOnce(Return(ByMove(nullptr)));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, DrainAsDataPipe());
+  EXPECT_CALL(*consumer, DrainAsDataPipe(_));
   EXPECT_CALL(*consumer, GetPublicState())
       .WillOnce(Return(BytesConsumer::PublicState::kReadableOrWaiting));
   EXPECT_CALL(checkpoint, Call(2));

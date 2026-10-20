@@ -55,7 +55,8 @@ class PLATFORM_EXPORT DataPipeBytesConsumer final : public BytesConsumer {
 
   Result BeginRead(base::span<const char>& buffer) override;
   Result EndRead(size_t read_size) override;
-  mojo::ScopedDataPipeConsumerHandle DrainAsDataPipe() override;
+  mojo::ScopedDataPipeConsumerHandle DrainAsDataPipe(
+      DrainedDataPipeClient** client) override;
   void SetClient(BytesConsumer::Client*) override;
   void ClearClient() override;
 

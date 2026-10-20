@@ -188,6 +188,9 @@ class PLATFORM_EXPORT ResourceLoader final
   void DidFinishLoadingBody() override;
   void DidFailLoadingBody() override;
   void DidCancelLoadingBody() override;
+  void WillCreateBlobFromDrainedDataPipe() override;
+  void DidCreateBlobFromDrainedDataPipe(
+      const scoped_refptr<BlobDataHandle>&) override;
 
   void DidReceiveDataImpl(
       std::variant<SegmentedBuffer, base::span<const char>> data);
@@ -224,6 +227,7 @@ class PLATFORM_EXPORT ResourceLoader final
 
   void OnProgress(uint64_t delta) override;
   void FinishedCreatingBlob(const scoped_refptr<BlobDataHandle>&);
+  void MarkBlobFinished();
 
   std::optional<ResourceRequestBlockedReason> CheckResponseNosniff(
       mojom::blink::RequestContextType,
@@ -276,10 +280,10 @@ class PLATFORM_EXPORT ResourceLoader final
   bool blob_finished_ = false;
   bool blob_response_started_ = false;
   bool has_seen_end_of_body_ = false;
-  // If DidFinishLoading is called while downloading to a blob before the blob
-  // is finished, we might have to defer actually handling the event. This
-  // struct is used to store the information needed to refire DidFinishLoading
-  // when the blob is finished too.
+  // If DidFinishLoading is called before the blob for the body is finished, we
+  // might have to defer actually handling the event. This struct is used to
+  // store the information needed to refire DidFinishLoading when the blob is
+  // finished too.
   struct DeferredFinishLoadingInfo {
     base::TimeTicks response_end_time;
   };

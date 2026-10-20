@@ -379,6 +379,27 @@ void ResourceLoader::DidCancelLoadingBody() {
   Cancel();
 }
 
+void ResourceLoader::WillCreateBlobFromDrainedDataPipe() {
+  CHECK(!blob_response_started_);
+  // The blob only serves to expose the body to the observer, so don't hold the
+  // load open waiting for it when nobody is looking.
+  auto* observer = fetcher_->GetResourceLoadObserver();
+  blob_response_started_ = observer && observer->InterestedInAllRequests();
+}
+
+void ResourceLoader::DidCreateBlobFromDrainedDataPipe(
+    const scoped_refptr<BlobDataHandle>& blob) {
+  if (!blob_response_started_ ||
+      scheduler_client_id_ == ResourceLoadScheduler::kInvalidClientId) {
+    return;
+  }
+  CHECK(!blob_finished_);
+  if (auto* observer = fetcher_->GetResourceLoadObserver()) {
+    observer->DidDownloadToBlob(resource_->InspectorId(), blob.get());
+  }
+  MarkBlobFinished();
+}
+
 void ResourceLoader::StartFetch() {
   DCHECK_NE(ResourceLoadScheduler::kInvalidClientId, scheduler_client_id_);
   if (resource_->Options().synchronous_policy == kRequestSynchronously &&
@@ -1119,10 +1140,9 @@ void ResourceLoader::DidFinishLoading(base::TimeTicks response_end_time,
 
   if ((response_body_loader_ && !has_seen_end_of_body_ &&
        !response_body_loader_->IsAborted()) ||
-      (resource_->GetResourceRequest().DownloadToBlob() && !blob_finished_ &&
-       blob_response_started_)) {
-    // If the body is still being loaded, we defer the completion until all the
-    // body is received.
+      (blob_response_started_ && !blob_finished_)) {
+    // If the body is still being loaded, or is still being turned into a blob,
+    // we defer the completion until all the body is received.
     deferred_finish_loading_info_ =
         DeferredFinishLoadingInfo{response_end_time};
 
@@ -1425,7 +1445,10 @@ void ResourceLoader::FinishedCreatingBlob(
     observer->DidDownloadToBlob(resource_->InspectorId(), blob.get());
   }
   resource_->DidDownloadToBlob(blob);
+  MarkBlobFinished();
+}
 
+void ResourceLoader::MarkBlobFinished() {
   blob_finished_ = true;
   if (deferred_finish_loading_info_) {
     const ResourceResponse& response = resource_->GetResponse();

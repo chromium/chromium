@@ -553,6 +553,9 @@ class NoopResponseBodyLoaderClient final
   void DidFinishLoadingBody() override {}
   void DidFailLoadingBody() override {}
   void DidCancelLoadingBody() override {}
+  void WillCreateBlobFromDrainedDataPipe() override {}
+  void DidCreateBlobFromDrainedDataPipe(
+      const scoped_refptr<BlobDataHandle>&) override {}
 };
 
 // Regression test for b/564248014:

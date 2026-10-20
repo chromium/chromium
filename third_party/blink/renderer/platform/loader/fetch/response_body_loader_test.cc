@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/data_pipe_bytes_consumer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/drained_data_pipe_client.h"
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/loader/testing/replaying_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
@@ -63,6 +64,8 @@ class ResponseBodyLoaderTest : public testing::Test {
     bool LoadingIsFinished() const { return finished_; }
     bool LoadingIsFailed() const { return failed_; }
     bool LoadingIsCancelled() const { return cancelled_; }
+    int WillCreateBlobCount() const { return will_create_blob_count_; }
+    int DidCreateBlobCount() const { return did_create_blob_count_; }
 
     void DidReceiveData(base::span<const char> data) override {
       DCHECK(!finished_);
@@ -97,6 +100,13 @@ class ResponseBodyLoaderTest : public testing::Test {
       DCHECK(!failed_);
       cancelled_ = true;
     }
+    void WillCreateBlobFromDrainedDataPipe() override {
+      ++will_create_blob_count_;
+    }
+    void DidCreateBlobFromDrainedDataPipe(
+        const scoped_refptr<BlobDataHandle>&) override {
+      ++did_create_blob_count_;
+    }
 
     void SetLoader(ResponseBodyLoader& loader) { loader_ = loader; }
     void Trace(Visitor* visitor) const override { visitor->Trace(loader_); }
@@ -107,6 +117,8 @@ class ResponseBodyLoaderTest : public testing::Test {
     StringBuilder data_;
     bool finished_ = false;
     bool failed_ = false;
+    int will_create_blob_count_ = 0;
+    int did_create_blob_count_ = 0;
     bool cancelled_ = false;
   };
 
@@ -1073,6 +1085,60 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
 }
 
 TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
+       DrainAsDataPipeHandsOutClient) {
+  mojo::ScopedDataPipeConsumerHandle consumer_end;
+  mojo::ScopedDataPipeProducerHandle producer_end;
+  ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_end, consumer_end),
+            MOJO_RESULT_OK);
+
+  DataPipeBytesConsumer::CompletionNotifier* completion_notifier = nullptr;
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* original_consumer = MakeGarbageCollected<DataPipeBytesConsumer>(
+      task_runner, std::move(consumer_end), &completion_notifier);
+  auto* client = MakeGarbageCollected<TestClient>();
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
+
+  DrainedDataPipeClient* drained_client = nullptr;
+  EXPECT_TRUE(
+      body_loader->DrainAsBytesConsumer().DrainAsDataPipe(&drained_client));
+  ASSERT_TRUE(drained_client);
+
+  drained_client->WillCreateBlobFromDrainedDataPipe();
+  EXPECT_EQ(1, client->WillCreateBlobCount());
+  drained_client->DidCreateBlobFromDrainedDataPipe(nullptr);
+  EXPECT_EQ(1, client->DidCreateBlobCount());
+}
+
+TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
+       BlobFromDrainedDataPipeIsDroppedAfterAbort) {
+  mojo::ScopedDataPipeConsumerHandle consumer_end;
+  mojo::ScopedDataPipeProducerHandle producer_end;
+  ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_end, consumer_end),
+            MOJO_RESULT_OK);
+
+  DataPipeBytesConsumer::CompletionNotifier* completion_notifier = nullptr;
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* original_consumer = MakeGarbageCollected<DataPipeBytesConsumer>(
+      task_runner, std::move(consumer_end), &completion_notifier);
+  auto* client = MakeGarbageCollected<TestClient>();
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
+
+  DrainedDataPipeClient* drained_client = nullptr;
+  EXPECT_TRUE(
+      body_loader->DrainAsBytesConsumer().DrainAsDataPipe(&drained_client));
+  ASSERT_TRUE(drained_client);
+  drained_client->WillCreateBlobFromDrainedDataPipe();
+  EXPECT_EQ(1, client->WillCreateBlobCount());
+
+  body_loader->Abort();
+
+  drained_client->DidCreateBlobFromDrainedDataPipe(nullptr);
+  EXPECT_EQ(0, client->DidCreateBlobCount());
+}
+
+TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
        DrainAsDataPipe) {
   mojo::ScopedDataPipeConsumerHandle consumer_end;
   mojo::ScopedDataPipeProducerHandle producer_end;
@@ -1092,7 +1158,7 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
 
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
 
-  EXPECT_TRUE(consumer.DrainAsDataPipe());
+  EXPECT_TRUE(consumer.DrainAsDataPipe(nullptr));
 
   task_runner->RunUntilIdle();
 

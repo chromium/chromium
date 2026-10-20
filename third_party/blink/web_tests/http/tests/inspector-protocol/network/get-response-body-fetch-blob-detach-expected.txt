@@ -1,0 +1,3 @@
+Tests that the load finishes when the inspector detaches while a body consumed as a blob is being downloaded.
+blob size: 1000, resource timing entries: 1
+

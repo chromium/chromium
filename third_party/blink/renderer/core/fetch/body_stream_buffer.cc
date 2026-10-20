@@ -74,8 +74,10 @@ class BodyStreamBuffer::LoaderClient final
   }
 
   void DidFetchDataStartedDataPipe(
-      mojo::ScopedDataPipeConsumerHandle data_pipe) override {
-    client_->DidFetchDataStartedDataPipe(std::move(data_pipe));
+      mojo::ScopedDataPipeConsumerHandle data_pipe,
+      DrainedDataPipeClient* drained_pipe_client) override {
+    client_->DidFetchDataStartedDataPipe(std::move(data_pipe),
+                                         drained_pipe_client);
   }
 
   void DidFetchDataLoadedDataPipe() override {

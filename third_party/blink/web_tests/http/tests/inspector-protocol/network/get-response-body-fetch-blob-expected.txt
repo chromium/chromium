@@ -1,0 +1,4 @@
+Tests that response body is available after the page consumed the fetch response as a blob.
+http://127.0.0.1:8000/inspector-protocol/network/./resources/final.js: blob size: 37, body size: 37, base64Encoded: false
+http://127.0.0.1:8000/inspector-protocol/network/./resources/abe.png: blob size: 12242, body size: 12242, base64Encoded: true
+

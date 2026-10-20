@@ -116,7 +116,11 @@ void ResourceLoadObserverForWorker::DidReceiveTransferSizeUpdate(
 }
 
 void ResourceLoadObserverForWorker::DidDownloadToBlob(uint64_t identifier,
-                                                      BlobDataHandle* blob) {}
+                                                      BlobDataHandle* blob) {
+  if (blob) {
+    probe::DidReceiveBlob(probe_, identifier, nullptr, blob);
+  }
+}
 
 void ResourceLoadObserverForWorker::DidFinishLoading(
     uint64_t identifier,

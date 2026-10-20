@@ -31,11 +31,15 @@ scoped_refptr<EncodedFormData> PlaceHolderBytesConsumer::DrainAsFormData() {
   return underlying_ ? underlying_->DrainAsFormData() : nullptr;
 }
 
-mojo::ScopedDataPipeConsumerHandle PlaceHolderBytesConsumer::DrainAsDataPipe() {
+mojo::ScopedDataPipeConsumerHandle PlaceHolderBytesConsumer::DrainAsDataPipe(
+    DrainedDataPipeClient** client) {
   if (!underlying_) {
+    if (client) {
+      *client = nullptr;
+    }
     return {};
   }
-  return underlying_->DrainAsDataPipe();
+  return underlying_->DrainAsDataPipe(client);
 }
 
 void PlaceHolderBytesConsumer::SetClient(BytesConsumer::Client* client) {

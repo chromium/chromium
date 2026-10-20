@@ -73,7 +73,7 @@ void WebBundleLoader::Trace(Visitor* visitor) const {
 
 void WebBundleLoader::DidStartLoadingResponseBody(BytesConsumer& consumer) {
   // Drain |consumer| so that DidFinishLoading is surely called later.
-  consumer.DrainAsDataPipe();
+  consumer.DrainAsDataPipe(nullptr);
 }
 
 void WebBundleLoader::DidFail(uint64_t, const ResourceError&) {

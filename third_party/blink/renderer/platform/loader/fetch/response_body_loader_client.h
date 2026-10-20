@@ -7,15 +7,17 @@
 
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/drained_data_pipe_client.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 // A ResponseBodyLoaderClient receives signals for loading a response body.
-class ResponseBodyLoaderClient : public GarbageCollectedMixin {
+// When the body is drained as a data pipe it also receives what the user of
+// the pipe does with the contents, see DrainedDataPipeClient.
+class ResponseBodyLoaderClient : public DrainedDataPipeClient {
  public:
-  virtual ~ResponseBodyLoaderClient() = default;
+  ~ResponseBodyLoaderClient() override = default;
 
   // Called when reading a chunk, with the chunk.
   virtual void DidReceiveData(base::span<const char> data) = 0;

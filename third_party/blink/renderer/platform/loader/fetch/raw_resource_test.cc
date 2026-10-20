@@ -74,6 +74,9 @@ class RawResourceTest : public testing::Test {
     void DidFinishLoadingBody() override {}
     void DidFailLoadingBody() override {}
     void DidCancelLoadingBody() override {}
+    void WillCreateBlobFromDrainedDataPipe() override {}
+    void DidCreateBlobFromDrainedDataPipe(
+        const scoped_refptr<BlobDataHandle>&) override {}
   };
 
   test::TaskEnvironmentWithMainThreadScheduler task_environment_;

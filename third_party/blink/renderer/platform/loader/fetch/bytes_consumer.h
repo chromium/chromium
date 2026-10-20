@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/drained_data_pipe_client.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -134,7 +135,15 @@ class PLATFORM_EXPORT BytesConsumer : public GarbageCollected<BytesConsumer> {
   // call GetPublicState() to check if draining closed the consumer.
   //
   // When this function returns an invalid handle, this function does nothing.
-  virtual mojo::ScopedDataPipeConsumerHandle DrainAsDataPipe() {
+  //
+  // `client` may be null. Otherwise `*client` is set to the object that the
+  // caller must tell what it does with the pipe contents, or to null when the
+  // consumer has no such object or no handle is returned.
+  virtual mojo::ScopedDataPipeConsumerHandle DrainAsDataPipe(
+      DrainedDataPipeClient** client) {
+    if (client) {
+      *client = nullptr;
+    }
     return mojo::ScopedDataPipeConsumerHandle();
   }
 

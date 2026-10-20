@@ -149,8 +149,8 @@ class FetchLoaderClient final : public GarbageCollected<FetchLoaderClient>,
   FetchLoaderClient(const FetchLoaderClient&) = delete;
   FetchLoaderClient& operator=(const FetchLoaderClient&) = delete;
 
-  void DidFetchDataStartedDataPipe(
-      mojo::ScopedDataPipeConsumerHandle pipe) override {
+  void DidFetchDataStartedDataPipe(mojo::ScopedDataPipeConsumerHandle pipe,
+                                   DrainedDataPipeClient*) override {
     DCHECK(!body_stream_.is_valid());
     DCHECK(pipe.is_valid());
     body_stream_ = std::move(pipe);

@@ -1,0 +1,8 @@
+Tests that aborting a fetch whose response is consumed as a blob fails the request.
+Abort before response.blob(): AbortError
+Abort during body download: AbortError
+No abort: blob size: 1000, body size: 1000
+loadingFailed: net::ERR_ABORTED, canceled: true
+loadingFailed: net::ERR_ABORTED, canceled: true
+loadingFinished
+

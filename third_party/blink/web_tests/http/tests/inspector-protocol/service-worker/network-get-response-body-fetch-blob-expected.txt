@@ -1,0 +1,10 @@
+Tests that response body is available after a response provided by a service worker, or fetched by it, is consumed as a blob.
+page fetched synthesized, blob size: 29, body:
+Synthesized by service worker
+page fetched hello-world.txt, blob size: 12, body:
+hello world
+
+service worker fetched hello-world.txt, blob size: 12, body:
+hello world
+
+

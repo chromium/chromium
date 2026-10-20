@@ -230,7 +230,7 @@ TEST_F(BufferingBytesConsumerTest, DrainAsDataPipeFailsWithoutDelay) {
   auto* bytes_consumer = BufferingBytesConsumer::Create(data_pipe_consumer);
 
   EXPECT_EQ(PublicState::kReadableOrWaiting, bytes_consumer->GetPublicState());
-  auto pipe = bytes_consumer->DrainAsDataPipe();
+  auto pipe = bytes_consumer->DrainAsDataPipe(nullptr);
   EXPECT_FALSE(pipe.is_valid());
 }
 
@@ -246,7 +246,7 @@ TEST_F(BufferingBytesConsumerTest, DrainAsDataPipeSucceedsWithDelay) {
       data_pipe_consumer, scheduler::GetSingleThreadTaskRunnerForTesting());
 
   EXPECT_EQ(PublicState::kReadableOrWaiting, bytes_consumer->GetPublicState());
-  auto drained_consumer_handle = bytes_consumer->DrainAsDataPipe();
+  auto drained_consumer_handle = bytes_consumer->DrainAsDataPipe(nullptr);
   EXPECT_TRUE(drained_consumer_handle.is_valid());
 }
 
@@ -264,7 +264,7 @@ TEST_F(BufferingBytesConsumerTest, DrainAsDataPipeFailsWithExpiredDelay) {
   task_environment_.FastForwardBy(base::Milliseconds(51));
 
   EXPECT_EQ(PublicState::kReadableOrWaiting, bytes_consumer->GetPublicState());
-  auto drained_consumer_handle = bytes_consumer->DrainAsDataPipe();
+  auto drained_consumer_handle = bytes_consumer->DrainAsDataPipe(nullptr);
   EXPECT_FALSE(drained_consumer_handle.is_valid());
 }
 
