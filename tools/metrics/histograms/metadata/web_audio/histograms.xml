@@ -282,14 +282,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebAudio.AudioDestination.HardwareBufferSize" units="units"
+<histogram name="WebAudio.AudioDestination.HardwareBufferSize2" units="frames"
     expires_after="2027-09-06">
   <owner>mjwilson@chromium.org</owner>
   <owner>hongchan@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
   <summary>
     The buffer size (in audio frames) for WebAudio rendering recommended by the
-    audio hardware. Recorded for every WebAudio AudioContext that is created.
+    audio hardware of the output device that the AudioContext renders to.
+    Recorded each time WebAudio creates an audio device for an AudioContext (on
+    construction, on setSinkId() and on destination channel count changes), if
+    the device authorization succeeds. Not recorded for silent sinks (sinkId
+    type &quot;none&quot;).
   </summary>
 </histogram>
 

@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_features.h"
@@ -658,6 +659,67 @@ TEST_F(RendererWebAudioDeviceImplTest,
   EXPECT_EQ(params.sample_rate(), 48000);
   EXPECT_EQ(params.frames_per_buffer(), 480);
   EXPECT_TRUE(params.IsValid());
+}
+
+TEST_F(RendererWebAudioDeviceImplTest,
+       AuthorizedDeviceRecordsHardwareBufferSize) {
+  base::HistogramTester histogram_tester;
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
+
+  histogram_tester.ExpectUniqueSample(
+      "WebAudio.AudioDestination.HardwareBufferSize2", kHardwareBufferSize, 1);
+}
+
+TEST_F(RendererWebAudioDeviceImplTest,
+       SinkRecreationAfterStopRecordsNoAdditionalHardwareBufferSize) {
+  base::HistogramTester histogram_tester;
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
+
+  webaudio_device_->Stop();
+  EXPECT_EQ(webaudio_device_->MaybeCreateSinkAndGetStatus(),
+            media::OUTPUT_DEVICE_STATUS_OK);
+
+  histogram_tester.ExpectUniqueSample(
+      "WebAudio.AudioDestination.HardwareBufferSize2", kHardwareBufferSize, 1);
+}
+
+TEST_F(RendererWebAudioDeviceImplTest,
+       TimedOutAuthorizationRecordsNoHardwareBufferSize) {
+  base::HistogramTester histogram_tester;
+  // A timed-out authorization reports valid placeholder parameters.
+  EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
+      .WillRepeatedly(testing::Return(media::OutputDeviceInfo(
+          std::string(), media::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT,
+          media::AudioParameters::UnavailableDeviceParams())));
+
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
+
+  histogram_tester.ExpectTotalCount(
+      "WebAudio.AudioDestination.HardwareBufferSize2", 0);
+}
+
+TEST_F(RendererWebAudioDeviceImplTest,
+       InvalidHardwareParamsRecordNoHardwareBufferSize) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
+      .WillRepeatedly(testing::Return(
+          media::OutputDeviceInfo(std::string(), media::OUTPUT_DEVICE_STATUS_OK,
+                                  media::AudioParameters())));
+
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
+
+  histogram_tester.ExpectTotalCount(
+      "WebAudio.AudioDestination.HardwareBufferSize2", 0);
+}
+
+TEST_F(RendererWebAudioDeviceImplTest, SilentSinkRecordsNoHardwareBufferSize) {
+  base::HistogramTester histogram_tester;
+  // The `WebAudioSinkDescriptor` constructor with only a frame token constructs
+  // a silent sink.
+  SetupDevice(blink::WebAudioSinkDescriptor(kFrameToken));
+
+  histogram_tester.ExpectTotalCount(
+      "WebAudio.AudioDestination.HardwareBufferSize2", 0);
 }
 
 class RendererWebAudioDeviceImplLatencyAndSampleRateTest

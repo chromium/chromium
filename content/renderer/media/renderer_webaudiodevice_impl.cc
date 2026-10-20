@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -257,7 +258,16 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
   SendLogMessage(base::StringPrintf("%s", __func__));
 
   CreateAudioRendererSink();
-  HandleDeviceStatus(GetSinkOutputDeviceInfo());
+  media::OutputDeviceInfo device_info = GetSinkOutputDeviceInfo();
+  // Silent sinks get synthesized parameters and a failed authorization reports
+  // placeholder ones, so neither carries a hardware buffer size.
+  if (sink_descriptor_.Type() == WebAudioSinkDescriptor::kAudible &&
+      device_info.device_status() == media::OUTPUT_DEVICE_STATUS_OK &&
+      device_info.output_params().IsValid()) {
+    base::UmaHistogramSparse("WebAudio.AudioDestination.HardwareBufferSize2",
+                             device_info.output_params().frames_per_buffer());
+  }
+  HandleDeviceStatus(std::move(device_info));
 }
 
 media::OutputDeviceInfo RendererWebAudioDeviceImpl::GetSinkOutputDeviceInfo() {

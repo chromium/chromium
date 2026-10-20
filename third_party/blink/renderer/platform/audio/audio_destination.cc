@@ -604,15 +604,6 @@ AudioDestination::AudioDestination(
                context_sample_rate_));
   }
 
-  // Record the sizes if we successfully created an output device.
-  // Histogram for audioHardwareBufferSize
-  base::UmaHistogramSparse(
-      "WebAudio.AudioDestination.HardwareBufferSize",
-      static_cast<int>(Platform::Current()->AudioHardwareBufferSize()));
-
-  // Histogram for the actual callback size used.  Typically, this is the same
-  // as audioHardwareBufferSize, but can be adjusted depending on some
-  // heuristics below.
   base::UmaHistogramSparse("WebAudio.AudioDestination.CallbackBufferSize",
                            callback_buffer_size_);
 
