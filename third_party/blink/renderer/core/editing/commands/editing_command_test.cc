@@ -104,6 +104,21 @@ TEST_F(EditingCommandTest, EnabledVisibleSelection) {
   EXPECT_TRUE(command.IsEnabled());
 }
 
+TEST_F(EditingCommandTest, LineEndModifySelectionEnabledInReadOnlyInput) {
+  SetBodyContent("<input id='inp' readonly value='hello world'>");
+  Element* inp = QuerySelector("#inp");
+  inp->Focus();
+  UpdateAllLifecyclePhasesForTest();
+
+  Editor& editor = GetDocument().GetFrame()->GetEditor();
+  // Sanity check: the non-line-end variant is already enabled here.
+  EXPECT_TRUE(editor.CreateCommand("MoveLeftAndModifySelection").IsEnabled());
+  EXPECT_TRUE(editor.CreateCommand("MoveToLeftEndOfLineAndModifySelection")
+                  .IsEnabled());
+  EXPECT_TRUE(editor.CreateCommand("MoveToRightEndOfLineAndModifySelection")
+                  .IsEnabled());
+}
+
 TEST_F(EditingCommandTest, EnabledVisibleSelectionAndMark) {
   Editor& editor = GetDocument().GetFrame()->GetEditor();
   const EditorCommand command = editor.CreateCommand("SelectToMark");
