@@ -23,7 +23,11 @@ class SendTabToSelfModel;
 //   org.chromium.chrome.browser.share.send_tab_to_self)
 enum class EntryPointDisplayReason {
   // The send-tab-to-self entry point should be shown because all the conditions
-  // are met and the feature is ready to be used.
+  // are met and the feature is ready to be used. Note that target device
+  // expiration is re-evaluated on every call to
+  // `SendTabToSelfModel::GetTargetDeviceInfoSortedList()`, so callers must
+  // still handle an empty device list if the last target device expires
+  // between the two calls.
   kOfferFeature,
   // The user might be able to use send-tab-to-self if they sign in, so offer
   // that. "Might" because the list of target devices can't be known yet, it

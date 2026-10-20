@@ -55,7 +55,10 @@ class SendTabToSelfModel {
   // Returns a vector of entry IDs in the model.
   virtual std::vector<std::string> GetAllGuids() const = 0;
 
-  // Returns a specific entry. Returns null if the entry does not exist.
+  // Returns a specific entry, or `nullptr` if the entry does not exist. The
+  // returned pointer is owned by the model and may be invalidated at any point
+  // without a notification; callers should store the entry's GUID across
+  // asynchronous callbacks and re-query `GetEntryByGUID()`.
   virtual const SendTabToSelfEntry* GetEntryByGUID(
       std::string_view guid) const = 0;
 
@@ -120,12 +123,18 @@ class SendTabToSelfModel {
   void AddObserver(SendTabToSelfModelObserver* observer);
   void RemoveObserver(SendTabToSelfModelObserver* observer);
 
-  // Returns true if the user has valid target device.
+  // Returns `true` if the user has at least one non-expired target device.
+  // Device expiration is evaluated against the current clock on every call
+  // without caching.
   virtual bool HasValidTargetDevice() = 0;
 
   // Returns a vector of information about possible target devices, ordered by
   // the last updated time stamp of the device with the most recently used
-  // device listed first. This is a thin layer on top of DeviceInfoTracker.
+  // device listed first. This is a thin layer on top of `DeviceInfoTracker`
+  // that re-evaluates device expiration against the current clock on every
+  // call without caching; callers must handle an empty return vector even if
+  // `HasValidTargetDevice()` or `GetEntryPointDisplayReason()` recently
+  // indicated that a target device was available.
   virtual std::vector<syncer::RemoteDeviceInfo>
   GetTargetDeviceInfoSortedList() = 0;
 
