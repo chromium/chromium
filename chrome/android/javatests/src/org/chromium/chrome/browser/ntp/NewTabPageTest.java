@@ -924,15 +924,24 @@ public class NewTabPageTest {
     @Test
     @SmallTest
     @Feature({"NewTabPage"})
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
+    @DisableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT, ChromeFeatureList.NTP_AURORA_V2})
     @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testAiModeButton() {
-        View ntpLayout = mNtp.getLayout();
-        TouchCommon.singleClickView(
-                ntpLayout
-                        .findViewById(R.id.composeplate_view)
-                        .findViewById(R.id.composeplate_button));
+        clickAiModeButton();
         verifyComposeplateUrlNavigation();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage"})
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/1"})
+    @DisableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
+    public void testAiModeButton_auroraV2Redirect() {
+        mActivityTestRule.skipWindowAndTabStateCleanup();
+
+        clickAiModeButton();
+        mOmnibox.checkFocus(true);
     }
 
     @Test
@@ -946,11 +955,7 @@ public class NewTabPageTest {
         OmniboxFeatures.sRedirectComposeplateButton.setForTesting(true);
         mActivityTestRule.skipWindowAndTabStateCleanup();
 
-        View ntpLayout = mNtp.getLayout();
-        TouchCommon.singleClickView(
-                ntpLayout
-                        .findViewById(R.id.composeplate_view)
-                        .findViewById(R.id.composeplate_button));
+        clickAiModeButton();
         mOmnibox.checkFocus(true);
     }
 
@@ -958,18 +963,23 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage"})
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT})
+    @DisableFeatures({ChromeFeatureList.NTP_AURORA_V2})
     @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testAiModeButton_fuseboxWithoutRedirect() {
         if (mActivityTestRule.getActivity().isTablet()) return;
 
         mActivityTestRule.skipWindowAndTabStateCleanup();
 
+        clickAiModeButton();
+        verifyComposeplateUrlNavigation();
+    }
+
+    private void clickAiModeButton() {
         View ntpLayout = mNtp.getLayout();
         TouchCommon.singleClickView(
                 ntpLayout
                         .findViewById(R.id.composeplate_view)
                         .findViewById(R.id.composeplate_button));
-        verifyComposeplateUrlNavigation();
     }
 
     private void verifyComposeplateUrlNavigation() {

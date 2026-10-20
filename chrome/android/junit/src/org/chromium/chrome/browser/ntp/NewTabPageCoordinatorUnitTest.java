@@ -1021,6 +1021,7 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
+    @DisableFeatures({ChromeFeatureList.NTP_AURORA_V2})
     public void testComposeplateButtonClicked_ActionChipsDisabled() {
         testComposeplateButtonClickedImpl(/* expectedFocusSearchBox= */ false);
     }
