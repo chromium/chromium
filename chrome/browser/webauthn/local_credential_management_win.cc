@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,19 +55,14 @@ class CredentialPresenceCacher : public ProfileObserver {
       base::OnceCallback<void(
           std::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
           callback)
-      : profile_(profile), callback_(std::move(callback)) {}
-
-  ~CredentialPresenceCacher() override {
-    if (profile_) {
-      profile_->RemoveObserver(this);
-      profile_ = nullptr;
-    }
+      : callback_(std::move(callback)) {
+    profile_observation_.Observe(profile);
   }
 
   void OnEnumerateResult(
       std::vector<device::DiscoverableCredentialMetadata> credentials) {
-    if (profile_) {
-      profile_->GetPrefs()->SetBoolean(
+    if (Profile* profile = profile_observation_.GetSource()) {
+      profile->GetPrefs()->SetBoolean(
           kHasPlatformCredentialsPref,
           ContainsUserCreatedCredential(credentials));
     }
@@ -77,13 +73,12 @@ class CredentialPresenceCacher : public ProfileObserver {
   // ProfileObserver:
 
   void OnProfileWillBeDestroyed(Profile* profile) override {
-    DCHECK_EQ(profile, profile_);
-    profile_->RemoveObserver(this);
-    profile_ = nullptr;
+    DCHECK(profile_observation_.IsObservingSource(profile));
+    profile_observation_.Reset();
   }
 
  private:
-  raw_ptr<Profile> profile_;
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   base::OnceCallback<void(
       std::optional<std::vector<device::DiscoverableCredentialMetadata>>)>
       callback_;
