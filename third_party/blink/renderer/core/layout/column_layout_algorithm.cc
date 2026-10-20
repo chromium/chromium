@@ -504,7 +504,18 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeMinMaxSizes(
     // min-content inline-size contribution of its contents."
     const LayoutUnit column_width(Style().ColumnWidth());
     result.sizes.min_size = std::min(result.sizes.min_size, column_width);
-    result.sizes.max_size = std::max(result.sizes.max_size, column_width);
+    if (Style().HasAutoColumnCount() &&
+        RuntimeEnabledFeatures::MulticolColumnWidthMaxContentClampEnabled()) {
+      // This is not currently specified anywhere, but matches the
+      // "Max-content Sizes in Unconstrained-height Multi-column Layout"
+      // section from an old css-sizing-4 draft, which was removed; see
+      // https://github.com/w3c/csswg-drafts/issues/4952. With
+      // column-count:auto the used column count is 1, so the max-content
+      // inline size is just column-width.
+      result.sizes.max_size = column_width;
+    } else {
+      result.sizes.max_size = std::max(result.sizes.max_size, column_width);
+    }
     result.sizes.max_size =
         std::max(result.sizes.max_size, result.sizes.min_size);
   }

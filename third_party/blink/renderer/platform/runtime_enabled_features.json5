@@ -4511,6 +4511,13 @@
       status: "stable",
     },
     {
+      // Clamp a column-count:auto multicol container's max-content inline
+      // size to column-width per css-sizing-4. Kill switch for
+      // crbug.com/41459384.
+      name: "MulticolColumnWidthMaxContentClamp",
+      status: "stable",
+    },
+    {
       // Support Nastaliq script. crbug.com/569667449
       name: "NastaliqScript",
       status: "stable",

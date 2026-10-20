@@ -2780,7 +2780,8 @@ TEST_F(ColumnLayoutAlgorithmTest, MinMax) {
   EXPECT_EQ(LayoutUnit(170), sizes->min_size);
   EXPECT_EQ(LayoutUnit(320), sizes->max_size);
 
-  // Only column-width set.
+  // Only column-width set. With column-count:auto the max-content
+  // contribution is column-width (css-sizing-4).
   builder = ComputedStyleBuilder(layout_object->Style());
   builder.SetColumnWidth(80);
   builder.SetHasAutoColumnCount();
@@ -2789,7 +2790,7 @@ TEST_F(ColumnLayoutAlgorithmTest, MinMax) {
   sizes = algorithm.ComputeMinMaxSizes(MinMaxSizesInput::Unconstrained()).sizes;
   ASSERT_TRUE(sizes.has_value());
   EXPECT_EQ(LayoutUnit(50), sizes->min_size);
-  EXPECT_EQ(LayoutUnit(100), sizes->max_size);
+  EXPECT_EQ(LayoutUnit(80), sizes->max_size);
 }
 
 TEST_F(ColumnLayoutAlgorithmTest, ColumnBalancing) {
