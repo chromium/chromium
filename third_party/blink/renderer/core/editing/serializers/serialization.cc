@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_base_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -73,6 +74,8 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/html/html_link_element.h"
+#include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_quote_element.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
@@ -94,6 +97,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -883,6 +887,34 @@ static bool ContainsStyleElements(const DocumentFragment& fragment) {
   return false;
 }
 
+// Remove <base>, <link>, and <meta>, which can change URL resolution, load
+// resources, or navigate when inserted into a document. Do not rely on
+// unrendered-element filtering: author CSS can make these elements rendered.
+static void StripBaseLinkAndMetaElements(DocumentFragment& fragment) {
+  HeapVector<Member<DocumentFragment>> fragments;
+  fragments.push_back(&fragment);
+  while (!fragments.empty()) {
+    DocumentFragment* current_fragment = fragments.back();
+    fragments.pop_back();
+    Node* next = nullptr;
+    for (Node* node = current_fragment->firstChild(); node; node = next) {
+      if (IsA<HTMLBaseElement>(*node) || IsA<HTMLLinkElement>(*node) ||
+          IsA<HTMLMetaElement>(*node)) {
+        next = NodeTraversal::NextSkippingChildren(*node, current_fragment);
+        node->remove();
+      } else {
+        // Template contents are separate fragments, not ordinary DOM children.
+        if (auto* template_element = DynamicTo<HTMLTemplateElement>(*node)) {
+          if (DocumentFragment* content = template_element->getContent()) {
+            fragments.push_back(content);
+          }
+        }
+        next = NodeTraversal::Next(*node, current_fragment);
+      }
+    }
+  }
+}
+
 // Returns true if any svg <use> element is removed.
 static bool StripSvgUseNonLocalHrefs(Node& node) {
   if (auto* use = DynamicTo<SVGUseElement>(node)) {
@@ -940,6 +972,8 @@ String CreateStrictlyProcessedMarkupWithContext(
       staging_document->GetPage()->WillBeDestroyed();
       return String();
     }
+
+    StripBaseLinkAndMetaElements(*fragment);
 
     bool needs_sanitization = false;
     if (ContainsStyleElements(*fragment))

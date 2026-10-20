@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 
+#include <string>
+
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -213,6 +215,74 @@ TEST_F(SerializationTest, StrictlyProcessedMarkupDropsScriptsAndPlugins) {
   EXPECT_EQ("<div>safe<svg><circle></circle></svg></div>",
             StrictlyProcessedMarkup(markup));
 }
+
+class SerializationUnsafeHeadTagTest
+    : public SerializationTest,
+      public testing::WithParamInterface<std::string> {};
+
+// Without stylesheets, remove unsafe tags in ordinary DOM and template contents
+// while preserving other markup, including hidden content and relative URLs.
+TEST_P(SerializationUnsafeHeadTagTest,
+       StrictlyProcessedMarkupDropsUnsafeHeadTagsAndPreservesOtherMarkup) {
+  const String tag_markup = String(GetParam());
+  const String safe_markup =
+      "<span style=\"display: none\">hidden</span>"
+      "<a href=\"relative\">safe</a>";
+  // Repeat the same tag to check that removal doesn't skip adjacent siblings,
+  // nested tags, or tags after preserved content and after the container.
+  const String markup = tag_markup + tag_markup + "<div>" + tag_markup +
+                        safe_markup + tag_markup + "</div>" + tag_markup;
+
+  EXPECT_EQ("<div>" + safe_markup + "</div>", StrictlyProcessedMarkup(markup));
+
+  const String template_markup = "<template>" + tag_markup + "<template>" +
+                                 tag_markup + safe_markup + "</template>" +
+                                 tag_markup + safe_markup + "</template>";
+  const String expected_template_markup = "<template><template>" + safe_markup +
+                                          "</template>" + safe_markup +
+                                          "</template>";
+  EXPECT_EQ(expected_template_markup + "<div>safe</div>",
+            StrictlyProcessedMarkup(template_markup + tag_markup +
+                                    "<div>safe</div>"));
+}
+
+// Inline display overrides must not allow an unsafe tag to survive or force
+// heavyweight serialization of the remaining content.
+TEST_P(SerializationUnsafeHeadTagTest,
+       StrictlyProcessedMarkupDropsUnsafeHeadTagWithInlineStyle) {
+  const String tag_markup = String(GetParam());
+  const String markup = tag_markup.substr(0, tag_markup.length() - 1) +
+                        " style='display: block'><div>safe</div>";
+
+  EXPECT_EQ("<div>safe</div>", StrictlyProcessedMarkup(markup));
+}
+
+// With a stylesheet forcing heavyweight serialization, remove the unsafe tag
+// despite its display override while still converting legitimate styles inline.
+TEST_P(SerializationUnsafeHeadTagTest,
+       StrictlyProcessedMarkupDropsUnsafeHeadTagWithStylesheet) {
+  const String style =
+      "<style>base, link, meta { display: block; }"
+      "div { color: rgb(1, 2, 3); }</style>";
+  const String tag_markup = String(GetParam());
+  const String safe_markup = "<div>safe</div>";
+  const String sanitized_markup =
+      StrictlyProcessedMarkup(style + tag_markup + safe_markup);
+
+  EXPECT_EQ(StrictlyProcessedMarkup(style + safe_markup), sanitized_markup);
+  EXPECT_NE(kNotFound, sanitized_markup.find("safe")) << sanitized_markup;
+  EXPECT_NE(kNotFound, sanitized_markup.find("color: rgb(1, 2, 3)"))
+      << sanitized_markup;
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    UnsafeHeadTags,
+    SerializationUnsafeHeadTagTest,
+    testing::Values(
+        "<base href='https://attacker.example/'>",
+        "<link rel='stylesheet' href='https://attacker.example/style.css'>",
+        "<meta http-equiv='refresh' "
+        "content='0; url=https://attacker.example/'>"));
 
 TEST_F(SerializationTest, StrictlyProcessedMarkupStripsScriptingAttributes) {
   const String markup =
