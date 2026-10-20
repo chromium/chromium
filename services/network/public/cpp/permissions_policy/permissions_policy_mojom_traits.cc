@@ -38,6 +38,14 @@ bool StructTraits<network::mojom::ParsedPermissionsPolicyDeclarationDataView,
          in.ReadSelfIfMatches(&out->self_if_matches);
 }
 
+bool StructTraits<network::mojom::PermissionsPolicyFeaturesBitsetDataView,
+                  network::PermissionsPolicyFeaturesBitset>::
+    Read(network::mojom::PermissionsPolicyFeaturesBitsetDataView in,
+         network::PermissionsPolicyFeaturesBitset* out) {
+  std::string value;
+  return in.ReadValue(&value) && out->Deserialize(value);
+}
+
 bool StructTraits<network::mojom::PermissionsPolicyDataView,
                   network::PermissionsPolicy>::
     Read(network::mojom::PermissionsPolicyDataView in,

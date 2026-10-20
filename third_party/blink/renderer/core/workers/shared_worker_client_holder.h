@@ -34,6 +34,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features_bitset.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_client.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_connector.mojom-blink.h"
@@ -74,15 +75,17 @@ class CORE_EXPORT SharedWorkerClientHolder final
   // Establishes a connection with SharedWorkerHost in the browser process.
   // `connector_override` is used to force creation of the shared worker on
   // a custom worker pool instead of the default pool `connector_`.
-  void Connect(SharedWorker*,
-               MessagePortChannel,
-               const KURL&,
-               mojo::PendingRemote<mojom::blink::BlobURLToken>,
-               mojom::blink::WorkerOptionsPtr options,
-               mojom::blink::SharedWorkerSameSiteCookies same_site_cookies,
-               const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
-                   connector_override,
-               bool extended_lifetime);
+  void Connect(
+      SharedWorker*,
+      MessagePortChannel,
+      const KURL&,
+      mojo::PendingRemote<mojom::blink::BlobURLToken>,
+      mojom::blink::WorkerOptionsPtr options,
+      mojom::blink::SharedWorkerSameSiteCookies same_site_cookies,
+      const HeapMojoRemote<mojom::blink::SharedWorkerConnector>*
+          connector_override,
+      bool extended_lifetime,
+      const network::PermissionsPolicyFeaturesBitset& permissions_policy);
 
   void Trace(Visitor* visitor) const override;
 

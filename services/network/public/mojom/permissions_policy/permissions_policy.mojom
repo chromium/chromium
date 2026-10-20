@@ -34,6 +34,12 @@ struct ParsedPermissionsPolicyDeclaration {
   string? reporting_endpoint;
 };
 
+// Represents a set of enabled permissions policy features.
+// Typemapped to `network::PermissionsPolicyFeaturesBitset`.
+struct PermissionsPolicyFeaturesBitset {
+  string value;
+};
+
 // Represents a Permissions Policy.
 // Typemapped to `network::PermissionsPolicy`.
 struct PermissionsPolicy {

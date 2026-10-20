@@ -105,5 +105,17 @@ TEST(PermissionsPolicyMojomTraitsTest, Roundtrips_PermissionsPolicy) {
   EXPECT_EQ(*original, *copied);
 }
 
+TEST(PermissionsPolicyMojomTraitsTest,
+     Roundtrips_PermissionsPolicyFeaturesBitset) {
+  PermissionsPolicyFeaturesBitset original;
+  original.Add(network::mojom::PermissionsPolicyFeature::kCamera);
+  original.Add(network::mojom::PermissionsPolicyFeature::kUsb);
+
+  PermissionsPolicyFeaturesBitset copied;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::PermissionsPolicyFeaturesBitset>(original, copied));
+  EXPECT_EQ(original, copied);
+}
+
 }  // namespace
 }  // namespace network

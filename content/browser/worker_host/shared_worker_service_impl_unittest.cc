@@ -44,9 +44,13 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features_bitset.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 #include "url/origin.h"
@@ -82,7 +86,7 @@ void ConnectToSharedWorkerWithContextType(
           }(),
           GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
       blink::mojom::SharedWorkerSameSiteCookies::kAll,
-      /*extended_lifetime=*/false));
+      /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset()));
 
   blink::MessagePortDescriptorPair pipe;
   *local_port = MessagePortChannel(pipe.TakePort0());
@@ -1891,7 +1895,7 @@ TEST_F(SharedWorkerServiceImplTest, ExtensionCrossOriginSameOriginCheck) {
           }(),
           GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
       blink::mojom::SharedWorkerSameSiteCookies::kAll,
-      /*extended_lifetime=*/false));
+      /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset()));
 
   blink::MessagePortDescriptorPair pipe;
   mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_proxy;
@@ -1950,7 +1954,7 @@ TEST_F(SharedWorkerServiceImplTest, IwaCrossOriginSameOriginCheck) {
           }(),
           GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
       blink::mojom::SharedWorkerSameSiteCookies::kAll,
-      /*extended_lifetime=*/false));
+      /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset()));
 
   blink::MessagePortDescriptorPair pipe;
   mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_proxy;
@@ -2007,7 +2011,7 @@ TEST_F(SharedWorkerServiceImplTest, ExtensionSameOriginCheckFlagOff) {
           }(),
           GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
       blink::mojom::SharedWorkerSameSiteCookies::kAll,
-      /*extended_lifetime=*/false));
+      /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset()));
 
   blink::MessagePortDescriptorPair pipe;
   mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_proxy;
@@ -2145,7 +2149,7 @@ TEST_F(SharedWorkerServiceImplTest, CanAccessDataForOriginDenied) {
           }(),
           GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
       blink::mojom::SharedWorkerSameSiteCookies::kAll,
-      /*extended_lifetime=*/false));
+      /*extended_lifetime=*/false, network::PermissionsPolicyFeaturesBitset()));
 
   blink::MessagePortDescriptorPair pipe;
   mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_proxy;
@@ -2163,6 +2167,159 @@ TEST_F(SharedWorkerServiceImplTest, CanAccessDataForOriginDenied) {
 
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return client.CheckReceivedOnScriptLoadFailed(); }));
+}
+
+TEST_F(SharedWorkerServiceImplTest,
+       InvalidPermissionsPolicyTriggersBadMessage) {
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kPermissionsPolicyForSharedWorkers);
+
+  const GURL kUrl("https://example.com/");
+  const GURL kWorkerUrl("https://example.com/w.js");
+
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kUrl);
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+
+  // Navigate with a Permissions-Policy header that disables kUsb and restricts
+  // kHid to 'self', while leaving kSerial without a declared policy (enabled
+  // for 'self' by default).
+  network::ParsedPermissionsPolicy header_policy(2);
+  header_policy[0].feature = network::mojom::PermissionsPolicyFeature::kUsb;
+  header_policy[1].feature = network::mojom::PermissionsPolicyFeature::kHid;
+  header_policy[1].self_if_matches = url::Origin::Create(kUrl);
+  auto navigation_simulator =
+      NavigationSimulator::CreateRendererInitiated(kUrl, render_frame_host);
+  navigation_simulator->SetPermissionsPolicyHeader(header_policy);
+  navigation_simulator->Commit();
+  render_frame_host = web_contents->GetPrimaryMainFrame();
+
+  auto connect_with_policy =
+      [&](mojo::Remote<blink::mojom::SharedWorkerConnector>& connector,
+          const GURL& worker_url,
+          const network::PermissionsPolicyFeaturesBitset& worker_policy) {
+        auto options = blink::mojom::WorkerOptions::New();
+        options->name = "name";
+        blink::mojom::SharedWorkerInfoPtr info(
+            blink::mojom::SharedWorkerInfo::New(
+                worker_url, std::move(options),
+                std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+                blink::mojom::FetchClientSettingsObject::New(
+                    []() {
+                      auto policies =
+                          blink::mojom::PolicyContainerPolicies::New();
+                      policies->referrer_policy =
+                          network::mojom::ReferrerPolicy::kDefault;
+                      return policies;
+                    }(),
+                    GURL(),
+                    blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+                blink::mojom::SharedWorkerSameSiteCookies::kAll,
+                /*extended_lifetime=*/false, worker_policy));
+
+        blink::MessagePortDescriptorPair pipe;
+        mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_proxy;
+        std::ignore = client_proxy.InitWithNewPipeAndPassReceiver();
+
+        connector->Connect(
+            std::move(info), std::move(client_proxy),
+            blink::mojom::SharedWorkerCreationContextType::kSecure,
+            pipe.TakePort1(), mojo::NullRemote());
+        connector.FlushForTesting();
+      };
+
+  // 1. Requesting an allowed feature (kSerial) should NOT trigger a bad
+  // message.
+  {
+    mojo::Remote<blink::mojom::SharedWorkerConnector> connector =
+        MakeSharedWorkerConnector(render_frame_host->GetGlobalId());
+
+    network::PermissionsPolicyFeaturesBitset valid_policy;
+    valid_policy.Add(network::mojom::PermissionsPolicyFeature::kSerial);
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    connect_with_policy(connector, kWorkerUrl, valid_policy);
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+
+  // 2. Requesting a feature disabled in the creator context (kUsb) MUST trigger
+  // SWH_INVALID_PERMISSIONS_POLICY, since the renderer should always check
+  // whether the policy is allowed in the parent context.
+  {
+    mojo::Remote<blink::mojom::SharedWorkerConnector> connector =
+        MakeSharedWorkerConnector(render_frame_host->GetGlobalId());
+
+    network::PermissionsPolicyFeaturesBitset disallowed_policy;
+    disallowed_policy.Add(network::mojom::PermissionsPolicyFeature::kUsb);
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    connect_with_policy(connector, kWorkerUrl, disallowed_policy);
+    EXPECT_EQ("SWH_INVALID_PERMISSIONS_POLICY",
+              bad_message_observer.WaitForBadMessage());
+  }
+
+  // 3. Requesting a feature with a default allowlist of 'self' (kSerial) and no
+  // declared policy in the creator context for a data: URL worker (which has an
+  // opaque origin) should NOT trigger a bad message.
+  {
+    mojo::Remote<blink::mojom::SharedWorkerConnector> connector =
+        MakeSharedWorkerConnector(render_frame_host->GetGlobalId());
+
+    network::PermissionsPolicyFeaturesBitset valid_policy;
+    valid_policy.Add(network::mojom::PermissionsPolicyFeature::kSerial);
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    connect_with_policy(connector, GURL("data:text/javascript,"), valid_policy);
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+
+  // 4. Requesting a feature with a declared policy of 'self' (kHid) for a
+  // same-origin worker should NOT trigger a bad message.
+  {
+    mojo::Remote<blink::mojom::SharedWorkerConnector> connector =
+        MakeSharedWorkerConnector(render_frame_host->GetGlobalId());
+
+    network::PermissionsPolicyFeaturesBitset valid_policy;
+    valid_policy.Add(network::mojom::PermissionsPolicyFeature::kHid);
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    connect_with_policy(connector, kWorkerUrl, valid_policy);
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+  }
+
+  // 5. Requesting a feature with a declared policy of 'self' (kHid) for a
+  // data: URL worker (which has an opaque origin) MUST trigger
+  // SWH_INVALID_PERMISSIONS_POLICY.
+  {
+    mojo::Remote<blink::mojom::SharedWorkerConnector> connector =
+        MakeSharedWorkerConnector(render_frame_host->GetGlobalId());
+
+    network::PermissionsPolicyFeaturesBitset disallowed_policy;
+    disallowed_policy.Add(network::mojom::PermissionsPolicyFeature::kHid);
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    connect_with_policy(connector, GURL("data:text/javascript,"),
+                        disallowed_policy);
+    EXPECT_EQ("SWH_INVALID_PERMISSIONS_POLICY",
+              bad_message_observer.WaitForBadMessage());
+  }
+
+  // 6. Requesting a feature which is not in the creator context's feature list
+  // (kNotFound) MUST trigger SWH_INVALID_PERMISSIONS_POLICY.
+  {
+    mojo::Remote<blink::mojom::SharedWorkerConnector> connector =
+        MakeSharedWorkerConnector(render_frame_host->GetGlobalId());
+
+    ASSERT_FALSE(
+        render_frame_host->GetPermissionsPolicy()->GetFeatureList().contains(
+            network::mojom::PermissionsPolicyFeature::kNotFound));
+    network::PermissionsPolicyFeaturesBitset unknown_policy;
+    unknown_policy.Add(network::mojom::PermissionsPolicyFeature::kNotFound);
+
+    mojo::test::BadMessageObserver bad_message_observer;
+    connect_with_policy(connector, kWorkerUrl, unknown_policy);
+    EXPECT_EQ("SWH_INVALID_PERMISSIONS_POLICY",
+              bad_message_observer.WaitForBadMessage());
+  }
 }
 
 }  // namespace content

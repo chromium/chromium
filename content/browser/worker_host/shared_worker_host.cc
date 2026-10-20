@@ -405,7 +405,11 @@ void SharedWorkerHost::Start(
       instance_.url(), std::move(options),
       mojo::Clone(content_security_policies_),
       std::move(outside_fetch_client_settings_object),
-      instance_.same_site_cookies(), instance_.extended_lifetime()));
+      instance_.same_site_cookies(), instance_.extended_lifetime(),
+      // TODO(https://crbug.com/562705553): Store the shared worker's
+      // permissions policy on the SharedWorkerInstance and send it down to the
+      // renderer process.
+      network::PermissionsPolicyFeaturesBitset()));
 
   auto renderer_preferences = blink::RendererPreferences();
   UpdateRendererPreferencesForWorkerHelper(

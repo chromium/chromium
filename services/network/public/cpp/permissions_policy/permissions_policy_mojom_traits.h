@@ -12,6 +12,7 @@
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features_bitset.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy.mojom-shared.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/mojom/origin.mojom.h"
@@ -81,6 +82,20 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
   static bool Read(
       network::mojom::ParsedPermissionsPolicyDeclarationDataView in,
       network::ParsedPermissionsPolicyDeclaration* out);
+};
+
+template <>
+class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
+    StructTraits<network::mojom::PermissionsPolicyFeaturesBitsetDataView,
+                 network::PermissionsPolicyFeaturesBitset> {
+ public:
+  static std::string value(
+      const network::PermissionsPolicyFeaturesBitset& bitset) {
+    return bitset.Serialize();
+  }
+
+  static bool Read(network::mojom::PermissionsPolicyFeaturesBitsetDataView in,
+                   network::PermissionsPolicyFeaturesBitset* out);
 };
 
 template <>

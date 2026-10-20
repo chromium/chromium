@@ -46,7 +46,10 @@
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/storage_access_api/status.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features_bitset.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -243,6 +246,28 @@ void SharedWorkerServiceImpl::ConnectToWorker(
           storage_key.origin().scheme())) {
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPermissionsPolicyForSharedWorkers)) {
+    // The shared worker cannot be delegated any features that the creator
+    // context cannot delegate to the worker script's origin. This check is
+    // already performed in the renderer, so it should never fail for a
+    // well-behaving renderer process.
+    const network::PermissionsPolicy* creator_permissions_policy =
+        render_frame_host->GetPermissionsPolicy();
+    CHECK(creator_permissions_policy);
+    const url::Origin src_origin = url::Origin::Create(info->url);
+    for (size_t i = 0; i < network::kPermissionsPolicyFeaturesBitsetSize; ++i) {
+      const auto feature =
+          static_cast<network::mojom::PermissionsPolicyFeature>(i);
+      if (info->permissions_policy.Contains(feature) &&
+          !creator_permissions_policy->CanDelegateFeatureToOrigin(feature,
+                                                                  src_origin)) {
+        mojo::ReportBadMessage("SWH_INVALID_PERMISSIONS_POLICY");
+        return;
+      }
+    }
   }
 
   RenderFrameHost* main_frame = render_frame_host->frame_tree()->GetMainFrame();

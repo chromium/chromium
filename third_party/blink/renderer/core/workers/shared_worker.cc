@@ -253,9 +253,6 @@ SharedWorker* SharedWorker::CreateImpl(
     // goes out of scope after returning from this function.
     return worker;
   }
-  // TODO(https://crbug.com/562705553): Plumb the parsed_permissions_policy to
-  // the browser process.
-
   DCHECK(!options->name.IsNull());
   if (options->type == mojom::blink::ScriptType::kClassic)
     UseCounter::Count(window, WebFeature::kClassicSharedWorker);
@@ -265,7 +262,7 @@ SharedWorker* SharedWorker::CreateImpl(
   SharedWorkerClientHolder::From(*window)->Connect(
       worker, std::move(remote_port), script_url, std::move(blob_url_token),
       std::move(options), same_site_cookies, connector_override,
-      extended_lifetime);
+      extended_lifetime, *parsed_permissions_policy);
 
   return worker;
 }

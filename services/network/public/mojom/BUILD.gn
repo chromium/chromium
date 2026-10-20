@@ -1908,6 +1908,10 @@ mojom("mojom_permissions_policy") {
           cpp = "::network::ParsedPermissionsPolicyDeclaration"
         },
         {
+          mojom = "network.mojom.PermissionsPolicyFeaturesBitset"
+          cpp = "::network::PermissionsPolicyFeaturesBitset"
+        },
+        {
           mojom = "network.mojom.PermissionsPolicy"
           cpp = "::network::PermissionsPolicy"
           default_constructible = false

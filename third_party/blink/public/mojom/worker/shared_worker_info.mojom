@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "services/network/public/mojom/content_security_policy.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
 import "third_party/blink/public/mojom/worker/worker_options.mojom";
 import "url/mojom/url.mojom";
@@ -35,4 +36,8 @@ struct SharedWorkerInfo {
   // have been destructed.
   // See: https://github.com/whatwg/html/issues/10997
   bool extended_lifetime;
+
+  // The permissions policy which keys this shared worker, parsed from the
+  // 'allow' member of SharedWorkerOptions.
+  network.mojom.PermissionsPolicyFeaturesBitset permissions_policy;
 };
