@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/autotest_desks_api.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -12,10 +13,12 @@
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -47,23 +50,47 @@ bool ContainsCommandIdInMenu(int command_id, const ui::MenuModel* menu) {
 // Browser tests for verifying `SystemMenuModelBuilder` behavior for apps when
 // locked (and not locked) for OnTask. Only relevant for non-web browser
 // scenarios.
-class SystemMenuModelBuilderWithOnTaskTest : public InProcessBrowserTest {
+class SystemMenuModelBuilderWithOnTaskTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SystemMenuModelBuilderWithOnTaskTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kUseUnifiedLockedStateController, GetParam());
+  }
+
  protected:
   webapps::AppId InstallMockApp() {
     return web_app::test::InstallDummyWebApp(
         browser()->GetProfile(), /*app_name=*/"Mock app",
         /*app_url=*/GURL("https://www.example.com/"));
   }
+
+  void SetLockedForOnTask(BrowserWindowInterface* app_browser, bool locked) {
+    if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+      auto* controller = chromeos::LockedStateController::From(app_browser);
+      if (locked) {
+        controller->Lock(chromeos::LockedState::kOnTaskPrepared);
+      } else {
+        controller->Unlock(chromeos::LockedState::kOnTaskLocked);
+      }
+    } else {
+      ash::boca::OnTaskLockedController::From(app_browser)
+          ->set_locked_for_on_task(locked);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
+IN_PROC_BROWSER_TEST_P(SystemMenuModelBuilderWithOnTaskTest,
                        SystemMenuWhenNotLockedForOnTask) {
   // Install and launch app.
   webapps::AppId app_id = InstallMockApp();
   BrowserWindowInterface* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
-  ash::boca::OnTaskLockedController::From(app_browser)
-      ->set_locked_for_on_task(false);
+  SetLockedForOnTask(app_browser, false);
 
   // Create a new desk so we can verify desk menu options visibility.
   ASSERT_TRUE(ash::AutotestDesksApi().CreateNewDesk());
@@ -83,14 +110,13 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
       chromeos::MoveToDesksMenuModel::kMenuCommandId, menu));
 }
 
-IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
+IN_PROC_BROWSER_TEST_P(SystemMenuModelBuilderWithOnTaskTest,
                        SystemMenuWhenLockedForOnTask) {
   // Install and launch app.
   webapps::AppId app_id = InstallMockApp();
   BrowserWindowInterface* const app_browser =
       web_app::LaunchWebAppBrowser(browser()->GetProfile(), app_id);
-  ash::boca::OnTaskLockedController::From(app_browser)
-      ->set_locked_for_on_task(true);
+  SetLockedForOnTask(app_browser, true);
 
   // Create a new desk so we can verify desk menu options visibility.
   ASSERT_TRUE(ash::AutotestDesksApi().CreateNewDesk());
@@ -109,6 +135,10 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
   EXPECT_FALSE(ContainsCommandIdInMenu(
       chromeos::MoveToDesksMenuModel::kMenuCommandId, menu));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SystemMenuModelBuilderWithOnTaskTest,
+                         testing::Bool());
 
 class SystemMenuModelBuilderMultiUserTest : public ash::LoginManagerTest {
  public:

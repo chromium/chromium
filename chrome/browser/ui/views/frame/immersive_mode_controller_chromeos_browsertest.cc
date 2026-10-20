@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
@@ -37,6 +39,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -619,9 +622,47 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest, Layout) {
   EXPECT_TRUE(toolbar->GetVisible());
 }
 
+// TODO(crbug.com/438540029): Rename this test suite to "TrustedPinned" to
+// disambiguate between LockedFullscreen (which is for extension API) and OnTask
+// locked (which is for class tools).
+class ImmersiveModeControllerChromeosLockedTest
+    : public ImmersiveModeControllerChromeosTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ImmersiveModeControllerChromeosLockedTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kUseUnifiedLockedStateController,
+        is_unified_locked_state_controller_enabled_);
+  }
+
+ protected:
+  void PinWindow(bool trusted, bool locked_for_on_task = false) {
+    if (trusted && is_unified_locked_state_controller_enabled_) {
+      auto* controller = chromeos::LockedStateController::From(browser());
+      ASSERT_TRUE(controller);
+      if (locked_for_on_task) {
+        controller->Lock(chromeos::LockedState::kOnTaskLocked);
+      } else {
+        controller->Lock(chromeos::LockedState::kExtensionLocked);
+      }
+    } else {
+      if (!is_unified_locked_state_controller_enabled_) {
+        ash::boca::OnTaskLockedController::From(browser())
+            ->set_locked_for_on_task(locked_for_on_task);
+      }
+      ChromeOSBrowserUITest::PinWindow(
+          browser_view()->GetWidget()->GetNativeWindow(), trusted);
+    }
+  }
+
+ private:
+  const bool is_unified_locked_state_controller_enabled_ = GetParam();
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Verifies that transitioning from fullscreen to trusted pinned disables the
 // immersive controls.
-IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest,
+IN_PROC_BROWSER_TEST_P(ImmersiveModeControllerChromeosLockedTest,
                        FullscreenToLockedTransition) {
   // Start in fullscreen.
   ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(browser());
@@ -629,8 +670,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest,
   EXPECT_TRUE(controller()->IsEnabled());
 
   // Transition to locked fullscreen.
-  ChromeOSBrowserUITest::PinWindow(
-      browser_view()->GetWidget()->GetNativeWindow(), /*trusted=*/true);
+  PinWindow(/*trusted=*/true);
   // ImmersiveController is disabled in TrustedPinned so that it cannot be
   // exited.
   EXPECT_FALSE(controller()->IsEnabled());
@@ -639,20 +679,21 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest,
 // Verifies that transitioning from fullscreen to trusted pinned keeps immersive
 // controls when the webapp is locked for OnTask. Only relevant for non-web
 // browser scenarios.
-IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosTest,
+IN_PROC_BROWSER_TEST_P(ImmersiveModeControllerChromeosLockedTest,
                        FullscreenToLockedTransitionWhenLockedForOnTask) {
-  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
-      true);
   // Start in fullscreen and verify ImmersiveController is enabled.
   ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(browser());
   EXPECT_TRUE(controller()->IsEnabled());
 
   // Transition to locked fullscreen and verify ImmersiveController remains
   // enabled.
-  ChromeOSBrowserUITest::PinWindow(
-      browser_view()->GetWidget()->GetNativeWindow(), /*trusted=*/true);
+  PinWindow(/*trusted=*/true, /*locked_for_on_task=*/true);
   EXPECT_TRUE(controller()->IsEnabled());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ImmersiveModeControllerChromeosLockedTest,
+                         testing::Bool());
 
 // Test that the browser commands which are usually disabled in fullscreen are
 // are enabled in immersive fullscreen.

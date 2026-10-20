@@ -56,6 +56,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
+#include "chrome/common/chrome_features.h"
 #endif
 
 namespace {
@@ -1595,10 +1597,27 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, NavigateSplitTabUKMLogged) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
+class TabStripOnTaskBrowsertest : public TabStripBrowsertest,
+                                  public testing::WithParamInterface<bool> {
+ public:
+  TabStripOnTaskBrowsertest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kUseUnifiedLockedStateController, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(TabStripOnTaskBrowsertest,
                        CloseButtonHiddenWhenLockedForOnTask) {
-  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
-      true);
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    chromeos::LockedStateController::From(browser())->Lock(
+        chromeos::LockedState::kOnTaskPrepared);
+  } else {
+    ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+        true);
+  }
 
   AppendTab();
   AppendTab();
@@ -1633,6 +1652,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
   EXPECT_FALSE(tab0->showing_close_button_for_testing());
   EXPECT_FALSE(tab1->showing_close_button_for_testing());
 }
+
+INSTANTIATE_TEST_SUITE_P(All, TabStripOnTaskBrowsertest, testing::Bool());
 #endif
 
 class TabStripSaveBrowsertest : public TabStripBrowsertest {

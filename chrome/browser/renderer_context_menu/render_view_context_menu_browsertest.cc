@@ -1276,18 +1276,17 @@ IN_PROC_BROWSER_TEST_F(ContextMenuForSupervisedUsersBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/438540029): Rename this test suite to "TrustedPinned" to
+// disambiguate between LockedFullscreen (which is for extension API) and OnTask
+// locked (which is for class tools).
 class ContextMenuForLockedFullscreenBrowserTest
     : public ContextMenuBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
   ContextMenuForLockedFullscreenBrowserTest() {
-    if (is_unified_locked_state_controller_enabled_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kUseUnifiedLockedStateController);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kUseUnifiedLockedStateController);
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        features::kUseUnifiedLockedStateController,
+        is_unified_locked_state_controller_enabled_);
   }
 
  protected:

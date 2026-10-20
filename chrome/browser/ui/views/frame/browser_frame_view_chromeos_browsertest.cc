@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -1694,21 +1695,58 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserFrameViewChromeOSTest,
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 }
 
-using LockedFullscreenBrowserFrameViewChromeOSTest =
-    TopChromeMdParamTest<ChromeOSBrowserUITest>;
+// TODO(crbug.com/438540029): Rename this test suite to "TrustedPinned" to
+// disambiguate between LockedFullscreen (which is for extension API) and OnTask
+// locked (which is for class tools).
+class LockedFullscreenBrowserFrameViewChromeOSTest
+    : public ChromeOSBrowserUITest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  LockedFullscreenBrowserFrameViewChromeOSTest()
+      : touch_ui_scoper_(std::get<0>(GetParam())) {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kUseUnifiedLockedStateController,
+        is_unified_locked_state_controller_enabled_);
+  }
+
+ protected:
+  void PinWindow(aura::Window* window,
+                 bool trusted,
+                 bool locked_for_on_task = false) {
+    if (trusted && is_unified_locked_state_controller_enabled_) {
+      auto* controller = chromeos::LockedStateController::From(browser());
+      ASSERT_TRUE(controller);
+      if (locked_for_on_task) {
+        controller->Lock(chromeos::LockedState::kOnTaskLocked);
+      } else {
+        controller->Lock(chromeos::LockedState::kExtensionLocked);
+      }
+    } else {
+      if (!is_unified_locked_state_controller_enabled_) {
+        ash::boca::OnTaskLockedController::From(browser())
+            ->set_locked_for_on_task(locked_for_on_task);
+      }
+      ChromeOSBrowserUITest::PinWindow(window, trusted);
+    }
+  }
+
+ private:
+  const bool is_unified_locked_state_controller_enabled_ =
+      std::get<1>(GetParam());
+  ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
                        ToggleTabletModeWhenNotLockedForOnTask) {
-  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
-      false);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(browser());
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 
-  // Set locked fullscreen state.
-  PinWindow(browser_view->GetWidget()->GetNativeWindow(), /*trusted=*/true);
+  PinWindow(browser_view->GetWidget()->GetNativeWindow(), /*trusted=*/true,
+            /*locked_for_on_task=*/false);
 
   // We're fullscreen, immersive is disabled in locked fullscreen, and while
   // we're at it, also make sure that the shelf is hidden.
@@ -1742,16 +1780,14 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserFrameViewChromeOSTest,
                        ToggleTabletModeWhenLockedForOnTask) {
-  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
-      true);
   BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(browser());
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(browser());
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 
-  // Set locked fullscreen state.
-  PinWindow(browser_view->GetWidget()->GetNativeWindow(), /*trusted=*/true);
+  PinWindow(browser_view->GetWidget()->GetNativeWindow(), /*trusted=*/true,
+            /*locked_for_on_task=*/true);
 
   // Verify immersive mode is enabled in locked fullscreen mode and when locked
   // for OnTask. Also verify that the shelf is hidden.
@@ -2300,7 +2336,9 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
 INSTANTIATE_TEST_SUITE(BrowserFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(FloatBrowserFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(HomeLauncherBrowserFrameViewChromeOSTest);
-INSTANTIATE_TEST_SUITE(LockedFullscreenBrowserFrameViewChromeOSTest);
+INSTANTIATE_TEST_SUITE_P(All,
+                         LockedFullscreenBrowserFrameViewChromeOSTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 INSTANTIATE_TEST_SUITE(WebAppFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(BrowserFrameViewAshTest);
 INSTANTIATE_TEST_SUITE(BrowserFrameViewAshAvatarTest);

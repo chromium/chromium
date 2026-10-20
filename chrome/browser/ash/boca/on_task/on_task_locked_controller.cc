@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/common/chrome_features.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace ash::boca {
@@ -16,13 +18,16 @@ OnTaskLockedController::OnTaskLockedController(
     BrowserWindowInterface* browser_window_interface)
     : scoped_unowned_user_data_(
           browser_window_interface->GetUnownedUserDataHost(),
-          *this) {}
+          *this) {
+  CHECK(!::features::IsUseUnifiedLockedStateControllerEnabled());
+}
 
 OnTaskLockedController::~OnTaskLockedController() = default;
 
 // static
 OnTaskLockedController* OnTaskLockedController::From(
     BrowserWindowInterface* browser_window_interface) {
+  CHECK(!::features::IsUseUnifiedLockedStateControllerEnabled());
   return Get(browser_window_interface->GetUnownedUserDataHost());
 }
 

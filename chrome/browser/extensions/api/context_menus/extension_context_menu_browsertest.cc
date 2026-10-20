@@ -53,9 +53,12 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/wm/window_pin_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
+#include "chrome/common/chrome_features.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -954,20 +957,44 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuLazyTest, UpdateCheckboxes) {
 #if BUILDFLAG(IS_CHROMEOS)
 // Extension context menu tests with and without locked fullscreen when locked
 // and not locked for OnTask. Only relevant for non-web browser scenarios.
+// TODO(crbug.com/438540029): Rename this test suite to "TrustedPinned" to
+// disambiguate between LockedFullscreen (which is for extension API) and OnTask
+// locked (which is for class tools).
 class ExtensionContextMenuLockedFullscreenTest
     : public ExtensionContextMenuBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ public:
+  ExtensionContextMenuLockedFullscreenTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kUseUnifiedLockedStateController, std::get<2>(GetParam()));
+  }
+
  protected:
-  bool IsLockedFullscreen() { return std::get<0>(GetParam()); }
-  bool IsLockedForOnTask() { return std::get<1>(GetParam()); }
+  bool TestLockedFullscreen() { return std::get<0>(GetParam()); }
+  bool TestLockedForOnTask() { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLockedFullscreenTest,
                        VerifyItemStateForOnTask) {
-  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
-      IsLockedForOnTask());
-  if (IsLockedFullscreen()) {
-    ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    auto* controller = chromeos::LockedStateController::From(browser());
+    if (TestLockedFullscreen()) {
+      controller->Lock(TestLockedForOnTask()
+                           ? chromeos::LockedState::kOnTaskLocked
+                           : chromeos::LockedState::kExtensionLocked);
+    } else if (TestLockedForOnTask()) {
+      controller->Lock(chromeos::LockedState::kOnTaskPrepared);
+    }
+  } else {
+    ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+        TestLockedForOnTask());
+    if (TestLockedFullscreen()) {
+      ash::PinWindow(browser()->GetWindow()->GetNativeWindow(),
+                     /*trusted=*/true);
+    }
   }
 
   // Load test extension and wait for js test code to create context menu with
@@ -985,15 +1012,18 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLockedFullscreenTest,
   const std::unique_ptr<TestRenderViewContextMenu> menu(
       TestRenderViewContextMenu::Create(GetActiveWebContents(), page_url));
   int command_id = ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0);
-  bool expect_command_enabled = IsLockedForOnTask() || !IsLockedFullscreen();
+  bool expect_command_enabled =
+      TestLockedForOnTask() || !TestLockedFullscreen();
   ASSERT_EQ(expect_command_enabled, menu->IsCommandIdEnabled(command_id));
 }
 
-INSTANTIATE_TEST_SUITE_P(ExtensionContextMenuLockedFullscreenTests,
-                         ExtensionContextMenuLockedFullscreenTest,
-                         ::testing::Combine(
-                             /*IsLockedFullscreen=*/::testing::Bool(),
-                             /*IsLockedForOnTask=*/::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    ExtensionContextMenuLockedFullscreenTests,
+    ExtensionContextMenuLockedFullscreenTest,
+    ::testing::Combine(
+        /*TestLockedFullscreen=*/::testing::Bool(),
+        /*TestLockedForOnTask=*/::testing::Bool(),
+        /*IsUseUnifiedLockedStateControllerEnabled=*/::testing::Bool()));
 #endif
 
 

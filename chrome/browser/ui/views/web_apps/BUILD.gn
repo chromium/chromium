@@ -195,6 +195,7 @@ source_set("browser_tests") {
     deps += [
       ":protocol_handler_picker_dialog",
       "//chrome/browser/ash/boca/on_task",
+      "//chrome/browser/ui/chromeos/locked_state",
       "//chrome/browser/ui/views/frame:immersive_mode_controller_chromeos",
       "//chrome/browser/ui/views/frame:top_container_view",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",

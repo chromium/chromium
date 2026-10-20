@@ -172,6 +172,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ui/ash/test_util.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
@@ -511,19 +512,43 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, CloseWithTabsStartWithActive) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, OnTaskLockedBrowserView) {
-  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
-      true);
+class BrowserViewOnTaskTest : public BrowserViewTest,
+                              public testing::WithParamInterface<bool> {
+ public:
+  BrowserViewOnTaskTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kUseUnifiedLockedStateController, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(BrowserViewOnTaskTest, OnTaskLockedBrowserView) {
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    chromeos::LockedStateController::From(browser())->Lock(
+        chromeos::LockedState::kOnTaskPrepared);
+  } else {
+    ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+        true);
+  }
   EXPECT_FALSE(browser_view()->CanMinimize());
   EXPECT_FALSE(browser_view()->ShouldShowCloseButton());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, OnTaskUnlockedBrowserView) {
-  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
-      false);
+IN_PROC_BROWSER_TEST_P(BrowserViewOnTaskTest, OnTaskUnlockedBrowserView) {
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    chromeos::LockedStateController::From(browser())->Unlock(
+        chromeos::LockedState::kOnTaskLocked);
+  } else {
+    ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
+        false);
+  }
   EXPECT_TRUE(browser_view()->CanMinimize());
   EXPECT_TRUE(browser_view()->ShouldShowCloseButton());
 }
+
+INSTANTIATE_TEST_SUITE_P(All, BrowserViewOnTaskTest, testing::Bool());
 #endif
 
 // Verifies that page and devtools WebViews are being correctly laid out

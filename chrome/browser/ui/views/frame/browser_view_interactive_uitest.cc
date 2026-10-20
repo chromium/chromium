@@ -55,8 +55,11 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
+#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
+#include "chrome/common/chrome_features.h"
 #endif
 
 using views::FocusManager;
@@ -722,11 +725,46 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDesktopWidgetEnabledTest,
 #endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
-using BrowserViewLockedFullscreenTestChromeOS = BrowserViewTest;
+// TODO(crbug.com/438540029): Rename this test suite to "TrustedPinned" to
+// disambiguate between LockedFullscreen (which is for extension API) and OnTask
+// locked (which is for class tools).
+class BrowserViewLockedFullscreenTestChromeOS
+    : public BrowserViewTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BrowserViewLockedFullscreenTestChromeOS() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kUseUnifiedLockedStateController,
+        is_unified_locked_state_controller_enabled_);
+  }
 
-IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
+ protected:
+  void PinWindow(bool trusted, bool locked_for_on_task = false) {
+    if (trusted && is_unified_locked_state_controller_enabled_) {
+      auto* controller = chromeos::LockedStateController::From(browser());
+      ASSERT_TRUE(controller);
+      if (locked_for_on_task) {
+        controller->Lock(chromeos::LockedState::kOnTaskLocked);
+      } else {
+        controller->Lock(chromeos::LockedState::kExtensionLocked);
+      }
+    } else {
+      if (!is_unified_locked_state_controller_enabled_) {
+        ash::boca::OnTaskLockedController::From(browser())
+            ->set_locked_for_on_task(locked_for_on_task);
+      }
+      ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), trusted);
+    }
+  }
+
+ private:
+  const bool is_unified_locked_state_controller_enabled_ = GetParam();
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(BrowserViewLockedFullscreenTestChromeOS,
                        ShowExclusiveAccessBubbleWhenNotLocked) {
-  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/false);
+  PinWindow(/*trusted=*/false);
   ExclusiveAccessManager::From(browser())
       ->context()
       ->UpdateExclusiveAccessBubble(
@@ -744,9 +782,9 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                   ->IsExclusiveAccessBubbleDisplayed());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
+IN_PROC_BROWSER_TEST_P(BrowserViewLockedFullscreenTestChromeOS,
                        HideExclusiveAccessBubbleWhenLocked) {
-  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
+  PinWindow(/*trusted=*/true);
   ExclusiveAccessManager::From(browser())
       ->context()
       ->UpdateExclusiveAccessBubble(
@@ -762,25 +800,25 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                    ->IsExclusiveAccessBubbleDisplayed());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
+IN_PROC_BROWSER_TEST_P(BrowserViewLockedFullscreenTestChromeOS,
                        EnableImmersiveModeWhenNotTrustedPinned) {
-  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/false);
+  PinWindow(/*trusted=*/false);
   EXPECT_TRUE(ImmersiveModeController::From(browser())->IsEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
+IN_PROC_BROWSER_TEST_P(BrowserViewLockedFullscreenTestChromeOS,
                        DisableImmersiveModeWhenNotLockedForOnTask) {
-  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
-      false);
-  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
+  PinWindow(/*trusted=*/true, /*locked_for_on_task=*/false);
   EXPECT_FALSE(ImmersiveModeController::From(browser())->IsEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
+IN_PROC_BROWSER_TEST_P(BrowserViewLockedFullscreenTestChromeOS,
                        EnableImmersiveModeWhenLockedForOnTask) {
-  ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
-      true);
-  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
+  PinWindow(/*trusted=*/true, /*locked_for_on_task=*/true);
   EXPECT_TRUE(ImmersiveModeController::From(browser())->IsEnabled());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrowserViewLockedFullscreenTestChromeOS,
+                         testing::Bool());
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -128,10 +128,8 @@ LockedStateController::CommandType GetCommandType(int command_id) {
 // static
 LockedStateController* LockedStateController::From(
     BrowserWindowInterface* browser_window_interface) {
-  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
-    return Get(browser_window_interface->GetUnownedUserDataHost());
-  }
-  return nullptr;
+  CHECK(features::IsUseUnifiedLockedStateControllerEnabled());
+  return Get(browser_window_interface->GetUnownedUserDataHost());
 }
 
 LockedStateController::LockedStateController(
@@ -140,7 +138,9 @@ LockedStateController::LockedStateController(
       capabilities_(kUnlockedCapabilities),
       scoped_unowned_user_data_(
           browser_window_interface->GetUnownedUserDataHost(),
-          *this) {}
+          *this) {
+  CHECK(features::IsUseUnifiedLockedStateControllerEnabled());
+}
 
 LockedStateController::~LockedStateController() = default;
 

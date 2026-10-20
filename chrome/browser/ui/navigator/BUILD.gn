@@ -179,6 +179,7 @@ if (!is_android) {
         "//chrome/browser/ash/boca/on_task",
         "//chrome/browser/ui/ash/multi_user",
         "//chrome/browser/ui/ash/session",
+        "//chrome/browser/ui/chromeos/locked_state",
         "//components/account_id:test_support",
       ]
     }

@@ -716,13 +716,9 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
       public testing::WithParamInterface<bool> {
  public:
   BrowserCommandControllerBrowserTestLockedFullscreen() {
-    if (is_unified_locked_state_controller_enabled_) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kUseUnifiedLockedStateController);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kUseUnifiedLockedStateController);
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        features::kUseUnifiedLockedStateController,
+        is_unified_locked_state_controller_enabled_);
   }
 
  protected:

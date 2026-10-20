@@ -453,12 +453,15 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
                                                                      browser);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  locked_state_controller_ =
-      GetUserDataFactory().CreateInstance<chromeos::LockedStateController>(
-          *browser, browser);
-  on_task_locked_controller_ =
-      GetUserDataFactory().CreateInstance<ash::boca::OnTaskLockedController>(
-          *browser, browser);
+  if (features::IsUseUnifiedLockedStateControllerEnabled()) {
+    locked_state_controller_ =
+        GetUserDataFactory().CreateInstance<chromeos::LockedStateController>(
+            *browser, browser);
+  } else {
+    on_task_locked_controller_ =
+        GetUserDataFactory().CreateInstance<ash::boca::OnTaskLockedController>(
+            *browser, browser);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if defined(USE_AURA)
