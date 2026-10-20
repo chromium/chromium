@@ -6,6 +6,7 @@
 
 #import <CoreGraphics/CGDirectDisplay.h>
 
+#include <atomic>
 #include <memory>
 
 #include "base/functional/callback.h"
@@ -31,20 +32,48 @@ class DISPLAY_EXPORT WindowServerEventPumpThread : public base::Thread {
       base::RepeatingCallback<void(int64_t)> update_vsync_displays_cb);
   ~WindowServerEventPumpThread() override;
 
-  // To be implemented.
+  // Outcome of pumping WindowServer events on this thread. Recorded in the
+  // "Viz.DisplayLink.WindowServerEventPumpResult" histogram: kSuccess is
+  // recorded once, after the first successful drain of the event queue, and a
+  // failure value is recorded once when the thread stops pumping.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(WindowServerEventPumpResult)
+  enum class Result {
+    // The WindowServer event queue was drained successfully at least once.
+    kSuccess = 0,
+
+    // CGSMainConnectionID() returned an invalid connection.
+    kInvalidMainConnection = 1,
+
+    // CGSGetEventPort() failed or returned MACH_PORT_NULL.
+    kGetEventPortFailed = 2,
+
+    // mach_msg() failed to receive from the WindowServer event port.
+    kMachMsgReceiveFailed = 3,
+
+    kMaxValue = kMachMsgReceiveFailed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:WindowServerEventPumpResult)
 
  private:
-  // Called when this thread can no longer pump WindowServer events. Disables
-  // CADisplayLink creation for the rest of the process lifetime and makes all
-  // root frame sinks fall back to a timer-based VSync source. Safe to call
-  // from any thread; the work is bounced to the Viz thread.
-  void DisableDisplayLink();
+  void PumpWindowServerEvents();
+
+  // Called when this thread can no longer pump WindowServer events. Records
+  // `failure` to UMA, disables CADisplayLink creation for the rest of the
+  // process lifetime and makes all root frame sinks fall back to a timer-based
+  // VSync source. Safe to call from any thread; the work is bounced to the Viz
+  // thread.
+  void DisableDisplayLink(Result failure);
 
   // Callback to FrameSinkManagerImpl::UpdateVSyncDisplays(), used to make
   // every root frame sink recreate its DisplayLinkMac. The display ID argument
   // is ignored when the GPU process owns the display link, so 0 is passed to
   // update all displays.
   base::RepeatingCallback<void(int64_t)> update_vsync_displays_cb_;
+
+  std::atomic<bool> shutdown_{false};
 
   // Task runner of the Viz thread on which this object was created and on
   // which `update_vsync_displays_cb_` must run.

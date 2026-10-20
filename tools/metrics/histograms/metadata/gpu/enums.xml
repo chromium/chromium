@@ -1515,6 +1515,21 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="Core Supported"/>
 </enum>
 
+<!-- LINT.IfChange(WindowServerEventPumpResult) -->
+
+<enum name="WindowServerEventPumpResult">
+  <summary>
+    The result of pumping WindowServer events for CADisplayLink on the
+    WindowServerEventPumpThread in the GPU process.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed - Invalid connection"/>
+  <int value="2" label="Failed - Event port"/>
+  <int value="3" label="Failed - mach_msg"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/display/mac/ca_display_link_mac.h:WindowServerEventPumpResult) -->
+
 </enums>
 
 </histogram-configuration>

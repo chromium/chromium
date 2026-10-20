@@ -2711,6 +2711,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Viz.DisplayLink.DrainEventQueueUs" units="microseconds"
+    expires_after="2027-09-25">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    The time elapsed to drain the WindowServer event queue in the
+    WindowServerEventPumpThread of the child (GPU) process. Recorded every time
+    messages arrive on the specific mach port and the pending display
+    reconfiguration and wake events are processed. Only reported on platforms
+    supporting high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Viz.DisplayLink.IpcTimeFromNeedsBeginFramesToVSyncReceived"
     units="ms" expires_after="2027-06-28">
   <owner>magchen@chromium.org</owner>
@@ -2721,6 +2734,21 @@ chromium-metrics-reviews@google.com.
     process. This is recorded once per request cycle per display. This is
     recorded only when the CADisplayLinkInBrowser feature is enabled (which uses
     ExternalDisplayLink and VSyncProviderMac).
+  </summary>
+</histogram>
+
+<histogram name="Viz.DisplayLink.WindowServerEventPumpResult"
+    enum="WindowServerEventPumpResult" expires_after="2027-09-25">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    The result of pumping WindowServer events on the WindowServerEventPumpThread
+    in the GPU process. Success is recorded once, after the WindowServer event
+    queue is drained for the first time. A failure reason is recorded once when
+    the thread fails to obtain the WindowServer connection or event port, or
+    when receiving from the event port fails; CADisplayLink creation is then
+    disabled and all root frame sinks fall back to a timer-based VSync source.
+    Only recorded when the CADisplayLinkInGpu feature is enabled.
   </summary>
 </histogram>
 
