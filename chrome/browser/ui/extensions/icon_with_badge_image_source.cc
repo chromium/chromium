@@ -59,8 +59,14 @@ SkColor GetBadgeBackgroundColor(IconWithBadgeImageSource::Badge* badge,
              : SkColorSetA(badge->background_color, SK_AlphaOPAQUE);
 }
 
-float GetBlockedActionBadgeRadius() {
-  return 12.0f;
+// Returns the radius of the blocked-action decoration circle for an icon area
+// of `icon_area_size`. The decoration is designed as a 24dp circle inside the
+// default 28dp toolbar button, but callers (e.g. the WebUI extensions
+// container) may request smaller images, in which case the circle is shrunk to
+// fit the available area.
+float GetBlockedActionBadgeRadius(int icon_area_size) {
+  constexpr float kDefaultRadius = 12.0f;
+  return std::min(kDefaultRadius, icon_area_size / 2.0f);
 }
 
 }  // namespace
@@ -246,13 +252,10 @@ void IconWithBadgeImageSource::PaintBlockedActionDecoration(
       gfx::Vector2d(0, 2), kBlurCorrection * 6 /*blur*/,
       color_provider->GetColor(kColorExtensionIconDecorationAmbientShadow));
 
-  const float blocked_action_badge_radius = GetBlockedActionBadgeRadius();
-
-  // Sanity checking.
   const gfx::Rect icon_rect = GetIconAreaRect();
-  CHECK_LE(2 * blocked_action_badge_radius, icon_rect.width(),
-           base::NotFatalUntil::M162);
   CHECK_EQ(icon_rect.width(), icon_rect.height(), base::NotFatalUntil::M162);
+  const float blocked_action_badge_radius =
+      GetBlockedActionBadgeRadius(icon_rect.width());
 
   cc::PaintFlags paint_flags;
   paint_flags.setStyle(cc::PaintFlags::kFill_Style);
