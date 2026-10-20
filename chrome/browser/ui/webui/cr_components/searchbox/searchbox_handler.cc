@@ -1787,7 +1787,10 @@ void SearchboxHandler::OpenPopupSelection(
     AutocompleteMatch url_match = searchbox::GenerateDotComMatch(
         client(), autocomplete_controller(), input, text_for_tld);
     if (url_match.destination_url.is_valid()) {
-      OpenMatch(popup_selection, url_match, disposition, base::TimeTicks::Now(),
+      // `url_match` isn't in the result, so pass `kNoMatch` to log it as the
+      // only match, instead of logging the line that `popup_selection` is on.
+      OpenMatch(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
+                url_match, disposition, base::TimeTicks::Now(),
                 searchbox::MakeAutocompleteSnapshot(autocomplete_controller()));
       return;
     }
