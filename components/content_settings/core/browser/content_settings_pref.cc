@@ -280,30 +280,22 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
   // valid when the notifications are sent, so that |Observe| skips the
   // notification.
   base::AutoReset<bool> auto_reset(&updating_preferences_, true);
+  std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update;
   base::AutoLock auto_lock(value_map_.GetLock());
 
   value_map_.clear();
 
-  if (prefs_->GetDict(pref_name_).empty()) {
+  const base::DictValue& all_settings_dictionary = prefs_->GetDict(pref_name_);
+  if (all_settings_dictionary.empty()) {
     return;
   }
 
-  std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update;
-  std::unique_ptr<prefs::DictionaryValueUpdate> mutable_settings;
-  // Don't create `update` in off the record mode to avoid accidentally
-  // modifying the pref.
-  if (!off_the_record_) {
-    update =
-        std::make_unique<prefs::ScopedDictionaryPrefUpdate>(prefs_, pref_name_);
-    mutable_settings = update->Get();
-  }
-  ReadSettingsFromDictionary(prefs_->GetDict(pref_name_),
-                             mutable_settings.get());
+  ReadSettingsFromDictionary(all_settings_dictionary, update);
 }
 
 void ContentSettingsPref::ReadSettingsFromDictionary(
     const base::DictValue& all_settings_dictionary,
-    prefs::DictionaryValueUpdate* mutable_settings) {
+    std::unique_ptr<prefs::ScopedDictionaryPrefUpdate>& update) {
   // Accumulates non-canonical pattern strings found in Prefs for which the
   // corresponding canonical pattern is also in Prefs. In these cases the
   // canonical version takes priority, and the non-canonical pattern is removed.
@@ -417,7 +409,16 @@ void ContentSettingsPref::ReadSettingsFromDictionary(
   // off_the_record reads occur before off_the_record reads. Thus, by the time
   // the off_the_record call to ReadContentSettingsFromPref() occurs, the
   // regular profile will have canonicalized the stored pref data.
-  if (!off_the_record_) {
+  if (!off_the_record_ &&
+      (!non_canonical_patterns_to_remove.empty() ||
+       !expired_patterns_to_remove.empty() ||
+       !expired_permission_usage_to_remove.empty() ||
+       !non_canonical_patterns_to_canonical_pattern.empty())) {
+    update =
+        std::make_unique<prefs::ScopedDictionaryPrefUpdate>(prefs_, pref_name_);
+    std::unique_ptr<prefs::DictionaryValueUpdate> mutable_settings =
+        update->Get();
+
     for (const auto& pattern : non_canonical_patterns_to_remove) {
       mutable_settings->RemoveWithoutPathExpansion(pattern, nullptr);
     }

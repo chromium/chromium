@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -29,7 +30,7 @@ class Clock;
 }
 
 namespace prefs {
-class DictionaryValueUpdate;
+class ScopedDictionaryPrefUpdate;
 }  // namespace prefs
 
 namespace content_settings {
@@ -88,7 +89,7 @@ class ContentSettingsPref {
   // A helper function to read settings from a dictionary.
   void ReadSettingsFromDictionary(
       const base::DictValue& all_settings_dictionary,
-      prefs::DictionaryValueUpdate* mutable_settings)
+      std::unique_ptr<prefs::ScopedDictionaryPrefUpdate>& update)
       EXCLUSIVE_LOCKS_REQUIRED(value_map_.GetLock());
   // Helper function to determine if the setting should be removed.
   bool ShouldRemoveSetting(
