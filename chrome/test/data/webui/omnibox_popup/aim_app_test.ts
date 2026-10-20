@@ -97,6 +97,37 @@ suite('AimAppTest', function() {
     assertTrue(!!app.$.composebox.input);
   });
 
+  test('ClearPopupReportsWhetherQueryWasSubmitted', async function() {
+    const app = document.createElement('omnibox-aim-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    // Closing without a submission does not report a submitted query.
+    let response = await page.clearPopup();
+    assertFalse(response.querySubmitted);
+
+    // Closing after a submission reports the submitted query, so the browser
+    // leaves focus on the results page instead of the omnibox.
+    app.$.composebox.fire('composebox-submit');
+    response = await page.clearPopup();
+    assertTrue(response.querySubmitted);
+
+    // The submission is only reported for the close that follows it.
+    response = await page.clearPopup();
+    assertFalse(response.querySubmitted);
+
+    // Showing the popup again resets a submission that was never reported.
+    app.$.composebox.fire('composebox-submit');
+    page.onPopupShown({
+      input: '',
+      attachments: [],
+      toolMode: 0,
+    });
+    await microtasksFinished();
+    response = await page.clearPopup();
+    assertFalse(response.querySubmitted);
+  });
+
   test('ResetsPreserveContextOnShow', async function() {
     const app = document.createElement('omnibox-aim-app');
     document.body.appendChild(app);
@@ -588,5 +619,27 @@ suite('AimAppTest', function() {
 
     assertEquals(1, handler.getCallCount('requestClose'));
     assertEquals('test draft text', handler.getArgs('requestClose')[0]);
+  });
+
+  test('ModifierSubmitLeavesClosingToBrowser', async function() {
+    const app = document.createElement('omnibox-aim-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+    app.$.composebox.input = 'test query';
+    await microtasksFinished();
+
+    // A modifier submit opens the results elsewhere and closes the composebox.
+    // The browser closes the popup itself for any submit it accepts, so the
+    // page must not request a close that would hand focus back to the omnibox.
+    app.$.composebox.submitQuery(
+        new KeyboardEvent('keydown', {key: 'Enter', ctrlKey: true}));
+    await microtasksFinished();
+    assertEquals(1, testProxy.handler.getCallCount('submitQuery'));
+    assertEquals(0, handler.getCallCount('requestClose'));
+
+    // A later close, like Escape after a dropped submit, still goes through.
+    app.$.composebox.closeComposebox();
+    await microtasksFinished();
+    assertEquals(1, handler.getCallCount('requestClose'));
   });
 });

@@ -13,7 +13,8 @@ export function getHtml(this: OmniboxAimAppElement) {
     .closeOnEscape="${this.webuiOmniboxFullPopupEnabled_}"
     .webuiShadowEnabled="${this.webuiShadowEnabled_}"
     @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
-    @close-composebox="${this.onCloseComposebox_}">
+    @close-composebox="${this.onCloseComposebox_}"
+    @composebox-submit="${this.onComposeboxSubmit_}">
 </cr-omnibox-composebox>
 <!--_html_template_end_-->`;
   // clang-format on

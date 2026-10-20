@@ -912,7 +912,7 @@ export const ComposeboxEmbedderMixin =
           // composebox closes before the new results page finishes loading.
           if (e && e.detail &&
               (e.detail.ctrlKey || e.detail.metaKey || e.detail.shiftKey)) {
-            this.closeComposebox();
+            this.closeComposebox(/* afterSubmit= */ true);
           }
         }
 
@@ -2398,14 +2398,21 @@ export const ComposeboxEmbedderMixin =
           this.clearAutocompleteMatches();
         }
 
-        closeComposebox() {
+        /**
+         * @param afterSubmit Whether the composebox is closing right after a
+         *     query was submitted from it, as opposed to the user dismissing
+         *     it. Forwarded in the `close-composebox` event so hosts that
+         *     close on submit themselves can skip the request.
+         */
+        closeComposebox(afterSubmit: boolean = false) {
           this.resetDelayedTabContextRequests_();
           this.resetModes();
           this.getSearchboxHandler().clearFiles(
               /*shouldBlockAutoSuggestedTabs=*/ false);
           this.resetToolsAndModels();
           this.suggestInventory = null;
-          this.fire('close-composebox', {composeboxText: this.input});
+          this.fire(
+              'close-composebox', {composeboxText: this.input, afterSubmit});
         }
 
         handleEscapeKeyLogic() {
@@ -2470,7 +2477,7 @@ export const ComposeboxEmbedderMixin =
           // doing so in the current tab causes a visual jitter where the
           // composebox closes before the new results page finishes loading.
           if (ctrlKey || metaKey || shiftKey) {
-            this.closeComposebox();
+            this.closeComposebox(/* afterSubmit= */ true);
           }
         }
 
@@ -3486,7 +3493,7 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   deleteFileContext(
       uuidToDelete: UnguessableToken, fromAutoSuggestedChip?: boolean): void;
   closeMenu(): void;
-  closeComposebox(): void;
+  closeComposebox(afterSubmit?: boolean): void;
   submitQuery(e?: KeyboardEvent|MouseEvent): void;
   cacheSubmittedTabs(): void;
   submitCleanup(): void;

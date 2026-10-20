@@ -102,6 +102,7 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -3560,6 +3561,35 @@ class FullWebUIOmniboxAimInteractiveTestBase
         WaitForAimPopupReady(),
         InAnyContext(WaitForElementToRender(kAimPopupWebView, kAimInput)));
   }
+
+  // Submits the AIM popup's query by pressing Enter with `modifiers`, then
+  // waits for `OmniboxAimPopupWebUIContent::OnClearCallback()`, which decides
+  // whether to hand focus back to the omnibox once the popup is hidden.
+  auto SubmitAimQueryAndWaitForPopupCleared(int modifiers) {
+    return Steps(
+        // `OnClearCallback()` detaches the popup's WebContents right before
+        // making that decision. Observe the detach to know when it has run.
+        Do([this]() {
+          aim_popup_cleared_ = false;
+          auto* aim_presenter = GetActiveAimPresenter();
+          ASSERT_TRUE(aim_presenter);
+          auto* content = aim_presenter->GetWebUIContent();
+          ASSERT_TRUE(content);
+          aim_popup_detached_subscription_ =
+              content->AddWebContentsDetachedCallback(
+                  base::BindLambdaForTesting(
+                      [this](views::WebView*) { aim_popup_cleared_ = true; }));
+        }),
+        InAnyContext(
+            SendKeyPress(kBrowserViewElementId, ui::VKEY_RETURN, modifiers)),
+        WaitForAimPopupHidden(),
+        PollUntil([this]() { return aim_popup_cleared_; },
+                  "WaitForAimPopupCleared"));
+  }
+
+ private:
+  bool aim_popup_cleared_ = false;
+  base::CallbackListSubscription aim_popup_detached_subscription_;
 };
 
 class FullWebUIOmniboxAimInteractiveTest
@@ -3626,6 +3656,40 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
       WaitForPopupState(OmniboxPopupState::kFull),
       WaitForWebUIInputValue(kQuery), WaitForOmniboxFocus(true),
       CheckWebUIInputSelection(kQuery.length(), kQuery.length()));
+}
+
+// Submitting a query from the AIM popup should leave focus on the page that
+// shows the results instead of handing it back to the omnibox.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
+                       SubmitAimQueryDoesNotRestoreOmniboxFocus) {
+  RunTestSequence(
+      OpenAimPopup(), InputAimPopupText("my test query"),
+      SubmitAimQueryAndWaitForPopupCleared(ui::EF_NONE),
+      // The omnibox must not reclaim focus, and its popup must stay closed.
+      CheckPopupState(OmniboxPopupState::kNone), CheckOmniboxFocus(false));
+}
+
+// Same as above, but with a modifier that opens the results in a background
+// tab. The composebox also closes itself right after such a submit, and that
+// close must not hand focus back to the omnibox either.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
+                       ModifierSubmitAimQueryDoesNotRestoreOmniboxFocus) {
+#if BUILDFLAG(IS_MAC)
+  constexpr int kBackgroundTabModifier = ui::EF_COMMAND_DOWN;
+#else
+  constexpr int kBackgroundTabModifier = ui::EF_CONTROL_DOWN;
+#endif
+  int tab_count = 0;
+  RunTestSequence(
+      OpenAimPopup(), InputAimPopupText("my test query"),
+      Do([&]() { tab_count = browser()->tab_strip_model()->count(); }),
+      SubmitAimQueryAndWaitForPopupCleared(kBackgroundTabModifier),
+      Check(
+          [&]() {
+            return browser()->tab_strip_model()->count() == tab_count + 1;
+          },
+          "CheckBackgroundTabOpened"),
+      CheckPopupState(OmniboxPopupState::kNone), CheckOmniboxFocus(false));
 }
 
 // Opening multiple New Tab Pages rapidly while the Full WebUI omnibox popup is

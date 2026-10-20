@@ -66,7 +66,8 @@ void OmniboxAimPopupWebUIContent::OnContextMenuClosed() {
 
 void OmniboxAimPopupWebUIContent::OnClearCallback(
     base::WeakPtr<content::WebContents> original_web_contents,
-    const std::string& input) {
+    const std::string& input,
+    bool query_submitted) {
   // Now that the WebUI has painted, it is safe to detach and cleanup.
   Detach();
 
@@ -79,7 +80,7 @@ void OmniboxAimPopupWebUIContent::OnClearCallback(
   // web contents is referenced by the omnibox_edit_model.
   if (location_bar()->GetWebContents() == original_web_contents.get()) {
     if (!draft_already_applied) {
-      ApplyInputAndCleanup(input);
+      ApplyInputAndCleanup(input, query_submitted);
     }
   } else if (original_web_contents && !input.empty()) {
     SaveInputToBackgroundTab(original_web_contents.get(), input);
@@ -93,8 +94,8 @@ void OmniboxAimPopupWebUIContent::SaveInputToBackgroundTab(
                                       base::UTF8ToUTF16(input));
 }
 
-void OmniboxAimPopupWebUIContent::ApplyInputAndCleanup(
-    const std::string& input) {
+void OmniboxAimPopupWebUIContent::ApplyInputAndCleanup(const std::string& input,
+                                                       bool query_submitted) {
   const bool is_full_webui = is_full_webui_omnibox();
   if (is_full_webui) {
     controller()->edit_model()->Revert();
@@ -110,13 +111,15 @@ void OmniboxAimPopupWebUIContent::ApplyInputAndCleanup(
   // (`CloseUI()`, where `draft_applied_on_close_` is true) or when the browser
   // window widget itself is active (e.g. clicking the page content). If another
   // widget (such as a sign-in promo bubble) has taken activation, do not steal
-  // activation back from it.
+  // activation back from it. If the popup closed because a query was submitted
+  // from it, leave focus where the submission left it, which is the results
+  // page unless they opened in a background tab.
   views::Widget* location_bar_widget =
       popup_presenter() ? popup_presenter()->delegate().GetLocationBarWidget()
                         : nullptr;
   const bool should_restore_focus =
-      draft_applied_on_close_ ||
-      (location_bar_widget && location_bar_widget->IsActive());
+      draft_applied_on_close_ || (!query_submitted && location_bar_widget &&
+                                  location_bar_widget->IsActive());
   if (is_full_webui && should_restore_focus) {
     // Hand focus back to the omnibox. Don't select all so the caret continues
     // the user's editing session.
@@ -183,7 +186,7 @@ void OmniboxAimPopupWebUIContent::CloseUI() {
     // Must be set before `ApplyInputAndCleanup()`, which can synchronously
     // re-enter `Clear()`.
     draft_applied_on_close_ = true;
-    ApplyInputAndCleanup(draft);
+    ApplyInputAndCleanup(draft, /*query_submitted=*/false);
     controller()->popup_state_manager()->SetPopupState(
         OmniboxPopupState::kFull);
   } else {

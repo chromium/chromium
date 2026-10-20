@@ -71,7 +71,7 @@ void OmniboxPopupAimHandler::SetPreserveContextOnClose(
 }
 
 void OmniboxPopupAimHandler::ClearPopup(
-    base::OnceCallback<void(const std::string&)> callback) {
+    base::OnceCallback<void(const std::string&, bool)> callback) {
   page_->ClearPopup(std::move(callback));
 }
 

@@ -66,6 +66,10 @@ export class OmniboxAimAppElement extends CrLitElement {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private listenerIds_: number[] = [];
   private preserveContextOnClose_: boolean = false;
+  // Whether a query was submitted from the composebox since the popup was last
+  // shown. Reported back to the browser on `clearPopup` so it leaves focus on
+  // the page showing the results instead of returning it to the omnibox.
+  private querySubmitted_: boolean = false;
 
   constructor() {
     super();
@@ -107,6 +111,7 @@ export class OmniboxAimAppElement extends CrLitElement {
   // its public API.
 
   private onPopupShown_(context: SearchContext) {
+    this.querySubmitted_ = false;
     const composebox = this.$.composebox;
     if (!this.preserveContextOnClose_) {
       // Avoid showing the glow animation when coming back from a preserved
@@ -129,15 +134,18 @@ export class OmniboxAimAppElement extends CrLitElement {
     this.setPreserveContextOnClose_(false);
   }
 
-  private async clearPopup_(): Promise<{input: string}> {
+  private async clearPopup_():
+      Promise<{input: string, querySubmitted: boolean}> {
     const composebox = this.$.composebox;
     const input = composebox.input;
+    const querySubmitted = this.querySubmitted_;
+    this.querySubmitted_ = false;
     if (!this.preserveContextOnClose_) {
       composebox.resetSession();
     }
     await composebox.updateComplete;
     // Transfer input text to the location bar.
-    return {input};
+    return {input, querySubmitted};
   }
 
   private setPreserveContextOnClose_(preserveContextOnClose: boolean) {
@@ -161,8 +169,23 @@ export class OmniboxAimAppElement extends CrLitElement {
    * Forwards close requests along with the active composebox input text so the
    * browser can transfer any typed draft back to the Omnibox.
    */
-  protected onCloseComposebox_(e: CustomEvent<{composeboxText: string}>) {
+  protected onCloseComposebox_(
+      e: CustomEvent<{composeboxText: string, afterSubmit?: boolean}>) {
+    // After a submit, the browser closes the popup itself, and
+    // `requestClose()` would hand focus back to the omnibox.
+    if (e.detail.afterSubmit) {
+      return;
+    }
     this.browserProxy_.handler.requestClose(e.detail.composeboxText);
+  }
+
+  /**
+   * Records that a query was submitted, so that `clearPopup_()` can tell the
+   * browser to leave focus on the page showing the results. The composebox
+   * clears its own inputs on submit.
+   */
+  protected onComposeboxSubmit_() {
+    this.querySubmitted_ = true;
   }
 }
 

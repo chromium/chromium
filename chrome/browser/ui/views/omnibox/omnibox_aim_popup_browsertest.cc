@@ -255,7 +255,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
   // 3. Simulate the Mojo callback returning with draft text.
   // We manually call the private `OnClearCallback`.
   const std::string draft_text = "typed in composebox";
-  content->OnClearCallback(original_tab_ptr, draft_text);
+  content->OnClearCallback(original_tab_ptr, draft_text,
+                           /*query_submitted=*/false);
 
   // 4. Verify the text was injected into the ORIGINAL tab's state.
   auto* state = static_cast<OmniboxState*>(
@@ -1047,7 +1048,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupFullWebUIBrowserTest,
   auto* content = ShowPopupAndGetWebUIContent();
   ASSERT_TRUE(content);
 
-  content->ApplyInputAndCleanup("test search query");
+  content->ApplyInputAndCleanup("test search query", /*query_submitted=*/false);
 
   EXPECT_EQ(u"test search query", location_bar()->GetOmniboxView()->GetText());
   EXPECT_TRUE(location_bar()
@@ -1062,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupFullWebUIBrowserTest,
   ASSERT_TRUE(content);
 
   location_bar()->GetOmniboxView()->SetUserText(u"temporary draft");
-  content->ApplyInputAndCleanup("");
+  content->ApplyInputAndCleanup("", /*query_submitted=*/false);
 
   EXPECT_FALSE(location_bar()
                    ->GetOmniboxController()
