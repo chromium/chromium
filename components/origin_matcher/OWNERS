@@ -1,6 +1,7 @@
 file://android_webview/OWNERS
 
 ashleynewson@chromium.org
+bewise@chromium.org
 
 per-file *_mojom_traits*.*=set noparent
 per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS
