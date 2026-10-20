@@ -4,6 +4,7 @@
 
 bundle_data("resources") {
   sources = [
+    "ntp_customization.json",
     "save_passwords.json",
     "save_passwords_darkmode.json",
     "use_autofill.json",

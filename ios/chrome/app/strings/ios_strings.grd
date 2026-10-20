@@ -5555,6 +5555,18 @@ You can restart anytime.
       <message name="IDS_IOS_NOTIFICATIONS_TITLE" desc="Title for Notifications settings menu.">
         Notifications
       </message>
+      <message name="IDS_IOS_NTP_CUSTOMIZATION_PROMO_PRIMARY_BUTTON_TITLE" desc="The title for the primary button of the NTP customization sheet. [iOS only]">
+        Try it now
+      </message>
+      <message name="IDS_IOS_NTP_CUSTOMIZATION_PROMO_SECONDARY_BUTTON_TITLE" desc="The title for the secondary button of the NTP customization sheet. [iOS only]">
+        No thanks
+      </message>
+      <message name="IDS_IOS_NTP_CUSTOMIZATION_PROMO_SUBTITLE" desc="The subtitle of the NTP customization promo sheet. [iOS only]">
+          Switch to a layout built for quick searches
+      </message>
+      <message name="IDS_IOS_NTP_CUSTOMIZATION_PROMO_TITLE" desc="The title of the NTP customization promo sheet. [iOS only]">
+          Try a focused new tab page
+      </message>
       <message name="IDS_IOS_NTP_FEED_SIGNIN_FULL_PROMO_BODY" desc="The text on the body of the new tab page Feed Signin Promo, explaining that users will see more relevant content if they enable sync. [iOS only]">
         Sync for the most relevant content based on your interests.
       </message>
