@@ -911,7 +911,7 @@
         "apk": "android-cts/testcases/CtsWidgetTestCases.apk",
         "includes": [
           {
-            "match": "android.widget.cts.RemoteViewsActivityTest#testWebView"
+            "match": "android.widget.cts.RemoteViewsActivityTest#testWebView*"
           }
         ]
       },
