@@ -23,21 +23,19 @@
 #include "ash/public/cpp/test/test_tab_strip_delegate.h"
 #include "ash/scanner/fake_scanner_delegate.h"
 #include "ash/system/focus_mode/test/test_focus_mode_delegate.h"
-#include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 #include "ash/system/test_system_sounds_delegate.h"
 #include "ash/user_education/mock_user_education_delegate.h"
 #include "ash/user_education/user_education_delegate.h"
 #include "ash/wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_metrics.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace ash {
 
-TestShellDelegate::TestShellDelegate()
-    : url_loader_factory_(
-          base::MakeRefCounted<network::TestSharedURLLoaderFactory>()) {}
+TestShellDelegate::TestShellDelegate() = default;
 
 TestShellDelegate::~TestShellDelegate() = default;
 
@@ -133,8 +131,11 @@ std::unique_ptr<ScannerDelegate> TestShellDelegate::CreateScannerDelegate()
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
-TestShellDelegate::GetBrowserProcessUrlLoaderFactory() const {
-  return url_loader_factory_;
+TestShellDelegate::GetBrowserProcessUrlLoaderFactory() {
+  if (!url_loader_factory_) {
+    url_loader_factory_ = std::make_unique<network::TestURLLoaderFactory>();
+  }
+  return url_loader_factory_->GetSafeWeakWrapper();
 }
 
 bool TestShellDelegate::CanGoBack(gfx::NativeWindow window) const {

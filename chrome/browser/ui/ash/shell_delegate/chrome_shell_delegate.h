@@ -72,7 +72,7 @@ class ChromeShellDelegate : public ash::ShellDelegate,
       const override;
   std::unique_ptr<ash::ScannerDelegate> CreateScannerDelegate() const override;
   scoped_refptr<network::SharedURLLoaderFactory>
-  GetBrowserProcessUrlLoaderFactory() const override;
+  GetBrowserProcessUrlLoaderFactory() override;
   void OpenKeyboardShortcutHelpPage() const override;
   bool CanGoBack(gfx::NativeWindow window) const override;
   void SetTabScrubberEnabled(bool enabled) override;
