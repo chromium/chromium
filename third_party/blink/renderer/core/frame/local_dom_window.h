@@ -613,6 +613,16 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // the status.
   void SetStorageAccessApiStatus(net::StorageAccessApiStatus status);
 
+  // Whether this window's document may bind
+  // network.mojom.RestrictedDeviceBoundSessionManager. The browser decides at
+  // commit; a document that commits without commit params gets false.
+  bool CanUseDeviceBoundSessionJsApi() const {
+    return can_use_device_bound_session_js_api_;
+  }
+  void SetCanUseDeviceBoundSessionJsApi(bool value) {
+    can_use_device_bound_session_js_api_ = value;
+  }
+
   // https://html.spec.whatwg.org/multipage/browsing-the-web.html#has-been-revealed
   bool HasBeenRevealed() const { return has_been_revealed_; }
   void SetHasBeenRevealed(bool revealed);
@@ -765,6 +775,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Records this window's Storage Access API status. It cannot be downgraded.
   net::StorageAccessApiStatus storage_access_api_status_ =
       net::StorageAccessApiStatus::kNone;
+
+  // Set by DocumentLoader for each new document in this window.
+  bool can_use_device_bound_session_js_api_ = false;
 
   // Tracks whether this window has shown a payment request without a user
   // activation. It cannot be revoked once set to true.

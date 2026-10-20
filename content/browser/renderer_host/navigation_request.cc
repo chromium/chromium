@@ -161,6 +161,7 @@
 #include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/is_potentially_trustworthy.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -1087,6 +1088,36 @@ net::StorageAccessApiStatus ShouldLoadWithStorageAccess(
   return net::StorageAccessApiStatus::kAccessViaAPI;
 }
 
+// Whether a document that commits `origin` with `isolation_info` in a process
+// with `process_lock` may bind
+// network.mojom.RestrictedDeviceBoundSessionManager. Uses only facts that do
+// not change for the document's life. The network service CHECKs the origin and
+// isolation facts, and checks the site-level cookie setting on every use
+// instead.
+bool ComputeCanUseDeviceBoundSessionJsApi(
+    const ProcessLock& process_lock,
+    const url::Origin& origin,
+    const net::IsolationInfo& isolation_info) {
+  if (!base::FeatureList::IsEnabled(features::kDeviceBoundSessionJsApi)) {
+    return false;
+  }
+  // A RenderFrameHostImpl's process does not change, so its lock is fixed for
+  // the document's life. PDF and sandboxed processes may not access origin
+  // data, as in ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(). That
+  // call returns false here for an origin the process has not committed yet,
+  // because RenderFrameHostImpl::UpdatePermissionsForNavigation() adds the
+  // origin to the process's committed origins later.
+  if (process_lock.is_pdf() || process_lock.is_sandboxed()) {
+    return false;
+  }
+  // TODO(crbug.com/353772143): When DBSC supports partitioned cookies, let
+  // third-party contexts through, so that each sees the sessions in its own
+  // cookie partition.
+  return !origin.opaque() && net::IsOriginPotentiallyTrustworthy(origin) &&
+         !isolation_info.nonce().has_value() &&
+         isolation_info.site_for_cookies().IsFirstParty(origin.GetURL());
+}
+
 const char* BeforeUnloadExecutionModeToString(
     NavigationHandle::BeforeUnloadExecutionMode mode) {
   switch (mode) {
@@ -1428,7 +1459,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*isolated_app_policy=*/std::nullopt,
           /*internal_scroll_to_text_fragment=*/std::nullopt,
           /*is_secure_context_root=*/false,
-          blink::mojom::ScriptInjectionPolicy::kNone);
+          blink::mojom::ScriptInjectionPolicy::kNone,
+          /*can_use_device_bound_session_js_api=*/false);
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(!GetContentClient()->browser()->IsInitialWebUIURL(common_params->url));
 #endif
@@ -1602,7 +1634,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*isolated_app_policy=*/std::nullopt,
           /*internal_scroll_to_text_fragment=*/std::nullopt,
           /*is_secure_context_root=*/false,
-          blink::mojom::ScriptInjectionPolicy::kNone);
+          blink::mojom::ScriptInjectionPolicy::kNone,
+          /*can_use_device_bound_session_js_api=*/false);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -7676,6 +7709,10 @@ void NavigationRequest::CommitNavigation() {
   commit_params_->load_with_storage_access = ShouldLoadWithStorageAccess(
       begin_params(), common_params(), frame_tree_node()->current_frame_host(),
       did_encounter_cross_origin_redirect(), GetURL(), response());
+  commit_params_->can_use_device_bound_session_js_api =
+      ComputeCanUseDeviceBoundSessionJsApi(
+          GetRenderFrameHost()->GetProcess()->GetProcessLock(),
+          origin_to_commit, isolation_info_for_subresources_);
 
   auto common_params = common_params_->Clone();
   auto commit_params = commit_params_.Clone();

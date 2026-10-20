@@ -2208,6 +2208,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return required_connection_allowlist_;
   }
 
+  // Whether the current document may bind
+  // network.mojom.RestrictedDeviceBoundSessionManager. NavigationRequest
+  // computed this at commit and sent the same value to the renderer in
+  // CommitNavigationParams.
+  bool CanUseDeviceBoundSessionJsApi() const {
+    return document_associated_data_->can_use_device_bound_session_js_api();
+  }
+
   bool IsCredentialless() const override;
 
   bool IsLastCrossDocumentNavigationStartedByUser() const override;

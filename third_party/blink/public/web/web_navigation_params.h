@@ -681,6 +681,11 @@ struct BLINK_EXPORT WebNavigationParams {
   // document.
   mojom::ScriptInjectionPolicy script_injection_policy =
       mojom::ScriptInjectionPolicy::kNone;
+
+  // Whether the document may bind RestrictedDeviceBoundSessionManager. Set
+  // from CommitNavigationParams; false when the document commits without
+  // them.
+  bool can_use_device_bound_session_js_api = false;
 };
 
 }  // namespace blink

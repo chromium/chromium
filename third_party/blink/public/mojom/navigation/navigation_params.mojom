@@ -792,6 +792,11 @@ struct CommitNavigationParams {
   // document (e.g. preventing injected scripts from navigating the page without
   // a user gesture).
   ScriptInjectionPolicy script_injection_policy = kNone;
+
+  // Whether the committed document may bind
+  // network.mojom.RestrictedDeviceBoundSessionManager. Computed from facts that
+  // do not change for the document's life. Defaults to false.
+  bool can_use_device_bound_session_js_api = false;
 };
 
 // Parameters used to dispatch the `pageswap` event on the old Document for

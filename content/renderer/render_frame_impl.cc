@@ -1041,6 +1041,8 @@ void FillMiscNavigationParams(
   navigation_params->is_browser_initiated = commit_params.is_browser_initiated;
   navigation_params->is_secure_context_root =
       commit_params.is_secure_context_root;
+  navigation_params->can_use_device_bound_session_js_api =
+      commit_params.can_use_device_bound_session_js_api;
 
   navigation_params->is_cross_site_cross_browsing_context_group =
       commit_params.is_cross_site_cross_browsing_context_group;

@@ -16771,6 +16771,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     document_associated_data_->set_renderer_accessible_http_cache_write_enabled(
         !!navigation_request
               ->GetNetworkIsolationKeyForRendererAccessibleHttpCache());
+    document_associated_data_->set_can_use_device_bound_session_js_api(
+        navigation_request->commit_params()
+            .can_use_device_bound_session_js_api);
 
     const std::optional<FencedFrameProperties>& fenced_frame_properties =
         navigation_request->ComputeFencedFrameProperties();

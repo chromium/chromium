@@ -116,6 +116,7 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
     kCreateSpeculativeRFHDelayMs;
 // Allows full debugging of Top Chrome Webium in devtools.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDebugTopChromeWebUI);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionJsApi);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kDeviceBoundSessionTerminationEvictBackForwardCache);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kDigitalGoodsApi);

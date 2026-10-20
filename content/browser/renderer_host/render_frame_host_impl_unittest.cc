@@ -1962,6 +1962,92 @@ TEST_F(RenderFrameHostImplMimeHandlerTest,
                   .is_secure_context_root);
 }
 
+// Turns on the DBSC JS API, so that each commit computes
+// `can_use_device_bound_session_js_api`.
+class RenderFrameHostImplDeviceBoundSessionJsApiTest
+    : public RenderFrameHostImplTest {
+ protected:
+  // Commits `navigation` and returns the new document's value. Checks that
+  // the renderer got the same value in the commit params.
+  bool CommitAndCheck(std::unique_ptr<NavigationSimulator> navigation) {
+    navigation->ReadyToCommit();
+    const bool sent = NavigationRequest::From(navigation->GetNavigationHandle())
+                          ->commit_params()
+                          .can_use_device_bound_session_js_api;
+    navigation->Commit();
+    auto* rfh = static_cast<RenderFrameHostImpl*>(
+        navigation->GetFinalRenderFrameHost());
+    EXPECT_EQ(sent, rfh->CanUseDeviceBoundSessionJsApi());
+    return sent;
+  }
+
+  // Commits https://a.test/ in the main frame and returns a new child of it.
+  TestRenderFrameHost* AddChildToHttpsPage(bool credentialless) {
+    NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                      GURL("https://a.test/"));
+    return credentialless ? main_test_rfh()->AppendCredentiallessChild("child")
+                          : main_test_rfh()->AppendChild("child");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kDeviceBoundSessionJsApi};
+};
+
+TEST_F(RenderFrameHostImplDeviceBoundSessionJsApiTest,
+       TopLevelHttpsDocumentCanUse) {
+  EXPECT_TRUE(CommitAndCheck(NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://a.test/"), contents())));
+}
+
+TEST_F(RenderFrameHostImplDeviceBoundSessionJsApiTest, SameSiteIframeCanUse) {
+  TestRenderFrameHost* child = AddChildToHttpsPage(/*credentialless=*/false);
+  EXPECT_TRUE(CommitAndCheck(NavigationSimulator::CreateRendererInitiated(
+      GURL("https://sub.a.test/"), child)));
+}
+
+TEST_F(RenderFrameHostImplDeviceBoundSessionJsApiTest,
+       CrossSiteIframeCannotUse) {
+  TestRenderFrameHost* child = AddChildToHttpsPage(/*credentialless=*/false);
+  EXPECT_FALSE(CommitAndCheck(NavigationSimulator::CreateRendererInitiated(
+      GURL("https://b.test/"), child)));
+}
+
+TEST_F(RenderFrameHostImplDeviceBoundSessionJsApiTest,
+       CredentiallessIframeCannotUse) {
+  TestRenderFrameHost* child = AddChildToHttpsPage(/*credentialless=*/true);
+  EXPECT_FALSE(CommitAndCheck(NavigationSimulator::CreateRendererInitiated(
+      GURL("https://a.test/"), child)));
+}
+
+TEST_F(RenderFrameHostImplDeviceBoundSessionJsApiTest, OpaqueOriginCannotUse) {
+  EXPECT_FALSE(CommitAndCheck(NavigationSimulator::CreateBrowserInitiated(
+      GURL("data:text/html,opaque"), contents())));
+}
+
+TEST_F(RenderFrameHostImplDeviceBoundSessionJsApiTest, HttpDocumentCannotUse) {
+  EXPECT_FALSE(CommitAndCheck(NavigationSimulator::CreateBrowserInitiated(
+      GURL("http://a.test/"), contents())));
+}
+
+// A same-document navigation keeps the document, so it keeps the value.
+TEST_F(RenderFrameHostImplDeviceBoundSessionJsApiTest,
+       SameDocumentNavigationKeepsValue) {
+  ASSERT_TRUE(CommitAndCheck(NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://a.test/"), contents())));
+  NavigationSimulator::CreateRendererInitiated(GURL("https://a.test/#frag"),
+                                               main_test_rfh())
+      ->CommitSameDocument();
+  EXPECT_TRUE(main_test_rfh()->CanUseDeviceBoundSessionJsApi());
+}
+
+TEST_F(RenderFrameHostImplTest,
+       CannotUseDeviceBoundSessionJsApiWhenFeatureOff) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(),
+                                                    GURL("https://a.test/"));
+  EXPECT_FALSE(main_test_rfh()->CanUseDeviceBoundSessionJsApi());
+}
+
 TEST_F(RenderFrameHostImplTest, NotificationServiceBlockedForPdf) {
   UrlInfo url_info(
       UrlInfoInit(GURL("https://foo.com/document.pdf"))

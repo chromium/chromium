@@ -412,6 +412,7 @@ struct SameSizeAsDocumentLoader
   bool last_navigation_had_transient_user_activation;
   bool last_navigation_had_trusted_initiator;
   bool is_secure_context_root;
+  bool can_use_device_bound_session_js_api;
   mojom::blink::ScriptInjectionPolicy script_injection_policy;
   bool had_sticky_activation;
   bool is_browser_initiated;
@@ -642,6 +643,8 @@ DocumentLoader::DocumentLoader(
   DCHECK(frame_);
   DCHECK(params_);
   is_secure_context_root_ = params_->is_secure_context_root;
+  can_use_device_bound_session_js_api_ =
+      params_->can_use_device_bound_session_js_api;
   script_injection_policy_ = params_->script_injection_policy;
 
   // See `archive_` attribute documentation.
@@ -821,6 +824,8 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->reduced_accept_language = reduced_accept_language_;
   params->navigation_delivery_type = navigation_delivery_type_;
   params->load_with_storage_access = storage_access_api_status_;
+  params->can_use_device_bound_session_js_api =
+      can_use_device_bound_session_js_api_;
   params->modified_runtime_features = modified_runtime_features_;
   params->visited_link_salt = visited_link_salt_;
   params->content_settings = content_settings_->Clone();
@@ -2948,6 +2953,11 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
                             inherited_has_storage_access);
 
   frame_->DomWindow()->SetInitiatorStateToken(initiator_state_token_);
+
+  // Set after the window is chosen, because a same-origin commit from the
+  // initial empty document keeps the old window.
+  frame_->DomWindow()->SetCanUseDeviceBoundSessionJsApi(
+      can_use_device_bound_session_js_api_);
 
   frame_->DomWindow()->SetPolicyContainer(std::move(policy_container_));
   frame_->DomWindow()->SetContentSecurityPolicy(csp);

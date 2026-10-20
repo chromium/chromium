@@ -799,6 +799,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // window's SecurityContext.
   bool is_secure_context_root_ = false;
 
+  // Whether the document may bind RestrictedDeviceBoundSessionManager, from
+  // the commit params. Applied to the LocalDOMWindow for every new document.
+  bool can_use_device_bound_session_js_api_ = false;
+
   // Policy controlling script injection tracking and protections for this
   // document.
   mojom::blink::ScriptInjectionPolicy script_injection_policy_ =

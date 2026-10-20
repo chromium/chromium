@@ -286,6 +286,12 @@ const base::FeatureParam<bool> kCreateSpeculativeRFHFilterRestore{
 const base::FeatureParam<int> kCreateSpeculativeRFHDelayMs{
     &kDeferSpeculativeRFHCreation, "create_speculative_rfh_delay_ms", 0};
 
+// Lets the browser tell each document at commit whether it may bind
+// RestrictedDeviceBoundSessionManager, and bind it for those that may. Also
+// turns on the DeviceBoundSessionJsApi Blink feature, which exposes
+// DeviceBoundSessionRegistrationObserver.
+BASE_FEATURE(kDeviceBoundSessionJsApi, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When a device bound session
 // (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) is
 // terminated, evict pages with cache-control:no-store from the

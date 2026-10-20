@@ -4848,7 +4848,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*internal_scroll_to_text_fragment=*/
           params.internal_scroll_to_text_fragment,
           /*is_secure_context_root=*/false,
-          blink::mojom::ScriptInjectionPolicy::kNone);
+          blink::mojom::ScriptInjectionPolicy::kNone,
+          /*can_use_device_bound_session_js_api=*/false);
 
   // internal_scroll_to_text_fragment should only be set for browser-initiated
   // navigations.
