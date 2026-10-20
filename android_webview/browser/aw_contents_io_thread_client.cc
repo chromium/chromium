@@ -48,6 +48,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/base/data_url.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_util.h"
 #include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 
@@ -555,6 +556,27 @@ network::HttpRequestHeadersUpdateParams ParseInterceptorUpdates(
   network::HttpRequestHeadersUpdateParams interceptor_update_params;
 
   for (const auto& [key, value] : interceptor_updates) {
+    if (!net::HttpUtil::IsValidHeaderName(key)) {
+      LOG(WARNING)
+          << "Invalid header name from embedder-provided header interceptor:"
+          << key;
+      continue;
+    }
+    if (value.has_value() && !net::HttpUtil::IsValidHeaderValue(*value)) {
+      LOG(WARNING) << "Invalid value for header from embedder-provided header "
+                      "interceptor. Header key:"
+                   << key;
+      continue;
+    }
+    // Forbid modifying unsafe headers, as defined on:
+    // https://fetch.spec.whatwg.org/#forbidden-request-header
+    if (!net::HttpUtil::IsSafeHeader(key, value.value_or(""))) {
+      LOG(WARNING)
+          << "Ignoring unsafe header from embedder-provided header interceptor:"
+          << key;
+      continue;
+    }
+
     if (value.has_value()) {
       interceptor_update_params.SetHeader(key, *value);
     } else {

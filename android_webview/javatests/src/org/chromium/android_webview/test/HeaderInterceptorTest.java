@@ -23,6 +23,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwNavigationParams;
 import org.chromium.android_webview.AwPrefetchCallback;
 import org.chromium.android_webview.AwWebResourceRequest;
@@ -112,6 +113,7 @@ public class HeaderInterceptorTest extends AwParameterizedTest {
 
     @Rule public AwActivityTestRule mActivityTestRule;
 
+    private AwCookieManager mCookieManager;
     private AwContents mAwContents;
     private AwBrowserContext mAwBrowserContext;
 
@@ -125,6 +127,7 @@ public class HeaderInterceptorTest extends AwParameterizedTest {
     public void setUp() throws Exception {
         AwTestContainerView container =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        mCookieManager = new AwCookieManager();
         mAwContents = container.getAwContents();
         mAwBrowserContext = mAwContents.getBrowserContextInternal();
     }
@@ -1185,6 +1188,125 @@ public class HeaderInterceptorTest extends AwParameterizedTest {
             HTTPRequest swFetchRequest = server.getLastRequest(SW_FETCH_URL);
             // Headers added through the AwContents should not be attached.
             assertThat(swFetchRequest.headerValue("X-My-Header")).isEqualTo("");
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    public void testInterceptor_cannotOverrideUnsafeHeaders() throws Exception {
+        // Enable Javascript so WebView sends Client Hints.
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        try (TestWebServer server = TestWebServer.start()) {
+            String requestUrl = setMockResponse(server);
+            String newValue = "My-Value";
+            mCookieManager.setCookie(requestUrl, "cookie1=test1");
+
+            // Headers from https://fetch.spec.whatwg.org/#forbidden-request-header
+            // should not be overridden by header interceptors.
+            registerContentsInterceptorOnUiThread(
+                    request ->
+                            hashMapOf(
+                                    "Connection",
+                                    newValue,
+                                    "Cookie",
+                                    "cookie1=new-value",
+                                    "Host",
+                                    newValue,
+                                    "Origin",
+                                    newValue,
+                                    "Sec-Fetch-Mode",
+                                    newValue,
+                                    "Sec-CH-UA",
+                                    newValue),
+                    server.getResponseUrl("/*"));
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), requestUrl);
+
+            assertThat(server.getRequestCount(REQUEST_PATH)).isEqualTo(1);
+            HTTPRequest lastRequest = server.getLastRequest(REQUEST_PATH);
+            assertThat(lastRequest.headerValue("Connection")).isNotEqualTo(newValue);
+            assertThat(lastRequest.headerValue("Cookie")).isEqualTo("cookie1=test1");
+            assertThat(lastRequest.headerValue("Host")).isNotEqualTo(newValue);
+            assertThat(lastRequest.headerValue("Origin")).isNotEqualTo(newValue);
+            assertThat(lastRequest.headerValue("Sec-Fetch-Mode")).isNotEqualTo(newValue);
+            assertThat(lastRequest.headerValue("Sec-CH-UA")).isNotEqualTo(newValue);
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    public void testInterceptor_cannotDeleteUnsafeHeaders() throws Exception {
+        // Enable Javascript so WebView sends Client Hints.
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        try (TestWebServer server = TestWebServer.start()) {
+            String requestUrl = setMockResponse(server);
+            mCookieManager.setCookie(requestUrl, "cookie1=test1");
+
+            // Headers from https://fetch.spec.whatwg.org/#forbidden-request-header
+            // should not be deleted by header interceptors.
+            registerContentsInterceptorOnUiThread(
+                    request ->
+                            hashMapOf(
+                                    "Connection",
+                                    null,
+                                    "Cookie",
+                                    null,
+                                    "Host",
+                                    null,
+                                    "Sec-Fetch-Mode",
+                                    null,
+                                    "Sec-CH-UA",
+                                    null),
+                    server.getResponseUrl("/*"));
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), requestUrl);
+
+            assertThat(server.getRequestCount(REQUEST_PATH)).isEqualTo(1);
+            HTTPRequest lastRequest = server.getLastRequest(REQUEST_PATH);
+            assertThat(lastRequest.headerValue("Connection")).isNotEmpty();
+            assertThat(lastRequest.headerValue("Cookie")).isNotEmpty();
+            assertThat(lastRequest.headerValue("Host")).isNotEmpty();
+            assertThat(lastRequest.headerValue("Sec-Fetch-Mode")).isNotEmpty();
+            assertThat(lastRequest.headerValue("Sec-CH-UA")).isNotEmpty();
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    public void testInterceptor_ignoresInvalidHeaderNames() throws Exception {
+        try (TestWebServer server = TestWebServer.start()) {
+            String requestUrl = setMockResponse(server);
+
+            registerContentsInterceptorOnUiThread(
+                    request -> hashMapOf("hello, world", "My-Value"), server.getResponseUrl("/*"));
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), requestUrl);
+
+            assertThat(server.getRequestCount(REQUEST_PATH)).isEqualTo(1);
+            HTTPRequest lastRequest = server.getLastRequest(REQUEST_PATH);
+            assertThat(lastRequest.headerValue("hello, world")).isEmpty();
+        }
+    }
+
+    @Test
+    @Feature({"AndroidWebView"})
+    @MediumTest
+    public void testInterceptor_ignoresInvalidHeaderValues() throws Exception {
+        try (TestWebServer server = TestWebServer.start()) {
+            String requestUrl = setMockResponse(server);
+
+            registerContentsInterceptorOnUiThread(
+                    request -> hashMapOf("X-My-Header", "My-Value\r\n\0"),
+                    server.getResponseUrl("/*"));
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), requestUrl);
+
+            assertThat(server.getRequestCount(REQUEST_PATH)).isEqualTo(1);
+            HTTPRequest lastRequest = server.getLastRequest(REQUEST_PATH);
+            assertThat(lastRequest.headerValue("X-My-Header")).isEmpty();
         }
     }
 
