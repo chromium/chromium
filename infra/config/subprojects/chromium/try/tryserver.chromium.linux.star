@@ -320,6 +320,9 @@ try_.builder(
             "verify_paths_only": True,
         },
     },
+    # Download the build outputs so that the "Verify Archive Paths" step can
+    # find them.
+    siso_output_local_strategy = "greedy",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
