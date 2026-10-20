@@ -515,6 +515,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
                        FileChooserCancellationReleasesDeactivationBlocker) {
   auto* content = ShowPopupAndGetWebUIContent();
   ASSERT_TRUE(content);
+  ASSERT_TRUE(content::WaitForLoadStop(content->GetWebContents()));
   auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
   ASSERT_TRUE(presenter);
   // Wait for popup state transition delayed task to finish.
@@ -634,6 +635,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimPopupKeepOpenBrowserTest,
                        FileChooserSelectionReleasesDeactivationBlocker) {
   auto* content = ShowPopupAndGetWebUIContent();
   ASSERT_TRUE(content);
+  ASSERT_TRUE(content::WaitForLoadStop(content->GetWebContents()));
   auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
   ASSERT_TRUE(presenter);
 
