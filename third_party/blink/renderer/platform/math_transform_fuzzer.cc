@@ -7,10 +7,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "third_party/blink/renderer/platform/fonts/utf16_text_iterator.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/testing/fuzzed_data_provider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static blink::BlinkFuzzerTestSupport test_support =
@@ -18,12 +18,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   blink::test::TaskEnvironment task_environment;
   blink::FuzzedDataProvider data_provider(data, size);
   blink::String content = data_provider.ConsumeRandomLengthString(size);
-  content.Ensure16Bit();
-  blink::UTF16TextIterator text_iterator(content.Span16());
-  UChar32 code_point;
-  while (text_iterator.Consume(code_point)) {
+  for (UChar32 code_point : content) {
     blink::unicode::ItalicMathVariant(code_point);
-    text_iterator.Advance();
   }
   return 0;
 }

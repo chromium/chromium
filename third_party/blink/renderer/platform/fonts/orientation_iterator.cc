@@ -37,7 +37,7 @@ bool ExtendsGraphemeCluster(UChar32 character,
 
 OrientationIterator::OrientationIterator(base::span<const UChar> buffer,
                                          FontOrientation run_orientation)
-    : utf16_iterator_(buffer), at_end_(buffer.empty()) {
+    : begin_(buffer), utf16_iterator_(begin_) {
   // There's not much point in segmenting by IsUprightInMixedVertical if the
   // text orientation is not "mixed".
   DCHECK_EQ(run_orientation, FontOrientation::kVerticalMixed);
@@ -45,14 +45,19 @@ OrientationIterator::OrientationIterator(base::span<const UChar> buffer,
 
 bool OrientationIterator::Consume(wtf_size_t* orientation_limit,
                                   RenderOrientation* render_orientation) {
-  if (at_end_)
+  const CodePointIterator::Utf16 end = utf16_iterator_.EndForThis();
+  if (utf16_iterator_ == end) {
     return false;
+  }
 
   RenderOrientation current_render_orientation = kOrientationInvalid;
   UChar32 cluster_base = 0;
   bool after_zwj = false;
-  UChar32 next_u_char32;
-  while (utf16_iterator_.Consume(next_u_char32)) {
+  for (; utf16_iterator_ != end; ++utf16_iterator_) {
+    UChar32 next_u_char32 = *utf16_iterator_;
+    if (U_IS_SURROGATE(next_u_char32)) [[unlikely]] {
+      next_u_char32 = uchar::kReplacementCharacter;
+    }
     if (current_render_orientation == kOrientationInvalid ||
         !ExtendsGraphemeCluster(next_u_char32, cluster_base, after_zwj)) {
       cluster_base = next_u_char32;
@@ -64,17 +69,15 @@ bool OrientationIterator::Consume(wtf_size_t* orientation_limit,
               : kOrientationRotateSideways;
       if (previous_render_orientation != current_render_orientation &&
           previous_render_orientation != kOrientationInvalid) {
-        *orientation_limit = utf16_iterator_.Offset();
+        *orientation_limit = utf16_iterator_.DistanceByCodeUnits(begin_);
         *render_orientation = previous_render_orientation;
         return true;
       }
     }
     after_zwj = next_u_char32 == uchar::kZeroWidthJoiner;
-    utf16_iterator_.Advance();
   }
-  *orientation_limit = utf16_iterator_.Size();
+  *orientation_limit = end.DistanceByCodeUnits(begin_);
   *render_orientation = current_render_orientation;
-  at_end_ = true;
   return true;
 }
 

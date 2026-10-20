@@ -8,8 +8,8 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
-#include "third_party/blink/renderer/platform/fonts/utf16_text_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 
 namespace blink {
 
@@ -35,8 +35,8 @@ class PLATFORM_EXPORT OrientationIterator {
   bool Consume(wtf_size_t* orientation_limit, RenderOrientation*);
 
  private:
-  UTF16TextIterator utf16_iterator_;
-  bool at_end_;
+  const CodePointIterator::Utf16 begin_;
+  CodePointIterator::Utf16 utf16_iterator_;
 };
 
 }  // namespace blink

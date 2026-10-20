@@ -59,11 +59,11 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/fonts/small_caps_iterator.h"
-#include "third_party/blink/renderer/platform/fonts/utf16_text_iterator.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
@@ -741,10 +741,14 @@ bool HarfBuzzShaper::CollectFallbackHintChars(
     }
 
     // !text_.Is8Bit()...
-    UChar32 hint_char;
-    UTF16TextIterator iterator(
+    CodePointIterator::Utf16 iterator(
         text_.Span16().subspan(it->start_index_, it->num_characters_));
-    while (iterator.Consume(hint_char)) {
+    const CodePointIterator::Utf16 end = iterator.EndForThis();
+    for (; iterator != end; ++iterator) {
+      UChar32 hint_char = *iterator;
+      if (U_IS_SURROGATE(hint_char)) [[unlikely]] {
+        hint_char = uchar::kReplacementCharacter;
+      }
       hint.push_back(hint_char);
       num_chars_added++;
       // Determine if we can take a shortcut and not fill the hint list
@@ -755,7 +759,6 @@ bool HarfBuzzShaper::CollectFallbackHintChars(
       if (!needs_hint_list && !unicode::IsCommonOrInheritedScript(hint_char)) {
         return true;
       }
-      iterator.Advance();
     }
   }
   return num_chars_added > 0;

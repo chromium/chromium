@@ -8,8 +8,8 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
-#include "third_party/blink/renderer/platform/fonts/utf16_text_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
 
 namespace blink {
 
@@ -30,9 +30,9 @@ class PLATFORM_EXPORT SmallCapsIterator {
   bool Consume(wtf_size_t* caps_limit, SmallCapsBehavior*);
 
  private:
-  UTF16TextIterator utf16_iterator_;
+  const CodePointIterator::Utf16 begin_;
+  CodePointIterator::Utf16 utf16_iterator_;
   UChar32 next_u_char32_ = 0;
-  bool at_end_;
 
   SmallCapsBehavior current_small_caps_behavior_ = kSmallCapsInvalid;
   SmallCapsBehavior previous_small_caps_behavior_ = kSmallCapsInvalid;
