@@ -2638,7 +2638,7 @@ void PaintLayer::UpdateCompositorFilterOperationsForBackdropFilter(
       FilterEffectBuilder(reference_box, FilterViewport(), zoom,
                           style.VisitedDependentColor(GetCSSPropertyColor()),
                           style.UsedColorScheme(), nullptr, nullptr)
-          .BuildFilterOperations(filter_operations);
+          .BuildFilterOperations(filter_operations, /*contains_backdrop=*/true);
   // Note that |operations| may be empty here, if the |filter_operations| list
   // contains only invalid filters (e.g. invalid reference filters). See
   // https://crbug.com/983157 for details.

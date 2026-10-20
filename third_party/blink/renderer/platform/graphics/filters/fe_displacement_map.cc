@@ -110,8 +110,11 @@ sk_sp<PaintFilter> FEDisplacementMap::CreateImageFilter() {
   // FEDisplacementMap must be a pass-through filter if
   // the origin is tainted. See:
   // https://drafts.fxtf.org/filter-effects/#fedisplacemnentmap-restrictions.
-  if (InputEffect(1)->OriginTainted())
+  // Backdrop filters also are considered origin tainting for FEDisplacementMap
+  // because the backdrop may contain private information.
+  if (InputEffect(1)->OriginTainted() || InputEffect(1)->ContainsBackdrop()) {
     return color;
+  }
 
   sk_sp<PaintFilter> displ = paint_filter_builder::Build(
       InputEffect(1), OperatingInterpolationSpace());
