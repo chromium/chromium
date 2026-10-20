@@ -211,7 +211,7 @@
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_AUTOFILL_AI_VALUABLES_IPH" desc="Text in In-Product-Help with an item from Google Wallet">
         Now you can autofill more info from Google Wallet. Manage your information or turn these suggestions off in Settings.
       </message>
-      <message name="IDS_IPH_KEYBOARD_ACCESSORY_AUTOFILL_AI_SPII_DISCLAIMER" translateable="false" desc="Text in the In-Product-Help bubble reminding users to verify sensitive autofill information against the original source.">
+      <message name="IDS_IPH_KEYBOARD_ACCESSORY_AUTOFILL_AI_SPII_DISCLAIMER" desc="Text in the In-Product-Help bubble reminding users to verify sensitive autofill information against the original source.">
         Gemini can make mistakes. Long press the suggestion to review the original source and make sure this info is accurate.
       </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION" desc="Text in the In-Product-Help bubble for a home or work Autofill profile suggestion.">
