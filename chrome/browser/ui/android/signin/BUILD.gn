@@ -327,6 +327,7 @@ android_library("javatests") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/ui/android/enterprise_signals_disclaimer:java",
+    "//chrome/browser/ui/android/enterprise_signals_disclaimer:java_resources",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/browser/ui/android/signin:java_resources",
     "//chrome/browser/ui/messages/android:java",

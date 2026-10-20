@@ -86,8 +86,7 @@ public class AccountPickerBottomSheetMediator
     private final SigninManager mSigninManager;
     private final @Nullable AccountPreviewDataService mAccountPreviewDataService;
     private final AccountPickerDelegate mAccountPickerDelegate;
-    // TODO(b/553341908): Make non-null once seamless sign-in supports the new management notice.
-    private final @Nullable Delegate mDelegate;
+    private final Delegate mDelegate;
     private final Runnable mDismissBottomSheet;
     private final AccountPickerBottomSheetStrings mAccountPickerBottomSheetStrings;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
@@ -178,7 +177,8 @@ public class AccountPickerBottomSheetMediator
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             @SigninAccessPoint int signinAccessPoint,
-            CoreAccountId accountId) {
+            CoreAccountId accountId,
+            Delegate delegate) {
         return new AccountPickerBottomSheetMediator(
                 windowAndroid,
                 identityManager,
@@ -194,8 +194,7 @@ public class AccountPickerBottomSheetMediator
                 /* isWebSignin= */ false,
                 signinAccessPoint,
                 accountId,
-                // TODO(b/553341908): Support the new management notice in seamless sign-in.
-                /* delegate= */ null);
+                delegate);
     }
 
     private AccountPickerBottomSheetMediator(
@@ -213,7 +212,7 @@ public class AccountPickerBottomSheetMediator
             boolean isWebSignin,
             @SigninAccessPoint int signinAccessPoint,
             @Nullable CoreAccountId accountId,
-            @Nullable Delegate delegate) {
+            Delegate delegate) {
         mWindowAndroid = windowAndroid;
         mActivity = assertNonNull(windowAndroid.getActivity().get());
         mIdentityManager = identityManager;
@@ -729,11 +728,8 @@ public class AccountPickerBottomSheetMediator
     }
 
     private void shownConfirmManagementSheet() {
-        // TODO(b/553341908): Support the new management notice in the seamless sign-in flow.
-        if (!mIsSeamlessSignin
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)) {
-            assertNonNull(mDelegate)
-                    .setUpManagementNoticeForAccount(assertNonNull(mSelectedAccount));
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)) {
+            mDelegate.setUpManagementNoticeForAccount(assertNonNull(mSelectedAccount));
         }
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.CONFIRM_MANAGEMENT);
         if (mIsSeamlessSignin && mRequestDisplayBottomSheet != null) {

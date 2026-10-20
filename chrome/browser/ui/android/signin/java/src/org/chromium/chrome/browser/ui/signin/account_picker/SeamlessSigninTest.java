@@ -4,8 +4,15 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
+import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasPackage;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -27,12 +34,20 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.transit.MoreViewMatchers.isDescendantOf;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
+import static org.chromium.base.test.util.ForgivingClickAction.forgivingClick;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Intent;
 import android.view.View;
 
+import androidx.annotation.IdRes;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
@@ -52,6 +67,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -749,6 +765,111 @@ public class SeamlessSigninTest {
         verify(mAccountPickerDelegateMock).onAccountPickerDestroy();
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testNewManagementNotice_acceptStartsSignin() {
+        var accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN,
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_ACCEPTED,
+                                AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT)
+                        .expectNoRecords(TIMESTAMP_SIGNIN_ABORTED)
+                        .build();
+        mIsAccountManaged = true;
+        createCoordinatorAndLaunchSigninFlow();
+        waitForNewManagementNotice();
+
+        clickDisclaimerButton(R.id.disclaimer_accept_button);
+
+        verifySignInCompleted();
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testNewManagementNotice_cancelDismissesBottomSheet() {
+        var accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN,
+                                AccountConsistencyPromoAction.DISMISSED_BUTTON)
+                        .build();
+        mIsAccountManaged = true;
+        createCoordinatorAndLaunchSigninFlow();
+        waitForNewManagementNotice();
+
+        clickDisclaimerButton(R.id.disclaimer_cancel_button);
+
+        CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
+        verifySignInNeverStarted();
+        verify(mAccountPickerDelegateMock).onSignInCancel();
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testNewManagementNotice_backPressDismissesBottomSheet() {
+        var accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN,
+                                AccountConsistencyPromoAction.DISMISSED_BACK)
+                        .build();
+        mIsAccountManaged = true;
+        createCoordinatorAndLaunchSigninFlow();
+        waitForNewManagementNotice();
+
+        Espresso.pressBack();
+
+        CriteriaHelper.pollUiThread(() -> !mBottomSheetController.isSheetOpen());
+        verifySignInNeverStarted();
+        verify(mAccountPickerDelegateMock).onSignInCancel();
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testNewManagementNotice_learnMoreOpensInfoPage() {
+        mIsAccountManaged = true;
+        createCoordinatorAndLaunchSigninFlow();
+        waitForNewManagementNotice();
+
+        Intents.init();
+        try {
+            // Stub the intent so that no custom tab is actually opened on top of the test
+            // activity.
+            Matcher<Intent> customTabIntentMatcher =
+                    allOf(
+                            hasAction(Intent.ACTION_VIEW),
+                            hasPackage(mActivityTestRule.getActivity().getPackageName()),
+                            hasExtraWithKey(CustomTabsIntent.EXTRA_SESSION));
+            intending(customTabIntentMatcher)
+                    .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
+
+            onView(withId(R.id.disclaimer_description)).perform(clickOnClickableSpan(0));
+
+            intended(customTabIntentMatcher);
+        } finally {
+            Intents.release();
+        }
+        // The management notice is still displayed, so the user can proceed after reading the
+        // info page.
+        waitForNewManagementNotice();
+        verifySignInNeverStarted();
+        verify(mAccountPickerDelegateMock, never()).onSignInCancel();
+    }
+
     private void assertBottomSheetNeverShown() {
         // View should never have been initialized
         assertNull(mCoordinator.getBottomSheetViewForTesting());
@@ -794,6 +915,17 @@ public class SeamlessSigninTest {
                 allOf(
                         withId(R.id.account_picker_confirm_management_description),
                         withText(expectedPolicyText)));
+    }
+
+    private void waitForNewManagementNotice() {
+        waitForBottomSheetView(withId(R.id.disclaimer_title));
+        onViewWaiting(withId(R.id.disclaimer_accept_button));
+        onViewWaiting(withId(R.id.disclaimer_cancel_button));
+        onView(withId(R.id.account_picker_confirm_management_description)).check(doesNotExist());
+    }
+
+    private void clickDisclaimerButton(@IdRes int buttonId) {
+        onViewWaiting(withId(buttonId)).perform(forgivingClick());
     }
 
     private void waitForSignInInProgressSheet() {

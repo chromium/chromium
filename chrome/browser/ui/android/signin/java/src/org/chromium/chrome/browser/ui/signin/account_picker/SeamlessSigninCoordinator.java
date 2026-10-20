@@ -14,10 +14,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetView.PresentationMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -32,15 +34,18 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * only be displayed in cases of sign-in errors, or for management notices.
  */
 @NullMarked
-public class SeamlessSigninCoordinator implements SigninBottomSheetUiCoordinator {
+public class SeamlessSigninCoordinator
+        implements SigninBottomSheetUiCoordinator, AccountPickerBottomSheetMediator.Delegate {
 
     private final Activity mActivity;
+    private final IdentityManager mIdentityManager;
     private final boolean mUseDialog;
     private final @SigninAccessPoint int mSigninAccessPoint;
     private final AccountPickerBottomSheetMediator mAccountPickerBottomSheetMediator;
     private final AccountPickerPresenter mPresenter;
 
     private @Nullable AccountPickerBottomSheetView mView;
+    private @Nullable EnterpriseSignalsDisclaimerCoordinator mManagementNoticeCoordinator;
     private boolean mIsDestroyed;
 
     /**
@@ -74,6 +79,7 @@ public class SeamlessSigninCoordinator implements SigninBottomSheetUiCoordinator
             @SigninAccessPoint int signinAccessPoint,
             CoreAccountId selectedAccountId) {
         mActivity = activity;
+        mIdentityManager = identityManager;
         mSigninAccessPoint = signinAccessPoint;
         mUseDialog = SigninUtils.shouldShowAccountPickerDialog(activity);
         AccountPickerDismissalLogger dismissalLogger =
@@ -102,7 +108,8 @@ public class SeamlessSigninCoordinator implements SigninBottomSheetUiCoordinator
                         accountPickerBottomSheetStrings,
                         deviceLockActivityLauncher,
                         signinAccessPoint,
-                        selectedAccountId);
+                        selectedAccountId,
+                        /* delegate= */ this);
     }
 
     @MainThread
@@ -117,6 +124,7 @@ public class SeamlessSigninCoordinator implements SigninBottomSheetUiCoordinator
         }
 
         mIsDestroyed = true;
+        destroyManagementNoticeCoordinator();
         mAccountPickerBottomSheetMediator.destroy();
         mPresenter.destroy();
     }
@@ -136,8 +144,8 @@ public class SeamlessSigninCoordinator implements SigninBottomSheetUiCoordinator
                             mUseDialog
                                     ? PresentationMode.MODAL_DIALOG
                                     : PresentationMode.BOTTOM_SHEET);
-            // TODO(b/553341908): Show the new management notice when ANDROID_NEW_MANAGEMENT_NOTICE
-            // is enabled.
+            // The management notice may have been set up before the view was created.
+            attachManagementNoticeToView();
             PropertyModelChangeProcessor.create(
                     mAccountPickerBottomSheetMediator.getModel(),
                     mView,
@@ -147,6 +155,39 @@ public class SeamlessSigninCoordinator implements SigninBottomSheetUiCoordinator
             SigninMetricsUtils.logAccountConsistencyPromoAction(
                     AccountConsistencyPromoAction.SHOWN, mSigninAccessPoint);
         }
+    }
+
+    /** Implements {@link AccountPickerBottomSheetMediator.Delegate}. */
+    @Override
+    public void setUpManagementNoticeForAccount(CoreAccountInfo account) {
+        destroyManagementNoticeCoordinator();
+        mManagementNoticeCoordinator =
+                new EnterpriseSignalsDisclaimerCoordinator(
+                        mActivity,
+                        mIdentityManager,
+                        account,
+                        mUseDialog
+                                ? EnterpriseSignalsDisclaimerCoordinator.PresentationMode
+                                        .MODAL_DIALOG
+                                : EnterpriseSignalsDisclaimerCoordinator.PresentationMode
+                                        .BOTTOM_SHEET,
+                        mAccountPickerBottomSheetMediator);
+        // If the view isn't created yet, the notice is attached in {@link #requestDisplayUi()}.
+        attachManagementNoticeToView();
+    }
+
+    private void attachManagementNoticeToView() {
+        if (mView == null || mManagementNoticeCoordinator == null) return;
+        mView.setManagementNoticeView(
+                mManagementNoticeCoordinator.getView(),
+                mManagementNoticeCoordinator.getTitleView(),
+                mManagementNoticeCoordinator::getVerticalScrollOffset);
+    }
+
+    private void destroyManagementNoticeCoordinator() {
+        if (mManagementNoticeCoordinator == null) return;
+        mManagementNoticeCoordinator.destroy();
+        mManagementNoticeCoordinator = null;
     }
 
     /** Implements {@link SigninBottomSheetUiCoordinator}. Dismiss the UI, if shown. */
