@@ -303,19 +303,23 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 }
 
 - (void)updateTrailingButtonState {
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    BOOL shouldShowVoiceSearch =
+        IsRegularXRegularSizeClass(self) || IsCompactHeight(self);
+    self.trailingButtonState =
+        shouldShowVoiceSearch ? kVoiceSearchButton : kNoButton;
+    return;
+  }
+
   if (IsChromeNextIaEnabled() && !IsNextOldDesignEnabled()) {
-    BOOL shouldShowVoiceSearch = self.traitCollection.verticalSizeClass ==
-                                 UIUserInterfaceSizeClassCompact;
+    BOOL shouldShowVoiceSearch = IsCompactHeight(self);
 
     self.trailingButtonState =
         shouldShowVoiceSearch ? kVoiceSearchButton : kShareButton;
     return;
   }
 
-  BOOL shouldShowVoiceSearch =
-      self.traitCollection.horizontalSizeClass ==
-          UIUserInterfaceSizeClassRegular ||
-      self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
+  BOOL shouldShowVoiceSearch = !IsCompactWidth(self) || IsCompactHeight(self);
 
   self.trailingButtonState =
       shouldShowVoiceSearch ? kVoiceSearchButton : kShareButton;
