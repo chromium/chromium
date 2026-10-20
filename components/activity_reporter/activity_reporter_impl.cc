@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -35,6 +36,19 @@ namespace activity_reporter {
 
 namespace {
 
+InitialDateLastActiveState ToState(int dla) {
+  if (dla == update_client::kDateUnknown) {
+    return InitialDateLastActiveState::kUnknown;
+  }
+  if (dla == update_client::kDateFirstTime) {
+    return InitialDateLastActiveState::kFirstTimeUnpersisted;
+  }
+  if (dla >= 0) {
+    return InitialDateLastActiveState::kPersisted;
+  }
+  return InitialDateLastActiveState::kInvalid;
+}
+
 class ActivityReporterImpl : public ActivityReporter {
  public:
   ActivityReporterImpl(
@@ -53,10 +67,14 @@ class ActivityReporterImpl : public ActivityReporter {
             pref_service_provider, network_fetcher_factory, channel_provider,
             per_user_install);
     update_client::PersistedData* data = configurator->GetPersistedData();
-    if (data && data->GetDateLastActive(std::string(kChromeActivityId)) ==
-                    update_client::kDateUnknown) {
-      data->SetDateLastActive(std::string(kChromeActivityId),
-                              update_client::kDateFirstTime);
+    if (data) {
+      const int dla = data->GetDateLastActive(std::string(kChromeActivityId));
+      base::UmaHistogramEnumeration(
+          "ActivityReporter.InitialDateLastActiveState", ToState(dla));
+      if (dla == update_client::kDateUnknown) {
+        data->SetDateLastActive(std::string(kChromeActivityId),
+                                update_client::kDateFirstTime);
+      }
     }
     update_client_ = update_client::UpdateClientFactory(configurator);
   }

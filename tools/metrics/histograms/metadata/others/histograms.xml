@@ -179,6 +179,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/ui/histograms.xml:WebUIHostname) -->
 
+<histogram name="ActivityReporter.InitialDateLastActiveState"
+    enum="InitialDateLastActiveState" expires_after="2027-01-19">
+  <owner>noahrose@google.com</owner>
+  <owner>src/components/activity_reporter/OWNERS</owner>
+  <summary>
+    Records the persisted DateLastActive state in Local State for the Chrome
+    Activity Reporter when ActivityReporterImpl is constructed. Because
+    ActivityReporterImpl is constructed lazily on the first ReportActive() call,
+    this is emitted at most once per browser session and only in sessions that
+    report activity. Used to diagnose whether prior sessions failed to persist
+    DateLastActive data (e.g., due to a race during browser shutdown).
+  </summary>
+</histogram>
+
 <histogram name="BlueZ.PerProfile.{BlueZPerProfileResult}ConnectionResult"
     enum="BlueZResultOfPerProfileConnection" expires_after="2023-06-11">
   <owner>mmandlik@google.com</owner>

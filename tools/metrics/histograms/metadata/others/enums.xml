@@ -253,6 +253,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failed after retry limit"/>
 </enum>
 
+<!-- LINT.IfChange(InitialDateLastActiveState) -->
+
+<enum name="InitialDateLastActiveState">
+  <int value="0" label="Unknown (-2)"/>
+  <int value="1" label="First time, unpersisted (-1)"/>
+  <int value="2" label="Persisted (&gt;= 0)"/>
+  <int value="3" label="Invalid (&lt; -2)"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/activity_reporter/activity_reporter.h:InitialDateLastActiveState) -->
+
 <!-- LINT.IfChange(IpczBlockAllocationSize) -->
 
 <enum name="IpczBlockAllocationSize">
