@@ -64,9 +64,11 @@ void RlzPingHandler::Ping(const std::string& brand,
 
   callback_ = std::move(callback);
 
-  CHECK_EQ(brand.length(), 4u, base::NotFatalUntil::M161);
-  CHECK_EQ(language.length(), 2u, base::NotFatalUntil::M161);
-  CHECK_EQ(id.length(), 50u, base::NotFatalUntil::M161);
+  // TODO(crbug.com/574664421): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(brand.length(), 4u);
+  DCHECK_EQ(language.length(), 2u);
+  DCHECK_EQ(id.length(), 50u);
 
   GURL request_url(base::StringPrintf(
       "https://%s%s?", rlz_lib::kFinancialServer, rlz_lib::kFinancialPingPath));
