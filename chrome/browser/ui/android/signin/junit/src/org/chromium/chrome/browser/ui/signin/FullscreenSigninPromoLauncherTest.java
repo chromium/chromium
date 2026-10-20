@@ -34,6 +34,8 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
@@ -43,6 +45,10 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -66,7 +72,8 @@ import java.util.concurrent.TimeUnit;
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @DisableFeatures({
     SigninFeatures.FORCE_STARTUP_SIGNIN_PROMO,
-    SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY
+    SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY,
+    ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP
 })
 @EnableFeatures(
         SigninFeatures.FULLSCREEN_SIGN_IN_PROMO_USE_DATE
@@ -123,6 +130,8 @@ public class FullscreenSigninPromoLauncherTest {
     @Mock private Context mContext;
 
     @Mock private Intent mSigninIntent;
+
+    @Mock private Tracker mTrackerMock;
 
     private final SigninPreferencesManager mPrefManager = SigninPreferencesManager.getInstance();
 
@@ -387,10 +396,15 @@ public class FullscreenSigninPromoLauncherTest {
     public void whenHasNewAccountShouldReturnTrue() {
         mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        FullscreenSigninAndHistorySyncConfig expectedConfig =
+                FullscreenSigninAndHistorySyncConfig.builder(
+                                "string", "string", "string", "string", "string")
+                        .shouldCallTrackerDismissed(false)
+                        .build();
         when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
                         eq(mContext),
                         eq(mProfile),
-                        any(),
+                        eq(expectedConfig),
                         eq(SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO)))
                 .thenReturn(mSigninIntent);
         mPrefManager.setSigninPromoLastShownTimeWithRandomOffset(mTimeInPast);
@@ -476,7 +490,9 @@ public class FullscreenSigninPromoLauncherTest {
      * SigninAndHistorySyncActivityLauncherImpl#canStartSigninAndHistorySyncOrShowError}
      */
     @Test
+    @EnableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
     public void testSigninFlowFailsToLaunch() {
+        TrackerFactory.setTrackerForTests(mTrackerMock);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mPrefManager.setSigninPromoLastShownTimeWithRandomOffset(mTimeInPast);
         when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
@@ -490,10 +506,78 @@ public class FullscreenSigninPromoLauncherTest {
                 FullscreenSigninPromoLauncher.launchPromoIfNeeded(
                         mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
 
+        verify(mTrackerMock, never()).shouldTriggerHelpUi(any(), any(FeatureProperties.class));
         verify(mContext, never()).startActivity(any());
         Assert.assertEquals(
                 mTimeInPast, mPrefManager.getSigninPromoLastShownTimeWithRandomOffset());
         Assert.assertEquals(null, mPrefManager.getSigninPromoLastAccountEmails());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
+    public void testCooldownGroupEnabledAndAllowedShouldLaunchPromo() {
+        TrackerFactory.setTrackerForTests(mTrackerMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        FullscreenSigninAndHistorySyncConfig expectedConfig =
+                FullscreenSigninAndHistorySyncConfig.builder(
+                                "string", "string", "string", "string", "string")
+                        .shouldCallTrackerDismissed(true)
+                        .build();
+        when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
+                        eq(mContext),
+                        eq(mProfile),
+                        eq(expectedConfig),
+                        eq(SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO)))
+                .thenReturn(mSigninIntent);
+        mPrefManager.setSigninPromoLastShownTimeWithRandomOffset(mTimeInPast);
+        mPrefManager.setSigninPromoLastAccountEmails(Set.of(TestAccounts.ACCOUNT1.getEmail()));
+        FeatureProperties expectedProps =
+                new FeatureProperties(
+                        UiFormat.FRE,
+                        /* isBlockedByEnterprisePolicy= */ true,
+                        /* isBlockedByCooldownGroup= */ true,
+                        /* blocksCooldownGroup= */ true);
+        when(mTrackerMock.shouldTriggerHelpUi(
+                        eq(FeatureConstants.FULLSCREEN_SIGNIN_PROMO_FEATURE), eq(expectedProps)))
+                .thenReturn(true);
+
+        Assert.assertTrue(
+                FullscreenSigninPromoLauncher.launchPromoIfNeeded(
+                        mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
+
+        verify(mTrackerMock)
+                .shouldTriggerHelpUi(
+                        FeatureConstants.FULLSCREEN_SIGNIN_PROMO_FEATURE, expectedProps);
+        verify(mContext).startActivity(mSigninIntent);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
+    public void testCooldownGroupEnabledAndBlockedShouldNotLaunchPromo() {
+        TrackerFactory.setTrackerForTests(mTrackerMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        when(mFullscreenSigninLauncherMock.createFullscreenSigninIntent(
+                        eq(mContext),
+                        eq(mProfile),
+                        any(),
+                        eq(SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO)))
+                .thenReturn(mSigninIntent);
+        mPrefManager.setSigninPromoLastShownTimeWithRandomOffset(mTimeInPast);
+        mPrefManager.setSigninPromoLastAccountEmails(Set.of(TestAccounts.ACCOUNT1.getEmail()));
+        when(mTrackerMock.shouldTriggerHelpUi(
+                        eq(FeatureConstants.FULLSCREEN_SIGNIN_PROMO_FEATURE),
+                        any(FeatureProperties.class)))
+                .thenReturn(false);
+
+        Assert.assertFalse(
+                FullscreenSigninPromoLauncher.launchPromoIfNeeded(
+                        mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
+
+        verify(mContext, never()).startActivity(any());
+        Assert.assertEquals(
+                mTimeInPast, mPrefManager.getSigninPromoLastShownTimeWithRandomOffset());
     }
 
     private void assertSigninPromoRandomTimeOffsetInRange() {

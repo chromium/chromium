@@ -34,6 +34,7 @@ public class SigninAndHistorySyncBundleHelperTest {
                         .historyOptInMode(HistorySyncConfig.OptInMode.REQUIRED)
                         .signinLogoId(3)
                         .shouldDisableSignin(true)
+                        .shouldCallTrackerDismissed(true)
                         .build();
 
         Bundle bundle = SigninAndHistorySyncBundleHelper.getBundle(initialConfig);

@@ -21,6 +21,7 @@ public final class FullscreenSigninAndHistorySyncConfig {
     public final FullscreenSigninConfig signinConfig;
     public final HistorySyncConfig historySyncConfig;
     public final @HistorySyncConfig.OptInMode int historyOptInMode;
+    public final boolean shouldCallTrackerDismissed;
 
     /**
      * Builder for {@link FullscreenSigninAndHistorySyncConfig} which contains resources for the
@@ -39,6 +40,7 @@ public final class FullscreenSigninAndHistorySyncConfig {
         private @Nullable String mSelectedAccountEmail;
         private @SigninAndHistorySyncCoordinator.SigninFlow int mSigninFlow =
                 SigninAndHistorySyncCoordinator.SigninFlow.DEFAULT_SIGNIN;
+        private boolean mShouldCallTrackerDismissed;
 
         private Builder(
                 String signinTitle,
@@ -82,6 +84,17 @@ public final class FullscreenSigninAndHistorySyncConfig {
             return this;
         }
 
+        /**
+         * Sets whether {@link FullscreenSigninAndHistorySyncCoordinator#destroy()} should call
+         * {@link org.chromium.components.feature_engagement.Tracker#dismissed} when the promo is
+         * dismissed (because this flow was gated by {@link
+         * org.chromium.components.feature_engagement.Tracker#shouldTriggerHelpUi}).
+         */
+        public Builder shouldCallTrackerDismissed(boolean shouldCallTrackerDismissed) {
+            mShouldCallTrackerDismissed = shouldCallTrackerDismissed;
+            return this;
+        }
+
         public FullscreenSigninAndHistorySyncConfig build() {
             final FullscreenSigninConfig signinConfig =
                     new FullscreenSigninConfig(
@@ -98,17 +111,22 @@ public final class FullscreenSigninAndHistorySyncConfig {
                             /* title= */ mHistorySyncTitle, /* subtitle= */ mHistorySyncSubtitle);
 
             return new FullscreenSigninAndHistorySyncConfig(
-                    signinConfig, historySyncConfig, mHistoryOptInMode);
+                    signinConfig,
+                    historySyncConfig,
+                    mHistoryOptInMode,
+                    mShouldCallTrackerDismissed);
         }
     }
 
     private FullscreenSigninAndHistorySyncConfig(
             FullscreenSigninConfig signinConfig,
             HistorySyncConfig historySyncConfig,
-            @HistorySyncConfig.OptInMode int historyOptInMode) {
+            @HistorySyncConfig.OptInMode int historyOptInMode,
+            boolean shouldCallTrackerDismissed) {
         this.signinConfig = signinConfig;
         this.historySyncConfig = historySyncConfig;
         this.historyOptInMode = historyOptInMode;
+        this.shouldCallTrackerDismissed = shouldCallTrackerDismissed;
     }
 
     /** Creates a builder for the fresh sign-in flow. */
@@ -157,11 +175,13 @@ public final class FullscreenSigninAndHistorySyncConfig {
         FullscreenSigninAndHistorySyncConfig other = (FullscreenSigninAndHistorySyncConfig) object;
         return signinConfig.equals(other.signinConfig)
                 && historySyncConfig.equals(other.historySyncConfig)
-                && historyOptInMode == other.historyOptInMode;
+                && historyOptInMode == other.historyOptInMode
+                && shouldCallTrackerDismissed == other.shouldCallTrackerDismissed;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(signinConfig, historySyncConfig, historyOptInMode);
+        return Objects.hash(
+                signinConfig, historySyncConfig, historyOptInMode, shouldCallTrackerDismissed);
     }
 }

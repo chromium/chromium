@@ -37,6 +37,9 @@ public final class SigninAndHistorySyncBundleHelper {
     private static final String HISTORY_SYNC_CONFIG_TITLE = "Signin.HistorySyncConfig.Title";
     private static final String HISTORY_SYNC_CONFIG_SUBTITLE = "Signin.HistorySyncConfig.Subtitle";
 
+    // Fields of {@link FullscreenSigninAndHistorySyncConfig}.
+    private static final String SHOULD_CALL_TRACKER_DISMISSED = "Signin.ShouldCallTrackerDismissed";
+
     // Fields common to {@link FullscreenSigninAndHistorySyncConfig} and
     // {@link BottomSheetSigninAndHistorySyncConfig}.
     private static final String HISTORY_OPT_IN_MODE = "Signin.HistoryOptInMode";
@@ -73,6 +76,7 @@ public final class SigninAndHistorySyncBundleHelper {
         bundle.putString(
                 SIGNIN_CONFIG_SELECTED_ACCOUNT_EMAIL, config.signinConfig.selectedAccountEmail);
         bundle.putInt(SIGNIN_CONFIG_FLOW, config.signinConfig.signinFlow);
+        bundle.putBoolean(SHOULD_CALL_TRACKER_DISMISSED, config.shouldCallTrackerDismissed);
         return bundle;
     }
 
@@ -92,6 +96,7 @@ public final class SigninAndHistorySyncBundleHelper {
                 bundle.getInt(
                         SIGNIN_CONFIG_FLOW,
                         SigninAndHistorySyncCoordinator.SigninFlow.DEFAULT_SIGNIN));
+        builder.shouldCallTrackerDismissed(bundle.getBoolean(SHOULD_CALL_TRACKER_DISMISSED, false));
         return builder.build();
     }
 
