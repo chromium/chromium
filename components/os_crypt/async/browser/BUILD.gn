@@ -10,9 +10,8 @@ component("browser") {
     "os_crypt_async.h",
   ]
 
-  deps = [ ":key_provider_interface" ]
-
   public_deps = [
+    ":key_provider_interface",
     "//base",
     "//components/os_crypt/async/common",
   ]
@@ -25,7 +24,7 @@ component("browser") {
       "os_crypt_win.h",
     ]
 
-    deps += [
+    deps = [
       "//components/prefs",
       "//components/version_info",
       "//crypto",
@@ -62,8 +61,8 @@ if (is_apple) {
       "keychain_key_provider.h",
       "keychain_key_provider.mm",
     ]
+    public_deps = [ ":key_provider_interface" ]
     deps = [
-      ":key_provider_interface",
       "//base",
       "//build:branding_buildflags",
       "//components/os_crypt/async/common",

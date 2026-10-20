@@ -8,6 +8,7 @@
 #include <stdio.h>
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <optional>
 #include <utility>
@@ -287,6 +288,9 @@ void OnLocalStatePrefsLoaded();
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "base/types/expected.h"
+#include "chrome/common/chrome_paths_internal.h"
+#include "components/os_crypt/async/browser/key_provider.h"
 #include "components/os_crypt/async/browser/keychain_key_provider.h"
 #endif
 
@@ -312,6 +316,33 @@ static const int kUpdateCheckIntervalHours = 6;
 static constexpr base::TimeDelta kEndSessionTimeout = base::Seconds(10);
 #endif
 // LINT.ThenChange(//chrome/browser/shutdown_watchdog_mac.cc:EndSessionTimeout)
+
+#if BUILDFLAG(IS_MAC)
+namespace {
+
+// A KeyProvider that always reports `kTemporarilyUnavailable` for a given tag
+// and is never used for encryption. Used when running with a non-default user
+// data directory so that default user data directory ("v10") encrypted data
+// cannot be decrypted.
+class UnavailableKeyProvider : public os_crypt_async::KeyProvider {
+ public:
+  explicit UnavailableKeyProvider(std::string tag) : tag_(std::move(tag)) {}
+  ~UnavailableKeyProvider() override = default;
+
+  // os_crypt_async::KeyProvider:
+  void GetKey(KeyCallback callback) override {
+    std::move(callback).Run(
+        tag_, base::unexpected(KeyError::kTemporarilyUnavailable));
+  }
+
+  bool UseForEncryption() override { return false; }
+
+ private:
+  const std::string tag_;
+};
+
+}  // namespace
+#endif  // BUILDFLAG(IS_MAC)
 
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
@@ -1661,9 +1692,22 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kUseKeychainKeyProvider)) {
-    providers.emplace_back(std::make_pair(
-        /*precedence=*/10u,
-        std::make_unique<os_crypt_async::KeychainKeyProvider>()));
+    if (!base::FeatureList::IsEnabled(
+            features::kKeychainKeyProviderUserDataDirProtection) ||
+        chrome::IsUsingDefaultDataDirectory().value_or(false)) {
+      providers.emplace_back(
+          /*precedence=*/10u,
+          std::make_unique<os_crypt_async::KeychainKeyProvider>());
+    } else {
+      constexpr auto kCustomUserDataSalt =
+          std::to_array<uint8_t>({'p', 'e', 'p', 'p', 'e', 'r'});
+      providers.emplace_back(
+          /*precedence=*/10u, std::make_unique<UnavailableKeyProvider>("v10"));
+      providers.emplace_back(
+          /*precedence=*/15u,
+          std::make_unique<os_crypt_async::KeychainKeyProvider>(
+              "v11", kCustomUserDataSalt));
+    }
   }
 #endif  // BUILDFLAG(IS_MAC)
 

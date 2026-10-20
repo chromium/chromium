@@ -57,6 +57,12 @@ BASE_FEATURE(kUseAdHocSigningForWebAppShims, base::FEATURE_ENABLED_BY_DEFAULT);
 // When enabled, the KeychainKeyProvider is used to provide the OS Crypt async
 // key.
 BASE_FEATURE(kUseKeychainKeyProvider, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, KeychainKeyProvider uses a separate key for non-default user
+// data directories and marks the default ("v10") key as temporarily
+// unavailable.
+BASE_FEATURE(kKeychainKeyProviderUserDataDirProtection,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

@@ -4,6 +4,7 @@
 
 #include "components/os_crypt/async/browser/keychain_key_provider.h"
 
+#include <array>
 #include <vector>
 
 #include "base/test/task_environment.h"
@@ -42,6 +43,31 @@ TEST_F(KeychainKeyProviderTest, GetKey_Success) {
                                              0x7D, 0x11, 0x58, 0x1B, 0x7A, 0xA8,
                                              0xCE, 0x72, 0x18, 0xDE};
   EXPECT_EQ(key_result.value().key_, expected_key);
+}
+
+TEST_F(KeychainKeyProviderTest, GetKey_CustomTagAndSalt) {
+  crypto::apple::FakeKeychainV2 mock_keychain("test-access-group");
+  mock_keychain.set_find_generic_result(noErr);
+
+  KeychainKeyProvider default_provider(&mock_keychain);
+  base::test::TestFuture<const std::string&,
+                         base::expected<Encryptor::Key, KeyProvider::KeyError>>
+      default_future;
+  default_provider.GetKey(default_future.GetCallback());
+  auto& [default_tag, default_key_result] = default_future.Get();
+  ASSERT_TRUE(default_key_result.has_value());
+
+  constexpr auto kCustomSalt =
+      std::to_array<uint8_t>({'p', 'e', 'p', 'p', 'e', 'r'});
+  KeychainKeyProvider custom_provider(&mock_keychain, "v11", kCustomSalt);
+  base::test::TestFuture<const std::string&,
+                         base::expected<Encryptor::Key, KeyProvider::KeyError>>
+      custom_future;
+  custom_provider.GetKey(custom_future.GetCallback());
+
+  auto& [custom_tag, custom_key_result] = custom_future.Get();
+  EXPECT_EQ(custom_tag, "v11");
+  EXPECT_NE(custom_key_result, default_key_result);
 }
 
 TEST_F(KeychainKeyProviderTest, GetKey_NotFound) {

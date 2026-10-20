@@ -30,9 +30,12 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/common/chrome_paths_internal.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/os_crypt/test_support.h"
-#include "chrome/common/chrome_paths_internal.h"
 #include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/util_constants.h"
@@ -71,6 +74,10 @@ enum TestConfiguration {
   // The Secret Portal key provider is being registered with Chrome.
   kOSCryptAsyncWithSecretPortalProvider,
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#if BUILDFLAG(IS_MAC)
+  // Simulates running Chrome with a custom (non-default) user data directory.
+  kOSCryptAsyncCustomUserDataDir,
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 enum MetricsExpectation {
@@ -158,13 +165,15 @@ class CookieEncryptionProviderBrowserTest
         base::GetCurrentProcessIntegrityLevel() != base::HIGH_INTEGRITY) {
       GTEST_SKIP() << "Elevation is required for this test.";
     }
-
-    // Browser tests use a custom user data dir, which would normally result in
-    // App-Bound encryption being disabled with
-    // `SupportLevel::kNotUsingDefaultUserDataDir`, so this call forces the
-    // non-standard testing data dir to be considered a default one.
-    chrome::SetUsingDefaultUserDataDirectoryForTesting(true);
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    // Browser tests use a custom user data dir, which would normally result in
+    // default user-data-dir encryption being disabled, so this call forces the
+    // non-standard testing data dir to be considered a default one unless a
+    // test case specifically requests a custom user data dir.
+    chrome::SetUsingDefaultUserDataDirectoryForTesting(true);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
     auto configuration =
         content::IsPreTest() ? GetParam().before : GetParam().after;
@@ -187,6 +196,11 @@ class CookieEncryptionProviderBrowserTest
         disabled_features.push_back(features::kDbusSecretPortal);
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
         break;
+#if BUILDFLAG(IS_MAC)
+      case kOSCryptAsyncCustomUserDataDir:
+        chrome::SetUsingDefaultUserDataDirectoryForTesting(false);
+        break;
+#endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_WIN)
       case kOSCryptAsyncNoService:
         break;
@@ -396,5 +410,20 @@ INSTANTIATE_TEST_SUITE_P(
          .metrics_expectation_before = kSecretPortalMetrics,
          .metrics_expectation_after = kSecretPortalMetrics},
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
+#if BUILDFLAG(IS_MAC)
+        {.name = "custom_user_data_dir",
+         .before = kOSCryptAsyncCustomUserDataDir,
+         .after = kOSCryptAsyncCustomUserDataDir,
+         .metrics_expectation_before = kOSCryptAsyncMetrics,
+         .metrics_expectation_after = kOSCryptAsyncMetrics},
+        {.name = "default_to_custom_user_data_dir",
+         .expect_pass = false,
+         .before = kOSCryptAsync,
+         .after = kOSCryptAsyncCustomUserDataDir},
+        {.name = "custom_to_default_user_data_dir",
+         .expect_pass = false,
+         .before = kOSCryptAsyncCustomUserDataDir,
+         .after = kOSCryptAsync},
+#endif  // BUILDFLAG(IS_MAC)
     }),
     [](const auto& info) { return info.param.name; });

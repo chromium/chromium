@@ -6,9 +6,14 @@
 
 #include <array>
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/apple/osstatus_logging.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -25,15 +30,16 @@ namespace os_crypt_async {
 namespace {
 
 // These constants are duplicated from the sync backend os_crypt_mac.mm.
-constexpr char kKeyTag[] = "v10";
+constexpr char kDefaultKeyTag[] = "v10";
 constexpr size_t kDerivedKeySize = 16;
-constexpr auto kSalt =
+constexpr auto kDefaultSalt =
     std::to_array<uint8_t>({'s', 'a', 'l', 't', 'y', 's', 'a', 'l', 't'});
 constexpr size_t kIterations = 1003;
 
 // This function runs on a worker thread and performs blocking Keychain IO.
 base::expected<Encryptor::Key, KeyProvider::KeyError> GetKeyTask(
     crypto::SubtlePassKey subtle_passkey,
+    base::span<const uint8_t> pbkdf2_salt,
     crypto::apple::KeychainV2* keychain_for_testing) {
   std::unique_ptr<crypto::apple::FakeKeychainV2> scoped_fake_keychain;
   crypto::apple::KeychainV2* keychain_to_use = keychain_for_testing;
@@ -59,19 +65,32 @@ base::expected<Encryptor::Key, KeyProvider::KeyError> GetKeyTask(
 
   std::array<uint8_t, kDerivedKeySize> key_bytes;
   crypto::kdf::Pbkdf2HmacSha1({.iterations = kIterations},
-                              base::as_byte_span(password), kSalt, key_bytes,
-                              subtle_passkey);
+                              base::as_byte_span(password), pbkdf2_salt,
+                              key_bytes, subtle_passkey);
 
   return Encryptor::Key(key_bytes, mojom::Algorithm::kAES128CBC);
 }
 
 }  // namespace
 
-KeychainKeyProvider::KeychainKeyProvider() = default;
+KeychainKeyProvider::KeychainKeyProvider()
+    : KeychainKeyProvider(kDefaultKeyTag, kDefaultSalt) {}
+
+KeychainKeyProvider::KeychainKeyProvider(std::string key_tag,
+                                         base::span<const uint8_t> pbkdf2_salt)
+    : key_tag_(std::move(key_tag)), pbkdf2_salt_(base::ToVector(pbkdf2_salt)) {}
 
 KeychainKeyProvider::KeychainKeyProvider(
     crypto::apple::KeychainV2* keychain_for_testing)
-    : keychain_for_testing_(keychain_for_testing) {}
+    : KeychainKeyProvider(keychain_for_testing, kDefaultKeyTag, kDefaultSalt) {}
+
+KeychainKeyProvider::KeychainKeyProvider(
+    crypto::apple::KeychainV2* keychain_for_testing,
+    std::string key_tag,
+    base::span<const uint8_t> pbkdf2_salt)
+    : keychain_for_testing_(keychain_for_testing),
+      key_tag_(std::move(key_tag)),
+      pbkdf2_salt_(base::ToVector(pbkdf2_salt)) {}
 
 KeychainKeyProvider::~KeychainKeyProvider() = default;
 
@@ -81,9 +100,9 @@ void KeychainKeyProvider::GetKey(KeyCallback callback) {
   // https://developer.apple.com/documentation/security/secitemcopymatching%28_%3A_%3A%29#Performance-considerations
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      base::BindOnce(&GetKeyTask, crypto::SubtlePassKey{},
+      base::BindOnce(&GetKeyTask, crypto::SubtlePassKey{}, pbkdf2_salt_,
                      keychain_for_testing_),
-      base::BindOnce(std::move(callback), kKeyTag));
+      base::BindOnce(std::move(callback), key_tag_));
 }
 
 bool KeychainKeyProvider::UseForEncryption() {
