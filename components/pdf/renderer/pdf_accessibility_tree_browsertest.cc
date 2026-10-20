@@ -5403,16 +5403,17 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicSortBlockNodesByVerticalBands) {
   ASSERT_EQ(8u, page->GetChildCount());
 
   // Expected visual reading order after sorting vertical bands top-to-bottom
-  // while preserving stream order within each band. Every vertical gap starts
-  // a new band, since no block below a gap continues a column in stream order:
+  // while preserving stream order within each band. A block below a gap starts
+  // a new band only if it was emitted before a band block above it in its
+  // column:
   // 0. JournalHeader (Band 0 at y = 56)
   // 1. DOIHeader (Band 0 at y = 58, overlapping y = 56..70)
-  // 2. PaperTitle (Band 1 at y = 120)
-  // 3. PaperAbstract (Band 2 at y = 250)
-  // 4. LeftColumn (Band 3 at y = 470)
-  // 5. RightColumn (Band 3 at y = 470, overlapping LeftColumn)
-  // 6. AuthorFootnote (Band 4 at y = 750)
-  // 7. JournalFooter (Band 5 at y = 920)
+  // 2. PaperTitle (Band 1 at y = 120; emitted before DOIHeader above it)
+  // 3. PaperAbstract (Band 1 at y = 250; emitted after PaperTitle)
+  // 4. LeftColumn (Band 2 at y = 470; emitted before both Band 1 blocks)
+  // 5. RightColumn (Band 2 at y = 470, overlapping LeftColumn)
+  // 6. AuthorFootnote (Band 2 at y = 750; emitted after LeftColumn)
+  // 7. JournalFooter (Band 3 at y = 920; emitted before LeftColumn)
   constexpr std::array<std::string_view, 8> kExpectedTexts = {
       "JournalHeader",
       "DOIHeader",
@@ -5435,8 +5436,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicSortBlockNodesByVerticalBands) {
 
 // Paragraph breaks in side-by-side columns can line up into page-wide vertical
 // gaps. Those gaps must not split the columns into separate bands, or headings
-// from both columns would interleave by `y`. Blocks that do not continue a
-// column in stream order, such as a title emitted last, still split off.
+// from both columns would interleave by `y`. A title emitted last still splits
+// off, since the blocks below it were emitted before it.
 TEST_F(PdfAccessibilityTreeTest,
        HeuristicSortBlockNodesKeepsStaggeredColumnsInStreamOrder) {
   base::test::ScopedFeatureList feature_list;
@@ -5478,6 +5479,127 @@ TEST_F(PdfAccessibilityTreeTest,
       "PageTitle",  "LeftIntro",    "LeftHeading", "LeftBody",
       "RightIntro", "RightHeading", "RightBody",   "PageFooter"};
 
+  for (size_t i = 0; i < kExpectedTexts.size(); ++i) {
+    SCOPED_TRACE(::testing::Message() << "block index " << i);
+    const ui::AXNode* block = page->GetChildAtIndex(i);
+    ASSERT_NE(nullptr, block);
+    ASSERT_GT(block->GetChildCount(), 0u);
+    EXPECT_EQ(kExpectedTexts[i], block->GetChildAtIndex(0u)->GetStringAttribute(
+                                     ax::mojom::StringAttribute::kName));
+  }
+}
+
+// Side-by-side columns emitted right column first keep stream order, even when
+// their vertical gaps line up.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicSortBlockNodesKeepsRightColumnFirstStreamOrder) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"RightTop", "RightBottom", "LeftTop", "LeftBottom"}),
+      {gfx::RectF(450.0f, 200.0f, 300.0f, 14.0f),
+       gfx::RectF(450.0f, 300.0f, 300.0f, 14.0f),
+       gfx::RectF(50.0f, 250.0f, 300.0f, 14.0f),
+       gfx::RectF(50.0f, 350.0f, 300.0f, 14.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(4u, page->GetChildCount());
+
+  constexpr std::array<std::string_view, 4> kExpectedTexts = {
+      "RightTop", "RightBottom", "LeftTop", "LeftBottom"};
+  for (size_t i = 0; i < kExpectedTexts.size(); ++i) {
+    SCOPED_TRACE(::testing::Message() << "block index " << i);
+    const ui::AXNode* block = page->GetChildAtIndex(i);
+    ASSERT_NE(nullptr, block);
+    ASSERT_GT(block->GetChildCount(), 0u);
+    EXPECT_EQ(kExpectedTexts[i], block->GetChildAtIndex(0u)->GetStringAttribute(
+                                     ax::mojom::StringAttribute::kName));
+  }
+}
+
+// A full-width block below side-by-side columns but emitted before them moves
+// after both columns.
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicSortBlockNodesMovesFullWidthBlockBelowColumns) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // Two lines per column, so the move up to the right column breaks the
+  // paragraph instead of joining both columns' first lines.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"FullWidth", "LeftColLine1", "LeftColLine2",
+                      "RightColLine1", "RightColLine2"}),
+      {gfx::RectF(50.0f, 300.0f, 700.0f, 14.0f),
+       gfx::RectF(50.0f, 200.0f, 300.0f, 14.0f),
+       gfx::RectF(50.0f, 215.0f, 300.0f, 14.0f),
+       gfx::RectF(450.0f, 200.0f, 300.0f, 14.0f),
+       gfx::RectF(450.0f, 215.0f, 300.0f, 14.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  constexpr std::array<std::string_view, 3> kExpectedTexts = {
+      "LeftColLine1LeftColLine2", "RightColLine1RightColLine2", "FullWidth"};
+  for (size_t i = 0; i < kExpectedTexts.size(); ++i) {
+    SCOPED_TRACE(::testing::Message() << "block index " << i);
+    const ui::AXNode* block = page->GetChildAtIndex(i);
+    ASSERT_NE(nullptr, block);
+    ASSERT_GT(block->GetChildCount(), 0u);
+    EXPECT_EQ(kExpectedTexts[i], block->GetChildAtIndex(0u)->GetStringAttribute(
+                                     ax::mojom::StringAttribute::kName));
+  }
+}
+
+// Blocks that overlap vertically keep stream order, even when the block emitted
+// later starts higher (e.g. a label on the first line of a list item).
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicSortBlockNodesKeepsVerticallyOverlappingBlocksInStreamOrder) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // `Later` starts 5px above `Earlier` and overlaps it in both directions.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style},
+      MakeCharVector({"EarlierLine1", "EarlierLine2", "Later"}),
+      {gfx::RectF(50.0f, 210.0f, 300.0f, 14.0f),
+       gfx::RectF(50.0f, 225.0f, 300.0f, 14.0f),
+       gfx::RectF(200.0f, 205.0f, 300.0f, 14.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  constexpr std::array<std::string_view, 2> kExpectedTexts = {
+      "EarlierLine1EarlierLine2", "Later"};
   for (size_t i = 0; i < kExpectedTexts.size(); ++i) {
     SCOPED_TRACE(::testing::Message() << "block index " << i);
     const ui::AXNode* block = page->GetChildAtIndex(i);

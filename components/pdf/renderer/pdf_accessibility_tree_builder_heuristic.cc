@@ -1683,52 +1683,25 @@ void ConnectPreviousAndNextOnLine(ui::AXNodeData* previous_on_line_node,
                                      previous_on_line_node->id);
 }
 
-// Returns whether the candidate block at `candidate_index` continues a column
-// of the band above it, in which case it joins that band despite the vertical
-// gap between them. `band_indices_above` lists the band's blocks as indices
-// into `block_nodes`; the candidate is not one of them.
-//
-// Without this, gaps that line up across side-by-side columns would split the
-// columns into separate bands, interleaving them when bands are sorted by `y`.
-//
-// Both of these must be true:
-//   1. The band has multiple columns. At least one band block is in the
-//      candidate's column (overlapping it horizontally), and at least one is in
-//      a different column (entirely to its left or right).
-//   2. The stream emits the band one column at a time, from left to right. So
-//      every band block entirely to the candidate's right comes after the
-//      candidate in the stream, and every other band block comes before it.
-//
-// For example, with stream order A, B, C:
-//   A  C
-//
-//   B
-// B joins the band of A and C: A is in B's column and comes before B, and C
-// is to B's right and comes after B.
-//
-// This assumes left-to-right columns; pages with right-to-left text are not
-// sorted.
-bool ContinuesBandColumnLtr(base::span<const ui::AXNodeData* const> block_nodes,
-                            base::span<const size_t> band_indices_above,
-                            size_t candidate_index) {
+// Returns whether the candidate block at `candidate_index` was emitted before a
+// band block above it in the same column (overlapping it horizontally). Only
+// then must the band end above the candidate so sorting can move it. Otherwise
+// the candidate joins the band despite a vertical gap, so columns keep stream
+// order however the stream orders them (e.g. a table emitted after the column
+// beside it).
+bool IsEmittedBeforeBlockAboveInColumn(
+    base::span<const ui::AXNodeData* const> block_nodes,
+    base::span<const size_t> band_indices_above,
+    size_t candidate_index) {
   const gfx::RectF& candidate_bounds =
       block_nodes[candidate_index]->relative_bounds.bounds;
-  bool has_block_in_column = false;
-  bool has_block_in_other_column = false;
-  for (size_t band_index : band_indices_above) {
+  return std::ranges::any_of(band_indices_above, [&](size_t band_index) {
     const gfx::RectF& band_bounds =
         block_nodes[band_index]->relative_bounds.bounds;
-    const bool is_right =
-        band_bounds.x() + kComparisonEpsilon >= candidate_bounds.right();
-    const bool is_left =
-        band_bounds.right() <= candidate_bounds.x() + kComparisonEpsilon;
-    if ((band_index > candidate_index) != is_right) {
-      return false;
-    }
-    has_block_in_column |= !is_left && !is_right;
-    has_block_in_other_column |= is_left || is_right;
-  }
-  return has_block_in_column && has_block_in_other_column;
+    return band_index > candidate_index &&
+           band_bounds.x() + kComparisonEpsilon < candidate_bounds.right() &&
+           candidate_bounds.x() + kComparisonEpsilon < band_bounds.right();
+  });
 }
 
 // Reorders `block_nodes` and the matching block entries in `page_child_ids`
@@ -1741,10 +1714,10 @@ bool ContinuesBandColumnLtr(base::span<const ui::AXNodeData* const> block_nodes,
 //
 // To avoid disrupting columns, blocks are grouped into horizontal bands:
 //   1. Blocks whose vertical intervals [y, bottom] overlap share a band.
-//   2. A block below a vertical gap also joins the band if it continues one of
-//      the band's columns in stream order. Paragraph breaks in side-by-side
-//      columns can line up into such gaps, and splitting there would
-//      interleave the columns' headings by `y`.
+//   2. A block below a vertical gap also joins the band unless it was emitted
+//      before a band block above it in the same column. Gaps between
+//      side-by-side columns can line up, and splitting there would interleave
+//      the columns by `y`.
 //   3. Bands are ordered top-to-bottom across the page.
 //   4. Blocks within the same band (such as side-by-side columns) keep their
 //      original stream order.
@@ -1763,10 +1736,11 @@ void SortBlockNodesByVerticalBands(std::vector<ui::AXNodeData*>& block_nodes,
   // `page_child_ids` below.
   //
   // First, sort `order` by each block's top `y` coordinate so vertically
-  // overlapping blocks become contiguous.
+  // overlapping blocks become contiguous (stable, so blocks with equal `y` keep
+  // stream order).
   std::vector<size_t> order(num_blocks);
   std::iota(order.begin(), order.end(), 0u);
-  std::ranges::sort(order, [&](size_t a, size_t b) {
+  std::ranges::stable_sort(order, [&](size_t a, size_t b) {
     return block_nodes[a]->relative_bounds.bounds.y() <
            block_nodes[b]->relative_bounds.bounds.y();
   });
@@ -1782,15 +1756,13 @@ void SortBlockNodesByVerticalBands(std::vector<ui::AXNodeData*>& block_nodes,
     // vertical interval overlaps the current band.
     const bool overlaps_band = bounds.y() + kComparisonEpsilon < band_bottom;
     if (overlaps_band ||
-        ContinuesBandColumnLtr(
+        !IsEmittedBeforeBlockAboveInColumn(
             block_nodes, base::span(order).subspan(band_start, i - band_start),
             order[i])) {
       // Merge this block into the band.
       band_bottom = std::ranges::max(band_bottom, bounds.bottom());
     } else {
-      // This block starts a new band, ending the band [band_start, i). Sort
-      // the block indices in the completed band in ascending numerical order
-      // to restore their original stream order.
+      // End the band [band_start, i) and restore its stream order.
       std::sort(order.begin() + band_start, order.begin() + i);
       band_start = i;
       band_bottom = bounds.bottom();
