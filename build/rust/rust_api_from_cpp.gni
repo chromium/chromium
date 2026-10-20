@@ -116,6 +116,13 @@ _globally_enabled_crubit_features = [
 #     directly by the generated code.  But Crubit needs to know that C++
 #     declarations from these headers (e.g. `std::unique_ptr`) belong to this
 #     target.
+#
+#   crate_features: (optional)
+#     Internal parameter, used only by `//build/rust/crubit:cc_std`.  A list of
+#     Cargo-style features (i.e. `--cfg feature="..."`) for compiling the
+#     generated bindings crate.  Crubit-generated code doesn't check any
+#     features, so this is only useful for `extra_rust_sources` (e.g.
+#     `len_capacity_encoding` for `vector.rs`).
 template("rust_api_from_cpp") {
   assert(enable_rust_api_from_cpp)
   assert(enable_rust)
@@ -348,6 +355,10 @@ template("rust_api_from_cpp") {
     crate_name = _lib_target_crate_name
     crate_root = _rs_out_path
     sources = [ crate_root ] + _extra_rust_sources
+
+    if (defined(invoker.crate_features)) {
+      features = invoker.crate_features
+    }
 
     if (defined(_extra_rs_srcs_copy_target_name)) {
       deps += [ ":${_extra_rs_srcs_copy_target_name}" ]

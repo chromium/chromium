@@ -108,7 +108,6 @@ if (enable_rust_api_from_cpp) {
     override_target_label = "//third_party/crubit/support/cc_std:cc_std"
 
     # Other C++ standard library types to cover (in dependency order):
-    # TODO(crbug.com/40226863): std::vector (+crate feature).
     # TODO(crbug.com/40226863): std::shared_ptr.
     # TODO(crbug.com/40226863): std::string_view (+lossy_utf8, slice_ptr).
     # TODO(crbug.com/40226863): std::string (needs std::string_view).
@@ -116,6 +115,7 @@ if (enable_rust_api_from_cpp) {
     public_headers = [
       "${libcxx_prefix}/include/memory",
       "${libcxx_prefix}/include/optional",
+      "${libcxx_prefix}/include/vector",
 
       # Helpers used by `allocator.rs` (e.g. `cpp_new` and `cpp_delete`).
       "${crubit_src_dir}/support/cc_std_impl/allocator.h",
@@ -129,7 +129,10 @@ if (enable_rust_api_from_cpp) {
     # first covering all the public headers from Crubit's `headers.bzl`
     # (otherwise the generated C++ code may refer to types like
     # `std::input_iterator_tag` without including their public header).
-    internal_headers = [ "${libcxx_prefix}/include/__memory/unique_ptr.h" ]
+    internal_headers = [
+      "${libcxx_prefix}/include/__memory/unique_ptr.h",
+      "${libcxx_prefix}/include/__vector/vector.h",
+    ]
 
     # Hand-written Rust types (e.g. `cc_std::std::optional<T>`) that
     # Crubit-generated code expects in the `std` module.
@@ -138,8 +141,16 @@ if (enable_rust_api_from_cpp) {
       "${crubit_src_dir}/support/cc_std_impl/non_null.rs",
       "${crubit_src_dir}/support/cc_std_impl/optional.rs",
       "${crubit_src_dir}/support/cc_std_impl/unique_ptr.rs",
+      "${crubit_src_dir}/support/cc_std_impl/vector.rs",
+      "${crubit_src_dir}/support/cc_std_impl/vector_partial_eq.rs",
     ]
     extra_rust_sources_mod = "std"
+
+    # Chromium's libc++ uses the size-based `std::vector` layout (see
+    # `_LIBCPP_ABI_VECTOR_LAYOUT_SIZE_BASED` in libc++'s
+    # `__configuration/abi.h`).  `vector.rs` supports this layout only when the
+    # `len_capacity_encoding` feature is enabled.
+    crate_features = [ "len_capacity_encoding" ]
   }
 
   source_set("cc_std_empty_target") {

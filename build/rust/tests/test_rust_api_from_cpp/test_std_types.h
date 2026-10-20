@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 inline std::optional<int> AddOneIfPresent(std::optional<int> x) {
   if (!x.has_value()) {
@@ -29,6 +30,18 @@ inline std::unique_ptr<int> CreateUniquePtr(int value) {
 
 inline int GetValueFromUniquePtr(std::unique_ptr<int> ptr) {
   return *ptr;
+}
+
+inline std::vector<int> CreateVector(int a, int b, int c) {
+  return {a, b, c};
+}
+
+inline int SumVector(std::vector<int> v) {
+  int sum = 0;
+  for (int x : v) {
+    sum += x;
+  }
+  return sum;
 }
 
 #endif  // BUILD_RUST_TESTS_TEST_RUST_API_FROM_CPP_TEST_STD_TYPES_H_
