@@ -43,6 +43,13 @@ class ActuationTransportHandler : public browser_actuator::TransportHandler {
                            TaskId task_id,
                            proto::StartTaskResponse response);
 
+  void HandleStopTask(const std::string& request_id,
+                      std::string_view task_id_str,
+                      const proto::StopTaskRequest& request);
+  void OnStopTaskComplete(const std::string& request_id,
+                          const std::string& task_id_str,
+                          bool success);
+
   std::unique_ptr<ActuationDelegate> delegate_;
   base::flat_set<TaskId> active_tasks_;
   base::WeakPtrFactory<ActuationTransportHandler> weak_ptr_factory_{this};

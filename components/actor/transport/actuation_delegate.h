@@ -11,6 +11,7 @@
 namespace chrome::aix::autobrowse::proto {
 class StartTaskRequest;
 class StartTaskResponse;
+class StopTaskRequest;
 }  // namespace chrome::aix::autobrowse::proto
 
 namespace optimization_guide::proto {
@@ -33,7 +34,9 @@ class ActuationDelegate {
                          StartTaskCallback callback) = 0;
 
   using StopTaskCallback = base::OnceCallback<void(bool /*success*/)>;
-  virtual void StopTask(TaskId task_id, StopTaskCallback callback) = 0;
+  virtual void StopTask(TaskId task_id,
+                        const proto::StopTaskRequest& request,
+                        StopTaskCallback callback) = 0;
 
   using ActCallback =
       base::OnceCallback<void(optimization_guide::proto::ActionsResult)>;

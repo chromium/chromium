@@ -67,14 +67,16 @@ TEST_F(ActorKeyedServiceAdapterTest, StopTaskStopsExistingTaskAndReturnsTrue) {
   ASSERT_TRUE(actor_service_->GetTask(task_id));
 
   base::test::TestFuture<bool> stop_future;
-  adapter_.StopTask(task_id, stop_future.GetCallback());
+  adapter_.StopTask(task_id, proto::StopTaskRequest(),
+                    stop_future.GetCallback());
   EXPECT_TRUE(stop_future.Get());
   EXPECT_FALSE(actor_service_->GetTask(task_id));
 }
 
 TEST_F(ActorKeyedServiceAdapterTest, StopTaskReturnsFalseForUnknownTask) {
   base::test::TestFuture<bool> stop_future;
-  adapter_.StopTask(TaskId(9999), stop_future.GetCallback());
+  adapter_.StopTask(TaskId(9999), proto::StopTaskRequest(),
+                    stop_future.GetCallback());
   EXPECT_FALSE(stop_future.Get());
 }
 

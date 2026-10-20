@@ -72,7 +72,11 @@ class FakeActuationDelegate : public ActuationDelegate {
     pending_start_callback_ = std::move(callback);
   }
 
-  void StopTask(TaskId task_id, StopTaskCallback callback) override {
+  void StopTask(TaskId task_id,
+                const proto::StopTaskRequest& request,
+                StopTaskCallback callback) override {
+    last_stop_task_id_ = task_id;
+    last_stop_request_ = request;
     stopped_task_ids_.push_back(task_id);
     std::move(callback).Run(true);
   }
@@ -87,6 +91,12 @@ class FakeActuationDelegate : public ActuationDelegate {
     return std::move(pending_start_callback_);
   }
 
+  const std::optional<TaskId>& last_stop_task_id() const {
+    return last_stop_task_id_;
+  }
+  const std::optional<proto::StopTaskRequest>& last_stop_request() const {
+    return last_stop_request_;
+  }
   const std::vector<TaskId>& stopped_task_ids() const {
     return stopped_task_ids_;
   }
@@ -95,6 +105,8 @@ class FakeActuationDelegate : public ActuationDelegate {
   std::optional<proto::StartTaskRequest> last_start_request_;
   StartTaskCallback pending_start_callback_;
 
+  std::optional<TaskId> last_stop_task_id_;
+  std::optional<proto::StopTaskRequest> last_stop_request_;
   std::vector<TaskId> stopped_task_ids_;
 };
 
@@ -110,6 +122,16 @@ class ActuationTransportHandlerTest : public testing::Test {
   void TearDown() override {
     delegate_ = nullptr;
     handler_.reset();
+  }
+
+  void StartSessionTask(int32_t task_id) {
+    proto::ServerToBrowserPayload start_msg;
+    start_msg.mutable_start_task();
+    handler_->OnMessage(browser_actuator::PayloadType::kActuation,
+                        start_msg.SerializeAsString());
+    proto::StartTaskResponse response;
+    response.set_status(proto::StartTaskResponse::STATUS_OK);
+    delegate_->TakeStartCallback().Run(TaskId(task_id), std::move(response));
   }
 
   FakeTransportSession session_{"session_123"};
@@ -151,6 +173,73 @@ TEST_F(ActuationTransportHandlerTest,
 }
 
 TEST_F(ActuationTransportHandlerTest,
+       StopTaskForwardsOwnedTaskOnceAndSendsResponse) {
+  StartSessionTask(7);
+
+  proto::ServerToBrowserPayload downstream;
+  downstream.set_task_id("7");
+  downstream.set_request_id("req_stop_1");
+  downstream.mutable_stop_task()->set_reason(
+      proto::StopTaskRequest::USER_CANCELLED);
+
+  handler_->OnMessage(browser_actuator::PayloadType::kActuation,
+                      downstream.SerializeAsString());
+
+  ASSERT_TRUE(delegate_->last_stop_task_id().has_value());
+  EXPECT_EQ(*delegate_->last_stop_task_id(), TaskId(7));
+  ASSERT_TRUE(delegate_->last_stop_request().has_value());
+  EXPECT_EQ(delegate_->last_stop_request()->reason(),
+            proto::StopTaskRequest::USER_CANCELLED);
+  EXPECT_EQ(delegate_->stopped_task_ids().size(), 1u);
+  ASSERT_EQ(session_.sent_messages().size(), 2u);
+  EXPECT_EQ(session_.sent_messages()[1].task_id(), "7");
+  EXPECT_EQ(session_.sent_messages()[1].request_id(), "req_stop_1");
+  ASSERT_TRUE(session_.sent_messages()[1].has_stop_task());
+  EXPECT_EQ(session_.sent_messages()[1].stop_task().status(),
+            proto::StopTaskResponse::STATUS_OK);
+
+  handler_->OnMessage(browser_actuator::PayloadType::kActuation,
+                      downstream.SerializeAsString());
+  EXPECT_EQ(delegate_->stopped_task_ids().size(), 1u);
+  ASSERT_EQ(session_.sent_messages().size(), 3u);
+  EXPECT_EQ(session_.sent_messages()[2].task_id(), "7");
+  EXPECT_EQ(session_.sent_messages()[2].request_id(), "req_stop_1");
+  ASSERT_TRUE(session_.sent_messages()[2].has_stop_task());
+  EXPECT_EQ(session_.sent_messages()[2].stop_task().status(),
+            proto::StopTaskResponse::STATUS_FAILED);
+}
+
+TEST_F(ActuationTransportHandlerTest, StopTaskRejectsUnownedOrInvalidTask) {
+  proto::ServerToBrowserPayload downstream;
+  downstream.set_task_id("99");
+  downstream.set_request_id("req_stop_unowned");
+  downstream.mutable_stop_task()->set_reason(
+      proto::StopTaskRequest::TASK_COMPLETED);
+
+  handler_->OnMessage(browser_actuator::PayloadType::kActuation,
+                      downstream.SerializeAsString());
+  EXPECT_FALSE(delegate_->last_stop_task_id().has_value());
+  ASSERT_EQ(session_.sent_messages().size(), 1u);
+  EXPECT_EQ(session_.sent_messages()[0].task_id(), "99");
+  EXPECT_EQ(session_.sent_messages()[0].request_id(), "req_stop_unowned");
+  ASSERT_TRUE(session_.sent_messages()[0].has_stop_task());
+  EXPECT_EQ(session_.sent_messages()[0].stop_task().status(),
+            proto::StopTaskResponse::STATUS_FAILED);
+
+  downstream.set_task_id("not_an_int");
+  downstream.set_request_id("req_stop_invalid");
+  handler_->OnMessage(browser_actuator::PayloadType::kActuation,
+                      downstream.SerializeAsString());
+  EXPECT_FALSE(delegate_->last_stop_task_id().has_value());
+  ASSERT_EQ(session_.sent_messages().size(), 2u);
+  EXPECT_EQ(session_.sent_messages()[1].task_id(), "not_an_int");
+  EXPECT_EQ(session_.sent_messages()[1].request_id(), "req_stop_invalid");
+  ASSERT_TRUE(session_.sent_messages()[1].has_stop_task());
+  EXPECT_EQ(session_.sent_messages()[1].stop_task().status(),
+            proto::StopTaskResponse::STATUS_FAILED);
+}
+
+TEST_F(ActuationTransportHandlerTest,
        IgnoresInvalidPayloadOrNonActuationPayloadType) {
   handler_->OnMessage(browser_actuator::PayloadType::kControl, "invalid_bytes");
   handler_->OnMessage(browser_actuator::PayloadType::kActuation,
@@ -162,6 +251,7 @@ TEST_F(ActuationTransportHandlerTest,
                       empty_command.SerializeAsString());
 
   EXPECT_FALSE(delegate_->last_start_request().has_value());
+  EXPECT_FALSE(delegate_->last_stop_task_id().has_value());
   EXPECT_TRUE(session_.sent_messages().empty());
 }
 
@@ -173,7 +263,9 @@ TEST_F(ActuationTransportHandlerTest, StopsActiveSessionTasksOnDestruction) {
    public:
     explicit DestructionTrackingDelegate(std::vector<TaskId>* stopped_tasks)
         : stopped_tasks_(stopped_tasks) {}
-    void StopTask(TaskId task_id, StopTaskCallback callback) override {
+    void StopTask(TaskId task_id,
+                  const proto::StopTaskRequest& request,
+                  StopTaskCallback callback) override {
       stopped_tasks_->push_back(task_id);
       std::move(callback).Run(true);
     }
@@ -209,8 +301,16 @@ TEST_F(ActuationTransportHandlerTest, StopsActiveSessionTasksOnDestruction) {
   raw_delegate->TakeStartCallback().Run(TaskId(), std::move(failed_response));
   EXPECT_TRUE(session.sent_messages().back().task_id().empty());
 
+  proto::ServerToBrowserPayload stop_msg;
+  stop_msg.set_task_id("11");
+  stop_msg.mutable_stop_task();
+  handler->OnMessage(browser_actuator::PayloadType::kActuation,
+                     stop_msg.SerializeAsString());
+  EXPECT_EQ(stopped_tasks, std::vector<TaskId>{TaskId(11)});
+
+  stopped_tasks.clear();
   handler.reset();
-  EXPECT_EQ(stopped_tasks, (std::vector<TaskId>{TaskId(11), TaskId(22)}));
+  EXPECT_EQ(stopped_tasks, std::vector<TaskId>{TaskId(22)});
 }
 
 TEST_F(ActuationTransportHandlerTest,

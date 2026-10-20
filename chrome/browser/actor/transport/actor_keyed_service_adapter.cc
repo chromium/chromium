@@ -51,6 +51,7 @@ void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
 }
 
 void ActorKeyedServiceAdapter::StopTask(TaskId task_id,
+                                        const proto::StopTaskRequest& request,
                                         StopTaskCallback callback) {
   if (!actor_service_->GetTask(task_id)) {
     std::move(callback).Run(false);
