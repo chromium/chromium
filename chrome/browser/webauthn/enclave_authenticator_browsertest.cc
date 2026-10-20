@@ -120,8 +120,12 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager.h"
+#include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/common/chrome_version.h"
 #include "components/trusted_vault/icloud_recovery_key_mac.h"
 #include "components/trusted_vault/proto/vault.pb.h"
@@ -3676,6 +3680,77 @@ IN_PROC_BROWSER_TEST_F(EnclaveICloudRecoveryKeyTest, DISABLED_Recovery) {
     EXPECT_TRUE(future.Wait());
     ASSERT_EQ(future.Get().size(), 1u);
   }
+}
+
+class EnclavePasskeyUnlockICloudRecoveryTest
+    : public EnclaveICloudRecoveryKeyTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kPasskeyUnlockICloudRecovery};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    EnclavePasskeyUnlockICloudRecoveryTest,
+    PasskeyUnlockManagerRecoversWithICloudKeychainOnStartup) {
+  // Enroll the device with the enclave and set up a GPM PIN.
+  base::test::TestFuture<bool> setup_future;
+  enclave_manager().SetupWithPIN("123456", setup_future.GetCallback());
+  ASSERT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(setup_future.Get());
+  ASSERT_TRUE(enclave_manager().IsReady());
+
+  // Create an iCloud recovery key in the fake keychain and enroll it with the
+  // enclave and fake security domain service.
+  base::test::TestFuture<std::unique_ptr<trusted_vault::ICloudRecoveryKey>>
+      create_key_future;
+  trusted_vault::ICloudRecoveryKey::Create(
+      create_key_future.GetCallback(),
+      trusted_vault::SecurityDomainId::kPasskeys,
+      kICloudKeychainRecoveryKeyAccessGroup);
+  ASSERT_TRUE(create_key_future.Wait());
+  std::unique_ptr<trusted_vault::ICloudRecoveryKey> icloud_key =
+      create_key_future.Take();
+  ASSERT_TRUE(icloud_key);
+
+  base::test::TestFuture<bool> add_key_future;
+  enclave_manager().AddICloudRecoveryKey(std::move(icloud_key),
+                                         add_key_future.GetCallback());
+  ASSERT_TRUE(add_key_future.Wait());
+  ASSERT_TRUE(add_key_future.Get());
+
+  // Simulate a locked device by clearing local enclave registration and cached
+  // keys, waiting for the state write to complete, and reloading the enclave so
+  // that PasskeyUnlockManager observes the unready state while EnclaveManager
+  // remains loaded.
+  enclave_manager().ClearRegistrationForTesting();
+  enclave_manager().ClearCachedKeysForTesting();
+  base::test::TestFuture<void> write_future;
+  enclave_manager().RunWhenStoppedForTesting(write_future.GetCallback());
+  ASSERT_TRUE(write_future.Wait());
+  enclave_manager().ResetForTesting();
+  WaitForEnclaveLoaded();
+  ASSERT_TRUE(enclave_manager().IsLoaded());
+  ASSERT_FALSE(enclave_manager().IsReady());
+
+  // Ensure sync is active and no recovery attempt has fired before a passkey
+  // exists.
+  ASSERT_TRUE(sync_harness_->AwaitSyncTransportActive());
+  histogram_tester_.ExpectTotalCount(
+      "WebAuthentication.Enclave.ActionOutcome.RecoverWithICloudKeychain", 0);
+
+  // Add a GPM passkey so PasskeyUnlockManager sees locked passkeys and triggers
+  // a single startup iCloud Keychain recovery attempt.
+  AddTestPasskeyToModel();
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return enclave_manager().IsReady(); }));
+  EXPECT_TRUE(enclave_manager().IsReady());
+  EXPECT_FALSE(webauthn::PasskeyUnlockManagerFactory::GetForProfile(
+                   browser()->GetProfile())
+                   ->ShouldDisplayErrorUi());
+  histogram_tester_.ExpectUniqueSample(
+      "WebAuthentication.Enclave.ActionOutcome.RecoverWithICloudKeychain",
+      EnclaveManager::ActionOutcome::kSuccess, 1);
 }
 
 #endif  // BUILDFLAG(IS_MAC)

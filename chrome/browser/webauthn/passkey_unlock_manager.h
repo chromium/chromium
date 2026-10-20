@@ -9,6 +9,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "build/build_config.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_interface.h"
@@ -95,6 +96,10 @@ class PasskeyUnlockManager : public KeyedService,
   static void RecordErrorUIEventType(ErrorUIEventType event_type);
 
  private:
+#if BUILDFLAG(IS_MAC)
+  enum class ICloudRecoveryState { kNotStarted, kInProgress, kDone };
+#endif  // BUILDFLAG(IS_MAC)
+
   // Returns the PasskeyModel provided at construction.
   PasskeyModel* passkey_model();
 
@@ -111,6 +116,11 @@ class PasskeyUnlockManager : public KeyedService,
   // user actionable errors.
   void UpdateSyncState();
 
+  // Called whenever an input to the passkey unlock state changes. On macOS,
+  // first starts iCloud Keychain recovery if needed, then recomputes whether
+  // to display the error UI.
+  void OnPasskeyUnlockStateChanged();
+
   // Recomputes `should_display_error_ui_` and notifies observers if its value
   // changed.
   void ComputeShouldDisplayErrorUiAndNotifyObservers();
@@ -126,6 +136,16 @@ class PasskeyUnlockManager : public KeyedService,
   void AsynchronouslyCheckSystemUVAvailability();
   // Callback for `AsynchronouslyCheckSystemUVAvailability`.
   void OnHaveSystemUVAvailability(bool has_system_uv);
+  // Returns whether opportunistic iCloud Keychain recovery on startup is
+  // enabled and has not completed yet. Always false on platforms other than
+  // macOS.
+  bool IsOpportunisticRecoveryOnStartupUnfinished() const;
+#if BUILDFLAG(IS_MAC)
+  // Starts iCloud Keychain recovery at most once when passkeys are locked and
+  // the feature is enabled.
+  void MaybeStartICloudRecovery();
+  void OnICloudRecoveryComplete();
+#endif  // BUILDFLAG(IS_MAC)
 
   // A helper for `ComputeShouldDisplayErrorUi()`. Checks whether passkeys are
   // in the locked state. If this information can't be computed returns
@@ -206,6 +226,9 @@ class PasskeyUnlockManager : public KeyedService,
 
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request>
       download_account_state_request_;
+#if BUILDFLAG(IS_MAC)
+  ICloudRecoveryState icloud_recovery_state_ = ICloudRecoveryState::kNotStarted;
+#endif  // BUILDFLAG(IS_MAC)
 
   SEQUENCE_CHECKER(sequence_checker_);
 
