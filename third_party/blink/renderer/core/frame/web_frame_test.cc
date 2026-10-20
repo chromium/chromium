@@ -15734,4 +15734,43 @@ TEST_F(WebFrameTest, FindFrameByNameCurrent) {
   EXPECT_EQ(frame->FindFrameByName(WebString("_current")), nullptr);
 }
 
+TEST_F(WebFrameTest, FromWindow) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+  WebLocalFrameImpl* main_frame = web_view_helper.LocalMainFrame();
+
+  v8::Isolate* isolate = main_frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = main_frame->MainWorldScriptContext();
+  v8::Context::Scope context_scope(context);
+
+  // Test with main window.
+  v8::Local<v8::Value> window =
+      main_frame->ExecuteScriptAndReturnValue(WebScriptSource("window"));
+  EXPECT_EQ(main_frame, WebFrame::FromWindow(isolate, window));
+
+  // Test with child frame window.
+  v8::Local<v8::Value> child_window = main_frame->ExecuteScriptAndReturnValue(
+      WebScriptSource("(() => {"
+                      "  const iframe = document.createElement('iframe');"
+                      "  document.body.appendChild(iframe);"
+                      "  return iframe.contentWindow;"
+                      "})()"));
+  ASSERT_TRUE(main_frame->FirstChild());
+  EXPECT_EQ(main_frame->FirstChild(),
+            WebFrame::FromWindow(isolate, child_window));
+
+  // Test with detached frame window.
+  main_frame->ExecuteScriptAndReturnValue(
+      WebScriptSource("document.querySelector('iframe').remove()"));
+  EXPECT_EQ(nullptr, WebFrame::FromWindow(isolate, child_window));
+
+  // Test with invalid / non-window values.
+  EXPECT_EQ(nullptr, WebFrame::FromWindow(isolate, v8::Object::New(isolate)));
+  EXPECT_EQ(nullptr, WebFrame::FromWindow(isolate, v8::Null(isolate)));
+  EXPECT_EQ(nullptr, WebFrame::FromWindow(isolate, v8::Undefined(isolate)));
+  EXPECT_EQ(nullptr,
+            WebFrame::FromWindow(isolate, v8::Number::New(isolate, 123)));
+}
+
 }  // namespace blink

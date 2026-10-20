@@ -314,6 +314,15 @@ chrome.runtime.getVersion = function() {};
 chrome.runtime.getURL = function(path) {};
 
 /**
+ * Returns the document ID of the specified window or frame element.
+ * @param {*} target A WindowProxy or frame element (iframe, frame, embed, or
+ *     object) for the target frame.
+ * @return {string} The document ID of the target.
+ * @see https://developer.chrome.com/extensions/runtime#method-getDocumentId
+ */
+chrome.runtime.getDocumentId = function(target) {};
+
+/**
  * Signals that the extension has finished registering its event listeners for
  * the current service worker instance. The browser replaces persisted listener
  * registrations with the newly registered listeners and dispatches any queued

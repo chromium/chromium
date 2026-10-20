@@ -41,7 +41,11 @@
 #include "extensions/renderer/v8_helpers.h"
 #include "extensions/renderer/worker_thread_dispatcher.h"
 #include "gin/converter.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_node.h"
 #include "v8/include/v8-function-callback.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-isolate.h"
@@ -100,6 +104,7 @@ void EmptySetter(v8::Local<v8::Name> name,
 constexpr char kGetManifest[] = "runtime.getManifest";
 constexpr char kGetVersion[] = "runtime.getVersion";
 constexpr char kGetURL[] = "runtime.getURL";
+constexpr char kGetDocumentId[] = "runtime.getDocumentId";
 constexpr char kConnect[] = "runtime.connect";
 constexpr char kConnectNative[] = "runtime.connectNative";
 constexpr char kSendMessage[] = "runtime.sendMessage";
@@ -418,6 +423,7 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
       {&RuntimeHooksDelegate::HandleSendMessage, kSendMessage},
       {&RuntimeHooksDelegate::HandleConnect, kConnect},
       {&RuntimeHooksDelegate::HandleGetURL, kGetURL},
+      {&RuntimeHooksDelegate::HandleGetDocumentId, kGetDocumentId},
       {&RuntimeHooksDelegate::HandleGetManifest, kGetManifest},
       {&RuntimeHooksDelegate::HandleGetVersion, kGetVersion},
       {&RuntimeHooksDelegate::HandleConnectNative, kConnectNative},
@@ -513,6 +519,46 @@ RequestResult RuntimeHooksDelegate::HandleGetURL(
     const APISignature::V8ParseResult& parse_result) {
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   return GetURL(script_context, *parse_result.arguments);
+}
+
+RequestResult RuntimeHooksDelegate::HandleGetDocumentId(
+    ScriptContext* script_context,
+    const APISignature::V8ParseResult& parse_result) {
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
+  CHECK_EQ(1u, parse_result.arguments->size());
+
+  v8::Isolate* isolate = script_context->isolate();
+  v8::Local<v8::Value> target = (*parse_result.arguments)[0];
+
+  blink::WebFrame* target_frame = nullptr;
+  if (target->IsObject()) {
+    target_frame = blink::WebFrame::FromWindow(isolate, target);
+    if (!target_frame) {
+      blink::WebNode node = blink::WebNode::FromV8Value(isolate, target);
+      if (!node.IsNull()) {
+        target_frame = blink::WebFrame::FromFrameOwnerElement(node);
+      }
+    }
+  }
+
+  // TODO(crbug.com/574047677): Add support for out-of-process frames.
+  if (!target_frame || !target_frame->IsWebLocalFrame()) {
+    RequestResult result(RequestResult::INVALID_INVOCATION);
+    result.error =
+        "Invalid target: expected an attached Window or frame element.";
+    return result;
+  }
+
+  blink::WebDocument document = target_frame->ToWebLocalFrame()->GetDocument();
+  if (document.IsNull()) {
+    RequestResult result(RequestResult::INVALID_INVOCATION);
+    result.error = "Target frame does not have an active document.";
+    return result;
+  }
+
+  RequestResult result(RequestResult::HANDLED);
+  result.return_value = gin::StringToV8(isolate, document.Token().ToString());
+  return result;
 }
 
 RequestResult RuntimeHooksDelegate::HandleSendMessage(

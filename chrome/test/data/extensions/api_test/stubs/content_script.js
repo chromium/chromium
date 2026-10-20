@@ -103,6 +103,11 @@ chrome.runtime.sendMessage('getApi', function(apis) {
         }
 
         const path = `${namespace}.${entry.name}`;
+        // Skip `runtime.getDocumentId()`, which is restricted to a feature
+        // flag.
+        if (path === 'runtime.getDocumentId') {
+          return;
+        }
         if (module.unprivileged || entry.unprivileged ||
             isAvailableToContentScripts(namespace, path)) {
           unprivilegedPaths.push(path);

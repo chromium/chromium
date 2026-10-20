@@ -2934,4 +2934,102 @@ IN_PROC_BROWSER_TEST_F(RuntimeAsyncListenerRegistrationApiTest,
                 *profile(), extension->id()));
 }
 
+class RuntimeGetDocumentIdApiTest : public RuntimeApiTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      extensions_features::kApiRuntimeGetDocumentId};
+};
+
+IN_PROC_BROWSER_TEST_F(RuntimeGetDocumentIdApiTest, GetDocumentId) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "runtime.getDocumentId test",
+           "version": "1.0",
+           "manifest_version": 3,
+           "background": {
+             "service_worker": "background.js"
+           },
+           "content_scripts": [{
+             "matches": ["*://*/title1.html"],
+             "js": ["content_script.js"]
+           }]
+         })";
+
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+           chrome.test.assertEq(undefined, chrome.runtime.getDocumentId);
+           sendResponse({senderDocumentId: sender.documentId});
+         });)";
+
+  static constexpr char kContentScriptJs[] =
+      R"(chrome.test.runTests([
+           async function getDocumentIdForWindowAndFrame() {
+             const mainDocId = chrome.runtime.getDocumentId(window);
+             chrome.test.assertTrue(typeof mainDocId === 'string');
+             chrome.test.assertEq(32, mainDocId.length);
+
+             const response = await chrome.runtime.sendMessage('ping');
+             chrome.test.assertEq(response.senderDocumentId, mainDocId);
+
+             const iframe = document.createElement('iframe');
+             iframe.src = '/title2.html';
+             await new Promise((resolve) => {
+               iframe.onload = resolve;
+               document.body.appendChild(iframe);
+             });
+
+             const frameDocIdFromElement =
+                 chrome.runtime.getDocumentId(iframe);
+             const frameDocIdFromWindow =
+                 chrome.runtime.getDocumentId(iframe.contentWindow);
+             chrome.test.assertEq(frameDocIdFromElement, frameDocIdFromWindow);
+             chrome.test.assertNe(mainDocId, frameDocIdFromElement);
+
+             // Detaching the frame should cause getDocumentId to throw.
+             const detachedWindow = iframe.contentWindow;
+             iframe.remove();
+             chrome.test.assertThrows(
+                 () => chrome.runtime.getDocumentId(iframe),
+                 /Invalid target/);
+             chrome.test.assertThrows(
+                 () => chrome.runtime.getDocumentId(detachedWindow),
+                 /Invalid target/);
+             chrome.test.assertThrows(
+                 () => chrome.runtime.getDocumentId(document.body),
+                 /Invalid target/);
+             chrome.test.assertThrows(
+                 () => chrome.runtime.getDocumentId({}),
+                 /Invalid target/);
+
+             chrome.test.sendMessage(mainDocId, () => {
+               chrome.test.succeed();
+             });
+           }
+         ]);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScriptJs);
+
+  ResultCatcher catcher;
+  ExtensionTestMessageListener doc_id_listener(ReplyBehavior::kWillReply);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            embedded_test_server()->GetURL("/title1.html")));
+  ASSERT_TRUE(doc_id_listener.WaitUntilSatisfied());
+
+  content::RenderFrameHost* main_frame =
+      GetActiveWebContents()->GetPrimaryMainFrame();
+  EXPECT_EQ(ExtensionApiFrameIdMap::GetDocumentId(main_frame).ToString(),
+            doc_id_listener.message());
+
+  doc_id_listener.Reply("");
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
 }  // namespace extensions
