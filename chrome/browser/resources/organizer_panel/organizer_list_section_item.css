@@ -26,6 +26,11 @@
   width: 28px;
 }
 
+#crUrlListItem::part(suffix) {
+  margin-inline-end: 0;
+  padding-right: 4px;
+}
+
 #content {
   display: flex;
   flex-direction: column;

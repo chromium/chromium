@@ -70,7 +70,7 @@ export function getHtml(this: CrUrlListItemElement) {
       </div>
     </div>
   </div>
-  <div class="suffix">
+  <div class="suffix" part="suffix">
     <slot name="suffix"></slot>
   </div>
 </div>

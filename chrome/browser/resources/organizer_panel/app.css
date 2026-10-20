@@ -23,9 +23,11 @@
   --color-toolbar-search-field-background-hover:
       var(--color-sys-state-hover-on-subtle);
   --cr-toolbar-search-field-background: var(--color-toolbar);
+  --cr-toolbar-search-field-term-margin: 0 6px;
   flex-shrink: 0;
   margin: 12px;
   margin-top: 4px;
+  padding: 0 4px;
   width: auto;
 }
 
