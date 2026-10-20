@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -652,6 +653,76 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
   // There is a ready-to-reuse resource.
   EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
   // No task posted.
+  EXPECT_FALSE(
+      provider->unused_resources_reclaim_timer_is_running_for_testing());
+}
+
+TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
+       UnusedResourcesAreNotCollectedWhenYoung) {
+  base::test::ScopedFeatureList feature_list{kCanvas2DReclaimUnusedResources};
+  V8TestingScope scope;
+  auto* context = CreateBackedContext(scope, RasterMode::kGPU);
+  auto* provider = context->GetSharedImageProviderForTesting();
+
+  auto resource = context->PaintRenderingResultsToResource(kBackBuffer,
+                                                           FlushReason::kOther);
+  context->fillRect(0, 0, 1, 1);
+  auto new_resource = context->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
+  ASSERT_NE(resource, new_resource);
+  if (base::FeatureList::IsEnabled(
+          ::features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_FALSE(GetSyncToken(resource.get()).HasData());
+    EXPECT_FALSE(GetSyncToken(new_resource.get()).HasData());
+  } else {
+    ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
+  }
+  EXPECT_FALSE(
+      provider->unused_resources_reclaim_timer_is_running_for_testing());
+  EnsureResourceRecycled(std::move(resource));
+  EXPECT_TRUE(
+      provider->unused_resources_reclaim_timer_is_running_for_testing());
+
+  // There is a ready-to-reuse resource.
+  EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
+  task_environment_.FastForwardBy(
+      Canvas2DResourceProvider::kUnusedResourceExpirationTime -
+      base::Seconds(1));
+  // The reclaim task hasn't run yet.
+  EXPECT_TRUE(
+      provider->unused_resources_reclaim_timer_is_running_for_testing());
+
+  context->fillRect(0, 0, 1, 1);
+  resource = context->PaintRenderingResultsToResource(kBackBuffer,
+                                                      FlushReason::kOther);
+  EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
+  context->fillRect(0, 0, 1, 1);
+  new_resource = context->PaintRenderingResultsToResource(kBackBuffer,
+                                                          FlushReason::kOther);
+  ASSERT_NE(resource, new_resource);
+  if (base::FeatureList::IsEnabled(
+          ::features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_FALSE(GetSyncToken(resource.get()).HasData());
+    EXPECT_FALSE(GetSyncToken(new_resource.get()).HasData());
+  } else {
+    ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
+  }
+
+  EnsureResourceRecycled(std::move(resource));
+  EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Too young, no release yet.
+  EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
+  // But re-post the task to free it.
+  EXPECT_TRUE(
+      provider->unused_resources_reclaim_timer_is_running_for_testing());
+
+  task_environment_.FastForwardBy(
+      Canvas2DResourceProvider::kUnusedResourceExpirationTime);
+  // Now it's collected.
+  EXPECT_FALSE(provider->HasUnusedResourcesForTesting());
+  // And no new task is posted.
   EXPECT_FALSE(
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 }
