@@ -192,6 +192,7 @@ class ContextualTasksWebContentsUserData
   void DeleteContext(const base::UnguessableToken& file_token);
   void DeleteTabContext(int32_t tab_id);
   void ClearFiles();
+  void ClearInputPlateState();
 
   // Associates `tab_session_id` with the task, if any, so the task knows which
   // tabs have been attached as context.

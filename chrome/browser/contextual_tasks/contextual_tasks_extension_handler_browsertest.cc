@@ -4313,4 +4313,126 @@ IN_PROC_BROWSER_TEST_F(
       lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    OnPageChangedMessageResetsLensCropAndAllowsRemountingOnNewThread) {
+  // Step 1: Emit first Lens crop on the current thread. Should emit mount
+  // (LENS_CHIP, is_active=true) and CONTEXT_STATE_READY.
+  base::RunLoop mount_run_loop1;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_inject_chrome_input());
+        EXPECT_EQ(message->inject_chrome_input().input_type(),
+                  lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+        EXPECT_TRUE(message->inject_chrome_input().is_active());
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_on_context_state_changed());
+        EXPECT_EQ(message->on_context_state_changed().context_state(),
+                  lens::ClientToSearchMessage::OnContextStateChanged::
+                      CONTEXT_STATE_READY);
+        mount_run_loop1.Quit();
+      });
+  EXPECT_CALL(mock_page_,
+              OnLensCropUpdated(GURL("data:image/png;base64,crop1")))
+      .Times(1);
+
+  handler_->OnLensThumbnailCreatedForTesting("data:image/png;base64,crop1");
+  mount_run_loop1.Run();
+
+  auto model = handler_->GetOrCreateInputStateModelForTesting();
+  ASSERT_TRUE(model);
+  EXPECT_TRUE(model->lens_crop().has_value());
+  mock_session_handle_->AddPendingDelayedTab(123, GURL("https://example.com"),
+                                             "Example");
+  contextual_search::TabInfo restored_tab;
+  restored_tab.tab_id = 456;
+  restored_tab.url = GURL("https://example.com/restored");
+  restored_tab.title = "Restored";
+  mock_session_handle_->SetRestoredTabs({restored_tab});
+  auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  EXPECT_EQ(user_data->GetSelectedTabs().size(), 1u);
+  EXPECT_EQ(mock_session_handle_->GetTabContextState().restored.size(), 1u);
+
+  // Step 2: AIM sends OnPageChanged (e.g. on soft navigation to a new
+  // thread or zero state). Chrome clears the Lens crop, closes Lens, clears
+  // selected tabs, and emits unmount (LENS_CHIP, is_active=false) +
+  // CONTEXT_STATE_NONE.
+  EXPECT_CALL(*mock_lens_controller_, lens_overlay_controller())
+      .WillRepeatedly(Return(mock_lens_overlay_controller_.get()));
+  EXPECT_CALL(*mock_lens_overlay_controller_, ClearRegionSelection()).Times(1);
+  EXPECT_CALL(
+      *mock_lens_controller_,
+      CloseLensAsync(
+          lens::LensOverlayDismissalSource::kContextualTasksLensChipRemoved))
+      .Times(1);
+
+  base::RunLoop clear_run_loop;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_inject_chrome_input());
+        EXPECT_EQ(message->inject_chrome_input().input_type(),
+                  lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+        EXPECT_FALSE(message->inject_chrome_input().is_active());
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_on_context_state_changed());
+        EXPECT_EQ(message->on_context_state_changed().context_state(),
+                  lens::ClientToSearchMessage::OnContextStateChanged::
+                      CONTEXT_STATE_NONE);
+        clear_run_loop.Quit();
+      });
+
+  lens::SearchToClientMessage page_changed_msg;
+  page_changed_msg.mutable_on_page_changed()->set_is_zero_state(true);
+  const size_t size = page_changed_msg.ByteSizeLong();
+  std::vector<uint8_t> serialized_page_changed(size);
+  page_changed_msg.SerializeToArray(serialized_page_changed.data(), size);
+  handler_->OnWebviewMessage(serialized_page_changed, std::nullopt);
+  clear_run_loop.Run();
+
+  EXPECT_FALSE(model->lens_crop().has_value());
+  EXPECT_TRUE(user_data->GetSelectedTabs().empty());
+  EXPECT_TRUE(mock_session_handle_->GetTabContextState().restored.empty());
+
+  // Step 3: Selecting a new Lens region on the new thread mounts LENS_CHIP
+  // again (rather than assuming it is already mounted).
+  base::RunLoop mount_run_loop2;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_inject_chrome_input());
+        EXPECT_EQ(message->inject_chrome_input().input_type(),
+                  lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+        EXPECT_TRUE(message->inject_chrome_input().is_active());
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_on_context_state_changed());
+        EXPECT_EQ(message->on_context_state_changed().context_state(),
+                  lens::ClientToSearchMessage::OnContextStateChanged::
+                      CONTEXT_STATE_READY);
+        mount_run_loop2.Quit();
+      });
+  EXPECT_CALL(mock_page_,
+              OnLensCropUpdated(GURL("data:image/png;base64,crop2")))
+      .Times(1);
+
+  handler_->OnLensThumbnailCreatedForTesting("data:image/png;base64,crop2");
+  mount_run_loop2.Run();
+  EXPECT_TRUE(model->lens_crop().has_value());
+}
+
 }  // namespace contextual_tasks
