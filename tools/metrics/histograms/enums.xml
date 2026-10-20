@@ -8941,6 +8941,7 @@ from previous Chrome versions.
   <int value="-1823280112" label="sparky-server-url:enabled"/>
   <int value="-1823193038" label="QuietNotificationPrompts:disabled"/>
   <int value="-1823073826" label="TabGroupsSave:disabled"/>
+  <int value="-1822868959" label="ContextualTasksPinningV2:disabled"/>
   <int value="-1822825246" label="DragFromShelfToHomeOrOverview:enabled"/>
   <int value="-1821585768"
       label="AccessibilityChromeVoxPageMigration:disabled"/>
@@ -10100,6 +10101,7 @@ from previous Chrome versions.
       label="OnDemandBackgroundTabContextCaptureOptimization:disabled"/>
   <int value="-1474724634"
       label="OverrideLanguagePrefsForHrefTranslate:enabled"/>
+  <int value="-1473967183" label="ContextualTasksPinningV2:enabled"/>
   <int value="-1473878093" label="HideArcMediaNotifications:disabled"/>
   <int value="-1473803888" label="SendTabToSelfNoTargetDeviceQrCode:enabled"/>
   <int value="-1473668019" label="token-binding:disabled"/>

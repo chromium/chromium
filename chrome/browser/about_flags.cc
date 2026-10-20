@@ -12584,6 +12584,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          contextual_tasks::kEnableContextualTasksPinButtonOnSrp)},
 
+    {"contextual-tasks-pinning-v2",
+     contextual_tasks::flag_descriptions::kContextualTasksPinningV2Name,
+     contextual_tasks::flag_descriptions::kContextualTasksPinningV2Description,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksPinningV2)},
+
     {"contextual-tasks-enable-spatial-model-toolbar-layout",
      contextual_tasks::flag_descriptions::
          kContextualTasksEnableSpatialModelToolbarLayoutName,

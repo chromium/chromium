@@ -25,6 +25,7 @@ BASE_DECLARE_FEATURE(kContextualTasksExtraOauthScopes);
 BASE_DECLARE_FEATURE(kContextualTasksDriveOAuthScope);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonOnSrp);
+BASE_DECLARE_FEATURE(kContextualTasksPinningV2);
 BASE_DECLARE_FEATURE(kEphemeralPinningVisibleWhenPermanentlyPinned);
 BASE_DECLARE_FEATURE(kContextualTasksEphemeralButtonContextMenu);
 BASE_DECLARE_FEATURE(kContextualTasksEphemeralButtonAutoDismiss);
@@ -574,6 +575,10 @@ extern bool IsRoundedClipPathEnabled();
 // Returns whether the pin button in toolbar is enabled.
 extern bool IsContextualTasksPinButtonInToolbarEnabled();
 
+// Returns whether Pinning V2 behavior (consolidating the pinning and ephemeral
+// toolbar buttons for the right-hand Search in Chrome side panel) is enabled.
+extern bool IsContextualTasksPinningV2Enabled();
+
 // Returns whether the pin button in the side panel header is enabled on SRP.
 extern bool IsContextualTasksPinButtonOnSrpEnabled();
 
@@ -631,6 +636,8 @@ extern const char kEnableContextualTasksPinButtonInToolbarName[];
 extern const char kEnableContextualTasksPinButtonInToolbarDescription[];
 extern const char kEnableContextualTasksPinButtonOnSrpName[];
 extern const char kEnableContextualTasksPinButtonOnSrpDescription[];
+extern const char kContextualTasksPinningV2Name[];
+extern const char kContextualTasksPinningV2Description[];
 extern const char kContextualTasksHideMenuOnAiPageName[];
 extern const char kContextualTasksHideMenuOnAiPageDescription[];
 extern const char kContextualTasksEnableSpatialModelToolbarLayoutName[];

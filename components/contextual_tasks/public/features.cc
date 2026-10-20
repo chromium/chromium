@@ -70,6 +70,10 @@ BASE_FEATURE(kEnableContextualTasksPinButtonInToolbar,
 BASE_FEATURE(kEnableContextualTasksPinButtonOnSrp,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables V2 pinning behavior that consolidates the pinning and ephemeral
+// toolbar buttons for the new right-hand Search in Chrome (SiC) side panel.
+BASE_FEATURE(kContextualTasksPinningV2, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Keeps the ephemeral contextual tasks button visible even when the permanent
 // button is pinned in the toolbar.
 BASE_FEATURE(kEphemeralPinningVisibleWhenPermanentlyPinned,
@@ -811,6 +815,10 @@ bool IsContextualTasksPinButtonInToolbarEnabled() {
   return base::FeatureList::IsEnabled(kEnableContextualTasksPinButtonInToolbar);
 }
 
+bool IsContextualTasksPinningV2Enabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksPinningV2);
+}
+
 bool IsContextualTasksPinButtonOnSrpEnabled() {
   return base::FeatureList::IsEnabled(kEnableContextualTasksPinButtonOnSrp);
 }
@@ -1141,6 +1149,11 @@ const char kEnableContextualTasksPinButtonOnSrpName[] =
 const char kEnableContextualTasksPinButtonOnSrpDescription[] =
     "Enables the option to pin the contextual tasks shortcut from the side "
     "panel header when viewing the search results page (SRP).";
+
+const char kContextualTasksPinningV2Name[] = "Contextual Tasks Pinning V2";
+const char kContextualTasksPinningV2Description[] =
+    "Consolidates the pinning and ephemeral toolbar buttons for the new "
+    "right-hand Search in Chrome (SiC) side panel.";
 
 const char kContextualTasksHideMenuOnAiPageName[] =
     "Contextual Tasks Hide Menu On AI Page";
