@@ -2483,6 +2483,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   return _node->GetDelegate()->GetFocus() == _node->GetNativeViewAccessible();
 }
 
+// TODO(crbug.com/574469797): This API does not return the same thing in all
+// cases as Safari. For example, when the node is focusable, it returns itsself,
+// where as Safari searches for an ancestor.
 - (id)AXFocusableAncestor {
   if (![self instanceActive])
     return nil;
