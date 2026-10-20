@@ -143,8 +143,6 @@ const DeepQuery kAimInput = {"omnibox-aim-app", "#composebox",
                              "cr-composebox-input", "#input"};
 const DeepQuery kCancelIcon = {"omnibox-aim-app", "#composebox",
                                "cr-composebox-input", "#cancelIcon"};
-const DeepQuery kAimSubmit = {"omnibox-aim-app", "#composebox",
-                              "cr-composebox-submit", "#submitContainer"};
 }  // namespace
 
 class FullWebUIOmniboxInteractiveTestBase
@@ -3917,6 +3915,12 @@ class FullWebUIOmniboxAimInteractiveTestBase
     return WaitForStateChange(contents_id, value_changed);
   }
 
+  // Waits until the AIM composebox accepts a submission, which is all that
+  // pressing Enter in it requires (see `handleEnter_()` in
+  // composebox_mixin.ts). This deliberately does not wait for the submit button
+  // to render: the composebox only shows it in its tall layout, which depends
+  // on the allowed inputs of its input state. Tests here submit with Enter and
+  // never click the button.
   auto WaitForAimSubmitEnabled(const ui::ElementIdentifier& contents_id) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimSubmitEnabled);
     StateChange submit_enabled;
@@ -3924,8 +3928,7 @@ class FullWebUIOmniboxAimInteractiveTestBase
     submit_enabled.where = DeepQuery{"omnibox-aim-app", "#composebox"};
     submit_enabled.test_function = "(el) => el && el.canSubmitFilesAndInput";
     submit_enabled.continue_across_navigation = true;
-    return Steps(WaitForElementToRender(contents_id, kAimSubmit),
-                 WaitForStateChange(contents_id, submit_enabled));
+    return WaitForStateChange(contents_id, submit_enabled);
   }
 
   auto InputAimPopupText(const std::string& text) {
@@ -3962,7 +3965,19 @@ class FullWebUIOmniboxAimInteractiveTestBase
         OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
         InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
         InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
-        InSameContext(ClickElement(kPopupWebView, kComposeButton)),
+        // Click the compose button with a DOM click rather than a real mouse
+        // click. A real click first waits for the popup's first paint event,
+        // which flakily never arrives (b/567193967). It can also be swallowed:
+        // for 500 ms after it is shown, the popup forwards mouse events over
+        // the location bar, where the compose button sits, to the browser
+        // window beneath it (see `OmniboxPopupFullPresenter::Show()`).
+        // `detail: 1` marks the click as a mouse click, as a real one would.
+        // The click hides the popup, so don't wait for the script to finish.
+        InSameContext(
+            ExecuteJsAt(kPopupWebView, kComposeButton,
+                        "el => el.dispatchEvent(new MouseEvent('click', "
+                        "{bubbles: true, composed: true, detail: 1}))",
+                        ExecuteJsMode::kFireAndForget)),
         WaitForAimPopupReady(),
         InAnyContext(WaitForElementToRender(kAimPopupWebView, kAimInput)));
   }
