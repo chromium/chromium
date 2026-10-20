@@ -20,7 +20,7 @@
 #include "ui/views/view.h"
 
 namespace views {
-class ViewShadow;
+class ViewDecoration;
 }  // namespace views
 
 namespace ash {
@@ -115,7 +115,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   void ReparentDragEnded() override;
 
   AppListBubblePage current_page_for_test() { return current_page_; }
-  views::ViewShadow* view_shadow_for_test() { return view_shadow_.get(); }
+  views::ViewDecoration* view_shadow_for_test() { return view_shadow_.get(); }
   SearchBoxView* search_box_view() { return search_box_view_; }
   views::View* separator_for_test() { return separator_; }
   bool showing_folder_for_test() { return showing_folder_; }
@@ -168,7 +168,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // during animations.
   AppListBubblePage current_page_ = AppListBubblePage::kNone;
 
-  std::unique_ptr<views::ViewShadow> view_shadow_;
+  std::unique_ptr<views::ViewDecoration> view_shadow_;
 
   // The individual views are implementation details and are intentionally not
   // exposed via getters (except for tests).

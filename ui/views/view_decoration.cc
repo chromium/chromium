@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/view_shadow.h"
+#include "ui/views/view_decoration.h"
 
 #include "ui/compositor/layer.h"
 #include "ui/decoration/shadow.h"
@@ -12,7 +12,7 @@
 
 namespace views {
 
-ViewShadow::ViewShadow(View* view, int elevation)
+ViewDecoration::ViewDecoration(View* view, int elevation)
     : view_(view), decoration_(ui::Decoration::CreateShadow(elevation)) {
   if (!view_->layer()) {
     view_->SetPaintToLayer();
@@ -22,25 +22,25 @@ ViewShadow::ViewShadow(View* view, int elevation)
   view_observation_.Observe(view_);
 }
 
-ViewShadow::~ViewShadow() {
+ViewDecoration::~ViewDecoration() {
   if (view_) {
     OnViewIsDeleting(view_);
   }
 }
 
-void ViewShadow::SetRoundedCornerRadius(int corner_radius) {
+void ViewDecoration::SetRoundedCornerRadius(int corner_radius) {
   SetRoundedCorners(gfx::RoundedCornersF(corner_radius));
 }
 
-void ViewShadow::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
+void ViewDecoration::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
   decoration_->SetRoundedCorners(radii);
 }
 
-void ViewShadow::OnViewLayerBoundsSet(View* view) {
+void ViewDecoration::OnViewLayerBoundsSet(View* view) {
   decoration_->SetContentBounds(view_->layer()->bounds());
 }
 
-void ViewShadow::OnViewIsDeleting(View* view) {
+void ViewDecoration::OnViewIsDeleting(View* view) {
   decoration_.reset();
   view_observation_.Reset();
   view_ = nullptr;

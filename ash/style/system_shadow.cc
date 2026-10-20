@@ -15,8 +15,8 @@
 #include "ui/decoration/decoration.h"
 #include "ui/decoration/shadow.h"
 #include "ui/views/view.h"
+#include "ui/views/view_decoration.h"
 #include "ui/views/view_observer.h"
-#include "ui/views/view_shadow.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -52,15 +52,17 @@ class SystemShadowImpl : public SystemShadow {
 ////////////////////////////////////////////////////////////////////////////////
 // SystemViewShadow:
 
-// An implementation of `SystemShadow`. It is based on ViewShadow. The
-// ViewShadow is added in the layers beneath the view and adjusts its content
-// bounds with the view's bounds. Do not manually set the content bounds.
+// An implementation of `SystemShadow`. It is based on ViewDecoration. The
+// ViewDecoration is added in the layers beneath the view and adjusts its
+// content bounds with the view's bounds. Do not manually set the content
+// bounds.
 class SystemViewShadow : public SystemShadow, public views::ViewObserver {
  public:
   SystemViewShadow(views::View* view, SystemShadow::Type type)
-      : view_shadow_(view, SystemShadow::GetElevationFromType(type)) {
-    view_shadow_.decoration()->GetSourceAs<ui::decoration::Shadow>()->SetStyle(
-        ui::decoration::Shadow::Style::kChromeOSSystemUI);
+      : view_decoration_(view, SystemShadow::GetElevationFromType(type)) {
+    view_decoration_.decoration()
+        ->GetSourceAs<ui::decoration::Shadow>()
+        ->SetStyle(ui::decoration::Shadow::Style::kChromeOSSystemUI);
     view_observation_.Observe(view);
     if (auto* widget = view->GetWidget()) {
       ObserveColorProviderSource(widget);
@@ -82,12 +84,14 @@ class SystemViewShadow : public SystemShadow, public views::ViewObserver {
 
  private:
   // SystemShadow:
-  ui::Decoration* decoration() override { return view_shadow_.decoration(); }
+  ui::Decoration* decoration() override {
+    return view_decoration_.decoration();
+  }
   const ui::Decoration* decoration() const override {
-    return view_shadow_.decoration();
+    return view_decoration_.decoration();
   }
 
-  views::ViewShadow view_shadow_;
+  views::ViewDecoration view_decoration_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
 };

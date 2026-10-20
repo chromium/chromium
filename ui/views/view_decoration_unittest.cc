@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/view_shadow.h"
+#include "ui/views/view_decoration.h"
 
 #include "ui/compositor/layer.h"
 #include "ui/decoration/shadow.h"
@@ -12,9 +12,9 @@
 
 namespace views {
 
-using ViewShadowTest = ViewsTestBase;
+using ViewDecorationTest = ViewsTestBase;
 
-TEST_F(ViewShadowTest, UseShadow) {
+TEST_F(ViewDecorationTest, UseShadow) {
   View root;
   root.SetPaintToLayer();
 
@@ -25,7 +25,7 @@ TEST_F(ViewShadowTest, UseShadow) {
   View* v3 = root.AddChildView(std::make_unique<View>());
   v3->SetPaintToLayer();
 
-  auto shadow = std::make_unique<ViewShadow>(v2, 1);
+  auto shadow = std::make_unique<ViewDecoration>(v2, 1);
 
   ASSERT_EQ(4u, root.layer()->children().size());
   EXPECT_EQ(v1->layer(), root.layer()->children()[0]);
@@ -40,11 +40,11 @@ TEST_F(ViewShadowTest, UseShadow) {
   EXPECT_EQ(v3->layer(), root.layer()->children()[2]);
 }
 
-TEST_F(ViewShadowTest, ShadowBoundsFollowView) {
+TEST_F(ViewDecorationTest, ShadowBoundsFollowView) {
   View view;
   view.SetBoundsRect(gfx::Rect(10, 20, 30, 40));
 
-  ViewShadow shadow(&view, 1);
+  ViewDecoration shadow(&view, 1);
 
   EXPECT_EQ(gfx::Rect(10, 20, 30, 40), shadow.decoration()->content_bounds());
 
@@ -53,7 +53,7 @@ TEST_F(ViewShadowTest, ShadowBoundsFollowView) {
             shadow.decoration()->content_bounds());
 }
 
-TEST_F(ViewShadowTest, ShadowBoundsFollowIndirectViewBoundsChange) {
+TEST_F(ViewDecorationTest, ShadowBoundsFollowIndirectViewBoundsChange) {
   View root;
   root.SetPaintToLayer();
   root.SetBoundsRect(gfx::Rect(100, 100, 200, 200));
@@ -63,38 +63,38 @@ TEST_F(ViewShadowTest, ShadowBoundsFollowIndirectViewBoundsChange) {
   View* view = parent->AddChildView(std::make_unique<View>());
   view->SetBoundsRect(gfx::Rect(5, 10, 20, 30));
 
-  ViewShadow shadow(view, 1);
+  ViewDecoration shadow(view, 1);
   EXPECT_EQ(gfx::Rect(15, 30, 20, 30), shadow.decoration()->content_bounds());
 
   parent->SetBoundsRect(gfx::Rect(5, 15, 60, 70));
   EXPECT_EQ(gfx::Rect(10, 25, 20, 30), shadow.decoration()->content_bounds());
 }
 
-TEST_F(ViewShadowTest, ViewDestruction) {
+TEST_F(ViewDecorationTest, ViewDestruction) {
   View root;
   root.SetPaintToLayer();
   root.SetBoundsRect(gfx::Rect(10, 20, 30, 40));
 
   View* v1 = root.AddChildView(std::make_unique<View>());
-  ViewShadow shadow(v1, 1);
+  ViewDecoration shadow(v1, 1);
   EXPECT_EQ(2u, root.layer()->children().size());
 
   delete v1;
   EXPECT_TRUE(root.layer()->children().empty());
 }
 
-TEST_F(ViewShadowTest, ShadowKeepsLayerType) {
+TEST_F(ViewDecorationTest, ShadowKeepsLayerType) {
   View view;
   view.SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   view.SetBoundsRect(gfx::Rect(10, 20, 30, 40));
-  ViewShadow shadow(&view, 1);
+  ViewDecoration shadow(&view, 1);
   EXPECT_TRUE(view.layer());
   EXPECT_TRUE(view.layer()->AsSolidColor());
 }
 
 // Tests the shadow layer will not shift when the view's layer is reparented to
 // another layer.
-TEST_F(ViewShadowTest, NoShiftWhenReparentViewLayer) {
+TEST_F(ViewDecorationTest, NoShiftWhenReparentViewLayer) {
   View root1;
   root1.SetPaintToLayer();
 
@@ -102,7 +102,7 @@ TEST_F(ViewShadowTest, NoShiftWhenReparentViewLayer) {
   view->SetPaintToLayer();
   view->SetBoundsRect(gfx::Rect(10, 20, 30, 40));
 
-  ViewShadow shadow(view, 1);
+  ViewDecoration shadow(view, 1);
 
   // Cache current shadow position.
   const gfx::Point pos = shadow.decoration()->layer()->bounds().origin();
@@ -110,14 +110,14 @@ TEST_F(ViewShadowTest, NoShiftWhenReparentViewLayer) {
   // Reparent the view's layer to another layer.
   View root2;
   root2.SetPaintToLayer();
-  root2.AddChildViewRaw(view);
+  root2.AddChildView(root1.RemoveChildViewT(view));
   // Check if the shadow layer shifted.
   EXPECT_EQ(pos, shadow.decoration()->layer()->bounds().origin());
 }
 
-TEST_F(ViewShadowTest, SetRoundedCorners) {
+TEST_F(ViewDecorationTest, SetRoundedCorners) {
   View view;
-  ViewShadow shadow(&view, 1);
+  ViewDecoration shadow(&view, 1);
 
   const gfx::RoundedCornersF radii(10, 20, 30, 40);
   shadow.SetRoundedCorners(radii);

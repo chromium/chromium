@@ -56,13 +56,13 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
   static std::unique_ptr<SystemShadow> CreateShadowOnNinePatchLayer(
       Type shadow_type);
 
-  // Create a system shadow based on `ash::ViewShadow`. This shadow is used for
-  // views. The shadow's layer is added to the `layers_beneath_` of the view and
-  // its content bounds are adjusted with the bounds of view's layer. The shadow
-  // does not need to manually update the content bounds but cannot be used when
-  // the shadow's content bounds do not equal to the view bounds. For example,
-  // `AppListFolderView` has a clip rect whose bounds should be the content
-  // bounds of the shadow. In this case, please use
+  // Create a system shadow based on `views::ViewDecoration`. This shadow is
+  // used for views. The shadow's layer is added to the `layers_beneath_` of the
+  // view and its content bounds are adjusted with the bounds of view's layer.
+  // The shadow does not need to manually update the content bounds but cannot
+  // be used when the shadow's content bounds do not equal to the view bounds.
+  // For example, `AppListFolderView` has a clip rect whose bounds should be the
+  // content bounds of the shadow. In this case, please use
   // `CreateShadowOnNinePatchLayer` instead.
   static std::unique_ptr<SystemShadow> CreateShadowOnNinePatchLayerForView(
       views::View* view,

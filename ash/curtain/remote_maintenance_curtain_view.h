@@ -24,7 +24,7 @@ class Size;
 }  // namespace gfx
 
 namespace views {
-class ViewShadow;
+class ViewDecoration;
 }  // namespace views
 
 namespace ash::curtain {
@@ -61,7 +61,7 @@ class ASH_EXPORT RemoteMaintenanceCurtainView : public views::View {
   raw_ptr<AshWebView> curtain_view_ = nullptr;
   raw_ptr<views::View> wallpaper_view_ = nullptr;
 
-  std::unique_ptr<views::ViewShadow> curtain_view_shadow_;
+  std::unique_ptr<views::ViewDecoration> curtain_view_shadow_;
 };
 
 }  // namespace ash::curtain

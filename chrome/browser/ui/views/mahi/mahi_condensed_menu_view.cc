@@ -31,7 +31,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
-#include "ui/views/view_shadow.h"
+#include "ui/views/view_decoration.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos::mahi {
@@ -110,7 +110,8 @@ END_METADATA
 }  // namespace
 
 MahiCondensedMenuView::MahiCondensedMenuView()
-    : view_shadow_(std::make_unique<views::ViewShadow>(this, /*elevation=*/2)) {
+    : view_shadow_(
+          std::make_unique<views::ViewDecoration>(this, /*elevation=*/2)) {
   const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::ShapeContextTokens::kMenuRadius);
   view_shadow_->SetRoundedCornerRadius(corner_radius);

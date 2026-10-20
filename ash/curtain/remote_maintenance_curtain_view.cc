@@ -18,7 +18,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
-#include "ui/views/view_shadow.h"
+#include "ui/views/view_decoration.h"
 
 namespace ash::curtain {
 
@@ -85,7 +85,7 @@ void RemoteMaintenanceCurtainView::AddCurtainWebView() {
                                        StackLayout::VerticalAlignment::kCenter);
 
   // Add a shadow
-  curtain_view_shadow_ = std::make_unique<views::ViewShadow>(
+  curtain_view_shadow_ = std::make_unique<views::ViewDecoration>(
       curtain_view_.get(), util().GetShadowElevation());
   curtain_view_shadow_->SetRoundedCornerRadius(util().GetCornerRadius());
 

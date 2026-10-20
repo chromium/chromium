@@ -15,7 +15,7 @@
 #include "ui/views/view.h"
 
 namespace views {
-class ViewShadow;
+class ViewDecoration;
 }  // namespace views
 
 namespace chromeos {
@@ -65,7 +65,7 @@ class ReadWriteCardsView : public views::View {
   // layout.
   gfx::Rect context_menu_bounds_;
 
-  std::unique_ptr<views::ViewShadow> view_shadow_;
+  std::unique_ptr<views::ViewDecoration> view_shadow_;
 
   const raw_ref<chromeos::ReadWriteCardsUiController>
       read_write_cards_ui_controller_;

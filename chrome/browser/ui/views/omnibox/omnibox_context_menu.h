@@ -19,7 +19,7 @@ namespace views {
 class MenuItemView;
 class MenuRunner;
 class View;
-class ViewShadow;
+class ViewDecoration;
 class Widget;
 }  // namespace views
 
@@ -85,7 +85,7 @@ class OmniboxContextMenu : public views::MenuDelegate,
   base::WeakPtr<content::WebContents> web_contents_;
 
   // The drop shadows of the menus, mapped from the shadowed container view.
-  base::flat_map<raw_ptr<views::View>, std::unique_ptr<views::ViewShadow>>
+  base::flat_map<raw_ptr<views::View>, std::unique_ptr<views::ViewDecoration>>
       view_shadows_;
 
   bool was_add_tabs_button_shown_logged_ = false;

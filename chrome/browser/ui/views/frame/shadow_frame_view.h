@@ -12,7 +12,7 @@
 #include "ui/views/view.h"
 
 namespace views {
-class ViewShadow;
+class ViewDecoration;
 }
 
 // Non-interactive child view that can be used to add a TopChrome-specific
@@ -65,7 +65,7 @@ class ShadowFrameView : public views::View {
   double shadow_opacity_ = 1.0;
   std::optional<bool> was_dark_;
 
-  std::unique_ptr<views::ViewShadow> view_shadow_;
+  std::unique_ptr<views::ViewDecoration> view_decoration_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_SHADOW_FRAME_VIEW_H_

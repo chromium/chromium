@@ -44,7 +44,7 @@
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/property_effects.h"
 #include "ui/views/view.h"
-#include "ui/views/view_shadow.h"
+#include "ui/views/view_decoration.h"
 #include "ui/views/widget/widget.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -175,7 +175,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
 
     if (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled()) {
       // Create a shadow for the OOBE dialog.
-      view_shadow_ = std::make_unique<views::ViewShadow>(
+      view_shadow_ = std::make_unique<views::ViewDecoration>(
           oobe_view_.get(), kOobeDialogShadowElevation);
       view_shadow_->SetRoundedCornerRadius(kOobeDialogCornerRadius);
     }
@@ -231,7 +231,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
   raw_ptr<OobeUIDialogDelegate, DanglingUntriaged> dialog_delegate_ =
       nullptr;                                      // Owned by us.
   raw_ptr<OobeWebDialogView> oobe_view_ = nullptr;  // Owned by views hierarchy.
-  std::unique_ptr<views::ViewShadow> view_shadow_;
+  std::unique_ptr<views::ViewDecoration> view_shadow_;
 
   // Indicates whether Oobe web view should fully occupy the hosting widget.
   bool fullscreen_ = false;

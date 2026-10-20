@@ -13,7 +13,7 @@
 
 namespace views {
 class LabelButton;
-class ViewShadow;
+class ViewDecoration;
 }  // namespace views
 
 namespace chromeos::mahi {
@@ -39,7 +39,7 @@ class MahiCondensedMenuView : public views::View {
 
   // TODO(http:/b/334748450): Remove this when `MahiCondensedMenuView` overrides
   // `ReadWriteCardsView`.
-  std::unique_ptr<views::ViewShadow> view_shadow_;
+  std::unique_ptr<views::ViewDecoration> view_shadow_;
 };
 
 }  // namespace chromeos::mahi

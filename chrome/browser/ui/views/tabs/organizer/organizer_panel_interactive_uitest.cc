@@ -47,7 +47,7 @@
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/interaction/interactive_views_test.h"
-#include "ui/views/view_shadow.h"
+#include "ui/views/view_decoration.h"
 #include "ui/views/view_tracker.h"
 
 namespace {

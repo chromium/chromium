@@ -29,7 +29,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
-#include "ui/views/view_shadow.h"
+#include "ui/views/view_decoration.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -39,7 +39,7 @@ constexpr int kMainMenuWidthWithSubmenuEnabled = 240;
 constexpr int kDefaultMenuWidth = 320;
 // Maximum height of tab sub menu before scroll is activated.
 constexpr int kMaxTabSubMenuHeight = 344;
-// The shadow variation to use for `ViewShadow`
+// The shadow variation to use for `ViewDecoration`
 constexpr int kShadowOption = 3;
 }  // namespace
 
@@ -126,12 +126,12 @@ void OmniboxContextMenu::WillShowMenu(views::MenuItemView* menu) {
       // for both tabs submenu and context menu on platforms that do not use a
       // bubble border. When a bubble border is present (e.g. on Windows and
       // Linux), `BubbleBorder` already renders the drop shadow within its
-      // outside border insets, and applying a `ViewShadow` to
+      // outside border insets, and applying a `ViewDecoration` to
       // `scroll_container` erroneously casts an outer shadow around the insets.
       if (!scroll_container->HasBubbleBorder() &&
           !view_shadows_.contains(scroll_container)) {
-        auto shadow = std::make_unique<views::ViewShadow>(scroll_container,
-                                                          kShadowOption);
+        auto shadow = std::make_unique<views::ViewDecoration>(scroll_container,
+                                                              kShadowOption);
         int corner_radius = views::MenuConfig::instance().CornerRadiusForMenu(
             menu->GetMenuController());
         shadow->SetRoundedCornerRadius(corner_radius);

@@ -15,7 +15,7 @@
 #include "ui/decoration/shadow.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/views/view_shadow.h"
+#include "ui/views/view_decoration.h"
 
 BEGIN_METADATA(ShadowFrameView)
 END_METADATA
@@ -34,12 +34,13 @@ void ShadowFrameView::SetShadowVisible(bool visible) {
   }
 
   if (visible) {
-    view_shadow_ = std::make_unique<views::ViewShadow>(this, shadow_elevation_);
-    view_shadow_->SetRoundedCorners(corners_);
-    view_shadow_->decoration()->layer()->SetOpacity(shadow_opacity_);
+    view_decoration_ =
+        std::make_unique<views::ViewDecoration>(this, shadow_elevation_);
+    view_decoration_->SetRoundedCorners(corners_);
+    view_decoration_->decoration()->layer()->SetOpacity(shadow_opacity_);
     UpdateShadowColors();
   } else {
-    view_shadow_.reset();
+    view_decoration_.reset();
     DestroyLayer();
     was_dark_.reset();
     SchedulePaint();
@@ -52,8 +53,8 @@ void ShadowFrameView::SetShadowOpacity(double opacity) {
   }
   shadow_opacity_ = opacity;
 
-  if (view_shadow_) {
-    view_shadow_->decoration()->layer()->SetOpacity(opacity);
+  if (view_decoration_) {
+    view_decoration_->decoration()->layer()->SetOpacity(opacity);
     SchedulePaint();
   }
 }
@@ -65,8 +66,8 @@ void ShadowFrameView::SetShadowCornerRadius(int corner_radius) {
   }
   corners_ = corners;
 
-  if (view_shadow_) {
-    view_shadow_->SetRoundedCornerRadius(corner_radius);
+  if (view_decoration_) {
+    view_decoration_->SetRoundedCornerRadius(corner_radius);
     SchedulePaint();
   }
 }
@@ -79,28 +80,28 @@ void ShadowFrameView::SetShadowCornerRadii(
 
   corners_ = corners;
 
-  if (view_shadow_) {
-    view_shadow_->SetRoundedCorners(corners);
+  if (view_decoration_) {
+    view_decoration_->SetRoundedCorners(corners);
     SchedulePaint();
   }
 }
 
 void ShadowFrameView::OnThemeChanged() {
   View::OnThemeChanged();
-  if (view_shadow_) {
+  if (view_decoration_) {
     UpdateShadowColors();
   }
 }
 
 void ShadowFrameView::AddedToWidget() {
-  if (view_shadow_) {
+  if (view_decoration_) {
     UpdateShadowColors();
   }
 }
 
 void ShadowFrameView::UpdateShadowColors() {
-  CHECK(view_shadow_);
-  if (!view_shadow_->decoration()) {
+  CHECK(view_decoration_);
+  if (!view_decoration_->decoration()) {
     return;
   }
 
@@ -128,7 +129,7 @@ void ShadowFrameView::UpdateShadowColors() {
 
   const ui::decoration::Shadow::ElevationToColorsMap map{
       {shadow_elevation_, shadow_colors}};
-  view_shadow_->decoration()
+  view_decoration_->decoration()
       ->GetSourceAs<ui::decoration::Shadow>()
       ->SetColorMap(map);
   SchedulePaint();

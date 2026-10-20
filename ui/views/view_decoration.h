@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_VIEW_SHADOW_H_
-#define UI_VIEWS_VIEW_SHADOW_H_
+#ifndef UI_VIEWS_VIEW_DECORATION_H_
+#define UI_VIEWS_VIEW_DECORATION_H_
 
 #include <memory>
 
@@ -19,14 +19,14 @@ namespace views {
 
 // Manages the shadow for a view. This forces |view| to paint to layer if it's
 // not.
-class VIEWS_EXPORT ViewShadow : public ViewObserver {
+class VIEWS_EXPORT ViewDecoration : public ViewObserver {
  public:
-  ViewShadow(View* view, int elevation);
+  ViewDecoration(View* view, int elevation);
 
-  ViewShadow(const ViewShadow&) = delete;
-  ViewShadow& operator=(const ViewShadow&) = delete;
+  ViewDecoration(const ViewDecoration&) = delete;
+  ViewDecoration& operator=(const ViewDecoration&) = delete;
 
-  ~ViewShadow() override;
+  ~ViewDecoration() override;
 
   // Update the corner radius of the view along with the shadow.
   void SetRoundedCornerRadius(int corner_radius);
@@ -48,4 +48,4 @@ class VIEWS_EXPORT ViewShadow : public ViewObserver {
 
 }  // namespace views
 
-#endif  // UI_VIEWS_VIEW_SHADOW_H_
+#endif  // UI_VIEWS_VIEW_DECORATION_H_
