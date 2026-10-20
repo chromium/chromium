@@ -7,12 +7,15 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 constexpr CGFloat kTestIconPointSize = 18;
@@ -34,6 +37,8 @@ TEST_F(TableViewDetailIconItemTest, ItemProperties) {
   item.iconTintColor = UIColor.whiteColor;
   item.iconBackgroundColor = UIColor.blackColor;
   item.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
+  EXPECT_TRUE(item.badgeType == BadgeType::kNone);
+  EXPECT_TRUE(item.badgeLayout == BadgeLayout::kInline);
 
   LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[LegacyTableViewCell class]]);
@@ -165,4 +170,71 @@ TEST_F(TableViewDetailIconItemTest, TestReservesLeadingSpace) {
       base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
           cell.contentConfiguration);
   EXPECT_TRUE(configuration.reservesLeadingSpace);
+}
+
+// Tests that warning badge is set properly inline after a call to
+// `configureCell:`.
+TEST_F(TableViewDetailIconItemTest, ItemWithWarningBadgeInline) {
+  TableViewDetailIconItem* item =
+      [[TableViewDetailIconItem alloc] initWithType:0];
+  item.text = @"Universal Opt-Out";
+  item.badgeType = BadgeType::kWarning;
+  item.badgeLayout = BadgeLayout::kInline;
+
+  LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
+  ASSERT_TRUE([cell isMemberOfClass:[LegacyTableViewCell class]]);
+  [item configureCell:cell];
+
+  ASSERT_TRUE([cell.contentConfiguration
+      isMemberOfClass:TableViewCellContentConfiguration.class]);
+  TableViewCellContentConfiguration* configuration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          cell.contentConfiguration);
+
+  EXPECT_NE(nil, configuration.attributedTitle);
+  EXPECT_EQ(nil, configuration.trailingConfiguration);
+
+  NSString* warningHint =
+      l10n_util::GetNSString(IDS_IOS_ITEM_WARNING_BADGE_ACCESSIBILITY_HINT);
+  NSString* expectedAccessibilityLabel =
+      [NSString stringWithFormat:@"%@, %@", configuration.accessibilityLabel,
+                                 warningHint];
+  EXPECT_NSEQ(expectedAccessibilityLabel, cell.accessibilityLabel);
+}
+
+// Tests that warning badge is set properly trailing after a call to
+// `configureCell:`.
+TEST_F(TableViewDetailIconItemTest, ItemWithWarningBadgeTrailing) {
+  TableViewDetailIconItem* item =
+      [[TableViewDetailIconItem alloc] initWithType:0];
+  item.text = @"Universal Opt-Out";
+  item.badgeType = BadgeType::kWarning;
+  item.badgeLayout = BadgeLayout::kTrailing;
+
+  LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
+  ASSERT_TRUE([cell isMemberOfClass:[LegacyTableViewCell class]]);
+  [item configureCell:cell];
+
+  ASSERT_TRUE([cell.contentConfiguration
+      isMemberOfClass:TableViewCellContentConfiguration.class]);
+  TableViewCellContentConfiguration* configuration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          cell.contentConfiguration);
+
+  EXPECT_EQ(nil, configuration.attributedTitle);
+  EXPECT_NSEQ(item.text, configuration.title);
+  ASSERT_TRUE([configuration.trailingConfiguration
+      isMemberOfClass:ImageContentConfiguration.class]);
+  ImageContentConfiguration* trailingImage =
+      base::apple::ObjCCastStrict<ImageContentConfiguration>(
+          configuration.trailingConfiguration);
+  EXPECT_NE(nil, trailingImage.image);
+  EXPECT_EQ(kTableViewIconImageSize, trailingImage.imageSize.width);
+  EXPECT_EQ(kTableViewIconImageSize, trailingImage.imageSize.height);
+
+  NSString* warningHint =
+      l10n_util::GetNSString(IDS_IOS_ITEM_WARNING_BADGE_ACCESSIBILITY_HINT);
+  NSString* expectedAccessibilityLabel =
+      [NSString stringWithFormat:@"%@, %@", item.text, warningHint];
+  EXPECT_NSEQ(expectedAccessibilityLabel, cell.accessibilityLabel);
 }

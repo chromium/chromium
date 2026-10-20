@@ -4469,6 +4469,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_ITEM_ACCOUNT_ERROR_BADGE_ACCESSIBILITY_HINT" desc="Accessibility hint to let the user know that there is an error badge associated with the listed item. The hint is appended to the a11y message that describes the item. For example, the 'settings' message will become 'settings, account error' when there is an account error badge on the item. [iOS only]">
         Account error
       </message>
+      <message name="IDS_IOS_ITEM_WARNING_BADGE_ACCESSIBILITY_HINT" desc="Accessibility hint to let the user know that there is a warning badge associated with the listed item. The hint is appended to the accessibility message that describes the item. For example, the 'Settings' message will become 'Settings, Attention needed' when there is a warning badge on the item. [iOS only]">
+        Attention needed
+      </message>
       <message name="IDS_IOS_JAVA_SCRIPT_DIALOG_BLOCKING_BUTTON_TEXT" desc="The text used for the button added to JavaScript dialogs to prevent a page from spamming the user with endless alerts. [Length:27em]">
         Suppress dialogs
       </message>
