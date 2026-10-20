@@ -34,6 +34,7 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/ozone/events_ozone.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/span_style.h"
@@ -460,12 +461,15 @@ void WaylandInputMethodContext::SetCursorLocation(const gfx::Rect& rect) {
   if (!focused_window) {
     return;
   }
+  // The protocol expects surface-local coordinates, which are window-local
+  // DIP scaled by the window's ui_scale.
+  const gfx::Rect rect_in_surface = gfx::ScaleToEnclosingRectIgnoringError(
+      rect - focused_window->GetBoundsInDIP().OffsetFromOrigin(),
+      focused_window->applied_state().ui_scale);
   if (text_input_v3_) {
-    text_input_v3_->SetCursorRect(
-        rect - focused_window->GetBoundsInDIP().OffsetFromOrigin());
+    text_input_v3_->SetCursorRect(rect_in_surface);
   } else {
-    text_input_v1_->SetCursorRect(
-        rect - focused_window->GetBoundsInDIP().OffsetFromOrigin());
+    text_input_v1_->SetCursorRect(rect_in_surface);
   }
 }
 

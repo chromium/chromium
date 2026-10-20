@@ -481,6 +481,44 @@ TEST_F(WaylandInputMethodContextV3Test,
   });
 }
 
+// The cursor rectangle sent to the compositor must be in surface-local
+// coordinates, i.e. window-local DIP scaled by the window's ui_scale.
+TEST_F(WaylandInputMethodContextV3Test, CursorLocationScaledByUiScale) {
+  ASSERT_TRUE(connection_->IsUiScaleEnabled());
+  connection_->window_manager()->SetFontScale(1.25f);
+  ASSERT_EQ(1.25f, window_->applied_state().ui_scale);
+
+  constexpr gfx::Rect kCursorLocation(40, 80, 4, 8);
+  constexpr gfx::Rect kExpectedRect(50, 100, 5, 10);
+  connection_->window_manager()->SetTextInputFocusedWindow(nullptr);
+
+  LinuxInputMethodContext::TextInputClientAttributes attributes;
+  attributes.input_type = TEXT_INPUT_TYPE_TEXT;
+  input_method_context_->UpdateFocus(true, TEXT_INPUT_TYPE_NONE, attributes,
+                                     ui::TextInputClient::FOCUS_REASON_OTHER);
+  input_method_context_->SetCursorLocation(kCursorLocation);
+  connection_->Flush();
+
+  PostToServerAndWait([kExpectedRect](wl::TestWaylandServerThread* server) {
+    auto* zwp_text_input = server->text_input_manager_v3()->text_input();
+    InSequence s;
+    EXPECT_CALL(*zwp_text_input, Enable()).Times(1);
+    EXPECT_CALL(*zwp_text_input, SetContentType(_, _)).Times(1);
+    EXPECT_CALL(*zwp_text_input,
+                SetCursorRect(kExpectedRect.x(), kExpectedRect.y(),
+                              kExpectedRect.width(), kExpectedRect.height()))
+        .Times(1);
+    EXPECT_CALL(*zwp_text_input, Commit()).Times(1);
+  });
+  connection_->window_manager()->SetTextInputFocusedWindow(window_.get());
+  connection_->Flush();
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    Mock::VerifyAndClearExpectations(
+        server->text_input_manager_v3()->text_input());
+  });
+}
+
 // Without a focused text input client, the cursor location must not be cached
 // for a window that doesn't have text input focus.
 TEST_F(WaylandInputMethodContextV3Test,
