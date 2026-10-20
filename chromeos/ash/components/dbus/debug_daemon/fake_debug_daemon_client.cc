@@ -184,14 +184,15 @@ void FakeDebugDaemonClient::GetLog(
 
 void FakeDebugDaemonClient::SetLog(std::string_view log_name,
                                    std::optional<std::string> log_data) {
-  if (auto it = logs_.find(log_name); it != logs_.end()) {
+  if (auto it = logs_.lower_bound(log_name);
+      it != logs_.end() && it->first == log_name) {
     if (log_data.has_value()) {
       it->second = std::move(*log_data);
     } else {
       logs_.erase(it);
     }
   } else if (log_data.has_value()) {
-    logs_.emplace(log_name, std::move(*log_data));
+    logs_.emplace_hint(it, log_name, std::move(*log_data));
   }
 }
 

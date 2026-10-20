@@ -8,10 +8,12 @@
 
 #include <algorithm>
 #include <string_view>
+#include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -260,8 +262,7 @@ base::CallbackListSubscription CrosSettings::AddSettingsObserver(
   DCHECK(GetProvider(path));
 
   // Get the callback registry associated with the path.
-  auto it = settings_observers_.try_emplace(std::string(path)).first;
-  return it->second.Add(std::move(callback));
+  return base::GetOrCreate(settings_observers_, path).Add(std::move(callback));
 }
 
 CrosSettingsProvider* CrosSettings::GetProvider(std::string_view path) const {

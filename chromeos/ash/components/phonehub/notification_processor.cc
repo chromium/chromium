@@ -329,12 +329,7 @@ void NotificationProcessor::OnDecodedBitmapReady(
   if (!image_skia.isNull())
     image_skia.MakeThreadSafe();
 
-  auto it = id_to_images_map_.find(request.notification_id);
-  if (it == id_to_images_map_.end()) {
-    it = id_to_images_map_.insert(
-        it, std::pair<int64_t, NotificationImages>(request.notification_id,
-                                                   NotificationImages()));
-  }
+  auto it = id_to_images_map_.try_emplace(request.notification_id).first;
 
   switch (request.image_field) {
     case NotificationImageField::kColorIcon:
