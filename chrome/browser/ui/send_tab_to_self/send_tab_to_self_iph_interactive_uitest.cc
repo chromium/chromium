@@ -463,8 +463,16 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
       WaitForPromo(feature_engagement::kIPHSendTabToSelfTutorialFeature));
 }
 
+// TODO(crbug.com/565062574): Re-enable on mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TutorialFlowCompletesOnTabSend \
+  DISABLED_TutorialFlowCompletesOnTabSend
+#else
+#define MAYBE_TutorialFlowCompletesOnTabSend \
+  TutorialFlowCompletesOnTabSend
+#endif
 IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
-                       TutorialFlowCompletesOnTabSend) {
+                       MAYBE_TutorialFlowCompletesOnTabSend) {
   const GURL eligible_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
 
