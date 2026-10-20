@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -97,14 +95,14 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
 
   CreateAndActivateTab(GetSimpleTestUrl());
 
+  base::test::TestFuture<tabs::TabInterface*> focused_tab_future;
+  base::CallbackListSubscription subscription =
+      instance->GetSharingManagerInternal().AddFocusedTabChangedCallback(
+          base::BindLambdaForTesting([&](const FocusedTabData& data) {
+            focused_tab_future.SetValue(data.focus());
+          }));
   GetTabListInterface()->ActivateTab(tab1->GetHandle());
-  // The panel is already closed, so WaitForSidePanelState() would return
-  // immediately. Flush tasks posted by the tab switch so that an incorrect
-  // re-show has a chance to happen before checking the state.
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+  ASSERT_EQ(focused_tab_future.Get(), tab1);
 
   ASSERT_OK(
       WaitForSidePanelState(tab1, GlicSidePanelCoordinator::State::kClosed));
