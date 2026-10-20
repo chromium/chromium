@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -145,6 +146,19 @@ void NodeIterator::UpdateForNodeRemoval(Node& removed_node,
       reference_node.node && reference_node.node->IsDescendantOf(&removed_node);
   if (!will_remove_reference_node && !will_remove_reference_node_ancestor)
     return;
+
+  if (RuntimeEnabledFeatures::NodeIteratorRemovalFixEnabled()) {
+    if (reference_node.is_pointer_before_node) {
+      if (Node* next =
+              NodeTraversal::NextSkippingChildren(removed_node, root())) {
+        reference_node.node = next;
+        return;
+      }
+      reference_node.is_pointer_before_node = false;
+    }
+    reference_node.node = NodeTraversal::Previous(removed_node, root());
+    return;
+  }
 
   if (reference_node.is_pointer_before_node) {
     Node* node = NodeTraversal::Next(removed_node, root());

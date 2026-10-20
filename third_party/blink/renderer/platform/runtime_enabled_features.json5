@@ -4594,6 +4594,12 @@
       depends_on: ["SetHTMLCanRunScripts", "TrustedTypesCreateParserOptions"]
     },
     {
+      // Kill switch for the NodeIterator position fix after subtree removal.
+      // https://crbug.com/532607274
+      name: "NodeIteratorRemovalFix",
+      status: "stable",
+    },
+    {
       // Fix for https://crbug.com/482862753
       name: "NoExtendSelectionToUserSelectNoneOutOfFlow",
       status: "stable"
