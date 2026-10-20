@@ -34,16 +34,27 @@ using ::device_signals_disclaimer_test::WaitForAndClickProceedButton;
 
 }  // namespace
 
-class DeviceSignalsDisclaimerInteractiveTest : public SigninBrowserTestBase {
+// The test parameter indicates whether the refreshed UI is enabled.
+class DeviceSignalsDisclaimerInteractiveTest
+    : public SigninBrowserTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   DeviceSignalsDisclaimerInteractiveTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {policy::features::kDeviceSignalsBackfillDisclaimer,
-         switches::kEnforceManagementDisclaimer},
-        {});
+    scoped_feature_list_.InitWithFeatureStates(
+        {{policy::features::kDeviceSignalsBackfillDisclaimer, true},
+         {switches::kEnforceManagementDisclaimer, true},
+         {switches::kFirstRunDesktopRefresh, UseRefreshedUi()},
+         {switches::kFirstRunDesktopChoiceScreenRefresh, UseRefreshedUi()},
+         {switches::kEnterpriseSigninDialogsRefresh, UseRefreshedUi()}});
   }
 
  protected:
+  bool UseRefreshedUi() const { return GetParam(); }
+
+  const ManagedUserProfileNoticeSelectors& selectors() const {
+    return GetSelectors(UseRefreshedUi());
+  }
+
   content::WebContents* GetModalDialogWebContents(
       BrowserWindowInterface* browser) {
     return SigninViewController::From(browser)
@@ -54,7 +65,7 @@ class DeviceSignalsDisclaimerInteractiveTest : public SigninBrowserTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerInteractiveTest,
+IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerInteractiveTest,
                        PressEscapeThenClickProceed) {
   AccountInfo account_info = signin::MakePrimaryAccountAvailable(
       identity_manager(), "email@example.com", signin::ConsentLevel::kSignin);
@@ -80,10 +91,15 @@ IN_PROC_BROWSER_TEST_F(DeviceSignalsDisclaimerInteractiveTest,
   EXPECT_FALSE(modal_widget->IsClosed());
 
   // Click proceed button on the still-open dialog.
-  const ManagedUserProfileNoticeSelectors& selectors =
-      GetSelectors(/*use_refreshed_ui=*/false);
-  ASSERT_TRUE(WaitForAndClickProceedButton(dialog_contents, selectors));
+  ASSERT_TRUE(WaitForAndClickProceedButton(dialog_contents, selectors()));
 
   EXPECT_EQ(result_future.Get(),
             signin::DeviceSignalsDisclaimerResult::kAccepted);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DeviceSignalsDisclaimerInteractiveTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Refreshed" : "Legacy";
+                         });

@@ -13,6 +13,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/cfi_buildflags.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -4224,14 +4225,18 @@ IN_PROC_BROWSER_TEST_F(SigninErrorProfilePickerBrowserTest,
       static_cast<int>(SigninUIError::Type::kFromGoogleServiceAuthError), 1);
 }
 
+// The test parameter indicates whether the refreshed UI is enabled.
 class ProfilePickerDeviceSignalsDisclaimerBrowserTest
-    : public ProfilePickerCreationFlowBrowserTest {
+    : public ProfilePickerCreationFlowBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   ProfilePickerDeviceSignalsDisclaimerBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {policy::features::kDeviceSignalsBackfillDisclaimer,
-         switches::kEnforceManagementDisclaimer},
-        {});
+    scoped_feature_list_.InitWithFeatureStates(
+        {{policy::features::kDeviceSignalsBackfillDisclaimer, true},
+         {switches::kEnforceManagementDisclaimer, true},
+         {switches::kFirstRunDesktopRefresh, UseRefreshedUi()},
+         {switches::kFirstRunDesktopChoiceScreenRefresh, UseRefreshedUi()},
+         {switches::kEnterpriseSigninDialogsRefresh, UseRefreshedUi()}});
   }
 
   void SetUpOnMainThread() override {
@@ -4260,8 +4265,20 @@ class ProfilePickerDeviceSignalsDisclaimerBrowserTest
     return managed_profile_path_;
   }
 
+  bool UseRefreshedUi() const { return GetParam(); }
+
   const ManagedUserProfileNoticeSelectors& selectors() const {
-    return GetSelectors(/*use_refreshed_ui=*/false);
+    return GetSelectors(UseRefreshedUi());
+  }
+
+  // URL of the device signals disclaimer shown for the managed profile,
+  // matching the UI variant selected by the test parameter.
+  GURL GetDisclaimerUrl() const {
+    Profile* profile = g_browser_process->profile_manager()->GetProfileByPath(
+        managed_profile_path_);
+    return ManagedUserProfileNoticeUI::GetUrl(
+        ManagedUserProfileNoticeUI::ScreenType::kDeviceSignalsDisclaimer,
+        CHECK_DEREF(profile));
   }
 
   void ClickDisclaimerProceedButton() {
@@ -4290,7 +4307,7 @@ class ProfilePickerDeviceSignalsDisclaimerBrowserTest
   base::HistogramTester histogram_tester_;
 };
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
                        OpenProfileFromPickerProceed) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -4302,7 +4319,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
 
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetDisclaimerUrl());
   ClickDisclaimerProceedButton();
 
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
@@ -4317,7 +4334,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
       EnterpriseSignalsDisclaimerProfilePickerResult::kAccepted, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
                        OpenProfileFromPickerCancel) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -4328,7 +4345,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
 
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
 
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetDisclaimerUrl());
   ClickDisclaimerCancelButton();
 
   WaitForLoadStop(GURL(chrome::kChromeUIProfilePickerUrl));
@@ -4346,7 +4363,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
       EnterpriseSignalsDisclaimerProfilePickerResult::kDeclined, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
                        OpenProfileFromPickerCancelAndReopen) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -4357,7 +4374,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
 
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
 
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetDisclaimerUrl());
   ClickDisclaimerCancelButton();
 
   WaitForLoadStop(GURL(chrome::kChromeUIProfilePickerUrl));
@@ -4365,11 +4382,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
 
   // Picking the profile again should re-show the disclaimer without crashing.
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetDisclaimerUrl());
   EXPECT_TRUE(ProfilePicker::IsOpen());
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
                        OpenProfileFromPickerClosePicker) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -4380,7 +4397,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
 
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
 
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetDisclaimerUrl());
   ProfilePicker::Hide();
 
   WaitForPickerClosed();
@@ -4397,7 +4414,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
       EnterpriseSignalsDisclaimerProfilePickerResult::kProfilePickerClosed, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
                        OpenProfileFromPickerAlreadyConsented) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -4425,7 +4442,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
       kEnterpriseSignalsDisclaimerProfilePickerResult, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
                        OpenProfileFromPickerOpenSettings) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -4437,7 +4454,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/true);
 
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetDisclaimerUrl());
   ClickDisclaimerProceedButton();
 
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
@@ -4454,7 +4471,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
       EnterpriseSignalsDisclaimerProfilePickerResult::kAccepted, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
                        OpenProfileFromPickerOpensCommandLineUrls) {
   ProfilePicker::SetOpenCommandLineUrlsInNextProfileOpened(true);
   base::CommandLine::ForCurrentProcess()->AppendArg("https://www.google.com");
@@ -4471,7 +4488,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   BrowserAddedWaiter browser_waiter(2u, BrowserAddedWaiter::ReturnMode::kNew);
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
 
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetDisclaimerUrl());
   ClickDisclaimerProceedButton();
 
   BrowserWindowInterface* const new_browser = browser_waiter.Wait();
@@ -4488,7 +4505,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
       EnterpriseSignalsDisclaimerProfilePickerResult::kAccepted, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
                        OpenProfileFromPickerLearnMoreClose) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -4501,7 +4518,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   ui_test_utils::BrowserCreatedObserver browser_creation_observer;
 
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetDisclaimerUrl());
 
   ASSERT_TRUE(ClickLearnMoreLink());
 
@@ -4524,7 +4541,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
       kEnterpriseSignalsDisclaimerProfilePickerLearnMoreClicked, true, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
                        OpenProfileFromPickerLearnMoreOpenAndOpen) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -4537,7 +4554,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   ui_test_utils::BrowserCreatedObserver browser_creation_observer;
 
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetDisclaimerUrl());
 
   ASSERT_TRUE(ClickLearnMoreLink());
 
@@ -4560,7 +4577,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
       kEnterpriseSignalsDisclaimerProfilePickerLearnMoreClicked, true, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+IN_PROC_BROWSER_TEST_P(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
                        OpenProfileFromPickerLearnMoreDoesNotRestoreSession) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
@@ -4600,7 +4617,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   ui_test_utils::BrowserCreatedObserver browser_creation_observer;
 
   OpenProfileFromPicker(managed_profile_path(), /*open_settings=*/false);
-  WaitForLoadStop(GURL(chrome::kChromeUIManagedUserProfileNoticeUrl));
+  WaitForLoadStop(GetDisclaimerUrl());
 
   ASSERT_TRUE(ClickLearnMoreLink());
 
@@ -4620,3 +4637,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDeviceSignalsDisclaimerBrowserTest,
   histogram_tester().ExpectBucketCount(
       kEnterpriseSignalsDisclaimerProfilePickerLearnMoreClicked, true, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ProfilePickerDeviceSignalsDisclaimerBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Refreshed" : "Legacy";
+                         });
