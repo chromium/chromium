@@ -131,6 +131,10 @@ class AXRelationCache {
   // relation present on source. This includes attributes on ElementInternals.
   void UpdateReverseOwnsRelations(Element& source);
 
+  // Return true if `attr_name` is tracked in `aria_other_relations_id_map_` /
+  // `aria_other_relations_node_map_`.
+  static bool IsOtherRelationAttribute(const QualifiedName& attr_name);
+
   // Update the target to source node mappings for any other ARIA
   // relation present on source. This includes attributes on ElementInternals.
   void UpdateReverseOtherRelations(Element& source);

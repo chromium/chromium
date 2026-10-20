@@ -2181,4 +2181,157 @@ TEST_F(AccessibilityTest, WebAXObjectClearSelectionAnnotatesAction) {
   EXPECT_TRUE(found_selection_event);
 }
 
+TEST_F(AccessibilityTest, PopoverInvokerUpdatedWhenTargetConnectedOrModified) {
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  cache.SetAXMode(ui::kAXModeComplete);
+
+  DocumentParser* parser = GetDocument().ImplicitOpen(kForceSynchronousParsing);
+  ASSERT_NE(nullptr, parser);
+  parser->Append(
+      R"HTML(<button id="btn" popovertarget="pop">Toggle</button>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  AXObject* button = GetAXObjectByElementId("btn");
+  ASSERT_NE(nullptr, button);
+  EXPECT_EQ(kExpandedUndefined, button->IsExpanded());
+
+  ASSERT_TRUE(cache.CommitAXUpdates(GetDocument(), /*force=*/true));
+  {
+    std::vector<ui::AXTreeUpdate> initial_updates;
+    std::vector<ui::AXEvent> initial_events;
+    bool had_end_of_test_event = false;
+    bool had_load_complete_messages = false;
+    ScopedFreezeAXCache freeze(cache);
+    cache.GetUpdatesAndEventsForSerialization(initial_updates, initial_events,
+                                              had_end_of_test_event,
+                                              had_load_complete_messages);
+  }
+  cache.ClearObjectsPendingSerializationForTesting();
+  cache.ResetLifecycleForTesting();
+
+  // Now parse the closed (display:none) target popover after the invoker was
+  // already serialized.
+  parser->Append(
+      R"HTML(<div id="pop" popover="invalid_value">Popover</div>)HTML");
+  parser->Finish();
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(cache.CommitAXUpdates(GetDocument(), /*force=*/true));
+  EXPECT_EQ(kExpandedCollapsed, button->IsExpanded());
+
+  std::vector<ui::AXTreeUpdate> updates;
+  std::vector<ui::AXEvent> events;
+  bool had_end_of_test_event = false;
+  bool had_load_complete_messages = false;
+  {
+    ScopedFreezeAXCache freeze(cache);
+    cache.GetUpdatesAndEventsForSerialization(
+        updates, events, had_end_of_test_event, had_load_complete_messages);
+  }
+  cache.ClearObjectsPendingSerializationForTesting();
+  cache.ResetLifecycleForTesting();
+
+  bool found_collapsed_button = false;
+  for (const ui::AXTreeUpdate& update : updates) {
+    for (const ui::AXNodeData& node : update.nodes) {
+      if (node.id == button->AXObjectID()) {
+        found_collapsed_button =
+            node.HasState(ax::mojom::blink::State::kCollapsed);
+      }
+    }
+  }
+  EXPECT_TRUE(found_collapsed_button);
+
+  // Removing the popover attribute on the connected target should also dirty
+  // the invoker and clear its expanded/collapsed state.
+  Element* pop = GetElementById("pop");
+  ASSERT_NE(nullptr, pop);
+  pop->removeAttribute(html_names::kPopoverAttr);
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(cache.CommitAXUpdates(GetDocument(), /*force=*/true));
+  EXPECT_EQ(kExpandedUndefined, button->IsExpanded());
+
+  updates.clear();
+  events.clear();
+  {
+    ScopedFreezeAXCache freeze(cache);
+    cache.GetUpdatesAndEventsForSerialization(
+        updates, events, had_end_of_test_event, had_load_complete_messages);
+  }
+  cache.ClearObjectsPendingSerializationForTesting();
+  cache.ResetLifecycleForTesting();
+
+  bool found_uncollapsed_button = false;
+  for (const ui::AXTreeUpdate& update : updates) {
+    for (const ui::AXNodeData& node : update.nodes) {
+      if (node.id == button->AXObjectID()) {
+        found_uncollapsed_button =
+            !node.HasState(ax::mojom::blink::State::kCollapsed) &&
+            !node.HasState(ax::mojom::blink::State::kExpanded);
+      }
+    }
+  }
+  EXPECT_TRUE(found_uncollapsed_button);
+
+  // Re-adding the popover attribute should mark the invoker dirty and restore
+  // its collapsed state.
+  pop->setAttribute(html_names::kPopoverAttr, keywords::kAuto);
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(cache.CommitAXUpdates(GetDocument(), /*force=*/true));
+  EXPECT_EQ(kExpandedCollapsed, button->IsExpanded());
+
+  updates.clear();
+  events.clear();
+  {
+    ScopedFreezeAXCache freeze(cache);
+    cache.GetUpdatesAndEventsForSerialization(
+        updates, events, had_end_of_test_event, had_load_complete_messages);
+  }
+  cache.ClearObjectsPendingSerializationForTesting();
+  cache.ResetLifecycleForTesting();
+
+  found_collapsed_button = false;
+  for (const ui::AXTreeUpdate& update : updates) {
+    for (const ui::AXNodeData& node : update.nodes) {
+      if (node.id == button->AXObjectID()) {
+        found_collapsed_button =
+            node.HasState(ax::mojom::blink::State::kCollapsed);
+      }
+    }
+  }
+  EXPECT_TRUE(found_collapsed_button);
+
+  // Removing the closed popover element from the DOM should also mark the
+  // invoker dirty and clear its expanded/collapsed state.
+  pop->remove();
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(cache.CommitAXUpdates(GetDocument(), /*force=*/true));
+  EXPECT_EQ(kExpandedUndefined, button->IsExpanded());
+
+  updates.clear();
+  events.clear();
+  {
+    ScopedFreezeAXCache freeze(cache);
+    cache.GetUpdatesAndEventsForSerialization(
+        updates, events, had_end_of_test_event, had_load_complete_messages);
+  }
+  cache.ClearObjectsPendingSerializationForTesting();
+  cache.ResetLifecycleForTesting();
+
+  found_uncollapsed_button = false;
+  for (const ui::AXTreeUpdate& update : updates) {
+    for (const ui::AXNodeData& node : update.nodes) {
+      if (node.id == button->AXObjectID()) {
+        found_uncollapsed_button =
+            !node.HasState(ax::mojom::blink::State::kCollapsed) &&
+            !node.HasState(ax::mojom::blink::State::kExpanded);
+      }
+    }
+  }
+  EXPECT_TRUE(found_uncollapsed_button);
+}
+
 }  // namespace blink

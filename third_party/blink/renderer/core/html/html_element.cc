@@ -1575,8 +1575,15 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action,
 }
 
 namespace {
-// We have to mark *all* invokers for the given popover dirty in the
-// ax tree, since they all should now have an updated expanded state.
+// Marks all invokers for `popover` dirty in the AX tree when `popover` opens,
+// closes, or is removed from the DOM, since the invokers' expanded/collapsed
+// state (`AXNodeObject::IsExpanded`) and details relation
+// (`AXObject::GetPopoverTargetForInvoker` /
+// `GetCommandForElementForDetailsRelation`) depend on whether `popover` is a
+// connected popover and whether it is open.
+// Note: When a target element is inserted into the DOM, or has its `popover`
+// or `id` attribute modified, `AXObjectCacheImpl` marks any referencing
+// invokers dirty via `AXRelationCache`.
 void MarkPopoverInvokersDirty(const HTMLElement& popover) {
   CHECK(popover.IsPopover());
   auto& document = popover.GetDocument();
@@ -4004,6 +4011,9 @@ void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
     // If a popover is removed from the document, make sure it gets
     // removed from the popover element stack and the top layer.
     if (was_in_document) {
+      if (!popoverOpen()) {
+        MarkPopoverInvokersDirty(*this);
+      }
       // We can't run focus event handlers while removing elements.
       HidePopoverInternal(
           /*invoker=*/nullptr, HidePopoverFocusBehavior::kNone,

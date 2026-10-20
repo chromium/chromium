@@ -2710,7 +2710,11 @@ void AXObjectCacheImpl::NodeIsConnected(Node* node) {
     if (AXObject::HasARIAOwns(element)) {
       DeferTreeUpdate(TreeUpdateReason::kUpdateAriaOwns, element);
     }
-    if (element->HasID()) {
+    if (element->HasID() ||
+        (IsA<HTMLElement>(element) && To<HTMLElement>(element)->IsPopover())) {
+      // `kIdChanged` is also used for popover targets to trigger
+      // `MaybeNewRelationTarget()`, which marks any reverse-relation sources
+      // (such as popover invokers) dirty.
       DeferTreeUpdate(TreeUpdateReason::kIdChanged, element);
     }
   }
@@ -4320,20 +4324,24 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
   }
 
   AXObject* ax_object = Get(node);
-  if (!ax_object) {
+  if (!ax_object &&
+      tree_update->update_reason != TreeUpdateReason::kIdChanged &&
+      tree_update->update_reason != TreeUpdateReason::kReferenceTargetChanged) {
     return;
   }
 
-  ax_object->UpdateCachedAttributeValuesIfNeeded(/* notify_parent */ true);
-  if (ax_object->IsDetached()) {
-    return;
-  }
+  if (ax_object) {
+    ax_object->UpdateCachedAttributeValuesIfNeeded(/* notify_parent */ true);
+    if (ax_object->IsDetached()) {
+      return;
+    }
 
-  // TODO(crbug.com/452392024): Investigate why this fails, fix it, and move to
-  // a CHECK.
-  // TODO(crbug.com/500774799): Investigate and convert to CHECK.
-  DCHECK(!ax_object->IsMissingParent())
-      << tree_update->ToString() << " on " << ax_object;
+    // TODO(crbug.com/452392024): Investigate why this fails, fix it, and move
+    // to a CHECK.
+    // TODO(crbug.com/500774799): Investigate and convert to CHECK.
+    DCHECK(!ax_object->IsMissingParent())
+        << tree_update->ToString() << " on " << ax_object;
+  }
 
   base::AutoReset<ax::mojom::blink::EventFrom> event_from_resetter(
       &active_event_from_, tree_update->event_from);
@@ -4440,7 +4448,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
   }
   // Ensure that new subtrees are filled out. Any new AXObjects added will
   // also add their children.
-  if (!ax_object->IsDetached()) {
+  if (ax_object && !ax_object->IsDetached()) {
     ax_object->UpdateChildrenIfNecessary();
   }
 }
@@ -5031,11 +5039,7 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
           MarkElementDirty(element);
         }
       }
-    } else if (attr_name == html_names::kAriaActionsAttr ||
-               attr_name == html_names::kAriaControlsAttr ||
-               attr_name == html_names::kAriaDetailsAttr ||
-               attr_name == html_names::kAriaErrormessageAttr ||
-               attr_name == html_names::kAriaFlowtoAttr) {
+    } else if (AXRelationCache::IsOtherRelationAttribute(attr_name)) {
       MarkElementDirty(element);
       if (relation_cache_) {
         relation_cache_->UpdateReverseOtherRelations(*element);
@@ -5088,7 +5092,11 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
             Element::InterestForType::kExplicitOnly)) {
       MarkElementDirty(target);
     }
-  } else if (attr_name == html_names::kIdAttr) {
+  } else if (attr_name == html_names::kIdAttr ||
+             attr_name == html_names::kPopoverAttr) {
+    // `kIdChanged` is also used when `popover` changes to trigger
+    // `MaybeNewRelationTarget()`, which marks any reverse-relation sources
+    // (such as popover invokers) dirty.
     DeferTreeUpdate(TreeUpdateReason::kIdChanged, element);
   } else if (attr_name == html_names::kClassAttr) {
     MarkElementDirty(element);  // Reserialize the class.
@@ -5118,6 +5126,14 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
     if (element == document_->documentElement()) {
       MarkElementDirty(document_);
     }
+  } else if (AXRelationCache::IsOtherRelationAttribute(attr_name)) {
+    MarkElementDirty(element);
+    if (relation_cache_) {
+      relation_cache_->UpdateReverseOtherRelations(*element);
+    }
+  } else if (attr_name == html_names::kCommandAttr ||
+             attr_name == html_names::kPopovertargetactionAttr) {
+    MarkElementDirty(element);
   }
 }
 

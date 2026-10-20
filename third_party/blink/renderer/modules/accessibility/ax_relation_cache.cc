@@ -592,7 +592,7 @@ base::span<std::pair<QualifiedName, Element::TinyBloomFilter>>
 AXRelationCache::GetOtherRelationAttributes() {
   // Avoid issues with commas within the type name in DEFINE_STATIC_LOCAL().
   using QualifiedNameArray =
-      std::array<std::pair<QualifiedName, Element::TinyBloomFilter>, 5>;
+      std::array<std::pair<QualifiedName, Element::TinyBloomFilter>, 7>;
   DEFINE_STATIC_LOCAL(
       QualifiedNameArray, attributes,
       ({{html_names::kAriaControlsAttr,
@@ -604,8 +604,22 @@ AXRelationCache::GetOtherRelationAttributes() {
         {html_names::kAriaFlowtoAttr,
          Element::FilterForAttribute(html_names::kAriaFlowtoAttr)},
         {html_names::kAriaActionsAttr,
-         Element::FilterForAttribute(html_names::kAriaActionsAttr)}}));
+         Element::FilterForAttribute(html_names::kAriaActionsAttr)},
+        {html_names::kCommandforAttr,
+         Element::FilterForAttribute(html_names::kCommandforAttr)},
+        {html_names::kPopovertargetAttr,
+         Element::FilterForAttribute(html_names::kPopovertargetAttr)}}));
   return attributes;
+}
+
+// static
+bool AXRelationCache::IsOtherRelationAttribute(const QualifiedName& attr_name) {
+  for (const auto& [attribute, filter] : GetOtherRelationAttributes()) {
+    if (attribute == attr_name) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void AXRelationCache::UpdateReverseOtherRelations(Element& source) {
@@ -1221,7 +1235,7 @@ void AXRelationCache::GetRelationSourcesById(
     const AtomicString& target_id_attr,
     TargetIdToSourceNodeMap& id_map,
     HeapVector<Member<AXObject>>& source_objects) {
-  if (target_id_attr == g_null_atom) {
+  if (target_id_attr == g_null_atom || id_map.empty()) {
     return;
   }
 
@@ -1241,6 +1255,9 @@ void AXRelationCache::GetRelationSourcesByElementReference(
     const DOMNodeId target_node,
     TargetNodeToSourceNodeMap& node_map,
     HeapVector<Member<AXObject>>& source_objects) {
+  if (node_map.empty()) {
+    return;
+  }
   auto it = node_map.find(target_node);
   if (it == node_map.end()) {
     return;
@@ -1356,8 +1373,8 @@ void AXRelationCache::UpdateRelatedTreeAfterChange(Element& element) {
   MarkOldAndNewRelationSourcesDirty(element, aria_text_relations_id_map_,
                                     aria_text_relations_node_map_);
 
-  // aria-controls, aria-details, aria-errormessage, aria-flowto, and
-  // aria-actions.
+  // aria-controls, aria-details, aria-errormessage, aria-flowto, aria-actions,
+  // commandfor, and popovertarget.
   MarkOldAndNewRelationSourcesDirty(element, aria_other_relations_id_map_,
                                     aria_other_relations_node_map_);
   UpdateReverseOtherRelations(element);
@@ -1444,16 +1461,18 @@ void AXRelationCache::MarkOldAndNewRelationSourcesDirty(
   const AtomicString& id_attr = element.GetIdAttribute();
   GetRelationSourcesById(id_attr, id_map, related_sources);
 
-  const DOMNodeId dom_node_id = element.GetDomNodeId();
-  GetRelationSourcesByElementReference(dom_node_id, node_map, related_sources);
+  if (const DOMNodeId dom_node_id = DOMNodeIds::ExistingIdForNode(&element)) {
+    GetRelationSourcesByElementReference(dom_node_id, node_map,
+                                         related_sources);
 
-  // If id attribute changed, also mark old relation source dirty, and update
-  // the map that points from the id attribute to the node id
-  auto iter = registered_id_attributes_.find(element.GetDomNodeId());
-  if (iter != registered_id_attributes_.end()) {
-    const AtomicString& old_id_attr = iter->value;
-    if (old_id_attr != id_attr) {
-      GetRelationSourcesById(old_id_attr, id_map, related_sources);
+    // If id attribute changed, also mark old relation source dirty, and update
+    // the map that points from the id attribute to the node id
+    auto iter = registered_id_attributes_.find(dom_node_id);
+    if (iter != registered_id_attributes_.end()) {
+      const AtomicString& old_id_attr = iter->value;
+      if (old_id_attr != id_attr) {
+        GetRelationSourcesById(old_id_attr, id_map, related_sources);
+      }
     }
   }
   for (AXObject* related : related_sources) {
