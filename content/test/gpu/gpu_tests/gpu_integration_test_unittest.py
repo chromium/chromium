@@ -1478,7 +1478,16 @@ class RetrieveAboutGpuUnittest(unittest.TestCase):
 class ClearSystemShaderCacheUnittest(fake_filesystem_unittest.TestCase):
   def setUp(self):
     self.setUpPyfakefs()
+    self.fs.CreateDirectory(tempfile.gettempdir())
     GpuTestClass.child = None
+    mock_process = mock.MagicMock()
+    mock_process.pid = 1234
+    mock_process.create_time.return_value = 5678.9
+    process_patcher = mock.patch.object(
+      gpu_integration_test.psutil, 'Process', return_value=mock_process
+    )
+    process_patcher.start()
+    self.addCleanup(process_patcher.stop)
 
   def tearDown(self):
     GpuTestClass.child = None
@@ -1550,19 +1559,20 @@ class ClearSystemShaderCacheUnittest(fake_filesystem_unittest.TestCase):
     self.assertFalse(os.path.exists(cache_file_2))
     self.assertFalse(os.path.exists(locallow_dxcache))
     self.assertFalse(os.path.exists(local_dxcache))
+    sentinel_file = os.path.join(
+      tempfile.gettempdir(), 'cleared_shader_cache_1234_5678'
+    )
+    self.assertTrue(os.path.exists(sentinel_file))
 
   def testClearSystemShaderCacheOtherWorkersWaitForRemoval(self):
-    home_dir = os.path.join(os.path.sep, 'Users', 'chrome-bot')
-    local_dir = os.path.join(home_dir, 'AppData', 'Local')
-    locallow_dxcache = os.path.join(
-      home_dir, 'AppData', 'LocalLow', 'NVIDIA', 'DXCache'
+    sentinel_file = os.path.join(
+      tempfile.gettempdir(), 'cleared_shader_cache_1234_5678'
     )
-    self.fs.CreateDirectory(locallow_dxcache)
 
-    def _simulate_worker1_removal(condition, timeout):
+    def _simulate_worker1_sentinel(condition, timeout):
       del timeout
-      if not condition():
-        os.rmdir(locallow_dxcache)
+      self.assertFalse(condition())
+      self.fs.CreateFile(sentinel_file)
       self.assertTrue(condition())
 
     GpuTestClass.child = mock.MagicMock(worker_num=2)
@@ -1572,16 +1582,14 @@ class ClearSystemShaderCacheUnittest(fake_filesystem_unittest.TestCase):
         'IsWindows',
         return_value=True,
       ),
-      mock.patch.object(os.path, 'expanduser', return_value=home_dir),
-      mock.patch.dict(os.environ, {'LOCALAPPDATA': local_dir}),
       mock.patch.object(
-        py_utils, 'WaitFor', side_effect=_simulate_worker1_removal
+        py_utils, 'WaitFor', side_effect=_simulate_worker1_sentinel
       ) as mock_wait_for,
     ):
       GpuTestClass._ClearSystemShaderCache()
 
-    self.assertEqual(mock_wait_for.call_count, 4)
-    self.assertFalse(os.path.exists(locallow_dxcache))
+    mock_wait_for.assert_called_once()
+    self.assertTrue(os.path.exists(sentinel_file))
 
 
 def _ExtractTestResults(

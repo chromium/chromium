@@ -18,10 +18,12 @@ import os
 import pkgutil
 import re
 import shutil
+import tempfile
 import types
 from typing import Any, NamedTuple, Type
 import unittest
 
+import psutil
 import py_utils
 from telemetry.internal.actions import page_action
 from telemetry.internal.browser import browser_options as bo
@@ -672,15 +674,27 @@ class GpuIntegrationTest(
       os.path.join(locallow_app_data, 'NVIDIA', 'PerDriverVersion', 'DXCache'),
     ]
 
+    parent_process = psutil.Process(os.getppid())
+    sentinel_file = os.path.join(
+      tempfile.gettempdir(),
+      f'cleared_shader_cache_{parent_process.pid}_'
+      f'{int(parent_process.create_time())}',
+    )
     if cls.child.worker_num == 1:
       for cache_dir in cache_dirs:
         if not os.path.exists(cache_dir):
           continue
         shutil.rmtree(cache_dir, ignore_errors=True)
         logging.warning('Cleared system shader cache %s', cache_dir)
+      with open(sentinel_file, 'w', encoding='utf-8'):
+        pass
     else:
-      for cache_dir in cache_dirs:
-        py_utils.WaitFor(lambda d=cache_dir: not os.path.exists(d), timeout=30)
+      # Wait for worker 1 to finish clearing the cache. We cannot wait for the
+      # cache directories themselves to stop existing because background system
+      # processes may hold open handles to individual files (preventing
+      # directory removal) and worker 1's browser startup will immediately
+      # recreate the directory.
+      py_utils.WaitFor(lambda: os.path.exists(sentinel_file), timeout=30)
 
   @classmethod
   def GenerateTestCases__RunGpuTest(
