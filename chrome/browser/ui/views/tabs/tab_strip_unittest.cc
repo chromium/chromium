@@ -716,39 +716,43 @@ TEST_P(TabStripTest, HeaderOnCollapseChangeAccessibilityProperties) {
   controller_->MoveTabIntoGroup(0, group);
   CompleteAnimationAndLayout();
 
+  TabGroupHeader* header = tab_strip_->group_header(group.value());
   ASSERT_FALSE(controller_->IsGroupCollapsed(group.value()));
-  EXPECT_TRUE(tab_strip_->group_header(group.value())->GetVisible());
+  EXPECT_TRUE(header->GetVisible());
 
-  // Initially the tab group is expanded
-  ui::AXNodeData node_data;
-  tab_strip_->group_header(group.value())
-      ->GetViewAccessibility()
-      .GetAccessibleNodeData(&node_data);
-  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+  for (views::View* view :
+       {static_cast<views::View*>(header), header->title_chip_for_testing()}) {
+    // Initially the tab group is expanded
+    ui::AXNodeData node_data;
+    view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
+    EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+  }
 
   // Using controller to change the collapsed state of the tab group .
   controller_->ToggleTabGroupCollapsedState(
       group.value(), ToggleTabGroupCollapsedStateOrigin::kMenuAction);
-  tab_strip_->group_header(group.value())->VisualsChanged();
+  header->VisualsChanged();
 
-  node_data = ui::AXNodeData();
-  tab_strip_->group_header(group.value())
-      ->GetViewAccessibility()
-      .GetAccessibleNodeData(&node_data);
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
+  for (views::View* view :
+       {static_cast<views::View*>(header), header->title_chip_for_testing()}) {
+    ui::AXNodeData node_data;
+    view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_FALSE(node_data.HasState(ax::mojom::State::kExpanded));
+    EXPECT_TRUE(node_data.HasState(ax::mojom::State::kCollapsed));
+  }
 
   controller_->ToggleTabGroupCollapsedState(
       group.value(), ToggleTabGroupCollapsedStateOrigin::kMenuAction);
-  tab_strip_->group_header(group.value())->VisualsChanged();
+  header->VisualsChanged();
 
-  node_data = ui::AXNodeData();
-  tab_strip_->group_header(group.value())
-      ->GetViewAccessibility()
-      .GetAccessibleNodeData(&node_data);
-  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
-  EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+  for (views::View* view :
+       {static_cast<views::View*>(header), header->title_chip_for_testing()}) {
+    ui::AXNodeData node_data;
+    view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_TRUE(node_data.HasState(ax::mojom::State::kExpanded));
+    EXPECT_FALSE(node_data.HasState(ax::mojom::State::kCollapsed));
+  }
 }
 
 namespace {
