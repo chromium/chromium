@@ -1933,17 +1933,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_build_tools/apkanalyzer/cipd': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_build_tools/apkanalyzer',
-              'version': 'zx9JRwc9Dxfnzac4GqNIUa7rWsoABWZjl5ePnEIoSWYC',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/android_build_tools/bazel_tools/cipd': {
       'packages': [
           {
