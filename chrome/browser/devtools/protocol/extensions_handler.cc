@@ -234,7 +234,9 @@ void ExtensionsHandler::LoadUnpacked(
 
   content::BrowserContext* context =
       DevToolsBrowserContextManager::GetInstance().GetDefaultBrowserContext();
-  CHECK(context, base::NotFatalUntil::M161);
+  // TODO(crbug.com/573857391): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(context);
   scoped_refptr<extensions::UnpackedInstaller> installer(
       extensions::UnpackedInstaller::Create(context));
   installer->set_be_noisy_on_failure(false);
@@ -314,7 +316,9 @@ void ExtensionsHandler::Uninstall(const protocol::String& id,
 
   content::BrowserContext* context =
       DevToolsBrowserContextManager::GetInstance().GetDefaultBrowserContext();
-  CHECK(context, base::NotFatalUntil::M161);
+  // TODO(crbug.com/573857391): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(context);
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(context);
   const extensions::Extension* extension = registry->GetInstalledExtension(id);
