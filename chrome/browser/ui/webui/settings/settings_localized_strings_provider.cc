@@ -86,17 +86,13 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/device_reauth/device_auth_availability_checker.h"
-#include "components/device_reauth/device_authenticator.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/lens/lens_features.h"
 #include "components/live_caption/caption_util.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
 #include "components/personal_context/core/url_constants.h"
@@ -1591,17 +1587,7 @@ bool CheckDeviceAuthAvailability(content::WebContents* web_contents) {
   // If `client` is not available, then don't show toggle switch.
   autofill::ContentAutofillClient* client =
       autofill::ContentAutofillClient::FromWebContents(web_contents);
-  if (!client) {
-    return false;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kDeviceReauthRefactor)) {
-    return autofill::IsDeviceAuthAvailable(
-        client->GetDeviceAuthAvailabilityChecker().get());
-  }
-  return autofill::IsDeviceAuthAvailable(
-      client->GetDeviceAuthenticator().get());
+  return client && client->SupportsDeviceReauth();
 }
 
 bool IsWalletServerStorageEnabled() {

@@ -69,12 +69,10 @@
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/consent_auditor/consent_auditor.h"
-#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
@@ -1110,16 +1108,7 @@ AutofillPrivateCheckIfDeviceAuthAvailableFunction::Run() {
   autofill::ContentAutofillClient* client =
       autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
   if (client) {
-    bool is_available = false;
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kDeviceReauthRefactor)) {
-      is_available = autofill::IsDeviceAuthAvailable(
-          client->GetDeviceAuthAvailabilityChecker().get());
-    } else {
-      is_available = autofill::IsDeviceAuthAvailable(
-          client->GetDeviceAuthenticator().get());
-    }
-    return RespondNow(WithArguments(is_available));
+    return RespondNow(WithArguments(client->SupportsDeviceReauth()));
   }
 #endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   return RespondNow(Error(base::StrCat(

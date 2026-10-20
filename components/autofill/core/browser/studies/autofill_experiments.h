@@ -17,11 +17,6 @@ namespace syncer {
 class SyncService;
 }
 
-namespace device_reauth {
-class DeviceAuthAvailabilityChecker;
-class DeviceAuthenticator;
-}
-
 namespace autofill {
 
 class LogManager;
@@ -53,13 +48,6 @@ bool IsCreditCardFidoAuthenticationEnabled();
 //    settings page in the past.
 bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
                                   PrefService* pref_service);
-
-// Returns true if we can use device authentication to authenticate the user.
-// We currently only support biometric authentication for the same.
-bool IsDeviceAuthAvailable(
-    device_reauth::DeviceAuthAvailabilityChecker* checker);
-bool IsDeviceAuthAvailable(
-    device_reauth::DeviceAuthenticator* device_authenticator);
 
 // Returns true if the Touch To Fill feature is supported by platform.
 bool IsTouchToFillPaymentMethodSupported();

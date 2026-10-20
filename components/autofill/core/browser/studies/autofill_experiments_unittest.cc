@@ -16,8 +16,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/device_reauth/mock_device_auth_availability_checker.h"
-#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -28,10 +26,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using device_reauth::MockDeviceAuthAvailabilityChecker;
-using device_reauth::MockDeviceAuthenticator;
-using testing::Return;
 
 namespace autofill {
 
@@ -44,8 +38,6 @@ class AutofillExperimentsTest : public testing::Test {
     signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
     prefs::RegisterProfilePrefs(pref_service_.registry());
     log_manager_ = LogManager::Create(nullptr, base::NullCallback());
-    mock_checker_ = std::make_unique<MockDeviceAuthAvailabilityChecker>();
-    mock_device_authenticator_ = std::make_unique<MockDeviceAuthenticator>();
   }
 
   bool IsCreditCardUploadEnabled(
@@ -66,10 +58,6 @@ class AutofillExperimentsTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<LogManager> log_manager_;
-  std::unique_ptr<device_reauth::MockDeviceAuthAvailabilityChecker>
-      mock_checker_;
-  std::unique_ptr<device_reauth::MockDeviceAuthenticator>
-      mock_device_authenticator_;
 };
 
 // Testing each scenario, followed by logging the metrics for various
@@ -325,23 +313,6 @@ TEST_F(AutofillExperimentsTest, ShouldShowIbanOnSettingsPage_FeatureEnabled) {
   prefs::SetAutofillHasSeenIban(&pref_service_);
   EXPECT_TRUE(ShouldShowIbanOnSettingsPage("US", &pref_service_));
   EXPECT_TRUE(ShouldShowIbanOnSettingsPage("us", &pref_service_));
-}
-
-TEST_F(
-    AutofillExperimentsTest,
-    IsDeviceAuthAvailable_FeatureEnabledAndAuthenticationAvailableForMacAndWin) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  ON_CALL(*mock_checker_, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-
-  EXPECT_TRUE(IsDeviceAuthAvailable(mock_checker_.get()));
-  EXPECT_TRUE(IsDeviceAuthAvailable(mock_device_authenticator_.get()));
-#else
-  EXPECT_FALSE(IsDeviceAuthAvailable(mock_checker_.get()));
-  EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_.get()));
-#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)
