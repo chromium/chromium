@@ -51,7 +51,6 @@
 -ExtensionApiTabTest.Query
 -ExtensionCspApiTest.ServiceWorkerIsConstrainedByMV3CSPEvenIfSandboxed
 -HistoryWithHistoryEmbeddingsTest.HistoryAppTest
--NewTabPageAppTest.LeftHandSide
 -PasswordGenerationAgentTest.*
 
 # https://crbug.com/544822220
