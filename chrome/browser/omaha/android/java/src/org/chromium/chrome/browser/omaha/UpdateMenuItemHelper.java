@@ -168,7 +168,12 @@ public class UpdateMenuItemHelper {
                 if (TextUtils.isEmpty(updateUrl)) {
                     return;
                 }
-                startIntentUpdate(activity, updateUrl);
+                try {
+                    UpdateStatusProvider.getInstance()
+                            .startIntentUpdate(activity, /* newTask= */ false);
+                } catch (ActivityNotFoundException e) {
+                    Log.e(TAG, "Failed to launch Activity for: %s", updateUrl);
+                }
                 break;
             case UpdateState.UNSUPPORTED_OS_VERSION:
             // Intentional fall through.
@@ -285,25 +290,20 @@ public class UpdateMenuItemHelper {
         for (Runnable observer : mObservers) observer.run();
     }
 
-    private void startIntentUpdate(Activity activity, @Nullable String updateUrl) {
-        if (TextUtils.isEmpty(updateUrl)) return;
-
-        try {
-            UpdateStatusProvider.getInstance().startIntentUpdate(activity, /* newTask= */ false);
-        } catch (ActivityNotFoundException e) {
-            Log.e(TAG, "Failed to launch Activity for: %s", updateUrl);
-        }
-    }
-
     private void startIntentFallback(Activity activity, @Nullable String updateUrl) {
         if (activity.isFinishing()
                 || activity.isDestroyed()
                 || activity.isChangingConfigurations()) {
             return;
         }
+        if (TextUtils.isEmpty(updateUrl)) return;
         // TODO(crbug.com/553918188): Remove logging once in-app update flow stabilizes.
         Log.i(TAG, "InAppUpdate: Falling back to startIntentUpdate for URL: %s", updateUrl);
-        startIntentUpdate(activity, updateUrl);
+        try {
+            UpdateStatusProvider.getInstance().startIntentUpdate(activity, /* newTask= */ false);
+        } catch (ActivityNotFoundException e) {
+            Log.e(TAG, "Failed to launch Activity for: %s", updateUrl);
+        }
     }
 
     private PrefService getPrefService() {
