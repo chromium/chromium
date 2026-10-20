@@ -5376,6 +5376,11 @@ void RenderViewContextMenu::ExecIndigo() {
           tabs::TabInterface::MaybeGetFromContents(source_web_contents_))) {
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         GetBrowserContext(), features::kIndigoContextMenu);
+    indigo::RecordContextMenuTargetType(
+        content_type_->SupportsGroup(
+            ContextMenuContentType::ITEM_GROUP_MEDIA_IMAGE)
+            ? indigo::IndigoContextMenuTargetType::kImage
+            : indigo::IndigoContextMenuTargetType::kPage);
     controller->InvokeAction(indigo::EntryPoint::kContextMenu);
   }
 }

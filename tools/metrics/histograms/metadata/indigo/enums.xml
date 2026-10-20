@@ -41,6 +41,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoApiStatus) -->
 
+<!-- LINT.IfChange(IndigoContextMenuTargetType) -->
+
+<enum name="IndigoContextMenuTargetType">
+  <int value="0" label="Page"/>
+  <int value="1" label="Image"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/indigo/indigo_metrics.h:IndigoContextMenuTargetType) -->
+
 <!-- LINT.IfChange(IndigoMaybeInvokeGlicResult) -->
 
 <enum name="IndigoMaybeInvokeGlicResult">

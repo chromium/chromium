@@ -110,6 +110,10 @@ void RecordClickedEntryPoint(
   }
 }
 
+void RecordContextMenuTargetType(IndigoContextMenuTargetType target_type) {
+  base::UmaHistogramEnumeration(kContextMenuTargetTypeHistogram, target_type);
+}
+
 void RecordApiHttpResponse(IndigoApiEndpoint endpoint,
                            google_apis::ApiErrorCode code) {
   if (!IsHttpCode(code)) {

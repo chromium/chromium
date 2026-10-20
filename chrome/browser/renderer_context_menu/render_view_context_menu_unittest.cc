@@ -1687,6 +1687,16 @@ TEST_F(RenderViewContextMenuPrefsTest,
     histogram_tester.ExpectUniqueSample(
         "Indigo.PageAction.ClickedEntryPoint",
         indigo::IndigoPageActionEntryPoint::kContextMenu, 1);
+    histogram_tester.ExpectUniqueSample(
+        indigo::kContextMenuTargetTypeHistogram,
+        indigo::IndigoContextMenuTargetType::kImage, 1);
+
+    page_menu.ExecuteCommand(IDC_CONTENT_CONTEXT_INDIGO, 0);
+    histogram_tester.ExpectBucketCount(
+        indigo::kContextMenuTargetTypeHistogram,
+        indigo::IndigoContextMenuTargetType::kPage, 1);
+    histogram_tester.ExpectTotalCount(indigo::kContextMenuTargetTypeHistogram,
+                                      2);
   }
 
   {

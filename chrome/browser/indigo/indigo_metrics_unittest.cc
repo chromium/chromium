@@ -100,6 +100,19 @@ TEST(IndigoMetricsTest, RecordClickedEntryPoint_ContextMenu) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(kContextMenuClickAction));
 }
 
+TEST(IndigoMetricsTest, RecordContextMenuTargetType) {
+  base::HistogramTester histogram_tester;
+
+  RecordContextMenuTargetType(IndigoContextMenuTargetType::kPage);
+  histogram_tester.ExpectBucketCount(kContextMenuTargetTypeHistogram,
+                                     IndigoContextMenuTargetType::kPage, 1);
+
+  RecordContextMenuTargetType(IndigoContextMenuTargetType::kImage);
+  histogram_tester.ExpectBucketCount(kContextMenuTargetTypeHistogram,
+                                     IndigoContextMenuTargetType::kImage, 1);
+  histogram_tester.ExpectTotalCount(kContextMenuTargetTypeHistogram, 2);
+}
+
 TEST(IndigoMetricsTest, RecordTransformationTrigger) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
