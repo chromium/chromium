@@ -770,11 +770,6 @@ public class AutofillProviderTest {
         Activity activity = Robolectric.buildActivity(Activity.class).get();
         mAutofillProvider.switchToContext(new WeakReference<>(activity));
 
-        // A popup is currently showing, but the field moves outside visible bounds.
-        // The stale popup must be dismissed.
-        AutofillPopup mockPopup = Mockito.mock(AutofillPopup.class);
-        mAutofillProvider.setDatalistPopupForTesting(mockPopup);
-
         RectF offscreenBounds = new RectF(0, -2000, 100, -1900);
         FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
         fieldBuilder.mBounds = offscreenBounds;
@@ -795,8 +790,50 @@ public class AutofillProviderTest {
                 offscreenBounds.height(),
                 /* hasServerPrediction= */ false);
 
+        // A popup is currently showing, but the field moves outside visible bounds.
+        // The stale popup must be dismissed.
+        AutofillPopup mockPopup = Mockito.mock(AutofillPopup.class);
+        mAutofillProvider.setDatalistPopupForTesting(mockPopup);
+
         mAutofillProvider.showDatalistPopup(
                 new String[] {"Value 1"}, new String[] {"Label 1"}, /* isRtl= */ false);
+
+        verify(mockPopup).dismiss();
+        assertNull(mAutofillProvider.getDatalistPopupForTesting());
+    }
+
+    @Test
+    public void testStartAutofillSession_dismissesDatalistPopup() {
+        AutofillPopup mockPopup = Mockito.mock(AutofillPopup.class);
+        mAutofillProvider.setDatalistPopupForTesting(mockPopup);
+
+        FormFieldDataBuilder fieldBuilder = new FormFieldDataBuilder();
+        FormData form =
+                new FormData(
+                        /* sessionId= */ 123,
+                        /* name= */ null,
+                        /* host= */ null,
+                        Collections.singletonList(fieldBuilder.build()));
+
+        mAutofillProvider.startAutofillSession(
+                form,
+                /* focus= */ 0,
+                /* x= */ 0,
+                /* y= */ 0,
+                /* width= */ 50,
+                /* height= */ 20,
+                /* hasServerPrediction= */ false);
+
+        verify(mockPopup).dismiss();
+        assertNull(mAutofillProvider.getDatalistPopupForTesting());
+    }
+
+    @Test
+    public void testCancelSession_dismissesDatalistPopup() {
+        AutofillPopup mockPopup = Mockito.mock(AutofillPopup.class);
+        mAutofillProvider.setDatalistPopupForTesting(mockPopup);
+
+        mAutofillProvider.cancelSession();
 
         verify(mockPopup).dismiss();
         assertNull(mAutofillProvider.getDatalistPopupForTesting());

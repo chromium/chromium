@@ -398,6 +398,11 @@ void AndroidAutofillProvider::UpdateCurrentField(
   if (!session_state_) {
     session_state_.emplace();
   }
+  if (session_state_->current_field.id &&
+      (session_state_->current_field.id != field.global_id() ||
+       field.datalist_options().empty())) {
+    bridge_->HideDatalistPopup();
+  }
   session_state_->current_field = {
       field.global_id(),
       manager ? manager->ComputeFieldTypeGroupForField(form.global_id(),

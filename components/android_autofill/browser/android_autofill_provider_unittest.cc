@@ -390,6 +390,78 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillFindsCorrectFieldId) {
             form.fields()[1].global_id());
 }
 
+// Tests that the datalist popup is hidden when `UpdateCurrentField()` changes
+// the active field (e.g. via `OnAskForValuesToFill()` or
+// `OnSelectControlSelectionChanged()`), preventing a stale popup from staying
+// open across field/frame changes (crbug.com/574635898).
+TEST_F(AndroidAutofillProviderTest, HidesDatalistPopupWhenCurrentFieldChanges) {
+  FormData form1 =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  test_api(form1).field(0).set_datalist_options(
+      {SelectOption{.value = u"val1", .text = u"label1"}});
+  FormData form2 = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form1, form2}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  EXPECT_CALL(provider_bridge(), HideDatalistPopup).Times(0);
+  EXPECT_CALL(provider_bridge(), ShowDatalistPopup);
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form1, form1.fields()[0].global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  // Querying the same field while it still has datalist options updates the
+  // popup in place without hiding it first.
+  EXPECT_CALL(provider_bridge(), HideDatalistPopup).Times(0);
+  EXPECT_CALL(provider_bridge(), ShowDatalistPopup);
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form1, form1.fields()[0].global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  // Switching to a different field via `OnAskForValuesToFill()` hides the
+  // datalist popup.
+  EXPECT_CALL(provider_bridge(), HideDatalistPopup);
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form1, form1.fields()[1].global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  // Re-open the datalist popup on field 0, then switch fields via
+  // `OnSelectControlSelectionChanged()` on an unlinked form.
+  EXPECT_CALL(provider_bridge(), ShowDatalistPopup);
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form1, form1.fields()[0].global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  EXPECT_CALL(provider_bridge(), HideDatalistPopup);
+  autofill_provider().OnSelectControlSelectionChanged(
+      &android_autofill_manager(), form2, form2.fields()[0]);
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+}
+
+// Tests that the datalist popup is hidden if the currently focused field is
+// re-queried after its datalist options become empty.
+TEST_F(AndroidAutofillProviderTest,
+       HidesDatalistPopupWhenSameFieldLosesDatalistOptions) {
+  FormData form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  test_api(form).field(0).set_datalist_options(
+      {SelectOption{.value = u"val1", .text = u"label1"}});
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  EXPECT_CALL(provider_bridge(), ShowDatalistPopup);
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields()[0].global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  test_api(form).field(0).set_datalist_options({});
+  EXPECT_CALL(provider_bridge(), HideDatalistPopup);
+  EXPECT_CALL(provider_bridge(), ShowDatalistPopup).Times(0);
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, form.fields()[0].global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+}
+
 // Tests that Java is informed about visibility changes of form fields connected
 // to the current Autofill session if they are detected in focus change events.
 TEST_F(AndroidAutofillProviderTest, NotifyAboutVisibilityChangeOnFocus) {

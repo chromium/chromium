@@ -335,6 +335,7 @@ public class AutofillProvider {
             float height,
             boolean hasServerPrediction) {
         Rect absBound = transformToWindowBounds(new RectF(x, y, x + width, y + height));
+        hideDatalistPopup();
         if (mRequest != null) notifyViewExitBeforeDestroyRequest();
 
         transformFormFieldToContainViewCoordinates(formData);
@@ -960,6 +961,7 @@ public class AutofillProvider {
 
     @CalledByNative
     public void cancelSession() {
+        hideDatalistPopup();
         getAutofillManagerWrapper().cancel();
         mPrefillRequest = null;
         mRequest = null;
