@@ -360,6 +360,10 @@ img.distilled-inline-img {
 img.distilled-full-width-img {
   display: block;
   width: 100%;
+  /* Fill the panel, but never past the image's own intrinsic width, which for
+   * a replaced element is its max-content size. Without this, an image
+   * narrower than the panel is upscaled and looks blurry. */
+  max-width: max-content;
   height: auto;
 }
 

@@ -4,8 +4,8 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, ContentController, NodeStore, SpeechController, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AppStyleUpdater, ContentType, ReadAloudNode, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {AppStyleUpdater, ContentType, ReadabilityImageClassifier, ReadAloudNode, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertGT, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {emitEvent, setContent, setupAppTestEnvironment, setupBasicSpeech} from './common.js';
@@ -454,6 +454,69 @@ suite('AppContent', () => {
           assertTrue(contentController.isEmpty());
           assertTrue(app.$.containerParent.hidden);
         });
+  });
+
+  suite('full width image sizing with readability', () => {
+    setup(() => {
+      contentBrowserProxy.activeDistillationMethod =
+          contentBrowserProxy.distillationTypeReadability;
+      visualBrowserProxy.imagesEnabled = true;
+      // The test page's body has no width of its own, so the panel is given an
+      // explicit one. These tests are about how an image is sized relative to
+      // the panel, so that width has to be both non-zero and known.
+      app.style.width = '600px';
+      app.style.height = '800px';
+    });
+
+    // Returns a data URL for an image with the given intrinsic size, so these
+    // tests don't depend on a network resource loading.
+    function imageDataUrl(width: number, height: number): string {
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      return canvas.toDataURL();
+    }
+
+    // Distills a figure with a caption, which the classifier always treats as
+    // full width, and resolves once the image has been classified.
+    async function distillFullWidthImage(
+        width: number, height: number): Promise<HTMLImageElement> {
+      contentBrowserProxy.htmlContent = '<figure><img src="' +
+          imageDataUrl(width, height) +
+          '"><figcaption>caption</figcaption></figure>';
+
+      app.updateContent();
+      await microtasksFinished();
+
+      const img = app.$.container.querySelector('img')!;
+      await whenCheck(
+          app.$.container,
+          () => img.classList.contains(
+              ReadabilityImageClassifier.FULL_WIDTH_CLASS));
+      return img;
+    }
+
+    test('does not upscale an image narrower than the panel', async () => {
+      const intrinsicWidth = 320;
+      const img = await distillFullWidthImage(intrinsicWidth, 200);
+      const figure = app.$.container.querySelector('figure')!;
+
+      // There has to be room to upscale into, or this asserts nothing.
+      assertGT(figure.clientWidth, intrinsicWidth);
+      assertEquals(intrinsicWidth, img.naturalWidth);
+      assertEquals(
+          intrinsicWidth, Math.round(img.getBoundingClientRect().width));
+    });
+
+    test('fills the panel with an image wider than the panel', async () => {
+      const img = await distillFullWidthImage(2000, 1000);
+      const figure = app.$.container.querySelector('figure')!;
+
+      // The image has to be wider than the panel, or this asserts nothing.
+      assertGT(img.naturalWidth, figure.clientWidth);
+      assertEquals(
+          figure.clientWidth, Math.round(img.getBoundingClientRect().width));
+    });
   });
 
   suite('on speech active change', () => {
