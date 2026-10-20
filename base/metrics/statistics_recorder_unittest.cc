@@ -312,6 +312,9 @@ TEST_P(StatisticsRecorderTest, WithName) {
       StatisticsRecorder::WithName(histograms, "", /*case_sensitive=*/true),
       SizeIs(3));
   EXPECT_THAT(
+      StatisticsRecorder::WithName(histograms, "", /*case_sensitive=*/false),
+      SizeIs(3));
+  EXPECT_THAT(
       StatisticsRecorder::WithName(histograms, "Test", /*case_sensitive=*/true),
       SizeIs(3));
   EXPECT_THAT(

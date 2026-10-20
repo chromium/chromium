@@ -585,9 +585,13 @@ StatisticsRecorder::Histograms StatisticsRecorder::WithName(
     Histograms histograms,
     std::string_view query,
     bool case_sensitive) {
+  if (query.empty()) {
+    return histograms;
+  }
+
   // Char equality comparator which respects the `case_sensitive` setting.
   auto comparator = [case_sensitive](char a, char b) {
-    return case_sensitive ? a == b : std::toupper(a) == std::toupper(b);
+    return case_sensitive ? a == b : ToUpperASCII(a) == ToUpperASCII(b);
   };
   // Filter function that returns true if `h->histogram_name()` does not contain
   // `query`. Uses `comparator` to compare chars.
