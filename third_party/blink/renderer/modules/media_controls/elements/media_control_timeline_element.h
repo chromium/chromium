@@ -27,8 +27,8 @@ class MediaControlTimelineElement : public MediaControlSliderElement {
 
   // FIXME: An "earliest possible position" will be needed once that concept
   // is supported by HTMLMediaElement, see https://crbug.com/137275
-  void SetPosition(double, bool suppress_aria = false);
-  void SetDuration(double);
+  MODULES_EXPORT void SetPosition(double, bool suppress_aria = false);
+  MODULES_EXPORT void SetDuration(double);
 
   void OnMediaKeyboardEvent(Event* event) { DefaultEventHandler(*event); }
 

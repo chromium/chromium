@@ -109,7 +109,7 @@ void MediaControlTimelineElement::SetPosition(double current_time,
   }
 
   MaybeUpdateTimelineInterval();
-  SetValue(String::Number(current_time));
+  SetValue(String::NumberToStringEcmaScript(current_time));
 
   if (!suppress_aria)
     UpdateAria();

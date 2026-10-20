@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/events/touch_event.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -299,6 +300,14 @@ TEST_F(MediaControlTimelineElementTest, UpgradeTouchEventToPointerDenied) {
   Timeline()->DispatchEvent(*PointerEvent::Create(event_type_names::kPointerup,
                                                   GetValidPointerEventInit()));
   EXPECT_TRUE(Video()->paused());
+}
+
+TEST_F(MediaControlTimelineElementTest, SetPositionMatchesDurationPrecision) {
+  constexpr double kDuration = 6.029932;
+  Timeline()->SetDuration(kDuration);
+  Timeline()->SetPosition(kDuration);
+  EXPECT_EQ("6.029932", Timeline()->FastGetAttribute(html_names::kMaxAttr));
+  EXPECT_EQ("6.029932", Timeline()->Value());
 }
 
 }  // namespace blink
