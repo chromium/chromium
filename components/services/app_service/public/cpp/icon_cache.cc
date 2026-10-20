@@ -59,15 +59,13 @@ std::unique_ptr<IconLoader::Releaser> IconCache::LoadIconFromIconKey(
 
   if (icon_type == IconType::kUncompressed ||
       icon_type == IconType::kStandard) {
-    auto iter = map_.find(key);
-    if (iter == map_.end()) {
-      iter = map_.insert(std::make_pair(key, Value())).first;
-    } else if (!iter->second.image_.isNull() &&
-               (allow_placeholder_icon || !iter->second.is_placeholder_icon_)) {
-      cache_hit = &iter->second;
+    Value& value = map_[key];
+    if (!value.image_.isNull() &&
+        (allow_placeholder_icon || !value.is_placeholder_icon_)) {
+      cache_hit = &value;
     }
 
-    auto new_ref_count = ++iter->second.ref_count_;
+    auto new_ref_count = ++value.ref_count_;
     CHECK(new_ref_count != std::numeric_limits<decltype(new_ref_count)>::max());
     ref_count_incremented = true;
   }

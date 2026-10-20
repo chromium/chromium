@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/map_util.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/services/app_service/public/cpp/app.h"
@@ -231,25 +232,20 @@ void AppRegistryCache::DoOnApps(std::vector<AppPtr> deltas) {
   }
 
   // Update the states for every de-duplicated delta.
-  for (const auto& d_iter : deltas_in_progress_) {
-    auto s_iter = states_.find(d_iter.first);
-    apps::App* state =
-        (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
-    apps::App* delta = d_iter.second;
-
+  for (const auto& [app_id, delta] : deltas_in_progress_) {
     if (delta->readiness != Readiness::kRemoved) {
-      if (state) {
-        AppUpdate::Merge(state, delta);
-      } else {
-        // Call AppUpdate::Merge to set the init value for the icon key's
-        // `update_version`.
-        auto app = std::make_unique<App>(delta->app_type, delta->app_id);
-        AppUpdate::Merge(app.get(), delta);
-        states_.insert(std::make_pair(delta->app_id, std::move(app)));
-      }
+      // Call AppUpdate::Merge to also set the init value for the icon key's
+      // `update_version` when creating a new state.
+      AppPtr& state = base::GetOrCreate(states_, app_id, [&] {
+        return std::make_unique<App>(delta->app_type, delta->app_id);
+      });
+      AppUpdate::Merge(state.get(), delta);
     } else {
-      DCHECK(!state || state->readiness != Readiness::kReady);
-      states_.erase(d_iter.first);
+      auto s_iter = states_.find(app_id);
+      if (s_iter != states_.end()) {
+        DCHECK_NE(s_iter->second->readiness, Readiness::kReady);
+        states_.erase(s_iter);
+      }
     }
   }
   deltas_in_progress_.clear();
