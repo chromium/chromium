@@ -1029,15 +1029,16 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::ContinueAuthRequest(
   }
 
   info_->AddResponseInfoFromResourceResponse(*current_response_);
-  auto continuation =
-      base::BindRepeating(&InProgressRequest::OnAuthRequestHandled,
-                          weak_factory_.GetWeakPtr(), base::Passed(&callback));
+  auto [async_continuation, sync_continuation] = base::SplitOnceCallback(
+      base::BindOnce(&InProgressRequest::OnAuthRequestHandled,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 
   auth_credentials_.emplace();
   WebRequestEventRouter::AuthRequiredResponse response =
       WebRequestEventRouter::Get(factory_->browser_context_)
           ->OnAuthRequired(factory_->browser_context_, &info_.value(),
-                           auth_info, continuation, &auth_credentials_.value());
+                           auth_info, std::move(async_continuation),
+                           &auth_credentials_.value());
 
   // At least one extension has a blocking handler for this request, so we'll
   // just wait for them to finish. |OnAuthRequestHandled()| will be invoked
@@ -1051,7 +1052,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::ContinueAuthRequest(
   // proceed.
   DCHECK_EQ(response, WebRequestEventRouter::AuthRequiredResponse::
                           AUTH_REQUIRED_RESPONSE_NO_ACTION);
-  continuation.Run(response);
+  std::move(sync_continuation).Run(response);
 }
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
