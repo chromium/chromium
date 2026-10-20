@@ -182,6 +182,10 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // added to an entry and the entry.
   void ResetCachePendingState() { cache_pending_ = false; }
 
+  void CancelEntryLockTimeout() {
+    entry_lock_waiting_since_ = base::TimeTicks();
+  }
+
   RequestPriority priority() const { return priority_; }
   PartialData* partial() { return partial_.get(); }
   bool is_truncated() { return truncated_; }
