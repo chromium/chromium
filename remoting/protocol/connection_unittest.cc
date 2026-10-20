@@ -19,7 +19,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/build_config.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/fifo_buffer.h"
 #include "remoting/base/ipc_fifo_buffer.h"
@@ -41,6 +40,7 @@
 #include "remoting/protocol/webrtc_connection_to_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
 using ::testing::_;
@@ -481,13 +481,7 @@ TEST_F(ConnectionTest, RejectConnection) {
   client_session_->event_handler()->OnSessionStateChange(Session::CLOSED);
 }
 
-// crbug.com/1224862: Tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Disconnect DISABLED_Disconnect
-#else
-#define MAYBE_Disconnect Disconnect
-#endif
-TEST_F(ConnectionTest, MAYBE_Disconnect) {
+TEST_F(ConnectionTest, Disconnect) {
   Connect();
 
   EXPECT_CALL(client_event_handler_,
@@ -497,13 +491,7 @@ TEST_F(ConnectionTest, MAYBE_Disconnect) {
   base::RunLoop().RunUntilIdle();
 }
 
-// crbug.com/1224862: Tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Control DISABLED_Control
-#else
-#define MAYBE_Control Control
-#endif
-TEST_F(ConnectionTest, MAYBE_Control) {
+TEST_F(ConnectionTest, Control) {
   Connect();
 
   Capabilities capabilities_msg;
@@ -521,13 +509,7 @@ TEST_F(ConnectionTest, MAYBE_Control) {
   run_loop.Run();
 }
 
-// crbug.com/1224862: Tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Events DISABLED_Events
-#else
-#define MAYBE_Events Events
-#endif
-TEST_F(ConnectionTest, MAYBE_Events) {
+TEST_F(ConnectionTest, Events) {
   Connect();
 
   KeyEvent event;
@@ -545,17 +527,12 @@ TEST_F(ConnectionTest, MAYBE_Events) {
   run_loop.Run();
 }
 
-// crbug.com/1224862: Tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Video DISABLED_Video
-#else
-#define MAYBE_Video Video
-#endif
-TEST_F(ConnectionTest, MAYBE_Video) {
+TEST_F(ConnectionTest, Video) {
   Connect();
 
   std::unique_ptr<VideoStream> video_stream =
-      host_connection_->StartVideoStream(0, CreateTestCapturer());
+      host_connection_->StartVideoStream(webrtc::kFullDesktopScreenId,
+                                         CreateTestCapturer());
 
   // Receive 5 frames.
   for (int i = 0; i < 5; ++i) {
@@ -563,15 +540,9 @@ TEST_F(ConnectionTest, MAYBE_Video) {
   }
 }
 
-// crbug.com/1224862: Tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_VideoWithSlowSignaling DISABLED_VideoWithSlowSignaling
-#else
-#define MAYBE_VideoWithSlowSignaling VideoWithSlowSignaling
-#endif
 // Verifies that the VideoStream doesn't lose any video frames while the
 // connection is being established.
-TEST_F(ConnectionTest, MAYBE_VideoWithSlowSignaling) {
+TEST_F(ConnectionTest, VideoWithSlowSignaling) {
   // Add signaling delay to slow down connection handshake.
   host_session_->set_signaling_delay(base::Milliseconds(100));
   client_session_->set_signaling_delay(base::Milliseconds(100));
@@ -579,18 +550,13 @@ TEST_F(ConnectionTest, MAYBE_VideoWithSlowSignaling) {
   Connect();
 
   std::unique_ptr<VideoStream> video_stream =
-      host_connection_->StartVideoStream(0, CreateTestCapturer());
+      host_connection_->StartVideoStream(webrtc::kFullDesktopScreenId,
+                                         CreateTestCapturer());
 
   WaitNextVideoFrame();
 }
 
-// crbug.com/1224862: Tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DestroyOnIncomingMessage DISABLED_DestroyOnIncomingMessage
-#else
-#define MAYBE_DestroyOnIncomingMessage DestroyOnIncomingMessage
-#endif
-TEST_F(ConnectionTest, MAYBE_DestroyOnIncomingMessage) {
+TEST_F(ConnectionTest, DestroyOnIncomingMessage) {
   Connect();
 
   KeyEvent event;
@@ -609,8 +575,7 @@ TEST_F(ConnectionTest, MAYBE_DestroyOnIncomingMessage) {
   run_loop.Run();
 }
 
-// TODO(crbug.com/40729981): Test is flaky.
-TEST_F(ConnectionTest, DISABLED_VideoStats) {
+TEST_F(ConnectionTest, VideoStats) {
   Connect();
 
   base::TimeTicks start_time = base::TimeTicks::Now();
@@ -623,7 +588,8 @@ TEST_F(ConnectionTest, DISABLED_VideoStats) {
       InputEventTimestamps{event_timestamp, start_time});
 
   std::unique_ptr<VideoStream> video_stream =
-      host_connection_->StartVideoStream(0, CreateTestCapturer());
+      host_connection_->StartVideoStream(webrtc::kFullDesktopScreenId,
+                                         CreateTestCapturer());
   video_stream->SetEventTimestampsSource(input_event_timestamps_source);
   WaitNextVideoFrame();
 
@@ -670,28 +636,24 @@ TEST_F(ConnectionTest, DISABLED_Audio) {
   client_audio_player_.Verify();
 }
 
-// Flaky on multiple platforms
-// https://crbug.com/1143671
-TEST_F(ConnectionTest, DISABLED_FirstCaptureFailed) {
+TEST_F(ConnectionTest, FirstCaptureFailed) {
   Connect();
 
   auto test_capturer = std::make_unique<TestScreenCapturer>();
   test_capturer->FailNthFrame(0);
   auto video_stream = host_connection_->StartVideoStream(
-      0, WrapTestCapturer(std::move(test_capturer)));
+      webrtc::kFullDesktopScreenId, WrapTestCapturer(std::move(test_capturer)));
 
   WaitNextVideoFrame();
 }
 
-// Flaky on multiple platforms
-// https://crbug.com/1143671
-TEST_F(ConnectionTest, DISABLED_SecondCaptureFailed) {
+TEST_F(ConnectionTest, SecondCaptureFailed) {
   Connect();
 
   auto test_capturer = std::make_unique<TestScreenCapturer>();
   test_capturer->FailNthFrame(1);
   auto video_stream = host_connection_->StartVideoStream(
-      0, WrapTestCapturer(std::move(test_capturer)));
+      webrtc::kFullDesktopScreenId, WrapTestCapturer(std::move(test_capturer)));
 
   WaitNextVideoFrame();
   WaitNextVideoFrame();
