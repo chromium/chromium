@@ -37,14 +37,6 @@ public class ZygotePreload implements android.app.ZygotePreload {
     @SuppressLint("Override")
     @Override
     public void doPreload(ApplicationInfo appInfo) {
-        // APKs targeting pre-Q releases, like ChromePublic, have ZygotePreload in their manifests.
-        // Running Chrome from these APKs on Q+ creates the app zygote and performs the preload. In
-        // order to load the native library with the correct name prefix, the "linker
-        // implementation" is chosen by the LibraryLoader itself, and not overwritten here.
-        doPreloadCommon(appInfo);
-    }
-
-    protected final void doPreloadCommon(ApplicationInfo appInfo) {
         Log.i(
                 TAG,
                 "versionCode=%s minSdkVersion=%s isBundle=%s",

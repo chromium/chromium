@@ -2191,7 +2191,6 @@ if (_is_default_toolchain) {
   # code is in a DFM.
   android_library("base_module_java") {
     sources = [
-      "java/src/org/chromium/chrome/app/TrichromeZygotePreload.java",
       "java/src/org/chromium/chrome/browser/DeferredStartupHandler.java",
       "java/src/org/chromium/chrome/browser/GracefulShutdownService.java",
       "java/src/org/chromium/chrome/browser/actor/ActorForegroundService.java",

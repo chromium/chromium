@@ -89,10 +89,6 @@ public class LibraryLoader {
     // requires native explicitly loads it.
     private boolean mInitializedForTesting;
 
-    // Whether to use the Chromium linker vs. the system linker.
-    // Avoids locking: should be initialized very early.
-    private boolean mUseChromiumLinker = NativeLibraries.sUseLinker;
-
     // The type of process the shared library is loaded in. Gets passed to native after loading.
     // Avoids locking: should be initialized very early.
     private @LibraryProcessType int mLibraryProcessType;
@@ -104,8 +100,6 @@ public class LibraryLoader {
     private final Object mLock = new Object();
 
     // When a Chromium linker is used, this field represents the concrete class serving as a Linker.
-    // Always accessed via getLinker() because the choice of the class can be influenced by
-    // public setLinkerImplementation() below.
     @GuardedBy("mLock")
     private @Nullable Linker mLinker;
 
@@ -293,11 +287,7 @@ public class LibraryLoader {
                                 getLoadAddress());
             } else if (isLoadedByZygote()) {
                 if (DEBUG) {
-                    Log.i(
-                            TAG,
-                            "initInChildProcess: already loaded by app zygote "
-                                    + "(mFallbackToSystemLinker=%b)",
-                            mFallbackToSystemLinker);
+                    Log.i(TAG, "initInChildProcess: already loaded by app zygote");
                 }
             } else if (mCreatedIn == CreatedIn.ZYGOTE) {
                 if (DEBUG) {
@@ -448,20 +438,6 @@ public class LibraryLoader {
         }
     }
 
-    /**
-     * Sets the configuration for library loading.
-     *
-     * Must be called before loading the library. Since this function is called extremely early on
-     * in startup, locking is not required.
-     *
-     * @param useChromiumLinker Whether to use a chromium linker.
-     */
-    public void setLinkerImplementation(boolean useChromiumLinker) {
-        assert !mInitialized;
-        mUseChromiumLinker = useChromiumLinker;
-        if (DEBUG) logLinkerUsed();
-    }
-
     private void logLinkerUsed() {
         Log.i(TAG, "Configuration: useChromiumLinker() = %b", useChromiumLinker());
     }
@@ -471,7 +447,7 @@ public class LibraryLoader {
     // common for App Zygote to choose loading with the system linker when sharing RELRO with the
     // browser process is not supported.
     private boolean useChromiumLinker() {
-        return mUseChromiumLinker;
+        return NativeLibraries.sUseLinker && !mFallbackToSystemLinker;
     }
 
     /**
@@ -527,15 +503,15 @@ public class LibraryLoader {
     public void preloadNowOverridePackageName(String packageName) {
         synchronized (mLock) {
             if (useChromiumLinker()) return;
-            preloadAlreadyLocked(packageName, /* inZygote= */ false);
+            preloadAlreadyLocked(packageName);
         }
     }
 
     @GuardedBy("mLock")
-    private void preloadAlreadyLocked(String packageName, boolean inZygote) {
+    private void preloadAlreadyLocked(String packageName) {
         try (TraceEvent te = TraceEvent.scoped("LibraryLoader.preloadAlreadyLocked")) {
             // Preloader uses system linker, we shouldn't preload if Chromium linker is used.
-            assert !useChromiumLinker() || (inZygote && mainProcessIntendsToProvideRelroFd());
+            assert !useChromiumLinker();
             if (mLibraryPreloader != null && !mLibraryPreloaderCalled) {
                 mLibraryPreloader.loadLibrary(packageName);
                 mLibraryPreloaderCalled = true;
@@ -634,9 +610,9 @@ public class LibraryLoader {
 
     @GuardedBy("mLock")
     @SuppressLint({"UnsafeDynamicallyLoadedCode"})
-    private void loadWithSystemLinkerAlreadyLocked(ApplicationInfo appInfo, boolean inZygote) {
+    private void loadWithSystemLinkerAlreadyLocked(ApplicationInfo appInfo) {
         setEnvForNative();
-        preloadAlreadyLocked(appInfo.packageName, inZygote);
+        preloadAlreadyLocked(appInfo.packageName);
         for (String library : NativeLibraries.LIBRARIES) {
             System.loadLibrary(library);
         }
@@ -670,7 +646,7 @@ public class LibraryLoader {
                 throw new UnsatisfiedLinkError();
             }
 
-            if (useChromiumLinker() && !mFallbackToSystemLinker) {
+            if (useChromiumLinker()) {
                 if (DEBUG) Log.i(TAG, "Loading with the Chromium linker.");
                 // See base/android/linker/config.gni, the chromium linker is only enabled when
                 // we have a single library.
@@ -679,7 +655,7 @@ public class LibraryLoader {
                 loadWithChromiumLinker(appInfo, library);
             } else {
                 if (DEBUG) Log.i(TAG, "Loading with the System linker.");
-                loadWithSystemLinkerAlreadyLocked(appInfo, inZygote);
+                loadWithSystemLinkerAlreadyLocked(appInfo);
             }
 
             long loadTimeMs = uptimeTimer.getElapsedMillis();

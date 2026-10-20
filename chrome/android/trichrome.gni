@@ -27,7 +27,6 @@ declare_args() {
 trichrome_jinja_variables = [
   "trichrome_library=$trichrome_library_package",
   "trichrome_certdigest=$trichrome_certdigest",
-  "zygote_preload_class=org.chromium.chrome.app.TrichromeZygotePreload",
 ]
 
 template("trichrome_library_apk_tmpl") {
