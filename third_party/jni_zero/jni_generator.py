@@ -695,7 +695,8 @@ def _WriteKotlinProxies(output_dir, jni_mode, gen_jni_class, jni_objs, *,
                                            gen_jni_class=gen_jni_class,
                                            script_name=script_name)
     else:
-      content = f'// {basename}.kt has no @NativeMethods.\n'
+      package = jni_obj.java_class.class_without_prefix.package_with_dots
+      content = f'// {basename}.kt has no @NativeMethods.\npackage {package}\n'
     with common.atomic_output(os.path.join(output_dir, f'{basename}Jni.kt'),
                               'w') as f:
       f.write(content)

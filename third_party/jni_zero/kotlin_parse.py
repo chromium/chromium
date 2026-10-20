@@ -85,6 +85,7 @@ _CLASSES_REGEX = re.compile(
     r'(?:[^{}"]|"[^"]*"))*?)\b'
     r'(?:class|interface|object)\b\s+\b([\w.$]+)'
     r'(<[\s\S]*?>)?'
+    r'(?:\s+(?:@[\w.]+(?:\([^)]*\))?\s+|\w+\s+)*constructor\b)?'
     # The header spans multiple lines only within parentheses (e.g. a primary
     # constructor), or after ":" or ",".
     r'(?:\((?:[^()]|\([^()]*\))*\)|[^{}()\n]|(?<=[:,])\n)*(\{)?',
@@ -161,10 +162,13 @@ def _parse_kotlin_classes(contents,
     if generics_str:
       type_resolver.type_params = _parse_type_params(type_resolver,
                                                      generics_str[1:-1])
+    annotations, _ = parse_common.parse_annotations(preamble)
+    jni_type = annotations.get('JniType')
     parsed_classes.append(
         parse_common.ParsedClass(_start_idx=class_keyword_start,
                                  _end_idx=end_idx,
-                                 type_resolver=type_resolver))
+                                 type_resolver=type_resolver,
+                                 jni_type=jni_type))
 
   if parsed_classes:
     parsed_classes[0].type_resolver.nested_classes.sort()

@@ -1013,7 +1013,11 @@ native void foo();
     contents = """
 package org.jni_zero
 
-class MyClass {
+class MyClass
+@JvmOverloads
+internal constructor(
+    val id: Int = 0,
+) {
     data class Point(val x: Int, val y: Int)
 
     class Inner {
@@ -1080,6 +1084,27 @@ class MyClass {
           'interface A {\nfun <T> a(t: T)\nfun b()\n}\n}')
 
   def testParseKotlinSafePointers(self):
+    contents_valid = """
+package org.jni_zero
+
+class SafePointerTest {
+    @JniType("::my::cpp::Foo")
+    interface NativeFoo : JniTypeToken
+
+    @NativeMethods
+    interface Natives {
+        fun createFoo(): JniUniquePtr<NativeFoo>
+        fun useFoo(self: JniPtr<NativeFoo>)
+    }
+}
+"""
+    parsed_file = _parse_kotlin_file('SafePointerTest.kt',
+                                     contents_valid,
+                                     enable_safe_pointers=True)
+    self.assertEqual(
+        parsed_file.type_tokens,
+        {'org/jni_zero/SafePointerTest$NativeFoo': '::my::cpp::Foo'})
+
     contents_ret_ptr = """
 package org.jni_zero
 
