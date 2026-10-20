@@ -25,6 +25,9 @@
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class GURL;
+class TabListInterface;
+
 namespace content {
 class WebContents;
 }
@@ -208,6 +211,14 @@ class ActorToolsTest : public PlatformBrowserTest {
   content::WebContents* web_contents();
   tabs::TabInterface* active_tab();
   content::RenderFrameHost* main_frame();
+
+  // The tab list of the window containing `active_tab()`.
+  TabListInterface* tab_list();
+
+  // Opens `url` in a new tab in the current window, waits for it to load, and
+  // makes it the active tab. Fails the test on error.
+  void OpenForegroundTab(const GURL& url);
+
   ExecutionEngine& execution_engine();
   ActorKeyedService& actor_keyed_service() const;
   ActorTask& actor_task() const;

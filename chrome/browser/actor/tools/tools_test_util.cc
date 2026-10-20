@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -18,6 +19,8 @@
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/password_manager/actor_login/chrome_actor_login_delegate_client.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
@@ -314,6 +317,28 @@ tabs::TabInterface* ActorToolsTest::active_tab() {
 
 content::RenderFrameHost* ActorToolsTest::main_frame() {
   return web_contents()->GetPrimaryMainFrame();
+}
+
+TabListInterface* ActorToolsTest::tab_list() {
+  return TabListInterface::From(active_tab()->GetBrowserWindowInterface());
+}
+
+void ActorToolsTest::OpenForegroundTab(const GURL& url) {
+  // Open in the background and activate explicitly rather than opening in the
+  // foreground. On Android, a foreground open runs the new tab animation,
+  // which re-selects the new tab again when the animation finishes. That
+  // deferred selection can land after a tool under test has switched tabs
+  // and undo the switch.
+  tabs::TabInterface* tab =
+      tab_list()->OpenTab(url, /*index=*/-1, /*foreground=*/false);
+  ASSERT_TRUE(tab);
+  ASSERT_TRUE(content::WaitForLoadStop(tab->GetContents()));
+  tab_list()->ActivateTab(tab->GetHandle());
+
+  // On Android, TabInterface::IsActivated() can lag the tab list's active
+  // index briefly. Tools treat an already activated target as a successful
+  // no-op, so wait for activation to settle before acting.
+  ASSERT_TRUE(base::test::RunUntil([tab]() { return tab->IsActivated(); }));
 }
 
 ExecutionEngine& ActorToolsTest::execution_engine() {

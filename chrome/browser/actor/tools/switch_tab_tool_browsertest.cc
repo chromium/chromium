@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -15,7 +14,6 @@
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -56,24 +54,6 @@ class ActorSwitchTabToolBrowserTest : public ActorToolsTest {
   }
 
  protected:
-  TabListInterface* tab_list() {
-    return TabListInterface::From(active_tab()->GetBrowserWindowInterface());
-  }
-
-  // Opens `url` in a new foreground tab and waits for it to load and become the
-  // activated tab.
-  void OpenForegroundTab(const GURL& url) {
-    tabs::TabInterface* tab =
-        tab_list()->OpenTab(url, /*index=*/-1, /*foreground=*/true);
-    ASSERT_TRUE(tab);
-    ASSERT_TRUE(content::WaitForLoadStop(tab->GetContents()));
-    // On Android, TabInterface::IsActivated() can lag the tab list's active
-    // index briefly after a foreground open. SwitchTabTool treats an already
-    // activated target as a successful no-op, so wait for activation to settle
-    // before acting; otherwise the previous tab may still report as activated.
-    ASSERT_TRUE(base::test::RunUntil([tab]() { return tab->IsActivated(); }));
-  }
-
   int active_index() { return tab_list()->GetActiveIndex(); }
 
  private:

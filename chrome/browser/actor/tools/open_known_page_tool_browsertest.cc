@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -19,7 +18,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -85,25 +83,6 @@ class ActorOpenKnownPageToolBrowserTest : public ActorToolsTest {
   }
 
  protected:
-  TabListInterface* tab_list() {
-    return TabListInterface::From(active_tab()->GetBrowserWindowInterface());
-  }
-
-  // Opens `url` in a new tab and makes it the active tab.
-  void OpenForegroundTab(const GURL& url) {
-    // Open in the background and activate explicitly rather than opening in
-    // the foreground. On Android, a foreground open runs the new tab
-    // animation, which re-selects the new tab again when the animation
-    // finishes. That deferred selection can land after the tool under test
-    // has switched tabs and undo the switch.
-    tabs::TabInterface* tab =
-        tab_list()->OpenTab(url, /*index=*/-1, /*foreground=*/false);
-    ASSERT_TRUE(tab);
-    ASSERT_TRUE(content::WaitForLoadStop(tab->GetContents()));
-    tab_list()->ActivateTab(tab->GetHandle());
-    ASSERT_TRUE(base::test::RunUntil([tab]() { return tab->IsActivated(); }));
-  }
-
   int active_index() { return tab_list()->GetActiveIndex(); }
 
   int tab_count() { return tab_list()->GetTabCount(); }

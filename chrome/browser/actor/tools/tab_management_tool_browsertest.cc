@@ -55,10 +55,6 @@ class ActorTabManagementToolBrowserTest : public ActorToolsTest {
     return active_tab()->GetBrowserWindowInterface();
   }
 
-  TabListInterface* tab_list() {
-    return TabListInterface::From(browser_window());
-  }
-
 #if !BUILDFLAG(IS_ANDROID)
   BrowserWindowInterface* CreateIncognitoBrowserWindow() {
     Profile* incognito_profile =
@@ -238,10 +234,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest, ActivateTab) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
   // Create a second tab in the foreground.
-  tabs::TabInterface* second_tab =
-      tab_list()->OpenTab(start_tab_url, /*index=*/-1, /*foreground=*/true);
-  ASSERT_TRUE(second_tab);
-  ASSERT_TRUE(content::WaitForLoadStop(second_tab->GetContents()));
+  ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(start_tab_url));
   ASSERT_EQ(tab_list()->GetTabCount(), 2);
   ASSERT_EQ(tab_list()->GetTab(1), tab_list()->GetActiveTab());
 
@@ -264,10 +257,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest, CloseTab) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
   // Create a second tab in the foreground.
-  tabs::TabInterface* second_tab =
-      tab_list()->OpenTab(start_tab_url, /*index=*/-1, /*foreground=*/true);
-  ASSERT_TRUE(second_tab);
-  ASSERT_TRUE(content::WaitForLoadStop(second_tab->GetContents()));
+  ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(start_tab_url));
   ASSERT_EQ(tab_list()->GetTabCount(), 2);
   ASSERT_EQ(tab_list()->GetTab(1), tab_list()->GetActiveTab());
 
