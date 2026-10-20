@@ -10,10 +10,6 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/views/window/dialog_delegate.h"
 
-namespace views {
-class Widget;
-}
-
 namespace ash {
 
 // Dialog shown when the user tries to close the flow when account has already
@@ -39,7 +35,6 @@ class ConfirmSignoutDialog : public views::DialogDelegateView {
 
  private:
   ConfirmSignoutDialog();
-  static views::Widget* current_instance_;
 };
 
 }  // namespace ash

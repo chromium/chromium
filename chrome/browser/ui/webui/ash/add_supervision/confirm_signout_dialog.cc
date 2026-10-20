@@ -6,6 +6,9 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
@@ -29,9 +32,20 @@ namespace ash {
 namespace {
 // The width of the text body in the dialog.
 const int kDialogBodyTextWidth = 250;
+
+// The widget of the dialog currently showing, if any.
+std::unique_ptr<views::Widget>& CurrentInstance() {
+  static base::NoDestructor<std::unique_ptr<views::Widget>> widget;
+  return *widget;
+}
+
+void OnWidgetCloseRequested(views::Widget::ClosedReason) {
+  CurrentInstance().reset();
+}
 }  // namespace
 
 ConfirmSignoutDialog::ConfirmSignoutDialog() {
+  SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   DialogDelegate::SetButtonLabel(
       ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(
@@ -55,9 +69,7 @@ ConfirmSignoutDialog::ConfirmSignoutDialog() {
   AddChildViewRaw(body);
 }
 
-ConfirmSignoutDialog::~ConfirmSignoutDialog() {
-  ConfirmSignoutDialog::current_instance_ = nullptr;
-}
+ConfirmSignoutDialog::~ConfirmSignoutDialog() = default;
 
 ui::mojom::ModalType ConfirmSignoutDialog::GetModalType() const {
   return ui::mojom::ModalType::kSystem;
@@ -73,21 +85,19 @@ bool ConfirmSignoutDialog::Accept() {
 }
 
 // static
-views::Widget* ConfirmSignoutDialog::current_instance_ = nullptr;
-
-// static
 void ConfirmSignoutDialog::Show() {
   // Ownership of the ConfirmSignoutDialog is passed to the views system.
   // Dialog is system-modal, so no parent window is needed.
-  ConfirmSignoutDialog::current_instance_ =
-      constrained_window::CreateBrowserModalDialogViews(
-          new ConfirmSignoutDialog(), nullptr /* parent window */);
-  current_instance_->Show();
+  std::unique_ptr<views::Widget>& widget = CurrentInstance();
+  widget = base::WrapUnique(constrained_window::CreateBrowserModalDialogViews(
+      new ConfirmSignoutDialog(), nullptr /* parent window */));
+  widget->MakeCloseSynchronous(base::BindOnce(&OnWidgetCloseRequested));
+  widget->Show();
 }
 
 // static
 bool ConfirmSignoutDialog::IsShowing() {
-  return ConfirmSignoutDialog::current_instance_ != nullptr;
+  return CurrentInstance() != nullptr;
 }
 
 BEGIN_METADATA(ConfirmSignoutDialog)
