@@ -89,9 +89,9 @@ __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
 // slice. With this signature length in mind, the size target for the unsigned
 // x86_64 slice is 264kB - 22656 = 247680.
 //
-// With an unpadded unsigned size of 27024, (247680 - 27024) = 220656 bytes of
+// With an unpadded unsigned size of 12656, (247680 - 12656) = 235024 bytes of
 // padding are desirable. The padding can only be introduced with 4kB precision,
-// so 216kB of padding is introduced.
+// so 228kB of padding is introduced.
 //
 // If the main executable has a significant change in size, this will need to be
 // revised.
@@ -109,10 +109,5 @@ __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
 // bytes total, accounting for both the padding and the additional SHA-256 hash
 // incorporated into the code signature. The difference is <1% and can be
 // ignored in most cases.)
-//
-// TODO(crbug.com/40794783): This padding size was borrowed from the
-// non-Apéritif chrome_exe_main_mac.cc and will need to be recomputed for the
-// Apéritif chrome_exe_main_mac.c once Apéritif is enabled for the main
-// browser executable.
-__attribute__((used)) const char kGrossPaddingForCrbug1300598[216 * 1024] = {};
+__attribute__((used)) const char kGrossPaddingForCrbug1300598[228 * 1024] = {};
 #endif
