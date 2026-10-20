@@ -1,4 +1,5 @@
-team_email: "safebrowsing@chromium.org"
+team_email: "dbsc-chrome-team@google.com"
 buganizer_public: {
   component_id: 1455741
 }
+agentic_review {}
