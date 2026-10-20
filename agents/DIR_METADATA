@@ -1,0 +1,5 @@
+buganizer_public {
+  component_id: 1861756  # Chromium > Tools > Agents
+}
+
+agentic_review {}
