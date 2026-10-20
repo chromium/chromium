@@ -619,7 +619,6 @@ InteractionSequence::WithInitialElement(TrackedElement* element,
       .SetElementID(element->identifier())
       .SetContext(element->context())
       .SetMustBeVisibleAtStart(true)
-      .SetMustRemainVisible(true)
       .SetStartCallback(std::move(start_callback))
       .SetEndCallback(std::move(end_callback));
   return step.Build();

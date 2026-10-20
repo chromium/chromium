@@ -244,8 +244,7 @@ TEST_P(InteractionSequenceTest, HideWithInitialElementAborts) {
   EXPECT_ASYNC_CALL_IN_SCOPE(aborted, Run, element.Hide());
 }
 
-TEST_P(InteractionSequenceTest,
-       HideWithInitialElementDoesNotAbortIfMustRemainVisibleIsFalse) {
+TEST_P(InteractionSequenceTest, HideWithInitialElementDoesNotAbortByDefault) {
   UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
   UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
   test::TestElement element(kTestIdentifier1, kTestContext1);
@@ -255,21 +254,14 @@ TEST_P(InteractionSequenceTest,
           .SetAbortedCallback(aborted.Get())
           .SetCompletedCallback(completed.Get())
           .SetContext(element.context())
+          .AddStep(InteractionSequence::WithInitialElement(&element))
           .AddStep(InteractionSequence::StepBuilder()
                        .SetElementID(element.identifier())
-                       .SetType(InteractionSequence::StepType::kShown)
-                       .SetMustBeVisibleAtStart(true)
-                       .SetMustRemainVisible(false)
-                       .Build())
-          .AddStep(InteractionSequence::StepBuilder()
-                       .SetElementID(element.identifier())
-                       .SetMustBeVisibleAtStart(false)
-                       .SetType(InteractionSequence::StepType::kActivated)
+                       .SetType(InteractionSequence::StepType::kHidden)
                        .Build())
           .Build();
   sequence->Start();
-  element.Hide();
-  EXPECT_ASYNC_CALL_IN_SCOPE(aborted, Run, sequence.reset());
+  EXPECT_ASYNC_CALL_IN_SCOPE(completed, Run, element.Hide());
 }
 
 // This tests a case where the element is hidden on the first step and there is
