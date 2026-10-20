@@ -752,9 +752,7 @@ void FormStructureRationalizer::RationalizeFormatStrings(
         });
     base::UmaHistogramBoolean("Autofill.FormatString.IsCompatible",
                               is_format_string_compatible);
-    if (!is_format_string_compatible &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnforceFormatStringCompatibility)) {
+    if (!is_format_string_compatible) {
       LOG_AF(log_manager) << LoggingScope::kRationalization
                           << LogMessage::kRationalization
                           << "Cleared incompatible format string of "

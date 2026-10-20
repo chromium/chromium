@@ -815,11 +815,6 @@ BASE_FEATURE(kAutofillEnableWalletDisclosureNoticePublicPass,
 BASE_FEATURE(kAutofillEnableWalletReminderNoticePublicPass,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether Autofill clears format strings assigned to a field where
-// none of the assigned field types are compatible with it.
-BASE_FEATURE(kAutofillEnforceFormatStringCompatibility,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables extended zip code validation.
 // TODO(crbug.com/434140055): Clean up when launched.
 BASE_FEATURE(kAutofillExtendZipCodeValidation,
