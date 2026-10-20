@@ -5,13 +5,16 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.chromium.components.browser_ui.widget.BoundedLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/task_manager_toolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    app:maxWidthLandscape="@dimen/task_manager_toolbar_max_width"
+    app:maxWidthPortrait="@dimen/task_manager_toolbar_max_width">
 
     <!-- Search Box -->
     <include layout="@layout/task_manager_search_box" />
@@ -60,4 +63,4 @@ found in the LICENSE file.
         </LinearLayout>
     </HorizontalScrollView>
 
-</LinearLayout>
+</org.chromium.components.browser_ui.widget.BoundedLinearLayout>

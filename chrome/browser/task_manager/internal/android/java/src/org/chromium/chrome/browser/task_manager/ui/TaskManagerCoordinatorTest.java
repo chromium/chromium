@@ -37,6 +37,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
@@ -286,6 +287,24 @@ public class TaskManagerCoordinatorTest {
         assertFalse(tabsChip.isSelected());
         assertFalse(browserChip.isSelected());
         assertTrue(allChip.isSelected());
+    }
+
+    @Test
+    public void testToolbarMaxWidth() {
+        View toolbar = mActivity.findViewById(R.id.task_manager_toolbar);
+        assertNotNull(toolbar);
+
+        @Px
+        int maxWidth =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.task_manager_toolbar_max_width);
+        @Px int parentWidth = maxWidth + 500;
+        toolbar.measure(
+                View.MeasureSpec.makeMeasureSpec(parentWidth, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+        assertEquals(maxWidth, toolbar.getMeasuredWidth());
     }
 
     @Test
