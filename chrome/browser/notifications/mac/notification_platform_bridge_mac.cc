@@ -221,6 +221,10 @@ void NotificationPlatformBridgeMac::GetDisplayedForOrigin(
         if (!url::IsSameOriginWith(registrar.GetAppScope(app_id), origin)) {
           continue;
         }
+        if (!AppShimRegistry::Get()->IsAppInstalledInProfile(
+                app_id, profile->GetPath())) {
+          continue;
+        }
         web_app_ids.push_back(app_id);
       }
     }

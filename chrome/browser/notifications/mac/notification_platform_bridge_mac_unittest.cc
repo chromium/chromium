@@ -577,10 +577,13 @@ class NotificationPlatformBridgeMacTestWithNotificationAttribution
     // happens safely by default.
     AppShimRegistry::Get()->OnAppInstalledForProfile(installed_app_id_,
                                                      profile()->GetPath());
+    uninstalled_app_id_ = web_app::test::InstallDummyWebApp(
+        profile(), "Uninstalled Web App Name", GURL("https://uninstalled.com"));
   }
 
  protected:
   webapps::AppId installed_app_id_;
+  webapps::AppId uninstalled_app_id_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -725,4 +728,23 @@ TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
   }
 
   EXPECT_TRUE(dispatcher_for_web_app(installed_app_id_));
+}
+
+TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
+       GetDisplayedWithoutInstalledShim) {
+  auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
+  EXPECT_FALSE(dispatcher_for_web_app(uninstalled_app_id_));
+
+  {
+    base::test::TestFuture<std::set<std::string>, bool> future;
+    bridge->GetDisplayedForOrigin(profile(), GURL("https://uninstalled.com"),
+                                  future.GetCallback());
+    auto [notifications, supports_synchronization] = future.Get();
+    EXPECT_EQ(0u, notifications.size());
+    EXPECT_TRUE(supports_synchronization);
+  }
+
+  EXPECT_FALSE(dispatcher_for_web_app(uninstalled_app_id_));
 }

@@ -647,7 +647,9 @@ Profile* AppShimManager::ProfileForBackgroundShimLaunch(
       if (!p->IsRegularProfile()) {
         continue;
       }
-      if (delegate_->AppIsInstalled(p, app_id)) {
+      if (delegate_->AppIsInstalled(p, app_id) &&
+          AppShimRegistry::Get()->IsAppInstalledInProfile(app_id,
+                                                          p->GetPath())) {
         return p;
       }
     }
