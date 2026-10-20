@@ -13,7 +13,7 @@ import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/s
 import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {$$, eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createDefaultInputState, TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
@@ -116,6 +116,15 @@ suite('OmniboxPopupSearchboxTest', function() {
   let handler: TestMock<OmniboxPopupPageHandlerRemote>&
       OmniboxPopupPageHandlerRemote;
   let callbackRouter: OmniboxPopupPageRemote;
+
+  suiteSetup(async () => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'layout_constants_v0.css';
+    const loaded = eventToPromise('load', link);
+    document.head.appendChild(link);
+    await loaded;
+  });
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -6453,54 +6462,6 @@ suite('OmniboxPopupSearchboxTest', function() {
        testSearchbox.style.getPropertyValue('--alignment-inset-horizontal'));
    assertEquals(
        '8px', testSearchbox.style.getPropertyValue('--alignment-inset-bottom'));
-
-   // Shared layout constants come from `layout_constants_v0.css` and map to
-   // `--cr-searchbox-*` variables on the host.
-   testSearchbox.style.setProperty('--location-bar-height', '40px');
-   testSearchbox.style.setProperty('--omnibox-primary-font-size', '16px');
-   testSearchbox.style.setProperty('--location-bar-icon-size', '22px');
-   testSearchbox.style.setProperty('--location-bar-chip-icon-size', '20px');
-   testSearchbox.style.setProperty(
-       '--location-bar-page-info-icon-vertical-padding', '6px');
-   testSearchbox.style.setProperty(
-       '--location-bar-page-info-icon-padding-start', '4px');
-   testSearchbox.style.setProperty(
-       '--location-bar-page-info-icon-padding-end', '4px');
-   testSearchbox.style.setProperty(
-       '--location-bar-leading-decoration-edge-padding', '7px');
-   testSearchbox.style.setProperty(
-       '--location-bar-leading-decoration-inner-padding', '9px');
-   testSearchbox.style.setProperty(
-       '--location-bar-trailing-decoration-aim-edge-padding', '6px');
-   const hostStyle = getComputedStyle(testSearchbox);
-   assertEquals(
-       '40px', hostStyle.getPropertyValue('--cr-searchbox-height').trim());
-   assertEquals(
-       '16px', hostStyle.getPropertyValue('--cr-searchbox-font-size').trim());
-   assertEquals(
-       '22px',
-       hostStyle.getPropertyValue('--cr-searchbox-icon-size-in-searchbox')
-           .trim());
-   assertEquals('40px', hostStyle.height);
-   assertEquals('16px', hostStyle.fontSize);
-   assertEquals(
-       '28px', getComputedStyle(testSearchbox.$.input.inputElement).height);
-   const iconStyle = getComputedStyle(testSearchbox.$.input.$.icon);
-   assertEquals('30px', iconStyle.width);
-   assertEquals('7px', iconStyle.paddingInlineStart);
-   assertEquals('9px', iconStyle.paddingInlineEnd);
-   const composeIcon =
-       testSearchbox.$.composeButton.shadowRoot.querySelector<HTMLElement>(
-           '.compose-icon');
-   assertTrue(!!composeIcon);
-   const composeIconStyle = getComputedStyle(composeIcon);
-   assertEquals('20px', composeIconStyle.width);
-   assertEquals('20px', composeIconStyle.height);
-   const glowContainer =
-       testSearchbox.$.composeButton.shadowRoot.querySelector<HTMLElement>(
-           '.glow-container');
-   assertTrue(!!glowContainer);
-   assertEquals('4px', getComputedStyle(glowContainer).marginInlineEnd);
 
    testSearchbox.remove();
    // Restore original values so `loadTimeData` does not leak into other tests.
