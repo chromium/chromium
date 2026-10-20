@@ -74,6 +74,16 @@ export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
     this.$.lazyMenu.get().close();
   }
 
+  focusItem(groupIndex: number, itemIndex: number) {
+    const actionMenu = this.$.lazyMenu.getIfExists();
+    if (!actionMenu?.open) {
+      return;
+    }
+    const item = actionMenu.querySelector<HTMLElement>(
+        `#${this.getItemId_(groupIndex, itemIndex)}`);
+    item?.focus();
+  }
+
   protected onClick_(e: Event) {
     const currentTarget = e.currentTarget as HTMLElement;
     const groupIndex = Number.parseInt(currentTarget.dataset['groupIndex']!);
@@ -92,10 +102,14 @@ export class GroupedActionMenuElement extends GroupedActionMenuElementBase {
     }
   }
 
+  protected getItemId_(groupIndex: number, itemIndex: number): string {
+    return `group-${groupIndex}-item-${itemIndex}`;
+  }
+
   protected getAriaOwns_(groupIndex: number, length: number): string {
     return Array
         .from(
-            {length}, (_, itemIndex) => `group-${groupIndex}-item-${itemIndex}`)
+            {length}, (_, itemIndex) => this.getItemId_(groupIndex, itemIndex))
         .join(' ');
   }
 

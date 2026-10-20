@@ -89,11 +89,16 @@ suite('AudioMenuElement', () => {
     assertFalse(audioMenu.$.menu.$.lazyMenu.get().open);
   });
 
-  test('opens and closes accent menu', async () => {
+  test('opens and closes accent menu and restores focus', async () => {
     createAudioMenu();
+    stubAnimationFrame();
+    audioMenu.open(document.body);
+    await microtasksFinished();
     assertFalse(!!audioMenu.shadowRoot.querySelector('accent-menu'));
 
-    audioMenu.$.menu.dispatchEvent(new CustomEvent('open-accent-menu'));
+    const buttons = getItemsInMenu(audioMenu.$.menu.$.lazyMenu);
+    const accentButton = buttons[1]!;
+    accentButton.click();
     await microtasksFinished();
 
     const accentMenu = audioMenu.shadowRoot.querySelector('accent-menu');
@@ -103,19 +108,24 @@ suite('AudioMenuElement', () => {
     await microtasksFinished();
 
     assertFalse(!!audioMenu.shadowRoot.querySelector('accent-menu'));
+    assertEquals(accentButton, audioMenu.$.menu.shadowRoot.activeElement);
   });
 
   test(
       'opens and closes voice selection dialog from audio menu action item',
       async () => {
         createAudioMenu();
+        stubAnimationFrame();
+        audioMenu.open(document.body);
+        await microtasksFinished();
         assertFalse(
             !!audioMenu.shadowRoot.querySelector('voice-selection-dialog'));
 
+        const buttons = getItemsInMenu(audioMenu.$.menu.$.lazyMenu);
+        const voiceButton = buttons[0]!;
         const whenOpenFired =
             eventToPromise(ToolbarEvent.VOICE_MENU_OPEN, audioMenu);
-        audioMenu.$.menu.dispatchEvent(
-            new CustomEvent('open-voice-selection-dialog'));
+        voiceButton.click();
         await whenOpenFired;
         await microtasksFinished();
 
@@ -132,6 +142,7 @@ suite('AudioMenuElement', () => {
 
         assertFalse(
             !!audioMenu.shadowRoot.querySelector('voice-selection-dialog'));
+        assertEquals(voiceButton, audioMenu.$.menu.shadowRoot.activeElement);
       });
 
   test(

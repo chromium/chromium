@@ -10,7 +10,7 @@ import type {GroupedActionMenuElement} from 'chrome-untrusted://read-anything-si
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {getItemsInMenu, setupTestEnvironment} from './common.js';
+import {getItemsInMenu, setupTestEnvironment, stubAnimationFrame} from './common.js';
 
 suite('GroupedActionMenuElement', () => {
   let menu: GroupedActionMenuElement;
@@ -219,5 +219,38 @@ suite('GroupedActionMenuElement', () => {
     assertEquals('Immediate Action', buttons[1]!.textContent.trim());
     assertEquals('Immediate Action', buttons[1]!.getAttribute('aria-label'));
     assertEquals('Immediate Action', buttons[1]!.getAttribute('title'));
+  });
+
+  test('focusItem focuses the specified item when open', async () => {
+    stubAnimationFrame();
+    menu.menuGroups = [
+      {
+        header: {title: 'Header 1', separator: false},
+        items: [
+          {title: 'Item 1', data: 1},
+          {title: 'Item 2', data: 2},
+        ],
+        eventName: ToolbarEvent.THEME,
+      },
+      {
+        header: {title: 'Header 2', separator: true},
+        items: [
+          {title: 'Item 3', data: 3},
+        ],
+        eventName: ToolbarEvent.LINE_SPACING,
+      },
+    ];
+    await microtasksFinished();
+    menu.open(document.body);
+    await microtasksFinished();
+
+    const buttons = getItemsInMenu(menu.$.lazyMenu);
+    assertEquals(3, buttons.length);
+
+    menu.focusItem(0, 1);
+    assertEquals(buttons[1], menu.shadowRoot.activeElement);
+
+    menu.focusItem(1, 0);
+    assertEquals(buttons[2], menu.shadowRoot.activeElement);
   });
 });
