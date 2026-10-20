@@ -179,6 +179,10 @@
           {
             "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#testAugmentedAutoFill_startTypingHideInline",
             "_bug_id": "crbug.com/1369088"
+          },
+          {
+            "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
+            "_bug_id": "crbug.com/550556857"
           }
         ],
         "setup_commands": [
@@ -296,6 +300,10 @@
           {
             "match": "android.autofillservice.cts.servicebehavior.WebViewMultiScreenLoginActivityTest#testSave_eachFieldSeparately",
             "_bug_id": "crbug.com/1369088"
+          },
+          {
+            "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
+            "_bug_id": "crbug.com/550556857"
           }
         ],
         "setup_commands": [
@@ -445,6 +453,10 @@
           {
             "match": "android.autofillservice.cts.servicebehavior.WebViewMultiScreenLoginActivityTest#testSave_eachFieldSeparately",
             "_bug_id": "crbug.com/1369088"
+          },
+          {
+            "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
+            "_bug_id": "crbug.com/550556857"
           }
         ],
         "setup_commands": [
@@ -580,6 +592,10 @@
           {
             "match": "android.autofillservice.cts.servicebehavior.WebViewMultiScreenLoginActivityTest#testSave_eachFieldSeparately",
             "_bug_id": "crbug.com/1369088"
+          },
+          {
+            "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
+            "_bug_id": "crbug.com/550556857"
           }
         ],
         "setup_commands": [
@@ -727,6 +743,10 @@
           {
             "match": "android.autofillservice.cts.servicebehavior.WebViewMultiScreenLoginActivityTest#testSave_eachFieldSeparately",
             "_bug_id": "crbug.com/1369088"
+          },
+          {
+            "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
+            "_bug_id": "crbug.com/550556857"
           }
         ],
         "setup_commands": [
@@ -874,6 +894,10 @@
           {
             "match": "android.autofillservice.cts.servicebehavior.WebViewMultiScreenLoginActivityTest#testSave_eachFieldSeparately",
             "_bug_id": "crbug.com/1369088"
+          },
+          {
+            "match": "android.autofillservice.cts.inline.InlineAugmentedWebViewActivityTest#*",
+            "_bug_id": "crbug.com/550556857"
           }
         ],
         "setup_commands": [
