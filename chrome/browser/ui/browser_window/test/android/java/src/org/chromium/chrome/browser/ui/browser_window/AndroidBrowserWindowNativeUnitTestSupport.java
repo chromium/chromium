@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.ui.browser_window;
 import static org.mockito.Mockito.mock;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 /**
@@ -48,13 +51,23 @@ final class AndroidBrowserWindowNativeUnitTestSupport {
     }
 
     @CalledByNative
-    private long invokeGetOrCreateNativePtr() {
+    private JniPtr<NativeBrowserWindowInterface> invokeGetOrCreateNativePtr() {
         return mAndroidBrowserWindow.getOrCreateNativePtr();
     }
 
     @CalledByNative
-    private long invokeGetNativePtr() {
+    private @Nullable JniPtr<NativeBrowserWindowInterface> invokeGetNativePtr() {
         return mAndroidBrowserWindow.getNativePtr();
+    }
+
+    @CalledByNative
+    private long invokeGetOrCreateLegacyNativePtr() {
+        return mAndroidBrowserWindow.getOrCreateLegacyNativePtr();
+    }
+
+    @CalledByNative
+    private long invokeGetLegacyNativePtr() {
+        return mAndroidBrowserWindow.getLegacyNativePtr();
     }
 
     @CalledByNative

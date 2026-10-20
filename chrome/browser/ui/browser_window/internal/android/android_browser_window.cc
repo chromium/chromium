@@ -6,6 +6,8 @@
 
 #include <jni.h>
 
+#include <memory>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_deref.h"
@@ -25,6 +27,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "third_party/jni_zero/jni_unique_ptr.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace {
@@ -34,13 +37,31 @@ using base::android::JavaRef;
 }  // namespace
 
 // Implements Java |AndroidBrowserWindow.Natives#create|.
-static int64_t JNI_AndroidBrowserWindow_Create(JNIEnv* env,
-                                               const JavaRef<jobject>& caller,
-                                               int32_t browser_window_type,
-                                               Profile* profile) {
-  return reinterpret_cast<intptr_t>(new AndroidBrowserWindow(
-      env, caller,
-      static_cast<BrowserWindowInterface::Type>(browser_window_type), profile));
+static jni_zero::JniUniquePtr<BrowserWindowInterface>
+JNI_AndroidBrowserWindow_Create(JNIEnv* env,
+                                const JavaRef<jobject>& caller,
+                                int32_t browser_window_type,
+                                Profile* profile) {
+  std::unique_ptr<BrowserWindowInterface> browser_window =
+      std::make_unique<AndroidBrowserWindow>(
+          env, caller,
+          static_cast<BrowserWindowInterface::Type>(browser_window_type),
+          profile);
+  return jni_zero::MakeUnique(std::move(browser_window));
+}
+
+// Implements Java |AndroidBrowserWindow.Natives#getLegacyNativePtr|.
+static int64_t JNI_AndroidBrowserWindow_GetLegacyNativePtr(
+    JNIEnv* env,
+    BrowserWindowInterface* browser_window) {
+  return reinterpret_cast<intptr_t>(browser_window);
+}
+
+// Implements Java |AndroidBrowserWindow.Natives#getSessionIdForTesting|.
+static int32_t JNI_AndroidBrowserWindow_GetSessionIdForTesting(
+    JNIEnv* env,
+    BrowserWindowInterface* browser_window) {
+  return browser_window->GetSessionID().id();
 }
 
 AndroidBrowserWindow::AndroidBrowserWindow(
@@ -56,16 +77,6 @@ AndroidBrowserWindow::AndroidBrowserWindow(
 
 AndroidBrowserWindow::~AndroidBrowserWindow() {
   browser_did_close_callback_list_.Notify(this);
-  Java_AndroidBrowserWindow_clearNativePtr(AttachCurrentThread(),
-                                           java_android_browser_window_);
-}
-
-void AndroidBrowserWindow::Destroy(JNIEnv* env) {
-  delete this;
-}
-
-int32_t AndroidBrowserWindow::GetSessionIdForTesting(JNIEnv* env) const {
-  return GetSessionID().id();
 }
 
 ui::UnownedUserDataHost& AndroidBrowserWindow::GetUnownedUserDataHost() {

@@ -52,14 +52,26 @@ class AndroidBrowserWindowUnitTest : public testing::Test {
   }
 
   AndroidBrowserWindow* InvokeJavaGetOrCreateNativePtr() const {
-    return reinterpret_cast<AndroidBrowserWindow*>(
+    return static_cast<AndroidBrowserWindow*>(
         Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetOrCreateNativePtr(
             AttachCurrentThread(), java_test_support_));
   }
 
   AndroidBrowserWindow* InvokeJavaGetNativePtr() const {
-    return reinterpret_cast<AndroidBrowserWindow*>(
+    return static_cast<AndroidBrowserWindow*>(
         Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetNativePtr(
+            AttachCurrentThread(), java_test_support_));
+  }
+
+  BrowserWindowInterface* InvokeJavaGetOrCreateLegacyNativePtr() const {
+    return reinterpret_cast<BrowserWindowInterface*>(
+        Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetOrCreateLegacyNativePtr(
+            AttachCurrentThread(), java_test_support_));
+  }
+
+  BrowserWindowInterface* InvokeJavaGetLegacyNativePtr() const {
+    return reinterpret_cast<BrowserWindowInterface*>(
+        Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetLegacyNativePtr(
             AttachCurrentThread(), java_test_support_));
   }
 
@@ -137,6 +149,23 @@ TEST_F(AndroidBrowserWindowUnitTest, JavaGetNativePtrMethodReturnsCreatedPtr) {
 }
 
 TEST_F(AndroidBrowserWindowUnitTest,
+       JavaLegacyNativePtrMethodsReturnAddressOfNativePtr) {
+  // Arrange & Act.
+  BrowserWindowInterface* legacy_ptr = InvokeJavaGetOrCreateLegacyNativePtr();
+
+  // Assert.
+  AndroidBrowserWindow* ptr = InvokeJavaGetNativePtr();
+  EXPECT_NE(nullptr, ptr);
+  EXPECT_EQ(ptr, legacy_ptr);
+  EXPECT_EQ(ptr, InvokeJavaGetLegacyNativePtr());
+}
+
+TEST_F(AndroidBrowserWindowUnitTest,
+       JavaGetLegacyNativePtrMethodReturnsNullBeforeCreation) {
+  EXPECT_EQ(nullptr, InvokeJavaGetLegacyNativePtr());
+}
+
+TEST_F(AndroidBrowserWindowUnitTest,
        JavaDestroyMethodMarksWindowAsScheduledForDeletion) {
   // Arrange.
   InvokeJavaGetOrCreateNativePtr();
@@ -194,14 +223,12 @@ TEST_F(AndroidBrowserWindowUnitTest, GetSessionIDReturnsUniqueID) {
       Java_AndroidBrowserWindowNativeUnitTestSupport_Constructor(
           AttachCurrentThread(), profile->GetJavaObject());
 
-  AndroidBrowserWindow* android_browser_window1 = reinterpret_cast<
-      AndroidBrowserWindow*>(
+  BrowserWindowInterface* android_browser_window1 =
       Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetOrCreateNativePtr(
-          AttachCurrentThread(), java_test_support1));
-  AndroidBrowserWindow* android_browser_window2 = reinterpret_cast<
-      AndroidBrowserWindow*>(
+          AttachCurrentThread(), java_test_support1);
+  BrowserWindowInterface* android_browser_window2 =
       Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetOrCreateNativePtr(
-          AttachCurrentThread(), java_test_support2));
+          AttachCurrentThread(), java_test_support2);
 
   const SessionID& session_id1 = android_browser_window1->GetSessionID();
   const SessionID& session_id2 = android_browser_window2->GetSessionID();
@@ -222,10 +249,9 @@ TEST_F(AndroidBrowserWindowUnitTest, GetTypeReturnsBrowserWindowInterfaceType) {
       Java_AndroidBrowserWindowNativeUnitTestSupport_Constructor(
           AttachCurrentThread(), BrowserWindowInterface::TYPE_POPUP,
           profile->GetJavaObject());
-  AndroidBrowserWindow* android_browser_window = reinterpret_cast<
-      AndroidBrowserWindow*>(
+  BrowserWindowInterface* android_browser_window =
       Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetOrCreateNativePtr(
-          AttachCurrentThread(), java_test_support));
+          AttachCurrentThread(), java_test_support);
 
   // Assert.
   EXPECT_EQ(BrowserWindowInterface::TYPE_POPUP,

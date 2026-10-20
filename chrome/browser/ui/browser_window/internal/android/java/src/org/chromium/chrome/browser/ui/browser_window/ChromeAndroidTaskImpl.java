@@ -434,7 +434,7 @@ final class ChromeAndroidTaskImpl
                                     .mActivityScopedObjects
                                     .mActivityWindowAndroid);
             mInternalActivityScopedObjects.addBrowserWindow(browserWindow);
-            long ptr = browserWindow.getOrCreateNativePtr();
+            long ptr = browserWindow.getOrCreateLegacyNativePtr();
             incognitoModel.associateWithBrowserWindow(ptr);
             mChromeAndroidTaskImpl.mAndroidBrowserWindowObserverNotifier.notifyBrowserWindowAdded(
                     browserWindow);
@@ -708,7 +708,7 @@ final class ChromeAndroidTaskImpl
             var internalActivityScopedObjects = mActivityScopedObjectsDeque.peekFirst();
             var browserWindow = internalActivityScopedObjects.getBrowserWindowForCurrentProfile();
 
-            taskCreationCallbackForNative.onResult(browserWindow.getOrCreateNativePtr());
+            taskCreationCallbackForNative.onResult(browserWindow.getOrCreateLegacyNativePtr());
         }
         mPendingTaskInfo = null;
     }
@@ -833,7 +833,7 @@ final class ChromeAndroidTaskImpl
                 : "This Task is not pending or alive.";
         var browserWindow = getTopmostWindowWithProfile(profile);
         assert browserWindow != null : "No AndroidBrowserWindow found for given Profile.";
-        return browserWindow.getOrCreateNativePtr();
+        return browserWindow.getOrCreateLegacyNativePtr();
     }
 
     @Override
@@ -847,7 +847,7 @@ final class ChromeAndroidTaskImpl
             if (obj.mActivityScopedObjects.mActivityWindowAndroid.getActivity().get() == activity) {
                 var browserWindow = obj.mAndroidBrowserWindows.get(profile);
                 if (browserWindow != null) {
-                    return browserWindow.getNativePtr();
+                    return browserWindow.getLegacyNativePtr();
                 }
                 return 0;
             }
@@ -912,8 +912,7 @@ final class ChromeAndroidTaskImpl
         } else {
             assert browserWindow.getActivityWindowAndroid()
                     == internalActivityScopedObjects.mActivityScopedObjects.mActivityWindowAndroid;
-            long ptr = browserWindow.getNativePtr();
-            assert ptr != 0 : "Native object has not been created.";
+            assert browserWindow.getNativePtr() != null : "Native object has not been created.";
 
             var profile = browserWindow.getProfile();
             internalActivityScopedObjects
@@ -926,7 +925,7 @@ final class ChromeAndroidTaskImpl
 
         // Note: Notify observers immediately before browserWindow.destroy(), and after everything
         // else.
-        if (browserWindow.getNativePtr() != 0) {
+        if (browserWindow.getNativePtr() != null) {
             browserWindowObserverNotifier.notifyBrowserWindowDestroyed(browserWindow);
         }
         browserWindow.destroy();
@@ -1334,11 +1333,11 @@ final class ChromeAndroidTaskImpl
                     internalActivityScopedObjects.mAndroidBrowserWindows.entrySet().iterator();
             while (iterator.hasNext()) {
                 var entry = iterator.next();
-                allNativeBrowserWindowPtrs.add(entry.getValue().getOrCreateNativePtr());
+                allNativeBrowserWindowPtrs.add(entry.getValue().getOrCreateLegacyNativePtr());
             }
         }
         if (mPendingBrowserWindow != null) {
-            allNativeBrowserWindowPtrs.add(mPendingBrowserWindow.getOrCreateNativePtr());
+            allNativeBrowserWindowPtrs.add(mPendingBrowserWindow.getOrCreateLegacyNativePtr());
         }
         return allNativeBrowserWindowPtrs;
     }
@@ -1454,7 +1453,7 @@ final class ChromeAndroidTaskImpl
             }
 
             // Associate the new AndroidBrowserWindow with TabModel.
-            tabModel.associateWithBrowserWindow(newBrowserWindow.getOrCreateNativePtr());
+            tabModel.associateWithBrowserWindow(newBrowserWindow.getOrCreateLegacyNativePtr());
 
             // Create a new InternalActivityScopedObjects instance, and
             // add it to the top of the deque.
@@ -1483,7 +1482,7 @@ final class ChromeAndroidTaskImpl
                                         activityWindowAndroid);
                         internalActivityScopedObjects.addBrowserWindow(regularBrowserWindow);
                         regularModel.associateWithBrowserWindow(
-                                regularBrowserWindow.getOrCreateNativePtr());
+                                regularBrowserWindow.getOrCreateLegacyNativePtr());
                         mAndroidBrowserWindowObserverNotifier.notifyBrowserWindowAdded(
                                 regularBrowserWindow);
                     }
@@ -1944,7 +1943,7 @@ final class ChromeAndroidTaskImpl
 
         long nativeBrowserWindowPtr =
                 browserWindowForFeature != null
-                        ? browserWindowForFeature.getOrCreateNativePtr()
+                        ? browserWindowForFeature.getOrCreateLegacyNativePtr()
                         : 0;
 
         return useActivity(

@@ -44,6 +44,7 @@ import android.os.Process;
 import android.util.Pair;
 import android.view.WindowMetrics;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -803,12 +804,15 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(0, chromeAndroidTask.getAllNativeBrowserWindowPtrs().size());
 
         // Verify native destroy was called for both.
-        verify(chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives, times(1))
-                .destroy(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
-        verify(chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives, times(1))
-                .destroy(
+        assertEquals(
+                1,
+                ChromeAndroidTaskUnitTestSupport.getNativeAndroidBrowserWindowDestroyCount(
+                        FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR));
+        assertEquals(
+                1,
+                ChromeAndroidTaskUnitTestSupport.getNativeAndroidBrowserWindowDestroyCount(
                         ChromeAndroidTaskUnitTestSupport
-                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR));
     }
 
     @Test
@@ -819,7 +823,6 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
         var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
-        var mockNatives = chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives;
 
         // Arrange: Add Activity 2 to the same task using the same profile
         var activityScopedObjects2 = createActivityScopedObjects(taskId, profile);
@@ -839,7 +842,10 @@ public class ChromeAndroidTaskImplUnitTest {
         // Assert:
         // 1. Exactly one window was destroyed natively. (Both windows share the same mock native
         //    pointer, so we verify the destroy method was invoked exactly 1 time in total).
-        verify(mockNatives, times(1)).destroy(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        assertEquals(
+                1,
+                ChromeAndroidTaskUnitTestSupport.getNativeAndroidBrowserWindowDestroyCount(
+                        FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR));
 
         // 2. Only Activity 1's window remains tracked in the Java layer.
         var remainingWindows = chromeAndroidTask.getBrowserWindowsForTesting(profile);
@@ -870,8 +876,10 @@ public class ChromeAndroidTaskImplUnitTest {
                 .onBrowserWindowRemoved(
                         new AndroidBrowserWindowInfo(
                                 nativePtr, profile, activityScopedObjects.mActivityWindowAndroid));
-        verify(chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives, times(1))
-                .destroy(nativePtr);
+        assertEquals(
+                1,
+                ChromeAndroidTaskUnitTestSupport.getNativeAndroidBrowserWindowDestroyCount(
+                        nativePtr));
     }
 
     @Test
@@ -912,15 +920,21 @@ public class ChromeAndroidTaskImplUnitTest {
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
         var activityScopedObjects = chromeAndroidTaskWithMockDeps.mActivityScopedObjects;
         var mockTabModel = activityScopedObjects.mTabModelSelector.getCurrentModel();
-        var mockNatives = chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives;
+        var nativeBrowserWindow =
+                (JniUniquePtr<?>)
+                        chromeAndroidTask
+                                .getBrowserWindowsForTesting(
+                                        chromeAndroidTaskWithMockDeps.mMockProfile)
+                                .get(0)
+                                .getNativePtr();
 
         // Act
         chromeAndroidTask.removeActivityScopedObjects(activityScopedObjects.mActivityWindowAndroid);
 
         // Assert: Strict ordering
-        InOrder inOrder = inOrder(mockTabModel, mockNatives);
+        InOrder inOrder = inOrder(mockTabModel, nativeBrowserWindow);
         inOrder.verify(mockTabModel).dissociateWithBrowserWindow();
-        inOrder.verify(mockNatives).destroy(any(Long.class));
+        inOrder.verify(nativeBrowserWindow).destroy();
     }
 
     @Test
@@ -1394,8 +1408,6 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
         var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
         var profile = chromeAndroidTaskWithMockDeps.mMockProfile;
-        var mockAndroidBrowserWindowNatives =
-                assertNonNull(chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives);
         long nativeAndroidBrowserWindowPtr =
                 chromeAndroidTask.getOrCreateNativeBrowserWindowPtr(profile);
         var mockTabModel =
@@ -1406,7 +1418,10 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.destroy();
 
         // Assert.
-        verify(mockAndroidBrowserWindowNatives, times(1)).destroy(nativeAndroidBrowserWindowPtr);
+        assertEquals(
+                1,
+                ChromeAndroidTaskUnitTestSupport.getNativeAndroidBrowserWindowDestroyCount(
+                        nativeAndroidBrowserWindowPtr));
         verify(mockTabModel).dissociateWithBrowserWindow();
     }
 
@@ -3209,10 +3224,11 @@ public class ChromeAndroidTaskImplUnitTest {
         var allPtrsAfter = chromeAndroidTask.getAllNativeBrowserWindowPtrs();
         assertEquals(1, allPtrsAfter.size());
         assertTrue(allPtrsAfter.contains(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR));
-        verify(chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives, times(1))
-                .destroy(
+        assertEquals(
+                1,
+                ChromeAndroidTaskUnitTestSupport.getNativeAndroidBrowserWindowDestroyCount(
                         ChromeAndroidTaskUnitTestSupport
-                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR));
     }
 
     @Test
@@ -3326,7 +3342,6 @@ public class ChromeAndroidTaskImplUnitTest {
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
         var tabModelSelector =
                 chromeAndroidTaskWithMockDeps.mActivityScopedObjects.mTabModelSelector;
-        var mockNatives = chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives;
 
         // Simulate Incognito creation.
         var incognitoModel = (IncognitoTabModel) tabModelSelector.getModel(true);
@@ -3353,13 +3368,17 @@ public class ChromeAndroidTaskImplUnitTest {
 
         // Assert:
         // 1. Incognito window was destroyed.
-        verify(mockNatives, times(1))
-                .destroy(
+        assertEquals(
+                1,
+                ChromeAndroidTaskUnitTestSupport.getNativeAndroidBrowserWindowDestroyCount(
                         ChromeAndroidTaskUnitTestSupport
-                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR));
 
         // 2. Regular window was NOT destroyed.
-        verify(mockNatives, never()).destroy(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        assertEquals(
+                0,
+                ChromeAndroidTaskUnitTestSupport.getNativeAndroidBrowserWindowDestroyCount(
+                        FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR));
 
         // 3. The ActivityScopedObjects wrapper should STILL exist because the regular window is
         // still alive.

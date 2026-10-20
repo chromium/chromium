@@ -27,12 +27,6 @@ class AndroidBrowserWindow final : public BrowserWindowInterface {
   AndroidBrowserWindow& operator=(const AndroidBrowserWindow&) = delete;
   ~AndroidBrowserWindow() override;
 
-  // Implements Java |AndroidBrowserWindow.Natives#destroy|.
-  void Destroy(JNIEnv* env);
-
-  // Implements Java |AndroidBrowserWindow.Natives#getSessionIdForTesting|.
-  int32_t GetSessionIdForTesting(JNIEnv* env) const;
-
   // Implements |BrowserWindowInterface|.
   ui::UnownedUserDataHost& GetUnownedUserDataHost() override;
   const ui::UnownedUserDataHost& GetUnownedUserDataHost() const override;

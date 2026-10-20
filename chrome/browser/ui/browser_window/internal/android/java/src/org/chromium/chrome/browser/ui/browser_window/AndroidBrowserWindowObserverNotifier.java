@@ -34,7 +34,7 @@ final class AndroidBrowserWindowObserverNotifier {
     }
 
     void notifyBrowserWindowAdded(AndroidBrowserWindow window) {
-        long ptr = window.getOrCreateNativePtr();
+        long ptr = window.getOrCreateLegacyNativePtr();
         var windowInfo =
                 new AndroidBrowserWindowInfo(
                         ptr, window.getProfile(), window.getActivityWindowAndroid());
@@ -51,7 +51,7 @@ final class AndroidBrowserWindowObserverNotifier {
         }
 
         // Notify observers of window destruction.
-        long ptr = window.getNativePtr();
+        long ptr = window.getLegacyNativePtr();
         assert ptr != 0;
         var windowInfo =
                 new AndroidBrowserWindowInfo(
@@ -64,10 +64,10 @@ final class AndroidBrowserWindowObserverNotifier {
     void updateActiveBrowserWindow(@Nullable AndroidBrowserWindow activeWindow) {
         if (mLastActiveBrowserWindow == activeWindow) return;
 
-        if (mLastActiveBrowserWindow != null && mLastActiveBrowserWindow.getNativePtr() != 0) {
+        if (mLastActiveBrowserWindow != null && mLastActiveBrowserWindow.getNativePtr() != null) {
             var windowInfo =
                     new AndroidBrowserWindowInfo(
-                            mLastActiveBrowserWindow.getNativePtr(),
+                            mLastActiveBrowserWindow.getLegacyNativePtr(),
                             mLastActiveBrowserWindow.getProfile(),
                             mLastActiveBrowserWindow.getActivityWindowAndroid());
             for (var observer : mObservers) {
@@ -75,10 +75,10 @@ final class AndroidBrowserWindowObserverNotifier {
             }
         }
         mLastActiveBrowserWindow = activeWindow;
-        if (mLastActiveBrowserWindow != null && mLastActiveBrowserWindow.getNativePtr() != 0) {
+        if (mLastActiveBrowserWindow != null && mLastActiveBrowserWindow.getNativePtr() != null) {
             var windowInfo =
                     new AndroidBrowserWindowInfo(
-                            mLastActiveBrowserWindow.getNativePtr(),
+                            mLastActiveBrowserWindow.getLegacyNativePtr(),
                             mLastActiveBrowserWindow.getProfile(),
                             mLastActiveBrowserWindow.getActivityWindowAndroid());
             for (var observer : mObservers) {

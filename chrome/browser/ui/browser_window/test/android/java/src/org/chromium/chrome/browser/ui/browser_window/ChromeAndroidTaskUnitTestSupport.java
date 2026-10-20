@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.browser_window;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.when;
@@ -32,6 +33,8 @@ import android.view.WindowMetrics;
 import androidx.annotation.RequiresApi;
 import androidx.core.view.WindowInsetsControllerCompat;
 
+import org.jni_zero.JniUniquePtr;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Promise;
@@ -51,6 +54,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -293,10 +297,21 @@ public final class ChromeAndroidTaskUnitTestSupport {
         }
     }
 
-    /** Fake native pointer value returned by {@link AndroidBrowserWindow.Natives#create}. */
+    /**
+     * Fake native address of the pointer returned by {@link AndroidBrowserWindow.Natives#create},
+     * as reported by {@link AndroidBrowserWindow.Natives#getLegacyNativePtr}.
+     */
     public static final long FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR = 123456789L;
 
     public static final long FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR = 987654321L;
+
+    /** Mock pointer to its fake native address, removed when the pointer is destroyed. */
+    private static final Map<JniUniquePtr<NativeBrowserWindowInterface>, Long>
+            sFakeNativeAndroidBrowserWindowPtrs = new HashMap<>();
+
+    /** Fake native address to the number of times a mock pointer with it was destroyed. */
+    private static final Map<Long, Integer> sNativeAndroidBrowserWindowDestroyCounts =
+            new HashMap<>();
 
     private static @Nullable PopupCreator sPopupCreator;
     private static @Nullable MultiInstanceOrchestrator sMultiInstanceOrchestrator;
@@ -536,15 +551,19 @@ public final class ChromeAndroidTaskUnitTestSupport {
     }
 
     /**
-     * Creates a mock {@link AndroidBrowserWindow.Natives} that returns {@link
+     * Creates a mock {@link AndroidBrowserWindow.Natives} whose {@link
+     * AndroidBrowserWindow.Natives#create} returns a fake {@link JniUniquePtr}. {@link
+     * AndroidBrowserWindow.Natives#getLegacyNativePtr} reports the fake pointer as {@link
      * #FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR} or {@link
-     * #FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR} when {@link
-     * AndroidBrowserWindow.Natives#create} is called.
+     * #FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR}.
      *
      * <p>This method also sets the mock as the testing instance for {@link
      * AndroidBrowserWindowJni}.
      */
     public static AndroidBrowserWindow.Natives createMockAndroidBrowserWindowNatives() {
+        ResettersForTesting.register(sFakeNativeAndroidBrowserWindowPtrs::clear);
+        ResettersForTesting.register(sNativeAndroidBrowserWindowDestroyCounts::clear);
+
         var mockAndroidBrowserWindowNatives = mock(AndroidBrowserWindow.Natives.class);
         when(mockAndroidBrowserWindowNatives.create(
                         /* caller= */ any(),
@@ -553,14 +572,42 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 .thenAnswer(
                         invocation -> {
                             Profile profile = invocation.getArgument(2);
-                            return profile.isOffTheRecord()
-                                    ? FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR
-                                    : FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR;
+                            long fakePtr =
+                                    profile.isOffTheRecord()
+                                            ? FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR
+                                            : FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR;
+                            @SuppressWarnings("unchecked")
+                            JniUniquePtr<NativeBrowserWindowInterface> ptr =
+                                    mock(JniUniquePtr.class);
+                            doAnswer(
+                                            unused -> {
+                                                sFakeNativeAndroidBrowserWindowPtrs.remove(ptr);
+                                                sNativeAndroidBrowserWindowDestroyCounts.merge(
+                                                        fakePtr, 1, Integer::sum);
+                                                return null;
+                                            })
+                                    .when(ptr)
+                                    .destroy();
+                            sFakeNativeAndroidBrowserWindowPtrs.put(ptr, fakePtr);
+                            return ptr;
                         });
+        when(mockAndroidBrowserWindowNatives.getLegacyNativePtr(any()))
+                .thenAnswer(
+                        invocation ->
+                                sFakeNativeAndroidBrowserWindowPtrs.getOrDefault(
+                                        invocation.getArgument(0), 0L));
 
         AndroidBrowserWindowJni.setInstanceForTesting(mockAndroidBrowserWindowNatives);
 
         return mockAndroidBrowserWindowNatives;
+    }
+
+    /**
+     * Returns how many times a pointer returned by the mock from {@link
+     * #createMockAndroidBrowserWindowNatives()} with the given fake address was destroyed.
+     */
+    public static int getNativeAndroidBrowserWindowDestroyCount(long fakePtr) {
+        return sNativeAndroidBrowserWindowDestroyCounts.getOrDefault(fakePtr, 0);
     }
 
     /** Mocks {@link PopupCreator}. */

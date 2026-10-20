@@ -29,6 +29,7 @@ if (is_android) {
       "//content/public/android:content_full_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_no_recycler_view_java",
       "//ui/base/mojom:ui_base_types_java",
@@ -83,6 +84,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowNativeUnitTestSupport.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport.java",
     ]
+    deps = [ "//chrome/browser/ui/browser_window/public/android:jni" ]
   }
 }
 

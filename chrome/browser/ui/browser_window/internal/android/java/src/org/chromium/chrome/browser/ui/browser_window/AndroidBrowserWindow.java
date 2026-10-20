@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.ui.browser_window;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.NativeBrowserWindowInterface;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 /** Java class for communicating with the native {@code AndroidBrowserWindow}. */
@@ -25,8 +28,8 @@ final class AndroidBrowserWindow {
     private final AndroidBaseWindow mAndroidBaseWindow;
     private @Nullable ActivityWindowAndroid mActivityWindowAndroid;
 
-    /** Address of the native {@code AndroidBrowserWindow}. */
-    private long mNativeAndroidBrowserWindow;
+    /** The native {@code AndroidBrowserWindow}, owned by this class. */
+    private @Nullable JniUniquePtr<NativeBrowserWindowInterface> mNativeAndroidBrowserWindow;
 
     /**
      * Supports the native implementation of {@code BrowserWindowInterface::IsDeleteScheduled()}.
@@ -52,13 +55,13 @@ final class AndroidBrowserWindow {
     }
 
     /**
-     * Returns the address of the native {@code AndroidBrowserWindow}.
+     * Returns the native {@code AndroidBrowserWindow}.
      *
      * <p>If the native {@code AndroidBrowserWindow} hasn't been created, this method will create it
-     * before returning its address.
+     * before returning it.
      */
-    long getOrCreateNativePtr() {
-        if (mNativeAndroidBrowserWindow == 0) {
+    JniPtr<NativeBrowserWindowInterface> getOrCreateNativePtr() {
+        if (mNativeAndroidBrowserWindow == null) {
             mNativeAndroidBrowserWindow =
                     AndroidBrowserWindowJni.get().create(this, mBrowserWindowType, mProfile);
         }
@@ -66,13 +69,33 @@ final class AndroidBrowserWindow {
     }
 
     /**
-     * Returns the address of the native {@code AndroidBrowserWindow}.
+     * Returns the native {@code AndroidBrowserWindow}.
      *
-     * <p>This method returns 0 if the native {@code AndroidBrowserWindow}
-     * hasn't been created.
+     * <p>This method returns null if the native {@code AndroidBrowserWindow} hasn't been created.
      */
-    long getNativePtr() {
+    @Nullable JniPtr<NativeBrowserWindowInterface> getNativePtr() {
         return mNativeAndroidBrowserWindow;
+    }
+
+    /**
+     * Same as {@link #getOrCreateNativePtr()}, but returns the address of the native {@code
+     * BrowserWindowInterface}.
+     */
+    // TODO(crbug.com/40794873): Remove once all callers take JniPtr<NativeBrowserWindowInterface>.
+    long getOrCreateLegacyNativePtr() {
+        return AndroidBrowserWindowJni.get().getLegacyNativePtr(getOrCreateNativePtr());
+    }
+
+    /**
+     * Same as {@link #getNativePtr()}, but returns the address of the native {@code
+     * BrowserWindowInterface}, or 0 if it hasn't been created.
+     */
+    // TODO(crbug.com/40794873): Remove once all callers take JniPtr<NativeBrowserWindowInterface>.
+    long getLegacyNativePtr() {
+        if (mNativeAndroidBrowserWindow == null) {
+            return 0;
+        }
+        return AndroidBrowserWindowJni.get().getLegacyNativePtr(mNativeAndroidBrowserWindow);
     }
 
     /**
@@ -90,8 +113,9 @@ final class AndroidBrowserWindow {
         mIsDeleteScheduled = true;
         mAndroidBaseWindow.destroy();
 
-        if (mNativeAndroidBrowserWindow != 0) {
-            AndroidBrowserWindowJni.get().destroy(mNativeAndroidBrowserWindow);
+        if (mNativeAndroidBrowserWindow != null) {
+            mNativeAndroidBrowserWindow.destroy();
+            mNativeAndroidBrowserWindow = null;
         }
     }
 
@@ -106,7 +130,7 @@ final class AndroidBrowserWindow {
     }
 
     @Nullable Integer getNativeSessionIdForTesting() {
-        if (mNativeAndroidBrowserWindow == 0) {
+        if (mNativeAndroidBrowserWindow == null) {
             return null;
         }
 
@@ -127,11 +151,6 @@ final class AndroidBrowserWindow {
         return mActivityWindowAndroid;
     }
 
-    @CalledByNative
-    private void clearNativePtr() {
-        mNativeAndroidBrowserWindow = 0;
-    }
-
     @NativeMethods
     interface Natives {
         /**
@@ -141,24 +160,20 @@ final class AndroidBrowserWindow {
          * @param browserWindowType The browser window type as defined in the native {@code
          *     BrowserWindowInterface::Type} enum.
          * @param profile The {@link Profile} associated with the {@code AndroidBrowserWindow}.
-         * @return The address of the native {@code AndroidBrowserWindow}.
+         * @return The native {@code AndroidBrowserWindow}, owned by the caller.
          */
-        long create(
+        JniUniquePtr<NativeBrowserWindowInterface> create(
                 AndroidBrowserWindow caller,
                 @BrowserWindowType int browserWindowType,
                 @JniType("Profile*") Profile profile);
 
-        /**
-         * Destroys the native {@code AndroidBrowserWindow}.
-         *
-         * @param nativeAndroidBrowserWindow The address of the native {@code AndroidBrowserWindow}.
-         */
-        void destroy(long nativeAndroidBrowserWindow);
+        /** Returns the address of the given native {@code BrowserWindowInterface}. */
+        long getLegacyNativePtr(JniPtr<NativeBrowserWindowInterface> browserWindow);
 
         /**
          * Returns the {@code SessionID} as returned by the native function {@code
          * AndroidBrowserWindow::GetSessionID()}.
          */
-        int getSessionIdForTesting(long nativeAndroidBrowserWindow);
+        int getSessionIdForTesting(JniPtr<NativeBrowserWindowInterface> browserWindow);
     }
 }
