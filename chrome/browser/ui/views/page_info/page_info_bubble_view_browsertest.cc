@@ -15,6 +15,7 @@
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
@@ -847,9 +848,12 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, BlockedAndInvalidCert) {
 
   // Check that clicking the certificate viewer button is reported to the
   // sentiment service.
+  base::HistogramTester histograms;
   views::View* certificates_button = GetView(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_CERTIFICATE_VIEWER);
   PerformMouseClickOnView(certificates_button);
+  histograms.ExpectUniqueSample("Net.CertificateViewer.Opened",
+                                CertificateViewerEntrypoint::kPageInfo, 1);
 }
 
 // Ensure a page that has an EV certificate *and* is blocked by Safe Browsing

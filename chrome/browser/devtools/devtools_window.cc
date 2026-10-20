@@ -2015,7 +2015,8 @@ void DevToolsWindow::ShowCertificateViewer(const std::string& cert_chain) {
     return;
   }
   gfx::NativeWindow parent = browser->GetWindow()->GetNativeWindow();
-  ::ShowCertificateViewer(inspected_contents, parent, cert.get());
+  ::ShowCertificateViewer(inspected_contents, parent, cert.get(),
+                          CertificateViewerEntrypoint::kDevTools);
 #endif
 }
 

@@ -1609,6 +1609,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.CertificateViewer.Opened"
+    enum="CertificateViewerEntrypoint" expires_after="2027-10-15">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
+  <summary>
+    Records the entrypoint from which the certificate viewer dialog
+    (chrome://view-cert) was opened. Recorded once each time the dialog is
+    shown, on desktop platforms where the WebUI certificate viewer is enabled.
+    On Windows and macOS, viewing a certificate from the client certificate
+    selector opens the native OS viewer instead and is not recorded here.
+  </summary>
+</histogram>
+
 <histogram name="Net.CertVerifier.CTRequirementStatus"
     enum="CTRequirementStatus" expires_after="2027-03-21">
   <owner>mattm@chromium.org</owner>

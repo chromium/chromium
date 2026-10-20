@@ -402,7 +402,8 @@ void ChromePageInfoDelegate::OpenCertificateDialog(
   CHECK(top_window, base::NotFatalUntil::M162);
 
   FocusWebContents();
-  ShowCertificateViewer(web_contents_, top_window, certificate);
+  ShowCertificateViewer(web_contents_, top_window, certificate,
+                        CertificateViewerEntrypoint::kPageInfo);
 }
 
 void ChromePageInfoDelegate::OpenConnectionHelpCenterPage(

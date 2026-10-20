@@ -20,7 +20,8 @@ void ShowCertificateDialog(base::WeakPtr<content::WebContents> web_contents,
 
   CertificateViewerDialog::ShowConstrained(
       std::move(cert), web_contents.get(),
-      web_contents->GetTopLevelNativeWindow());
+      web_contents->GetTopLevelNativeWindow(),
+      CertificateViewerEntrypoint::kCertificateManager);
 }
 
 void ShowCertificateDialog(
@@ -36,7 +37,8 @@ void ShowCertificateDialog(
   CertificateViewerDialog::ShowConstrainedWithMetadata(
       std::move(cert), std::move(cert_metadata),
       std::move(modifications_callback), web_contents.get(),
-      web_contents->GetTopLevelNativeWindow());
+      web_contents->GetTopLevelNativeWindow(),
+      CertificateViewerEntrypoint::kCertificateManager);
 }
 
 bool IsCACertificateManagementAllowed(const PrefService& prefs) {

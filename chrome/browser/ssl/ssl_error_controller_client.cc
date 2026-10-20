@@ -131,8 +131,8 @@ void SSLErrorControllerClient::LaunchDateAndTimeSettings() {
 #if !BUILDFLAG(IS_ANDROID)
 void SSLErrorControllerClient::ShowCertificateViewer() {
   // TODO(crbug.com/436274249): support "view certificate" on android too.
-  ::ShowCertificateViewer(web_contents(),
-                          web_contents()->GetTopLevelNativeWindow(),
-                          ssl_info_.cert.get());
+  ::ShowCertificateViewer(
+      web_contents(), web_contents()->GetTopLevelNativeWindow(),
+      ssl_info_.cert.get(), CertificateViewerEntrypoint::kSslInterstitial);
 }
 #endif

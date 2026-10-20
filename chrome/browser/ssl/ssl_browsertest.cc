@@ -45,6 +45,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/interstitials/security_interstitial_idn_test.h"
@@ -6498,6 +6499,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, ShowCertificateViewer) {
   histograms.ExpectBucketCount(
       interaction_histogram,
       security_interstitials::MetricsHelper::VIEW_CERTIFICATE, 1);
+  histograms.ExpectUniqueSample("Net.CertificateViewer.Opened",
+                                CertificateViewerEntrypoint::kSslInterstitial,
+                                1);
 }
 
 // This SPKI hash is from a self signed certificate generated using the

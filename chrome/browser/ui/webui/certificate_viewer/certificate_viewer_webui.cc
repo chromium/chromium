@@ -16,6 +16,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -340,16 +341,18 @@ std::string DialogArgsForCertList(
 // Shows a certificate using the WebUI certificate viewer.
 void ShowCertificateViewer(WebContents* web_contents,
                            gfx::NativeWindow parent,
-                           net::X509Certificate* cert) {
+                           net::X509Certificate* cert,
+                           CertificateViewerEntrypoint entrypoint) {
   CertificateViewerDialog::ShowConstrained(cert->CopyCertBuffers(),
-                                           web_contents, parent);
+                                           web_contents, parent, entrypoint);
 }
 
 #if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
 void ShowCertificateViewerForClientAuth(content::WebContents* web_contents,
                                         gfx::NativeWindow parent,
                                         net::X509Certificate* cert) {
-  ShowCertificateViewer(web_contents, parent, cert);
+  ShowCertificateViewer(web_contents, parent, cert,
+                        CertificateViewerEntrypoint::kClientCertSelector);
 }
 #endif
 
@@ -360,20 +363,22 @@ void ShowCertificateViewerForClientAuth(content::WebContents* web_contents,
 CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs,
     content::WebContents* web_contents,
-    gfx::NativeWindow parent) {
+    gfx::NativeWindow parent,
+    CertificateViewerEntrypoint entrypoint) {
   return ShowConstrained(std::move(certs), std::nullopt, base::NullCallback(),
-                         web_contents, parent);
+                         web_contents, parent, entrypoint);
 }
 
 // static
 CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
     bssl::UniquePtr<CRYPTO_BUFFER> cert,
     content::WebContents* web_contents,
-    gfx::NativeWindow parent) {
+    gfx::NativeWindow parent,
+    CertificateViewerEntrypoint entrypoint) {
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs;
   certs.push_back(std::move(cert));
   return ShowConstrained(std::move(certs), std::nullopt, base::NullCallback(),
-                         web_contents, parent);
+                         web_contents, parent, entrypoint);
 }
 
 // static
@@ -383,13 +388,14 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrainedWithMetadata(
         cert_metadata,
     CertMetadataModificationsCallback modifications_callback,
     content::WebContents* web_contents,
-    gfx::NativeWindow parent) {
+    gfx::NativeWindow parent,
+    CertificateViewerEntrypoint entrypoint) {
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> certs;
   certs.push_back(std::move(cert));
 
   return CertificateViewerDialog::ShowConstrained(
       std::move(certs), std::move(cert_metadata),
-      std::move(modifications_callback), web_contents, parent);
+      std::move(modifications_callback), web_contents, parent, entrypoint);
 }
 
 // static
@@ -405,7 +411,10 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
         cert_metadata,
     CertMetadataModificationsCallback modifications_callback,
     content::WebContents* web_contents,
-    gfx::NativeWindow parent) {
+    gfx::NativeWindow parent,
+    CertificateViewerEntrypoint entrypoint) {
+  base::UmaHistogramEnumeration("Net.CertificateViewer.Opened", entrypoint);
+
   if (GetMockCallbackInstance()) {
     GetMockCallbackInstance().Run(std::move(certs), web_contents);
     return nullptr;

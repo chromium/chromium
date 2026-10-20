@@ -182,6 +182,7 @@ source_set("browser_tests") {
   deps = [
     ":page_info",
     "//base",
+    "//chrome/browser:certificate_viewer",
     "//chrome/browser/file_system_access",
     "//chrome/browser/lookalikes:test_support",
     "//chrome/browser/privacy_sandbox:test_support",

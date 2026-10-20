@@ -138,6 +138,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Client Cert"/>
 </enum>
 
+<!-- LINT.IfChange(CertificateViewerEntrypoint) -->
+
+<enum name="CertificateViewerEntrypoint">
+  <int value="0" label="Page Info"/>
+  <int value="1" label="SSL interstitial"/>
+  <int value="2" label="DevTools"/>
+  <int value="3" label="Certificate Manager"/>
+  <int value="4" label="Client certificate selector"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/certificate_viewer.h:CertificateViewerEntrypoint) -->
+
 <enum name="ConnectionInfo">
   <summary>
     Application protocol used for HTTP response as defined in
