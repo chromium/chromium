@@ -15,7 +15,10 @@
 #include <string>
 #include <vector>
 
+#include "base/location.h"
+#include "base/test/bind.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/threading/thread.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
@@ -883,6 +886,42 @@ TEST_F(FlatButtonTest, DisablingClearsHoverAndCancelsTracking) {
 
 TEST_F(FlatButtonTest, HidingClearsHoverAndCancelsTracking) {
   ASSERT_NO_FATAL_FAILURE(ExpectHidingClearsHoverAndCancelsTracking(button_));
+}
+
+// A `WS_CHILD` window without a parent makes `::CreateWindowExW` fail
+// deterministically; the button must report that it is absent, not crash.
+TEST(CaptionButtonCreateTest, ReportsFailureWithoutAParent) {
+  CloseButton button;
+  EXPECT_EQ(button.Create(/*parent=*/nullptr, {0, 0, 30, 30},
+                          OwnerDrawTitleBarWindow::kButtonClose),
+            nullptr);
+  EXPECT_FALSE(button.IsWindow());
+  EXPECT_EQ(button.hwnd(), nullptr);
+}
+
+// `::SetWindowSubclass()` refuses to subclass a window owned by another
+// thread, which is the one way to make it fail on demand. `hwnd()` must stay
+// null after a failure; `CaptionButton::Create()` relies on this. `FlatButton`
+// is used only as a concrete `SubclassedWindow`.
+TEST(SubclassedWindowTest, FailedSubclassLeavesHwndNull) {
+  HWND hwnd = ::CreateWindowExW(0, L"BUTTON", L"", WS_POPUP, -10000, -10000,
+                                100, 30, nullptr, nullptr, nullptr, nullptr);
+  ASSERT_NE(hwnd, nullptr);
+
+  base::Thread other_thread("SubclassedWindowTest");
+  ASSERT_TRUE(other_thread.Start());
+  other_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&] {
+        FlatButton button;
+        EXPECT_FALSE(button.SubclassWindow(hwnd));
+        EXPECT_EQ(button.hwnd(), nullptr);
+        EXPECT_FALSE(button.IsWindow());
+      }));
+  other_thread.Stop();
+
+  // `button` has been destroyed without touching the window.
+  EXPECT_TRUE(::IsWindow(hwnd));
+  EXPECT_TRUE(::DestroyWindow(hwnd));
 }
 
 }  // namespace

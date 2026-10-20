@@ -85,6 +85,9 @@ class CaptionButton : public TrackedButton {
   CaptionButton& operator=(const CaptionButton&) = delete;
   ~CaptionButton() override;
 
+  // Creates and subclasses the `BUTTON` control as a child of `parent`.
+  // Returns its HWND, or nullptr if it could not be created or subclassed, in
+  // which case `IsWindow()` is false. A missing tool tip is tolerated.
   HWND Create(HWND parent, const RECT& bounds, int control_id);
 
   void DrawItem(LPDRAWITEMSTRUCT draw_item_struct);

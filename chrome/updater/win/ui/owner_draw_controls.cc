@@ -19,6 +19,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/functional/function_ref.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/current_module.h"
 #include "base/win/scoped_gdi_object.h"
@@ -181,6 +182,10 @@ CaptionButton::~CaptionButton() {
 }
 
 HWND CaptionButton::Create(HWND parent, const RECT& bounds, int control_id) {
+  // The tool tip text doubles as the accessible name, so every concrete
+  // caption button must provide one.
+  CHECK(!tool_tip_text_.empty());
+
   // Use the system `BUTTON` class so the control participates in MSAA/UIA
   // (announced as a push button) and natively handles keyboard activation
   // and `BN_CLICKED` dispatch. The localized tool-tip string also serves as
@@ -188,24 +193,44 @@ HWND CaptionButton::Create(HWND parent, const RECT& bounds, int control_id) {
   // `BUTTON` paint (including the focus rectangle and any default-button
   // frame); the parent dispatches `WM_DRAWITEM` back to `DrawItem` so the
   // custom icon is rendered.
+  //
+  // Failures below are not fatal: third-party hooks are known to fail these
+  // calls (crbug.com/574653640), and the title bar lays out around an absent
+  // button.
   HWND control_hwnd = ::CreateWindowExW(
       0, L"BUTTON", tool_tip_text_.c_str(),
       WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, bounds.left, bounds.top,
       Width(bounds), Height(bounds), parent,
       reinterpret_cast<HMENU>(static_cast<INT_PTR>(control_id)),
       CURRENT_MODULE(), nullptr);
-  CHECK(control_hwnd && ::IsWindow(control_hwnd));
-  CHECK((SubclassWindow)(control_hwnd));
+  if (!control_hwnd) {
+    PLOG(ERROR) << __func__ << ": failed to create caption button "
+                << control_id;
+    return nullptr;
+  }
+
+  // Destroy a `BUTTON` that could not be subclassed: the title bar does not
+  // know about it (`hwnd()` is null), so it would be an unpainted, unpositioned
+  // control that still sends `BN_CLICKED`.
+  if (!SubclassWindow(control_hwnd)) {
+    LOG(ERROR) << __func__ << ": failed to subclass caption button "
+               << control_id;
+    ::DestroyWindow(control_hwnd);
+    return nullptr;
+  }
 
   // The `BUTTON`'s `WM_CREATE` has already fired by the time the subclass is
   // installed, so set the tool tip up here rather than from a `WM_CREATE`
   // handler.
-  CHECK(!tool_tip_text_.empty());
   tool_tip_window_ = ::CreateWindowExW(
       0, TOOLTIPS_CLASSW, nullptr, WS_POPUP | TTS_ALWAYSTIP, CW_USEDEFAULT,
       CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hwnd(), nullptr,
       CURRENT_MODULE(), nullptr);
-  CHECK(tool_tip_window_ && ::IsWindow(tool_tip_window_));
+  if (!tool_tip_window_) {
+    PLOG(ERROR) << __func__ << ": failed to create tool tip for caption button "
+                << control_id;
+    return hwnd();
+  }
 
   ::SendMessageW(tool_tip_window_, TTM_SETDELAYTIME, TTDT_AUTOMATIC,
                  MAKELONG(2000, 0));

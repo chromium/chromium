@@ -71,7 +71,8 @@ class SubclassedWindow : public gfx::MessageMapInterface {
   HWND hwnd() const { return hwnd_; }
   BOOL IsWindow() const { return hwnd_ && ::IsWindow(hwnd_); }
 
-  // Subclasses `hwnd`. Returns whether the subclass was installed.
+  // Subclasses `hwnd`. Returns whether the subclass was installed. On failure,
+  // `hwnd()` stays null.
   BOOL SubclassWindow(HWND hwnd);
 
  private:

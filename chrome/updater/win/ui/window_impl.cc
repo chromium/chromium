@@ -179,9 +179,15 @@ BOOL SubclassedWindow::SubclassWindow(HWND hwnd) {
   if (!hwnd || !::IsWindow(hwnd)) {
     return FALSE;
   }
+  // Set `hwnd_` only once the subclass is in place: only `SubclassProc` clears
+  // it on `WM_NCDESTROY`, and a stale `hwnd_` could alias a recycled HWND that
+  // the destructor would then unsubclass.
+  if (!::SetWindowSubclass(hwnd, &SubclassProc, kSubclassId,
+                           reinterpret_cast<DWORD_PTR>(this))) {
+    return FALSE;
+  }
   hwnd_ = hwnd;
-  return ::SetWindowSubclass(hwnd, &SubclassProc, kSubclassId,
-                             reinterpret_cast<DWORD_PTR>(this));
+  return TRUE;
 }
 
 // static
