@@ -121,10 +121,12 @@ void ExtensionControllerImpl::OnBuiltInWebExtensionCreated(
                    forMatchPattern:pattern];
     }
   }
-
+  // General case for built-in extensions is to work the same way in incognito.
+  context.hasAccessToPrivateData = YES;
   NSError* context_error = nil;
   BOOL success = [extension_controller_ loadExtensionContext:context
                                                        error:&context_error];
+
   if (!success || context_error) {
     DLOG(ERROR) << "Failed to load extension context: "
                 << base::SysNSStringToUTF8(context_error.localizedDescription);
