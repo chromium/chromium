@@ -6046,7 +6046,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PageActionMenu.Footer.RowShown"
-    enum="IOSPageActionMenuFooterReason" expires_after="2026-11-21">
+    enum="IOSPageActionMenuFooterReason" expires_after="2027-10-20">
   <owner>fbeauchamp@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
