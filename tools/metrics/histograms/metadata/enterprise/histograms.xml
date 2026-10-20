@@ -879,6 +879,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.ClientCertificate.CommonNameSanitization"
+    enum="ClientCertificateCommonNameSanitization" expires_after="2027-06-01">
+  <owner>pleblanc@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures each type of sanitization applied to a certificate Subject Common
+    Name (CN) in SanitizeAndTruncateCommonName (including control/formatting
+    character or invalid UTF-8 stripping, whitespace trimming, and UTF-8 byte
+    truncation). Multiple buckets may be recorded for a single input if more
+    than one sanitization step was applied.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.ClientCertificate.{Level}.CertificateValidation.Result"
+    enum="CertificateValidationResult" expires_after="2027-06-01">
+  <owner>pleblanc@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the validation result (valid, expired, expiring soon, CN mismatch,
+    etc.) when validating a loaded permanent client certificate during a
+    provisioning check for a {Level}, or when a newly issued certificate's
+    Subject Common Name does not match the requested identity.
+  </summary>
+  <token key="Level" variants="ClientCertLevel"/>
+</histogram>
+
 <histogram
     name="Enterprise.ClientCertificate.{Level}.CreateCertificate.Success.HasCert"
     enum="BooleanSuccess" expires_after="2027-03-07">

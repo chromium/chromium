@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/enterprise/client_certificates/core/certificate_store.h"
 #include "components/enterprise/client_certificates/core/constants.h"
@@ -29,19 +28,6 @@
 #include "net/cert/x509_certificate.h"
 
 namespace client_certificates {
-
-namespace {
-
-constexpr int kDaysBeforeExpiration = 7;
-
-// Returns true if `certificate` expires within the next `kDaysBeforeExpiration`
-// days.
-bool IsCertExpiringSoon(const net::X509Certificate& certificate) {
-  return (base::Time::Now() + base::Days(kDaysBeforeExpiration)) >
-         certificate.valid_expiry();
-}
-
-}  // namespace
 
 CertificateProvisioningService::Status::Status(bool is_provisioning)
     : is_provisioning(is_provisioning) {}

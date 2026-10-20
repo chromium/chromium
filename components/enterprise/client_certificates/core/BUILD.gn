@@ -90,6 +90,7 @@ source_set("core") {
     "client_certificates_service.cc",
     "client_identity.cc",
     "constants.cc",
+    "context_delegate.cc",
     "ec_private_key.cc",
     "ec_private_key_factory.cc",
     "features.cc",
@@ -228,6 +229,7 @@ source_set("unit_tests") {
   sources = [
     "certificate_provisioning_service_unittest.cc",
     "client_certificates_service_unittest.cc",
+    "context_delegate_unittest.cc",
     "dm_server_client_unittest.cc",
     "ec_private_key_factory_unittest.cc",
     "ec_private_key_unittest.cc",

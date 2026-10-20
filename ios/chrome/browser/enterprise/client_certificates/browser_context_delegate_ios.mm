@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/enterprise/client_certificates/browser_context_delegate_ios.h"
 
 #import "base/memory/scoped_refptr.h"
+#import "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #import "components/enterprise/client_certificates/core/constants.h"
 #import "components/enterprise/client_certificates/core/prefs.h"
 #import "net/cert/x509_certificate.h"
@@ -18,6 +19,10 @@ void BrowserContextDelegateIOS::OnClientCertificateDeleted(
     scoped_refptr<net::X509Certificate> certificate) {
   // No cleanup required on iOS. Certificates will be cleaned up upon profile
   // directory deletion.
+}
+
+std::string BrowserContextDelegateIOS::GetExpectedCommonName() const {
+  return policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
 }
 
 std::string BrowserContextDelegateIOS::GetIdentityName() {

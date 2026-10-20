@@ -57,7 +57,7 @@ CertificateProvisioningServiceFactoryIOS::BuildServiceInstanceFor(
 
   auto core_service = CertificateProvisioningService::Create(
       profile->GetPrefs(), certificate_store,
-      std::make_unique<ProfileContextDelegateIOS>(),
+      std::make_unique<ProfileContextDelegateIOS>(profile_id_service),
       KeyUploadClient::Create(
           std::make_unique<
               enterprise_attestation::ProfileCloudManagementDelegate>(

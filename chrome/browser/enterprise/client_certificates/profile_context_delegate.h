@@ -10,17 +10,22 @@
 
 class Profile;
 
+namespace enterprise {
+class ProfileIdService;
+}  // namespace enterprise
+
 namespace client_certificates {
 
 class ProfileContextDelegate : public ContextDelegate {
  public:
-  explicit ProfileContextDelegate(
-      Profile* profile);
+  ProfileContextDelegate(Profile* profile,
+                         enterprise::ProfileIdService* profile_id_service);
   ~ProfileContextDelegate() override;
 
   // ContextDelegate:
   void OnClientCertificateDeleted(
       scoped_refptr<net::X509Certificate> certificate) override;
+  std::string GetExpectedCommonName() const override;
   std::string GetIdentityName() override;
   std::string GetTemporaryIdentityName() override;
   std::string GetPolicyPref() override;
@@ -28,6 +33,7 @@ class ProfileContextDelegate : public ContextDelegate {
 
  private:
   const raw_ptr<Profile> profile_;
+  const raw_ptr<enterprise::ProfileIdService> profile_id_service_;
 };
 
 }  // namespace client_certificates

@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/prefs.h"
 #include "content/public/browser/storage_partition.h"
@@ -33,6 +34,10 @@ void BrowserContextDelegate::OnClientCertificateDeleted(
               certificate);
         });
   }
+}
+
+std::string BrowserContextDelegate::GetExpectedCommonName() const {
+  return policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
 }
 
 std::string BrowserContextDelegate::GetIdentityName() {

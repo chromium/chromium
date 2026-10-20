@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_MOCK_CONTEXT_DELEGATE_H_
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_MOCK_CONTEXT_DELEGATE_H_
 
+#include <string>
+
 #include "components/enterprise/client_certificates/core/context_delegate.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,9 +23,11 @@ class MockContextDelegate : public ContextDelegate {
               OnClientCertificateDeleted,
               (scoped_refptr<net::X509Certificate>),
               (override));
+  MOCK_METHOD(std::string, GetExpectedCommonName, (), (const, override));
   MOCK_METHOD(std::string, GetIdentityName, (), (override));
   MOCK_METHOD(std::string, GetTemporaryIdentityName, (), (override));
   MOCK_METHOD(std::string, GetPolicyPref, (), (override));
+  MOCK_METHOD(std::string, GetConfigPolicyPref, (), (const, override));
   MOCK_METHOD(std::string, GetLoggingContext, (), (override));
 };
 

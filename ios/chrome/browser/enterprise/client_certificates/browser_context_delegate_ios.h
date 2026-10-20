@@ -17,6 +17,7 @@ class BrowserContextDelegateIOS : public ContextDelegate {
   // ContextDelegate:
   void OnClientCertificateDeleted(
       scoped_refptr<net::X509Certificate> certificate) override;
+  std::string GetExpectedCommonName() const override;
   std::string GetIdentityName() override;
   std::string GetTemporaryIdentityName() override;
   std::string GetPolicyPref() override;

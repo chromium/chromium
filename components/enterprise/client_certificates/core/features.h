@@ -16,6 +16,14 @@ BASE_DECLARE_FEATURE(kManagedUserClientCertificateInPrefs);
 // Return true if the managed user certificate should be stored in prefs.
 bool IsManagedUserClientCertificateInPrefsEnabled();
 
+// Controls whether the Subject Common Name (CN) of managed client certificates
+// can be configured via policy, sent in certificate provisioning requests, and
+// validated against the expected context identity.
+BASE_DECLARE_FEATURE(kClientCertCommonNameAttribute);
+
+// Returns true if configurable Subject Common Name (CN) provisioning and
+// identity validation are enabled.
+bool IsClientCertCommonNameAttributeEnabled();
 
 #if BUILDFLAG(IS_WIN)
 // Controls whether Windows TPM keys are blocked from

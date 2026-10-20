@@ -115,7 +115,7 @@ CertificateProvisioningServiceFactory::BuildServiceInstanceForBrowserContext(
 
   return CertificateProvisioningService::Create(
       profile->GetPrefs(), certificate_store,
-      std::make_unique<ProfileContextDelegate>(profile),
+      std::make_unique<ProfileContextDelegate>(profile, profile_id_service),
       KeyUploadClient::Create(
           std::make_unique<
               enterprise_attestation::ProfileCloudManagementDelegate>(

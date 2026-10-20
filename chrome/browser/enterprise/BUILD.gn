@@ -13,7 +13,6 @@ source_set("enterprise") {
     "browser_management/browser_management_status_provider.h",
     "browser_management/management_service_factory.h",
     "chrome_browser_main_extra_parts_enterprise.h",
-    "client_certificates/browser_context_delegate.h",
     "client_certificates/cert_utils.h",
     "client_certificates/certificate_provisioning_service_factory.h",
     "client_certificates/certificate_store_factory.h",
@@ -186,6 +185,7 @@ source_set("enterprise") {
     ]
 
     public += [
+      "client_certificates/browser_context_delegate.h",
       "groups/enterprise_groups_handler_factory.h",
       "idle/action.h",
       "idle/action_runner.h",
@@ -411,7 +411,6 @@ source_set("impl") {
     "browser_management/browser_management_status_provider.cc",
     "browser_management/management_service_factory.cc",
     "chrome_browser_main_extra_parts_enterprise.cc",
-    "client_certificates/browser_context_delegate.cc",
     "client_certificates/cert_utils.cc",
     "client_certificates/certificate_provisioning_service_factory.cc",
     "client_certificates/certificate_store_factory.cc",
@@ -643,6 +642,7 @@ source_set("impl") {
     ]
   } else {
     sources += [
+      "client_certificates/browser_context_delegate.cc",
       "groups/enterprise_groups_handler_factory.cc",
       "idle/action.cc",
       "idle/action_runner.cc",

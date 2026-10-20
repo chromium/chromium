@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/prefs.h"
 #include "content/public/browser/storage_partition.h"
@@ -26,6 +27,8 @@
 namespace client_certificates {
 
 namespace {
+
+constexpr char kFakeProfileId[] = "fake-profile-id";
 
 scoped_refptr<net::X509Certificate> LoadTestCert() {
   static constexpr char kTestCertFileName[] = "client_1.pem";
@@ -59,12 +62,16 @@ class ProfileContextDelegateTest : public testing::Test {
     auto* storage_partition = profile_->GetDefaultStoragePartition();
     storage_partition->SetNetworkContextForTesting(
         std::move(network_context_remote));
+    delegate_ = std::make_unique<ProfileContextDelegate>(profile_.get(),
+                                                         &profile_id_service_);
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<MockNetworkContext> mock_network_context_;
   std::unique_ptr<TestingProfile> profile_;
+  enterprise::ProfileIdService profile_id_service_{kFakeProfileId};
+  std::unique_ptr<ProfileContextDelegate> delegate_;
 };
 
 TEST_F(ProfileContextDelegateTest,
@@ -78,7 +85,7 @@ TEST_F(ProfileContextDelegateTest,
       .WillOnce(testing::DoAll(testing::SaveArg<0>(&flushed_cert),
                                [&run_loop] { run_loop.Quit(); }));
 
-  ProfileContextDelegate(profile_.get()).OnClientCertificateDeleted(test_cert);
+  delegate_->OnClientCertificateDeleted(test_cert);
   run_loop.Run();
 
   std::vector<std::string> test_cert_pem;
@@ -89,19 +96,22 @@ TEST_F(ProfileContextDelegateTest,
   EXPECT_EQ(test_cert_pem, flushed_cert_pem);
 }
 
+TEST_F(ProfileContextDelegateTest, GetExpectedCommonName) {
+  EXPECT_EQ(kFakeProfileId, delegate_->GetExpectedCommonName());
+}
+
 TEST_F(ProfileContextDelegateTest, GetIdentityName) {
-  EXPECT_EQ(kManagedProfileIdentityName,
-            ProfileContextDelegate(profile_.get()).GetIdentityName());
+  EXPECT_EQ(kManagedProfileIdentityName, delegate_->GetIdentityName());
 }
 
 TEST_F(ProfileContextDelegateTest, GetTemporaryIdentityName) {
   EXPECT_EQ(kTemporaryManagedProfileIdentityName,
-            ProfileContextDelegate(profile_.get()).GetTemporaryIdentityName());
+            delegate_->GetTemporaryIdentityName());
 }
 
 TEST_F(ProfileContextDelegateTest, GetPolicyPref) {
   EXPECT_EQ(prefs::kProvisionManagedClientCertificateForUserPrefs,
-            ProfileContextDelegate(profile_.get()).GetPolicyPref());
+            delegate_->GetPolicyPref());
 }
 
 }  // namespace client_certificates

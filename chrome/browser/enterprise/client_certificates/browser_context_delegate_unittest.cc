@@ -12,6 +12,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/client_certificates/core/constants.h"
 #include "components/enterprise/client_certificates/core/prefs.h"
 #include "content/public/browser/storage_partition.h"
@@ -93,6 +94,12 @@ TEST_F(BrowserContextDelegateTest,
   EXPECT_TRUE(flushed_cert->GetPEMEncodedChain(&flushed_cert_pem));
   EXPECT_TRUE(test_cert->GetPEMEncodedChain(&test_cert_pem));
   EXPECT_EQ(test_cert_pem, flushed_cert_pem);
+}
+
+TEST_F(BrowserContextDelegateTest, GetExpectedCommonName) {
+  policy::FakeBrowserDMTokenStorage storage;
+  storage.SetClientId("test-client-id");
+  EXPECT_EQ("test-client-id", BrowserContextDelegate().GetExpectedCommonName());
 }
 
 TEST_F(BrowserContextDelegateTest, GetIdentityName) {

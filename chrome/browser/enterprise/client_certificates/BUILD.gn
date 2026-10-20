@@ -6,10 +6,7 @@ source_set("unit_tests") {
   testonly = true
   configs += [ "//components/enterprise:extra_warnings" ]
 
-  sources = [
-    "browser_context_delegate_unittest.cc",
-    "profile_context_delegate_unittest.cc",
-  ]
+  sources = [ "profile_context_delegate_unittest.cc" ]
 
   deps = [
     "//base",
@@ -17,6 +14,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
+    "//components/enterprise/browser/identifiers",
     "//components/enterprise/client_certificates/core",
     "//content/public/browser",
     "//content/test:test_support",
@@ -28,6 +26,11 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (!is_chromeos) {
+    sources += [ "browser_context_delegate_unittest.cc" ]
+    deps += [ "//components/enterprise:test_support" ]
+  }
 
   if (is_chromeos) {
     sources += [ "ash/kcer_certificate_store_unittest.cc" ]

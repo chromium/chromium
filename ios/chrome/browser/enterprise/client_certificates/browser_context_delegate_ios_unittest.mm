@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/enterprise/client_certificates/browser_context_delegate_ios.h"
 
+#import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/client_certificates/core/constants.h"
 #import "components/enterprise/client_certificates/core/prefs.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -12,6 +13,13 @@
 namespace client_certificates {
 
 using BrowserContextDelegateIOSTest = PlatformTest;
+
+TEST_F(BrowserContextDelegateIOSTest, GetExpectedCommonName) {
+  policy::FakeBrowserDMTokenStorage storage;
+  storage.SetClientId("test-ios-client-id");
+  EXPECT_EQ("test-ios-client-id",
+            BrowserContextDelegateIOS().GetExpectedCommonName());
+}
 
 TEST_F(BrowserContextDelegateIOSTest, GetIdentityName) {
   EXPECT_EQ(kManagedBrowserIdentityName,

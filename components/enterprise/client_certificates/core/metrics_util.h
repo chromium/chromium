@@ -37,6 +37,37 @@ enum class ProvisioningError {
   kMaxValue = kCertificateCommitFailed
 };
 
+// Captures the validation outcome of a client certificate.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(CertificateValidationResult)
+enum class CertificateValidationResult {
+  kValid = 0,
+  kExpiringSoon = 1,
+  kExpired = 2,
+  kEmptySubjectCommonName = 3,
+  kIdentityMismatch = 4,
+  kMissingContextIdentity = 5,
+  kIssuedCertificateIdentityMismatch = 6,
+  kMaxValue = kIssuedCertificateIdentityMismatch
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:CertificateValidationResult)
+
+// Captures the types of sanitization applied to a certificate Subject Common
+// Name (CN).
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(CommonNameSanitizationType)
+enum class CommonNameSanitizationType {
+  kNone = 0,
+  kWhitespaceTrimmed = 1,
+  kControlCharactersStripped = 2,
+  kTruncated = 3,
+  kEmptyResult = 4,
+  kMaxValue = kEmptyResult
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:ClientCertificateCommonNameSanitization)
+
 enum class ProvisioningScenario {
   kUnknown = 0,
   kCertificateCreation = 1,
@@ -48,6 +79,11 @@ struct ProvisioningContext {
   const base::TimeTicks start_time{base::TimeTicks::Now()};
   ProvisioningScenario scenario{ProvisioningScenario::kUnknown};
 };
+
+void LogCertificateValidationResult(const std::string& logging_context,
+                                    CertificateValidationResult result);
+
+void LogCommonNameSanitization(CommonNameSanitizationType sanitization_type);
 
 void LogProvisioningError(const std::string& logging_context,
                           ProvisioningError provisioning_error,

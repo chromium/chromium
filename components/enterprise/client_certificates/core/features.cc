@@ -14,6 +14,12 @@ bool IsManagedUserClientCertificateInPrefsEnabled() {
   return base::FeatureList::IsEnabled(kManagedUserClientCertificateInPrefs);
 }
 
+BASE_FEATURE(kClientCertCommonNameAttribute, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsClientCertCommonNameAttributeEnabled() {
+  return base::FeatureList::IsEnabled(kClientCertCommonNameAttribute);
+}
+
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kWindowsSoftwareKeysEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 

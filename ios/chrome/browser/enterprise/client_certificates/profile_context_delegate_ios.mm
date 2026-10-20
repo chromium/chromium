@@ -6,13 +6,18 @@
 
 #import "base/check.h"
 #import "base/memory/scoped_refptr.h"
+#import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "components/enterprise/client_certificates/core/constants.h"
 #import "components/enterprise/client_certificates/core/prefs.h"
 #import "net/cert/x509_certificate.h"
 
 namespace client_certificates {
 
-ProfileContextDelegateIOS::ProfileContextDelegateIOS() = default;
+ProfileContextDelegateIOS::ProfileContextDelegateIOS(
+    enterprise::ProfileIdService* profile_id_service)
+    : profile_id_service_(profile_id_service) {
+  CHECK(profile_id_service_);
+}
 
 ProfileContextDelegateIOS::~ProfileContextDelegateIOS() = default;
 
@@ -20,6 +25,10 @@ void ProfileContextDelegateIOS::OnClientCertificateDeleted(
     scoped_refptr<net::X509Certificate> certificate) {
   // No cleanup required on iOS. Certificates will be cleaned up upon profile
   // directory deletion.
+}
+
+std::string ProfileContextDelegateIOS::GetExpectedCommonName() const {
+  return profile_id_service_->GetProfileId().value_or(std::string());
 }
 
 std::string ProfileContextDelegateIOS::GetIdentityName() {
