@@ -105,6 +105,12 @@ inline constexpr char kAppBarAssistantCustomizationDescription[] =
     "When enabled, long pressing the AppBar assistant button shows a menu to "
     "choose which entry point the button shows.";
 
+inline constexpr char kAppBarStaticSymbolWhenHiddenName[] =
+    "App Bar static symbol when hidden";
+inline constexpr char kAppBarStaticSymbolWhenHiddenDescription[] =
+    "When enabled, the App Bar tab grid button swaps its symbol without an "
+    "animated content transition while the App Bar is not visible.";
+
 inline constexpr char kAppSwitcherAISummarizationName[] =
     "App Switcher AI summarization";
 inline constexpr char kAppSwitcherAISummarizationDescription[] =
