@@ -130,7 +130,9 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     static final String PREF_NEW_PROFILE = "new_profile";
     static final String SAVE_AND_FILL_ADDRESSES = "save_and_fill_addresses";
     public static final String PREF_EMAIL_VERIFICATION = "autofill_email_verification_enabled";
-    public static final String PREF_EMAIL_VERIFICATION_LIST = "autofill_email_verification_list";
+    public static final String PREF_EMAIL_VERIFICATION_SECTION =
+            "autofill_email_verification_section";
+    public static final String PREF_EMAIL_VERIFICATION_INFO = "autofill_email_verification_info";
     public static final String PREF_EMAIL_VERIFICATION_EMPTY = "autofill_email_verification_empty";
 
     public static final String GOOGLE_ACCOUNT_HOME_ADDRESS_EDIT_URL =
@@ -301,9 +303,19 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         }
     }
 
+    /**
+     * Adds the "Verified email" section: the toggle, an explanation of the feature and, if the
+     * feature is enabled, the list of verified email addresses. All items are grouped into a single
+     * category so that they are styled as one section.
+     */
     private void addEmailVerificationSection(PreferenceScreen screen) {
         PersonalDataManager personalDataManager =
                 PersonalDataManagerFactory.getForProfile(getProfile());
+
+        var category = new ChromeBasePreferenceCategory(getStyledContext());
+        category.setKey(PREF_EMAIL_VERIFICATION_SECTION);
+        category.setTitle(R.string.autofill_settings_email_verification_section_title);
+        screen.addPreference(category);
 
         ChromeSwitchPreference emailVerificationSwitch =
                 new ChromeSwitchPreference(getStyledContext(), null);
@@ -326,14 +338,17 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                         return personalDataManager.isEmailVerificationManaged();
                     }
                 });
-        screen.addPreference(emailVerificationSwitch);
+        category.addPreference(emailVerificationSwitch);
+
+        // Explains what the feature does ("When on" / "Things to consider"). Shown regardless of
+        // the toggle state so that users can make an informed decision before opting in.
+        Preference infoPref = new ChromeBasePreference(getStyledContext());
+        infoPref.setKey(PREF_EMAIL_VERIFICATION_INFO);
+        infoPref.setLayoutResource(R.layout.autofill_email_verification_info);
+        infoPref.setSelectable(false);
+        category.addPreference(infoPref);
 
         if (personalDataManager.isEmailVerificationEnabled()) {
-            var category = new ChromeBasePreferenceCategory(getStyledContext());
-            category.setKey("autofill_email_verification_list");
-            category.setTitle(R.string.autofill_settings_email_verification_section_title);
-            screen.addPreference(category);
-
             List<String> emails = personalDataManager.getEmailVerificationAddresses();
             if (emails == null || emails.isEmpty()) {
                 Preference emptyPref = new ChromeBasePreference(getStyledContext());

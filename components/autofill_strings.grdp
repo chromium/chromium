@@ -415,16 +415,16 @@
   <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_SUMMARY" desc="Text shown below a verified email address indicating which identity provider verified it." formatter_data="android_java">
     Verified by <ph name="IDP_ORIGIN">%1$s<ex>accounts.google.com</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_WHEN_ON_CONFIRM" desc="Bullet point in the 'When on' section of the email verification settings, explaining what happens when the setting is turned on.">
+  <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_WHEN_ON_CONFIRM" desc="Bullet point in the 'When on' section of the email verification settings, explaining what happens when the setting is turned on." formatter_data="android_java">
     Email providers like google.com can confirm your email address so you don’t have to check your inbox
   </message>
-  <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_CONSIDER_SUPPORTED_SITES" desc="Bullet point in the 'Things to consider' section of the email verification settings, noting that the feature only works on sites that support it.">
+  <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_CONSIDER_SUPPORTED_SITES" desc="Bullet point in the 'Things to consider' section of the email verification settings, noting that the feature only works on sites that support it." formatter_data="android_java">
     Only works on supported sites
   </message>
-  <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_CONSIDER_PER_EMAIL" desc="Bullet point in the 'Things to consider' section of the email verification settings, noting that the user is asked for permission for each email address individually.">
+  <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_CONSIDER_PER_EMAIL" desc="Bullet point in the 'Things to consider' section of the email verification settings, noting that the user is asked for permission for each email address individually." formatter_data="android_java">
     You’ll be asked to allow each email address separately
   </message>
-  <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_CONSIDER_SIGNED_IN" desc="Bullet point in the 'Things to consider' section of the email verification settings, noting that the user must be signed in to their email provider for the feature to work.">
+  <message name="IDS_AUTOFILL_SETTINGS_EMAIL_VERIFICATION_CONSIDER_SIGNED_IN" desc="Bullet point in the 'Things to consider' section of the email verification settings, noting that the user must be signed in to their email provider for the feature to work." formatter_data="android_java">
     To use the feature, you need to be signed in to your email account
   </message>
   <!-- TODO(crbug.com/447113309): will no longer be used for title, update desc -->

@@ -47,6 +47,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -1302,16 +1303,15 @@ public class AutofillProfilesFragmentTest {
                 () -> {
                     PreferenceCategory category =
                             fragment.findPreference(
-                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_SECTION);
                     Criteria.checkThat(category, Matchers.notNullValue());
 
-                    boolean isEmpty =
-                            category.getPreferenceCount() == 0
-                                    || (category.getPreferenceCount() == 1
-                                            && AutofillProfilesFragment
-                                                    .PREF_EMAIL_VERIFICATION_EMPTY
-                                                    .equals(category.getPreference(0).getKey()));
-                    Criteria.checkThat(isEmpty, Matchers.is(true));
+                    // The section contains the toggle, the info and the empty state label.
+                    Criteria.checkThat(category.getPreferenceCount(), Matchers.is(3));
+                    Criteria.checkThat(
+                            category.findPreference(
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_EMPTY),
+                            Matchers.notNullValue());
                 });
     }
 
@@ -1330,7 +1330,7 @@ public class AutofillProfilesFragmentTest {
                 () -> {
                     PreferenceCategory category =
                             fragment.findPreference(
-                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_SECTION);
                     Criteria.checkThat(category, Matchers.notNullValue());
                     Preference pref = category.findPreference("test@example.com");
                     Criteria.checkThat(pref, Matchers.notNullValue());
@@ -1358,7 +1358,7 @@ public class AutofillProfilesFragmentTest {
                 () -> {
                     PreferenceCategory category =
                             fragment.findPreference(
-                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_SECTION);
                     Criteria.checkThat(category, Matchers.notNullValue());
                     Preference pref1 = category.findPreference("test@example.com");
                     Preference pref2 = category.findPreference("other@gmail.com");
@@ -1367,11 +1367,18 @@ public class AutofillProfilesFragmentTest {
                     Criteria.checkThat(
                             fragment.findPreference("autofill_email_verification_enabled"),
                             Matchers.notNullValue());
-                    Criteria.checkThat(category.getPreferenceCount(), Matchers.is(2));
+                    // The section contains the toggle, the info and the two emails.
+                    Criteria.checkThat(category.getPreferenceCount(), Matchers.is(4));
                     Criteria.checkThat(
-                            category.getPreference(0).getKey(), Matchers.is("test@example.com"));
+                            category.getPreference(0).getKey(),
+                            Matchers.is(AutofillProfilesFragment.PREF_EMAIL_VERIFICATION));
                     Criteria.checkThat(
-                            category.getPreference(1).getKey(), Matchers.is("other@gmail.com"));
+                            category.getPreference(1).getKey(),
+                            Matchers.is(AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_INFO));
+                    Criteria.checkThat(
+                            category.getPreference(2).getKey(), Matchers.is("test@example.com"));
+                    Criteria.checkThat(
+                            category.getPreference(3).getKey(), Matchers.is("other@gmail.com"));
                 });
     }
 
@@ -1391,7 +1398,7 @@ public class AutofillProfilesFragmentTest {
                 () -> {
                     PreferenceCategory category =
                             fragment.findPreference(
-                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_SECTION);
                     Criteria.checkThat(category, Matchers.notNullValue());
                     Preference pref = category.findPreference(longEmail);
                     Criteria.checkThat(pref, Matchers.notNullValue());
@@ -1413,7 +1420,7 @@ public class AutofillProfilesFragmentTest {
                 () -> {
                     PreferenceCategory category =
                             fragment.findPreference(
-                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_SECTION);
                     Criteria.checkThat(category, Matchers.notNullValue());
                     Preference pref = category.findPreference("test@example.com");
                     Criteria.checkThat(pref, Matchers.notNullValue());
@@ -1510,7 +1517,7 @@ public class AutofillProfilesFragmentTest {
                 () -> {
                     PreferenceCategory category =
                             fragment.findPreference(
-                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_SECTION);
                     Criteria.checkThat(
                             category.findPreference("test@example.com"), Matchers.nullValue());
                     Criteria.checkThat(
@@ -1540,15 +1547,14 @@ public class AutofillProfilesFragmentTest {
                 () -> {
                     PreferenceCategory category =
                             fragment.findPreference(
-                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_SECTION);
                     Criteria.checkThat(category, Matchers.notNullValue());
-                    boolean isEmpty =
-                            category.getPreferenceCount() == 0
-                                    || (category.getPreferenceCount() == 1
-                                            && AutofillProfilesFragment
-                                                    .PREF_EMAIL_VERIFICATION_EMPTY
-                                                    .equals(category.getPreference(0).getKey()));
-                    Criteria.checkThat(isEmpty, Matchers.is(true));
+                    // The section contains the toggle, the info and the empty state label.
+                    Criteria.checkThat(category.getPreferenceCount(), Matchers.is(3));
+                    Criteria.checkThat(
+                            category.findPreference(
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_EMPTY),
+                            Matchers.notNullValue());
                 });
     }
 
@@ -1571,9 +1577,106 @@ public class AutofillProfilesFragmentTest {
                 () -> {
                     PreferenceCategory category =
                             fragment.findPreference(
-                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
-                    Criteria.checkThat(category, Matchers.nullValue());
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_SECTION);
+                    Criteria.checkThat(category, Matchers.notNullValue());
+                    // Only the toggle and the info are shown when the feature is disabled.
+                    Criteria.checkThat(category.getPreferenceCount(), Matchers.is(2));
+                    Criteria.checkThat(
+                            category.findPreference("test@example.com"), Matchers.nullValue());
                 });
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_PROTOCOL})
+    @MediumTest
+    public void testEmailVerification_InfoShownWhenToggleOff() {
+        AutofillProfilesFragment fragment = mSettingsTestRule.getFragment();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(fragment.getProfile())
+                            .setBoolean(Pref.AUTOFILL_EMAIL_VERIFICATION_ENABLED, false);
+                    fragment.onPersonalDataChanged();
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Preference info =
+                            fragment.findPreference(
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_INFO);
+                    Criteria.checkThat(info, Matchers.notNullValue());
+                    Criteria.checkThat(info.isSelectable(), Matchers.is(false));
+                });
+        verifyEmailVerificationInfoDisplayed();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.EMAIL_VERIFICATION_PROTOCOL})
+    @MediumTest
+    public void testEmailVerification_InfoShownWhenToggleOn() {
+        AutofillProfilesFragment fragment = mSettingsTestRule.getFragment();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(fragment.getProfile())
+                            .setBoolean(Pref.AUTOFILL_EMAIL_VERIFICATION_ENABLED, true);
+                    fragment.onPersonalDataChanged();
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            fragment.findPreference(
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_INFO),
+                            Matchers.notNullValue());
+                });
+        verifyEmailVerificationInfoDisplayed();
+    }
+
+    private void verifyEmailVerificationInfoDisplayed() {
+        AutofillProfilesFragment fragment = mSettingsTestRule.getFragment();
+        int[] stringIds = {
+            R.string.settings_heading_when_on,
+            R.string.autofill_settings_email_verification_when_on_confirm,
+            R.string.settings_heading_consider,
+            R.string.autofill_settings_email_verification_consider_supported_sites,
+            R.string.autofill_settings_email_verification_consider_per_email,
+            R.string.autofill_settings_email_verification_consider_signed_in,
+        };
+        // The list may be rebuilt asynchronously after onPersonalDataChanged(), which can make an
+        // earlier scroll target stale. Re-scroll on every poll until the info view is bound.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View header =
+                            fragment.getListView()
+                                    .findViewById(R.id.email_verification_when_on_header);
+                    if (header == null || !header.isShown()) {
+                        fragment.scrollToPreference(
+                                AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_INFO);
+                    }
+                    Criteria.checkThat(header, Matchers.notNullValue());
+                    Criteria.checkThat(header.isShown(), Matchers.is(true));
+                    // The header's parent is the root of the info layout.
+                    String infoText = collectText((View) header.getParent());
+                    for (int id : stringIds) {
+                        Criteria.checkThat(
+                                infoText, Matchers.containsString(fragment.getString(id)));
+                    }
+                },
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL * 3,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    /** Returns the concatenated text of all TextViews in the given view hierarchy. */
+    private static String collectText(View view) {
+        if (view instanceof TextView textView) {
+            return textView.getText() + "\n";
+        }
+        StringBuilder text = new StringBuilder();
+        if (view instanceof ViewGroup group) {
+            for (int i = 0; i < group.getChildCount(); i++) {
+                text.append(collectText(group.getChildAt(i)));
+            }
+        }
+        return text.toString();
     }
 
     @Test
@@ -1587,7 +1690,7 @@ public class AutofillProfilesFragmentTest {
                             fragment.findPreference("autofill_email_verification_enabled");
                     PreferenceCategory category =
                             fragment.findPreference(
-                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_LIST);
+                                    AutofillProfilesFragment.PREF_EMAIL_VERIFICATION_SECTION);
                     Criteria.checkThat(toggle, Matchers.nullValue());
                     Criteria.checkThat(category, Matchers.nullValue());
                 });
