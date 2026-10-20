@@ -83,7 +83,14 @@ base::TimeDelta OsSettingsProviderGtk::CaretBlinkInterval() const {
 }
 
 std::optional<SkColor> OsSettingsProviderGtk::AccentColor() const {
-  return accent_color_;
+  // Prefer the desktop accent color (from the xdg-desktop-portal). Otherwise,
+  // use the GTK theme's own accent, so that the Material palettes generated
+  // from the accent color (focus rings, tab hover, ...) match the theme's
+  // highlights.
+  if (accent_color_) {
+    return accent_color_;
+  }
+  return SkColorSetA(GetThemeAccentColor(), SK_AlphaOPAQUE);
 }
 
 void OsSettingsProviderGtk::SetAccentColor(

@@ -19,6 +19,8 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/color/dynamic_color/palette.h"
+#include "ui/color/dynamic_color/palette_factory.h"
 #include "ui/color/system_theme.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gtk/gtk_compat.h"
@@ -58,14 +60,19 @@ class GtkColorMixersTest : public testing::Test {
   }
 
   // Builds a provider like the production pipeline: the core UI mixers
-  // followed by the GTK mixer.
-  std::unique_ptr<ui::ColorProvider> CreateProvider(ColorMode color_mode) {
+  // followed by the GTK mixer. Like `NativeThemeGtk`, `accent_color` is also
+  // used as the user color that seeds the Material palettes.
+  std::unique_ptr<ui::ColorProvider> CreateProvider(
+      ColorMode color_mode,
+      std::optional<SkColor> accent_color = std::nullopt) {
     ui::ColorProviderKey key;
     key.color_mode = color_mode;
     key.system_theme = ui::SystemTheme::kGtk;
+    key.user_color = accent_color;
+    key.user_color_source = ui::ColorProviderKey::UserColorSource::kAccent;
     auto provider = std::make_unique<ui::ColorProvider>();
     ui::AddColorMixers(provider.get(), key);
-    AddGtkNativeColorMixer(provider.get(), key, std::nullopt);
+    AddGtkNativeColorMixer(provider.get(), key, accent_color);
     return provider;
   }
 
@@ -149,6 +156,31 @@ TEST_F(GtkColorMixersTest, MatchingPaletteUsesGtkColors) {
     ExpectReadable(*provider, ui::kColorPrimaryForeground,
                    ui::kColorPrimaryBackground);
     ExpectToolbarReadable(*provider);
+  }
+}
+
+// Regression test for crbug.com/571161438: focus rings and tab hover used
+// Chrome's baseline blue instead of the GTK accent color. The GTK mixer must
+// not clobber the Material colors generated from the accent.
+TEST_F(GtkColorMixersTest, MaterialColorsFollowAccent) {
+  // Yaru's default orange.
+  constexpr SkColor kAccent = SkColorSetRGB(0xE9, 0x54, 0x20);
+  const std::unique_ptr<ui::Palette> palette = ui::GeneratePalette(
+      kAccent, ui::ColorProviderKey::SchemeVariant::kTonalSpot);
+  const ui::TonalPalette& primary = palette->primary();
+  for (bool dark : {false, true}) {
+    SCOPED_TRACE(dark ? "dark" : "light");
+    UseAdwaita(dark);
+    auto provider =
+        CreateProvider(dark ? ColorMode::kDark : ColorMode::kLight, kAccent);
+    EXPECT_EQ(provider->GetColor(ui::kColorAccent), kAccent);
+    EXPECT_EQ(provider->GetColor(ui::kColorRefPrimary40), primary.get(40));
+    EXPECT_EQ(provider->GetColor(ui::kColorSysPrimary),
+              primary.get(dark ? 80 : 40));
+    EXPECT_EQ(provider->GetColor(ui::kColorSysStateFocusRing),
+              primary.get(dark ? 80 : 40));
+    EXPECT_EQ(provider->GetColor(ui::kColorFocusableBorderFocused),
+              primary.get(dark ? 80 : 40));
   }
 }
 

@@ -49,9 +49,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   const SkColor accent_fg = GetFgColor(
       "treeview.view "
       "treeview.view.cell:selected:focus label");
-  const SkColor accent_bg =
-      accent_color.value_or(GetBgColor("treeview.view "
-                                       "treeview.view.cell:selected:focus"));
+  const SkColor accent_bg = accent_color.value_or(GetThemeAccentColor());
 
   static constexpr char kTextFocused[] =
       "textview.view:focus:focus-within text:focus:focus-within";

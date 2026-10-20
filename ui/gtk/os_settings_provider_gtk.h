@@ -37,7 +37,8 @@ class COMPONENT_EXPORT(GTK) OsSettingsProviderGtk
   base::TimeDelta CaretBlinkInterval() const override;
 
   // Sets the system accent color (sourced from the xdg-desktop-portal and
-  // pushed in via GtkUi::SetAccentColor) and notifies observers.
+  // pushed in via GtkUi::SetAccentColor) and notifies observers. When unset,
+  // `AccentColor()` falls back to the GTK theme's accent color.
   void SetAccentColor(std::optional<SkColor> accent_color);
 
   // Sets the color-scheme preference (sourced from the xdg-desktop-portal and

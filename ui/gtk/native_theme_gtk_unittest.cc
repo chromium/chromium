@@ -12,6 +12,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/os_settings_provider_gtk.h"
@@ -104,6 +106,34 @@ TEST_F(NativeThemeGtkTest, OverrideTakesPrecedence) {
   UseAdwaita(/*dark=*/false);
   ui::NativeTheme::SetPreferredColorSchemeOverride(PreferredColorScheme::kDark);
   EXPECT_EQ(GtkThemeScheme(), PreferredColorScheme::kDark);
+}
+
+// Regression test for crbug.com/571161438: the Material palettes (focus rings,
+// tab hover, ...) must be seeded from the desktop accent color.
+TEST_F(NativeThemeGtkTest, UserColorFollowsDesktopAccent) {
+  constexpr SkColor kAccent = SkColorSetRGB(0xE9, 0x54, 0x20);
+  UseAdwaita(/*dark=*/false);
+  provider_.SetAccentColor(kAccent);
+  EXPECT_EQ(provider_.AccentColor(), kAccent);
+  auto* const native_theme = NativeThemeGtk::instance();
+  EXPECT_EQ(native_theme->user_color(), kAccent);
+  const ui::ColorProviderKey key = native_theme->GetColorProviderKey(nullptr);
+  EXPECT_EQ(key.user_color, kAccent);
+  EXPECT_EQ(key.user_color_source,
+            ui::ColorProviderKey::UserColorSource::kAccent);
+}
+
+// Without a desktop accent color, the GTK theme's own accent is used.
+TEST_F(NativeThemeGtkTest, UserColorFallsBackToThemeAccent) {
+  provider_.SetAccentColor(std::nullopt);
+  for (bool dark : {false, true}) {
+    SCOPED_TRACE(dark ? "dark" : "light");
+    UseAdwaita(dark);
+    const SkColor theme_accent =
+        SkColorSetA(GetThemeAccentColor(), SK_AlphaOPAQUE);
+    EXPECT_EQ(provider_.AccentColor(), theme_accent);
+    EXPECT_EQ(NativeThemeGtk::instance()->user_color(), theme_accent);
+  }
 }
 
 }  // namespace

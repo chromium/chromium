@@ -733,6 +733,31 @@ TEST_P(ColorProviderTest, OmniboxContrast) {
 #endif
 }
 
+// Regression test for crbug.com/571161438: with a Linux system theme (e.g.
+// GTK), the Material palettes follow the native theme's user color (the
+// toolkit accent). Otherwise, the baseline palette is used.
+TEST_P(ColorProviderTest, SystemThemeUsesNativeUserColor) {
+  constexpr SkColor kAccent = SkColorSetRGB(0xE9, 0x54, 0x20);
+  ui::ColorProviderKey base_key;
+  base_key.user_color = kAccent;
+  base_key.user_color_source = ui::ColorProviderKey::UserColorSource::kAccent;
+  const ui::ColorProviderKey key = GetColorProviderKey(base_key, profile());
+  EXPECT_EQ(key.user_color, kAccent);
+  const bool uses_system_theme =
+      theme_service()->UsingSystemTheme() &&
+      theme_service()->IsSystemThemeDistinctFromDefaultTheme();
+  EXPECT_EQ(key.user_color_source,
+            uses_system_theme || theme_service()->UsingDeviceTheme()
+                ? ui::ColorProviderKey::UserColorSource::kAccent
+                : ui::ColorProviderKey::UserColorSource::kBaseline);
+#if BUILDFLAG(IS_LINUX)
+  if (GetSystemTheme() == SystemTheme::kCustom &&
+      ui::GetDefaultLinuxUiTheme()) {
+    EXPECT_TRUE(uses_system_theme);
+  }
+#endif
+}
+
 // Sets and unsets themes using the BrowserThemeColor policy.
 TEST_F(ThemeServiceTest, PolicyThemeColorSet) {
   theme_service()->UseDefaultTheme();

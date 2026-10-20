@@ -772,6 +772,11 @@ ui::ColorProviderKey ThemeService::GetColorProviderKey(
     key.user_color_source = ui::ColorProviderKey::UserColorSource::kBaseline;
   } else if (UsingDeviceTheme()) {
     key.user_color_source = ui::ColorProviderKey::UserColorSource::kAccent;
+  } else if (UsingSystemTheme() && IsSystemThemeDistinctFromDefaultTheme()) {
+    // System themes (e.g. GTK) paint with the toolkit's colors, so follow the
+    // native theme's user color (e.g. the toolkit accent) rather than Chrome's
+    // baseline palette.
+    key.user_color_source = base_key.user_color_source;
   } else if (GetIsGrayscale()) {
     key.user_color_source = ui::ColorProviderKey::UserColorSource::kGrayscale;
   } else if (GetIsBaseline()) {

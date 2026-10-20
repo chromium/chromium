@@ -921,15 +921,17 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
   SkColor default_color =
       BrowserWindow::FromBrowser(browser())->GetColorProvider()->GetColor(
           ui::kColorLiveCaptionBubbleForegroundDefault);
-  SkColor language_label_color =
-      BrowserWindow::FromBrowser(browser())->GetColorProvider()->GetColor(
-          ui::kColorRefPrimary80);
   ui::CaptionStyle caption_style;
 
   GetController()->UpdateCaptionStyle(std::nullopt);
   OnPartialTranscription(
       "Marsupials first evolved in South America about 100 million years "
       "ago.");
+  // The bubble is hosted in its own widget, so its reference palette colors
+  // may differ from the browser window's (e.g. with the GTK theme, they are
+  // derived from the system accent color).
+  SkColor language_label_color =
+      GetBubble()->GetColorProvider()->GetColor(ui::kColorRefPrimary80);
   EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
   EXPECT_EQ(default_color, GetTitle()->GetEnabledColor());
   EXPECT_EQ(default_color, GetErrorText()->GetEnabledColor());

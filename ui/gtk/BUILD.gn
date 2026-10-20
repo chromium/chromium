@@ -223,6 +223,7 @@ if (use_gtk) {
       "//ui/base/glib",
       "//ui/color",
       "//ui/color:mixers",
+      "//ui/color/dynamic_color",
       "//ui/events",
       "//ui/gfx",
       "//ui/linux:linux_ui",

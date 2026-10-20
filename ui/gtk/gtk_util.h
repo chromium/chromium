@@ -188,6 +188,10 @@ COMPONENT_EXPORT(GTK) void ClearStyleColorCache();
 // variant, so the rendered colors are the only reliable signal.
 bool IsGtkThemeDark();
 
+// Returns the GTK theme's accent color, approximated by the background of a
+// focused, selected treeview cell. This may be translucent.
+COMPONENT_EXPORT(GTK) SkColor GetThemeAccentColor();
+
 // Get a GtkSettings property as a C++ string.
 std::string GetGtkSettingsStringProperty(GtkSettings* settings,
                                          const gchar* prop_name);
