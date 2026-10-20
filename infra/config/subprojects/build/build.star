@@ -285,6 +285,10 @@ cq_build_perf_builder(
         # Only the baseline clean and incremental build times matter here.
         "enable_missing_deps_check": False,
     },
+    # On 384 vCPUs siso exhausts the Cloud Trace write quota within minutes,
+    # and the backed-up exporter then blocks every clog call behind its
+    # bundler mutex, which stalls the build (http://b/575633282).
+    siso_enable_cloud_trace = False,
     siso_profile_mode = "local",
 )
 

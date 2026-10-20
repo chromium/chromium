@@ -50,7 +50,7 @@
       "remote-link"
     ],
     "enable_cloud_monitoring": true,
-    "enable_cloud_trace": true,
+    "enable_cloud_trace": false,
     "experiments": [
       "no-fallback"
     ],
