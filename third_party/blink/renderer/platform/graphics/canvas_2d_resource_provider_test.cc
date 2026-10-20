@@ -380,44 +380,6 @@ TEST_P(Canvas2DResourceProviderSyncTokenTest,
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 }
 
-TEST_F(Canvas2DResourceProviderTest, SharedImageStaticBitmapImage) {
-  const gpu::SharedImageUsageSet shared_image_usage_flags =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-
-  Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
-                                   gfx::HDRMetadata(),
-                                   CanvasPixelFormat::kUint8,
-                                   /*has_alpha=*/true);
-  auto provider = Canvas2DResourceProvider::CreateWithClear(
-      gfx::Size(10, 10), color_params, context_provider_wrapper_,
-      RasterMode::kGPU, shared_image_usage_flags);
-
-  ASSERT_NE(provider, nullptr);
-
-  // Same resource returned until the canvas is updated.
-  auto image = provider->Snapshot();
-  ASSERT_TRUE(image);
-  auto new_image = provider->Snapshot();
-  EXPECT_EQ(image->GetSharedImage(), new_image->GetSharedImage());
-  EXPECT_EQ(
-      provider->ProduceCanvasResource(/*surface=*/nullptr)->GetSharedImage(),
-      image->GetSharedImage());
-
-  // Resource updated after draw.
-  MemoryManagedPaintRecorder recorder(provider->Size(), nullptr);
-  recorder.getRecordingCanvas().clear(SkColors::kWhite);
-  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
-  new_image = provider->Snapshot();
-  EXPECT_NE(new_image->GetSharedImage(), image->GetSharedImage());
-
-  // Resource recycled.
-  auto original_shared_image = image->GetSharedImage();
-  image.reset();
-  recorder.getRecordingCanvas().clear(SkColors::kBlack);
-  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
-  EXPECT_EQ(original_shared_image, provider->Snapshot()->GetSharedImage());
-}
-
 TEST_F(Canvas2DResourceProviderTest, EstimatedSizeInBytesAccelerated) {
   constexpr gfx::Size kSize(10, 10);
   auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);

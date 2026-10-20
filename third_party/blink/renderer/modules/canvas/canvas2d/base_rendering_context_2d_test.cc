@@ -449,5 +449,34 @@ TEST_F(BaseRenderingContext2DSharedImageTest, UnacceleratedOverlay) {
       shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE));
 }
 
+TEST_F(BaseRenderingContext2DSharedImageTest, ResourceRecyclingViaSnapshot) {
+  V8TestingScope scope;
+  auto* context = CreateBackedContext(scope, RasterMode::kGPU);
+  ASSERT_TRUE(context->IsBackingValid());
+
+  // Same resource returned until the canvas is updated.
+  auto image = context->PaintRenderingResultsToSnapshot(kBackBuffer);
+  ASSERT_TRUE(image);
+  auto new_image = context->PaintRenderingResultsToSnapshot(kBackBuffer);
+  EXPECT_EQ(image->GetSharedImage(), new_image->GetSharedImage());
+  EXPECT_EQ(
+      context->PaintRenderingResultsToResource(kBackBuffer, FlushReason::kOther)
+          ->GetSharedImage(),
+      image->GetSharedImage());
+
+  // Resource updated after draw.
+  context->fillRect(0, 0, 1, 1);
+  new_image = context->PaintRenderingResultsToSnapshot(kBackBuffer);
+  EXPECT_NE(new_image->GetSharedImage(), image->GetSharedImage());
+
+  // Resource recycled.
+  auto original_shared_image = image->GetSharedImage();
+  image.reset();
+  context->fillRect(0, 0, 1, 1);
+  EXPECT_EQ(
+      original_shared_image,
+      context->PaintRenderingResultsToSnapshot(kBackBuffer)->GetSharedImage());
+}
+
 }  // namespace
 }  // namespace blink
