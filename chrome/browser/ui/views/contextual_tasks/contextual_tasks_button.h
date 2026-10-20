@@ -20,8 +20,10 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/menus/simple_menu_model.h"
 
 class BrowserWindowInterface;
+class PinnedActionToolbarButtonMenuModel;
 
 namespace ui {
 class ImageModel;
@@ -31,9 +33,9 @@ class LayerOwner;
 
 class ContextualTasksButton
     : public ToolbarButton,
-      public ui::SimpleMenuModel::Delegate,
       public contextual_tasks::ContextualTasksPanelController::Observer,
-      public ImmersiveModeController::Observer {
+      public ImmersiveModeController::Observer,
+      public ui::SimpleMenuModel::Delegate {
   METADATA_HEADER(ContextualTasksButton, ToolbarButton)
 
  public:
@@ -58,8 +60,6 @@ class ContextualTasksButton
   bool IsHighlighted() const;
   ui::Layer* GetDropShadowLayerForTesting() const;
 
-  // ui::SimpleMenuModel::Delegate:
-  void ExecuteCommand(int command_id, int event_flags) override;
   // contextual_tasks::ContextualTasksPanelController::Observer:
   void OnSurfaceStateChanged(
       contextual_tasks::ContextualTasksPanelHost::SurfaceState state,
@@ -77,6 +77,11 @@ class ContextualTasksButton
 
   // views::View:
   void RemoveLayerFromRegions(ui::Layer* old_layer) override;
+
+  // ui::SimpleMenuModel::Delegate:
+  bool IsCommandIdEnabled(int command_id) const override;
+  bool IsCommandIdVisible(int command_id) const override;
+  void ExecuteCommand(int command_id, int event_flags) override;
 
  protected:
   void UpdateColorsAndInsets() override;
@@ -101,6 +106,7 @@ class ContextualTasksButton
   base::CallbackListSubscription eligibility_change_subscription_;
   base::CallbackListSubscription vertical_tabs_subscription_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
+  std::unique_ptr<PinnedActionToolbarButtonMenuModel> pinned_action_menu_model_;
 
   std::optional<Button::ScopedAnchorHighlight> anchor_highlight_;
 

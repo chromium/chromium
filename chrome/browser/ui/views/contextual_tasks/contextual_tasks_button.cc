@@ -19,6 +19,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/pref_names.h"
@@ -209,24 +211,28 @@ class ContextualTasksButtonHighlightPathGenerator
   const raw_ptr<ContextualTasksButton> button_;
 };
 
-enum ContextualTasksButtonMenuCommand {
+enum ContextualTasksButtonContextMenuCommand {
   kCommandRemoveForCurrentTask = 1,
+  kCommandPinToToolbar = 2,
+  kCommandUnpinFromToolbar = 3,
+  kCommandCustomizeToolbar = 4,
 };
 
-std::unique_ptr<ui::SimpleMenuModel> CreateContextualTasksButtonMenuModel(
-    ui::SimpleMenuModel::Delegate* delegate) {
-  auto menu_model = std::make_unique<ui::SimpleMenuModel>(delegate);
-  menu_model->AddItemWithStringId(
-      kCommandRemoveForCurrentTask,
-      contextual_tasks::
-              ShouldUseCloseSidePanelForEphemeralButtonContextMenu()
-          ? IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE
-          : IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE);
-  menu_model->SetElementIdentifierAt(
-      0,
-      ContextualTasksButton::
-          kContextualTasksEphemeralButtonRemoveForTaskMenuItem);
-  return menu_model;
+constexpr size_t kPinnedActionMenuPinIndex = 0;
+constexpr size_t kPinnedActionMenuUnpinIndex = 1;
+constexpr size_t kPinnedActionMenuCustomizeIndex = 2;
+
+std::optional<size_t> GetPinnedActionMenuIndexForCommand(int command_id) {
+  switch (command_id) {
+    case kCommandPinToToolbar:
+      return kPinnedActionMenuPinIndex;
+    case kCommandUnpinFromToolbar:
+      return kPinnedActionMenuUnpinIndex;
+    case kCommandCustomizeToolbar:
+      return kPinnedActionMenuCustomizeIndex;
+    default:
+      return std::nullopt;
+  }
 }
 
 }  // namespace
@@ -242,11 +248,45 @@ ContextualTasksButton::ContextualTasksButton(
                               base::Unretained(this)),
           base::FeatureList::IsEnabled(
               contextual_tasks::kContextualTasksEphemeralButtonContextMenu)
-              ? CreateContextualTasksButtonMenuModel(this)
+              ? std::make_unique<ui::SimpleMenuModel>(this)
               : nullptr,
           nullptr,
           /*trigger_menu_on_long_press=*/false),
       browser_window_interface_(browser_window_interface) {
+  if (auto* simple_menu_model =
+          static_cast<ui::SimpleMenuModel*>(menu_model())) {
+    const int close_label_id =
+        contextual_tasks::
+                ShouldUseCloseSidePanelForEphemeralButtonContextMenu()
+            ? IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE
+            : IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE;
+    simple_menu_model->AddItemWithStringIdAndIcon(
+        kCommandRemoveForCurrentTask, close_label_id,
+        ui::ImageModel::FromVectorIcon(
+            features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
+                                              : vector_icons::kCloseOldIcon,
+            ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize));
+    simple_menu_model->SetElementIdentifierAt(
+        0, kContextualTasksEphemeralButtonRemoveForTaskMenuItem);
+    simple_menu_model->AddSeparator(ui::NORMAL_SEPARATOR);
+
+    pinned_action_menu_model_ =
+        std::make_unique<PinnedActionToolbarButtonMenuModel>(
+            browser_window_interface_, kActionSidePanelShowContextualTasks);
+    constexpr std::pair<int, size_t> kPinnedMenuCommands[] = {
+        {kCommandPinToToolbar, kPinnedActionMenuPinIndex},
+        {kCommandUnpinFromToolbar, kPinnedActionMenuUnpinIndex},
+        {kCommandCustomizeToolbar, kPinnedActionMenuCustomizeIndex},
+    };
+    for (const auto& [command_id, index] : kPinnedMenuCommands) {
+      simple_menu_model->AddItemWithIcon(
+          command_id, pinned_action_menu_model_->GetLabelAt(index),
+          pinned_action_menu_model_->GetIconAt(index));
+      simple_menu_model->SetElementIdentifierAt(
+          simple_menu_model->GetItemCount() - 1,
+          pinned_action_menu_model_->GetElementIdentifierAt(index));
+    }
+  }
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   // The contextual tasks button is ephemeral and starts hidden until an active
@@ -329,32 +369,6 @@ ContextualTasksButton::ContextualTasksButton(
 ContextualTasksButton::~ContextualTasksButton() {
   anchor_highlight_.reset();
   ClearDropShadow();
-}
-
-void ContextualTasksButton::ExecuteCommand(int command_id, int event_flags) {
-  if (!base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksEphemeralButtonContextMenu)) {
-    return;
-  }
-  auto* controller = ContextualTasksEphemeralButtonController::From(
-      browser_window_interface_);
-  if (!controller) {
-    return;
-  }
-  switch (command_id) {
-    case kCommandRemoveForCurrentTask:
-      base::RecordAction(base::UserMetricsAction(
-          "ContextualTasks.EphemeralToolbarButton.UserAction."
-          "RemoveByContextMenu"));
-      base::UmaHistogramBoolean(
-          "ContextualTasks.EphemeralToolbarButton.UserAction."
-          "RemoveByContextMenu",
-          true);
-      controller->RemoveEphemeralButtonForCurrentTask();
-      break;
-    default:
-      NOTREACHED();
-  }
 }
 
 float ContextualTasksButton::GetCornerRadiusFor(
@@ -566,6 +580,48 @@ void ContextualTasksButton::RemoveLayerFromRegions(ui::Layer* old_layer) {
     views::View::RemoveLayerFromRegions(old_layer);
   } else {
     ToolbarButton::RemoveLayerFromRegions(old_layer);
+  }
+}
+
+bool ContextualTasksButton::IsCommandIdEnabled(int command_id) const {
+  if (std::optional<size_t> index =
+          GetPinnedActionMenuIndexForCommand(command_id);
+      index.has_value() && pinned_action_menu_model_) {
+    return pinned_action_menu_model_->IsEnabledAt(*index);
+  }
+  return true;
+}
+
+bool ContextualTasksButton::IsCommandIdVisible(int command_id) const {
+  if (std::optional<size_t> index =
+          GetPinnedActionMenuIndexForCommand(command_id);
+      index.has_value() && pinned_action_menu_model_) {
+    return pinned_action_menu_model_->IsVisibleAt(*index);
+  }
+  return true;
+}
+
+void ContextualTasksButton::ExecuteCommand(int command_id, int event_flags) {
+  if (command_id == kCommandRemoveForCurrentTask) {
+    auto* const controller = ContextualTasksEphemeralButtonController::From(
+        browser_window_interface_);
+    if (!controller) {
+      return;
+    }
+    base::RecordAction(base::UserMetricsAction(
+        "ContextualTasks.EphemeralToolbarButton.UserAction."
+        "RemoveByContextMenu"));
+    base::UmaHistogramBoolean(
+        "ContextualTasks.EphemeralToolbarButton.UserAction."
+        "RemoveByContextMenu",
+        true);
+    controller->RemoveEphemeralButtonForCurrentTask();
+    return;
+  }
+  if (std::optional<size_t> index =
+          GetPinnedActionMenuIndexForCommand(command_id);
+      index.has_value() && pinned_action_menu_model_) {
+    pinned_action_menu_model_->ActivatedAt(*index, event_flags);
   }
 }
 
