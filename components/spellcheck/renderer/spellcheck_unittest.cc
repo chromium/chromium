@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -48,6 +49,24 @@ base::FilePath GetHunspellDirectory() {
   hunspell_directory = hunspell_directory.AppendASCII("hunspell_dictionaries");
   return hunspell_directory;
 }
+
+#if !BUILDFLAG(IS_APPLE)
+class ZeroLengthResultSpellCheck : public SpellCheck {
+ public:
+  using SpellCheck::SpellCheck;
+  using SpellCheck::SpellCheckWord;
+
+  bool SpellCheckWord(std::u16string_view,
+                      spellcheck::mojom::SpellCheckHost&,
+                      size_t* misspelling_start,
+                      size_t* misspelling_length,
+                      std::nullptr_t) override {
+    *misspelling_start = 0;
+    *misspelling_length = 0;
+    return false;
+  }
+};
+#endif  // !BUILDFLAG(IS_APPLE)
 
 }  // namespace
 
@@ -1073,6 +1092,54 @@ TEST_P(SpellCheckTest, SpellCheckParagraphMultipleMisspellings) {
 
   TestSpellCheckParagraph(text, expected);
 }
+
+// Regression test for crbug.com/574469799. Override SpellCheckWord() to
+// simulate a false return with a zero-length range, verifying that paragraph
+// checking terminates even if other platforms produce this result in the
+// future.
+TEST_P(SpellCheckTest, SpellCheckParagraphWithZeroLengthResult) {
+  spellcheck::EmptyLocalInterfaceProvider embedder_provider;
+  ZeroLengthResultSpellCheck checker(&embedder_provider);
+
+  std::vector<blink::WebTextCheckingResult> results;
+  EXPECT_FALSE(checker.SpellCheckParagraph(
+      u"unchecked", provider_.GetSpellCheckHost(), &results));
+  EXPECT_TRUE(results.empty());
+}
+
+#if BUILDFLAG(IS_WIN)
+// Regression test for crbug.com/574469799. SpellCheckWord() can currently
+// return false with a zero-length range during Windows hybrid checks.
+// SpellCheckParagraph() must stop without adding a zero-length spelling
+// marker and preserve any earlier misspellings.
+TEST_P(SpellCheckTest, SpellCheckParagraphWithDisabledLanguage) {
+  // Model a hybrid check: en-US uses Hunspell, while ru-RU uses the browser.
+  spell_check()->AddSpellcheckLanguage(base::File(), "ru-RU");
+  ASSERT_EQ(2u, spell_check()->LanguageCount());
+  ASSERT_EQ(1u, spell_check()->EnabledLanguageCount());
+
+  // "privet" ("hello" in Russian), written in Cyrillic. Expect a false/zero
+  // word result and no paragraph markers because en-US skips this script.
+  const std::u16string text = u"\u043f\u0440\u0438\u0432\u0435\u0442";
+  size_t misspelling_start = 1;
+  size_t misspelling_length = 1;
+  ASSERT_FALSE(spell_check()->SpellCheckWord(
+      text, provider_.GetSpellCheckHost(), &misspelling_start,
+      &misspelling_length, nullptr));
+  ASSERT_EQ(0u, misspelling_start);
+  ASSERT_EQ(0u, misspelling_length);
+  std::vector<blink::WebTextCheckingResult> results;
+  EXPECT_FALSE(spell_check()->SpellCheckParagraph(
+      text, provider_.GetSpellCheckHost(), &results));
+  EXPECT_TRUE(results.empty());
+
+  // Prepend "zz, zz " to the Cyrillic text and preserve both "zz" markers.
+  std::vector<SpellCheckResult> expected;
+  expected.emplace_back(spellcheck::Decoration::SPELLING, 0, 2);
+  expected.emplace_back(spellcheck::Decoration::SPELLING, 4, 2);
+  TestSpellCheckParagraph(u"zz, zz " + text, expected);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // Make sure a relatively long (correct) sentence can be spellchecked.
 TEST_P(SpellCheckTest, SpellCheckParagraphLongSentence) {

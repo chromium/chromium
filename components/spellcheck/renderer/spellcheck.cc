@@ -448,6 +448,13 @@ bool SpellCheck::SpellCheckParagraph(
       return true;
     }
 
+    // A zero misspelling length here indicates all renderer languages skipped
+    // the remaining text, not that a misspelling was identified. So stop
+    // scanning.
+    if (misspelling_length == 0) {
+      break;
+    }
+
     // A word is correctly spelled if it is in the profile custom dictionary
     // or in the per-document word set.
     const bool in_custom_dictionary =

@@ -115,11 +115,12 @@ class SpellCheck : public spellcheck::mojom::SpellChecker {
 
   // Overload of SpellCheckWord for skipping optional suggestions with a
   // nullptr, used to disambiguate between the other two overloads.
-  bool SpellCheckWord(std::u16string_view text,
-                      spellcheck::mojom::SpellCheckHost& host,
-                      size_t* misspelling_start,
-                      size_t* misspelling_len,
-                      std::nullptr_t null_suggestions_ptr);
+  // Overridden by paragraph tests to supply word-check results.
+  virtual bool SpellCheckWord(std::u16string_view text,
+                              spellcheck::mojom::SpellCheckHost& host,
+                              size_t* misspelling_start,
+                              size_t* misspelling_len,
+                              std::nullptr_t null_suggestions_ptr);
 
 #if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
   // SpellCheck a paragraph.
