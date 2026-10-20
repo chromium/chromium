@@ -190,7 +190,6 @@ component("gl") {
   ]
 
   configs += [
-    "//build/config/compiler:wexit_time_destructors",
     "//build/config/compiler:wglobal_constructors",
     "//build/config:precompiled_headers",
   ]

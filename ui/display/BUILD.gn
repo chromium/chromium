@@ -13,7 +13,6 @@ component("display_features") {
     "display_features.h",
   ]
   defines = [ "IS_DISPLAY_FEATURES_IMPL" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [ "//base" ]
 }
 
@@ -120,8 +119,6 @@ component("display") {
   }
 
   defines = [ "DISPLAY_IMPLEMENTATION" ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":display_features",
@@ -284,7 +281,6 @@ static_library("test_support") {
       "manager/test/touch_transform_controller_test_api.h",
       "test/display_test_util.cc",
     ]
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
     public_deps += [ "//ui/display/manager" ]
   }
 

@@ -44,7 +44,6 @@ component("gfx_skia") {
     "skia_util.cc",
     "skia_util.h",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [
     "//base",
     "//skia",
@@ -163,7 +162,6 @@ component("gfx") {
   configs += [
     ":gfx_impl_define",
     "//build/config:precompiled_headers",
-    "//build/config/compiler:wexit_time_destructors",
   ]
 
   public_deps = [
@@ -546,10 +544,7 @@ source_set("selection_bound_sources") {
     "selection_bound.h",
   ]
 
-  configs += [
-    ":gfx_impl_define",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ ":gfx_impl_define" ]
 
   public_deps = [
     "//base",
@@ -610,10 +605,7 @@ source_set("memory_buffer_sources") {
     ]
   }
 
-  configs += [
-    ":gfx_impl_define",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  configs += [ ":gfx_impl_define" ]
 
   public_deps = [ ":buffer_types" ]
 

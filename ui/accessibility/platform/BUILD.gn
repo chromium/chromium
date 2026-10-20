@@ -85,10 +85,7 @@ component("platform") {
     "inspect/ax_tree_indexer.h",
   ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
 
   deps = [
     "//third_party/abseil-cpp:absl",

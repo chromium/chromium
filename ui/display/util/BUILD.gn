@@ -15,8 +15,6 @@ component("util") {
     "edid_parser.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   defines = [ "DISPLAY_UTIL_IMPLEMENTATION" ]
 
   public_deps = [ "//ui/display:display_features" ]

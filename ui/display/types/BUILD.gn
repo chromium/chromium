@@ -29,8 +29,6 @@ component("types") {
 
   defines = [ "DISPLAY_TYPES_IMPLEMENTATION" ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//components/viz/common/resources:shared_image_format",

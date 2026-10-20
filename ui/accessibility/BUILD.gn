@@ -113,10 +113,7 @@ component("ax_base") {
     ]
   }
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
 
   public_deps = [
     ":ax_constants_mojo",
@@ -217,10 +214,7 @@ component("accessibility_internal") {
     "null_ax_action_target.h",
   ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
 
   deps = [
     "//base",
@@ -253,10 +247,7 @@ if (is_android || is_chromeos) {
       "ax_assistant_structure.h",
     ]
 
-    configs += [
-      "//build/config/compiler:wexit_time_destructors",
-      "//build/config/compiler:wglobal_constructors",
-    ]
+    configs += [ "//build/config/compiler:wglobal_constructors" ]
 
     deps = [ ":accessibility" ]
 

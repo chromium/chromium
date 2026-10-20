@@ -107,7 +107,6 @@ component("geometry_skia") {
     "transform_util.cc",
     "transform_util.h",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [
     ":geometry",
     "//base",
