@@ -199,7 +199,6 @@ bool D3DVideoDecoder::InitializeAcceleratedDecoder(
     return false;
   }
 
-  is_first_config_change_ = true;
   return true;
 }
 
@@ -359,6 +358,10 @@ void D3DVideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
 
   if (already_initialized) {
+    // Defer tearing down |d3d_video_decoder_wrapper_| and |picture_buffers_|
+    // until the new |accelerated_video_decoder_| emits its initial
+    // kConfigChange in DoDecode(). This avoids disrupting in-flight frames
+    // when Initialize() is called right after Flush() (e.g. WebCodecs flush()).
     if (!InitializeAcceleratedDecoder(config)) {
       return;
     }
@@ -607,14 +610,11 @@ void D3DVideoDecoder::DoDecode() {
 
       CreatePictureBuffers();
     } else if (result == media::AcceleratedVideoDecoder::kConfigChange) {
-      // Before the first frame, we get a config change that we should ignore.
-      // We only want to take action if this is a mid-stream config change.  We
-      // could wait until now to allocate the first D3DVideoDecoder, but we
-      // don't, so that init can fail rather than decoding if there's a problem
-      // creating it.  We could also unconditionally re-allocate the decoder,
-      // but we keep it if it's ready to go.
-      const bool is_first_config_change =
-          std::exchange(is_first_config_change_, false);
+      // Skip recreating the decoder on the initial kConfigChange if no picture
+      // buffers have been allocated yet and the stream matches |config_|.
+      // If |picture_buffers_| is non-empty (e.g. after Flush() + Initialize()),
+      // we must clear it and recreate the decoder so buffers still held by the
+      // client don't starve decoding.
       const auto new_bit_depth = accelerated_video_decoder_->GetBitDepth();
       const auto new_profile = accelerated_video_decoder_->GetProfile();
       const auto new_coded_size = accelerated_video_decoder_->GetPicSize();
@@ -624,18 +624,14 @@ void D3DVideoDecoder::DoDecode() {
           accelerated_video_decoder_->GetVideoColorSpace();
       const auto new_visible_rect =
           accelerated_video_decoder_->GetVisibleRect();
-      const size_t pic_buffers_required =
-          accelerated_video_decoder_->GetRequiredNumOfPictures() + 1;
       DCHECK(gfx::Rect(new_coded_size).Contains(new_visible_rect));
       DCHECK(!new_visible_rect.IsEmpty());
-      if (is_first_config_change && new_profile == config_.profile() &&
+      if (picture_buffers_.empty() && new_profile == config_.profile() &&
           new_coded_size == config_.coded_size() &&
           new_visible_rect == config_.visible_rect() &&
           new_bit_depth == bit_depth_ &&
           new_chroma_sampling == chroma_sampling_ &&
-          new_color_space == color_space_ &&
-          (picture_buffers_.empty() ||
-           picture_buffers_.size() >= pic_buffers_required)) {
+          new_color_space == color_space_) {
         continue;
       }
 

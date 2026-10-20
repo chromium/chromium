@@ -251,10 +251,6 @@ class MEDIA_GPU_EXPORT D3DVideoDecoder : public VideoDecoder,
 
   std::unique_ptr<D3DVideoDecoderWrapper> d3d_video_decoder_wrapper_;
 
-  // True when waiting for the initial kConfigChange emitted by
-  // |accelerated_video_decoder_| before the first frame after Initialize().
-  bool is_first_config_change_ = false;
-
   // The currently configured bit depth for the decoder. When this changes we
   // need to recreate the decoder.
   uint8_t bit_depth_ = 8u;
