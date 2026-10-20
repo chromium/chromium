@@ -12,10 +12,6 @@
 #include "base/functional/callback_forward.h"
 #include "components/account_id/account_id.h"
 
-namespace aura {
-class Window;
-}
-
 namespace ash {
 
 // An interface that allows Ash to trigger authentication steps that ChromeOS
@@ -56,8 +52,8 @@ class ASH_PUBLIC_EXPORT InSessionAuthDialogClient {
   virtual void AuthenticateUserWithFingerprint(
       base::OnceCallback<void(bool, FingerprintState)> callback) = 0;
 
-  // Open a help article in a new window and return the window.
-  virtual aura::Window* OpenInSessionAuthHelpPage() const = 0;
+  // Open a help article in a new window.
+  virtual void OpenInSessionAuthHelpPage() const = 0;
 
  protected:
   virtual ~InSessionAuthDialogClient() = default;

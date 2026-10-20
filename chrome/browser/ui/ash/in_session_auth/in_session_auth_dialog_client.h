@@ -24,10 +24,6 @@
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/session_auth_factors.h"
 
-namespace aura {
-class Window;
-}
-
 namespace ash {
 class UserContext;
 }
@@ -71,7 +67,7 @@ class InSessionAuthDialogClient
       base::OnceCallback<void(bool)> callback) override;
   void AuthenticateUserWithFingerprint(
       base::OnceCallback<void(bool, ash::FingerprintState)> callback) override;
-  aura::Window* OpenInSessionAuthHelpPage() const override;
+  void OpenInSessionAuthHelpPage() const override;
 
   // AuthStatusConsumer:
   void OnAuthFailure(const ash::AuthFailure& error) override;

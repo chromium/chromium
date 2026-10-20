@@ -12,10 +12,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/auth",
   "+chrome/browser/ash/login/quick_unlock",
-  "+chrome/browser/profiles/profile_manager.h",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/browser/ui/navigator/browser_navigator.h",
-  "+chrome/browser/ui/navigator/browser_navigator_params.h",
 ]
 
 specific_include_rules = {

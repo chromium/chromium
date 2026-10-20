@@ -153,6 +153,13 @@ class BrowserController {
     // If set, the navigation is treated as renderer-initiated, with this
     // origin as its initiator. Otherwise, it is browser-initiated.
     std::optional<url::Origin> initiating_origin;
+    // Whether the created popup window (`BrowserType::kPopup`) is for a
+    // trusted UI surface rather than an untrusted web popup. When true, the
+    // popup hides the location bar, title bar, and window icon, uses
+    // app-style header rendering, and uses saved or default window bounds
+    // instead of inheriting bounds from the last active browser.
+    // Only allowed when `disposition` is `WindowOpenDisposition::NEW_POPUP`.
+    bool popup_has_trusted_source = false;
   };
 
   // See ForEachBrowser below.

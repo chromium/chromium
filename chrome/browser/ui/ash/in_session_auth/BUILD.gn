@@ -26,14 +26,15 @@ static_library("in_session_auth") {
     "//ash/constants",
     "//ash/in_session_auth",
     "//chrome/browser/ash/login/quick_unlock",
-    "//chrome/browser/profiles:profile_manager",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/navigator",
+    "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/cryptohome:public",
     "//chromeos/ash/components/osauth/public",
     "//components/account_id",
+    "//components/session_manager/core",
     "//components/user_manager",
     "//content/public/browser",
+    "//ui/base",
+    "//url",
   ]
 }
 

@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
@@ -301,6 +302,10 @@ content::WebContents* BrowserControllerImpl::OpenUrl(
   if (params.initiating_origin.has_value()) {
     nav_params.is_renderer_initiated = true;
     nav_params.initiator_origin = *params.initiating_origin;
+  }
+  if (params.popup_has_trusted_source) {
+    CHECK_EQ(params.disposition, WindowOpenDisposition::NEW_POPUP);
+    nav_params.trusted_source = true;
   }
   Navigate(&nav_params);
   return nav_params.navigated_or_inserted_contents.get();

@@ -21,21 +21,20 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/navigator/browser_navigator.h"
-#include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "components/account_id/account_id.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/base/base_window.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
 
 using ::ash::AuthenticationError;
 using ::ash::AuthStatusConsumer;
@@ -353,21 +352,17 @@ void InSessionAuthDialogClient::OnFingerprintScan(
   }
 }
 
-aura::Window* InSessionAuthDialogClient::OpenInSessionAuthHelpPage() const {
-  // TODO(b/156258540): Use the profile of the source browser window.
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+void InSessionAuthDialogClient::OpenInSessionAuthHelpPage() const {
+  // TODO(b/156258540): Use the account of the source browser window.
+  const session_manager::Session& session =
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession());
   // Create new browser window because the auth dialog is a child of the
   // existing one.
-  NavigateParams params(profile, GURL(kInSessionAuthHelpPageUrl),
-                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.trusted_source = true;
-  params.window_action = NavigateParams::WindowAction::kShowWindow;
-  params.user_gesture = true;
-  params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
-  Navigate(&params);
-
-  return params.browser->GetWindow()->GetNativeWindow();
+  ash::BrowserController::GetInstance()->OpenUrl(
+      session.account_id(), GURL(kInSessionAuthHelpPageUrl),
+      {.disposition = WindowOpenDisposition::NEW_POPUP,
+       .transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+       .popup_has_trusted_source = true});
 }
 
 // AuthStatusConsumer:
