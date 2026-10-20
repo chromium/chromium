@@ -1186,9 +1186,9 @@ if (!is_robolectric && enable_java_templates) {
 
     _enable_resources = !defined(invoker.enable_android_resources) ||
                         invoker.enable_android_resources
-    _build_config = "$target_gen_dir/$target_name.build_config.json"
 
     if (_enable_resources) {
+      _build_config = "$target_gen_dir/$target_name.build_config.json"
       _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
       _manifest_build_config =
           "$target_gen_dir/$target_name.manifest.build_config.json"
@@ -1356,26 +1356,6 @@ if (!is_robolectric && enable_java_templates) {
       }
     }
 
-    if (build_with_chromium && generate_location_tags) {
-      # Used by test_runner.py to map test classes to source file locations.
-      _size_info_target = "${target_name}__size_info"
-
-      create_size_info_files(_size_info_target) {
-        name = invoker.target_name
-        build_config = _build_config
-
-        # Tests can be in the binary's own sources, which are not part of
-        # javac_full_classpath (that only covers deps).
-        unprocessed_jar_path =
-            "$target_out_dir/${invoker.target_name}.javac.jar"
-        deps = [
-          ":$_build_config_target_name",
-          ":${_java_binary_target_name}__host",
-          ":${invoker.target_name}__compile_java",
-        ]
-      }
-    }
-
     test_runner_script(target_name) {
       forward_variables_from(invoker,
                              [
@@ -1401,13 +1381,8 @@ if (!is_robolectric && enable_java_templates) {
       if (_enable_resources) {
         deps += [ ":$_apkbuilder_target_name" ]
       }
-      data_deps = []
       if (defined(invoker.shared_libraries)) {
-        data_deps += invoker.shared_libraries
-      }
-      if (build_with_chromium && generate_location_tags) {
-        data = [ "//testing/location_tags.json" ]
-        data_deps += [ ":${invoker.target_name}__size_info" ]
+        data_deps = invoker.shared_libraries
       }
 
       # Add non-libary deps, since the __host target does not depend on them.

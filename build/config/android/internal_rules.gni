@@ -2617,31 +2617,27 @@ if (enable_java_templates) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       script = "//build/android/gyp/create_size_info_files.py"
       _jar_info_path = "$root_build_dir/size-info/${invoker.name}.jar.info"
-      outputs = [ _jar_info_path ]
+      _pak_info_path = "$root_build_dir/size-info/${invoker.name}.pak.info"
+      _res_info_path = "$root_build_dir/size-info/${invoker.name}.res.info"
+      outputs = [
+        _jar_info_path,
+        _pak_info_path,
+        _res_info_path,
+      ]
       depfile = "$target_gen_dir/$target_name.d"
       args = [
         "--depfile",
         rebase_path(depfile, root_build_dir),
         "--jar-info-path",
         rebase_path(_jar_info_path, root_build_dir),
+        "--pak-info-path",
+        rebase_path(_pak_info_path, root_build_dir),
+        "--res-info-path",
+        rebase_path(_res_info_path, root_build_dir),
       ]
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       inputs = [ invoker.build_config ]
       _is_bundle = defined(invoker.modules)
-      if (_is_bundle || defined(invoker.res_size_info_path)) {
-        _pak_info_path = "$root_build_dir/size-info/${invoker.name}.pak.info"
-        _res_info_path = "$root_build_dir/size-info/${invoker.name}.res.info"
-        outputs += [
-          _pak_info_path,
-          _res_info_path,
-        ]
-        args += [
-          "--pak-info-path",
-          rebase_path(_pak_info_path, root_build_dir),
-          "--res-info-path",
-          rebase_path(_res_info_path, root_build_dir),
-        ]
-      }
       if (_is_bundle) {
         foreach(_module, invoker.modules) {
           inputs += [ _module.build_config ]
@@ -2657,23 +2653,19 @@ if (enable_java_templates) {
           ]
         }
       } else {
-        if (defined(invoker.res_size_info_path)) {
-          inputs += [ invoker.res_size_info_path ]
-          _rebased_res_size_info_path =
-              rebase_path(invoker.res_size_info_path, root_build_dir)
-          args += [
-            "--in-res-info-path",
-            _rebased_res_size_info_path,
-            "--assets=@FileArg($_rebased_build_config:assets)",
-            "--uncompressed-assets=@FileArg($_rebased_build_config:uncompressed_assets)",
-          ]
-        }
-        inputs += [ invoker.unprocessed_jar_path ]
+        inputs += [
+          invoker.res_size_info_path,
+          invoker.unprocessed_jar_path,
+        ]
         _rebased_unprocessed_jar_path =
             rebase_path(invoker.unprocessed_jar_path, root_build_dir)
         args += [
           "--jar-files=$_rebased_unprocessed_jar_path",
           "--jar-files=@FileArg($_rebased_build_config:javac_full_classpath)",
+          "--in-res-info-path",
+          rebase_path(invoker.res_size_info_path, root_build_dir),
+          "--assets=@FileArg($_rebased_build_config:assets)",
+          "--uncompressed-assets=@FileArg($_rebased_build_config:uncompressed_assets)",
         ]
       }
     }
