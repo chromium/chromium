@@ -1109,6 +1109,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
             preference.setManagedPreferenceDelegate(makeManagedPreferenceDelegateFor(info));
             preference.setOrder(++mMaxPermissionOrder);
+            preference.setSelectable(false);
             preferenceScreen.addPreference(preference);
         }
     }

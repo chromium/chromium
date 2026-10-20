@@ -293,6 +293,7 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
                             .setNegativeButton(R.string.cancel, null)
                             .show();
                 });
+        header.setSelectable(false);
         preferenceScreen.addPreference(header);
 
         // TODO(chouinard): Handle this header and divider in a cleaner way. May need to migrate
@@ -300,6 +301,7 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
         // programmatically.
         Preference divider = new Preference(getStyledContext());
         divider.setLayoutResource(R.layout.horizontal_divider);
+        divider.setSelectable(false);
         preferenceScreen.addPreference(divider);
     }
 
