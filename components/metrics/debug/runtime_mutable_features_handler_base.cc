@@ -49,12 +49,11 @@ void RuntimeMutableFeaturesHandlerBase::HandleFetchRuntimeMutableFeatures(
 
     // Determine which field trial, if any, is controlling the feature's
     // enabled/disabled state, and retrieve its group. Note, that we can
-    // use string_view here because we're referencing strings within the
-    // FeatureList::RuntimeMutableFeatureState object or the FieldTrial
-    // object, both of which are const from the point of view of this
-    // handler.
-    std::string trial_name;
-    std::string group_name;
+    // use string_view for `trial_name` and `group_name` because we're
+    // referencing strings within the FeatureList::RuntimeMutableFeatureState
+    // object or the FieldTrial object, both of which outlive this handler call.
+    std::string_view trial_name;
+    std::string_view group_name;
     bool runtime_override = false;
     if (feature_state.override_info) {
       // The feature is being controlled by a runtime-mutable field trial.
