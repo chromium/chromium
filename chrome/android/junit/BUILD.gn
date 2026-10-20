@@ -1818,6 +1818,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/multiwindow/WindowZOrderTrackerUnitTest.java",
       "src/org/chromium/chrome/browser/native_page/ContextMenuManagerUnitTest.java",
       "src/org/chromium/chrome/browser/native_page/NativePageFactoryTest.java",
+      "src/org/chromium/chrome/browser/navigation_predictor/NavigationPredictorBridgeTest.java",
       "src/org/chromium/chrome/browser/new_tab_url/DseNewTabUrlManagerUnitTest.java",
       "src/org/chromium/chrome/browser/night_mode/GlobalNightModeStateControllerTest.java",
       "src/org/chromium/chrome/browser/night_mode/GlobalNightModeStateProviderHolderTest.java",

@@ -7,16 +7,25 @@ package org.chromium.chrome.browser.navigation_predictor;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 /** Exposes methods to report tabs moving to foreground/background. */
 @NullMarked
 public class NavigationPredictorBridge implements PauseResumeWithNativeObserver {
+    // The number of resumed activities for each Profile. Activities in different windows can be
+    // resumed at the same time and share their Profile's search engine preconnector, so it should
+    // only be paused once none of them is resumed. Only accessed on the UI thread, where activity
+    // lifecycle callbacks run.
+    private static final Map<Profile, Integer> sResumedActivityCounts = new HashMap<>();
+
     private final Profile mProfile;
     private final BooleanSupplier mIsWarmStartSupplier;
 
@@ -39,6 +48,8 @@ public class NavigationPredictorBridge implements PauseResumeWithNativeObserver 
 
     @Override
     public void onResumeWithNative() {
+        ThreadUtils.assertOnUiThread();
+        sResumedActivityCounts.put(mProfile, sResumedActivityCounts.getOrDefault(mProfile, 0) + 1);
         if (mIsWarmStartSupplier.getAsBoolean()) {
             NavigationPredictorBridgeJni.get().onActivityWarmResumed(mProfile);
         } else {
@@ -48,6 +59,14 @@ public class NavigationPredictorBridge implements PauseResumeWithNativeObserver 
 
     @Override
     public void onPauseWithNative() {
+        ThreadUtils.assertOnUiThread();
+        int resumedCount = sResumedActivityCounts.getOrDefault(mProfile, 0);
+        assert resumedCount > 0;
+        if (resumedCount > 1) {
+            sResumedActivityCounts.put(mProfile, resumedCount - 1);
+            return;
+        }
+        sResumedActivityCounts.remove(mProfile);
         NavigationPredictorBridgeJni.get().onPause(mProfile);
     }
 
