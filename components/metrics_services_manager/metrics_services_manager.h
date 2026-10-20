@@ -148,7 +148,7 @@ class MetricsServicesManager {
   metrics::MetricsServiceClient* GetMetricsServiceClient();
 
   // Updates which services are running to match current permissions.
-  void UpdateRunningServices();
+  void UpdateRunningServices(bool may_record_and_upload_changed);
 
   // Updates the state of UkmService to match current permissions.
   void UpdateUkmService();
@@ -191,6 +191,9 @@ class MetricsServicesManager {
 
   // The current metrics setting for reporting metrics.
   bool consent_given_ = false;
+
+  // Whether `UpdatePermissions()` has been called at least once.
+  bool permissions_initialized_ = false;
 
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
 

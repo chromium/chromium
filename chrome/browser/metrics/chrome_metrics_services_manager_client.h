@@ -87,7 +87,7 @@ class ChromeMetricsServicesManagerClient
   bool IsOffTheRecordSessionActive() override;
 #if BUILDFLAG(IS_WIN)
   // On Windows, the client controls whether Crashpad can upload crash reports.
-  void UpdateRunningServices(bool may_record, bool may_upload) override;
+  void UpdateRunningServices(bool may_record_and_upload) override;
 #endif  // BUILDFLAG(IS_WIN)
 
  private:

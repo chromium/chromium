@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace metrics {
@@ -25,6 +26,8 @@ class SyntheticTrialRegistry;
 }
 
 namespace metrics_services_manager {
+
+BASE_DECLARE_FEATURE(kOffloadUpdateRunningServicesWin);
 
 // MetricsServicesManagerClient is an interface that allows
 // MetricsServicesManager to interact with its embedder.
@@ -55,7 +58,7 @@ class MetricsServicesManagerClient {
 
   // Update the running state of metrics services managed by the embedder, for
   // example, crash reporting.
-  virtual void UpdateRunningServices(bool may_record, bool may_upload) {}
+  virtual void UpdateRunningServices(bool may_record_and_upload) {}
 
   // Called when a document starts loading for the first time.
   virtual void OnPageLoadStarted() {}

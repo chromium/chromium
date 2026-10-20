@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "components/metrics/dwa/dwa_recorder.h"
@@ -28,6 +29,13 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace metrics_services_manager {
+
+// When enabled, MetricsServicesManager::UpdateRunningServices() skips redundant
+// calls to MetricsServicesManagerClient::UpdateRunningServices(), and on
+// Windows, ChromeMetricsServicesManagerClient::UpdateRunningServices() offloads
+// Crashpad settings writes to CollectStatsConsentTaskRunner().
+BASE_FEATURE(kOffloadUpdateRunningServicesWin,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 MetricsServicesManager::MetricsServicesManager(
     std::unique_ptr<MetricsServicesManagerClient> client)
@@ -160,7 +168,8 @@ MetricsServicesManager::GetMetricsServiceClient() {
     // base::Unretained is safe since |this| owns the metrics_service_client_.
     metrics_service_client_->SetUpdateRunningServicesCallback(
         base::BindRepeating(&MetricsServicesManager::UpdateRunningServices,
-                            base::Unretained(this)));
+                            base::Unretained(this),
+                            /*may_record_and_upload_changed=*/false));
   }
   return metrics_service_client_.get();
 }
@@ -230,10 +239,14 @@ void MetricsServicesManager::UpdatePermissions(bool current_may_record,
 
   // Stash the current permissions so that we can update the services correctly
   // when preferences change.
+  const bool may_record_and_upload_changed =
+      !std::exchange(permissions_initialized_, true) ||
+      (may_record_ && may_upload_) !=
+          (current_may_record && current_may_upload);
   may_record_ = current_may_record;
   consent_given_ = current_consent_given;
   may_upload_ = current_may_upload;
-  UpdateRunningServices();
+  UpdateRunningServices(may_record_and_upload_changed);
 }
 
 void MetricsServicesManager::LoadingStateChanged(bool is_loading) {
@@ -250,7 +263,8 @@ void MetricsServicesManager::OnRendererUnresponsive() {
   GetMetricsService()->OnApplicationNotIdle();
 }
 
-void MetricsServicesManager::UpdateRunningServices() {
+void MetricsServicesManager::UpdateRunningServices(
+    bool may_record_and_upload_changed) {
   DCHECK(thread_checker_.CalledOnValidThread());
   metrics::MetricsService* metrics = GetMetricsService();
 
@@ -259,7 +273,10 @@ void MetricsServicesManager::UpdateRunningServices() {
     return;
   }
 
-  client_->UpdateRunningServices(may_record_, may_upload_);
+  if (may_record_and_upload_changed ||
+      !base::FeatureList::IsEnabled(kOffloadUpdateRunningServicesWin)) {
+    client_->UpdateRunningServices(may_record_ && may_upload_);
+  }
 
   if (may_record_) {
     if (!metrics->recording_active())
