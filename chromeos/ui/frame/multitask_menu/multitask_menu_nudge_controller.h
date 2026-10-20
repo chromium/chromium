@@ -16,6 +16,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 class PrefRegistrySimple;
@@ -128,6 +129,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   // being shown.
   void OnDismissTimerEnded();
 
+  // Runs when `nudge_widget_` is closed, including when its native window is
+  // destroyed before `window_`. Dismisses the nudge.
+  void OnNudgeWidgetClosed(views::Widget::ClosedReason reason);
+
   // Dismisses the widget and pulse if `window_` is not visible, or if
   // `anchor_view_` is not drawn in clamshell mode. Otherwise updates the bounds
   // and reparents the two if necessary.
@@ -142,7 +147,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   // timer.
   base::OneShotTimer clamshell_nudge_dismiss_timer_;
 
-  views::UniqueWidgetPtr nudge_widget_;
+  std::unique_ptr<views::Widget> nudge_widget_;
   std::unique_ptr<ui::LayerSolidColor> pulse_layer_;
 
   // The time the nudge was shown. Null if it hasn't been shown this session.

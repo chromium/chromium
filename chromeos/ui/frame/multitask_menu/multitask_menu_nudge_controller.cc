@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -67,7 +68,7 @@ base::Time GetTime() {
 
 std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_POPUP);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.name = "MultitaskNudgeWidget";
@@ -194,8 +195,9 @@ void MultitaskMenuNudgeController::DismissNudge() {
   pulse_layer_.reset();
   if (nudge_widget_ && !nudge_widget_->IsClosed()) {
     nudge_widget_->GetLayer()->GetAnimator()->AbortAllAnimations();
-    nudge_widget_->CloseNow();
+    nudge_widget_->SetVisibilityChangedAnimationsEnabled(false);
   }
+  nudge_widget_.reset();
 }
 
 void MultitaskMenuNudgeController::OnMenuOpened(bool tablet_mode) {
@@ -209,7 +211,7 @@ void MultitaskMenuNudgeController::OnMenuOpened(bool tablet_mode) {
 
   // Avoid sending prefs through the cros API or recording user actions if the
   // nudge isn't shown.
-  if (!nudge_widget_ || nudge_widget_->IsClosed()) {
+  if (!nudge_widget_) {
     return;
   }
 
@@ -363,6 +365,11 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   window_ = window;
 
   nudge_widget_ = CreateWidget(window_);
+  // The nudge window can be destroyed before `window_`, e.g. when the root
+  // window closes its windows from the top of the stack down.
+  nudge_widget_->MakeCloseSynchronous(
+      base::BindOnce(&MultitaskMenuNudgeController::OnNudgeWidgetClosed,
+                     base::Unretained(this)));
   anchor_view_ = anchor_view;
 
   nudge_widget_->Show();
@@ -439,6 +446,11 @@ void MultitaskMenuNudgeController::OnDismissTimerEnded() {
       .Once()
       .SetDuration(kFadeDuration)
       .SetOpacity(layer, 0.0f, gfx::Tween::LINEAR);
+}
+
+void MultitaskMenuNudgeController::OnNudgeWidgetClosed(
+    views::Widget::ClosedReason reason) {
+  DismissNudge();
 }
 
 void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
