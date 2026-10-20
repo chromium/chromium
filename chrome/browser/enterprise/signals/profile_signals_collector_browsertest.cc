@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -20,6 +21,8 @@
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -73,11 +76,13 @@ class ProfileSignalsCollectorTest : public PlatformBrowserTest {
   }
 
   // Helper function to check the profile level signals are collected correctly.
-  void CheckSignalsCollected(ProfileSignalsResponse& response) {
+  void CheckSignalsCollected(ProfileSignalsResponse& response,
+                             bool expected_is_isolated_mode = false) {
     EXPECT_EQ(response.profile_enrollment_domain, kFakeUserEnrollmentDomain);
     EXPECT_EQ(response.safe_browsing_protection_level,
               safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
     EXPECT_TRUE(response.built_in_dns_client_enabled);
+    EXPECT_EQ(response.is_isolated_mode, expected_is_isolated_mode);
   }
 
   Profile* profile() { return chrome_test_utils::GetProfile(this); }
@@ -113,7 +118,8 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest, GetSignal_Success) {
 
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_TRUE(response.profile_signals_response);
-  CheckSignalsCollected(response.profile_signals_response.value());
+  CheckSignalsCollected(response.profile_signals_response.value(),
+                        /*expected_is_isolated_mode=*/false);
 }
 
 // Tests that an unsupported signal is marked as unsupported.
@@ -142,6 +148,53 @@ IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorTest, GetSignal_MissingUser) {
 
   ASSERT_FALSE(response.top_level_error.has_value());
   ASSERT_FALSE(response.profile_signals_response);
+}
+
+class ProfileSignalsCollectorIsolatedModeTest
+    : public ProfileSignalsCollectorTest {
+ protected:
+  ProfileSignalsCollectorIsolatedModeTest() {
+    feature_list_.InitWithFeatures(
+        {enterprise_isolated_mode::kEnableEnterpriseIsolatedMode,
+         enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2},
+        {});
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    ProfileSignalsCollectorTest::SetUpBrowserContextKeyedServices(context);
+    SetupIsolatedMode(Profile::FromBrowserContext(context));
+  }
+
+ private:
+  void SetupIsolatedMode(Profile* profile) {
+    ASSERT_TRUE(profile);
+    profile->GetPrefs()->SetInteger(
+        enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+        static_cast<int>(
+            enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
+  }
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ProfileSignalsCollectorIsolatedModeTest,
+                       GetSignal_IsolatedModeProfile) {
+  SetFakePolicyAndPrefData();
+  Profile* isolated_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(isolated_profile->IsEnterpriseIsolatedModeProfile());
+
+  ProfileSignalsCollector signals_collector(isolated_profile);
+  SignalName signal_name = SignalName::kBrowserContextSignals;
+  SignalsAggregationRequest empty_request;
+  SignalsAggregationResponse response;
+  signals_collector.GetSignal(signal_name, UserPermission::kGranted,
+                              empty_request, response, base::DoNothing());
+
+  ASSERT_FALSE(response.top_level_error.has_value());
+  ASSERT_TRUE(response.profile_signals_response);
+  CheckSignalsCollected(response.profile_signals_response.value(),
+                        /*expected_is_isolated_mode=*/true);
 }
 
 }  // namespace device_signals

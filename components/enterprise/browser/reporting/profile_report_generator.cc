@@ -13,8 +13,8 @@
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/policy/core/browser/policy_conversions.h"
-#include "profile_report_generator.h"
 
 namespace em = enterprise_management;
 
@@ -93,7 +93,9 @@ void ProfileReportGenerator::MaybeGenerate(
     // query param. Only set the proto field for browser reports.
     delegate_->GetProfileId(report_.get());
   }
-
+  if (enterprise_isolated_mode::IsCaaEnabledInIsolatedMode()) {
+    report_->set_profile_type(em::ChromeUserProfileInfo::REGULAR);
+  }
   if (policies_enabled_) {
     // TODO(crbug.com/40635691): Upload policy error as their IDs.
     auto client = delegate_->MakePolicyConversionsClient(is_machine_scope_);

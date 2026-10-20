@@ -282,6 +282,7 @@ struct ProfileSignalsResponse : BaseSignalResponse {
   safe_browsing::SafeBrowsingState safe_browsing_protection_level =
       safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
   bool site_isolation_enabled = false;
+  bool is_isolated_mode = false;
   std::optional<std::string> profile_id = std::nullopt;
 
   // Enterprise cloud content analysis exclusives

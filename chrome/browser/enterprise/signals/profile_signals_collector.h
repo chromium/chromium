@@ -43,6 +43,8 @@ class ProfileSignalsCollector : public BaseSignalsCollector {
                          SignalsAggregationResponse& response,
                          base::OnceClosure done_closure);
 
+  const bool is_isolated_mode_;
+
   // These objects are owned directly by the Profile. During the interleaved teardown of
   // ChromeOS multi-user tests, the memory for these profile-owned services might get freed
   // before the SignalsAggregator (and this collector) is fully destroyed.

@@ -19,6 +19,7 @@
 #include "components/device_signals/core/common/platform_utils.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/policy/core/browser/url_list/policy_blocklist_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/prefs/pref_service.h"
@@ -45,6 +46,9 @@ ProfileSignalsCollector::ProfileSignalsCollector(Profile* profile)
            base::BindRepeating(&ProfileSignalsCollector::GetProfileSignals,
                                base::Unretained(this))},
       }),
+      is_isolated_mode_(
+          enterprise_isolated_mode::IsCaaEnabledInIsolatedMode() &&
+          profile->IsEnterpriseIsolatedModeProfile()),
       policy_blocklist_service_(
           ChromePolicyBlocklistServiceFactory::GetForProfile(profile)),
       profile_prefs_(profile->GetPrefs()),
@@ -87,6 +91,7 @@ void ProfileSignalsCollector::GetProfileSignals(
   signal_response.site_isolation_enabled =
       device_signals::GetSiteIsolationEnabled();
   signal_response.profile_id = profile_id_service_->GetProfileId();
+  signal_response.is_isolated_mode = is_isolated_mode_;
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
   signal_response.realtime_url_check_mode =
