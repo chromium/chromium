@@ -615,15 +615,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return mCache.getDimen(R.dimen.omnibox_suggestion_content_padding);
     }
 
-    /**
-     * Get additional text color.
-     *
-     * @see #getAdditionalTextColor(Context, ...)
-     */
-    public @ColorInt int getAdditionalTextColor() {
-        return getAdditionalTextColor(mContext);
-    }
-
     /** Resolves the background color of the chip showing the active tool. */
     public @ColorInt int getRequestTypeButtonColor() {
         return IncognitoColors.getInteractableChipBgColor(mContext, isIncognito());
@@ -1050,14 +1041,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         }
 
         return context;
-    }
-
-    /**
-     * @param context The context to retrieve the resources from.
-     * @return the color for the additional text.
-     */
-    public static @ColorInt int getAdditionalTextColor(Context context) {
-        return SemanticColorUtils.getDefaultTextColorSecondary(context);
     }
 
     /**

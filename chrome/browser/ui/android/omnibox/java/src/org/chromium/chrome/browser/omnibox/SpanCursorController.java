@@ -16,7 +16,7 @@ import android.view.inputmethod.BaseInputConnection;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.Locale;
@@ -39,7 +39,7 @@ class SpanCursorController {
         mDelegate = delegate;
         mAutocompleteBgColorSpan = new BackgroundColorSpan(mDelegate.getHighlightColor());
         mAdditionalTextFgColorSpan =
-                new ForegroundColorSpan(OmniboxResourceProvider.getAdditionalTextColor(context));
+                new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorSecondary(context));
     }
 
     public void setSpan(AutocompleteState state) {

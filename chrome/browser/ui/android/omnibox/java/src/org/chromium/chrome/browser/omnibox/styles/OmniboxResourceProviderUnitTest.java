@@ -559,16 +559,6 @@ public class OmniboxResourceProviderUnitTest {
     }
 
     @Test
-    public void getAdditionalTextColor() {
-        final int defaultTextColorSecondary =
-                MaterialColors.getColor(mContext, R.attr.colorOnSurfaceVariant, TAG);
-        assertEquals(
-                "Wrong additional text color.",
-                defaultTextColorSecondary,
-                OmniboxResourceProvider.getAdditionalTextColor(mContext));
-    }
-
-    @Test
     public void testInstanceMethods() {
         OmniboxResourceProvider provider =
                 new OmniboxResourceProvider(mContext, BrandedColorScheme.LIGHT_BRANDED_THEME);
