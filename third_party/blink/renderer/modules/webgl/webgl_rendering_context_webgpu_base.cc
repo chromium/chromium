@@ -1265,11 +1265,29 @@ GLint WebGLRenderingContextWebGPUBase::getAttribLocation(WebGLProgram* program,
                                              name.Utf8().c_str());
 }
 
-ScriptValue WebGLRenderingContextWebGPUBase::getBufferParameter(ScriptState*,
-                                                                GLenum target,
-                                                                GLenum pname) {
-  NOTIMPLEMENTED();
-  return {};
+ScriptValue WebGLRenderingContextWebGPUBase::getBufferParameter(
+    ScriptState* script_state,
+    GLenum target,
+    GLenum pname) {
+  // ANGLE also accepts the ES3 buffer mapping pnames (BUFFER_MAPPED,
+  // BUFFER_ACCESS_FLAGS, ...), but WebGL 2.0 has no buffer mapping.
+  if (pname != GL_BUFFER_USAGE && pname != GL_BUFFER_SIZE) {
+    InsertGLError(GL_INVALID_ENUM, "getBufferParameter",
+                  "invalid parameter name");
+    return ScriptValue::CreateNull(script_state->GetIsolate());
+  }
+
+  // WebGL 2.0 spec, getBufferParameter:
+  // > querying with the pname BUFFER_SIZE returns the buffer size as a value of
+  // > type GLsizeiptr.
+  // https://registry.khronos.org/webgl/specs/latest/2.0/
+  // A 32-bit GLint is equivalent for us: bufferData rejects sizes above
+  // INT32_MAX, and JS gets the same Number.
+  GLint value = 0;
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glGetBufferParameterivRobustANGLEFn(
+                         target, pname, 1, nullptr, &value),
+                     ScriptValue::CreateNull(script_state->GetIsolate()));
+  return WebGLAny(script_state, value);
 }
 
 WebGLContextAttributes* WebGLRenderingContextWebGPUBase::getContextAttributes()
