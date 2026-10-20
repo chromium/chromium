@@ -897,7 +897,21 @@ void WebGLRenderingContextWebGPUBase::compressedTexImage2D(
     GLsizei height,
     GLint border,
     MaybeShared<DOMArrayBufferView> data) {
-  NOTIMPLEMENTED();
+  // WebGL 2.0 uses a separate overload taking an offset for uploads from a
+  // PIXEL_UNPACK_BUFFER. GL would interpret the data pointer as an offset.
+  if (pixel_unpack_buffer_binding_) {
+    InsertGLError(GL_INVALID_OPERATION, "compressedTexImage2D",
+                  "a buffer is bound to PIXEL_UNPACK_BUFFER");
+    return;
+  }
+  if (!ValidateFitsNonNegInt32("compressedTexImage2D", "data",
+                               data->byteLength())) {
+    return;
+  }
+
+  driver_gl_.fn.glCompressedTexImage2DFn(
+      target, level, internalformat, width, height, border,
+      static_cast<GLsizei>(data->byteLength()), data->BaseAddressMaybeShared());
 }
 
 void WebGLRenderingContextWebGPUBase::compressedTexSubImage2D(
@@ -909,7 +923,21 @@ void WebGLRenderingContextWebGPUBase::compressedTexSubImage2D(
     GLsizei height,
     GLenum format,
     MaybeShared<DOMArrayBufferView> data) {
-  NOTIMPLEMENTED();
+  // WebGL 2.0 uses a separate overload taking an offset for uploads from a
+  // PIXEL_UNPACK_BUFFER. GL would interpret the data pointer as an offset.
+  if (pixel_unpack_buffer_binding_) {
+    InsertGLError(GL_INVALID_OPERATION, "compressedTexSubImage2D",
+                  "a buffer is bound to PIXEL_UNPACK_BUFFER");
+    return;
+  }
+  if (!ValidateFitsNonNegInt32("compressedTexSubImage2D", "data",
+                               data->byteLength())) {
+    return;
+  }
+
+  driver_gl_.fn.glCompressedTexSubImage2DFn(
+      target, level, xoffset, yoffset, width, height, format,
+      static_cast<GLsizei>(data->byteLength()), data->BaseAddressMaybeShared());
 }
 
 void WebGLRenderingContextWebGPUBase::copyTexImage2D(GLenum target,
