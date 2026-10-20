@@ -21,7 +21,6 @@ android_library("java") {
 
   srcjar_deps = [ ":jni_headers" ]
   sources = [
-    "java/src/org/chromium/chrome/browser/profiles/OriginalProfileSupplier.java",
     "java/src/org/chromium/chrome/browser/profiles/OtrProfileId.java",
     "java/src/org/chromium/chrome/browser/profiles/Profile.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileIntentUtils.java",
