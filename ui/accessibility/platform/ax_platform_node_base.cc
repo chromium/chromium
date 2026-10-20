@@ -324,7 +324,8 @@ std::optional<size_t> AXPlatformNodeBase::GetIndexInParent() {
   DCHECK(delegate->IsIgnored())
       << "Unable to find the unignored child in the list of its parent's "
          "children.\n* Child: "
-      << *this << "\n* Parent's subtree: " << parent->SubtreeToString();
+      << *this << "\n* Parent's subtree: "
+      << parent->SubtreeToString(/*stop_at_document=*/true);
   return std::nullopt;
 }
 

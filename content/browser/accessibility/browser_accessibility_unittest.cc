@@ -1543,6 +1543,49 @@ TEST_F(BrowserAccessibilityTest, GetIndexInParent) {
   EXPECT_EQ(0u, child_accessible->GetIndexInParent());
 }
 
+TEST_F(BrowserAccessibilityTest, DisconnectedDocumentDoesNotUseNativeParent) {
+  class NativeParentDelegate : public ui::TestAXPlatformTreeManagerDelegate {
+   public:
+    gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override {
+      ++native_parent_queries;
+      return gfx::NativeViewAccessible();
+    }
+
+    int native_parent_queries = 0;
+  } parent_delegate;
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  ui::AXTreeUpdate parent_update = MakeAXTreeUpdateForTesting(root);
+  parent_update.has_tree_data = true;
+  parent_update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  std::unique_ptr<ui::BrowserAccessibilityManager> parent_manager(
+      CreateBrowserAccessibilityManager(parent_update, node_id_delegate_,
+                                        &parent_delegate));
+
+  // The child tree has a parent_tree_id, but that tree has no iframe node
+  // linking back to it.
+  ui::AXTreeUpdate child_update = MakeAXTreeUpdateForTesting(root);
+  child_update.has_tree_data = true;
+  child_update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  child_update.tree_data.parent_tree_id = parent_manager->GetTreeID();
+  ui::TestAXPlatformTreeManagerDelegate child_delegate;
+  child_delegate.is_root_frame_ = false;
+  std::unique_ptr<ui::BrowserAccessibilityManager> child_manager(
+      CreateBrowserAccessibilityManager(child_update, node_id_delegate_,
+                                        &child_delegate));
+
+  parent_delegate.native_parent_queries = 0;
+  EXPECT_EQ(gfx::NativeViewAccessible(),
+            child_manager->GetBrowserAccessibilityRoot()->GetParent());
+  EXPECT_EQ(0, parent_delegate.native_parent_queries);
+
+  // The top-level document still uses the native-parent delegate.
+  parent_manager->GetBrowserAccessibilityRoot()->GetParent();
+  EXPECT_EQ(1, parent_delegate.native_parent_queries);
+}
+
 TEST_F(BrowserAccessibilityTest, CreatePositionAt) {
   ui::AXNodeData root_1;
   root_1.id = 1;

@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
@@ -1349,9 +1350,14 @@ std::string AXPlatformNodeDelegate::GetRootURL() const {
   return std::string();
 }
 
-std::string AXPlatformNodeDelegate::SubtreeToStringHelper(size_t level) {
+std::string AXPlatformNodeDelegate::SubtreeToStringHelper(
+    size_t level,
+    bool stop_at_document) {
   std::string result(level * 2, '+');
   result += ToString();
+  if (stop_at_document && ui::IsPlatformDocument(GetRole())) {
+    return result + " [document contents omitted]\n";
+  }
   result += '\n';
 
   // We can't use ChildrenBegin() and ChildrenEnd() here, because they both
@@ -1363,7 +1369,7 @@ std::string AXPlatformNodeDelegate::SubtreeToStringHelper(size_t level) {
   auto iter_end = ChildIteratorBase(this, GetChildCount());
   for (auto iter = iter_start; iter != iter_end; ++iter) {
     AXPlatformNodeDelegate& child = static_cast<AXPlatformNodeDelegate&>(*iter);
-    result += child.SubtreeToStringHelper(level + 1);
+    result += child.SubtreeToStringHelper(level + 1, stop_at_document);
   }
 
   return result;

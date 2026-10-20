@@ -499,7 +499,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibility
   // errors are present.
   TextAttributeMap GetSpellingAndGrammarAttributes() const;
 
-  std::string SubtreeToStringHelper(size_t level) override;
+  std::string SubtreeToStringHelper(size_t level,
+                                    bool stop_at_document) override;
 
   BrowserAccessibility* ToBrowserAccessibility() override;
 

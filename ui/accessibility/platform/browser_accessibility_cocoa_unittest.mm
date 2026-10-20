@@ -314,6 +314,87 @@ TEST_P(BrowserAccessibilityCocoaTest, ClickAncestorDoesNotAdvertisePress) {
       containsObject:NSAccessibilityPressAction]);
 }
 
+TEST_P(BrowserAccessibilityCocoaTest, RootDocumentWithoutNativeParent) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  AXTreeUpdate update;
+  update.root_id = root.id;
+  update.nodes.push_back(root);
+
+  TestAXNodeIdDelegate node_id_delegate;
+  TestAXPlatformTreeManagerDelegate delegate;
+  for (bool has_delegate : {true, false}) {
+    SCOPED_TRACE(has_delegate);
+    auto manager = std::make_unique<BrowserAccessibilityManagerMac>(
+        update, node_id_delegate, has_delegate ? &delegate : nullptr);
+    BrowserAccessibilityCocoa* node =
+        base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+            manager->GetBrowserAccessibilityRoot()
+                ->GetNativeViewAccessible()
+                .Get());
+
+    ASSERT_TRUE([node instanceActive]);
+    EXPECT_EQ(nil, [node accessibilityParent]);
+  }
+}
+
+TEST_P(BrowserAccessibilityCocoaTest,
+       DisconnectedDocumentDoesNotUseNativeParent) {
+  class NativeParentDelegate : public TestAXPlatformTreeManagerDelegate {
+   public:
+    gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override {
+      return gfx::NativeViewAccessible(native_parent);
+    }
+
+    NSView* __strong native_parent = [[NSView alloc] init];
+  } parent_delegate;
+
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  AXTreeUpdate parent_update;
+  parent_update.root_id = root.id;
+  parent_update.nodes.push_back(root);
+  parent_update.has_tree_data = true;
+  parent_update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  TestAXNodeIdDelegate node_id_delegate;
+  auto parent_manager = std::make_unique<BrowserAccessibilityManagerMac>(
+      parent_update, node_id_delegate, &parent_delegate);
+  BrowserAccessibilityCocoa* parent_node =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          parent_manager->GetBrowserAccessibilityRoot()
+              ->GetNativeViewAccessible()
+              .Get());
+  EXPECT_EQ(parent_delegate.native_parent, [parent_node accessibilityParent]);
+
+  // The child document names its outer document's tree, but that tree has no
+  // iframe node linking back to the child.
+  AXTreeUpdate child_update = parent_update;
+  child_update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+  child_update.tree_data.parent_tree_id = parent_manager->GetTreeID();
+  TestAXPlatformTreeManagerDelegate child_delegate;
+  child_delegate.is_root_frame_ = false;
+  auto child_manager = std::make_unique<BrowserAccessibilityManagerMac>(
+      child_update, node_id_delegate, &child_delegate);
+  BrowserAccessibility* child_root =
+      child_manager->GetBrowserAccessibilityRoot();
+  BrowserAccessibilityCocoa* child_node =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          child_root->GetNativeViewAccessible().Get());
+
+  ASSERT_EQ(nullptr, child_root->PlatformGetParent());
+  ASSERT_EQ(parent_manager.get(), child_manager->GetManagerForRootFrame());
+  EXPECT_EQ(nil, [child_node accessibilityParent]);
+
+  // The child document must also remain parentless without the outer manager.
+  parent_manager.reset();
+  ASSERT_EQ(nullptr, child_manager->GetManagerForRootFrame());
+  ASSERT_TRUE([child_node instanceActive]);
+  EXPECT_EQ(nil, [child_node accessibilityParent]);
+}
+
 TEST_P(BrowserAccessibilityCocoaTest, ViewsShowMenuUsesSerializedCapabilities) {
   AXNodeData root;
   root.id = 1;

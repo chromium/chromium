@@ -1001,16 +1001,20 @@ AXPlatformNodeId BrowserAccessibility::GetUniqueId() const {
   return unique_id_;
 }
 
-std::string BrowserAccessibility::SubtreeToStringHelper(size_t level) {
+std::string BrowserAccessibility::SubtreeToStringHelper(size_t level,
+                                                        bool stop_at_document) {
   std::string result(level * 2, '+');
   result += ToString();
+  if (stop_at_document && ui::IsPlatformDocument(GetRole())) {
+    return result + " [document contents omitted]\n";
+  }
   result += '\n';
 
   for (InternalChildIterator it = InternalChildrenBegin();
        it != InternalChildrenEnd(); ++it) {
     BrowserAccessibility* child = it.get();
     DCHECK(child);
-    result += child->SubtreeToStringHelper(level + 1);
+    result += child->SubtreeToStringHelper(level + 1, stop_at_document);
   }
 
   return result;
@@ -1036,6 +1040,14 @@ gfx::NativeViewAccessible BrowserAccessibility::GetParent() const {
   BrowserAccessibility* parent = PlatformGetParent();
   if (parent)
     return parent->GetNativeViewAccessible();
+
+  // Hiding an <iframe> can remove its element from the outer document's
+  // accessibility tree while leaving the embedded document's tree alive.
+  // The embedded document then has no accessible parent. Only the main frame
+  // may use the native view as a fallback parent.
+  if (!manager_->IsRootFrameManager()) {
+    return gfx::NativeViewAccessible();
+  }
 
   AXPlatformTreeManagerDelegate* delegate =
       manager_->GetDelegateFromRootManager();

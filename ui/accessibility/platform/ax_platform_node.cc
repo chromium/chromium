@@ -68,9 +68,9 @@ std::string AXPlatformNode::ToString() const {
   return GetDelegate()->ToString();
 }
 
-std::string AXPlatformNode::SubtreeToString() const {
+std::string AXPlatformNode::SubtreeToString(bool stop_at_document) const {
   // Must not be called before `Init()` or after `Destroy()`.
-  return GetDelegate()->SubtreeToString();
+  return GetDelegate()->SubtreeToString(stop_at_document);
 }
 
 std::ostream& operator<<(std::ostream& stream, AXPlatformNode& node) {

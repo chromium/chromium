@@ -119,8 +119,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   std::string ToString() const;
 
   // Returns a string representation of the subtree of nodes rooted at this
-  // node.
-  std::string SubtreeToString() const;
+  // node. If `stop_at_document` is true, include document nodes but omit their
+  // descendants.
+  std::string SubtreeToString(bool stop_at_document = false) const;
 
   friend std::ostream& operator<<(std::ostream& stream, AXPlatformNode& node);
 

@@ -29,13 +29,16 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/accessibility_notification_waiter.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/features.h"
@@ -61,6 +64,10 @@
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #endif
 
+#if BUILDFLAG(USE_ATK) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "content/browser/accessibility/accessibility_content_browsertest.h"
+#endif
+
 using ::testing::ElementsAre;
 using ::testing::Pair;
 
@@ -73,6 +80,58 @@ constexpr int kDelayForDeferredUpdatesAfterPageLoad = 150;
 #endif
 
 namespace content {
+
+#if BUILDFLAG(USE_ATK) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+class AccessibilityBackForwardCacheBrowserTest
+    : public AccessibilityContentBrowserTest {
+ public:
+  AccessibilityBackForwardCacheBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AccessibilityBackForwardCacheBrowserTest,
+                       CachedDocumentNativeParent) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContents* web_contents = GetWebContentsAndAssertNonNull();
+
+  // 1. Open the first page and check its document's native parent.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  WaitForAccessibilityTreeToContainNodeWithName(web_contents,
+                                                "This page has no title.");
+  RenderFrameHostImplWrapper first_frame(web_contents->GetPrimaryMainFrame());
+  auto* first_document = GetRootAndAssertNonNull();
+  EXPECT_TRUE(first_document->GetParent());
+
+  // 2. Navigate away. The cached document must have no native parent.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+  WaitForAccessibilityTreeToContainNodeWithName(web_contents,
+                                                "Title Of Awesomeness");
+  ASSERT_TRUE(first_frame);
+  ASSERT_TRUE(first_frame->IsInBackForwardCache());
+  ASSERT_TRUE(first_frame->browser_accessibility_manager());
+  ASSERT_EQ(first_document, first_frame->browser_accessibility_manager()
+                                ->GetBrowserAccessibilityRoot());
+  EXPECT_FALSE(first_document->GetParent());
+
+  // 3. Go back. The same document must regain its native parent.
+  ASSERT_TRUE(HistoryGoBack(web_contents));
+  WaitForAccessibilityTreeToContainNodeWithName(web_contents,
+                                                "This page has no title.");
+  ASSERT_TRUE(first_frame);
+  ASSERT_EQ(first_frame.get(), web_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(first_frame->IsActive());
+  ASSERT_EQ(first_document, GetRootAndAssertNonNull());
+  EXPECT_TRUE(first_document->GetParent());
+}
+#endif
 
 class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
  public:

@@ -1262,6 +1262,10 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     return unignored_parent;
   }
 
+  if (!_owner->manager()->IsRootFrameManager()) {
+    return nil;
+  }
+
   if (!_owner->IsWebContent()) {
     // PlatformGetParent crosses the tree boundary; for views, when we reach the
     // root of the view tree, there's really no other ancestor to hook up to.
@@ -1279,7 +1283,6 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     DCHECK(false);
     return nil;
   }
-  SANITIZER_CHECK(manager->GetParentView());
   return manager->GetParentView();
 }
 

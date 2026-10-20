@@ -4268,6 +4268,12 @@ RenderFrameHostImpl::AccessibilityGetAcceleratedWidget() {
 
 gfx::NativeViewAccessible
 RenderFrameHostImpl::AccessibilityGetNativeViewAccessible() {
+  // Inactive documents, including pages in the back/forward cache, are not
+  // children of the native view's accessible object.
+  if (!IsActive()) {
+    return gfx::NativeViewAccessible();
+  }
+
   RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
       render_view_host_->GetWidget()->GetView());
   if (view) {

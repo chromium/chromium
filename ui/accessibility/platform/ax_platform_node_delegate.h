@@ -660,8 +660,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   std::string ToString() const { return GetData().ToString(); }
 
   // Returns a string representation of the subtree of delegates rooted at this
-  // delegate.
-  std::string SubtreeToString() { return SubtreeToStringHelper(0u); }
+  // delegate. If `stop_at_document` is true, include document nodes but omit
+  // their descendants.
+  std::string SubtreeToString(bool stop_at_document = false) {
+    return SubtreeToStringHelper(0u, stop_at_document);
+  }
 
   friend std::ostream& operator<<(std::ostream& stream,
                                   const AXPlatformNodeDelegate& delegate) {
@@ -673,7 +676,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
 
   explicit AXPlatformNodeDelegate(AXNode* node);
 
-  virtual std::string SubtreeToStringHelper(size_t level);
+  virtual std::string SubtreeToStringHelper(size_t level,
+                                            bool stop_at_document);
 
   virtual void NotifyAccessibilityApiUsage() const {}
 
