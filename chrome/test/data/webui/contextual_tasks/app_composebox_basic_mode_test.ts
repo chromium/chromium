@@ -19,8 +19,7 @@ import {createContextualTasksAppElement, fixtureUrl} from './contextual_tasks_te
 async function removeThreadFrameToPreventRaceConditions() {
   const appElement = document.querySelector('contextual-tasks-app');
   appElement?.removeThreadFrameListenersForTesting();
-  const threadFrame =
-      appElement?.shadowRoot.querySelector<HTMLElement>('#threadFrame');
+  const threadFrame = appElement?.$.threadFrame;
   threadFrame?.remove();
   await microtasksFinished();
 }
@@ -59,9 +58,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
 
         const composebox =
             appElement.shadowRoot.querySelector('contextual-tasks-composebox');
-        const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
-        const flexCenterContainer =
-            appElement.shadowRoot.querySelector('#flexCenterContainer');
+        const threadFrame = appElement.$.threadFrame;
+        const flexCenterContainer = appElement.$.flexCenterContainer;
 
         assertTrue(!!composebox);
         assertFalse(composebox.hasAttribute('hidden'));
@@ -73,8 +71,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         // With flag enabled, hidden attribute should NOT be present.
         assertFalse(composebox.hasAttribute('hidden'));
 
-        const threadFrameStyle = getComputedStyle(threadFrame!);
-        const flexCenterStyle = getComputedStyle(flexCenterContainer!);
+        const threadFrameStyle = getComputedStyle(threadFrame);
+        const flexCenterStyle = getComputedStyle(flexCenterContainer);
 
         assertEquals(
             '1', threadFrameStyle.zIndex, 'Thread frame z-index should be 1');
@@ -87,8 +85,8 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         await proxy.callbackRouterRemote.$.flushForTesting();
         assertFalse(composebox.hasAttribute('hidden'));
 
-        const threadFrameStyleRestored = getComputedStyle(threadFrame!);
-        const flexCenterStyleRestored = getComputedStyle(flexCenterContainer!);
+        const threadFrameStyleRestored = getComputedStyle(threadFrame);
+        const flexCenterStyleRestored = getComputedStyle(flexCenterContainer);
 
         // Verify z-index is not stuck
         assertFalse(threadFrameStyleRestored.zIndex === '1');
@@ -135,15 +133,14 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
 
         const composebox =
             appElement.shadowRoot.querySelector('contextual-tasks-composebox');
-        const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
-        const flexCenterContainer =
-            appElement.shadowRoot.querySelector('#flexCenterContainer');
+        const threadFrame = appElement.$.threadFrame;
+        const flexCenterContainer = appElement.$.flexCenterContainer;
 
         assertTrue(!!composebox);
         assertFalse(composebox.hasAttribute('hidden'));
 
-        const threadFrameStyle = getComputedStyle(threadFrame!);
-        const flexCenterStyle = getComputedStyle(flexCenterContainer!);
+        const threadFrameStyle = getComputedStyle(threadFrame);
+        const flexCenterStyle = getComputedStyle(flexCenterContainer);
 
         // Verify z-index is not set to basic mode values
         assertFalse(threadFrameStyle.zIndex === '1');
@@ -163,16 +160,15 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
 
         const composebox =
             appElement.shadowRoot.querySelector('contextual-tasks-composebox');
-        const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
-        const flexCenterContainer =
-            appElement.shadowRoot.querySelector('#flexCenterContainer');
+        const threadFrame = appElement.$.threadFrame;
+        const flexCenterContainer = appElement.$.flexCenterContainer;
 
         assertTrue(!!composebox);
         // With z-order enabled, it should NOT be hidden
         assertFalse(composebox.hasAttribute('hidden'));
 
-        const threadFrameStyle = getComputedStyle(threadFrame!);
-        const flexCenterStyle = getComputedStyle(flexCenterContainer!);
+        const threadFrameStyle = getComputedStyle(threadFrame);
+        const flexCenterStyle = getComputedStyle(flexCenterContainer);
 
         assertEquals(
             '1', threadFrameStyle.zIndex, 'Thread frame z-index should be 1');
@@ -643,9 +639,7 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         /*url=*/ nlmFixtureUrl.toString());
 
     // Verify composeboxHeaderWrapper is hidden.
-    const headerWrapper =
-        appElement.shadowRoot.querySelector('#composeboxHeaderWrapper');
-    assertTrue(!!headerWrapper);
+    const headerWrapper = appElement.$.composeboxHeaderWrapper;
     assertTrue(headerWrapper.hasAttribute('hidden'));
   });
 

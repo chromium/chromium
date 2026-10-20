@@ -1214,7 +1214,8 @@ suite('ComposeboxMixinTest', () => {
 
   test('clear button title changes with input text', async () => {
     const cancelIcon =
-        element.getInputElement().shadowRoot.querySelector('#cancelIcon')!;
+        element.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#cancelIcon')!;
     assertEquals(
         loadTimeData.getString('composeboxCancelButtonTitle'),
         cancelIcon.getAttribute('title'));

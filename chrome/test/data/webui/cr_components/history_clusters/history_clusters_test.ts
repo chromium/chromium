@@ -379,9 +379,7 @@ suite('HistoryClustersTest', () => {
 
     // Find the action menu button inside the 'url-visit' component's shadow
     // DOM.
-    const actionMenuButton =
-        urlVisit.shadowRoot.querySelector<HTMLElement>('#actionMenuButton');
-    assertTrue(!!actionMenuButton);
+    const actionMenuButton = urlVisit.$.actionMenuButton;
     actionMenuButton.click();
     await microtasksFinished();
 

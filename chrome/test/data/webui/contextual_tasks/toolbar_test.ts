@@ -151,9 +151,7 @@ suite('ToolbarAppTest', () => {
     topToolbar.isAimEligible = true;
     await topToolbar.updateComplete;
 
-    const newThreadButton =
-        topToolbar.shadowRoot.querySelector<HTMLElement>('#newThreadButton')!;
-    assertTrue(!!newThreadButton);
+    const newThreadButton = topToolbar.$.newThreadButton;
 
     newThreadButton.click();
     await toolbarProxy.handler.whenCalled('createNewThread');

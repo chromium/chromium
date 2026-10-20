@@ -360,12 +360,8 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         // Remove the webview immediately to permanently prevent background
         // loadabort and loadstart events from polluting the reactive tracking
         // states during this test.
-        const threadFrame =
-            contextualTasksApp.shadowRoot.querySelector('#threadFrame');
-        if (threadFrame) {
-          threadFrame.remove();
-          await microtasksFinished();
-        }
+        contextualTasksApp.$.threadFrame.remove();
+        await microtasksFinished();
 
         // Force the internal component state to represent a fully loaded,
         // non-zero state AI page.
@@ -1155,12 +1151,8 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         // Verify initial state has is-dom-content-loaded_ and elements are
         // hidden
         assertFalse(appElement.hasAttribute('is-dom-content-loaded_'));
-        const composebox = appElement.shadowRoot.querySelector('#composebox');
-        const headerWrapper =
-            appElement.shadowRoot.querySelector('#composeboxHeaderWrapper');
-
-        assertTrue(!!composebox);
-        assertTrue(!!headerWrapper);
+        const composebox = appElement.$.composebox;
+        const headerWrapper = appElement.$.composeboxHeaderWrapper;
 
         assertEquals('hidden', window.getComputedStyle(composebox).visibility);
         assertEquals('none', window.getComputedStyle(composebox).pointerEvents);

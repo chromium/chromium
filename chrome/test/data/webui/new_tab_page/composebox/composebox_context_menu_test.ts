@@ -295,10 +295,8 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
       try {
         // Access the dialog.
-        const crActionMenu =
-            contextActionMenu.shadowRoot.querySelector('#menu');
-        assertTrue(!!crActionMenu);
-        const dialog = crActionMenu.shadowRoot!.querySelector('dialog');
+        const crActionMenu = contextActionMenu.$.menu;
+        const dialog = crActionMenu.shadowRoot.querySelector('dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.open);
 
@@ -353,10 +351,8 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
       try {
         // Access the dialog.
-        const crActionMenu =
-            contextActionMenu.shadowRoot.querySelector('#menu');
-        assertTrue(!!crActionMenu);
-        const dialog = crActionMenu.shadowRoot!.querySelector('dialog');
+        const crActionMenu = contextActionMenu.$.menu;
+        const dialog = crActionMenu.shadowRoot.querySelector('dialog');
         assertTrue(!!dialog);
         assertTrue(dialog.open);
 

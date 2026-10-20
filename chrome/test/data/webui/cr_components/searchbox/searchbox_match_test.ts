@@ -280,14 +280,12 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.match = match;
     await microtasksFinished();
 
-    const primaryTextEl = matchEl.shadowRoot.querySelector('#primaryText');
-    assertTrue(!!primaryTextEl);
+    const primaryTextEl = matchEl.$.primaryText;
     // 'test ' is rendered unstyled. 'content' is rendered as a "match".
     assertEquals(
         '<span>test </span><span class="match">content</span>',
         primaryTextEl.innerHTML);
-    const secondaryTextEl = matchEl.shadowRoot.querySelector('#secondaryText');
-    assertTrue(!!secondaryTextEl);
+    const secondaryTextEl = matchEl.$.secondaryText;
     // 'test ' is rendered unstyled. 'description' is rendered as a "match".
     assertEquals(
         '<span>test </span><span class="match">description</span>',
@@ -302,8 +300,7 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.match = match;
     await microtasksFinished();
 
-    const primaryTextEl = matchEl.shadowRoot.querySelector('#primaryText');
-    assertTrue(!!primaryTextEl);
+    const primaryTextEl = matchEl.$.primaryText;
     // 'prefix' is rendered unstyled.
     assertEquals(
         '<span>prefix </span><span class="match">content</span>',
@@ -335,8 +332,7 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.match = match;
     await microtasksFinished();
 
-    const primaryTextEl = matchEl.shadowRoot.querySelector('#primaryText');
-    assertTrue(!!primaryTextEl);
+    const primaryTextEl = matchEl.$.primaryText;
     assertEquals(
         '<span>a</span><span class="dim">b</span>' +
             '<span class="dim match">c</span><span class="match url">d</span>' +
@@ -355,16 +351,14 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.match = match;
     await microtasksFinished();
 
-    const primaryTextEl = matchEl.shadowRoot.querySelector('#primaryText');
-    assertTrue(!!primaryTextEl);
+    const primaryTextEl = matchEl.$.primaryText;
     // `<script>` HTML tag is escaped. Primary text is rendered unstyled.
     assertEquals(
         '<span>&lt;script&gt;alert("xss")&lt;/script&gt;Safe Content</span>',
         primaryTextEl.innerHTML);
     assertEquals(0, primaryTextEl.querySelectorAll('script').length);
 
-    const secondaryTextEl = matchEl.shadowRoot.querySelector('#secondaryText');
-    assertTrue(!!secondaryTextEl);
+    const secondaryTextEl = matchEl.$.secondaryText;
     // `<img>` HTML tag is escaped. Secondary text is rendered unstyled.
     assertEquals(
         '<span>&lt;img src=x onerror=alert(1)&gt;Safe Description</span>',

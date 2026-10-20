@@ -308,8 +308,7 @@ getSubmitContainer<T extends ComposeboxUnionElement = ComposeboxElement>(
   const button = testProxy.element.shadowRoot.querySelector(
       'cr-composebox-submit');
   assertTrue(!!button);
-  const container = button.shadowRoot.querySelector<HTMLElement>('#submitContainer');
-  assertTrue(!!container);
+  const container = button.$.submitContainer;
   return container;
 }
 
@@ -319,7 +318,6 @@ getSubmitIcon<T extends ComposeboxUnionElement = ComposeboxElement>(
   const button = testProxy.element.shadowRoot.querySelector(
       'cr-composebox-submit');
   assertTrue(!!button);
-  const submitIcon = button.shadowRoot.querySelector<HTMLElement>('#submitIcon');
-  assertTrue(!!submitIcon);
+  const submitIcon = button.$.submitIcon;
   return submitIcon;
 }

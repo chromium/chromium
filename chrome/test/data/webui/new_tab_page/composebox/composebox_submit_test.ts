@@ -35,13 +35,11 @@ suite('ComposeboxSubmitTest', () => {
     assertFalse(submitButton.disabled);
     assertEquals(SubmitButtonIconType.UPWARD, submitButton.iconType);
 
-    const icon =
-        submitButton.shadowRoot.querySelector<HTMLElement>('#submitIcon');
+    const icon = submitButton.$.submitIcon;
     const overlay =
         submitButton.shadowRoot.querySelector<HTMLElement>('#submitOverlay');
 
     // Assert icon properties.
-    assertTrue(!!icon);
     assertTrue(icon.classList.contains('icon-arrow-upward'));
     assertFalse(icon.hasAttribute('disabled'));
     // Assert overlay properties.
@@ -55,13 +53,11 @@ suite('ComposeboxSubmitTest', () => {
     submitButton.submitButtonTitle = 'Custom Title';
     await microtasksFinished();
 
-    const icon =
-        submitButton.shadowRoot.querySelector<HTMLElement>('#submitIcon');
+    const icon = submitButton.$.submitIcon;
     const overlay =
         submitButton.shadowRoot.querySelector<HTMLElement>('#submitOverlay');
 
     // Assert icon properties.
-    assertTrue(!!icon);
     assertTrue(icon.classList.contains('icon-arrow-forward'));
     assertTrue(icon.hasAttribute('disabled'));
     // Assert overlay properties.
@@ -89,9 +85,7 @@ suite('ComposeboxSubmitTest', () => {
     submitButton.addEventListener('submit-click', () => {
       eventCount++;
     });
-    const container =
-        submitButton.shadowRoot.querySelector<HTMLElement>('#submitContainer');
-    assertTrue(!!container);
+    const container = submitButton.$.submitContainer;
 
     container.click();
     await microtasksFinished();
@@ -106,9 +100,7 @@ suite('ComposeboxSubmitTest', () => {
     });
     submitButton.disabled = true;
     await microtasksFinished();
-    const container =
-        submitButton.shadowRoot.querySelector<HTMLElement>('#submitContainer');
-    assertTrue(!!container);
+    const container = submitButton.$.submitContainer;
 
     container.click();
     await microtasksFinished();
@@ -118,9 +110,7 @@ suite('ComposeboxSubmitTest', () => {
 
   test('dispatches submit-focusin event', async () => {
     const focusinPromise = eventToPromise('submit-focusin', submitButton);
-    const container =
-        submitButton.shadowRoot.querySelector<HTMLElement>('#submitContainer');
-    assertTrue(!!container);
+    const container = submitButton.$.submitContainer;
 
     container.dispatchEvent(new FocusEvent('focusin'));
     const event = await focusinPromise;
@@ -254,9 +244,7 @@ suite('ComposeboxSmartComposeSubmitTest', () => {
     const submitBtn =
         testProxy.element.shadowRoot.querySelector('cr-composebox-submit');
     assertTrue(!!submitBtn);
-    const submitContainer =
-        submitBtn.shadowRoot.querySelector<HTMLElement>('#submitContainer');
-    assertTrue(!!submitContainer);
+    const submitContainer = submitBtn.$.submitContainer;
     submitContainer.click();
     await microtasksFinished();
 

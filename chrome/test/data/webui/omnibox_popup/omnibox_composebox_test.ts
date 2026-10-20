@@ -717,9 +717,8 @@ suite('OmniboxComposeboxTest', () => {
   test('Render Error Scrim on validation error', async () => {
     let scrim = omniboxComposebox.shadowRoot.querySelector('ntp-error-scrim');
     assertFalse(!!scrim);
-    const composebox =
-        omniboxComposebox.shadowRoot.querySelector('#composebox');
-    assertFalse(composebox!.hasAttribute('inert'));
+    const composebox = omniboxComposebox.$.composebox;
+    assertFalse(composebox.hasAttribute('inert'));
 
     omniboxComposebox.errorMessage = 'File size exceeds 100 MiB';
     await microtasksFinished();
@@ -728,7 +727,7 @@ suite('OmniboxComposeboxTest', () => {
     scrim = omniboxComposebox.shadowRoot.querySelector('ntp-error-scrim');
     assertTrue(!!scrim);
     assertEquals('File size exceeds 100 MiB', scrim.errorMessage);
-    assertTrue(composebox!.hasAttribute('inert'));
+    assertTrue(composebox.hasAttribute('inert'));
 
     // Dismiss error scrim.
     scrim.fire('dismiss-error-scrim');
@@ -738,7 +737,7 @@ suite('OmniboxComposeboxTest', () => {
     assertEquals('', omniboxComposebox.errorMessage);
     scrim = omniboxComposebox.shadowRoot.querySelector('ntp-error-scrim');
     assertFalse(!!scrim);
-    assertFalse(composebox!.hasAttribute('inert'));
+    assertFalse(composebox.hasAttribute('inert'));
   });
 
   test('Add Attachment with validation error fails', async () => {
@@ -1017,10 +1016,8 @@ suite('OmniboxComposeboxTest', () => {
     // When the submit button is clicked.
     const composeboxSubmit =
         omniboxComposebox.shadowRoot.querySelector('cr-composebox-submit');
-    const submitContainer =
-        composeboxSubmit!.shadowRoot.querySelector<HTMLElement>(
-            '#submitContainer');
-    submitContainer!.click();
+    const submitContainer = composeboxSubmit!.$.submitContainer;
+    submitContainer.click();
     await microtasksFinished();
 
     // Then openAutocompleteMatch is called.
@@ -1065,10 +1062,8 @@ suite('OmniboxComposeboxTest', () => {
 
         const composeboxSubmit =
             omniboxComposebox.shadowRoot.querySelector('cr-composebox-submit');
-        const submitContainer =
-            composeboxSubmit!.shadowRoot.querySelector<HTMLElement>(
-                '#submitContainer');
-        submitContainer!.click();
+        const submitContainer = composeboxSubmit!.$.submitContainer;
+        submitContainer.click();
         await microtasksFinished();
 
         assertEquals(1, testProxy.handler.getCallCount('submitQuery'));
@@ -1133,10 +1128,8 @@ suite('OmniboxComposeboxTest', () => {
         const composeboxSubmit =
             omniboxComposebox.shadowRoot.querySelector('cr-composebox-submit');
         assertFalse(composeboxSubmit!.hasAttribute('disabled'));
-        const submitContainer =
-            composeboxSubmit!.shadowRoot.querySelector<HTMLElement>(
-                '#submitContainer');
-        submitContainer!.click();
+        const submitContainer = composeboxSubmit!.$.submitContainer;
+        submitContainer.click();
         await microtasksFinished();
 
         // Then submitQuery is called.
@@ -1707,13 +1700,11 @@ suite('OmniboxComposeboxTest', () => {
     });
 
     test('sets is-dragging-file attribute on dragenter', async () => {
-      const dropZone =
-          omniboxComposebox.shadowRoot.querySelector('#composebox');
-      assertTrue(!!dropZone);
+      const dropZone = omniboxComposebox.$.composebox;
 
       assertFalse(omniboxComposebox.hasAttribute('is-dragging-file'));
 
-      dropZone?.dispatchEvent(new DragEvent('dragenter', {
+      dropZone.dispatchEvent(new DragEvent('dragenter', {
         bubbles: true,
         composed: true,
       }));
@@ -1725,16 +1716,14 @@ suite('OmniboxComposeboxTest', () => {
     });
 
     test('removes is-dragging-file attribute on dragleave', async () => {
-      const dropZone =
-          omniboxComposebox.shadowRoot.querySelector('#composebox');
-      assertTrue(!!dropZone);
+      const dropZone = omniboxComposebox.$.composebox;
 
       omniboxComposebox.animationState = GlowAnimationState.DRAGGING;
-      dropZone?.dispatchEvent(new DragEvent('dragenter', {
+      dropZone.dispatchEvent(new DragEvent('dragenter', {
         bubbles: true,
         composed: true,
       }));
-      dropZone?.dispatchEvent(new DragEvent('dragleave', {
+      dropZone.dispatchEvent(new DragEvent('dragleave', {
         bubbles: true,
         composed: true,
       }));
@@ -2419,9 +2408,7 @@ suite('OmniboxComposeboxTest', () => {
       assertTrue(!!submitButton);
       await submitButton.updateComplete;
 
-      const submitContainer =
-          submitButton.shadowRoot.querySelector<HTMLElement>('#submitContainer');
-      assertTrue(!!submitContainer);
+      const submitContainer = submitButton.$.submitContainer;
       submitContainer.click();
 
       await microtasksFinished();

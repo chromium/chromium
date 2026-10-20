@@ -192,11 +192,7 @@ export class ContextualEntrypointAndMenuElement extends
   }
 
   closeMenu() {
-    const menu =
-        this.shadowRoot.querySelector<ContextualActionMenuElement>('#menu');
-    if (menu) {
-      menu.close();
-    }
+    this.$.menu.close();
   }
 
   protected onMenuClose_() {

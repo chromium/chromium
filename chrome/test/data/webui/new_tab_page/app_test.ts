@@ -1175,11 +1175,9 @@ suite('NewTabPageAppTest', () => {
             const composeButton = getComposeButton();
             assertTrue(!!composeButton);
 
-            searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
-                .querySelector<HTMLInputElement>('#input')!.value = 'hello';
-            searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
-                .querySelector<HTMLInputElement>('#input')!.dispatchEvent(
-                    new InputEvent('input'));
+            searchboxContainer!.$.input.inputElement.value = 'hello';
+            searchboxContainer!.$.input.inputElement.dispatchEvent(
+                new InputEvent('input'));
 
             // Dispatch the 'compose-click' event directly, which ntp-searchbox
             // listens for. This simulates the `ntp-searchbox-compose-button`
@@ -1206,8 +1204,7 @@ suite('NewTabPageAppTest', () => {
         const composeButton = getComposeButton();
         assertTrue(!!composeButton);
 
-        searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
-            .querySelector<HTMLInputElement>('#input')!.value = 'hello';
+        searchboxContainer!.$.input.inputElement.value = 'hello';
 
         // Act.
         composeButton.dispatchEvent(new CustomEvent(
@@ -1273,11 +1270,9 @@ suite('NewTabPageAppTest', () => {
             const composeButton = getComposeButton();
             assertTrue(!!composeButton);
 
-            searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
-                .querySelector<HTMLInputElement>('#input')!.value = 'hello';
-            searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
-                .querySelector<HTMLInputElement>('#input')!.dispatchEvent(
-                    new InputEvent('input'));
+            searchboxContainer!.$.input.inputElement.value = 'hello';
+            searchboxContainer!.$.input.inputElement.dispatchEvent(
+                new InputEvent('input'));
 
             // Dispatch the 'compose-click' event directly, which cr-searchbox
             // listens for. This simulates the `cr-searchbox-compose-button`
@@ -1607,11 +1602,9 @@ suite('NewTabPageAppTest', () => {
           const composeButton = getComposeButton();
           assertTrue(!!composeButton);
 
-          searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
-              .querySelector<HTMLInputElement>('#input')!.value = 'hello';
-          searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
-              .querySelector<HTMLInputElement>('#input')!.dispatchEvent(
-                  new InputEvent('input'));
+          searchboxContainer!.$.input.inputElement.value = 'hello';
+          searchboxContainer!.$.input.inputElement.dispatchEvent(
+              new InputEvent('input'));
 
           // Simulate entrypoint click with text present.
           composeButton.dispatchEvent(new CustomEvent(
@@ -1860,9 +1853,7 @@ suite('NewTabPageAppTest', () => {
               composeboxElement.setAttribute('should-remain-folded_', '');
               await composeboxElement.updateComplete;
 
-              const composeboxContainer =
-                  composeboxElement.shadowRoot.querySelector('#composebox');
-              assertTrue(!!composeboxContainer);
+              const composeboxContainer = composeboxElement.$.composebox;
 
               const searchboxWrapper =
                   searchbox.shadowRoot!.querySelector('#inputWrapper')!;

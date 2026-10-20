@@ -876,20 +876,14 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     if (!wrapper) {
       return null;
     }
-    const innerComposebox =
-        wrapper.shadowRoot?.querySelector<HTMLElement>('#composebox');
-    if (!innerComposebox) {
-      return null;
-    }
+    const innerComposebox = wrapper.$.composebox;
     const entrypoint = innerComposebox.shadowRoot
                            ?.querySelector<ContextualEntrypointAndMenuElement>(
                                '#contextEntrypoint');
     if (!entrypoint) {
       return null;
     }
-    return entrypoint.shadowRoot?.querySelector<ContextualActionMenuElement>(
-               '#menu') ||
-        null;
+    return entrypoint.$.menu || null;
   }
   // </if>
 

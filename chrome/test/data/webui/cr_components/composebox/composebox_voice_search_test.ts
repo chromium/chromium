@@ -854,9 +854,7 @@ suite('ComposeboxVoiceSearch', () => {
 
     // With nothing to submit, clicking it exits voice search and returns to
     // the searchbox, the same as closing voice search.
-    const submitContainer =
-        submitButton.shadowRoot.querySelector<HTMLElement>('#submitContainer');
-    assertTrue(!!submitContainer);
+    const submitContainer = submitButton.$.submitContainer;
     const cancelEventPromise =
         eventToPromise('voice-search-cancel', voiceSearchElement);
     submitContainer.click();
@@ -1206,10 +1204,7 @@ suite('ComposeboxVoiceSearch', () => {
 
 
         // Verify: classes were added to elements.
-        const animatedSearchElement =
-            composeboxElement.shadowRoot.querySelector(
-                '#animatedSearchElement')!;
-        assertTrue(!!animatedSearchElement);
+        const animatedSearchElement = composeboxElement.$.animatedSearchElement;
         assertTrue(
             voiceSearchElement.classList.contains('permission-prompt-showing'));
         assertTrue(animatedSearchElement.classList.contains(

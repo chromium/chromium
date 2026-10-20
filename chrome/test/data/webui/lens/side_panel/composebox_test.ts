@@ -139,9 +139,7 @@ suite('Composebox', () => {
             '#input')!;
     assertTrue(!!input);
 
-    const animatedElement =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!animatedElement);
+    const animatedElement = composebox.$.composebox;
 
     // Focusing the input should expand the composebox.
     const expandPromise =
@@ -168,9 +166,7 @@ suite('Composebox', () => {
     loadTimeData.overrideValues({enableAimSearchbox: true});
     const composebox = await setupTest();
 
-    const animatedElement =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!animatedElement);
+    const animatedElement = composebox.$.composebox;
 
     const initialHeight = composebox.offsetHeight;
     assertTrue(initialHeight > 0);
@@ -296,9 +292,7 @@ suite('Composebox', () => {
             '#input')!;
     assertTrue(!!input);
     input.focus();
-    const animatedElement =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!animatedElement);
+    const animatedElement = composebox.$.composebox;
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send suggestions to the composebox.
@@ -330,9 +324,7 @@ suite('Composebox', () => {
             '#input')!;
     assertTrue(!!input);
     input.focus();
-    const animatedElement =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!animatedElement);
+    const animatedElement = composebox.$.composebox;
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send suggestions to the composebox.
@@ -363,9 +355,7 @@ suite('Composebox', () => {
 
     // Focus input to expand composebox and show dropdown.
     input.focus();
-    const animatedElement =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!animatedElement);
+    const animatedElement = composebox.$.composebox;
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send suggestions to the composebox.
@@ -399,9 +389,7 @@ suite('Composebox', () => {
 
     // Focus input to expand composebox.
     input.focus();
-    const animatedElement =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!animatedElement);
+    const animatedElement = composebox.$.composebox;
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send suggestions to the composebox and assert dropdown is visible.
@@ -455,9 +443,7 @@ suite('Composebox', () => {
 
     input.focus();
     // Wait for expansion.
-    const animatedElement =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!animatedElement);
+    const animatedElement = composebox.$.composebox;
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // When no text is present, only the input should be focusable inside the
@@ -508,9 +494,7 @@ suite('Composebox', () => {
 
     input.focus();
     // Wait for expansion.
-    const animatedElement =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!animatedElement);
+    const animatedElement = composebox.$.composebox;
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     input.innerText = 'some text';
@@ -598,9 +582,7 @@ suite('Composebox', () => {
 
     // Focus input to expand composebox.
     input.focus();
-    const animatedElement =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!animatedElement);
+    const animatedElement = composebox.$.composebox;
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send suggestions to the composebox.
@@ -646,10 +628,6 @@ suite('Composebox', () => {
             '#input')!;
     assertTrue(!!input);
 
-    const animatedElement =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!animatedElement);
-
     // The button should be visible.
     assertTrue(isTrulyVisible(lensButton));
 
@@ -671,10 +649,6 @@ suite('Composebox', () => {
         composebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
             '#input')!;
     assertTrue(!!input);
-
-    const animatedElement =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!animatedElement);
 
     // The button should be visible.
     assertTrue(isTrulyVisible(lensButton));
@@ -767,9 +741,7 @@ suite('Composebox', () => {
             '#input')!;
     assertTrue(!!input);
     input.focus();
-    const animatedElement =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!animatedElement);
+    const animatedElement = composebox.$.composebox;
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send 3 suggestions to the composebox.
@@ -843,9 +815,7 @@ suite('Composebox', () => {
             '#input')!;
     assertTrue(!!input);
     input.focus();
-    const animatedElement =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!animatedElement);
+    const animatedElement = composebox.$.composebox;
     await getTransitionEndPromise(animatedElement, 'max-height');
 
     // Send 3 suggestions to the composebox.

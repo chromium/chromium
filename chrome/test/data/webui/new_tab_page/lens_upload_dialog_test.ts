@@ -75,9 +75,7 @@ suite('LensUploadDialogTest', () => {
 
   test('hides when close button is clicked', async () => {
     // Act.
-    const closeButton =
-        uploadDialog.shadowRoot.querySelector<HTMLElement>('#closeButton');
-    assertTrue(!!closeButton);
+    const closeButton = uploadDialog.$.closeButton;
     closeButton.click();
     await microtasksFinished();
 

@@ -272,8 +272,7 @@ suite('ComposeboxDragAndDrop', () => {
   test('sets is-dragging-file attribute on dragenter', async () => {
     await createComposeboxElement();
     await microtasksFinished();
-    const dropZone = composeboxElement.shadowRoot.querySelector('#composebox');
-    assertTrue(!!dropZone);
+    const dropZone = composeboxElement.$.composebox;
 
     assertFalse(composeboxElement.hasAttribute('is-dragging-file'));
 
@@ -290,8 +289,7 @@ suite('ComposeboxDragAndDrop', () => {
   test('removes is-dragging-file attribute on dragleave', async () => {
     await createComposeboxElement();
     await microtasksFinished();
-    const dropZone = composeboxElement.shadowRoot.querySelector('#composebox');
-    assertTrue(!!dropZone);
+    const dropZone = composeboxElement.$.composebox;
 
     composeboxElement.animationState = GlowAnimationState.DRAGGING;
     dropZone?.dispatchEvent(new DragEvent('dragenter', {
@@ -437,9 +435,7 @@ suite('ComposeboxDragAndDrop', () => {
     await createComposeboxElement();
     await microtasksFinished();
 
-    const contextEntrypoint =
-        composeboxElement.shadowRoot.querySelector('#contextEntrypoint');
-    assertTrue(!!contextEntrypoint);
+    const contextEntrypoint = composeboxElement.$.contextEntrypoint;
     contextEntrypoint.dispatchEvent(new CustomEvent('tool-click', {
       detail: {tool: ToolMode.kDeepSearch},
     }));
@@ -479,9 +475,7 @@ suite('ComposeboxDragAndDrop', () => {
     await createComposeboxElement();
     await microtasksFinished();
 
-    const contextEntrypoint =
-        composeboxElement.shadowRoot.querySelector('#contextEntrypoint');
-    assertTrue(!!contextEntrypoint);
+    const contextEntrypoint = composeboxElement.$.contextEntrypoint;
     contextEntrypoint.dispatchEvent(new CustomEvent('tool-click', {
       detail: {tool: ToolMode.kImageGen},
     }));
@@ -530,9 +524,7 @@ suite('ComposeboxDragAndDrop', () => {
     await createComposeboxElement();
     await microtasksFinished();
 
-    const contextEntrypoint =
-        composeboxElement.shadowRoot.querySelector('#contextEntrypoint');
-    assertTrue(!!contextEntrypoint);
+    const contextEntrypoint = composeboxElement.$.contextEntrypoint;
     contextEntrypoint.dispatchEvent(new CustomEvent('tool-click', {
       detail: {tool: ToolMode.kCanvas},
     }));

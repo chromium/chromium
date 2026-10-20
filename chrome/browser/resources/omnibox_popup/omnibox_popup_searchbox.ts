@@ -2225,15 +2225,9 @@ export class OmniboxPopupSearchboxElement extends
       return;
     }
 
-    const composeButton =
-        this.shadowRoot?.querySelector<HTMLElement>('#composeButton');
-    if (!composeButton) {
-      return;
-    }
-
     // Capture the latest "expanded" AIM button width.
     if (!this.aimButtonIconOnly_) {
-      this.expandedAimButtonWidth_ = composeButton.offsetWidth;
+      this.expandedAimButtonWidth_ = this.$.composeButton.offsetWidth;
     }
 
     const input = this.$.input.inputElement;
@@ -2254,7 +2248,7 @@ export class OmniboxPopupSearchboxElement extends
       }
       const textWidth = this.getTextWidth_(text, input);
       const expandedWidth = this.expandedAimButtonWidth_ || 104;
-      const collapsedWidth = composeButton.offsetWidth || 24;
+      const collapsedWidth = this.$.composeButton.offsetWidth || 24;
       // If non-empty input text can fit comfortably alongside the "expanded"
       // AIM button, then render the "expanded" variant.
       // NOTE: `threshold` uses a 4px safety margin in order to limit any

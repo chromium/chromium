@@ -121,12 +121,9 @@ suite('NewTabPageDoodleShareDialogTest', () => {
       await microtasksFinished();
 
       // Assert.
-      const copyButton =
-          doodleShareDialog.shadowRoot.querySelector('#copyButton');
-      assertTrue(!!copyButton);
       assertEquals(
           roundedIcons ? 'ntp-doodle:copy' : 'ntp-doodle:copy-old',
-          copyButton.getAttribute('iron-icon'));
+          doodleShareDialog.$.copyButton.getAttribute('iron-icon'));
     });
   });
 });

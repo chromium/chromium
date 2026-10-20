@@ -24,8 +24,7 @@ import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as 
 // a race condition with our manual event simulation.
 async function removeThreadFrameToPreventRaceConditions() {
   const appElement = document.querySelector('contextual-tasks-app');
-  const threadFrame =
-      appElement?.shadowRoot.querySelector<HTMLElement>('#threadFrame');
+  const threadFrame = appElement?.$.threadFrame;
 
   if (threadFrame && isVisible(threadFrame)) {
     threadFrame.remove();
@@ -605,9 +604,7 @@ suite('ContextualTasksAppTest', function() {
         appElement.shadowRoot.querySelector('contextual-tasks-composebox');
     assertTrue(!!composebox);
     assertTrue(!!composebox.shadowRoot);
-    const innerComposebox =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!innerComposebox);
+    const innerComposebox = composebox.$.composebox;
     innerComposebox.style.height = '123px';
 
     await new Promise(resolve => requestAnimationFrame(resolve));
@@ -644,7 +641,6 @@ suite('ContextualTasksAppTest', function() {
         await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
     const composebox = appElement.$.composebox;
-    assertTrue(!!composebox);
 
     const rect = {
       top: 10,
@@ -690,7 +686,6 @@ suite('ContextualTasksAppTest', function() {
         await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
     const composebox = appElement.$.composebox;
-    assertTrue(!!composebox);
 
     const rect = {
       top: 10,
@@ -865,7 +860,6 @@ suite('ContextualTasksAppTest', function() {
     await removeThreadFrameToPreventRaceConditions();
 
     const composebox = appElement.$.composebox;
-    assertTrue(!!composebox);
 
     // Initial state setup: AI page, not zero state, no forced bounds
     proxy.handler.setIsAiPage(true);
@@ -1004,8 +998,7 @@ suite('ContextualTasksAppTest', function() {
         /*waitForInitialLoadStart=*/ false);
 
     // Remove the thread frame to prevent unwanted loadstart events.
-    const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
-    assertTrue(!!threadFrame);
+    const threadFrame = appElement.$.threadFrame;
     appElement.shadowRoot.removeChild(threadFrame);
     await microtasksFinished();
 
@@ -1086,8 +1079,7 @@ suite('ContextualTasksAppTest', function() {
         await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
     // Remove the thread frame to prevent unwanted loadstart events.
-    const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
-    assertTrue(!!threadFrame);
+    const threadFrame = appElement.$.threadFrame;
     appElement.shadowRoot.removeChild(threadFrame);
     await microtasksFinished();
 
@@ -1122,8 +1114,7 @@ suite('ContextualTasksAppTest', function() {
             });
 
         // Remove the thread frame to prevent unwanted loadstart events.
-        const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
-        assertTrue(!!threadFrame);
+        const threadFrame = appElement.$.threadFrame;
         appElement.shadowRoot.removeChild(threadFrame);
         await microtasksFinished();
 
@@ -1209,8 +1200,7 @@ suite('ContextualTasksAppTest', function() {
         await microtasksFinished();
 
         // Remove the thread frame to prevent unwanted loadstart events.
-        const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
-        assertTrue(!!threadFrame);
+        const threadFrame = appElement.$.threadFrame;
         appElement.shadowRoot.removeChild(threadFrame);
         await microtasksFinished();
 
@@ -1286,7 +1276,7 @@ suite('ContextualTasksAppTest', function() {
     const {appElement} =
         await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
-    const wrapper = appElement.shadowRoot.querySelector('#composeboxHeaderWrapper')!;
+    const wrapper = appElement.$.composeboxHeaderWrapper;
     assertTrue(wrapper.hasAttribute('hidden'));
   });
 
@@ -1298,7 +1288,7 @@ suite('ContextualTasksAppTest', function() {
     await microtasksFinished();
     await appElement.updateComplete;
 
-    const wrapper = appElement.shadowRoot.querySelector('#composeboxHeaderWrapper')!;
+    const wrapper = appElement.$.composeboxHeaderWrapper;
     assertStyle(wrapper, 'display', 'none');
   });
 
@@ -1310,7 +1300,7 @@ suite('ContextualTasksAppTest', function() {
     appElement.setIsZeroStateForTesting(false);
     await microtasksFinished();
     await appElement.updateComplete;
-    const wrapper = appElement.shadowRoot.querySelector('#composeboxHeaderWrapper')!;
+    const wrapper = appElement.$.composeboxHeaderWrapper;
     assertFalse(wrapper.hasAttribute('hidden'));
 
     proxy.callbackRouterRemote.hideInput();
@@ -1359,8 +1349,7 @@ suite('ContextualTasksAppTest', function() {
         assertFalse(appElement.$.composebox.hidden);
         assertStyle(appElement.$.composebox, 'visibility', 'visible');
 
-        const wrapper =
-            appElement.shadowRoot.querySelector('#composeboxHeaderWrapper')!;
+        const wrapper = appElement.$.composeboxHeaderWrapper;
         assertFalse(wrapper.hasAttribute('hidden'));
         assertStyle(wrapper, 'visibility', 'visible');
       });

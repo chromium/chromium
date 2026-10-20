@@ -722,10 +722,7 @@ suite('NewTabPageComposeboxTest', () => {
       assertTrue(!!submitButton);
       await submitButton.updateComplete;
 
-      const submitContainer =
-          submitButton.shadowRoot.querySelector<HTMLElement>(
-              '#submitContainer');
-      assertTrue(!!submitContainer);
+      const submitContainer = submitButton.$.submitContainer;
       submitContainer.click();
 
       await microtasksFinished();

@@ -11,7 +11,6 @@ import type {ActionChip, ActionChipsPageRemote as PageRemote, TabInfo} from 'chr
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
-import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -736,9 +735,7 @@ suite('NewTabPageActionChipsTest', () => {
           '.action-chips-container');
       assertTrue(!!container);
 
-      const actionMenu =
-          chips.shadowRoot.querySelector<CrActionMenuElement>('#actionMenu');
-      assertTrue(!!actionMenu);
+      const actionMenu = chips.$.actionMenu;
 
       container.dispatchEvent(
           new MouseEvent('contextmenu', {cancelable: true}));
@@ -765,9 +762,7 @@ suite('NewTabPageActionChipsTest', () => {
           assertEquals(3, allChips.length);
 
           const firstChip = allChips[0]!;
-          const actionMenu =
-              chips.shadowRoot.querySelector<HTMLElement>('#actionMenu');
-          assertTrue(!!actionMenu);
+          const actionMenu = chips.$.actionMenu;
 
           firstChip.dispatchEvent(
               new MouseEvent('contextmenu', {cancelable: true}));

@@ -1143,8 +1143,7 @@ suite('ToolbarAppTest', () => {
     await microtasksFinished();
 
     const reloadIconButton =
-        app.shadowRoot.querySelector('reload-button')!.shadowRoot.querySelector(
-            '#button')!;
+        app.shadowRoot.querySelector('reload-button')!.$.button;
     const appMenuChip = app.shadowRoot.querySelector('app-menu-button')!
                             .shadowRoot.querySelector('toolbar-chip-button')!;
     function getFillColor(): string {

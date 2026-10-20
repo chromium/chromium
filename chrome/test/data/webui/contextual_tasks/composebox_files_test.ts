@@ -602,9 +602,7 @@ suite('ContextualTasksComposeboxForkFilesTest', () => {
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(
           new File(['test'], 'test.jpg', {type: 'image/jpeg'}));
-      const composeboxDiv =
-          innerComposebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-      assertTrue(composeboxDiv !== null);
+      const composeboxDiv = innerComposebox.$.composebox;
 
       let pasteEvent = new ClipboardEvent('paste', {
         clipboardData: dataTransfer,

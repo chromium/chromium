@@ -509,11 +509,10 @@ suite('NewTabPageRealboxNextTest', () => {
   });
 
   test('clicking composebox button with text records user action', () => {
-    const inputEl = realbox.shadowRoot.querySelector('#input');
-    assertTrue(!!inputEl);
-    inputEl.shadowRoot!.querySelector<HTMLInputElement>('#input')!.value =
+    const inputEl = realbox.$.input;
+    inputEl.shadowRoot.querySelector<HTMLInputElement>('#input')!.value =
         'hello';
-    inputEl.shadowRoot!.querySelector('#input')!.dispatchEvent(
+    inputEl.shadowRoot.querySelector('#input')!.dispatchEvent(
         new InputEvent('input'));
 
     const composeButton =
@@ -556,10 +555,7 @@ suite('NewTabPageRealboxNextTest', () => {
 
     await composeButton.updateComplete;
 
-    const glowAnimationWrapper =
-        composeButton.shadowRoot.querySelector<HTMLElement>(
-            '#glowAnimationWrapper');
-    assertTrue(!!glowAnimationWrapper);
+    const glowAnimationWrapper = composeButton.$.glowAnimationWrapper;
 
     glowAnimationWrapper.classList.remove('play');
     assertFalse(glowAnimationWrapper.classList.contains('play'));
@@ -593,10 +589,7 @@ suite('NewTabPageRealboxNextTest', () => {
     assertTrue(!!composeButton);
     await composeButton.updateComplete;
 
-    const glowAnimationWrapper =
-        composeButton.shadowRoot.querySelector<HTMLElement>(
-            '#glowAnimationWrapper');
-    assertTrue(!!glowAnimationWrapper);
+    const glowAnimationWrapper = composeButton.$.glowAnimationWrapper;
     assertFalse(glowAnimationWrapper.classList.contains('play'));
   });
 
@@ -616,10 +609,7 @@ suite('NewTabPageRealboxNextTest', () => {
     assertTrue(!!composeButton);
     await composeButton.updateComplete;
 
-    const glowAnimationWrapper =
-        composeButton.shadowRoot.querySelector<HTMLElement>(
-            '#glowAnimationWrapper');
-    assertTrue(!!glowAnimationWrapper);
+    const glowAnimationWrapper = composeButton.$.glowAnimationWrapper;
     assertFalse(glowAnimationWrapper.classList.contains('play'));
   });
 
@@ -931,11 +921,10 @@ suite('NewTabPageRealboxNextTest', () => {
   test(
       'clicking composebox button with a URL clears text and opens composebox',
       async () => {
-        const inputEl = realbox.shadowRoot.querySelector('#input');
-        assertTrue(!!inputEl);
-        inputEl.shadowRoot!.querySelector<HTMLInputElement>('#input')!.value =
+        const inputEl = realbox.$.input;
+        inputEl.shadowRoot.querySelector<HTMLInputElement>('#input')!.value =
             'https://example.com';
-        inputEl.shadowRoot!.querySelector('#input')!.dispatchEvent(
+        inputEl.shadowRoot.querySelector('#input')!.dispatchEvent(
             new InputEvent('input'));
 
         const matches = [createSearchMatchForTesting({
@@ -978,11 +967,10 @@ suite('NewTabPageRealboxNextTest', () => {
       async () => {
         realbox.composeboxEnabled = false;
 
-        const inputEl = realbox.shadowRoot.querySelector('#input');
-        assertTrue(!!inputEl);
-        inputEl.shadowRoot!.querySelector<HTMLInputElement>('#input')!.value =
+        const inputEl = realbox.$.input;
+        inputEl.shadowRoot.querySelector<HTMLInputElement>('#input')!.value =
             'https://example.com';
-        inputEl.shadowRoot!.querySelector('#input')!.dispatchEvent(
+        inputEl.shadowRoot.querySelector('#input')!.dispatchEvent(
             new InputEvent('input'));
 
         const matches = [createSearchMatchForTesting({

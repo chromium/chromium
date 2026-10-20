@@ -172,12 +172,8 @@ suite('SearchboxTest', () => {
     realbox = await createAndAppendRealbox();
     await microtasksFinished();
 
-    const inputWrapper =
-        realbox.shadowRoot.querySelector<HTMLElement>('#inputWrapper');
-    assertTrue(!!inputWrapper);
-    const searchboxInput =
-        realbox.shadowRoot.querySelector<HTMLElement>('#input');
-    assertTrue(!!searchboxInput);
+    const inputWrapper = realbox.$.inputWrapper;
+    const searchboxInput = realbox.$.input;
     const dropdownContainer =
         realbox.shadowRoot.querySelector<HTMLElement>('.dropdownContainer');
 
@@ -224,7 +220,6 @@ suite('SearchboxTest', () => {
     realbox = await createAndAppendRealbox();
 
     const faviconImage = realbox.$.input.$.icon.$.faviconImage;
-    assertTrue(!!faviconImage);
 
     const loadPromise = eventToPromise('load', faviconImage);
     faviconImage.dispatchEvent(new Event('load'));
@@ -730,12 +725,10 @@ suite('SearchboxTest', () => {
             hasEntityImage: boolean, expectUseIconImg: boolean,
             expectedSrc: string|null) {
           const icon = getIcon(element!);
-          assertTrue(!!icon.$.icon, 'Icon element does not exists');
           assertEquals(
               isVisible(icon.$.icon), !expectUseIconImg && !hasEntityImage,
               'Icon visibility is incorrect');
 
-          assertTrue(!!icon.$.iconImg, 'Icon image element does not exist');
           assertEquals(
               isVisible(icon.$.iconImg), expectUseIconImg && !hasEntityImage,
               'Icon image visibility is incorrect');
@@ -758,7 +751,6 @@ suite('SearchboxTest', () => {
 
           const icon = getIcon(element!);
           const iconImg = icon.$.iconImg;
-          assertTrue(!!iconImg);
           const loadPromise = eventToPromise('load', iconImg);
           iconImg.dispatchEvent(new Event('load'));
           await loadPromise;
@@ -929,10 +921,8 @@ suite('SearchboxTest', () => {
     assertEquals(2, matchEls.length);
 
     let faviconImage = matchEls[0]!.$.icon.$.faviconImage;
-    assertTrue(!!faviconImage);
 
     let vectorIcon = matchEls[0]!.$.icon.$.icon;
-    assertTrue(!!vectorIcon);
 
     let loadPromise = eventToPromise('load', faviconImage);
     faviconImage.dispatchEvent(new Event('load'));
@@ -945,10 +935,8 @@ suite('SearchboxTest', () => {
     assertFalse(isVisible(vectorIcon));
 
     faviconImage = matchEls[1]!.$.icon.$.faviconImage;
-    assertTrue(!!faviconImage);
 
     vectorIcon = matchEls[1]!.$.icon.$.icon;
-    assertTrue(!!vectorIcon);
 
     loadPromise = eventToPromise('load', faviconImage);
     faviconImage.dispatchEvent(new Event('load'));
@@ -971,7 +959,6 @@ suite('SearchboxTest', () => {
     assertEquals('https://helloworld.com', realbox.$.input.inputElement.value);
 
     const realboxIcon = realbox.$.input.$.icon;
-    assertTrue(!!realboxIcon);
 
     loadPromise = eventToPromise('load', realboxIcon.$.faviconImage);
     realboxIcon.$.faviconImage.dispatchEvent(new Event('load'));

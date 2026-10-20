@@ -14,7 +14,6 @@ import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/c
 import {InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxToolChipElement} from 'chrome://resources/cr_components/composebox/composebox_tool_chip.js';
 import {VoiceSearchAction, VoiceSearchQuerySource} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
-import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState, VoiceSearchState} from 'chrome://resources/cr_components/search/constants.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -446,9 +445,7 @@ suite('ContextualTasksComposeboxTest', () => {
         }));
         await contextualTasksApp.updateComplete;
 
-        const composebox =
-            contextualTasksApp.shadowRoot.querySelector('#composebox');
-        assertTrue(!!composebox);
+        const composebox = contextualTasksApp.$.composebox;
         assertEquals('visible', window.getComputedStyle(composebox).visibility);
 
         const mockEvent = {
@@ -502,9 +499,7 @@ suite('ContextualTasksComposeboxTest', () => {
         }));
         await contextualTasksApp.updateComplete;
 
-        const composebox =
-            contextualTasksApp.shadowRoot.querySelector('#composebox');
-        assertTrue(!!composebox);
+        const composebox = contextualTasksApp.$.composebox;
         assertEquals('visible', window.getComputedStyle(composebox).visibility);
 
         const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
@@ -1006,9 +1001,7 @@ suite('ContextualTasksComposeboxTest', () => {
     await microtasksFinished();
 
     // Mock specific container bounds to guarantee enough space
-    const container = composeboxElement.shadowRoot.querySelector<HTMLElement>(
-        '#composeboxContainer');
-    assertTrue(container !== null);
+    const container = composeboxElement.$.composeboxContainer;
     container.style.width = '800px';
     innerComposebox.style.width = '400px';
 
@@ -1451,8 +1444,7 @@ suite('ContextualTasksComposeboxForkSmokeTest', () => {
     const {wrapper, innerComposebox} = parts;
     assertEquals('CONTEXTUAL-TASKS-INNER-COMPOSEBOX', innerComposebox.tagName);
     assertEquals('composebox', innerComposebox.id);
-    assertEquals(
-        innerComposebox, wrapper.shadowRoot.querySelector('#composebox'));
+    assertEquals(innerComposebox, wrapper.$.composebox);
   });
 
   test('inner composebox does not query zps on initial mount', () => {
@@ -1550,9 +1542,7 @@ suite('ContextualTasksComposeboxForkBasicInputTest', () => {
     const inputElement =
         innerComposebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
             '#input')!;
-    const keydownDiv =
-        innerComposebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(keydownDiv !== null);
+    const keydownDiv = innerComposebox.$.composebox;
 
     assertEquals('', getInputValue(inputElement));
     mockSearchboxPageHandler.reset();
@@ -2174,8 +2164,7 @@ suite('ContextualTasksComposeboxForkContextMenuTest', () => {
     const wrapper =
         parts.app.shadowRoot.querySelector('contextual-tasks-composebox');
     assertTrue(!!wrapper);
-    const innerComposebox = wrapper.shadowRoot.querySelector('#composebox');
-    assertTrue(!!innerComposebox);
+    const innerComposebox = wrapper.$.composebox;
     const innerShadowRoot = innerComposebox.shadowRoot;
     assertTrue(!!innerShadowRoot);
     const entrypoint = innerShadowRoot.querySelector('#contextEntrypoint');
@@ -2196,9 +2185,7 @@ suite('ContextualTasksComposeboxForkContextMenuTest', () => {
         await entrypointAndMenu.updateComplete;
         assertTrue(entrypointAndMenu.contextManagementInComposeboxEnabled);
 
-        const menu = entrypointAndMenu.shadowRoot
-                         .querySelector<ContextualActionMenuElement>('#menu');
-        assertTrue(!!menu);
+        const menu = entrypointAndMenu.$.menu;
         await menu.updateComplete;
         assertTrue(menu.contextManagementInComposeboxEnabled);
       });
@@ -2790,9 +2777,7 @@ suite('ContextualTasksComposeboxForkErrorScrimTest', () => {
 
   test('error scrim lifecycle: render, inert, dismiss', async () => {
     const {innerComposebox} = parts;
-    const composeboxDiv =
-        innerComposebox.shadowRoot.querySelector('#composebox');
-    assertTrue(!!composeboxDiv);
+    const composeboxDiv = innerComposebox.$.composebox;
 
     // No error: no scrim in the DOM, composebox stays interactive.
     assertFalse(!!innerComposebox.shadowRoot.querySelector('ntp-error-scrim'));
@@ -3130,9 +3115,7 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
               async () => {
                 const inner = parts.innerComposebox;
                 const voiceSearch = getVoiceSearch();
-                const composeboxDiv =
-                    inner.shadowRoot.querySelector('#composebox');
-                assertTrue(!!composeboxDiv);
+                const composeboxDiv = inner.$.composebox;
                 assertEquals(
                     'none', window.getComputedStyle(voiceSearch).display);
 
@@ -3540,10 +3523,7 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
             assertTrue(!!submitButton);
             assertFalse(submitButton.disabled);
             await submitButton.updateComplete;
-            const submitContainer =
-                submitButton.shadowRoot.querySelector<HTMLElement>(
-                    '#submitContainer');
-            assertTrue(!!submitContainer);
+            const submitContainer = submitButton.$.submitContainer;
             submitContainer.click();
             await microtasksFinished();
             await parts.innerComposebox.updateComplete;

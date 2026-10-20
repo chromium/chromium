@@ -406,9 +406,7 @@ enum Version {
       assertTrue(container.isHelpBubbleShowing());
       const bubble = container.getHelpBubbleForTesting('p1')!;
       assert(bubble);
-      const closeButton =
-          bubble.shadowRoot.querySelector<HTMLElement>('#close');
-      assertTrue(!!closeButton);
+      const closeButton = bubble.$.close;
       assertEquals(
           CLOSE_BUTTON_ALT_TEXT, closeButton.getAttribute('aria-label'));
     });
@@ -421,9 +419,7 @@ enum Version {
       const bubble = container.getHelpBubbleForTesting('p1')!;
       assert(bubble);
       assertEquals(bubble.bodyIconName, params.bodyIconName);
-      const bodyIcon =
-          bubble.shadowRoot.querySelector<HTMLElement>('#bodyIcon');
-      assertTrue(!!bodyIcon);
+      const bodyIcon = bubble.$.bodyIcon;
       const ironIcon = bodyIcon.querySelector('cr-icon');
       assertTrue(!!ironIcon);
       assertEquals(`iph:${params.bodyIconName}`, ironIcon.icon);
@@ -437,9 +433,7 @@ enum Version {
       const bubble = container.getHelpBubbleForTesting('p1')!;
       assert(bubble);
       assertEquals(bubble.bodyIconName, null);
-      const bodyIcon =
-          bubble.shadowRoot.querySelector<HTMLElement>('#bodyIcon');
-      assertTrue(!!bodyIcon);
+      const bodyIcon = bubble.$.bodyIcon;
       assertTrue(bodyIcon.hidden);
     });
 
