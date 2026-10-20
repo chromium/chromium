@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_active_info.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_buffer.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_context_attribute_helpers.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_framebuffer.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_object.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_program.h"
@@ -1292,8 +1293,20 @@ ScriptValue WebGLRenderingContextWebGPUBase::getBufferParameter(
 
 WebGLContextAttributes* WebGLRenderingContextWebGPUBase::getContextAttributes()
     const {
-  NOTIMPLEMENTED();
-  return nullptr;
+  if (isContextLost()) {
+    return nullptr;
+  }
+
+  // TODO(413078308): Adjust the returned attributes to match what the context
+  // actually provides once implemented:
+  // - depth / stencil: set to false if the default framebuffer failed to
+  //   allocate them.
+  // - antialias: set to whether the default framebuffer is multisampled.
+  // - xrCompatible: set to the tracked XR compatibility state once
+  //   makeXRCompatible() is implemented.
+  // - desynchronized: set to Host()->LowLatencyEnabled() once low-latency
+  //   presentation is supported.
+  return ToWebGLContextAttributes(CreationAttributes());
 }
 
 GLenum WebGLRenderingContextWebGPUBase::getError() {
