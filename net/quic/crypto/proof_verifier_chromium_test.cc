@@ -30,6 +30,7 @@
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cert/x509_util.h"
 #include "net/http/transport_security_state.h"
+#include "net/http/transport_security_state_test_util.h"
 #include "net/quic/crypto/proof_source_chromium.h"
 #include "net/quic/quic_context.h"
 #include "net/test/cert_test_util.h"
@@ -39,10 +40,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-#include "net/cert/key_pinning_state_chrome_test_util.h"
-#endif
-
 using ::testing::_;
 using ::testing::Return;
 
@@ -50,9 +47,7 @@ namespace net::test {
 
 namespace {
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 const char kCTAndPKPHost[] = "hsts-hpkp-preloaded.test";
-#endif
 
 // CertVerifier that will fail the test if it is ever called.
 class FailsTestCertVerifier : public CertVerifier {
@@ -370,14 +365,6 @@ TEST_F(ProofVerifierChromiumTest, IsFatalErrorSetForFatalError) {
   EXPECT_TRUE(verify_details->is_fatal_cert_error);
 }
 
-// The PKP tests depend on ScopedKeyPinningStateChromeDefaults and
-// KeyPinningStateChrome which are only available when the builtin pin list is
-// compiled in. We could also make a separate version of these tests that use
-// the dynamic PKP path for testing on cronet, but it's not really worth the
-// effort, especially since this is only a temporary state. Once PKP refactor
-// is complete and pinning is only done in cert verification, then these tests
-// can just configure the mock cert verifier to test the desired pkp results.
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 // Test that PKP is enforced for certificates that chain up to known roots.
 TEST_F(ProofVerifierChromiumTest, PKPEnforced) {
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -389,8 +376,9 @@ TEST_F(ProofVerifierChromiumTest, PKPEnforced) {
   MockCertVerifier dummy_verifier;
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
 
-  ScopedKeyPinningStateChromeDefaults scoped_key_pinning_enable;
-  transport_security_state_.ReinitializePinningForTesting();
+  transport_security_state_.EnableStaticPinsForTesting();
+  transport_security_state_.SetPinningListAlwaysTimelyForTesting(true);
+  ScopedTransportSecurityStateSource scoped_security_state_source;
 
   ProofVerifierChromium proof_verifier(&dummy_verifier,
                                        &transport_security_state_, nullptr, {},
@@ -437,8 +425,9 @@ TEST_F(ProofVerifierChromiumTest, PKPBypassFlagSet) {
   MockCertVerifier dummy_verifier;
   dummy_verifier.AddResultForCert(test_cert_.get(), dummy_result_, OK);
 
-  ScopedKeyPinningStateChromeDefaults scoped_key_pinning_enable;
-  transport_security_state_.ReinitializePinningForTesting();
+  transport_security_state_.EnableStaticPinsForTesting();
+  transport_security_state_.SetPinningListAlwaysTimelyForTesting(true);
+  ScopedTransportSecurityStateSource scoped_security_state_source;
 
   ProofVerifierChromium proof_verifier(
       &dummy_verifier, &transport_security_state_, nullptr, {kCTAndPKPHost},
@@ -485,8 +474,9 @@ TEST_F(ProofVerifierChromiumTest, PKPAndCTBothTested) {
                                   ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
 
   // Set up PKP.
-  ScopedKeyPinningStateChromeDefaults scoped_key_pinning_enable;
-  transport_security_state_.ReinitializePinningForTesting();
+  transport_security_state_.EnableStaticPinsForTesting();
+  transport_security_state_.SetPinningListAlwaysTimelyForTesting(true);
+  ScopedTransportSecurityStateSource scoped_security_state_source;
 
   ProofVerifierChromium proof_verifier(&dummy_verifier,
                                        &transport_security_state_, nullptr, {},
@@ -522,7 +512,6 @@ TEST_F(ProofVerifierChromiumTest, PKPAndCTBothTested) {
   EXPECT_TRUE(verify_details->cert_verify_result.cert_status &
               CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED);
 }
-#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 TEST_F(ProofVerifierChromiumTest, UnknownRootRejected) {
   dummy_result_.is_issued_by_known_root = false;

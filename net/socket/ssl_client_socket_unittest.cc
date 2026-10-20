@@ -60,6 +60,7 @@
 #include "net/cert/x509_util.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/transport_security_state.h"
+#include "net/http/transport_security_state_test_util.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/test_net_log.h"
@@ -105,10 +106,6 @@
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-#include "net/cert/key_pinning_state_chrome_test_util.h"
-#endif
-
 using net::test::IsError;
 using net::test::IsOk;
 
@@ -133,12 +130,10 @@ namespace {
 // base-64 alphabet.)
 const uint8_t kGoodHashValueVectorInput = 0;
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 // When passed to |MakeHashValueVector|, this will generate a key pin that is
 // not sha256/AA...=, and hence will cause pin validation failure with the
 // TestSPKI pin.
 const uint8_t kBadHashValueVectorInput = 3;
-#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
 constexpr uint16_t kModernTLS12Cipher = 0xc02f;
@@ -4766,20 +4761,11 @@ std::vector<SHA256HashValue> MakeHashValueVector(uint8_t tag) {
   return out;
 }
 
-// The PKP tests depend on ScopedKeyPinningStateChromeDefaults and
-// KeyPinningStateChrome which are only available when the builtin pin list is
-// compiled in. We could also make a separate version of these tests that use
-// the dynamic PKP path for testing on cronet, but it's not really worth the
-// effort, especially since this is only a temporary state. Once PKP refactor
-// is complete and pinning is only done in cert verification, then these tests
-// can just configure the mock cert verifier to test the desired pkp results.
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 // Test that |ssl_info.pkp_bypassed| is set when a local trust anchor causes
 // pinning to be bypassed.
 TEST_P(SSLClientSocketVersionTest, PKPBypassedSet) {
   AddScopedFeatureList().InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
-
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
   scoped_refptr<X509Certificate> server_cert =
@@ -4794,8 +4780,9 @@ TEST_P(SSLClientSocketVersionTest, PKPBypassedSet) {
       MakeHashValueVector(kBadHashValueVectorInput);
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
-  ScopedKeyPinningStateChromeDefaults scoped_key_pinning_enable;
-  transport_security_state_->ReinitializePinningForTesting();
+  transport_security_state_->EnableStaticPinsForTesting();
+  transport_security_state_->SetPinningListAlwaysTimelyForTesting(true);
+  ScopedTransportSecurityStateSource scoped_security_state_source;
 
   SSLConfig ssl_config;
   int rv;
@@ -4815,7 +4802,6 @@ TEST_P(SSLClientSocketVersionTest, PKPBypassedSet) {
 TEST_P(SSLClientSocketVersionTest, PKPEnforced) {
   AddScopedFeatureList().InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
-
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
   scoped_refptr<X509Certificate> server_cert =
@@ -4830,8 +4816,9 @@ TEST_P(SSLClientSocketVersionTest, PKPEnforced) {
       MakeHashValueVector(kBadHashValueVectorInput);
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
 
-  ScopedKeyPinningStateChromeDefaults scoped_key_pinning_enable;
-  transport_security_state_->ReinitializePinningForTesting();
+  transport_security_state_->EnableStaticPinsForTesting();
+  transport_security_state_->SetPinningListAlwaysTimelyForTesting(true);
+  ScopedTransportSecurityStateSource scoped_security_state_source;
 
   SSLConfig ssl_config;
   int rv;
@@ -4847,7 +4834,6 @@ TEST_P(SSLClientSocketVersionTest, PKPEnforced) {
 
   EXPECT_FALSE(ssl_info.pkp_bypassed);
 }
-#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 namespace {
 // TLS_RSA_WITH_AES_128_GCM_SHA256's key exchange involves encrypting to the
@@ -4951,20 +4937,11 @@ TEST_P(SSLClientSocketVersionTest, IgnoreCertificateErrorsBypassesRequiredCT) {
   EXPECT_TRUE(sock_->IsConnected());
 }
 
-// The PKP tests depend on ScopedKeyPinningStateChromeDefaults and
-// KeyPinningStateChrome which are only available when the builtin pin list is
-// compiled in. We could also make a separate version of these tests that use
-// the dynamic PKP path for testing on cronet, but it's not really worth the
-// effort, especially since this is only a temporary state. Once PKP refactor
-// is complete and pinning is only done in cert verification, then these tests
-// can just configure the mock cert verifier to test the desired pkp results.
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 // When both PKP and CT are required for a host, and both fail, the more
 // serious error is that the pin validation failed.
 TEST_P(SSLClientSocketVersionTest, PKPMoreImportantThanCT) {
   AddScopedFeatureList().InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
-
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
   scoped_refptr<X509Certificate> server_cert =
@@ -4983,8 +4960,9 @@ TEST_P(SSLClientSocketVersionTest, PKPMoreImportantThanCT) {
   cert_verifier_->AddResultForCert(server_cert.get(), verify_result,
                                    ERR_CERTIFICATE_TRANSPARENCY_REQUIRED);
 
-  ScopedKeyPinningStateChromeDefaults scoped_key_pinning_enable;
-  transport_security_state_->ReinitializePinningForTesting();
+  transport_security_state_->EnableStaticPinsForTesting();
+  transport_security_state_->SetPinningListAlwaysTimelyForTesting(true);
+  ScopedTransportSecurityStateSource scoped_security_state_source;
 
   const char kCTHost[] = "hsts-hpkp-preloaded.test";
 
@@ -5002,7 +4980,6 @@ TEST_P(SSLClientSocketVersionTest, PKPMoreImportantThanCT) {
               CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED);
   EXPECT_FALSE(sock_->IsConnected());
 }
-#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 // Tests that the SCTAuditingDelegate is called to enqueue SCT reports.
 TEST_P(SSLClientSocketVersionTest, SCTAuditingReportCollected) {

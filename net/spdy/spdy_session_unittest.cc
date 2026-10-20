@@ -45,6 +45,7 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_request_info.h"
+#include "net/http/transport_security_state_test_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
@@ -75,10 +76,6 @@
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
-
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-#include "net/cert/key_pinning_state_chrome_test_util.h"
-#endif
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -6885,20 +6882,14 @@ TEST(CanPoolTest, CanNotPoolWithClientCerts) {
                                     "www.example.org", "mail.example.org"));
 }
 
-// The PKP tests depend on ScopedKeyPinningStateChromeDefaults and
-// KeyPinningStateChrome which are only available when the builtin pin list is
-// compiled in. We could also make a separate version of these tests that use
-// the dynamic PKP path for testing on cronet, but it's not really worth the
-// effort, especially since this is only a temporary state. Once PKP refactor
-// is complete and pinning is only done in cert verification, then these tests
-// can just configure the mock cert verifier to test the desired pkp results.
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 TEST(CanPoolTest, CanNotPoolWithBadPins) {
   base::test::ScopedFeatureList scoped_feature_list_;
   scoped_feature_list_.InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
-  ScopedKeyPinningStateChromeDefaults scoped_key_pinning_enable;
   TransportSecurityState tss;
+  tss.EnableStaticPinsForTesting();
+  tss.SetPinningListAlwaysTimelyForTesting(true);
+  ScopedTransportSecurityStateSource scoped_security_state_source;
 
   TestSSLConfigService ssl_config_service;
   SSLInfo ssl_info;
@@ -6911,7 +6902,6 @@ TEST(CanPoolTest, CanNotPoolWithBadPins) {
   EXPECT_FALSE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
                                     "www.example.org", "example.test"));
 }
-#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 TEST(CanPoolTest, CanNotPoolWithBadCTWhenCTRequired) {
   using testing::Return;
@@ -7000,10 +6990,11 @@ TEST(CanPoolTest, CanPoolWithGoodCTWhenCTRequired) {
                                    "www.example.org", "mail.example.org"));
 }
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 TEST(CanPoolTest, CanPoolWithAcceptablePins) {
-  ScopedKeyPinningStateChromeDefaults scoped_key_pinning_enable;
   TransportSecurityState tss;
+  tss.EnableStaticPinsForTesting();
+  tss.SetPinningListAlwaysTimelyForTesting(true);
+  ScopedTransportSecurityStateSource scoped_security_state_source;
 
   TestSSLConfigService ssl_config_service;
   SSLInfo ssl_info;
@@ -7019,7 +7010,6 @@ TEST(CanPoolTest, CanPoolWithAcceptablePins) {
   EXPECT_TRUE(SpdySession::CanPool(&tss, ssl_info, ssl_config_service,
                                    "www.example.org", "mail.example.org"));
 }
-#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 TEST(CanPoolTest, CanPoolWithClientCertsAndPolicy) {
   TransportSecurityState tss;

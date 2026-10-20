@@ -9,16 +9,17 @@
 
 #include <array>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -27,18 +28,13 @@
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
-#include "net/cert/key_pinning_state.h"
 #include "net/cert/require_ct_delegate.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
+#include "net/http/transport_security_state_pins_source.h"
 #include "net/http/transport_security_state_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/net_buildflags.h"
-
-#if BUILDFLAG(CRONET_BUILD)
-#include "net/cert/key_pinning_state_dynamic.h"
-#elif BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-#include "net/cert/key_pinning_state_chrome.h"
-#endif
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace net {
 
@@ -50,6 +46,8 @@ class X509Certificate;
 
 void NET_EXPORT_PRIVATE SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source);
+void NET_EXPORT_PRIVATE SetTransportSecurityStatePinsSourceForTesting(
+    const TransportSecurityStatePinsSource* source);
 
 // Whether an insecure connection should be upgraded to use SSL. For metrics
 // this includes whether the decision came from static or dynamic state.
@@ -63,7 +61,8 @@ enum class SSLUpgradeDecision {
   kStaticUpgrade,
 };
 
-// Tracks which hosts have enabled strict transport security.
+// Tracks which hosts have enabled strict transport security and/or public
+// key pins.
 //
 // This object manages the in-memory store. Register a Delegate with
 // |SetDelegate| to persist the state to disk.
@@ -73,15 +72,6 @@ enum class SSLUpgradeDecision {
 class NET_EXPORT TransportSecurityState {
  public:
   using HashedHost = std::array<uint8_t, crypto::hash::kSha256Size>;
-
-  // TODO(crbug.com/497882860): For simplicity during the refactor, alias types
-  // that used to be subclasses of TransportSecurityState. Remove these.
-  using PKPState = KeyPinningState::PKPState;
-  using PKPStatus = KeyPinningState::PKPStatus;
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-  using PinSet = KeyPinningStateChrome::PinSet;
-  using PinSetInfo = KeyPinningStateChrome::PinSetInfo;
-#endif
 
   class NET_EXPORT Delegate {
    public:
@@ -145,6 +135,97 @@ class NET_EXPORT TransportSecurityState {
    private:
     std::map<HashedHost, STSState>::const_iterator iterator_;
     std::map<HashedHost, STSState>::const_iterator end_;
+  };
+
+  // PKPStatus describes the result of a pinning check.
+  enum class PKPStatus {
+    // Pinning was enabled and the necessary pins were not present.
+    VIOLATED,
+
+    // Pinning was not enabled, or pinning was enabled and the certificate
+    // satisfied the pins.
+    OK,
+
+    // Pinning was enabled and the certificate did not satisfy the pins, but the
+    // violation was ignored due to local policy, such as a local trust anchor.
+    BYPASSED,
+  };
+
+  // A PKPState describes the public key pinning state.
+  class NET_EXPORT PKPState {
+   public:
+    PKPState();
+    PKPState(const PKPState& other);
+    ~PKPState();
+
+    // The absolute time (UTC) when the |spki_hashes| expire.
+    base::Time expiry;
+
+    // Optional; hashes of pinned SubjectPublicKeyInfos.
+    absl::flat_hash_set<SHA256HashValue> spki_hashes;
+
+    // Optional; hashes of static known-bad SubjectPublicKeyInfos which MUST
+    // NOT intersect with the set of SPKIs in the TLS server's certificate
+    // chain.
+    absl::flat_hash_set<SHA256HashValue> bad_spki_hashes;
+
+    // Are subdomains subject to this policy state?
+    bool include_subdomains = false;
+
+    // Takes a set of SubjectPublicKeyInfo |hashes| and returns true if:
+    //   1) |bad_static_spki_hashes| does not intersect |hashes|; AND
+    //   2) Both |static_spki_hashes| and |dynamic_spki_hashes| are empty
+    //      or at least one of them intersects |hashes|.
+    //
+    // |{dynamic,static}_spki_hashes| contain trustworthy public key hashes,
+    // any one of which is sufficient to validate the certificate chain in
+    // question. The public keys could be of a root CA, intermediate CA, or
+    // leaf certificate, depending on the security vs. disaster recovery
+    // tradeoff selected. (Pinning only to leaf certifiates increases
+    // security because you no longer trust any CAs, but it hampers disaster
+    // recovery because you can't just get a new certificate signed by the
+    // CA.)
+    //
+    // |bad_static_spki_hashes| contains public keys that we don't want to
+    // trust.
+    bool CheckPublicKeyPins(const std::vector<SHA256HashValue>& hashes) const;
+
+    // Returns true if any of the HashValueVectors |static_spki_hashes|,
+    // |bad_static_spki_hashes|, or |dynamic_spki_hashes| contains any
+    // items.
+    bool HasPublicKeyPins() const;
+  };
+
+  class NET_EXPORT PinSet {
+   public:
+    PinSet(std::string name,
+           std::vector<SHA256HashValue> static_spki_hashes,
+           std::vector<SHA256HashValue> bad_static_spki_hashes);
+    PinSet(const PinSet& other);
+    ~PinSet();
+
+    const std::string& name() const { return name_; }
+    const std::vector<SHA256HashValue>& static_spki_hashes() const {
+      return static_spki_hashes_;
+    }
+    const std::vector<SHA256HashValue>& bad_static_spki_hashes() const {
+      return bad_static_spki_hashes_;
+    }
+
+   private:
+    std::string name_;
+    std::vector<SHA256HashValue> static_spki_hashes_;
+    std::vector<SHA256HashValue> bad_static_spki_hashes_;
+  };
+
+  struct NET_EXPORT PinSetInfo {
+    std::string hostname_;
+    std::string pinset_name_;
+    bool include_subdomains_;
+
+    PinSetInfo(std::string hostname,
+               std::string pinset_name,
+               bool include_subdomains);
   };
 
   TransportSecurityState();
@@ -228,14 +309,12 @@ class NET_EXPORT TransportSecurityState {
     return ct_emergency_disable_;
   }
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
   // |pinsets| should include all known pinsets, |host_pins| the information
   // related to each hostname's pin, and |update_time| the time at which this
   // list was known to be up to date.
   void UpdatePinList(const std::vector<PinSet>& pinsets,
                      const std::vector<PinSetInfo>& host_pins,
                      base::Time update_time);
-#endif
 
   // Clears all dynamic HSTS data.
   //
@@ -270,30 +349,30 @@ class NET_EXPORT TransportSecurityState {
   bool DeleteDynamicDataForHost(std::string_view host);
 
   // Returns true and updates |*result| if |host| has dynamic or static
-  // HSTS state. If multiple entries match |host|, dynamic state is preferred
-  // over static state and other than that the most specific match determines
-  // the return value (both is in deviation of RFC6797, cf.
+  // HSTS/HPKP (respectively) state. If multiple entries match |host|, dynamic
+  // state is preferred over static state and other than that the most specific
+  // match determines the return value (both is in deviation of RFC6797, cf.
   // https://crbug.com/821811).
   //
-  // Note that the method is not const because it opportunistically removes
-  // entries that have expired.
+  // Note that the HSTS method is not const because it opportunistically
+  // removes entries that have expired.
   bool GetSTSState(std::string_view host, STSState* sts_result);
-
-  // Get the PKP state using the current `key_pinning_state_`.
   bool GetPKPState(std::string_view host, PKPState* pkp_result) const;
 
-  // Returns true and updates |*result| iff |host| has static HSTS state. If
-  // multiple entries match |host|, the most specific match determines the
-  // return value.
+  // Returns true and updates |*result| iff |host| has static HSTS/HPKP
+  // (respectively) state. If multiple entries match |host|, the most specific
+  // match determines the return value.
   bool GetStaticSTSState(std::string_view host, STSState* sts_result) const;
+  bool GetStaticPKPState(std::string_view host, PKPState* pkp_result) const;
 
   // Returns true and updates |*result| iff |host| has dynamic
-  // HSTS state. If multiple entries match |host|, the most specific match
-  // determines the return value.
+  // HSTS/HPKP (respectively) state. If multiple entries match |host|,
+  // the most specific match determines the return value.
   //
-  // Note that the method is not const because it opportunistically removes
-  // entries that have expired.
+  // Note that the HSTS method is not const because it opportunistically
+  // removes entries that have expired.
   bool GetDynamicSTSState(std::string_view host, STSState* result);
+  bool GetDynamicPKPState(std::string_view host, PKPState* result) const;
 
   // Processes an HSTS header value from the host, adding entries to
   // dynamic state if necessary.
@@ -305,7 +384,6 @@ class NET_EXPORT TransportSecurityState {
                base::Time expiry,
                bool include_subdomains);
 
-#if BUILDFLAG(CRONET_BUILD)
   // Adds explicitly-specified data as if it was processed from an HPKP header.
   // Note: dynamic PKP data is not persisted.
   void AddHPKP(std::string_view host,
@@ -320,26 +398,18 @@ class NET_EXPORT TransportSecurityState {
   // with local proxies and filters?" at
   // https://www.chromium.org/Home/chromium-security/security-faq
   void SetEnablePublicKeyPinningBypassForLocalTrustAnchors(bool value);
-#endif  //  BUILDFLAG(CRONET_BUILD)
 
   void AssertCalledOnValidThread() const {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   }
 
-  // Workaround for ScopedKeyPinningStateChromeDefaults needing to be created
-  // before the KeyPinningState is initialized. In some tests it's hard to
-  // arrange for that to happen, so this allows a test to reinitialize the
-  // key_pinning_state_ on an already created TransportSecurityState object so
-  // that it will pick up the new ScopedKeyPinningStateChromeDefaults state.
-  // TODO(crbug.com/497882860): remove this.
-  void ReinitializePinningForTesting() {
-#if BUILDFLAG(CRONET_BUILD)
-    key_pinning_state_ = base::MakeRefCounted<KeyPinningStateDynamic>();
-#elif BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-    key_pinning_state_ = KeyPinningStateChrome::CreateForCompiledIn();
-#else
-    key_pinning_state_ = base::MakeRefCounted<KeyPinningStateDummy>();
-#endif
+  // For unit tests only.
+  void EnableStaticPinsForTesting() { enable_static_pins_ = true; }
+
+  // Sets whether pinning list timestamp freshness should be ignored for
+  // testing.
+  void SetPinningListAlwaysTimelyForTesting(bool always_timely) {
+    pins_list_always_timely_for_testing_ = always_timely;
   }
 
   // The number of cached STSState entries.
@@ -355,6 +425,7 @@ class NET_EXPORT TransportSecurityState {
   FRIEND_TEST_ALL_PREFIXES(HttpSecurityHeadersTest, NoClobberPins);
 
   typedef std::map<HashedHost, STSState> STSStateMap;
+  typedef std::map<HashedHost, PKPState> PKPStateMap;
 
   base::DictValue NetLogUpgradeToSSLParam(std::string_view host);
 
@@ -362,6 +433,12 @@ class NET_EXPORT TransportSecurityState {
   // built in security information (i.e. HSTS preloading and pinning
   // information) is timely.
   static bool IsBuildTimely();
+
+  // Helper method for actually checking pins.
+  PKPStatus CheckPublicKeyPinsImpl(
+      std::string_view host,
+      bool is_issued_by_known_root,
+      const std::vector<SHA256HashValue>& hashes) const;
 
   // If a Delegate is present, notify it that the internal state has
   // changed.
@@ -376,12 +453,31 @@ class NET_EXPORT TransportSecurityState {
                        base::Time expiry,
                        bool include_subdomains);
 
+  // Returns true if a request with the given SubjectPublicKeyInfo |hashes|
+  // satisfies the pins in |pkp_state|, and false otherwise.
+  PKPStatus CheckPins(bool is_issued_by_known_root,
+                      const TransportSecurityState::PKPState& pkp_state,
+                      const std::vector<SHA256HashValue>& hashes) const;
+
+  // Returns true if the static key pinning list has been updated in the last 10
+  // weeks.
+  bool IsStaticPKPListTimely() const;
+
   // The sets of hosts that have enabled TransportSecurity. |domain| will always
-  // be empty for a STSState in this map; the domain comes from the map keys
-  // instead. In addition, |upgrade_mode| in the STSState is never MODE_DEFAULT.
+  // be empty for a STSState or PKPState in these maps; the domain comes from
+  // the map keys instead. In addition, |upgrade_mode| in the STSState is never
+  // MODE_DEFAULT and |HasPublicKeyPins| in the PKPState always returns true.
   STSStateMap enabled_sts_hosts_;
+  // This is the dynamic PKP data set by AddHPKP:
+  PKPStateMap enabled_pkp_hosts_;
 
   raw_ptr<Delegate> delegate_ = nullptr;
+
+  // True if static pins should be used.
+  bool enable_static_pins_ = true;
+
+  // True if public key pinning bypass is enabled for local trust anchors.
+  bool enable_pkp_bypass_for_local_trust_anchors_ = true;
 
   scoped_refptr<RequireCTDelegate> require_ct_delegate_;
 
@@ -389,17 +485,15 @@ class NET_EXPORT TransportSecurityState {
 
   bool ct_emergency_disable_ = false;
 
-  // TODO(crbug.com/497882860): remove key pinning from TransportSecurityState.
-#if BUILDFLAG(CRONET_BUILD)
-  scoped_refptr<KeyPinningStateDynamic> key_pinning_state_ =
-      base::MakeRefCounted<KeyPinningStateDynamic>();
-#elif BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-  scoped_refptr<KeyPinningState> key_pinning_state_ =
-      KeyPinningStateChrome::CreateForCompiledIn();
-#else
-  scoped_refptr<KeyPinningState> key_pinning_state_ =
-      base::MakeRefCounted<KeyPinningStateDummy>();
-#endif
+  // These 3 members are for the component-updated "static" PKP data:
+  // The values in host_pins_ maps are references to PinSet objects in the
+  // pinsets_ vector.
+  std::optional<base::flat_map<std::string, std::pair<const PinSet*, bool>>>
+      host_pins_;
+  base::Time key_pins_list_last_update_time_;
+  std::vector<PinSet> pinsets_;
+
+  bool pins_list_always_timely_for_testing_ = false;
 
   THREAD_CHECKER(thread_checker_);
 };

@@ -43,7 +43,6 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/ct_policy_status.h"
-#include "net/cert/key_pinning_state.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/extras/preload_data/decoder.h"
@@ -61,20 +60,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-#include "net/cert/key_pinning_state_chrome.h"
-#include "net/cert/key_pinning_state_chrome_test_util.h"
-#endif
-
 namespace net {
 
 namespace {
 
 namespace test_default {
+// TODO(crbug.com/497882860): Remove pins includes from this file.
+#include "net/http/transport_security_state_static_pins_unittest_default.h"
 #include "net/http/transport_security_state_static_unittest_default.h"
 }
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 const char kHost[] = "example.test";
 
 // GoodPin1 is in the `static_spki_hashes` of both withoutRejectedPins and
@@ -116,7 +111,6 @@ constexpr auto kBadPath = std::to_array<const char*>({
     "sha256/2222222222222222222222222222222222222222222=",
     "sha256/3333333333333333333333333333333333333333333=",
 });
-#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 class MockRequireCTDelegate : public RequireCTDelegate {
  public:
@@ -130,7 +124,6 @@ class MockRequireCTDelegate : public RequireCTDelegate {
   ~MockRequireCTDelegate() override = default;
 };
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 std::vector<SHA256HashValue> DeserializeHashes(
     base::span<const char* const> serialized_hashes) {
   std::vector<SHA256HashValue> result;
@@ -142,7 +135,6 @@ std::vector<SHA256HashValue> DeserializeHashes(
   }
   return result;
 }
-#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 }  // namespace
 
@@ -153,13 +145,24 @@ class TransportSecurityStateTest : public ::testing::Test,
       : WithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
+    SetTransportSecurityStatePinsSourceForTesting(&test_default::kPinsSource);
     // Need mocked out time for pruning tests. Don't start with a
     // time of 0, as code doesn't generally expect it.
     FastForwardBy(base::Days(1));
   }
 
   ~TransportSecurityStateTest() override {
+    SetTransportSecurityStatePinsSourceForTesting(nullptr);
     SetTransportSecurityStateSourceForTesting(nullptr);
+  }
+
+  static void DisableStaticPins(TransportSecurityState* state) {
+    state->enable_static_pins_ = false;
+  }
+
+  static void EnableStaticPins(TransportSecurityState* state) {
+    state->enable_static_pins_ = true;
+    state->SetPinningListAlwaysTimelyForTesting(true);
   }
 
   static HashValueVector GetSampleSPKIHashes() {
@@ -372,7 +375,6 @@ TEST_F(TransportSecurityStateTest, STSSubdomainNoOverride) {
   EXPECT_TRUE(state.ShouldSSLErrorsBeFatal("bar.foo.example.test"));
 }
 
-#if BUILDFLAG(CRONET_BUILD)
 // Tests that a more-specific HPKP rule overrides a less-specific rule
 // with it, regardless of the includeSubDomains bit. Note this behavior does not
 // match HSTS. See https://crbug.com/821811.
@@ -399,7 +401,6 @@ TEST_F(TransportSecurityStateTest, PKPSubdomainCarveout) {
   EXPECT_TRUE(state.HasPublicKeyPins("bar.foo.example.test"));
   EXPECT_TRUE(state.ShouldSSLErrorsBeFatal("bar.foo.example.test"));
 }
-#endif  // BUILDFLAG(CRONET_BUILD)
 
 TEST_F(TransportSecurityStateTest, FatalSSLErrors) {
   TransportSecurityState state;
@@ -407,24 +408,22 @@ TEST_F(TransportSecurityStateTest, FatalSSLErrors) {
   const base::Time expiry = current_time + base::Seconds(1000);
 
   state.AddHSTS("example1.test", expiry, false);
-#if BUILDFLAG(CRONET_BUILD)
   state.AddHPKP("example2.test", expiry, false, GetSampleSPKIHashes());
-#endif
 
   // The presense of either HSTS or HPKP is enough to make SSL errors fatal.
   EXPECT_TRUE(state.ShouldSSLErrorsBeFatal("example1.test"));
-#if BUILDFLAG(CRONET_BUILD)
   EXPECT_TRUE(state.ShouldSSLErrorsBeFatal("example2.test"));
-#endif
 }
 
-// Tests that HSTS state expires. Also tests that expired entries are pruned.
+// Tests that HPKP and HSTS state both expire. Also tests that expired entries
+// are pruned.
 //
 // Setting `is_top_level_nav` true prevents the upgrade from being blocked by
 // kHstsTopLevelNavigationsOnly.
 TEST_F(TransportSecurityStateTest, Expiration) {
   TransportSecurityState state;
   const base::Time current_time(base::Time::Now());
+  const base::Time expiry = current_time + base::Seconds(1000);
   const base::Time older = current_time - base::Seconds(1000);
 
   // Note: this test assumes that inserting an entry with an expiration time in
@@ -436,14 +435,31 @@ TEST_F(TransportSecurityStateTest, Expiration) {
   // Querying |state| for a domain should flush out expired entries.
   EXPECT_FALSE(TransportSecurityState::STSStateIterator(state).HasNext());
 
+  state.AddHPKP("example1.test", older, false, GetSampleSPKIHashes());
+  EXPECT_FALSE(state.HasPublicKeyPins("example1.test"));
+
   state.AddHSTS("example1.test", older, false);
+  state.AddHPKP("example1.test", older, false, GetSampleSPKIHashes());
   EXPECT_TRUE(TransportSecurityState::STSStateIterator(state).HasNext());
   EXPECT_FALSE(state.ShouldSSLErrorsBeFatal("example1.test"));
   // Querying |state| for a domain should flush out expired entries.
   EXPECT_FALSE(TransportSecurityState::STSStateIterator(state).HasNext());
+
+  // Test that HSTS can outlive HPKP.
+  state.AddHSTS("example1.test", expiry, false);
+  state.AddHPKP("example1.test", older, false, GetSampleSPKIHashes());
+  EXPECT_TRUE(
+      state.ShouldUpgradeToSSL("example1.test", /*is_top_level_nav=*/true));
+  EXPECT_FALSE(state.HasPublicKeyPins("example1.test"));
+
+  // Test that HPKP can outlive HSTS.
+  state.AddHSTS("example2.test", older, false);
+  state.AddHPKP("example2.test", expiry, false, GetSampleSPKIHashes());
+  EXPECT_FALSE(
+      state.ShouldUpgradeToSSL("example2.test", /*is_top_level_nav=*/true));
+  EXPECT_TRUE(state.HasPublicKeyPins("example2.test"));
 }
 
-#if BUILDFLAG(CRONET_BUILD)
 // Tests that HPKP and HSTS state are queried independently for subdomain
 // matches.
 //
@@ -510,9 +526,9 @@ TEST_F(TransportSecurityStateTest, IndependentInsertion) {
       state.ShouldUpgradeToSSL("foo.example2.test", /*is_top_level_nav=*/true));
   EXPECT_FALSE(state.HasPublicKeyPins("foo.example2.test"));
 }
-#endif  // BUILDFLAG(CRONET_BUILD)
 
-// Tests that GetDynamicSTSState returns the correct data.
+// Tests that GetDynamic[PKP|STS]State returns the correct data and that the
+// states are not mixed together.
 //
 // Setting `is_top_level_nav` true prevents the upgrade from being blocked by
 // kHstsTopLevelNavigationsOnly.
@@ -523,21 +539,19 @@ TEST_F(TransportSecurityStateTest, DynamicDomainState) {
   const base::Time expiry2 = current_time + base::Seconds(2000);
 
   state.AddHSTS("example.com", expiry1, true);
-  state.AddHSTS("foo.example.com", expiry2, false);
+  state.AddHPKP("foo.example.com", expiry2, false, GetSampleSPKIHashes());
 
-  TransportSecurityState::STSState sts_state1;
-  TransportSecurityState::STSState sts_state2;
-  ASSERT_TRUE(state.GetDynamicSTSState("example.com", &sts_state1));
-  ASSERT_TRUE(state.GetDynamicSTSState("foo.example.com", &sts_state2));
-  EXPECT_TRUE(sts_state1.ShouldUpgradeToSSL());
-  EXPECT_TRUE(sts_state1.include_subdomains);
-  EXPECT_EQ(expiry1, sts_state1.expiry);
-  EXPECT_EQ("example.com", sts_state1.domain);
-
-  EXPECT_TRUE(sts_state2.ShouldUpgradeToSSL());
-  EXPECT_FALSE(sts_state2.include_subdomains);
-  EXPECT_EQ(expiry2, sts_state2.expiry);
-  EXPECT_EQ("foo.example.com", sts_state2.domain);
+  TransportSecurityState::STSState sts_state;
+  TransportSecurityState::PKPState pkp_state;
+  ASSERT_TRUE(state.GetDynamicSTSState("foo.example.com", &sts_state));
+  ASSERT_TRUE(state.GetDynamicPKPState("foo.example.com", &pkp_state));
+  EXPECT_TRUE(sts_state.ShouldUpgradeToSSL());
+  EXPECT_TRUE(pkp_state.HasPublicKeyPins());
+  EXPECT_TRUE(sts_state.include_subdomains);
+  EXPECT_FALSE(pkp_state.include_subdomains);
+  EXPECT_EQ(expiry1, sts_state.expiry);
+  EXPECT_EQ(expiry2, pkp_state.expiry);
+  EXPECT_EQ("example.com", sts_state.domain);
 }
 
 // Tests that GetSSLUpgradeDecision() matches the result of ShouldUpgradeToSSL()
@@ -593,7 +607,6 @@ TEST_F(TransportSecurityStateTest, StaticOrDynamicSource) {
       /*is_top_level_nav=*/true));
 }
 
-#if BUILDFLAG(CRONET_BUILD)
 // Tests that new pins always override previous pins. This should be true for
 // both pins at the same domain or includeSubdomains pins at a parent domain.
 TEST_F(TransportSecurityStateTest, NewPinsOverride) {
@@ -629,7 +642,6 @@ TEST_F(TransportSecurityStateTest, NewPinsOverride) {
   EXPECT_THAT(pkp_state.spki_hashes,
               testing::UnorderedElementsAre(hash3.sha256hashvalue()));
 }
-#endif  // BUILDFLAG(CRONET_BUILD)
 
 // Setting `is_top_level_nav` true prevents the upgrade from being blocked by
 // kHstsTopLevelNavigationsOnly.
@@ -641,6 +653,7 @@ TEST_F(TransportSecurityStateTest, DeleteAllDynamicDataBetween) {
 
   EXPECT_FALSE(
       state.ShouldUpgradeToSSL("example.com", /*is_top_level_nav=*/true));
+  EXPECT_FALSE(state.HasPublicKeyPins("example.com"));
   bool include_subdomains = false;
   state.AddHSTS("example.com", expiry, include_subdomains);
 
@@ -689,6 +702,7 @@ TEST_F(TransportSecurityStateTest, DeleteDynamicDataForHost) {
 
 TEST_F(TransportSecurityStateTest, LongNames) {
   TransportSecurityState state;
+  state.SetPinningListAlwaysTimelyForTesting(true);
   const char kLongName[] =
       "lookupByWaveIdHashAndWaveIdIdAndWaveIdDomainAndWaveletIdIdAnd"
       "WaveletIdDomainAndBlipBlipid";
@@ -696,15 +710,14 @@ TEST_F(TransportSecurityStateTest, LongNames) {
   TransportSecurityState::PKPState pkp_state;
   // Just checks that we don't hit a NOTREACHED
   EXPECT_FALSE(state.GetStaticSTSState(kLongName, &sts_state));
+  EXPECT_FALSE(state.GetStaticPKPState(kLongName, &pkp_state));
   EXPECT_FALSE(state.GetDynamicSTSState(kLongName, &sts_state));
-  EXPECT_FALSE(state.GetPKPState(kLongName, &pkp_state));
+  EXPECT_FALSE(state.GetDynamicPKPState(kLongName, &pkp_state));
 }
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 TEST_F(TransportSecurityStateTest, PinValidationWithCompiledInPins) {
   AddScopedFeatureList().InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
-  ScopedKeyPinningStateChromeDefaults scoped_static_pinning_enable_;
 
   std::vector<SHA256HashValue> good_hashes = DeserializeHashes(kGoodPath);
   std::vector<SHA256HashValue> maybe_rejected_hashes =
@@ -712,6 +725,8 @@ TEST_F(TransportSecurityStateTest, PinValidationWithCompiledInPins) {
   std::vector<SHA256HashValue> bad_hashes = DeserializeHashes(kBadPath);
 
   TransportSecurityState state;
+  state.SetPinningListAlwaysTimelyForTesting(true);
+  EnableStaticPins(&state);
 
   struct TestCase {
     std::string_view hostname;
@@ -771,7 +786,7 @@ TEST_F(TransportSecurityStateTest, PinValidationWithCompiledInPins) {
 
     TransportSecurityState::PKPState pkp_state;
     EXPECT_EQ(testcase.has_pins,
-              state.GetPKPState(testcase.hostname, &pkp_state));
+              state.GetStaticPKPState(testcase.hostname, &pkp_state));
     EXPECT_EQ(testcase.has_pins, pkp_state.HasPublicKeyPins());
 
     EXPECT_EQ(testcase.has_pins, state.HasPublicKeyPins(testcase.hostname));
@@ -802,7 +817,6 @@ TEST_F(TransportSecurityStateTest, PinValidationWithCompiledInPins) {
     }
   }
 }
-#endif
 
 TEST_F(TransportSecurityStateTest, PreloadedHsts) {
   TransportSecurityState state;
@@ -1025,10 +1039,21 @@ TEST(CTEmergencyDisableTest, CTEmergencyDisable) {
 
 #if BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
 
+#if !BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+// TODO(crbug.com/497882860): Some of these tests currently assume that
+// INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST and
+// CHROME_KEY_PINNING_SUPPORTED are always the same, and will lead to a
+// null dereference if CHROME_KEY_PINNING_SUPPORTED is false and a test tries
+// to force key pinning to enabled using the production pin list.
+// This requirement should be removed once the test code is untangled further.
+#error "inconsistent build flags (see comment)"
+#endif
+
 class TransportSecurityStateStaticTest : public TransportSecurityStateTest {
  public:
   TransportSecurityStateStaticTest() {
     SetTransportSecurityStateSourceForTesting(nullptr);
+    SetTransportSecurityStatePinsSourceForTesting(nullptr);
   }
 };
 
@@ -1039,13 +1064,12 @@ static bool StaticShouldRedirect(const char* hostname) {
          sts_state.ShouldUpgradeToSSL();
 }
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 TEST_F(TransportSecurityStateStaticTest, PreloadedProductionStaticPins) {
   base::test::ScopedFeatureList feature_list(
       features::kStaticKeyPinningEnforcement);
-  ScopedKeyPinningStateChromeDefaults scoped_static_pinning_enable_(
-      ScopedKeyPinningStateChromeDefaults::kForceEnableProduction);
   TransportSecurityState state;
+  state.SetPinningListAlwaysTimelyForTesting(true);
+  EnableStaticPins(&state);
 
   static constexpr std::string_view kExpectedPinnedDomains[] = {
       "1.docs.google.com",
@@ -1138,15 +1162,14 @@ TEST_F(TransportSecurityStateStaticTest, PreloadedProductionStaticPins) {
 }
 
 TEST_F(TransportSecurityStateStaticTest, DisableStaticPins) {
-  ScopedKeyPinningStateChromeDefaults scoped_static_pinning_enable_(
-      ScopedKeyPinningStateChromeDefaults::kForceDisabled);
   TransportSecurityState state;
+  state.SetPinningListAlwaysTimelyForTesting(true);
   TransportSecurityState::PKPState pkp_state;
 
-  EXPECT_FALSE(state.GetPKPState("chrome.google.com", &pkp_state));
+  DisableStaticPins(&state);
+  EXPECT_FALSE(state.GetStaticPKPState("chrome.google.com", &pkp_state));
   EXPECT_TRUE(pkp_state.spki_hashes.empty());
 }
-#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 TEST_F(TransportSecurityStateStaticTest, PreloadedDomainSet) {
   TransportSecurityState state;
@@ -1444,15 +1467,13 @@ TEST_F(TransportSecurityStateTest, DecodeSizeFour) {
 
 #endif  // BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-
 TEST_F(TransportSecurityStateTest, UpdateKeyPinsListValidPin) {
   AddScopedFeatureList().InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
   std::vector<SHA256HashValue> bad_hashes = DeserializeHashes(kBadPath);
 
-  ScopedKeyPinningStateChromeDefaults scoped_static_pinning_enable_;
   TransportSecurityState state;
+  EnableStaticPins(&state);
 
   // Prior to updating the list, bad_hashes should be rejected.
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
@@ -1479,8 +1500,8 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListNotValidPin) {
       features::kStaticKeyPinningEnforcement);
   std::vector<SHA256HashValue> good_hashes = DeserializeHashes(kGoodPath);
 
-  ScopedKeyPinningStateChromeDefaults scoped_static_pinning_enable_;
   TransportSecurityState state;
+  EnableStaticPins(&state);
 
   // Prior to updating the list, good_hashes should be accepted
   EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
@@ -1514,10 +1535,10 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListNotValidPin) {
 TEST_F(TransportSecurityStateTest, UpdateKeyPinsEmptyList) {
   AddScopedFeatureList().InitAndEnableFeature(
       features::kStaticKeyPinningEnforcement);
-  ScopedKeyPinningStateChromeDefaults scoped_static_pinning_enable_;
   std::vector<SHA256HashValue> bad_hashes = DeserializeHashes(kBadPath);
 
   TransportSecurityState state;
+  EnableStaticPins(&state);
 
   // Prior to updating the list, bad_hashes should be rejected.
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
@@ -1540,8 +1561,8 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomains) {
   // validate it is rejected afterwards.
   std::vector<SHA256HashValue> unpinned_hashes = DeserializeHashes(kGoodPath);
 
-  ScopedKeyPinningStateChromeDefaults scoped_static_pinning_enable_;
   TransportSecurityState state;
+  EnableStaticPins(&state);
 
   // Prior to updating the list, unpinned_hashes should be accepted
   EXPECT_EQ(
@@ -1578,8 +1599,8 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomainsTLD) {
   // validate it is rejected afterwards.
   std::vector<SHA256HashValue> unpinned_hashes = DeserializeHashes(kGoodPath);
 
-  ScopedKeyPinningStateChromeDefaults scoped_static_pinning_enable_;
   TransportSecurityState state;
+  EnableStaticPins(&state);
 
   // Prior to updating the list, unpinned_hashes should be accepted
   EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
@@ -1615,8 +1636,8 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsDontIncludeSubdomains) {
   // domain is an exact match.
   std::vector<SHA256HashValue> unpinned_hashes = DeserializeHashes(kGoodPath);
 
-  ScopedKeyPinningStateChromeDefaults scoped_static_pinning_enable_;
   TransportSecurityState state;
+  EnableStaticPins(&state);
 
   // Prior to updating the list, unpinned_hashes should be accepted
   EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
@@ -1653,19 +1674,18 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
       features::kStaticKeyPinningEnforcement);
   std::vector<SHA256HashValue> bad_hashes = DeserializeHashes(kBadPath);
 
-  ScopedKeyPinningStateChromeDefaults scoped_static_pinning_enable_;
   TransportSecurityState state;
+  EnableStaticPins(&state);
 
-  // Using the compiled-in unittest data, bad_hashes should be rejected.
+  // Prior to updating the list, bad_hashes should be rejected.
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
             state.CheckPublicKeyPins(kHost, true, bad_hashes));
 
-  // ScopedKeyPinningStateChromeDefaults normally sets a flag that results in
-  // considering the pins list as always timely. We need to disable that so we
-  // can test that the timestamp supplied with component update data has the
+  // TransportSecurityStateTest sets a flag when EnableStaticPins is called that
+  // results in TransportSecurityState considering the pins list as always
+  // timely. We need to disable it so we can test that the timestamp has the
   // required effect.
-  scoped_static_pinning_enable_.Reset(
-      ScopedKeyPinningStateChromeDefaults::kUnittestDefaultWithoutAlwaysTimely);
+  state.SetPinningListAlwaysTimelyForTesting(false);
 
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
@@ -1688,8 +1708,6 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
   // Hashes should now be rejected.
   EXPECT_EQ(TransportSecurityState::PKPStatus::VIOLATED,
             state.CheckPublicKeyPins(kHost, true, bad_hashes));
-
-  EXPECT_TRUE(state.ShouldSSLErrorsBeFatal(kHost));
 }
 
 class TransportSecurityStatePinningKillswitchTest
@@ -1704,14 +1722,12 @@ class TransportSecurityStatePinningKillswitchTest
 TEST_F(TransportSecurityStatePinningKillswitchTest, PinningKillswitchSet) {
   std::vector<SHA256HashValue> bad_hashes = DeserializeHashes(kBadPath);
 
-  ScopedKeyPinningStateChromeDefaults scoped_static_pinning_enable_;
   TransportSecurityState state;
+  EnableStaticPins(&state);
 
   // Hashes should be accepted since pinning enforcement is disabled.
   EXPECT_EQ(TransportSecurityState::PKPStatus::OK,
             state.CheckPublicKeyPins(kHost, true, bad_hashes));
 }
-
-#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 }  // namespace net

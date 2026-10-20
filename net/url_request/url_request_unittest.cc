@@ -189,10 +189,6 @@
 #include "net/websockets/websocket_test_util.h"
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
-#include "net/cert/key_pinning_state_chrome_test_util.h"
-#endif
-
 using net::test::IsError;
 using net::test::IsOk;
 using net::test_server::RegisterDefaultHandlers;
@@ -6134,11 +6130,20 @@ TEST_F(URLRequestTestHTTP, ProcessSTS) {
 
   TransportSecurityState* security_state = context->transport_security_state();
   TransportSecurityState::STSState sts_state;
+  TransportSecurityState::PKPState pkp_state;
   EXPECT_TRUE(
       security_state->GetDynamicSTSState(test_server_hostname, &sts_state));
+  EXPECT_FALSE(
+      security_state->GetDynamicPKPState(test_server_hostname, &pkp_state));
   EXPECT_EQ(TransportSecurityState::STSState::MODE_FORCE_HTTPS,
             sts_state.upgrade_mode);
   EXPECT_TRUE(sts_state.include_subdomains);
+  EXPECT_FALSE(pkp_state.include_subdomains);
+#if BUILDFLAG(IS_ANDROID)
+  // Android's CertVerifyProc does not (yet) handle pins.
+#else
+  EXPECT_FALSE(pkp_state.HasPublicKeyPins());
+#endif
 }
 
 TEST_F(URLRequestTestHTTP, STSNotProcessedOnIP) {
@@ -6214,18 +6219,9 @@ TEST_F(URLRequestTestHTTP, STSProcessedOnLocalhostWhenFeatureDisabled) {
   EXPECT_TRUE(security_state->GetDynamicSTSState("localhost", &sts_state));
 }
 
-// The PKP tests depend on ScopedKeyPinningStateChromeDefaults and
-// KeyPinningStateChrome which are only available when the builtin pin list is
-// compiled in. We could also make a separate version of these tests that use
-// the dynamic PKP path for testing on cronet, but it's not really worth the
-// effort, especially since this is only a temporary state. Once PKP refactor
-// is complete and pinning is only done in cert verification, then these tests
-// can just configure the mock cert verifier to test the desired pkp results.
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
   AddScopedFeatureList().InitAndEnableFeature(
       net::features::kStaticKeyPinningEnforcement);
-  ScopedKeyPinningStateChromeDefaults scoped_key_pinning_enable;
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(
       net::EmbeddedTestServer::CERT_COMMON_NAME_IS_DOMAIN);
@@ -6248,9 +6244,14 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
 
   std::string test_server_hostname = "www.example.org";
 
+  ScopedTransportSecurityStateSource scoped_transport_security_state_source;
+
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->SetCertVerifier(std::move(cert_verifier));
   auto context = context_builder->Build();
+  context->transport_security_state()->EnableStaticPinsForTesting();
+  context->transport_security_state()->SetPinningListAlwaysTimelyForTesting(
+      true);
 
   TestDelegate d;
   std::unique_ptr<URLRequest> request(context->CreateRequest(
@@ -6265,12 +6266,11 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
   // Check that the request succeeded and that PKP was bypassed.
   EXPECT_EQ(OK, d.request_status());
   TransportSecurityState::PKPState pkp_state;
-  EXPECT_TRUE(context->transport_security_state()->GetPKPState(
+  EXPECT_TRUE(context->transport_security_state()->GetStaticPKPState(
       test_server_hostname, &pkp_state));
   EXPECT_TRUE(pkp_state.HasPublicKeyPins());
   EXPECT_TRUE(request->ssl_info().pkp_bypassed);
 }
-#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 TEST_F(URLRequestTestHTTP, ProcessSTSOnce) {
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -9600,6 +9600,8 @@ TEST_F(HTTPSRequestTest, HTTPSPreloadedHSTSTest) {
 // This tests that cached HTTPS page loads do not cause any updates to the
 // TransportSecurityState.
 TEST_F(HTTPSRequestTest, HTTPSErrorsNoClobberTSSTest) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      net::features::kStaticKeyPinningEnforcement);
   ScopedTransportSecurityStateSource scoped_transport_security_state_source;
 
   // The actual problem -- CERT_MISMATCHED_NAME in this case -- doesn't
@@ -9624,14 +9626,22 @@ TEST_F(HTTPSRequestTest, HTTPSErrorsNoClobberTSSTest) {
   TransportSecurityState& transport_security_state =
       *context->transport_security_state();
 
+  transport_security_state.EnableStaticPinsForTesting();
+  transport_security_state.SetPinningListAlwaysTimelyForTesting(true);
+
   TransportSecurityState::STSState static_sts_state;
+  TransportSecurityState::PKPState static_pkp_state;
   EXPECT_TRUE(transport_security_state.GetStaticSTSState(
       "hsts-hpkp-preloaded.test", &static_sts_state));
+  EXPECT_TRUE(transport_security_state.GetStaticPKPState(
+      "hsts-hpkp-preloaded.test", &static_pkp_state));
 
   TransportSecurityState::STSState dynamic_sts_state;
   TransportSecurityState::PKPState dynamic_pkp_state;
   EXPECT_FALSE(transport_security_state.GetDynamicSTSState(
       "hsts-hpkp-preloaded.test", &dynamic_sts_state));
+  EXPECT_FALSE(transport_security_state.GetDynamicPKPState(
+      "hsts-hpkp-preloaded.test", &dynamic_pkp_state));
 
   TestDelegate d;
   std::unique_ptr<URLRequest> r(context->CreateRequest(
@@ -9652,15 +9662,26 @@ TEST_F(HTTPSRequestTest, HTTPSErrorsNoClobberTSSTest) {
 
   // Get a fresh copy of the states, and check that they haven't changed.
   TransportSecurityState::STSState new_static_sts_state;
+  TransportSecurityState::PKPState new_static_pkp_state;
   EXPECT_TRUE(transport_security_state.GetStaticSTSState(
       "hsts-hpkp-preloaded.test", &new_static_sts_state));
+  EXPECT_TRUE(transport_security_state.GetStaticPKPState(
+      "hsts-hpkp-preloaded.test", &new_static_pkp_state));
   TransportSecurityState::STSState new_dynamic_sts_state;
+  TransportSecurityState::PKPState new_dynamic_pkp_state;
   EXPECT_FALSE(transport_security_state.GetDynamicSTSState(
       "hsts-hpkp-preloaded.test", &new_dynamic_sts_state));
+  EXPECT_FALSE(transport_security_state.GetDynamicPKPState(
+      "hsts-hpkp-preloaded.test", &new_dynamic_pkp_state));
 
   EXPECT_EQ(new_static_sts_state.upgrade_mode, static_sts_state.upgrade_mode);
   EXPECT_EQ(new_static_sts_state.include_subdomains,
             static_sts_state.include_subdomains);
+  EXPECT_EQ(new_static_pkp_state.include_subdomains,
+            static_pkp_state.include_subdomains);
+  EXPECT_EQ(new_static_pkp_state.spki_hashes, static_pkp_state.spki_hashes);
+  EXPECT_EQ(new_static_pkp_state.bad_spki_hashes,
+            static_pkp_state.bad_spki_hashes);
 }
 
 // Make sure HSTS preserves a POST request's method and body.
@@ -11577,6 +11598,9 @@ TEST_F(HTTPSLocalCRLSetTest, InterceptionBlockedAllowOverrideOnHSTS) {
 
   // Enable preloaded HSTS for |kHSTSHost|.
   ASSERT_TRUE(context->transport_security_state());
+  TransportSecurityState& security_state = *context->transport_security_state();
+  security_state.EnableStaticPinsForTesting();
+  security_state.SetPinningListAlwaysTimelyForTesting(true);
   ScopedTransportSecurityStateSource scoped_transport_security_state_source;
 
   // Connect to the test server and see the certificate error flagged, but
