@@ -12,6 +12,7 @@ import("//build/config/coverage/coverage.gni")
 import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/kythe.gni")
+import("//build/toolchain/rbe.gni")
 import("//build/util/generate_wrapper.gni")
 import("//build_overrides/build.gni")
 if (current_toolchain == default_toolchain) {
@@ -2247,6 +2248,14 @@ if (enable_java_templates) {
       "//third_party/protobuf/python/google/protobuf/util/__init__.py",
     ]
 
+    # Remote resource compilation runs on Linux workers, which need the Linux
+    # aapt2 when the host isn't Linux.
+    _use_linux_aapt2 = use_remoteexec && host_os != "linux"
+    if (_use_linux_aapt2) {
+      _linux_aapt2 = "//third_party/android_build_tools/aapt2/linux-amd64/aapt2"
+      _common_inputs += [ _linux_aapt2 ]
+    }
+
     _inputs = _common_inputs
 
     _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
@@ -2260,6 +2269,12 @@ if (enable_java_templates) {
       "--min-sdk-version=${invoker.min_sdk_version}",
       "--target-sdk-version=${_target_sdk_version}",
     ]
+    if (_use_linux_aapt2) {
+      _args += [
+        "--linux-aapt2-path",
+        rebase_path(_linux_aapt2, root_build_dir),
+      ]
+    }
 
     if (!defined(testonly) || !testonly ||
         (defined(invoker.enforce_resource_overlays_in_tests) &&

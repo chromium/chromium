@@ -64,6 +64,11 @@ def _ParseArgs(args):
         '--aapt2-path', required=True, help='Path to the Android aapt2 tool.'
     )
     input_opts.add_argument(
+        '--linux-aapt2-path',
+        help='Path to the Linux aapt2, used instead of --aapt2-path when '
+        'running on Linux.',
+    )
+    input_opts.add_argument(
         '--android-manifest', required=True, help='AndroidManifest.xml path.'
     )
     input_opts.add_argument(
@@ -204,6 +209,9 @@ def _ParseArgs(args):
 
     diff_utils.AddCommandLineFlags(parser)
     options = parser.parse_args(args)
+
+    if options.linux_aapt2_path and sys.platform == 'linux':
+        options.aapt2_path = options.linux_aapt2_path
 
     options.include_resources = action_helpers.parse_gn_list(
         options.include_resources
