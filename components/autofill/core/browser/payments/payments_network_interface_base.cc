@@ -8,8 +8,10 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -19,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
+#include "components/autofill/core/browser/payments/payments_access_token_fetcher.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
@@ -84,6 +87,7 @@ void PaymentsNetworkInterfaceBase::CancelRequest() {
   resource_request_.reset();
   simple_url_loader_.reset();
   token_fetcher_.reset();
+  payments_access_token_fetcher_.reset();
   access_token_.clear();
   has_retried_authorization_ = false;
 }
@@ -290,6 +294,19 @@ void PaymentsNetworkInterfaceBase::AccessTokenFetchFinished(
   }
 }
 
+void PaymentsNetworkInterfaceBase::OnAccessTokenFetchFinished(
+    const std::variant<GoogleServiceAuthError, std::string>& result) {
+  if (std::holds_alternative<GoogleServiceAuthError>(result)) {
+    AccessTokenError(std::get<GoogleServiceAuthError>(result));
+    return;
+  }
+
+  access_token_ = std::get<std::string>(result);
+  if (resource_request_) {
+    SetOAuth2TokenAndStartRequest();
+  }
+}
+
 void PaymentsNetworkInterfaceBase::AccessTokenError(
     const GoogleServiceAuthError& error) {
   DVLOG(1) << "Unhandled OAuth2 error: " << error.ToString();
@@ -313,6 +330,20 @@ void PaymentsNetworkInterfaceBase::AccessTokenError(
 }
 
 void PaymentsNetworkInterfaceBase::StartTokenFetch(bool invalidate_old) {
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableOAuth2TokenFix)) {
+    if (!payments_access_token_fetcher_) {
+      payments_access_token_fetcher_ =
+          std::make_unique<PaymentsAccessTokenFetcher>(
+              CHECK_DEREF(identity_manager_.get()));
+    }
+    payments_access_token_fetcher_->GetAccessToken(
+        invalidate_old,
+        base::BindOnce(
+            &PaymentsNetworkInterfaceBase::OnAccessTokenFetchFinished,
+            weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   // We're still waiting for the last request to come back.
   if (!invalidate_old && token_fetcher_) {
     return;

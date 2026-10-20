@@ -8,10 +8,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/payments/payments_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace signin {
@@ -79,9 +81,16 @@ class PaymentsNetworkInterfaceBase {
   void OnSimpleLoaderCompleteInternal(int response_code,
                                       const std::string& data);
 
-  // Callback that handles a completed access token request.
+  // Callback that handles a completed access token request from
+  // `token_fetcher_`.
   void AccessTokenFetchFinished(GoogleServiceAuthError error,
                                 signin::AccessTokenInfo access_token_info);
+
+  // Callback that handles a completed access token request from
+  // `payments_access_token_fetcher_`. `result` contains either the fetched
+  // access token string on success, or a `GoogleServiceAuthError` on failure.
+  void OnAccessTokenFetchFinished(
+      const std::variant<GoogleServiceAuthError, std::string>& result);
 
   // Handles a completed access token request in the case of failure.
   void AccessTokenError(const GoogleServiceAuthError& error);
@@ -112,6 +121,9 @@ class PaymentsNetworkInterfaceBase {
 
   // The OAuth2 token fetcher for any account.
   std::unique_ptr<signin::AccessTokenFetcher> token_fetcher_;
+
+  // The access token fetcher to fetch the latest access token.
+  std::unique_ptr<PaymentsAccessTokenFetcher> payments_access_token_fetcher_;
 
   // The OAuth2 token, or empty if not fetched.
   std::string access_token_;
