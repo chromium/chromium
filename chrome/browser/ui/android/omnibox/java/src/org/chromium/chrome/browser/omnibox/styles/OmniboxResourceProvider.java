@@ -33,7 +33,6 @@ import androidx.core.content.ContextCompat;
 import com.google.android.material.color.MaterialColors;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -55,7 +54,9 @@ import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Locale;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
  * Provides resources specific to Omnibox.
@@ -89,7 +90,7 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
 
     private static final String TAG = "OmniboxResourceProvider";
 
-    private static SparseArray<String> sStringCache = new SparseArray<>();
+    private static final Pattern GRIT_PLACEHOLDER = Pattern.compile("\\$(\\d+)");
     private static @ColorInt @Nullable Integer sUrlBarPrimaryTextColorForTesting;
     private static @ColorInt @Nullable Integer sUrlBarHintTextColorForTesting;
 
@@ -224,17 +225,9 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return (T) mCache.getDrawable(res);
     }
 
-    /**
-     * As {@link #getString(Context, int, CharSequence...)} but uses the instance context and cache.
-     */
+    /** Resolves a string resource and expands positional arguments. */
     public String getString(@StringRes int res, CharSequence... args) {
-        String string = mCache.getString(res);
-        return args.length == 0
-                ? string
-                : String.format(
-                        mContext.getResources().getConfiguration().getLocales().get(0),
-                        string,
-                        (Object[]) args);
+        return formatStringArgs(mCache.getString(res), args);
     }
 
     /** Resolves a dimension size and caches the result. */
@@ -832,39 +825,27 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     // ============================================================================================
 
     /**
-     * As {@link android.content.res.Resources#getString(int, Object...)} but potentially augmented
-     * with caching. If caching is enabled, there is a single, unbounded string cache shared by all
-     * contexts. When dealing with strings with format params, the raw string is cached and
-     * formatted on demand using the default locale.
+     * Expands a string using grit-style `$1`, `$2`, ... placeholders, which allow the same string
+     * to be shared with other platforms, by substituting the supplied arguments in order.
      *
-     * <p>This function converts cross-platform grit string expansion placeholders to Java
-     * placeholders allowing any single string to be used both from C++ and Java. This requires all
-     * the arguments to be of String type.
-     *
-     * @param context current context used to resolve string res
-     * @param res string res to retrieve, cache, and expand
-     * @param args positional arguments expanded when `res` includes expansion placeholders
-     * @return expanded and formatted string representing
+     * @param template The string containing grit-style placeholders.
+     * @param args The values substituted for the placeholders.
+     * @return The expanded string, or the template itself if no arguments are supplied.
      */
-    public static String getString(Context context, @StringRes int res, CharSequence... args) {
-        ThreadUtils.assertOnUiThread();
-        String string = sStringCache.get(res, null);
-        if (string == null) {
-            string = context.getString(res);
+    public static String expandString(String template, CharSequence... args) {
+        return formatStringArgs(convertGritPlaceholders(template), args);
+    }
 
-            // Translate `$1`, `$2`, ... strings (found typically on other platforms)
-            // to `%1$s`, `%2$s` etc, which are appropriate for Chrome.
-            string = string.replaceAll("\\$(\\d+)", "%$1\\$s");
+    /** Converts grit-style `$1`, `$2`, ... placeholders to Java string specifiers `%1$s`, .... */
+    /* package */ static String convertGritPlaceholders(String template) {
+        return GRIT_PLACEHOLDER.matcher(template).replaceAll("%$1\\$s");
+    }
 
-            sStringCache.put(res, string);
-        }
-
-        return args.length == 0
-                ? string
-                : String.format(
-                        context.getResources().getConfiguration().getLocales().get(0),
-                        string,
-                        (Object[]) args);
+    private static String formatStringArgs(String javaTemplate, CharSequence... args) {
+        if (args.length == 0) return javaTemplate;
+        // Templates only ever contain string specifiers (`%1$s`), which are not affected by the
+        // locale; Locale.ROOT is passed to keep the formatting explicit.
+        return String.format(Locale.ROOT, javaTemplate, (Object[]) args);
     }
 
     /**
@@ -1087,29 +1068,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     public @Nullable Bitmap getTabFavicon(Tab tab) {
         if (mTabFaviconFactory == null) return null;
         return mTabFaviconFactory.apply(tab);
-    }
-
-    public static void disableCachesForTesting() {
-        sStringCache =
-                new SparseArray<>() {
-                    @Override
-                    public @Nullable String get(int key) {
-                        return null;
-                    }
-
-                    @Override
-                    public String get(int key, String valueIfKeyNotFound) {
-                        return valueIfKeyNotFound;
-                    }
-                };
-    }
-
-    public static void reenableCachesForTesting() {
-        sStringCache = new SparseArray<>();
-    }
-
-    public static SparseArray<String> getStringCacheForTesting() {
-        return sStringCache;
     }
 
     public static void setUrlBarPrimaryTextColorForTesting(@ColorInt int value) {

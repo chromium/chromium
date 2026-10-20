@@ -173,12 +173,10 @@ public class BasicSuggestionProcessorUnitTest {
                         mActionDelegate);
         mProcessor = new BasicSuggestionProcessor(mUiContext);
         mInput = new AutocompleteInput();
-        OmniboxResourceProvider.disableCachesForTesting();
     }
 
     @After
     public void tearDown() {
-        OmniboxResourceProvider.reenableCachesForTesting();
         mInput.reset();
     }
 

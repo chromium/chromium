@@ -450,21 +450,19 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
     /** Returns the hint text to be used on fakebox/searchbox on the New Tab Page. */
     public String getNtpHintText(Context context) {
         if (TextUtils.isEmpty(mSearchEngineName)) {
-            return OmniboxResourceProvider.getString(context, R.string.omnibox_empty_hint);
+            return context.getString(R.string.omnibox_empty_hint);
         }
 
         @StringRes int hintId = getHintStringRes(/* isNtpSearchBox= */ true);
-        return OmniboxResourceProvider.getString(context, hintId, mSearchEngineName);
+        return OmniboxResourceProvider.expandString(context.getString(hintId), mSearchEngineName);
     }
 
-    /** Returns the hint text string to be used on the omnibox for Hint Text Updater. */
-    public String getOmniboxHintString() {
-        // Hint text updater checks for empty search engine name and returns the empty hint in that
-        // case so this should never be null.
-        assert mSearchEngineName != null;
-
-        @StringRes int hintId = getHintStringRes(/* isNtpSearchBox= */ false);
-        return OmniboxResourceProvider.getString(mContext, hintId, mSearchEngineName);
+    /**
+     * Returns the omnibox hint string resource. The string expects the search engine name as its
+     * only argument.
+     */
+    public @StringRes int getOmniboxHintStringRes() {
+        return getHintStringRes(/* isNtpSearchBox= */ false);
     }
 
     private @StringRes int getHintStringRes(boolean isNtpSearchBox) {

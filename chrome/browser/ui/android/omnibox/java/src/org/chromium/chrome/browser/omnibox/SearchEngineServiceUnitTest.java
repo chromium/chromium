@@ -558,39 +558,47 @@ public class SearchEngineServiceUnitTest {
     }
 
     @Test
-    public void testGetOmniboxHintString_Default() {
+    public void testGetOmniboxHintStringRes_Default() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         configureSearchEngine("google", "Google");
         OmniboxFeatures.sUseAskHintForNtp.setForTesting(false);
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
-        assertEquals("Search Google or type URL", searchEngineService.getOmniboxHintString());
+        assertEquals(
+                R.string.omnibox_empty_hint_with_dse_name,
+                searchEngineService.getOmniboxHintStringRes());
     }
 
     @Test
-    public void testGetOmniboxHintString_AskHint() {
+    public void testGetOmniboxHintStringRes_AskHint() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         configureSearchEngine("google", "Google");
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
-        assertEquals("Ask Google or type URL", searchEngineService.getOmniboxHintString());
+        assertEquals(
+                R.string.omnibox_empty_ask_hint_with_dse_name,
+                searchEngineService.getOmniboxHintStringRes());
     }
 
     @Test
-    public void testGetOmniboxHintString_onDesktop() {
+    public void testGetOmniboxHintStringRes_onDesktop() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         configureSearchEngine("google", "Google");
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
-        assertEquals("Ask Google or type URL", searchEngineService.getOmniboxHintString());
+        assertEquals(
+                R.string.omnibox_empty_ask_hint_with_dse_name,
+                searchEngineService.getOmniboxHintStringRes());
     }
 
     @Test
-    public void testGetOmniboxHintString_NonGoogle() {
+    public void testGetOmniboxHintStringRes_NonGoogle() {
         configureSearchEngine("yahoo", "Yahoo");
         OmniboxFeatures.sUseAskHintForNtp.setForTesting(true);
         var searchEngineService = new SearchEngineService(mProfile, mFaviconHelper, mImageFetcher);
-        assertEquals("Search Yahoo or type URL", searchEngineService.getOmniboxHintString());
+        assertEquals(
+                R.string.omnibox_empty_hint_with_dse_name,
+                searchEngineService.getOmniboxHintStringRes());
     }
 
     private static AiModeButtonUiConfig createTestAiModeButtonUiConfig(GURL faviconUrl) {

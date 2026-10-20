@@ -154,8 +154,8 @@ public class HintTextUpdaterUnitTest {
                 .when(mSearchEngineService.getAiModeButtonUiConfigSupplier())
                 .thenReturn(mAiModeButtonUiConfigSupplier);
         lenient()
-                .when(mSearchEngineService.getOmniboxHintString())
-                .thenReturn("Search Google or type URL");
+                .when(mSearchEngineService.getOmniboxHintStringRes())
+                .thenReturn(R.string.omnibox_empty_hint_with_dse_name);
         mSearchEngineServiceSupplier.set(mSearchEngineService);
 
         verify(mSearchEngineService)
@@ -350,7 +350,8 @@ public class HintTextUpdaterUnitTest {
     @Test
     public void testGetOmniboxHintText_DefaultSearchEngine() {
         when(mSearchEngineService.getSearchEngineName()).thenReturn("Google");
-        when(mSearchEngineService.getOmniboxHintString()).thenReturn("Search Google or type URL");
+        when(mSearchEngineService.getOmniboxHintStringRes())
+                .thenReturn(R.string.omnibox_empty_hint_with_dse_name);
 
         clearInvocations(mUpdateHintTextCallback);
         mUpdater.onTitleChanged();
@@ -358,7 +359,8 @@ public class HintTextUpdaterUnitTest {
 
         clearInvocations(mUpdateHintTextCallback);
         when(mSearchEngineService.getSearchEngineName()).thenReturn("Yahoo");
-        when(mSearchEngineService.getOmniboxHintString()).thenReturn("Search Yahoo or type URL");
+        when(mSearchEngineService.getOmniboxHintStringRes())
+                .thenReturn(R.string.omnibox_empty_hint_with_dse_name);
         mSearchEngineNameObserver.onSearchEngineNameChanged();
         verify(mUpdateHintTextCallback).onResult(eq("Search Yahoo or type URL"));
     }
@@ -496,7 +498,8 @@ public class HintTextUpdaterUnitTest {
     public void testAimActivationHint_ChipSelectedInDrafting_ShowsDefaultHint() {
         setupAimActivationHintEligible();
         when(mSearchEngineService.getSearchEngineName()).thenReturn(SEARCH_ENGINE_NAME);
-        when(mSearchEngineService.getOmniboxHintString()).thenReturn(SEARCH_ENGINE_HINT);
+        when(mSearchEngineService.getOmniboxHintStringRes())
+                .thenReturn(R.string.omnibox_empty_hint_with_dse_name);
 
         // Selecting the activation chip in SUGGESTIONS clears the hint.
         mActivationChipSelectedSupplier.set(true);
@@ -521,7 +524,8 @@ public class HintTextUpdaterUnitTest {
     public void testAimActivationHint_ChipSelectedInDrafting_NonEmptyUserText_HidesHint() {
         setupAimActivationHintEligible();
         when(mSearchEngineService.getSearchEngineName()).thenReturn(SEARCH_ENGINE_NAME);
-        when(mSearchEngineService.getOmniboxHintString()).thenReturn(SEARCH_ENGINE_HINT);
+        when(mSearchEngineService.getOmniboxHintStringRes())
+                .thenReturn(R.string.omnibox_empty_hint_with_dse_name);
 
         mActivationChipSelectedSupplier.set(true);
         mAutocompleteInput.setDisplayState(DisplayState.DRAFTING);

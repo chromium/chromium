@@ -147,8 +147,9 @@ public class OmniboxTest {
                 () -> {
                     assertEquals(
                             "Location bar has incorrect hint.",
-                            OmniboxResourceProvider.getString(
-                                    mActivityTestRule.getActivity(), expectedHintRes, "Google"),
+                            OmniboxResourceProvider.expandString(
+                                    mActivityTestRule.getActivity().getString(expectedHintRes),
+                                    "Google"),
                             urlBar.getHint().toString());
                 });
 

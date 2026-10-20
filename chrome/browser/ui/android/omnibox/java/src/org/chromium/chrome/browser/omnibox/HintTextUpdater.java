@@ -290,7 +290,8 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
                             R.string.omnibox_empty_hint_for_image_generation, searchEngineName);
             }
         }
-        return searchEngineService.getOmniboxHintString();
+        return mResourceProvider.getString(
+                searchEngineService.getOmniboxHintStringRes(), searchEngineName);
     }
 
     private boolean useAimActivationOrEmptyHint() {

@@ -540,50 +540,22 @@ public class OmniboxResourceProviderUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES)
-    public void getStringCached() {
-        String refineString =
-                OmniboxResourceProvider.getString(
-                        mContext, R.string.accessibility_omnibox_btn_refine, "foobar");
-
-        assertEquals(
-                mContext.getString(R.string.accessibility_omnibox_btn_refine, "foobar"),
-                refineString);
-        assertEquals(
-                mContext.getString(R.string.accessibility_omnibox_btn_refine),
-                OmniboxResourceProvider.getStringCacheForTesting()
-                        .get(R.string.accessibility_omnibox_btn_refine));
-
-        String copyString = OmniboxResourceProvider.getString(mContext, R.string.copy_link);
-        assertEquals(mContext.getString(R.string.copy_link, "foobar"), copyString);
-        assertEquals(
-                copyString,
-                OmniboxResourceProvider.getStringCacheForTesting().get(R.string.copy_link));
-    }
-
-    @Test
     public void getString_convertGritPlaceholders() {
         doReturn("Hello, $1!").when(mContext).getString(1234);
-        assertEquals("Hello, world!", OmniboxResourceProvider.getString(mContext, 1234, "world"));
+        assertEquals("Hello, world!", mProvider.getString(1234, "world"));
 
         doReturn("$2, $1 $2").when(mContext).getString(1235);
-        assertEquals(
-                "Bond, James Bond",
-                OmniboxResourceProvider.getString(mContext, 1235, "James", "Bond"));
+        assertEquals("Bond, James Bond", mProvider.getString(1235, "James", "Bond"));
 
         doReturn("$1s and $2s").when(mContext).getString(1236);
         assertEquals(
-                "Burritos and Chimichangas",
-                OmniboxResourceProvider.getString(mContext, 1236, "Burrito", "Chimichanga"));
+                "Burritos and Chimichangas", mProvider.getString(1236, "Burrito", "Chimichanga"));
 
         doReturn("$s and $d").when(mContext).getString(1237);
-        assertEquals(
-                "$s and $d", OmniboxResourceProvider.getString(mContext, 1237, "Bad", "Broken"));
+        assertEquals("$s and $d", mProvider.getString(1237, "Bad", "Broken"));
 
         doReturn("$1$1$1$1$1$1 $2!!!").when(mContext).getString(1238);
-        assertEquals(
-                "NaNaNaNaNaNa BATMAN!!!",
-                OmniboxResourceProvider.getString(mContext, 1238, "Na", "BATMAN"));
+        assertEquals("NaNaNaNaNaNa BATMAN!!!", mProvider.getString(1238, "Na", "BATMAN"));
     }
 
     @Test
