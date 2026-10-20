@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/arm.gni")
 import("//build/config/chrome_build.gni")
 import("//testing/test.gni")
@@ -9,37 +10,52 @@ import("//third_party/libvpx/libvpx_srcs.gni")
 import("//third_party/libvpx/libvpx_test_srcs.gni")
 import("//third_party/nasm/nasm_assemble.gni")
 
-# Sets the architecture name for building libvpx.
+# Sets the architecture name and whether high bit depth is supported for
+# building libvpx.
 if (current_cpu == "x86") {
   cpu_arch_full = "ia32"
+  libvpx_high_bit_depth = true
 } else if (current_cpu == "x64") {
   if (is_msan) {
     cpu_arch_full = "generic"
   } else {
     cpu_arch_full = "x64"
   }
+  libvpx_high_bit_depth = true
 } else if (current_cpu == "arm") {
   if (is_chromeos) {
     # ChromeOS gets highbd vp9 but other arm targets do not.
     # TODO(thakis): ChromeOS no longer ships a 32-bit arm build, remove this.
     cpu_arch_full = "arm-neon-highbd"
+    libvpx_high_bit_depth = true
   } else {
     cpu_arch_full = "arm-neon"
+    libvpx_high_bit_depth = false
   }
 } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
   # We support vp9 profile 2 for SW decoding on all platforms except mobile
   # Android or Fuchsia.
   if ((is_android && !is_desktop_android) || is_fuchsia) {
     cpu_arch_full = "arm64"
+    libvpx_high_bit_depth = false
   } else {
     cpu_arch_full = "arm64-highbd"
+    libvpx_high_bit_depth = true
   }
 } else if (current_cpu == "riscv64") {
   cpu_arch_full = "generic"
+  libvpx_high_bit_depth = true
 } else if (current_cpu == "loong64") {
   cpu_arch_full = "loongarch"
+  libvpx_high_bit_depth = false
 } else {
   cpu_arch_full = current_cpu
+  libvpx_high_bit_depth = false
+}
+
+buildflag_header("libvpx_buildflags") {
+  header = "libvpx_buildflags.h"
+  flags = [ "LIBVPX_HIGH_BIT_DEPTH=$libvpx_high_bit_depth" ]
 }
 
 # The mac configurations are currently a relic. They were useful when

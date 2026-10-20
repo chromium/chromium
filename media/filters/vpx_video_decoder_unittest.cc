@@ -23,6 +23,7 @@
 #include "media/base/video_frame.h"
 #include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/libvpx/libvpx_buildflags.h"
 #include "third_party/skia/include/core/SkData.h"
 
 #if BUILDFLAG(ENABLE_FFMPEG)
@@ -459,7 +460,7 @@ TEST_F(VpxVideoDecoderTest, AlphaFrameValidAfterPoolDestruction) {
 // The test stream uses profile 2, which needs high bit depth support in libvpx.
 // On ARM we fail to decode the final, duplicate frame, so there is no point in
 // running this test (https://crbug.com/864458).
-#if BUILDFLAG(ENABLE_FFMPEG) && !defined(LIBVPX_NO_HIGH_BIT_DEPTH) && \
+#if BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(LIBVPX_HIGH_BIT_DEPTH) && \
     !defined(ARCH_CPU_ARM_FAMILY)
 TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
   // Initialize with dummy data, we could read it from the test clip, but it's
@@ -504,7 +505,7 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
   // ASAN will be very unhappy with this line if the above is incorrect.
   std::ranges::fill(last_frame->writable_span(VideoFrame::Plane::kY), 0);
 }
-#endif  // BUILDFLAG(ENABLE_FFMPEG) && !defined(LIBVPX_NO_HIGH_BIT_DEPTH) &&
+#endif  // BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(LIBVPX_HIGH_BIT_DEPTH) &&
         // !defined(ARCH_CPU_ARM_FAMILY)
 
 #if BUILDFLAG(ENABLE_FFMPEG)
