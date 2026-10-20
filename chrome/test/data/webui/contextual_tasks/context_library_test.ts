@@ -216,31 +216,54 @@ suite('ContextLibraryTest', () => {
       });
 
   test('Dark mode reflects attribute and updates border color', async () => {
-    app.tabs = [createTab(1, 'https://www.google.com')];
+    app.tabs = [
+      createTab(1, 'https://www.google.com'),
+      createTab(2, 'https://www.youtube.com'),
+      createTab(3, 'https://en.wikipedia.org'),
+      createTab(4, 'https://github.com'),
+    ];
     await microtasksFinished();
 
     const item = app.$.faviconGroup.shadowRoot.querySelector<HTMLElement>(
         '.favicon-item');
     assertTrue(!!item);
+    const moreItems =
+        app.$.faviconGroup.shadowRoot.querySelector<HTMLElement>('#more-items');
+    assertTrue(!!moreItems);
 
     assertFalse(app.darkMode);
     assertFalse(app.hasAttribute('dark-mode'));
+    assertEquals('light', getComputedStyle(app).colorScheme);
     assertEquals('rgb(240, 242, 245)', getComputedStyle(item).borderColor);
+    assertEquals('rgb(71, 71, 71)', getComputedStyle(moreItems).color);
 
     app.darkMode = true;
     await microtasksFinished();
     assertTrue(app.hasAttribute('dark-mode'));
+    assertEquals('dark', getComputedStyle(app).colorScheme);
     assertEquals('rgb(78, 80, 89)', getComputedStyle(item).borderColor);
+    assertEquals('rgb(199, 199, 199)', getComputedStyle(moreItems).color);
 
     app.darkMode = false;
     await microtasksFinished();
     assertFalse(app.hasAttribute('dark-mode'));
+    assertEquals('light', getComputedStyle(app).colorScheme);
   });
 
   test('Initializes darkMode from cs=1 URL query param', async () => {
     const originalUrl = window.location.href;
+    let lightApp;
     let darkApp;
     try {
+      window.history.replaceState({}, '', '?cs=0');
+      lightApp = document.createElement('context-library');
+      document.body.appendChild(lightApp);
+      await microtasksFinished();
+
+      assertFalse(lightApp.darkMode);
+      assertFalse(lightApp.hasAttribute('dark-mode'));
+      assertEquals('light', getComputedStyle(lightApp).colorScheme);
+
       window.history.replaceState({}, '', '?cs=1');
       darkApp = document.createElement('context-library');
       document.body.appendChild(darkApp);
@@ -248,7 +271,11 @@ suite('ContextLibraryTest', () => {
 
       assertTrue(darkApp.darkMode);
       assertTrue(darkApp.hasAttribute('dark-mode'));
+      assertEquals('dark', getComputedStyle(darkApp).colorScheme);
     } finally {
+      if (lightApp && lightApp.parentNode) {
+        lightApp.remove();
+      }
       if (darkApp && darkApp.parentNode) {
         darkApp.remove();
       }

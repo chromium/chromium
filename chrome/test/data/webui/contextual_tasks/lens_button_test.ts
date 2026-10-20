@@ -149,22 +149,44 @@ suite('LensButtonTest', () => {
   });
 
   test('Dark mode reflects attribute correctly', async () => {
+    const probe = document.createElement('div');
+    probe.style.backgroundColor =
+        'var(--cr-icon-button-active-background-color)';
+    app.$.lensButton.shadowRoot.appendChild(probe);
+
     assertFalse(app.darkMode);
     assertFalse(app.hasAttribute('dark-mode'));
+    assertEquals('light', getComputedStyle(app).colorScheme);
+    assertEquals(
+        'rgba(31, 31, 31, 0.12)', getComputedStyle(probe).backgroundColor);
 
     app.darkMode = true;
     await microtasksFinished();
     assertTrue(app.hasAttribute('dark-mode'));
+    assertEquals('dark', getComputedStyle(app).colorScheme);
+    assertEquals(
+        'rgba(227, 227, 227, 0.12)', getComputedStyle(probe).backgroundColor);
 
     app.darkMode = false;
     await microtasksFinished();
     assertFalse(app.hasAttribute('dark-mode'));
+    assertEquals('light', getComputedStyle(app).colorScheme);
   });
 
   test('Initializes darkMode from cs=1 URL query param', async () => {
     const originalUrl = window.location.href;
+    let lightApp;
     let darkApp;
     try {
+      window.history.replaceState({}, '', '?cs=0');
+      lightApp = document.createElement('lens-button-app');
+      document.body.appendChild(lightApp);
+      await microtasksFinished();
+
+      assertFalse(lightApp.darkMode);
+      assertFalse(lightApp.hasAttribute('dark-mode'));
+      assertEquals('light', getComputedStyle(lightApp).colorScheme);
+
       window.history.replaceState({}, '', '?cs=1');
       darkApp = document.createElement('lens-button-app');
       document.body.appendChild(darkApp);
@@ -172,7 +194,11 @@ suite('LensButtonTest', () => {
 
       assertTrue(darkApp.darkMode);
       assertTrue(darkApp.hasAttribute('dark-mode'));
+      assertEquals('dark', getComputedStyle(darkApp).colorScheme);
     } finally {
+      if (lightApp && lightApp.parentNode) {
+        lightApp.remove();
+      }
       if (darkApp && darkApp.parentNode) {
         darkApp.remove();
       }

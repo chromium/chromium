@@ -12,6 +12,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  color-scheme: light;
   display: block;
   height: 100%;
   width: 100%;
@@ -23,21 +24,27 @@
   --tab-picker-favicon-border-color: var(--tab-picker-menu-background-color,
       var(--color-composebox-background,
           #fff));
+  --tab-picker-favicon-more-items-color: #474747;
+  --tab-picker-favicon-skeleton-color: #e1e3e1;
+  --tab-picker-focus-outline-color: #0b57d0;
   --tab-picker-hover-background-color:
-      var(--color-context-menu-hover-background,
-          var(--cr-hover-background-color, rgba(0, 0, 0, 0.04)));
+      var(--color-context-menu-hover-background, rgba(0, 0, 0, 0.04));
   --tab-picker-menu-background-color: var(--color-composebox-background,
       var(--search-background-color,
-          var(--color-menu-background,
-              var(--cr-fallback-color-surface, #fff))));
+          var(--color-menu-background, #fff)));
+  --cr-focus-outline-color: var(--tab-picker-focus-outline-color);
 }
 
 :host([dark-mode]) {
+  color-scheme: dark;
   --tab-picker-item-color: rgba(230, 232, 240, 1);
   --tab-picker-disabled-text-color:
       var(--color-composebox-context-entrypoint-text-disabled,
           rgba(230, 232, 240, 0.38));
   --tab-picker-favicon-border-color: rgba(44, 46, 54, 1);
+  --tab-picker-favicon-more-items-color: rgb(199, 199, 199);
+  --tab-picker-favicon-skeleton-color: rgb(68, 71, 70);
+  --tab-picker-focus-outline-color: #a8c7fa;
   --tab-picker-hover-background-color:
       var(--color-context-menu-hover-background, rgba(53, 53, 53, 1));
   --tab-picker-menu-background-color: var(--color-composebox-background,
@@ -103,6 +110,10 @@
 
 composebox-favicon-group {
   --composebox-favicon-border-color: var(--tab-picker-favicon-border-color);
+  --composebox-favicon-more-items-color:
+      var(--tab-picker-favicon-more-items-color);
+  --composebox-favicon-skeleton-color:
+      var(--tab-picker-favicon-skeleton-color);
   margin-inline-end: 10px;
   margin-inline-start: auto;
 }
@@ -121,11 +132,12 @@ composebox-favicon-group {
 }
 
 #tabMenu {
+  --cr-action-menu-disabled-item-color: var(--tab-picker-disabled-text-color);
+  --cr-hover-background-color: var(--tab-picker-hover-background-color);
   --cr-menu-background-color: var(--tab-picker-menu-background-color);
   --cr-menu-border-radius: 16px;
   --cr-menu-shadow: var(--cr-elevation-3);
   --cr-primary-text-color: var(--tab-picker-item-color);
-  --cr-hover-background-color: var(--tab-picker-hover-background-color);
 }
 
 #tabMenu::part(dialog) {

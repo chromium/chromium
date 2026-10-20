@@ -57,9 +57,7 @@ export class LensChipAppElement extends CrLitElement {
     super.connectedCallback();
 
     const params = new URLSearchParams(window.location.search);
-    if (params.has('cs')) {
-      this.darkMode = params.get('cs') === '1';
-    }
+    this.darkMode = params.get('cs') === '1';
 
     this.fetchPreview_();
 

@@ -124,7 +124,9 @@
 
 #more-items {
   align-items: center;
-  color: var(--color-sys-on-surface-subtle, var(--cr-fallback-color-on-surface-subtle));
+  color: var(--composebox-favicon-more-items-color,
+      var(--color-sys-on-surface-subtle,
+          var(--cr-fallback-color-on-surface-subtle)));
   display: flex;
   font-family: inherit;
   font-size: 11px;

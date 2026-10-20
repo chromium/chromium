@@ -626,20 +626,91 @@ suite('TabPickerTest', () => {
   });
 
   test('Flyout item text color adapts in dark mode', async () => {
+    const tab3 = createTabInfo(4, 'Tab Four', 'https://example.com/4');
+    app.selectedTabs = [tab0, tab1, tab2, tab3];
+    await microtasksFinished();
+
     app.$.shareTabsTrigger.click();
     await microtasksFinished();
     assertTrue(app.$.tabMenu.open);
 
+    const dialog = app.$.tabMenu.getDialog();
     const items =
         app.$.tabMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item');
     const [item0] = items;
     assert(item0);
+    const faviconGroup =
+        app.$.shareTabsTrigger.querySelector('composebox-favicon-group');
+    assert(faviconGroup);
+    const faviconItem =
+        faviconGroup.shadowRoot.querySelector<HTMLElement>('.favicon-item');
+    assert(faviconItem);
+    const moreItems =
+        faviconGroup.shadowRoot.querySelector<HTMLElement>('#more-items');
+    assert(moreItems);
+
+    assertEquals('light', window.getComputedStyle(app).colorScheme);
+    assertEquals(
+        'rgb(255, 255, 255)', window.getComputedStyle(dialog).backgroundColor);
+    assertEquals('rgb(31, 31, 31)', window.getComputedStyle(item0).color);
+    assertEquals(
+        'rgba(0, 0, 0, 0.04)',
+        window.getComputedStyle(app.$.shareTabsTrigger).backgroundColor);
+    assertEquals(
+        '#0b57d0',
+        window.getComputedStyle(app)
+            .getPropertyValue('--cr-focus-outline-color')
+            .trim());
+    assertEquals(
+        'rgb(255, 255, 255)', window.getComputedStyle(faviconItem).borderColor);
+    assertEquals('rgb(71, 71, 71)', window.getComputedStyle(moreItems).color);
 
     app.darkMode = true;
     await microtasksFinished();
 
-    const color = window.getComputedStyle(item0).color;
-    assertEquals('rgb(230, 232, 240)', color);
+    assertEquals('dark', window.getComputedStyle(app).colorScheme);
+    assertEquals(
+        'rgb(44, 46, 54)', window.getComputedStyle(dialog).backgroundColor);
+    assertEquals('rgb(230, 232, 240)', window.getComputedStyle(item0).color);
+    assertEquals(
+        'rgb(53, 53, 53)',
+        window.getComputedStyle(app.$.shareTabsTrigger).backgroundColor);
+    assertEquals(
+        '#a8c7fa',
+        window.getComputedStyle(app)
+            .getPropertyValue('--cr-focus-outline-color')
+            .trim());
+    assertEquals(
+        'rgb(44, 46, 54)', window.getComputedStyle(faviconItem).borderColor);
+    assertEquals(
+        'rgb(199, 199, 199)', window.getComputedStyle(moreItems).color);
+  });
+
+  test('Initializes darkMode from cs URL query param', async () => {
+    const originalUrl = window.location.href;
+    let lightApp: TabPickerAppElement|undefined;
+    let darkApp: TabPickerAppElement|undefined;
+    try {
+      window.history.replaceState({}, '', '?cs=0');
+      lightApp = document.createElement('tab-picker-app');
+      document.body.appendChild(lightApp);
+      await microtasksFinished();
+      assertFalse(lightApp.darkMode);
+      assertFalse(lightApp.hasAttribute('dark-mode'));
+      assertEquals('light', window.getComputedStyle(lightApp).colorScheme);
+
+      window.history.replaceState({}, '', '?cs=1');
+      darkApp = document.createElement('tab-picker-app');
+      document.body.appendChild(darkApp);
+      await microtasksFinished();
+      assertTrue(darkApp.darkMode);
+      assertTrue(darkApp.hasAttribute('dark-mode'));
+      assertEquals('dark', window.getComputedStyle(darkApp).colorScheme);
+    } finally {
+      lightApp?.remove();
+      darkApp?.remove();
+      window.history.replaceState({}, '', originalUrl);
+    }
   });
 
   test(

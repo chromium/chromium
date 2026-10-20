@@ -172,6 +172,16 @@ source_set("browser_tests") {
     if (enable_compose) {
       deps += [ "//chrome/browser/compose" ]
     }
+
+    if (enable_extensions_core) {
+      deps += [
+        "//chrome/browser/extensions",
+        "//chrome/browser/resources/contextual_tasks/extension:resources",
+        "//chrome/browser/ui/tabs:tab_strip",
+        "//extensions/common",
+        "//extensions/common:extension_features",
+      ]
+    }
   }
 
   if (!is_android || is_desktop_android) {

@@ -9,6 +9,7 @@
 :host {
   border-radius: 8px;
   box-sizing: border-box;
+  color-scheme: light;
   display: block;
   height: 100%;
   margin: 0;
@@ -16,6 +17,10 @@
   padding: 0;
   user-select: none;
   width: 100%;
+}
+
+:host([dark-mode]) {
+  color-scheme: dark;
 }
 
 .chip {
@@ -41,7 +46,9 @@
 }
 
 #closeButton {
+  --cr-icon-button-active-background-color: rgba(255, 255, 255, 0.16);
   --cr-icon-button-fill-color: #fff;
+  --cr-icon-button-focus-outline-color: #0b57d0;
   --cr-icon-button-hover-background-color: rgba(0, 0, 0, 0.6);
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-margin-end: 0;
@@ -59,6 +66,10 @@
   transition: opacity 150ms ease-in-out;
   width: 100%;
   z-index: 2;
+}
+
+:host([dark-mode]) #closeButton {
+  --cr-icon-button-focus-outline-color: #a8c7fa;
 }
 
 .chip:hover #closeButton,

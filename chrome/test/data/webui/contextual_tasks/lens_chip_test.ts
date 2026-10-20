@@ -146,20 +146,68 @@ suite('LensChipTest', () => {
       });
 
   test('Dark mode reflects attribute correctly', async () => {
+    browserProxy.handler.setLensCropPreviewResult(MOCK_DATA_URI);
     app = document.createElement('lens-chip-app');
     document.body.appendChild(app);
+    await browserProxy.handler.whenCalled('getLensCropPreview');
     await microtasksFinished();
+
+    const closeButton =
+        app.shadowRoot?.querySelector<HTMLElement>('#closeButton');
+    assertTrue(!!closeButton);
 
     assertFalse(app.getDarkModeForTesting());
     assertFalse(app.hasAttribute('dark-mode'));
+    assertEquals('light', getComputedStyle(app).colorScheme);
+    assertEquals(
+        '#0b57d0',
+        getComputedStyle(closeButton)
+            .getPropertyValue('--cr-icon-button-focus-outline-color')
+            .trim());
 
     app.setDarkModeForTesting(true);
     await microtasksFinished();
     assertTrue(app.hasAttribute('dark-mode'));
+    assertEquals('dark', getComputedStyle(app).colorScheme);
+    assertEquals(
+        '#a8c7fa',
+        getComputedStyle(closeButton)
+            .getPropertyValue('--cr-icon-button-focus-outline-color')
+            .trim());
 
     app.setDarkModeForTesting(false);
     await microtasksFinished();
     assertFalse(app.hasAttribute('dark-mode'));
+    assertEquals('light', getComputedStyle(app).colorScheme);
+  });
+
+  test('Initializes darkMode from cs URL query param', async () => {
+    const originalUrl = window.location.href;
+    let lightApp: LensChipAppElement|undefined;
+    let darkApp: LensChipAppElement|undefined;
+    try {
+      window.history.replaceState({}, '', '?cs=0');
+      lightApp = document.createElement('lens-chip-app');
+      document.body.appendChild(lightApp);
+      await microtasksFinished();
+
+      assertFalse(lightApp.getDarkModeForTesting());
+      assertFalse(lightApp.hasAttribute('dark-mode'));
+      assertEquals('light', getComputedStyle(lightApp).colorScheme);
+
+      window.history.replaceState({}, '', '?cs=1');
+      darkApp = document.createElement('lens-chip-app');
+      document.body.appendChild(darkApp);
+      await microtasksFinished();
+
+      assertTrue(darkApp.getDarkModeForTesting());
+      assertTrue(darkApp.hasAttribute('dark-mode'));
+      assertEquals('dark', getComputedStyle(darkApp).colorScheme);
+    } finally {
+      lightApp?.remove();
+      darkApp?.remove();
+      window.history.replaceState({}, '', originalUrl);
+    }
   });
 
   test('RTL direction is supported on host element', async () => {
