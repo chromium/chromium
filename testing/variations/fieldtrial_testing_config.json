@@ -14623,6 +14623,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "fcp_enable_privacy_id_v2": "true",
                         "fcp_population_name_contextual_cues": "chrome/private_insights/contextual_cues",
                         "fcp_server_uri": "https://federatedcompute-pa.googleapis.com/",
                         "fcp_use_attestation_transparency_verifier": "true",
