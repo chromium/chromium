@@ -28,7 +28,8 @@ class PulseAudioCapturer : public AudioCapturer,
   // Must be called to configure the capturer before the first capturer instance
   // is created. `task_runner` is an IO thread that is passed to AudioPipeReader
   // to read from the pipe specified by the `CHROME_REMOTE_DESKTOP_AUDIO_PIPE`
-  // environment variable. Returns true if the pipe reader was initialized.
+  // environment variable (or the legacy `--audio-pipe-name` command-line
+  // switch). Returns true if the pipe reader was initialized.
   static bool InitializePipeReader(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
