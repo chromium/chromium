@@ -8,7 +8,8 @@ import type {SettingsTravelPageElement} from './travel_page.js';
 
 export function getHtml(this: SettingsTravelPageElement) {
   return html`<!--_html_template_start_-->
-<settings-subpage page-title="$i18n{travelCardTitle}" class="multi-card">
+<settings-subpage page-title="$i18n{travelCardTitle}" class="multi-card"
+    route-path="${this.routePath}">
 
   <div class="card">
     <settings-toggle-button id="optInToggle"

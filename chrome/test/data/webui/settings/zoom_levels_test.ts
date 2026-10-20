@@ -5,6 +5,7 @@
 // clang-format off
 import type {ZoomLevelEntry, ZoomLevelsElement} from 'chrome://settings/lazy_load.js';
 import {SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {loadTimeData, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -68,6 +69,19 @@ suite('ZoomLevels', function() {
   function getRemoveButton(listContainer: HTMLElement, index: number) {
     return listContainer.children[index]!.querySelector('cr-icon-button')!;
   }
+
+  // Test that the tab title is updated when the subpage becomes active.
+  test('UpdatesTitle', async function() {
+    testElement.setAttribute(
+        'route-path', routes.SITE_SETTINGS_ZOOM_LEVELS.path);
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_ZOOM_LEVELS);
+    await waitAfterNextRender(testElement);
+    assertEquals(
+        loadTimeData.getStringF(
+            'settingsAltPageTitle',
+            loadTimeData.getString('siteSettingsCategoryZoomLevels')),
+        document.title);
+  });
 
   test('empty zoom state', function() {
     const list = testElement.$.list;

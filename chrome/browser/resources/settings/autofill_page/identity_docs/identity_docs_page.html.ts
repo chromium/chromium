@@ -9,6 +9,7 @@ import type {SettingsIdentityDocsPageElement} from './identity_docs_page.js';
 export function getHtml(this: SettingsIdentityDocsPageElement) {
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{identityDocsCardTitle}"
+    route-path="${this.routePath}"
     class="multi-card">
 
   <div class="card">

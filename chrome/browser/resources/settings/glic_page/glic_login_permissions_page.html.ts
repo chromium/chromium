@@ -16,7 +16,8 @@ ${this.selectedPermissionToRemove_ ? html`
       @close="${this.onRemoveDialogClose_}">
   </settings-simple-confirmation-dialog>
 ` : ''}
-<settings-subpage page-title="$i18n{glicActorLoginPermissionsSectionTitle}">
+<settings-subpage page-title="$i18n{glicActorLoginPermissionsSectionTitle}"
+    route-path="${this.routePath}">
   <div class="header-container section">
     <div id="actorLoginPermissionsTitle">
       $i18n{glicLoginPermissionsPageTitle}

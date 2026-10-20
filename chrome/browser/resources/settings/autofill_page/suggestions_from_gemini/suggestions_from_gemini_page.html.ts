@@ -9,6 +9,7 @@ import type {SettingsSuggestionsFromGeminiPageElement} from './suggestions_from_
 export function getHtml(this: SettingsSuggestionsFromGeminiPageElement) {
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{autofillPersonalContextSettingsTitle}"
+    route-path="${this.routePath}"
     class="multi-card">
   <div class="card">
     <settings-toggle-button id="suggestionsFromGeminiToggle"

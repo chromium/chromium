@@ -9,6 +9,7 @@ import type {SettingsPaymentsPageElement} from './payments_page.js';
 export function getHtml(this: SettingsPaymentsPageElement) {
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{paymentsTitle}"
+    route-path="${this.routePath}"
     learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}"
     class="multi-card">
 

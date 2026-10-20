@@ -16,7 +16,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import type {Route} from '../router.js';
+import type {Route, SettingsRoutes} from '../router.js';
 import {RouteObserverMixinLit} from '../router.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 import {SearchableViewContainerMixinLit} from '../settings_page/searchable_view_container_mixin_lit.js';
@@ -51,11 +51,13 @@ export class SettingsAutofillPageIndexElement extends
 
   static override get properties() {
     return {
+      routes_: {type: Object},
       isShoppingEnabled_: {type: Boolean},
       showSuggestionsFromGeminiSettings_: {type: Boolean},
     };
   }
 
+  protected accessor routes_: SettingsRoutes = routes;
   protected accessor isShoppingEnabled_: boolean =
       loadTimeData.getBoolean('shoppingIntegrationEnabled');
   protected accessor showSuggestionsFromGeminiSettings_: boolean =

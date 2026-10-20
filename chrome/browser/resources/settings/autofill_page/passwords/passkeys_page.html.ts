@@ -9,6 +9,7 @@ import type {SettingsPasskeysPageElement} from './passkeys_page.js';
 export function getHtml(this: SettingsPasskeysPageElement) {
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{managePasskeysTitle}"
+    route-path="${this.routePath}"
     search-label="$i18n{managePasskeysSearch}"
     .searchTerm="${this.filter_}"
     @search-term-changed="${this.onSearchTermChanged_}">

@@ -9,6 +9,7 @@ import type {SettingsContactInfoPageElement} from './contact_info_page.js';
 export function getHtml(this: SettingsContactInfoPageElement) {
   return html`<!--_html_template_start_-->
   <settings-subpage page-title="$i18n{contactInfoTitle}"
+      route-path="${this.routePath}"
       learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}"
       class="multi-card">
     <div class="card">
