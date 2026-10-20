@@ -13,9 +13,11 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/dcheck_is_on.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/values.h"
 
 namespace base {
@@ -91,14 +93,17 @@ class BASE_EXPORT SparseHistogram : public HistogramBase {
   friend class SparseHistogramTest;
   friend class HistogramThreadsafeTest;
 
-  // Protects access to |samples_|.
+  // Protects access to |unlogged_samples_|, |logged_samples_|, and
+  // |final_delta_created_|.
   mutable base::Lock lock_;
 
-  // Flag to indicate if PrepareFinalDelta has been previously called.
-  mutable bool final_delta_created_ = false;
+#if DCHECK_IS_ON()  // Don't waste memory if it won't be used.
+  // Flag to indicate if SnapshotFinalDelta has been previously called.
+  mutable bool final_delta_created_ GUARDED_BY(lock_) = false;
+#endif
 
-  std::unique_ptr<HistogramSamples> unlogged_samples_;
-  std::unique_ptr<HistogramSamples> logged_samples_;
+  std::unique_ptr<HistogramSamples> unlogged_samples_ GUARDED_BY(lock_);
+  std::unique_ptr<HistogramSamples> logged_samples_ GUARDED_BY(lock_);
 };
 
 }  // namespace base
