@@ -637,6 +637,60 @@ TEST_F(GlicInstanceMetricsTest,
 }
 
 TEST_F(GlicInstanceMetricsTest,
+       InstanceEvents_BackfillsPreOpenEventsWhenInitialSourceSet) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+  ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
+
+  metrics_.OnInstanceCreatedWithoutWarming();
+  metrics_.OnRegisterConversation("conv-id");
+  metrics_.OnBind();
+  metrics_.OnBind();
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.InvocationSource.PdfSummarizeButton.EventCounts", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.InvocationSource.PdfSummarizeButton.HadEvent", 0);
+
+  metrics_.OnOpen(mojom::InvocationSource::kPdfSummarizeButton, show_options);
+
+  // Check that relevant events were properly backfilled after invocation source
+  // was set as kPdfSummarizeButton.
+  for (GlicInstanceEvent event :
+       {GlicInstanceEvent::kInstanceCreated,
+        GlicInstanceEvent::kInstanceCreatedWithoutWarming,
+        GlicInstanceEvent::kRegisterConversation, GlicInstanceEvent::kTabBound,
+        GlicInstanceEvent::kOpen}) {
+    histogram_tester_.ExpectBucketCount(
+        "Glic.InvocationSource.PdfSummarizeButton.HadEvent", event, 1);
+  }
+  for (GlicInstanceEvent event :
+       {GlicInstanceEvent::kInstanceCreated,
+        GlicInstanceEvent::kInstanceCreatedWithoutWarming,
+        GlicInstanceEvent::kRegisterConversation, GlicInstanceEvent::kOpen}) {
+    histogram_tester_.ExpectBucketCount(
+        "Glic.InvocationSource.PdfSummarizeButton.EventCounts", event, 1);
+  }
+  histogram_tester_.ExpectBucketCount(
+      "Glic.InvocationSource.PdfSummarizeButton.EventCounts",
+      GlicInstanceEvent::kTabBound, 2);
+
+  metrics_.OnBind();
+  metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options);
+
+  // Verify that initial invocation source is sticky.
+  histogram_tester_.ExpectBucketCount(
+      "Glic.InvocationSource.PdfSummarizeButton.HadEvent",
+      GlicInstanceEvent::kTabBound, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.InvocationSource.PdfSummarizeButton.EventCounts",
+      GlicInstanceEvent::kTabBound, 3);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.InvocationSource.OsButton.EventCounts", 0);
+  histogram_tester_.ExpectTotalCount("Glic.InvocationSource.OsButton.HadEvent",
+                                     0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
        InstanceEvents_NoCrashWithoutInitialEntrypoint) {
   // We ensure we don't crash before the initial entrypoint gets assigned.
   // We bypass OnToggle so initial_entrypoint is null.

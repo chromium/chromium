@@ -521,8 +521,25 @@ void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
 
 void GlicInstanceMetrics::MaybeSetInitialInvocationSource(
     mojom::InvocationSource source) {
-  if (!initial_invocation_source_.has_value()) {
-    initial_invocation_source_ = source;
+  if (initial_invocation_source_.has_value()) {
+    return;
+  }
+  initial_invocation_source_ = source;
+
+  // Backfill events that happened before the initial invocation source was set.
+  const std::string source_str = GetInvocationSourceString(source);
+  const std::string event_counts_histogram =
+      base::StrCat({"Glic.InvocationSource.", source_str, ".EventCounts"});
+  const std::string had_event_histogram =
+      base::StrCat({"Glic.InvocationSource.", source_str, ".HadEvent"});
+  for (const auto& [event, count] : event_counts_) {
+    if (count <= 0) {
+      continue;
+    }
+    base::UmaHistogramEnumeration(had_event_histogram, event);
+    for (int i = 0; i < count; ++i) {
+      base::UmaHistogramEnumeration(event_counts_histogram, event);
+    }
   }
 }
 
