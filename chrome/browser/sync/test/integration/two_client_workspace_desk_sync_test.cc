@@ -87,23 +87,30 @@ IN_PROC_BROWSER_TEST_F(
     TwoClientWorkspaceDeskSyncTest,
     PRE_DownloadDeskTemplateWhenUpToDateFromOneClientToAnother) {
   ASSERT_TRUE(SetupSync());
-}
 
-IN_PROC_BROWSER_TEST_F(TwoClientWorkspaceDeskSyncTest,
-                       DownloadDeskTemplateWhenUpToDateFromOneClientToAnother) {
-  // Inject a test desk template to Sync.
+  // Simulate going offline and receiving a server-side desk template update
+  // while offline, so the invalidation is delivered upon browser restart in
+  // the main test.
+  DisableNetwork();
+
   sync_pb::EntitySpecifics specifics;
   WorkspaceDeskSpecifics* desk = specifics.mutable_workspace_desk();
   desk->CopyFrom(CreateWorkspaceDeskSpecifics(1, AdvanceAndGetTime()));
   base::Uuid desk_1_uuid =
       base::Uuid::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 1));
-  base::Uuid desk_2_uuid =
-      base::Uuid::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 2));
   fake_server_->InjectEntity(
       syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
           "desk_1", desk_1_uuid.AsLowercaseString(), specifics,
           /*creation_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime()),
           /*last_modified_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime())));
+}
+
+IN_PROC_BROWSER_TEST_F(TwoClientWorkspaceDeskSyncTest,
+                       DownloadDeskTemplateWhenUpToDateFromOneClientToAnother) {
+  base::Uuid desk_1_uuid =
+      base::Uuid::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 1));
+  base::Uuid desk_2_uuid =
+      base::Uuid::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 2));
 
   ASSERT_TRUE(SetupClients());
   // Checks that client 1 was able to get the entry via the on `OnStateChanged`

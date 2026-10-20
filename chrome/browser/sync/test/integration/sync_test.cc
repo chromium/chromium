@@ -448,14 +448,15 @@ void SyncTest::PostCreateThreads() {
       // after the threadpool is initialized.
       base::FilePath user_data_dir;
       base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-      fake_server_ = std::make_unique<fake_server::FakeServer>(
-          user_data_dir.AppendASCII("FakeServer"));
+      const base::FilePath fake_server_dir =
+          user_data_dir.AppendASCII("FakeServer");
+      fake_server_ = std::make_unique<fake_server::FakeServer>(fake_server_dir);
       embedded_fake_server_adapter_ =
           std::make_unique<fake_server::EmbeddedFakeServerAdapter>(
               fake_server_->AsWeakPtr());
       fake_server_sync_invalidation_sender_ =
           std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
-              fake_server_.get());
+              fake_server_.get(), fake_server_dir);
 
       SetupMockGaiaResponses();
 
@@ -1208,12 +1209,19 @@ void SyncTest::DisableNetwork() {
 
   connection_change_simulator_.SetConnectionType(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
+
+  if (fake_server_sync_invalidation_sender_) {
+    fake_server_sync_invalidation_sender_->SetOfflineAllClients(true);
+  }
 }
 
 void SyncTest::EnableNetwork() {
   url_loader_interceptor_.reset();
   connection_change_simulator_.SetConnectionType(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
+  if (fake_server_sync_invalidation_sender_) {
+    fake_server_sync_invalidation_sender_->SetOfflineAllClients(false);
+  }
 }
 
 void SyncTest::TriggerSyncForDataTypes(int index,

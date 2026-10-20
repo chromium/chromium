@@ -147,11 +147,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientWorkspaceDeskSyncTest,
 IN_PROC_BROWSER_TEST_P(SingleClientWorkspaceDeskSyncTest,
                        PRE_DownloadDeskTemplateWhenUpToDate) {
   ASSERT_TRUE(SetupSync());
-}
 
-IN_PROC_BROWSER_TEST_P(SingleClientWorkspaceDeskSyncTest,
-                       DownloadDeskTemplateWhenUpToDate) {
-  // Inject a test desk template to Sync.
+  // Simulate going offline and receiving a server-side desk template update
+  // while offline, so the invalidation is delivered upon browser restart in
+  // the main test.
+  DisableNetwork();
+
   sync_pb::EntitySpecifics specifics;
   WorkspaceDeskSpecifics* desk = specifics.mutable_workspace_desk();
   desk->CopyFrom(CreateWorkspaceDeskSpecifics(1, AdvanceAndGetTime()));
@@ -161,7 +162,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientWorkspaceDeskSyncTest,
           "non_unique_name", kTestUuid1_.AsLowercaseString(), specifics,
           /*creation_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime()),
           /*last_modified_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime())));
+}
 
+IN_PROC_BROWSER_TEST_P(SingleClientWorkspaceDeskSyncTest,
+                       DownloadDeskTemplateWhenUpToDate) {
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(DownloadStatusChecker(GetSyncService(0)).Wait());
 

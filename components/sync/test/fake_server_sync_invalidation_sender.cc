@@ -5,20 +5,32 @@
 #include "components/sync/test/fake_server_sync_invalidation_sender.h"
 
 #include <algorithm>
+#include <optional>
+#include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
 #include "components/sync/base/time.h"
 
 namespace fake_server {
 
 FakeServerSyncInvalidationSender::FakeServerSyncInvalidationSender(
-    FakeServer* fake_server)
-    : fake_server_(CHECK_DEREF(fake_server)) {
+    FakeServer* fake_server,
+    const base::FilePath& storage_dir)
+    : fake_server_(CHECK_DEREF(fake_server)),
+      fake_state_file_path_(storage_dir.AppendASCII("fake_invalidations.json")) {
+  CHECK(!storage_dir.empty());
+  LoadFakeStateFromDisk();
   fake_server_observation_.Observe(fake_server);
 }
 
@@ -50,6 +62,13 @@ void FakeServerSyncInvalidationSender::RemoveFakeGCMDriver(
   CHECK(std::ranges::contains(fake_gcm_drivers_, fake_gcm_driver));
   fake_gcm_driver->RemoveConnectionObserver(this);
   std::erase(fake_gcm_drivers_, fake_gcm_driver);
+}
+
+void FakeServerSyncInvalidationSender::SetOfflineAllClients(bool offline) {
+  offline_ = offline;
+  if (!offline_) {
+    DeliverInvalidationsToHandlers();
+  }
 }
 
 base::WeakPtr<FakeServerSyncInvalidationSender>
@@ -98,6 +117,7 @@ void FakeServerSyncInvalidationSender::OnCommit(
     invalidations_to_deliver_[token].push_back(std::move(payload));
   }
 
+  WriteFakeStateToDisk();
   DeliverInvalidationsToHandlers();
 }
 
@@ -109,6 +129,11 @@ void FakeServerSyncInvalidationSender::OnConnected(
 }
 
 void FakeServerSyncInvalidationSender::DeliverInvalidationsToHandlers() {
+  if (offline_) {
+    DVLOG(1) << "Not delivering invalidations while network is offline.";
+    return;
+  }
+
   DVLOG(1) << "Trying to deliver invalidations for "
            << invalidations_to_deliver_.size()
            << " FCM tokens. Known target tokens from DeviceInfo: "
@@ -136,8 +161,11 @@ void FakeServerSyncInvalidationSender::DeliverInvalidationsToHandlers() {
     processed_tokens.insert(token);
   }
 
-  for (const std::string& token_to_remove : processed_tokens) {
-    invalidations_to_deliver_.erase(token_to_remove);
+  if (!processed_tokens.empty()) {
+    for (const std::string& token_to_remove : processed_tokens) {
+      invalidations_to_deliver_.erase(token_to_remove);
+    }
+    WriteFakeStateToDisk();
   }
 }
 
@@ -197,6 +225,46 @@ void FakeServerSyncInvalidationSender::UpdateTokenToInterestedDataTypesMap() {
       CHECK(syncer::IsRealDataType(data_type));
       token_to_interested_data_types_[token].Put(data_type);
     }
+  }
+}
+
+void FakeServerSyncInvalidationSender::LoadFakeStateFromDisk() {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string json_string;
+  if (!base::ReadFileToString(fake_state_file_path_, &json_string)) {
+    return;
+  }
+
+  std::optional<base::Value> json =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_RFC);
+  CHECK(json && json->is_dict());
+  for (const auto [token, list] : json->GetDict()) {
+    CHECK(list.is_list());
+    for (const base::Value& encoded_payload : list.GetList()) {
+      std::string serialized_payload;
+      CHECK(base::Base64Decode(encoded_payload.GetString(),
+                               &serialized_payload));
+      sync_pb::SyncInvalidationsPayload payload;
+      CHECK(payload.ParseFromString(serialized_payload));
+      invalidations_to_deliver_[token].push_back(std::move(payload));
+    }
+  }
+}
+
+void FakeServerSyncInvalidationSender::WriteFakeStateToDisk() const {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::DictValue dict;
+  for (const auto& [token, payloads] : invalidations_to_deliver_) {
+    base::ListValue list;
+    for (const sync_pb::SyncInvalidationsPayload& payload : payloads) {
+      list.Append(base::Base64Encode(payload.SerializeAsString()));
+    }
+    dict.Set(token, std::move(list));
+  }
+
+  std::string json_string;
+  if (base::JSONWriter::Write(dict, &json_string)) {
+    base::WriteFile(fake_state_file_path_, json_string);
   }
 }
 
