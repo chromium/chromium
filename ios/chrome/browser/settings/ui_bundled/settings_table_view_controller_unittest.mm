@@ -26,6 +26,7 @@
 #import "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync/test/test_sync_user_settings.h"
+#import "components/universal_optout/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
@@ -60,6 +61,8 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/browser/voice/model/voice_search_prefs.h"
+#import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
+#import "ios/chrome/browser/web_extension/model/fake_extension_service.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -110,6 +113,12 @@ class SettingsTableViewControllerTest
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindOnce(&password_manager::BuildPasswordStore<
                        ProfileIOS, password_manager::TestPasswordStore>));
+    builder.AddTestingFactory(
+        ExtensionServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<FakeExtensionService>();
+            }));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     // Prepare mocks for PushNotificationClient dependency
@@ -223,6 +232,19 @@ class SettingsTableViewControllerTest
 
     EXPECT_EQ(has_default_browser_blue_dot,
               BadgeType::kNotificationDot == default_browser_item.badgeType);
+  }
+
+  TableViewDetailIconItem* GetPrivacyDetailItem() {
+    NSArray<TableViewItem*>* advanced_items = [controller().tableViewModel
+        itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                         SettingsSectionIdentifierAdvanced];
+    for (TableViewItem* item in advanced_items) {
+      if ([item.accessibilityIdentifier
+              isEqualToString:kSettingsPrivacyCellId]) {
+        return base::apple::ObjCCast<TableViewDetailIconItem>(item);
+      }
+    }
+    return nil;
   }
 
  protected:
@@ -887,4 +909,85 @@ TEST_F(SettingsTableViewControllerTest, HidesAITierRingWhenAccountErrorExists) {
   ASSERT_TRUE(identity_account_item != nil);
   EXPECT_EQ(TableViewAccountDetailImage::kAITierRing,
             identity_account_item.detailImage);
+}
+
+// Tests that the privacy detail item displays a warning badge when the
+// extension service has a load error, and clears the badge when the error is
+// resolved.
+TEST_F(SettingsTableViewControllerTest, TestPrivacyItemErrorBadge) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      universal_optout::features::kUniversalOptOutSettings);
+
+  CreateController();
+  CheckController();
+
+  FakeExtensionService* fake_service = static_cast<FakeExtensionService*>(
+      ExtensionServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_TRUE(fake_service != nullptr);
+
+  TableViewDetailIconItem* privacy_item = GetPrivacyDetailItem();
+  ASSERT_TRUE(privacy_item != nil);
+  EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
+
+  // Simulate extension load error.
+  fake_service->SetHasLoadError(true);
+  EXPECT_TRUE(privacy_item.badgeType == BadgeType::kWarning);
+  EXPECT_TRUE(privacy_item.badgeLayout == BadgeLayout::kTrailing);
+
+  // Simulate error resolution.
+  fake_service->SetHasLoadError(false);
+  EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
+  EXPECT_TRUE(privacy_item.badgeLayout == BadgeLayout::kInline);
+}
+
+// Tests that the privacy detail item does not display a warning badge when
+// kUniversalOptOutSettings is disabled even if the extension service reports a
+// load error.
+TEST_F(SettingsTableViewControllerTest,
+       TestPrivacyItemUniversalOptOutSettingsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      universal_optout::features::kUniversalOptOutSettings);
+
+  CreateController();
+  CheckController();
+
+  FakeExtensionService* fake_service = static_cast<FakeExtensionService*>(
+      ExtensionServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_TRUE(fake_service != nullptr);
+
+  TableViewDetailIconItem* privacy_item = GetPrivacyDetailItem();
+  ASSERT_TRUE(privacy_item != nil);
+  EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
+
+  // Simulate extension load error while the feature is disabled.
+  fake_service->SetHasLoadError(true);
+  EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
+}
+
+// Tests that the privacy detail item does not display a warning badge when the
+// extension service is in silent mode even if it reports a load error.
+TEST_F(SettingsTableViewControllerTest, TestPrivacyItemSilentModeNoErrorBadge) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {universal_optout::features::kUniversalOptOutExtensionSilent},
+      /*disabled_features=*/
+      {universal_optout::features::kUniversalOptOutSettings});
+
+  CreateController();
+  CheckController();
+
+  FakeExtensionService* fake_service = static_cast<FakeExtensionService*>(
+      ExtensionServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_TRUE(fake_service != nullptr);
+
+  TableViewDetailIconItem* privacy_item = GetPrivacyDetailItem();
+  ASSERT_TRUE(privacy_item != nil);
+  EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
+
+  // Simulate extension load error while in silent mode.
+  fake_service->SetHasLoadError(true);
+  EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
 }

@@ -29,6 +29,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service.h"
+#import "components/universal_optout/features.h"
 #import "components/universal_optout/prefs.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h"
@@ -519,9 +520,15 @@ bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
   if (!_universalOptOutDetailItem || !_profile) {
     return;
   }
+  if (!base::FeatureList::IsEnabled(
+          universal_optout::features::kUniversalOptOutSettings)) {
+    return;
+  }
   ExtensionService* extensionService =
       ExtensionServiceFactory::GetForProfile(_profile);
-  const bool hasError = extensionService && extensionService->HasLoadError();
+  const bool hasError =
+      extensionService && extensionService->HasLoadError() &&
+      !universal_optout::features::IsUniversalOptOutExtensionSilentEnabled();
   if (hasError) {
     _universalOptOutDetailItem.detailText = nil;
     _universalOptOutDetailItem.badgeType = BadgeType::kWarning;

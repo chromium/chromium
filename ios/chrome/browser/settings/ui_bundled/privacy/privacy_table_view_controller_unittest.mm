@@ -565,6 +565,77 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutErrorBadge) {
   EXPECT_NSEQ(item.detailText, l10n_util::GetNSString(IDS_IOS_SETTING_OFF));
 }
 
+// Tests that the Universal Opt-Out item is not displayed when the extension
+// service is in silent mode even if it reports a load error.
+TEST_P(PrivacyTableViewControllerTest,
+       TestUniversalOptOutSilentModeNoErrorBadge) {
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    return;
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {universal_optout::features::kUniversalOptOut,
+       universal_optout::features::kUniversalOptOutExtension,
+       universal_optout::features::kUniversalOptOutExtensionSilent},
+      /*disabled_features=*/
+      {universal_optout::features::kUniversalOptOutSettings});
+
+  profile_->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEligible, true);
+  profile_->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled, true);
+
+  CreateController();
+  CheckController();
+
+  FakeExtensionService* fake_service = static_cast<FakeExtensionService*>(
+      ExtensionServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_TRUE(fake_service != nullptr);
+
+  EXPECT_FALSE(HasUniversalOptOutItem());
+
+  // Simulate load error in silent mode.
+  fake_service->SetHasLoadError(true);
+  EXPECT_FALSE(HasUniversalOptOutItem());
+}
+
+// Tests that the Universal Opt-Out item is not displayed and does not show an
+// error badge when kUniversalOptOutSettings is disabled.
+TEST_P(PrivacyTableViewControllerTest,
+       TestUniversalOptOutSettingsDisabledNoErrorBadge) {
+  if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
+    return;
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {universal_optout::features::kUniversalOptOut,
+       universal_optout::features::kUniversalOptOutExtension},
+      /*disabled_features=*/
+      {universal_optout::features::kUniversalOptOutSettings});
+
+  profile_->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEligible, true);
+  profile_->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled, true);
+
+  CreateController();
+  CheckController();
+
+  FakeExtensionService* fake_service = static_cast<FakeExtensionService*>(
+      ExtensionServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_TRUE(fake_service != nullptr);
+
+  EXPECT_FALSE(HasUniversalOptOutItem());
+
+  // Simulate load error when settings feature is disabled.
+  fake_service->SetHasLoadError(true);
+  EXPECT_FALSE(HasUniversalOptOutItem());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     PrivacyTableViewControllerTestAllConfigs,
     PrivacyTableViewControllerTest,
