@@ -98,6 +98,30 @@ TEST(AtomicStringTableTest, SmallStringCacheKeepAlive) {
   EXPECT_FALSE(
       AtomicStringTable::Instance().WeakFindForTesting(kSmallString).IsNull());
 
+  // Two distinct 8-byte strings should both be retained in SmallStringCache.
+  // Previously, all 8-byte strings hashed to the same slot and evicted each
+  // other.
+  const char* kEightByte1 = "eightch1";
+  const char* kEightByte2 = "eightch2";
+  {
+    EXPECT_TRUE(
+        AtomicStringTable::Instance().WeakFindForTesting(kEightByte1).IsNull());
+    EXPECT_TRUE(
+        AtomicStringTable::Instance().WeakFindForTesting(kEightByte2).IsNull());
+    AtomicString eight1(kEightByte1);
+    AtomicString eight2(kEightByte2);
+    EXPECT_EQ(eight1.length(), 8u);
+    EXPECT_EQ(eight2.length(), 8u);
+    EXPECT_FALSE(
+        AtomicStringTable::Instance().WeakFindForTesting(kEightByte1).IsNull());
+    EXPECT_FALSE(
+        AtomicStringTable::Instance().WeakFindForTesting(kEightByte2).IsNull());
+  }
+  EXPECT_FALSE(
+      AtomicStringTable::Instance().WeakFindForTesting(kEightByte1).IsNull());
+  EXPECT_FALSE(
+      AtomicStringTable::Instance().WeakFindForTesting(kEightByte2).IsNull());
+
   // Large strings (length > 16) are NOT kept alive by the SmallStringCache.
   const char* kLargeString = "largenotcachedstring17";
   {

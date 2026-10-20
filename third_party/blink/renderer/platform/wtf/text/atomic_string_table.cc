@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <atomic>
+#include <bit>
 #include <cstdint>
 #include <cstring>
 #include <type_traits>
@@ -72,7 +73,9 @@ ALWAYS_INLINE String SmallStringCacheGetOrInsert(uint64_t sig_low,
                                                  Generator generator) {
   // Fibonacci hash using the golden ratio constant to distribute strings
   // evenly across the cache.
-  uint64_t hash_key = sig_low ^ sig_high ^ length;
+  // Rotate `sig_high` so `sig_low ^ sig_high` does not cancel to 0 when
+  // `length == 8` (`first<8>()` == `last<8>()`).
+  uint64_t hash_key = sig_low ^ std::rotr(sig_high, 27) ^ length;
   const size_t index =
       (hash_key * kGoldenRatio64) >> SmallStringCache::kHashShift;
 
