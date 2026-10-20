@@ -139,34 +139,6 @@ class Canvas2DResourceProviderTest : public Test {
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform_;
 };
 
-TEST_F(Canvas2DResourceProviderTest, UnacceleratedOverlay) {
-  const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo =
-      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
-
-  const gpu::SharedImageUsageSet shared_image_usage_flags =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-
-  Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
-                                   gfx::HDRMetadata(),
-                                   CanvasPixelFormat::kUint8,
-                                   /*has_alpha=*/true);
-  auto provider = Canvas2DResourceProvider::CreateWithClear(
-      kSize, color_params, context_provider_wrapper_, RasterMode::kCPU,
-      shared_image_usage_flags);
-
-  EXPECT_EQ(provider->Size(), kSize);
-  EXPECT_TRUE(provider && provider->IsValid());
-  EXPECT_FALSE(provider->IsAccelerated());
-
-  // We do not support single buffering for unaccelerated low latency canvas.
-  EXPECT_FALSE(provider->IsSingleBuffered());
-
-  EXPECT_EQ(GetSkImageInfo(provider.get()), kInfo);
-
-  EXPECT_FALSE(provider->IsSingleBuffered());
-}
-
 std::unique_ptr<Canvas2DResourceProvider> MakeCanvas2DResourceProvider(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper>
         context_provider_wrapper) {

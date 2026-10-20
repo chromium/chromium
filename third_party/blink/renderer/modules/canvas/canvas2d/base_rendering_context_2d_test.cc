@@ -10,12 +10,19 @@
 
 #include "base/byte_size.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_record.h"
 #include "cc/test/paint_op_matchers.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_raster_interface.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -44,20 +51,26 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTileMode.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
 
@@ -85,13 +98,15 @@ class TestRenderingContext2D final
   explicit TestRenderingContext2D(
       V8TestingScope& scope,
       const CanvasContextCreationAttributesCore& attrs =
-          CanvasContextCreationAttributesCore())
+          CanvasContextCreationAttributesCore(),
+      const gfx::Size& size = gfx::Size(300, 300))
       : BaseRenderingContext2D(
             MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument()),
             attrs,
             scheduler::GetSingleThreadTaskRunnerForTesting()),
         execution_context_(scope.GetExecutionContext()) {
-    ConfigureRecorder(gfx::Size(Width(), Height()), /*is_graphite=*/false);
+    HostAsHTMLCanvasElement()->SetSize(size);
+    ConfigureRecorder(size, /*is_graphite=*/false);
   }
   ~TestRenderingContext2D() override = default;
 
@@ -101,8 +116,8 @@ class TestRenderingContext2D final
   bool OriginClean() const override { return true; }
   void SetOriginTainted() override {}
 
-  int Width() const override { return 300; }
-  int Height() const override { return 300; }
+  int Width() const override { return Host()->width(); }
+  int Height() const override { return Host()->height(); }
 
   bool CanCreateBacking() override { return false; }
 
@@ -116,6 +131,7 @@ class TestRenderingContext2D final
     return GetPaintCanvas();
   }
   using BaseRenderingContext2D::ConfigureRecorder;
+  using BaseRenderingContext2D::CreateSharedImageProvider;
   using BaseRenderingContext2D::CreateSoftwareSurface;
   using BaseRenderingContext2D::FlushIfRecordingLimitExceeded;
   using BaseRenderingContext2D::Snapshot;
@@ -154,7 +170,10 @@ class TestRenderingContext2D final
     }
   }
 
-  std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override {
+  std::optional<cc::PaintRecord> FlushCanvas(FlushReason reason) override {
+    if (HasBacking()) {
+      return FlushCanvasInternal(reason);
+    }
     return Recorder()->ReleaseMainRecording();
   }
 
@@ -178,14 +197,8 @@ class TestRenderingContext2D final
 
   bool InitializeBacking() override { return false; }
 
-  bool Is2DCanvasAccelerated() const override { return false; }
-
   // Implementing pure virtual functions from CanvasRenderingContext.
   scoped_refptr<StaticBitmapImage> GetImage() override { return nullptr; }
-  scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
-      SourceDrawingBuffer) override {
-    return nullptr;
-  }
 
   bool IsComposited() const override { return false; }
   bool IsPaintable() const override { return is_paintable_; }
@@ -349,8 +362,8 @@ TEST(BaseRenderingContext2DTest, HdrMetadata) {
 
   CanvasContextCreationAttributesCore attrs;
   attrs.hdr_metadata = hdr_metadata;
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope, attrs);
-  context->HostAsHTMLCanvasElement()->SetSize(kSize);
+  auto* context =
+      MakeGarbageCollected<TestRenderingContext2D>(scope, attrs, kSize);
   context->CreateSoftwareSurface();
 
   ASSERT_TRUE(context->HasBacking());
@@ -364,13 +377,76 @@ TEST(BaseRenderingContext2DTest, AllocatedBufferSizeSoftware) {
   V8TestingScope scope;
   constexpr gfx::Size kSize(10, 10);
 
-  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
-  context->HostAsHTMLCanvasElement()->SetSize(kSize);
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(
+      scope, CanvasContextCreationAttributesCore(), kSize);
   context->CreateSoftwareSurface();
 
   ASSERT_TRUE(context->HasBacking());
   EXPECT_EQ(context->AllocatedBufferSize(),
             base::ByteSize(kSize.width() * kSize.height() * 4));
+}
+
+constexpr int kMaxTextureSize = 1024;
+
+class BaseRenderingContext2DSharedImageTest : public testing::Test {
+ public:
+  void SetUp() override {
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    auto* test_raster = test_context_provider_->UnboundTestRasterInterface();
+    test_raster->set_max_texture_size(kMaxTextureSize);
+    test_raster->set_texture_format_bgra8888(true);
+    test_raster->set_texture_half_float_linear(true);
+
+    gpu::SharedImageCapabilities shared_image_caps;
+    shared_image_caps.supports_scanout_shared_images = true;
+#if BUILDFLAG(IS_WIN)
+    shared_image_caps.shared_image_swap_chain = true;
+#endif
+    test_context_provider_->SharedImageInterface()->SetCapabilities(
+        shared_image_caps);
+
+    InitializeSharedGpuContext(test_context_provider_.get());
+  }
+
+  void TearDown() override { SharedGpuContext::Reset(); }
+
+ protected:
+  static constexpr gfx::Size kSize{10, 10};
+
+  TestRenderingContext2D* CreateBackedContext(
+      V8TestingScope& scope,
+      RasterMode raster_mode = RasterMode::kGPU) {
+    const gpu::SharedImageUsageSet shared_image_usage_flags =
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    auto* context = MakeGarbageCollected<TestRenderingContext2D>(
+        scope, CanvasContextCreationAttributesCore(), kSize);
+    context->CreateSharedImageProvider(raster_mode, shared_image_usage_flags);
+    return context;
+  }
+
+  test::TaskEnvironment task_environment_;
+  scoped_refptr<viz::TestContextProvider> test_context_provider_;
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform_;
+};
+
+TEST_F(BaseRenderingContext2DSharedImageTest, UnacceleratedOverlay) {
+  V8TestingScope scope;
+  auto* context = CreateBackedContext(scope, RasterMode::kCPU);
+  ASSERT_TRUE(context->IsBackingValid());
+  EXPECT_FALSE(context->Is2DCanvasAccelerated());
+
+  auto resource = context->PaintRenderingResultsToResource(kBackBuffer,
+                                                           FlushReason::kOther);
+  ASSERT_TRUE(resource);
+  auto shared_image = resource->GetSharedImage();
+  ASSERT_TRUE(shared_image);
+  EXPECT_EQ(shared_image->size(), kSize);
+  EXPECT_EQ(shared_image->format(), viz::SharedImageFormat::N32Format());
+  EXPECT_EQ(shared_image->alpha_type(), kPremul_SkAlphaType);
+  EXPECT_EQ(shared_image->color_space(), gfx::ColorSpace::CreateSRGB());
+  // We do not support single buffering for unaccelerated low latency canvas.
+  EXPECT_FALSE(
+      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE));
 }
 
 }  // namespace

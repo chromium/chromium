@@ -24,8 +24,10 @@ specific_include_rules = {
         "+cc/layers/texture_layer.h",
         "+cc/test/paint_op_matchers.h",
         "+gpu/GLES2/gl2extchromium.h",
+        "+gpu/command_buffer/client/client_shared_image.h",
         "+gpu/command_buffer/client/test_shared_image_interface.h",
         "+ui/accessibility",
+        "+ui/gfx/color_space.h",
         "+ui/gfx/skia_util.h",
     ]
 }
