@@ -78,13 +78,18 @@ class MODULES_EXPORT MulticastController final : public ScriptWrappable,
     net::IPAddress group;
     std::optional<net::IPAddress> source;
 
+    String GroupString() const { return String::FromUtf8(group.ToString()); }
+
+    String SourceString() const {
+      return source.has_value() ? String::FromUtf8(source->ToString())
+                                : String();
+    }
+
     String ToString() const {
-      String group_string = String::FromUtf8(group.ToString());
       if (source.has_value()) {
-        return StrCat(
-            {group_string, "@", String::FromUtf8(source->ToString())});
+        return StrCat({GroupString(), "@", SourceString()});
       }
-      return group_string;
+      return GroupString();
     }
 
     bool operator==(const MembershipKey& other) const = default;

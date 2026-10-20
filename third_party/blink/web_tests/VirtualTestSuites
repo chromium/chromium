@@ -1730,7 +1730,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--isolated-context-origins=https://devtools.oopif.test"
+      "--isolated-context-origins=https://devtools.oopif.test",
+      "--enable-features=SourceSpecificMulticastInDirectSockets"
     ],
     "expires": "never"
   },

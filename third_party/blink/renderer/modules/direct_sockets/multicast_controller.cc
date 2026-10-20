@@ -347,8 +347,10 @@ void MulticastController::OnJoinedGroup(
 
   if (net_error == net::OK) {
     membership_iter->value.state = Membership::State::kJoined;
-    probe::DirectUDPSocketJoinedMulticastGroup(GetExecutionContext(),
-                                               inspector_id_, key);
+    const MembershipKey& membership_key = membership_iter->value.key;
+    probe::DirectUDPSocketJoinedMulticastGroup(
+        GetExecutionContext(), inspector_id_, membership_key.GroupString(),
+        membership_key.SourceString());
     resolver->Resolve();
   } else {
     memberships_.erase(membership_iter);
@@ -368,9 +370,13 @@ void MulticastController::OnLeftGroup(
   leave_group_promises_.erase(iter);
 
   if (net_error == net::OK) {
-    memberships_.erase(key);
-    probe::DirectUDPSocketLeftMulticastGroup(GetExecutionContext(),
-                                             inspector_id_, key);
+    auto membership_iter = memberships_.find(key);
+    CHECK(membership_iter != memberships_.end());
+    const MembershipKey& membership_key = membership_iter->value.key;
+    probe::DirectUDPSocketLeftMulticastGroup(
+        GetExecutionContext(), inspector_id_, membership_key.GroupString(),
+        membership_key.SourceString());
+    memberships_.erase(membership_iter);
     resolver->Resolve();
   } else {
     resolver->Reject(Socket::CreateDOMExceptionFromNetErrorCode(net_error));
@@ -386,16 +392,14 @@ MulticastController::joinedGroups() const {
     if (membership.state != Membership::State::kJoined) {
       continue;
     }
-    const String group_string =
-        String::FromUtf8(membership.key.group.ToString());
+    const String group_string = membership.key.GroupString();
     if (!membership.key.source.has_value()) {
       result.push_back(MakeGarbageCollected<V8UnionMulticastMembershipOrString>(
           group_string));
     } else {
       auto* v8_membership = MulticastMembership::Create();
       v8_membership->setGroupAddress(group_string);
-      v8_membership->setSourceAddress(
-          String::FromUtf8(membership.key.source->ToString()));
+      v8_membership->setSourceAddress(membership.key.SourceString());
 
       result.push_back(MakeGarbageCollected<V8UnionMulticastMembershipOrString>(
           v8_membership));

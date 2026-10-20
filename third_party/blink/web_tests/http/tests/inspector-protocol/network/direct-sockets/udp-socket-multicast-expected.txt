@@ -1,0 +1,6 @@
+UDP DirectSockets multicast membership events
+joined: IPAddress=237.132.100.17 sourceAddress=undefined
+left: IPAddress=237.132.100.17 sourceAddress=undefined
+joined: IPAddress=232.1.1.1 sourceAddress=192.0.2.1
+left: IPAddress=232.1.1.1 sourceAddress=192.0.2.1
+

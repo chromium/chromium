@@ -2405,16 +2405,22 @@ void InspectorNetworkAgent::DirectUDPSocketChunkReceived(
 
 void InspectorNetworkAgent::DirectUDPSocketJoinedMulticastGroup(
     uint64_t identifier,
-    const String& ipAddress) {
+    const String& group_address,
+    const String& source_address) {
   GetFrontend()->directUDPSocketJoinedMulticastGroup(
-      IdentifiersFactory::SubresourceRequestId(identifier), ipAddress);
+      IdentifiersFactory::SubresourceRequestId(identifier), group_address,
+      source_address.IsNull() ? std::nullopt
+                              : std::make_optional(source_address));
 }
 
 void InspectorNetworkAgent::DirectUDPSocketLeftMulticastGroup(
     uint64_t identifier,
-    const String& ipAddress) {
+    const String& group_address,
+    const String& source_address) {
   GetFrontend()->directUDPSocketLeftMulticastGroup(
-      IdentifiersFactory::SubresourceRequestId(identifier), ipAddress);
+      IdentifiersFactory::SubresourceRequestId(identifier), group_address,
+      source_address.IsNull() ? std::nullopt
+                              : std::make_optional(source_address));
 }
 
 protocol::Response InspectorNetworkAgent::enable(
