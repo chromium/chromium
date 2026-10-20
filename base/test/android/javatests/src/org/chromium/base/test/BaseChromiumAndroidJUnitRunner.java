@@ -237,7 +237,10 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             Request listJUnit4TestRequest = createListTestRequest(junit4Arguments);
             results.putAll(executorBuilder.build().execute(listJUnit4TestRequest));
             finish(Activity.RESULT_OK, results);
-        } catch (RuntimeException e) {
+            // Catch Exception instead of RuntimeException because Cronet's gn2bp build in
+            // Android compiles against an older prebuilt version of androidx.test.runner where
+            // TestExecutor#execute still declares `throws UnsupportedEncodingException`.
+        } catch (Exception e) {
             String msg = "Fatal exception when running tests";
             Log.e(TAG, msg, e);
             results.putString(
