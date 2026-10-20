@@ -580,14 +580,13 @@ public class AutofillAiDelegate {
             }
 
             if (shouldHaveAddButton) {
-                category.addPreference(createAddEntityButton(entityDataManager, type));
+                category.addPreference(createAddEntityButton(type));
             }
         }
     }
 
-    private Preference createAddEntityButton(
-            EntityDataManager entityDataManager, EntityType entityType) {
-        boolean buttonEnabled = isAddButtonEnabled(entityDataManager, entityType);
+    private Preference createAddEntityButton(EntityType entityType) {
+        boolean buttonEnabled = getToggleState(entityType.getTypeName()).checked;
 
         Preference pref = new ChromeBasePreference(getStyledContext());
         Drawable plusIcon =
@@ -619,23 +618,6 @@ public class AutofillAiDelegate {
                     return true;
                 });
         return pref;
-    }
-
-    private boolean isAddButtonEnabled(EntityDataManager entityDataManager, EntityType entityType) {
-        return isEligibleToAddEntities(entityDataManager, entityType.getTypeName())
-                && !isPlatformAutofillEnabledForProfile(mFragment.getProfile());
-    }
-
-    private boolean isEligibleToAddEntities(
-            EntityDataManager entityDataManager, @EntityTypeName int entityTypeName) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
-            return getToggleState(entityTypeName).checked;
-        }
-
-        return (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
-                ? entityDataManager.canEnableOrDisableAutofillAi()
-                : entityDataManager.isEligibleToAutofillAi()
-                        && entityDataManager.getAutofillAiOptInStatus());
     }
 
     private static boolean entityTypeToggleEnabled(
