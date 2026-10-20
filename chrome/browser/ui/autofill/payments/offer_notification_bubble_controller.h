@@ -15,7 +15,6 @@ namespace autofill {
 
 class AutofillBubbleBase;
 class AutofillOfferData;
-class CreditCard;
 
 // Interface that exposes controller functionality to offer notification related
 // UIs.
@@ -43,18 +42,12 @@ class OfferNotificationBubbleController {
   // Returns the title that should be displayed in the bubble.
   virtual std::u16string GetWindowTitle() const = 0;
 
-  // Returns the label text for the Ok button.
-  virtual std::u16string GetOkButtonLabel() const = 0;
-
   // Returns the tooltip text for the promo code offer button, which can differ
   // depending on whether it has been clicked yet or not.
   virtual std::u16string GetPromoCodeButtonTooltip() const = 0;
 
   // Returns the reference to the offer notification bubble view.
   virtual AutofillBubbleBase* GetOfferNotificationBubbleView() const = 0;
-
-  // Returns the related card if the offer is a card linked offer.
-  virtual const CreditCard* GetLinkedCard() const = 0;
 
   // Returns the related offer, from which the UI can extract display strings.
   virtual const AutofillOfferData* GetOffer() const = 0;

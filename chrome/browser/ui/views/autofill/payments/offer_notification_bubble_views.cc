@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/subpage_view.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,8 +23,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/layout_types.h"
+#include "ui/views/view_class_properties.h"
 
 namespace autofill {
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kOfferNotificationBubbleElementId);
@@ -62,15 +60,13 @@ void OfferNotificationBubbleViews::Hide() {
 
 void OfferNotificationBubbleViews::Init() {
   switch (controller_->GetOffer()->GetOfferType()) {
-    case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
-      InitWithCardLinkedOfferContent();
-      return;
     case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
       InitWithGPayPromoCodeOfferContent();
       return;
     case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
       InitWithWalletDirectOfferContent();
       return;
+    case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
   }
@@ -112,24 +108,6 @@ void OfferNotificationBubbleViews::OnWidgetDestroying(views::Widget* widget) {
   CHECK_NE(widget->closed_reason(),
            views::Widget::ClosedReason::kCancelButtonClicked,
            base::NotFatalUntil::M162);
-}
-
-void OfferNotificationBubbleViews::InitWithCardLinkedOfferContent() {
-  // Card-linked offers have a positive CTA button:
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
-  SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetOkButtonLabel());
-
-  // Create bubble content:
-  views::FlexLayout* layout =
-      SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout->SetOrientation(views::LayoutOrientation::kVertical);
-  auto* explanatory_message = AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_OFFERS_REMINDER_DESCRIPTION_TEXT,
-          controller_->GetLinkedCard()->CardNameAndLastFourDigits()),
-      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
-  explanatory_message->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  explanatory_message->SetMultiLine(true);
 }
 
 void OfferNotificationBubbleViews::InitWithGPayPromoCodeOfferContent() {

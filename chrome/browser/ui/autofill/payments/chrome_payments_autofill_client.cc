@@ -929,20 +929,10 @@ AutofillOfferManager* ChromePaymentsAutofillClient::GetAutofillOfferManager() {
 void ChromePaymentsAutofillClient::UpdateOfferNotification(
     const AutofillOfferData& offer,
     const OfferNotificationOptions& options) {
-  const CreditCard* card = offer.GetEligibleInstrumentIds().empty()
-                               ? nullptr
-                               : client_->GetPersonalDataManager()
-                                     .payments_data_manager()
-                                     .GetCreditCardByInstrumentId(
-                                         offer.GetEligibleInstrumentIds()[0]);
-
-  if (offer.GetOfferType() ==
-          AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER &&
-      !card) {
-    return;
-  }
-
 #if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/546252995): Support Wallet offers in the Android offer
+  // notification. It currently requires a linked card, so it is not shown for
+  // Wallet offers.
   if (options.notification_has_been_shown) {
     // For Android, if notification has been shown on this merchant, don't show
     // it again.
@@ -951,12 +941,12 @@ void ChromePaymentsAutofillClient::UpdateOfferNotification(
   OfferNotificationControllerAndroid::CreateForWebContents(web_contents());
   OfferNotificationControllerAndroid* controller =
       OfferNotificationControllerAndroid::FromWebContents(web_contents());
-  controller->ShowIfNecessary(&offer, card);
+  controller->ShowIfNecessary(&offer, /*card=*/nullptr);
 #else
   OfferNotificationBubbleControllerImpl::CreateForWebContents(web_contents());
   OfferNotificationBubbleControllerImpl* controller =
       OfferNotificationBubbleControllerImpl::FromWebContents(web_contents());
-  controller->ShowOfferNotificationIfApplicable(offer, card, options);
+  controller->ShowOfferNotificationIfApplicable(offer, options);
 #endif
 }
 

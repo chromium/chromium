@@ -29,12 +29,12 @@ class OfferNotificationBubbleViewsBrowserTest
 };
 
 // Tests that the offer notification bubble will not be shown if the offer data
-// is invalid (does not have a linked card or a promo code).
+// is invalid (does not have a valid offer details url).
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
                        InvalidOfferData) {
-  auto offer_data = CreateCardLinkedOfferDataWithDomains(
+  auto offer_data = CreateWalletDirectOfferDataWithDomains(
       {GetUrl("www.example.com", "/"), GetUrl("www.test.com", "/")});
-  offer_data->SetEligibleInstrumentIdForTesting({});
+  offer_data->SetOfferDetailsUrl(GURL());
   test_api(personal_data()->payments_data_manager())
       .AddOfferData(std::move(offer_data));
   personal_data()->NotifyPersonalDataObserver();
@@ -111,7 +111,7 @@ class OfferNotificationBubbleViewsBubbleDisabledBrowserTest
 // direct offers notification bubble feature is disabled.
 IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBubbleDisabledBrowserTest,
                        NotificationBubbleDisabled) {
-  auto offer_data = CreateCardLinkedOfferDataWithDomains(
+  auto offer_data = CreateWalletDirectOfferDataWithDomains(
       {GetUrl("www.example.com", "/"), GetUrl("www.test.com", "/")});
   test_api(personal_data()->payments_data_manager())
       .AddOfferData(std::move(offer_data));

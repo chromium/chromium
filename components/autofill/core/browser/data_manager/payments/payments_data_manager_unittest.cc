@@ -1051,9 +1051,11 @@ TEST_F(PaymentsDataManagerTest, SetEmptyCreditCard) {
 
 // Tests that GetAutofillOffers returns all available offers.
 TEST_P(PaymentsDataManagerServerTest, GetAutofillOffers) {
-  // Add two card-linked offers and one promo code offer.
-  AddOfferDataForTest(test::GetCardLinkedOfferData1());
-  AddOfferDataForTest(test::GetCardLinkedOfferData2());
+  // Add three offers.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      GURL("http://www.example1.com"), /*is_expired=*/false, "111"));
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      GURL("http://www.example2.com"), /*is_expired=*/false, "222"));
   AddOfferDataForTest(test::GetPromoCodeOfferData());
 
   // Should return all three.
@@ -1081,8 +1083,6 @@ TEST_P(PaymentsDataManagerServerTest,
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableWalletDirectOffers);
 
-  // Card-linked offers should not be returned.
-  AddOfferDataForTest(test::GetCardLinkedOfferData1());
   // Expired promo code offers should not be returned.
   AddOfferDataForTest(test::GetPromoCodeOfferData(
       /*origin=*/GURL("http://www.example.com"), /*is_expired=*/true));
@@ -1105,8 +1105,9 @@ TEST_P(PaymentsDataManagerServerTest,
 // Tests that GetAutofillOffers does not return any offers if
 // |IsAutofillWalletImportEnabled()| returns |false|.
 TEST_P(PaymentsDataManagerServerTest, GetAutofillOffers_WalletImportDisabled) {
-  // Add a card-linked offer and a promo code offer.
-  AddOfferDataForTest(test::GetCardLinkedOfferData1());
+  // Add two offers.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      GURL("http://www.example1.com"), /*is_expired=*/false, "111"));
   AddOfferDataForTest(test::GetPromoCodeOfferData());
 
   ASSERT_EQ(payments_data_manager().GetAutofillOffers().size(), 2U);
@@ -1122,8 +1123,9 @@ TEST_P(PaymentsDataManagerServerTest, GetAutofillOffers_WalletImportDisabled) {
 // `IsAutofillPaymentMethodsEnabled()` returns `false`.
 TEST_P(PaymentsDataManagerServerTest,
        GetAutofillOffers_AutofillCreditCardDisabled) {
-  // Add a card-linked offer and a promo code offer.
-  AddOfferDataForTest(test::GetCardLinkedOfferData1());
+  // Add two offers.
+  AddOfferDataForTest(test::GetPromoCodeOfferData(
+      GURL("http://www.example1.com"), /*is_expired=*/false, "111"));
   AddOfferDataForTest(test::GetPromoCodeOfferData());
 
   prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
@@ -1206,8 +1208,6 @@ TEST_P(PaymentsDataManagerServerTest,
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillEnableWalletDirectOffers);
 
-  // Card-linked offers should not be returned.
-  AddOfferDataForTest(test::GetCardLinkedOfferData1());
 
   DisplayStrings display_strings;
   display_strings.value_prop_text = "5% off on shoes";

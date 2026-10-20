@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_OFFER_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_OFFER_MANAGER_H_
 
-#include <stdint.h>
-
-#include <map>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -27,9 +24,6 @@ class PaymentsDataManager;
 // browser context. Owned and created by the AutofillOfferManagerFactory.
 class AutofillOfferManager : public KeyedService {
  public:
-  // Mapping from credit card guid id to offer data.
-  using CardLinkedOffersMap = std::map<std::string, const AutofillOfferData*>;
-
   explicit AutofillOfferManager(PaymentsDataManager* payments_data_manager);
   ~AutofillOfferManager() override;
   AutofillOfferManager(const AutofillOfferManager&) = delete;
@@ -54,11 +48,7 @@ class AutofillOfferManager : public KeyedService {
   void ClearShownNotificationIdsForTesting();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(
-      AutofillOfferManagerTest,
-      CreateCardLinkedOffersMap_ReturnsOnlyCardLinkedOffers);
   FRIEND_TEST_ALL_PREFIXES(AutofillOfferManagerTest, IsUrlEligible);
-  friend class OfferNotificationControllerAndroidBrowserTest;
 
   const raw_ref<PaymentsDataManager> payments_data_manager_;
 

@@ -77,10 +77,6 @@ class OfferNotificationBubbleViewsTestBase
   // OfferNotificationBubbleControllerImpl::ObserverForTest:
   void OnBubbleShown() override;
 
-  // Also creates a credit card for the offer.
-  std::unique_ptr<AutofillOfferData> CreateCardLinkedOfferDataWithDomains(
-      const std::vector<GURL>& domains);
-
   std::unique_ptr<AutofillOfferData> CreateGPayPromoCodeOfferDataWithDomains(
       const std::vector<GURL>& domains);
 
@@ -89,9 +85,6 @@ class OfferNotificationBubbleViewsTestBase
 
   void SetUpOfferDataWithDomains(AutofillOfferData::OfferType offer_type,
                                  const std::vector<GURL>& domains);
-
-  // Also creates a credit card for the offer.
-  void SetUpCardLinkedOfferDataWithDomains(const std::vector<GURL>& domains);
 
   void SetUpGPayPromoCodeOfferDataWithDomains(const std::vector<GURL>& domains);
 

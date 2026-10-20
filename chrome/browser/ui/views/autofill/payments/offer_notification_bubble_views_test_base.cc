@@ -37,7 +37,6 @@ constexpr char kDefaultTestUsageInstructionsText[] =
     "Click the promo code field at checkout to autofill it.";
 constexpr char kDefaultTestDetailsUrlString[] = "https://pay.google.com";
 constexpr char kDefaultTestOfferShortTitle[] = "5% off";
-constexpr int64_t kCreditCardInstrumentId = 0x4444;
 }  // namespace
 
 OfferNotificationBubbleViewsTestBase::OfferNotificationBubbleViewsTestBase()
@@ -107,30 +106,6 @@ void OfferNotificationBubbleViewsTestBase::OnBubbleShown() {
 }
 
 std::unique_ptr<AutofillOfferData>
-OfferNotificationBubbleViewsTestBase::CreateCardLinkedOfferDataWithDomains(
-    const std::vector<GURL>& domains) {
-  auto card = std::make_unique<CreditCard>();
-  card->set_instrument_id(kCreditCardInstrumentId);
-  personal_data_->payments_data_manager().AddServerCreditCardForTest(
-      std::move(card));
-  test_api(personal_data_->payments_data_manager()).NotifyObservers();
-  std::string offer_id = "4444";
-  base::Time expiry = AutofillClock::Now() + base::Days(2);
-  std::vector<GURL> merchant_origins;
-  for (auto url : domains) {
-    merchant_origins.emplace_back(url.DeprecatedGetOriginAsURL());
-  }
-  GURL offer_details_url;
-  DisplayStrings display_strings;
-  std::vector<int64_t> eligible_instrument_ids = {kCreditCardInstrumentId};
-  std::string offer_reward_amount = "5%";
-  return std::make_unique<AutofillOfferData>(
-      AutofillOfferData::GPayCardLinkedOffer(
-          offer_id, expiry, merchant_origins, offer_details_url,
-          display_strings, eligible_instrument_ids, offer_reward_amount));
-}
-
-std::unique_ptr<AutofillOfferData>
 OfferNotificationBubbleViewsTestBase::CreateGPayPromoCodeOfferDataWithDomains(
     const std::vector<GURL>& domains) {
   std::string offer_id = "5555";
@@ -174,27 +149,16 @@ void OfferNotificationBubbleViewsTestBase::SetUpOfferDataWithDomains(
     AutofillOfferData::OfferType offer_type,
     const std::vector<GURL>& domains) {
   switch (offer_type) {
-    case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
-      SetUpCardLinkedOfferDataWithDomains(domains);
-      break;
     case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
       SetUpGPayPromoCodeOfferDataWithDomains(domains);
       break;
     case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
       SetUpWalletDirectOfferDataWithDomains(domains);
       break;
+    case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
   }
-}
-
-void OfferNotificationBubbleViewsTestBase::SetUpCardLinkedOfferDataWithDomains(
-    const std::vector<GURL>& domains) {
-  personal_data_->payments_data_manager().ClearAllServerDataForTesting();
-  // CreateCardLinkedOfferDataWithDomains(~) will add the necessary card.
-  test_api(personal_data_->payments_data_manager())
-      .AddOfferData(CreateCardLinkedOfferDataWithDomains(domains));
-  test_api(personal_data_->payments_data_manager()).NotifyObservers();
 }
 
 void OfferNotificationBubbleViewsTestBase::
