@@ -1062,8 +1062,7 @@
       },
       {
         "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--gtest_filter=-ToDouble/BytecodeInterpreterCastTest.Cast/9223372036854775806_Double_9223372036854774784_000000_Gt:ToDouble/BytecodeInterpreterCastTest.Cast/9223372036854775806_Double_9223372036854774784_000000_Le:ToDouble/BytecodeInterpreterCastTest.Cast/9223372036854775806_Double_9223372036854775808_000000_Ge:ToDouble/BytecodeInterpreterCastTest.Cast/9223372036854775806_Double_9223372036854775808_000000_Lt"
+          "--test-launcher-print-test-stdio=always"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
