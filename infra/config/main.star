@@ -241,6 +241,7 @@ chromium_luci.configure_targets(
             "chromeos-betty-finch": True,
             "ci_only": True,
             "crosier-no-arc": True,
+            "experiments": True,
             "gce": True,
             "gpu_enable_metal_debug_layers": True,
             "gpu_force_angle_d3d11": True,
