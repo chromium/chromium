@@ -8,10 +8,8 @@
 #include <optional>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -38,7 +36,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/command_line_switches.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -153,14 +150,6 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
     loop.Run();
   }
 
-  // This will never return if the policy request was already handled. Make sure
-  // to call this before the policy request is made.
-  void WaitForPolicyHanging() {
-    base::RunLoop loop;
-    policy_hanging_closure_ = loop.QuitClosure();
-    loop.Run();
-  }
-
   void ConfirmSync(
       LoginUIService::SyncConfirmationUIClosedResult confirmation_result) {
     std::move(sync_confirmation_callback_).Run(confirmation_result);
@@ -190,8 +179,6 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
   }
 
   void OnTurnSyncOnHelperDeleted() { ++helper_deleted_count_; }
-
-  void set_policy_hanging(bool hanging) { policy_hanging_ = hanging; }
 
  private:
   // InProcessBrowserTest:
@@ -282,20 +269,9 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
     return http_response;
   }
 
-  // This simply redirects to the policy server, unless |policy_hanging_| is
-  // true.
+  // This simply redirects to the policy server.
   std::unique_ptr<net::test_server::HttpResponse> HandleDeviceManagementRequest(
       const net::test_server::HttpRequest& r) {
-    std::string request_type;
-    net::GetValueForKeyInQuery(r.GetURL(), policy::dm_protocol::kParamRequest,
-                               &request_type);
-    if (request_type == policy::dm_protocol::kValueRequestPolicy &&
-        policy_hanging_) {
-      if (policy_hanging_closure_)
-        std::move(policy_hanging_closure_).Run();
-      return std::make_unique<net::test_server::HungResponse>();
-    }
-
     // Redirect to the policy server.
     GURL::Replacements replace_query;
     std::string query = r.GetURL().GetQuery();
@@ -314,10 +290,8 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
   std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_server_;
   CoreAccountId account_id_;
   base::OnceClosure sync_confirmation_shown_closure_;
-  base::OnceClosure policy_hanging_closure_;
   base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
       sync_confirmation_callback_;
-  bool policy_hanging_ = false;
   int helper_created_count_ = 0;
   int helper_deleted_count_ = 0;
 };
@@ -461,57 +435,4 @@ IN_PROC_BROWSER_TEST_F(UserPolicySigninServiceTest,
   EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(profile()));
   EXPECT_TRUE(enterprise_util::ProfileCanBeManaged(profile()));
   TurnSyncOnHelper::SetShowSyncEnabledUiForTesting(false);
-}
-
-// This test can be deleted once syncer::kReplaceSyncPromosWithSignInPromos is
-// launched.
-class UserPolicySigninServiceTestWithReplaceSyncPromosWithSignInPromosDisabled
-    : public UserPolicySigninServiceTest {
- public:
-  UserPolicySigninServiceTestWithReplaceSyncPromosWithSignInPromosDisabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            syncer::kReplaceSyncPromosWithSignInPromos,
-            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Regression test for https://crbug.com/40122451
-// Start a new signing flow while the existing one is hanging on a policy
-// request.
-IN_PROC_BROWSER_TEST_F(
-    UserPolicySigninServiceTestWithReplaceSyncPromosWithSignInPromosDisabled,
-    ConcurrentSignin) {
-  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-
-  set_policy_hanging(true);
-  CreateTurnSyncOnHelper();
-  WaitForPolicyHanging();
-
-  // Policy hanging, policy is not applied.
-  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-  EXPECT_TRUE(signin_client()->IsClearPrimaryAccountAllowed());
-
-  // Restart a new signin flow and allow it to complete.
-  CreateTurnSyncOnHelper();
-  set_policy_hanging(false);
-  WaitForSyncConfirmation();
-
-  // Policies are applied right before the sync confirmation is shown.
-  EXPECT_EQ(signin::ConsentLevel::kSignin,
-            signin::GetPrimaryAccountConsentLevel(identity_manager()));
-  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-  EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed());
-
-  // Confirm the signin.
-  ConfirmSync(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
-  // Policy is still applied.
-  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
-  EXPECT_EQ(signin::ConsentLevel::kSync,
-            signin::GetPrimaryAccountConsentLevel(identity_manager()));
-  EXPECT_FALSE(signin_client()->IsClearPrimaryAccountAllowed());
 }
