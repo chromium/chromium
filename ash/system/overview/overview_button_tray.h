@@ -21,6 +21,7 @@
 namespace ui {
 class Event;
 class GestureEvent;
+class ImageModel;
 }  // namespace ui
 
 namespace ash {
@@ -70,7 +71,6 @@ class ASH_EXPORT OverviewButtonTray : public ImagedTrayIcon,
   // ImagedTrayIcon:
   void UpdateAfterLoginStatusChange() override;
   void UpdateTrayItemColor(bool is_active) override;
-  void OnThemeChanged() override;
 
  private:
   friend class OverviewButtonTrayTest;
@@ -81,7 +81,7 @@ class ASH_EXPORT OverviewButtonTray : public ImagedTrayIcon,
 
   void UpdateIconVisibility();
 
-  gfx::ImageSkia GetIconImage();
+  ui::ImageModel GetIconImage();
 
   // Stores the timestamp of the last tap event time that happened while not
   // in overview mode. Used to check for double taps, which invoke quick switch.

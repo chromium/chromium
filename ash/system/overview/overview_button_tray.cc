@@ -26,10 +26,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -70,7 +67,7 @@ OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
 
   set_icon_visibility_callback(base::BindRepeating(&ShouldButtonBeVisible));
 
-  image_view()->SetImage(ui::ImageModel::FromImageSkia(GetIconImage()));
+  image_view()->SetImage(GetIconImage());
 
   // Since OverviewButtonTray is located on the rightmost position of a
   // horizontal shelf, no separator is required.
@@ -128,12 +125,7 @@ void OverviewButtonTray::OnOverviewModeEnded() {
 }
 
 void OverviewButtonTray::UpdateTrayItemColor(bool is_active) {
-  image_view()->SetImage(ui::ImageModel::FromImageSkia(GetIconImage()));
-}
-
-void OverviewButtonTray::OnThemeChanged() {
-  TrayBackgroundView::OnThemeChanged();
-  image_view()->SetImage(ui::ImageModel::FromImageSkia(GetIconImage()));
+  image_view()->SetImage(GetIconImage());
 }
 
 void OverviewButtonTray::OnButtonPressed(const ui::Event& event) {
@@ -204,15 +196,11 @@ void OverviewButtonTray::UpdateIconVisibility() {
       Shell::Get()->session_controller()->GetSessionState()));
 }
 
-gfx::ImageSkia OverviewButtonTray::GetIconImage() {
-  SkColor color = gfx::kPlaceholderColor;
-  if (GetColorProvider()) {
-    color = GetColorProvider()->GetColor(
-        is_active() ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                    : cros_tokens::kCrosSysOnSurface);
-  }
-
-  return gfx::CreateVectorIcon(kShelfOverviewIcon, color);
+ui::ImageModel OverviewButtonTray::GetIconImage() {
+  return ui::ImageModel::FromVectorIcon(
+      kShelfOverviewIcon, is_active()
+                              ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                              : cros_tokens::kCrosSysOnSurface);
 }
 
 BEGIN_METADATA(OverviewButtonTray)
