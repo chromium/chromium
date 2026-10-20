@@ -1055,9 +1055,13 @@ suite('TopToolbarTest', () => {
           const logoContainer =
               topRow.querySelector<HTMLElement>('.top-toolbar-logo-container');
           assertHTMLElement(logoContainer);
+          const dashboard = topRow.querySelector<HTMLElement&{delegate: any}>(
+              'permission-dashboard');
+          assertHTMLElement(dashboard);
 
-          // Initial state: `G` logo shows.
-          assertFalse(!!topRow.querySelector('permission-dashboard'));
+          // Initial state: `G` logo shows and permission-dashboard is hidden.
+          assertTrue(dashboard.hidden);
+          assertEquals('none', getComputedStyle(dashboard).display);
           assertFalse(logoContainer.hidden);
           assertEquals('flex', getComputedStyle(logoContainer).display);
 
@@ -1069,20 +1073,19 @@ suite('TopToolbarTest', () => {
             isDividerVisible: false,
           };
 
-          // Verify `topToolbar` DOM (dashboard rendered, logo container hidden)
+          // Verify `topToolbar` DOM (dashboard visible, logo container hidden)
           // when request chip shows.
           topToolbar.permissionDashboardState = fakeState;
           await microtasksFinished();
 
-          const dashboard = topRow.querySelector<HTMLElement&{delegate: any}>(
-              'permission-dashboard');
-          assertTrue(!!dashboard);
+          assertFalse(dashboard.hidden);
+          assertEquals('flex', getComputedStyle(dashboard).display);
           assertTrue(!!dashboard.delegate);
           assertTrue(logoContainer.hidden);
           assertEquals('none', getComputedStyle(logoContainer).display);
 
-          // Remove the visible chip, so that the permission dashboard no longer
-          // shows and the `G` logo is restored.
+          // Remove the visible chip, so that the permission dashboard is hidden
+          // and the `G` logo is restored.
           topToolbar.permissionDashboardState = {
             indicatorChip: createFakeChip(),
             requestChip: createFakeChip(),
@@ -1090,15 +1093,17 @@ suite('TopToolbarTest', () => {
           };
           await microtasksFinished();
 
-          assertFalse(!!topRow.querySelector('permission-dashboard'));
+          assertTrue(dashboard.hidden);
+          assertEquals('none', getComputedStyle(dashboard).display);
           assertFalse(logoContainer.hidden);
           assertEquals('flex', getComputedStyle(logoContainer).display);
 
-          // Set state to dashboard to null. It should no longer show.
+          // Set state to dashboard to null. It should remain hidden.
           topToolbar.permissionDashboardState = null;
           await microtasksFinished();
 
-          assertFalse(!!topRow.querySelector('permission-dashboard'));
+          assertTrue(dashboard.hidden);
+          assertEquals('none', getComputedStyle(dashboard).display);
           assertFalse(logoContainer.hidden);
           assertEquals('flex', getComputedStyle(logoContainer).display);
         });
@@ -1112,9 +1117,13 @@ suite('TopToolbarTest', () => {
           const logoContainer =
               topRow.querySelector<HTMLElement>('.top-toolbar-logo-container');
           assertHTMLElement(logoContainer);
+          const dashboard = topRow.querySelector<HTMLElement&{delegate: any}>(
+              'permission-dashboard');
+          assertHTMLElement(dashboard);
 
-          // Initial state: `G` logo shows.
-          assertFalse(!!topRow.querySelector('permission-dashboard'));
+          // Initial state: `G` logo shows and permission-dashboard is hidden.
+          assertTrue(dashboard.hidden);
+          assertEquals('none', getComputedStyle(dashboard).display);
           assertFalse(logoContainer.hidden);
           assertEquals('flex', getComputedStyle(logoContainer).display);
 
@@ -1126,20 +1135,19 @@ suite('TopToolbarTest', () => {
             isDividerVisible: false,
           };
 
-          // Verify `topToolbar` DOM (dashboard rendered, logo container hidden)
+          // Verify `topToolbar` DOM (dashboard visible, logo container hidden)
           // when indicator chip shows.
           topToolbar.permissionDashboardState = fakeState;
           await microtasksFinished();
 
-          const dashboard = topRow.querySelector<HTMLElement&{delegate: any}>(
-              'permission-dashboard');
-          assertTrue(!!dashboard);
+          assertFalse(dashboard.hidden);
+          assertEquals('flex', getComputedStyle(dashboard).display);
           assertTrue(!!dashboard.delegate);
           assertTrue(logoContainer.hidden);
           assertEquals('none', getComputedStyle(logoContainer).display);
 
-          // Remove the visible chip, so that the permission dashboard no longer
-          // shows and the `G` logo is restored.
+          // Remove the visible chip, so that the permission dashboard is hidden
+          // and the `G` logo is restored.
           topToolbar.permissionDashboardState = {
             indicatorChip: createFakeChip(),
             requestChip: createFakeChip(),
@@ -1147,7 +1155,8 @@ suite('TopToolbarTest', () => {
           };
           await microtasksFinished();
 
-          assertFalse(!!topRow.querySelector('permission-dashboard'));
+          assertTrue(dashboard.hidden);
+          assertEquals('none', getComputedStyle(dashboard).display);
           assertFalse(logoContainer.hidden);
           assertEquals('flex', getComputedStyle(logoContainer).display);
         });
@@ -1159,7 +1168,10 @@ suite('TopToolbarTest', () => {
 
           const topRow = topToolbar.shadowRoot.querySelector('#top-row');
           assertTrue(!!topRow);
-          assertFalse(!!topRow.querySelector('permission-dashboard'));
+          const dashboard =
+              topRow.querySelector<HTMLElement>('permission-dashboard');
+          assertHTMLElement(dashboard);
+          assertTrue(dashboard.hidden);
 
           // Push an update over the observer callback router.
           const observerRemote = toolbarProxy.bindToolbarUiObserverRemote();
@@ -1174,7 +1186,7 @@ suite('TopToolbarTest', () => {
           await microtasksFinished();
 
           assertDeepEquals(pushedState, topToolbar.permissionDashboardState);
-          assertTrue(!!topRow.querySelector('permission-dashboard'));
+          assertFalse(dashboard.hidden);
         });
 
     test('forwards permission chip delegate calls to service', async () => {
