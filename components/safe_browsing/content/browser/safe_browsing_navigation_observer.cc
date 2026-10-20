@@ -125,6 +125,7 @@ void SafeBrowsingNavigationObserver::DidStartNavigation(
           navigation_handle->GetURL());
   nav_event->source_tab_id =
       sessions::SessionTabHelper::IdForTab(navigation_handle->GetWebContents());
+  nav_event->target_tab_id = nav_event->source_tab_id;
   SetNavigationSourceMainFrameUrl(navigation_handle, nav_event.get());
   SetNavigationOutermostMainFrameIds(navigation_handle, nav_event.get());
 

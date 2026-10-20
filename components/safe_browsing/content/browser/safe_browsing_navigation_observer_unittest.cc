@@ -449,12 +449,12 @@ TEST_F(SBNavigationObserverTest, ServerRedirect) {
   NavigationEvent* pending_event =
       nav_list->FindPendingNavigationEvent(GURL("http://foo/3"));
   VerifyNavigationEvent(
-      GURL("http://foo/0"),       // source_url
-      GURL("http://foo/0"),       // source_main_frame_url
-      GURL("http://foo/3"),       // original_request_url
-      GURL("http://foo/3"),       // destination_url
-      tab_id,                     // source_tab_id
-      SessionID::InvalidValue(),  // target_tab_id
+      GURL("http://foo/0"),  // source_url
+      GURL("http://foo/0"),  // source_main_frame_url
+      GURL("http://foo/3"),  // original_request_url
+      GURL("http://foo/3"),  // destination_url
+      tab_id,                // source_tab_id
+      tab_id,                // target_tab_id
       ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
       false,  // has_committed
       false,  // has_server_redirect
@@ -474,7 +474,7 @@ TEST_F(SBNavigationObserverTest, ServerRedirect) {
       GURL("http://foo/3"),       // original_request_url
       GURL("http://redirect/1"),  // destination_url
       tab_id,                     // source_tab_id
-      SessionID::InvalidValue(),  // target_tab_id
+      tab_id,                     // target_tab_id
       ReferrerChainEntry::RENDERER_INITIATED_WITHOUT_USER_GESTURE,
       false,  // has_committed
       true,   // has_server_redirect
@@ -1237,12 +1237,12 @@ TEST_F(SBNavigationObserverTest,
   NavigationEvent* pending_event =
       nav_list->FindPendingNavigationEvent(GURL("http://foo/1"));
   VerifyNavigationEvent(
-      GURL("http://foo/0"),       // source_url
-      GURL("http://foo/0"),       // source_main_frame_url
-      GURL("http://foo/1"),       // original_request_url
-      GURL("http://foo/1"),       // destination_url
-      tab_id,                     // source_tab_id
-      SessionID::InvalidValue(),  // target_tab_id
+      GURL("http://foo/0"),  // source_url
+      GURL("http://foo/0"),  // source_main_frame_url
+      GURL("http://foo/1"),  // original_request_url
+      GURL("http://foo/1"),  // destination_url
+      tab_id,                // source_tab_id
+      tab_id,                // target_tab_id
       ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
       false,  // has_committed
       false,  // has_server_redirect
@@ -1337,6 +1337,28 @@ TEST_F(SBNavigationObserverTest,
       false,  // has_committed
       false,  // has_server_redirect
       navigation_event_list()->GetNavigationEvent(1U));
+}
+
+// Regression test for b/568560137.
+TEST_F(SBNavigationObserverTest,
+       PendingNavigationEventSameTabIsNotRetargeting) {
+  sessions::SessionTabHelper::CreateForWebContents(web_contents(),
+                                                   base::NullCallback());
+  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("http://foo/1"), web_contents()->GetPrimaryMainFrame());
+  navigation->SetHasUserGesture(true);
+  navigation->Start();
+
+  ReferrerChain referrer_chain;
+  EXPECT_EQ(
+      SafeBrowsingNavigationObserverManager::SUCCESS,
+      navigation_observer_manager_->IdentifyReferrerChainByPendingEventURL(
+          GURL("http://foo/1"), /*user_gesture_count_limit=*/2,
+          &referrer_chain));
+  ASSERT_EQ(1, referrer_chain.size());
+  EXPECT_EQ("http://foo/1", referrer_chain.Get(0).url());
+  EXPECT_EQ("http://foo/0", referrer_chain.Get(0).referrer_url());
+  EXPECT_FALSE(referrer_chain.Get(0).is_retargeting());
 }
 
 }  // namespace safe_browsing
