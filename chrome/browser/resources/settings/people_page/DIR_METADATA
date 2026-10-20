@@ -1,0 +1,7 @@
+mixins: "//components/sync/COMMON_METADATA"
+monorail: {
+  component: "UI>Settings"
+}
+buganizer_public: {
+  component_id: 1457080
+}
