@@ -959,7 +959,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   if (base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2)) {
     contextual_cueing_controller_ =
-        std::make_unique<contextual_cueing::ContextualCueingController>(&tab);
+        GetUserDataFactory()
+            .CreateInstance<contextual_cueing::ContextualCueingController>(
+                tab, &tab);
     glic::GlicCueTarget::Register(tab);
     contextual_search::ContextualSearchCueTarget::Register(tab);
   }

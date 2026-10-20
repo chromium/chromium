@@ -2526,7 +2526,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                     return;
                   }
                   auto* controller =
-                      tab->GetTabFeatures()->contextual_cueing_controller();
+                      contextual_cueing::ContextualCueingController::From(tab);
                   if (controller) {
                     controller->OnActionInvoked();
                   }

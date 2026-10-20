@@ -169,6 +169,8 @@ class ContextualCueingPageActionObserver
 
 }  // namespace
 
+DEFINE_USER_DATA(ContextualCueingController);
+
 ContextualCueingController::ContextualCueingController(tabs::TabInterface* tab)
     : tab_(tab),
       contextual_cueing_service_(
@@ -186,7 +188,8 @@ ContextualCueingController::ContextualCueingController(tabs::TabInterface* tab)
           IdentityManagerFactory::GetForProfile(tab_->GetProfile())),
       favicon_service_(FaviconServiceFactory::GetForProfile(
           tab_->GetProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS)) {
+          ServiceAccessType::EXPLICIT_ACCESS)),
+      scoped_unowned_user_data_(tab_->GetUnownedUserDataHost(), *this) {
 #if !BUILDFLAG(IS_ANDROID)
   page_action_observer_ = std::make_unique<ContextualCueingPageActionObserver>(
       base::BindRepeating(&ContextualCueingController::OnCueFormFactorShown,
@@ -250,16 +253,9 @@ void ContextualCueingController::OnActionInvoked() {
 }
 
 // static
-ContextualCueingController* ContextualCueingController::GetForWebContents(
-    content::WebContents& contents) {
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-#else
-  if (auto* tab = tabs::TabInterface::GetFromContents(&contents)) {
-    return tab->GetTabFeatures()->contextual_cueing_controller();
-  }
-#endif
-  return nullptr;
+ContextualCueingController* ContextualCueingController::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
 }
 
 void ContextualCueingController::RegisterCueTarget(

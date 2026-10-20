@@ -26,6 +26,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
@@ -70,15 +71,15 @@ class ContextualCueingController
           PageContentAnnotationsObserver,
       public TabListInterfaceObserver {
  public:
+  DECLARE_USER_DATA(ContextualCueingController);
+
   explicit ContextualCueingController(tabs::TabInterface* tab);
   ContextualCueingController(const ContextualCueingController&) = delete;
   ContextualCueingController& operator=(const ContextualCueingController&) =
       delete;
   ~ContextualCueingController() override;
 
-  // Get contents' browser's ContextualCueingController if it exists.
-  static ContextualCueingController* GetForWebContents(
-      content::WebContents& contents);
+  static ContextualCueingController* From(tabs::TabInterface* tab);
 
   // Register a cue type. Feature code provides a CueTarget for reporting the
   // feature's cue eligibility and handling clicks. Calling this function for a
@@ -310,6 +311,9 @@ class ContextualCueingController
 #endif
 
   GURL last_logged_active_url_;
+
+  ui::ScopedUnownedUserData<ContextualCueingController>
+      scoped_unowned_user_data_;
 
   base::WeakPtrFactory<ContextualCueingController> weak_ptr_factory_{this};
 };

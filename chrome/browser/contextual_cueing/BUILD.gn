@@ -28,6 +28,7 @@ source_set("contextual_cueing") {
     "//components/private_insights/events:contextual_cue_log_event_proto",
     "//components/sessions",
     "//components/tabs:public",
+    "//ui/base/unowned_user_data",
     "//url",
   ]
 

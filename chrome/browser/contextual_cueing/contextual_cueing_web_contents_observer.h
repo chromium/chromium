@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
 class WebContents;
@@ -20,8 +19,7 @@ class ContextualCueingService;
 
 // Observes WebContents visits and notifies ContextualCueingService on changes.
 class ContextualCueingWebContentsObserver
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<ContextualCueingWebContentsObserver> {
+    : public content::WebContentsObserver {
  public:
   ContextualCueingWebContentsObserver(
       const ContextualCueingWebContentsObserver&) = delete;
@@ -39,13 +37,8 @@ class ContextualCueingWebContentsObserver
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
  private:
-  friend class content::WebContentsUserData<
-      ContextualCueingWebContentsObserver>;
-
   raw_ptr<ContextualCueingService> service_;
   bool should_evaluate_cues_on_load_ = false;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace contextual_cueing

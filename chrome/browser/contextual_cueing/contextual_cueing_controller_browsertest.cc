@@ -174,10 +174,7 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,
   }
 
   ContextualCueingController* contextual_cueing_controller() {
-    return browser()
-        ->GetActiveTabInterface()
-        ->GetTabFeatures()
-        ->contextual_cueing_controller();
+    return ContextualCueingController::From(browser()->GetActiveTabInterface());
   }
 
   TestCueTarget* cue_target() {
@@ -199,7 +196,7 @@ class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase,
 
   void RegisterTestCueTargetForTab(tabs::TabInterface* tab) {
     auto test_cue_target = std::make_unique<TestCueTarget>();
-    tab->GetTabFeatures()->contextual_cueing_controller()->RegisterCueTarget(
+    ContextualCueingController::From(tab)->RegisterCueTarget(
         CueTargetType::kGlic, std::move(test_cue_target));
   }
 
@@ -2628,11 +2625,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   // Second click invokes the action.
   action->InvokeAction();
 
-  TestCueTarget* second_cue_target =
-      static_cast<TestCueTarget*>(second_browser->GetActiveTabInterface()
-                                      ->GetTabFeatures()
-                                      ->contextual_cueing_controller()
-                                      ->GetTarget(CueTargetType::kGlic));
+  TestCueTarget* second_cue_target = static_cast<TestCueTarget*>(
+      ContextualCueingController::From(second_browser->GetActiveTabInterface())
+          ->GetTarget(CueTargetType::kGlic));
   ASSERT_TRUE(second_cue_target);
   ASSERT_TRUE(second_cue_target->HasClickData());
   EXPECT_EQ("Prompt",
@@ -2841,8 +2836,7 @@ class TargetRegisteringObserver : public TabStripModelObserver {
                                                    CueIntrusiveness::kQuiet};
         non_mes_target->generate_result =
             MakeCompleteResponse().contextual_cues(0);
-        contents.tab->GetTabFeatures()
-            ->contextual_cueing_controller()
+        ContextualCueingController::From(contents.tab)
             ->RegisterCueTarget(CueTargetType::kTestSource,
                                 std::move(non_mes_target));
       }
@@ -3076,12 +3070,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
   non_mes_target->supported_intrusiveness = {CueIntrusiveness::kLoud,
                                              CueIntrusiveness::kQuiet};
   non_mes_target->generate_result = MakeCompleteResponse().contextual_cues(0);
-  browser()
-      ->GetActiveTabInterface()
-      ->GetTabFeatures()
-      ->contextual_cueing_controller()
-      ->RegisterCueTarget(CueTargetType::kTestSource,
-                          std::move(non_mes_target));
+  contextual_cueing_controller()->RegisterCueTarget(CueTargetType::kTestSource,
+                                                    std::move(non_mes_target));
 
   // Exhaust loud caps by showing a loud cue.
   service->OnCueShown(GURL("https://example.com"), CueTargetType::kGlic,
@@ -3178,11 +3168,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
   target->downgrades_to_quiet_on_dismiss = true;
   target->generate_result = MakeCompleteResponse().contextual_cues(0);
   TestCueTarget* target_ptr = target.get();
-  browser()
-      ->GetActiveTabInterface()
-      ->GetTabFeatures()
-      ->contextual_cueing_controller()
-      ->RegisterCueTarget(CueTargetType::kTestSource, std::move(target));
+  contextual_cueing_controller()->RegisterCueTarget(CueTargetType::kTestSource,
+                                                    std::move(target));
 
   class TestObserver : public page_actions::PageActionModelObserver {
    public:
@@ -3218,14 +3205,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
   EXPECT_TRUE(observer.anchored_message_showing_);
 
   // Now dismiss the cue.
-  browser()
-      ->GetActiveTabInterface()
-      ->GetTabFeatures()
-      ->contextual_cueing_controller()
-      ->OnCueInteraction(ContextualCueingInteraction::kCueDismissed,
-                         CueTargetType::kTestSource,
-                         *target_ptr->generate_result, {}, {}, "cuj", {},
-                         "fake_id");
+  contextual_cueing_controller()->OnCueInteraction(
+      ContextualCueingInteraction::kCueDismissed, CueTargetType::kTestSource,
+      *target_ptr->generate_result, {}, {}, "cuj", {}, "fake_id");
 
   // The chip should still be visible, but anchored message is NOT showing.
   EXPECT_TRUE(observer.visible_);
@@ -3255,12 +3237,8 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerMultiSourceBrowserTest,
                                              CueIntrusiveness::kQuiet};
   non_mes_target->generate_result = MakeCompleteResponse().contextual_cues(0);
   TestCueTarget* target_ptr = non_mes_target.get();
-  browser()
-      ->GetActiveTabInterface()
-      ->GetTabFeatures()
-      ->contextual_cueing_controller()
-      ->RegisterCueTarget(CueTargetType::kTestSource,
-                          std::move(non_mes_target));
+  contextual_cueing_controller()->RegisterCueTarget(CueTargetType::kTestSource,
+                                                    std::move(non_mes_target));
 
   // User dismisses a cue.
   service->OnCueDismissed(CueTargetType::kGlic, /*record_ucb_stats=*/true);

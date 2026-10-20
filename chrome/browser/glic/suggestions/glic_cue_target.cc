@@ -29,7 +29,6 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/pdf/common/constants.h"
 #include "components/prefs/pref_service.h"
@@ -74,7 +73,7 @@ void GlicCueTarget::Register(tabs::TabInterface& tab) {
   }
 
   auto* contextual_cueing_controller =
-      tab.GetTabFeatures()->contextual_cueing_controller();
+      contextual_cueing::ContextualCueingController::From(&tab);
   CHECK(contextual_cueing_controller);
   contextual_cueing_controller->RegisterCueTarget(
       contextual_cueing::CueTargetType::kGlic,

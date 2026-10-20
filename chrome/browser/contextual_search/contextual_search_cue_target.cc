@@ -33,7 +33,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -71,7 +70,7 @@ void ContextualSearchCueTarget::Register(tabs::TabInterface& tab) {
       << "Contextual search contextual cue not yet implemented for Android.";
 #else
   auto* contextual_cueing_controller =
-      tab.GetTabFeatures()->contextual_cueing_controller();
+      contextual_cueing::ContextualCueingController::From(&tab);
   CHECK(contextual_cueing_controller);
   contextual_cueing_controller->RegisterCueTarget(
       contextual_cueing::CueTargetType::kContextualSearch,

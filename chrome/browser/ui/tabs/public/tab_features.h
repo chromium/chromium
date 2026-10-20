@@ -552,11 +552,6 @@ class TabFeatures {
     return new_tab_page_preload_pipeline_manager_.get();
   }
 
-  contextual_cueing::ContextualCueingController*
-  contextual_cueing_controller() {
-    return contextual_cueing_controller_.get();
-  }
-
   site_engagement::SiteEngagementService::Helper* site_engagement_helper() {
     return site_engagement_helper_.get();
   }
