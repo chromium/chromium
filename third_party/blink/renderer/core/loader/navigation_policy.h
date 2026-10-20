@@ -61,6 +61,12 @@ CORE_EXPORT NavigationPolicy NavigationPolicyFromEvent(const Event*);
 CORE_EXPORT NavigationPolicy
 NavigationPolicyForCreateWindow(const WebWindowFeatures&);
 
+// Returns true if the modifiers of the current input event request a specific
+// policy for a new window (e.g. ctrl-click for a background tab, or
+// shift-click for a new window). NavigationPolicyForCreateWindow() honors this
+// request over the window features.
+CORE_EXPORT bool UserRequestedNavigationPolicyForCreateWindow();
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_NAVIGATION_POLICY_H_

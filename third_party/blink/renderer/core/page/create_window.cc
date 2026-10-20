@@ -26,6 +26,8 @@
 
 #include "third_party/blink/renderer/core/page/create_window.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -34,6 +36,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/public/web/web_window_features.h"
@@ -82,6 +85,8 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       RuntimeEnabledFeatures::RelOpenerBcgDependencyHintEnabled(dom_window);
   const bool always_on_top_enabled =
       RuntimeEnabledFeatures::WindowOpenAlwaysOnTopEnabled();
+  const bool split_tab_enabled =
+      RuntimeEnabledFeatures::WindowOpenSplitTabEnabled();
 
   // This code follows the HTML spec, specifically
   // https://html.spec.whatwg.org/C/#concept-window-open-features-tokenize
@@ -95,6 +100,10 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
   bool scrollbars = true;
   enum class PopupState { kUnknown, kPopup, kWindow };
   PopupState popup_state = PopupState::kUnknown;
+  bool split_requested = false;
+  mojom::blink::SplitTabPosition split_position =
+      mojom::blink::SplitTabPosition::kUnspecified;
+  std::optional<uint8_t> split_size;
   unsigned key_begin, key_end;
   unsigned value_begin, value_end;
 
@@ -215,6 +224,35 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       window_features.noreferrer = value;
     } else if (always_on_top_enabled && key_string == "alwaysontop") {
       window_features.always_on_top = value;
+    } else if (split_tab_enabled && key_string == "split") {
+      split_requested = value;
+    } else if (split_tab_enabled && key_string == "splitposition") {
+      // Unrecognized values leave the browser default. As with other
+      // features, the last occurrence of the key wins.
+      if (value_string == "left") {
+        split_position = mojom::blink::SplitTabPosition::kLeft;
+      } else if (value_string == "right") {
+        split_position = mojom::blink::SplitTabPosition::kRight;
+      } else if (value_string == "top") {
+        split_position = mojom::blink::SplitTabPosition::kTop;
+      } else if (value_string == "bottom") {
+        split_position = mojom::blink::SplitTabPosition::kBottom;
+      } else {
+        split_position = mojom::blink::SplitTabPosition::kUnspecified;
+      }
+    } else if (split_tab_enabled && key_string == "splitsize") {
+      // Parsed as an integer percentage. Invalid or out-of-range values leave
+      // the browser default. As with other features, the last occurrence of
+      // the key wins. `value` isn't used, because it is 1 (a valid size) for
+      // an empty, "yes", or "true" value.
+      std::optional<int> size =
+          StringToInt(value_string, NumberParsingOptions::Loose());
+      if (size && *size >= mojom::blink::WindowFeatures::kMinSplitSize &&
+          *size <= mojom::blink::WindowFeatures::kMaxSplitSize) {
+        split_size = static_cast<uint8_t>(*size);
+      } else {
+        split_size = std::nullopt;
+      }
     } else if (key_string == "background") {
       window_features.background = true;
     } else if (key_string == "persistent") {
@@ -228,7 +266,16 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
   }
 
   window_features.is_popup = popup_state == PopupState::kPopup;
-  if (popup_state == PopupState::kUnknown) {
+  if (split_requested) {
+    CHECK(split_tab_enabled);
+    window_features.is_split = true;
+    window_features.split_position = split_position;
+    window_features.split_size = split_size;
+    // When a split is requested, the legacy "any other feature means popup"
+    // heuristic does not apply. `is_popup` is only true if "popup" was
+    // explicitly requested, in which case it is the fallback when the browser
+    // does not create the split. Otherwise the fallback is a new tab.
+  } else if (popup_state == PopupState::kUnknown) {
     window_features.is_popup = !tool_bar || !menu_bar || !scrollbars ||
                                !status_bar || !window_features.resizable;
   }
@@ -321,6 +368,16 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
     request.SetNavigationPolicy(kNavigationPolicyPictureInPicture);
   } else {
     request.SetNavigationPolicy(NavigationPolicyForCreateWindow(features));
+    // The user's click modifiers (e.g. ctrl-click for a background tab) take
+    // precedence over a split tab request. In that case, drop the request, so
+    // that the browser handles the modifiers as it would without it. This must
+    // happen after the policy is chosen, since the policy depends on
+    // `is_split`.
+    if (features.is_split && UserRequestedNavigationPolicyForCreateWindow()) {
+      features.is_split = false;
+      features.split_position = mojom::blink::SplitTabPosition::kUnspecified;
+      features.split_size = std::nullopt;
+    }
     probe::WindowOpen(&opener_window, url, frame_name, features,
                       LocalFrame::HasTransientUserActivation(&opener_frame));
   }

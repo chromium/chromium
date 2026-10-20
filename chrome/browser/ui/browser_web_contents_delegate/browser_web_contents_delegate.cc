@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/trace_event/trace_event.h"
@@ -98,12 +99,14 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/base_window.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -185,6 +188,41 @@ bool ShouldCreateBackgroundContents(Profile* profile,
   }
 
   return true;
+}
+
+// Returns true if a window.open() split tab request (the "split" window
+// feature) from `source`, with renderer-chosen `disposition`, can be honored by
+// opening the new contents in a new split alongside `source`.
+bool CanOpenWindowOpenSplitTab(BrowserWindowInterface& browser,
+                               content::WebContents* source,
+                               WindowOpenDisposition disposition) {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kWindowOpenSplitTab));
+  // The renderer's fallback disposition for a split request is NEW_POPUP if
+  // "popup" was also specified, or NEW_FOREGROUND_TAB otherwise. The renderer
+  // drops the request if the user's click modifiers chose the disposition, so
+  // any other disposition is unexpected, and is left alone.
+  if (disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
+      disposition != WindowOpenDisposition::NEW_POPUP) {
+    return false;
+  }
+  if (!source || browser.GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    return false;
+  }
+  // Don't interrupt the user for a backgrounded actor task.
+  if (actor::IsRunningBackgroundActorTask(*source)) {
+    return false;
+  }
+  // The opener must be the active tab in this window, and must not already be
+  // in a split. A request from an already-split tab falls back, rather than
+  // replacing content the user placed in the other side of the split.
+  TabStripModel* const tab_strip_model = browser.GetTabStripModel();
+  if (tab_strip_model->GetIndexOfWebContents(source) == TabStripModel::kNoTab) {
+    return false;
+  }
+  tabs::TabInterface* const source_tab =
+      tabs::TabInterface::MaybeGetFromContents(source);
+  return source_tab && source_tab == tab_strip_model->GetActiveTab() &&
+         !source_tab->IsSplit();
 }
 
 BackgroundContents* CreateBackgroundContents(
@@ -666,6 +704,22 @@ content::WebContents* BrowserWebContentsDelegate::AddNewContents(
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
+  // Handle a window.open() split tab request. The renderer chooses a tab or
+  // popup disposition as the fallback, and the browser decides whether to
+  // create the split. The renderer doesn't send the request if the user's
+  // click modifiers chose the disposition (e.g. ctrl-click for a background
+  // tab), so those are handled as usual.
+  if (window_features.is_split) {
+    // Only the renderer sets `is_split`, and content rejects it as a bad
+    // message if the feature is disabled. Other callers either forward the
+    // features of such a request (e.g. DevTools or guest views), or pass
+    // default features.
+    CHECK(base::FeatureList::IsEnabled(blink::features::kWindowOpenSplitTab));
+    if (CanOpenWindowOpenSplitTab(*browser_, source, disposition)) {
+      disposition = WindowOpenDisposition::NEW_SPLIT_VIEW;
+    }
+  }
+
   FullscreenController* fullscreen_controller =
       exclusive_access_manager_->fullscreen_controller();
 #if BUILDFLAG(IS_MAC)

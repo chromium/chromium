@@ -6,7 +6,21 @@ module blink.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+// The side of the opener on which the new content should appear, when a split
+// tab is requested via the "splitposition" window feature.
+enum SplitTabPosition {
+  kUnspecified,
+  kLeft,
+  kRight,
+  kTop,
+  kBottom,
+};
+
 struct WindowFeatures {
+    // The valid range, inclusive, of `split_size`.
+    const uint8 kMinSplitSize = 1;
+    const uint8 kMaxSplitSize = 99;
+
     gfx.mojom.Rect bounds;
 
     // Rect cannot differentiate between 0 and unset values.
@@ -18,4 +32,18 @@ struct WindowFeatures {
 
     bool is_popup = false;
     bool always_on_top = false;
+
+    // Split tab hints, from the "split", "splitposition", and "splitsize"
+    // window features. These may only be set when the WindowOpenSplitTab
+    // feature is enabled, and `split_position` and `split_size` may only be
+    // set when `is_split` is true. `is_split` is a request, which the browser
+    // may decline; in that case, `is_popup` determines whether the fallback is
+    // a popup or a new tab. The renderer doesn't send the request if the
+    // user's click modifiers chose the disposition.
+    bool is_split = false;
+    SplitTabPosition split_position = SplitTabPosition.kUnspecified;
+    // The percentage (kMinSplitSize to kMaxSplitSize) of the split to give to
+    // the new content. Unset means the browser default. The browser may clamp
+    // this to a narrower range to keep both sides of the split usable.
+    uint8? split_size;
 };

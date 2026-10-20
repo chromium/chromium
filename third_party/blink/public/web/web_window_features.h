@@ -31,6 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WINDOW_FEATURES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WINDOW_FEATURES_H_
 
+#include <cstdint>
+#include <optional>
+
+#include "third_party/blink/public/mojom/window_features/window_features.mojom-shared.h"
 #include "third_party/blink/public/platform/web_string.h"
 
 namespace blink {
@@ -47,6 +51,12 @@ struct WebWindowFeatures {
 
   bool is_popup = false;
   bool always_on_top = false;
+
+  // Split tab hints. See window_features.mojom for details.
+  bool is_split = false;
+  mojom::SplitTabPosition split_position =
+      mojom::SplitTabPosition::kUnspecified;
+  std::optional<uint8_t> split_size;
 
   // The members above this line are transferred through mojo
   // in the form of |struct WindowFeatures| defined in window_features.mojom,

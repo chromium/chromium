@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params_utils.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/status_bubble.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -76,7 +77,9 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
@@ -245,6 +248,53 @@ BrowserWindowCreateParams::ValueSpecified GetOriginSpecified(
   return params.window_features.has_x && params.window_features.has_y
              ? BrowserWindowCreateParams::ValueSpecified::kSpecified
              : BrowserWindowCreateParams::ValueSpecified::kUnspecified;
+}
+
+// The range, in percent, to which the "splitsize" window feature is clamped.
+// This keeps either side of the split from being made too small to use. It
+// matches the minimum size percentage enforced by MultiContentsView.
+constexpr int kMinWindowOpenSplitSizePercent = 10;
+constexpr int kMaxWindowOpenSplitSizePercent = 90;
+
+// Converts the split tab hints from window.open() into split visual data.
+// Sets `new_tab_first` to true if the new tab should be the first (left or top)
+// tab in the split.
+split_tabs::SplitTabVisualData GetWindowOpenSplitTabVisualData(
+    const blink::mojom::WindowFeatures& window_features,
+    bool& new_tab_first) {
+  CHECK(base::FeatureList::IsEnabled(blink::features::kWindowOpenSplitTab));
+  CHECK(window_features.is_split);
+
+  blink::mojom::SplitTabPosition position = window_features.split_position;
+  // Top/bottom splits require stacked split support. Without it, fall back to
+  // left/right.
+  if (!base::FeatureList::IsEnabled(tabs::kSplitViewHorizontal)) {
+    if (position == blink::mojom::SplitTabPosition::kTop) {
+      position = blink::mojom::SplitTabPosition::kLeft;
+    } else if (position == blink::mojom::SplitTabPosition::kBottom) {
+      position = blink::mojom::SplitTabPosition::kRight;
+    }
+  }
+  const split_tabs::SplitTabLayout layout =
+      (position == blink::mojom::SplitTabPosition::kTop ||
+       position == blink::mojom::SplitTabPosition::kBottom)
+          ? split_tabs::SplitTabLayout::kStacked
+          : split_tabs::SplitTabLayout::kSideBySide;
+  // The default (unspecified) position puts the new tab on the right.
+  new_tab_first = position == blink::mojom::SplitTabPosition::kLeft ||
+                  position == blink::mojom::SplitTabPosition::kTop;
+
+  // `split_size` is the new tab's share of the split, while the visual data's
+  // ratio is the first tab's share.
+  double new_tab_ratio = 0.5;
+  if (window_features.split_size.has_value()) {
+    new_tab_ratio = std::clamp(static_cast<int>(*window_features.split_size),
+                               kMinWindowOpenSplitSizePercent,
+                               kMaxWindowOpenSplitSizePercent) /
+                    100.0;
+  }
+  return split_tabs::SplitTabVisualData(
+      layout, new_tab_first ? new_tab_ratio : 1.0 - new_tab_ratio);
 }
 
 // Returns a Browser and tab index. The browser can host the navigation or
@@ -1065,9 +1115,29 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
       if (new_tab_index != TabStripModel::kNoTab && active_tab &&
           active_tab != new_tab && !active_tab->IsSplit() &&
           (!source_tab || !source_tab->IsSplit())) {
-        tab_strip_model->AddToNewSplit(
-            {new_tab_index}, split_tabs::SplitTabVisualData(),
+        // For window.open() split tab requests, apply the position and size
+        // hints. Otherwise, use the default visual data.
+        split_tabs::SplitTabVisualData visual_data;
+        bool new_tab_first = false;
+        if (params->window_features.is_split) {
+          CHECK(base::FeatureList::IsEnabled(
+              blink::features::kWindowOpenSplitTab));
+          visual_data = GetWindowOpenSplitTabVisualData(params->window_features,
+                                                        new_tab_first);
+        }
+        const split_tabs::SplitTabId split_id = tab_strip_model->AddToNewSplit(
+            {new_tab_index}, visual_data,
             split_tabs::SplitTabCreatedSource::kLinkClick);
+        // AddToNewSplit() orders the split by tab strip index, which normally
+        // puts the new tab second. For window.open() split tab requests,
+        // reverse the split if the new tab should be first. The ratio in
+        // `visual_data` already accounts for this order.
+        if (params->window_features.is_split &&
+            new_tab_first !=
+                (tab_strip_model->GetSplitData(split_id)->ListTabs()[0] ==
+                 new_tab)) {
+          tab_strip_model->ReverseTabsInSplit(split_id);
+        }
       }
       if (new_tab) {
         // AddToNewSplit() makes the split contiguous and gives the new tab the

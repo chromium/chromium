@@ -4,6 +4,9 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdint>
+#include <optional>
+
 #include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/core/page/create_window.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -127,6 +130,160 @@ TEST_F(WindowFeaturesTest, AlwaysOnTop) {
               GetWindowFeaturesFromString(test.feature_string,
                                           /*dom_window=*/nullptr)
                   .always_on_top)
+        << "Testing '" << test.feature_string << "'";
+  }
+}
+
+TEST_F(WindowFeaturesTest, Split) {
+  ScopedWindowOpenSplitTabForTest split_tab_enabled{true};
+
+  static const struct {
+    const char* feature_string;
+    bool is_split;
+    bool is_popup;
+  } kCases[] = {
+      {"", false, false},
+      {"something", false, true},
+      {"notsplit", false, true},
+      {"split", true, false},
+      {"SpLiT", true, false},
+      {"split=1", true, false},
+      {"split=yes", true, false},
+      {"split=0", false, true},
+      {"split=no", false, true},
+      {"split=1, split=0", false, true},
+      {"split=0, split=1", true, false},
+      // The legacy "any other feature means popup" heuristic doesn't apply to
+      // split requests.
+      {"split, something", true, false},
+      {"something, split", true, false},
+      {"split, width=400, height=300", true, false},
+      {"split, toolbar=0, menubar=0", true, false},
+      {"split, noopener", true, false},
+      {"split, noreferrer", true, false},
+      // An explicit popup request is the fallback.
+      {"split, popup", true, true},
+      {"popup, split", true, true},
+      {"split, popup=1", true, true},
+      {"split, popup=0", true, false},
+      {"popup=0, split", true, false},
+      {"popup", false, true},
+  };
+
+  for (const auto& test : kCases) {
+    WebWindowFeatures features = GetWindowFeaturesFromString(
+        test.feature_string, /*dom_window=*/nullptr);
+    EXPECT_EQ(test.is_split, features.is_split)
+        << "Testing '" << test.feature_string << "'";
+    EXPECT_EQ(test.is_popup, features.is_popup)
+        << "Testing '" << test.feature_string << "'";
+  }
+}
+
+TEST_F(WindowFeaturesTest, SplitPosition) {
+  ScopedWindowOpenSplitTabForTest split_tab_enabled{true};
+
+  static const struct {
+    const char* feature_string;
+    mojom::SplitTabPosition split_position;
+  } kCases[] = {
+      {"split", mojom::SplitTabPosition::kUnspecified},
+      {"split, splitposition=left", mojom::SplitTabPosition::kLeft},
+      {"split, splitposition=right", mojom::SplitTabPosition::kRight},
+      {"split, splitposition=top", mojom::SplitTabPosition::kTop},
+      {"split, splitposition=bottom", mojom::SplitTabPosition::kBottom},
+      {"splitposition=left, split", mojom::SplitTabPosition::kLeft},
+      {"split, SplitPosition=LeFt", mojom::SplitTabPosition::kLeft},
+      {"split, splitposition", mojom::SplitTabPosition::kUnspecified},
+      {"split, splitposition=", mojom::SplitTabPosition::kUnspecified},
+      {"split, splitposition=center", mojom::SplitTabPosition::kUnspecified},
+      {"split, splitposition=inline-end",
+       mojom::SplitTabPosition::kUnspecified},
+      {"split, splitposition=1", mojom::SplitTabPosition::kUnspecified},
+      // The last occurrence wins, even if it is invalid.
+      {"split, splitposition=left, splitposition=top",
+       mojom::SplitTabPosition::kTop},
+      {"split, splitposition=left, splitposition=foo",
+       mojom::SplitTabPosition::kUnspecified},
+      // The position is only reported along with a split request.
+      {"splitposition=left", mojom::SplitTabPosition::kUnspecified},
+      {"split=0, splitposition=left", mojom::SplitTabPosition::kUnspecified},
+  };
+
+  for (const auto& test : kCases) {
+    EXPECT_EQ(test.split_position,
+              GetWindowFeaturesFromString(test.feature_string,
+                                          /*dom_window=*/nullptr)
+                  .split_position)
+        << "Testing '" << test.feature_string << "'";
+  }
+}
+
+TEST_F(WindowFeaturesTest, SplitSize) {
+  ScopedWindowOpenSplitTabForTest split_tab_enabled{true};
+
+  static const struct {
+    const char* feature_string;
+    std::optional<uint8_t> split_size;
+  } kCases[] = {
+      {"split", std::nullopt},
+      {"split, splitsize=30", 30},
+      {"split, splitsize=1", 1},
+      {"split, splitsize=99", 99},
+      {"split, splitsize=50", 50},
+      {"splitsize=30, split", 30},
+      {"split, SplitSize=30", 30},
+      // Trailing garbage is ignored, as for other integer features.
+      {"split, splitsize=30%", 30},
+      {"split, splitsize=30.7", 30},
+      // Invalid or out-of-range values are ignored.
+      {"split, splitsize", std::nullopt},
+      {"split, splitsize=", std::nullopt},
+      {"split, splitsize=yes", std::nullopt},
+      {"split, splitsize=abc", std::nullopt},
+      {"split, splitsize=0", std::nullopt},
+      {"split, splitsize=100", std::nullopt},
+      {"split, splitsize=-30", std::nullopt},
+      {"split, splitsize=1000", std::nullopt},
+      // The last occurrence wins, even if it is invalid.
+      {"split, splitsize=30, splitsize=40", 40},
+      {"split, splitsize=30, splitsize=abc", std::nullopt},
+      // The size is only reported along with a split request.
+      {"splitsize=30", std::nullopt},
+      {"split=0, splitsize=30", std::nullopt},
+  };
+
+  for (const auto& test : kCases) {
+    EXPECT_EQ(test.split_size,
+              GetWindowFeaturesFromString(test.feature_string,
+                                          /*dom_window=*/nullptr)
+                  .split_size)
+        << "Testing '" << test.feature_string << "'";
+  }
+}
+
+TEST_F(WindowFeaturesTest, SplitDisabled) {
+  ScopedWindowOpenSplitTabForTest split_tab_enabled{false};
+
+  static const struct {
+    const char* feature_string;
+    bool is_popup;
+  } kCases[] = {
+      {"split", true},
+      {"split, splitposition=left, splitsize=30", true},
+      {"popup=0, split", false},
+  };
+
+  for (const auto& test : kCases) {
+    WebWindowFeatures features = GetWindowFeaturesFromString(
+        test.feature_string, /*dom_window=*/nullptr);
+    EXPECT_FALSE(features.is_split)
+        << "Testing '" << test.feature_string << "'";
+    EXPECT_EQ(mojom::SplitTabPosition::kUnspecified, features.split_position)
+        << "Testing '" << test.feature_string << "'";
+    EXPECT_EQ(std::nullopt, features.split_size)
+        << "Testing '" << test.feature_string << "'";
+    EXPECT_EQ(test.is_popup, features.is_popup)
         << "Testing '" << test.feature_string << "'";
   }
 }

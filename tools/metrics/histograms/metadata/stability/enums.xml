@@ -593,6 +593,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="405" label="RFH_DOWNLOAD_URL_BLOB_WITHOUT_TOKEN"/>
   <int value="406" label="RPH_DUPLICATE_MEMORY_COORDINATOR_HOST"/>
   <int value="407" label="RFHI_WEBMCP_REGISTER_INVALID_TOOL_ID"/>
+  <int value="408" label="RFH_CREATE_NEW_WINDOW_INVALID_SPLIT_TAB_FEATURES"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

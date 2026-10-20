@@ -96,6 +96,7 @@ source_set("impl") {
       "//chrome/browser/ui/browser_ui_controller",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/tabs:features",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:launch_utils",
@@ -143,6 +144,7 @@ if (!is_android) {
     sources = [
       "browser_navigator_browsertest.cc",
       "browser_navigator_browsertest.h",
+      "window_open_split_tab_browsertest.cc",
     ]
 
     if (is_chromeos) {
@@ -167,11 +169,16 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/page_info",
       "//chrome/browser/ui/search:test_support_ui",
+      "//chrome/browser/ui/tabs:features",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/window_feature_controller",
       "//chrome/test:test_support",
       "//components/captive_portal/content",
+      "//components/split_tabs",
+      "//components/tabs:public",
       "//content/test:test_support",
       "//testing/gtest",
+      "//third_party/blink/public/common:headers",
     ]
 
     if (is_chromeos) {

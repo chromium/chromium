@@ -7898,6 +7898,22 @@
       status: "stable",
     },
     {
+      // Supports the "split", "splitposition", and "splitsize" features in
+      // window.open(), which request that the new content be opened in a split
+      // tab alongside the opener.
+      //
+      // The base::Feature is enabled by default, and serves as a kill switch
+      // for the browser-side implementation. The Blink side follows the
+      // "test" status unless the base::Feature is overridden, in which case
+      // both sides follow the override. This keeps the renderer and browser
+      // consistent, so that the browser can reject split requests from a
+      // renderer when the base::Feature is disabled.
+      name: "WindowOpenSplitTab",
+      status: "test",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
+    },
+    {
       // Fixes an issue where Ctrl+Right Arrow skips punctuation before a newline.
       name: "WordSkipSpacesPunctuationFix",
       status: "stable",
