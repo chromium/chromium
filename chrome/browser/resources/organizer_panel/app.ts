@@ -31,6 +31,7 @@ export interface OrganizerPanelAppElement {
     list: OrganizerListElement,
     menu: CrActionMenuElement,
     searchField: CrToolbarSearchFieldElement,
+    shortcut: HTMLElement,
   };
 }
 

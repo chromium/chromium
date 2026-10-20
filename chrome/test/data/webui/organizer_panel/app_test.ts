@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('OrganizerPanelAppTest', () => {
   let app: OrganizerPanelAppElement;
@@ -97,9 +97,22 @@ suite('OrganizerPanelAppTest', () => {
     assertEquals('Search Tabs', searchField.getAttribute('label'));
     assertEquals('Clear search', searchField.getAttribute('clear-label'));
 
-    const shortcut = searchField.querySelector('#shortcut');
-    assertTrue(!!shortcut);
-    assertEquals('Ctrl+Shift+A', shortcut.textContent);
+    assertEquals('Ctrl+Shift+A', app.$.shortcut.textContent);
+
+    assertTrue(hasStyle(searchField.$.prompt, 'text-overflow', 'ellipsis'));
+  });
+
+  test('elides placeholder when there is not enough room', async () => {
+    const searchField = app.$.searchField;
+
+    // Set search field width narrow enough that the placeholder cannot fit
+    // alongside the shortcut.
+    searchField.style.width = '120px';
+    await microtasksFinished();
+
+    const prompt = searchField.$.prompt;
+    assertTrue(prompt.clientWidth < prompt.scrollWidth);
+    assertTrue(hasStyle(prompt, 'text-overflow', 'ellipsis'));
   });
 
   test('renders organizer list with expected sections', () => {

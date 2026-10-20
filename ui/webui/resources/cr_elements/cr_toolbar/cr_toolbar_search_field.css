@@ -107,6 +107,7 @@ cr-icon-button {
   font-weight: 500;
   line-height: 185%;
   margin: var(--cr-toolbar-search-field-term-margin, 0);
+  min-width: 0;
   position: relative;
 }
 
@@ -117,6 +118,7 @@ label {
   overflow: hidden;
   position: absolute;
   right: 0;
+  text-overflow: ellipsis;
   top: 0;
   white-space: nowrap;
 }

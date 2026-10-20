@@ -16,6 +16,7 @@ import {getHtml} from './cr_toolbar_search_field.html.js';
 export interface CrToolbarSearchFieldElement {
   $: {
     icon: CrIconButtonElement,
+    prompt: HTMLElement,
     searchInput: HTMLInputElement,
     searchTerm: HTMLElement,
   };
