@@ -147,7 +147,12 @@ void PermissionPromptBaseView::AnchorToPageInfoOrChip() {
     set_parent_window(platform_util::GetViewForWindow(GetNativeWindow()));
   }
   if (configuration.highlighted_element) {
-    SetHighlightedElement(*configuration.highlighted_element);
+    if (configuration.highlighted_element_context) {
+      SetHighlightedElement(*configuration.highlighted_element,
+                            configuration.highlighted_element_context);
+    } else {
+      SetHighlightedElement(*configuration.highlighted_element);
+    }
   }
   if (configuration.anchor.IsNull()) {
     SetAnchorRect(bubble_anchor_util::GetPageInfoAnchorRect(GetBrowser()));

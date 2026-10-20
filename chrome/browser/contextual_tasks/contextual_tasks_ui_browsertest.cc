@@ -1163,19 +1163,29 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
   EXPECT_FALSE(main_omnibox_chip_controller->IsPermissionPromptChipVisible());
 
   // `GetChipAnchor()` and `GetPermissionPromptBubbleAnchorConfiguration()`
-  // should return the side panel's request chip anchor.
+  // should return the side panel's request chip anchor, and highlight the
+  // request chip in the toolbar document's context.
   std::optional<bubble_anchor_util::AnchorConfiguration> chip_anchor =
       location_bar->GetChipAnchor();
   ASSERT_TRUE(chip_anchor.has_value());
   EXPECT_EQ(chip_anchor->anchor.GetIfElement(), expected_chip_anchor);
-  EXPECT_EQ(chip_anchor->highlighted_element, std::nullopt);
+  EXPECT_EQ(chip_anchor->highlighted_element,
+            PermissionChipView::kPermissionRequestChipElementId);
+  EXPECT_EQ(chip_anchor->highlighted_element_context, context);
   EXPECT_EQ(chip_anchor->bubble_arrow, views::BubbleBorder::TOP_LEFT);
 
   bubble_anchor_util::AnchorConfiguration prompt_anchor_config =
       bubble_anchor_util::GetPermissionPromptBubbleAnchorConfiguration(
           panel_contents);
   EXPECT_EQ(prompt_anchor_config.anchor.GetIfElement(), expected_chip_anchor);
-  EXPECT_EQ(prompt_anchor_config.highlighted_element, std::nullopt);
+  EXPECT_EQ(prompt_anchor_config.highlighted_element,
+            PermissionChipView::kPermissionRequestChipElementId);
+  EXPECT_EQ(prompt_anchor_config.highlighted_element_context, context);
+
+  // The real request chip can register once the toolbar WebUI renders the
+  // request. Remove the stand-in so the two never coexist when the prompt
+  // bubble highlights the chip, which expects a single chip in `context`.
+  fallback_chip_element.reset();
 
   // Finish the expand animation so the prompt bubble opens, then click Accept
   // and verify it routes through the side panel's ChipController.

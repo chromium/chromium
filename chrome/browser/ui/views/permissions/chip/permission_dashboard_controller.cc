@@ -31,6 +31,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -177,6 +178,20 @@ bool SuppressVerboseState(ChipController* request_chip_controller) {
   // If there are pending permission requests in `PermissionRequestManager`,
   // then the expand animation should be suppressed.
   return prm.has_value() && prm.value()->has_pending_requests();
+}
+
+// Highlights the indicator chip while `bubble` is showing. If the location bar
+// has its own element context (e.g. a WebUI toolbar in the side panel), look
+// the chip up there. Otherwise, the ID would be resolved in the browser
+// window's context and could highlight the main toolbar's indicator chip.
+void HighlightIndicatorChip(views::BubbleDialogDelegate& bubble,
+                            const LocationBar& location_bar) {
+  if (ui::ElementContext context = location_bar.GetElementContext()) {
+    bubble.SetHighlightedElement(PermissionChipView::kIndicatorChipElementId,
+                                 context);
+  } else {
+    bubble.SetHighlightedElement(PermissionChipView::kIndicatorChipElementId);
+  }
 }
 }  // namespace
 
@@ -479,8 +494,7 @@ void PermissionDashboardController::ShowBubble() {
             web_contents,
             permission_dashboard_->GetIndicatorChip()->GetAnchor(),
             views::BubbleBorder::TOP_LEFT);
-    bubble_view_->SetHighlightedElement(
-        PermissionChipView::kIndicatorChipElementId);
+    HighlightIndicatorChip(*bubble_view_, *location_bar_);
     views::Widget* bubble_widget =
         views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
     bubble_widget->Show();
@@ -526,7 +540,7 @@ void PermissionDashboardController::ShowPageInfoDialog(
 
   views::BubbleDialogDelegateView* const bubble =
       PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
-  bubble->SetHighlightedElement(PermissionChipView::kIndicatorChipElementId);
+  HighlightIndicatorChip(*bubble, *location_bar_);
   bubble->GetWidget()->Show();
   page_info_bubble_suppressor_.Observe(bubble->GetWidget());
 }

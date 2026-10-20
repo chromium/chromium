@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "content/public/browser/web_contents.h"
@@ -113,12 +114,20 @@ ContextualTasksLocationBar::GetChipAnchor() {
   PermissionChipInterface* request_chip =
       permission_dashboard_->GetRequestChip();
   if (request_chip && request_chip->GetVisible()) {
-    // Do not set a highlighted element: `SetHighlightedElement()` resolves the
-    // ID in the browser window's context, so it would highlight the main
-    // toolbar's chip whenever that one is showing. With no ID, the bubble
-    // highlights its anchor, i.e. this chip.
-    return {{request_chip->GetAnchor(), std::nullopt,
-             views::BubbleBorder::TOP_LEFT}};
+    bubble_anchor_util::AnchorConfiguration configuration{
+        request_chip->GetAnchor(), std::nullopt, views::BubbleBorder::TOP_LEFT};
+    // Highlight the request chip by ID, looked up in the toolbar WebUI's
+    // element context. Without the context, the ID would be resolved in the
+    // browser window's context and highlight the main toolbar's chip whenever
+    // that one is showing. Unlike relying on the anchor, highlighting by ID
+    // also re-applies the highlight if the WebUI re-registers the chip while
+    // the bubble is open.
+    if (ui::ElementContext context = GetElementContext()) {
+      configuration.highlighted_element =
+          PermissionChipView::kPermissionRequestChipElementId;
+      configuration.highlighted_element_context = context;
+    }
+    return configuration;
   }
   return std::nullopt;
 }

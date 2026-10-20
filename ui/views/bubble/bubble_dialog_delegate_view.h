@@ -485,6 +485,13 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // the anchor widget.
   void SetHighlightedElement(ui::ElementIdentifier id);
 
+  // Same as above, but looks up `id` in `context` instead of the context based
+  // on the anchor widget. Use this when the element lives in a different
+  // context than the anchor widget, e.g. an element in a WebUI that has its own
+  // element context.
+  void SetHighlightedElement(ui::ElementIdentifier id,
+                             ui::ElementContext context);
+
   // The bubble's parent window - this can only be usefully set before creating
   // the bubble's widget. If there is one, the bubble will be stacked above it,
   // and it will become the Views parent window for the bubble.
@@ -685,6 +692,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest, HighlightPriority);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
                            DelayedHighlightByElement);
+  FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
+                           HighlightByElementInExplicitContext);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
                            AnchorChangeChangesHighlight);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,

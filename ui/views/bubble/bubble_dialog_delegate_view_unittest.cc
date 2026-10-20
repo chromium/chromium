@@ -970,6 +970,64 @@ TEST_F(BubbleDialogDelegateViewTest, DelayedHighlightByElement) {
   EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
 }
 
+// Ensures that an element highlighted with an explicit context is looked up in
+// that context rather than the one based on the anchor widget.
+TEST_F(BubbleDialogDelegateViewTest, HighlightByElementInExplicitContext) {
+  std::unique_ptr<Widget> anchor_widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                       Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  LabelButton* anchor_widget_button =
+      anchor_widget->SetContentsView(std::make_unique<LabelButton>(
+          Button::PressedCallback(), std::u16string()));
+  anchor_widget_button->SetProperty(kElementIdentifierKey,
+                                    ui::ElementTracker::kTemporaryIdentifier);
+  TestInkDrop* anchor_widget_ink_drop = new TestInkDrop();
+  test::InkDropHostTestApi(InkDrop::Get(anchor_widget_button))
+      .SetInkDrop(base::WrapUnique(anchor_widget_ink_drop));
+
+  std::unique_ptr<Widget> other_widget =
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                       Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  LabelButton* other_widget_button =
+      other_widget->SetContentsView(std::make_unique<LabelButton>(
+          Button::PressedCallback(), std::u16string()));
+  other_widget_button->SetProperty(kElementIdentifierKey,
+                                   ui::ElementTracker::kTemporaryIdentifier);
+  TestInkDrop* other_widget_ink_drop = new TestInkDrop();
+  test::InkDropHostTestApi(InkDrop::Get(other_widget_button))
+      .SetInkDrop(base::WrapUnique(other_widget_ink_drop));
+
+  const ui::ElementContext other_context =
+      ElementTrackerViews::GetContextForWidget(other_widget.get());
+  ASSERT_NE(ElementTrackerViews::GetContextForWidget(anchor_widget.get()),
+            other_context);
+
+  TestBubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(nullptr);
+  bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
+
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+  bubble_delegate->SetHighlightedElement(
+      ui::ElementTracker::kTemporaryIdentifier, other_context);
+  bubble_widget->Show();
+  // Explicitly calling OnWidgetVisibilityChanging to test functionality for
+  // OS_WIN. Outside of the test environment this happens automatically by way
+  // of HWNDMessageHandler.
+  bubble_delegate->OnBubbleWidgetVisibilityChanged(true);
+  EXPECT_EQ(InkDropState::ACTIVATED,
+            other_widget_ink_drop->GetTargetInkDropState());
+  EXPECT_EQ(InkDropState::HIDDEN,
+            anchor_widget_ink_drop->GetTargetInkDropState());
+
+  bubble_widget->Close();
+  bubble_delegate->OnBubbleWidgetVisibilityChanged(false);
+  EXPECT_EQ(InkDropState::DEACTIVATED,
+            other_widget_ink_drop->GetTargetInkDropState());
+  EXPECT_EQ(InkDropState::HIDDEN,
+            anchor_widget_ink_drop->GetTargetInkDropState());
+}
+
 // Test that moving an anchor between two buttons in the same widget properly
 // updates the highlight.
 TEST_F(BubbleDialogDelegateViewTest, AnchorChangeChangesHighlight) {

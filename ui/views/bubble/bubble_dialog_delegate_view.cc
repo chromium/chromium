@@ -775,12 +775,16 @@ BubbleDialogDelegate::PreventCloseOnDeactivate() {
 }
 
 void BubbleDialogDelegate::SetHighlightedElement(ui::ElementIdentifier id) {
-  auto* element_tracker = ui::ElementTracker::GetElementTracker();
-
   auto* parent_widget =
       anchor_widget() ? anchor_widget()
                       : views::Widget::GetWidgetForNativeView(parent_window());
-  auto context = views::ElementTrackerViews::GetContextForWidget(parent_widget);
+  SetHighlightedElement(
+      id, views::ElementTrackerViews::GetContextForWidget(parent_widget));
+}
+
+void BubbleDialogDelegate::SetHighlightedElement(ui::ElementIdentifier id,
+                                                 ui::ElementContext context) {
+  auto* element_tracker = ui::ElementTracker::GetElementTracker();
 
   // `highlighted_button_tracker_` will deal with the hiding part.
   // Unretained is safe because `highlighted_element_shown_subscription_` owns

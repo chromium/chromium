@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "chrome/browser/ui/bubble_anchor_util.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -28,6 +29,12 @@ struct AnchorConfiguration {
 
   // The arrow position for the bubble.
   views::BubbleBorder::Arrow bubble_arrow = views::BubbleBorder::TOP_LEFT;
+
+  // The context to look up `highlighted_element` in. If null, it is looked up
+  // in the context based on the bubble's anchor widget. Set this when the
+  // element lives in a different context, e.g. a WebUI with its own element
+  // context.
+  ui::ElementContext highlighted_element_context;
 };
 
 // Returns the anchor configuration for bubbles that are aligned to the page
