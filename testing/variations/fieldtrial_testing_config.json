@@ -17522,6 +17522,29 @@
             ]
         }
     ],
+    "TranslateAsyncDomTranslator": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "ef": "eadt"
+                    },
+                    "enable_features": [
+                        "TranslateElementExperimentFeatures"
+                    ]
+                }
+            ]
+        }
+    ],
     "TranslateLanguageSearchUIExperiment": [
         {
             "platforms": [
@@ -17535,29 +17558,6 @@
                     "name": "Enabled_20260528",
                     "enable_features": [
                         "TranslateLanguageSearchUI"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TranslateShortTextStaticContext": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260806",
-                    "params": {
-                        "ef": "ests"
-                    },
-                    "enable_features": [
-                        "TranslateElementExperimentFeatures"
                     ]
                 }
             ]
