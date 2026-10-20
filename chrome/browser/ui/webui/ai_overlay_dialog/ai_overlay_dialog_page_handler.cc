@@ -55,6 +55,10 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#endif
+
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
 #include "chrome/browser/ui/android/ai_overlay_dialog/ai_overlay_dialog_bridge.h"
 #else
@@ -78,9 +82,16 @@ namespace {
 content::WebContents* GetActiveWebContentsFromBrowser(
     BrowserWindowInterface* browser) {
 #if !BUILDFLAG(IS_ANDROID)
-  return browser->GetTabStripModel()->GetActiveWebContents();
+  return browser ? browser->GetTabStripModel()->GetActiveWebContents()
+                 : nullptr;
 #else
-  return nullptr;
+  if (!browser) {
+    return nullptr;
+  }
+
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* tab = tab_list ? tab_list->GetActiveTab() : nullptr;
+  return tab ? tab->GetContents() : nullptr;
 #endif
 }
 

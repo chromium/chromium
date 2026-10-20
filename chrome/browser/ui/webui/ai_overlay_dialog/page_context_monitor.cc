@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/page_content_annotations/page_content_screenshot_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -264,6 +265,11 @@ PageContextMonitor::PageContextMonitor(BrowserWindowInterface& window,
       window.RegisterActiveTabDidChange(base::BindRepeating(
           &PageContextMonitor::OnActiveTabChanged, base::Unretained(this)));
   OnActiveTabChanged(&window);
+#else
+  if (TabListInterface* tab_list = TabListInterface::From(&window)) {
+    tab_list_observation_.Observe(tab_list);
+    UpdateActiveTab();
+  }
 #endif
 }
 
@@ -314,25 +320,60 @@ void PageContextMonitor::DidStopLoading() {
   }
 }
 
-void PageContextMonitor::OnActiveTabChanged(BrowserWindowInterface* window) {
-#if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
-#else
-  CHECK_EQ(window, &window_.get());
+void PageContextMonitor::OnActiveWebContentsChanged(
+    content::WebContents* contents) {
+  if (contents == web_contents()) {
+    return;
+  }
 
-  tabs::TabInterface* active_tab = window_->GetActiveTabInterface();
-  Observe(active_tab ? active_tab->GetContents() : nullptr);
+  Observe(contents);
   ResetPageContextState();
 
-  if (!active_tab) {
+  if (!contents) {
     return;
   }
 
   page_handler_->DidChangePage(web_contents()->GetLastCommittedURL(),
                                web_contents()->GetTitle(), std::nullopt);
   StartNewFetch();
-#endif
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void PageContextMonitor::OnActiveTabChanged(BrowserWindowInterface* window) {
+  CHECK_EQ(window, &window_.get());
+
+  tabs::TabInterface* active_tab = window_->GetActiveTabInterface();
+  OnActiveWebContentsChanged(active_tab ? active_tab->GetContents() : nullptr);
+}
+#else
+void PageContextMonitor::UpdateActiveTab() {
+  tabs::TabInterface* tab =
+      tab_list_observation_.IsObserving()
+          ? tab_list_observation_.GetSource()->GetActiveTab()
+          : nullptr;
+  OnActiveWebContentsChanged(tab ? tab->GetContents() : nullptr);
+}
+
+void PageContextMonitor::OnActiveTabChanged(TabListInterface& tab_list,
+                                            tabs::TabInterface* tab) {
+  OnActiveWebContentsChanged(tab ? tab->GetContents() : nullptr);
+}
+
+void PageContextMonitor::OnTabRemoved(TabListInterface& tab_list,
+                                      tabs::TabInterface* tab,
+                                      TabRemovedReason removed_reason) {
+  UpdateActiveTab();
+}
+
+void PageContextMonitor::OnAllTabsAreClosing(TabListInterface& tab_list) {
+  OnActiveWebContentsChanged(nullptr);
+}
+
+void PageContextMonitor::OnTabListDestroyed(TabListInterface& tab_list) {
+  tab_list_observation_.Reset();
+  OnActiveWebContentsChanged(nullptr);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void PageContextMonitor::StartNewFetch() {
   fetch_waiting_on_load_ = false;
