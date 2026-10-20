@@ -147,7 +147,7 @@ std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotSamples() const {
   base::AutoLock auto_lock(lock_);
   snapshot->Add(*unlogged_samples_);
   snapshot->Add(*logged_samples_);
-  return std::move(snapshot);
+  return snapshot;
 }
 
 std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotUnloggedSamples()
@@ -157,7 +157,7 @@ std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotUnloggedSamples()
   base::AutoLock auto_lock(lock_);
   snapshot->Add(*unlogged_samples_);
 
-  return std::move(snapshot);
+  return snapshot;
 }
 
 void SparseHistogram::MarkSamplesAsLogged(const HistogramSamples& samples) {
@@ -179,7 +179,7 @@ std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotDelta() {
 #endif
   snapshot->Extract(*unlogged_samples_);
   logged_samples_->Add(*snapshot);
-  return std::move(snapshot);
+  return snapshot;
 }
 
 std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotFinalDelta() const {
@@ -191,7 +191,7 @@ std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotFinalDelta() const {
 #endif
   snapshot->Add(*unlogged_samples_);
 
-  return std::move(snapshot);
+  return snapshot;
 }
 
 bool SparseHistogram::AddSamples(const HistogramSamples& samples) {
