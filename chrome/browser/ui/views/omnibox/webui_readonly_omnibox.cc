@@ -810,7 +810,9 @@ WebUIReadOnlyOmnibox::OnTextInput(
     bool unelide_ok = controller()->edit_model()->Unelide();
     CHECK(unelide_ok, base::NotFatalUntil::M162);
     // It should produce the same text (the 'formatted full URL').
-    CHECK_EQ(text_, text_input.text, base::NotFatalUntil::M162);
+    // TODO(crbug.com/574837774): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_EQ(text_, text_input.text);
 
     // Unelide() calls SetWindowTextAndCaretPos() and SelectAll(), which reset
     // browser_version_ and selection_. Since this unelision was initiated by
