@@ -94,57 +94,38 @@ void AutofillAiAccessManager::MaybeAuthenticate(
     const url::Origin& origin,
     OnAuthenticationCompleteCallback on_auth_complete_callback,
     OnUnmaskCallback on_unmask_callback) {
-  if (!should_reauth) {
-    std::move(on_auth_complete_callback)
-        .Run(/*reauth_attempted=*/false, should_fetch_from_server);
-    std::move(on_unmask_callback)
-        .Run(std::move(entity), /*reauth_attempted=*/false);
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kDeviceReauthRefactor)) {
-    if (!authenticator_) {
-      authenticator_ =
-          manager_->client().GetDeviceAuthenticator("Autofill.Ai.ReauthToFill");
+  const auto can_authenticate = [&] {
+    if (!base::FeatureList::IsEnabled(
+            password_manager::features::kDeviceReauthRefactor)) {
+      if (!authenticator_) {
+        authenticator_ = manager_->client().GetDeviceAuthenticator(
+            "Autofill.Ai.ReauthToFill");
+      }
+      return authenticator_ &&
+             authenticator_->CanAuthenticateWithBiometricOrScreenLock();
     }
-    if (!authenticator_ ||
-        !authenticator_->CanAuthenticateWithBiometricOrScreenLock()) {
-      // If the device is not capable of reauth or not set up, we assume success
-      // to avoid blocking the user. Reauth is a best-effort security measure.
-      std::move(on_auth_complete_callback)
-          .Run(/*reauth_attempted=*/false, should_fetch_from_server);
-      std::move(on_unmask_callback)
-          .Run(std::move(entity), /*reauth_attempted=*/false);
-      return;
-    }
-  } else {
     std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
         manager_->client().GetDeviceAuthAvailabilityChecker();
     if (!checker || !checker->CanAuthenticateWithBiometricOrScreenLock()) {
-      // If the device is not capable of reauth or not set up, we assume success
-      // to avoid blocking the user. Reauth is a best-effort security measure.
-      std::move(on_auth_complete_callback)
-          .Run(/*reauth_attempted=*/false, should_fetch_from_server);
-      std::move(on_unmask_callback)
-          .Run(std::move(entity), /*reauth_attempted=*/false);
-      return;
+      return false;
     }
-
     if (!authenticator_) {
       authenticator_ =
           manager_->client().GetDeviceAuthenticator("Autofill.Ai.ReauthToFill");
     }
     CHECK(authenticator_, base::NotFatalUntil::M162);
-    if (!authenticator_) {
-      // If the device is not capable of reauth or not set up, we assume success
-      // to avoid blocking the user. Reauth is a best-effort security measure.
-      std::move(on_auth_complete_callback)
-          .Run(/*reauth_attempted=*/false, should_fetch_from_server);
-      std::move(on_unmask_callback)
-          .Run(std::move(entity), /*reauth_attempted=*/false);
-      return;
-    }
+    return authenticator_ != nullptr;
+  };
+
+  if (!should_reauth || !can_authenticate()) {
+    // If reauth is not required or the device is not capable of or set up for
+    // reauth, we assume success to avoid blocking the user. Reauth is a
+    // best-effort security measure.
+    std::move(on_auth_complete_callback)
+        .Run(/*reauth_attempted=*/false, should_fetch_from_server);
+    std::move(on_unmask_callback)
+        .Run(std::move(entity), /*reauth_attempted=*/false);
+    return;
   }
 
   base::OnceCallback<void(bool)> on_auth_complete = base::BindOnce(
