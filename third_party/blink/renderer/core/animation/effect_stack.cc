@@ -75,6 +75,25 @@ void CopyNewAnimationsToActiveInterpolationsMap(
   }
 }
 
+// Returns true if `sampled_effect` has a higher composite order than the
+// animation associated with `cutoff`. This mirrors the ordering used by
+// EffectStack::CompareSampledEffects.
+bool IsAbovePartialEffectStackCutoff(const SampledEffect& sampled_effect,
+                                     const KeyframeEffect& cutoff) {
+  const Animation* cutoff_animation = cutoff.GetAnimation();
+  if (!cutoff_animation) {
+    return false;
+  }
+  const KeyframeEffect* effect = sampled_effect.Effect();
+  const Animation* animation = effect ? effect->GetAnimation() : nullptr;
+  if (animation) {
+    return Animation::HasLowerCompositeOrdering(
+        cutoff_animation, animation,
+        Animation::CompareAnimationsOrdering::kPointerOrder);
+  }
+  return sampled_effect.SequenceNumber() > cutoff_animation->SequenceNumber();
+}
+
 }  // namespace
 
 bool EffectStack::CompareSampledEffects(
@@ -173,9 +192,18 @@ ActiveInterpolationsMap EffectStack::ActiveInterpolations(
     for (const auto& sampled_effect : sampled_effects) {
       if (reached_cuttoff)
         break;
-      if (partial_effect_stack_cutoff &&
-          sampled_effect->Effect() == partial_effect_stack_cutoff)
-        reached_cuttoff = true;
+      if (partial_effect_stack_cutoff) {
+        if (sampled_effect->Effect() == partial_effect_stack_cutoff) {
+          reached_cuttoff = true;
+        } else if (IsAbovePartialEffectStackCutoff(
+                       *sampled_effect, *partial_effect_stack_cutoff)) {
+          // The cutoff effect is not necessarily part of the effect stack (e.g.
+          // if it is not in effect), so we cannot rely on reaching it. Effects
+          // with a higher composite order than the cutoff never contribute to
+          // the partial effect stack.
+          break;
+        }
+      }
 
       if (sampled_effect->GetPriority() != priority ||
           // TODO(majidvp): Instead of accessing the effect's animation move the

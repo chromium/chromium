@@ -197,6 +197,38 @@ TEST_F(AnimationEffectStackTest, ClearedEffectsRemoved) {
   EXPECT_EQ(0u, result.size());
 }
 
+TEST_F(AnimationEffectStackTest, PartialEffectStackCutoff) {
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "1px")), 0);
+  KeyframeEffect* cutoff =
+      MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "2px"));
+  Play(cutoff, 0);
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "3px")), 0);
+
+  ActiveInterpolationsMap result = EffectStack::ActiveInterpolations(
+      &element->GetElementAnimations()->GetEffectStack(), nullptr, nullptr,
+      KeyframeEffect::kDefaultPriority, cutoff);
+  EXPECT_EQ(1u, result.size());
+  EXPECT_EQ(GetFontSizeValue(result), 2);
+}
+
+TEST_F(AnimationEffectStackTest, PartialEffectStackCutoffNotInEffect) {
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "1px")), 0);
+  KeyframeEffect* cutoff =
+      MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "2px"));
+  Animation* cutoff_animation = Play(cutoff, 0);
+  Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "3px")), 0);
+
+  // Canceling the animation removes its effect from the effect stack. Effects
+  // with a higher composite order than the cutoff must still be excluded.
+  cutoff_animation->cancel();
+  ActiveInterpolationsMap result = EffectStack::ActiveInterpolations(
+      &element->GetElementAnimations()->GetEffectStack(), nullptr, nullptr,
+      KeyframeEffect::kDefaultPriority, cutoff);
+  EXPECT_EQ(2u, SampledEffectCount());
+  EXPECT_EQ(1u, result.size());
+  EXPECT_EQ(GetFontSizeValue(result), 1);
+}
+
 TEST_F(AnimationEffectStackTest, ForwardsFillDiscarding) {
   Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "1px")), 2);
   Play(MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "2px")), 6);
