@@ -208,13 +208,13 @@ public class CastWebContentsActivity extends ComponentActivity {
                     return new BroadcastReceiverScope(
                             filter,
                             (Intent intent) -> {
+                                boolean canUsePip = canUsePictureInPicture();
                                 Log.d(
                                         TAG,
-                                        "ACTION_USER_PRESENT received. canUsePictureInPicture: "
-                                                + canUsePictureInPicture()
-                                                + " mVideoIsPlaying: "
-                                                + mVideoIsPlaying);
-                                if (canUsePictureInPicture() && mVideoIsPlaying) {
+                                        "ACTION_USER_PRESENT: canUsePip=%b, isPlaying=%b",
+                                        canUsePip,
+                                        mVideoIsPlaying);
+                                if (canUsePip && mVideoIsPlaying) {
                                     enterPictureInPictureMode(
                                             new PictureInPictureParams.Builder().build());
                                 }
