@@ -121,8 +121,8 @@ bool MatchGlob(std::string_view value, std::string_view pattern);
 bool MimeTypeMatched(std::string_view intent_mime_type,
                      std::string_view filter_mime_type);
 
-bool ExtensionMatched(const std::string& file_name,
-                      const std::string& filter_extension);
+bool ExtensionMatched(std::string_view file_name,
+                      std::string_view filter_extension);
 
 // Converts |intent| to base::Value, e.g.:
 // {

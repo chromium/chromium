@@ -16,6 +16,8 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/constants/webui_url_constants.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -824,29 +826,22 @@ class FileHandlerDialogBrowserTestWithAutomatedFlow
   // mime types.
   bool ExplicitFileHandlersForOfficeExtensionsAndMimeTypesNotSet() {
     return ExplicitFileHandlersForExtensionsAndMimeTypesNotSet(
-               fm_tasks::WordGroupExtensions(),
-               fm_tasks::WordGroupMimeTypes()) &&
-           ExplicitFileHandlersForExtensionsAndMimeTypesNotSet(
-               fm_tasks::ExcelGroupExtensions(),
-               fm_tasks::ExcelGroupMimeTypes()) &&
-           ExplicitFileHandlersForExtensionsAndMimeTypesNotSet(
-               fm_tasks::PowerPointGroupExtensions(),
-               fm_tasks::PowerPointGroupMimeTypes());
+        fm_tasks::OfficeGroupExtensions(), fm_tasks::OfficeGroupMimeTypes());
   }
 
   // Tests that there are no explicit file handlers set for the given extensions
   // and mime types.
   bool ExplicitFileHandlersForExtensionsAndMimeTypesNotSet(
-      const std::set<std::string>& extensions,
-      const std::set<std::string>& mime_types) {
+      base::span<const std::string_view> extensions,
+      base::span<const std::string_view> mime_types) {
     const auto& prefs = *profile()->GetPrefs();
-    for (const auto& extension : extensions) {
+    for (std::string_view extension : extensions) {
       if (fm_tasks::GetDefaultTaskFromPrefs(prefs,
                                             /*mime_type=*/{}, extension)) {
         return false;
       }
     }
-    for (const auto& mime_type : mime_types) {
+    for (std::string_view mime_type : mime_types) {
       fm_tasks::TaskDescriptor default_task;
       if (fm_tasks::GetDefaultTaskFromPrefs(prefs, mime_type,
                                             /*suffix=*/{})) {
@@ -883,8 +878,8 @@ class FileHandlerDialogBrowserTestWithAutomatedFlow
   // Tests that there are no explicit file handlers set for the given extensions
   // and mime types are set to a task with a given |action_id|.
   bool ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
-      const std::set<std::string>& extensions,
-      const std::set<std::string>& mime_types,
+      base::span<const std::string_view> extensions,
+      base::span<const std::string_view> mime_types,
       std::string_view action_id) {
     return ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
         extensions, mime_types,
@@ -897,18 +892,18 @@ class FileHandlerDialogBrowserTestWithAutomatedFlow
   // Tests that there are no explicit file handlers set for the given extensions
   // and mime types are set to a particular |task|.
   bool ExplicitFileHandlersForExtensionsAndMimeTypesSetTo(
-      const std::set<std::string>& extensions,
-      const std::set<std::string>& mime_types,
+      base::span<const std::string_view> extensions,
+      base::span<const std::string_view> mime_types,
       const fm_tasks::TaskDescriptor& task) {
     const auto& prefs = *profile()->GetPrefs();
-    for (const auto& extension : extensions) {
+    for (std::string_view extension : extensions) {
       if (fm_tasks::GetDefaultTaskFromPrefs(prefs,
                                             /*mime_type=*/{},
                                             extension) != task) {
         return false;
       }
     }
-    for (const auto& mime_type : mime_types) {
+    for (std::string_view mime_type : mime_types) {
       if (fm_tasks::GetDefaultTaskFromPrefs(prefs, mime_type, /*suffix=*/{}) !=
           task) {
         return false;
@@ -1007,16 +1002,21 @@ IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
 // office extensions or mime types.
 IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
                        PreexistingFileHandlersAreNotOverwritten) {
-  std::set<std::string> test_extensions({".docx", ".pptx", ".xslx"});
-  std::set<std::string> test_mime_types({"application/msword",
-                                         "application/vnd.ms-excel",
-                                         "application/vnd.ms-excel"});
+  base::flat_set<std::string_view> test_extensions({".docx", ".pptx", ".xlsx"});
+  base::flat_set<std::string_view> test_mime_types(
+      {"application/msword", "application/vnd.ms-excel",
+       "application/vnd.ms-powerpoint"});
 
   // Create sets of office extensions excluding the ones reserved for testing.
-  std::set<std::string> word_extensions(fm_tasks::WordGroupExtensions());
-  std::set<std::string> excel_extensions(fm_tasks::ExcelGroupExtensions());
-  std::set<std::string> power_point_extensions(
-      fm_tasks::PowerPointGroupExtensions());
+  base::flat_set<std::string_view> word_extensions(
+      fm_tasks::WordGroupExtensions().begin(),
+      fm_tasks::WordGroupExtensions().end());
+  base::flat_set<std::string_view> excel_extensions(
+      fm_tasks::ExcelGroupExtensions().begin(),
+      fm_tasks::ExcelGroupExtensions().end());
+  base::flat_set<std::string_view> power_point_extensions(
+      fm_tasks::PowerPointGroupExtensions().begin(),
+      fm_tasks::PowerPointGroupExtensions().end());
   for (const auto& extension : test_extensions) {
     word_extensions.erase(extension);
     excel_extensions.erase(extension);
@@ -1024,10 +1024,15 @@ IN_PROC_BROWSER_TEST_P(FileHandlerDialogBrowserTestWithAutomatedFlow,
   }
 
   // Create sets of office mime types excluding the ones reserved for testing.
-  std::set<std::string> word_mime_types(fm_tasks::WordGroupMimeTypes());
-  std::set<std::string> excel_mime_types(fm_tasks::ExcelGroupMimeTypes());
-  std::set<std::string> power_point_mime_types(
-      fm_tasks::PowerPointGroupMimeTypes());
+  base::flat_set<std::string_view> word_mime_types(
+      fm_tasks::WordGroupMimeTypes().begin(),
+      fm_tasks::WordGroupMimeTypes().end());
+  base::flat_set<std::string_view> excel_mime_types(
+      fm_tasks::ExcelGroupMimeTypes().begin(),
+      fm_tasks::ExcelGroupMimeTypes().end());
+  base::flat_set<std::string_view> power_point_mime_types(
+      fm_tasks::PowerPointGroupMimeTypes().begin(),
+      fm_tasks::PowerPointGroupMimeTypes().end());
   for (const auto& mime_type : test_mime_types) {
     word_mime_types.erase(mime_type);
     excel_mime_types.erase(mime_type);

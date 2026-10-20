@@ -5,9 +5,11 @@
 #include "chrome/browser/ash/file_manager/virtual_tasks/ms365_virtual_task.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/webui/file_manager/url_constants.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
@@ -23,27 +25,9 @@
 
 namespace file_manager::file_tasks {
 
-Ms365VirtualTask::Ms365VirtualTask() {
-  for (const auto& extension : WordGroupExtensions()) {
-    matcher_file_extensions_.push_back(extension);
-  }
-  for (const auto& extension : ExcelGroupExtensions()) {
-    matcher_file_extensions_.push_back(extension);
-  }
-  for (const auto& extension : PowerPointGroupExtensions()) {
-    matcher_file_extensions_.push_back(extension);
-  }
+Ms365VirtualTask::Ms365VirtualTask() = default;
 
-  for (const auto& mime_type : WordGroupMimeTypes()) {
-    matcher_mime_types_.push_back(mime_type);
-  }
-  for (const auto& mime_type : ExcelGroupMimeTypes()) {
-    matcher_mime_types_.push_back(mime_type);
-  }
-  for (const auto& mime_type : PowerPointGroupMimeTypes()) {
-    matcher_mime_types_.push_back(mime_type);
-  }
-}
+Ms365VirtualTask::~Ms365VirtualTask() = default;
 
 bool Ms365VirtualTask::IsEnabled(Profile* profile) const {
   return chromeos::cloud_upload::IsMicrosoftOfficeCloudUploadAllowed(profile) &&
@@ -91,6 +75,15 @@ bool Ms365VirtualTask::Execute(
       profile, task, {file_url},
       std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
           ash::cloud_upload::CloudProvider::kOneDrive, 1));
+}
+
+base::span<const std::string_view> Ms365VirtualTask::MatcherMimeTypes() const {
+  return OfficeGroupMimeTypes();
+}
+
+base::span<const std::string_view> Ms365VirtualTask::MatcherFileExtensions()
+    const {
+  return OfficeGroupExtensions();
 }
 
 }  // namespace file_manager::file_tasks

@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/command_line.h"
@@ -87,13 +89,16 @@ std::optional<std::string> GetAppIdFromFilePath(
   }
   const std::string& file_extension = file_path.FinalExtension();
   if (file_extension == ".gdoc" ||
-      file_tasks::WordGroupExtensions().contains(file_extension)) {
+      std::ranges::contains(file_tasks::WordGroupExtensions(),
+                            file_extension)) {
     return ash::kGoogleDocsAppId;
   } else if (file_extension == ".gsheet" ||
-             file_tasks::ExcelGroupExtensions().contains(file_extension)) {
+             std::ranges::contains(file_tasks::ExcelGroupExtensions(),
+                                   file_extension)) {
     return ash::kGoogleSheetsAppId;
   } else if (file_extension == ".gslides" ||
-             file_tasks::PowerPointGroupExtensions().contains(file_extension)) {
+             std::ranges::contains(file_tasks::PowerPointGroupExtensions(),
+                                   file_extension)) {
     return ash::kGoogleSlidesAppId;
   }
   return std::nullopt;

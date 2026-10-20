@@ -5,13 +5,14 @@
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
 
 #include <algorithm>
-#include <initializer_list>
+#include <string>
 #include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -117,6 +118,46 @@ bool AnyFileNeedsUploadToDrive(
     return ash::cloud_upload::PathIsOnDriveFS(profile, url.path());
   });
 }
+
+template <size_t... Ns>
+consteval base::fixed_flat_set<std::string_view, (Ns + ...)> MergeFixedFlatSets(
+    const base::fixed_flat_set<std::string_view, Ns>&... sets) {
+  std::string_view merged[(Ns + ...)]{};
+  size_t i = 0;
+  for (base::span<const std::string_view> set :
+       {base::span<const std::string_view>(sets)...}) {
+    for (std::string_view item : set) {
+      merged[i++] = item;
+    }
+  }
+  return base::MakeFixedFlatSet<std::string_view>(std::move(merged));
+}
+
+constexpr auto kWordExtensions =
+    base::MakeFixedFlatSet<std::string_view>({".doc", ".docx"});
+constexpr auto kExcelExtensions =
+    base::MakeFixedFlatSet<std::string_view>({".xls", ".xlsm", ".xlsx"});
+constexpr auto kPowerPointExtensions =
+    base::MakeFixedFlatSet<std::string_view>({".ppt", ".pptx"});
+constexpr auto kOfficeExtensions = MergeFixedFlatSets(kWordExtensions,
+                                                      kExcelExtensions,
+                                                      kPowerPointExtensions);
+
+constexpr auto kWordMimeTypes = base::MakeFixedFlatSet<std::string_view>(
+    {"application/msword",
+     "application/"
+     "vnd.openxmlformats-officedocument.wordprocessingml.document"});
+constexpr auto kExcelMimeTypes = base::MakeFixedFlatSet<std::string_view>(
+    {"application/vnd.ms-excel",
+     "application/vnd.ms-excel.sheet.macroEnabled.12",
+     "application/"
+     "vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+constexpr auto kPowerPointMimeTypes = base::MakeFixedFlatSet<std::string_view>(
+    {"application/vnd.ms-powerpoint",
+     "application/"
+     "vnd.openxmlformats-officedocument.presentationml.presentation"});
+constexpr auto kOfficeMimeTypes =
+    MergeFixedFlatSets(kWordMimeTypes, kExcelMimeTypes, kPowerPointMimeTypes);
 
 }  // namespace
 
@@ -474,51 +515,26 @@ bool IsQuickOfficeInstalled(Profile* profile) {
 }
 
 bool IsOfficeFile(const base::FilePath& path) {
-  std::vector<std::set<std::string>> groups = {WordGroupExtensions(),
-                                               ExcelGroupExtensions(),
-                                               PowerPointGroupExtensions()};
-
-  for (const std::set<std::string>& group : groups) {
-    for (const std::string& extension : group) {
-      if (path.MatchesExtension(extension)) {
-        return true;
-      }
-    }
-  }
-  return false;
+  return std::ranges::any_of(kOfficeExtensions,
+                             [&path](std::string_view extension) {
+                               return path.MatchesExtension(extension);
+                             });
 }
 
-bool IsOfficeFileMimeType(const std::string& mime_type) {
-  std::vector<std::set<std::string>> groups = {
-      WordGroupMimeTypes(), ExcelGroupMimeTypes(), PowerPointGroupMimeTypes()};
-
-  for (const std::set<std::string>& group : groups) {
-    for (const std::string& office_mime_type : group) {
-      if (mime_type == office_mime_type) {
-        return true;
-      }
-    }
-  }
-  return false;
+bool IsOfficeFileMimeType(std::string_view mime_type) {
+  return kOfficeMimeTypes.contains(mime_type);
 }
 
-std::set<std::string> WordGroupExtensions() {
-  static const base::NoDestructor<std::set<std::string>> extensions(
-      std::initializer_list<std::string>({".doc", ".docx"}));
-  return *extensions;
+base::span<const std::string_view> WordGroupExtensions() {
+  return kWordExtensions;
 }
 
-std::set<std::string> WordGroupMimeTypes() {
-  static const base::NoDestructor<std::set<std::string>> mime_types(
-      std::initializer_list<std::string>(
-          {"application/msword",
-           "application/"
-           "vnd.openxmlformats-officedocument.wordprocessingml.document"}));
-  return *mime_types;
+base::span<const std::string_view> WordGroupMimeTypes() {
+  return kWordMimeTypes;
 }
 
 bool HasExplicitDefaultFileHandler(Profile* profile,
-                                   const std::string& extension) {
+                                   std::string_view extension) {
   std::string lower_extension = base::ToLowerASCII(extension);
   const base::DictValue& extension_task_prefs =
       profile->GetPrefs()->GetDict(ash::prefs::kDefaultTasksBySuffix);
@@ -540,20 +556,12 @@ void SetWordFileHandlerToFilesSWA(Profile* profile,
   SetWordFileHandler(profile, task, replace_existing);
 }
 
-std::set<std::string> ExcelGroupExtensions() {
-  static const base::NoDestructor<std::set<std::string>> extensions(
-      std::initializer_list<std::string>({".xls", ".xlsm", ".xlsx"}));
-  return *extensions;
+base::span<const std::string_view> ExcelGroupExtensions() {
+  return kExcelExtensions;
 }
 
-std::set<std::string> ExcelGroupMimeTypes() {
-  static const base::NoDestructor<std::set<std::string>> mime_types(
-      std::initializer_list<std::string>(
-          {"application/vnd.ms-excel",
-           "application/vnd.ms-excel.sheet.macroEnabled.12",
-           "application/"
-           "vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
-  return *mime_types;
+base::span<const std::string_view> ExcelGroupMimeTypes() {
+  return kExcelMimeTypes;
 }
 
 void SetExcelFileHandler(Profile* profile,
@@ -571,19 +579,20 @@ void SetExcelFileHandlerToFilesSWA(Profile* profile,
   SetExcelFileHandler(profile, task, replace_existing);
 }
 
-std::set<std::string> PowerPointGroupExtensions() {
-  static const base::NoDestructor<std::set<std::string>> extensions(
-      std::initializer_list<std::string>({".ppt", ".pptx"}));
-  return *extensions;
+base::span<const std::string_view> PowerPointGroupExtensions() {
+  return kPowerPointExtensions;
 }
 
-std::set<std::string> PowerPointGroupMimeTypes() {
-  static const base::NoDestructor<std::set<std::string>> mime_types(
-      std::initializer_list<std::string>(
-          {"application/vnd.ms-powerpoint",
-           "application/"
-           "vnd.openxmlformats-officedocument.presentationml.presentation"}));
-  return *mime_types;
+base::span<const std::string_view> PowerPointGroupMimeTypes() {
+  return kPowerPointMimeTypes;
+}
+
+base::span<const std::string_view> OfficeGroupExtensions() {
+  return kOfficeExtensions;
+}
+
+base::span<const std::string_view> OfficeGroupMimeTypes() {
+  return kOfficeMimeTypes;
 }
 
 void SetPowerPointFileHandler(Profile* profile,

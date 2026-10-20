@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/files_internals_ui_delegate.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_pref_names.h"
 #include "base/barrier_callback.h"
 #include "base/files/file_enumerator.h"
@@ -263,25 +265,10 @@ std::string ChromeFilesInternalsUIDelegate::GetOfficeFileHandlers() const {
       profile->GetPrefs()->GetDict(ash::prefs::kDefaultTasksBySuffix);
   base::DictValue filtered_prefs;
 
-  for (const std::string& extension :
-       file_manager::file_tasks::WordGroupExtensions()) {
-    if (extension_task_prefs.contains(extension)) {
-      filtered_prefs.Set(extension,
-                         *extension_task_prefs.FindString(extension));
-    }
-  }
-  for (const std::string& extension :
-       file_manager::file_tasks::ExcelGroupExtensions()) {
-    if (extension_task_prefs.contains(extension)) {
-      filtered_prefs.Set(extension,
-                         *extension_task_prefs.FindString(extension));
-    }
-  }
-  for (const std::string& extension :
-       file_manager::file_tasks::PowerPointGroupExtensions()) {
-    if (extension_task_prefs.contains(extension)) {
-      filtered_prefs.Set(extension,
-                         *extension_task_prefs.FindString(extension));
+  for (std::string_view extension :
+       file_manager::file_tasks::OfficeGroupExtensions()) {
+    if (const std::string* task = extension_task_prefs.FindString(extension)) {
+      filtered_prefs.Set(extension, *task);
     }
   }
   return filtered_prefs.DebugString();
@@ -300,31 +287,15 @@ void ChromeFilesInternalsUIDelegate::ClearOfficeFileHandlers() {
   }
   ScopedDictPrefUpdate mime_type_pref(profile->GetPrefs(),
                                       ash::prefs::kDefaultTasksByMimeType);
-  for (const std::string& mime_type :
-       file_manager::file_tasks::WordGroupMimeTypes()) {
-    mime_type_pref->Remove(mime_type);
-  }
-  for (const std::string& mime_type :
-       file_manager::file_tasks::ExcelGroupMimeTypes()) {
-    mime_type_pref->Remove(mime_type);
-  }
-  for (const std::string& mime_type :
-       file_manager::file_tasks::PowerPointGroupMimeTypes()) {
+  for (std::string_view mime_type :
+       file_manager::file_tasks::OfficeGroupMimeTypes()) {
     mime_type_pref->Remove(mime_type);
   }
 
   ScopedDictPrefUpdate extension_pref(profile->GetPrefs(),
                                       ash::prefs::kDefaultTasksBySuffix);
-  for (const std::string& extension :
-       file_manager::file_tasks::WordGroupExtensions()) {
-    extension_pref->Remove(extension);
-  }
-  for (const std::string& extension :
-       file_manager::file_tasks::ExcelGroupExtensions()) {
-    extension_pref->Remove(extension);
-  }
-  for (const std::string& extension :
-       file_manager::file_tasks::PowerPointGroupExtensions()) {
+  for (std::string_view extension :
+       file_manager::file_tasks::OfficeGroupExtensions()) {
     extension_pref->Remove(extension);
   }
 

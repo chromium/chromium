@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_ASH_FILE_MANAGER_VIRTUAL_TASKS_INSTALL_ISOLATED_WEB_APP_VIRTUAL_TASK_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "chrome/browser/ash/file_manager/virtual_file_tasks.h"
 
 class GURL;
@@ -42,6 +44,9 @@ class InstallIsolatedWebAppVirtualTask : public VirtualTask {
       Profile* profile,
       const TaskDescriptor& task,
       const std::vector<storage::FileSystemURL>& file_urls) const override;
+
+ protected:
+  base::span<const std::string_view> MatcherFileExtensions() const override;
 };
 
 }  // namespace file_manager::file_tasks

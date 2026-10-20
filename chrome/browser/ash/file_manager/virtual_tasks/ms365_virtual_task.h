@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_ASH_FILE_MANAGER_VIRTUAL_TASKS_MS365_VIRTUAL_TASK_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "chrome/browser/ash/file_manager/virtual_file_tasks.h"
 
 class GURL;
@@ -25,6 +27,7 @@ struct TaskDescriptor;
 class Ms365VirtualTask : public VirtualTask {
  public:
   Ms365VirtualTask();
+  ~Ms365VirtualTask() override;
 
   bool IsEnabled(Profile* profile) const override;
 
@@ -41,6 +44,10 @@ class Ms365VirtualTask : public VirtualTask {
       Profile* profile,
       const TaskDescriptor& task,
       const std::vector<storage::FileSystemURL>& file_urls) const override;
+
+ protected:
+  base::span<const std::string_view> MatcherMimeTypes() const override;
+  base::span<const std::string_view> MatcherFileExtensions() const override;
 };
 
 }  // namespace file_manager::file_tasks

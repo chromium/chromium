@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_ASH_FILE_MANAGER_VIRTUAL_TASKS_DRIVE_UPLOAD_VIRTUAL_TASK_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "chrome/browser/ash/file_manager/virtual_file_tasks.h"
 
 class GURL;
@@ -48,6 +50,10 @@ class DocsUploadVirtualTask : public DriveUploadBaseVirtualTask {
   std::string id() const override;
   std::string title() const override;
   GURL icon_url() const override;
+
+ protected:
+  base::span<const std::string_view> MatcherMimeTypes() const override;
+  base::span<const std::string_view> MatcherFileExtensions() const override;
 };
 
 class SheetsUploadVirtualTask : public DriveUploadBaseVirtualTask {
@@ -57,6 +63,10 @@ class SheetsUploadVirtualTask : public DriveUploadBaseVirtualTask {
   std::string id() const override;
   std::string title() const override;
   GURL icon_url() const override;
+
+ protected:
+  base::span<const std::string_view> MatcherMimeTypes() const override;
+  base::span<const std::string_view> MatcherFileExtensions() const override;
 };
 
 class SlidesUploadVirtualTask : public DriveUploadBaseVirtualTask {
@@ -66,6 +76,10 @@ class SlidesUploadVirtualTask : public DriveUploadBaseVirtualTask {
   std::string id() const override;
   std::string title() const override;
   GURL icon_url() const override;
+
+ protected:
+  base::span<const std::string_view> MatcherMimeTypes() const override;
+  base::span<const std::string_view> MatcherFileExtensions() const override;
 };
 
 }  // namespace file_manager::file_tasks

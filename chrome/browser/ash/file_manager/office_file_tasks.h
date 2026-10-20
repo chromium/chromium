@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_OFFICE_FILE_TASKS_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_OFFICE_FILE_TASKS_H_
 
-#include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -164,19 +165,21 @@ bool IsQuickOfficeInstalled(Profile* profile);
 bool IsOfficeFile(const base::FilePath& path);
 
 // Returns whether |mime_type| is a MS Office file mimetype.
-bool IsOfficeFileMimeType(const std::string& mime_type);
+bool IsOfficeFileMimeType(std::string_view mime_type);
 
-// Returns the group of extensions we consider to be 'Word', 'Excel' or
-// 'PowerPoint' files for the purpose of setting preferences. The extensions
-// contain the '.' character at the start.
-std::set<std::string> WordGroupExtensions();
-std::set<std::string> ExcelGroupExtensions();
-std::set<std::string> PowerPointGroupExtensions();
+// Returns the group of extensions we consider to be 'Word', 'Excel',
+// 'PowerPoint', or all Office files for the purpose of setting preferences.
+// The extensions contain the '.' character at the start.
+base::span<const std::string_view> WordGroupExtensions();
+base::span<const std::string_view> ExcelGroupExtensions();
+base::span<const std::string_view> PowerPointGroupExtensions();
+base::span<const std::string_view> OfficeGroupExtensions();
 
 // The same as above but MIME types.
-std::set<std::string> WordGroupMimeTypes();
-std::set<std::string> ExcelGroupMimeTypes();
-std::set<std::string> PowerPointGroupMimeTypes();
+base::span<const std::string_view> WordGroupMimeTypes();
+base::span<const std::string_view> ExcelGroupMimeTypes();
+base::span<const std::string_view> PowerPointGroupMimeTypes();
+base::span<const std::string_view> OfficeGroupMimeTypes();
 
 // Updates the default task for each of the office file types.
 void SetWordFileHandler(Profile* profile,
@@ -192,7 +195,7 @@ void SetPowerPointFileHandler(Profile* profile,
 // Whether we have an explicit user preference stored for the file handler for
 // this extension. |extension| should contain the leading '.'.
 bool HasExplicitDefaultFileHandler(Profile* profile,
-                                   const std::string& extension);
+                                   std::string_view extension);
 
 // Updates the default task for each of the office file types to a Files
 // SWA with |action_id|. |action_id| must be a valid action registered with the

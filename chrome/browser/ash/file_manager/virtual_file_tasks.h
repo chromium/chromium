@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_VIRTUAL_FILE_TASKS_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_VIRTUAL_FILE_TASKS_H_
 
+#include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "extensions/browser/entry_info.h"
 #include "url/gurl.h"
@@ -42,7 +45,7 @@ class VirtualTask {
   // enabled. |Matches()| can return true even if the task is disabled - in this
   // case the task will not be found by |MatchVirtualTasks()|. Note this has a
   // default implementation which matches against file extensions and mime types
-  // in |matcher_mime_types_| and |matcher_file_extensions_|.
+  // in |MatcherMimeTypes()| and |MatcherFileExtensions()|.
   virtual bool Matches(const std::vector<extensions::EntryInfo>& entries,
                        const std::vector<GURL>& file_urls) const;
 
@@ -64,9 +67,9 @@ class VirtualTask {
       const std::vector<std::string>& dlp_source_urls) const = 0;
 
  protected:
-  std::vector<std::string> matcher_mime_types_;
-  // File extensions without the leading ".".
-  std::vector<std::string> matcher_file_extensions_;
+  virtual base::span<const std::string_view> MatcherMimeTypes() const;
+  // File extensions with the leading ".".
+  virtual base::span<const std::string_view> MatcherFileExtensions() const;
 };
 
 // Appends any virtual tasks that are enabled and match |entries|/|file_urls| to

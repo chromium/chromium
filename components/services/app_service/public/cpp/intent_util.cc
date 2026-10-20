@@ -7,11 +7,13 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -44,8 +46,8 @@ const char kUiBypassedKey[] = "ui_bypassed";
 const char kExtrasKey[] = "extras";
 const char kMimeTypeInodeDirectory[] = "inode/directory";
 
-bool ComponentMatched(const std::string& intent_component,
-                      const std::string& filter_component) {
+bool ComponentMatched(std::string_view intent_component,
+                      std::string_view filter_component) {
   return filter_component == kWildCardAny ||
          intent_component == filter_component;
 }
@@ -323,13 +325,13 @@ bool MatchGlob(std::string_view value, std::string_view pattern) {
 
 bool MimeTypeMatched(std::string_view intent_mime_type,
                      std::string_view filter_mime_type) {
-  std::vector<std::string> intent_components =
-      base::SplitString(intent_mime_type, kMimeTypeSeparator,
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string_view> intent_components =
+      base::SplitStringPiece(intent_mime_type, kMimeTypeSeparator,
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  std::vector<std::string> filter_components =
-      base::SplitString(filter_mime_type, kMimeTypeSeparator,
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string_view> filter_components =
+      base::SplitStringPiece(filter_mime_type, kMimeTypeSeparator,
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   if (intent_components.size() > kMimeTypeComponentSize ||
       filter_components.size() > kMimeTypeComponentSize ||
@@ -358,18 +360,20 @@ bool MimeTypeMatched(std::string_view intent_mime_type,
   return true;
 }
 
-bool ExtensionMatched(const std::string& file_name,
-                      const std::string& filter_extension) {
-  if (filter_extension == kWildCardAny)
+bool ExtensionMatched(std::string_view file_name,
+                      std::string_view filter_extension) {
+  if (filter_extension == kWildCardAny) {
     return true;
+  }
 
   // Normalise to have a preceding ".".
-  std::string normalised_extension = filter_extension;
-  if (filter_extension.length() > 0 && filter_extension[0] != '.') {
-    normalised_extension = '.' + normalised_extension;
+  std::string normalised_extension;
+  if (!filter_extension.empty() && filter_extension[0] != '.') {
+    normalised_extension = base::StrCat({".", filter_extension});
+    filter_extension = normalised_extension;
   }
   base::FilePath::StringType handler_extension =
-      base::FilePath::FromUTF8Unsafe(normalised_extension).Extension();
+      base::FilePath::FromUTF8Unsafe(filter_extension).Extension();
 
   base::FilePath file_path = base::FilePath::FromUTF8Unsafe(file_name);
 
@@ -554,35 +558,33 @@ apps::IntentPtr ConvertDictToIntent(const base::DictValue& dict) {
 
 std::string CalculateCommonMimeType(
     const std::vector<std::string>& mime_types) {
-  const std::string any_mime_type = std::string(kWildCardAny) +
-                                    std::string(kMimeTypeSeparator) +
-                                    std::string(kWildCardAny);
-  if (mime_types.size() == 0) {
-    return any_mime_type;
+  static constexpr char kAnyMimeType[] = "*/*";
+  if (mime_types.empty()) {
+    return kAnyMimeType;
   }
 
-  std::vector<std::string> common_type =
-      base::SplitString(mime_types[0], kMimeTypeSeparator,
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (common_type.size() != 2) {
-    return any_mime_type;
+  std::vector<std::string_view> common_type =
+      base::SplitStringPiece(mime_types[0], kMimeTypeSeparator,
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (common_type.size() != kMimeTypeComponentSize) {
+    return kAnyMimeType;
   }
 
-  for (auto& mime_type : mime_types) {
-    std::vector<std::string> type =
-        base::SplitString(mime_type, kMimeTypeSeparator, base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
+  for (std::string_view mime_type : base::span(mime_types).subspan(1u)) {
+    std::vector<std::string_view> type = base::SplitStringPiece(
+        mime_type, kMimeTypeSeparator, base::TRIM_WHITESPACE,
+        base::SPLIT_WANT_NONEMPTY);
     if (type.size() != kMimeTypeComponentSize) {
-      return any_mime_type;
+      return kAnyMimeType;
     }
     if (common_type[0] != type[0]) {
-      return any_mime_type;
+      return kAnyMimeType;
     }
     if (common_type[1] != type[1]) {
       common_type[1] = kWildCardAny;
     }
   }
-  return common_type[0] + kMimeTypeSeparator + common_type[1];
+  return base::StrCat({common_type[0], kMimeTypeSeparator, common_type[1]});
 }
 
 SharedText ExtractSharedText(const std::string& share_text) {

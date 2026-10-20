@@ -6,8 +6,11 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/virtual_tasks/drive_upload_virtual_task.h"
@@ -46,14 +49,13 @@ bool LooksLikeVirtualTask(const TaskDescriptor& task) {
 // `mime_types`.
 bool AllEntriesMatchAtLeastOneMimeType(
     const std::vector<extensions::EntryInfo>& entries,
-    const std::vector<std::string>& mime_types) {
+    base::span<const std::string_view> mime_types) {
   return std::ranges::all_of(
       entries,
       [&](const std::string& entry_mime_type) {
-        return std::ranges::any_of(
-            mime_types, [&](const std::string& mime_type) {
-              return apps_util::MimeTypeMatched(entry_mime_type, mime_type);
-            });
+        return std::ranges::any_of(mime_types, [&](std::string_view mime_type) {
+          return apps_util::MimeTypeMatched(entry_mime_type, mime_type);
+        });
       },
       &extensions::EntryInfo::mime_type);
 }
@@ -62,12 +64,12 @@ bool AllEntriesMatchAtLeastOneMimeType(
 // `file_extensions`
 bool AllUrlsMatchAtLeastOneFileExtension(
     const std::vector<GURL>& file_urls,
-    const std::vector<std::string>& file_extensions) {
+    base::span<const std::string_view> file_extensions) {
   return std::ranges::all_of(
       file_urls,
       [&](const std::string& file_name) {
         return std::ranges::any_of(
-            file_extensions, [&](const std::string& file_extension) {
+            file_extensions, [&](std::string_view file_extension) {
               return apps_util::ExtensionMatched(file_name, file_extension);
             });
       },
@@ -141,15 +143,23 @@ bool VirtualTask::Matches(const std::vector<extensions::EntryInfo>& entries,
                           const std::vector<GURL>& file_urls) const {
   // Try to match mime types
   bool mime_types_matched =
-      AllEntriesMatchAtLeastOneMimeType(entries, matcher_mime_types_);
+      AllEntriesMatchAtLeastOneMimeType(entries, MatcherMimeTypes());
 
   // Try to match extensions
   bool extensions_matched =
-      AllUrlsMatchAtLeastOneFileExtension(file_urls, matcher_file_extensions_);
+      AllUrlsMatchAtLeastOneFileExtension(file_urls, MatcherFileExtensions());
 
   // TODO(b/284800493): Should this be able to mix and match mimes and
   // extensions too?
   return mime_types_matched || extensions_matched;
+}
+
+base::span<const std::string_view> VirtualTask::MatcherMimeTypes() const {
+  return {};
+}
+
+base::span<const std::string_view> VirtualTask::MatcherFileExtensions() const {
+  return {};
 }
 
 }  // namespace file_manager::file_tasks

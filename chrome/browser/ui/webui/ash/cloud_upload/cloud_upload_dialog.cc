@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 
+#include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/web_app_id_constants.h"
@@ -13,6 +15,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check_deref.h"
 #include "base/containers/enum_set.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -332,7 +335,7 @@ void OpenODFSUrl(Profile* profile,
 
 bool HasFileWithExtensionFromSet(
     const std::vector<storage::FileSystemURL>& file_urls,
-    const std::set<std::string>& extensions) {
+    base::span<const std::string_view> extensions) {
   return std::ranges::any_of(file_urls, [&extensions](const auto& file_url) {
     return std::ranges::any_of(extensions, [&file_url](const auto& extension) {
       return file_url.path().MatchesExtension(extension);
@@ -369,7 +372,7 @@ bool HaveExplicitFileHandlers(
 // This indicates we ran Office setup and set a preference, or the user had a
 // pre-existing preference for these file types.
 bool HaveExplicitFileHandlers(Profile* profile,
-                              const std::set<std::string>& extensions) {
+                              base::span<const std::string_view> extensions) {
   return std::ranges::all_of(extensions, [profile](const auto& extension) {
     return fm_tasks::HasExplicitDefaultFileHandler(profile, extension);
   });
@@ -1685,9 +1688,7 @@ void LaunchMicrosoft365Setup(Profile* profile, gfx::NativeWindow modal_parent) {
   // Office file types, or that the user has pre-existing preferences for these
   // file types.
   one_drive_setup_dialog_args->set_office_as_default_handler =
-      !HaveExplicitFileHandlers(profile, fm_tasks::WordGroupExtensions()) ||
-      !HaveExplicitFileHandlers(profile, fm_tasks::ExcelGroupExtensions()) ||
-      !HaveExplicitFileHandlers(profile, fm_tasks::PowerPointGroupExtensions());
+      !HaveExplicitFileHandlers(profile, fm_tasks::OfficeGroupExtensions());
 
   args->dialog_specific_args =
       mojom::DialogSpecificArgs::NewOneDriveSetupDialogArgs(

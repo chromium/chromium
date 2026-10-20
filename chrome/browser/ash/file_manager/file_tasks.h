@@ -96,11 +96,11 @@
 #define CHROME_BROWSER_ASH_FILE_MANAGER_FILE_TASKS_H_
 
 #include <memory>
-#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
@@ -244,24 +244,24 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable*);
 // types. If |replace_existing| is false, does not rewrite existing prefs.
 void UpdateDefaultTask(Profile* profile,
                        const TaskDescriptor& task_descriptor,
-                       const std::set<std::string>& suffixes,
-                       const std::set<std::string>& mime_types,
+                       base::span<const std::string_view> suffixes,
+                       base::span<const std::string_view> mime_types,
                        bool replace_existing = true);
 
 // Remove the specified file handler for the given sets of suffixes and MIME
 // types.
 void RemoveDefaultTask(Profile* profile,
                        const TaskDescriptor& task_descriptor,
-                       const std::set<std::string>& suffixes,
-                       const std::set<std::string>& mime_types);
+                       base::span<const std::string_view> suffixes,
+                       base::span<const std::string_view> mime_types);
 
 // Returns the default task for the given |mime_type|/|suffix| combination in
 // |task_out|. If it finds a MIME type match, then it prefers that over a suffix
 // match. If a default can't be found, then it returns std::nullopt.
 std::optional<TaskDescriptor> GetDefaultTaskFromPrefs(
     const PrefService& pref_service,
-    const std::string& mime_type,
-    const std::string& suffix);
+    std::string_view mime_type,
+    std::string_view suffix);
 
 // Generates task id for the task specified by |app_id|, |task_type| and
 // |action_id|.
@@ -347,7 +347,7 @@ bool IsHtmlFile(const base::FilePath& path);
 // Whether we have an explicit user preference stored for the file handler for
 // this extension. |extension| should contain the leading '.'.
 bool HasExplicitDefaultFileHandler(Profile* profile,
-                                   const std::string& extension);
+                                   std::string_view extension);
 
 }  // namespace file_manager::file_tasks
 

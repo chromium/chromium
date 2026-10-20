@@ -5,9 +5,11 @@
 #include "chrome/browser/ash/file_manager/virtual_tasks/drive_upload_virtual_task.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/webui/file_manager/url_constants.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
@@ -52,14 +54,7 @@ bool DriveUploadBaseVirtualTask::Execute(
           ash::cloud_upload::CloudProvider::kGoogleDrive, 1));
 }
 
-DocsUploadVirtualTask::DocsUploadVirtualTask() {
-  for (const auto& extension : WordGroupExtensions()) {
-    matcher_file_extensions_.push_back(extension);
-  }
-  for (const auto& mime_type : WordGroupMimeTypes()) {
-    matcher_mime_types_.push_back(mime_type);
-  }
-}
+DocsUploadVirtualTask::DocsUploadVirtualTask() = default;
 
 std::string DocsUploadVirtualTask::id() const {
   return base::StrCat({ash::file_manager::kChromeUIFileManagerURL, "?",
@@ -76,14 +71,17 @@ GURL DocsUploadVirtualTask::icon_url() const {
   return GURL();
 }
 
-SheetsUploadVirtualTask::SheetsUploadVirtualTask() {
-  for (const auto& extension : ExcelGroupExtensions()) {
-    matcher_file_extensions_.push_back(extension);
-  }
-  for (const auto& mime_type : ExcelGroupMimeTypes()) {
-    matcher_mime_types_.push_back(mime_type);
-  }
+base::span<const std::string_view> DocsUploadVirtualTask::MatcherMimeTypes()
+    const {
+  return WordGroupMimeTypes();
 }
+
+base::span<const std::string_view>
+DocsUploadVirtualTask::MatcherFileExtensions() const {
+  return WordGroupExtensions();
+}
+
+SheetsUploadVirtualTask::SheetsUploadVirtualTask() = default;
 
 std::string SheetsUploadVirtualTask::id() const {
   return base::StrCat({ash::file_manager::kChromeUIFileManagerURL, "?",
@@ -100,14 +98,17 @@ GURL SheetsUploadVirtualTask::icon_url() const {
   return GURL();
 }
 
-SlidesUploadVirtualTask::SlidesUploadVirtualTask() {
-  for (const auto& extension : PowerPointGroupExtensions()) {
-    matcher_file_extensions_.push_back(extension);
-  }
-  for (const auto& mime_type : PowerPointGroupMimeTypes()) {
-    matcher_mime_types_.push_back(mime_type);
-  }
+base::span<const std::string_view> SheetsUploadVirtualTask::MatcherMimeTypes()
+    const {
+  return ExcelGroupMimeTypes();
 }
+
+base::span<const std::string_view>
+SheetsUploadVirtualTask::MatcherFileExtensions() const {
+  return ExcelGroupExtensions();
+}
+
+SlidesUploadVirtualTask::SlidesUploadVirtualTask() = default;
 
 std::string SlidesUploadVirtualTask::id() const {
   return base::StrCat({ash::file_manager::kChromeUIFileManagerURL, "?",
@@ -122,6 +123,16 @@ GURL SlidesUploadVirtualTask::icon_url() const {
   // This gets overridden in file_tasks.ts.
   // TODO(crbug.com/40280769): Specify the icon here instead of overriding it.
   return GURL();
+}
+
+base::span<const std::string_view> SlidesUploadVirtualTask::MatcherMimeTypes()
+    const {
+  return PowerPointGroupMimeTypes();
+}
+
+base::span<const std::string_view>
+SlidesUploadVirtualTask::MatcherFileExtensions() const {
+  return PowerPointGroupExtensions();
 }
 
 }  // namespace file_manager::file_tasks

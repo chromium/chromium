@@ -7,12 +7,13 @@
 #include <stddef.h>
 
 #include <memory>
-#include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
@@ -39,10 +40,11 @@ constexpr char kInvalidTaskType[] = "Invalid task type: ";
 constexpr char kInvalidFileUrl[] = "Invalid file URL";
 
 // Make a set of unique filename suffixes out of the list of file URLs.
-std::set<std::string> GetUniqueSuffixes(
+base::flat_set<std::string> GetUniqueSuffixes(
     const std::vector<std::string>& file_urls,
     const storage::FileSystemContext* context) {
-  std::set<std::string> suffixes;
+  std::vector<std::string> suffixes;
+  suffixes.reserve(file_urls.size());
   for (const auto& file_url : file_urls) {
     const storage::FileSystemURL url =
         context->CrackURLInFirstPartyContext(GURL{file_url});
@@ -50,24 +52,26 @@ std::set<std::string> GetUniqueSuffixes(
       return {};
     }
     // We'll skip empty suffixes.
-    if (!url.path().Extension().empty()) {
-      suffixes.insert(url.path().Extension());
+    std::string extension = base::ToLowerASCII(url.path().Extension());
+    if (!extension.empty()) {
+      suffixes.push_back(std::move(extension));
     }
   }
-  return suffixes;
+  return base::flat_set<std::string>(std::move(suffixes));
 }
 
 // Make a set of unique MIME types out of the list of MIME types.
-std::set<std::string> GetUniqueMimeTypes(
+base::flat_set<std::string_view> GetUniqueMimeTypes(
     const std::vector<std::string>& mime_type_list) {
-  std::set<std::string> mime_types;
+  std::vector<std::string_view> mime_types;
+  mime_types.reserve(mime_type_list.size());
   for (const auto& mime_type : mime_type_list) {
     // We'll skip empty MIME types and existing MIME types.
     if (!mime_type.empty()) {
-      mime_types.insert(mime_type);
+      mime_types.push_back(mime_type);
     }
   }
-  return mime_types;
+  return base::flat_set<std::string_view>(std::move(mime_types));
 }
 
 namespace api_fmp = extensions::api::file_manager_private;
@@ -278,9 +282,9 @@ FileManagerPrivateInternalSetDefaultTaskFunction::Run() {
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           profile, render_frame_host());
 
-  const std::set<std::string> suffixes =
+  const base::flat_set<std::string> suffixes =
       GetUniqueSuffixes(params->urls, file_system_context.get());
-  const std::set<std::string> mime_types =
+  const base::flat_set<std::string_view> mime_types =
       GetUniqueMimeTypes(params->mime_types);
 
   // If there weren't any mime_types, and all the suffixes were blank,
@@ -301,7 +305,9 @@ FileManagerPrivateInternalSetDefaultTaskFunction::Run() {
   file_manager::file_tasks::TaskDescriptor descriptor(
       params->descriptor.app_id, task_type, params->descriptor.action_id);
 
-  file_manager::file_tasks::UpdateDefaultTask(profile, descriptor, suffixes,
+  const std::vector<std::string_view> suffix_views(suffixes.begin(),
+                                                   suffixes.end());
+  file_manager::file_tasks::UpdateDefaultTask(profile, descriptor, suffix_views,
                                               mime_types);
   return RespondNow(NoArguments());
 }
