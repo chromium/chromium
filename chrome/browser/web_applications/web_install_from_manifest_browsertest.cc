@@ -117,6 +117,17 @@ constexpr int kMaxInstalledBySize = 10;
 constexpr char kTestPageWithId[] = "/banners/manifest_with_id_test_page.html";
 constexpr char kValidManifestNoId[] = "/banners/manifest.json";
 constexpr char kValidManifestWithId[] = "/banners/manifest_with_id.json";
+constexpr char kContentTypeManifest[] = R"({
+  "name": "Content-Type test app",
+  "id": "/content-type-app",
+  "start_url": "/banners/manifest_with_id_test_page.html",
+  "display": "standalone",
+  "icons": [{
+    "src": "/banners/image-512px.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }]
+})";
 constexpr char kCrossOriginManifestPath[] =
     "/controlled_cross_origin_manifest.webmanifest";
 constexpr char kCrossOriginManifestCookie[] =
@@ -276,8 +287,11 @@ class WebInstallFromManifestBrowserTest : public WebAppBrowserTestBase {
   }
 
   // Sets a dynamic manifest response for /dynamic_manifest.json.
-  void SetDynamicManifestResponse(const std::string& json) {
+  void SetDynamicManifestResponse(
+      const std::string& json,
+      std::optional<std::string> content_type = "application/json") {
     dynamic_manifest_json_ = json;
+    dynamic_manifest_content_type_ = std::move(content_type);
   }
 
   // When the permission prompt shows, it must be granted or denied.
@@ -337,9 +351,17 @@ class WebInstallFromManifestBrowserTest : public WebAppBrowserTestBase {
       return response;
     }
     if (request.relative_url == "/dynamic_manifest.json") {
+      if (!dynamic_manifest_content_type_) {
+        // BasicHttpResponse always sends Content-Type, even when empty. Use
+        // RawHttpResponse to omit the header entirely.
+        return std::make_unique<net::test_server::RawHttpResponse>(
+            "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Length: " +
+                base::NumberToString(dynamic_manifest_json_.size()),
+            dynamic_manifest_json_);
+      }
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
-      response->set_content_type("application/json");
+      response->set_content_type(*dynamic_manifest_content_type_);
       response->set_content(dynamic_manifest_json_);
       return response;
     }
@@ -347,8 +369,39 @@ class WebInstallFromManifestBrowserTest : public WebAppBrowserTestBase {
   }
 
   std::string dynamic_manifest_json_;
+  std::optional<std::string> dynamic_manifest_content_type_ =
+      "application/json";
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+class WebInstallManifestContentTypeBrowserTest
+    : public WebInstallFromManifestBrowserTest,
+      public testing::WithParamInterface<const char*> {};
+
+IN_PROC_BROWSER_TEST_P(WebInstallManifestContentTypeBrowserTest,
+                       JsonContentType_Succeeds) {
+  SetDynamicManifestResponse(kContentTypeManifest, GetParam());
+  NavigateToValidUrl();
+  SetPermissionResponse(/*permission_granted=*/true);
+  auto auto_accept_pwa = web_app::SetPwaInstallationAutoRespondForTesting(
+      web_app::InstallDialogTestResponse::kAcceptAndLaunch);
+
+  ASSERT_TRUE(TryInstallFromManifest(
+      embedded_https_test_server().GetURL("/dynamic_manifest.json")));
+
+  EXPECT_TRUE(ResultExists());
+  EXPECT_FALSE(ErrorExists());
+  const webapps::AppId app_id = GenerateAppIdFromManifestId(webapps::ManifestId(
+      embedded_https_test_server().GetURL("/content-type-app")));
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebInstallManifestContentTypeBrowserTest,
+                         testing::Values("application/json",
+                                         "application/manifest+json",
+                                         "application/vnd.example+json"));
 
 // Valid manifest with custom id, no id option provided.
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
@@ -2019,7 +2072,53 @@ class WebInstallPrivacyInvariantTest
                            ".then(result => { webInstallResult = result; })"
                            ".catch(error => { webInstallError = error; });");
   }
+
+  void ExpectContentTypeDataError(std::optional<std::string> content_type) {
+    content::WebContents* wc = NavigateAndGetWebContents();
+    SetPermissionResponse(/*permission_granted=*/false, wc);
+    const GURL manifest_url =
+        embedded_https_test_server().GetURL("/dynamic_manifest.json");
+
+    SetDynamicManifestResponse("invalid json");
+    ASSERT_TRUE(TryInstallFromManifest(manifest_url, wc));
+    ASSERT_EQ(GetErrorName(wc), kDataError);
+    const std::string parsing_error =
+        content::EvalJs(wc, "webInstallError.toString()").ExtractString();
+    ASSERT_TRUE(content::ExecJs(wc, "delete window.webInstallError;"));
+
+    SetDynamicManifestResponse(kContentTypeManifest, std::move(content_type));
+    permissions::PermissionRequestObserver permission_observer(wc);
+    WebInstallDialogShownWatcher dialog_watcher;
+    base::HistogramTester histograms;
+    ASSERT_TRUE(TryInstallFromManifest(manifest_url, wc));
+
+    ASSERT_TRUE(ErrorExists(wc));
+    EXPECT_EQ(GetErrorName(wc), kDataError);
+    EXPECT_EQ(content::EvalJs(wc, "webInstallError.toString()"), parsing_error);
+    EXPECT_EQ(content::EvalJs(wc, "typeof webInstallResult"), "undefined");
+    EXPECT_FALSE(permission_observer.request_shown());
+    EXPECT_FALSE(dialog_watcher.shown());
+    const webapps::AppId app_id =
+        GenerateAppIdFromManifestId(webapps::ManifestId(
+            embedded_https_test_server().GetURL("/content-type-app")));
+    EXPECT_FALSE(provider().registrar_unsafe().GetAppById(app_id));
+    histograms.ExpectUniqueSample(
+        kInstallResultUma, WebInstallServiceResult::kInstallCommandFailed, 1);
+  }
 };
+
+IN_PROC_BROWSER_TEST_P(WebInstallPrivacyInvariantTest, TextPlain_DataError) {
+  ExpectContentTypeDataError("text/plain");
+}
+
+IN_PROC_BROWSER_TEST_P(WebInstallPrivacyInvariantTest, TextHtml_DataError) {
+  ExpectContentTypeDataError("text/html");
+}
+
+IN_PROC_BROWSER_TEST_P(WebInstallPrivacyInvariantTest,
+                       MissingContentType_DataError) {
+  ExpectContentTypeDataError(std::nullopt);
+}
 
 // A valid manifest without a custom id, and no id option provided, should
 // return DataError identically in regular and Incognito modes.

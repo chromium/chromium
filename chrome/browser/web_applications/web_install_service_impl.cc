@@ -99,10 +99,11 @@ std::optional<blink::mojom::WebInstallIssueReason> GetIssueReasonForFetchError(
   switch (error) {
     case WebInstallManifestFetchError::kDownloadFailed:
     case WebInstallManifestFetchError::kRedirected:
+    // TODO(crbug.com/575536637): Surface a new DevTools issue for invalid
+    // manifest content type.
+    case WebInstallManifestFetchError::kInvalidContentType:
       return blink::mojom::WebInstallIssueReason::
           kManifestParsingOrNetworkError;
-    case WebInstallManifestFetchError::kInvalidContentType:
-      return std::nullopt;
   }
 }
 

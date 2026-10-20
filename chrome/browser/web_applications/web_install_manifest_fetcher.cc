@@ -11,12 +11,14 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -128,11 +130,23 @@ void WebInstallManifestFetcher::OnRedirect(
 void WebInstallManifestFetcher::OnManifestDownloaded(
     std::optional<std::string> manifest_content) {
   // TODO(crbug.com/525409692): Include manifest URL telemetry.
+  auto response_head = simple_url_loader_->TakeResponseInfo();
   simple_url_loader_.reset();
 
   if (!manifest_content) {
     std::move(fetch_callback_)
         .Run(base::unexpected(WebInstallManifestFetchError::kDownloadFailed));
+    return;
+  }
+
+  std::string mime_type;
+  // Require HTTP metadata, not a MIME type inferred from the response body.
+  if (!response_head || !response_head->headers ||
+      !response_head->headers->GetMimeType(&mime_type) ||
+      !blink::IsJSONMimeType(mime_type)) {
+    std::move(fetch_callback_)
+        .Run(base::unexpected(
+            WebInstallManifestFetchError::kInvalidContentType));
     return;
   }
 

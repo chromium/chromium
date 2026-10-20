@@ -34,8 +34,8 @@ namespace web_app {
 
 // Fetches a web app manifest from a URL using SimpleURLLoader. Used for a
 // web-initiated manifest-first install flow to retrieve manifest JSON from the
-// browser process. Does not parse the manifest — returns raw content on
-// success.
+// browser process. Requires JSON Content-Type metadata, but does not parse the
+// manifest — returns raw content on success.
 class WebInstallManifestFetcher {
  public:
   using FetchCallback = base::OnceCallback<void(
