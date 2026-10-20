@@ -37,9 +37,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
-import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.UserDataHost;
@@ -93,47 +90,39 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
 
     private TestContentView mContentView;
-    private Activity mActivity;
+    private FullscreenTestActivity mActivity;
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private MultiWindowModeStateDispatcherImpl mMultiWindowModeStateDispatcher;
     private FullscreenHtmlApiHandlerCompat mFullscreenHtmlApiHandlerCompat;
     private SettableNonNullObservableSupplier<Boolean> mAreControlsHidden;
     private UserDataHost mHost;
 
-    @Implements(Activity.class)
-    public static class FullscreenShadowActivity extends ShadowActivity {
-        public HashMap<Integer, Integer> counters = new HashMap<>();
+    public static class FullscreenTestActivity extends Activity {
+        public final HashMap<Integer, Integer> mCounters = new HashMap<>();
 
-        public FullscreenShadowActivity() {}
-
-        @Implementation(minSdk = 34)
-        protected void requestFullscreenMode(
+        @Override
+        public void requestFullscreenMode(
                 int request, OutcomeReceiver<Void, Throwable> approvalCallback) {
             if (approvalCallback != null) {
                 approvalCallback.onResult(null);
             }
-            if (counters.containsKey(request)) {
-                counters.put(request, counters.get(request) + 1);
-            } else {
-                counters.put(request, 1);
-            }
+            mCounters.put(request, mCounters.getOrDefault(request, 0) + 1);
         }
     }
 
     private void assertEqualNumberOfEnterAndExitActivityFullscreenMode(int numberOfEnters) {
-        FullscreenShadowActivity shadow = (FullscreenShadowActivity) Shadows.shadowOf(mActivity);
         if (numberOfEnters == 0) {
-            assertFalse(shadow.counters.containsKey(Activity.FULLSCREEN_MODE_REQUEST_ENTER));
-            assertFalse(shadow.counters.containsKey(Activity.FULLSCREEN_MODE_REQUEST_EXIT));
+            assertFalse(mActivity.mCounters.containsKey(Activity.FULLSCREEN_MODE_REQUEST_ENTER));
+            assertFalse(mActivity.mCounters.containsKey(Activity.FULLSCREEN_MODE_REQUEST_EXIT));
         } else {
-            assertTrue(shadow.counters.containsKey(Activity.FULLSCREEN_MODE_REQUEST_ENTER));
+            assertTrue(mActivity.mCounters.containsKey(Activity.FULLSCREEN_MODE_REQUEST_ENTER));
             assertEquals(
                     numberOfEnters,
-                    (int) shadow.counters.get(Activity.FULLSCREEN_MODE_REQUEST_ENTER));
-            assertTrue(shadow.counters.containsKey(Activity.FULLSCREEN_MODE_REQUEST_EXIT));
+                    (int) mActivity.mCounters.get(Activity.FULLSCREEN_MODE_REQUEST_ENTER));
+            assertTrue(mActivity.mCounters.containsKey(Activity.FULLSCREEN_MODE_REQUEST_EXIT));
             assertEquals(
                     numberOfEnters,
-                    (int) shadow.counters.get(Activity.FULLSCREEN_MODE_REQUEST_EXIT));
+                    (int) mActivity.mCounters.get(Activity.FULLSCREEN_MODE_REQUEST_EXIT));
         }
     }
 
@@ -157,7 +146,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity = Robolectric.buildActivity(FullscreenTestActivity.class).setup().get();
         mContentView = new TestContentView(mActivity);
 
         mHost = new UserDataHost();
@@ -184,9 +173,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
-    @Config(
-            shadows = {FullscreenShadowActivity.class},
-            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenRequestCanceledAtPendingStateBeforeControlsDisappear() {
         // avoid calling GestureListenerManager/SelectionPopupController
         doReturn(null).when(mTab).getWebContents();
@@ -220,9 +207,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
-    @Config(
-            shadows = {FullscreenShadowActivity.class},
-            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenRequestCanceledAtPendingStateAfterControlsDisappear() {
         // Avoid calling GestureListenerManager/SelectionPopupController
         doReturn(null).when(mTab).getWebContents();
@@ -249,9 +234,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
-    @Config(
-            shadows = {FullscreenShadowActivity.class},
-            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenAddAndRemoveObserver() {
         // avoid calling GestureListenerManager/SelectionPopupController
         doReturn(null).when(mTab).getWebContents();
@@ -283,9 +266,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
-    @Config(
-            shadows = {FullscreenShadowActivity.class},
-            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenObserverCalledOncePerSession() {
         // avoid calling GestureListenerManager/SelectionPopupController
         doReturn(null).when(mTab).getWebContents();
@@ -321,9 +302,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
-    @Config(
-            shadows = {FullscreenShadowActivity.class},
-            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenObserverCalledOncePerSessionWhenWebContentsNotNull() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mContentView).when(mTab).getContentView();
@@ -361,9 +340,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
-    @Config(
-            shadows = {FullscreenShadowActivity.class},
-            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testNoObserverWhenCanceledBeforeBeingInteractable() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(false).when(mTab).isUserInteractable();
@@ -385,9 +362,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
-    @Config(
-            shadows = {FullscreenShadowActivity.class},
-            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenObserverInTabNonInteractableState() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(false).when(mTab).isUserInteractable(); // Tab not interactable at first.
@@ -416,9 +391,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
-    @Config(
-            shadows = {FullscreenShadowActivity.class},
-            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenObserverNotifiedWhenActivityStopped() {
         mFullscreenHtmlApiHandlerCompat =
                 new FullscreenHtmlApiHandlerCompat(
@@ -451,9 +424,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
-    @Config(
-            shadows = {FullscreenShadowActivity.class},
-            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testFullscreenObserverCalledOnceWhenExitPersistentFullscreenModeCalled() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mContentView).when(mTab).getContentView();
@@ -497,9 +468,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
-    @Config(
-            shadows = {FullscreenShadowActivity.class},
-            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testMultiWindowModeChangeIsHandledDuringAfterEnterFullscreen() {
         mFullscreenHtmlApiHandlerCompat =
                 new FullscreenHtmlApiHandlerCompat(
@@ -552,9 +521,7 @@ public class FullscreenHtmlApiHandlerCompatUnitTest {
     }
 
     @Test
-    @Config(
-            shadows = {FullscreenShadowActivity.class},
-            sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     public void testExitFullscreenWhenActiveTabClearedBeforeTabExit() {
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mContentView).when(mTab).getContentView();

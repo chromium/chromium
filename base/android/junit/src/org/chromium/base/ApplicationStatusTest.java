@@ -26,12 +26,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
-import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -39,7 +34,6 @@ import java.util.List;
 
 /** Unit tests for {@link ApplicationStatus}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ApplicationStatusTest.TrackingShadowActivity.class})
 public class ApplicationStatusTest {
     private static class WindowCallbackWrapper implements Window.Callback {
         final Window.Callback mWrapped;
@@ -185,22 +179,14 @@ public class ApplicationStatusTest {
         }
     }
 
-    /** Shadow that tracks calls to onWindowFocusChanged and dispatchKeyEvent. */
-    @Implements(Activity.class)
-    public static class TrackingShadowActivity extends ShadowActivity {
+    /** Activity subclass that tracks calls to onWindowFocusChanged. */
+    public static class WindowFocusTrackingActivity extends Activity {
         private int mWindowFocusCalls;
-        private int mDispatchKeyEventCalls;
-        private boolean mReturnValueForKeyDispatch;
 
-        @Implementation
-        public void onWindowFocusChanged(@SuppressWarnings("unused") boolean hasFocus) {
+        @Override
+        public void onWindowFocusChanged(boolean hasFocus) {
+            super.onWindowFocusChanged(hasFocus);
             mWindowFocusCalls++;
-        }
-
-        @Implementation
-        public boolean dispatchKeyEvent(@SuppressWarnings("unused") KeyEvent event) {
-            mDispatchKeyEventCalls++;
-            return mReturnValueForKeyDispatch;
         }
     }
 
@@ -210,15 +196,17 @@ public class ApplicationStatusTest {
                 mock(ApplicationStatus.WindowFocusChangedListener.class);
         ApplicationStatus.registerWindowFocusChangedListener(mock);
 
-        ActivityController<Activity> controller =
-                Robolectric.buildActivity(Activity.class).create().start().visible();
-        TrackingShadowActivity shadow = (TrackingShadowActivity) Shadows.shadowOf(controller.get());
+        ActivityController<WindowFocusTrackingActivity> controller =
+                Robolectric.buildActivity(WindowFocusTrackingActivity.class)
+                        .create()
+                        .start()
+                        .visible();
 
         controller.get().getWindow().getCallback().onWindowFocusChanged(true);
         // Assert that listeners were notified.
         verify(mock).onWindowFocusChanged(controller.get(), true);
         // Also ensure that the original activity is forwarded the notification.
-        Assert.assertEquals(1, shadow.mWindowFocusCalls);
+        Assert.assertEquals(1, controller.get().mWindowFocusCalls);
     }
 
     @Test

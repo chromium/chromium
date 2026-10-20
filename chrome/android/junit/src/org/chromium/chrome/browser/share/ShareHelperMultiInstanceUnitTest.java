@@ -28,7 +28,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowActivity.IntentForResult;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowPendingIntent;
@@ -50,7 +49,7 @@ import org.chromium.ui.base.WindowAndroid;
  * mode.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowPendingIntent.class, ShadowActivity.class})
+@Config(shadows = {ShadowPendingIntent.class})
 public class ShareHelperMultiInstanceUnitTest {
     private static final ComponentName COMPONENT_NAME_1 = new ComponentName("package", "one");
     private static final ComponentName COMPONENT_NAME_2 = new ComponentName("package", "two");

@@ -20,10 +20,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Application;
-import android.app.PictureInPictureParams;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -57,10 +55,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
-import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowActivityManager;
 import org.robolectric.shadows.ShadowLooper;
@@ -88,59 +82,6 @@ import org.chromium.content_public.browser.WebContentsObserver;
 @RunWith(BaseRobolectricTestRunner.class)
 public class CastWebContentsActivityTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    /** ShadowActivity that allows us to intercept calls to setTurnScreenOn. */
-    @Implements(Activity.class)
-    public static class ExtendedShadowActivity extends ShadowActivity {
-        private boolean mTurnScreenOn;
-        private boolean mShowWhenLocked;
-        private boolean mInPipMode;
-        private MotionEvent mLastTouchEvent;
-
-        @Override
-        public boolean getTurnScreenOn() {
-            return mTurnScreenOn;
-        }
-
-        @Override
-        public boolean getShowWhenLocked() {
-            return mShowWhenLocked;
-        }
-
-        public boolean getInPictureInPictureMode() {
-            return mInPipMode;
-        }
-
-        public MotionEvent popLastTouchEvent() {
-            MotionEvent result = mLastTouchEvent;
-            mLastTouchEvent = null;
-            return result;
-        }
-
-        @Implementation
-        @Override
-        public void setTurnScreenOn(boolean turnScreenOn) {
-            mTurnScreenOn = turnScreenOn;
-        }
-
-        @Implementation
-        @Override
-        public void setShowWhenLocked(boolean showWhenLocked) {
-            mShowWhenLocked = showWhenLocked;
-        }
-
-        @Implementation
-        public boolean dispatchTouchEvent(MotionEvent ev) {
-            mLastTouchEvent = ev;
-            return true;
-        }
-
-        @Override
-        public boolean enterPictureInPictureMode(PictureInPictureParams params) {
-            mInPipMode = true;
-            return true;
-        }
-    }
 
     /**
      * A custom Resources wrapper that intentionally throws NotFoundException for back_pressed.js.
@@ -329,7 +270,6 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    @Config(shadows = {ExtendedShadowActivity.class})
     public void testTurnsScreenOnIfTurnOnScreen() {
         mActivityLifecycle =
                 Robolectric.buildActivity(
@@ -338,7 +278,7 @@ public class CastWebContentsActivityTest {
                                 mWebContents, true, false, true, false, "0"));
         mActivity = mActivityLifecycle.get();
         mActivity.testingModeForTesting();
-        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
+        ShadowActivity shadowActivity = Shadows.shadowOf(mActivity);
         mActivityLifecycle.create();
 
         Assert.assertTrue(shadowActivity.getTurnScreenOn());
@@ -346,7 +286,6 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    @Config(shadows = {ExtendedShadowActivity.class})
     public void testRemovesTurnScreenOnFlagsOnScreenOff() {
         mActivityLifecycle =
                 Robolectric.buildActivity(
@@ -355,7 +294,7 @@ public class CastWebContentsActivityTest {
                                 mWebContents, true, false, true, false, "0"));
         mActivity = mActivityLifecycle.get();
         mActivity.testingModeForTesting();
-        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
+        ShadowActivity shadowActivity = Shadows.shadowOf(mActivity);
         mActivityLifecycle.create();
 
         Assert.assertTrue(shadowActivity.getTurnScreenOn());
@@ -370,7 +309,6 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    @Config(shadows = {ExtendedShadowActivity.class})
     public void testDoesNotTurnScreenOnIfNotTurnOnScreen() {
         mActivityLifecycle =
                 Robolectric.buildActivity(
@@ -379,11 +317,12 @@ public class CastWebContentsActivityTest {
                                 mWebContents, true, false, false, false, "0"));
         mActivity = mActivityLifecycle.get();
         mActivity.testingModeForTesting();
-        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
+        ShadowActivity shadowActivity = Shadows.shadowOf(mActivity);
         mActivityLifecycle.create();
 
         Assert.assertFalse(shadowActivity.getTurnScreenOn());
-        Assert.assertFalse(shadowActivity.getShowWhenLocked());
+        // CastWebContentsActivity declares android:showWhenLocked="true" in AndroidManifest.xml.
+        Assert.assertTrue(shadowActivity.getShowWhenLocked());
     }
 
     @Test
@@ -492,34 +431,32 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    @Config(shadows = {ExtendedShadowActivity.class})
     public void testDispatchTouchEventInPipMode() {
         CastWebContentsSurfaceHelper surfaceHelper = mock(CastWebContentsSurfaceHelper.class);
-        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
         when(surfaceHelper.isTouchInputEnabled()).thenReturn(true);
         mActivity.setSurfaceHelperForTesting(surfaceHelper);
         Window window = mock(Window.class);
         mActivityLifecycle.create().start().resume();
-        shadowActivity.setWindow(window);
+        mShadowActivity.setWindow(window);
         updateMediaState(true, true);
         MotionEvent event = mock(MotionEvent.class);
         when(event.getAction()).thenReturn(MotionEvent.ACTION_DOWN);
         when(window.superDispatchTouchEvent(event)).thenReturn(true);
         // Touch is enabled before entering PiP mode.
         assertTrue(mActivity.dispatchTouchEvent(event));
-        assertEquals(shadowActivity.popLastTouchEvent(), event);
+        verify(window, times(1)).superDispatchTouchEvent(event);
         mActivity.onUserLeaveHint();
         mActivity.onPictureInPictureModeChanged(true, new Configuration());
         // Touch is disabled while in PiP mode.
         assertFalse(mActivity.dispatchTouchEvent(event));
-        assertNull(shadowActivity.popLastTouchEvent());
+        verify(window, times(1)).superDispatchTouchEvent(event);
         mActivity.onPictureInPictureModeChanged(false, new Configuration());
         // Touch is re-enabled after leaving PiP mode.
         assertTrue(mActivity.dispatchTouchEvent(event));
+        verify(window, times(2)).superDispatchTouchEvent(event);
     }
 
     @Test
-    @Config(shadows = {ExtendedShadowActivity.class})
     public void testStopWhileNotInPipModeDoesNotCloseActivity() {
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
         mActivityLifecycle.create().start().resume();
@@ -533,7 +470,6 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    @Config(shadows = {ExtendedShadowActivity.class})
     public void testStopWhileInPipModeDoesNotCloseActivity() {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
@@ -552,7 +488,6 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    @Config(shadows = {ExtendedShadowActivity.class})
     public void testStopWhileInPipModeWithScreenOnClosesActivity() {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
@@ -725,7 +660,6 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    @Config(shadows = {ExtendedShadowActivity.class})
     public void testEntersPipWhenPlayingVideo() {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
         mActivityLifecycle.create().start().resume();
@@ -733,12 +667,10 @@ public class CastWebContentsActivityTest {
         updateMediaState(true, true);
         mActivity.onUserLeaveHint();
 
-        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
-        assertTrue(shadowActivity.getInPictureInPictureMode());
+        assertTrue(mActivity.isInPictureInPictureMode());
     }
 
     @Test
-    @Config(shadows = {ExtendedShadowActivity.class})
     public void testDoesNotenterPipWhenOnlyPlayingAudio() {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
         mActivityLifecycle.create().start().resume();
@@ -746,12 +678,10 @@ public class CastWebContentsActivityTest {
         updateMediaState(true, false);
         mActivity.onUserLeaveHint();
 
-        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
-        assertFalse(shadowActivity.getInPictureInPictureMode());
+        assertFalse(mActivity.isInPictureInPictureMode());
     }
 
     @Test
-    @Config(shadows = {ExtendedShadowActivity.class})
     public void testEntersPipWhenVideoIsPlayingOnUserPresent() {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
         mActivityLifecycle.create().start().resume();
@@ -759,14 +689,12 @@ public class CastWebContentsActivityTest {
         updateMediaState(true, true);
         RuntimeEnvironment.application.sendBroadcast(new Intent(Intent.ACTION_USER_PRESENT));
 
-        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
         Shadows.shadowOf(getMainLooper()).idle();
 
-        assertTrue(shadowActivity.getInPictureInPictureMode());
+        assertTrue(mActivity.isInPictureInPictureMode());
     }
 
     @Test
-    @Config(shadows = {ExtendedShadowActivity.class})
     public void testDoesNotenterPipWhenVideoNotPlayingOnUserPresent() {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
         mActivityLifecycle.create().start().resume();
@@ -774,10 +702,9 @@ public class CastWebContentsActivityTest {
         updateMediaState(false, false);
         RuntimeEnvironment.application.sendBroadcast(new Intent(Intent.ACTION_USER_PRESENT));
 
-        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
         Shadows.shadowOf(getMainLooper()).idle();
 
-        assertFalse(shadowActivity.getInPictureInPictureMode());
+        assertFalse(mActivity.isInPictureInPictureMode());
     }
 
     @Test
@@ -1183,7 +1110,6 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
-    @Config(shadows = {ExtendedShadowActivity.class})
     public void testPipDelayedExpansionOnNewIntent() {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
         mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_NONE);
@@ -1192,19 +1118,17 @@ public class CastWebContentsActivityTest {
         mActivity.onUserLeaveHint();
         mActivity.onPictureInPictureModeChanged(true, new Configuration());
 
-        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
-
         Intent newIntent = new Intent(mActivity.getIntent());
         mActivity.onNewIntent(newIntent);
 
         // Initially, startActivity shouldn't have been called yet because of the 300ms delay.
-        assertNull(shadowActivity.getNextStartedActivity());
+        assertNull(mShadowActivity.getNextStartedActivity());
 
         // Run delayed tasks.
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         // Now startActivity should have been called to expand the Activity.
-        Intent startedIntent = shadowActivity.getNextStartedActivity();
+        Intent startedIntent = mShadowActivity.getNextStartedActivity();
         assertNotNull(startedIntent);
         assertEquals(
                 CastWebContentsActivity.class.getName(),

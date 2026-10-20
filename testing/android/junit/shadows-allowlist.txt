@@ -8,3 +8,12 @@
 # Disallow shadows of chrome-authored code.
 -com.google.android.apps.chrome
 -org.chromium
+
+# Disallow custom shadows of Activity because instrumenting Activity across the
+# sandbox breaks ShadowActivity casts and Mockito spy/mock verification in other
+# tests (crbug.com/575851581). Use an Activity subclass or ShadowActivity.
++android.app.ActivityManager
++android.app.ActivityOptions
++android.app.ActivityTaskManager
++android.app.ActivityThread
+-android.app.Activity
