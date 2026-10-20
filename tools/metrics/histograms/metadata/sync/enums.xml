@@ -402,6 +402,12 @@ chromium-metrics-reviews@google.com.
   <int value="128" label="CustomLinksListMobile"/>
   <int value="129" label="SiteTokenProviderPref"/>
   <int value="130" label="ReaderForAccessibility"/>
+  <int value="131" label="SafeBrowsingNoProtectionDisabledTimestamp"/>
+  <int value="132" label="SafeBrowsingPreNoProtectionState"/>
+  <int value="133" label="SafeBrowsingNoProtectionDisabledPermanently"/>
+  <int value="134" label="SafeBrowsingNoProtectionReminderDismissed"/>
+  <int value="135" label="SafeBrowsingNoProtectionReminderLastShown"/>
+  <int value="136" label="SafeBrowsingNoProtectionReminderCount"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->

@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -13,6 +14,8 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
@@ -20,6 +23,41 @@
 using enum safe_browsing::ExtendedReportingLevel;
 
 namespace safe_browsing {
+void ClearNoProtectionReminderState(PrefService* prefs) {
+  if (!prefs) {
+    return;
+  }
+  if (prefs->FindPreference(
+          prefs::kSafeBrowsingNoProtectionReminderDismissed)) {
+    prefs->ClearPref(prefs::kSafeBrowsingNoProtectionReminderDismissed);
+  }
+  if (prefs->FindPreference(prefs::kSafeBrowsingNoProtectionReminderCount)) {
+    prefs->ClearPref(prefs::kSafeBrowsingNoProtectionReminderCount);
+  }
+  if (prefs->FindPreference(
+          prefs::kSafeBrowsingNoProtectionReminderLastShown)) {
+    prefs->ClearPref(prefs::kSafeBrowsingNoProtectionReminderLastShown);
+  }
+}
+
+void ClearNoProtectionTrackingState(PrefService* prefs) {
+  if (!prefs) {
+    return;
+  }
+  if (prefs->FindPreference(
+          prefs::kSafeBrowsingNoProtectionDisabledTimestamp)) {
+    prefs->ClearPref(prefs::kSafeBrowsingNoProtectionDisabledTimestamp);
+  }
+  if (prefs->FindPreference(prefs::kSafeBrowsingPreNoProtectionState)) {
+    prefs->ClearPref(prefs::kSafeBrowsingPreNoProtectionState);
+  }
+  if (prefs->FindPreference(
+          prefs::kSafeBrowsingNoProtectionDisabledPermanently)) {
+    prefs->ClearPref(prefs::kSafeBrowsingNoProtectionDisabledPermanently);
+  }
+  ClearNoProtectionReminderState(prefs);
+}
+
 namespace {
 
 const SafeBrowsingState kStandardSecurityBundleDefault =
@@ -127,7 +165,10 @@ void EnableSafeBrowsingSettingSetLocallyPref(PrefService* prefs) {
 
 void SetSafeBrowsingState(PrefService* prefs,
                           SafeBrowsingState state,
-                          bool is_esb_enabled_by_account_integration) {
+                          bool is_esb_enabled_by_account_integration,
+                          bool is_temporary_opt_out) {
+  SafeBrowsingState previous_state = GetSafeBrowsingState(*prefs);
+
   bool tailored_security_pref_registered =
       prefs->FindPreference(
           prefs::kEnhancedProtectionEnabledViaTailoredSecurity);
@@ -142,6 +183,7 @@ void SetSafeBrowsingState(PrefService* prefs,
     }
     SetEnhancedProtectionPref(prefs, true);
     SetStandardProtectionPref(prefs, true);
+    ClearNoProtectionTrackingState(prefs);
   } else if (state == SafeBrowsingState::STANDARD_PROTECTION) {
     if (tailored_security_pref_registered) {
       // Reset values since enhanced protection is disabled.
@@ -150,6 +192,7 @@ void SetSafeBrowsingState(PrefService* prefs,
     }
     SetEnhancedProtectionPref(prefs, false);
     SetStandardProtectionPref(prefs, true);
+    ClearNoProtectionTrackingState(prefs);
   } else {
     // This bit is only set when enhanced protection is enabled, so we reset it
     // when enhanced protection is disabled.
@@ -159,6 +202,51 @@ void SetSafeBrowsingState(PrefService* prefs,
     }
     SetEnhancedProtectionPref(prefs, false);
     SetStandardProtectionPref(prefs, false);
+
+    bool has_temporary_prefs =
+        prefs->FindPreference(
+            prefs::kSafeBrowsingNoProtectionDisabledTimestamp) &&
+        prefs->FindPreference(prefs::kSafeBrowsingPreNoProtectionState);
+
+    if (has_temporary_prefs && !IsSafeBrowsingPolicyManaged(*prefs) &&
+        !IsSafeBrowsingExtensionControlled(*prefs)) {
+      bool has_permanent_pref = prefs->FindPreference(
+          prefs::kSafeBrowsingNoProtectionDisabledPermanently);
+      bool is_explicitly_permanent =
+          has_permanent_pref &&
+          prefs->GetBoolean(
+              prefs::kSafeBrowsingNoProtectionDisabledPermanently);
+      bool is_explicitly_not_permanent =
+          has_permanent_pref &&
+          prefs->HasPrefPath(
+              prefs::kSafeBrowsingNoProtectionDisabledPermanently) &&
+          !prefs->GetBoolean(
+              prefs::kSafeBrowsingNoProtectionDisabledPermanently);
+
+      bool should_opt_out_temporarily =
+          (is_temporary_opt_out || is_explicitly_not_permanent) &&
+          !is_explicitly_permanent &&
+          base::FeatureList::IsEnabled(kSafeBrowsingNoProtectionTemporary);
+
+      if (should_opt_out_temporarily) {
+        if (previous_state != SafeBrowsingState::NO_SAFE_BROWSING &&
+            prefs->GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp)
+                .is_null()) {
+          prefs->SetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp,
+                         base::Time::Now());
+          prefs->SetInteger(prefs::kSafeBrowsingPreNoProtectionState,
+                            static_cast<int>(previous_state));
+        }
+      } else if (!is_temporary_opt_out || is_explicitly_permanent) {
+        if (has_permanent_pref) {
+          prefs->SetBoolean(prefs::kSafeBrowsingNoProtectionDisabledPermanently,
+                            true);
+        }
+        ClearNoProtectionReminderState(prefs);
+        prefs->ClearPref(prefs::kSafeBrowsingNoProtectionDisabledTimestamp);
+        prefs->ClearPref(prefs::kSafeBrowsingPreNoProtectionState);
+      }
+    }
   }
 }
 
@@ -287,6 +375,25 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   }
   registry->RegisterBooleanPref(prefs::kSafeBrowsingProceedAnywayDisabled,
                                 false);
+  registry->RegisterTimePref(prefs::kSafeBrowsingNoProtectionDisabledTimestamp,
+                             base::Time(),
+                             user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kSafeBrowsingPreNoProtectionState,
+      static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kSafeBrowsingNoProtectionDisabledPermanently, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(
+      prefs::kSafeBrowsingNoProtectionReminderCount, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterTimePref(prefs::kSafeBrowsingNoProtectionReminderLastShown,
+                             base::Time(),
+                             user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kSafeBrowsingNoProtectionReminderDismissed, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       prefs::kSafeBrowsingSyncedEnhancedProtectionRetryState,
       TailoredSecurityRetryState::UNSET);
@@ -419,6 +526,34 @@ void UpdatePrefsBeforeSecurityInterstitial(PrefService* prefs) {
   prefs->SetBoolean(prefs::kSafeBrowsingSawInterstitialScoutReporting, true);
 }
 
+base::TimeDelta GetNoProtectionReversionDuration() {
+  if (base::CommandLine::InitializedForCurrentProcess()) {
+    const base::CommandLine* command_line =
+        base::CommandLine::ForCurrentProcess();
+    if (command_line &&
+        command_line->HasSwitch(
+            switches::kSafeBrowsingNoProtectionDurationSeconds)) {
+      std::string custom_seconds_str = command_line->GetSwitchValueASCII(
+          switches::kSafeBrowsingNoProtectionDurationSeconds);
+      int custom_seconds = 0;
+      if (base::StringToInt(custom_seconds_str, &custom_seconds) &&
+          custom_seconds > 0) {
+        return base::Seconds(custom_seconds);
+      }
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(kSafeBrowsingNoProtectionTemporary)) {
+    int param_seconds =
+        kSafeBrowsingNoProtectionTemporaryDurationInSeconds.Get();
+    if (param_seconds > 0) {
+      return base::Seconds(param_seconds);
+    }
+  }
+
+  return base::Hours(24);
+}
+
 base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs) {
   base::ListValue preferences_list;
 
@@ -433,6 +568,20 @@ base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs) {
     preferences_list.Append(preference);
     bool enabled = prefs->GetBoolean(preference);
     preferences_list.Append(enabled ? "Enabled" : "Disabled");
+  }
+
+  if (base::FeatureList::IsEnabled(kSafeBrowsingNoProtectionTemporary) &&
+      GetSafeBrowsingState(*prefs) == SafeBrowsingState::NO_SAFE_BROWSING &&
+      prefs->FindPreference(
+          prefs::kSafeBrowsingNoProtectionDisabledTimestamp)) {
+    base::Time disabled_time =
+        prefs->GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp);
+    if (!disabled_time.is_null()) {
+      preferences_list.Append(
+          prefs::kSafeBrowsingNoProtectionDisabledTimestamp);
+      preferences_list.Append(
+          base::NumberToString(disabled_time.InMillisecondsSinceUnixEpoch()));
+    }
   }
   return preferences_list;
 }

@@ -9731,6 +9731,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSafeBrowsingLocalListsUseSBv5Description, kOsAll,
      FEATURE_VALUE_TYPE(safe_browsing::kLocalListsUseSBv5)},
 
+    {"safe-browsing-no-protection-temporary",
+     flag_descriptions::kSafeBrowsingNoProtectionTemporaryName,
+     flag_descriptions::kSafeBrowsingNoProtectionTemporaryDescription, kOsAll,
+     FEATURE_VALUE_TYPE(safe_browsing::kSafeBrowsingNoProtectionTemporary)},
+
     {"safe-browsing-no-protection-suppress-warnings",
      flag_descriptions::kSafeBrowsingNoProtectionSuppressWarningsName,
      flag_descriptions::kSafeBrowsingNoProtectionSuppressWarningsDescription,

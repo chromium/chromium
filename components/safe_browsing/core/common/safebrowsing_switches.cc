@@ -100,5 +100,7 @@ const char kSbEnableEnhancedProtection[] =
     "safebrowsing-enable-enhanced-protection";
 const char kForceTreatUserAsAdvancedProtection[] =
     "safe-browsing-treat-user-as-advanced-protection";
+const char kSafeBrowsingNoProtectionDurationSeconds[] =
+    "safe-browsing-no-protection-duration-seconds";
 
 }  // namespace safe_browsing::switches

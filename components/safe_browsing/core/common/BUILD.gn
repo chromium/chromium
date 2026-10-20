@@ -13,6 +13,7 @@ static_library("safe_browsing_prefs") {
 
   deps = [
     ":features",
+    ":switches",
     "//components/pref_registry",
     "//components/prefs",
     "//net",
@@ -55,6 +56,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/policy/core/browser",
     "//components/policy/core/browser:test_support",
+    "//components/pref_registry",
     "//components/prefs:test_support",
     "//testing/gmock",
     "//testing/gtest",
@@ -98,8 +100,6 @@ source_set("common") {
     "safebrowsing_constants.cc",
     "safebrowsing_constants.h",
     "safebrowsing_referral_methods.h",
-    "safebrowsing_switches.cc",
-    "safebrowsing_switches.h",
     "scheme_logger.cc",
     "scheme_logger.h",
     "utils.cc",
@@ -128,6 +128,7 @@ source_set("common") {
   public_deps = [
     ":features",
     ":interfaces",
+    ":switches",
     ":threat_enums",
   ]
 }
@@ -153,4 +154,15 @@ mojom("interfaces") {
 
 source_set("threat_enums") {
   sources = [ "threat_enums.h" ]
+}
+
+source_set("switches") {
+  sources = [
+    "safebrowsing_switches.cc",
+    "safebrowsing_switches.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [ "//base" ]
 }

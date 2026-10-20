@@ -498,6 +498,12 @@ BASE_DECLARE_FEATURE(kSafeBrowsingDeleteUnusedStores);
 // mode.
 BASE_DECLARE_FEATURE(kSafeBrowsingNoProtectionSuppressWarnings);
 
+// Enables temporary (24-hour) Safe Browsing opt-out by default.
+BASE_DECLARE_FEATURE(kSafeBrowsingNoProtectionTemporary);
+// Specifies the temporary No Protection reversion duration in seconds.
+extern const base::FeatureParam<int>
+    kSafeBrowsingNoProtectionTemporaryDurationInSeconds;
+
 // Skips Safe Browsing Real-Time URL lookups when the device is offline.
 BASE_DECLARE_FEATURE(kSafeBrowsingSkipRealTimeLookupIfOffline);
 

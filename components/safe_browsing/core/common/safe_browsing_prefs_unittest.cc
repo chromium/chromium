@@ -9,14 +9,30 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+namespace {
+
+bool IsPrefSyncable(const PrefRegistrySimple* registry,
+                    std::string_view pref_name) {
+  if (!registry) {
+    return false;
+  }
+  return (registry->GetRegistrationFlags(pref_name) &
+          user_prefs::PrefRegistrySyncable::SYNCABLE_PREF) != 0;
+}
+
+}  // namespace
 
 namespace safe_browsing {
 
@@ -356,5 +372,432 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_tailored_security_enabled = false,
             .expected_enhanced_protection_enabled = false,
             .expected_standard_protection_enabled = false}));
+
+TEST_F(SafeBrowsingPrefsTest, NoProtectionPrefsInitialized) {
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+  EXPECT_EQ(prefs.GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp),
+            base::Time());
+  EXPECT_EQ(prefs.GetInteger(prefs::kSafeBrowsingPreNoProtectionState),
+            static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
+  EXPECT_EQ(prefs.GetInteger(prefs::kSafeBrowsingNoProtectionReminderCount), 0);
+  EXPECT_EQ(prefs.GetTime(prefs::kSafeBrowsingNoProtectionReminderLastShown),
+            base::Time());
+  EXPECT_FALSE(
+      prefs.GetBoolean(prefs::kSafeBrowsingNoProtectionReminderDismissed));
+  EXPECT_FALSE(
+      prefs.GetBoolean(prefs::kSafeBrowsingNoProtectionDisabledPermanently));
+
+  // Verify all 6 No Protection prefs are registered as syncable.
+  EXPECT_TRUE(IsPrefSyncable(
+      prefs.registry(), prefs::kSafeBrowsingNoProtectionDisabledTimestamp));
+  EXPECT_TRUE(IsPrefSyncable(prefs.registry(),
+                             prefs::kSafeBrowsingPreNoProtectionState));
+  EXPECT_TRUE(IsPrefSyncable(
+      prefs.registry(), prefs::kSafeBrowsingNoProtectionDisabledPermanently));
+  EXPECT_TRUE(IsPrefSyncable(
+      prefs.registry(), prefs::kSafeBrowsingNoProtectionReminderDismissed));
+  EXPECT_TRUE(IsPrefSyncable(
+      prefs.registry(), prefs::kSafeBrowsingNoProtectionReminderLastShown));
+  EXPECT_TRUE(IsPrefSyncable(prefs.registry(),
+                             prefs::kSafeBrowsingNoProtectionReminderCount));
+}
+
+TEST_F(SafeBrowsingPrefsTest, ClearNoProtectionTrackingState) {
+  // Calling ClearNoProtectionTrackingState on empty/unregistered prefs does not
+  // crash.
+  {
+    TestingPrefServiceSimple empty_prefs;
+    EXPECT_NO_FATAL_FAILURE(ClearNoProtectionTrackingState(&empty_prefs));
+    EXPECT_NO_FATAL_FAILURE(ClearNoProtectionTrackingState(nullptr));
+  }
+
+  // Calling ClearNoProtectionTrackingState on registered prefs clears all 6
+  // tracking prefs.
+  {
+    TestingPrefServiceSimple prefs;
+    RegisterProfilePrefs(prefs.registry());
+
+    prefs.SetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp,
+                  base::Time::Now());
+    prefs.SetInteger(prefs::kSafeBrowsingPreNoProtectionState,
+                     static_cast<int>(SafeBrowsingState::ENHANCED_PROTECTION));
+    prefs.SetBoolean(prefs::kSafeBrowsingNoProtectionDisabledPermanently, true);
+    prefs.SetBoolean(prefs::kSafeBrowsingNoProtectionReminderDismissed, true);
+    prefs.SetInteger(prefs::kSafeBrowsingNoProtectionReminderCount, 3);
+    prefs.SetTime(prefs::kSafeBrowsingNoProtectionReminderLastShown,
+                  base::Time::Now());
+
+    ClearNoProtectionTrackingState(&prefs);
+
+    EXPECT_FALSE(
+        prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionDisabledTimestamp));
+    EXPECT_TRUE(prefs.GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp)
+                    .is_null());
+    EXPECT_FALSE(prefs.HasPrefPath(prefs::kSafeBrowsingPreNoProtectionState));
+    EXPECT_FALSE(
+        prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionDisabledPermanently));
+    EXPECT_FALSE(
+        prefs.GetBoolean(prefs::kSafeBrowsingNoProtectionDisabledPermanently));
+    EXPECT_FALSE(
+        prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionReminderDismissed));
+    EXPECT_FALSE(
+        prefs.GetBoolean(prefs::kSafeBrowsingNoProtectionReminderDismissed));
+    EXPECT_FALSE(
+        prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionReminderCount));
+    EXPECT_EQ(prefs.GetInteger(prefs::kSafeBrowsingNoProtectionReminderCount),
+              0);
+    EXPECT_FALSE(
+        prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionReminderLastShown));
+    EXPECT_TRUE(prefs.GetTime(prefs::kSafeBrowsingNoProtectionReminderLastShown)
+                    .is_null());
+  }
+}
+
+TEST_F(SafeBrowsingPrefsTest, ClearNoProtectionReminderState) {
+  // Calling ClearNoProtectionReminderState on empty/unregistered prefs does not
+  // crash.
+  {
+    TestingPrefServiceSimple empty_prefs;
+    EXPECT_NO_FATAL_FAILURE(ClearNoProtectionReminderState(&empty_prefs));
+    EXPECT_NO_FATAL_FAILURE(ClearNoProtectionReminderState(nullptr));
+  }
+
+  // Calling ClearNoProtectionReminderState clears reminder prefs while
+  // preserving tracking state (timestamp and previous state).
+  {
+    TestingPrefServiceSimple prefs;
+    RegisterProfilePrefs(prefs.registry());
+
+    prefs.SetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp,
+                  base::Time::Now());
+    prefs.SetInteger(prefs::kSafeBrowsingPreNoProtectionState,
+                     static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
+    prefs.SetBoolean(prefs::kSafeBrowsingNoProtectionDisabledPermanently, true);
+    prefs.SetBoolean(prefs::kSafeBrowsingNoProtectionReminderDismissed, true);
+    prefs.SetInteger(prefs::kSafeBrowsingNoProtectionReminderCount, 3);
+    prefs.SetTime(prefs::kSafeBrowsingNoProtectionReminderLastShown,
+                  base::Time::Now());
+
+    ClearNoProtectionReminderState(&prefs);
+
+    EXPECT_FALSE(
+        prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionReminderDismissed));
+    EXPECT_FALSE(
+        prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionReminderCount));
+    EXPECT_FALSE(
+        prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionReminderLastShown));
+    // Tracking state is preserved.
+    EXPECT_TRUE(
+        prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionDisabledTimestamp));
+    EXPECT_TRUE(prefs.HasPrefPath(prefs::kSafeBrowsingPreNoProtectionState));
+    EXPECT_TRUE(
+        prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionDisabledPermanently));
+  }
+}
+
+TEST_F(SafeBrowsingPrefsTest, TemporaryNoProtectionStateTracking) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSafeBrowsingNoProtectionTemporary);
+
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+
+  // 1. Establish enhanced protection.
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::ENHANCED_PROTECTION);
+  EXPECT_EQ(GetSafeBrowsingState(prefs),
+            SafeBrowsingState::ENHANCED_PROTECTION);
+
+  // 2. Transition to NO_SAFE_BROWSING.
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::NO_SAFE_BROWSING,
+                       /*is_esb_enabled_by_account_integration=*/false,
+                       /*is_temporary_opt_out=*/true);
+  EXPECT_EQ(GetSafeBrowsingState(prefs), SafeBrowsingState::NO_SAFE_BROWSING);
+  EXPECT_FALSE(prefs.GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp)
+                   .is_null());
+  EXPECT_EQ(prefs.GetInteger(prefs::kSafeBrowsingPreNoProtectionState),
+            static_cast<int>(SafeBrowsingState::ENHANCED_PROTECTION));
+
+  // 3. User re-enables Standard Protection (clearing timestamp, pre-state, and
+  // reminder state).
+  prefs.SetBoolean(prefs::kSafeBrowsingNoProtectionReminderDismissed, true);
+  prefs.SetInteger(prefs::kSafeBrowsingNoProtectionReminderCount, 2);
+  prefs.SetTime(prefs::kSafeBrowsingNoProtectionReminderLastShown,
+                base::Time::Now());
+
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_EQ(GetSafeBrowsingState(prefs),
+            SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_TRUE(prefs.GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp)
+                  .is_null());
+  EXPECT_FALSE(prefs.HasPrefPath(prefs::kSafeBrowsingPreNoProtectionState));
+  EXPECT_FALSE(
+      prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionReminderDismissed));
+  EXPECT_FALSE(
+      prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionReminderCount));
+  EXPECT_FALSE(
+      prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionReminderLastShown));
+}
+
+TEST_F(SafeBrowsingPrefsTest, PermanentNoProtectionReSaveDoesNotSetTemporary) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSafeBrowsingNoProtectionTemporary);
+
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+
+  // User is already permanently in NO_SAFE_BROWSING with no timestamp.
+  SetStandardProtectionPref(&prefs, false);
+  SetEnhancedProtectionPref(&prefs, false);
+  EXPECT_EQ(GetSafeBrowsingState(prefs), SafeBrowsingState::NO_SAFE_BROWSING);
+  EXPECT_TRUE(prefs.GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp)
+                  .is_null());
+
+  // Re-saving NO_SAFE_BROWSING should not set temporary timestamp or pre-state.
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::NO_SAFE_BROWSING);
+  EXPECT_TRUE(prefs.GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp)
+                  .is_null());
+  EXPECT_FALSE(prefs.HasPrefPath(prefs::kSafeBrowsingPreNoProtectionState));
+}
+
+TEST_F(SafeBrowsingPrefsTest, ManagedPolicyDoesNotSetTemporary) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSafeBrowsingNoProtectionTemporary);
+
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::STANDARD_PROTECTION);
+  prefs.SetManagedPref(prefs::kSafeBrowsingEnabled,
+                       std::make_unique<base::Value>(false));
+
+  EXPECT_TRUE(IsSafeBrowsingPolicyManaged(prefs));
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::NO_SAFE_BROWSING);
+
+  EXPECT_TRUE(prefs.GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp)
+                  .is_null());
+  EXPECT_FALSE(prefs.HasPrefPath(prefs::kSafeBrowsingPreNoProtectionState));
+  EXPECT_FALSE(
+      prefs.GetBoolean(prefs::kSafeBrowsingNoProtectionDisabledPermanently));
+}
+
+TEST_F(SafeBrowsingPrefsTest, ExtensionControlledDoesNotSetTemporary) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSafeBrowsingNoProtectionTemporary);
+
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::STANDARD_PROTECTION);
+  prefs.SetExtensionPref(prefs::kSafeBrowsingEnabled,
+                         std::make_unique<base::Value>(false));
+
+  EXPECT_TRUE(IsSafeBrowsingExtensionControlled(prefs));
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::NO_SAFE_BROWSING);
+
+  EXPECT_TRUE(prefs.GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp)
+                  .is_null());
+  EXPECT_FALSE(prefs.HasPrefPath(prefs::kSafeBrowsingPreNoProtectionState));
+  EXPECT_FALSE(
+      prefs.GetBoolean(prefs::kSafeBrowsingNoProtectionDisabledPermanently));
+}
+
+TEST_F(SafeBrowsingPrefsTest,
+       WebUiPreConfiguredNotPermanentTriggersTemporaryOptOut) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSafeBrowsingNoProtectionTemporary);
+
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::STANDARD_PROTECTION);
+  prefs.SetBoolean(prefs::kSafeBrowsingNoProtectionDisabledPermanently, false);
+
+  // Invoking SetSafeBrowsingState without specifying is_temporary_opt_out
+  // (defaults to false). Because kSafeBrowsingNoProtectionDisabledPermanently
+  // was set to false by WebUI, temporary opt-out should be triggered.
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::NO_SAFE_BROWSING);
+
+  EXPECT_EQ(GetSafeBrowsingState(prefs), SafeBrowsingState::NO_SAFE_BROWSING);
+  EXPECT_FALSE(prefs.GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp)
+                   .is_null());
+  EXPECT_EQ(prefs.GetInteger(prefs::kSafeBrowsingPreNoProtectionState),
+            static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION));
+  EXPECT_FALSE(
+      prefs.GetBoolean(prefs::kSafeBrowsingNoProtectionDisabledPermanently));
+}
+
+TEST_F(SafeBrowsingPrefsTest, ExplicitPermanentNoProtectionOptOut) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSafeBrowsingNoProtectionTemporary);
+
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::ENHANCED_PROTECTION);
+  EXPECT_EQ(GetSafeBrowsingState(prefs),
+            SafeBrowsingState::ENHANCED_PROTECTION);
+
+  // Transition to NO_SAFE_BROWSING with is_temporary_opt_out = false.
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::NO_SAFE_BROWSING,
+                       /*is_esb_enabled_by_account_integration=*/false,
+                       /*is_temporary_opt_out=*/false);
+
+  EXPECT_EQ(GetSafeBrowsingState(prefs), SafeBrowsingState::NO_SAFE_BROWSING);
+  EXPECT_TRUE(
+      prefs.GetBoolean(prefs::kSafeBrowsingNoProtectionDisabledPermanently));
+  EXPECT_TRUE(prefs.GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp)
+                  .is_null());
+  EXPECT_FALSE(prefs.HasPrefPath(prefs::kSafeBrowsingPreNoProtectionState));
+}
+
+TEST_F(SafeBrowsingPrefsTest, PermanentOptOutFromTemporaryClearsReminderState) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSafeBrowsingNoProtectionTemporary);
+
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+
+  // Transition to temporary No Protection first.
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::STANDARD_PROTECTION);
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::NO_SAFE_BROWSING,
+                       /*is_esb_enabled_by_account_integration=*/false,
+                       /*is_temporary_opt_out=*/true);
+  EXPECT_FALSE(prefs.GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp)
+                   .is_null());
+
+  // Set reminder state during temporary opt-out.
+  prefs.SetBoolean(prefs::kSafeBrowsingNoProtectionReminderDismissed, true);
+  prefs.SetInteger(prefs::kSafeBrowsingNoProtectionReminderCount, 2);
+  prefs.SetTime(prefs::kSafeBrowsingNoProtectionReminderLastShown,
+                base::Time::Now());
+
+  // Transition to permanent opt-out.
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::NO_SAFE_BROWSING,
+                       /*is_esb_enabled_by_account_integration=*/false,
+                       /*is_temporary_opt_out=*/false);
+
+  EXPECT_EQ(GetSafeBrowsingState(prefs), SafeBrowsingState::NO_SAFE_BROWSING);
+  EXPECT_TRUE(
+      prefs.GetBoolean(prefs::kSafeBrowsingNoProtectionDisabledPermanently));
+  EXPECT_TRUE(prefs.GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp)
+                  .is_null());
+  EXPECT_FALSE(prefs.HasPrefPath(prefs::kSafeBrowsingPreNoProtectionState));
+  EXPECT_FALSE(
+      prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionReminderDismissed));
+  EXPECT_FALSE(
+      prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionReminderCount));
+  EXPECT_FALSE(
+      prefs.HasPrefPath(prefs::kSafeBrowsingNoProtectionReminderLastShown));
+}
+
+TEST_F(SafeBrowsingPrefsTest, GetNoProtectionReversionDurationDefault) {
+  EXPECT_EQ(GetNoProtectionReversionDuration(), base::Hours(24));
+}
+
+TEST_F(SafeBrowsingPrefsTest, GetNoProtectionReversionDurationWithSwitch) {
+  base::test::ScopedCommandLine scoped_command_line;
+  auto* command_line = scoped_command_line.GetProcessCommandLine();
+
+  command_line->AppendSwitchASCII(
+      switches::kSafeBrowsingNoProtectionDurationSeconds, "3600");
+  EXPECT_EQ(GetNoProtectionReversionDuration(), base::Hours(1));
+
+  // Invalid or non-positive value defaults back to 24 hours.
+  command_line->AppendSwitchASCII(
+      switches::kSafeBrowsingNoProtectionDurationSeconds, "-10");
+  EXPECT_EQ(GetNoProtectionReversionDuration(), base::Hours(24));
+
+  command_line->AppendSwitchASCII(
+      switches::kSafeBrowsingNoProtectionDurationSeconds, "invalid");
+  EXPECT_EQ(GetNoProtectionReversionDuration(), base::Hours(24));
+}
+
+TEST_F(SafeBrowsingPrefsTest, GetNoProtectionReversionDurationFinchOverride) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSafeBrowsingNoProtectionTemporary, {{"duration_seconds", "7200"}});
+
+  EXPECT_EQ(kSafeBrowsingNoProtectionTemporaryDurationInSeconds.Get(), 7200);
+  EXPECT_EQ(GetNoProtectionReversionDuration(), base::Hours(2));
+}
+
+TEST_F(SafeBrowsingPrefsTest,
+       GetNoProtectionReversionDurationFeatureEnabledWithoutParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSafeBrowsingNoProtectionTemporary);
+
+  EXPECT_EQ(kSafeBrowsingNoProtectionTemporaryDurationInSeconds.Get(), 0);
+  EXPECT_EQ(GetNoProtectionReversionDuration(), base::Hours(24));
+}
+
+TEST_F(SafeBrowsingPrefsTest,
+       GetNoProtectionReversionDurationFinchOverrideInvalidFallsBackToDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSafeBrowsingNoProtectionTemporary, {{"duration_seconds", "-10"}});
+
+  EXPECT_EQ(kSafeBrowsingNoProtectionTemporaryDurationInSeconds.Get(), -10);
+  EXPECT_EQ(GetNoProtectionReversionDuration(), base::Hours(24));
+}
+
+TEST_F(SafeBrowsingPrefsTest,
+       GetNoProtectionReversionDurationSwitchOverridesFinch) {
+  base::test::ScopedCommandLine scoped_command_line;
+  auto* command_line = scoped_command_line.GetProcessCommandLine();
+  command_line->AppendSwitchASCII(
+      switches::kSafeBrowsingNoProtectionDurationSeconds, "3600");
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSafeBrowsingNoProtectionTemporary, {{"duration_seconds", "7200"}});
+
+  // Switch (1 hour) takes precedence over Finch parameter (2 hours).
+  EXPECT_EQ(GetNoProtectionReversionDuration(), base::Hours(1));
+}
+
+TEST_F(SafeBrowsingPrefsTest,
+       GetSafeBrowsingPreferencesListTemporaryNoProtection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSafeBrowsingNoProtectionTemporary);
+
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::STANDARD_PROTECTION);
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::NO_SAFE_BROWSING,
+                       /*is_esb_enabled_by_account_integration=*/false,
+                       /*is_temporary_opt_out=*/true);
+
+  base::ListValue pref_list = GetSafeBrowsingPreferencesList(&prefs);
+  bool found_timestamp = false;
+  for (const auto& item : pref_list) {
+    if (item.is_string() &&
+        item.GetString() == prefs::kSafeBrowsingNoProtectionDisabledTimestamp) {
+      found_timestamp = true;
+    }
+  }
+  EXPECT_TRUE(found_timestamp);
+}
+
+TEST_F(SafeBrowsingPrefsTest, DefaultSetSafeBrowsingStateIsPermanentOptOut) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSafeBrowsingNoProtectionTemporary);
+
+  TestingPrefServiceSimple prefs;
+  RegisterProfilePrefs(prefs.registry());
+
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::STANDARD_PROTECTION);
+  // Default call with 2 arguments should be permanent (is_temporary_opt_out =
+  // false).
+  SetSafeBrowsingState(&prefs, SafeBrowsingState::NO_SAFE_BROWSING);
+
+  EXPECT_EQ(GetSafeBrowsingState(prefs), SafeBrowsingState::NO_SAFE_BROWSING);
+  EXPECT_TRUE(
+      prefs.GetBoolean(prefs::kSafeBrowsingNoProtectionDisabledPermanently));
+  EXPECT_TRUE(prefs.GetTime(prefs::kSafeBrowsingNoProtectionDisabledTimestamp)
+                  .is_null());
+  EXPECT_FALSE(prefs.HasPrefPath(prefs::kSafeBrowsingPreNoProtectionState));
+}
 
 }  // namespace safe_browsing

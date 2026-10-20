@@ -2640,6 +2640,12 @@ inline constexpr char kSafeBrowsingLocalListsUseSBv5Description[] =
     "Fetch and check local lists using the Safe Browsing v5 API instead of the "
     "v4 Update API.";
 
+inline constexpr char kSafeBrowsingNoProtectionTemporaryName[] =
+    "Safe Browsing Temporary No Protection";
+inline constexpr char kSafeBrowsingNoProtectionTemporaryDescription[] =
+    "Enables temporary 24-hour Safe Browsing opt-out mode with automatic "
+    "reversion to the previous protection level.";
+
 inline constexpr char kSafeBrowsingNoProtectionSuppressWarningsName[] =
     "Safe Browsing Suppress Dangerous File Warnings in No Protection";
 inline constexpr char kSafeBrowsingNoProtectionSuppressWarningsDescription[] =

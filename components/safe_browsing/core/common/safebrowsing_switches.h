@@ -29,6 +29,9 @@ extern const char kSbEnableEnhancedProtection[];
 extern const char kForceTreatUserAsAdvancedProtection[];
 extern const char kSbFastInitialListsUpdate[];
 
+// Command-line override for the temporary No Protection duration in seconds.
+extern const char kSafeBrowsingNoProtectionDurationSeconds[];
+
 }  // namespace safe_browsing::switches
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_SAFEBROWSING_SWITCHES_H_
