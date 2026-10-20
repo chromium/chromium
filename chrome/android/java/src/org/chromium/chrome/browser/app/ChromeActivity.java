@@ -123,6 +123,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolderSupplier;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManagerHandler;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteUtils;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.devtools.DevToolsWindowAndroid;
@@ -832,8 +833,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                         new StartupSigninStateCheckController(
                                 /* context= */ this,
                                 /* dialogManager= */ modalDialogManager,
+                                /* bottomSheetController= */ assertNonNull(
+                                        mRootUiCoordinator.getBottomSheetController()),
                                 /* lifecycleDispatcher= */ getLifecycleDispatcher(),
-                                /* profileSupplier= */ mTabModelProfileSupplier);
+                                /* profileSupplier= */ mTabModelProfileSupplier,
+                                /* showInfoPageCallback= */ url ->
+                                        CustomTabActivity.showInfoPage(this, url));
             }
 
             mShowContentRunnable =

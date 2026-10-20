@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.ui.signin;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -16,9 +19,17 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerController;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerController.ShownOn;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SignoutReason;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+// TODO(b/570998772): Move this class to the enterprise signals disclaimer directory and merge with
+// the StartupEnterpriseSignalsDisclaimerController.
 
 /**
  * Controller responsible for verifying sign-in state correctness on activity startup. Currently
@@ -31,17 +42,47 @@ public class StartupSigninStateCheckController implements NativeInitObserver, De
     private final ModalDialogManager mDialogManager;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
+    private final EnterpriseSignalsDisclaimerController mDisclaimerController;
     private boolean mDestroyed;
 
+    /**
+     * @param context The Activity {@link Context}.
+     * @param dialogManager The {@link ModalDialogManager} for showing the management notice.
+     * @param bottomSheetController The {@link BottomSheetController} for showing the enterprise
+     *     signals disclaimer.
+     * @param lifecycleDispatcher The {@link ActivityLifecycleDispatcher} of the activity.
+     * @param profileSupplier Supplier of the current {@link Profile}.
+     * @param showInfoPageCallback Callback invoked with a URL to open an info page from the
+     *     enterprise signals disclaimer.
+     */
     public StartupSigninStateCheckController(
             Context context,
             ModalDialogManager dialogManager,
+            BottomSheetController bottomSheetController,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            MonotonicObservableSupplier<Profile> profileSupplier) {
+            MonotonicObservableSupplier<Profile> profileSupplier,
+            Callback<String> showInfoPageCallback) {
+        this(
+                context,
+                dialogManager,
+                lifecycleDispatcher,
+                profileSupplier,
+                new EnterpriseSignalsDisclaimerController(
+                        context, bottomSheetController, dialogManager, showInfoPageCallback));
+    }
+
+    @VisibleForTesting
+    StartupSigninStateCheckController(
+            Context context,
+            ModalDialogManager dialogManager,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            MonotonicObservableSupplier<Profile> profileSupplier,
+            EnterpriseSignalsDisclaimerController disclaimerController) {
         mContext = context;
         mDialogManager = dialogManager;
         mLifecycleDispatcher = lifecycleDispatcher;
         mProfileSupplier = profileSupplier;
+        mDisclaimerController = disclaimerController;
 
         mLifecycleDispatcher.register(this);
     }
@@ -50,6 +91,7 @@ public class StartupSigninStateCheckController implements NativeInitObserver, De
     public void onDestroy() {
         mDestroyed = true;
         mLifecycleDispatcher.unregister(this);
+        mDisclaimerController.destroy();
     }
 
     @Override
@@ -97,26 +139,79 @@ public class StartupSigninStateCheckController implements NativeInitObserver, De
                         return;
                     }
                     if (isAccountManaged) {
-                        ConfirmManagedSyncDataDialogCoordinator.Listener listener =
-                                new ConfirmManagedSyncDataDialogCoordinator.Listener() {
-                                    @Override
-                                    public void onConfirm() {
-                                        signinManager.setUserAcceptedAccountManagement(true);
-                                    }
-
-                                    @Override
-                                    public void onCancel() {
-                                        signinManager.setUserAcceptedAccountManagement(false);
-                                        signinManager.signOut(SignoutReason.ABORT_SIGNIN);
-                                    }
-                                };
-
-                        new ConfirmManagedSyncDataDialogCoordinator(
-                                mContext,
-                                mDialogManager,
-                                listener,
-                                signinManager.extractDomainName(primaryAccount.getEmail()));
+                        showManagementNotice(signinManager, primaryAccount);
                     }
                 });
+    }
+
+    /** Shows the management notice for the primary account. */
+    private void showManagementNotice(SigninManager signinManager, AccountInfo primaryAccount) {
+        ConfirmManagedSyncDataDialogCoordinator.Listener listener =
+                new ConfirmManagedSyncDataDialogCoordinator.Listener() {
+                    @Override
+                    public void onConfirm() {
+                        if (mDestroyed
+                                || !isPrimaryAccount(signinManager, primaryAccount.getId())) {
+                            return;
+                        }
+                        signinManager.setUserAcceptedAccountManagement(true);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        if (mDestroyed
+                                || !isPrimaryAccount(signinManager, primaryAccount.getId())) {
+                            return;
+                        }
+                        signinManager.setUserAcceptedAccountManagement(false);
+                        signinManager.runAfterOperationInProgress(
+                                () -> {
+                                    if (!mDestroyed
+                                            && signinManager.isSignOutAllowed()
+                                            && isPrimaryAccount(
+                                                    signinManager, primaryAccount.getId())) {
+                                        signinManager.signOut(
+                                                SignoutReason
+                                                        .USER_DECLINED_ENTERPRISE_MANAGEMENT_DISCLAIMER);
+                                    }
+                                });
+                    }
+                };
+
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)) {
+            new ConfirmManagedSyncDataDialogCoordinator(
+                    mContext,
+                    mDialogManager,
+                    listener,
+                    signinManager.extractDomainName(primaryAccount.getEmail()));
+            return;
+        }
+
+        mDisclaimerController.show(
+                signinManager.getIdentityManager(),
+                primaryAccount,
+                ShownOn.SIGNIN_STATE_RECOVERY,
+                new EnterpriseSignalsDisclaimerController.Listener() {
+                    @Override
+                    public void onAccepted() {
+                        listener.onConfirm();
+                    }
+
+                    @Override
+                    public void onDeclined() {
+                        listener.onCancel();
+                    }
+                });
+    }
+
+    private static boolean isPrimaryAccount(
+            SigninManager signinManager, CoreAccountId primaryAccountId) {
+        CoreAccountInfo primaryAccountInfo =
+                signinManager.getIdentityManager().getPrimaryAccountInfo();
+        if (primaryAccountInfo == null) {
+            return false;
+        }
+
+        return primaryAccountId.equals(primaryAccountInfo.getId());
     }
 }

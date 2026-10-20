@@ -45,13 +45,14 @@ public class EnterpriseSignalsDisclaimerController {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     // LINT.IfChange(EnterpriseSignalsDisclaimerShownOn)
-    @IntDef({ShownOn.STARTUP, ShownOn.SIGN_IN, ShownOn.COUNT})
+    @IntDef({ShownOn.STARTUP, ShownOn.SIGN_IN, ShownOn.SIGNIN_STATE_RECOVERY, ShownOn.COUNT})
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
     public @interface ShownOn {
         int STARTUP = 0;
         int SIGN_IN = 1;
-        int COUNT = 2;
+        int SIGNIN_STATE_RECOVERY = 2;
+        int COUNT = 3;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSignalsDisclaimerShownOn)

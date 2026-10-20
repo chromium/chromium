@@ -2789,6 +2789,7 @@ chromium-metrics-reviews@google.com.
 <enum name="EnterpriseSignalsDisclaimerShownOn">
   <int value="0" label="Startup"/>
   <int value="1" label="Sign-in"/>
+  <int value="2" label="Sign-in state recovery"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/enterprise_signals_disclaimer/java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerController.java:EnterpriseSignalsDisclaimerShownOn) -->
