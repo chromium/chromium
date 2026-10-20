@@ -478,5 +478,14 @@ TEST_F(BaseRenderingContext2DSharedImageTest, ResourceRecyclingViaSnapshot) {
       context->PaintRenderingResultsToSnapshot(kBackBuffer)->GetSharedImage());
 }
 
+TEST_F(BaseRenderingContext2DSharedImageTest, AllocatedBufferSizeAccelerated) {
+  V8TestingScope scope;
+  auto* context = CreateBackedContext(scope, RasterMode::kGPU);
+  ASSERT_TRUE(context->IsBackingValid());
+  EXPECT_TRUE(context->Is2DCanvasAccelerated());
+  EXPECT_EQ(context->AllocatedBufferSize(),
+            base::ByteSize(kSize.width() * kSize.height() * 4));
+}
+
 }  // namespace
 }  // namespace blink

@@ -380,14 +380,4 @@ TEST_P(Canvas2DResourceProviderSyncTokenTest,
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 }
 
-TEST_F(Canvas2DResourceProviderTest, EstimatedSizeInBytesAccelerated) {
-  constexpr gfx::Size kSize(10, 10);
-  auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
-
-  ASSERT_TRUE(provider && provider->IsValid());
-  EXPECT_TRUE(provider->IsAccelerated());
-  EXPECT_EQ(provider->EstimatedSizeInBytes(),
-            base::ByteSize(kSize.width() * kSize.height() * 4));
-}
-
 }  // namespace blink
