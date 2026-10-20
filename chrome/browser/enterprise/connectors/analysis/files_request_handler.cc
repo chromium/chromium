@@ -59,6 +59,8 @@ void ReportCancellationsOnUIThread(
     GURL url,
     GURL tab_url,
     safe_browsing::ReferrerChain referrer_chain,
+    std::optional<safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
+        extension_initiator,
     std::vector<UnreportedFileInfo> unreported_files) {
   Profile* profile = profile_weak.get();
   if (!profile) {
@@ -77,7 +79,7 @@ void ReportCancellationsOnUIThread(
         access_point_trigger, /*scan_id=*/"",
         enterprise_connectors::kUserCancelledUnscannedReason,
         content_transfer_method, unreported.file_info.size, referrer_chain,
-        EventResult::CANCELLED);
+        EventResult::CANCELLED, extension_initiator);
   }
 }
 
@@ -195,7 +197,8 @@ void FilesRequestHandler::MaybeCancelAndReport() {
                      handler_->content_transfer_method(),
                      GURL(handler_->content_analysis_info()->url()),
                      handler_->content_analysis_info()->tab_url(),
-                     handler_->content_analysis_info()->referrer_chain()));
+                     handler_->content_analysis_info()->referrer_chain(),
+                     handler_->content_analysis_info()->extension_initiator()));
 }
 
 void FilesRequestHandler::StopFileWork() {

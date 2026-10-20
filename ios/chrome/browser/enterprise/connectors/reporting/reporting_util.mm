@@ -96,7 +96,7 @@ void MaybeReportDangerousDownloadEvent(
       /*threat_type=*/kDangerousFileTypeDownloadThreatType, file_info.mime_type,
       DataTransferEventTrigger::FILE_DOWNLOAD, response.request_token(),
       /*content_transfer_method=*/"", file_info.size, info.referrer_chain(),
-      info.frame_url_chain(), result);
+      info.frame_url_chain(), result, info.extension_initiator());
 }
 
 }  // namespace enterprise_connectors

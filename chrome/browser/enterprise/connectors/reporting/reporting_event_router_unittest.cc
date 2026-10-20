@@ -928,7 +928,8 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Allowed) {
       "exampleDestination", "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
       "application/zip", DataTransferEventTrigger::FILE_UPLOAD, "123",
       "FILE_PASSWORD_PROTECTED", "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", 12345,
-      referrer_chain, EventResult::ALLOWED);
+      referrer_chain, EventResult::ALLOWED,
+      /*extension_initiator=*/std::nullopt);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -977,7 +978,7 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Cancelled) {
       "exampleDestination", "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
       "application/zip", DataTransferEventTrigger::FILE_DOWNLOAD, "123",
       "FILE_PASSWORD_PROTECTED", "", 12345, referrer_chain,
-      EventResult::CANCELLED);
+      EventResult::CANCELLED, /*extension_initiator=*/std::nullopt);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -1028,7 +1029,7 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnUnscannedFileEvent_Blocked) {
       "exampleDestination", "encrypted.zip", GetHashCallbackVariant("DEADBEEF"),
       "application/zip", DataTransferEventTrigger::FILE_DOWNLOAD, "123",
       "FILE_PASSWORD_PROTECTED", "", 12345, referrer_chain,
-      EventResult::BLOCKED);
+      EventResult::BLOCKED, /*extension_initiator=*/std::nullopt);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -1087,7 +1088,8 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnSensitiveDataEvent_Allowed) {
       "application/zip", DataTransferEventTrigger::FILE_UPLOAD, "123",
       "CONTENT_TRANSFER_METHOD_DRAG_AND_DROP", "test@gmail.com",
       "gaia@gmail.com", /*user_justification=*/std::nullopt, *result, 200,
-      referrer_chain, CreateFakeFrameUrlChainProto(), EventResult::ALLOWED);
+      referrer_chain, CreateFakeFrameUrlChainProto(), EventResult::ALLOWED,
+      /*extension_initiator=*/std::nullopt);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -1158,7 +1160,7 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnSensitiveDataEvent_Blocked) {
       "application/zip", DataTransferEventTrigger::FILE_DOWNLOAD, "123", "",
       "test@gmail.com", "gaia@gmail.com", /*user_justification=*/std::nullopt,
       *result, 200, referrer_chain, CreateFakeFrameUrlChainProto(),
-      EventResult::BLOCKED);
+      EventResult::BLOCKED, /*extension_initiator=*/std::nullopt);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -1211,7 +1213,8 @@ TEST_P(ReportingEventRouterFileEventTest, TestOnDangerousDownloadEvent_Warned) {
       GetHashCallbackVariant("DEADBEEF"), "POTENTIALLY_UNWANTED",
       "application/zip", DataTransferEventTrigger::FILE_DOWNLOAD, "123",
       /*content_transfer_method=*/"", 12345, std::move(referrer_chain),
-      CreateFakeFrameUrlChainProto(), EventResult::WARNED);
+      CreateFakeFrameUrlChainProto(), EventResult::WARNED,
+      /*extension_initiator=*/std::nullopt);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -1265,7 +1268,8 @@ TEST_P(ReportingEventRouterFileEventTest,
       GetHashCallbackVariant("DEADBEEF"), "DANGEROUS", "application/zip",
       DataTransferEventTrigger::FILE_DOWNLOAD, "123",
       /*content_transfer_method=*/"", 12345, std::move(referrer_chain),
-      CreateFakeFrameUrlChainProto(), EventResult::BLOCKED);
+      CreateFakeFrameUrlChainProto(), EventResult::BLOCKED,
+      /*extension_initiator=*/std::nullopt);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -1319,7 +1323,7 @@ TEST_P(ReportingEventRouterFileEventTest,
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT, "application/zip",
       DataTransferEventTrigger::FILE_DOWNLOAD, "123", 12345,
       std::move(referrer_chain), CreateFakeFrameUrlChainProto(),
-      EventResult::BYPASSED);
+      EventResult::BYPASSED, /*extension_initiator=*/std::nullopt);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -1372,7 +1376,7 @@ TEST_P(ReportingEventRouterFileEventTest,
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT, "application/zip",
       DataTransferEventTrigger::FILE_DOWNLOAD, "", 12345,
       std::move(referrer_chain), CreateFakeFrameUrlChainProto(),
-      EventResult::WARNED);
+      EventResult::WARNED, /*extension_initiator=*/std::nullopt);
   RunUntilHashObtained();
   run_loop.Run();
 }
@@ -1475,7 +1479,8 @@ TEST_P(ReportingEventRouterInitiatorTest, DangerousDownloadEvent_NoInitiator) {
       "download.exe", GetHashCallbackVariant("DEADBEEF"),
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT, "application/exe",
       DataTransferEventTrigger::FILE_DOWNLOAD, /*scan_id=*/"", 12345,
-      ReferrerChain(), CreateFakeFrameUrlChainProto(), EventResult::WARNED);
+      ReferrerChain(), CreateFakeFrameUrlChainProto(), EventResult::WARNED,
+      /*extension_initiator=*/std::nullopt);
   RunUntilHashObtained();
   run_loop.Run();
 }
