@@ -669,6 +669,10 @@
       <intent-filter>  # DIFF-ANCHOR: 83919a44
         <action android:name="com.sec.android.airview.HOVER"/>
       </intent-filter>  # DIFF-ANCHOR: 83919a44
+      <intent-filter>  # DIFF-ANCHOR: 5d980e94
+        <action android:name="org.chromium.chrome.browser.glic.EXTERNAL_TRIGGERING"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 5d980e94
       <meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>
     </activity-alias>  # DIFF-ANCHOR: 9da0e5b6
     <activity-alias  # DIFF-ANCHOR: 5042984f

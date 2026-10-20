@@ -270,8 +270,6 @@ by a child template that "extends" this file.
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.NOTIFICATION_PREFERENCES" />
             </intent-filter>
-            <!-- TODO(b/548888503): Remove after approval.-->
-            {% if channel in ['canary', 'default'] %}
             <!-- This starts FGS and finishes, does not show anything to the
                  user. Caller needs to be a trusted google app and need to use
                  startActivityForResult. -->
@@ -279,7 +277,6 @@ by a child template that "extends" this file.
                 <action android:name="org.chromium.chrome.browser.glic.EXTERNAL_TRIGGERING" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
-            {% endif %}
             <!-- Matches the common case of intents with no MIME type.
                  Make sure to keep in sync with the next filter.  -->
             <intent-filter>
