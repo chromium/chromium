@@ -49,72 +49,78 @@ GroupConfig kGroupNeverStored;
 void InitializeStorageFeatureConfigs() {
   FeatureConfig default_config;
   default_config.valid = true;
-  default_config.used = EventConfig("myevent", Comparator(ANY, 0), 0, 0);
-  default_config.trigger = EventConfig("myevent", Comparator(ANY, 0), 0, 0);
+  default_config.used =
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/0);
+  default_config.trigger =
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/0);
   default_config.event_configs.insert(
-      EventConfig("myevent", Comparator(ANY, 0), 0, 0));
-  default_config.event_configs.insert(
-      EventConfig("unrelated_event", Comparator(ANY, 0), 0, 100));
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
+  default_config.event_configs.insert(EventConfig(
+      "unrelated_event", Comparator(ANY, 0), /*window=*/0, /*storage=*/100));
   default_config.session_rate = Comparator(ANY, 0);
   default_config.availability = Comparator(ANY, 0);
 
   kNeverStored = default_config;
 
   kStoredInUsed1Day = default_config;
-  kStoredInUsed1Day.used = EventConfig("myevent", Comparator(ANY, 0), 0, 1);
+  kStoredInUsed1Day.used =
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/1);
 
   kStoredInUsed2Days = default_config;
-  kStoredInUsed2Days.used = EventConfig("myevent", Comparator(ANY, 0), 0, 2);
+  kStoredInUsed2Days.used =
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/2);
 
   kStoredInUsed10Days = default_config;
-  kStoredInUsed10Days.used = EventConfig("myevent", Comparator(ANY, 0), 0, 10);
+  kStoredInUsed10Days.used =
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/10);
 
   kStoredInTrigger1Day = default_config;
   kStoredInTrigger1Day.trigger =
-      EventConfig("myevent", Comparator(ANY, 0), 0, 1);
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/1);
 
   kStoredInTrigger2Days = default_config;
   kStoredInTrigger2Days.trigger =
-      EventConfig("myevent", Comparator(ANY, 0), 0, 2);
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/2);
 
   kStoredInTrigger10Days = default_config;
   kStoredInTrigger10Days.trigger =
-      EventConfig("myevent", Comparator(ANY, 0), 0, 10);
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/10);
 
   kStoredInEventConfigs1Day = default_config;
   kStoredInEventConfigs1Day.event_configs.clear();
   kStoredInEventConfigs1Day.event_configs.insert(
-      EventConfig("myevent", Comparator(ANY, 0), 0, 0));
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
   kStoredInEventConfigs1Day.event_configs.insert(
-      EventConfig("myevent", Comparator(ANY, 0), 0, 1));
-  kStoredInEventConfigs1Day.event_configs.insert(
-      EventConfig("unrelated_event", Comparator(ANY, 0), 0, 100));
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/1));
+  kStoredInEventConfigs1Day.event_configs.insert(EventConfig(
+      "unrelated_event", Comparator(ANY, 0), /*window=*/0, /*storage=*/100));
 
   kStoredInEventConfigs2Days = default_config;
   kStoredInEventConfigs2Days.event_configs.clear();
   kStoredInEventConfigs2Days.event_configs.insert(
-      EventConfig("myevent", Comparator(ANY, 0), 0, 0));
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
   kStoredInEventConfigs2Days.event_configs.insert(
-      EventConfig("myevent", Comparator(ANY, 0), 0, 2));
-  kStoredInEventConfigs2Days.event_configs.insert(
-      EventConfig("unrelated_event", Comparator(ANY, 0), 0, 100));
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/2));
+  kStoredInEventConfigs2Days.event_configs.insert(EventConfig(
+      "unrelated_event", Comparator(ANY, 0), /*window=*/0, /*storage=*/100));
 
   kStoredInEventConfigs10Days = default_config;
   kStoredInEventConfigs10Days.event_configs.clear();
   kStoredInEventConfigs10Days.event_configs.insert(
-      EventConfig("myevent", Comparator(ANY, 0), 0, 0));
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
   kStoredInEventConfigs10Days.event_configs.insert(
-      EventConfig("myevent", Comparator(ANY, 0), 0, 10));
-  kStoredInEventConfigs10Days.event_configs.insert(
-      EventConfig("unrelated_event", Comparator(ANY, 0), 0, 100));
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/10));
+  kStoredInEventConfigs10Days.event_configs.insert(EventConfig(
+      "unrelated_event", Comparator(ANY, 0), /*window=*/0, /*storage=*/100));
 
   GroupConfig default_group_config;
   default_config.valid = true;
-  default_config.trigger = EventConfig("myevent", Comparator(ANY, 0), 0, 0);
+  default_config.trigger =
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/0);
   default_config.event_configs.insert(
-      EventConfig("myevent", Comparator(ANY, 0), 0, 0));
-  default_config.event_configs.insert(
-      EventConfig("unrelated_event", Comparator(ANY, 0), 0, 100));
+      EventConfig("myevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
+  default_config.event_configs.insert(EventConfig(
+      "unrelated_event", Comparator(ANY, 0), /*window=*/0, /*storage=*/100));
   default_config.session_rate = Comparator(ANY, 0);
 
   kGroupNeverStored = default_group_config;
@@ -242,15 +248,17 @@ TEST_F(FeatureConfigEventStorageValidatorTest,
       {kEventStorageTestFeatureBar, kEventStorageTestGroupTwo});
 
   FeatureConfig foo_config = kNeverStored;
-  foo_config.used = EventConfig("fooevent", Comparator(ANY, 0), 0, 1);
+  foo_config.used =
+      EventConfig("fooevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/1);
   FeatureConfig bar_config = kNeverStored;
-  bar_config.used = EventConfig("barevent", Comparator(ANY, 0), 0, 1);
+  bar_config.used =
+      EventConfig("barevent", Comparator(ANY, 0), /*window=*/0, /*storage=*/1);
   GroupConfig group_one_config = kGroupNeverStored;
-  group_one_config.trigger =
-      EventConfig("grouponeevent", Comparator(ANY, 0), 0, 1);
+  group_one_config.trigger = EventConfig("grouponeevent", Comparator(ANY, 0),
+                                         /*window=*/0, /*storage=*/1);
   GroupConfig group_two_config = kGroupNeverStored;
-  group_two_config.trigger =
-      EventConfig("grouptwoevent", Comparator(ANY, 0), 0, 1);
+  group_two_config.trigger = EventConfig("grouptwoevent", Comparator(ANY, 0),
+                                         /*window=*/0, /*storage=*/1);
   UseConfigs(foo_config, bar_config, group_one_config, group_two_config);
 
   EXPECT_FALSE(validator_.ShouldStore("myevent"));

@@ -119,7 +119,7 @@ bool AndroidBlueBubbleConfigurationProvider::MaybeProvideFeatureConfiguration(
       config.trigger.storage = storage;
       config.event_configs.insert(
           EventConfig(trigger_name, Comparator(LESS_THAN, kMaxLifetimeTriggers),
-                      kLifetimeWindowDays, storage));
+                      /*window=*/kLifetimeWindowDays, /*storage=*/storage));
     }
     modified = true;
   }
@@ -145,8 +145,9 @@ bool AndroidBlueBubbleConfigurationProvider::MaybeProvideFeatureConfiguration(
       config.trigger.storage = storage;
     } else {
       config.trigger.storage = storage;
-      config.event_configs.insert(EventConfig(
-          trigger_name, Comparator(EQUAL, 0), kMinCooldownDays, storage));
+      config.event_configs.insert(
+          EventConfig(trigger_name, Comparator(EQUAL, 0),
+                      /*window=*/kMinCooldownDays, /*storage=*/storage));
     }
     modified = true;
   }

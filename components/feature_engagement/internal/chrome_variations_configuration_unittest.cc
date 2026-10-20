@@ -261,16 +261,19 @@ TEST_F(ChromeVariationsConfigurationTest, ParseSingleFeature) {
 
   FeatureConfig expected_foo;
   expected_foo.valid = true;
-  expected_foo.used =
-      EventConfig("page_download_started", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger =
-      EventConfig("opened_chrome_home", Comparator(ANY, 0), 0, 360);
-  expected_foo.event_configs.insert(EventConfig(
-      "user_has_seen_dino", Comparator(GREATER_THAN_OR_EQUAL, 1), 120, 180));
-  expected_foo.event_configs.insert(EventConfig(
-      "user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0), 120, 180));
+  expected_foo.used = EventConfig("page_download_started", Comparator(ANY, 0),
+                                  /*window=*/0, /*storage=*/360);
+  expected_foo.trigger = EventConfig("opened_chrome_home", Comparator(ANY, 0),
+                                     /*window=*/0, /*storage=*/360);
   expected_foo.event_configs.insert(
-      EventConfig("user_opened_downloads_home", Comparator(ANY, 0), 0, 360));
+      EventConfig("user_has_seen_dino", Comparator(GREATER_THAN_OR_EQUAL, 1),
+                  /*window=*/120, /*storage=*/180));
+  expected_foo.event_configs.insert(
+      EventConfig("user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0),
+                  /*window=*/120, /*storage=*/180));
+  expected_foo.event_configs.insert(EventConfig("user_opened_downloads_home",
+                                                Comparator(ANY, 0),
+                                                /*window=*/0, /*storage=*/360));
   EXPECT_EQ(expected_foo, foo);
 }
 
@@ -306,16 +309,19 @@ TEST_F(ChromeVariationsConfigurationTest, ParsePrefixedParamNames) {
 
   FeatureConfig expected_foo;
   expected_foo.valid = true;
-  expected_foo.used =
-      EventConfig("page_download_started", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger =
-      EventConfig("opened_chrome_home", Comparator(ANY, 0), 0, 360);
-  expected_foo.event_configs.insert(EventConfig(
-      "user_has_seen_dino", Comparator(GREATER_THAN_OR_EQUAL, 1), 120, 180));
-  expected_foo.event_configs.insert(EventConfig(
-      "user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0), 120, 180));
+  expected_foo.used = EventConfig("page_download_started", Comparator(ANY, 0),
+                                  /*window=*/0, /*storage=*/360);
+  expected_foo.trigger = EventConfig("opened_chrome_home", Comparator(ANY, 0),
+                                     /*window=*/0, /*storage=*/360);
   expected_foo.event_configs.insert(
-      EventConfig("user_opened_downloads_home", Comparator(ANY, 0), 0, 360));
+      EventConfig("user_has_seen_dino", Comparator(GREATER_THAN_OR_EQUAL, 1),
+                  /*window=*/120, /*storage=*/180));
+  expected_foo.event_configs.insert(
+      EventConfig("user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0),
+                  /*window=*/120, /*storage=*/180));
+  expected_foo.event_configs.insert(EventConfig("user_opened_downloads_home",
+                                                Comparator(ANY, 0),
+                                                /*window=*/0, /*storage=*/360));
   expected_foo.session_rate = Comparator(NOT_EQUAL, 6);
   expected_foo.availability = Comparator(GREATER_THAN_OR_EQUAL, 1);
   EXPECT_EQ(expected_foo, foo);
@@ -424,8 +430,10 @@ TEST_F(ChromeVariationsConfigurationTest, OnlyTriggerAndUsedIsValid) {
 
   FeatureConfig expected_foo;
   expected_foo.valid = true;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   EXPECT_EQ(expected_foo, foo);
   histogram_tester.ExpectBucketCount(
       kConfigParseEventName,
@@ -453,8 +461,10 @@ void RunBlockedByTest(ChromeVariationsConfigurationTest* test,
   EXPECT_EQ(is_valid, foo.valid);
   FeatureConfig expected_foo;
   expected_foo.valid = is_valid;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   expected_foo.blocked_by = expected_blocked_by;
   EXPECT_EQ(expected_foo, foo);
   if (is_valid) {
@@ -595,8 +605,10 @@ void RunSessionRateImpactTest(ChromeVariationsConfigurationTest* test,
 
   FeatureConfig expected_foo;
   expected_foo.valid = is_valid;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   expected_foo.session_rate_impact =
       is_valid ? expected_impact : SessionRateImpact();
   EXPECT_EQ(expected_foo, foo);
@@ -860,8 +872,10 @@ void RunGroupsTest(ChromeVariationsConfigurationTest* test,
   EXPECT_EQ(is_valid, foo.valid);
   FeatureConfig expected_foo;
   expected_foo.valid = is_valid;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   expected_foo.groups = expected_groups;
   EXPECT_EQ(expected_foo, foo);
   if (is_valid) {
@@ -949,22 +963,22 @@ TEST_F(ChromeVariationsConfigurationTest, WhitespaceIsValid) {
   expected_foo.valid = true;
   expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 1, 320);
   expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 2, 330);
-  expected_foo.event_configs.insert(
-      EventConfig("e0", Comparator(LESS_THAN, 1), 3, 340));
-  expected_foo.event_configs.insert(
-      EventConfig("e1", Comparator(GREATER_THAN, 2), 4, 350));
-  expected_foo.event_configs.insert(
-      EventConfig("e2", Comparator(LESS_THAN_OR_EQUAL, 3), 5, 360));
-  expected_foo.event_configs.insert(
-      EventConfig("e3", Comparator(LESS_THAN, 4), 6, 370));
-  expected_foo.event_configs.insert(
-      EventConfig("e4", Comparator(GREATER_THAN, 5), 7, 380));
-  expected_foo.event_configs.insert(
-      EventConfig("e5", Comparator(LESS_THAN_OR_EQUAL, 6), 8, 390));
-  expected_foo.event_configs.insert(
-      EventConfig("e6", Comparator(LESS_THAN_OR_EQUAL, 7), 9, 400));
-  expected_foo.event_configs.insert(
-      EventConfig("e7", Comparator(LESS_THAN_OR_EQUAL, 8), 10, 410));
+  expected_foo.event_configs.insert(EventConfig("e0", Comparator(LESS_THAN, 1),
+                                                /*window=*/3, /*storage=*/340));
+  expected_foo.event_configs.insert(EventConfig(
+      "e1", Comparator(GREATER_THAN, 2), /*window=*/4, /*storage=*/350));
+  expected_foo.event_configs.insert(EventConfig(
+      "e2", Comparator(LESS_THAN_OR_EQUAL, 3), /*window=*/5, /*storage=*/360));
+  expected_foo.event_configs.insert(EventConfig("e3", Comparator(LESS_THAN, 4),
+                                                /*window=*/6, /*storage=*/370));
+  expected_foo.event_configs.insert(EventConfig(
+      "e4", Comparator(GREATER_THAN, 5), /*window=*/7, /*storage=*/380));
+  expected_foo.event_configs.insert(EventConfig(
+      "e5", Comparator(LESS_THAN_OR_EQUAL, 6), /*window=*/8, /*storage=*/390));
+  expected_foo.event_configs.insert(EventConfig(
+      "e6", Comparator(LESS_THAN_OR_EQUAL, 7), /*window=*/9, /*storage=*/400));
+  expected_foo.event_configs.insert(EventConfig(
+      "e7", Comparator(LESS_THAN_OR_EQUAL, 8), /*window=*/10, /*storage=*/410));
   expected_foo.session_rate_impact = CreateSessionRateImpactExplicit(
       {kChromeTestFeatureBar.name, kChromeTestFeatureQux.name});
   EXPECT_EQ(expected_foo, foo);
@@ -997,8 +1011,10 @@ TEST_F(ChromeVariationsConfigurationTest, IgnoresInvalidConfigKeys) {
 
   FeatureConfig expected_foo;
   expected_foo.valid = true;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   EXPECT_EQ(expected_foo, foo);
 
   // Exactly 2 keys should be unrecognized and not ignored.
@@ -1024,8 +1040,10 @@ TEST_F(ChromeVariationsConfigurationTest, IgnoresInvalidEventConfigTokens) {
 
   FeatureConfig expected_foo;
   expected_foo.valid = true;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   EXPECT_EQ(expected_foo, foo);
 }
 
@@ -1240,8 +1258,10 @@ void RunTrackingOnlyTest(ChromeVariationsConfigurationTest* test,
 
   FeatureConfig expected_foo;
   expected_foo.valid = is_valid;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   expected_foo.tracking_only = expected_value;
   EXPECT_EQ(expected_foo, foo);
 }
@@ -1315,17 +1335,19 @@ TEST_F(ChromeVariationsConfigurationTest, AllComparatorTypesWork) {
   FeatureConfig expected_foo;
   expected_foo.valid = true;
   expected_foo.used = EventConfig("e0", Comparator(ANY, 0), 20, 30);
-  expected_foo.trigger = EventConfig("e1", Comparator(LESS_THAN, 1), 21, 31);
+  expected_foo.trigger = EventConfig("e1", Comparator(LESS_THAN, 1),
+                                     /*window=*/21, /*storage=*/31);
+  expected_foo.event_configs.insert(EventConfig(
+      "e2", Comparator(GREATER_THAN, 2), /*window=*/22, /*storage=*/32));
+  expected_foo.event_configs.insert(EventConfig(
+      "e3", Comparator(LESS_THAN_OR_EQUAL, 3), /*window=*/23, /*storage=*/33));
   expected_foo.event_configs.insert(
-      EventConfig("e2", Comparator(GREATER_THAN, 2), 22, 32));
+      EventConfig("e4", Comparator(GREATER_THAN_OR_EQUAL, 4), /*window=*/24,
+                  /*storage=*/34));
   expected_foo.event_configs.insert(
-      EventConfig("e3", Comparator(LESS_THAN_OR_EQUAL, 3), 23, 33));
-  expected_foo.event_configs.insert(
-      EventConfig("e4", Comparator(GREATER_THAN_OR_EQUAL, 4), 24, 34));
-  expected_foo.event_configs.insert(
-      EventConfig("e5", Comparator(EQUAL, 5), 25, 35));
-  expected_foo.event_configs.insert(
-      EventConfig("e6", Comparator(NOT_EQUAL, 6), 26, 36));
+      EventConfig("e5", Comparator(EQUAL, 5), /*window=*/25, /*storage=*/35));
+  expected_foo.event_configs.insert(EventConfig("e6", Comparator(NOT_EQUAL, 6),
+                                                /*window=*/26, /*storage=*/36));
   expected_foo.session_rate = Comparator(NOT_EQUAL, 6);
   expected_foo.availability = Comparator(GREATER_THAN_OR_EQUAL, 1);
   EXPECT_EQ(expected_foo, foo);
@@ -1351,11 +1373,12 @@ TEST_F(ChromeVariationsConfigurationTest, MultipleEventsWithSameName) {
   FeatureConfig expected_foo;
   expected_foo.valid = true;
   expected_foo.used = EventConfig("foo", Comparator(ANY, 0), 20, 30);
-  expected_foo.trigger = EventConfig("foo", Comparator(LESS_THAN, 1), 21, 31);
-  expected_foo.event_configs.insert(
-      EventConfig("foo", Comparator(GREATER_THAN, 2), 22, 32));
-  expected_foo.event_configs.insert(
-      EventConfig("foo", Comparator(LESS_THAN_OR_EQUAL, 3), 23, 33));
+  expected_foo.trigger = EventConfig("foo", Comparator(LESS_THAN, 1),
+                                     /*window=*/21, /*storage=*/31);
+  expected_foo.event_configs.insert(EventConfig(
+      "foo", Comparator(GREATER_THAN, 2), /*window=*/22, /*storage=*/32));
+  expected_foo.event_configs.insert(EventConfig(
+      "foo", Comparator(LESS_THAN_OR_EQUAL, 3), /*window=*/23, /*storage=*/33));
   expected_foo.session_rate = Comparator(ANY, 0);
   expected_foo.availability = Comparator(GREATER_THAN, 1);
   EXPECT_EQ(expected_foo, foo);
@@ -1400,8 +1423,8 @@ TEST_F(ChromeVariationsConfigurationTest, ParseMultipleFeatures) {
   FeatureConfig expected_foo;
   expected_foo.valid = true;
   expected_foo.used = EventConfig("foo_used", Comparator(ANY, 0), 20, 30);
-  expected_foo.trigger =
-      EventConfig("foo_trigger", Comparator(LESS_THAN, 1), 21, 31);
+  expected_foo.trigger = EventConfig("foo_trigger", Comparator(LESS_THAN, 1),
+                                     /*window=*/21, /*storage=*/31);
   expected_foo.session_rate = Comparator(EQUAL, 10);
   expected_foo.availability = Comparator(LESS_THAN, 0);
   EXPECT_EQ(expected_foo, foo);
@@ -1414,21 +1437,23 @@ TEST_F(ChromeVariationsConfigurationTest, ParseMultipleFeatures) {
   FeatureConfig expected_qux;
   expected_qux.valid = true;
   expected_qux.used =
-      EventConfig("qux_used", Comparator(GREATER_THAN_OR_EQUAL, 2), 99, 42);
+      EventConfig("qux_used", Comparator(GREATER_THAN_OR_EQUAL, 2),
+                  /*window=*/99, /*storage=*/42);
   expected_qux.trigger =
       EventConfig("qux_trigger", Comparator(ANY, 0), 103, 104);
+  expected_qux.event_configs.insert(EventConfig("q0", Comparator(LESS_THAN, 10),
+                                                /*window=*/20, /*storage=*/30));
+  expected_qux.event_configs.insert(EventConfig(
+      "q1", Comparator(GREATER_THAN, 11), /*window=*/21, /*storage=*/31));
+  expected_qux.event_configs.insert(EventConfig(
+      "q2", Comparator(LESS_THAN_OR_EQUAL, 12), /*window=*/22, /*storage=*/32));
   expected_qux.event_configs.insert(
-      EventConfig("q0", Comparator(LESS_THAN, 10), 20, 30));
+      EventConfig("q3", Comparator(GREATER_THAN_OR_EQUAL, 13), /*window=*/23,
+                  /*storage=*/33));
   expected_qux.event_configs.insert(
-      EventConfig("q1", Comparator(GREATER_THAN, 11), 21, 31));
-  expected_qux.event_configs.insert(
-      EventConfig("q2", Comparator(LESS_THAN_OR_EQUAL, 12), 22, 32));
-  expected_qux.event_configs.insert(
-      EventConfig("q3", Comparator(GREATER_THAN_OR_EQUAL, 13), 23, 33));
-  expected_qux.event_configs.insert(
-      EventConfig("q4", Comparator(EQUAL, 14), 24, 34));
-  expected_qux.event_configs.insert(
-      EventConfig("q5", Comparator(NOT_EQUAL, 15), 25, 35));
+      EventConfig("q4", Comparator(EQUAL, 14), /*window=*/24, /*storage=*/34));
+  expected_qux.event_configs.insert(EventConfig("q5", Comparator(NOT_EQUAL, 15),
+                                                /*window=*/25, /*storage=*/35));
   expected_qux.session_rate = Comparator(NOT_EQUAL, 13);
   expected_qux.availability = Comparator(EQUAL, 0);
   EXPECT_EQ(expected_qux, qux);
@@ -1448,9 +1473,10 @@ TEST_F(ChromeVariationsConfigurationTest, CheckedInConfigIsReadable) {
   expected.availability = Comparator(LESS_THAN, 0);
   expected.session_rate = Comparator(LESS_THAN, 0);
   expected.trigger =
-      EventConfig("dummy_feature_iph_trigger", Comparator(LESS_THAN, 0), 1, 1);
-  expected.used =
-      EventConfig("dummy_feature_action", Comparator(LESS_THAN, 0), 1, 1);
+      EventConfig("dummy_feature_iph_trigger", Comparator(LESS_THAN, 0),
+                  /*window=*/1, /*storage=*/1);
+  expected.used = EventConfig("dummy_feature_action", Comparator(LESS_THAN, 0),
+                              /*window=*/1, /*storage=*/1);
 
   const FeatureConfig& config =
       configuration_.GetFeatureConfig(kIPHDummyFeature);
@@ -1633,14 +1659,17 @@ TEST_F(ChromeVariationsConfigurationTest, ParseSingleGroup) {
 
   GroupConfig expected_group_one;
   expected_group_one.valid = true;
-  expected_group_one.trigger =
-      EventConfig("opened_chrome_home", Comparator(ANY, 0), 0, 360);
-  expected_group_one.event_configs.insert(EventConfig(
-      "user_has_seen_dino", Comparator(GREATER_THAN_OR_EQUAL, 1), 120, 180));
-  expected_group_one.event_configs.insert(EventConfig(
-      "user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0), 120, 180));
+  expected_group_one.trigger = EventConfig(
+      "opened_chrome_home", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   expected_group_one.event_configs.insert(
-      EventConfig("user_opened_downloads_home", Comparator(ANY, 0), 0, 360));
+      EventConfig("user_has_seen_dino", Comparator(GREATER_THAN_OR_EQUAL, 1),
+                  /*window=*/120, /*storage=*/180));
+  expected_group_one.event_configs.insert(
+      EventConfig("user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0),
+                  /*window=*/120, /*storage=*/180));
+  expected_group_one.event_configs.insert(
+      EventConfig("user_opened_downloads_home", Comparator(ANY, 0),
+                  /*window=*/0, /*storage=*/360));
   EXPECT_EQ(expected_group_one, group_one);
 }
 
@@ -1681,7 +1710,8 @@ TEST_F(ChromeVariationsConfigurationTest, GroupOnlyTriggerIsValid) {
 
   GroupConfig expected_group_one;
   expected_group_one.valid = true;
-  expected_group_one.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_group_one.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   EXPECT_EQ(expected_group_one, group_one);
   histogram_tester.ExpectBucketCount(
       kConfigParseEventName,
@@ -1708,7 +1738,8 @@ TEST_F(ChromeVariationsConfigurationTest, GroupIgnoresInvalidConfigKeys) {
 
   GroupConfig expected_group_one;
   expected_group_one.valid = true;
-  expected_group_one.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_group_one.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   EXPECT_EQ(expected_group_one, group_one);
 
   // Exactly 2 keys should be unrecognized and not ignored.
@@ -1809,12 +1840,12 @@ TEST_F(ChromeVariationsConfigurationTest, GroupMultipleEventsWithSameName) {
 
   GroupConfig expected_group_one;
   expected_group_one.valid = true;
-  expected_group_one.trigger =
-      EventConfig("foo", Comparator(LESS_THAN, 1), 21, 31);
-  expected_group_one.event_configs.insert(
-      EventConfig("foo", Comparator(GREATER_THAN, 2), 22, 32));
-  expected_group_one.event_configs.insert(
-      EventConfig("foo", Comparator(LESS_THAN_OR_EQUAL, 3), 23, 33));
+  expected_group_one.trigger = EventConfig("foo", Comparator(LESS_THAN, 1),
+                                           /*window=*/21, /*storage=*/31);
+  expected_group_one.event_configs.insert(EventConfig(
+      "foo", Comparator(GREATER_THAN, 2), /*window=*/22, /*storage=*/32));
+  expected_group_one.event_configs.insert(EventConfig(
+      "foo", Comparator(LESS_THAN_OR_EQUAL, 3), /*window=*/23, /*storage=*/33));
   expected_group_one.session_rate = Comparator(ANY, 0);
   EXPECT_EQ(expected_group_one, group_one);
 }
@@ -1855,8 +1886,8 @@ TEST_F(ChromeVariationsConfigurationTest, ParseMultipleGroups) {
   EXPECT_TRUE(group_one.valid);
   GroupConfig expected_group_one;
   expected_group_one.valid = true;
-  expected_group_one.trigger =
-      EventConfig("foo_trigger", Comparator(LESS_THAN, 1), 21, 31);
+  expected_group_one.trigger = EventConfig(
+      "foo_trigger", Comparator(LESS_THAN, 1), /*window=*/21, /*storage=*/31);
   expected_group_one.session_rate = Comparator(EQUAL, 10);
   EXPECT_EQ(expected_group_one, group_one);
 
@@ -1870,18 +1901,19 @@ TEST_F(ChromeVariationsConfigurationTest, ParseMultipleGroups) {
   expected_group_three.valid = true;
   expected_group_three.trigger =
       EventConfig("qux_trigger", Comparator(ANY, 0), 103, 104);
+  expected_group_three.event_configs.insert(EventConfig(
+      "q0", Comparator(LESS_THAN, 10), /*window=*/20, /*storage=*/30));
+  expected_group_three.event_configs.insert(EventConfig(
+      "q1", Comparator(GREATER_THAN, 11), /*window=*/21, /*storage=*/31));
+  expected_group_three.event_configs.insert(EventConfig(
+      "q2", Comparator(LESS_THAN_OR_EQUAL, 12), /*window=*/22, /*storage=*/32));
   expected_group_three.event_configs.insert(
-      EventConfig("q0", Comparator(LESS_THAN, 10), 20, 30));
+      EventConfig("q3", Comparator(GREATER_THAN_OR_EQUAL, 13), /*window=*/23,
+                  /*storage=*/33));
   expected_group_three.event_configs.insert(
-      EventConfig("q1", Comparator(GREATER_THAN, 11), 21, 31));
-  expected_group_three.event_configs.insert(
-      EventConfig("q2", Comparator(LESS_THAN_OR_EQUAL, 12), 22, 32));
-  expected_group_three.event_configs.insert(
-      EventConfig("q3", Comparator(GREATER_THAN_OR_EQUAL, 13), 23, 33));
-  expected_group_three.event_configs.insert(
-      EventConfig("q4", Comparator(EQUAL, 14), 24, 34));
-  expected_group_three.event_configs.insert(
-      EventConfig("q5", Comparator(NOT_EQUAL, 15), 25, 35));
+      EventConfig("q4", Comparator(EQUAL, 14), /*window=*/24, /*storage=*/34));
+  expected_group_three.event_configs.insert(EventConfig(
+      "q5", Comparator(NOT_EQUAL, 15), /*window=*/25, /*storage=*/35));
   expected_group_three.session_rate = Comparator(NOT_EQUAL, 13);
   EXPECT_EQ(expected_group_three, group_three);
 }
@@ -1898,7 +1930,8 @@ TEST_F(ChromeVariationsConfigurationTest, CheckedInGroupConfigIsReadable) {
   expected.valid = true;
   expected.session_rate = Comparator(LESS_THAN, 0);
   expected.trigger =
-      EventConfig("dummy_group_iph_trigger", Comparator(LESS_THAN, 0), 1, 1);
+      EventConfig("dummy_group_iph_trigger", Comparator(LESS_THAN, 0),
+                  /*window=*/1, /*storage=*/1);
 
   const GroupConfig& config = configuration_.GetGroupConfig(kIPHDummyGroup);
   EXPECT_EQ(expected, config);
@@ -1971,8 +2004,10 @@ TEST_F(ChromeVariationsConfigurationTest,
   EXPECT_EQ(true, foo.valid);
   FeatureConfig expected_foo;
   expected_foo.valid = true;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   expected_foo.blocked_by =
       CreateBlockedByExplicit({kChromeTestFeatureBar.name});
   EXPECT_EQ(expected_foo, foo);
@@ -2000,8 +2035,10 @@ TEST_F(ChromeVariationsConfigurationTest,
   EXPECT_EQ(true, foo.valid);
   FeatureConfig expected_foo;
   expected_foo.valid = true;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   expected_foo.blocked_by = CreateBlockedByExplicit({});
   EXPECT_EQ(expected_foo, foo);
 
@@ -2040,8 +2077,10 @@ TEST_F(ChromeVariationsConfigurationTest,
   EXPECT_EQ(true, foo.valid);
   FeatureConfig expected_foo;
   expected_foo.valid = true;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   expected_foo.blocked_by = CreateBlockedByExplicit(
       {kChromeTestFeatureBar.name, kChromeTestFeatureQux.name});
   EXPECT_EQ(expected_foo, foo);
@@ -2081,8 +2120,10 @@ TEST_F(ChromeVariationsConfigurationTest, ParseExpandsBlockedByMultipleGroups) {
   EXPECT_EQ(true, foo.valid);
   FeatureConfig expected_foo;
   expected_foo.valid = true;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   expected_foo.blocked_by = CreateBlockedByExplicit(
       {kChromeTestFeatureBar.name, kChromeTestFeatureQux.name});
   EXPECT_EQ(expected_foo, foo);
@@ -2119,8 +2160,10 @@ TEST_F(ChromeVariationsConfigurationTest,
   EXPECT_EQ(1u, foo.blocked_by.affected_features->size());
   FeatureConfig expected_foo;
   expected_foo.valid = true;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   expected_foo.blocked_by =
       CreateBlockedByExplicit({kChromeTestFeatureBar.name});
   EXPECT_EQ(expected_foo, foo);
@@ -2154,8 +2197,10 @@ TEST_F(ChromeVariationsConfigurationTest,
   EXPECT_EQ(true, foo.valid);
   FeatureConfig expected_foo;
   expected_foo.valid = true;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   expected_foo.session_rate_impact =
       CreateSessionRateImpactExplicit({kChromeTestFeatureBar.name});
   EXPECT_EQ(expected_foo, foo);
@@ -2183,8 +2228,10 @@ TEST_F(ChromeVariationsConfigurationTest,
   EXPECT_EQ(true, foo.valid);
   FeatureConfig expected_foo;
   expected_foo.valid = true;
-  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.used =
+      EventConfig("eu", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
+  expected_foo.trigger =
+      EventConfig("et", Comparator(ANY, 0), /*window=*/0, /*storage=*/360);
   expected_foo.session_rate_impact = CreateSessionRateImpactExplicit({});
   EXPECT_EQ(expected_foo, foo);
 
@@ -2197,16 +2244,19 @@ TEST_F(ChromeVariationsConfigurationTest,
 TEST_F(ChromeVariationsConfigurationTest, UpdateConfigs) {
   FeatureConfig expected_foo;
   expected_foo.valid = true;
-  expected_foo.used =
-      EventConfig("page_download_started", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger =
-      EventConfig("opened_chrome_home", Comparator(ANY, 0), 0, 360);
-  expected_foo.event_configs.insert(EventConfig(
-      "user_has_seen_dino", Comparator(GREATER_THAN_OR_EQUAL, 1), 120, 180));
-  expected_foo.event_configs.insert(EventConfig(
-      "user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0), 120, 180));
+  expected_foo.used = EventConfig("page_download_started", Comparator(ANY, 0),
+                                  /*window=*/0, /*storage=*/360);
+  expected_foo.trigger = EventConfig("opened_chrome_home", Comparator(ANY, 0),
+                                     /*window=*/0, /*storage=*/360);
   expected_foo.event_configs.insert(
-      EventConfig("user_opened_downloads_home", Comparator(ANY, 0), 0, 360));
+      EventConfig("user_has_seen_dino", Comparator(GREATER_THAN_OR_EQUAL, 1),
+                  /*window=*/120, /*storage=*/180));
+  expected_foo.event_configs.insert(
+      EventConfig("user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0),
+                  /*window=*/120, /*storage=*/180));
+  expected_foo.event_configs.insert(EventConfig("user_opened_downloads_home",
+                                                Comparator(ANY, 0),
+                                                /*window=*/0, /*storage=*/360));
 
   auto provider = std::make_unique<TestConfigurationProvider>();
   provider->SetConfig(expected_foo);
@@ -2218,12 +2268,13 @@ TEST_F(ChromeVariationsConfigurationTest, UpdateConfigs) {
   // Update config, removing `event_1` and `event_3`.
   expected_foo = FeatureConfig();
   expected_foo.valid = true;
-  expected_foo.used =
-      EventConfig("page_download_started", Comparator(ANY, 0), 0, 360);
-  expected_foo.trigger =
-      EventConfig("opened_chrome_home", Comparator(ANY, 0), 0, 360);
-  expected_foo.event_configs.insert(EventConfig(
-      "user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0), 120, 180));
+  expected_foo.used = EventConfig("page_download_started", Comparator(ANY, 0),
+                                  /*window=*/0, /*storage=*/360);
+  expected_foo.trigger = EventConfig("opened_chrome_home", Comparator(ANY, 0),
+                                     /*window=*/0, /*storage=*/360);
+  expected_foo.event_configs.insert(
+      EventConfig("user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0),
+                  /*window=*/120, /*storage=*/180));
   EXPECT_NE(expected_foo, foo);
 
   provider->SetConfig(expected_foo);

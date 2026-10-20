@@ -22,7 +22,8 @@ FeatureConfig CreateBaseConfig(EventConfig trigger) {
   FeatureConfig config;
   config.valid = true;
   config.trigger = std::move(trigger);
-  config.used = EventConfig("test_used", Comparator(EQUAL, 0), 360, 360);
+  config.used = EventConfig("test_used", Comparator(EQUAL, 0), /*window=*/360,
+                            /*storage=*/360);
   return config;
 }
 
@@ -38,8 +39,9 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest, FlagDisabled_NoOp) {
   feature_list.InitAndDisableFeature(
       chrome::android::kBlueBubbleIphCooldownGroup);
 
-  FeatureConfig config = CreateBaseConfig(
-      EventConfig("test_trigger", Comparator(LESS_THAN, 5), 360, 360));
+  FeatureConfig config =
+      CreateBaseConfig(EventConfig("test_trigger", Comparator(LESS_THAN, 5),
+                                   /*window=*/360, /*storage=*/360));
   EXPECT_FALSE(provider_.MaybeProvideFeatureConfiguration(
       kIPHTabSwitcherButtonFeature, config, {}, {}));
   EXPECT_EQ(config.trigger.comparator, Comparator(LESS_THAN, 5));
@@ -51,8 +53,9 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest,
   base::test::ScopedFeatureList feature_list{
       chrome::android::kBlueBubbleIphCooldownGroup};
 
-  FeatureConfig config = CreateBaseConfig(
-      EventConfig("test_trigger", Comparator(LESS_THAN, 5), 360, 360));
+  FeatureConfig config =
+      CreateBaseConfig(EventConfig("test_trigger", Comparator(LESS_THAN, 5),
+                                   /*window=*/360, /*storage=*/360));
   EXPECT_FALSE(provider_.MaybeProvideFeatureConfiguration(
       kIPHAppRatingPromptFeature, config, {}, {}));
   EXPECT_EQ(config.trigger.comparator, Comparator(LESS_THAN, 5));
@@ -64,12 +67,12 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest,
   base::test::ScopedFeatureList feature_list{
       chrome::android::kBlueBubbleIphCooldownGroup};
 
-  FeatureConfig config = CreateBaseConfig(
-      EventConfig("test_trigger", Comparator(EQUAL, 0), 360, 360));
+  FeatureConfig config = CreateBaseConfig(EventConfig(
+      "test_trigger", Comparator(EQUAL, 0), /*window=*/360, /*storage=*/360));
   EXPECT_FALSE(provider_.MaybeProvideFeatureConfiguration(
       kIPHBottomToolbarTipFeature, config, {}, {}));
-  EXPECT_EQ(config.trigger,
-            EventConfig("test_trigger", Comparator(EQUAL, 0), 360, 360));
+  EXPECT_EQ(config.trigger, EventConfig("test_trigger", Comparator(EQUAL, 0),
+                                        /*window=*/360, /*storage=*/360));
   EXPECT_TRUE(config.event_configs.empty());
 }
 
@@ -78,10 +81,11 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest,
   base::test::ScopedFeatureList feature_list{
       chrome::android::kBlueBubbleIphCooldownGroup};
 
-  FeatureConfig config = CreateBaseConfig(
-      EventConfig("test_trigger", Comparator(EQUAL, 0), 7, 360));
-  config.event_configs.insert(
-      EventConfig("test_trigger", Comparator(LESS_THAN, 3), 360, 360));
+  FeatureConfig config = CreateBaseConfig(EventConfig(
+      "test_trigger", Comparator(EQUAL, 0), /*window=*/7, /*storage=*/360));
+  config.event_configs.insert(EventConfig("test_trigger",
+                                          Comparator(LESS_THAN, 3),
+                                          /*window=*/360, /*storage=*/360));
 
   EXPECT_FALSE(provider_.MaybeProvideFeatureConfiguration(
       kIPHSiteControlsFeature, config, {}, {}));
@@ -93,16 +97,18 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest,
   base::test::ScopedFeatureList feature_list{
       chrome::android::kBlueBubbleIphCooldownGroup};
 
-  FeatureConfig config = CreateBaseConfig(
-      EventConfig("test_trigger", Comparator(LESS_THAN, 5), 360, 360));
+  FeatureConfig config =
+      CreateBaseConfig(EventConfig("test_trigger", Comparator(LESS_THAN, 5),
+                                   /*window=*/360, /*storage=*/360));
   EXPECT_TRUE(provider_.MaybeProvideFeatureConfiguration(
       kIPHTabSwitcherButtonFeature, config, {}, {}));
 
   EXPECT_EQ(config.trigger,
-            EventConfig("test_trigger", Comparator(LESS_THAN, 3), 360, 360));
-  EXPECT_THAT(
-      config.event_configs,
-      Contains(EventConfig("test_trigger", Comparator(EQUAL, 0), 7, 360)));
+            EventConfig("test_trigger", Comparator(LESS_THAN, 3),
+                        /*window=*/360, /*storage=*/360));
+  EXPECT_THAT(config.event_configs,
+              Contains(EventConfig("test_trigger", Comparator(EQUAL, 0),
+                                   /*window=*/7, /*storage=*/360)));
 }
 
 TEST_F(AndroidBlueBubbleConfigurationProviderTest,
@@ -110,16 +116,17 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest,
   base::test::ScopedFeatureList feature_list{
       chrome::android::kBlueBubbleIphCooldownGroup};
 
-  FeatureConfig config = CreateBaseConfig(
-      EventConfig("test_trigger", Comparator(LESS_THAN, 1), 1, 90));
+  FeatureConfig config = CreateBaseConfig(EventConfig(
+      "test_trigger", Comparator(LESS_THAN, 1), /*window=*/1, /*storage=*/90));
   EXPECT_TRUE(provider_.MaybeProvideFeatureConfiguration(
       kIPHReadLaterAppMenuBookmarkThisPageFeature, config, {}, {}));
 
   EXPECT_EQ(config.trigger,
-            EventConfig("test_trigger", Comparator(LESS_THAN, 1), 7, 360));
+            EventConfig("test_trigger", Comparator(LESS_THAN, 1), /*window=*/7,
+                        /*storage=*/360));
   EXPECT_THAT(config.event_configs,
               Contains(EventConfig("test_trigger", Comparator(LESS_THAN, 3),
-                                   360, 360)));
+                                   /*window=*/360, /*storage=*/360)));
 }
 
 TEST_F(AndroidBlueBubbleConfigurationProviderTest,
@@ -127,20 +134,21 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest,
   base::test::ScopedFeatureList feature_list{
       chrome::android::kBlueBubbleIphCooldownGroup};
 
-  FeatureConfig config = CreateBaseConfig(
-      EventConfig("test_trigger", Comparator(LESS_THAN, 3), 360, 360));
-  config.event_configs.insert(
-      EventConfig("test_trigger", Comparator(LESS_THAN, 1), 1, 360));
+  FeatureConfig config =
+      CreateBaseConfig(EventConfig("test_trigger", Comparator(LESS_THAN, 3),
+                                   /*window=*/360, /*storage=*/360));
+  config.event_configs.insert(EventConfig(
+      "test_trigger", Comparator(LESS_THAN, 1), /*window=*/1, /*storage=*/360));
 
   EXPECT_TRUE(provider_.MaybeProvideFeatureConfiguration(kIPHCCTMinimized,
                                                          config, {}, {}));
 
   EXPECT_THAT(config.event_configs,
               Not(Contains(EventConfig("test_trigger", Comparator(LESS_THAN, 1),
-                                       1, 360))));
-  EXPECT_THAT(
-      config.event_configs,
-      Contains(EventConfig("test_trigger", Comparator(EQUAL, 0), 7, 360)));
+                                       /*window=*/1, /*storage=*/360))));
+  EXPECT_THAT(config.event_configs,
+              Contains(EventConfig("test_trigger", Comparator(EQUAL, 0),
+                                   /*window=*/7, /*storage=*/360)));
 }
 
 TEST_F(AndroidBlueBubbleConfigurationProviderTest,
@@ -148,16 +156,16 @@ TEST_F(AndroidBlueBubbleConfigurationProviderTest,
   base::test::ScopedFeatureList feature_list{
       chrome::android::kBlueBubbleIphCooldownGroup};
 
-  FeatureConfig config = CreateBaseConfig(
-      EventConfig("test_trigger", Comparator(EQUAL, 0), 90, 90));
+  FeatureConfig config = CreateBaseConfig(EventConfig(
+      "test_trigger", Comparator(EQUAL, 0), /*window=*/90, /*storage=*/90));
   EXPECT_TRUE(provider_.MaybeProvideFeatureConfiguration(
       kIPHSiteControlsFeature, config, {}, {}));
 
-  EXPECT_EQ(config.trigger,
-            EventConfig("test_trigger", Comparator(EQUAL, 0), 90, 360));
+  EXPECT_EQ(config.trigger, EventConfig("test_trigger", Comparator(EQUAL, 0),
+                                        /*window=*/90, /*storage=*/360));
   EXPECT_THAT(config.event_configs,
               Contains(EventConfig("test_trigger", Comparator(LESS_THAN, 3),
-                                   360, 360)));
+                                   /*window=*/360, /*storage=*/360)));
   EXPECT_EQ(config.event_configs.size(), 1u);
 }
 

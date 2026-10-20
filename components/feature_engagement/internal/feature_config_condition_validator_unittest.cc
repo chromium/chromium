@@ -49,8 +49,10 @@ FeatureConfig GetValidFeatureConfig() {
 FeatureConfig GetAcceptingFeatureConfig() {
   FeatureConfig config;
   config.valid = true;
-  config.used = EventConfig("used", Comparator(ANY, 0), 0, 0);
-  config.trigger = EventConfig("trigger", Comparator(ANY, 0), 0, 0);
+  config.used =
+      EventConfig("used", Comparator(ANY, 0), /*window=*/0, /*storage=*/0);
+  config.trigger =
+      EventConfig("trigger", Comparator(ANY, 0), /*window=*/0, /*storage=*/0);
   config.session_rate = Comparator(ANY, 0);
   config.availability = Comparator(ANY, 0);
   return config;
@@ -73,7 +75,8 @@ GroupConfig GetValidGroupConfig() {
 GroupConfig GetAcceptingGroupConfig() {
   GroupConfig config;
   config.valid = true;
-  config.trigger = EventConfig("trigger", Comparator(ANY, 0), 0, 0);
+  config.trigger =
+      EventConfig("trigger", Comparator(ANY, 0), /*window=*/0, /*storage=*/0);
   return config;
 }
 
@@ -320,7 +323,8 @@ class FeatureConfigConditionValidatorTest : public ::testing::Test {
   ConditionValidator::Result GetResultForEventWindow(Comparator comparator,
                                                      uint32_t window) {
     FeatureConfig config = GetAcceptingFeatureConfig();
-    config.event_configs.insert(EventConfig("event1", comparator, window, 0));
+    config.event_configs.insert(
+        EventConfig("event1", comparator, /*window=*/window, /*storage=*/0));
     return validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config, {},
                                       event_model_, availability_model_,
                                       display_lock_controller_, &configuration_,
@@ -408,7 +412,8 @@ TEST_F(FeatureConfigConditionValidatorTest, Used) {
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
   FeatureConfig config = GetAcceptingFeatureConfig();
-  config.used = EventConfig("used", Comparator(LESS_THAN, 0), 0, 0);
+  config.used = EventConfig("used", Comparator(LESS_THAN, 0), /*window=*/0,
+                            /*storage=*/0);
 
   ConditionValidator::Result result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
@@ -420,7 +425,8 @@ TEST_F(FeatureConfigConditionValidatorTest, Trigger) {
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
   FeatureConfig config = GetAcceptingFeatureConfig();
-  config.trigger = EventConfig("trigger", Comparator(LESS_THAN, 0), 0, 0);
+  config.trigger = EventConfig("trigger", Comparator(LESS_THAN, 0),
+                               /*window=*/0, /*storage=*/0);
 
   ConditionValidator::Result result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
@@ -432,7 +438,8 @@ TEST_F(FeatureConfigConditionValidatorTest, SingleOKPrecondition) {
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
   FeatureConfig config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(EventConfig("event1", Comparator(ANY, 0), 0, 0));
+  config.event_configs.insert(
+      EventConfig("event1", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
 
   EXPECT_TRUE(GetResult(config).NoErrors());
 }
@@ -442,8 +449,10 @@ TEST_F(FeatureConfigConditionValidatorTest, MultipleOKPreconditions) {
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
   FeatureConfig config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(EventConfig("event1", Comparator(ANY, 0), 0, 0));
-  config.event_configs.insert(EventConfig("event2", Comparator(ANY, 0), 0, 0));
+  config.event_configs.insert(
+      EventConfig("event1", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
+  config.event_configs.insert(
+      EventConfig("event2", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
 
   EXPECT_TRUE(GetResult(config).NoErrors());
 }
@@ -453,9 +462,10 @@ TEST_F(FeatureConfigConditionValidatorTest, OneOKThenOneFailingPrecondition) {
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
   FeatureConfig config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(EventConfig("event1", Comparator(ANY, 0), 0, 0));
   config.event_configs.insert(
-      EventConfig("event2", Comparator(LESS_THAN, 0), 0, 0));
+      EventConfig("event1", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
+  config.event_configs.insert(EventConfig("event2", Comparator(LESS_THAN, 0),
+                                          /*window=*/0, /*storage=*/0));
 
   ConditionValidator::Result result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
@@ -467,9 +477,10 @@ TEST_F(FeatureConfigConditionValidatorTest, OneFailingThenOneOKPrecondition) {
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
   FeatureConfig config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(EventConfig("event1", Comparator(ANY, 0), 0, 0));
   config.event_configs.insert(
-      EventConfig("event2", Comparator(LESS_THAN, 0), 0, 0));
+      EventConfig("event1", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
+  config.event_configs.insert(EventConfig("event2", Comparator(LESS_THAN, 0),
+                                          /*window=*/0, /*storage=*/0));
 
   ConditionValidator::Result result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
@@ -481,10 +492,10 @@ TEST_F(FeatureConfigConditionValidatorTest, TwoFailingPreconditions) {
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
   FeatureConfig config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(
-      EventConfig("event1", Comparator(LESS_THAN, 0), 0, 0));
-  config.event_configs.insert(
-      EventConfig("event2", Comparator(LESS_THAN, 0), 0, 0));
+  config.event_configs.insert(EventConfig("event1", Comparator(LESS_THAN, 0),
+                                          /*window=*/0, /*storage=*/0));
+  config.event_configs.insert(EventConfig("event2", Comparator(LESS_THAN, 0),
+                                          /*window=*/0, /*storage=*/0));
 
   ConditionValidator::Result result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
@@ -1012,10 +1023,10 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
 
   // Verify validator counts correctly for two events last 99 days.
   FeatureConfig config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(
-      EventConfig("event1", Comparator(EQUAL, 10u), 99u, 0));
-  config.event_configs.insert(
-      EventConfig("event2", Comparator(EQUAL, 5u), 99u, 0));
+  config.event_configs.insert(EventConfig("event1", Comparator(EQUAL, 10u),
+                                          /*window=*/99u, /*storage=*/0));
+  config.event_configs.insert(EventConfig("event2", Comparator(EQUAL, 5u),
+                                          /*window=*/99u, /*storage=*/0));
   ConditionValidator::Result result = validator_.MeetsConditions(
       kFeatureConfigTestFeatureFoo, config, {}, event_model_,
       availability_model_, display_lock_controller_, &configuration_,
@@ -1024,10 +1035,10 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
 
   // Verify validator counts correctly for two events last 100 days.
   config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(
-      EventConfig("event1", Comparator(EQUAL, 20u), 100u, 0));
-  config.event_configs.insert(
-      EventConfig("event2", Comparator(EQUAL, 10u), 100u, 0));
+  config.event_configs.insert(EventConfig("event1", Comparator(EQUAL, 20u),
+                                          /*window=*/100u, /*storage=*/0));
+  config.event_configs.insert(EventConfig("event2", Comparator(EQUAL, 10u),
+                                          /*window=*/100u, /*storage=*/0));
   result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config, {},
                                       event_model_, availability_model_,
                                       display_lock_controller_, &configuration_,
@@ -1036,10 +1047,10 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
 
   // Verify validator counts correctly for two events last 101 days.
   config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(
-      EventConfig("event1", Comparator(EQUAL, 30u), 101u, 0));
-  config.event_configs.insert(
-      EventConfig("event2", Comparator(EQUAL, 15u), 101u, 0));
+  config.event_configs.insert(EventConfig("event1", Comparator(EQUAL, 30u),
+                                          /*window=*/101u, /*storage=*/0));
+  config.event_configs.insert(EventConfig("event2", Comparator(EQUAL, 15u),
+                                          /*window=*/101u, /*storage=*/0));
   result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config, {},
                                       event_model_, availability_model_,
                                       display_lock_controller_, &configuration_,
@@ -1049,10 +1060,10 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
   // Verify validator counts correctly for two events last 101 days, and returns
   // error when first event fails.
   config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(
-      EventConfig("event1", Comparator(EQUAL, 0), 101u, 0));
-  config.event_configs.insert(
-      EventConfig("event2", Comparator(EQUAL, 15u), 101u, 0));
+  config.event_configs.insert(EventConfig("event1", Comparator(EQUAL, 0),
+                                          /*window=*/101u, /*storage=*/0));
+  config.event_configs.insert(EventConfig("event2", Comparator(EQUAL, 15u),
+                                          /*window=*/101u, /*storage=*/0));
   result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config, {},
                                       event_model_, availability_model_,
                                       display_lock_controller_, &configuration_,
@@ -1063,10 +1074,10 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
   // Verify validator counts correctly for two events last 101 days, and returns
   // error when second event fails.
   config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(
-      EventConfig("event1", Comparator(EQUAL, 30u), 101u, 0));
-  config.event_configs.insert(
-      EventConfig("event2", Comparator(EQUAL, 0), 101u, 0));
+  config.event_configs.insert(EventConfig("event1", Comparator(EQUAL, 30u),
+                                          /*window=*/101u, /*storage=*/0));
+  config.event_configs.insert(EventConfig("event2", Comparator(EQUAL, 0),
+                                          /*window=*/101u, /*storage=*/0));
   result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config, {},
                                       event_model_, availability_model_,
                                       display_lock_controller_, &configuration_,
@@ -1077,10 +1088,10 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
   // Verify validator counts correctly for two events last 101 days, and returns
   // error when both events fail.
   config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(
-      EventConfig("event1", Comparator(EQUAL, 0), 101u, 0));
-  config.event_configs.insert(
-      EventConfig("event2", Comparator(EQUAL, 0), 101u, 0));
+  config.event_configs.insert(EventConfig("event1", Comparator(EQUAL, 0),
+                                          /*window=*/101u, /*storage=*/0));
+  config.event_configs.insert(EventConfig("event2", Comparator(EQUAL, 0),
+                                          /*window=*/101u, /*storage=*/0));
   result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config, {},
                                       event_model_, availability_model_,
                                       display_lock_controller_, &configuration_,
@@ -1096,12 +1107,14 @@ TEST_F(FeatureConfigConditionValidatorTest, TestStaggeredTriggering) {
   // Trigger maximum 2 times, and only 1 time last 2 days (today + yesterday).
   FeatureConfig config;
   config.valid = true;
-  config.used = EventConfig("used", Comparator(ANY, 0), 0, 0);
-  config.trigger = EventConfig("trigger", Comparator(LESS_THAN, 2), 100u, 100u);
+  config.used =
+      EventConfig("used", Comparator(ANY, 0), /*window=*/0, /*storage=*/0);
+  config.trigger = EventConfig("trigger", Comparator(LESS_THAN, 2),
+                               /*window=*/100u, /*storage=*/100u);
   config.session_rate = Comparator(ANY, 0);
   config.availability = Comparator(ANY, 0);
-  config.event_configs.insert(
-      EventConfig("trigger", Comparator(LESS_THAN, 1u), 2u, 100u));
+  config.event_configs.insert(EventConfig("trigger", Comparator(LESS_THAN, 1u),
+                                          /*window=*/2u, /*storage=*/100u));
 
   // Should be OK to trigger initially on day 0.
   EXPECT_TRUE(GetResult(config).NoErrors());
@@ -1144,10 +1157,10 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEventsWithSameName) {
 
   // Trigger maximum 2 times, and only 1 time last 2 days (today + yesterday).
   FeatureConfig config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(
-      EventConfig("event1", Comparator(LESS_THAN, 1u), 2u, 100u));
-  config.event_configs.insert(
-      EventConfig("event1", Comparator(LESS_THAN, 2u), 100u, 100u));
+  config.event_configs.insert(EventConfig("event1", Comparator(LESS_THAN, 1u),
+                                          /*window=*/2u, /*storage=*/100u));
+  config.event_configs.insert(EventConfig("event1", Comparator(LESS_THAN, 2u),
+                                          /*window=*/100u, /*storage=*/100u));
 
   // Should be OK to trigger initially on day 0.
   EXPECT_TRUE(GetResult(config).NoErrors());
@@ -1324,7 +1337,8 @@ TEST_F(FeatureConfigConditionValidatorTest, GroupTrigger) {
 
   FeatureConfig config = GetAcceptingFeatureConfig();
   GroupConfig group_config = GetAcceptingGroupConfig();
-  group_config.trigger = EventConfig("trigger", Comparator(LESS_THAN, 0), 0, 0);
+  group_config.trigger = EventConfig("trigger", Comparator(LESS_THAN, 0),
+                                     /*window=*/0, /*storage=*/0);
 
   ConditionValidator::Result result =
       GetResultWithGroups(config, {group_config});
@@ -1340,7 +1354,7 @@ TEST_F(FeatureConfigConditionValidatorTest, GroupSingleOKPrecondition) {
   FeatureConfig config = GetAcceptingFeatureConfig();
   GroupConfig group_config = GetAcceptingGroupConfig();
   group_config.event_configs.insert(
-      EventConfig("event1", Comparator(ANY, 0), 0, 0));
+      EventConfig("event1", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
 
   EXPECT_TRUE(GetResultWithGroups(config, {group_config}).NoErrors());
 }
@@ -1352,9 +1366,9 @@ TEST_F(FeatureConfigConditionValidatorTest, GroupMultipleOKPreconditions) {
   FeatureConfig config = GetAcceptingFeatureConfig();
   GroupConfig group_config = GetAcceptingGroupConfig();
   group_config.event_configs.insert(
-      EventConfig("event1", Comparator(ANY, 0), 0, 0));
+      EventConfig("event1", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
   group_config.event_configs.insert(
-      EventConfig("event2", Comparator(ANY, 0), 0, 0));
+      EventConfig("event2", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
 
   EXPECT_TRUE(GetResultWithGroups(config, {group_config}).NoErrors());
 }
@@ -1367,9 +1381,9 @@ TEST_F(FeatureConfigConditionValidatorTest,
   FeatureConfig config = GetAcceptingFeatureConfig();
   GroupConfig group_config = GetAcceptingGroupConfig();
   group_config.event_configs.insert(
-      EventConfig("event1", Comparator(ANY, 0), 0, 0));
-  group_config.event_configs.insert(
-      EventConfig("event2", Comparator(LESS_THAN, 0), 0, 0));
+      EventConfig("event1", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
+  group_config.event_configs.insert(EventConfig(
+      "event2", Comparator(LESS_THAN, 0), /*window=*/0, /*storage=*/0));
 
   ConditionValidator::Result result =
       GetResultWithGroups(config, {group_config});
@@ -1385,10 +1399,10 @@ TEST_F(FeatureConfigConditionValidatorTest, MultipleGroupOKPreconditions) {
   FeatureConfig config = GetAcceptingFeatureConfig();
   GroupConfig group_one_config = GetAcceptingGroupConfig();
   group_one_config.event_configs.insert(
-      EventConfig("event1", Comparator(ANY, 0), 0, 0));
+      EventConfig("event1", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
   GroupConfig group_two_config = GetAcceptingGroupConfig();
   group_two_config.event_configs.insert(
-      EventConfig("event2", Comparator(ANY, 0), 0, 0));
+      EventConfig("event2", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
 
   EXPECT_TRUE(GetResultWithGroups(config, {group_one_config, group_two_config})
                   .NoErrors());
@@ -1402,10 +1416,10 @@ TEST_F(FeatureConfigConditionValidatorTest,
   FeatureConfig config = GetAcceptingFeatureConfig();
   GroupConfig group_one_config = GetAcceptingGroupConfig();
   group_one_config.event_configs.insert(
-      EventConfig("event1", Comparator(ANY, 0), 0, 0));
+      EventConfig("event1", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
   GroupConfig group_two_config = GetAcceptingGroupConfig();
-  group_two_config.event_configs.insert(
-      EventConfig("event2", Comparator(LESS_THAN, 0), 0, 0));
+  group_two_config.event_configs.insert(EventConfig(
+      "event2", Comparator(LESS_THAN, 0), /*window=*/0, /*storage=*/0));
 
   ConditionValidator::Result result =
       GetResultWithGroups(config, {group_one_config, group_two_config});
@@ -1421,11 +1435,11 @@ TEST_F(FeatureConfigConditionValidatorTest,
 
   FeatureConfig config = GetAcceptingFeatureConfig();
   GroupConfig group_one_config = GetAcceptingGroupConfig();
-  group_one_config.event_configs.insert(
-      EventConfig("event1", Comparator(LESS_THAN, 0), 0, 0));
+  group_one_config.event_configs.insert(EventConfig(
+      "event1", Comparator(LESS_THAN, 0), /*window=*/0, /*storage=*/0));
   GroupConfig group_two_config = GetAcceptingGroupConfig();
   group_two_config.event_configs.insert(
-      EventConfig("event2", Comparator(ANY, 0), 0, 0));
+      EventConfig("event2", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
 
   ConditionValidator::Result result =
       GetResultWithGroups(config, {group_one_config, group_two_config});
@@ -1439,11 +1453,12 @@ TEST_F(FeatureConfigConditionValidatorTest, FeatureAndGroupOKPreconditions) {
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
   FeatureConfig config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(EventConfig("event1", Comparator(ANY, 0), 0, 0));
+  config.event_configs.insert(
+      EventConfig("event1", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
 
   GroupConfig group_config = GetAcceptingGroupConfig();
   group_config.event_configs.insert(
-      EventConfig("event2", Comparator(ANY, 0), 0, 0));
+      EventConfig("event2", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
 
   EXPECT_TRUE(GetResultWithGroups(config, {group_config}).NoErrors());
 }
@@ -1454,11 +1469,12 @@ TEST_F(FeatureConfigConditionValidatorTest,
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
   FeatureConfig config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(EventConfig("event1", Comparator(ANY, 0), 0, 0));
+  config.event_configs.insert(
+      EventConfig("event1", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
 
   GroupConfig group_config = GetAcceptingGroupConfig();
-  group_config.event_configs.insert(
-      EventConfig("event2", Comparator(LESS_THAN, 0), 0, 0));
+  group_config.event_configs.insert(EventConfig(
+      "event2", Comparator(LESS_THAN, 0), /*window=*/0, /*storage=*/0));
 
   ConditionValidator::Result result =
       GetResultWithGroups(config, {group_config});
@@ -1473,12 +1489,12 @@ TEST_F(FeatureConfigConditionValidatorTest,
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
   FeatureConfig config = GetAcceptingFeatureConfig();
-  config.event_configs.insert(
-      EventConfig("event1", Comparator(LESS_THAN, 0), 0, 0));
+  config.event_configs.insert(EventConfig("event1", Comparator(LESS_THAN, 0),
+                                          /*window=*/0, /*storage=*/0));
 
   GroupConfig group_one_config = GetAcceptingGroupConfig();
   group_one_config.event_configs.insert(
-      EventConfig("event2", Comparator(ANY, 0), 0, 0));
+      EventConfig("event2", Comparator(ANY, 0), /*window=*/0, /*storage=*/0));
 
   ConditionValidator::Result result =
       GetResultWithGroups(config, {group_one_config});

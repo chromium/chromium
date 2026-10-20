@@ -92,8 +92,11 @@ TEST(CommonPreconditionsTest, MeetsFeatureEngagementCriteriaPrecondition) {
   UnownedTypedDataCollection data;
 
   const EventList kPassingEventList{
-      {EventConfig("event1", Comparator(ComparatorType::EQUAL, 0), 7, 7), 0},
-      {EventConfig("event2", Comparator(ComparatorType::GREATER_THAN, 1), 7, 7),
+      {EventConfig("event1", Comparator(ComparatorType::EQUAL, 0), /*window=*/7,
+                   /*storage=*/7),
+       0},
+      {EventConfig("event2", Comparator(ComparatorType::GREATER_THAN, 1),
+                   /*window=*/7, /*storage=*/7),
        2},
   };
   EXPECT_CALL(tracker, ListEvents(testing::Ref(kTestFeature)))
@@ -101,8 +104,11 @@ TEST(CommonPreconditionsTest, MeetsFeatureEngagementCriteriaPrecondition) {
   EXPECT_EQ(FeaturePromoResult::Success(), precond.CheckPrecondition(data));
 
   const EventList kFailingEventList1{
-      {EventConfig("event1", Comparator(ComparatorType::EQUAL, 0), 7, 7), 1},
-      {EventConfig("event2", Comparator(ComparatorType::GREATER_THAN, 1), 7, 7),
+      {EventConfig("event1", Comparator(ComparatorType::EQUAL, 0), /*window=*/7,
+                   /*storage=*/7),
+       1},
+      {EventConfig("event2", Comparator(ComparatorType::GREATER_THAN, 1),
+                   /*window=*/7, /*storage=*/7),
        2},
   };
   EXPECT_CALL(tracker, ListEvents(testing::Ref(kTestFeature)))
@@ -111,8 +117,11 @@ TEST(CommonPreconditionsTest, MeetsFeatureEngagementCriteriaPrecondition) {
             precond.CheckPrecondition(data));
 
   const EventList kFailingEventList2{
-      {EventConfig("event1", Comparator(ComparatorType::EQUAL, 0), 7, 7), 0},
-      {EventConfig("event2", Comparator(ComparatorType::GREATER_THAN, 1), 7, 7),
+      {EventConfig("event1", Comparator(ComparatorType::EQUAL, 0), /*window=*/7,
+                   /*storage=*/7),
+       0},
+      {EventConfig("event2", Comparator(ComparatorType::GREATER_THAN, 1),
+                   /*window=*/7, /*storage=*/7),
        0},
   };
   EXPECT_CALL(tracker, ListEvents(testing::Ref(kTestFeature)))

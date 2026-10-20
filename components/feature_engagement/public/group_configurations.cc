@@ -20,11 +20,13 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     config.valid = true;
     config.session_rate = Comparator(EQUAL, 0);
     // Only show a fullscreen promo once every two days.
-    config.trigger = EventConfig("fullscreen_promos_group_trigger",
-                                 Comparator(LESS_THAN, 1), 2, 1000);
+    config.trigger =
+        EventConfig("fullscreen_promos_group_trigger", Comparator(LESS_THAN, 1),
+                    /*window=*/2, /*storage=*/1000);
     // Only show a fullscreen promo three times every seven days.
     config.event_configs.insert(EventConfig("fullscreen_promos_group_trigger",
-                                            Comparator(LESS_THAN, 3), 7, 1000));
+                                            Comparator(LESS_THAN, 3),
+                                            /*window=*/7, /*storage=*/1000));
     return config;
   }
 
@@ -33,22 +35,25 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     config.valid = true;
     config.session_rate = Comparator(EQUAL, 0);
     // Default browser promos should be at least 14 days apart.
-    config.trigger = EventConfig(events::kDefaultBrowserPromosGroupTrigger,
-                                 Comparator(LESS_THAN, 1), 14, 365);
+    config.trigger =
+        EventConfig(events::kDefaultBrowserPromosGroupTrigger,
+                    Comparator(LESS_THAN, 1), /*window=*/14, /*storage=*/365);
     // Default Browser promos shouldn't be shown if the Post Restore Default
     // Browser Promo has been shown in the past 7 days.
     config.event_configs.insert(
         EventConfig("post_restore_default_browser_promo_trigger",
-                    Comparator(EQUAL, 0), 7, 365));
+                    Comparator(EQUAL, 0), /*window=*/7, /*storage=*/365));
 
     // Default Browser promos can be shown only after Chrome has been opened 7
     // or more times.
-    config.event_configs.insert(EventConfig(
-        events::kChromeOpened, Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
+    config.event_configs.insert(
+        EventConfig(events::kChromeOpened, Comparator(GREATER_THAN_OR_EQUAL, 7),
+                    /*window=*/365, /*storage=*/365));
 
     // Default Browser promos should be shown after 3 or more days since FRE.
     config.event_configs.insert(EventConfig(events::kIOSDefaultBrowserFREShown,
-                                            Comparator(EQUAL, 0), 3, 365));
+                                            Comparator(EQUAL, 0), /*window=*/3,
+                                            /*storage=*/365));
     return config;
   }
 
@@ -58,9 +63,9 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     config.session_rate = Comparator(EQUAL, 0);
 
     // Only one of the tailored promos ever can be shown.
-    config.trigger =
-        EventConfig("tailored_default_browser_promos_group_trigger",
-                    Comparator(EQUAL, 0), kMaxWindowPeriod, kMaxStoragePeriod);
+    config.trigger = EventConfig(
+        "tailored_default_browser_promos_group_trigger", Comparator(EQUAL, 0),
+        /*window=*/kMaxWindowPeriod, /*storage=*/kMaxStoragePeriod);
     return config;
   }
 
@@ -72,22 +77,23 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     // No more than 1 promo across all variants per day.
     config.trigger =
         EventConfig("tailored_non_modal_default_browser_promos_group_trigger",
-                    Comparator(LESS_THAN, 1), 1, 365);
+                    Comparator(LESS_THAN, 1), /*window=*/1, /*storage=*/365);
 
     // No more than 4 promos across all variants per 6 months
     config.event_configs.insert(
         EventConfig("tailored_non_modal_default_browser_promos_group_trigger",
-                    Comparator(LESS_THAN, 4), 180, 365));
+                    Comparator(LESS_THAN, 4), /*window=*/180, /*storage=*/365));
 
     // Non-modal Default Browser promos wait at least 1 day after FRE.
     config.event_configs.insert(EventConfig(events::kIOSDefaultBrowserFREShown,
-                                            Comparator(EQUAL, 0), 1, 365));
+                                            Comparator(EQUAL, 0), /*window=*/1,
+                                            /*storage=*/365));
 
     // Non-modal Default Browser promos should wait at least 1 day after a
     // fullscreen DB promo.
     config.event_configs.insert(
         EventConfig(events::kDefaultBrowserPromosGroupTrigger,
-                    Comparator(EQUAL, 0), 1, 365));
+                    Comparator(EQUAL, 0), /*window=*/1, /*storage=*/365));
 
     return config;
   }
@@ -98,13 +104,14 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     config.session_rate = kNoRestrictions;
 
     // No more than 1 promo across all variants per day.
-    config.trigger = EventConfig("non_modal_signin_promos_group_trigger",
-                                 Comparator(LESS_THAN, 1), 1, 365);
+    config.trigger =
+        EventConfig("non_modal_signin_promos_group_trigger",
+                    Comparator(LESS_THAN, 1), /*window=*/1, /*storage=*/365);
 
     // No more than 2 promos across all variants per 6 months
     config.event_configs.insert(
         EventConfig("non_modal_signin_promos_group_trigger",
-                    Comparator(LESS_THAN, 2), 180, 365));
+                    Comparator(LESS_THAN, 2), /*window=*/180, /*storage=*/365));
 
     return config;
   }
@@ -113,13 +120,14 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     config.valid = true;
     config.session_rate = kNoRestrictions;
     // Group Rule: Only allow 1 badge from this group per day.
-    config.trigger = EventConfig("homepage_new_badges_group_trigger",
-                                 Comparator(LESS_THAN, 1), 1, 365);
+    config.trigger =
+        EventConfig("homepage_new_badges_group_trigger",
+                    Comparator(LESS_THAN, 1), /*window=*/1, /*storage=*/365);
     // Group Rule: Don't show until the holdback period has elapsed.
-    config.event_configs.insert(
-        EventConfig(events::kIOSFREBadgeHoldbackPeriodElapsed,
-                    Comparator(GREATER_THAN_OR_EQUAL, 1), kMaxWindowPeriod,
-                    kMaxStoragePeriod));
+    config.event_configs.insert(EventConfig(
+        events::kIOSFREBadgeHoldbackPeriodElapsed,
+        Comparator(GREATER_THAN_OR_EQUAL, 1), /*window=*/kMaxWindowPeriod,
+        /*storage=*/kMaxStoragePeriod));
     return config;
   }
 #endif  // BUILDFLAG(IS_IOS)
@@ -132,12 +140,13 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     config.valid = true;
     config.session_rate = Comparator(EQUAL, 0);
     config.trigger = EventConfig("default_browser_promos_group_trigger",
-                                 Comparator(EQUAL, 0), 7, kMaxStoragePeriod);
+                                 Comparator(EQUAL, 0), /*window=*/7,
+                                 /*storage=*/kMaxStoragePeriod);
     // Default Browser promos in this groups can be shown only if the Role
     // Manager promo is not shown in the 7 days period.
-    config.event_configs.insert(
-        EventConfig("role_manager_default_browser_promos_shown",
-                    Comparator(EQUAL, 0), 7, kMaxStoragePeriod));
+    config.event_configs.insert(EventConfig(
+        "role_manager_default_browser_promos_shown", Comparator(EQUAL, 0),
+        /*window=*/7, /*storage=*/kMaxStoragePeriod));
     return config;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -149,7 +158,8 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     config.valid = true;
     config.session_rate = Comparator(LESS_THAN, 0);
     config.trigger =
-        EventConfig("dummy_group_iph_trigger", Comparator(LESS_THAN, 0), 1, 1);
+        EventConfig("dummy_group_iph_trigger", Comparator(LESS_THAN, 0),
+                    /*window=*/1, /*storage=*/1);
     return config;
   }
 
