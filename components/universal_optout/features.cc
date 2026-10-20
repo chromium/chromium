@@ -21,7 +21,7 @@ namespace universal_optout::features {
 
 BASE_FEATURE(kUniversalOptOut, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUniversalOptOutExtension, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUniversalOptOutExtension, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUniversalOptOutExtensionSilent,
              base::FEATURE_DISABLED_BY_DEFAULT);
