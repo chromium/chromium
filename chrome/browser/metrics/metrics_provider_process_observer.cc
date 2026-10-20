@@ -106,7 +106,7 @@ void MetricsProviderProcessObserver::ProbabilisticallyListenToRenderer(
       extensions::ProcessMap* process_map =
           extensions::ProcessMap::Get(browser_context);
       if (process_map) {
-        is_extension_renderer = process_map->Contains(host->GetDeprecatedID());
+        is_extension_renderer = process_map->Contains(host->GetID());
       }
 #endif
     }

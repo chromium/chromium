@@ -166,11 +166,11 @@ class ChromeWebStoreInIsolatedOriginTest : public ChromeWebStoreProcessTest {
   }
 };
 
-std::set<int> GetCurrentProcessIds() {
-  std::set<int> process_ids;
+std::set<content::ChildProcessId> GetCurrentProcessIds() {
+  std::set<content::ChildProcessId> process_ids;
   for (auto* web_contents : content::GetAllWebContents()) {
     process_ids.insert(
-        web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+        web_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
   }
   return process_ids;
 }
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ExtensionAndWebProcessOverflow) {
       test_data_dir_.AppendASCII("api_test/browser_action/add_popup")));
 
   // Identify all current renderer processes after loading extensions.
-  std::set<int> process_ids = GetCurrentProcessIds();
+  std::set<content::ChildProcessId> process_ids = GetCurrentProcessIds();
   size_t base_process_count = process_ids.size();
 
   // Verify that each extension got its own process, pushing us to infra + 3.
@@ -376,11 +376,11 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ExtensionAndWebProcessOverflow) {
 
   // Verify the number of processes across extensions and tabs.
   process_ids.insert(
-      web_contents1->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+      web_contents1->GetPrimaryMainFrame()->GetProcess()->GetID());
   process_ids.insert(
-      web_contents2->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+      web_contents2->GetPrimaryMainFrame()->GetProcess()->GetID());
   process_ids.insert(
-      web_contents3->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+      web_contents3->GetPrimaryMainFrame()->GetProcess()->GetID());
 
   // The web processes still share 2 processes as if there were a single
   // extension process (making a total of base_process_count + 2 processes
@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ExtensionAndWebProcessOverflow) {
   NavigateToURLInNewTab(cross_site_url);
   WebContents* web_contents4 = GetActiveWebContents();
   process_ids.insert(
-      web_contents4->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+      web_contents4->GetPrimaryMainFrame()->GetProcess()->GetID());
   // The cross-site process adds 1 more process to the total, to avoid sharing
   // with the existing web renderer processes (due to Site Isolation).
   EXPECT_EQ(base_process_count + 3, process_ids.size());

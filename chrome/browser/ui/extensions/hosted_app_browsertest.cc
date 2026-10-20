@@ -67,6 +67,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1045,7 +1046,7 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
         << " for " << url << " from " << rfh->GetLastCommittedURL();
 
     EXPECT_EQ(expect_app_process,
-              process_map_->Contains(new_rfh->GetProcess()->GetDeprecatedID()))
+              process_map_->Contains(new_rfh->GetProcess()->GetID()))
         << " for " << url << " from " << rfh->GetLastCommittedURL();
     EXPECT_EQ(expect_app_process,
               new_rfh->GetSiteInstance()->GetSecurityPrincipal().SchemeIs(
@@ -1093,7 +1094,7 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
         << " for " << url << " from " << parent_rfh->GetLastCommittedURL();
 
     EXPECT_EQ(expect_app_process,
-              process_map_->Contains(subframe->GetProcess()->GetDeprecatedID()))
+              process_map_->Contains(subframe->GetProcess()->GetID()))
         << " for " << url << " from " << parent_rfh->GetLastCommittedURL();
     if (!base::FeatureList::IsEnabled(
             features::kSiteInstanceGroupsForDataUrls)) {
@@ -1232,14 +1233,12 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
 
   // The isolated origin iframe's process should be in the ProcessMap, since
   // the isolated origin is covered by the app's extent.
-  EXPECT_TRUE(
-      process_map_->Contains(isolated->GetProcess()->GetDeprecatedID()));
+  EXPECT_TRUE(process_map_->Contains(isolated->GetProcess()->GetID()));
 
   // If we swapped processes for the |cross_site| iframe, its process should
   // not be on the ProcessMap.
   if (should_swap_for_cross_site_) {
-    EXPECT_FALSE(
-        process_map_->Contains(cross_site->GetProcess()->GetDeprecatedID()));
+    EXPECT_FALSE(process_map_->Contains(cross_site->GetProcess()->GetID()));
   }
 
   // Verify that |same_dir| and |diff_dir| can script each other.
@@ -1541,8 +1540,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
   // The resulting page should load in an app process, and the corresponding
   // SiteInstance's site URL should be a valid, non-empty chrome-extension://
   // URL with a valid host that corresponds to the app's ID.
-  EXPECT_TRUE(
-      process_map_->Contains(main_frame->GetProcess()->GetDeprecatedID()));
+  EXPECT_TRUE(process_map_->Contains(main_frame->GetProcess()->GetID()));
   EXPECT_FALSE(main_frame->GetSiteInstance()
                    ->GetSecurityPrincipal()
                    .GetDeprecatedSiteURL()
@@ -1621,7 +1619,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
   GURL app_site =
       GetSiteForURL(app_browser_->GetProfile(), app->GetLastCommittedURL());
   EXPECT_EQ(extensions::kExtensionScheme, app_site.GetScheme());
-  EXPECT_TRUE(process_map_->Contains(app->GetProcess()->GetDeprecatedID()));
+  EXPECT_TRUE(process_map_->Contains(app->GetProcess()->GetID()));
 
   // Add a same-site subframe on isolated.com outside the app's extent.  This
   // should stay in app process.
@@ -1656,12 +1654,12 @@ IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
   // processes to a non-app process.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser_, very_isolated_url));
   EXPECT_FALSE(process_map_->Contains(
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // Navigating main frame back to the app URL should go into an app process.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser_, app_url));
   EXPECT_TRUE(process_map_->Contains(
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
 }
 
 // Check that when a hosted app's extent contains multiple origins, one of
@@ -1697,12 +1695,12 @@ IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
 
   // The app URL should have loaded in an app process.
   RenderFrameHost* app = web_contents->GetPrimaryMainFrame();
-  EXPECT_TRUE(process_map_->Contains(app->GetProcess()->GetDeprecatedID()));
+  EXPECT_TRUE(process_map_->Contains(app->GetProcess()->GetID()));
   EXPECT_EQ(extensions::kExtensionScheme, app->GetSiteInstance()
                                               ->GetSecurityPrincipal()
                                               .GetDeprecatedSiteURL()
                                               .GetScheme());
-  int first_app_process_id = app->GetProcess()->GetDeprecatedID();
+  content::ChildProcessId first_app_process_id = app->GetProcess()->GetID();
 
   // Creating a subframe on unisolated.com should not be allowed to share the
   // main frame's app process, since we don't want the isolated.com isolated
@@ -1720,10 +1718,9 @@ IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser_, unisolated_app_url));
   EXPECT_TRUE(process_map_->Contains(
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
-  EXPECT_NE(
-      first_app_process_id,
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID()));
+  EXPECT_NE(first_app_process_id,
+            web_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
 }
 
 class HostedAppSitePerProcessTest : public HostedAppProcessModelTest {
@@ -1854,8 +1851,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
 
   // Both processes should still be app processes.
   auto* process_map = extensions::ProcessMap::Get(browser()->GetProfile());
-  EXPECT_TRUE(process_map->Contains(foo_process->GetDeprecatedID()));
-  EXPECT_TRUE(process_map->Contains(bar_process->GetDeprecatedID()));
+  EXPECT_TRUE(process_map->Contains(foo_process->GetID()));
+  EXPECT_TRUE(process_map->Contains(bar_process->GetID()));
 }
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -1917,8 +1914,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessPDFTest,
   // Ensure the app URL loaded in a hosted app process.
   auto* process_map = extensions::ProcessMap::Get(browser()->GetProfile());
   content::RenderFrameHost* app_frame = foo_contents->GetPrimaryMainFrame();
-  EXPECT_TRUE(
-      process_map->Contains(app_frame->GetProcess()->GetDeprecatedID()));
+  EXPECT_TRUE(process_map->Contains(app_frame->GetProcess()->GetID()));
 
   // Add a same-site PDF subframe and wait for it to load.
   GURL pdf_url = embedded_test_server()->GetURL("foo.com", "/pdf/test.pdf");
@@ -1950,8 +1946,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessPDFTest,
   // The current behavior is that the PDF process is also considered to be an
   // app process, since its URL matched the app's extent. This is probably not
   // necessary and is something to consider changing in future.
-  EXPECT_TRUE(process_map->Contains(
-      pdf_document_frame->GetProcess()->GetDeprecatedID()));
+  EXPECT_TRUE(process_map->Contains(pdf_document_frame->GetProcess()->GetID()));
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -2116,7 +2111,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
       web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   auto* foo_process = foo_site_instance->GetProcess();
   auto* process_map = extensions::ProcessMap::Get(browser()->GetProfile());
-  EXPECT_TRUE(process_map->Contains(foo_process->GetDeprecatedID()));
+  EXPECT_TRUE(process_map->Contains(foo_process->GetID()));
 
   // At this point the main frame process should have access to foo.com data
   // but not bar.com data.
@@ -2143,7 +2138,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
       web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_NE(foo_site_instance, bar_site_instance);
   auto* bar_process = bar_site_instance->GetProcess();
-  EXPECT_TRUE(process_map->Contains(bar_process->GetDeprecatedID()));
+  EXPECT_TRUE(process_map->Contains(bar_process->GetID()));
   EXPECT_NE(foo_process, bar_process);
 
   // At this point the main frame process should have access to bar.com data.
@@ -2162,7 +2157,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
   EXPECT_EQ(foo_app_url, web_contents->GetLastCommittedURL());
   foo_site_instance = web_contents->GetPrimaryMainFrame()->GetSiteInstance();
   foo_process = foo_site_instance->GetProcess();
-  EXPECT_TRUE(process_map->Contains(foo_process->GetDeprecatedID()));
+  EXPECT_TRUE(process_map->Contains(foo_process->GetID()));
 
   GURL foo_nonapp_url(
       embedded_test_server()->GetURL("foo.com", "/title1.html"));
@@ -2177,7 +2172,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
             web_contents->GetPrimaryMainFrame()->GetSiteInstance());
   auto* foo_nonapp_process = web_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_NE(foo_process, foo_nonapp_process);
-  EXPECT_FALSE(process_map->Contains(foo_nonapp_process->GetDeprecatedID()));
+  EXPECT_FALSE(process_map->Contains(foo_nonapp_process->GetID()));
 
   // Ensure the current non-app foo.com process is allowed to access foo.com
   // data.
@@ -2258,8 +2253,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
 
   // Ensure all tabs are in app processes.
   auto* process_map = extensions::ProcessMap::Get(browser()->GetProfile());
-  EXPECT_TRUE(process_map->Contains(foo_process->GetDeprecatedID()));
-  EXPECT_TRUE(process_map->Contains(bar_process->GetDeprecatedID()));
+  EXPECT_TRUE(process_map->Contains(foo_process->GetID()));
+  EXPECT_TRUE(process_map->Contains(bar_process->GetID()));
 
   // Open a background page from the first foo.com window.
   {

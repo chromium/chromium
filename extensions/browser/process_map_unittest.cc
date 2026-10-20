@@ -63,6 +63,7 @@ TEST(ExtensionProcessMapTest, Test) {
 
   // Test behavior when empty.
   EXPECT_FALSE(map.Contains("a", content::ChildProcessId(1)));
+  EXPECT_FALSE(map.Contains(content::ChildProcessId(1)));
   EXPECT_FALSE(map.Remove(content::ChildProcessId(1)));
   EXPECT_FALSE(map.ExtensionHasProcess("a"));
   EXPECT_EQ(0u, map.size());
@@ -70,7 +71,9 @@ TEST(ExtensionProcessMapTest, Test) {
   // Test insertion and behavior with one item.
   EXPECT_TRUE(map.Insert("a", content::ChildProcessId(1)));
   EXPECT_TRUE(map.Contains("a", content::ChildProcessId(1)));
+  EXPECT_TRUE(map.Contains(content::ChildProcessId(1)));
   EXPECT_FALSE(map.Contains("a", content::ChildProcessId(2)));
+  EXPECT_FALSE(map.Contains(content::ChildProcessId(2)));
   EXPECT_FALSE(map.Contains("b", content::ChildProcessId(1)));
   EXPECT_TRUE(map.ExtensionHasProcess("a"));
   EXPECT_FALSE(map.ExtensionHasProcess("b"));

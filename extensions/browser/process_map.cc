@@ -104,10 +104,6 @@ bool ProcessMap::Contains(content::ChildProcessId process_id) const {
   return items_.contains(process_id);
 }
 
-bool ProcessMap::Contains(int process_id) const {
-  return Contains(content::ChildProcessId::FromUnsafeValue(process_id));
-}
-
 bool ProcessMap::ExtensionHasProcess(const ExtensionId& extension_id) const {
   return std::ranges::find_if(items_, [extension_id](const auto& entry) {
            return entry.second == extension_id;

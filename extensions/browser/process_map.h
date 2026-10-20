@@ -104,9 +104,6 @@ class ProcessMap : public KeyedService {
                 content::ChildProcessId process_id) const;
   bool Contains(content::ChildProcessId process_id) const;
 
-  // TODO(crbug.com/379869738) Remove this override.
-  bool Contains(int process_id) const;
-
   // Returns true if an extension with the given `extension_id` has any
   // associated tracked process.
   bool ExtensionHasProcess(const ExtensionId& extension_id) const;

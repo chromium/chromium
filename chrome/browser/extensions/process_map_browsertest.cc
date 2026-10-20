@@ -743,8 +743,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(content::EvalJs(sandboxed_E2_frame, "window.origin == 'null';")
                   .ExtractBool());
   // The E2 frame has access to extension APIs.
-  EXPECT_TRUE(process_map()->Contains(
-      sandboxed_E2_frame->GetProcess()->GetDeprecatedID()));
+  EXPECT_TRUE(
+      process_map()->Contains(sandboxed_E2_frame->GetProcess()->GetID()));
   EXPECT_TRUE(FrameHasAccessToExtensionApis(sandboxed_E2_frame));
   // The E2 frame is sandboxed by virtue of being loaded in an iframe with
   // a sandbox attribute set, but it is not a manifest-sandboxed frame. As such,
@@ -1321,8 +1321,7 @@ IN_PROC_BROWSER_TEST_P(ProcessMapAboutSrcdocBrowserTest,
   EXPECT_FALSE(content::EvalJs(srcdoc_frame, "!!chrome && !!chrome.tabs;")
                    .ExtractBool());
 
-  EXPECT_FALSE(
-      process_map()->Contains(srcdoc_frame->GetProcess()->GetDeprecatedID()));
+  EXPECT_FALSE(process_map()->Contains(srcdoc_frame->GetProcess()->GetID()));
 
   // Make sure the resulting srcdoc frame cannot fetch() extension resources.
   // The only way `success` in the JS below can become true is if the fetch()
@@ -1379,11 +1378,9 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
       *sandboxed_frame->GetProcess();
 
   if (content::SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
-    EXPECT_NE(main_frame_process.GetDeprecatedID(),
-              sandboxed_frame_process.GetDeprecatedID());
+    EXPECT_NE(main_frame_process.GetID(), sandboxed_frame_process.GetID());
   } else {
-    EXPECT_EQ(main_frame_process.GetDeprecatedID(),
-              sandboxed_frame_process.GetDeprecatedID());
+    EXPECT_EQ(main_frame_process.GetID(), sandboxed_frame_process.GetID());
   }
 
   RunCanProcessHostContextTypeChecks(
