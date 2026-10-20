@@ -156,6 +156,12 @@ class AutofillWebDataService : public WebDataServiceBase {
       base::Time end,
       WebDataServiceRequestCallback consumer);
 
+  // Queries table-level statistics for the autocomplete table.
+  // The callback `consumer` will be called with a
+  // `WDResult<AutocompleteTableStats>`.
+  virtual WebDataServiceBase::Handle GetAutocompleteTableStats(
+      WebDataServiceRequestCallback consumer);
+
   // Schedules a task to update autocomplete entries in the web database.
   void UpdateAutocompleteEntries(
       const std::vector<AutocompleteEntry>& autocomplete_entries);

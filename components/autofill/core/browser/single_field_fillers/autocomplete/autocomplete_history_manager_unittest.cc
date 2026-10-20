@@ -25,6 +25,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_testing_pref_service.h"
@@ -62,8 +63,10 @@ using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::IsTrue;
+using ::testing::MockFunction;
 using ::testing::Not;
 using ::testing::Property;
 using ::testing::Return;
@@ -1064,6 +1067,110 @@ TEST_F(AutocompleteHistoryManagerTest, Migration_PrefNotUpdatedOnFailure) {
   EXPECT_EQ(prefs_->GetInteger(
                 prefs::kAutofillAutocompleteLabelSensitiveMigrationGeneration),
             1);
+}
+
+// Tests that autocomplete table stats are queried and logged with a delay after
+// profile startup when kAutofillRecordAutocompleteTableStats is enabled.
+TEST_F(AutocompleteHistoryManagerTest, TableStats_QueriesAndLogsOnStartup) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillRecordAutocompleteTableStats};
+
+  AutocompleteTableStats stats{
+      .total_entries = 100,
+      .entries_with_label = 25,
+      .entries_reused = 40,
+  };
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(*web_data_service_, GetAutocompleteTableStats)
+        .WillOnce([&](WebDataServiceRequestCallback cb) {
+          std::move(cb).Run(kTestDbQueryId,
+                            std::make_unique<WDResult<AutocompleteTableStats>>(
+                                AUTOCOMPLETE_TABLE_STATS, stats));
+          return kTestDbQueryId;
+        });
+  }
+
+  base::HistogramTester histogram_tester;
+  AutocompleteHistoryManager manager(web_data_service_, prefs_.get());
+
+  // The stats are not queried before the delay has passed.
+  task_environment_.FastForwardBy(
+      AutocompleteHistoryManager::kTableStatsRecordingDelay -
+      base::Milliseconds(1));
+  check.Call();
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Autocomplete.Table.EntriesCount", 100, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Autocomplete.Table.EntriesCount.NameOnly", 75, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Autocomplete.Table.EntriesCount.NameAndLabel", 25, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Autocomplete.Table.LabelSaturation", 25, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Autocomplete.Table.ReusedEntriesPercentage", 40, 1);
+}
+
+// Tests that no metrics are logged if GetAutocompleteTableStats returns a null
+// result (e.g., on database failure).
+TEST_F(AutocompleteHistoryManagerTest, TableStats_NullResultDoesNotLog) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillRecordAutocompleteTableStats};
+
+  EXPECT_CALL(*web_data_service_, GetAutocompleteTableStats)
+      .WillOnce([](WebDataServiceRequestCallback cb) {
+        std::move(cb).Run(kTestDbQueryId, nullptr);
+        return kTestDbQueryId;
+      });
+
+  base::HistogramTester histogram_tester;
+  AutocompleteHistoryManager manager(web_data_service_, prefs_.get());
+  task_environment_.FastForwardBy(
+      AutocompleteHistoryManager::kTableStatsRecordingDelay);
+
+  histogram_tester.ExpectTotalCount("Autofill.Autocomplete.Table.EntriesCount",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Autocomplete.Table.EntriesCount.NameOnly", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Autocomplete.Table.EntriesCount.NameAndLabel", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Autocomplete.Table.LabelSaturation", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Autocomplete.Table.ReusedEntriesPercentage", 0);
+}
+
+// Tests that table stats are not queried when
+// kAutofillRecordAutocompleteTableStats is disabled.
+TEST_F(AutocompleteHistoryManagerTest,
+       TableStats_NotQueriedWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillRecordAutocompleteTableStats);
+
+  EXPECT_CALL(*web_data_service_, GetAutocompleteTableStats).Times(0);
+  AutocompleteHistoryManager manager(web_data_service_, prefs_.get());
+  task_environment_.FastForwardBy(
+      AutocompleteHistoryManager::kTableStatsRecordingDelay);
+}
+
+// Tests that table stats are not queried if the manager is destroyed before
+// the delay has passed.
+TEST_F(AutocompleteHistoryManagerTest,
+       TableStats_NotQueriedWhenDestroyedBeforeDelay) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillRecordAutocompleteTableStats};
+
+  EXPECT_CALL(*web_data_service_, GetAutocompleteTableStats).Times(0);
+  {
+    AutocompleteHistoryManager manager(web_data_service_, prefs_.get());
+  }
+  task_environment_.FastForwardBy(
+      AutocompleteHistoryManager::kTableStatsRecordingDelay);
 }
 
 TEST_F(AutocompleteHistoryManagerTest,

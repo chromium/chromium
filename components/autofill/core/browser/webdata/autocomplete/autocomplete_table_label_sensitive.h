@@ -28,6 +28,7 @@ class WebDatabase;
 namespace autofill {
 
 class AutocompleteEntryLabelSensitive;
+struct AutocompleteTableStats;
 
 enum class MatchingType {
   kUnknown = 0,
@@ -195,6 +196,9 @@ class AutocompleteTableLabelSensitive : public WebDatabaseTable {
   // Retrieves all of the entries in the autocomplete table.
   [[nodiscard]] bool GetAllAutocompleteEntries(
       std::vector<AutocompleteEntryLabelSensitive>* entries);
+
+  // Computes table-level statistics for the autocomplete table.
+  [[nodiscard]] AutocompleteTableStats GetTableStats() const;
 
   // Retrieves a single entry from the autocomplete table.
   [[nodiscard]] std::optional<AutocompleteEntryLabelSensitive>

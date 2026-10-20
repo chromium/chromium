@@ -41,6 +41,7 @@
 #include "components/autofill/core/browser/data_model/payments/payments_metadata.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
@@ -815,6 +816,20 @@ AutofillWebDataBackendImpl::GetCountOfValuesContainedBetween(base::Time begin,
                               ->GetCountOfValuesContainedBetween(begin, end);
     return std::make_unique<WDResult<int64_t>>(INT64_RESULT, value);
   }
+}
+
+std::unique_ptr<WDTypedResult>
+AutofillWebDataBackendImpl::GetAutocompleteTableStats(WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLabelSensitiveAutocomplete)) {
+    return std::make_unique<WDResult<AutocompleteTableStats>>(
+        AUTOCOMPLETE_TABLE_STATS,
+        AutocompleteTableLabelSensitive::FromWebDatabase(db)->GetTableStats());
+  }
+  return std::make_unique<WDResult<AutocompleteTableStats>>(
+      AUTOCOMPLETE_TABLE_STATS,
+      AutocompleteTable::FromWebDatabase(db)->GetTableStats());
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::UpdateAutocompleteEntries(

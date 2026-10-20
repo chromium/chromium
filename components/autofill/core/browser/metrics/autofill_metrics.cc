@@ -27,6 +27,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -1266,6 +1267,34 @@ void AutofillMetrics::LogShowedHttpNotSecureExplanation() {
 // static
 void AutofillMetrics::LogAutocompleteDaysSinceLastUse(size_t days) {
   UMA_HISTOGRAM_COUNTS_1000("Autocomplete.DaysSinceLastUse", days);
+}
+
+// static
+void AutofillMetrics::LogAutocompleteTableStats(
+    const AutocompleteTableStats& stats) {
+  DCHECK_LE(stats.entries_with_label, stats.total_entries);
+  DCHECK_LE(stats.entries_reused, stats.total_entries);
+
+  base::UmaHistogramCounts10000("Autofill.Autocomplete.Table.EntriesCount",
+                                base::saturated_cast<int>(stats.total_entries));
+  base::UmaHistogramCounts10000(
+      "Autofill.Autocomplete.Table.EntriesCount.NameOnly",
+      base::saturated_cast<int>(stats.total_entries -
+                                stats.entries_with_label));
+  base::UmaHistogramCounts10000(
+      "Autofill.Autocomplete.Table.EntriesCount.NameAndLabel",
+      base::saturated_cast<int>(stats.entries_with_label));
+
+  if (stats.total_entries > 0) {
+    base::UmaHistogramPercentage(
+        "Autofill.Autocomplete.Table.LabelSaturation",
+        base::checked_cast<int>(100 * stats.entries_with_label /
+                                stats.total_entries));
+    base::UmaHistogramPercentage(
+        "Autofill.Autocomplete.Table.ReusedEntriesPercentage",
+        base::checked_cast<int>(100 * stats.entries_reused /
+                                stats.total_entries));
+  }
 }
 
 namespace {

@@ -235,6 +235,15 @@ AutofillWebDataService::GetCountOfValuesContainedBetween(
       std::move(consumer));
 }
 
+WebDataServiceBase::Handle AutofillWebDataService::GetAutocompleteTableStats(
+    WebDataServiceRequestCallback consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&AutofillWebDataBackendImpl::GetAutocompleteTableStats,
+                     autofill_backend_),
+      std::move(consumer));
+}
+
 // TODO(crbug.com/507327886): Remove after kAutofillLabelSensitiveAutocomplete
 // launch. There is no update action for label-sensitive autocomplete. Update
 // was used only by sync. Sync for label-sensitive autocomplete is turned off.

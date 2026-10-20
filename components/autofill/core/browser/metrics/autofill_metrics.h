@@ -51,6 +51,16 @@ class FormInteractionsUkmLogger;
 // A given maximum is enforced to minimize the number of buckets generated.
 extern const int kMaxBucketsCount;
 
+// Table-level statistics for the Autocomplete table.
+struct AutocompleteTableStats {
+  size_t total_entries = 0;
+  size_t entries_with_label = 0;
+  size_t entries_reused = 0;  // count > 1
+
+  friend constexpr bool operator==(const AutocompleteTableStats&,
+                                   const AutocompleteTableStats&) = default;
+};
+
 class AutofillMetrics {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -774,6 +784,10 @@ class AutofillMetrics {
   // Logs the number of days since an accepted Autocomplete suggestion was last
   // used.
   static void LogAutocompleteDaysSinceLastUse(size_t days);
+
+  // Logs table-level diagnostics and saturation metrics for the autocomplete
+  // table on profile startup.
+  static void LogAutocompleteTableStats(const AutocompleteTableStats& stats);
 
   // Logs the fact that an autocomplete popup was shown, recording
   // `AUTOCOMPLETE_SUGGESTIONS_SHOWN` to `Autocomplete.Events3` and for each

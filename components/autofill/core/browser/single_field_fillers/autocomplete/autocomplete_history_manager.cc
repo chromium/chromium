@@ -17,9 +17,11 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
@@ -415,6 +417,16 @@ AutocompleteHistoryManager::AutocompleteHistoryManager(
           /*new_migration_generation=*/expected_migration_generation));
     }
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillRecordAutocompleteTableStats)) {
+    // Delay the query to avoid impact on startup.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AutocompleteHistoryManager::QueryAutocompleteTableStats,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kTableStatsRecordingDelay);
+  }
 }
 
 AutocompleteHistoryManager::~AutocompleteHistoryManager() = default;
@@ -569,6 +581,24 @@ void AutocompleteHistoryManager::OnLegacyTableDataMigrationReturned(
         prefs::kAutofillAutocompleteLabelSensitiveMigrationGeneration,
         new_migration_generation);
   }
+}
+
+void AutocompleteHistoryManager::QueryAutocompleteTableStats() {
+  profile_database_->GetAutocompleteTableStats(base::BindOnce(
+      &AutocompleteHistoryManager::OnAutocompleteTableStatsReturned,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AutocompleteHistoryManager::OnAutocompleteTableStatsReturned(
+    WebDataServiceBase::Handle current_handle,
+    std::unique_ptr<WDTypedResult> result) {
+  if (!result) {
+    return;
+  }
+  DCHECK_EQ(AUTOCOMPLETE_TABLE_STATS, result->GetType());
+  const auto* stats_result =
+      static_cast<const WDResult<AutocompleteTableStats>*>(result.get());
+  AutofillMetrics::LogAutocompleteTableStats(stats_result->GetValue());
 }
 
 }  // namespace autofill

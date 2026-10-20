@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/suggestions/autocomplete_suggestion_generator.h"
@@ -33,6 +34,11 @@ namespace autofill {
 // through WebDataServiceBase.
 class AutocompleteHistoryManager : public KeyedService {
  public:
+  // Delay after construction before the autocomplete table stats are queried
+  // and recorded. Avoids impact on startup.
+  static constexpr base::TimeDelta kTableStatsRecordingDelay =
+      base::Seconds(30);
+
   AutocompleteHistoryManager(
       scoped_refptr<AutofillWebDataService> profile_database,
       PrefService* pref_service);
@@ -108,6 +114,15 @@ class AutocompleteHistoryManager : public KeyedService {
 
  private:
   friend class AutocompleteHistoryManagerTest;
+
+  // Queries the autocomplete table stats from `profile_database_`. The result
+  // is handled by `OnAutocompleteTableStatsReturned()`.
+  void QueryAutocompleteTableStats();
+
+  // Handles WebDataService responses for autocomplete table stats.
+  void OnAutocompleteTableStatsReturned(
+      WebDataServiceBase::Handle current_handle,
+      std::unique_ptr<WDTypedResult> result);
 
   // Must outlive this object.
   const scoped_refptr<AutofillWebDataService> profile_database_;

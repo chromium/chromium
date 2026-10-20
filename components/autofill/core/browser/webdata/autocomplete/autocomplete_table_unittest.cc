@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -872,6 +873,61 @@ TEST_F(AutocompleteTableTest, DontCrashWhenAddingValueToPoisonedDB) {
   field.set_name(u"Name");
   field.set_value(u"Superman");
   EXPECT_FALSE(table().AddFormFieldValues({field}, &changes));
+}
+
+// Tests that GetTableStats computes the correct count of total entries, entries
+// with labels (always 0 for the legacy table), and reused entries.
+TEST_F(AutocompleteTableTest, GetTableStats) {
+  // 1. Empty database.
+  EXPECT_EQ(table().GetTableStats(), (AutocompleteTableStats{
+                                         .total_entries = 0,
+                                         .entries_with_label = 0,
+                                         .entries_reused = 0,
+                                     }));
+
+  // 2. Add a form field entry.
+  AutocompleteChangeList changes;
+  FormFieldData field1;
+  field1.set_name(u"Name");
+  field1.set_value(u"Superman");
+  ASSERT_TRUE(table().AddFormFieldValues({field1}, &changes));
+
+  EXPECT_EQ(table().GetTableStats(), (AutocompleteTableStats{
+                                         .total_entries = 1,
+                                         .entries_with_label = 0,
+                                         .entries_reused = 0,
+                                     }));
+
+  // 3. Add a second form field entry.
+  FormFieldData field2;
+  field2.set_name(u"Email");
+  field2.set_value(u"superman@krypton.com");
+  ASSERT_TRUE(table().AddFormFieldValues({field2}, &changes));
+
+  EXPECT_EQ(table().GetTableStats(), (AutocompleteTableStats{
+                                         .total_entries = 2,
+                                         .entries_with_label = 0,
+                                         .entries_reused = 0,
+                                     }));
+
+  // 4. Submit the second field again to increment its count to 2 (reused).
+  ASSERT_TRUE(table().AddFormFieldValues({field2}, &changes));
+
+  EXPECT_EQ(table().GetTableStats(), (AutocompleteTableStats{
+                                         .total_entries = 2,
+                                         .entries_with_label = 0,
+                                         .entries_reused = 1,
+                                     }));
+
+  // 5. Submit the second field a third time (count = 3); entries_reused should
+  // remain 1 (distinct reused entries).
+  ASSERT_TRUE(table().AddFormFieldValues({field2}, &changes));
+
+  EXPECT_EQ(table().GetTableStats(), (AutocompleteTableStats{
+                                         .total_entries = 2,
+                                         .entries_with_label = 0,
+                                         .entries_reused = 1,
+                                     }));
 }
 
 }  // namespace

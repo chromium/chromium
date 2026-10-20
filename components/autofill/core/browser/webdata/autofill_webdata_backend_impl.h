@@ -217,6 +217,9 @@ class AutofillWebDataBackendImpl final
       base::Time end,
       WebDatabase* db);
 
+  // Returns table-level statistics for the autocomplete table.
+  std::unique_ptr<WDTypedResult> GetAutocompleteTableStats(WebDatabase* db);
+
   // Updates autocomplete entries in the web database.
   WebDatabase::State UpdateAutocompleteEntries(
       const std::vector<AutocompleteEntry>& autocomplete_entries,

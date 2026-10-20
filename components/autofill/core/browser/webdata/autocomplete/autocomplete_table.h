@@ -21,6 +21,7 @@ namespace autofill {
 
 class AutocompleteChange;
 class AutocompleteEntry;
+struct AutocompleteTableStats;
 class FormFieldData;
 
 // This class manages the Autocomplete table. The table in the SQLite database
@@ -101,6 +102,9 @@ class AutocompleteTable : public WebDatabaseTable {
 
   // Retrieves all of the entries in the autocomplete table.
   bool GetAllAutocompleteEntries(std::vector<AutocompleteEntry>* entries);
+
+  // Computes table-level statistics for the autocomplete table.
+  [[nodiscard]] AutocompleteTableStats GetTableStats() const;
 
   // Retrieves a single entry from the autocomplete table.
   std::optional<AutocompleteEntry> GetAutocompleteEntry(

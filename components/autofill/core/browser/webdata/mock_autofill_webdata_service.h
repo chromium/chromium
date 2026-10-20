@@ -53,6 +53,10 @@ class MockAutofillWebDataService : public AutofillWebDataService {
               MigrateDataFromLegacyTable,
               (WebDataServiceRequestCallback),
               (override));
+  MOCK_METHOD(WebDataServiceBase::Handle,
+              GetAutocompleteTableStats,
+              (WebDataServiceRequestCallback),
+              (override));
 
  protected:
   ~MockAutofillWebDataService() override;

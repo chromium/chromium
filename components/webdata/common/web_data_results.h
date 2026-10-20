@@ -31,6 +31,7 @@ typedef enum {
   AUTOFILL_VALUE_RESULT,             // WDResult<std::vector<AutofillEntry>>
   AUTOCOMPLETE_SEARCH_RESULT,        // WDResult<std::vector<
                                //   AutocompleteSearchResultLabelSensitive>>
+  AUTOCOMPLETE_TABLE_STATS,          // WDResult<AutocompleteTableStats>
   AUTOFILL_CLEANUP_RESULT,           // WDResult<bool>
   AUTOFILL_CHANGES,                  // WDResult<std::vector<AutofillChange>>
   AUTOFILL_PROFILES_RESULT,          // WDResult<std::vector<AutofillProfile>>

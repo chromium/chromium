@@ -2886,6 +2886,71 @@ TEST_F(AutofillMetricsTest, LogAutocompleteEvent_WithSuggestion) {
       "Autocomplete.BothNameAndLabelBasedSuggestions", 0);
 }
 
+// Tests that LogAutocompleteTableStats records the expected table-level
+// diagnostics and saturation metrics.
+TEST_F(AutofillMetricsTest, LogAutocompleteTableStats) {
+  {
+    base::HistogramTester histogram_tester;
+    AutocompleteTableStats stats{
+        .total_entries = 200,
+        .entries_with_label = 50,
+        .entries_reused = 80,
+    };
+    AutofillMetrics::LogAutocompleteTableStats(stats);
+
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Autocomplete.Table.EntriesCount", 200, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Autocomplete.Table.EntriesCount.NameOnly", 150, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Autocomplete.Table.EntriesCount.NameAndLabel", 50, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Autocomplete.Table.LabelSaturation", 25, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Autocomplete.Table.ReusedEntriesPercentage", 40, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    AutocompleteTableStats stats{
+        .total_entries = 50,
+        .entries_with_label = 0,
+        .entries_reused = 15,
+    };
+    AutofillMetrics::LogAutocompleteTableStats(stats);
+
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Autocomplete.Table.EntriesCount", 50, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Autocomplete.Table.EntriesCount.NameOnly", 50, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Autocomplete.Table.EntriesCount.NameAndLabel", 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Autocomplete.Table.LabelSaturation", 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Autocomplete.Table.ReusedEntriesPercentage", 30, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+    AutocompleteTableStats stats{
+        .total_entries = 0,
+        .entries_with_label = 0,
+        .entries_reused = 0,
+    };
+    AutofillMetrics::LogAutocompleteTableStats(stats);
+
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Autocomplete.Table.EntriesCount", 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Autocomplete.Table.EntriesCount.NameOnly", 0, 1);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.Autocomplete.Table.EntriesCount.NameAndLabel", 0, 1);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.Autocomplete.Table.LabelSaturation", 0);
+    histogram_tester.ExpectTotalCount(
+        "Autofill.Autocomplete.Table.ReusedEntriesPercentage", 0);
+  }
+}
+
 TEST_F(AutofillMetricsTest, LogServerCardLinkClicked) {
   {
     base::HistogramTester histogram_tester;

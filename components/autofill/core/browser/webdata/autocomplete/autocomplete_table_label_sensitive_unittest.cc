@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry_label_sensitive.h"
@@ -1498,6 +1499,70 @@ TEST_F(AutocompleteTableLabelSensitiveTest, ToSafeMatchingType_Bounds) {
   EXPECT_EQ(ToSafeMatchingType(static_cast<int>(MatchingType::kMaxValue) + 1),
             MatchingType::kUnknown);
   EXPECT_EQ(ToSafeMatchingType(100), MatchingType::kUnknown);
+}
+
+// Tests that GetTableStats computes the correct count of total entries, entries
+// with labels, and reused entries.
+TEST_F(AutocompleteTableLabelSensitiveTest, GetTableStats) {
+  // 1. Empty database.
+  EXPECT_EQ(table().GetTableStats(), (AutocompleteTableStats{
+                                         .total_entries = 0,
+                                         .entries_with_label = 0,
+                                         .entries_reused = 0,
+                                     }));
+
+  // 2. Add a name-only row (empty label).
+  FormFieldData field_name_only = test::CreateTestFormField(
+      /*label=*/u"", u"name1", u"value1", FormControlType::kInputText);
+  ASSERT_TRUE(SubmitFormField(field_name_only));
+
+  EXPECT_EQ(table().GetTableStats(), (AutocompleteTableStats{
+                                         .total_entries = 1,
+                                         .entries_with_label = 0,
+                                         .entries_reused = 0,
+                                     }));
+
+  // 3. Add a labeled row (non-empty label).
+  FormFieldData field_with_label = test::CreateTestFormField(
+      /*label=*/u"Label", u"name2", u"value2", FormControlType::kInputText);
+  ASSERT_TRUE(SubmitFormField(field_with_label));
+
+  EXPECT_EQ(table().GetTableStats(), (AutocompleteTableStats{
+                                         .total_entries = 2,
+                                         .entries_with_label = 1,
+                                         .entries_reused = 0,
+                                     }));
+
+  // 4. Submit the labeled field again to increment its count to 2 (reused).
+  ASSERT_TRUE(SubmitFormField(field_with_label));
+
+  EXPECT_EQ(table().GetTableStats(), (AutocompleteTableStats{
+                                         .total_entries = 2,
+                                         .entries_with_label = 1,
+                                         .entries_reused = 1,
+                                     }));
+
+  // 5. Submit the labeled field a third time (count = 3); entries_reused should
+  // remain 1 (distinct reused entries).
+  ASSERT_TRUE(SubmitFormField(field_with_label));
+
+  EXPECT_EQ(table().GetTableStats(), (AutocompleteTableStats{
+                                         .total_entries = 2,
+                                         .entries_with_label = 1,
+                                         .entries_reused = 1,
+                                     }));
+
+  // 6. Add a row whose label normalizes to empty (whitespace/punctuation only);
+  // it should be counted as name-only (entries_with_label unchanged).
+  FormFieldData field_punctuation_label = test::CreateTestFormField(
+      /*label=*/u" : ", u"name3", u"value3", FormControlType::kInputText);
+  ASSERT_TRUE(SubmitFormField(field_punctuation_label));
+
+  EXPECT_EQ(table().GetTableStats(), (AutocompleteTableStats{
+                                         .total_entries = 3,
+                                         .entries_with_label = 1,
+                                         .entries_reused = 1,
+                                     }));
 }
 
 }  // namespace

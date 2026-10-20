@@ -19,6 +19,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_table_util.h"
@@ -348,6 +349,21 @@ bool AutocompleteTable::GetAllAutocompleteEntries(
   }
 
   return s.Succeeded();
+}
+
+AutocompleteTableStats AutocompleteTable::GetTableStats() const {
+  AutocompleteTableStats stats;
+  sql::Statement s(
+      db()->GetUniqueStatement("SELECT "
+                               "  COUNT(*), "
+                               "  COUNT(CASE WHEN count > 1 THEN 1 END) "
+                               "FROM autofill"));
+  if (s.Step()) {
+    stats.total_entries = base::checked_cast<size_t>(s.ColumnInt64(0));
+    stats.entries_with_label = 0;
+    stats.entries_reused = base::checked_cast<size_t>(s.ColumnInt64(1));
+  }
+  return stats;
 }
 
 std::optional<AutocompleteEntry> AutocompleteTable::GetAutocompleteEntry(

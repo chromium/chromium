@@ -27,6 +27,7 @@
 #include "base/i18n/unicodestring.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autofill_table_util.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -457,6 +458,22 @@ bool AutocompleteTableLabelSensitive::GetAllAutocompleteEntries(
   }
 
   return s.Succeeded();
+}
+
+AutocompleteTableStats AutocompleteTableLabelSensitive::GetTableStats() const {
+  AutocompleteTableStats stats;
+  sql::Statement s(db()->GetUniqueStatement(
+      "SELECT "
+      "  COUNT(*), "
+      "  COUNT(CASE WHEN label_normalized != '' THEN 1 END), "
+      "  COUNT(CASE WHEN count > 1 THEN 1 END) "
+      "FROM autocomplete"));
+  if (s.Step()) {
+    stats.total_entries = base::checked_cast<size_t>(s.ColumnInt64(0));
+    stats.entries_with_label = base::checked_cast<size_t>(s.ColumnInt64(1));
+    stats.entries_reused = base::checked_cast<size_t>(s.ColumnInt64(2));
+  }
+  return stats;
 }
 
 std::optional<AutocompleteEntryLabelSensitive>
