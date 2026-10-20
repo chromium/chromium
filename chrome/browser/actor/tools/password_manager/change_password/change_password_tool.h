@@ -9,11 +9,19 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "components/actor/core/shared_types.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
+
+namespace password_manager {
+class ContentPasswordManagerDriver;
+}  // namespace password_manager
 
 namespace actor {
 
@@ -31,6 +39,9 @@ class ChangePasswordTool : public Tool {
   ~ChangePasswordTool() override;
 
   void Validate(ToolCallback callback) override;
+  mojom::ActionResultPtr TimeOfUseValidation(
+      const optimization_guide::proto::AnnotatedPageContent* last_observation)
+      override;
   void Invoke(ToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
@@ -40,11 +51,25 @@ class ChangePasswordTool : public Tool {
   ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:
+  mojom::ActionResultPtr ExtractFieldIds(
+      const optimization_guide::proto::AnnotatedPageContent* last_observation,
+      autofill::LocalFrameToken& target_frame_token);
+  void OnChangePasswordFormFilled(
+      ToolCallback callback,
+      const std::optional<autofill::FormData>& form_data);
+
   ActorSurfaceHandle actor_surface_handle_;
   std::optional<PageTarget> current_password_field_;
   std::optional<PageTarget> new_password_field_;
   std::optional<PageTarget> confirm_new_password_field_;
   std::optional<PageTarget> confirm_button_;
+
+  base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver_;
+  autofill::FieldGlobalId current_password_field_id_;
+  autofill::FieldGlobalId new_password_field_id_;
+  autofill::FieldGlobalId confirm_new_password_field_id_;
+
+  base::WeakPtrFactory<ChangePasswordTool> weak_factory_{this};
 };
 
 }  // namespace actor
