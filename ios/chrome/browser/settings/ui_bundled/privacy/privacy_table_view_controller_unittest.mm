@@ -547,13 +547,13 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutErrorBadge) {
   EXPECT_NSEQ(item.detailText, l10n_util::GetNSString(IDS_IOS_SETTING_ON));
 
   // Simulate load error.
-  fake_service->SetHasLoadError(true);
+  fake_service->SetHasGPCLoadError(true);
   EXPECT_TRUE(item.badgeType == BadgeType::kWarning);
   EXPECT_TRUE(item.badgeLayout == BadgeLayout::kTrailing);
   EXPECT_EQ(item.detailText, nil);
 
   // Simulate load success / resolved error.
-  fake_service->SetHasLoadError(false);
+  fake_service->SetHasGPCLoadError(false);
   EXPECT_TRUE(item.badgeType == BadgeType::kNone);
   EXPECT_NSEQ(item.detailText, l10n_util::GetNSString(IDS_IOS_SETTING_ON));
 
@@ -597,7 +597,7 @@ TEST_P(PrivacyTableViewControllerTest,
   EXPECT_FALSE(HasUniversalOptOutItem());
 
   // Simulate load error in silent mode.
-  fake_service->SetHasLoadError(true);
+  fake_service->SetHasGPCLoadError(true);
   EXPECT_FALSE(HasUniversalOptOutItem());
 }
 
@@ -632,7 +632,7 @@ TEST_P(PrivacyTableViewControllerTest,
   EXPECT_FALSE(HasUniversalOptOutItem());
 
   // Simulate load error when settings feature is disabled.
-  fake_service->SetHasLoadError(true);
+  fake_service->SetHasGPCLoadError(true);
   EXPECT_FALSE(HasUniversalOptOutItem());
 }
 

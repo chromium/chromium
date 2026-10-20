@@ -54,7 +54,7 @@ class ExtensionServiceImpl final : public ExtensionService {
       API_AVAILABLE(ios(18.4));
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  bool HasLoadError() const override;
+  bool HasGPCLoadError() const override;
   bool IsReady() const override;
   bool WebExtensionsWereLoadedAtStartup() const override;
   base::CallbackListSubscription RunWhenReady(
@@ -67,14 +67,15 @@ class ExtensionServiceImpl final : public ExtensionService {
 
   // Called when the extension loading finishes, applying any remaining delay
   // from experimental flags before delegating to `OnExtensionLoaded`.
-  void OnExtensionLoadedWithDelay(base::TimeTicks load_start_time,
+  void OnExtensionLoadedWithDelay(web::BuiltInExtension extension,
+                                  base::TimeTicks load_start_time,
                                   base::TimeDelta min_duration,
                                   bool success);
   // Called when the extension loading callback finishes.
-  void OnExtensionLoaded(bool success);
+  void OnExtensionLoaded(web::BuiltInExtension extension, bool success);
 
   // Called when loading the extension times out.
-  void OnExtensionLoadTimeout();
+  void OnExtensionLoadTimeout(web::BuiltInExtension extension);
 
   // Marks the service as ready during startup and notifies all waiting
   // callbacks. Readiness is solely for startup and is triggered only once.
@@ -85,14 +86,14 @@ class ExtensionServiceImpl final : public ExtensionService {
   // state.
   void OnOptOutPrefChanged();
 
-  // Updates `has_load_error_` and notifies observers if changed.
-  void SetHasLoadError(bool has_load_error);
+  // Updates `has_gpc_load_error_` and notifies observers if changed.
+  void SetHasGPCLoadError(bool has_gpc_load_error);
 
   // List of observers.
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 
-  // Whether there was an error loading the extension.
-  bool has_load_error_ = false;
+  // Whether there was an error loading the GPC extension.
+  bool has_gpc_load_error_ = false;
 
   // The `PrefService` used to query and observe opt-out preferences.
   const raw_ref<PrefService> pref_service_;

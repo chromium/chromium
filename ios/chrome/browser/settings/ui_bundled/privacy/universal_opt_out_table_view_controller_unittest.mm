@@ -228,13 +228,13 @@ TEST_F(UniversalOptOutTableViewControllerTest, TestFooterTextExtensionNote) {
   EXPECT_EQ(!base::ios::IsRunningOnIOS27OrLater(), has_note);
 }
 
-// Tests that when ExtensionService reports a load error, the error section
+// Tests that when ExtensionService reports a GPC load error, the error section
 // is added above the setting with the localized error message and "Learn more"
 // button, the footer is attached to the switch section, and tapping "Learn
 // more" opens the error URL in a new tab.
 TEST_F(UniversalOptOutTableViewControllerTest,
-       TestErrorSectionWhenExtensionHasLoadError) {
-  fake_extension_service()->SetHasLoadError(true);
+       TestErrorSectionWhenExtensionHasGPCLoadError) {
+  fake_extension_service()->SetHasGPCLoadError(true);
 
   CreateController();
   CheckController();
@@ -316,9 +316,9 @@ TEST_F(UniversalOptOutTableViewControllerTest,
   EXPECT_OCMOCK_VERIFY(mockSceneHandler);
 }
 
-// Tests that changing the ExtensionService load error state dynamically updates
-// the table view model and sections.
-TEST_F(UniversalOptOutTableViewControllerTest, TestDynamicLoadErrorChanges) {
+// Tests that changing the ExtensionService GPC load error state dynamically
+// updates the table view model and sections.
+TEST_F(UniversalOptOutTableViewControllerTest, TestDynamicGPCLoadErrorChanges) {
   CreateController();
   CheckController();
 
@@ -332,7 +332,7 @@ TEST_F(UniversalOptOutTableViewControllerTest, TestDynamicLoadErrorChanges) {
   ASSERT_TRUE(switchItemInitial != nil);
 
   // Transition to load error.
-  fake_extension_service()->SetHasLoadError(true);
+  fake_extension_service()->SetHasGPCLoadError(true);
 
   EXPECT_EQ(2, NumberOfSections());
   EXPECT_EQ(2, NumberOfItemsInSection(0));
@@ -357,7 +357,7 @@ TEST_F(UniversalOptOutTableViewControllerTest, TestDynamicLoadErrorChanges) {
   EXPECT_TRUE([controller().tableViewModel footerForSectionIndex:1] != nil);
 
   // Transition back to no load error.
-  fake_extension_service()->SetHasLoadError(false);
+  fake_extension_service()->SetHasGPCLoadError(false);
 
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));

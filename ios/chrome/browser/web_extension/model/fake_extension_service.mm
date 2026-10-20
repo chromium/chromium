@@ -26,8 +26,8 @@ void FakeExtensionService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool FakeExtensionService::HasLoadError() const {
-  return has_load_error_;
+bool FakeExtensionService::HasGPCLoadError() const {
+  return has_gpc_load_error_;
 }
 
 bool FakeExtensionService::IsReady() const {
@@ -59,13 +59,13 @@ void FakeExtensionService::SetWebExtensionsWereLoadedAtStartup(bool loaded) {
   web_extensions_were_loaded_at_startup_ = loaded;
 }
 
-void FakeExtensionService::SetHasLoadError(bool has_error) {
-  if (has_load_error_ == has_error) {
+void FakeExtensionService::SetHasGPCLoadError(bool has_error) {
+  if (has_gpc_load_error_ == has_error) {
     return;
   }
-  has_load_error_ = has_error;
+  has_gpc_load_error_ = has_error;
   for (Observer& observer : observers_) {
-    observer.OnExtensionLoadErrorChanged(this, has_load_error_);
+    observer.OnGPCLoadErrorChanged(this, has_gpc_load_error_);
   }
 }
 

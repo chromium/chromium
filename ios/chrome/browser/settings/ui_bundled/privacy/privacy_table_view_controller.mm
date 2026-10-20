@@ -538,9 +538,7 @@ bool ShouldShowUniversalOptOutSettings(
   }
   ExtensionService* extensionService =
       ExtensionServiceFactory::GetForProfile(_profile);
-  const bool hasError =
-      extensionService && extensionService->HasLoadError() &&
-      !universal_optout::features::IsUniversalOptOutExtensionSilentEnabled();
+  const bool hasError = extensionService && extensionService->HasGPCLoadError();
   if (hasError) {
     _universalOptOutDetailItem.detailText = nil;
     _universalOptOutDetailItem.badgeType = BadgeType::kWarning;
@@ -803,7 +801,7 @@ bool ShouldShowUniversalOptOutSettings(
 #pragma mark - ExtensionServiceObserving
 
 - (void)extensionService:(ExtensionService*)service
-    didChangeExtensionLoadError:(bool)hasLoadError {
+    didChangeGPCLoadError:(bool)hasGPCLoadError {
   [self updateUniversalOptOutDetailItem];
   if ([self.tableViewModel hasItem:_universalOptOutDetailItem]) {
     [self reconfigureCellsForItems:@[ _universalOptOutDetailItem ]];

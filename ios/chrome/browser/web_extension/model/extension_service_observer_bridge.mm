@@ -18,12 +18,13 @@ ExtensionServiceObserverBridge::ExtensionServiceObserverBridge(
 
 ExtensionServiceObserverBridge::~ExtensionServiceObserverBridge() = default;
 
-void ExtensionServiceObserverBridge::OnExtensionLoadErrorChanged(
+void ExtensionServiceObserverBridge::OnGPCLoadErrorChanged(
     ExtensionService* service,
-    bool has_load_error) {
-  if ([observer_ respondsToSelector:@selector(extensionService:
-                                              didChangeExtensionLoadError:)]) {
+    bool has_gpc_load_error) {
+  if ([observer_
+          respondsToSelector:@selector(
+                                 extensionService:didChangeGPCLoadError:)]) {
     [observer_ extensionService:service
-        didChangeExtensionLoadError:has_load_error];
+          didChangeGPCLoadError:has_gpc_load_error];
   }
 }

@@ -22,9 +22,9 @@ class ExtensionService : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called when the extension loading error state changes.
-    virtual void OnExtensionLoadErrorChanged(ExtensionService* service,
-                                             bool has_load_error) {}
+    // Called when the GPC extension loading error state changes.
+    virtual void OnGPCLoadErrorChanged(ExtensionService* service,
+                                       bool has_gpc_load_error) {}
   };
 
   // Initializes the service with the given `opt_out_state`, registers
@@ -38,8 +38,8 @@ class ExtensionService : public KeyedService {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Returns whether there was an error loading the extension.
-  virtual bool HasLoadError() const = 0;
+  // Returns whether there was an error loading the GPC extension.
+  virtual bool HasGPCLoadError() const = 0;
 
   // Returns whether the initial extensions have finished loading (or if there
   // are no extensions to load) during startup. Readiness is solely for startup;

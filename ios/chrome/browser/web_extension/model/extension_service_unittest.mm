@@ -82,18 +82,18 @@ class API_AVAILABLE(ios(18.4)) FakeExtensionController
 // A test observer for ExtensionService.
 class TestExtensionServiceObserver : public ExtensionService::Observer {
  public:
-  void OnExtensionLoadErrorChanged(ExtensionService* service,
-                                   bool has_load_error) override {
+  void OnGPCLoadErrorChanged(ExtensionService* service,
+                             bool has_gpc_load_error) override {
     call_count_++;
-    last_has_load_error_ = has_load_error;
+    last_has_gpc_load_error_ = has_gpc_load_error;
   }
 
   int call_count() const { return call_count_; }
-  bool last_has_load_error() const { return last_has_load_error_; }
+  bool last_has_gpc_load_error() const { return last_has_gpc_load_error_; }
 
  private:
   int call_count_ = 0;
-  bool last_has_load_error_ = false;
+  bool last_has_gpc_load_error_ = false;
 };
 
 class ExtensionServiceTest : public PlatformTest {
@@ -509,6 +509,7 @@ API_AVAILABLE(ios(18.4)) {
   // Should be ready now due to timeout.
   EXPECT_TRUE(service.IsReady());
   EXPECT_TRUE(ready_future.IsReady());
+  EXPECT_FALSE(service.HasGPCLoadError());
 }
 
 // Tests that ExtensionService becomes ready when extension completes loading
@@ -548,6 +549,39 @@ API_AVAILABLE(ios(18.4)) {
   SetOptedIn(false);
   EXPECT_TRUE(raw_fake_controller->IsBuiltInExtensionLoaded(
       web::BuiltInExtension::kGPCTest));
+}
+
+// Tests that a failed extension load in silent mode does not set
+// HasGPCLoadError and does not notify observers.
+TEST_F(ExtensionServiceTest, TestSilentModeLoadFailureDoesNotSetGPCLoadError)
+API_AVAILABLE(ios(18.4)) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      universal_optout::features::kUniversalOptOutExtensionSilent);
+
+  SetOptedIn(false);
+
+  auto fake_controller = std::make_unique<FakeExtensionController>();
+  FakeExtensionController* raw_fake_controller = fake_controller.get();
+
+  ExtensionServiceImpl service(pref_service_, std::move(fake_controller));
+  TestExtensionServiceObserver observer;
+  service.AddObserver(&observer);
+
+  service.Initialize(web::UniversalOptOutState::kNotEligible);
+
+  EXPECT_FALSE(service.IsReady());
+  EXPECT_FALSE(service.HasGPCLoadError());
+  EXPECT_EQ(observer.call_count(), 0);
+
+  // Fail silent extension load.
+  raw_fake_controller->CompleteLoad(/*success=*/false);
+
+  EXPECT_TRUE(service.IsReady());
+  EXPECT_FALSE(service.HasGPCLoadError());
+  EXPECT_EQ(observer.call_count(), 0);
+
+  service.RemoveObserver(&observer);
 }
 
 // Tests that ExtensionService does not load extension and is ready immediately
@@ -601,8 +635,8 @@ API_AVAILABLE(ios(18.4)) {
   EXPECT_EQ(raw_fake_controller->load_call_count(), 0);
 }
 
-// Tests that a failed extension load sets HasLoadError to true and notifies
-// observers, and that disabling the setting resets HasLoadError to false.
+// Tests that a failed extension load sets HasGPCLoadError to true and notifies
+// observers, and that disabling the setting resets HasGPCLoadError to false.
 TEST_F(ExtensionServiceTest, TestLoadFailureSetsLoadErrorAndResetOnDisable)
 API_AVAILABLE(ios(18.4)) {
   SetOptedIn(true);
@@ -616,32 +650,32 @@ API_AVAILABLE(ios(18.4)) {
 
   service.Initialize(web::UniversalOptOutState::kEnabled);
 
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 0);
 
   // Fail extension load.
   raw_fake_controller->CompleteLoad(/*success=*/false);
-  EXPECT_TRUE(service.HasLoadError());
+  EXPECT_TRUE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 1);
-  EXPECT_TRUE(observer.last_has_load_error());
+  EXPECT_TRUE(observer.last_has_gpc_load_error());
 
   // Disabling the setting should reset the load error.
   SetOptedIn(false);
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 2);
-  EXPECT_FALSE(observer.last_has_load_error());
+  EXPECT_FALSE(observer.last_has_gpc_load_error());
 
   // Enabling the setting should trigger load attempt.
   SetOptedIn(true);
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   raw_fake_controller->CompleteLoad(/*success=*/true);
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 2);
 
   service.RemoveObserver(&observer);
 }
 
-// Tests that timing out when loading an extension sets HasLoadError to true
+// Tests that timing out when loading an extension sets HasGPCLoadError to true
 // and notifies observers.
 TEST_F(ExtensionServiceTest, TestLoadTimeoutSetsLoadError)
 API_AVAILABLE(ios(18.4)) {
@@ -655,27 +689,27 @@ API_AVAILABLE(ios(18.4)) {
 
   service.Initialize(web::UniversalOptOutState::kEnabled);
 
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 0);
 
   // Fast forward past the 10-second loading timeout.
   task_environment_.FastForwardBy(base::Seconds(10));
 
-  EXPECT_TRUE(service.HasLoadError());
+  EXPECT_TRUE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 1);
-  EXPECT_TRUE(observer.last_has_load_error());
+  EXPECT_TRUE(observer.last_has_gpc_load_error());
 
   // Disabling the setting should reset the load error.
   SetOptedIn(false);
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 2);
-  EXPECT_FALSE(observer.last_has_load_error());
+  EXPECT_FALSE(observer.last_has_gpc_load_error());
 
   service.RemoveObserver(&observer);
 }
 
-// Tests that timing out when manually loading an extension sets `HasLoadError`
-// to true and notifies observers.
+// Tests that timing out when manually loading an extension sets
+// `HasGPCLoadError` to true and notifies observers.
 TEST_F(ExtensionServiceTest, TestManualLoadTimeoutSetsLoadError)
 API_AVAILABLE(ios(18.4)) {
   base::HistogramTester histogram_tester;
@@ -691,36 +725,36 @@ API_AVAILABLE(ios(18.4)) {
   service.Initialize(web::UniversalOptOutState::kEligible);
 
   EXPECT_TRUE(service.IsReady());
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 0);
 
   // Manually enable the setting to trigger loading.
   SetOptedIn(true);
   EXPECT_TRUE(raw_fake_controller->HasPendingLoad());
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 0);
 
   // Fast forward past the 2-second loading timeout.
   task_environment_.FastForwardBy(base::Seconds(2));
 
-  EXPECT_TRUE(service.HasLoadError());
+  EXPECT_TRUE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 1);
-  EXPECT_TRUE(observer.last_has_load_error());
+  EXPECT_TRUE(observer.last_has_gpc_load_error());
 
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
 
   // Disabling the setting should reset the load error.
   SetOptedIn(false);
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 2);
-  EXPECT_FALSE(observer.last_has_load_error());
+  EXPECT_FALSE(observer.last_has_gpc_load_error());
 
   // Enabling the setting should trigger another load attempt.
   SetOptedIn(true);
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   raw_fake_controller->CompleteLoad(/*success=*/true);
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 2);
   histogram_tester.ExpectUniqueSample("IOS.WebExtension.LoadSuccess", true, 1);
 
@@ -744,7 +778,7 @@ API_AVAILABLE(ios(18.4)) {
   service.Initialize(web::UniversalOptOutState::kEligible);
 
   EXPECT_TRUE(service.IsReady());
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
 
   // Manually enable the setting to trigger loading.
   SetOptedIn(true);
@@ -752,11 +786,11 @@ API_AVAILABLE(ios(18.4)) {
 
   // Advance time by 1 second (less than the 2-second timeout).
   task_environment_.FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
 
   // Complete load successfully.
   raw_fake_controller->CompleteLoad(/*success=*/true);
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 0);
   histogram_tester.ExpectUniqueSample("IOS.WebExtension.LoadSuccess", true, 1);
   histogram_tester.ExpectUniqueTimeSample("IOS.WebExtension.LoadDelay",
@@ -764,7 +798,7 @@ API_AVAILABLE(ios(18.4)) {
 
   // Fast forward another 2 seconds and verify that timeout does not fire.
   task_environment_.FastForwardBy(base::Seconds(2));
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 0);
 
   service.RemoveObserver(&observer);
@@ -792,9 +826,9 @@ API_AVAILABLE(ios(18.4)) {
   task_environment_.FastForwardBy(base::TimeDelta());
 
   EXPECT_TRUE(service.IsReady());
-  EXPECT_TRUE(service.HasLoadError());
+  EXPECT_TRUE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 1);
-  EXPECT_TRUE(observer.last_has_load_error());
+  EXPECT_TRUE(observer.last_has_gpc_load_error());
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.ReadyDelay", 0);
@@ -828,14 +862,14 @@ API_AVAILABLE(ios(18.4)) {
 
   // Still not ready before 1s has elapsed.
   EXPECT_FALSE(service.IsReady());
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 0);
 
   // Fast forward remaining 900ms to reach 1 second.
   task_environment_.FastForwardBy(base::Milliseconds(900));
 
   EXPECT_TRUE(service.IsReady());
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
@@ -867,15 +901,15 @@ API_AVAILABLE(ios(18.4)) {
   // Fast forward 500ms (less than 1s).
   task_environment_.FastForwardBy(base::Milliseconds(500));
   EXPECT_FALSE(service.IsReady());
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 0);
 
   // Fast forward remaining 500ms to reach 1s.
   task_environment_.FastForwardBy(base::Milliseconds(500));
   EXPECT_TRUE(service.IsReady());
-  EXPECT_TRUE(service.HasLoadError());
+  EXPECT_TRUE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 1);
-  EXPECT_TRUE(observer.last_has_load_error());
+  EXPECT_TRUE(observer.last_has_gpc_load_error());
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.ReadyDelay", 0);
@@ -906,15 +940,15 @@ API_AVAILABLE(ios(18.4)) {
   // At 2 seconds, the loading timeout should trigger.
   task_environment_.FastForwardBy(base::Seconds(2));
   EXPECT_TRUE(service.IsReady());
-  EXPECT_TRUE(service.HasLoadError());
+  EXPECT_TRUE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 1);
-  EXPECT_TRUE(observer.last_has_load_error());
+  EXPECT_TRUE(observer.last_has_gpc_load_error());
 
   // At 5 seconds (advance another 3s), the delayed load completes successfully.
   task_environment_.FastForwardBy(base::Seconds(3));
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 2);
-  EXPECT_FALSE(observer.last_has_load_error());
+  EXPECT_FALSE(observer.last_has_gpc_load_error());
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.ReadyDelay", 0);
@@ -944,13 +978,13 @@ API_AVAILABLE(ios(18.4)) {
   // At 2 seconds, the loading timeout should trigger.
   task_environment_.FastForwardBy(base::Seconds(2));
   EXPECT_TRUE(service.IsReady());
-  EXPECT_TRUE(service.HasLoadError());
+  EXPECT_TRUE(service.HasGPCLoadError());
   EXPECT_EQ(observer.call_count(), 1);
-  EXPECT_TRUE(observer.last_has_load_error());
+  EXPECT_TRUE(observer.last_has_gpc_load_error());
 
   // At 5 seconds (advance another 3s), the delay timer fires with failure.
   task_environment_.FastForwardBy(base::Seconds(3));
-  EXPECT_TRUE(service.HasLoadError());
+  EXPECT_TRUE(service.HasGPCLoadError());
   // The error state remains true, so observer is not called again.
   EXPECT_EQ(observer.call_count(), 1);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
@@ -977,7 +1011,7 @@ API_AVAILABLE(ios(18.4)) {
   service.Initialize(web::UniversalOptOutState::kEligible);
 
   EXPECT_TRUE(service.IsReady());
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
 
   // Manually enable the setting to trigger loading.
   SetOptedIn(true);
@@ -989,11 +1023,11 @@ API_AVAILABLE(ios(18.4)) {
 
   // Still delayed before reaching 1s.
   task_environment_.FastForwardBy(base::Milliseconds(500));
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
 
   // Advance remaining 300ms to reach 1s.
   task_environment_.FastForwardBy(base::Milliseconds(300));
-  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_FALSE(service.HasGPCLoadError());
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadSuccess", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.LoadDelay", 0);
   histogram_tester.ExpectTotalCount("IOS.WebExtension.ReadyDelay", 0);

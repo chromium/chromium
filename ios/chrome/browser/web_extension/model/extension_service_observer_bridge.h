@@ -13,9 +13,9 @@
 // Objective-C protocol mirroring `ExtensionService::Observer`.
 @protocol ExtensionServiceObserving <NSObject>
 @optional
-// Called when the extension loading error state changes.
+// Called when the GPC extension loading error state changes.
 - (void)extensionService:(ExtensionService*)service
-    didChangeExtensionLoadError:(bool)hasLoadError;
+    didChangeGPCLoadError:(bool)hasGPCLoadError;
 @end
 
 // Simple observer bridge that forwards all events to its delegate observer.
@@ -26,8 +26,8 @@ class ExtensionServiceObserverBridge : public ExtensionService::Observer {
   ~ExtensionServiceObserverBridge() override;
 
   // ExtensionService::Observer implementation.
-  void OnExtensionLoadErrorChanged(ExtensionService* service,
-                                   bool has_load_error) override;
+  void OnGPCLoadErrorChanged(ExtensionService* service,
+                             bool has_gpc_load_error) override;
 
  private:
   __weak id<ExtensionServiceObserving> observer_ = nil;

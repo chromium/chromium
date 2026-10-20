@@ -29,7 +29,7 @@ class FakeExtensionService final : public ExtensionService {
   web::ExtensionController* GetExtensionController() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  bool HasLoadError() const override;
+  bool HasGPCLoadError() const override;
   bool IsReady() const override;
   bool WebExtensionsWereLoadedAtStartup() const override;
   base::CallbackListSubscription RunWhenReady(
@@ -42,9 +42,9 @@ class FakeExtensionService final : public ExtensionService {
   // Sets whether web extensions are considered loaded at startup.
   void SetWebExtensionsWereLoadedAtStartup(bool loaded);
 
-  // Sets whether the service has an extension load error and notifies
+  // Sets whether the service has a GPC extension load error and notifies
   // observers if changed.
-  void SetHasLoadError(bool has_error);
+  void SetHasGPCLoadError(bool has_error);
 
   // Returns true if there are pending callbacks waiting for the service to
   // become ready.
@@ -55,7 +55,7 @@ class FakeExtensionService final : public ExtensionService {
 
  private:
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
-  bool has_load_error_ = false;
+  bool has_gpc_load_error_ = false;
   bool is_ready_ = false;
   bool web_extensions_were_loaded_at_startup_ = false;
   bool was_waited_upon_ = false;

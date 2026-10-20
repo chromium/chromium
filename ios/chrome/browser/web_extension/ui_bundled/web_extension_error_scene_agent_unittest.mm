@@ -135,7 +135,7 @@ TEST_F(WebExtensionErrorSceneAgentTest,
   scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
 
   // Extension load error occurs at startup before scene becomes active.
-  fake_extension_service()->SetHasLoadError(true);
+  fake_extension_service()->SetHasGPCLoadError(true);
 
   NSString* expected_message =
       l10n_util::GetNSString(IDS_IOS_UNIVERSAL_OPT_OUT_SNACKBAR_MESSAGE);
@@ -182,7 +182,7 @@ TEST_F(WebExtensionErrorSceneAgentTest,
                 messageAction:[OCMArg any]
              completionAction:[OCMArg any]]);
 
-  fake_extension_service()->SetHasLoadError(true);
+  fake_extension_service()->SetHasGPCLoadError(true);
 
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_);
 }
@@ -201,9 +201,9 @@ TEST_F(WebExtensionErrorSceneAgentTest,
                                                messageAction:[OCMArg any]
                                             completionAction:[OCMArg any]]);
 
-  fake_extension_service()->SetHasLoadError(true);
+  fake_extension_service()->SetHasGPCLoadError(true);
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_);
-  EXPECT_TRUE(fake_extension_service()->HasLoadError());
+  EXPECT_TRUE(fake_extension_service()->HasGPCLoadError());
 
   // Reset the mock so the previous rejection does not prevent the expectation.
   ResetMockSnackbarCommands();
@@ -244,7 +244,7 @@ TEST_F(WebExtensionErrorSceneAgentTest, NoErrorChangeDoesNotShowSnackbar) {
                                                messageAction:[OCMArg any]
                                             completionAction:[OCMArg any]]);
 
-  fake_extension_service()->SetHasLoadError(false);
+  fake_extension_service()->SetHasGPCLoadError(false);
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_);
 }
 
@@ -262,11 +262,11 @@ TEST_F(WebExtensionErrorSceneAgentTest,
                                                messageAction:[OCMArg any]
                                             completionAction:[OCMArg any]]);
 
-  fake_extension_service()->SetHasLoadError(true);
+  fake_extension_service()->SetHasGPCLoadError(true);
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_);
 
   // Error fixes itself while still backgrounded.
-  fake_extension_service()->SetHasLoadError(false);
+  fake_extension_service()->SetHasGPCLoadError(false);
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_);
 
   ResetMockSnackbarCommands();
@@ -304,7 +304,7 @@ TEST_F(WebExtensionErrorSceneAgentTest,
                 }]
              completionAction:[OCMArg any]]);
 
-  fake_extension_service()->SetHasLoadError(true);
+  fake_extension_service()->SetHasGPCLoadError(true);
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_);
 
   ASSERT_TRUE(captured_action);
@@ -320,8 +320,8 @@ TEST_F(WebExtensionErrorSceneAgentTest,
   scene_state_.UIEnabled = NO;
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-  fake_extension_service()->SetHasLoadError(true);
-  EXPECT_TRUE(fake_extension_service()->HasLoadError());
+  fake_extension_service()->SetHasGPCLoadError(true);
+  EXPECT_TRUE(fake_extension_service()->HasGPCLoadError());
 
   NSString* expected_message =
       l10n_util::GetNSString(IDS_IOS_UNIVERSAL_OPT_OUT_SNACKBAR_MESSAGE);
@@ -354,7 +354,7 @@ TEST_F(WebExtensionErrorSceneAgentTest, SilentModeDoesNotShowSnackbar) {
                                                messageAction:[OCMArg any]
                                             completionAction:[OCMArg any]]);
 
-  fake_extension_service()->SetHasLoadError(true);
+  fake_extension_service()->SetHasGPCLoadError(true);
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_);
 }
 
@@ -374,20 +374,20 @@ TEST_F(WebExtensionErrorSceneAgentTest,
                                                   buttonText:[OCMArg any]
                                                messageAction:[OCMArg any]
                                             completionAction:[OCMArg any]]);
-  fake_extension_service()->SetHasLoadError(true);
+  fake_extension_service()->SetHasGPCLoadError(true);
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_);
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kUniversalOptOutErrorToastShown));
 
   // Error is resolved.
-  fake_extension_service()->SetHasLoadError(false);
+  fake_extension_service()->SetHasGPCLoadError(false);
 
   // Second error occurs: snackbar must NOT be shown because pref is true.
   OCMReject([mock_snackbar_commands_ showSnackbarWithMessage:[OCMArg any]
                                                   buttonText:[OCMArg any]
                                                messageAction:[OCMArg any]
                                             completionAction:[OCMArg any]]);
-  fake_extension_service()->SetHasLoadError(true);
+  fake_extension_service()->SetHasGPCLoadError(true);
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_);
 }
 
@@ -405,21 +405,21 @@ TEST_F(WebExtensionErrorSceneAgentTest, ToastDisplayedAgainWhenPrefIsReset) {
                                                   buttonText:[OCMArg any]
                                                messageAction:[OCMArg any]
                                             completionAction:[OCMArg any]]);
-  fake_extension_service()->SetHasLoadError(true);
+  fake_extension_service()->SetHasGPCLoadError(true);
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_);
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kUniversalOptOutErrorToastShown));
 
   // Reset pref to false.
   prefs->SetBoolean(prefs::kUniversalOptOutErrorToastShown, false);
-  fake_extension_service()->SetHasLoadError(false);
+  fake_extension_service()->SetHasGPCLoadError(false);
 
   // Second error occurs after pref reset: snackbar should be shown again.
   OCMExpect([mock_snackbar_commands_ showSnackbarWithMessage:[OCMArg any]
                                                   buttonText:[OCMArg any]
                                                messageAction:[OCMArg any]
                                             completionAction:[OCMArg any]]);
-  fake_extension_service()->SetHasLoadError(true);
+  fake_extension_service()->SetHasGPCLoadError(true);
   EXPECT_OCMOCK_VERIFY(mock_snackbar_commands_);
   EXPECT_TRUE(prefs->GetBoolean(prefs::kUniversalOptOutErrorToastShown));
 }
@@ -435,7 +435,7 @@ TEST_F(WebExtensionErrorSceneAgentTest,
   scene_state_.UIEnabled = YES;
   scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
 
-  fake_extension_service()->SetHasLoadError(true);
+  fake_extension_service()->SetHasGPCLoadError(true);
 
   OCMReject([mock_snackbar_commands_ showSnackbarWithMessage:[OCMArg any]
                                                   buttonText:[OCMArg any]

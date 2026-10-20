@@ -75,8 +75,8 @@
 #pragma mark - ExtensionServiceObserving
 
 - (void)extensionService:(ExtensionService*)service
-    didChangeExtensionLoadError:(bool)hasLoadError {
-  if (hasLoadError) {
+    didChangeGPCLoadError:(bool)hasGPCLoadError {
+  if (hasGPCLoadError) {
     _hasPendingError = YES;
     [self maybeShowErrorSnackbar];
   }
@@ -100,7 +100,7 @@
   }
   _extensionServiceObserverBridge =
       std::make_unique<ExtensionServiceObserverBridge>(service, self);
-  if (service->HasLoadError()) {
+  if (service->HasGPCLoadError()) {
     _hasPendingError = YES;
   }
 }

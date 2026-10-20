@@ -931,12 +931,12 @@ TEST_F(SettingsTableViewControllerTest, TestPrivacyItemErrorBadge) {
   EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
 
   // Simulate extension load error.
-  fake_service->SetHasLoadError(true);
+  fake_service->SetHasGPCLoadError(true);
   EXPECT_TRUE(privacy_item.badgeType == BadgeType::kWarning);
   EXPECT_TRUE(privacy_item.badgeLayout == BadgeLayout::kTrailing);
 
   // Simulate error resolution.
-  fake_service->SetHasLoadError(false);
+  fake_service->SetHasGPCLoadError(false);
   EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
   EXPECT_TRUE(privacy_item.badgeLayout == BadgeLayout::kInline);
 }
@@ -962,7 +962,7 @@ TEST_F(SettingsTableViewControllerTest,
   EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
 
   // Simulate extension load error while the feature is disabled.
-  fake_service->SetHasLoadError(true);
+  fake_service->SetHasGPCLoadError(true);
   EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
 }
 
@@ -988,6 +988,6 @@ TEST_F(SettingsTableViewControllerTest, TestPrivacyItemSilentModeNoErrorBadge) {
   EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
 
   // Simulate extension load error while in silent mode.
-  fake_service->SetHasLoadError(true);
+  fake_service->SetHasGPCLoadError(true);
   EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
 }

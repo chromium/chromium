@@ -2460,9 +2460,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   }
   ExtensionService* extensionService =
       ExtensionServiceFactory::GetForProfile(_profile);
-  const bool hasError =
-      extensionService && extensionService->HasLoadError() &&
-      !universal_optout::features::IsUniversalOptOutExtensionSilentEnabled();
+  const bool hasError = extensionService && extensionService->HasGPCLoadError();
   BadgeType badgeType = hasError ? BadgeType::kWarning : BadgeType::kNone;
   if (badgeType != _privacyDetailItem.badgeType) {
     _privacyDetailItem.badgeType = badgeType;
@@ -3401,7 +3399,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 #pragma mark - ExtensionServiceObserving
 
 - (void)extensionService:(ExtensionService*)service
-    didChangeExtensionLoadError:(bool)hasLoadError {
+    didChangeGPCLoadError:(bool)hasGPCLoadError {
   [self updatePrivacyDetailItem];
 }
 

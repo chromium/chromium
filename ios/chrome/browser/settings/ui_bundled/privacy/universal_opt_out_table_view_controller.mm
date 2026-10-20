@@ -136,7 +136,7 @@ NSString* const kUniversalOptOutErrorLearnMoreItemAccessibilityIdentifier =
   }
   TableViewModel* model = self.tableViewModel;
 
-  const bool hasError = [self hasExtensionLoadError];
+  const bool hasError = [self hasGPCLoadError];
   if (hasError) {
     [model addSectionWithIdentifier:SectionIdentifierError];
     [model addItem:[self errorMessageItem]
@@ -234,7 +234,7 @@ NSString* const kUniversalOptOutErrorLearnMoreItemAccessibilityIdentifier =
 #pragma mark - ExtensionServiceObserving
 
 - (void)extensionService:(ExtensionService*)service
-    didChangeExtensionLoadError:(bool)hasLoadError {
+    didChangeGPCLoadError:(bool)hasGPCLoadError {
   if (!self.viewLoaded || _settingsAreDismissed) {
     return;
   }
@@ -251,14 +251,14 @@ NSString* const kUniversalOptOutErrorLearnMoreItemAccessibilityIdentifier =
   [self.sceneHandler closePresentedViewsAndOpenURL:command];
 }
 
-// Returns whether the extension service reports a load error.
-- (bool)hasExtensionLoadError {
+// Returns whether the extension service reports a GPC load error.
+- (bool)hasGPCLoadError {
   if (!_profile) {
     return false;
   }
   ExtensionService* extensionService =
       ExtensionServiceFactory::GetForProfile(_profile);
-  return extensionService && extensionService->HasLoadError();
+  return extensionService && extensionService->HasGPCLoadError();
 }
 
 // Returns the error message item, lazily initialized.
