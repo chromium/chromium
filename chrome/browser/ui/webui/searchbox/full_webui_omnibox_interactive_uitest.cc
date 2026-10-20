@@ -3315,6 +3315,30 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForOmniboxFocus(true));
 }
 
+// Verifies that Tab traversal to `LocationBarView` selects all of an unfocused
+// draft.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FocusTraversalToUnfocusedDraftSelectsAll) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(b/575892351): Ensure this test works properly when "
+                    "WebUI toolbar is enabled.";
+  }
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("ffffff"), ClickWebPageBody(kTab1),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForVisibleOmniboxUnfocused(), CheckWebUIInputSelection(0, 0),
+      // What Tab traversal does once it reaches the location bar.
+      Do([this]() {
+        auto* location_bar = BrowserView::GetBrowserViewForBrowser(browser())
+                                 ->GetLocationBarView();
+        location_bar->GetFocusManager()->SetFocusedViewWithReason(
+            location_bar,
+            views::FocusManager::FocusChangeReason::kFocusTraversal);
+      }),
+      WaitForOmniboxFocus(true), CheckWebUIInputSelection(0, 6));
+}
+
 // Verifies that text typed into the omnibox at startup reaches WebUI, whether
 // or not the popup is ready yet. On the Views toolbar,
 // `NativeFocusHandoffKeepsDraftAndSelection` forces the not-ready case.

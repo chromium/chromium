@@ -391,6 +391,11 @@ class LocationBarView
   // to process input and display suggestions.
   void OnFullWebUiOmniboxReady();
 
+  // Forwards focus to the WebUI omnibox. Like `OmniboxViewViews::SetFocus()`,
+  // this selects all when `select_all` is true or the omnibox didn't already
+  // have focus.
+  void ForwardFocusToWebUI(bool query_zps, bool select_all);
+
   // Creates `omnibox_popup_aim_presenter_` if it doesn't exist yet and the
   // profile is eligible for the AI Mode popup. Returns whether it exists.
   bool CreateOmniboxPopupAimPresenterIfEligible();
@@ -641,6 +646,10 @@ class LocationBarView
   // TODO(crbug.com/40251974): Remove this once state manager is proven
   //  reliable.
   bool in_popup_state_transition_ = false;
+  // True while routing Views focus to `LocationBarView` so
+  // `LocationBarView::OnFocus()` skips its default WebUI focus forwarding and
+  // leaves it to the caller's `ForwardFocusToWebUI()` call.
+  bool moving_focus_to_webui_ = false;
   // Caches the latest toolbar visibility state for re-evaluating focus
   // behavior.
   bool is_toolbar_visible_ = true;
