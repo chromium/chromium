@@ -542,7 +542,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/prefs/model:unit_tests",
     "//ios/chrome/browser/prerender/model:unit_tests",
     "//ios/chrome/browser/presenters/ui_bundled:unit_tests",
-    "//ios/chrome/browser/price_insights/coordinator:unit_tests",
     "//ios/chrome/browser/price_insights/model:unit_tests",
     "//ios/chrome/browser/price_insights/ui:unit_tests",
     "//ios/chrome/browser/price_notifications/ui_bundled:unit_tests",

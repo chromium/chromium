@@ -1,5 +1,0 @@
-include_rules = [
-  # keep-sorted start
-  "+ios/chrome/browser/price_insights/model",
-  # keep-sorted end
-]
