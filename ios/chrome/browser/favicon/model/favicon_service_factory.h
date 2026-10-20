@@ -5,35 +5,24 @@
 #ifndef IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "components/favicon/core/favicon_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-enum class ServiceAccessType;
-
-namespace favicon {
-class FaviconService;
-}
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_access.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 // Singleton that owns all FaviconServices and associates them with
 // ProfileIOS.
-class FaviconServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class FaviconServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
+                                  FaviconServiceFactory,
+                                  favicon::FaviconService,
+                                  RejectImplicitAccessIfIncognito> {
  public:
-  static favicon::FaviconService* GetForProfile(ProfileIOS* profile,
-                                                ServiceAccessType access_type);
-  static FaviconServiceFactory* GetInstance();
+  explicit FaviconServiceFactory(PassKey key);
   // Returns the default factory used to build FaviconService. Can be
   // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<FaviconServiceFactory>;
-
-  FaviconServiceFactory();
-  ~FaviconServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
