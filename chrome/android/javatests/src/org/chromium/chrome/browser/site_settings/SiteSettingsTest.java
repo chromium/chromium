@@ -112,9 +112,7 @@ import java.util.concurrent.TimeoutException;
 })
 @DisableFeatures({
     ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-    ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER,
-    ChromeFeatureList.SETTINGS_IN_TAB,
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP
+    ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER
 })
 public class SiteSettingsTest {
 
@@ -1212,6 +1210,8 @@ public class SiteSettingsTest {
 
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
+        // This test inspects the fragment through SettingsActivity, like SiteSettingsTestUtils.
+        settingsNavigation.setUseSettingsActivityForTesting(true); // crbug.com/521895796
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent =
                 settingsNavigation.createSettingsIntent(
@@ -1248,6 +1248,8 @@ public class SiteSettingsTest {
 
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
+        // This test inspects the fragment through SettingsActivity, like SiteSettingsTestUtils.
+        settingsNavigation.setUseSettingsActivityForTesting(true); // crbug.com/521895796
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent =
                 settingsNavigation.createSettingsIntent(
@@ -1377,6 +1379,8 @@ public class SiteSettingsTest {
 
         SettingsNavigation settingsNavigation =
                 SettingsNavigationFactory.createSettingsNavigation();
+        // This test inspects the fragment through SettingsActivity, like SiteSettingsTestUtils.
+        settingsNavigation.setUseSettingsActivityForTesting(true); // crbug.com/521895796
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent =
                 settingsNavigation.createSettingsIntent(
