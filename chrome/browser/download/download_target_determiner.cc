@@ -1104,8 +1104,7 @@ DownloadTargetDeterminer::Result
     // are confident it won't be triggered.
     DCHECK_NE(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
               download_->GetDangerType());
-    CHECK_EQ(kCrdownloadSuffix, download_->GetFullPath().Extension(),
-             base::NotFatalUntil::M161);
+    DCHECK_EQ(kCrdownloadSuffix, download_->GetFullPath().Extension());
     intermediate_path_ = download_->GetFullPath();
     return COMPLETE;
   }
