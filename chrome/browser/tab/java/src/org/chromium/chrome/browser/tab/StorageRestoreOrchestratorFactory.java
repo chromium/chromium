@@ -42,6 +42,6 @@ public class StorageRestoreOrchestratorFactory {
         long build(
                 @JniType("Profile*") Profile profile,
                 @JniType("tabs::TabStripCollection*") TabStripCollection collection,
-                @JniType("StorageLoadedDataAndroid*") StorageLoadedData loadedData);
+                @JniType("StorageLoadedData*") StorageLoadedData loadedData);
     }
 }

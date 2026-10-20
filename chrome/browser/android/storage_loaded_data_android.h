@@ -88,6 +88,18 @@ inline ScopedJavaLocalRef<jobject> ToJniType<tabs_pb::TabState>(
   return tabs::CreateLoadedTabState(env, const_cast<tabs_pb::TabState&>(input));
 }
 
+template <>
+inline tabs::StorageLoadedData* FromJniType<tabs::StorageLoadedData*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_storage_loaded_data) {
+  if (!j_storage_loaded_data) {
+    return nullptr;
+  }
+  return tabs::StorageLoadedDataAndroid::FromJavaObject(env,
+                                                        j_storage_loaded_data)
+      ->GetData();
+}
+
 }  // namespace jni_zero
 
 #endif  // CHROME_BROWSER_ANDROID_STORAGE_LOADED_DATA_ANDROID_H_

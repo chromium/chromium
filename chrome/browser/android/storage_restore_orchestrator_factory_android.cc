@@ -10,6 +10,7 @@
 #include "chrome/browser/android/storage_loaded_data_android.h"
 #include "chrome/browser/android/tab_state_storage_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab/storage_loaded_data.h"
 #include "components/tabs/public/android/jni_conversion.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -23,11 +24,11 @@ static int64_t JNI_StorageRestoreOrchestratorFactory_Build(
     JNIEnv* env,
     Profile* profile,
     tabs::TabStripCollection* collection,
-    StorageLoadedDataAndroid* loaded_data) {
+    StorageLoadedData* loaded_data) {
   TabStateStorageService* service =
       TabStateStorageServiceFactory::GetForProfile(profile);
-  StorageRestoreOrchestrator* orchestrator = new StorageRestoreOrchestrator(
-      collection, service, loaded_data->GetData());
+  StorageRestoreOrchestrator* orchestrator =
+      new StorageRestoreOrchestrator(collection, service, loaded_data);
   return reinterpret_cast<intptr_t>(orchestrator);
 }
 
