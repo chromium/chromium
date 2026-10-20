@@ -38,6 +38,7 @@
 #include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/tag_converters.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/posix/global_descriptors.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/scoped_add_feature_flags.h"
@@ -47,6 +48,8 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/default_clock.h"
+#include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -411,6 +414,9 @@ content::ContentRendererClient* AwMainDelegate::CreateContentRendererClient() {
 }
 
 void AwMainDelegate::InitializeMemorySystem(const bool is_browser_process) {
+  TRACE_EVENT0("startup", "AwMainDelegate::InitializeMemorySystem");
+  base::ElapsedTimer timer;
+
   const version_info::Channel channel = version_info::android::GetChannel();
   const bool is_canary_dev = (channel == version_info::Channel::CANARY ||
                               channel == version_info::Channel::DEV);
@@ -455,6 +461,13 @@ void AwMainDelegate::InitializeMemorySystem(const bool is_browser_process) {
     initializer.SetProfilingClientParameters(channel, profiler_process_type);
   }
   initializer.Initialize(memory_system_);
+
+  if (is_browser_process) {
+    base::UmaHistogramTimes(
+        "Android.WebView.Startup.CreationTime.InitializeMemorySystemTime."
+        "Browser",
+        timer.Elapsed());
+  }
 }
 
 bool AwMainDelegate::ShouldInitializePerfetto(InvokedIn invoked_in) {
