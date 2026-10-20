@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Current tab submitted"/>
 </enum>
 
-<!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/common.ts:SingleTabMenuItemAction) -->
+<!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.h:SingleTabMenuItemAction, //ui/webui/resources/cr_components/composebox/common.ts:SingleTabMenuItemAction) -->
 
 <!-- LINT.IfChange(ContextualSearchSource) -->
 

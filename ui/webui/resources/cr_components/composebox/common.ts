@@ -426,7 +426,8 @@ export enum SingleTabMenuItemAction {
   MAX_VALUE = CURRENT_TAB_SUBMITTED,
 }
 
-// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchSingleTabMenuItemAction)
+// LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.h:SingleTabMenuItemAction,
+// //tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchSingleTabMenuItemAction)
 
 export function recordSingleTabMenuItemAction(
     action: SingleTabMenuItemAction, composeboxSource: string) {
