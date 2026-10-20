@@ -4,7 +4,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--enable-leak-checks",
           "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb",
           "--skia-gold-consider-unsupported",
@@ -27,7 +26,8 @@
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
+          "--buildbucket-id=${buildbucket_build_id}",
+          "--bypass-skia-gold-functionality"
         ],
         "resultdb": {
           "enable": true,

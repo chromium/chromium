@@ -977,7 +977,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--bypass-skia-gold-functionality",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--emulator-debug-tags=all",
           "--gs-results-bucket=chromium-result-details",
@@ -999,7 +998,8 @@
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
+          "--buildbucket-id=${buildbucket_build_id}",
+          "--bypass-skia-gold-functionality"
         ],
         "resultdb": {
           "enable": true,
