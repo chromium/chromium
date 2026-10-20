@@ -319,6 +319,10 @@ cq_build_perf_builder(
         category = "build perf|windows",
         short_name = "svc",
     ),
+    properties = {
+        # Only the baseline clean and incremental build times matter here.
+        "enable_missing_deps_check": False,
+    },
     # Enabling local profiler hangs windows builders (http://b/476821630). So set cloud explicitly here.
     siso_profile_mode = "cloud",
 )
