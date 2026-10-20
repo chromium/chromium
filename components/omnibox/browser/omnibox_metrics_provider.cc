@@ -8,9 +8,9 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -188,95 +188,63 @@ void OmniboxMetricsProvider::ProvideCurrentSessionData(
 ClientSummarizedResultType
 OmniboxMetricsProvider::GetClientSummarizedResultType(
     metrics::OmniboxEventProto::Suggestion::ResultType type) {
-  static constexpr auto kResultTypesToClientSummarizedResultTypes =
-      base::MakeFixedFlatMap<OmniboxEventProto::Suggestion::ResultType,
-                             ClientSummarizedResultType>({
-          {OmniboxEventProto::Suggestion::URL_WHAT_YOU_TYPED,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_URL,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_TITLE,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_BODY,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_KEYWORD,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::NAVSUGGEST,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::BOOKMARK_TITLE,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::NAVSUGGEST_PERSONALIZED,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::CLIPBOARD_URL,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::PHYSICAL_WEB,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::PHYSICAL_WEB_OVERFLOW,
-           ClientSummarizedResultType::kUrl},  // More like a URL than a search.
-          {OmniboxEventProto::Suggestion::DOCUMENT,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::SEARCH_WHAT_YOU_TYPED,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_HISTORY,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_OTHER_ENGINE,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_ENTITY,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_TAIL,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_PERSONALIZED,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_PROFILE,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::SEARCH_SUGGEST_ANSWER,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::CALCULATOR,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::CLIPBOARD_TEXT,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::CLIPBOARD_IMAGE,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::EXTENSION_APP,
-           ClientSummarizedResultType::kApp},
-          {OmniboxEventProto::Suggestion::APP,
-           ClientSummarizedResultType::kApp},
-          {OmniboxEventProto::Suggestion::CONTACT,
-           ClientSummarizedResultType::kContact},
-          {OmniboxEventProto::Suggestion::APP_RESULT,
-           ClientSummarizedResultType::kOnDevice},
-          {OmniboxEventProto::Suggestion::LEGACY_ON_DEVICE,
-           ClientSummarizedResultType::kOnDevice},
-          {OmniboxEventProto::Suggestion::TILE_SUGGESTION,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::HISTORY_CLUSTER,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::OPEN_TAB,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::STARTER_PACK,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::TAB_SWITCH,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::PEDAL,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::FEATURED_ENTERPRISE_SEARCH,
-           ClientSummarizedResultType::kSearch},
-          {OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS_ANSWER,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::CROSS_DEVICE_TAB,
-           ClientSummarizedResultType::kUrl},
-          {OmniboxEventProto::Suggestion::RECENTLY_CLOSED_TAB,
-           ClientSummarizedResultType::kUrl},
-      });
-
-  const auto it = kResultTypesToClientSummarizedResultTypes.find(type);
-  return it == kResultTypesToClientSummarizedResultTypes.cend()
-             ? ClientSummarizedResultType::kUnknown
-             : it->second;
+  using Suggestion = OmniboxEventProto::Suggestion;
+  // No default case, so adding a ResultType fails to compile until it's
+  // mapped here. Map each type the way the server-side summary does, even
+  // where that reads oddly (NULL_RESULT_MESSAGE as on-device), so client and
+  // server numbers stay comparable.
+  switch (type) {
+    case Suggestion::URL_WHAT_YOU_TYPED:
+    case Suggestion::HISTORY_URL:
+    case Suggestion::HISTORY_TITLE:
+    case Suggestion::HISTORY_BODY:
+    case Suggestion::HISTORY_KEYWORD:
+    case Suggestion::NAVSUGGEST:
+    case Suggestion::BOOKMARK_TITLE:
+    case Suggestion::NAVSUGGEST_PERSONALIZED:
+    case Suggestion::CLIPBOARD_URL:
+    case Suggestion::PHYSICAL_WEB:
+    case Suggestion::PHYSICAL_WEB_OVERFLOW:  // More like a URL than a search.
+    case Suggestion::DOCUMENT:
+    case Suggestion::HISTORY_CLUSTER:
+    case Suggestion::OPEN_TAB:
+    case Suggestion::STARTER_PACK:
+    case Suggestion::TAB_SWITCH:
+    case Suggestion::PEDAL:
+    case Suggestion::HISTORY_EMBEDDINGS:
+    case Suggestion::HISTORY_EMBEDDINGS_ANSWER:
+    case Suggestion::CROSS_DEVICE_TAB:
+    case Suggestion::TAB_GROUP:
+    case Suggestion::RECENTLY_CLOSED_TAB:
+      return ClientSummarizedResultType::kUrl;
+    case Suggestion::SEARCH_WHAT_YOU_TYPED:
+    case Suggestion::SEARCH_HISTORY:
+    case Suggestion::SEARCH_SUGGEST:
+    case Suggestion::SEARCH_OTHER_ENGINE:
+    case Suggestion::SEARCH_SUGGEST_ENTITY:
+    case Suggestion::SEARCH_SUGGEST_TAIL:
+    case Suggestion::SEARCH_SUGGEST_PERSONALIZED:
+    case Suggestion::SEARCH_SUGGEST_PROFILE:
+    case Suggestion::SEARCH_SUGGEST_ANSWER:
+    case Suggestion::CALCULATOR:
+    case Suggestion::CLIPBOARD_TEXT:
+    case Suggestion::CLIPBOARD_IMAGE:
+    case Suggestion::TILE_SUGGESTION:
+    case Suggestion::FEATURED_ENTERPRISE_SEARCH:
+      return ClientSummarizedResultType::kSearch;
+    case Suggestion::EXTENSION_APP:
+    case Suggestion::APP:
+      return ClientSummarizedResultType::kApp;
+    case Suggestion::CONTACT:
+      return ClientSummarizedResultType::kContact;
+    case Suggestion::APP_RESULT:
+    case Suggestion::LEGACY_ON_DEVICE:
+    case Suggestion::NULL_RESULT_MESSAGE:
+      return ClientSummarizedResultType::kOnDevice;
+    case Suggestion::UNKNOWN_RESULT_TYPE:
+      return ClientSummarizedResultType::kUnknown;
+  }
+  NOTREACHED();
 }
 
 void OmniboxMetricsProvider::OnURLOpenedFromOmnibox(OmniboxLog* log) {
