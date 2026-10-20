@@ -426,7 +426,7 @@ FetchResponseData* Response::CreateUnfilteredFetchResponseDataWithoutBody(
   response->SetCacheStorageCacheName(
       fetch_api_response.cache_storage_cache_name);
   if (fetch_api_response.cache_storage_side_data_writer.is_valid()) {
-    response->SetPendingCacheStorageSideDataWriter(
+    response->SetCacheStorageSideDataWriter(
         std::move(fetch_api_response.cache_storage_side_data_writer));
   }
   response->SetConnectionInfo(fetch_api_response.connection_info);

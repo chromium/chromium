@@ -31,9 +31,10 @@
 #include <optional>
 #include <utility>
 
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/shared_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/alternate_protocol_usage.h"
@@ -46,6 +47,7 @@
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -289,14 +291,15 @@ class PLATFORM_EXPORT ResourceResponse final {
     cache_storage_cache_name_ = cache_storage_cache_name;
   }
 
-  const mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>&
-  CacheStorageSideDataWriter() const {
+  const scoped_refptr<CacheStorageSideDataWriterHolder>&
+  CacheStorageSideDataWriterHolder() const {
     return cache_storage_side_data_writer_;
   }
   void SetCacheStorageSideDataWriter(
-      mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>
+      mojo::PendingRemote<network::mojom::blink::CacheStorageSideDataWriter>
           cache_storage_side_data_writer) {
-    cache_storage_side_data_writer_ = std::move(cache_storage_side_data_writer);
+    cache_storage_side_data_writer_->data =
+        std::move(cache_storage_side_data_writer);
   }
 
   const Vector<String>& CorsExposedHeaderNames() const {
@@ -677,9 +680,11 @@ class PLATFORM_EXPORT ResourceResponse final {
 
   // Direct Mojo remote to the CacheStorageCache entry from where the response
   // is served via the ServiceWorker, used for writing code cache side data.
-  // Unbound if the response isn't from CacheStorage.
-  mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>
-      cache_storage_side_data_writer_;
+  // The underlying PendingRemote is invalid if the response isn't from
+  // CacheStorage.
+  scoped_refptr<blink::CacheStorageSideDataWriterHolder>
+      cache_storage_side_data_writer_ =
+          base::MakeRefCounted<blink::CacheStorageSideDataWriterHolder>();
 
   // The headers that should be exposed according to CORS. Only guaranteed
   // to be set if the response was fetched by a ServiceWorker.

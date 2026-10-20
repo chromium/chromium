@@ -573,14 +573,10 @@ void WebURLResponse::SetCacheStorageSideDataWriter(
       remote.is_valid()) {
     uint32_t version = remote.version();
     resource_response_->SetCacheStorageSideDataWriter(
-        mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>(
-            mojo::PendingRemote<
-                network::mojom::blink::CacheStorageSideDataWriter>(
-                remote.PassPipe(), version)));
+        mojo::PendingRemote<network::mojom::blink::CacheStorageSideDataWriter>(
+            remote.PassPipe(), version));
   } else {
-    resource_response_->SetCacheStorageSideDataWriter(
-        mojo::SharedRemote<
-            network::mojom::blink::CacheStorageSideDataWriter>());
+    resource_response_->SetCacheStorageSideDataWriter(mojo::NullRemote());
   }
 }
 

@@ -1304,7 +1304,10 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
   // debug crbug.com/463388771.
   CHECK(!has_forwarded_response_);
   has_forwarded_response_ = true;
-  target_client_->OnReceiveResponse(current_response_.Clone(),
+  auto response = current_response_.Clone();
+  response->cache_storage_side_data_writer =
+      std::move(current_response_->cache_storage_side_data_writer);
+  target_client_->OnReceiveResponse(std::move(response),
                                     std::move(current_body_),
                                     std::move(current_cached_metadata_));
 }

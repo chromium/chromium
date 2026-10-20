@@ -357,6 +357,12 @@ void FetchRespondWithObserver::OnResponseFulfilled(ScriptState* script_state,
     return;
   }
 
+  if (auto pending_side_data_writer =
+          response->GetResponse()->TakeCacheStorageSideDataWriter()) {
+    fetch_api_response->cache_storage_side_data_writer =
+        std::move(pending_side_data_writer);
+  }
+
   BodyStreamBuffer* buffer = response->InternalBodyBuffer();
   if (buffer) {
     // The |side_data_blob| must be taken before the body buffer is
