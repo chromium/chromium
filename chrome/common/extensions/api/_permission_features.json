@@ -841,7 +841,7 @@
   "proxyOverrideRulesPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "platforms": ["linux", "mac", "win"],
+    "platforms": ["chromeos", "linux", "mac", "win"],
     "allowlist" : [
       "031E5E4A54C39E4F46E11CE643584E9187915908",  // https://crbug.com/40592958 SecureConnect
       "349E89FE0296161007623C0B4096B617D7CECD54",  // https://crbug.com/40592958 SecureConnect

@@ -2929,6 +2929,7 @@ source_set("browser_tests") {
       "api/permissions/permissions_api_browsertest.cc",
       "api/printer_provider/printer_provider_apitest.cc",
       "api/protocol_handlers/protocol_handlers_manager_browsertest.cc",
+      "api/proxy_override_rules/proxy_override_rules_private_apitest.cc",
       "api/resources_private/resources_private_apitest.cc",
       "api/safe_browsing_private/safe_browsing_private_api_browsertest.cc",
       "api/settings_private/settings_private_apitest.cc",
@@ -3061,7 +3062,6 @@ source_set("browser_tests") {
         "//chrome/browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
         "api/experimental_actor/experimental_actor_apitest.cc",
         "api/experimental_ai_data/experimental_ai_data_apitest.cc",
-        "api/proxy_override_rules/proxy_override_rules_private_apitest.cc",
         "api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
       ]
 
