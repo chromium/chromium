@@ -208,6 +208,12 @@ def RunCTS(
     ]
     if json_results_file:
       local_test_runner_args += ['--json-results-file=%s' % json_results_file]
+    # Hardcode an android_webview/ file path here, so that bugs are routed to
+    # the WebView team component. Otherwise this defaults to the top-level
+    # chromium component.
+    local_test_runner_args += [
+      '--test-location-for-bug-routing=//android_webview/DIR_METADATA'
+    ]
     return cmd_helper.RunCmd(
       [_TEST_RUNNER_PATH, 'hostside'] + local_test_runner_args
     )
@@ -252,6 +258,12 @@ def RunCTS(
 
   if json_results_file:
     local_test_runner_args += ['--json-results-file=%s' % json_results_file]
+  # Hardcode an android_webview/ file path here, so that bugs are routed to
+  # the WebView team component. Otherwise this defaults to the top-level
+  # chromium component.
+  local_test_runner_args += [
+    '--test-location-for-bug-routing=//android_webview/DIR_METADATA'
+  ]
 
   return cmd_helper.RunCmd(
     [_TEST_RUNNER_PATH, 'instrumentation'] + local_test_runner_args

@@ -187,6 +187,14 @@ def AddTracingOptions(parser):
 def AddCommonOptions(parser):
     """Adds all common options to |parser|."""
     parser.add_argument(
+        '--test-location-for-bug-routing',
+        help=(
+            'Path to a DIR_METADATA file (or a file in the same directory) '
+            'to report to ResultDB for bug routing. If specified, this '
+            'overrides any class-to-file mapping from size-info.'
+        ),
+    )
+    parser.add_argument(
         "-q", "--quiet", action="store_true", help="Minimize output."
     )
 
@@ -1656,7 +1664,9 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
                             )
                             _SinkTestResult(
                                 r,
-                                test_file_name or r.GetTestFile(),
+                                args.test_location_for_bug_routing
+                                or test_file_name
+                                or r.GetTestFile(),
                                 test_instance,
                                 result_sink_client,
                             )
