@@ -48,6 +48,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowBuild;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPausedSystemClock;
 
@@ -272,28 +273,7 @@ public class AutocompleteMediatorUnitTest {
                 .getSideUiStateProviderSupplier();
         lenient().doReturn(mSideUiStateProvider).when(mUiOverrides).getSideUiStateProvider();
 
-        mMediator =
-                new AutocompleteMediator(
-                        mContext,
-                        mResourceProvider,
-                        mAutocompleteDelegate,
-                        mTextStateProvider,
-                        mListModel,
-                        new Handler(),
-                        () -> mModalDialogManager,
-                        null,
-                        null,
-                        mLocationBarDataProvider,
-                        tabGroupId -> {},
-                        url -> false,
-                        mOmniboxActionDelegate,
-                        mActivityLifecycleDispatcher,
-                        mEmbedder,
-                        mWindowAndroid,
-                        mDeferredImeCallback,
-                        mFuseboxCoordinator,
-                        mUiOverrides,
-                        mUrlTextWrappingSupplier);
+        mMediator = createMediator();
         mMediator
                 .getDropdownItemViewInfoListBuilderForTest()
                 .registerSuggestionProcessor(mMockProcessor);
@@ -322,6 +302,30 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.setOmniboxSuggestionsVisualStateObserver(mVisualStateObserver);
         mMediator.onTopResumedActivityChanged(/* isTopResumedActivity= */ true);
+    }
+
+    private AutocompleteMediator createMediator() {
+        return new AutocompleteMediator(
+                mContext,
+                mResourceProvider,
+                mAutocompleteDelegate,
+                mTextStateProvider,
+                mListModel,
+                new Handler(),
+                () -> mModalDialogManager,
+                null,
+                null,
+                mLocationBarDataProvider,
+                tabGroupId -> {},
+                url -> false,
+                mOmniboxActionDelegate,
+                mActivityLifecycleDispatcher,
+                mEmbedder,
+                mWindowAndroid,
+                mDeferredImeCallback,
+                mFuseboxCoordinator,
+                mUiOverrides,
+                mUrlTextWrappingSupplier);
     }
 
     /**
@@ -3265,6 +3269,39 @@ public class AutocompleteMediatorUnitTest {
 
         // Verify that observers are NOT installed because activity is not focused.
         verify(mAutocompleteController, never()).addOnSuggestionsReceivedListener(any());
+    }
+
+    @Test
+    public void onTopResumedActivityChanged_ignoredOnXiaomiDevices() {
+        ShadowBuild.setManufacturer("Xiaomi");
+        mListModel.set(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED, true);
+
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+        verify(mAutocompleteController).addOnSuggestionsReceivedListener(mMediator);
+
+        clearInvocations(mAutocompleteController);
+        mMediator.onTopResumedActivityChanged(/* isTopResumedActivity= */ false);
+
+        verify(mAutocompleteController, never()).stop(anyInt());
+        verify(mAutocompleteController, never()).removeOnSuggestionsReceivedListener(any());
+        assertTrue(mListModel.get(SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED));
+    }
+
+    @Test
+    public void installAutocompleteObservers_xiaomiDeviceInstallsWhenWindowUnfocusedAtCreation() {
+        ShadowBuild.setManufacturer("Xiaomi");
+        var controller = Robolectric.buildActivity(Activity.class).setup();
+        controller.windowFocusChanged(false);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        doReturn(new WeakReference<>(controller.get())).when(mWindowAndroid).getActivity();
+
+        AutocompleteMediator mediator = createMediator();
+        var session = createEmptySession();
+        mediator.beginInput(session);
+
+        verify(mAutocompleteController).addOnSuggestionsReceivedListener(mediator);
+        mediator.destroy();
     }
 
     @Test
