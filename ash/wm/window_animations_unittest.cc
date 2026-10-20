@@ -22,10 +22,14 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/compositor/test/layer_animator_test_controller.h"
+#include "ui/gfx/animation/tween.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -43,6 +47,25 @@ void WaitForMilliseconds(int ms) {
       FROM_HERE, loop.QuitClosure(), base::Milliseconds(ms));
   loop.Run();
 }
+
+// TODO(crbug.com/252543343): Consolidate LayerDestroyedChecker into a shared
+// test utility.
+class LayerDestroyedChecker : public ui::LayerObserver {
+ public:
+  explicit LayerDestroyedChecker(ui::Layer* layer) { layer->AddObserver(this); }
+  LayerDestroyedChecker(const LayerDestroyedChecker&) = delete;
+  LayerDestroyedChecker& operator=(const LayerDestroyedChecker&) = delete;
+  ~LayerDestroyedChecker() override = default;
+
+  void LayerDestroyed(ui::Layer* layer) override {
+    layer->RemoveObserver(this);
+    destroyed_ = true;
+  }
+  bool destroyed() const { return destroyed_; }
+
+ private:
+  bool destroyed_ = false;
+};
 
 }  // namespace
 
@@ -243,6 +266,91 @@ TEST_F(WindowAnimationsTest, CrossFadeToBounds) {
   old_layer->GetAnimator()->Step(base::TimeTicks::Now() + base::Seconds(1));
   window->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
                                        base::Seconds(1));
+}
+
+TEST_F(WindowAnimationsTest, CrossFadeInterrupted) {
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
+  window->SetBounds({5, 10, 320, 240});
+  window->Show();
+  window->layer()->GetAnimator()->StopAnimating();
+
+  Layer* first_layer = window->layer();
+  LayerDestroyedChecker first_layer_checker(first_layer);
+
+  // Start the first cross-fade animation to a larger size.
+  std::unique_ptr<ui::LayerTreeOwner> first_old_layer_owner =
+      wm::RecreateLayers(window.get());
+  window->SetBounds({640, 480});
+  CrossFadeAnimation(window.get(), std::move(first_old_layer_owner));
+  Layer* second_layer = window->layer();
+  LayerDestroyedChecker second_layer_checker(second_layer);
+  EXPECT_NE(first_layer, second_layer);
+  EXPECT_FALSE(first_layer_checker.destroyed());
+
+  gfx::Transform initial_in_transform;
+  initial_in_transform.Translate(5.f, 10.f);
+  initial_in_transform.Scale(320.f / 640.f, 240.f / 480.f);
+  EXPECT_EQ(initial_in_transform, second_layer->transform());
+  EXPECT_EQ(gfx::Transform(), second_layer->GetTargetTransform());
+
+  // Step the first cross-fade animation halfway through.
+  ui::LayerAnimatorTestController test_controller(second_layer->GetAnimator());
+  test_controller.StartThreadedAnimationsIfNeeded(
+      second_layer->GetAnimator()->last_step_time());
+  const base::TimeDelta duration =
+      test_controller.GetRunningSequence(ui::LayerAnimationElement::TRANSFORM)
+          ->FirstElement()
+          ->duration();
+  test_controller.Step(duration / 2);
+
+  const double tween_value =
+      gfx::Tween::CalculateValue(gfx::Tween::EASE_OUT, 0.5);
+  const gfx::Transform interrupted_transform =
+      gfx::Tween::TransformValueBetween(tween_value, initial_in_transform,
+                                        gfx::Transform());
+
+  // Interrupt with a new cross-fade animation to {10, 20, 400, 300}.
+  std::unique_ptr<ui::LayerTreeOwner> second_old_layer_owner =
+      wm::RecreateLayers(window.get());
+  window->SetBounds({10, 20, 400, 300});
+  CrossFadeAnimation(window.get(), std::move(second_old_layer_owner));
+
+  // The old layer from the first animation is deleted, `second_layer` is
+  // detached and becomes the old layer, and `third_layer` is recreated.
+  EXPECT_TRUE(first_layer_checker.destroyed());
+  EXPECT_FALSE(second_layer_checker.destroyed());
+  Layer* third_layer = window->layer();
+  EXPECT_NE(second_layer, third_layer);
+
+  // The detached `second_layer` (now old layer) starts from the interrupted
+  // transform and animates to the transform for the new bounds.
+  EXPECT_EQ(interrupted_transform, second_layer->transform());
+  gfx::Transform expected_old_target_transform;
+  expected_old_target_transform.Translate(10.f, 20.f);
+  expected_old_target_transform.Scale(400.f / 640.f, 300.f / 480.f);
+  EXPECT_EQ(expected_old_target_transform, second_layer->GetTargetTransform());
+  EXPECT_EQ(1.0f, second_layer->opacity());
+  EXPECT_EQ(0.0f, second_layer->GetTargetOpacity());
+
+  // The newly recreated `third_layer` has the interpolated transform as its
+  // initial value and animates to the identity transform.
+  const gfx::RectF interrupted_bounds =
+      interrupted_transform.MapRect(gfx::RectF(640.f, 480.f));
+  gfx::Transform expected_new_initial_transform;
+  expected_new_initial_transform.Translate(interrupted_bounds.x() - 10.f,
+                                           interrupted_bounds.y() - 20.f);
+  expected_new_initial_transform.Scale(interrupted_bounds.width() / 400.f,
+                                       interrupted_bounds.height() / 300.f);
+  EXPECT_EQ(expected_new_initial_transform, third_layer->transform());
+  EXPECT_EQ(gfx::Transform(), third_layer->GetTargetTransform());
+  EXPECT_EQ(1.0f, third_layer->GetTargetOpacity());
+
+  third_layer->GetAnimator()->StopAnimating();
+  EXPECT_TRUE(second_layer_checker.destroyed());
+  EXPECT_EQ(gfx::Transform(), third_layer->transform());
 }
 
 // Tests that when crossfading from a window which has a transform, the cross

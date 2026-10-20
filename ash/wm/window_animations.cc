@@ -162,9 +162,10 @@ class CrossFadeObserver : public aura::WindowObserver,
   void OnWindowLayerRecreated(aura::Window* window) override {
     // If the window layer is recreated. |layer_| will hold the LayerAnimator we
     // were originally observing. Layer recreation is usually done when doing
-    // another window animation, so stop this current one and trigger
-    // OnImplicitAnimationsCompleted to delete ourselves.
-    layer_->GetAnimator()->StopAnimating();
+    // another window animation, so abort this current one to preserve the
+    // interrupted transform and trigger OnImplicitAnimationsCompleted to delete
+    // ourselves.
+    layer_->GetAnimator()->AbortAllAnimations();
   }
 
   // ui::ImplicitAnimationObserver:
@@ -286,12 +287,9 @@ void CrossFadeAnimationInternal(
   const gfx::Rect old_bounds(old_layer->bounds());
 
   gfx::Transform old_transform(old_layer->transform());
-  gfx::Transform old_transform_in_root;
-  old_transform_in_root.Translate(old_bounds.x(), old_bounds.y());
-  old_transform_in_root.PreConcat(old_transform);
-  old_transform_in_root.Translate(-old_bounds.x(), -old_bounds.y());
   gfx::RectF old_transformed_bounds =
-      old_transform_in_root.MapRect(gfx::RectF(old_bounds));
+      old_transform.MapRect(gfx::RectF(old_bounds.size())) +
+      gfx::Vector2dF(old_bounds.OffsetFromOrigin());
   const gfx::Rect new_bounds(window->bounds());
   const bool old_on_top = (old_bounds.width() > new_bounds.width());
 
@@ -309,8 +307,9 @@ void CrossFadeAnimationInternal(
 
   // Scale up the old layer while translating to new position.
   {
-    old_layer->GetAnimator()->StopAnimating();
+    old_layer->GetAnimator()->AbortAllAnimations();
     old_layer->SetTransform(old_transform);
+    old_layer->SetOpacity(kWindowAnimation_ShowOpacity);
     ui::ScopedLayerAnimationSettings settings(old_layer->GetAnimator());
     settings.SetTransitionDuration(animation_duration);
     settings.SetTweenType(animation_tween_type);
