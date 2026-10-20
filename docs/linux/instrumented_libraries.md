@@ -6,98 +6,64 @@ others are optional, and are currently unused.
 
 ## Building the instrumented libraries
 
-### Setting up a chroot
+Building the libraries requires `apt-get source`, so the build must be done in
+an Ubuntu 26.04 (Resolute) environment.
+`third_party/instrumented_libs/scripts/build_in_chroot.py` takes care of this.
+It sets up an Ubuntu chroot under `out/` as an unprivileged user, and builds the
+libraries in it, so it works on any Linux distro.
 
-Building the libraries requires `apt-get source`, so the build must be done from
-an Ubuntu 24.04 environment. The preferred way is using a chroot. To get
-started, install `debootstrap` and `schroot`. If you're running a Debian-based
-distro, run:
+Apt is pinned to a fixed snapshot.ubuntu.com timestamp (`SNAPSHOT` in the
+script), so the package sources and build dependencies are reproducible. Bump it
+to pick up newer packages.
 
-```shell
-sudo apt install debootstrap schroot
-```
-
-Create a configuration for a Noble chroot:
-
-```shell
-cat | sudo tee /etc/schroot/chroot.d/noble_amd64.conf > /dev/null <<EOF
-[noble_amd64]
-description=Ubuntu 24.04 Noble for amd64
-directory=/srv/chroot/noble_amd64
-personality=linux
-root-users=$USER
-type=directory
-users=$USER
-EOF
-```
-
-Bootstrap the chroot:
+To build both the `msan-no-origins` and `msan-chained-origins` libraries:
 
 ```shell
-sudo mkdir -p /srv/chroot/noble_amd64
-sudo debootstrap --variant=buildd --arch=amd64 noble /srv/chroot/noble_amd64 http://archive.ubuntu.com/ubuntu/
+third_party/instrumented_libs/scripts/build_in_chroot.py
 ```
 
-If your `$HOME` directory is not `/home` (as is the case on gLinux), then route
-`/home` to the real thing. `schroot` automatically mounts `/home`, which is
-where I'm assuming you keep your source tree and `depot_tools`.
+The first run creates the chroot in `out/instrumented_libs_chroot_resolute`,
+which takes a while. Later runs reuse it. If only
+`third_party/instrumented_libs/resolute/scripts/install-build-deps.sh` changed,
+the new packages are installed into the existing chroot. Pass `--recreate` to
+start from scratch.
+
+The libraries are built in `out/instrumented_libs_build_resolute`, and are
+packaged as `msan-*-resolute-lib.tar.gz` in the root of the source tree.
+
+### Isolation modes
+
+The chroot is entered using one of two mechanisms, selected with `--mode`:
+
+*   `namespace` (the default): Unprivileged user namespaces + `chroot`. This
+    runs at native speed.
+*   `proot`: For machines that have unprivileged user namespaces disabled. Only
+    `ptrace` is required, but builds are about 3x slower.
+
+On a 128-thread machine, creating the chroot takes about 13 minutes in
+`namespace` mode and 20 minutes in `proot` mode, mostly spent downloading and
+installing packages. A clean build of both sets of libraries then takes about 13
+minutes in `namespace` mode and 40 minutes in `proot` mode.
+
+### Iterating on a package
+
+These options are useful when fixing build failures:
+
+*   `--packages=<pkg1>,<pkg2>`: Build only these packages (GN target names in
+    `third_party/instrumented_libs/resolute/BUILD.gn`), and skip packaging.
+*   `--keep-going`: Continue building other packages after a failure.
+*   `--no-clobber`: Keep each package's source and build tree, and reuse it on
+    the next build. Failed builds always keep their tree, under
+    `out/instrumented_libs_build_resolute/Instrumented-*/gen/third_party/instrumented_libs/resolute/<pkg>`.
+*   `--shell`: Open a shell in the chroot.
+
+For example:
 
 ```shell
-sudo mount --bind "$HOME" /home
+third_party/instrumented_libs/scripts/build_in_chroot.py --keep-going --packages=nss,pango1.0
 ```
 
-Populate `sources.list`:
-
-```shell
-cat | sudo tee -a /srv/chroot/noble_amd64/etc/apt/sources.list > /dev/null <<EOF
-deb     http://archive.ubuntu.com/ubuntu/ noble          main restricted universe
-deb-src	http://archive.ubuntu.com/ubuntu/ noble          main restricted universe
-deb     http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe
-deb-src http://archive.ubuntu.com/ubuntu/ noble-security main restricted universe
-deb     http://archive.ubuntu.com/ubuntu/ noble-updates  main restricted universe
-deb-src http://archive.ubuntu.com/ubuntu/ noble-updates  main restricted universe
-EOF
-```
-
-Enter the chroot and install the necessary packages:
-
-```shell
-schroot -c noble_amd64 -u root --directory /home/dev/chromium/src
-apt update
-apt upgrade
-apt install lsb-release sudo python-is-python3 pkg-config libgtk2.0-bin libdrm-dev help2man git fakeroot gyp patchelf
-```
-
-Install library packages:
-
-```shell
-third_party/instrumented_libs/noble/scripts/install-build-deps.sh
-```
-
-Change to a non-root user:
-```shell
-exit
-schroot -c noble_amd64 -u `whoami` --directory /home/dev/chromium/src
-```
-
-On your host, mount `/dev/shm/`.  Replace `*` with the actual path if you have multiple chroots.
-```shell
-sudo mount --bind /dev/shm /run/schroot/mount/noble_amd64-*/dev/shm
-```
-
-Add `depot_tools` to your `PATH`. For example, I have it in `~/dev/depot_tools`,
-so I use:
-
-```shell
-export PATH=/home/dev/depot_tools/:$PATH
-```
-
-Now we're ready to build the libraries. A clean build takes a little over 8
-minutes on a 72-thread machine.
-
-```shell
-third_party/instrumented_libs/scripts/build_and_package.py --parallel -j $(nproc) all noble
-```
+See `--help` for the remaining options.
 
 ## Uploading the libraries
 
@@ -106,15 +72,12 @@ bucket. File a ticket at [go/pdeiosec-bug](https://goto.google.com/pdeiosec-bug)
 to request access.
 
 ```shell
-# Exit the chroot.
-exit
-
-# Move files into place.
-mv *.tgz third_party/instrumented_libs/binaries
-
-# Upload.
-upload_to_google_storage.py -b chromium-instrumented-libraries third_party/instrumented_libs/binaries/msan*.tgz
+upload_to_google_storage_first_class.py -b chromium-instrumented-libraries msan-chained-origins-resolute-lib.tar.gz
+upload_to_google_storage_first_class.py -b chromium-instrumented-libraries msan-no-origins-resolute-lib.tar.gz
 ```
+
+Each command prints an object entry. Add (or update) them in the `objects` list
+in `third_party/instrumented_libs/DEPS`.
 
 ## Testing and uploading a CL
 
@@ -129,26 +92,10 @@ the MSAN bot will run on the CQ:
 CQ_INCLUDE_TRYBOTS=luci.chromium.try:linux_chromium_msan_rel_ng
 ```
 
-## Cleaning up chroots
+## Cleaning up
 
-This can be useful for restarting from scratch with a new chroot, e.g. to
-validate the build instructions above.
+The chroot, its package cache, and the build directories are all under `out/`:
 
 ```shell
-sudo rm /etc/schroot/chroot.d/noble_amd64.conf
-sudo rm -rf /srv/chroot/noble_amd64
-```
-
-If `rm` complains about active mount points, list the active chroot session(s):
-```shell
-schroot --list --all-sessions
-```
-Which should print something like:
-```
-session:noble_amd64-714a3c01-9dbf-4c98-81c1-90ab8c4c61fe
-```
-
-Then shutdown the chroot session with:
-```shell
-schroot -e -c noble_amd64-714a3c01-9dbf-4c98-81c1-90ab8c4c61fe
+rm -rf out/instrumented_libs_chroot_resolute* out/instrumented_libs_build_resolute
 ```
