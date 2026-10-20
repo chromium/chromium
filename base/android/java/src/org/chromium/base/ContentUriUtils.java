@@ -738,12 +738,39 @@ public abstract class ContentUriUtils {
      * @return Whether the URI's provider has the same Android UID as the current process.
      */
     public static boolean isUriFromThisApp(Uri uri, Context context) {
+        return isProviderFromThisApp(resolveProvider(uri, context));
+    }
+
+    /**
+     * Resolves the owner of the ContentProvider that serves the content URI.
+     *
+     * @param uriString The content URI to resolve.
+     * @return The {@link ContentUriOwner} of the URI's provider.
+     */
+    @CalledByNative
+    public static @ContentUriOwner int resolveContentUriOwner(
+            @JniType("std::string") String uriString) {
+        if (TextUtils.isEmpty(uriString)) return ContentUriOwner.UNRESOLVED;
+        try {
+            ProviderInfo info =
+                    resolveProvider(Uri.parse(uriString), ContextUtils.getApplicationContext());
+            if (info == null) return ContentUriOwner.UNRESOLVED;
+            if (!isProviderFromThisApp(info)) return ContentUriOwner.OTHER_APP;
+            return info.exported
+                    ? ContentUriOwner.EXPORTED_FROM_CURRENT_APP
+                    : ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP;
+        } catch (Exception e) {
+            return ContentUriOwner.UNRESOLVED;
+        }
+    }
+
+    private static @Nullable ProviderInfo resolveProvider(Uri uri, Context context) {
         String authority = uri.getAuthority();
         // OpaqueUri returns a null authority even when its string form includes one, so the URI
         // needs to be reparsed to be sure that the authority does not exist.
         if (TextUtils.isEmpty(authority)) {
             authority = Uri.parse(uri.toString()).getAuthority();
-            if (TextUtils.isEmpty(authority)) return false;
+            if (TextUtils.isEmpty(authority)) return null;
         }
 
         // Preserve existing behavior for user-qualified authorities: discard the user prefix and
@@ -752,7 +779,10 @@ public abstract class ContentUriUtils {
         authority = authority.substring(authority.lastIndexOf('@') + 1);
 
         PackageManager pm = context.getPackageManager();
-        ProviderInfo info = pm.resolveContentProvider(authority, 0);
+        return pm.resolveContentProvider(authority, 0);
+    }
+
+    private static boolean isProviderFromThisApp(@Nullable ProviderInfo info) {
         return info != null
                 && info.applicationInfo != null
                 && info.applicationInfo.uid == Process.myUid();

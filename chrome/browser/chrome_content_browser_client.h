@@ -1083,6 +1083,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context,
       const GURL& url) override;
 
+#if BUILDFLAG(IS_ANDROID)
+  bool IsContentSchemeURLNavigationAllowed(const GURL& url) override;
+#endif
+
   base::FilePath GetChildProcessPath(int flags) override;
 
   bool AreIsolatedWebAppsEnabled(

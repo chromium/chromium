@@ -122,12 +122,13 @@ public class ContentUriUtilsUnitTest {
         assertNull(ContentUriUtils.readTextFromUri(uri, requestedType));
     }
 
-    private void mockProvider(String authority, String packageName, int uid) {
+    private ProviderInfo mockProvider(String authority, String packageName, int uid) {
         ProviderInfo provider = new ProviderInfo();
         provider.packageName = packageName;
         provider.applicationInfo = new ApplicationInfo();
         provider.applicationInfo.uid = uid;
         when(mMockPackageManager.resolveContentProvider(authority, 0)).thenReturn(provider);
+        return provider;
     }
 
     @Test
@@ -200,5 +201,49 @@ public class ContentUriUtilsUnitTest {
         assertNull(opaque.getAuthority());
 
         assertFalse(ContentUriUtils.isUriFromThisApp(opaque, mMockContext));
+    }
+
+    @Test
+    public void testResolveContentUriOwner_ExportedFromCurrentApp() {
+        mockProvider("exported", "org.chromium.test", Process.myUid()).exported = true;
+
+        assertEquals(
+                ContentUriOwner.EXPORTED_FROM_CURRENT_APP,
+                ContentUriUtils.resolveContentUriOwner("content://exported/path"));
+    }
+
+    @Test
+    public void testResolveContentUriOwner_NonExportedFromCurrentApp() {
+        mockProvider("unexported", "org.chromium.test", Process.myUid());
+
+        assertEquals(
+                ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP,
+                ContentUriUtils.resolveContentUriOwner("content://unexported/path"));
+    }
+
+    @Test
+    public void testResolveContentUriOwner_OtherApp() {
+        mockProvider("different.uid", "org.chromium.other_package", Process.myUid() + 1);
+
+        assertEquals(
+                ContentUriOwner.OTHER_APP,
+                ContentUriUtils.resolveContentUriOwner("content://different.uid/path"));
+    }
+
+    @Test
+    public void testResolveContentUriOwner_Unresolved() {
+        assertEquals(
+                ContentUriOwner.UNRESOLVED,
+                ContentUriUtils.resolveContentUriOwner("content://unresolved/path"));
+    }
+
+    @Test
+    public void testResolveContentUriOwner_UserQualifiedAuthorityUsesBareAuthority() {
+        mockProvider("exported", "org.chromium.test", Process.myUid()).exported = true;
+        mockProvider("unexported", "org.chromium.test", Process.myUid());
+
+        assertEquals(
+                ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP,
+                ContentUriUtils.resolveContentUriOwner("content://10@exported@unexported/path"));
     }
 }

@@ -9034,6 +9034,13 @@ bool ChromeContentBrowserClient::IsFileSystemURLNavigationAllowed(
   return false;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool ChromeContentBrowserClient::IsContentSchemeURLNavigationAllowed(
+    const GURL& url) {
+  return ::IsContentSchemeURLNavigationAllowed(url);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 bool ChromeContentBrowserClient::AreIsolatedWebAppsEnabled(
     content::BrowserContext* browser_context) {
 #if !BUILDFLAG(IS_ANDROID)

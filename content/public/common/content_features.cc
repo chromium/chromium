@@ -211,6 +211,15 @@ BASE_FEATURE(kBackToAdIntervention, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, makes battery saver request heavy align wake ups.
 BASE_FEATURE(kBatterySaverModeAlignWakeUps, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// If enabled, the default ContentBrowserClient::
+// IsContentSchemeURLNavigationAllowed() blocks content:// navigations.
+// Embedders that need content:// navigations either override the method or
+// disable this feature.
+BASE_FEATURE(kBlockContentUriNavigationByDefault,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Broker file operations on disk cache in the Network Service.
 // This is no-op if the network service is hosted in the browser process.
 BASE_FEATURE(kBrokerFileOperationsOnDiskCacheInNetworkService,

@@ -88,6 +88,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kBackForwardCacheCCNSIgnoreUnchangedCookies);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackToAdIntervention);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBatterySaverModeAlignWakeUps);
+#if BUILDFLAG(IS_ANDROID)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kBlockContentUriNavigationByDefault);
+#endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kBrokerFileOperationsOnDiskCacheInNetworkService);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBypassRedirectChecksPerRequest);

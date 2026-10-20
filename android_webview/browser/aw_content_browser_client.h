@@ -91,6 +91,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
   bool IsExplicitNavigation(ui::PageTransition transition) override;
   bool IsHandledURL(const GURL& url) override;
+  bool IsContentSchemeURLNavigationAllowed(const GURL& url) override;
   bool ForceSniffingFileUrlsForHtml() override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;

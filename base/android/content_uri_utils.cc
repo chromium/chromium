@@ -157,6 +157,12 @@ bool IsContentUriFromThisApp(const FilePath& content_uri) {
   return Java_ContentUriUtils_isUriFromThisApp(env, content_uri.value());
 }
 
+ContentUriOwner ResolveContentUriOwner(const FilePath& content_uri) {
+  JNIEnv* env = android::AttachCurrentThread();
+  return static_cast<ContentUriOwner>(
+      Java_ContentUriUtils_resolveContentUriOwner(env, content_uri.value()));
+}
+
 std::string GetContentUriMimeType(const FilePath& content_uri) {
   JNIEnv* env = android::AttachCurrentThread();
   return Java_ContentUriUtils_getMimeType(env, content_uri.value());

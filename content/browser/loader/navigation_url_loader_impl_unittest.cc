@@ -27,6 +27,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/buildflags.h"
@@ -37,11 +38,13 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "content/test/test_navigation_url_loader_delegate.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/base/mock_network_change_notifier.h"
+#include "net/base/net_errors.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/storage_access_api/status.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -69,6 +72,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
@@ -705,9 +709,10 @@ class TestResponseInterceptor final : public NavigationLoaderInterceptor {
   bool should_redirect_ = true;
 };
 
-// A `NavigationLoaderInterceptor` that intercepts the request via
+// A `NavigationLoaderInterceptor` that intercepts only the first request via
 // `MaybeCreateLoader()` and immediately issues a redirect to `redirect_url`
 // with `URLResponseHead::bypass_redirect_checks` set to the supplied value.
+// Subsequent requests, including the redirected one, are not intercepted.
 class TestRedirectInterceptor final : public NavigationLoaderInterceptor {
  public:
   TestRedirectInterceptor(const GURL& redirect_url,
@@ -726,6 +731,11 @@ class TestRedirectInterceptor final : public NavigationLoaderInterceptor {
       BrowserContext* browser_context,
       LoaderCallback callback,
       FallbackCallback fallback_callback) override {
+    if (intercepted_) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+    intercepted_ = true;
     auto factory = base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
         base::BindOnce(&TestRedirectInterceptor::HandleRequest,
                        base::Unretained(this)));
@@ -771,6 +781,7 @@ class TestRedirectInterceptor final : public NavigationLoaderInterceptor {
 
   const GURL redirect_url_;
   const bool bypass_redirect_checks_;
+  bool intercepted_ = false;
   const raw_ptr<int64_t> navigation_id_ptr_;
   const raw_ptr<FrameTreeNodeId> frame_tree_node_id_ptr_;
   mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver_;
@@ -863,6 +874,28 @@ class TestDoubleRedirectInterceptor final : public NavigationLoaderInterceptor {
 void SetLargeNavigationTimeout(NavigationURLLoaderImpl& loader) {
   loader.SetNavigationTimeout(base::Seconds(1000));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class TestContentUriContentBrowserClient : public ContentBrowserClient {
+ public:
+  explicit TestContentUriContentBrowserClient(bool is_allowed)
+      : is_allowed_(is_allowed) {}
+
+  bool IsContentSchemeURLNavigationAllowed(const GURL& url) override {
+    call_count_++;
+    last_url_ = url;
+    return is_allowed_;
+  }
+
+  int call_count() const { return call_count_; }
+  const GURL& last_url() const { return last_url_; }
+
+ private:
+  const bool is_allowed_;
+  int call_count_ = 0;
+  GURL last_url_;
+};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -2021,5 +2054,101 @@ TEST_F(NavigationURLLoaderImplTest, ResponseWhileRedirectParseHeadersPending) {
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
   EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(NavigationURLLoaderImplTest, DisallowedContentUriNavigation) {
+  TestContentUriContentBrowserClient test_browser_client(/*is_allowed=*/false);
+  ScopedContentBrowserClientSetting setting(&test_browser_client);
+  TestNavigationURLLoaderDelegate delegate;
+  const GURL url("content://blocked.authority/path");
+  std::unique_ptr<NavigationURLLoaderImpl> loader =
+      CreateTestLoader(url, std::string(), "GET", &delegate);
+  loader->Start();
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, delegate.net_error());
+  EXPECT_EQ(1, test_browser_client.call_count());
+  EXPECT_EQ(url, test_browser_client.last_url());
+}
+
+TEST_F(NavigationURLLoaderImplTest, AllowedContentUriNavigation) {
+  TestContentUriContentBrowserClient test_browser_client(/*is_allowed=*/true);
+  ScopedContentBrowserClientSetting setting(&test_browser_client);
+  TestNavigationURLLoaderDelegate delegate;
+  const GURL url("content://allowed.authority/path");
+  std::unique_ptr<NavigationURLLoaderImpl> loader =
+      CreateTestLoader(url, std::string(), "GET", &delegate);
+  loader->Start();
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_FILE_NOT_FOUND, delegate.net_error());
+  EXPECT_EQ(1, test_browser_client.call_count());
+  EXPECT_EQ(url, test_browser_client.last_url());
+}
+
+TEST_F(NavigationURLLoaderImplTest, RedirectToDisallowedContentUri) {
+  base::test::ScopedFeatureList feature_list{
+      features::kBypassRedirectChecksPerRequest};
+  ASSERT_TRUE(http_test_server_.Start());
+  TestContentUriContentBrowserClient test_browser_client(/*is_allowed=*/false);
+  ScopedContentBrowserClientSetting setting(&test_browser_client);
+
+  int64_t navigation_id = 0;
+  FrameTreeNodeId frame_tree_node_id;
+  TestNavigationURLLoaderDelegate delegate;
+  const GURL content_url("content://blocked.authority/path");
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::make_unique<TestRedirectInterceptor>(
+      content_url, /*bypass_redirect_checks=*/true, &navigation_id,
+      &frame_tree_node_id));
+  std::unique_ptr<NavigationURLLoaderImpl> loader =
+      CreateTestLoader(http_test_server_.GetURL("/echo"), std::string(), "GET",
+                       &delegate, blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  navigation_id = pending_navigation_->GetNavigationHandle()->GetNavigationId();
+  frame_tree_node_id =
+      pending_navigation_->GetNavigationHandle()->GetFrameTreeNodeId();
+  loader->Start();
+  delegate.WaitForRequestRedirected();
+  loader->FollowRedirect({});
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, delegate.net_error());
+  EXPECT_EQ(1, test_browser_client.call_count());
+  EXPECT_EQ(content_url, test_browser_client.last_url());
+}
+
+TEST_F(NavigationURLLoaderImplTest, RedirectToAllowedContentUri) {
+  base::test::ScopedFeatureList feature_list{
+      features::kBypassRedirectChecksPerRequest};
+  ASSERT_TRUE(http_test_server_.Start());
+  TestContentUriContentBrowserClient test_browser_client(/*is_allowed=*/true);
+  ScopedContentBrowserClientSetting setting(&test_browser_client);
+
+  int64_t navigation_id = 0;
+  FrameTreeNodeId frame_tree_node_id;
+  TestNavigationURLLoaderDelegate delegate;
+  const GURL content_url("content://allowed.authority/path");
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::make_unique<TestRedirectInterceptor>(
+      content_url, /*bypass_redirect_checks=*/true, &navigation_id,
+      &frame_tree_node_id));
+  std::unique_ptr<NavigationURLLoaderImpl> loader =
+      CreateTestLoader(http_test_server_.GetURL("/echo"), std::string(), "GET",
+                       &delegate, blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  navigation_id = pending_navigation_->GetNavigationHandle()->GetNavigationId();
+  frame_tree_node_id =
+      pending_navigation_->GetNavigationHandle()->GetFrameTreeNodeId();
+  loader->Start();
+  delegate.WaitForRequestRedirected();
+  loader->FollowRedirect({});
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_FILE_NOT_FOUND, delegate.net_error());
+  EXPECT_EQ(1, test_browser_client.call_count());
+  EXPECT_EQ(content_url, test_browser_client.last_url());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

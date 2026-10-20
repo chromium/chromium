@@ -2969,6 +2969,15 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::BrowserContext* browser_context,
       const GURL& url);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Returns true if navigation to `url`, which must have a content:// scheme,
+  // is allowed. By default, returns false unless
+  // features::kBlockContentUriNavigationByDefault is disabled. If false is
+  // returned, navigation fails immediately with net::ERR_BLOCKED_BY_CLIENT
+  // without falling through to external intent handling.
+  virtual bool IsContentSchemeURLNavigationAllowed(const GURL& url);
+#endif
+
   // Called when optionally blockable insecure content is displayed on a secure
   // page (resulting in mixed content).
   virtual void OnDisplayInsecureContent(WebContents* web_contents) {}

@@ -69,6 +69,24 @@ bool IsDocumentUri(const FilePath& content_uri);
 // Android UID as the current process.
 BASE_EXPORT bool IsContentUriFromThisApp(const FilePath& content_uri);
 
+// The owner of the ContentProvider that serves a content URI.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base
+enum class ContentUriOwner {
+  // The URI does not resolve to any ContentProvider.
+  kUnresolved,
+  // The provider belongs to an app with a different Android UID.
+  kOtherApp,
+  // The provider has the same Android UID as the current process and is
+  // android:exported="true".
+  kExportedFromCurrentApp,
+  // The provider has the same Android UID as the current process and is
+  // android:exported="false". Only the current app can access it.
+  kNonExportedFromCurrentApp,
+};
+
+// Resolves the owner of the ContentProvider that serves `content_uri`.
+BASE_EXPORT ContentUriOwner ResolveContentUriOwner(const FilePath& content_uri);
+
 // Gets MIME type from a content URI. Returns an empty string if the URI is
 // invalid.
 BASE_EXPORT std::string GetContentUriMimeType(const FilePath& content_uri);

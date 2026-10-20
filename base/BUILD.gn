@@ -5816,8 +5816,15 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/base/ContentUriUtils.java" ]
   }
 
+  java_cpp_enum("content_uri_owner_enum_srcjar") {
+    sources = [ "android/content_uri_utils.h" ]
+  }
+
   android_library("content_uri_utils_java") {
-    srcjar_deps = [ ":content_uri_utils_jni" ]
+    srcjar_deps = [
+      ":content_uri_owner_enum_srcjar",
+      ":content_uri_utils_jni",
+    ]
     deps = [
       ":base_java",
       ":log_java",

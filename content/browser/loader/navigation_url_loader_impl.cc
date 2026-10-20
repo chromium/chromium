@@ -84,11 +84,12 @@
 #include "content/public/common/url_utils.h"
 #include "content/public/common/webplugininfo.h"
 #include "media/media_buildflags.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/net_errors.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -107,6 +108,8 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/request_destination.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/cpp/url_util.h"
@@ -122,6 +125,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_router_rule.mojom.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/android/content_url_loader_factory.h"
@@ -374,15 +378,14 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   return new_request;
 }
 
-// Called for requests that we don't have a URLLoaderFactory for.
-void UnknownSchemeCallback(
-    bool handled_externally,
+// Called for terminal requests that complete immediately with a network error.
+void CompleteWithNetErrorCallback(
+    net::Error net_error,
     const network::ResourceRequest& /* resource_request */,
-    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+    mojo::PendingReceiver<network::mojom::URLLoader> /* receiver */,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
-      ->OnComplete(network::URLLoaderCompletionStatus(
-          handled_externally ? net::ERR_ABORTED : net::ERR_UNKNOWN_URL_SCHEME));
+      ->OnComplete(network::URLLoaderCompletionStatus(net_error));
 }
 
 void LogQueueTimeHistogram(std::string_view name,
@@ -1266,8 +1269,13 @@ NavigationURLLoaderImpl::CreateNonNetworkLoaderFactory(
                       devtools_instrumentation::
                           WillCreateURLLoaderFactoryParams::ForFrame(frame))
                 : std::nullopt;
+    // The content:// factory is chosen per URL by
+    // ContentBrowserClient::IsContentSchemeURLNavigationAllowed(), so it must
+    // not be reused from the per-scheme cache.
+    const bool is_cacheable =
+        !resource_request.url.SchemeIs(url::kContentScheme);
     return std::make_pair(
-        /*is_cacheable=*/true,
+        is_cacheable,
         url_loader_factory::Create(
             ContentBrowserClient::URLLoaderFactoryType::kNavigation,
             url_loader_factory::TerminalParams::ForNonNetwork(
@@ -1328,7 +1336,9 @@ NavigationURLLoaderImpl::CreateNonNetworkLoaderFactory(
           ContentBrowserClient::URLLoaderFactoryType::kNavigation,
           url_loader_factory::TerminalParams::ForNonNetwork(
               base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
-                  base::BindOnce(UnknownSchemeCallback, handled)),
+                  base::BindOnce(&CompleteWithNetErrorCallback,
+                                 handled ? net::ERR_ABORTED
+                                         : net::ERR_UNKNOWN_URL_SCHEME)),
               network::mojom::kBrowserProcessId)));
 }
 
@@ -2268,7 +2278,18 @@ NavigationURLLoaderImpl::CreateTerminalNonNetworkLoaderFactory(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (url.GetScheme() == url::kContentScheme) {
+  if (url.SchemeIs(url::kContentScheme)) {
+    if (!GetContentClient()->browser()->IsContentSchemeURLNavigationAllowed(
+            url)) {
+      // A null factory would fall through to external protocol handling
+      // (Android intent dispatch), so fail with a terminal error instead.
+      mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+      base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
+          base::BindOnce(&CompleteWithNetErrorCallback,
+                         net::ERR_BLOCKED_BY_CLIENT))
+          ->Clone(pending_remote.InitWithNewPipeAndPassReceiver());
+      return pending_remote;
+    }
     return ContentURLLoaderFactory::Create();
   }
 #endif

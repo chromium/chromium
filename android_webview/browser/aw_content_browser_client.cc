@@ -465,6 +465,15 @@ bool AwContentBrowserClient::IsHandledURL(const GURL& url) {
   return false;
 }
 
+bool AwContentBrowserClient::IsContentSchemeURLNavigationAllowed(
+    const GURL& url) {
+  // WebView allows content:// navigations unconditionally for compatibility.
+  // The embedding app decides whether to allow content:// access via
+  // WebSettings#setAllowContentAccess, and which URIs to load via
+  // WebViewClient#shouldOverrideUrlLoading.
+  return true;
+}
+
 bool AwContentBrowserClient::ForceSniffingFileUrlsForHtml() {
   return sniff_file_urls_;
 }

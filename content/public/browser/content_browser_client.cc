@@ -1773,6 +1773,14 @@ bool ContentBrowserClient::IsFileSystemURLNavigationAllowed(
   return false;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool ContentBrowserClient::IsContentSchemeURLNavigationAllowed(
+    const GURL& url) {
+  return !base::FeatureList::IsEnabled(
+      features::kBlockContentUriNavigationByDefault);
+}
+#endif
+
 base::FilePath ContentBrowserClient::GetChildProcessPath(int flags) {
   return base::FilePath();
 }

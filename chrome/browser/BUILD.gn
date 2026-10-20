@@ -5095,6 +5095,7 @@ source_set("core_unit_tests") {
   ]
 
   if (is_android) {
+    sources += [ "chrome_content_browser_client_android_unittest.cc" ]
     deps += [
       "//chrome/browser/android",
       "//chrome/browser/android:web_contents_theme_client",

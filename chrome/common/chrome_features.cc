@@ -78,6 +78,12 @@ BASE_FEATURE(kAutofillPasswordSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidKeepProfilePartitionDirsInCacheDir,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Blocks navigations to content:// URIs served by Chrome's own
+// android:exported="false" content providers. Kill switch for
+// https://crbug.com/496190746.
+BASE_FEATURE(kBlockNonExportedContentProviderNavigation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable boarding pass detector on Chrome Android.
 BASE_FEATURE(kBoardingPassDetector, base::FEATURE_DISABLED_BY_DEFAULT);
 const char kBoardingPassDetectorUrlParamName[] = "boarding_pass_detector_urls";

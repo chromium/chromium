@@ -4,7 +4,10 @@
 
 #include "content/public/browser/content_browser_client.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
+#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
@@ -28,5 +31,23 @@ TEST(ContentBrowserClientTest, IsFullCookieAccessAllowed) {
                                          base::UnguessableToken::Create()),
       {}));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST(ContentBrowserClientTest, BlocksContentUriNavigationByDefault) {
+  ContentBrowserClient client;
+  EXPECT_FALSE(client.IsContentSchemeURLNavigationAllowed(
+      GURL("content://media/external/downloads/1")));
+}
+
+TEST(ContentBrowserClientTest,
+     AllowsContentUriNavigationWhenDefaultBlockingDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kBlockContentUriNavigationByDefault);
+  ContentBrowserClient client;
+  EXPECT_TRUE(client.IsContentSchemeURLNavigationAllowed(
+      GURL("content://media/external/downloads/1")));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content
