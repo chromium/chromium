@@ -510,6 +510,15 @@ views::SizeBounds TabCollectionAnimatingLayoutManager::GetAvailableHostSize()
   // horizontal-wrapping-vertically axes, or bounded by available parent width
   // for horizontal axis, to support dynamic tab shrinking and scrolling.
   if (IsVerticalOrWrappingVertically()) {
+    if (const auto* parent_layout_manager =
+            GetParentAnimatingLayoutManager(host_view())) {
+      if (auto it =
+              parent_layout_manager->target_view_layout_map_.find(host_view());
+          it != parent_layout_manager->target_view_layout_map_.end() &&
+          it->second.bounds.width() > 0) {
+        return views::SizeBounds(it->second.bounds.width(), {});
+      }
+    }
     return views::SizeBounds(std::max(host_view()->width(), 0), {});
   }
 

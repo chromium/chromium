@@ -60,17 +60,19 @@ class TestLayoutManager : public views::LayoutManagerBase {
         TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical) {
       // Place children at full width, starting from the top of the parent.
       int y = 0;
+      const int child_width = size_bounds.width().value_or(100);
       for (const auto& child : host_view()->children()) {
         const int child_height = child->GetPreferredSize().height() > 0
                                      ? child->GetPreferredSize().height()
                                      : 20;
-        layout.child_layouts.emplace_back(child, child->GetVisible(),
-                                          gfx::Rect(0, y, 100, child_height));
+        layout.child_layouts.emplace_back(
+            child, child->GetVisible(),
+            gfx::Rect(0, y, child_width, child_height));
         y += child_height;
       }
 
       // Calculate the total height based on all child layouts.
-      layout.host_size = gfx::Size(size_bounds.width().value_or(100), y);
+      layout.host_size = gfx::Size(child_width, y);
     } else if (axis_ == TabCollectionAnimatingLayoutManager::AnimationAxis::
                             kHorizontalWrappingVertically) {
       // Place children horizontally within a fixed-width parent.
@@ -758,13 +760,26 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
               ? std::make_unique<FixedHeightTestLayoutManager>(animation_axis())
               : std::make_unique<TestLayoutManager>(animation_axis()),
           group_delegate, animation_coordinator(), animation_axis()));
-  group_view->AddChildView(std::make_unique<views::View>());
+  auto* header = group_view->AddChildView(std::make_unique<views::View>());
 
   const gfx::Rect previous_bounds_in_screen = leading_tab->GetBoundsInScreen();
   group_layout_manager->AnimateAndReparentView(
       host_view()->RemoveChildViewT(leading_tab), previous_bounds_in_screen);
   group_view->InvalidateLayout();
   host_view()->InvalidateLayout();
+  if (is_vertical) {
+    // Even before the initial layout pass updates `group_view->width()`, the
+    // nested group layout manager should use its target width from the parent
+    // container so children start at full width instead of 0.
+    EXPECT_EQ(group_layout_manager->target_layout()
+                  .GetLayoutFor(header)
+                  ->bounds.width(),
+              200);
+    EXPECT_EQ(group_layout_manager->target_layout()
+                  .GetLayoutFor(leading_tab)
+                  ->bounds.width(),
+              200);
+  }
   widget()->LayoutRootViewIfNecessary();
 
   int prev_pos_in_host = 0;
