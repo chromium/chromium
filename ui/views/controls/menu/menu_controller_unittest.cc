@@ -3433,6 +3433,79 @@ TEST_F(MenuControllerTest,
   EXPECT_EQ(nullptr, menu_controller());
 }
 
+TEST_F(MenuControllerTest, IncrementSelectionUseAfterFreeViaActiveDescendant) {
+  CreateMenu();
+  MenuItemView* const item_with_buttons = AddButtonMenuItems(false);
+  SetPendingStateItem(item_with_buttons);
+
+  CallbackOnAXEventObserver observer(
+      ax::mojom::Event::kActiveDescendantChanged,
+      base::BindLambdaForTesting([this]() { DestroyMenuController(); }));
+
+  IncrementSelection();
+
+  EXPECT_TRUE(observer.fired());
+  EXPECT_EQ(nullptr, menu_controller());
+}
+
+TEST_F(MenuControllerTest,
+       SetHotTrackedButtonWithControllerDeletedDuringActiveDescendant) {
+  CreateMenu();
+  MenuItemView* const item_with_buttons = AddButtonMenuItems(true);
+  GET_CHILD_BUTTON(button, item_with_buttons, 0);
+  SetPendingStateItem(item_with_buttons);
+
+  CallbackOnAXEventObserver observer(
+      ax::mojom::Event::kActiveDescendantChanged,
+      base::BindLambdaForTesting([this]() { DestroyMenuController(); }));
+
+  SetHotTrackedButton(button);
+
+  EXPECT_TRUE(observer.fired());
+  EXPECT_EQ(nullptr, menu_controller());
+}
+
+TEST_F(MenuControllerTest, CloseSubmenuWithControllerDeletedDuringSelection) {
+  CreateMenu();
+  MenuItemView* const submenu_item = menu_item()->AppendSubMenu(10, u"Submenu");
+  MenuItemView* const child_item = submenu_item->AppendMenuItem(11, u"Child");
+  MenuItemView* const item_with_buttons = AddButtonMenuItems(true);
+  GET_CHILD_BUTTON(button, item_with_buttons, 0);
+  ShowSubmenu(submenu_item->GetSubmenu());
+
+  SetState(submenu_item);
+  SetPendingStateItem(child_item);
+  SetHotTrackedButton(button);
+
+  CallbackOnAXEventObserver observer(
+      ax::mojom::Event::kActiveDescendantChanged,
+      base::BindLambdaForTesting([this]() { DestroyMenuController(); }));
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kCollapse;
+  submenu_item->HandleAccessibleAction(action_data);
+
+  EXPECT_TRUE(observer.fired());
+  EXPECT_EQ(nullptr, menu_controller());
+}
+
+TEST_F(MenuControllerTest, SelectByCharWithControllerDeletedDuringSelection) {
+  CreateMenu();
+  MenuItemView* const item_with_buttons = AddButtonMenuItems(true);
+  GET_CHILD_BUTTON(button, item_with_buttons, 0);
+  SetPendingStateItem(item_with_buttons);
+  SetHotTrackedButton(button);
+
+  CallbackOnAXEventObserver observer(
+      ax::mojom::Event::kActiveDescendantChanged,
+      base::BindLambdaForTesting([this]() { DestroyMenuController(); }));
+
+  SelectByChar('t');
+
+  EXPECT_TRUE(observer.fired());
+  EXPECT_EQ(nullptr, menu_controller());
+}
+
 TEST_F(MenuControllerTest, SetSelectionIndices_MenuItemsOnly) {
   CreateMenu();
   SubmenuView* const submenu = menu_item()->GetSubmenu();
