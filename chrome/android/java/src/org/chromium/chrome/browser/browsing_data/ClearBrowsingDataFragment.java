@@ -60,6 +60,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsFragmentRegistry;
+import org.chromium.chrome.browser.settings.SettingsInTabNavigationDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -69,6 +71,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -256,6 +259,13 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
 
     private @Nullable OtherFormsOfHistoryDialogFragment mDialogAboutOtherFormsOfBrowsingHistory;
 
+    /**
+     * The URL of the settings page this page was opened from, e.g. All sites. Recorded as a
+     * deletion starts, because deleting browsing history also deletes the tab's navigation entry
+     * for it. Null if this page was not opened from a settings page.
+     */
+    private @Nullable String mOpenerUrl;
+
     private SigninManager mSigninManager;
 
     private @Nullable ProgressDialog mProgressDialog;
@@ -399,6 +409,11 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
             Set<Integer> options,
             String @Nullable [] excludedDomains,
             String @Nullable [] ignoredDomains) {
+        mOpenerUrl =
+                SettingsNavigationFactory.createSettingsNavigation(requireActivity())
+                                instanceof SettingsInTabNavigationDelegate navigation
+                        ? navigation.getPreviousSettingsPageUrl()
+                        : null;
         onClearBrowsingData();
         showProgressDialog();
         Set<Integer> dataTypes = new ArraySet<>();
@@ -538,13 +553,20 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
             dismissProgressDialog();
         } else {
             dismissProgressDialog();
-            // Name the page to return to rather than relying on the tab's navigation history.
-            // Under Url navigation this page occupies a navigation entry, and deleting browsing
-            // history can delete the entries before it, e.g. the Privacy page the user came from,
-            // leaving nothing to go back to. In SettingsActivity, which pops the fragment back
-            // stack, the parent is ignored.
-            SettingsNavigationFactory.createSettingsNavigation(requireActivity())
-                    .finishCurrentSettings(this, PrivacySettings.class, /* parentArgs= */ null);
+            // Return to the page this one was opened from, or else to Privacy, where it lives. Name
+            // the page rather than going back: the deletion can have deleted the entries before
+            // this one. In SettingsActivity, which pops the fragment back stack, it is ignored.
+            SettingsNavigation navigation =
+                    SettingsNavigationFactory.createSettingsNavigation(requireActivity());
+            if (mOpenerUrl != null) {
+                navigation.finishCurrentSettings(
+                        this,
+                        SettingsFragmentRegistry.getFragmentClassForUrl(mOpenerUrl),
+                        SettingsFragmentRegistry.parseUrlArguments(mOpenerUrl));
+            } else {
+                navigation.finishCurrentSettings(
+                        this, PrivacySettings.class, /* parentArgs= */ null);
+            }
         }
     }
 

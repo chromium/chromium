@@ -385,6 +385,26 @@ public class SettingsInTabNavigationDelegateTest {
     }
 
     @Test
+    public void testGetPreviousSettingsPageUrl_PreviousEntryIsSettings() {
+        setPreviousEntryUrl("chrome://settings/allSites");
+
+        assertEquals("chrome://settings/allSites", mDelegate.getPreviousSettingsPageUrl());
+    }
+
+    @Test
+    public void testGetPreviousSettingsPageUrl_PreviousEntryIsNotSettings() {
+        // E.g. Delete browsing data opened from History.
+        setPreviousEntryUrl("chrome-native://history/");
+
+        assertNull(mDelegate.getPreviousSettingsPageUrl());
+    }
+
+    @Test
+    public void testGetPreviousSettingsPageUrl_NoPreviousEntry() {
+        assertNull(mDelegate.getPreviousSettingsPageUrl());
+    }
+
+    @Test
     // SettingsHostFragment may only exist where settings-in-tab does: both flags on, tablet width.
     @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
     @Config(qualifiers = "w720dp-h1024dp")

@@ -682,6 +682,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.browsing_data") {
     "src/org/chromium/chrome/browser/browsing_data/BrowsingDataRemoverIntegrationTest.java",
     "src/org/chromium/chrome/browser/browsing_data/BrowsingDataTest.java",
     "src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataFragmentTest.java",
+    "src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataInTabTest.java",
   ]
 
   deps = [
