@@ -6,7 +6,9 @@
 
 use incremental_font_transfer::font_patch::PatchingError;
 use incremental_font_transfer::patch_group::{PatchGroup, UrlStatus};
-use incremental_font_transfer::patchmap::{DesignSpace, PatchUrl, SubsetDefinition};
+use incremental_font_transfer::patchmap::{
+    DesignSpace, FeatureSet, PatchMap, PatchUrl, SubsetDefinition,
+};
 use log::warn;
 use read_fonts::types::{Fixed, Tag};
 use read_fonts::{FontRef, TableProvider};
@@ -59,19 +61,41 @@ impl IftSubsetDefinition {
     pub fn union(&mut self, other: &IftSubsetDefinition) {
         self.0.union(&other.0);
     }
+
+    pub fn clear(&mut self) {
+        self.0.codepoints.clear();
+        match &mut self.0.feature_tags {
+            FeatureSet::Set(set) => set.clear(),
+            FeatureSet::All => self.0.feature_tags = FeatureSet::default(),
+        }
+        match &mut self.0.design_space {
+            DesignSpace::Ranges(ranges) => ranges.clear(),
+            DesignSpace::All => self.0.design_space = DesignSpace::default(),
+        }
+    }
 }
 
 #[derive(Default)]
 pub struct IftPatcher {
     font_data: Vec<u8>,
+    patch_map: PatchMap,
     patch_data: HashMap<PatchUrl, UrlStatus>,
     requested: HashSet<PatchUrl>,
 }
 
+fn create_patch_map(font_data: &[u8]) -> PatchMap {
+    let Ok(font) = FontRef::new(font_data).inspect_err(|err| warn!("Invalid font: {err}")) else {
+        return PatchMap::default();
+    };
+    PatchMap::new(&font).inspect_err(|err| warn!("Invalid IFT font: {err}")).unwrap_or_default()
+}
+
 impl From<&[u8]> for IftPatcher {
     fn from(font_data: &[u8]) -> IftPatcher {
+        let patch_map = create_patch_map(font_data);
         IftPatcher {
             font_data: font_data.to_vec(),
+            patch_map,
             patch_data: HashMap::default(),
             requested: HashSet::default(),
         }
@@ -88,6 +112,10 @@ impl IftPatcher {
 
     pub fn font_data(&self) -> &[u8] {
         &self.font_data
+    }
+
+    pub fn requires_patches(&self, subset: &IftSubsetDefinition) -> bool {
+        self.patch_map.has_intersecting_patches(&subset.0)
     }
 
     pub fn request_patches(&mut self, subset: &IftSubsetDefinition) -> Vec<String> {
@@ -120,27 +148,35 @@ impl IftPatcher {
     }
 
     pub fn apply_patches(&mut self, subset: &IftSubsetDefinition) -> IftApplyStatus {
-        loop {
+        let mut font_modified = false;
+        let status = loop {
             let Ok(font) = FontRef::new(&self.font_data) else {
-                return IftApplyStatus::InvalidFont;
+                break IftApplyStatus::InvalidFont;
             };
             let Ok(patch_group) =
                 PatchGroup::select_next_patches(font, &self.patch_data, &subset.0)
                     .inspect_err(|err| warn!("IFT error: {err}"))
             else {
-                return IftApplyStatus::PatchGroupError;
+                break IftApplyStatus::PatchGroupError;
             };
             let result = patch_group.apply_next_patches(&mut self.patch_data);
             match result {
-                Ok(data) => self.font_data = data,
-                Err(PatchingError::EmptyPatchList) => return IftApplyStatus::Success,
-                Err(PatchingError::MissingPatches) => return IftApplyStatus::MissingPatches,
+                Ok(data) => {
+                    self.font_data = data;
+                    font_modified = true;
+                }
+                Err(PatchingError::EmptyPatchList) => break IftApplyStatus::Success,
+                Err(PatchingError::MissingPatches) => break IftApplyStatus::MissingPatches,
                 Err(err) => {
                     warn!("IFT error: {err}");
-                    return IftApplyStatus::PatchError;
+                    break IftApplyStatus::PatchError;
                 }
             };
+        };
+        if font_modified {
+            self.patch_map = create_patch_map(&self.font_data);
         }
+        status
     }
 
     pub fn has_pending_patch_requests(&self) -> bool {

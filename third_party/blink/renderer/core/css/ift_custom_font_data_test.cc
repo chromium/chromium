@@ -175,7 +175,6 @@ class IftCustomFontDataTest : public SimTest {
     return font_data;
   }
 
- private:
   // Returns the font of each glyph run in the shaped text of `#target`.
   HeapVector<ShapeResult::RunFontData> TargetRunFonts() {
     Element* target = GetDocument().getElementById(AtomicString("target"));
@@ -190,45 +189,66 @@ class IftCustomFontDataTest : public SimTest {
     return run_fonts;
   }
 
+ private:
   std::unique_ptr<ScopedIncrementalFontTransferForTest> scoped_feature_;
 };
 
-TEST_F(IftCustomFontDataTest, EmptyTextDoesNotRequireFetch) {
+TEST_F(IftCustomFontDataTest, SupportedTextDoesNotRequireFetch) {
   const IftCustomFontData* custom_font_data = LoadCustomFontData();
   ASSERT_NE(custom_font_data, nullptr);
 
   EXPECT_TRUE(custom_font_data->IftRequireSubset(""));
+  EXPECT_TRUE(custom_font_data->IftRequireSubset("a"));
 
   // No work was scheduled, so the font is still usable.
   test::RunPendingTasks();
   EXPECT_TRUE(custom_font_data->IftRequireSubset(""));
+  EXPECT_TRUE(custom_font_data->IftRequireSubset("a"));
 }
 
-TEST_F(IftCustomFontDataTest, NewCodepointsTriggersCollection) {
+TEST_F(IftCustomFontDataTest, NewUnsupportedCodepointsTriggersCollection) {
+  SimSubresourceRequest patch_b_table(kPatchBTableUrl,
+                                      "application/octet-stream");
+  SimSubresourceRequest patch_b_glyph(kPatchBGlyphUrl,
+                                      "application/octet-stream");
   const IftCustomFontData* custom_font_data = LoadCustomFontData();
   ASSERT_NE(custom_font_data, nullptr);
 
-  EXPECT_FALSE(custom_font_data->IftRequireSubset("a"));
+  EXPECT_FALSE(custom_font_data->IftRequireSubset("b"));
   EXPECT_EQ(custom_font_data->GetStateForTesting(),
             IftCustomFontData::State::kCollecting);
+
+  test::RunPendingTasks();
+  patch_b_table.Complete(PatchPayload(kPatchBTableUrl));
+  patch_b_glyph.Complete(PatchPayload(kPatchBGlyphUrl));
 }
 
 TEST_F(IftCustomFontDataTest, CoveredCodepointsAreShapedWithFont) {
   const IftCustomFontData* custom_font_data = LoadCustomFontData("a");
   ASSERT_NE(custom_font_data, nullptr);
 
-  // The first time a subset is seen, the font is not used yet.
-  // TODO(wmedrano): Update once `IftRequireSubset()` checks the actual font,
-  // at which point "a" is supported immediately.
+  // Codepoint 'a' is already covered by the base font, so it is shaped with it
+  // immediately without triggering collection.
   Compositor().BeginFrame();
-  EXPECT_FALSE(IsShapedWith(custom_font_data));
-
-  // Once the font is idle, it is invalidated and the text is shaped with it. No
-  // patches were needed, so the initial font data is reused.
-  test::RunPendingTasks();
-  Compositor().BeginFrame();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kIdle);
   EXPECT_TRUE(IsShapedWith(custom_font_data));
   EXPECT_FALSE(IsShapedWithUpdated(custom_font_data));
+}
+
+TEST_F(IftCustomFontDataTest,
+       UnpatchableCodepointsFallBackWithoutBlockingSupportedText) {
+  // 'a' is in the base font; 'z' is neither in the base font nor in any patch.
+  const IftCustomFontData* custom_font_data = LoadCustomFontData("az");
+  ASSERT_NE(custom_font_data, nullptr);
+
+  Compositor().BeginFrame();
+  EXPECT_EQ(custom_font_data->GetStateForTesting(),
+            IftCustomFontData::State::kIdle);
+  HeapVector<ShapeResult::RunFontData> run_fonts = TargetRunFonts();
+  ASSERT_EQ(run_fonts.size(), 2u);
+  EXPECT_EQ(run_fonts[0].font_data_->GetCustomFontData(), custom_font_data);
+  EXPECT_NE(run_fonts[1].font_data_->GetCustomFontData(), custom_font_data);
 }
 
 TEST_F(IftCustomFontDataTest, MissingCodepointsAppliesPatch) {
@@ -447,7 +467,7 @@ TEST_F(IftCustomFontDataTest, DocumentDetachedBeforeCollectingFails) {
   ASSERT_NE(custom_font_data, nullptr);
 
   GetDocument().Shutdown();
-  EXPECT_FALSE(custom_font_data->IftRequireSubset("a"));
+  EXPECT_FALSE(custom_font_data->IftRequireSubset("b"));
   EXPECT_EQ(custom_font_data->GetStateForTesting(),
             IftCustomFontData::State::kFailed);
 

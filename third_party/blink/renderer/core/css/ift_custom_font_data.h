@@ -93,6 +93,8 @@ class CORE_EXPORT IftCustomFontData final : public CustomFontData {
   const std::unique_ptr<IftSubsetDefinition> requested_subset_;
   // The union of all subsets whose patches have been requested.
   const std::unique_ptr<IftSubsetDefinition> fetched_subset_;
+  // Scratch subset reused across `IftRequireSubset()` calls.
+  const std::unique_ptr<IftSubsetDefinition> scratch_subset_;
   // The in-flight patch fetches.
   mutable HeapHashSet<Member<PatchLoader>> patch_loaders_;
 };

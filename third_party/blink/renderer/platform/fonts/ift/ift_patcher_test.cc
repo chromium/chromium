@@ -99,6 +99,7 @@ TEST_F(IftPatcherTest, MissingCodepointsReturnsRequiredPatchUrls) {
 
   IftSubsetDefinition subset;
   subset.AddCodepoint('b');
+  EXPECT_TRUE(patcher->RequiresPatches(subset));
   Vector<String> patches = patcher->RequestPatches(subset);
   EXPECT_THAT(patches,
               testing::UnorderedElementsAre(kPatchBTableUrl, kPatchBGlyphUrl));
@@ -111,6 +112,7 @@ TEST_F(IftPatcherTest, ApplyPatchesUpdatesFontData) {
 
   IftSubsetDefinition subset;
   subset.AddCodepoint('b');
+  EXPECT_TRUE(patcher->RequiresPatches(subset));
   Vector<String> patches = patcher->RequestPatches(subset);
   ASSERT_THAT(patches,
               testing::UnorderedElementsAre(kPatchBTableUrl, kPatchBGlyphUrl));
@@ -121,6 +123,7 @@ TEST_F(IftPatcherTest, ApplyPatchesUpdatesFontData) {
   EXPECT_FALSE(patcher->GetFontData().empty());
   EXPECT_NE(patcher->GetFontData().size(), original_font.size());
   EXPECT_FALSE(patcher->HasPendingPatchRequests());
+  EXPECT_FALSE(patcher->RequiresPatches(subset));
   EXPECT_TRUE(patcher->RequestPatches(subset).empty());
 }
 
@@ -236,6 +239,7 @@ TEST_F(IftPatcherTest, AlreadyCoveredOrEmptySubsetReturnsNoPatches) {
   ASSERT_NE(patcher, nullptr);
 
   IftSubsetDefinition empty_subset;
+  EXPECT_FALSE(patcher->RequiresPatches(empty_subset));
   EXPECT_TRUE(patcher->RequestPatches(empty_subset).empty());
   EXPECT_EQ(patcher->ApplyPatches(empty_subset),
             IftPatcher::ApplyStatus::kSuccess);
@@ -243,8 +247,23 @@ TEST_F(IftPatcherTest, AlreadyCoveredOrEmptySubsetReturnsNoPatches) {
   // 'a' (codepoint 97) is an initial codepoint embedded in the base font.
   IftSubsetDefinition covered_subset;
   covered_subset.AddCodepoint('a');
+  EXPECT_FALSE(patcher->RequiresPatches(covered_subset));
   EXPECT_TRUE(patcher->RequestPatches(covered_subset).empty());
   EXPECT_EQ(patcher->ApplyPatches(covered_subset),
+            IftPatcher::ApplyStatus::kSuccess);
+  EXPECT_FALSE(patcher->HasPendingPatchRequests());
+}
+
+TEST_F(IftPatcherTest, UnpatchableSubsetRequiresNoPatches) {
+  std::unique_ptr<IftPatcher> patcher = IftPatcher::Create(IftFont());
+  ASSERT_NE(patcher, nullptr);
+
+  // 'z' is neither in the base font nor in any patch entry.
+  IftSubsetDefinition unpatchable_subset;
+  unpatchable_subset.AddCodepoint('z');
+  EXPECT_FALSE(patcher->RequiresPatches(unpatchable_subset));
+  EXPECT_TRUE(patcher->RequestPatches(unpatchable_subset).empty());
+  EXPECT_EQ(patcher->ApplyPatches(unpatchable_subset),
             IftPatcher::ApplyStatus::kSuccess);
   EXPECT_FALSE(patcher->HasPendingPatchRequests());
 }
@@ -327,6 +346,19 @@ TEST_F(IftPatcherTest, SubsetDefinitionUnionMergesDesignSpace) {
 
   EXPECT_FALSE(target.AddDesignSpace(kWghtTag, 400.0, 700.0));
   EXPECT_FALSE(target.AddDesignSpace(kWdthTag, 75.0, 125.0));
+}
+
+TEST_F(IftPatcherTest, SubsetDefinitionClearResetsSubset) {
+  IftSubsetDefinition subset;
+  subset.AddCodepoint('b');
+  subset.AddFeatureTag(kLigaTag);
+  subset.AddDesignSpace(kWghtTag, 100.0, 400.0);
+
+  subset.Clear();
+
+  EXPECT_TRUE(subset.AddCodepoint('b'));
+  EXPECT_TRUE(subset.AddFeatureTag(kLigaTag));
+  EXPECT_TRUE(subset.AddDesignSpace(kWghtTag, 100.0, 400.0));
 }
 
 }  // namespace blink

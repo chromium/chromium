@@ -50,6 +50,10 @@ void IftSubsetDefinition::Union(const IftSubsetDefinition& other) {
   subset_.union_(other.subset_);
 }
 
+void IftSubsetDefinition::Clear() {
+  subset_.clear();
+}
+
 IftPatcher::IftPatcher(ift_patcher_rs::IftPatcher patcher)
     : patcher_(std::move(patcher)) {}
 
@@ -74,6 +78,10 @@ std::unique_ptr<IftPatcher> IftPatcher::Create(
 base::span<const uint8_t> IftPatcher::GetFontData() const {
   rs_std::SliceRef<const ::std::uint8_t> font_data = patcher_.font_data();
   return base::span(font_data.to_span());
+}
+
+bool IftPatcher::RequiresPatches(const IftSubsetDefinition& subset) const {
+  return patcher_.requires_patches(subset.subset_);
 }
 
 Vector<String> IftPatcher::RequestPatches(const IftSubsetDefinition& subset) {

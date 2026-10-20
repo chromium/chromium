@@ -88,7 +88,8 @@ IftCustomFontData::IftCustomFontData(base::PassKey<IftCustomFontData>,
       font_url_(font_url),
       patcher_(std::move(patcher)),
       requested_subset_(std::make_unique<IftSubsetDefinition>()),
-      fetched_subset_(std::make_unique<IftSubsetDefinition>()) {
+      fetched_subset_(std::make_unique<IftSubsetDefinition>()),
+      scratch_subset_(std::make_unique<IftSubsetDefinition>()) {
   CHECK(font_face_source_);
   CHECK(patcher_);
 }
@@ -102,17 +103,22 @@ void IftCustomFontData::Trace(Visitor* visitor) const {
 }
 
 bool IftCustomFontData::IftRequireSubset(const StringView& text) const {
-  bool subset_modified = false;
+  if (state_ == State::kFailed) {
+    return false;
+  }
+  scratch_subset_->Clear();
   for (UChar32 code_point : text) {
-    subset_modified |=
-        requested_subset_->AddCodepoint(static_cast<uint32_t>(code_point));
+    scratch_subset_->AddCodepoint(static_cast<uint32_t>(code_point));
   }
-  if (subset_modified) {
-    BeginCollecting();
+  // If no patches intersect (either because the subset is already supported or
+  // because the font has no patches for it), the font is ready to shape with
+  // and any missing glyphs will fall back on `.notdef`.
+  if (!patcher_->RequiresPatches(*scratch_subset_)) {
+    return true;
   }
-  // TODO(wmedrano): Let's check directly with the actual font. Blocked on
-  // https://github.com/googlefonts/fontations/issues/2173.
-  return state_ == State::kIdle;
+  requested_subset_->Union(*scratch_subset_);
+  BeginCollecting();
+  return false;
 }
 
 base::span<const uint8_t> IftCustomFontData::GetFontDataForTesting() const {
@@ -125,10 +131,6 @@ void IftCustomFontData::BeginIdle() const {
   }
   state_ = State::kIdle;
   if (rendered_font_version_ == patched_font_version_) {
-    // TODO(wmedrano): We still need to force an invalidation IftRequireSubset
-    // will return false the first time it encounters a novel subset, even if it
-    // supported.
-    font_face_source_->InvalidateFontFace();
     return;
   }
   scoped_refptr<SharedBuffer> buffer =

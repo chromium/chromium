@@ -48,6 +48,10 @@ class PLATFORM_EXPORT IftSubsetDefinition {
   // Unions another `IftSubsetDefinition` into this instance.
   void Union(const IftSubsetDefinition& other);
 
+  // Clears all codepoints, feature tags, and design space ranges from this
+  // subset definition.
+  void Clear();
+
  private:
   friend class IftPatcher;
 
@@ -96,6 +100,11 @@ class PLATFORM_EXPORT IftPatcher {
   // span references the updated font binary containing the newly added glyphs
   // or tables.
   base::span<const uint8_t> GetFontData() const LIFETIME_BOUND;
+
+  // Returns true if the font has unapplied patches that intersect `subset`.
+  // Returns false if `subset` is already covered or cannot be patched into the
+  // font.
+  bool RequiresPatches(const IftSubsetDefinition& subset) const;
 
   // Evaluates `subset` against the current font state and returns a vector of
   // patch URLs required to fulfill the subset request.
