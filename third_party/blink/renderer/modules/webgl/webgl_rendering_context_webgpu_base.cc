@@ -1198,7 +1198,7 @@ void WebGLRenderingContextWebGPUBase::frontFace(GLenum mode) {
 }
 
 void WebGLRenderingContextWebGPUBase::generateMipmap(GLenum target) {
-  NOTIMPLEMENTED();
+  driver_gl_.fn.glGenerateMipmapEXTFn(target);
 }
 
 WebGLActiveInfo* WebGLRenderingContextWebGPUBase::getActiveAttrib(
