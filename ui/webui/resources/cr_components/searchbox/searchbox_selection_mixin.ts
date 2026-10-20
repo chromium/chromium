@@ -186,22 +186,27 @@ export const SearchboxSelectionMixin = <
       }
 
       if (this.isAimButtonVisible) {
-        const insertionIndex =
-            available.length > 0 && result.matches[0]?.allowedToBeDefaultMatch ?
-            1 :
-            0;
-        available.splice(insertionIndex, 0, {
-          line: result.matches.findIndex(
-              (m: AutocompleteMatch) => m.allowedToBeDefaultMatch),
-          state: SelectionLineState.kFocusedButtonAim,
-          actionIndex: 0,
-        });
-        if (!result.matches[0]?.allowedToBeDefaultMatch) {
-          // If there is no default match, we need a generic selection to
-          // represent the input field so that it can be focused.
+        const firstMatch = result.matches[0];
+        const defaultMatch =
+            firstMatch?.allowedToBeDefaultMatch ? firstMatch : null;
+        // If there is no default match, we need a generic selection to
+        // represent the input field so that it can be focused.
+        if (!defaultMatch) {
           available.splice(0, 0, {
             line: -1,
             state: SelectionLineState.kNormal,
+            actionIndex: 0,
+          });
+        }
+
+        const secondMatch = result.matches[1];
+        const suppressAim = !!defaultMatch?.keywordModel ||
+            !!defaultMatch?.actions.length ||
+            secondMatch?.keywordModel?.type === KeywordType.kInstant;
+        if (!suppressAim) {
+          available.splice(1, 0, {
+            line: defaultMatch ? 0 : -1,
+            state: SelectionLineState.kFocusedButtonAim,
             actionIndex: 0,
           });
         }
