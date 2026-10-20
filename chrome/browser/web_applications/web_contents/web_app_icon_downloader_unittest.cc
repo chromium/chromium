@@ -570,5 +570,47 @@ TEST_F(WebAppIconDownloaderPrerenderTest, PrerenderedPageNavigates) {
                   /*icons_http_results=*/_));
 }
 
+TEST_F(WebAppIconDownloaderTest,
+       DownloadSameUrlWithMultipleSizesAccumulatesBitmaps) {
+  const GURL svg_url("https://www.google.com/icon.svg");
+  const gfx::Size size_32(32, 32);
+  const gfx::Size size_64(64, 64);
+
+  std::vector<IconUrlWithSize> extra_urls = {
+      IconUrlWithSize::Create(svg_url, size_32),
+      IconUrlWithSize::Create(svg_url, size_64),
+  };
+
+  base::test::TestFuture<IconsDownloadedResult, IconsMap,
+                         DownloadedIconsHttpResults>
+      test_future;
+  WebAppIconDownloader downloader;
+  downloader.Start(web_contents(), extra_urls, test_future.GetCallback(),
+                   {.download_page_favicons = false});
+
+  EXPECT_EQ(2u, downloader.pending_requests());
+
+  web_contents_tester()->TestDidDownloadImage(
+      /*url=*/svg_url,
+      /*http_status_code=*/200,
+      /*bitmaps=*/CreateTestBitmaps({size_32}),
+      /*original_bitmap_sizes=*/{size_32});
+  EXPECT_EQ(1u, downloader.pending_requests());
+
+  web_contents_tester()->TestDidDownloadImage(
+      /*url=*/svg_url,
+      /*http_status_code=*/200,
+      /*bitmaps=*/CreateTestBitmaps({size_64}),
+      /*original_bitmap_sizes=*/{size_64});
+  EXPECT_EQ(0u, downloader.pending_requests());
+
+  auto [result, icons_map, http_results] = test_future.Get();
+  EXPECT_EQ(result, IconsDownloadedResult::kCompleted);
+  ASSERT_TRUE(icons_map.contains(svg_url));
+  ASSERT_EQ(2u, icons_map[svg_url].size());
+  EXPECT_EQ(32, icons_map[svg_url][0].width());
+  EXPECT_EQ(64, icons_map[svg_url][1].width());
+}
+
 }  // namespace
 }  // namespace web_app

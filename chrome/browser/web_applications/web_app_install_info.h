@@ -384,6 +384,9 @@ struct WebAppInstallInfo {
 
   IconsWithSizeAny icons_with_size_any;
 
+  // Icon URLs that rasterize at the requested download size.
+  base::flat_set<GURL> svg_icon_urls;
+
   // A DIY app isn't installable or promotable, and the user was able to
   // customize the title, etc.
   bool is_diy_app = false;

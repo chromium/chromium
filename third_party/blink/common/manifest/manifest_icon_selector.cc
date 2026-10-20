@@ -51,7 +51,10 @@ bool IsIconTypeSupported(const Manifest::ImageResource& icon,
           blink::IsSupportedNonImageMimeType(mime_type));
 }
 
-bool IsIconSvg(const Manifest::ImageResource& icon) {
+}  // namespace
+
+// static
+bool ManifestIconSelector::IsIconSvg(const Manifest::ImageResource& icon) {
   if (base::EqualsASCII(icon.type, "image/svg+xml")) {
     return true;
   }
@@ -59,8 +62,6 @@ bool IsIconSvg(const Manifest::ImageResource& icon) {
          base::EndsWith(icon.src.ExtractFileName(), ".svg",
                         base::CompareCase::INSENSITIVE_ASCII);
 }
-
-}  // namespace
 
 // static
 std::optional<ManifestIconSelectorResult>

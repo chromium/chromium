@@ -74,6 +74,10 @@ class BLINK_COMMON_EXPORT ManifestIconSelector {
   static std::optional<ManifestIconSelectorResult> FindBestMatchingIcon(
       const std::vector<blink::Manifest::ImageResource>& icons,
       const ManifestIconSelectorParams& params);
+
+  // Whether `icon` is an SVG, by MIME type or, when no type is declared, by
+  // file extension. SVGs rasterize at the requested size.
+  static bool IsIconSvg(const Manifest::ImageResource& icon);
 };
 
 }  // namespace blink

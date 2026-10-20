@@ -587,6 +587,142 @@ TEST(WebAppInstallUtils, DuplicateIconDownloadURLs) {
   }
 }
 
+TEST(WebAppInstallUtils, GetValidIconUrlsToDownload_RequestsDeclaredSizes) {
+  const GURL kSizedIconUrl("https://www.example.com/icon.svg");
+  const GURL kUnsizedIconUrl("https://www.example.com/icon.png");
+  const GURL kShortcutIconUrl("https://www.example.com/shortcut.svg");
+
+  auto web_app_info = CreateWebAppInstallInfo();
+  apps::IconInfo sized_icon;
+  sized_icon.url = kSizedIconUrl;
+  sized_icon.square_size_px = 192;
+  web_app_info.manifest_icons.push_back(sized_icon);
+  apps::IconInfo unsized_icon;
+  unsized_icon.url = kUnsizedIconUrl;
+  web_app_info.manifest_icons.push_back(unsized_icon);
+
+  WebAppShortcutsMenuItemInfo shortcut_item;
+  WebAppShortcutsMenuItemInfo::Icon shortcut_icon;
+  shortcut_icon.url = kShortcutIconUrl;
+  shortcut_icon.square_size_px = 96;
+  shortcut_item.SetShortcutIconInfosForPurpose(IconPurpose::ANY,
+                                               {shortcut_icon});
+  web_app_info.shortcuts_menu_item_infos.push_back(std::move(shortcut_item));
+
+  IconUrlSizeSet download_urls = GetValidIconUrlsToDownload(web_app_info);
+
+  EXPECT_THAT(
+      download_urls,
+      testing::UnorderedElementsAre(
+          IconUrlWithSize::Create(kSizedIconUrl, gfx::Size(192, 192)),
+          IconUrlWithSize::CreateForUnspecifiedSize(kUnsizedIconUrl),
+          IconUrlWithSize::Create(kShortcutIconUrl, gfx::Size(96, 96))));
+}
+
+// Raster icons are not rasterized at the requested size, so declared sizes
+// must not turn into several downloads of the same URL.
+TEST(WebAppInstallUtils, GetValidIconUrlsToDownload_RasterUrlOnce) {
+  const GURL raster_url("https://www.example.com/icon.ico");
+  auto web_app_info = CreateWebAppInstallInfo();
+  for (int size : {48, 256}) {
+    apps::IconInfo icon;
+    icon.url = raster_url;
+    icon.square_size_px = size;
+    web_app_info.manifest_icons.push_back(icon);
+  }
+  apps::IconInfo trusted_icon;
+  trusted_icon.url = raster_url;
+  trusted_icon.square_size_px = 256;
+  web_app_info.trusted_icons.push_back(trusted_icon);
+
+  EXPECT_THAT(GetValidIconUrlsToDownload(web_app_info),
+              testing::ElementsAre(
+                  IconUrlWithSize::CreateForUnspecifiedSize(raster_url)));
+}
+
+// `GetTrustedIconsFromManifest()` records `kIconSizeForSVGNoIntrinsicSize` for
+// a "sizes": "any" icon, which must not add a second download of a raster icon
+// that is already requested without a size.
+TEST(WebAppInstallUtils, GetValidIconUrlsToDownload_RasterSizeAnyOnce) {
+  const GURL raster_url("https://www.example.com/icon?format=png");
+  auto web_app_info = CreateWebAppInstallInfo();
+  apps::IconInfo manifest_icon;
+  manifest_icon.url = raster_url;
+  manifest_icon.square_size_px = 0;
+  web_app_info.manifest_icons.push_back(manifest_icon);
+  apps::IconInfo trusted_icon;
+  trusted_icon.url = raster_url;
+  trusted_icon.square_size_px = 1024;
+  web_app_info.trusted_icons.push_back(trusted_icon);
+
+  EXPECT_THAT(GetValidIconUrlsToDownload(web_app_info),
+              testing::ElementsAre(
+                  IconUrlWithSize::CreateForUnspecifiedSize(raster_url)));
+}
+
+TEST(WebAppInstallUtils, GetValidIconUrlsToDownload_SizeAnySkipsUnspecified) {
+  const GURL svg_url("https://www.example.com/icon?format=svg");
+  auto web_app_info = CreateWebAppInstallInfo();
+  web_app_info.svg_icon_urls.insert(svg_url);
+  apps::IconInfo icon;
+  icon.url = svg_url;
+  icon.square_size_px = 0;
+  web_app_info.manifest_icons.push_back(icon);
+  web_app_info.icons_with_size_any.manifest_icons[IconPurpose::ANY] = svg_url;
+
+  const IconUrlSizeSet urls = GetValidIconUrlsToDownload(web_app_info);
+  EXPECT_FALSE(
+      urls.contains(IconUrlWithSize::CreateForUnspecifiedSize(svg_url)));
+  EXPECT_TRUE(
+      urls.contains(IconUrlWithSize::Create(svg_url, gfx::Size(16, 16))));
+}
+
+// An SVG entry declaring both "any" and an explicit size must still be
+// requested at that explicit size.
+TEST(WebAppInstallUtils, GetValidIconUrlsToDownload_SizeAnyKeepsExplicitSize) {
+  const GURL svg_url("https://www.example.com/icon.svg");
+  auto web_app_info = CreateWebAppInstallInfo();
+  web_app_info.svg_icon_urls.insert(svg_url);
+  for (int size : {0, 256}) {
+    apps::IconInfo icon;
+    icon.url = svg_url;
+    icon.square_size_px = size;
+    web_app_info.manifest_icons.push_back(icon);
+  }
+  web_app_info.icons_with_size_any.manifest_icons[IconPurpose::ANY] = svg_url;
+  web_app_info.icons_with_size_any.manifest_icon_provided_sizes.emplace(256,
+                                                                        256);
+
+  const IconUrlSizeSet urls = GetValidIconUrlsToDownload(web_app_info);
+  EXPECT_TRUE(
+      urls.contains(IconUrlWithSize::Create(svg_url, gfx::Size(256, 256))));
+  EXPECT_FALSE(
+      urls.contains(IconUrlWithSize::CreateForUnspecifiedSize(svg_url)));
+}
+
+// Sizes above the icon size limit are discarded after download, so they must
+// not be rasterized in the first place.
+TEST(WebAppInstallUtils, GetValidIconUrlsToDownload_HomeTabSvgSizeLimit) {
+  const GURL svg_url("https://www.example.com/home_tab.svg");
+  auto web_app_info = CreateWebAppInstallInfo();
+
+  TabStrip tab_strip;
+  blink::Manifest::HomeTabParams home_tab_params;
+  blink::Manifest::ImageResource home_icon;
+  home_icon.src = svg_url;
+  home_icon.purpose.push_back(Purpose::ANY);
+  home_icon.sizes = {gfx::Size(32, 32), gfx::Size(2048, 2048)};
+  home_tab_params.icons.push_back(std::move(home_icon));
+  tab_strip.home_tab = std::move(home_tab_params);
+  web_app_info.tab_strip = std::move(tab_strip);
+
+  const IconUrlSizeSet urls = GetValidIconUrlsToDownload(web_app_info);
+  EXPECT_TRUE(
+      urls.contains(IconUrlWithSize::Create(svg_url, gfx::Size(32, 32))));
+  EXPECT_FALSE(
+      urls.contains(IconUrlWithSize::Create(svg_url, gfx::Size(2048, 2048))));
+}
+
 TEST(WebAppInstallUtils, SetWebAppManifestFields_Summary) {
   GURL start_url("https://www.chromium.org/index.html");
   auto web_app_info = CreateWebAppInstallInfoFromStartUrl(start_url);

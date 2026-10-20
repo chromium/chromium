@@ -765,6 +765,8 @@ TEST_F(ManifestToWebAppInstallInfoJobTest,
 
   // Generate expected data structure for |icons_with_size_any|.
   IconsWithSizeAny expected_icon_metadata;
+  expected_icon_metadata.manifest_icon_provided_sizes.emplace(kIconSize,
+                                                              kIconSize);
 
   const GURL manifest_icon_no_size_url(
       "https://www.example.com/manifest_image_no_size.svg");
@@ -2214,6 +2216,136 @@ TEST_F(ManifestToWebAppInstallInfoJobTest,
 
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
   EXPECT_THAT(web_app_info->display_override, testing::IsEmpty());
+}
+
+TEST_F(ManifestToWebAppInstallInfoJobTest, PopulateAnyIconsWithSvgMimeType) {
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+  manifest->icons.clear();
+
+  const GURL svg_url_without_extension("https://www.example.com/icon?fmt=vec");
+  blink::Manifest::ImageResource manifest_icon;
+  manifest_icon.src = svg_url_without_extension;
+  manifest_icon.type = u"image/svg+xml";
+  manifest_icon.sizes = {{0, 0}};
+  manifest_icon.purpose = {Purpose::ANY};
+  manifest->icons.push_back(std::move(manifest_icon));
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  EXPECT_EQ(web_app_info->icons_with_size_any.manifest_icons[IconPurpose::ANY],
+            svg_url_without_extension);
+}
+
+TEST_F(ManifestToWebAppInstallInfoJobTest, RecordsSvgIconUrls) {
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+  manifest->icons.clear();
+
+  const GURL svg_by_type("https://www.example.com/icon?fmt=vec");
+  const GURL svg_by_extension("https://www.example.com/dir.svg/icon.SVG");
+  const GURL untyped_raster("https://www.example.com/svg/icon.png");
+  auto add_icon = [&](const GURL& url, const std::u16string& type) {
+    blink::Manifest::ImageResource icon;
+    icon.src = url;
+    icon.type = type;
+    icon.sizes = {{192, 192}};
+    icon.purpose = {Purpose::ANY};
+    manifest->icons.push_back(std::move(icon));
+  };
+  add_icon(svg_by_type, u"image/svg+xml");
+  add_icon(svg_by_extension, u"");
+  add_icon(untyped_raster, u"");
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  EXPECT_THAT(web_app_info->svg_icon_urls,
+              testing::UnorderedElementsAre(svg_by_type, svg_by_extension));
+}
+
+// Trusted icon selection scans all manifest icons, so SVG URLs are recorded
+// past the limit on stored icons.
+TEST_F(ManifestToWebAppInstallInfoJobTest, RecordsSvgIconUrlsBeyondIconLimit) {
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+  manifest->icons.clear();
+
+  for (int i = 0; i < 25; ++i) {
+    blink::Manifest::ImageResource icon;
+    icon.src =
+        GURL("https://www.example.com/icon" + base::NumberToString(i) + ".png");
+    icon.sizes = {{192, 192}};
+    icon.purpose = {Purpose::ANY};
+    manifest->icons.push_back(std::move(icon));
+  }
+  const GURL trailing_svg_url("https://www.example.com/trailing.svg");
+  blink::Manifest::ImageResource svg_icon;
+  svg_icon.src = trailing_svg_url;
+  svg_icon.sizes = {{256, 256}};
+  svg_icon.purpose = {Purpose::ANY};
+  manifest->icons.push_back(std::move(svg_icon));
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  EXPECT_THAT(web_app_info->svg_icon_urls, testing::Contains(trailing_svg_url));
+}
+
+TEST_F(ManifestToWebAppInstallInfoJobTest,
+       ProvidedSizesIndependentOfDeclarationOrder) {
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+  manifest->icons.clear();
+
+  blink::Manifest::ImageResource raster_icon;
+  raster_icon.src = GURL("https://www.example.com/icon-192.png");
+  raster_icon.sizes = {{192, 192}};
+  raster_icon.purpose = {Purpose::ANY};
+  manifest->icons.push_back(std::move(raster_icon));
+
+  blink::Manifest::ImageResource svg_icon;
+  svg_icon.src = GURL("https://www.example.com/icon.svg");
+  svg_icon.sizes = {{0, 0}};
+  svg_icon.purpose = {Purpose::ANY};
+  manifest->icons.push_back(std::move(svg_icon));
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+  EXPECT_THAT(web_app_info->icons_with_size_any.manifest_icon_provided_sizes,
+              testing::ElementsAre(gfx::Size(192, 192)));
+}
+
+TEST_F(ManifestToWebAppInstallInfoJobTest, MultiSizeIconEntries) {
+  SetupBasicPageState();
+  auto& manifest = GetPageManifest();
+  manifest->icons.clear();
+
+  const GURL svg_url("https://www.example.com/icon.svg");
+  const GURL raster_url("https://www.example.com/icon.ico");
+  auto add_icon = [&](const GURL& url, std::vector<gfx::Size> sizes) {
+    blink::Manifest::ImageResource icon;
+    icon.src = url;
+    icon.sizes = std::move(sizes);
+    icon.purpose = {Purpose::ANY};
+    manifest->icons.push_back(std::move(icon));
+  };
+  add_icon(svg_url, {{0, 0}, {256, 256}});
+  add_icon(raster_url, {{48, 48}, {96, 96}});
+
+  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
+
+  // Every declared square size of the SVG is requested, while the raster icon
+  // is requested once.
+  EXPECT_THAT(
+      web_app_info->manifest_icons,
+      testing::ElementsAre(
+          testing::AllOf(testing::Field(&apps::IconInfo::url, svg_url),
+                         testing::Field(&apps::IconInfo::square_size_px, 0)),
+          testing::AllOf(testing::Field(&apps::IconInfo::url, svg_url),
+                         testing::Field(&apps::IconInfo::square_size_px, 256)),
+          testing::AllOf(testing::Field(&apps::IconInfo::url, raster_url),
+                         testing::Field(&apps::IconInfo::square_size_px, 48))));
+
+  // The raster icon is only downloaded once, at its first declared size, so
+  // 96x96 is not provided and is still generated from the "sizes": "any" SVG.
+  EXPECT_THAT(
+      web_app_info->icons_with_size_any.manifest_icon_provided_sizes,
+      testing::UnorderedElementsAre(gfx::Size(256, 256), gfx::Size(48, 48)));
 }
 
 TEST_F(ManifestToWebAppInstallInfoJobTest,

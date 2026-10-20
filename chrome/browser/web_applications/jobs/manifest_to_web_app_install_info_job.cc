@@ -52,6 +52,7 @@
 #include "net/base/schemeful_site.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -199,6 +200,44 @@ GetLocalizedIconsFromManifest(
   return manifest.icons;
 }
 
+void RecordSvgIconUrl(const blink::Manifest::ImageResource& icon,
+                      WebAppInstallInfo* web_app_info) {
+  if (blink::ManifestIconSelector::IsIconSvg(icon)) {
+    web_app_info->svg_icon_urls.insert(icon.src);
+  }
+}
+
+// Declared sizes to request for `icon`, in declaration order, dropping
+// non-square and too large ones. A zero size ("any") requests no declared
+// size. SVGs rasterize at the requested size, so every declared square size is
+// requested; raster images ignore it, so only the first one is.
+std::vector<SquareSizePx> GetDeclaredSizesToRequest(
+    const blink::Manifest::ImageResource& icon) {
+  std::vector<SquareSizePx> sizes;
+  const bool is_svg = blink::ManifestIconSelector::IsIconSvg(icon);
+  for (const gfx::Size& size : icon.sizes) {
+    if (size.width() != size.height() || size.width() > kMaxIconSize) {
+      continue;
+    }
+    sizes.push_back(size.width());
+    if (!is_svg) {
+      break;
+    }
+  }
+  return sizes;
+}
+
+// Records the sizes that are downloaded for an icon, which determines how many
+// sizes still need to be generated from a "sizes": "any" SVG icon.
+void RecordProvidedSizes(const std::vector<SquareSizePx>& sizes_to_request,
+                         SizeSet& provided_sizes) {
+  for (SquareSizePx size_px : sizes_to_request) {
+    if (size_px > 0) {
+      provided_sizes.emplace(size_px, size_px);
+    }
+  }
+}
+
 // Construct a list of icons from the parsed icons field of the manifest
 // *outside* of |web_app_info|, and update the current web_app_info if found.
 // If any icons are correctly specified in the manifest, they take precedence
@@ -206,61 +245,57 @@ GetLocalizedIconsFromManifest(
 void UpdateWebAppInstallInfoIconsFromManifestIfNeeded(
     const std::vector<blink::Manifest::ImageResource>& icons,
     WebAppInstallInfo* web_app_info) {
+  // Recorded for every entry: `GetTrustedIconsFromManifest()` scans all icons,
+  // so it can select one that the `kMaxIcons` cap below never reaches.
+  for (const blink::Manifest::ImageResource& icon : icons) {
+    RecordSvgIconUrl(icon, web_app_info);
+  }
+
   std::vector<apps::IconInfo> web_app_icons;
   for (const auto& icon : icons) {
     // An icon's purpose vector should never be empty (the manifest parser
     // should have added ANY if there was no purpose specified in the manifest).
     CHECK(!icon.purpose.empty());
 
+    // TODO(crbug.com/40126722): Take the declared icon density and sizes into
+    // account.
+    const std::vector<SquareSizePx> declared_sizes =
+        GetDeclaredSizesToRequest(icon);
+    if (!icon.sizes.empty() && declared_sizes.empty()) {
+      continue;
+    }
+    std::vector<std::optional<SquareSizePx>> sizes_to_request = {std::nullopt};
+    if (!declared_sizes.empty()) {
+      sizes_to_request.assign(declared_sizes.begin(), declared_sizes.end());
+    }
+
     for (IconPurpose purpose : icon.purpose) {
-      apps::IconInfo info;
-
-      if (!icon.sizes.empty()) {
-        if (std::ranges::contains(icon.sizes, gfx::Size()) &&
-            icon.src.spec().find(".svg") != std::string::npos) {
-          web_app_info->icons_with_size_any.manifest_icons[purpose] = icon.src;
-        }
-
-        // Filter out non-square or too large icons.
-        auto valid_size =
-            std::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
-              return size.width() == size.height() &&
-                     size.width() <= kMaxIconSize;
-            });
-        if (valid_size == icon.sizes.end()) {
-          continue;
-        }
-
-        // TODO(crbug.com/40126722): Take the declared icon density and
-        // sizes into account.
-        info.square_size_px = valid_size->width();
+      if (std::ranges::contains(icon.sizes, gfx::Size()) &&
+          blink::ManifestIconSelector::IsIconSvg(icon)) {
+        web_app_info->icons_with_size_any.manifest_icons[purpose] = icon.src;
       }
 
-      info.url = icon.src;
-      info.purpose = ManifestPurposeToIconInfoPurpose(purpose);
-      web_app_icons.push_back(std::move(info));
+      for (std::optional<SquareSizePx> size_px : sizes_to_request) {
+        apps::IconInfo info;
+        info.square_size_px = size_px;
+        info.url = icon.src;
+        info.purpose = ManifestPurposeToIconInfoPurpose(purpose);
+        web_app_icons.push_back(std::move(info));
 
-      // Limit the number of icons we store on the user's machine.
+        // Limit the number of icons we store on the user's machine.
+        if (web_app_icons.size() == kMaxIcons) {
+          break;
+        }
+      }
+
       if (web_app_icons.size() == kMaxIcons) {
         break;
       }
     }
 
-    // Keep track of the sizes passed in via the manifest which will be
-    // later used to compute how many SVG icons of size:any we need to
-    // download.
-    // This is handled outside the loop above to reduce the number of iterations
-    // so that purpose and size metadata is parsed sequentially one after the
-    // other.
-    if (!web_app_info->icons_with_size_any.manifest_icons.empty()) {
-      for (const auto& icon_size : icon.sizes) {
-        if (icon_size == gfx::Size()) {
-          continue;
-        }
-        web_app_info->icons_with_size_any.manifest_icon_provided_sizes.emplace(
-            icon_size);
-      }
-    }
+    RecordProvidedSizes(
+        declared_sizes,
+        web_app_info->icons_with_size_any.manifest_icon_provided_sizes);
 
     if (web_app_icons.size() == kMaxIcons) {
       break;
@@ -295,51 +330,41 @@ void PopulateWebAppShortcutsMenuItemInfos(
     const std::vector<blink::Manifest::ImageResource>& shortcut_icons_list =
         GetLocalizedShortcutIcons(shortcut, application_locale);
 
+    // TODO(crbug.com/40126722): Take the declared icon density and sizes into
+    // account.
+    std::vector<std::vector<SquareSizePx>> sizes_per_icon;
+    sizes_per_icon.reserve(shortcut_icons_list.size());
+    for (const blink::Manifest::ImageResource& icon : shortcut_icons_list) {
+      sizes_per_icon.push_back(GetDeclaredSizesToRequest(icon));
+      RecordProvidedSizes(
+          sizes_per_icon.back(),
+          web_app_info->icons_with_size_any.shortcut_menu_icons_provided_sizes);
+      RecordSvgIconUrl(icon, web_app_info);
+    }
+
     for (IconPurpose purpose : kIconPurposes) {
       std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_icons;
-      for (const auto& icon : shortcut_icons_list) {
+      for (size_t i = 0; i < shortcut_icons_list.size(); ++i) {
+        const blink::Manifest::ImageResource& icon = shortcut_icons_list[i];
         CHECK(!icon.purpose.empty());
         if (!std::ranges::contains(icon.purpose, purpose)) {
           continue;
         }
 
-        WebAppShortcutsMenuItemInfo::Icon info;
-
         if (std::ranges::contains(icon.sizes, gfx::Size()) &&
-            icon.src.spec().find(".svg") != std::string::npos) {
+            blink::ManifestIconSelector::IsIconSvg(icon)) {
           web_app_info->icons_with_size_any.shortcut_menu_icons[purpose] =
               icon.src;
         }
 
-        // Filter out non-square or too large icons.
-        auto valid_size_it =
-            std::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
-              return size.width() == size.height() &&
-                     size.width() <= kMaxIconSize;
-            });
-        if (valid_size_it == icon.sizes.end()) {
-          continue;
-        }
-        // TODO(crbug.com/40126722): Take the declared icon density and
-        // sizes into account.
-        info.square_size_px = valid_size_it->width();
-
-        // Keep track of the sizes passed in via the manifest which will be
-        // later used to compute how many SVG icons of size:any we need to
-        // download.
-        if (!web_app_info->icons_with_size_any.shortcut_menu_icons.empty()) {
-          for (const auto& icon_size : icon.sizes) {
-            if (icon_size == gfx::Size()) {
-              continue;
-            }
-            web_app_info->icons_with_size_any.shortcut_menu_icons_provided_sizes
-                .emplace(icon_size);
+        for (SquareSizePx size_px : sizes_per_icon[i]) {
+          CHECK_LE(num_shortcut_icons, kMaxIcons);
+          if (num_shortcut_icons == kMaxIcons) {
+            break;
           }
-        }
-
-        CHECK_LE(num_shortcut_icons, kMaxIcons);
-        if (num_shortcut_icons < kMaxIcons) {
+          WebAppShortcutsMenuItemInfo::Icon info;
           info.url = icon.src;
+          info.square_size_px = size_px;
           shortcut_icons.push_back(std::move(info));
           ++num_shortcut_icons;
         }
@@ -498,35 +523,23 @@ void PopulateHomeTabIconsFromHomeTabManifestParams(
 
     if (!icon.sizes.empty()) {
       if (std::ranges::contains(icon.sizes, gfx::Size()) &&
-          icon.src.spec().find(".svg") != std::string::npos) {
+          blink::ManifestIconSelector::IsIconSvg(icon)) {
         for (const auto& purpose : icon.purpose) {
           web_app_info->icons_with_size_any.home_tab_icons[purpose] = icon.src;
         }
       }
-      // Filter out non-square or too large icons.
-      auto valid_size =
-          std::ranges::find_if(icon.sizes, [](const gfx::Size& size) {
-            return size.width() == size.height() &&
-                   size.width() <= kMaxIconSize;
-          });
-      if (valid_size == icon.sizes.end()) {
+      const std::vector<SquareSizePx> sizes_to_request =
+          GetDeclaredSizesToRequest(icon);
+      if (sizes_to_request.empty()) {
         continue;
       }
 
-      // Keep track of the sizes passed in via the manifest which will be
-      // later used to compute how many SVG icons of size:any we need to
-      // download.
-      if (!web_app_info->icons_with_size_any.home_tab_icons.empty()) {
-        for (const auto& icon_size : icon.sizes) {
-          if (icon_size == gfx::Size()) {
-            continue;
-          }
-          web_app_info->icons_with_size_any.home_tab_icon_provided_sizes
-              .emplace(icon_size);
-        }
-      }
+      RecordProvidedSizes(
+          sizes_to_request,
+          web_app_info->icons_with_size_any.home_tab_icon_provided_sizes);
     }
 
+    RecordSvgIconUrl(icon, web_app_info);
     home_tab_icons.push_back(std::move(icon));
 
     // Limit the number of icons we store on the user's machine.

@@ -10,6 +10,7 @@
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
@@ -202,9 +203,7 @@ void WebAppIconDownloader::DidDownloadFavicon(
     return;
   }
 
-  // TODO(b/319669415 : Support adding onto existing bitmaps array instead of
-  // overwriting. Helpful for downloading multiple bitmaps from the same URL.
-  icons_map_[image_url] = bitmaps;
+  base::Extend(icons_map_[image_url], bitmaps);
 
   MaybeCompleteCallback();
 }

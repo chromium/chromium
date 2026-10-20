@@ -4,24 +4,31 @@
 
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 
+#include <algorithm>
+#include <optional>
 #include <set>
 #include <variant>
 #include <vector>
 
 #include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
+#include "components/webapps/browser/installable/installable_evaluator.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace web_app {
 
 namespace {
+
+constexpr SquareSizePx kMaxIconSize =
+    webapps::InstallableEvaluator::kMaximumIconSizeInPx;
 
 base::flat_set<GURL> GetAllIconUrlsForSizeAny(
     base::flat_map<IconPurpose, GURL> icon_purpose_to_urls) {
@@ -61,12 +68,37 @@ void PopulateIconUrlsForSizeAnyIfNeeded(
   }
 }
 
+// `svg_icon_urls` is only known when the icons come from a manifest, so fall
+// back to the file extension for icons restored from other sources.
+bool IsSvgIconUrl(const WebAppInstallInfo& web_app_info, const GURL& url) {
+  return web_app_info.svg_icon_urls.contains(url) ||
+         base::EndsWith(url.ExtractFileName(), ".svg",
+                        base::CompareCase::INSENSITIVE_ASCII);
+}
+
+// SVGs are rasterized at the requested size, so request declared square
+// sizes explicitly; raster images ignore the size and are downloaded once.
+IconUrlWithSize IconUrlForDeclaredSize(const WebAppInstallInfo& web_app_info,
+                                       const GURL& url,
+                                       std::optional<SquareSizePx> size_px) {
+  if (size_px.value_or(0) > 0 && IsSvgIconUrl(web_app_info, url)) {
+    return IconUrlWithSize::Create(url, gfx::Size(*size_px, *size_px));
+  }
+  return IconUrlWithSize::CreateForUnspecifiedSize(url);
+}
+
 std::vector<IconUrlWithSize> GetAppIconUrls(
     const WebAppInstallInfo& web_app_info) {
   std::vector<IconUrlWithSize> urls;
 
+  const auto any_urls =
+      GetAllIconUrlsForSizeAny(web_app_info.icons_with_size_any.manifest_icons);
   for (const apps::IconInfo& info : web_app_info.manifest_icons) {
-    urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(info.url));
+    if (info.square_size_px == 0 && any_urls.contains(info.url)) {
+      continue;
+    }
+    urls.push_back(
+        IconUrlForDeclaredSize(web_app_info, info.url, info.square_size_px));
   }
 
   // This is usually not needed, since on production,
@@ -76,12 +108,15 @@ std::vector<IconUrlWithSize> GetAppIconUrls(
   // In the end, the vector is converted into a set by
   // `GetValidIconUrlsToDownload()`, so duplicates are removed.
   for (const apps::IconInfo& info : web_app_info.trusted_icons) {
-    urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(info.url));
+    if (info.square_size_px == 0 && any_urls.contains(info.url)) {
+      continue;
+    }
+    urls.push_back(
+        IconUrlForDeclaredSize(web_app_info, info.url, info.square_size_px));
   }
 
   PopulateIconUrlsForSizeAnyIfNeeded(
-      std::ref(urls),
-      GetAllIconUrlsForSizeAny(web_app_info.icons_with_size_any.manifest_icons),
+      std::ref(urls), any_urls,
       web_app_info.icons_with_size_any.manifest_icon_provided_sizes,
       /*is_app_icon=*/true);
   return urls;
@@ -90,20 +125,24 @@ std::vector<IconUrlWithSize> GetAppIconUrls(
 std::vector<IconUrlWithSize> GetShortcutMenuIcons(
     const WebAppInstallInfo& web_app_info) {
   std::vector<IconUrlWithSize> urls;
+  const auto any_urls = GetAllIconUrlsForSizeAny(
+      web_app_info.icons_with_size_any.shortcut_menu_icons);
   for (const WebAppShortcutsMenuItemInfo& shortcut :
        web_app_info.shortcuts_menu_item_infos) {
     for (IconPurpose purpose : kIconPurposes) {
       for (const WebAppShortcutsMenuItemInfo::Icon& icon :
            shortcut.GetShortcutIconInfosForPurpose(purpose)) {
-        urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(icon.url));
+        if (icon.square_size_px == 0 && any_urls.contains(icon.url)) {
+          continue;
+        }
+        urls.push_back(IconUrlForDeclaredSize(web_app_info, icon.url,
+                                              icon.square_size_px));
       }
     }
   }
 
   PopulateIconUrlsForSizeAnyIfNeeded(
-      std::ref(urls),
-      GetAllIconUrlsForSizeAny(
-          web_app_info.icons_with_size_any.shortcut_menu_icons),
+      std::ref(urls), any_urls,
       web_app_info.icons_with_size_any.shortcut_menu_icons_provided_sizes);
   return urls;
 }
@@ -119,13 +158,27 @@ std::vector<IconUrlWithSize> GetHomeTabIcons(
   const auto& home_tab = std::get<blink::Manifest::HomeTabParams>(
       web_app_info.tab_strip.value().home_tab);
 
+  const auto any_urls =
+      GetAllIconUrlsForSizeAny(web_app_info.icons_with_size_any.home_tab_icons);
   for (const auto& icon : home_tab.icons) {
-    urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(icon.src));
+    const bool is_svg = IsSvgIconUrl(web_app_info, icon.src);
+    if (is_svg) {
+      for (const auto& size : icon.sizes) {
+        if (size.width() > 0 && size.width() == size.height() &&
+            size.width() <= kMaxIconSize) {
+          urls.push_back(IconUrlWithSize::Create(icon.src, size));
+        }
+      }
+    }
+    if (!is_svg || icon.sizes.empty() ||
+        (std::ranges::contains(icon.sizes, gfx::Size()) &&
+         !any_urls.contains(icon.src))) {
+      urls.push_back(IconUrlWithSize::CreateForUnspecifiedSize(icon.src));
+    }
   }
 
   PopulateIconUrlsForSizeAnyIfNeeded(
-      std::ref(urls),
-      GetAllIconUrlsForSizeAny(web_app_info.icons_with_size_any.home_tab_icons),
+      std::ref(urls), any_urls,
       web_app_info.icons_with_size_any.home_tab_icon_provided_sizes);
   return urls;
 }
