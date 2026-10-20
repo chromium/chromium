@@ -241,6 +241,8 @@ class ContextualTasksWebContentsUserData
       contextual_search::ContextualSearchContextController* controller);
   ContextState ComputeContextState();
   void UpdateContextState(bool force_send = false);
+  std::vector<lens::AddedContext> ComputeSuggestInputContexts();
+  void UpdateSuggestInputs();
   void RecordTimeToHandshakeComplete();
   // Returns the active tab to recontextualize on submit, unless the query has
   // a visual selection (`overlay_token`) or the tab was deselected. Like

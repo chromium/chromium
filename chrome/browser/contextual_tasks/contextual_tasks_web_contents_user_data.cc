@@ -215,6 +215,7 @@ struct ContextualTasksWebContentsUserData::PageSearchState
   std::string last_lens_crop_data_uri;
   bool context_library_is_active = false;
   ContextState last_sent_context_state = ContextState::kNone;
+  std::string last_sent_suggest_inputs_serialized;
 
   PAGE_USER_DATA_KEY_DECL();
 };
@@ -428,6 +429,7 @@ void ContextualTasksWebContentsUserData::UpdateExtensionFrameBound(
         page_state.is_lens_crop_mounted = false;
         page_state.last_lens_crop_data_uri.clear();
         page_state.last_sent_context_state = ContextState::kNone;
+        page_state.last_sent_suggest_inputs_serialized.clear();
       }
       return;
     }
@@ -495,6 +497,7 @@ void ContextualTasksWebContentsUserData::OnDocumentConnected(
   page_state.is_lens_crop_mounted = false;
   page_state.context_library_is_active = false;
   page_state.last_sent_context_state = ContextState::kNone;
+  page_state.last_sent_suggest_inputs_serialized.clear();
   page_state.connected_document_id = doc_id;
   page_state.service_worker_post_message_cb = std::move(post_message_cb);
   page_state.is_handshake_complete = false;
@@ -621,6 +624,7 @@ void ContextualTasksWebContentsUserData::OnHandshakeComplete(
       page_state.context_library_is_active = false;
     }
     page_state.last_sent_context_state = ContextState::kNone;
+    page_state.last_sent_suggest_inputs_serialized.clear();
   }
 
   if (!GetSelectedTabs().empty() && !page_state.context_library_is_active) {
@@ -633,6 +637,7 @@ void ContextualTasksWebContentsUserData::OnHandshakeComplete(
     }
   }
   UpdateContextState();
+  UpdateSuggestInputs();
 }
 
 void ContextualTasksWebContentsUserData::PostSearchMessage(
@@ -714,6 +719,7 @@ void ContextualTasksWebContentsUserData::UpdateContextLibraryInputState() {
                           /*is_active=*/has_tabs);
   }
   UpdateContextState();
+  UpdateSuggestInputs();
 }
 
 void ContextualTasksWebContentsUserData::OnTabContextUploadStarted(
@@ -747,6 +753,7 @@ void ContextualTasksWebContentsUserData::OnContextUploadStatusChanged(
     failed_context_uploads_.erase(context_token);
   }
   UpdateContextState();
+  UpdateSuggestInputs();
 }
 
 void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest() {
@@ -1079,6 +1086,81 @@ void ContextualTasksWebContentsUserData::UpdateContextState(bool force_send) {
   PostSearchMessage(message);
 }
 
+std::vector<lens::AddedContext>
+ContextualTasksWebContentsUserData::ComputeSuggestInputContexts() {
+  auto* session_handle = GetOrCreateContextualSessionHandle();
+  if (!session_handle) {
+    return {};
+  }
+
+  const auto selected_tabs = GetSelectedTabs();
+  if (selected_tabs.empty()) {
+    return {};
+  }
+
+  const std::optional<base::UnguessableToken> overlay_token =
+      GetLensOverlayToken();
+  std::vector<lens::AddedContext> contexts;
+  for (const auto& file_info : session_handle->GetUploadedContextFileInfos()) {
+    if (!file_info.request_id.has_value()) {
+      continue;
+    }
+    if (overlay_token.has_value() && file_info.file_token == *overlay_token) {
+      continue;
+    }
+    if (file_info.is_implicit_upload ||
+        (file_info.input_data && file_info.input_data->is_implicit_upload)) {
+      continue;
+    }
+    if (pending_context_uploads_.contains(file_info.file_token) ||
+        failed_context_uploads_.contains(file_info.file_token)) {
+      continue;
+    }
+    if (std::ranges::none_of(
+            selected_tabs, [&](const contextual_search::TabInfo& selected_tab) {
+              return !selected_tab.pending_delayed_upload &&
+                     selected_tab.context_token == file_info.file_token;
+            })) {
+      continue;
+    }
+
+    lens::AddedContext added;
+    added.set_search_session_id(session_handle->search_session_id());
+    *added.mutable_request_id() = *file_info.request_id;
+    if (file_info.input_data && file_info.input_data->upload_type.has_value()) {
+      added.set_contextual_input_upload_type(
+          *file_info.input_data->upload_type);
+    } else {
+      added.set_contextual_input_upload_type(
+          lens::LensOverlayContextualInputUploadType::
+              CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+    }
+    contexts.push_back(std::move(added));
+  }
+  return contexts;
+}
+
+void ContextualTasksWebContentsUserData::UpdateSuggestInputs() {
+  if (!IsContextualTasksTabBasedSuggestionsEnabled()) {
+    return;
+  }
+
+  lens::ClientToSearchMessage message;
+  auto* suggest_inputs = message.mutable_on_suggest_inputs_changed();
+  for (auto& context : ComputeSuggestInputContexts()) {
+    *suggest_inputs->add_added_contexts() = std::move(context);
+  }
+
+  std::string serialized;
+  suggest_inputs->SerializeToString(&serialized);
+  auto& page_state = GetPrimaryPageSearchState();
+  if (serialized == page_state.last_sent_suggest_inputs_serialized) {
+    return;
+  }
+  page_state.last_sent_suggest_inputs_serialized = std::move(serialized);
+  PostSearchMessage(message);
+}
+
 contextual_search::ContextualSearchSessionHandle*
 ContextualTasksWebContentsUserData::GetOrCreateContextualSessionHandle() {
   content::WebContents* web_contents = &GetWebContents();
@@ -1160,6 +1242,7 @@ void ContextualTasksWebContentsUserData::DoSubmitQueryCleanup() {
   CloseLensAsync(
       lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
   UpdateContextState();
+  UpdateSuggestInputs();
 }
 
 void ContextualTasksWebContentsUserData::CloseLensAsync(

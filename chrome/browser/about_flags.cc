@@ -12261,6 +12261,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksClobberActiveTab)},
 
+    {"contextual-tasks-tab-based-suggestions",
+     contextual_tasks::flag_descriptions::
+         kContextualTasksTabBasedSuggestionsName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksTabBasedSuggestionsDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksTabBasedSuggestions)},
+
     {"contextual-tasks-bypass-dismissed-cap",
      contextual_tasks::flag_descriptions::
          kContextualTasksBypassDismissedCapName,

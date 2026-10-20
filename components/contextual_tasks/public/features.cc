@@ -272,6 +272,9 @@ bool ShouldOpenNewTabOnSidePanelLinkClick() {
          kOpenNewTabOnSidePanelLinkClick.Get();
 }
 
+BASE_FEATURE(kContextualTasksTabBasedSuggestions,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kContextualTasksNonBlockingUrlNavigation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -983,6 +986,10 @@ bool IsContextualTasksClobberActiveTabEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksClobberActiveTab);
 }
 
+bool IsContextualTasksTabBasedSuggestionsEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksTabBasedSuggestions);
+}
+
 const base::FeatureParam<std::string> kContextualTasksSearchCapabilitiesVersion{
     &kContextualTasksRearchitecture,
     "contextual-tasks-search-capabilities-version",
@@ -1110,6 +1117,12 @@ const char kContextualTasksClobberActiveTabName[] =
 const char kContextualTasksClobberActiveTabDescription[] =
     "Enables clicking links in the contextual tasks side panel to clobber the "
     "active tab instead of opening in a new tab.";
+
+const char kContextualTasksTabBasedSuggestionsName[] =
+    "Contextual Tasks Tab-Based Suggestions";
+const char kContextualTasksTabBasedSuggestionsDescription[] =
+    "Enables sending attached tab context tokens to Search for tab-based "
+    "query suggestions.";
 
 const char kContextualTasksBypassDismissedCapName[] =
     "Contextual Tasks Bypass Dismissed Cap";
