@@ -2537,6 +2537,7 @@ TEST_F(DocumentFocusUseCounterTest,
 
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kFocusWithoutUserActivationBlocked));
+  EXPECT_THAT(ConsoleMessages(), IsEmpty());
 }
 
 // Regression coverage for the activated-target variant of crbug.com/513330788:
