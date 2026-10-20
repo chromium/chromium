@@ -122,22 +122,31 @@ _ClassDefItem = collections.namedtuple(
   'annotations_off,class_data_off,static_values_off',
 )
 
+# header_size: Number of bytes used by the 4 size fields at the start of the
+#     item.
 _ClassDataItem = collections.namedtuple(
   'ClassDataItem',
   'offset,static_fields_size,instance_fields_size,direct_methods_size,'
   'virtual_methods_size,static_fields,instance_fields,direct_methods,'
-  'virtual_methods',
+  'virtual_methods,header_size',
 )
-_EncodedField = collections.namedtuple('EncodedField', 'field_idx,access_flags')
+# byte_size: Number of bytes used by the encoded_field / encoded_method entry
+#     within its class_data_item.
+_EncodedField = collections.namedtuple(
+  'EncodedField', 'field_idx,access_flags,byte_size'
+)
 _EncodedMethod = collections.namedtuple(
-  'EncodedMethod', 'method_idx,access_flags,code_off'
+  'EncodedMethod', 'method_idx,access_flags,code_off,byte_size'
 )
 
 _TypeItem = collections.namedtuple('TypeItem', 'type_idx')
+# byte_size: Number of bytes used by the code_item, excluding trailing
+#     alignment padding (and excluding catch handlers not used by the last
+#     try_item, to match how dexlib2 computes sizes).
 _CodeItem = collections.namedtuple(
   'CodeItem',
   'offset,registers_size,ins_size,outs_size,tries_size,debug_info_off,'
-  'insns_size,insns,tries,handlers',
+  'insns_size,insns,tries,handlers,byte_size',
 )
 _TryItem = collections.namedtuple(
   'TryItem', 'start_addr,insn_count,handler_off'
@@ -164,6 +173,7 @@ class _DexReader(stream_reader.StreamReader):
     instance_fields_size = self.NextULeb128()
     direct_methods_size = self.NextULeb128()
     virtual_methods_size = self.NextULeb128()
+    header_size = self.Tell() - offset
     static_fields = self.NextEncodedFieldList(static_fields_size)
     instance_fields = self.NextEncodedFieldList(instance_fields_size)
     direct_methods = self.NextEncodedMethodList(direct_methods_size)
@@ -178,23 +188,29 @@ class _DexReader(stream_reader.StreamReader):
       instance_fields,
       direct_methods,
       virtual_methods,
+      header_size,
     )
 
   def NextEncodedFieldList(self, count):
     ret = []
     field_idx = 0
     for _ in range(count):
+      start = self.Tell()
       field_idx += self.NextULeb128()
-      ret.append(_EncodedField(field_idx, self.NextULeb128()))
+      access_flags = self.NextULeb128()
+      ret.append(_EncodedField(field_idx, access_flags, self.Tell() - start))
     return ret
 
   def NextEncodedMethodList(self, count):
     ret = []
     method_idx = 0
     for _ in range(count):
+      start = self.Tell()
       method_idx += self.NextULeb128()
+      access_flags = self.NextULeb128()
+      code_off = self.NextULeb128()
       ret.append(
-        _EncodedMethod(method_idx, self.NextULeb128(), self.NextULeb128())
+        _EncodedMethod(method_idx, access_flags, code_off, self.Tell() - start)
       )
     return ret
 
@@ -207,12 +223,21 @@ class _DexReader(stream_reader.StreamReader):
     debug_info_off = self.NextUInt()
     insns_size = self.NextUInt()
     insns = self.NextBytes(insns_size * 2)
+    byte_size = self.Tell() - item_offset
     if tries_size > 0:
       self.AlignUpTo(4)
     tries = [self.NextTryItem() for _ in range(tries_size)]
     handlers = None
     if tries_size != 0:
+      handlers_offset = self.Tell()
       handlers = self.NextEncodedCatchHandlerList()
+      end_offset = self.Tell()
+      # Match dexlib2's DexBackedMethodImplementation.getSize(), which counts
+      # up until the end of the handler used by the last try_item.
+      self.Seek(handlers_offset + tries[-1].handler_off)
+      self.NextEncodedCatchHandler()
+      byte_size = self.Tell() - item_offset
+      self.Seek(end_offset)
     self.AlignUpTo(4)
     return _CodeItem(
       item_offset,
@@ -225,6 +250,7 @@ class _DexReader(stream_reader.StreamReader):
       insns,
       tries,
       handlers,
+      byte_size,
     )
 
   def NextTryItem(self):
@@ -243,6 +269,24 @@ class _DexReader(stream_reader.StreamReader):
 
   def NextEncodedTypeAddrPair(self):
     return _EncodedTypeAddrPair(self.NextULeb128(), self.NextULeb128())
+
+  def SkipEncodedValue(self):
+    # https://source.android.com/docs/core/runtime/dex-format#encoding
+    header = self.NextUByte()
+    value_type = header & 0x1F
+    if value_type == 0x1C:  # VALUE_ARRAY
+      self.SkipEncodedArray()
+    elif value_type == 0x1D:  # VALUE_ANNOTATION
+      self.NextULeb128()  # type_idx
+      for _ in range(self.NextULeb128()):
+        self.NextULeb128()  # name_idx
+        self.SkipEncodedValue()
+    elif value_type not in (0x1E, 0x1F):  # VALUE_NULL, VALUE_BOOLEAN
+      self.Skip((header >> 5) + 1)
+
+  def SkipEncodedArray(self):
+    for _ in range(self.NextULeb128()):
+      self.SkipEncodedValue()
 
 
 class _MemoryItemList:
@@ -603,6 +647,56 @@ class DexFile:
 
   def GetCodeItemByOffset(self, offset):
     return self._code_item_by_offset.get(offset)
+
+  def GetEncodedArrayItemSizes(self, offset):
+    """Returns the sizes of the parts of an encoded_array_item.
+
+    Returns:
+      A tuple of (header_size, element_sizes), where header_size is the number
+      of bytes used to encode the element count, and element_sizes is a list
+      of the number of bytes used by each element.
+    """
+    reader = self.reader
+    reader.Seek(offset)
+    count = reader.NextULeb128()
+    header_size = reader.Tell() - offset
+    element_sizes = []
+    for _ in range(count):
+      start = reader.Tell()
+      reader.SkipEncodedValue()
+      element_sizes.append(reader.Tell() - start)
+    return header_size, element_sizes
+
+  def _GetAnnotationSetSize(self, offset):
+    if not offset:
+      return 0
+    self.reader.Seek(offset)
+    return self.reader.NextUInt()
+
+  def GetAnnotationsDirectoryInfo(self, offset):
+    """Returns info about an annotations_directory_item.
+
+    Returns:
+      A tuple of (num_class_annotations, annotated_field_idxs), where
+      annotated_field_idxs is a set of field_ids indices for fields that have
+      a non-empty set of annotations.
+    """
+    reader = self.reader
+    reader.Seek(offset)
+    class_annotations_off = reader.NextUInt()
+    fields_size = reader.NextUInt()
+    reader.NextUInt()  # annotated_methods_size
+    reader.NextUInt()  # annotated_parameters_size
+    field_annotations = [
+      (reader.NextUInt(), reader.NextUInt()) for _ in range(fields_size)
+    ]
+    annotated_field_idxs = {
+      field_idx
+      for field_idx, annotations_off in field_annotations
+      if self._GetAnnotationSetSize(annotations_off)
+    }
+    num_class_annotations = self._GetAnnotationSetSize(class_annotations_off)
+    return num_class_annotations, annotated_field_idxs
 
   def IterAllStringIdsUsedByCodeItem(self, code_item):
     if not code_item:

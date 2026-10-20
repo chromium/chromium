@@ -203,13 +203,6 @@ def GetStripPath():
   return _LlvmTool('strip')
 
 
-def GetApkAnalyzerPath():
-  default_path = FromToolsSrcRoot(
-    'third_party', 'android_build_tools', 'apkanalyzer', 'apkanalyzer'
-  )
-  return os.environ.get('SUPERSIZE_APK_ANALYZER', default_path)
-
-
 def GetAapt2Path():
   default_path = FromToolsSrcRoot(
     'third_party', 'android_build_tools', 'aapt2', 'cipd', 'aapt2'

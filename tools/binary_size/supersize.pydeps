@@ -39,7 +39,6 @@
 ../grit/grit/util.py
 ../grit/grit/xtb_reader.py
 libsupersize/apk.py
-libsupersize/apkanalyzer.py
 libsupersize/ar.py
 libsupersize/archive.py
 libsupersize/archive_util.py
@@ -51,6 +50,7 @@ libsupersize/dalvik_bytecode.py
 libsupersize/data_quality.py
 libsupersize/demangle.py
 libsupersize/describe.py
+libsupersize/dex.py
 libsupersize/dex_deobfuscate.py
 libsupersize/dex_disassembly.py
 libsupersize/dex_parser.py

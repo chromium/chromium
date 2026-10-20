@@ -56,9 +56,6 @@ class Golden:
 def AddMocksToPath():
   prev_path = os.environ['PATH']
   os.environ['PATH'] = _MOCK_TOOL_PREFIX[:-1] + os.path.pathsep + prev_path
-  os.environ['SUPERSIZE_APK_ANALYZER'] = os.path.join(
-    _MOCK_SDK_DIR, 'tools', 'bin', 'apkanalyzer'
-  )
   os.environ['SUPERSIZE_AAPT2'] = os.path.join(
     _MOCK_SDK_DIR, 'tools', 'bin', 'aapt2'
   )
@@ -68,5 +65,4 @@ def AddMocksToPath():
   finally:
     del os.environ['SUPERSIZE_TOOL_PREFIX']
     del os.environ['SUPERSIZE_AAPT2']
-    del os.environ['SUPERSIZE_APK_ANALYZER']
     os.environ['PATH'] = prev_path

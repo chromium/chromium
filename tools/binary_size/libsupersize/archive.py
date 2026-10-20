@@ -17,11 +17,10 @@ import time
 import zipfile
 
 import apk
-import apkanalyzer
 import archive_util
 import data_quality
 import describe
-import dex_deobfuscate
+import dex
 import dir_metadata
 import file_format
 import function_signature
@@ -319,11 +318,10 @@ def _CreatePakSymbols(*, pak_spec, pak_id_map, apk_spec, output_directory):
 def _CreateContainerSymbols(
   container_spec,
   apk_file_manager,
-  apk_analyzer_results,
+  dex_async_results,
   ninja_source_mapper,
   pak_id_map,
   component_overrides,
-  dex_deobfuscator_cache,
 ):
   container_name = container_spec.container_name
   apk_spec = container_spec.apk_spec
@@ -410,19 +408,11 @@ def _CreateContainerSymbols(
       i.file_size for i in apk_infolist if i.filename.endswith('.dex')
     )
     if dex_total_size > 0:
-      mapping_path = apk_spec.mapping_path  # May be None.
-      class_deobfuscation_map = dex_deobfuscator_cache.GetForMappingFile(
-        mapping_path
-      )
-      section_ranges, dex_symbols, dex_metrics_by_file = (
-        apkanalyzer.CreateDexSymbols(
-          apk_spec.apk_path,
-          apk_analyzer_results[container_name],
-          dex_total_size,
-          class_deobfuscation_map,
-          apk_spec.size_info_prefix,
-          apk_spec.track_string_literals,
-        )
+      section_ranges, dex_symbols, dex_metrics_by_file = dex.CreateDexSymbols(
+        apk_spec.apk_path,
+        dex_async_results[container_name],
+        dex_total_size,
+        apk_spec.size_info_prefix,
       )
       add_syms(section_ranges, dex_symbols)
       metrics_by_file.update(dex_metrics_by_file)
@@ -1276,17 +1266,17 @@ def CreateSizeInfo(
     for c in container_specs
     if not c.native_spec and c.apk_spec and c.apk_spec.analyze_dex
   ]
-  # Running ApkAnalyzer concurrently saves ~30 seconds for Monochrome.apks.
-  apk_analyzer_results = {}
+  # Parse dex files in background processes so that other containers can be
+  # processed concurrently.
+  dex_async_results = {}
   if dex_containers:
     logging.info(
-      'Kicking of ApkAnalyzer for %d .apk files', len(dex_containers)
+      'Kicking off dex analysis for %d .apk files', len(dex_containers)
     )
     for container_spec in dex_containers:
-      apk_analyzer_results[container_spec.container_name] = (
-        apkanalyzer.RunApkAnalyzerAsync(
-          container_spec.apk_spec.apk_path, container_spec.apk_spec.mapping_path
-        )
+      apk_spec = container_spec.apk_spec
+      dex_async_results[container_spec.container_name] = dex.AnalyzeDexAsync(
+        apk_spec.apk_path, apk_spec.mapping_path, apk_spec.track_string_literals
       )
 
   ninja_containers = [
@@ -1307,16 +1297,14 @@ def CreateSizeInfo(
 
   raw_symbols_list = []
   pak_id_map = pakfile.PakIdMap()
-  dex_deobfuscator_cache = dex_deobfuscate.CachedDexDeobfuscators()
   for container_spec in container_specs:
     raw_symbols = _CreateContainerSymbols(
       container_spec,
       apk_file_manager,
-      apk_analyzer_results,
+      dex_async_results,
       ninja_source_mapper,
       pak_id_map,
       json_config.ComponentOverrides(),
-      dex_deobfuscator_cache,
     )
     assert raw_symbols, f'{container_spec.container_name} had no symbols.'
     raw_symbols_list.append(raw_symbols)

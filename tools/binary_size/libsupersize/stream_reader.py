@@ -115,6 +115,20 @@ class StreamReader:
       offset: Offset to the beginning of the string.
     """
     offset = self._pos
+    # Fast path for ASCII strings (most strings). Malformed strings fall through
+    # to the slow path so that they raise errors.
+    end = offset + string_length
+    chunk = self._data[offset:end]
+    if (
+      len(chunk) == string_length
+      and chunk.isascii()
+      and 0 not in chunk
+      and end < len(self._data)
+      and self._data[end] == 0
+    ):
+      self._pos = end + 1
+      return chunk.decode('ascii')
+
     ret = ''
 
     for _ in range(string_length):
