@@ -163,11 +163,6 @@ void SetWidgetBoundsAndMaybeAnimateTransform(
   window->SetTransform(gfx::Transform());
 }
 
-bool IsContinuousScrollInProgress() {
-  return features::IsContinuousOverviewScrollAnimationEnabled() &&
-         OverviewController::Get()->is_continuous_scroll_in_progress();
-}
-
 }  // namespace
 
 OverviewItem::OverviewItem(aura::Window* window,
@@ -227,29 +222,14 @@ void OverviewItem::OnFocusedViewClosed() {
 }
 
 void OverviewItem::UpdateRoundedCorners() {
-  OverviewController* overview_controller = OverviewController::Get();
-
-  // If the feature ContinuousOverviewScrollAnimation is enabled, always show
-  // rounded corners for minimized windows, and show rounded corners for
-  // non-minimized windows after the continuous scroll has ended.
-  bool show_rounded_corners_for_start_animation = false;
-  if (features::IsContinuousOverviewScrollAnimationEnabled() &&
-      !display::Screen::Get()->InTabletMode()) {
-    show_rounded_corners_for_start_animation =
-        transform_window_.IsMinimizedOrTucked() ||
-        !IsContinuousScrollInProgress();
-  } else {
-    show_rounded_corners_for_start_animation =
-        !overview_controller->IsInStartAnimation();
-  }
-
   // Do not show the rounded corners and the shadow if overview is shutting
   // down or we're currently in entering overview animation. Also don't update
   // or animate the window's frame header clip under these conditions.
+  OverviewController* overview_controller = OverviewController::Get();
   const bool is_shutting_down =
       !overview_controller || !overview_controller->InOverviewSession();
   const bool should_show_rounded_corners =
-      !is_shutting_down && show_rounded_corners_for_start_animation;
+      !is_shutting_down && !overview_controller->IsInStartAnimation();
   if (should_show_rounded_corners) {
     if (overview_item_view_) {
       overview_item_view_->RefreshItemVisuals();
@@ -685,10 +665,8 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
   const bool is_animating = transform_window_.GetOverviewWindow()
                                 ->layer()
                                 ->GetAnimator()
-                                ->is_animating() ||
-                            IsContinuousScrollInProgress();
-  const bool shadow_visible = !GetRoundedCorners().IsEmpty() &&
-                              !is_animating;
+                                ->is_animating();
+  const bool shadow_visible = !GetRoundedCorners().IsEmpty() && !is_animating;
 
   // The shadow should always match the size of the item minus the border
   // instead of the transformed window or preview view, since for the window
@@ -715,16 +693,9 @@ void OverviewItem::SetShouldUseSpawnAnimation(bool value) {
 void OverviewItem::OnStartingAnimationComplete() {
   CHECK(item_widget_);
 
-  if (!IsContinuousScrollInProgress() &&
-      overview_session_->enter_exit_overview_type() ==
-          OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate) {
-    // If a continuous scroll has ended, make the header visible again.
-    item_widget_->GetLayer()->SetOpacity(1.f);
-  } else {
-    FadeInWidgetToOverview(item_widget_.get(),
-                           OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN,
-                           /*observe=*/false);
-  }
+  FadeInWidgetToOverview(item_widget_.get(),
+                         OVERVIEW_ANIMATION_ENTER_OVERVIEW_MODE_FADE_IN,
+                         /*observe=*/false);
 
   const bool show_backdrop =
       GetOverviewItemFillMode() != OverviewItemFillMode::kNormal;
@@ -768,28 +739,6 @@ void OverviewItem::OnOverviewItemDragEnded(bool snap) {
   }
 
   transform_window_.OnDragEnded();
-}
-
-void OverviewItem::OnOverviewItemContinuousScroll(
-    const gfx::Transform& target_transform,
-    float scroll_ratio) {
-  auto* window = GetWindow();
-
-  // TODO: This should use
-  // `ScopedOverviewTransformWindow::IsMinimizedOrTucked()` since tucked
-  // windows behave like minimized windows in overview, even if continuous
-  // scroll and tucked windows will not be supported together.
-  // Minimized windows slowly fade towards their target opacity 1.f. All other
-  // windows transform towards their target transform. The operation may be
-  // no-ops if the windows are at their final opacity and transform, which can
-  // happen if the windows were completely occluded before entering overview.
-  if (WindowState::Get(window)->IsMinimized()) {
-    item_widget()->GetLayer()->SetOpacity(std::clamp(0.01f, scroll_ratio, 1.f));
-  } else {
-    gfx::Transform transform = gfx::Tween::TransformValueBetween(
-        scroll_ratio, gfx::Transform(), target_transform);
-    window_util::SetTransform(window, transform);
-  }
 }
 
 void OverviewItem::UpdateCannotSnapWarningVisibility(bool animate) {

@@ -242,11 +242,6 @@ void OverviewGroupItem::SetBounds(const gfx::RectF& target_bounds,
   item1->SetBounds(item1_bounds, animation_type);
 }
 
-gfx::Transform OverviewGroupItem::ComputeTargetTransform(
-    const gfx::RectF& target_bounds) {
-  return gfx::Transform();
-}
-
 gfx::RectF OverviewGroupItem::GetWindowsUnionScreenBounds() const {
   gfx::RectF target_bounds;
   for (const auto& item : overview_items_) {
@@ -448,10 +443,6 @@ void OverviewGroupItem::OnOverviewItemDragEnded(bool snap) {
   // to receive the events.
   Restack();
 }
-
-void OverviewGroupItem::OnOverviewItemContinuousScroll(
-    const gfx::Transform& target_transform,
-    float scroll_ratio) {}
 
 void OverviewGroupItem::UpdateCannotSnapWarningVisibility(bool animate) {}
 

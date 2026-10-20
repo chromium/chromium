@@ -123,11 +123,6 @@ void OverviewDropTarget::SetBounds(const gfx::RectF& target_bounds,
   item_widget_->SetBounds(gfx::ToRoundedRect(target_bounds));
 }
 
-gfx::Transform OverviewDropTarget::ComputeTargetTransform(
-    const gfx::RectF& target_bounds) {
-  return gfx::Transform();
-}
-
 gfx::RectF OverviewDropTarget::GetWindowsUnionScreenBounds() const {
   return target_bounds_;
 }
@@ -180,10 +175,6 @@ void OverviewDropTarget::StartDrag() {}
 void OverviewDropTarget::OnOverviewItemDragStarted() {}
 
 void OverviewDropTarget::OnOverviewItemDragEnded(bool snap) {}
-
-void OverviewDropTarget::OnOverviewItemContinuousScroll(
-    const gfx::Transform& target_transform,
-    float scroll_ratio) {}
 
 void OverviewDropTarget::UpdateCannotSnapWarningVisibility(bool animate) {}
 

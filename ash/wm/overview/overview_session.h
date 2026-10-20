@@ -304,12 +304,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // |active_window_before_overview_|.
   bool IsWindowActiveWindowBeforeOverview(aura::Window* window) const;
 
-  // Used when feature ContinuousOverviewScrollAnimation is enabled. If a
-  // continuous scroll is in progress, position windows and desk bar
-  // continuously based on the y-distance of the scroll. If the scroll is
-  // ending, animate windows and desk bar to their final positions.
-  bool HandleContinuousScrollIntoOverview(float y_offset);
-
   // Shows the saved desk library. Creates the widget if needed. The desks bar
   // will be expanded if it isn't already. Focuses the item which matches
   // `item_to_focus` on the display associated with `root_window`.
@@ -461,7 +455,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void RemoveAllObservers();
 
   // Updates the no windows widget on each `OverviewGrid`.
-  void UpdateNoWindowsWidgetOnEachGrid(bool animate, bool is_continuous_enter);
+  void UpdateNoWindowsWidgetOnEachGrid(bool animate);
 
   void OnItemAdded(aura::Window* window);
 

@@ -15,7 +15,6 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
-#include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -216,30 +215,6 @@ bool OverviewController::CanEnterOverview() const {
 
 bool OverviewController::InOverviewSession() const {
   return overview_session_ && !overview_session_->is_shutting_down();
-}
-
-bool OverviewController::HandleContinuousScroll(float y_offset,
-                                                OverviewEnterExitType type) {
-  // We enter with type `kNormal` if a fast scroll happened and we want to enter
-  // overview mode immediately, using ToggleOverview().
-  CHECK((type ==
-         OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate) ||
-        (type == OverviewEnterExitType::kNormal));
-
-  // Determine if this is the last scroll update in this continuous scroll.
-  is_continuous_scroll_in_progress_ =
-      y_offset != WmGestureHandler::kVerticalThresholdDp &&
-      type != OverviewEnterExitType::kNormal;
-
-  if (!overview_session_) {
-    session_metrics_recorder_.emplace(
-        OverviewStartAction::k3FingerVerticalScroll, this);
-    ToggleOverview(type);
-    return true;
-  }
-
-  overview_session_->set_enter_exit_overview_type(type);
-  return overview_session_->HandleContinuousScrollIntoOverview(y_offset);
 }
 
 void OverviewController::IncrementSelection(bool forward) {

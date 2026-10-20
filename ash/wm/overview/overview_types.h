@@ -90,12 +90,6 @@ enum class OverviewEnterExitType {
   // that we do not need to add a delayed observer to handle minimizing the
   // windows after overview exit animations are finished.
   kFadeOutExit,
-  // Allows for a smooth transition to and from overview mode. When this type
-  // is used, overview mode will be entered immediately. However, the windows
-  // will stay in their current position/state. As the user scrolls up and down
-  // on the trackpad, each window will be put in an "in-between" state, between
-  // their current and final state, according to the scroll offset.
-  kContinuousAnimationEnterOnScrollUpdate,
   // Like `kNormal` but this is triggered from the full restore service when the
   // login work is still being completed. Birch uses this to determine what
   // timeout to use.

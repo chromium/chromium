@@ -44,8 +44,6 @@ class OverviewDropTarget : public OverviewItemBase {
   void RestoreWindow(bool reset_transform, bool animate) override;
   void SetBounds(const gfx::RectF& target_bounds,
                  OverviewAnimationType animation_type) override;
-  gfx::Transform ComputeTargetTransform(
-      const gfx::RectF& target_bounds) override;
   gfx::RectF GetWindowsUnionScreenBounds() const override;
   gfx::RectF GetTargetBoundsWithInsets() const override;
   gfx::RectF GetTransformedBounds() const override;
@@ -64,8 +62,6 @@ class OverviewDropTarget : public OverviewItemBase {
   void StartDrag() override;
   void OnOverviewItemDragStarted() override;
   void OnOverviewItemDragEnded(bool snap) override;
-  void OnOverviewItemContinuousScroll(const gfx::Transform& target_transform,
-                                      float scroll_ratio) override;
   void UpdateCannotSnapWarningVisibility(bool animate) override;
   void HideCannotSnapWarning(bool animate) override;
   void OnMovingItemToAnotherDesk() override;

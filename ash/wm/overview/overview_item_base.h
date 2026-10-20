@@ -198,10 +198,6 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
   virtual void SetBounds(const gfx::RectF& target_bounds,
                          OverviewAnimationType animation_type) = 0;
 
-  // TODO(http://b/297923747): Integrate continuous animation with snap groups.
-  virtual gfx::Transform ComputeTargetTransform(
-      const gfx::RectF& target_bounds) = 0;
-
   // Returns the union of the original target bounds of all transformed windows
   // represented by `this`, i.e. all regular (normal or transient descendants of
   // the windows returned by `GetWindows()`).
@@ -257,12 +253,6 @@ class ASH_EXPORT OverviewItemBase : public EventHandlerDelegate {
 
   virtual void OnOverviewItemDragStarted() = 0;
   virtual void OnOverviewItemDragEnded(bool snap) = 0;
-
-  // Called when performing the continuous scroll on overview item to set
-  // transform and opacity with pre-calculated `target_transform`.
-  virtual void OnOverviewItemContinuousScroll(
-      const gfx::Transform& target_transform,
-      float scroll_ratio) = 0;
 
   // Shows the cannot snap warning if currently in splitview, and the associated
   // item cannot be snapped.
