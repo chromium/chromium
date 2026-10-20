@@ -1512,24 +1512,15 @@ void ChildProcessSecurityPolicyImpl::GrantCommitURL(int child_id,
     return;
   }
 
-  base::AutoLock lock(lock_);
-
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  auto* state = process_states_.GetProcessStateForMutation(
-      ChildProcessId::FromUnsafeValue(child_id));
-  if (!state) {
-    return;
-  }
-
   if (origin.opaque()) {
     // If it's impossible to grant commit rights to just the origin (among other
     // things, URLs with non-standard schemes will be treated as opaque
     // origins), then grant access to commit all URLs of that scheme.
-    state->GrantCommitScheme(url.GetScheme());
+    GrantCommitScheme(child_id, url.GetScheme());
   } else {
     // When the child process has been commanded to request this scheme, grant
     // it the capability to request all URLs of that scheme.
-    state->GrantRequestScheme(url.GetScheme());
+    GrantRequestScheme(child_id, url.GetScheme());
   }
 }
 
