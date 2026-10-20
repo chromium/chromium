@@ -1716,10 +1716,8 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
     if (start_offset > end_offset)
       std::swap(start_offset, end_offset);
 
-    if (start_offset >=
-            static_cast<int>(start_object.GetTextContentLengthUTF16()) ||
-        end_offset >
-            static_cast<int>(start_object.GetTextContentLengthUTF16())) {
+    const int start_text_length = start_object.GetTextContentLengthUTF16();
+    if (start_offset >= start_text_length || end_offset > start_text_length) {
       return std::u16string();
     }
 
@@ -1738,14 +1736,12 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
       std::swap(start_offset, end_offset);
 
     const BrowserAccessibility* text_object = text_only_objects[0];
-    if (start_offset <
-            static_cast<int>(text_object->GetTextContentLengthUTF16()) &&
-        end_offset <=
-            static_cast<int>(text_object->GetTextContentLengthUTF16())) {
-      return text_object->GetTextContentUTF16().substr(
-          start_offset, end_offset - start_offset);
+    const std::u16string text = text_object->GetTextContentUTF16();
+    const int text_length = static_cast<int>(text.length());
+    if (start_offset < text_length && end_offset <= text_length) {
+      return text.substr(start_offset, end_offset - start_offset);
     }
-    return text_object->GetTextContentUTF16();
+    return text;
   }
 
   std::u16string text;
@@ -1757,11 +1753,11 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
   if (!first_object || first_object != start_text_object)
     std::swap(start_offset, end_offset);
 
-  if (start_offset <
-      static_cast<int>(start_text_object->GetTextContentUTF16().length())) {
-    text += start_text_object->GetTextContentUTF16().substr(start_offset);
+  const std::u16string start_text = start_text_object->GetTextContentUTF16();
+  if (start_offset < static_cast<int>(start_text.length())) {
+    text += start_text.substr(start_offset);
   } else {
-    text += start_text_object->GetTextContentUTF16();
+    text += start_text;
   }
 
   for (size_t i = 1; i < text_only_objects.size() - 1; ++i) {
@@ -1769,11 +1765,11 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
   }
 
   const BrowserAccessibility* end_text_object = text_only_objects.back();
-  if (end_offset <=
-      static_cast<int>(end_text_object->GetTextContentLengthUTF16())) {
-    text += end_text_object->GetTextContentUTF16().substr(0, end_offset);
+  const std::u16string end_text = end_text_object->GetTextContentUTF16();
+  if (end_offset <= static_cast<int>(end_text.length())) {
+    text += end_text.substr(0, end_offset);
   } else {
-    text += end_text_object->GetTextContentUTF16();
+    text += end_text;
   }
 
   return text;
@@ -1792,10 +1788,8 @@ gfx::Rect BrowserAccessibilityManager::GetRootFrameInnerTextRangeBoundsRect(
     if (start_offset > end_offset)
       std::swap(start_offset, end_offset);
 
-    if (start_offset >=
-            static_cast<int>(start_object.GetTextContentLengthUTF16()) ||
-        end_offset >
-            static_cast<int>(start_object.GetTextContentLengthUTF16())) {
+    const int start_text_length = start_object.GetTextContentLengthUTF16();
+    if (start_offset >= start_text_length || end_offset > start_text_length) {
       return gfx::Rect();
     }
 
