@@ -29,7 +29,7 @@
 // `prefilledEmail` preset the email in the add account dialog. The user can
 //     change this email. If the user changes the email and finishes the flow
 //     successfully, the coordinator flow is successful and the sign-in callback
-//     returns SigninCoordinatorResultSuccess.
+//     returns the added identity.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser

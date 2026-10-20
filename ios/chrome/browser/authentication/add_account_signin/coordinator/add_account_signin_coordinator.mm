@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/authentication/add_account_signin/coordinator/add_account_signin_coordinator.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
@@ -197,21 +199,20 @@ using signin_metrics::PromoAction;
   switch (result) {
     case SigninAddAccountToDeviceResult::kInterrupted:
       // Stop the reauth flow.
-      [self addAccountDoneWithSigninResult:SigninCoordinatorResultInterrupted
-                                  identity:nil];
+      [self addAccountDoneWithSigninResult:
+                base::unexpected(SigninCoordinatorResultInterrupted)];
       return;
     case SigninAddAccountToDeviceResult::kCancelledByUser:
-      [self addAccountDoneWithSigninResult:SigninCoordinatorResultCanceledByUser
-                                  identity:nil];
+      [self addAccountDoneWithSigninResult:
+                base::unexpected(SigninCoordinatorResultCanceledByUser)];
       return;
     case SigninAddAccountToDeviceResult::kError: {
       DCHECK(error);
       __weak AddAccountSigninCoordinator* weakSelf = self;
       ProceduralBlock dismissAction = ^{
         [weakSelf stopAlertCoordinator];
-        [weakSelf
-            addAccountDoneWithSigninResult:SigninCoordinatorResultCanceledByUser
-                                  identity:nil];
+        [weakSelf addAccountDoneWithSigninResult:
+                      base::unexpected(SigninCoordinatorResultCanceledByUser)];
       };
 
       self.alertCoordinator = ErrorCoordinator(
@@ -241,9 +242,20 @@ using signin_metrics::PromoAction;
         });
         return;
       }
-      [self
-          continueAddAccountFlowWithSigninResult:SigninCoordinatorResultSuccess
-                                        identity:identity];
+      // TODO(crbug.com/400902218): Handle the case where the identity is
+      // assigned to a different profile. (For kAddAccount this shouldn't
+      // matter, and for kPrimaryAccountReauth it should be impossible, but for
+      // kResignin it needs to be handled, probably by switching to the other
+      // profile and continuing the flow there.)
+      switch (self.signinIntent) {
+        case AddAccountSigninIntent::kResignin:
+          [self presentPostSigninManagerCoordinatorWithIdentity:identity];
+          break;
+        case AddAccountSigninIntent::kAddAccount:
+        case AddAccountSigninIntent::kPrimaryAccountReauth:
+          [self addAccountDoneWithSigninResult:identity];
+          break;
+      }
     }
   }
 }
@@ -291,30 +303,6 @@ using signin_metrics::PromoAction;
   self.postSigninManagerCoordinator = nil;
 }
 
-// Continues the sign-in workflow according to the sign-in intent
-- (void)continueAddAccountFlowWithSigninResult:
-            (SigninCoordinatorResult)signinResult
-                                      identity:(id<SystemIdentity>)identity {
-  // TODO(crbug.com/400902218): Handle the case where the identity is assigned
-  // to a different profile. (For kAddAccount this shouldn't matter, and for
-  // kPrimaryAccountReauth it should be impossible, but for kResignin it needs
-  // to be handled, probably by switching to the other profile and continuing
-  // the flow there.)
-  switch (self.signinIntent) {
-    case AddAccountSigninIntent::kResignin:
-      if (signinResult == SigninCoordinatorResultSuccess) {
-        [self presentPostSigninManagerCoordinatorWithIdentity:identity];
-      } else {
-        [self addAccountDoneWithSigninResult:signinResult identity:identity];
-      }
-      break;
-    case AddAccountSigninIntent::kAddAccount:
-    case AddAccountSigninIntent::kPrimaryAccountReauth:
-      [self addAccountDoneWithSigninResult:signinResult identity:identity];
-      break;
-  }
-}
-
 // Presents an alert when sign in with a restricted account and then continue
 // the sign-in workflow.
 - (void)presentSignInWithRestrictedAccountAlert {
@@ -331,9 +319,9 @@ using signin_metrics::PromoAction;
       addItemWithTitle:l10n_util::GetNSString(IDS_OK)
                 action:^{
                   [weakSelf stopAlertCoordinator];
-                  [weakSelf continueAddAccountFlowWithSigninResult:
-                                SigninCoordinatorResultCanceledByUser
-                                                          identity:nil];
+                  [weakSelf addAccountDoneWithSigninResult:
+                                base::unexpected(
+                                    SigninCoordinatorResultCanceledByUser)];
                 }
                  style:UIAlertActionStyleDefault];
 
@@ -341,17 +329,16 @@ using signin_metrics::PromoAction;
 }
 
 // Runs callback completion on finishing the add account flow.
-- (void)addAccountDoneWithSigninResult:(SigninCoordinatorResult)signinResult
-                              identity:(id<SystemIdentity>)identity {
+- (void)addAccountDoneWithSigninResult:
+    (SigninCoordinatorResultOrIdentity)signinResult {
   DCHECK(!self.alertCoordinator);
   DCHECK(!self.postSigninManagerCoordinator);
   DCHECK(!self.historySyncPopupCoordinator);
-  signin::CheckSigninCoordinatorResultAndIdentity(signinResult, identity);
   if (_stopped) {
     // The delegate is already dealing with stopping `self`.
     return;
   }
-  [self runCompletionWithSigninResult:signinResult completionIdentity:identity];
+  [self runCompletionWithSigninResult:std::move(signinResult)];
 }
 
 // Presents the extra screen with `identity` pre-selected.
@@ -360,8 +347,9 @@ using signin_metrics::PromoAction;
   if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // Due to asynchronicity, it can occurs that the users already got
     // signed-in.
-    [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                     completionIdentity:nil];
+    [self
+        runCompletionWithSigninResult:base::unexpected(
+                                          SigninCoordinatorResultInterrupted)];
     return;
   }
   CHECK([self isStarted]);
@@ -377,38 +365,29 @@ using signin_metrics::PromoAction;
                                 continuationProvider:_continuationProvider];
 
   __weak AddAccountSigninCoordinator* weakSelf = self;
-  self.postSigninManagerCoordinator.signinCompletion = ^(
-      SigninCoordinator* coordinator,
-      SigninCoordinatorResultOrIdentity result) {
-    SigninCoordinatorResult signinResult =
-        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-            result);
-    [weakSelf
-        postSigninManagerCoordinatorDoneWithCoordinator:coordinator
-                                                 result:signinResult
-                               signinCompletionIdentity:result.value_or(nil)];
-  };
+  self.postSigninManagerCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
+        [weakSelf postSigninDoneWithCoordinator:coordinator
+                                         result:std::move(result)];
+      };
   [self.postSigninManagerCoordinator start];
 }
 
-- (void)postSigninManagerCoordinatorDoneWithCoordinator:
-            (SigninCoordinator*)coordinator
-                                                 result:
-                                                     (SigninCoordinatorResult)
-                                                         result
-                               signinCompletionIdentity:
-                                   (id<SystemIdentity>)resultIdentity {
+- (void)postSigninDoneWithCoordinator:(SigninCoordinator*)coordinator
+                               result:
+                                   (SigninCoordinatorResultOrIdentity)result {
   CHECK_EQ(self.postSigninManagerCoordinator, coordinator);
   [self stopPostSigninManagerCoordinatorAnimated:NO];
-  if (result != SigninCoordinatorResultSuccess) {
-    [self addAccountDoneWithSigninResult:result identity:resultIdentity];
+  if (!result.has_value()) {
+    [self addAccountDoneWithSigninResult:std::move(result)];
     return;
   }
 
   if (history_sync::GetSkipReason(_syncService, _authenticationService,
                                   self.profile->GetPrefs(), YES) !=
       history_sync::HistorySyncSkipReason::kNone) {
-    [self addAccountDoneWithSigninResult:result identity:resultIdentity];
+    [self addAccountDoneWithSigninResult:std::move(result)];
     return;
   }
   CHECK([self isStarted]);
@@ -433,20 +412,20 @@ using signin_metrics::PromoAction;
       AuthenticationServiceFactory::GetForProfile(
           self.profile->GetOriginalProfile());
   id<SystemIdentity> primaryIdentity = authService->GetPrimaryIdentity();
-  SigninCoordinatorResult signinResult;
+  SigninCoordinatorResultOrIdentity signinResult =
+      base::unexpected(SigninCoordinatorResultInterrupted);
   switch (result) {
     case HistorySyncResult::kUserCanceled:
     case HistorySyncResult::kSuccess:
     case HistorySyncResult::kSkipped:
-      signinResult = SigninCoordinatorResultSuccess;
       CHECK(primaryIdentity);
+      signinResult = primaryIdentity;
       break;
     case HistorySyncResult::kPrimaryIdentityRemoved:
-      signinResult = SigninCoordinatorResultInterrupted;
       CHECK(!primaryIdentity);
       break;
   }
-  [self addAccountDoneWithSigninResult:signinResult identity:primaryIdentity];
+  [self addAccountDoneWithSigninResult:std::move(signinResult)];
 }
 
 #pragma mark - AddAccountSigninMediatorDelegate
@@ -457,8 +436,8 @@ using signin_metrics::PromoAction;
     // Stop is already ongoing.
     return;
   }
-  [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
-                   completionIdentity:nil];
+  [self runCompletionWithSigninResult:base::unexpected(
+                                          SigninCoordinatorResultInterrupted)];
 }
 
 #pragma mark - NSObject
