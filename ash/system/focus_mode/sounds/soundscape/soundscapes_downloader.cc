@@ -84,10 +84,8 @@ std::unique_ptr<network::SimpleURLLoader> CreateSimpleURLLoader(
 
 class SoundscapesDownloaderImpl : public SoundscapesDownloader {
  public:
-  SoundscapesDownloaderImpl(
-      SoundscapesDownloader::Urls config,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      : configuration_(config), url_loader_factory_(url_loader_factory) {}
+  explicit SoundscapesDownloaderImpl(SoundscapesDownloader::Urls config)
+      : configuration_(std::move(config)) {}
   ~SoundscapesDownloaderImpl() override = default;
 
   void FetchConfiguration(ConfigurationCallback callback) override {
@@ -101,7 +99,7 @@ class SoundscapesDownloaderImpl : public SoundscapesDownloader {
                            network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
                            network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED;
     pending_request_->SetRetryOptions(kMaxRetries, retry_mode);
-    pending_request_->DownloadToString(url_loader_factory_.get(),
+    pending_request_->DownloadToString(GetUrlLoaderFactory().get(),
                                        std::move(handler), kMaxDownloadBytes);
   }
 
@@ -114,6 +112,11 @@ class SoundscapesDownloaderImpl : public SoundscapesDownloader {
     }
 
     return resolved;
+  }
+
+ protected:
+  virtual scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory() {
+    return Shell::Get()->shell_delegate()->GetBrowserProcessUrlLoaderFactory();
   }
 
  private:
@@ -156,8 +159,26 @@ class SoundscapesDownloaderImpl : public SoundscapesDownloader {
 
   std::unique_ptr<network::SimpleURLLoader> pending_request_;
   SoundscapesDownloader::Urls configuration_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   base::WeakPtrFactory<SoundscapesDownloaderImpl> weak_factory_{this};
+};
+
+class TestSoundscapesDownloaderImpl : public SoundscapesDownloaderImpl {
+ public:
+  TestSoundscapesDownloaderImpl(
+      SoundscapesDownloader::Urls config,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : SoundscapesDownloaderImpl(std::move(config)),
+        url_loader_factory_(std::move(url_loader_factory)) {}
+  ~TestSoundscapesDownloaderImpl() override = default;
+
+ protected:
+  scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory()
+      override {
+    return url_loader_factory_;
+  }
+
+ private:
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
 }  // namespace
@@ -172,16 +193,15 @@ std::unique_ptr<SoundscapesDownloader> SoundscapesDownloader::Create(
   CHECK(!locale.empty());
 
   return std::make_unique<SoundscapesDownloaderImpl>(
-      ProductionConfiguration(locale),
-      Shell::Get()->shell_delegate()->GetBrowserProcessUrlLoaderFactory());
+      ProductionConfiguration(locale));
 }
 
 // static
 std::unique_ptr<SoundscapesDownloader> SoundscapesDownloader::CreateForTesting(
     const SoundscapesDownloader::Urls& configuration,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  return std::make_unique<SoundscapesDownloaderImpl>(configuration,
-                                                     url_loader_factory);
+  return std::make_unique<TestSoundscapesDownloaderImpl>(
+      configuration, std::move(url_loader_factory));
 }
 
 }  // namespace ash
