@@ -75,7 +75,9 @@ class DefaultOfflineWebContentsObserver : public content::WebContentsObserver {
     // If we have no error_page_url_ then this is the end of the first
     // navigation. Since this class is created when we detect an error page is
     // about to be shown, we just need to grab the URL and start the timer.
-    CHECK(navigation_handle->IsErrorPage(), base::NotFatalUntil::M162);
+    // TODO(crbug.com/575489700): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(navigation_handle->IsErrorPage());
     CHECK(error_page_url_.is_empty(), base::NotFatalUntil::M162);
     error_page_url_ = navigation_handle->GetURL();
     timer_start_ = base::TimeTicks::Now();
