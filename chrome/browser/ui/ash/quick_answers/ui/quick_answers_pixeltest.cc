@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
@@ -19,7 +18,6 @@
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -162,15 +160,6 @@ class QuickAnswersPixelTestBase
     : public InProcessBrowserTest,
       public testing::WithParamInterface<PixelTestParam> {
  public:
-  void SetUp() override {
-    // Make sure kQuickAnswersRichCard is disabled. It might be enabled via
-    // fieldtrial_testing_config.
-    scoped_feature_list_.InitAndDisableFeature(
-        chromeos::features::kQuickAnswersRichCard);
-
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (IsRtl(GetParam())) {
       command_line->AppendSwitchASCII(switches::kForceUIDirection,
@@ -259,7 +248,6 @@ class QuickAnswersPixelTestBase
         .widget_for_test();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<views::ViewSkiaGoldPixelDiff> pixel_diff_;
 };
 

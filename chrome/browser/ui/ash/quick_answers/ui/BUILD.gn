@@ -14,8 +14,6 @@ source_set("ui") {
     "magic_boost_user_consent_view.h",
     "quick_answers_stage_button.cc",
     "quick_answers_stage_button.h",
-    "quick_answers_text_label.cc",
-    "quick_answers_text_label.h",
     "quick_answers_util.cc",
     "quick_answers_util.h",
     "quick_answers_view.cc",

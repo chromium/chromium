@@ -93,9 +93,6 @@ BASE_FEATURE(kPlatformKeysChangesWave1, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to enable Quick Answers Rich card.
-BASE_FEATURE(kQuickAnswersRichCard, base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsBluetoothWifiQSPodRefreshEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothWifiQSPodRefresh);
 }
@@ -140,10 +137,6 @@ bool IsOrcaEnabled() {
 bool ShouldDisableChromeComposeOnChromeOS() {
   return base::FeatureList::IsEnabled(kFeatureManagementDisableChromeCompose) ||
          IsOrcaEnabled();
-}
-
-bool IsQuickAnswersRichCardEnabled() {
-  return base::FeatureList::IsEnabled(kQuickAnswersRichCard);
 }
 
 bool IsQuickAnswersV2SettingsSubToggleEnabled() {

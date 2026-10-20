@@ -8411,11 +8411,6 @@ inline constexpr char kPlatformKeysChangesWave1Description[] =
     "\"RSA-OAEP\" key type with the \"unwrapKey\" key usage and adding the "
     "setKeyTag() API method to mark keys for future lookup.";
 
-inline constexpr char kQuickAnswersRichCardName[] =
-    "Enable Quick Answers Rich Card";
-inline constexpr char kQuickAnswersRichCardDescription[] =
-    "Enable rich card views of the Quick Answers feature.";
-
 inline constexpr char kChromeOSHWVBREncodingName[] =
     "ChromeOS Hardware Variable Bitrate Encoding";
 inline constexpr char kChromeOSHWVBREncodingDescription[] =

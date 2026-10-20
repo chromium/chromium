@@ -18,7 +18,6 @@
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/components/quick_answers/utils/spell_checker.h"
 #include "chromeos/components/quick_answers/utils/translation_v2_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "components/translate/core/browser/translate_download_manager.h"
@@ -36,8 +35,7 @@ using ::chromeos::machine_learning::mojom::TextClassifier;
 
 // TODO(llin): Finalize on the threshold based on user feedback.
 constexpr int kUnitConversionIntentAndSelectionLengthDiffThreshold = 5;
-constexpr int kTranslationTextLengthThreshold = 100;
-constexpr int kRichAnswersTranslationTextLengthThreshold = 250;
+constexpr size_t kTranslationTextLengthThreshold = 100;
 constexpr int kDefinitionIntentAndSelectionLengthDiffThreshold = 2;
 
 // TODO(b/169370175): Remove the temporary invalid set after we ramp up to v2
@@ -331,15 +329,11 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
     return;
   }
 
-  size_t translation_text_length_threshold =
-      chromeos::features::IsQuickAnswersRichCardEnabled()
-          ? kRichAnswersTranslationTextLengthThreshold
-          : kTranslationTextLengthThreshold;
   // Don't generate translation intent if no device language is provided or the
   // length of selected text is above the threshold. Returns unknown intent
   // type.
   if (QuickAnswersState::Get()->application_locale().empty() ||
-      request.selected_text.length() > translation_text_length_threshold) {
+      request.selected_text.length() > kTranslationTextLengthThreshold) {
     std::move(complete_callback_)
         .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
     return;
