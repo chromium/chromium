@@ -14,6 +14,8 @@ exclude = [
 quote-style = "preserve"
 
 [lint]
+# Enable the legacy Ruff 0.15 default ruleset.
+select = ["E4", "E7", "E9", "F"]
 ignore = [
   "E402",  # module-import-not-at-top-of-file
   "E701",  # multiple-statements-on-one-line-colon

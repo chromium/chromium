@@ -10,3 +10,7 @@ quote-style = "preserve"
 [per-file-target-version]
 # TODO: remove once Fuchsia upgrades the Py version.
 "fuchsia/**" = "py38"
+
+[lint]
+# Enable the legacy Ruff 0.15 default ruleset.
+select = ["E4", "E7", "E9", "F"]

@@ -5,4 +5,6 @@ indent-width = 2
 quote-style = "preserve"
 
 [lint]
+# Enable the legacy Ruff 0.15 default ruleset.
+select = ["E4", "E7", "E9", "F"]
 unfixable = ["F401"]
