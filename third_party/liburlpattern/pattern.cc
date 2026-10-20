@@ -13,14 +13,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/types/expected.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/abseil-cpp/absl/strings/str_cat.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
-#include "third_party/icu/source/common/unicode/utf8.h"
 #include "third_party/liburlpattern/utils.h"
 
 namespace liburlpattern {
@@ -52,6 +51,17 @@ size_t ModifierLength(Modifier modifier) {
     case Modifier::kNone:
       return 0;
   }
+}
+
+// Returns true if `text` starts with a code point that may appear in a group
+// name after its first code point; i.e. if `text` would be read as part of a
+// directly preceding `:foo` name. Returns false if `text` is empty or does not
+// start with well-formed UTF-8.
+bool StartsWithNameCodepoint(std::string_view text) {
+  size_t index = 0;
+  base_icu::UChar32 codepoint;
+  return base::ReadUnicodeCharacter(text, &index, &codepoint) &&
+         IsNameCodepoint(codepoint, /*first_codepoint=*/false);
 }
 
 }  // namespace
@@ -123,11 +133,7 @@ std::string Pattern::GeneratePatternString() const {
         part.modifier == Modifier::kNone && next_part &&
         next_part->prefix.empty() && next_part->suffix.empty()) {
       if (next_part->type == PartType::kFixed) {
-        UChar32 codepoint = -1;
-        UNSAFE_TODO(
-            U8_GET(reinterpret_cast<const uint8_t*>(next_part->value.data()), 0,
-                   0, static_cast<int>(next_part->value.size()), codepoint));
-        needs_grouping = IsNameCodepoint(codepoint, /*first_codepoint=*/false);
+        needs_grouping = StartsWithNameCodepoint(next_part->value);
       } else {
         needs_grouping = !next_part->HasCustomName();
       }
@@ -205,11 +211,7 @@ std::string Pattern::GeneratePatternString() const {
     // from the end of the custom name; e.g. `:foo\\bar` instead of `:foobar`.
     if (part.type == PartType::kSegmentWildcard && custom_name &&
         !part.suffix.empty()) {
-      UChar32 codepoint = -1;
-      UNSAFE_TODO(U8_GET(reinterpret_cast<const uint8_t*>(part.suffix.data()),
-                         0, 0, static_cast<int>(part.suffix.size()),
-                         codepoint));
-      if (IsNameCodepoint(codepoint, /*first_codepoint=*/false)) {
+      if (StartsWithNameCodepoint(part.suffix)) {
         result += "\\";
       }
     }

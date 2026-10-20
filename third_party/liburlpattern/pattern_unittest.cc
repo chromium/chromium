@@ -18,6 +18,7 @@
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/parse.h"
+#include "third_party/liburlpattern/part.h"
 
 namespace {
 
@@ -408,6 +409,35 @@ TEST(PatternStringTest, NamedGroupInGroupingFollowedByValidNameText) {
 
 TEST(PatternStringTest, NamedGroupFollowedByEscapedValidNameText) {
   RunPatternStringTest(":foo\\bar", "{:foo}bar");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByNonAsciiValidNameText) {
+  // U+00DF LATIN SMALL LETTER SHARP S.
+  RunPatternStringTest("{:foo}\xC3\x9F", "{:foo}\xC3\x9F");
+}
+
+TEST(PatternStringTest, NamedGroupFollowedByNonAsciiInvalidNameText) {
+  // U+20AC EURO SIGN.
+  RunPatternStringTest(":foo\xE2\x82\xAC", ":foo\xE2\x82\xAC");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByDigit) {
+  // A digit cannot start a name, but it can continue one, so `:foo1` would be
+  // read as a single `foo1` name.
+  RunPatternStringTest("{:foo}1", "{:foo}1");
+}
+
+TEST(PatternStringTest, NamedGroupFollowedByInvalidUtf8) {
+  // Parse() rejects invalid UTF-8, but an EncodeCallback may return it, so
+  // build the Pattern directly. An invalid byte never continues a name, even
+  // when it is followed by a valid name code point.
+  std::vector<Part> part_list;
+  part_list.emplace_back(PartType::kSegmentWildcard, /*name=*/"foo",
+                         /*prefix=*/"", /*value=*/"", /*suffix=*/"",
+                         Modifier::kNone);
+  part_list.emplace_back(PartType::kFixed, "\x80z", Modifier::kNone);
+  Pattern pattern(std::move(part_list), Options(), "[^\\/#\\?]+?");
+  EXPECT_EQ(pattern.GeneratePatternString(), ":foo\x80z");
 }
 
 TEST(PatternStringTest, NamedGroupWithRegexpFollowedByValidNameText) {
