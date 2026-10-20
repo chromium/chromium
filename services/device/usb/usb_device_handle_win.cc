@@ -40,6 +40,12 @@
 
 namespace device {
 
+base::win::ScopedHandle CreateUsbRequestEvent() {
+  // Use a manual-reset event for overlapped I/O. Each request owns a fresh
+  // event, so it never needs to be reset for reuse.
+  return base::win::ScopedHandle(CreateEvent(nullptr, true, false, nullptr));
+}
+
 using mojom::UsbControlTransferRecipient;
 using mojom::UsbControlTransferType;
 using mojom::UsbTransferDirection;
@@ -148,7 +154,7 @@ class UsbDeviceHandleWin::Request : public base::win::ObjectWatcher::Delegate {
       : handle_(handle),
         interface_number_(interface_number),
         overlapped_{},
-        event_(CreateEvent(nullptr, false, false, nullptr)) {
+        event_(CreateUsbRequestEvent()) {
     overlapped_.hEvent = event_.Get();
   }
 
@@ -204,9 +210,11 @@ class UsbDeviceHandleWin::Request : public base::win::ObjectWatcher::Delegate {
       return;
     }
 
+    // The operation completed synchronously, or ObjectWatcher observed its
+    // completion event, so no further wait is needed to retrieve the result.
     DWORD size;
-    BOOL result =
-        WinUsb_GetOverlappedResult(handle_, &overlapped_, &size, true);
+    BOOL result = WinUsb_GetOverlappedResult(handle_, &overlapped_, &size,
+                                             /*bWait=*/false);
     DWORD last_error = GetLastError();
 
     // Request holds a reference to the buffer to ensure the kernel has a valid

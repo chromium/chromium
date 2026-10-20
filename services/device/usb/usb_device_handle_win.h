@@ -30,6 +30,9 @@ namespace device {
 
 class UsbDeviceWin;
 
+// Creates the per-request manual-reset event used by ObjectWatcher and WinUSB.
+base::win::ScopedHandle CreateUsbRequestEvent();
+
 // UsbDeviceHandle class provides basic I/O related functionalities.
 class UsbDeviceHandleWin : public UsbDeviceHandle {
  public:
