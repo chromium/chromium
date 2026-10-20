@@ -111,7 +111,7 @@ bool RawPtrBackupRefImpl<AllowDangling>::IsPointeeAlive(uintptr_t address) {
 template struct RawPtrBackupRefImpl</*AllowDangling=*/false>;
 template struct RawPtrBackupRefImpl</*AllowDangling=*/true>;
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
   auto reservation_offset_table =
@@ -127,7 +127,7 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
                   partition_alloc::PartitionPageSize());
   }
 }
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) ||
         // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 
 }  // namespace base::internal

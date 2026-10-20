@@ -1715,10 +1715,12 @@ TEST_F(BackupRefPtrTest, Basic) {
   EXPECT_EQ(*raw_ptr1, *wrapped_ptr1);
 
   allocator_.root()->Free(raw_ptr1);
-#if DCHECK_IS_ON() || PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) || \
+    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   // In debug builds, the use-after-free should be caught immediately.
   EXPECT_DEATH_IF_SUPPORTED(g_volatile_int_to_ignore = *wrapped_ptr1, "");
-#else   // DCHECK_IS_ON() || PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#else   // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) ||
+        // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   // The allocation should be poisoned since there's a raw_ptr alive.
   EXPECT_NE(*wrapped_ptr1, 42);
 
@@ -1734,7 +1736,8 @@ TEST_F(BackupRefPtrTest, Basic) {
   EXPECT_EQ(partition_alloc::UntagPtr(raw_ptr1),
             partition_alloc::UntagPtr(raw_ptr3));
   allocator_.root()->Free(raw_ptr3);
-#endif  // DCHECK_IS_ON() || PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON) ||
+        // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 }
 
 TEST_F(BackupRefPtrTest, ZeroSized) {
