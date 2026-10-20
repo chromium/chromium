@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
@@ -54,6 +53,10 @@
 #include "ui/views/widget/widget_utils.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+#if defined(USE_AURA)
+#include "ui/aura/env.h"
+#endif
 
 namespace {
 
@@ -145,16 +148,44 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<PinnedURLs>,
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<int>,
                                     kScrollOffsetPoller);
 
-class VerticalTabDragTest
-    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
+class TabDragTest
+    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest>,
+      public testing::WithParamInterface<TabStripOrientation> {
  public:
-  VerticalTabDragTest() = default;
-  ~VerticalTabDragTest() override = default;
+  TabDragTest() = default;
+  ~TabDragTest() override = default;
+
+  virtual TabStripOrientation orientation() const { return GetParam(); }
+  bool is_horizontal() const {
+    return orientation() == TabStripOrientation::kHorizontal;
+  }
+
+  void SetUp() override {
+#if defined(USE_AURA)
+    // This needs to be disabled as it can interfere with when events are
+    // processed. In particular if input throttling is turned on, then when an
+    // event ack runs the event may not have been processed.
+    aura::Env::set_initial_throttle_input_on_resize_for_testing(false);
+#endif
+    VerticalTabsInteractiveTestMixin<InteractiveBrowserTest>::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    if (is_horizontal()) {
+      VerticalTabsBrowserTestMixin<
+          InteractiveBrowserTest>::ExitVerticalTabsMode();
+    } else {
+      VerticalTabsBrowserTestMixin<
+          InteractiveBrowserTest>::EnterVerticalTabsMode();
+    }
+    InteractiveBrowserTest::SetUpOnMainThread();
+  }
 
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
     auto enabled = VerticalTabsInteractiveTestMixin<
         InteractiveBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({tabs::kTabStripUnification, {}});
     enabled.push_back({features::kCollapseTabGroupDuringDrag, {}});
     return enabled;
   }
@@ -190,13 +221,23 @@ class VerticalTabDragTest
     return Do([&]() { views::test::RunScheduledLayout(&GetBrowserView()); });
   }
 
+  BaseTabStripRegionView* GetTabStripRegionView() {
+    return static_cast<BaseTabStripRegionView*>(
+        GetBrowserView().tab_strip_view());
+  }
+
+  TabStripView* GetTabStripView() {
+    auto* region_view = GetTabStripRegionView();
+    return region_view
+               ? static_cast<TabStripView*>(region_view->GetTabStripView())
+               : nullptr;
+  }
+
   views::View* GetTabViewAt(int tab_index) {
     TabStripModel* tab_strip_model = browser()->GetTabStripModel();
     tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(tab_index);
     RootTabCollectionNode* root_node =
-        GetBrowserView()
-            .vertical_tab_strip_region_view_for_testing()
-            ->root_node_for_testing();
+        GetTabStripRegionView()->root_node_for_testing();
     return root_node ? root_node->GetNodeForHandle(tab->GetHandle())->view()
                      : nullptr;
   }
@@ -289,15 +330,12 @@ class VerticalTabDragTest
 
   auto GetScrollOffset() {
     return base::BindRepeating(
-        [](VerticalTabDragTest* test) {
-          auto* region_view = test->GetBrowserView()
-                                  .vertical_tab_strip_region_view_for_testing();
-          auto* tab_strip_view =
-              static_cast<TabStripView*>(region_view->GetTabStripView());
-          return tab_strip_view->unpinned_tabs_scroll_view()
-              ->contents()
-              ->GetVisibleBounds()
-              .y();
+        [](TabDragTest* test) {
+          auto* scroll_view =
+              test->GetTabStripView()->unpinned_tabs_scroll_view();
+          const gfx::PointF offset = scroll_view->CurrentOffset();
+          return static_cast<int>(test->is_horizontal() ? offset.x()
+                                                        : offset.y());
         },
         base::Unretained(this));
   }
@@ -305,11 +343,7 @@ class VerticalTabDragTest
   auto NameScrollView(const char* name) {
     return NameView(name, base::BindLambdaForTesting([this]() {
                       return static_cast<views::View*>(
-                          static_cast<TabStripView*>(
-                              GetBrowserView()
-                                  .vertical_tab_strip_region_view_for_testing()
-                                  ->GetTabStripView())
-                              ->unpinned_tabs_scroll_view());
+                          GetTabStripView()->unpinned_tabs_scroll_view());
                     }));
   }
 
@@ -341,8 +375,11 @@ class VerticalTabDragTest
           model->group_model()->ListTabGroups();
       ASSERT_LT(static_cast<size_t>(group_index), groups.size());
       TabGroup* group = model->group_model()->GetTabGroup(groups[group_index]);
-      vertical_tab_strip_controller()->ToggleTabGroupCollapsedState(
-          group, ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+      GetTabStripRegionView()
+          ->root_node_for_testing()
+          ->GetController()
+          ->ToggleTabGroupCollapsedState(
+              group, ToggleTabGroupCollapsedStateOrigin::kMenuAction);
       views::test::RunScheduledLayout(&GetBrowserView());
     });
   }
@@ -352,7 +389,7 @@ class VerticalTabDragTest
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
 };
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragWithinUnpinnedContainer) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragWithinUnpinnedContainer) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   RunTestSequence(
@@ -388,22 +425,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragWithinUnpinnedContainer) {
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragTabMaintainsHorizontalPadding) {
-  RunTestSequence(
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
-      StartDragBetweenTabs(1, 0), PollState(kDragStatePoller, GetDragActive()),
-      WaitForState(kDragStatePoller, true), Do([&]() {
-        views::View* tab0 = GetTabViewAt(0);
-        views::View* tab1 = GetTabViewAt(1);
-        ASSERT_TRUE(tab0 && tab1);
-        // The dragged tab should maintain the same horizontal alignment/padding
-        // as other tabs in the vertical container.
-        EXPECT_EQ(tab1->GetBoundsInScreen().x(), tab0->GetBoundsInScreen().x());
-        EXPECT_EQ(tab1->GetTransform().To2dTranslation().x(), 0);
-      }),
-      ReleaseMouse(), WaitForState(kDragStatePoller, false));
-}
-
 // This test uses an experimental API to replace mouse events with touch events.
 // It is currently only supported on Ash Chrome.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -412,8 +433,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragTabMaintainsHorizontalPadding) {
 #define MAYBE_DragWithinUnpinnedContainerTouch \
   DISABLED_DragWithinUnpinnedContainerTouch
 #endif
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
-                       MAYBE_DragWithinUnpinnedContainerTouch) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, MAYBE_DragWithinUnpinnedContainerTouch) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   RunTestSequence(
@@ -450,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, TouchTapSelectsTab) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, TouchTapSelectsTab) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   RunTestSequence(
@@ -461,13 +481,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, TouchTapSelectsTab) {
       }),
       CheckResult([&]() { return tab_strip_model->active_index(); }, 0),
       Do([&]() {
-        tabs::TabInterface* tab1 = tab_strip_model->GetTabAtIndex(1);
-        RootTabCollectionNode* root_node =
-            GetBrowserView()
-                .vertical_tab_strip_region_view_for_testing()
-                ->root_node_for_testing();
-        views::View* tab1_view =
-            root_node->GetNodeForHandle(tab1->GetHandle())->view();
+        views::View* tab1_view = GetTabViewAt(1);
+        ASSERT_NE(nullptr, tab1_view);
         gfx::Point tap_point = tab1_view->GetBoundsInScreen().CenterPoint();
 
         // Simulate realistic finger touch with radius and slight movement
@@ -482,13 +497,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, TouchTapSelectsTab) {
       }),
       CheckResult([&]() { return tab_strip_model->active_index(); }, 1),
       Do([&]() {
-        tabs::TabInterface* tab0 = tab_strip_model->GetTabAtIndex(0);
-        RootTabCollectionNode* root_node =
-            GetBrowserView()
-                .vertical_tab_strip_region_view_for_testing()
-                ->root_node_for_testing();
-        views::View* tab0_view =
-            root_node->GetNodeForHandle(tab0->GetHandle())->view();
+        views::View* tab0_view = GetTabViewAt(0);
+        ASSERT_NE(nullptr, tab0_view);
         gfx::Point tap_point = tab0_view->GetBoundsInScreen().CenterPoint();
 
         // Simulate stylus/pen tap with slight movement exceeding touch slop.
@@ -504,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, TouchTapSelectsTab) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, CancelDragWithinUnpinnedContainer) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, CancelDragWithinUnpinnedContainer) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   RunTestSequence(
@@ -529,9 +539,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, CancelDragWithinUnpinnedContainer) {
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
+IN_PROC_BROWSER_TEST_P(TabDragTest,
                        CancelDragFromUnselectedTabInScrollableTabStrip) {
-  constexpr int kTabCount = 50;
+  constexpr int kTabCount = 100;
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   tabs::TabInterface* original_tab_0 = nullptr;
@@ -559,12 +569,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
       }),
       RunScheduledLayout(), PollState(kScrollOffsetPoller, GetScrollOffset()),
       WaitForState(kScrollOffsetPoller, 0), Do([&]() {
-        auto* region_view =
-            GetBrowserView().vertical_tab_strip_region_view_for_testing();
-        auto* tab_strip_view =
-            static_cast<TabStripView*>(region_view->GetTabStripView());
-        ASSERT_TRUE(tab_strip_view->unpinned_tabs_scroll_view()
-                        ->IsVerticalContentOverflowing());
+        auto* scroll_view = GetTabStripView()->unpinned_tabs_scroll_view();
+        ASSERT_TRUE(is_horizontal()
+                        ? scroll_view->IsHorizontalContentOverflowing()
+                        : scroll_view->IsVerticalContentOverflowing());
         ASSERT_EQ(0, tab_strip_model->active_index());
         ASSERT_TRUE(tab_strip_model->IsTabSelected(0));
         ASSERT_FALSE(tab_strip_model->IsTabSelected(1));
@@ -588,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragSplitTabs) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragSplitTabs) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -622,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragSplitTabs) {
       ReleaseMouse());
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragOverSplit) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragOverSplit) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -658,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragOverSplit) {
       ReleaseMouse());
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragOverSplitInGroup) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragOverSplitInGroup) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -700,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragOverSplitInGroup) {
       ReleaseMouse());
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragMultipleTabs) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragMultipleTabs) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   RunTestSequence(
@@ -723,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragMultipleTabs) {
       ReleaseMouse());
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragMultipleTabsInGroup) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragMultipleTabsInGroup) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -769,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragMultipleTabsInGroup) {
       ReleaseMouse());
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragWithinGroup) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragWithinGroup) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   RunTestSequence(
@@ -813,7 +821,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragWithinGroup) {
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragOutOfGroup) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragOutOfGroup) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
   RunTestSequence(
@@ -847,8 +855,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragOutOfGroup) {
       }));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
-                       DragMultiplePinnedTabsWithinContainer) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragMultiplePinnedTabsWithinContainer) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -873,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
       CheckResult(
           [this]() { return browser()->GetTabStripModel()->IsTabSelected(2); },
           true),
-      StartDragBetweenTabs(2, 0),
+      StartDragBetweenTabs(3, 0),
       WaitForState(kPinnedTabOrderPoller, PinnedURLs({
                                               chrome::kChromeUISettingsURL,
                                               chrome::kChromeUIVersionURL,
@@ -890,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
       ReleaseMouse());
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragSplitWithinPinnedContainer) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragSplitWithinPinnedContainer) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -917,7 +924,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragSplitWithinPinnedContainer) {
       ReleaseMouse());
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
+IN_PROC_BROWSER_TEST_P(TabDragTest,
                        DragFromPinnedToUnpinnedContainerNotAllowed) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -948,7 +955,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
                                     })));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragGroupHeader) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragGroupHeader) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -1006,17 +1013,17 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragGroupHeader) {
           true));
 }
 
-class VerticalTabDragFocusModeTest : public VerticalTabDragTest {
+class TabDragFocusModeTest : public TabDragTest {
  public:
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    auto enabled = VerticalTabDragTest::GetEnabledFeatures();
+    auto enabled = TabDragTest::GetEnabledFeatures();
     enabled.push_back({features::kTabGroupsFocusing, {}});
     return enabled;
   }
 };
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragFocusModeTest,
+IN_PROC_BROWSER_TEST_P(TabDragFocusModeTest,
                        DragGroupHeaderInFocusModeDoesNotMoveGroup) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
@@ -1054,7 +1061,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragFocusModeTest,
                         chrome::kChromeUIVersionURL})));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragCollapsedGroupStaysCollapsed) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragCollapsedGroupStaysCollapsed) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -1087,8 +1094,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragCollapsedGroupStaysCollapsed) {
       ReleaseMouse());
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
-                       DragCollapsedGroupOverExpandedGroup) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragCollapsedGroupOverExpandedGroup) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -1124,10 +1130,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
       ReleaseMouse());
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToScroll) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragToScroll) {
   const char kScrollViewName[] = "Scroll View";
-  const char kFirstTabName[] = "First Tab";
-  const int kTabCount = 50;
+  const char kTabToDragName[] = "Tab to drag";
+  const int kTabCount = 100;
 
   RunTestSequence(
       // Add many tabs and ensure the first one is active so we start at the
@@ -1149,29 +1155,39 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToScroll) {
       PollState(kScrollOffsetPoller, GetScrollOffset()),
       WaitForState(kScrollOffsetPoller, 0),
 
-      // Start dragging the first tab.
-      NameTabViewAt(kFirstTabName, 0), MoveMouseTo(kFirstTabName),
-      ClickMouse(ui_controls::MouseButton::LEFT, /*release=*/false),
-      PollState(kDragStatePoller, GetDragActive()),
-      WaitForState(kDragStatePoller, true),
-
-      // Move mouse to the bottom edge of the scroll view to trigger scrolling
-      // down.
-      MoveMouseTo(
-          kScrollViewName, base::BindOnce([](ui::TrackedElement* element) {
-            const gfx::Rect bounds = element->GetScreenBounds();
-            return gfx::Point(bounds.CenterPoint().x(), bounds.bottom() - 1);
-          })),
+      // Start dragging the second (inactive) tab so the click at CenterPoint()
+      // does not hit the centered close button on the active tab in horizontal
+      // mode.
+      NameTabViewAt(kTabToDragName, 1), MoveMouseTo(kTabToDragName),
+      DragMouseTo(kScrollViewName,
+                  base::BindOnce(
+                      [](bool is_horizontal, ui::TrackedElement* element) {
+                        const gfx::Rect bounds = element->GetScreenBounds();
+                        return is_horizontal
+                                   ? gfx::Point(bounds.right() - 1,
+                                                bounds.CenterPoint().y())
+                                   : gfx::Point(bounds.CenterPoint().x(),
+                                                bounds.bottom() - 1);
+                      },
+                      is_horizontal()),
+                  /*release=*/false),
 
       // Wait for scroll offset to increase.
       WaitForState(kScrollOffsetPoller, testing::Gt(0)),
 
-      // Move mouse to the top edge of the scroll view to trigger scrolling up.
+      // Move mouse to the leading edge of the scroll view to trigger scrolling
+      // back/up.
       MoveMouseTo(kScrollViewName,
-                  base::BindOnce([](ui::TrackedElement* element) {
-                    const gfx::Rect bounds = element->GetScreenBounds();
-                    return gfx::Point(bounds.CenterPoint().x(), bounds.y() + 1);
-                  })),
+                  base::BindOnce(
+                      [](bool is_horizontal, ui::TrackedElement* element) {
+                        const gfx::Rect bounds = element->GetScreenBounds();
+                        return is_horizontal
+                                   ? gfx::Point(bounds.x() + 1,
+                                                bounds.CenterPoint().y())
+                                   : gfx::Point(bounds.CenterPoint().x(),
+                                                bounds.y() + 1);
+                      },
+                      is_horizontal())),
 
       // Wait for scroll offset to decrease back to 0.
       WaitForState(kScrollOffsetPoller, 0),
@@ -1179,7 +1195,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToScroll) {
       ReleaseMouse());
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToDetachIntoNewWindow) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragToDetachIntoNewWindow) {
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
       AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
@@ -1205,36 +1221,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToDetachIntoNewWindow) {
                   2));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
-                       DragToDetachIntoNewWindowWithVerticalTabsState) {
-  const int kInitialWidth = 250;
-  RunTestSequence(
-      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
-      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
-      Do([this]() {
-        vertical_tab_strip_state_controller()->RequestCollapse(true);
-        vertical_tab_strip_state_controller()->SetUncollapsedWidth(
-            kInitialWidth);
-      }),
-      RunScheduledLayout(), PollState(kBrowserCountPoller, GetBrowserCount()),
-      PollState(kDragStatePoller, GetDragActive()),
-      NameTabViewAt("Tab to drag", 1), MoveMouseTo("Tab to drag"),
-      ClickMouse(ui_controls::MouseButton::LEFT, /*release=*/false),
-      MoveMouseOutOfTabstrip(), WaitForState(kBrowserCountPoller, 2u),
-      WaitForDetachedWindowVisible(), ReleaseMouse(),
-      WaitForState(kDragStatePoller, false), Do([this, kInitialWidth]() {
-        BrowserWindowInterface& new_browser = GetLatestBrowser();
-        auto* controller =
-            tabs::VerticalTabStripStateController::From(&new_browser);
-        ASSERT_NE(nullptr, controller);
-        EXPECT_TRUE(controller->IsCollapsed());
-        EXPECT_EQ(kInitialWidth, controller->GetUncollapsedWidth());
-        EXPECT_EQ(1, new_browser.GetTabStripModel()->count());
-        EXPECT_EQ(2, browser()->GetTabStripModel()->count());
-      }));
-}
-
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToDetachThenCancel) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragToDetachThenCancel) {
   if (!GetBrowserView().GetWidget()->IsMoveLoopSupported()) {
     GTEST_SKIP() << "Not relevant for fallback tab dragging";
   }
@@ -1258,7 +1245,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToDetachThenCancel) {
           GURL(chrome::kChromeUIBookmarksURL)));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToDetachThenReattach) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DragToDetachThenReattach) {
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
       AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
@@ -1278,7 +1265,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragToDetachThenReattach) {
                   3));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DetachMultipleTabs) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DetachMultipleTabs) {
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
       AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
@@ -1318,7 +1305,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DetachMultipleTabs) {
                   1));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DetachPinnedTab) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DetachPinnedTab) {
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
       AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
@@ -1341,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DetachPinnedTab) {
                   2));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DetachTabPreservesActiveTab) {
+IN_PROC_BROWSER_TEST_P(TabDragTest, DetachTabPreservesActiveTab) {
   RunTestSequence(
       AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
       AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
@@ -1367,6 +1354,58 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DetachTabPreservesActiveTab) {
 }
 
 // TODO(crbug.com/490650365): Add regression test once detach tests are working.
+
+class VerticalTabDragTest : public TabDragTest {
+ public:
+  TabStripOrientation orientation() const override {
+    return TabStripOrientation::kVertical;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragTabMaintainsHorizontalPadding) {
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      StartDragBetweenTabs(1, 0), PollState(kDragStatePoller, GetDragActive()),
+      WaitForState(kDragStatePoller, true), Do([&]() {
+        views::View* tab0 = GetTabViewAt(0);
+        views::View* tab1 = GetTabViewAt(1);
+        ASSERT_TRUE(tab0 && tab1);
+        // The dragged tab should maintain the same horizontal alignment/padding
+        // as other tabs in the vertical container.
+        EXPECT_EQ(tab1->GetBoundsInScreen().x(), tab0->GetBoundsInScreen().x());
+        EXPECT_EQ(tab1->GetTransform().To2dTranslation().x(), 0);
+      }),
+      ReleaseMouse(), WaitForState(kDragStatePoller, false));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
+                       DragToDetachIntoNewWindowWithVerticalTabsState) {
+  const int kInitialWidth = 250;
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUISettingsURL), 2),
+      Do([this]() {
+        vertical_tab_strip_state_controller()->RequestCollapse(true);
+        vertical_tab_strip_state_controller()->SetUncollapsedWidth(
+            kInitialWidth);
+      }),
+      RunScheduledLayout(), PollState(kBrowserCountPoller, GetBrowserCount()),
+      PollState(kDragStatePoller, GetDragActive()),
+      NameTabViewAt("Tab to drag", 1), MoveMouseTo("Tab to drag"),
+      ClickMouse(ui_controls::MouseButton::LEFT, /*release=*/false),
+      MoveMouseOutOfTabstrip(), WaitForState(kBrowserCountPoller, 2u),
+      WaitForDetachedWindowVisible(), ReleaseMouse(),
+      WaitForState(kDragStatePoller, false), Do([this, kInitialWidth]() {
+        BrowserWindowInterface& new_browser = GetLatestBrowser();
+        auto* controller =
+            tabs::VerticalTabStripStateController::From(&new_browser);
+        ASSERT_NE(nullptr, controller);
+        EXPECT_TRUE(controller->IsCollapsed());
+        EXPECT_EQ(kInitialWidth, controller->GetUncollapsedWidth());
+        EXPECT_EQ(1, new_browser.GetTabStripModel()->count());
+        EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+      }));
+}
 
 class HorizontalTabDragTest : public InteractiveBrowserTest {
  public:
@@ -1500,51 +1539,6 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DragMultipleCompressedTabs) {
       }),
       ReleaseMouse(), WaitForState(kDragStatePoller, false));
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, TouchTapSelectsTab) {
-  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
-  ASSERT_NE(nullptr, tab_strip_model);
-  RunTestSequence(
-      Do([&]() {
-        chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
-                         /*foreground=*/false);
-        views::test::RunScheduledLayout(&GetBrowserView());
-      }),
-      CheckResult([&]() { return tab_strip_model->active_index(); }, 0),
-      Do([&]() {
-        views::View* tab1_view = GetTabViewAt(1);
-        ASSERT_NE(nullptr, tab1_view);
-        gfx::Point tap_point = tab1_view->GetBoundsInScreen().CenterPoint();
-
-        // Simulate realistic finger touch with radius and slight movement
-        // exceeding ChromeOS 6px touch slop.
-        ui::test::EventGenerator generator(
-            views::GetRootWindow(GetBrowserView().GetWidget()),
-            GetBrowserView().GetNativeWindow());
-        generator.SetTouchRadius(15, 15);
-        generator.PressTouch(tap_point);
-        generator.MoveTouchBy(10, 0);
-        generator.ReleaseTouch();
-      }),
-      CheckResult([&]() { return tab_strip_model->active_index(); }, 1),
-      Do([&]() {
-        views::View* tab0_view = GetTabViewAt(0);
-        ASSERT_NE(nullptr, tab0_view);
-        gfx::Point tap_point = tab0_view->GetBoundsInScreen().CenterPoint();
-
-        // Simulate stylus/pen tap with slight movement exceeding touch slop.
-        ui::test::EventGenerator generator(
-            views::GetRootWindow(GetBrowserView().GetWidget()),
-            GetBrowserView().GetNativeWindow());
-        generator.SetTouchPointerType(ui::EventPointerType::kPen);
-        generator.PressTouch(tap_point);
-        generator.MoveTouchBy(8, 0);
-        generator.ReleaseTouch();
-      }),
-      CheckResult([&]() { return tab_strip_model->active_index(); }, 0));
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
                        GestureScrollEndWithoutDragDoesNotSynthesizeTapOnTab) {
@@ -1786,3 +1780,31 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragRTLTest, DragPinnedTab) {
                   }),
                   ReleaseMouse(), WaitForState(kDragStatePoller, false));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabDragTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TabDragFocusModeTest,
+    testing::Values(TabStripOrientation::kVertical,
+                    TabStripOrientation::kHorizontal),
+    [](const testing::TestParamInfo<TabStripOrientation>& info) {
+      switch (info.param) {
+        case TabStripOrientation::kVertical:
+          return "Vertical";
+        case TabStripOrientation::kHorizontal:
+          return "Horizontal";
+      }
+    });
