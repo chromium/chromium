@@ -304,7 +304,7 @@ class TestAutofillClientTemplate : public T {
   }
 
   const signin::IdentityManager* GetIdentityManager() const override {
-    return identity_test_env_.identity_manager();
+    return identity_test_environment().identity_manager();
   }
 
   metrics::ProfileMetricsService* GetProfileMetricsService() override {
@@ -864,7 +864,15 @@ class TestAutofillClientTemplate : public T {
   }
 
   signin::IdentityTestEnvironment& identity_test_environment() {
-    return identity_test_env_;
+    return const_cast<signin::IdentityTestEnvironment&>(
+        std::as_const(*this).identity_test_environment());
+  }
+
+  const signin::IdentityTestEnvironment& identity_test_environment() const {
+    if (!identity_test_env_) {
+      identity_test_env_.emplace();
+    }
+    return *identity_test_env_;
   }
 
   one_time_tokens::SmsOtpService* GetSmsOtpService() const override {
@@ -916,7 +924,13 @@ class TestAutofillClientTemplate : public T {
 
  private:
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
-  signin::IdentityTestEnvironment identity_test_env_;
+  // Lazily initialized: `IdentityTestEnvironment` has platform-specific test
+  // dependencies (`TestNetworkConnectionTracker` on ChromeOS and
+  // `signin_java_test_support` on Android) that `content::ContentBrowserTest`
+  // does not set up by default. Lazy initialization allows
+  // `content::ContentBrowserTest` to use `TestAutofillClientTemplate` without
+  // those dependencies as long as `IdentityManager` is not used.
+  mutable std::optional<signin::IdentityTestEnvironment> identity_test_env_;
   metrics::ProfileMetricsService test_profile_metrics_service_{
       metrics::ProfileMetricsContext(1)};
   raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
