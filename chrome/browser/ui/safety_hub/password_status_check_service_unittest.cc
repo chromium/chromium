@@ -969,10 +969,13 @@ TEST_P(PasswordStatusCheckServiceParameterizedSchedulingTest,
   ::testing::StrictMock<MockObserver> observer(bulk_leak_check_service());
 
   // Make the probabality of all other days 0, except the current week day.
-  // Current week day should be selected to run the checks.
+  // Current week day should be selected to run the checks. The interval is set
+  // to 7 days so that every week day falls within the scheduling window.
   feature_list.InitAndEnableFeatureWithParameters(
       safety_check::features::kSafetyHub,
       {
+          {safety_check::features::kBackgroundPasswordCheckInterval.name,
+           "7d"},
           {"password-check-sun-weight", GetWeightForDay(0)},
           {"password-check-mon-weight", GetWeightForDay(1)},
           {"password-check-tue-weight", GetWeightForDay(2)},
