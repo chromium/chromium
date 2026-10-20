@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/legacy_language_tag_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/no_destructor.h"
@@ -35,16 +36,15 @@ std::string GetManifest() {
 }
 
 base::DictValue GetStrings() {
-  std::string application_locale =
-      g_browser_process
-          ? g_browser_process->GetFeatures()->application_locale_storage()->Get(
-                ApplicationLocaleStorage::LocaleFormat::kBCP47)
-          : "en-US";
+  base::i18n::LanguageTag application_locale =
+      g_browser_process ? g_browser_process->GetFeatures()
+                              ->application_locale_storage()
+                              ->GetTag()
+                        : base::i18n::GetKnownLanguageTag("en-US");
 
   base::DictValue dict;
   dict.Set("textdirection", base::i18n::IsRTL() ? "rtl" : "ltr");
-  dict.Set("language",
-           base::i18n::GetLanguageSubtagUsingLanguageTag(application_locale));
+  dict.Set("language", application_locale.language_subtag());
   dict.Set("indigoTitle", l10n_util::GetStringUTF16(IDS_INDIGO_TITLE));
   dict.Set("textLayerStep1",
            l10n_util::GetStringUTF16(IDS_INDIGO_TEXT_LAYER_STEP_1));

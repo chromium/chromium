@@ -100,12 +100,14 @@ std::optional<GURL> BuildInstallerDownloadUrl(bool is_metrics_enabled) {
                                          /*start_offset=*/0, "STATS",
                                          is_metrics_enabled ? "1" : "0");
 
-  std::string language_code = base::i18n::GetLanguageSubtagUsingLanguageTag(
-      g_browser_process->GetFeatures()->application_locale_storage()->Get());
-  CHECK(!language_code.empty());
-
-  base::ReplaceFirstSubstringAfterOffset(
-      &installer_url_template, /*start_offset=*/0, "LANGUAGE", language_code);
+  std::string_view language_subtag = g_browser_process->GetFeatures()
+                                         ->application_locale_storage()
+                                         ->GetTag()
+                                         .language_subtag();
+  CHECK(!language_subtag.empty());
+  base::ReplaceFirstSubstringAfterOffset(&installer_url_template,
+                                         /*start_offset=*/0, "LANGUAGE",
+                                         language_subtag);
 
   GURL installer_url(installer_url_template);
 

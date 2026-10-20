@@ -494,8 +494,10 @@ void ContextualTasksPageHandler::GetCommonSearchParams(
     is_side_panel = true;
   }
 
-  std::string country_code =
-      g_browser_process->GetFeatures()->application_locale_storage()->Get();
+  std::string country_code(g_browser_process->GetFeatures()
+                               ->application_locale_storage()
+                               ->GetTag()
+                               .tag_string());
 
   if (contextual_tasks::ShouldForceCountryCodeUS()) {
     country_code = "US";

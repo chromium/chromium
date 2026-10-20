@@ -78,6 +78,7 @@ source_set("impl") {
     ":indigo_config_proto",
     ":indigo_prompts_proto",
     "//base",
+    "//base:i18n",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/component_updater",

@@ -13,6 +13,7 @@
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/version.h"
@@ -124,18 +125,18 @@ SurveyStringData GetSurveyStringData(const std::string& trigger,
 // Returns true if surveys are allowed for the current application locale.
 bool IsLocaleAllowedForSurvey() {
   static constexpr auto kAllowedSurveyLocales =
-      base::MakeFixedFlatSet<std::string_view>({
-          "de",
-          "en",
-          "en-GB",
-          "en-US",
-          "fr",
-          "fr-CA",
-          "ja",
-          "pt",
+      base::MakeFixedFlatSet<base::i18n::LanguageTag>({
+          base::i18n::GetKnownLanguageTag("de"),
+          base::i18n::GetKnownLanguageTag("en"),
+          base::i18n::GetKnownLanguageTag("en-GB"),
+          base::i18n::GetKnownLanguageTag("en-US"),
+          base::i18n::GetKnownLanguageTag("fr"),
+          base::i18n::GetKnownLanguageTag("fr-CA"),
+          base::i18n::GetKnownLanguageTag("ja"),
+          base::i18n::GetKnownLanguageTag("pt"),
       });
   return kAllowedSurveyLocales.contains(
-      g_browser_process->GetFeatures()->application_locale_storage()->Get());
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
 }
 
 // Returns true if the survey corresponding to `trigger` should be enabled.

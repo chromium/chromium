@@ -78,5 +78,8 @@ PersonalContextEligibilityServiceFactory::BuildServiceInstanceForBrowserContext(
       personal_context::PersonalContextEligibilityServiceImpl>(
       account_settings_service, identity_manager, profile->GetPrefs(),
       GetCountryCodeFromVariations(),
-      g_browser_process->GetFeatures()->application_locale_storage()->Get());
+      std::string(g_browser_process->GetFeatures()
+                      ->application_locale_storage()
+                      ->GetTag()
+                      .tag_string()));
 }

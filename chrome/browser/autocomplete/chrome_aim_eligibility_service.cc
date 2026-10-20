@@ -37,11 +37,11 @@ ChromeAimEligibilityService::ChromeAimEligibilityService(
 ChromeAimEligibilityService::~ChromeAimEligibilityService() = default;
 
 std::string ChromeAimEligibilityService::GetLocaleImpl() const {
-  return g_browser_process
-             ? g_browser_process->GetFeatures()
-                   ->application_locale_storage()
-                   ->Get(ApplicationLocaleStorage::LocaleFormat::kBCP47)
-             : "";
+  return g_browser_process ? std::string(g_browser_process->GetFeatures()
+                                             ->application_locale_storage()
+                                             ->GetTag()
+                                             .tag_string())
+                           : "";
 }
 
 variations::VariationsService*

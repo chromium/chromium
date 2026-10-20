@@ -153,8 +153,10 @@ static std::string JNI_DriveDisclaimerBridge_GetConsentUrl(JNIEnv* env,
     builder.SetSessionIndex(static_cast<int>(
         identity_manager->GetSessionIndexForPrimaryAccount().value_or(0u)));
   }
-  builder.SetLocale(
-      g_browser_process->GetFeatures()->application_locale_storage()->Get());
+  builder.SetLocale(std::string(g_browser_process->GetFeatures()
+                                    ->application_locale_storage()
+                                    ->GetTag()
+                                    .tag_string()));
   builder.SetFlowId(omnibox::kComposeboxDriveConsentFlowId.Get());
   builder.SetProductId(omnibox::kComposeboxDriveConsentProductId.Get());
   builder.SetProductSurface(

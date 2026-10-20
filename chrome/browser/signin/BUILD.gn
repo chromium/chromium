@@ -211,6 +211,7 @@ source_set("impl") {
   ]
   public_deps = [ ":signin" ]
   deps = [
+    "//base:i18n",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:global_features",
     "//chrome/browser/autofill",

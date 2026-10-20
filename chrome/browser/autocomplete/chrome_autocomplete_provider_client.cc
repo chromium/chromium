@@ -189,7 +189,7 @@ lens::LensSearchboxController* GetLensSearchboxController(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-constexpr char kEnglishLanguageCode[] = "en";
+constexpr std::string_view kEnglishLanguageCode = "en";
 constexpr std::string kEnglishExpansionCountryCodes[] = {"au", "ca", "gb",
                                                          "nz", "us", "za"};
 
@@ -224,8 +224,8 @@ bool IsContextualSearchFeatureEnabled(
              kEnglishExpansionCountryCodes,
              variations_service->GetStoredPermanentCountry()) &&
          features->application_locale_storage() &&
-         features->application_locale_storage()->Get().starts_with(
-             kEnglishLanguageCode);
+         features->application_locale_storage()->GetTag().language_subtag() ==
+             kEnglishLanguageCode;
 }
 
 }  // namespace
