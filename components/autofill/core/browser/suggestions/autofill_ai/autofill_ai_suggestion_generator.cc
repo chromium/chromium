@@ -38,6 +38,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -756,6 +757,15 @@ Suggestion GetSuggestionForEntity(
     suggestion.iph_metadata = Suggestion::IPHMetadata(
         &feature_engagement::kIPHAutofillAiValuablesFeature);
   }
+#if BUILDFLAG(IS_ANDROID)
+  if (GetPersonalContextSpiiType(entity.type(), entity.record_type()) ==
+          EntityInstance::PersonalContextSpiiType::kSpii &&
+      base::FeatureList::IsEnabled(
+          feature_engagement::kIPH_AutofillAmbientAutofillSpiiDisclaimer)) {
+    suggestion.iph_metadata = Suggestion::IPHMetadata(
+        &feature_engagement::kIPH_AutofillAmbientAutofillSpiiDisclaimer);
+  }
+#endif
   return suggestion;
 }
 

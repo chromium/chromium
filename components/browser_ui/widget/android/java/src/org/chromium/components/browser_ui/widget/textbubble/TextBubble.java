@@ -126,6 +126,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      *     should be no image.
      * @param isRoundBubble Whether the bubble should be round.
      * @param inverseColor Whether the background and icon/text colors should be inverted.
+     * @param maxWidthPx The maximum width of the bubble in pixels, or 0 for no custom limit.
      * @param snoozeRunnable The callback for when snooze button is clicked.
      * @param snoozeDismissRunnable The callback to be invoked when dismiss button is clicked.
      */
@@ -139,6 +140,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
             @Nullable Drawable imageDrawable,
             boolean isRoundBubble,
             boolean inverseColor,
+            int maxWidthPx,
             @Nullable Runnable snoozeRunnable,
             @Nullable Runnable snoozeDismissRunnable) {
         assert snoozeRunnable == null || snoozeDismissRunnable == null;
@@ -154,7 +156,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         // ArrowBubbleDrawable.
         Drawable backgroundDrawable = getBackground(mContext, showArrow, isRoundBubble);
 
-        mPopupWindow =
+        AnchoredPopupWindow.Builder popupBuilder =
                 new AnchoredPopupWindow.Builder(
                                 context,
                                 rootView,
@@ -167,8 +169,11 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
                         .setPreferredHorizontalOrientation(
                                 AnchoredPopupWindow.HorizontalOrientation.CENTER)
                         .setLayoutObserver(this)
-                        .setAnimationStyle(R.style.TextBubbleAnimation)
-                        .build();
+                        .setAnimationStyle(R.style.TextBubbleAnimation);
+        if (maxWidthPx > 0) {
+            popupBuilder.setMaxWidth(maxWidthPx);
+        }
+        mPopupWindow = popupBuilder.build();
 
         mHandler = new Handler();
 
@@ -484,6 +489,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         private @Nullable Drawable mImageDrawable;
         private boolean mIsRoundBubble;
         private boolean mInverseColor;
+        private int mMaxWidthPx;
         private @Nullable Runnable mSnoozeRunnable;
         private @Nullable Runnable mSnoozeDismissRunnable;
 
@@ -542,6 +548,11 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
             return this;
         }
 
+        public Builder setMaxWidth(int maxWidthPx) {
+            mMaxWidthPx = maxWidthPx;
+            return this;
+        }
+
         public Builder setSnoozeRunnable(@Nullable Runnable snoozeRunnable) {
             mSnoozeRunnable = snoozeRunnable;
             return this;
@@ -563,6 +574,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
                     mImageDrawable,
                     mIsRoundBubble,
                     mInverseColor,
+                    mMaxWidthPx,
                     mSnoozeRunnable,
                     mSnoozeDismissRunnable);
         }

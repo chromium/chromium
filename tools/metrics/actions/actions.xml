@@ -290,6 +290,8 @@ should be able to be added at any place in this file.
       summary="For AutofillAiOptIn feature. (obsolete)"/>
   <variant name="_AutofillAiValuables"
       summary="For AutofillAiValuables feature."/>
+  <variant name="_AutofillAmbientAutofillSpiiDisclaimer"
+      summary="For AutofillAmbientAutofillSpiiDisclaimer feature."/>
   <variant name="_AutofillAtMemory"
       summary="For AutofillAtMemory IPH feature."/>
   <variant name="_AutofillBnplAffirmOrZipSuggestion"

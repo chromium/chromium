@@ -11,6 +11,7 @@
 #include "base/containers/to_vector.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
@@ -3258,6 +3259,54 @@ TEST_F(
               Not(Contains(EqualsSuggestion(
                   SuggestionType::kAutofillAiPrivateInferenceNotice))));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    PersonalContextSpiiEntities_AttachSpiiDisclaimerIphMetadataWhenFeatureEnabled) {
+  SetEntities({GetPassportEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kPersonalContext})});
+  SetForm({PASSPORT_NUMBER});
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      ElementsAre(
+          EqualsSuggestion(
+              SuggestionType::kFillAutofillAi,
+              &feature_engagement::kIPH_AutofillAmbientAutofillSpiiDisclaimer),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(SuggestionType::kManageAutofillAiIdentityDocs)));
+}
+
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    PersonalContextSpiiEntities_OmitSpiiDisclaimerIphMetadataWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      feature_engagement::kIPH_AutofillAmbientAutofillSpiiDisclaimer);
+
+  SetEntities({GetPassportEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kPersonalContext})});
+  SetForm({PASSPORT_NUMBER});
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      ElementsAre(
+          EqualsSuggestion(SuggestionType::kFillAutofillAi, nullptr),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(SuggestionType::kManageAutofillAiIdentityDocs)));
+}
+
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       PersonalContextNonSpiiEntities_OmitSpiiDisclaimerIphMetadata) {
+  SetEntities({test::GetVehicleEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kPersonalContext})});
+  SetForm({VEHICLE_LICENSE_PLATE});
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      ElementsAre(EqualsSuggestion(SuggestionType::kFillAutofillAi, nullptr),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAutofillAiTravel)));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace autofill

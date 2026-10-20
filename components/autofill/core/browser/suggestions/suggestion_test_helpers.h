@@ -15,6 +15,10 @@ namespace autofill {
 
 ::testing::Matcher<Suggestion> EqualsSuggestion(
     SuggestionType id,
+    const base::Feature* feature_for_iph);
+
+::testing::Matcher<Suggestion> EqualsSuggestion(
+    SuggestionType id,
     const std::u16string& main_text,
     bool is_main_text_primary = true);
 

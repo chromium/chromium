@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.widget.textbubble;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
@@ -114,5 +115,26 @@ public class TextBubbleUnitTest {
         View secondView = textBubble.getTextBubbleContentViewForTesting();
         assertNotNull(secondView);
         assertNotSame(firstView, secondView);
+    }
+
+    @Test
+    public void testSetMaxWidth_constrainsBubbleWidth() {
+        RectProvider anchorRectProvider = new RectProvider(new Rect(100, 100, 200, 200));
+        int maxWidthPx = 350;
+        TextBubble textBubble =
+                new TextBubble.Builder(
+                                mActivity,
+                                mRootView,
+                                anchorRectProvider,
+                                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do"
+                                        + " eiusmod tempor incididunt ut labore et dolore magna"
+                                        + " aliqua.",
+                                "Lorem ipsum dolor sit amet.")
+                        .setMaxWidth(maxWidthPx)
+                        .build();
+
+        textBubble.show();
+
+        assertTrue(mSpyPopupWindow.getWidth() <= maxWidthPx);
     }
 }

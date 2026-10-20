@@ -14,6 +14,11 @@ Matcher<Suggestion> EqualsSuggestion(SuggestionType id) {
 }
 
 Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
+                                     const base::Feature* feature_for_iph) {
+  return AllOf(EqualsSuggestion(id), HasIphFeature(feature_for_iph));
+}
+
+Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
                                      const std::u16string& main_text,
                                      bool is_main_text_primary) {
   return AllOf(Field(&Suggestion::type, id),

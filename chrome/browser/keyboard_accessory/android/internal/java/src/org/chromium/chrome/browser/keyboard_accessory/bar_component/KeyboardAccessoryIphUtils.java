@@ -39,6 +39,10 @@ public class KeyboardAccessoryIphUtils {
             case FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE:
                 tracker.notifyEvent(EventConstants.KEYBOARD_ACCESSORY_AT_MEMORY_USED);
                 return;
+            case FeatureConstants.KEYBOARD_ACCESSORY_AUTOFILL_AI_SPII_DISCLAIMER_FEATURE:
+                tracker.notifyEvent(
+                        EventConstants.KEYBOARD_ACCESSORY_AUTOFILL_AI_SPII_DISCLAIMER_USED);
+                return;
             case FeatureConstants.KEYBOARD_ACCESSORY_AUTOFILL_AI_VALUABLES_FEATURE:
                 tracker.notifyEvent(
                         EventConstants.KEYBOARD_ACCESSORY_AUTOFILL_AI_VALUABLES_AUTOFILLED);
@@ -92,7 +96,8 @@ public class KeyboardAccessoryIphUtils {
             View rootView,
             Runnable dismissCallback) {
         TextBubble helpBubble =
-                createBubble(tracker, feature, rectProvider, context, rootView, null, dismissCallback);
+                createBubble(
+                        tracker, feature, rectProvider, context, rootView, null, dismissCallback);
         if (helpBubble != null) helpBubble.show();
         return helpBubble != null;
     }
@@ -149,12 +154,16 @@ public class KeyboardAccessoryIphUtils {
         if (tracker == null) return null;
         if (!tracker.isInitialized()) return null;
         if (!tracker.shouldTriggerHelpUi(feature)) return null; // This call records the IPH intent.
+        int maxWidthPx =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.keyboard_accessory_iph_bubble_max_width);
         TextBubble helpBubble;
         // If the help text is provided, then use it directly to generate the text bubble.
         if (helpText != null && !helpText.isEmpty()) {
             helpBubble =
                     new TextBubble.Builder(context, rootView, rectProvider, helpText, helpText)
                             .setShowArrow(true)
+                            .setMaxWidth(maxWidthPx)
                             .build();
         } else {
             @StringRes int helpTextResourceId = getHelpTextForFeature(feature);
@@ -165,6 +174,7 @@ public class KeyboardAccessoryIphUtils {
                                     rectProvider,
                                     helpTextResourceId,
                                     helpTextResourceId)
+                            .setMaxWidth(maxWidthPx)
                             .build();
         }
         helpBubble.setDismissOnTouchInteraction(true);
@@ -184,6 +194,8 @@ public class KeyboardAccessoryIphUtils {
      */
     private static @StringRes int getHelpTextForFeature(@FeatureConstants String feature) {
         switch (feature) {
+            case FeatureConstants.KEYBOARD_ACCESSORY_AUTOFILL_AI_SPII_DISCLAIMER_FEATURE:
+                return R.string.iph_keyboard_accessory_autofill_ai_spii_disclaimer;
             case FeatureConstants.KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE:
                 return R.string.iph_keyboard_accessory_home_work_profile_suggestion;
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE:

@@ -29,6 +29,7 @@ found in the LICENSE file.
     <dimen name="keyboard_accessory_height_with_shadow">72dp</dimen>
     <dimen name="keyboard_accessory_horizontal_padding">6dp</dimen>
     <dimen name="keyboard_accessory_image_top_padding">12dp</dimen>
+    <dimen name="keyboard_accessory_iph_bubble_max_width">350dp</dimen>
     <dimen name="keyboard_accessory_last_chip_peek_width">42dp</dimen>
     <dimen name="keyboard_accessory_notch_base_width">18dp</dimen>
     <dimen name="keyboard_accessory_notch_height">8dp</dimen>

@@ -23,6 +23,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPH_AndroidTipsOptInPromo,
     &kIPH_AppLanguagePromo,
     &kIPH_ArchivedTabsAutoDeletePromo,
+    &kIPH_AutofillAmbientAutofillSpiiDisclaimer,
     &kIPH_BlueBubbleCooldownGroup,
     &kIPH_FullscreenSigninPromo,
     &kIPH_InterruptiveIphCooldownGroup,

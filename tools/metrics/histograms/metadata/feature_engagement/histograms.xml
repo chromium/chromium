@@ -99,6 +99,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AutofillAiValuables"
       summary="snooze educating users about the possibility of autofilling
                Google Wallet passses"/>
+  <variant name="IPH_AutofillAmbientAutofillSpiiDisclaimer"
+      summary="educating users about verifying sensitive personal context
+               suggestions filled via Ambient Autofill on Android"/>
   <variant name="IPH_AutofillAtMemory"
       summary="message shown when users copy/paste a value from another tab
                educating them that they can use the Autofill AtMemory feature
