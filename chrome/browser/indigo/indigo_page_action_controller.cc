@@ -735,9 +735,13 @@ void IndigoPageActionController::UpdateEntryPointsState() {
   last_trigger_source_ = eval.source;
   const bool should_show = eval.source.has_value();
 
+  // Delegate chip and anchored message cueing to Contextual Cues whenever CCV2
+  // is enabled and doing so will leave at least one functioning entry point
+  // (either through CCV2 or alternate UI).
   const bool delegate_to_contextual_cues =
-      base::FeatureList::IsEnabled(features::kIndigoContextualCueingV2) &&
-      base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2);
+      base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2) &&
+      (base::FeatureList::IsEnabled(features::kIndigoContextualCueingV2) ||
+       base::FeatureList::IsEnabled(features::kIndigoContextMenu));
 
   if (should_show) {
     ResolvePendingEligibilityCallbacks(/*eligible=*/true);

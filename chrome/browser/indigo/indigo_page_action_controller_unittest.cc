@@ -2171,6 +2171,36 @@ TEST_F(IndigoPageActionControllerLegacyTest,
   navigation->Commit();
 }
 
+TEST_F(IndigoPageActionControllerLegacyTest,
+       EntryPointNotShownWhenIndigoContextMenuEnabledWithContextualCueingV2) {
+  // This fixture enables `kContextualCueingV2` and disables
+  // `kIndigoContextualCueingV2`. When `kIndigoContextMenu` is also enabled,
+  // delegating chip and anchored message cueing to Contextual Cues still leaves
+  // a functioning entry point (the context menu), even though CCV2 itself will
+  // not cue Indigo. Accordingly, the controller should not show its own page
+  // action, anchored message, or suggestion chip, while still reporting the
+  // page as eligible for the context menu.
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(features::kIndigoContextMenu);
+
+  CreateController();
+  SetupEligibleAndOnboarded();
+
+  EXPECT_CALL(*page_action_controller_, Show(kActionIndigo)).Times(0);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _)).Times(0);
+  EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(kActionIndigo, _))
+      .Times(0);
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  EXPECT_TRUE(controller_->IsPageEligible());
+}
+
 TEST_P(IndigoPageActionControllerTest, TriggerSource_OptimizationGuide) {
   CreateController();
   SetupEligibleAndOnboarded();
