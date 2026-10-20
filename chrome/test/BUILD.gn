@@ -790,7 +790,6 @@ source_set("platform_browser_tests") {
 if (is_android) {
   test("android_browsertests") {
     use_default_launcher = false
-    product_config_java_packages = [ "org.chromium.chrome.browser" ]
     android_manifest =
         "${target_gen_dir}/android_browsertests_manifest/AndroidManifest.xml"
     android_manifest_dep = ":android_browsertests_manifest"
@@ -1180,7 +1179,6 @@ if (is_android) {
     use_default_launcher = false
     android_manifest = "${target_gen_dir}/android_sync_integration_tests_manifest/AndroidManifest.xml"
     android_manifest_dep = ":android_sync_integration_tests_manifest"
-    product_config_java_packages = [ "org.chromium.chrome.browser" ]
 
     deps = [
       "//chrome/browser/sync/test/integration:sync_integration_tests_impl",

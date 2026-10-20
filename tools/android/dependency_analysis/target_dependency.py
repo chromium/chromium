@@ -13,7 +13,6 @@ import java_group
 # in more than 3 build targets, it will be removed from the build graph. Some
 # examples include:
 # - org.chromium.base.natives.GEN_JNI (in 100+ targets)
-# - org.chromium.android_webview.ProductConfig (in 15+ targets)
 # - org.chromium.content.R (in 60+ targets)
 _MAX_CONCURRENT_BUILD_TARGETS = 3
 

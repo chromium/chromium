@@ -8,7 +8,6 @@ import android.content.Context;
 
 import org.chromium.base.PathUtils;
 import org.chromium.native_test.NativeBrowserTestApplication;
-import org.chromium.ui.base.ResourceBundle;
 
 /** A basic content_public.browser.tests {@link android.app.Application}. */
 public class ComponentsBrowserTestsApplication extends NativeBrowserTestApplication {
@@ -20,7 +19,6 @@ public class ComponentsBrowserTestsApplication extends NativeBrowserTestApplicat
 
         if (isBrowserProcess()) {
             // Test-only stuff, see also NativeUnitTest.java.
-            ResourceBundle.setNoAvailableLocalePaks();
             PathUtils.setPrivateDataDirectorySuffix(PRIVATE_DATA_DIRECTORY_SUFFIX);
         }
     }

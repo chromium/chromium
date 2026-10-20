@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.language;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -68,11 +67,6 @@ public class AppLanguagePromoDialogTest {
 
         mFakeLanguageBridge = new FakeLanguageBridgeJni();
         LanguageBridgeJni.setInstanceForTesting(mFakeLanguageBridge);
-    }
-
-    @After
-    public void tearDown() {
-        LanguageTestUtils.clearResourceBundleForTesting();
     }
 
     // Test getTopLanguagesHelper

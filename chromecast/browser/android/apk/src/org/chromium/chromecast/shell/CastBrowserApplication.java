@@ -17,7 +17,6 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.build.annotations.UsedByReflection;
-import org.chromium.ui.base.ResourceBundle;
 
 /**
  * Entry point for the Android cast shell application. Handles initialization of information that
@@ -38,8 +37,6 @@ public class CastBrowserApplication extends Application {
                 ApkInfo.setBrowserPackageInfo(packageInfo);
             }
         }
-        ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
-        LibraryLoader.getInstance().setLinkerImplementation(ProductConfig.USE_CHROMIUM_LINKER);
         LibraryLoader.getInstance()
                 .setLibraryProcessType(
                         isBrowserProcess()

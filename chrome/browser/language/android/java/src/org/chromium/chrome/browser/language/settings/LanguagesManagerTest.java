@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.language.settings;
 
 import android.text.TextUtils;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -61,11 +60,6 @@ public class LanguagesManagerTest {
                         alwaysLanguages,
                         targetLanguage);
         TranslateBridgeJni.setInstanceForTesting(mFakeTranslateBridge);
-    }
-
-    @After
-    public void tearDown() {
-        LanguageTestUtils.clearResourceBundleForTesting();
     }
 
     /** Tests for getting the potential accept languages. */

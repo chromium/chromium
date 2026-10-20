@@ -644,8 +644,6 @@ if (is_android) {
     loadable_modules = [ "$root_out_dir/libchrome_crashpad_handler.so" ]
 
     command_line_flags_file = "castshell-command-line"
-
-    product_config_java_packages = [ "org.chromium.chromecast.shell" ]
   }
 
   generate_final_jni("cast_browser_jni_registration") {
@@ -667,7 +665,6 @@ if (is_android) {
       ":cast_browser_apk__build_config_srcjar",
       ":cast_browser_apk__compile_resources",
       ":cast_browser_apk__native_libraries",
-      ":cast_browser_apk_org.chromium.chromecast.shell__product_config_srcjar",
       ":cast_browser_jni_registration",
     ]
   }

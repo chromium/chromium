@@ -456,7 +456,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/variations/VariationsSeedSafeModeAction.java",
     ]
     deps = [
-      ":android_webview_product_config_java",
       ":common_aidl_java",
       ":common_java",
       ":common_origin_trials_java",
@@ -710,22 +709,6 @@ if (_is_default_toolchain) {
 
   android_library("common_aidl_java") {
     srcjar_deps = [ ":common_aidl" ]
-  }
-
-  # Generate ProductConfig.java so that android_webview_product_config_java's
-  # compile step works.
-  generate_product_config_srcjar("webview_product_config") {
-    java_package = webview_product_config_java_package
-  }
-
-  # ProductConfig.java is excluded from the generated .jar
-  # (via. jar_excluded_patterns) and the final version is inserted at the APK
-  # level - with the list of pak locales populated by looking at the assets that
-  # are listed in the final APK's .build_config.json.
-  android_library("android_webview_product_config_java") {
-    sources = [ "java/src/org/chromium/android_webview/AwLocaleConfig.java" ]
-    srcjar_deps = [ ":webview_product_config" ]
-    jar_excluded_patterns = [ "*/ProductConfig.class" ]
   }
 
   webview_repack_locales("repack_locales") {

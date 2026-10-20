@@ -559,7 +559,6 @@ template("test") {
         "loadable_module_deps",
         "loadable_modules",
         "min_sdk_version",
-        "product_config_java_packages",
         "proguard_configs",
         "proguard_enabled",
         "srcjar_deps",

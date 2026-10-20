@@ -7,7 +7,6 @@ package org.chromium.ui.base;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,17 +19,12 @@ public class ResourceBundleTest {
 
     @Before
     public void setUp() {
-        ResourceBundle.setAvailablePakLocales(new String[] {"en-US", "fr-FR"});
-    }
-
-    @After
-    public void tearDown() {
-        ResourceBundle.clearAvailablePakLocalesForTesting();
+        ResourceBundle.setAvailablePakLocalesForTesting(new String[] {"en-US", "fr-FR"});
     }
 
     @Test
-    public void testGetLocalePakResourcePath_NullWhenLocalesNotSet() {
-        ResourceBundle.clearAvailablePakLocalesForTesting();
+    public void testGetLocalePakResourcePath_NullWhenLocalesEmpty() {
+        ResourceBundle.setAvailablePakLocalesForTesting(new String[] {});
         assertNull(
                 ResourceBundle.getLocalePakResourcePath(
                         "en-US", Gender.DEFAULT, /* inBundle= */ false, /* logError= */ false));

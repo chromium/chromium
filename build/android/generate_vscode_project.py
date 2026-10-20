@@ -113,10 +113,10 @@ def _FindCanonicalCompileResources(output_dir, build_config_path):
 def _IsUsefulSrcJar(srcjar_path, canonical_compile_resources):
     """Drop bundled srcjars that would surface duplicate types in JDT.
 
-    The wrapper-srcjar filters (BuildConfig/NativeLibraries/ProductConfig) hide
-    per-apk variants whose classes are already fed via input_srcjars. Resource
-    srcjars are pinned to the root target's own to avoid R conflicts across
-    libs. Mirrors build/android/chromiumide_api.py:_is_useful_source_jar.
+    The wrapper-srcjar filters (BuildConfig/NativeLibraries) hide per-apk
+    variants whose classes are already fed via input_srcjars. Resource srcjars
+    are pinned to the root target's own to avoid R conflicts across libs.
+    Mirrors build/android/chromiumide_api.py:_is_useful_source_jar.
     """
     if srcjar_path.endswith('_placeholder.srcjar'):
         return False
@@ -124,7 +124,6 @@ def _IsUsefulSrcJar(srcjar_path, canonical_compile_resources):
         (
             '__build_config_srcjar.srcjar',
             '__native_libraries.srcjar',
-            '__product_config_srcjar.srcjar',
         )
     ):
         return False

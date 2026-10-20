@@ -14,7 +14,6 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.net.NetworkChangeNotifier;
-import org.chromium.ui.base.ResourceBundle;
 
 /**
  * Entry point for the content shell application.  Handles initialization of information that needs
@@ -29,7 +28,6 @@ public class ContentShellApplication extends Application {
         super.attachBaseContext(base);
         boolean isBrowserProcess = !ContextUtils.getProcessName().contains(":");
         ContextUtils.initApplicationContext(this);
-        ResourceBundle.setNoAvailableLocalePaks();
         LibraryLoader.getInstance()
                 .setLibraryProcessType(
                         isBrowserProcess

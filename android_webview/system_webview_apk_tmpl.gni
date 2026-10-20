@@ -131,7 +131,6 @@ template("system_webview_apk_or_module_tmpl") {
                                  "include_64_bit_webview",
                                  "manifest_package",
                                  "webview_framework_dep",
-                                 "webview_product_config_java_package",
                                  "webview_devui_show_icon",
                                  "use_stable_package_name_for_trichrome",
                                  "mergeable_android_manifests",
@@ -167,11 +166,6 @@ template("system_webview_apk_or_module_tmpl") {
     suffix_apk_assets_used_by = system_webview_apk_target
 
     deps += [ "//android_webview:android_webview_no_weblayer_java" ]
-
-    if (!_omit_dex) {
-      product_config_java_packages =
-          [ invoker.webview_product_config_java_package ]
-    }
 
     if (!defined(alternative_android_sdk_dep)) {
       alternative_android_sdk_dep = invoker.webview_framework_dep
@@ -293,7 +287,7 @@ template("system_webview_apk_or_module_tmpl") {
       command_line_flags_file = "webview-command-line"
     }
 
-    if (!is_java_debug && !_omit_dex) {
+    if (!_omit_dex && !is_java_debug) {
       proguard_enabled = true
       if (!_is_bundle_module) {
         repackage_classes = "WV"

@@ -11,54 +11,39 @@ import org.chromium.base.ApkAssets;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.Arrays;
 
-/**
- * This class provides the resource bundle related methods for the native
- * library.
- *
- * IMPORTANT: Clients that use {@link ResourceBundle} MUST call either
- * {@link ResourceBundle#setAvailablePakLocales(String[], String[])} or
- * {@link ResourceBundle#setNoAvailableLocalePaks()} before calling the getters in this class.
- */
+/** This class provides the resource bundle related methods for the native library. */
 @JNINamespace("ui")
 @NullMarked
 public final class ResourceBundle {
     private static final String TAG = "ResourceBundle";
-    private static String @Nullable [] sAvailableLocales;
+    private static String[] sAvailableLocales = BuildConfig.LOCALES;
     private static boolean sOverrideApkSubpathExistsForTesting;
     private static boolean sOverrideFallbackPathExistsForTesting;
 
     private ResourceBundle() {}
 
-    /** Initiaze with no locales. */
-    public static void setNoAvailableLocalePaks() {
-        setAvailablePakLocales(new String[] {});
-    }
-
     /**
-     * Sets the available locale pak files.
+     * Sets the available locale pak files for testing.
      *
      * @param locales Locales that have pak files.
      */
-    public static void setAvailablePakLocales(String[] locales) {
-        assert sAvailableLocales == null;
+    public static void setAvailablePakLocalesForTesting(String[] locales) {
         sAvailableLocales = locales;
-    }
-
-    public static void clearAvailablePakLocalesForTesting() {
-        sAvailableLocales = null;
+        ResettersForTesting.register(() -> sAvailableLocales = BuildConfig.LOCALES);
     }
 
     /**
      * Return the list of available locales.
+     *
      * @return The correct locale list for this build.
      */
     public static String[] getAvailableLocales() {
-        assert sAvailableLocales != null;
         return sAvailableLocales;
     }
 
@@ -75,10 +60,6 @@ public final class ResourceBundle {
     @CalledByNative
     static @Nullable String getLocalePakResourcePath(
             String locale, @Gender int gender, boolean inBundle, boolean logError) {
-        if (sAvailableLocales == null) {
-            // Locales may be null in unit tests.
-            return null;
-        }
         if (Arrays.binarySearch(sAvailableLocales, locale) < 0) {
             // This locale is not supported by Chromium.
             return null;

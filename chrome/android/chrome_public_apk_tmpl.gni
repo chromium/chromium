@@ -293,8 +293,6 @@ template("chrome_common_apk_or_module_tmpl") {
       is_base_module = true
     }
 
-    product_config_java_packages = [ "org.chromium.chrome.browser" ]
-
     # Chrome does not enable Strict Mode checks.
     disable_strict_mode_context = true
 

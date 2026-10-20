@@ -161,10 +161,6 @@ common_java_sources = [
   "$common_java_src_dir/org/chromium/chromecast/shell/WebContentsRegistry.java",
 ]
 
-generate_product_config_srcjar("product_config_for_browser") {
-  java_package = "org.chromium.chromecast.shell"
-}
-
 generate_jni("jni_headers") {
   sources = [
     "apk/src/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
@@ -185,11 +181,8 @@ android_library("cast_shell_java") {
   srcjar_deps = [
     ":cast_browser_module_interface",
     ":jni_headers",
-    ":product_config_for_browser",
     "//chromecast/browser:java_enums",
   ]
-
-  jar_excluded_patterns = [ "*/ProductConfig.class" ]
 
   mergeable_android_manifests = [ cast_shell_android_manifest ]
   deps = common_android_library_deps + [

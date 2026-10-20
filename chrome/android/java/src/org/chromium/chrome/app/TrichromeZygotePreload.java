@@ -7,8 +7,8 @@ package org.chromium.chrome.app;
 import android.content.pm.ApplicationInfo;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.ProductConfig;
 import org.chromium.content_public.app.ZygotePreload;
 
 /** The {@link ZygotePreload} allowing to use the Chromium Linker when running Trichrome. */
@@ -19,8 +19,7 @@ public class TrichromeZygotePreload extends ZygotePreload {
         // The Chromium Linker is only needed when the App Zygote intends to create the RELRO
         // region.
         boolean useChromiumLinker =
-                ProductConfig.USE_CHROMIUM_LINKER
-                        && !LibraryLoader.mainProcessIntendsToProvideRelroFd();
+                NativeLibraries.sUseLinker && !LibraryLoader.mainProcessIntendsToProvideRelroFd();
         LibraryLoader.getInstance().setLinkerImplementation(useChromiumLinker);
         doPreloadCommon(appInfo);
     }

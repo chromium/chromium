@@ -96,6 +96,14 @@ public class BuildConfig {
     public static String APK_ASSETS_SUFFIX = null;
 #endif
 
+    // Sorted list of locales that have an uncompressed .pak within assets.
+    // Stored as an array because AssetManager.list() is slow.
+#if defined(_LOCALES)
+    public static String[] LOCALES = _LOCALES;
+#else
+    public static String[] LOCALES = {};
+#endif
+
     // Use in conjunction with FEATURE_PC check to limit desktop-only
     // features to devices with build flag. Should only be used in
     // DeviceInfo.java since this is the source of truth for isDesktop check.

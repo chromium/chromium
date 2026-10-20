@@ -26,7 +26,6 @@ android_library("nonembedded_java") {
     ":devui_java",
     ":services_java",
     ":util_java",
-    "//android_webview:android_webview_product_config_java",
     "//android_webview:common_aidl_java",
     "//android_webview:common_java",
     "//android_webview:common_platform_services_java",

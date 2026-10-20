@@ -184,7 +184,6 @@ def _IsUsefulSrcJar(srcjar_path, canonical_compile_resources=None):
             '_placeholder.srcjar',
             '__build_config_srcjar.srcjar',
             '__native_libraries.srcjar',
-            '__product_config_srcjar.srcjar',
             '__assetres.srcjar',
         )
     ):

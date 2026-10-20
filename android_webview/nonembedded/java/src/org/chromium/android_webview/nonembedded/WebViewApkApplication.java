@@ -14,7 +14,6 @@ import com.android.webview.chromium.WebViewLibraryPreloader;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.android_webview.AwLocaleConfig;
 import org.chromium.android_webview.common.CommandLineUtil;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.SafeModeController;
@@ -31,7 +30,6 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.build.BuildConfig;
 import org.chromium.components.crash.CustomAssertionHandler;
 import org.chromium.components.crash.PureJavaExceptionHandler;
-import org.chromium.ui.base.ResourceBundle;
 
 /**
  * Application subclass for SystemWebView and Trichrome.
@@ -85,8 +83,6 @@ public class WebViewApkApplication extends Application {
 
         maybeSetPreloader();
         maybeInitProcessGlobals();
-
-        ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
     }
 
     @Override

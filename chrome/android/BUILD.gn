@@ -1003,10 +1003,6 @@ if (_is_default_toolchain) {
     }
   }
 
-  generate_product_config_srcjar("chrome_product_config") {
-    java_package = "org.chromium.chrome.browser"
-  }
-
   # This is a list of all chrome module java dependencies. New features should
   # be added to this list.
   java_group("chrome_all_java") {
@@ -2312,18 +2308,11 @@ if (_is_default_toolchain) {
       deps += [ "//chrome/android/modules/dev_ui/provider:java" ]
     }
 
-    srcjar_deps = [
-      ":base_module_jni",
-      ":chrome_product_config",
-    ]
+    srcjar_deps = [ ":base_module_jni" ]
 
     # If this throws an error, try depending on
     # //content/public/android:content_main_dex_java instead.
     assert_no_deps = [ "//content/public/android:content_full_java" ]
-
-    # Add the actual implementation where necessary so that downstream targets
-    # can provide their own implementations.
-    jar_excluded_patterns = [ "*/ProductConfig.class" ]
 
     resources_package = "org.chromium.chrome.base"
   }

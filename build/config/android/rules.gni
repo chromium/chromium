@@ -2048,6 +2048,9 @@ if (!is_robolectric && enable_java_templates) {
           "_APK_ASSETS_SUFFIX=${invoker.apk_assets_suffix}",
         ]
       }
+      if (defined(invoker.locales_java_list)) {
+        defines += [ "_LOCALES=${invoker.locales_java_list}" ]
+      }
       if (defined(invoker.proguard_enabled) && invoker.proguard_enabled) {
         defines += [ "_IS_PROGUARD_ENABLED" ]
       }
@@ -2085,42 +2088,6 @@ if (!is_robolectric && enable_java_templates) {
       if (defined(invoker.disable_strict_mode_context) &&
           invoker.disable_strict_mode_context) {
         defines += [ "_DISABLE_STRICT_MODE_CONTEXT" ]
-      }
-    }
-  }
-
-  # Creates ProductConfig.java, a file containing product-specific
-  # configuration.
-  #
-  # Currently, this includes the list of locales, both in their compressed and
-  # uncompressed format, as well as library loading
-  #
-  # Variables:
-  #   build_config: Path to build_config used for locale lists.
-  #   java_package: Java package for the generated class.
-  #   use_chromium_linker:
-  template("generate_product_config_srcjar") {
-    java_cpp_template(target_name) {
-      defines = []
-      _use_final =
-          defined(invoker.build_config) ||
-          defined(invoker.use_chromium_linker) || defined(invoker.is_bundle)
-      if (_use_final) {
-        defines += [ "USE_FINAL" ]
-      }
-
-      sources = [ "//build/android/java/templates/ProductConfig.template" ]
-      defines += [ "PACKAGE=${invoker.java_package}" ]
-
-      _use_chromium_linker =
-          defined(invoker.use_chromium_linker) && invoker.use_chromium_linker
-      defines += [ "USE_CHROMIUM_LINKER_VALUE=$_use_chromium_linker" ]
-      if (defined(invoker.build_config)) {
-        forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
-        _rebased_build_config =
-            rebase_path(invoker.build_config, root_build_dir)
-        defines +=
-            [ "LOCALE_LIST=@FileArg($_rebased_build_config:locales_java_list)" ]
       }
     }
   }
@@ -2203,8 +2170,6 @@ if (!is_robolectric && enable_java_templates) {
   #   require_native_mocks: Enforce that any native calls using
   #     org.chromium.base.annotations.NativeMethods must have a mock set
   #     (optional).
-  #   product_config_java_packages: Optional list of java packages. If given, a
-  #     ProductConfig.java file will be generated for each package.
   #   enable_proguard_checks: Turns on -checkdiscard directives and missing
   #     symbols check in the proguard step (default=true).
   #   disallowed_library_classes: List of Android SDK classes (e.g.
@@ -2329,9 +2294,6 @@ if (!is_robolectric && enable_java_templates) {
     _use_chromium_linker =
         defined(invoker.use_chromium_linker) && invoker.use_chromium_linker
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
-
-    _generate_productconfig_java =
-        defined(invoker.product_config_java_packages) && !_omit_dex
 
     _proguard_enabled =
         defined(invoker.proguard_enabled) && invoker.proguard_enabled
@@ -2691,9 +2653,11 @@ if (!is_robolectric && enable_java_templates) {
         min_sdk_version = _min_sdk_version
         write_clang_profiling_data =
             use_clang_coverage && _generate_native_libraries_java
+        deps = [ ":$_build_config_target" ]
+        inputs = [ _build_config ]
+        locales_java_list =
+            "@FileArg(${_rebased_build_config}:locales_java_list)"
         if (defined(invoker.suffix_apk_assets_used_by)) {
-          deps = [ ":$_build_config_target" ]
-          inputs = [ _build_config ]
           apk_assets_suffixed_list =
               "@FileArg(${_rebased_build_config}:apk_assets_suffixed_list)"
           apk_assets_suffix =
@@ -2701,21 +2665,6 @@ if (!is_robolectric && enable_java_templates) {
         }
       }
       _srcjar_deps += [ ":${_template_name}__build_config_srcjar" ]
-    }
-
-    if (_generate_productconfig_java) {
-      foreach(_package, invoker.product_config_java_packages) {
-        _locale_target_name =
-            "${_template_name}_${_package}__product_config_srcjar"
-
-        generate_product_config_srcjar("$_locale_target_name") {
-          build_config = _build_config
-          java_package = _package
-          use_chromium_linker = _use_chromium_linker
-          deps = [ ":$_build_config_target" ]
-        }
-        _srcjar_deps += [ ":$_locale_target_name" ]
-      }
     }
 
     if (_is_bundle_module) {
@@ -2760,7 +2709,7 @@ if (!is_robolectric && enable_java_templates) {
                                "suffix_apk_assets_used_by",
                                "uses_split",
                              ])
-      if (_generate_productconfig_java) {
+      if (_generate_buildconfig_java) {
         create_locales_java_list = true
       }
       version_code = _version_code
@@ -3307,7 +3256,6 @@ if (!is_robolectric && enable_java_templates) {
             "manifest_package",
             "max_sdk_version",
             "mergeable_android_manifests",
-            "product_config_java_packages",
             "min_sdk_version",
             "native_lib_placeholders",
             "omit_dex",
@@ -3439,7 +3387,6 @@ if (!is_robolectric && enable_java_templates) {
             "jar_excluded_patterns",
             "javac_args",
             "loadable_modules",
-            "product_config_java_packages",
             "manifest_package",
             "max_sdk_version",
             "min_sdk_version",

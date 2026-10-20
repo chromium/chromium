@@ -41,7 +41,6 @@ import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.net.NetworkChangeNotifier;
-import org.chromium.ui.base.ResourceBundle;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 import java.util.UUID;
@@ -202,8 +201,6 @@ public final class StartupTasks {
      */
     public static void runNonUiThreadCapableStartupTasks(StartupController.Delegate delegate) {
         try {
-            ResourceBundle.setAvailablePakLocales(AwLocaleConfig.getWebViewSupportedPakLocales());
-
             try (DualTraceEvent ignored =
                     DualTraceEvent.scoped("LibraryLoader.ensureInitialized")) {
                 LibraryLoader.getInstance().ensureInitialized();

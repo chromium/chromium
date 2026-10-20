@@ -31,7 +31,6 @@ public class AppLocaleUtilsTest {
     // Reset the application override language after each test.
     @After
     public void tearDown() {
-        LanguageTestUtils.clearResourceBundleForTesting();
         ChromeSharedPreferences.getInstance()
                 .writeString(ChromePreferenceKeys.APPLICATION_OVERRIDE_LANGUAGE, null);
     }

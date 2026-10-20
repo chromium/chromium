@@ -28,8 +28,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ProductConfig;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -83,7 +83,7 @@ public class IncognitoNewTabPageTest {
     @SmallTest
     public void testDescriptionLanguages() throws Exception {
         var context = mActivityTestRule.getActivity().getApplicationContext();
-        for (String languageTag : ProductConfig.LOCALES) {
+        for (String languageTag : BuildConfig.LOCALES) {
             var localeContext = createContextForLocale(context, languageTag);
             IncognitoDescriptionView.getSpannedBulletText(
                     localeContext, R.string.new_tab_otr_not_saved);

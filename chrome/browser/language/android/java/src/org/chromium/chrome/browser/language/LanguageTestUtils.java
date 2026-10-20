@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.language;
 
 import org.chromium.ui.base.ResourceBundle;
 
-/** Utils for initializing and cleaning up android ResourceBundle in robolectric tests */
+/** Utils for initializing android ResourceBundle in robolectric tests */
 public class LanguageTestUtils {
     public static final String[] TEST_LOCALES = {
         "af", "am", "ar", "ar-XB", "as", "az", "be", "bg", "bn", "bs", "ca", "cs", "da", "de", "el",
@@ -20,11 +20,6 @@ public class LanguageTestUtils {
     private LanguageTestUtils() {}
 
     public static void initializeResourceBundleForTesting() {
-        clearResourceBundleForTesting();
-        ResourceBundle.setAvailablePakLocales(TEST_LOCALES);
-    }
-
-    public static void clearResourceBundleForTesting() {
-        ResourceBundle.clearAvailablePakLocalesForTesting();
+        ResourceBundle.setAvailablePakLocalesForTesting(TEST_LOCALES);
     }
 }

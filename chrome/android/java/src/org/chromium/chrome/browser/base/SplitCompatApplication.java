@@ -39,7 +39,6 @@ import org.chromium.build.NativeLibraries;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ProductConfig;
 import org.chromium.chrome.browser.crash.ApplicationStatusTracker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
@@ -51,7 +50,6 @@ import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionRepor
 import org.chromium.components.crash.PureJavaExceptionHandler.JavaExceptionReporterFactory;
 import org.chromium.components.module_installer.util.ModuleUtil;
 import org.chromium.components.policy.PolicyCache;
-import org.chromium.ui.base.ResourceBundle;
 
 import java.util.function.Supplier;
 
@@ -220,8 +218,6 @@ public class SplitCompatApplication extends Application {
         }
 
         maybeInitProcessType();
-        LibraryLoader.getInstance().setLinkerImplementation(ProductConfig.USE_CHROMIUM_LINKER);
-        ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
 
         if (isBrowserProcess) {
             // Renderer and GPU processes have command line passed to them via IPC
