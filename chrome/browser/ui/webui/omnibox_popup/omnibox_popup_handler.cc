@@ -113,6 +113,7 @@ void OmniboxPopupHandler::Revert(uint32_t sequence_number) {
     }
   }
   latest_selection_ = gfx::Range(0, 0);
+  show_full_url_ = false;
 }
 
 void OmniboxPopupHandler::OnInputCleared(uint32_t sequence_number) {

@@ -2199,6 +2199,39 @@ suite('OmniboxPopupSearchboxTest', function() {
    }
  });
 
+ test('EscapeStagedUnwinding_UnelidedUrlClosesDirectly', async () => {
+   // When the URL is unelided without user edits (`userInputInProgress: false`,
+   // `showFullUrl: true`) and the dropdown is closed, pressing Escape should
+   // skip Stage 3 (`kClearUserInput`) and directly execute Stage 4 (`kBlur`).
+   const permanentDisplayText = 'example.com';
+   const fullUrl = 'https://example.com/';
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     sequenceNumber: 9,
+     text: permanentDisplayText,
+     selection: {start: 0, end: permanentDisplayText.length},
+     userInputInProgress: false,
+     fullUrl: fullUrl,
+     isFocused: true,
+     permanentDisplayText: permanentDisplayText,
+     showFullUrl: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals(fullUrl, searchbox.getInputElement().inputElement.value);
+
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Escape',
+     cancelable: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals(1, handler.getCallCount('revert'));
+   assertEquals(1, handler.getCallCount('closeUI'));
+   assertEquals(1, handler.getCallCount('logEscapeAction'));
+   assertEquals(
+       OmniboxEscapeAction.kBlur, handler.getArgs('logEscapeAction')[0]);
+ });
+
  test('EscapeStagedUnwinding_ClearedInputNonEmptyUrl', async () => {
    // Input was manually cleared ('') on a page with a non-empty permanent URL.
    // ESC should restore the permanent URL ('example.com') without closing UI.

@@ -2152,7 +2152,8 @@ export class OmniboxPopupSearchboxElement extends
     // Omnibox.
     const isInputDirty = this.userInputInProgress_ ||
         this.keywordModeManager.isInKeywordMode ||
-        inputEl.inputElement.value !== this.permanentDisplayText_;
+        inputEl.inputElement.value !==
+            (this.fullUrlShown_ ? this.fullUrl_ : this.permanentDisplayText_);
     if (isInputDirty) {
       const wasAlreadyEmpty = inputEl.inputElement.value.length === 0 &&
           !this.keywordModeManager.isInKeywordMode;
@@ -2182,6 +2183,11 @@ export class OmniboxPopupSearchboxElement extends
 
     // Stage 4 (`kBlur`): Blurs Omnibox and closes UI, returning focus to Web
     // Contents.
+    if (this.fullUrlShown_) {
+      // Revert the native omnibox view in case it was unelided (e.g. via drag)
+      // so closing the popup restores the elided URL.
+      this.popupPageHandler_.revert(this.currentSequenceNum_);
+    }
     inputEl.blur();
     this.popupPageHandler_.closeUI();
     this.popupPageHandler_.logEscapeAction(OmniboxEscapeAction.kBlur);
