@@ -67,6 +67,7 @@ class TestFakeWebState : public web::FakeWebState {
 @interface MiniMapTabHelperTestMiniMapControllerFactory
     : NSObject <MiniMapControllerFactory>
 @property(nonatomic, copy) NSString* customCampaignToken;
+@property(nonatomic, assign) BOOL bypassNativePreview;
 @end
 
 @implementation MiniMapTabHelperTestMiniMapControllerFactory
@@ -98,18 +99,33 @@ class TestFakeWebState : public web::FakeWebState {
   return NO;
 }
 
+- (BOOL)isMapsNativePreviewBypassEnabled {
+  return self.bypassNativePreview;
+}
+
 @end
 
 class MiniMapTabHelperTest : public PlatformTest {
  public:
   MiniMapTabHelperTest() : application_(OCMClassMock([UIApplication class])) {}
 
+  // Whether the Native Preview bypass experiment is enabled for this
+  // fixture. Must be known before the MiniMapService is created in SetUp().
+  virtual bool IsBypassNativePreviewEnabled() { return false; }
+
   void SetUp() override {
     PlatformTest::SetUp();
     scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
 
     factory_ = [[MiniMapTabHelperTestMiniMapControllerFactory alloc] init];
+    factory_.bypassNativePreview = IsBypassNativePreviewEnabled();
     ios::provider::test::SetMiniMapControllerFactory(factory_);
+
+    OCMStub([application_ sharedApplication]).andReturn(application_);
+    OCMStub([application_ canOpenURL:GetGoogleMapsAppURL()])
+        .andDo(^(NSInvocation* invocation) {
+          [invocation setReturnValue:&google_maps_installed_];
+        });
 
     MiniMapServiceFactory::GetInstance();
     TestProfileIOS::Builder test_profile_builder;
@@ -130,12 +146,6 @@ class MiniMapTabHelperTest : public PlatformTest {
 
     MiniMapTabHelper::CreateForWebState(&web_state_);
     tab_helper_ = MiniMapTabHelper::FromWebState(&web_state_);
-    OCMStub([application_ sharedApplication]).andReturn(application_);
-    OCMStub([application_ canOpenURL:GetGoogleMapsAppURL()])
-        .andDo(^(NSInvocation* invocation) {
-          [invocation setReturnValue:&google_maps_installed_];
-        });
-
     template_url_service_ =
         ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
     template_url_service_->Load();
@@ -528,4 +538,59 @@ TEST_F(MiniMapTabHelperTest, TestDynamicCampaignTokenOptOut) {
   EXPECT_EQ(params->url.spec(),
             "https://www.google.com/maps/"
             "foo?valid=true&utm_campaign=as-npt-dynamic-789");
+}
+
+// Tests that when Google Maps is installed and the bypass flag is disabled,
+// standard behavior is preserved: interception is skipped (returns true).
+TEST_F(MiniMapTabHelperTest, NoBypassWhenGoogleMapsInstalledAndFlagDisabled) {
+  NSString* const kGoogleMapsLink =
+      @"https://www.google.com/maps/foo?valid=true";
+
+  // Verify Native Preview is NOT presented.
+  OCMReject([mini_map_commands_handler_
+      presentMiniMapNativePreviewForURL:[OCMArg any]]);
+
+  bool res = TestShouldAllowRequest(kGoogleSRPPage, kGoogleMapsLink,
+                                    /*feature_enabled=*/true,
+                                    /*google_maps_installed=*/true,
+                                    ui::PageTransition::PAGE_TRANSITION_LINK);
+
+  // Interception is skipped when Google Maps is installed and flag is off.
+  EXPECT_TRUE(res);
+  EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
+}
+
+#pragma mark - MiniMapTabHelperBypassEnabledTest
+
+// Fixture with the Native Preview bypass experiment enabled. The flag is
+// read once when MiniMapService is created in SetUp(), so it must be
+// configured by the fixture rather than set from the test body.
+class MiniMapTabHelperBypassEnabledTest : public MiniMapTabHelperTest {
+ public:
+  bool IsBypassNativePreviewEnabled() override { return true; }
+};
+
+// Tests that when Google Maps is installed and the bypass flag is enabled,
+// the URL is intercepted and forwarded to the MiniMap handler (which delegates
+// to ExperienceKit to open Google Maps directly instead of showing the preview
+// sheet).
+TEST_F(MiniMapTabHelperBypassEnabledTest,
+       BypassNativePreviewWhenGoogleMapsInstalled) {
+  NSString* const kGoogleMapsLink =
+      @"https://www.google.com/maps/foo?valid=true";
+  NSString* const kExpectedLink =
+      @"https://www.google.com/maps/foo?valid=true&utm_campaign=as-npt-bling";
+
+  // Verify the URL is intercepted and passed to the handler.
+  OCMExpect([mini_map_commands_handler_
+      presentMiniMapNativePreviewForURL:[NSURL URLWithString:kExpectedLink]]);
+
+  bool res = TestShouldAllowRequest(kGoogleSRPPage, kGoogleMapsLink,
+                                    /*feature_enabled=*/true,
+                                    /*google_maps_installed=*/true,
+                                    ui::PageTransition::PAGE_TRANSITION_LINK);
+
+  // Interception is active, so standard web navigation is blocked.
+  EXPECT_FALSE(res);
+  EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
 }
