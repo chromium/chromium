@@ -1373,10 +1373,30 @@ ScriptValue WebGLRenderingContextWebGPUBase::getParameter(
   GLint int_value = 0;
   switch (pname) {
     case GL_MAX_CUBE_MAP_TEXTURE_SIZE:
-    case GL_MAX_TEXTURE_SIZE: {
-      driver_gl_.fn.glGetIntegervFn(pname, &int_value);
+    case GL_MAX_TEXTURE_SIZE:
+    case GL_PACK_ALIGNMENT:
+    case GL_PACK_ROW_LENGTH:
+    case GL_PACK_SKIP_PIXELS:
+    case GL_PACK_SKIP_ROWS:
+    case GL_UNPACK_ALIGNMENT:
+    case GL_UNPACK_IMAGE_HEIGHT:
+    case GL_UNPACK_ROW_LENGTH:
+    case GL_UNPACK_SKIP_IMAGES:
+    case GL_UNPACK_SKIP_PIXELS:
+    case GL_UNPACK_SKIP_ROWS: {
+      RETURN_IF_GL_ERROR(driver_gl_.fn.glGetIntegervFn(pname, &int_value),
+                         ScriptValue::CreateNull(script_state->GetIsolate()));
       return WebGLAny(script_state, int_value);
     }
+
+    case GC3D_UNPACK_FLIP_Y_WEBGL:
+      return WebGLAny(script_state, unpack_flip_y_);
+
+    case GC3D_UNPACK_PREMULTIPLY_ALPHA_WEBGL:
+      return WebGLAny(script_state, unpack_premultiply_alpha_);
+
+    case GC3D_UNPACK_COLORSPACE_CONVERSION_WEBGL:
+      return WebGLAny(script_state, unpack_colorspace_conversion_);
 
     default:
       // TODO(413078308): Support other pnames.
@@ -1661,7 +1681,34 @@ void WebGLRenderingContextWebGPUBase::linkProgram(WebGLProgram* program) {
 }
 
 void WebGLRenderingContextWebGPUBase::pixelStorei(GLenum pname, GLint param) {
-  NOTIMPLEMENTED();
+  switch (pname) {
+    // WebGL-specific parameters:
+    // TODO(413078308): Apply these parameters in tex[Sub]Image2D and
+    // tex[Sub]Image3D.
+    case GC3D_UNPACK_FLIP_Y_WEBGL:
+      unpack_flip_y_ = param != 0;
+      return;
+
+    case GC3D_UNPACK_PREMULTIPLY_ALPHA_WEBGL:
+      unpack_premultiply_alpha_ = param != 0;
+      return;
+
+    case GC3D_UNPACK_COLORSPACE_CONVERSION_WEBGL:
+      if (static_cast<GLenum>(param) != GC3D_BROWSER_DEFAULT_WEBGL &&
+          param != GL_NONE) {
+        InsertGLError(
+            GL_INVALID_VALUE, "pixelStorei",
+            "invalid parameter for UNPACK_COLORSPACE_CONVERSION_WEBGL");
+        return;
+      }
+      unpack_colorspace_conversion_ = static_cast<GLenum>(param);
+      return;
+
+    // Standard parameters. ANGLE keeps their state.
+    default:
+      driver_gl_.fn.glPixelStoreiFn(pname, param);
+      return;
+  }
 }
 
 void WebGLRenderingContextWebGPUBase::polygonOffset(GLfloat factor,
