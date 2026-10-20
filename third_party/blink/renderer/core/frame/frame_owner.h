@@ -87,6 +87,7 @@ class CORE_EXPORT FrameOwner : public GarbageCollectedMixin {
   virtual void DidChangeAttributes() {}
 
  private:
+  virtual bool IsSwappingFrames() const { return false; }
   virtual void SetIsSwappingFrames(bool) {}
 };
 
@@ -104,9 +105,18 @@ class FrameSwapScope {
   STACK_ALLOCATED();
 
  public:
-  FrameSwapScope(FrameOwner* frame_owner) : frame_owner_(frame_owner) {
-    if (frame_owner)
+  explicit FrameSwapScope(FrameOwner* frame_owner) {
+    // This scope is inert if frame_owner is already in the middle of a swap.
+    // This can happen during FrameLoader::CommitNavigation if an event listener
+    // removes and reinserts the <iframe> that is already committing, triggering
+    // RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318.
+    //
+    // Note: We do not use a static counter, since a nested FrameSwapScope with
+    // a different frame_owner should not be inert.
+    if (frame_owner && !frame_owner->IsSwappingFrames()) {
+      frame_owner_ = frame_owner;
       frame_owner->SetIsSwappingFrames(true);
+    }
   }
 
   ~FrameSwapScope() {
@@ -118,7 +128,7 @@ class FrameSwapScope {
   }
 
  private:
-  FrameOwner* frame_owner_;
+  FrameOwner* frame_owner_ = nullptr;
 };
 
 }  // namespace blink

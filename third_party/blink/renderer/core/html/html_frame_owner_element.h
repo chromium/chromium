@@ -209,7 +209,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   virtual void CheckPotentialPermissionsPolicyViolation() {}
 
  protected:
-  bool is_swapping_frames() const { return is_swapping_frames_; }
+  bool IsSwappingFrames() const final { return is_swapping_frames_; }
 
   // Checks that the number of frames on the page are within the current limit.
   bool IsCurrentlyWithinFrameLimit() const;
@@ -223,7 +223,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   bool IsLocal() const final { return true; }
   bool IsRemote() const final { return false; }
   bool IsFrameOwnerElement() const final { return true; }
-  void SetIsSwappingFrames(bool is_swapping) override {
+  void SetIsSwappingFrames(bool is_swapping) final {
     is_swapping_frames_ = is_swapping;
   }
 

@@ -664,7 +664,7 @@ void HTMLIFrameElement::DidChangeAttributes() {
   // the subframe hasn't been created yet; or if we are in the middle of
   // swapping one frame for another, in which case the final state
   // will be propagated at the end of the swapping operation.
-  if (is_swapping_frames() || !ContentFrame()) {
+  if (IsSwappingFrames() || !ContentFrame()) {
     return;
   }
 
