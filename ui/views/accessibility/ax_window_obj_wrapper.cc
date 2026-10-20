@@ -154,7 +154,10 @@ void AXWindowObjWrapper::GetChildren(
   // Also consider any associated widgets as children.
   Widget* widget = GetWidgetForWindow(window_);
   if (widget && widget->IsVisible()) {
-    out_children->push_back(aura_obj_cache_->GetOrCreate(widget));
+    if (AXAuraObjWrapper* widget_wrapper =
+            aura_obj_cache_->GetOrCreate(widget)) {
+      out_children->push_back(widget_wrapper);
+    }
   }
 }
 
