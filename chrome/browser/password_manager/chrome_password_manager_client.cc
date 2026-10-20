@@ -68,6 +68,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/renderer_data_validation.h"
 #include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
@@ -139,7 +140,6 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/visibility.h"
@@ -153,7 +153,6 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/geometry/quad_f.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -216,6 +215,7 @@ using password_manager::CredentialCache;
 using password_manager::PasswordCredentialFillerImpl;
 #endif
 
+using autofill::TransformToRootCoordinates;
 using autofill::mojom::FocusedFieldType;
 using autofill::password_generation::PasswordGenerationType;
 using password_manager::BadMessageReason;
@@ -241,30 +241,6 @@ namespace {
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 constexpr char kPasswordBreachEntryTrigger[] = "PASSWORD_ENTRY";
 #endif
-
-// Transforms `rect` from the `rfh`'s local root's coordinate system to the
-// main frame's coordinate system.
-gfx::RectF TransformToRootCoordinates(content::RenderFrameHost& rfh,
-                                      gfx::RectF rect) {
-  content::RenderWidgetHostView* view = rfh.GetView();
-  if (!view) {
-    return rect;
-  }
-
-  // Intersect the coordinates with the view's bounds. This is to make it hard
-  // for a malicious frame to position an Password Manager popup over a field
-  // from different frame (provided the attacker's and the victim's frames do
-  // not share the same local root).
-  rect.InclusiveIntersect(gfx::RectF(view->GetViewBounds().size()));
-
-  // Transform all corners to handle CSS `transform: scale(...)` correctly
-  // (crbug.com/562177779).
-  return gfx::QuadF(view->TransformPointToRootCoordSpaceF(rect.origin()),
-                    view->TransformPointToRootCoordSpaceF(rect.top_right()),
-                    view->TransformPointToRootCoordSpaceF(rect.bottom_right()),
-                    view->TransformPointToRootCoordSpaceF(rect.bottom_left()))
-      .BoundingBox();
-}
 
 }  // namespace
 

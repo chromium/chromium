@@ -26,6 +26,8 @@ static_library("browser") {
     "integrators/actor/autofill_annotations_provider_impl.h",
     "integrators/email_verifier/email_verifier_delegate.cc",
     "integrators/email_verifier/email_verifier_delegate.h",
+    "renderer_data_validation.cc",
+    "renderer_data_validation.h",
     "renderer_forms_from_browser_form.cc",
     "renderer_forms_from_browser_form.h",
     "risk/fingerprint.cc",
@@ -161,7 +163,7 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   sources = [
-    "content_autofill_driver_browsertest.cc",
+    "renderer_data_validation_browsertest.cc",
     "risk/fingerprint_browsertest.cc",
   ]
 
