@@ -287,10 +287,7 @@ void MandatoryReauthManager::OnUserClosedOptInPrompt() {
 
 MandatoryReauthAuthenticationMethod
 MandatoryReauthManager::GetAuthenticationMethod() {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kDeviceReauthRefactor)) {
-    std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
-        client_->GetDeviceAuthAvailabilityChecker();
+  auto get_method = [](auto checker) {
     if (!checker) {
       return MandatoryReauthAuthenticationMethod::kUnknown;
     }
@@ -313,32 +310,11 @@ MandatoryReauthManager::GetAuthenticationMethod() {
     }
     return MandatoryReauthAuthenticationMethod::kUnsupportedMethod;
 #endif  // BUILDFLAG(IS_ANDROID)
-  }
-
-  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
-      client_->GetDeviceAuthenticator();
-  if (!authenticator) {
-    return MandatoryReauthAuthenticationMethod::kUnknown;
-  }
-#if BUILDFLAG(IS_ANDROID)
-  switch (authenticator->GetBiometricAvailabilityStatus()) {
-    case BiometricStatus::kBiometricsAvailable:
-      return MandatoryReauthAuthenticationMethod::kBiometric;
-    case BiometricStatus::kOnlyLskfAvailable:
-      return MandatoryReauthAuthenticationMethod::kScreenLock;
-    case BiometricStatus::kUnavailable:
-      return MandatoryReauthAuthenticationMethod::kUnsupportedMethod;
-  }
-#else
-  // Order matters here.
-  if (authenticator->CanAuthenticateWithBiometrics()) {
-    return MandatoryReauthAuthenticationMethod::kBiometric;
-  }
-  if (authenticator->CanAuthenticateWithBiometricOrScreenLock()) {
-    return MandatoryReauthAuthenticationMethod::kScreenLock;
-  }
-  return MandatoryReauthAuthenticationMethod::kUnsupportedMethod;
-#endif  // BUILDFLAG(IS_ANDROID)
+  };
+  return base::FeatureList::IsEnabled(
+             password_manager::features::kDeviceReauthRefactor)
+             ? get_method(client_->GetDeviceAuthAvailabilityChecker())
+             : get_method(client_->GetDeviceAuthenticator());
 }
 
 PaymentsDataManager& MandatoryReauthManager::GetPaymentsDataManager() {
