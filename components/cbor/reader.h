@@ -102,7 +102,7 @@ class CBOR_EXPORT Reader {
     // 13 was DUPLICATE_KEY.
     UNKNOWN_ERROR = 14,
     OUT_OF_ORDER_OR_DUPLICATE_KEY = 15,
-    // LINT.ThenChange(//components/cbor/rust/reader.rs:ErrorCode,//components/cbor/reader.cc:DecoderErrorAsserts,//tools/metrics/histograms/metadata/cbor/enums.xml:CBORDecoderError)
+    // LINT.ThenChange(//components/cbor/rust/reader.rs:Error,//components/cbor/reader.cc:DecoderErrorAsserts,//tools/metrics/histograms/metadata/cbor/enums.xml:CBORDecoderError)
     kMaxValue = OUT_OF_ORDER_OR_DUPLICATE_KEY,
   };
 
