@@ -91,6 +91,9 @@ std::ostream& operator<<(std::ostream& os,
     case feature_engagement::ANY:
       os << "ANY";
       break;
+    case feature_engagement::ANY_RELAXED:
+      os << "ANY_RELAXED";
+      break;
     case feature_engagement::LESS_THAN:
       os << "LESS_THAN";
       break;
@@ -252,6 +255,7 @@ bool IsComparatorLimited(const feature_engagement::Comparator& comparator,
                          uint32_t max_count) {
   switch (comparator.type) {
     case feature_engagement::ANY:
+    case feature_engagement::ANY_RELAXED:
     case feature_engagement::GREATER_THAN:
     case feature_engagement::GREATER_THAN_OR_EQUAL:
     case feature_engagement::NOT_EQUAL:

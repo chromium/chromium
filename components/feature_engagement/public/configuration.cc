@@ -55,6 +55,7 @@ std::ostream& operator<<(std::ostream& os, Blocking::Type type) {
 bool Comparator::MeetsCriteria(uint32_t v) const {
   switch (type) {
     case ANY:
+    case ANY_RELAXED:
       return true;
     case LESS_THAN:
       return v < value;
@@ -77,6 +78,7 @@ bool Comparator::MeetsCriteria(uint32_t v) const {
 std::ostream& operator<<(std::ostream& os, const Comparator& comparator) {
   switch (comparator.type) {
     case ANY:
+    case ANY_RELAXED:
       return os << "ANY";
     case LESS_THAN:
       return os << "<" << comparator.value;

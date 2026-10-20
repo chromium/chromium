@@ -248,13 +248,17 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
         EventConfig("docking_promo_eligibility_trigger", kAlwaysTrue,
                     kMaxStoragePeriod, kMaxStoragePeriod);
 
-    //  L7 days active.
-    config.event_configs.insert(
-        EventConfig(events::kChromeActiveSessionDay, kAlwaysTrue, 7, 365));
+    // L7 days active. Uses `kAlwaysTrueRelaxed` with a non-zero window because
+    // `DockingPromoEligibility` calls `Tracker::ListEvents` to count events in
+    // the 7-day window.
+    config.event_configs.insert(EventConfig(events::kChromeActiveSessionDay,
+                                            kAlwaysTrueRelaxed, 7, 365));
 
-    // L7 app icon launches.
-    config.event_configs.insert(
-        EventConfig(events::kIOSChromeOpenedFromIcon, kAlwaysTrue, 7, 365));
+    // L7 app icon launches. Uses `kAlwaysTrueRelaxed` with a non-zero window
+    // because `DockingPromoEligibility` calls `Tracker::ListEvents` to count
+    // events in the 7-day window.
+    config.event_configs.insert(EventConfig(events::kIOSChromeOpenedFromIcon,
+                                            kAlwaysTrueRelaxed, 7, 365));
 
     return config;
   } else if (kIPHiOSPostDefaultAbandonmentPromoFeature.name == feature->name) {
@@ -287,9 +291,12 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config.session_rate = kNoRestrictions;
     config.used = EventConfig("signin_fullscreen_promo_used", kAlwaysTrue,
                               kMaxStoragePeriod, kMaxStoragePeriod);
+    // Uses `kAlwaysTrueRelaxed` with a non-zero window because
+    // `PromosManagerImpl::SortPromos` calls `Tracker::HasEverTriggered` with
+    // `from_window=true`.
     config.trigger =
-        EventConfig(events::kIOSSigninFullscreenPromoTrigger, kAlwaysTrue,
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+        EventConfig(events::kIOSSigninFullscreenPromoTrigger,
+                    kAlwaysTrueRelaxed, kMaxStoragePeriod, kMaxStoragePeriod);
     return config;
   } else if (kIPHiOSReaderModeLargeOmniboxEntrypointFeature.name ==
              feature->name) {
@@ -353,8 +360,11 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     config.blocked_by.type = BlockedBy::Type::NONE;
     config.blocking.type = Blocking::Type::NONE;
     config.used = EventConfig("whats_new_updated_used", kAlwaysTrue, 365, 365);
+    // Uses `kAlwaysTrueRelaxed` with a non-zero window because
+    // `TipsNotificationCriteria::ShouldSendWhatsNew` calls
+    // `Tracker::HasEverTriggered` with `from_window=true`.
     config.trigger =
-        EventConfig("whats_new_updated_trigger", kAlwaysTrue, 365, 365);
+        EventConfig("whats_new_updated_trigger", kAlwaysTrueRelaxed, 365, 365);
     config.event_configs.insert(EventConfig(events::kViewedWhatsNew,
                                             Comparator(LESS_THAN, 1),
                                             /*window=*/365, /*storage=*/365));
@@ -610,12 +620,19 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     config.trigger = EventConfig("active_days_tracking_trigger", kAlwaysTrue,
                                  kMaxStoragePeriod, kMaxStoragePeriod);
 
+    // Uses `kAlwaysTrueRelaxed` with non-zero windows because
+    // `-[SessionMetricsProfileAgent recordActiveDaysIfNeeded]` calls
+    // `Tracker::ListEvents` to count active days in the 8-, 15-, and 29-day
+    // windows.
     config.event_configs.insert(EventConfig(events::kChromeActiveSessionDay,
-                                            kAlwaysTrue, 8, kMaxStoragePeriod));
-    config.event_configs.insert(EventConfig(
-        events::kChromeActiveSessionDay, kAlwaysTrue, 15, kMaxStoragePeriod));
-    config.event_configs.insert(EventConfig(
-        events::kChromeActiveSessionDay, kAlwaysTrue, 29, kMaxStoragePeriod));
+                                            kAlwaysTrueRelaxed, 8,
+                                            kMaxStoragePeriod));
+    config.event_configs.insert(EventConfig(events::kChromeActiveSessionDay,
+                                            kAlwaysTrueRelaxed, 15,
+                                            kMaxStoragePeriod));
+    config.event_configs.insert(EventConfig(events::kChromeActiveSessionDay,
+                                            kAlwaysTrueRelaxed, 29,
+                                            kMaxStoragePeriod));
     return config;
   } else if (kIPHiOSBackendPromoFeature.name == feature->name) {
     FeatureConfig config;

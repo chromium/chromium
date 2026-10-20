@@ -826,7 +826,9 @@ ANY
 > When creating an EventConfig where the desired outcome is always true (e.g. when
 > adding an event purely for data collection), the above values should be used, with
 > a window of 0. Conversely, a window of 0 should only be used when one of the above
-> constant values is used.
+> constant values is used. In the exceptional case where the comparator is the same
+> as `any` and the window is not 0 (if needed to know the number of events that
+> occurred in the window), `kAlwaysTrueRelaxed` (`ANY_RELAXED`) must be used instead.
 
 ### Boolean
 

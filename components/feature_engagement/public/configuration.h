@@ -38,6 +38,10 @@ enum ComparatorType {
   GREATER_THAN_OR_EQUAL = 4,
   EQUAL = 5,
   NOT_EQUAL = 6,
+  // Will always yield true. Must be used if the comparator is the same as
+  // `ANY` and the window is not 0. This should be exceptional, if needed to
+  // know the number of events that occurred in the window.
+  ANY_RELAXED = 7,
 };
 
 // A StorageType describes which type of storage the feature engagement events
@@ -70,6 +74,7 @@ struct Comparator {
 };
 
 inline constexpr Comparator kAlwaysTrue(ANY, 0);
+inline constexpr Comparator kAlwaysTrueRelaxed(ANY_RELAXED, 0);
 inline constexpr Comparator kAlwaysAvailable(ANY, 0);
 inline constexpr Comparator kNoRestrictions(ANY, 0);
 

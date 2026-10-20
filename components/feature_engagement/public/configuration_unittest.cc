@@ -18,6 +18,16 @@ TEST(ComparatorTest, Any) {
   EXPECT_TRUE(Comparator(ANY, 10).MeetsCriteria(11));
 }
 
+TEST(ComparatorTest, AnyRelaxed) {
+  EXPECT_TRUE(Comparator(ANY_RELAXED, 0).MeetsCriteria(0));
+  EXPECT_TRUE(Comparator(ANY_RELAXED, 1).MeetsCriteria(0));
+  EXPECT_TRUE(Comparator(ANY_RELAXED, 1).MeetsCriteria(1));
+  EXPECT_TRUE(Comparator(ANY_RELAXED, 1).MeetsCriteria(2));
+  EXPECT_TRUE(Comparator(ANY_RELAXED, 10).MeetsCriteria(9));
+  EXPECT_TRUE(Comparator(ANY_RELAXED, 10).MeetsCriteria(10));
+  EXPECT_TRUE(Comparator(ANY_RELAXED, 10).MeetsCriteria(11));
+}
+
 TEST(ComparatorTest, LessThan) {
   EXPECT_FALSE(Comparator(LESS_THAN, 0).MeetsCriteria(0));
   EXPECT_TRUE(Comparator(LESS_THAN, 1).MeetsCriteria(0));
