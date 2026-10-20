@@ -32,6 +32,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/utility/safe_browsing/mac/convert_big_endian.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
+#include "chrome/utility/safe_browsing/mac/rust/read_stream_bridge.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "third_party/zlib/zlib.h"
 
 namespace safe_browsing {
@@ -371,14 +373,24 @@ size_t& GetMaxDecompressChunkSize() {
 }
 
 UDIFParser::UDIFParser(ReadStream* stream)
-    : stream_(stream),
-      partition_names_(),
-      blocks_(),
-      block_size_(kSectorSize) {}
+    : stream_(stream), block_size_(kSectorSize) {
+  if (base::FeatureList::IsEnabled(kSafeBrowsingRustDmgParser)) {
+    rust_parser_ = rust_ffi::new_udif_parser(stream);
+  }
+}
 
 UDIFParser::~UDIFParser() = default;
 
 bool UDIFParser::Parse() {
+  if (rust_parser_.has_value()) {
+    if (!(*rust_parser_)->parse()) {
+      return false;
+    }
+    ::rust::Slice<const uint8_t> sig = (*rust_parser_)->code_signature();
+    signature_blob_.assign(sig.begin(), sig.end());
+    return true;
+  }
+
   if (!ParseBlkx())
     return false;
 
@@ -390,15 +402,24 @@ const std::vector<uint8_t>& UDIFParser::GetCodeSignature() {
 }
 
 size_t UDIFParser::GetNumberOfPartitions() {
+  if (rust_parser_.has_value()) {
+    return (*rust_parser_)->number_of_partitions();
+  }
   return blocks_.size();
 }
 
 std::string UDIFParser::GetPartitionName(size_t part_number) {
+  if (rust_parser_.has_value()) {
+    return std::string((*rust_parser_)->partition_name(part_number));
+  }
   DCHECK_LT(part_number, partition_names_.size());
   return partition_names_[part_number];
 }
 
 std::string UDIFParser::GetPartitionType(size_t part_number) {
+  if (rust_parser_.has_value()) {
+    return std::string((*rust_parser_)->partition_type(part_number));
+  }
   // The partition type is embedded in the Name field, as such:
   // "Partition-Name (Partition-Type : Partition-ID)".
   std::string name = GetPartitionName(part_number);
@@ -421,6 +442,9 @@ std::string UDIFParser::GetPartitionType(size_t part_number) {
 }
 
 size_t UDIFParser::GetPartitionSize(size_t part_number) {
+  if (rust_parser_.has_value()) {
+    return (*rust_parser_)->partition_size(part_number);
+  }
   DCHECK_LT(part_number, blocks_.size());
   auto size =
       base::CheckedNumeric<size_t>(blocks_[part_number]->sector_count()) *
@@ -430,6 +454,10 @@ size_t UDIFParser::GetPartitionSize(size_t part_number) {
 
 std::unique_ptr<ReadStream> UDIFParser::GetPartitionReadStream(
     size_t part_number) {
+  if (rust_parser_.has_value()) {
+    return rust_ffi::WrapRustReadStream(
+        (*rust_parser_)->partition_read_stream(part_number));
+  }
   DCHECK_LT(part_number, blocks_.size());
   return std::make_unique<UDIFPartitionReadStream>(stream_, block_size_,
                                                    blocks_[part_number].get());

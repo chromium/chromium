@@ -504,6 +504,10 @@ BASE_DECLARE_FEATURE(kSafeBrowsingNoProtectionTemporary);
 extern const base::FeatureParam<int>
     kSafeBrowsingNoProtectionTemporaryDurationInSeconds;
 
+// Uses the Rust implementation of the macOS DMG (UDIF/HFS+) parser in place of
+// the C++ implementation.
+BASE_DECLARE_FEATURE(kSafeBrowsingRustDmgParser);
+
 // Skips Safe Browsing Real-Time URL lookups when the device is offline.
 BASE_DECLARE_FEATURE(kSafeBrowsingSkipRealTimeLookupIfOffline);
 

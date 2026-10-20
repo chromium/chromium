@@ -25,6 +25,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/utility/safe_browsing/mac/convert_big_endian.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
+#include "chrome/utility/safe_browsing/mac/rust/read_stream_bridge.h"
+#include "components/safe_browsing/core/common/features.h"
 
 namespace safe_browsing {
 namespace dmg {
@@ -283,13 +285,19 @@ class HFSBTreeIterator {
 };
 
 HFSIterator::HFSIterator(ReadStream* stream)
-    : stream_(stream),
-      volume_header_() {
+    : stream_(stream), volume_header_() {
+  if (base::FeatureList::IsEnabled(kSafeBrowsingRustDmgParser)) {
+    rust_iterator_ = rust_ffi::new_hfs_iterator(stream);
+  }
 }
 
 HFSIterator::~HFSIterator() = default;
 
 bool HFSIterator::Open() {
+  if (rust_iterator_.has_value()) {
+    return (*rust_iterator_)->open();
+  }
+
   if (stream_->Seek(1024, SEEK_SET) != 1024)
     return false;
 
@@ -319,6 +327,10 @@ bool HFSIterator::Open() {
 }
 
 bool HFSIterator::Next() {
+  if (rust_iterator_.has_value()) {
+    return (*rust_iterator_)->next_item();
+  }
+
   if (!catalog_->HasNext())
     return false;
 
@@ -341,16 +353,25 @@ bool HFSIterator::Next() {
 }
 
 bool HFSIterator::IsDirectory() {
+  if (rust_iterator_.has_value()) {
+    return (*rust_iterator_)->is_directory();
+  }
   return catalog_->current_record()->record_type == kHFSPlusFolderRecord &&
          catalog_->current_record()->folder;
 }
 
 bool HFSIterator::IsFile() {
+  if (rust_iterator_.has_value()) {
+    return (*rust_iterator_)->is_file();
+  }
   return catalog_->current_record()->record_type == kHFSPlusFileRecord &&
          catalog_->current_record()->file;
 }
 
 bool HFSIterator::IsSymbolicLink() {
+  if (rust_iterator_.has_value()) {
+    return (*rust_iterator_)->is_symbolic_link();
+  }
   if (IsDirectory()) {
     return S_ISLNK(catalog_->current_record()->folder->bsdInfo.fileMode);
   }
@@ -361,6 +382,9 @@ bool HFSIterator::IsSymbolicLink() {
 }
 
 bool HFSIterator::IsHardLink() {
+  if (rust_iterator_.has_value()) {
+    return (*rust_iterator_)->is_hard_link();
+  }
   if (IsDirectory()) {
     return false;
   }
@@ -370,6 +394,9 @@ bool HFSIterator::IsHardLink() {
 }
 
 bool HFSIterator::IsDecmpfsCompressed() {
+  if (rust_iterator_.has_value()) {
+    return (*rust_iterator_)->is_decmpfs_compressed();
+  }
   if (IsDirectory()) {
     return false;
   }
@@ -378,10 +405,20 @@ bool HFSIterator::IsDecmpfsCompressed() {
 }
 
 std::u16string HFSIterator::GetPath() {
+  if (rust_iterator_.has_value()) {
+    ::rust::Slice<const uint16_t> slice = (*rust_iterator_)->path_utf16();
+    return std::u16string(slice.begin(), slice.end());
+  }
   return catalog_->current_record()->path;
 }
 
 std::unique_ptr<ReadStream> HFSIterator::GetReadStream() {
+  if (rust_iterator_.has_value()) {
+    if (!(*rust_iterator_)->has_read_stream()) {
+      return nullptr;
+    }
+    return rust_ffi::WrapRustReadStream((*rust_iterator_)->read_stream());
+  }
   if (IsDirectory() || IsHardLink()) {
     return nullptr;
   }

@@ -505,6 +505,8 @@ constexpr base::FeatureParam<int>
         &kSafeBrowsingNoProtectionTemporary, "duration_seconds",
         /*default_value=*/0};
 
+BASE_FEATURE(kSafeBrowsingRustDmgParser, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSafeBrowsingSkipRealTimeLookupIfOffline,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -610,6 +612,7 @@ base::ListValue GetFeatureStatusList() {
       &kSafeBrowsingDeleteUnusedStores,
       &kSafeBrowsingNoProtectionSuppressWarnings,
       &kSafeBrowsingNoProtectionTemporary,
+      &kSafeBrowsingRustDmgParser,
       &kSafeBrowsingSkipRealTimeLookupIfOffline,
       &kSafeBrowsingWaitForDnsForRealTimeLookup,
       &kShowManualNotificationRevocationsSafetyHub,

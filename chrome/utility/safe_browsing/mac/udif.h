@@ -11,11 +11,13 @@
 #include <sys/types.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/utility/safe_browsing/mac/rust/ffi.rs.h"
 
 namespace safe_browsing {
 namespace dmg {
@@ -83,10 +85,11 @@ class UDIFParser {
 
   const raw_ptr<ReadStream>
       stream_;  // The stream backing the UDIF image. Weak.
+  std::optional<::rust::Box<rust_ffi::RustUdifParser>> rust_parser_;
   std::vector<std::string> partition_names_;  // The names of all partitions.
   // All blocks in the UDIF image.
   std::vector<std::unique_ptr<const UDIFBlock>> blocks_;
-  uint16_t block_size_;  // The image's block size, in bytes.
+  uint16_t block_size_;                  // The image's block size, in bytes.
   std::vector<uint8_t> signature_blob_;  // DMG signature.
 };
 

@@ -2,7 +2,55 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/rust/rust_static_library.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+
+# Pure-Rust parser for UDIF (.dmg) disk images and HFS+/HFSX filesystems.
+# Kept free of `unsafe` code.
+rust_static_library("dmg_parser") {
+  visibility = [ ":*" ]
+
+  crate_root = "rust/lib.rs"
+  sources = [
+    "rust/hfs.rs",
+    "rust/lib.rs",
+    "rust/udif.rs",
+  ]
+
+  build_native_rust_unit_tests = true
+}
+
+source_set("read_stream_bridge_hdr") {
+  visibility = [ ":*" ]
+  sources = [
+    "read_stream.h",
+    "rust/read_stream_bridge.h",
+  ]
+  public_deps = [
+    "//base",
+    "//build/rust:cxx_cppdeps",
+  ]
+}
+
+# `cxx` FFI bridge exposing `dmg_parser` to C++ (`UDIFParser` / `HFSIterator`).
+# This is the only Rust target here that permits `unsafe` (for
+# `#[cxx::bridge]`).
+rust_static_library("dmg_ffi_bridge") {
+  visibility = [
+    ":*",
+    "//chrome/utility/safe_browsing:*",
+  ]
+
+  allow_unsafe = true
+  crate_root = "rust/ffi.rs"
+  sources = [ "rust/ffi.rs" ]
+  cxx_bindings = [ "rust/ffi.rs" ]
+
+  deps = [
+    ":dmg_parser",
+    ":read_stream_bridge_hdr",
+  ]
+}
 
 config("dmg_public_config") {
   libs = [ "bz2" ]
@@ -21,14 +69,19 @@ source_set("dmg_common") {
     "hfs.h",
     "read_stream.cc",
     "read_stream.h",
+    "rust/read_stream_bridge.cc",
+    "rust/read_stream_bridge.h",
     "udif.cc",
     "udif.h",
   ]
 
   deps = [
     "//base",
+    "//components/safe_browsing/core/common:features",
     "//third_party/zlib",
   ]
+
+  public_deps = [ ":dmg_ffi_bridge" ]
 
   public_configs = [ ":dmg_public_config" ]
 }
