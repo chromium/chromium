@@ -187,7 +187,7 @@ FontFallbackPriority ApplyFontVariantEmojiOnFallbackPriority(
     FontVariantEmoji font_variant_emoji) {
   // font-variant-emoji property should not override emoji variation selectors,
   // see https://www.w3.org/TR/css-fonts-4/#font-variant-emoji-prop.
-  if (!HasVSFallbackPriority(curr_font_fallback_priority)) {
+  if (!HasVsFallbackPriority(curr_font_fallback_priority)) {
     if (font_variant_emoji == kEmojiVariantEmoji) {
       return FontFallbackPriority::kEmojiEmoji;
     }
@@ -412,12 +412,12 @@ BufferSlice ComputeSlice(RangeContext* range_data,
 inline bool IsLastFontToShape(
     HarfBuzzShaper::FallbackFontStage fallback_stage) {
   return fallback_stage == HarfBuzzShaper::kLast ||
-         fallback_stage == HarfBuzzShaper::kLastIgnoreVS;
+         fallback_stage == HarfBuzzShaper::kLastIgnoreVs;
 }
 
 inline bool StageNeedsQueueReset(
     HarfBuzzShaper::FallbackFontStage fallback_stage) {
-  return fallback_stage == HarfBuzzShaper::kLastWithVS;
+  return fallback_stage == HarfBuzzShaper::kLastWithVs;
 }
 
 HarfBuzzShaper::FallbackFontStage ChangeStageToLast(
@@ -425,24 +425,24 @@ HarfBuzzShaper::FallbackFontStage ChangeStageToLast(
   switch (fallback_stage) {
     case HarfBuzzShaper::kIntermediate:
       return HarfBuzzShaper::kLast;
-    case HarfBuzzShaper::kIntermediateWithVS:
-      return HarfBuzzShaper::kLastWithVS;
-    case HarfBuzzShaper::kIntermediateIgnoreVS:
-      return HarfBuzzShaper::kLastIgnoreVS;
+    case HarfBuzzShaper::kIntermediateWithVs:
+      return HarfBuzzShaper::kLastWithVs;
+    case HarfBuzzShaper::kIntermediateIgnoreVs:
+      return HarfBuzzShaper::kLastIgnoreVs;
     default:
       return fallback_stage;
   }
 }
 
-HarfBuzzShaper::FallbackFontStage ChangeStageToVS(
+HarfBuzzShaper::FallbackFontStage ChangeStageToVs(
     HarfBuzzShaper::FallbackFontStage fallback_stage) {
   switch (fallback_stage) {
     case HarfBuzzShaper::kIntermediate:
-      return HarfBuzzShaper::kIntermediateWithVS;
+      return HarfBuzzShaper::kIntermediateWithVs;
     case HarfBuzzShaper::kLast:
-      return HarfBuzzShaper::kLastWithVS;
-    case HarfBuzzShaper::kIntermediateWithVS:
-    case HarfBuzzShaper::kLastWithVS:
+      return HarfBuzzShaper::kLastWithVs;
+    case HarfBuzzShaper::kIntermediateWithVs:
+    case HarfBuzzShaper::kLastWithVs:
       return fallback_stage;
     default:
       // We should not call this function on the second fallback pass.
@@ -607,8 +607,8 @@ void HarfBuzzShaper::ExtractShapeResults(
       // We revisit when HarfBuzz decides how to solve this more generally.
       // https://github.com/harfbuzz/harfbuzz/issues/2889
       glyph_result = kNotDef;
-    } else if (glyph_id == kUnmatchedVSGlyphId) {
-      fallback_stage = ChangeStageToVS(fallback_stage);
+    } else if (glyph_id == kUnmatchedVsGlyphId) {
+      fallback_stage = ChangeStageToVs(fallback_stage);
       glyph_result = kNotDef;
     } else {
       glyph_result = kShaped;
@@ -942,9 +942,9 @@ void HarfBuzzShaper::ShapeSegment(
         // for the base codepoint of unshaped variation sequences, so we need to
         // restart the fallback queue and set the variation selector mode to
         // `kIgnoreVariationSelector`.
-        DCHECK_EQ(fallback_stage, kLastWithVS);
+        DCHECK_EQ(fallback_stage, kLastWithVs);
         fallback_iterator.Reset();
-        fallback_stage = kIntermediateIgnoreVS;
+        fallback_stage = kIntermediateIgnoreVs;
         variation_selector_mode = kIgnoreVariationSelector;
       }
 

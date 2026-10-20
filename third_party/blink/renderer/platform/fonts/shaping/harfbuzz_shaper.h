@@ -119,12 +119,12 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
     kLast,
     // Found unshaped variation sequences and we are on the first fallback pass,
     // so we are including variation selectors during shaping.
-    kIntermediateWithVS,
-    kLastWithVS,
+    kIntermediateWithVs,
+    kLastWithVs,
     // Found unshaped variation sequences and we are on the second and last
     // fallback pass, so we are ignoring variation selectors during shaping.
-    kIntermediateIgnoreVS,
-    kLastIgnoreVS
+    kIntermediateIgnoreVs,
+    kLastIgnoreVs
   };
 
   ~HarfBuzzShaper() = default;

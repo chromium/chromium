@@ -176,7 +176,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   }
 
   // Return the GMS Core emoji font if FontFallbackPriority is kEmojiEmoji or
-  // kEmojiEmojiWithVS and a) no system fallback was found or b) the system
+  // kEmojiEmojiWithVs and a) no system fallback was found or b) the system
   // fallback font's PostScript name is "Noto Color Emoji" - then we override
   // the system one with the newer one from GMS core if we have it and if it has
   // glyph coverage. This should improves coverage for sequences such as WOMAN

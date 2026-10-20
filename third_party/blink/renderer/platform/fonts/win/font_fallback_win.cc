@@ -419,7 +419,7 @@ const AtomicString& GetFontBasedOnUnicodeBlock(UBlockCode block_code,
     case UBLOCK_EMOTICONS:
     case UBLOCK_ENCLOSED_ALPHANUMERIC_SUPPLEMENT:
       // We call this function only when FallbackPriority is not kEmojiEmoji or
-      // kEmojiEmojiWithVS, so we need a text presentation of emoji.
+      // kEmojiEmojiWithVs, so we need a text presentation of emoji.
       return GetMonoEmojiFont(font_manager);
     case UBLOCK_PLAYING_CARDS:
     case UBLOCK_MISCELLANEOUS_SYMBOLS:

@@ -18,38 +18,38 @@ enum class FontFallbackPriority {
   // For emoji in text presentation
   kEmojiText,
   // For emoji in text presentation with variation selector 15
-  kEmojiTextWithVS,
+  kEmojiTextWithVs,
   // For emoji in emoji presentation
   kEmojiEmoji,
   // For emoji in emoji presentation with variation selector 16
-  kEmojiEmojiWithVS,
+  kEmojiEmojiWithVs,
   kInvalid,
 
   // When adding values, ensure `kMaxEnumValue` is the largest value to store
   // (values that can be returned for non-empty inputs).
-  kMaxEnumValue = kEmojiEmojiWithVS,
+  kMaxEnumValue = kEmojiEmojiWithVs,
 };
 
 inline bool IsNonTextFallbackPriority(FontFallbackPriority fallback_priority) {
   return fallback_priority == FontFallbackPriority::kEmojiText ||
          fallback_priority == FontFallbackPriority::kEmojiEmoji ||
-         fallback_priority == FontFallbackPriority::kEmojiTextWithVS ||
-         fallback_priority == FontFallbackPriority::kEmojiEmojiWithVS;
+         fallback_priority == FontFallbackPriority::kEmojiTextWithVs ||
+         fallback_priority == FontFallbackPriority::kEmojiEmojiWithVs;
 }
 
-inline bool HasVSFallbackPriority(FontFallbackPriority fallback_priority) {
-  return fallback_priority == FontFallbackPriority::kEmojiTextWithVS ||
-         fallback_priority == FontFallbackPriority::kEmojiEmojiWithVS;
+inline bool HasVsFallbackPriority(FontFallbackPriority fallback_priority) {
+  return fallback_priority == FontFallbackPriority::kEmojiTextWithVs ||
+         fallback_priority == FontFallbackPriority::kEmojiEmojiWithVs;
 }
 
 inline bool IsEmojiPresentationEmoji(FontFallbackPriority fallback_priority) {
   return fallback_priority == FontFallbackPriority::kEmojiEmoji ||
-         fallback_priority == FontFallbackPriority::kEmojiEmojiWithVS;
+         fallback_priority == FontFallbackPriority::kEmojiEmojiWithVs;
 }
 
 inline bool IsTextPresentationEmoji(FontFallbackPriority fallback_priority) {
   return fallback_priority == FontFallbackPriority::kEmojiText ||
-         fallback_priority == FontFallbackPriority::kEmojiTextWithVS;
+         fallback_priority == FontFallbackPriority::kEmojiTextWithVs;
 }
 
 }  // namespace blink

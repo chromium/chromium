@@ -103,7 +103,7 @@ class PLATFORM_EXPORT HarfBuzzFace final
   Member<HarfBuzzFontData> harfbuzz_font_data_;
 };
 
-inline constexpr hb_codepoint_t kUnmatchedVSGlyphId =
+inline constexpr hb_codepoint_t kUnmatchedVsGlyphId =
     static_cast<hb_codepoint_t>(-1);
 
 }  // namespace blink

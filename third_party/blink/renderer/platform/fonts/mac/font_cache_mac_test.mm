@@ -88,7 +88,7 @@ TEST_F(FontCacheMacTest, SystemUIEmojiTextPresentationUsesAppleSymbols) {
 
   const SimpleFontData* fallback_font = font_cache.FallbackFontForCharacter(
       font_description, U'\U0001F310', system_ui_font,
-      FontFallbackPriority::kEmojiTextWithVS);
+      FontFallbackPriority::kEmojiTextWithVs);
   ASSERT_TRUE(fallback_font);
   EXPECT_EQ(fallback_font->PlatformData().FontFamilyName(),
             String::FromUtf8("Apple Symbols"));

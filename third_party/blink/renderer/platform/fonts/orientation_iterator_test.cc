@@ -160,7 +160,7 @@ TEST_F(OrientationIteratorTest, JapaneseLatinMixedOutside) {
                      {"Xyz", OrientationIterator::kOrientationRotateSideways}});
 }
 
-TEST_F(OrientationIteratorTest, EmojiZWJSequence) {
+TEST_F(OrientationIteratorTest, EmojiZwjSequence) {
   // U+200D ZERO WIDTH JOINER is Rotated in UAX #50, but it joins the
   // surrounding Extended_Pictographic characters into one grapheme cluster,
   // whose orientation is decided by the cluster's first character.
@@ -168,7 +168,7 @@ TEST_F(OrientationIteratorTest, EmojiZWJSequence) {
       {{"👩‍👩‍👧‍👦", OrientationIterator::kOrientationKeep}});
 }
 
-TEST_F(OrientationIteratorTest, EmojiZWJSequenceBetweenLatin) {
+TEST_F(OrientationIteratorTest, EmojiZwjSequenceBetweenLatin) {
   CHECK_ORIENTATION(
       {{"ab", OrientationIterator::kOrientationRotateSideways},
        {"👩‍❤️‍💋‍👨", OrientationIterator::kOrientationKeep},
@@ -189,7 +189,7 @@ TEST_F(OrientationIteratorTest, ZeroWidthJoinerAfterEmojiThenLatin) {
                      {"b", OrientationIterator::kOrientationRotateSideways}});
 }
 
-TEST_F(OrientationIteratorTest, EmojiZWJSequenceKillSwitch) {
+TEST_F(OrientationIteratorTest, EmojiZwjSequenceKillSwitch) {
   ScopedEmojiZWJVerticalOrientationForTest disabled(false);
   CHECK_ORIENTATION(
       {{"👩", OrientationIterator::kOrientationKeep},

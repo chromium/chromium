@@ -189,7 +189,7 @@ TEST_F(RunSegmenterTest, PunctuationDevanagariCombining) {
         FontFallbackPriority::kText}});
 }
 
-TEST_F(RunSegmenterTest, EmojiZWJSequences) {
+TEST_F(RunSegmenterTest, EmojiZwjSequences) {
   CheckRunsHorizontal(
       {{"👩‍👩‍👧‍👦👩‍❤️‍💋‍👨", USCRIPT_LATIN,
         OrientationIterator::kOrientationKeep,
@@ -202,7 +202,7 @@ TEST_F(RunSegmenterTest, EmojiZWJSequences) {
         OrientationIterator::kOrientationKeep, FontFallbackPriority::kText}});
 }
 
-TEST_F(RunSegmenterTest, EmojiZWJSequencesVerticalMixed) {
+TEST_F(RunSegmenterTest, EmojiZwjSequencesVerticalMixed) {
   CheckRunsMixed({{"👩‍👩‍👧‍👦👩‍❤️‍💋‍👨",
                    USCRIPT_COMMON, OrientationIterator::kOrientationKeep,
                    FontFallbackPriority::kEmojiEmoji}});

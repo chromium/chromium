@@ -149,7 +149,7 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
   // between the cases when we found a glyph for the whole variation sequence in
   // cmap format 14 subtable and when we found only a base character of the
   // variation sequence. In the latter case we set the glyph value to
-  // `kUnmatchedVSGlyphId`.
+  // `kUnmatchedVsGlyphId`.
   if (consider_variation_selector) {
     if (!is_variation_sequence) {
       if (variation_selector_mode == kForceVariationSelector15 ||
@@ -189,7 +189,7 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
     // We use `TypefaceHasAnySupportedColorTable` to check whether a typeface
     // has colored table and based on that we make an assumption whether a font
     // has a colored or monochromatic glyph for base character from variation
-    // sequence. We set `glyph` to `kUnmatchedVSGlyphId` only when font has a
+    // sequence. We set `glyph` to `kUnmatchedVsGlyphId` only when font has a
     // wrong presentation for base character.
     if (text_presentation_requested || emoji_presentation_requested) {
       SkTypeface* typeface = hb_font_data->font_.getTypeface();
@@ -200,10 +200,10 @@ static hb_bool_t HarfBuzzGetGlyph(hb_font_t* hb_font,
           ColorTableLookup::TypefaceHasAnySupportedColorTable(typeface);
       if ((has_color_table && text_presentation_requested) ||
           (!has_color_table && emoji_presentation_requested)) {
-        *glyph = kUnmatchedVSGlyphId;
+        *glyph = kUnmatchedVsGlyphId;
       }
     } else {
-      *glyph = kUnmatchedVSGlyphId;
+      *glyph = kUnmatchedVsGlyphId;
     }
   }
 

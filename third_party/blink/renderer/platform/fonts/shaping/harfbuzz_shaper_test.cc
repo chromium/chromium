@@ -175,7 +175,7 @@ class HarfBuzzShaperTest : public FontTestBase {
   const char* kSystemMonoEmojiFont = "Segoe UI Symbol";
 #endif
 
-  String GetShapedFontFamilyNameForEmojiVS(Font& font, String text) {
+  String GetShapedFontFamilyNameForEmojiVs(Font& font, String text) {
     DCHECK(text.length() == 1 ||
            (text.length() == 2 &&
             (text.ends_with(u"\ufe0e") || text.ends_with(u"\ufe0f"))));
@@ -807,8 +807,7 @@ TEST_F(HarfBuzzShaperTest, IdeographicSpace) {
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-TEST_F(HarfBuzzShaperTest, SystemEmojiVS15) {
-
+TEST_F(HarfBuzzShaperTest, SystemEmojiVs15) {
   Font* mono_font = CreateNotoEmoji();
   Font* color_font = CreateNotoColorEmoji();
 
@@ -819,21 +818,22 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVS15) {
       u"\u2614"
       u"\ufe0e");
   for (String text : {text_default, emoji_default}) {
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*mono_font, text),
-              StringView(kNotoEmojiFontName)) << text;
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVs(*mono_font, text),
+              StringView(kNotoEmojiFontName))
+        << text;
     const char* system_mono_font_name = kSystemMonoEmojiFont;
 #if BUILDFLAG(IS_MAC)
     if (text == text_default) {
       system_mono_font_name = kSystemMonoTextDefaultEmojiFont;
     }
 #endif
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*color_font, text),
-              StringView(system_mono_font_name)) << text;
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVs(*color_font, text),
+              StringView(system_mono_font_name))
+        << text;
   }
 }
 
-TEST_F(HarfBuzzShaperTest, SystemEmojiVS16) {
-
+TEST_F(HarfBuzzShaperTest, SystemEmojiVs16) {
   Font* mono_font = CreateNotoEmoji();
   Font* color_font = CreateNotoColorEmoji();
 
@@ -844,10 +844,12 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVS16) {
       u"\u2614"
       u"\ufe0f");
   for (String text : {text_default, emoji_default}) {
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*mono_font, text),
-              StringView(kSystemColorEmojiFont)) << text;
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*color_font, text),
-              StringView(kNotoColorEmojiFontName)) << text;
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVs(*mono_font, text),
+              StringView(kSystemColorEmojiFont))
+        << text;
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVs(*color_font, text),
+              StringView(kNotoColorEmojiFontName))
+        << text;
   }
 }
 
@@ -891,15 +893,14 @@ TEST_P(FontVariantEmojiTest, FontVariantEmojiSystemFallback) {
     }
 #endif
 
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*mono_font, text),
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVs(*mono_font, text),
               StringView(expected_name_for_mono_requested_font));
-    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*color_font, text),
+    EXPECT_EQ(GetShapedFontFamilyNameForEmojiVs(*color_font, text),
               StringView(expected_name_for_color_requested_font));
   }
 }
 
-TEST_F(HarfBuzzShaperTest, VSOverrideFontVariantEmoji) {
-
+TEST_F(HarfBuzzShaperTest, VsOverrideFontVariantEmoji) {
   String text(u"\u2603\u2614\ufe0e\u2603\ufe0f");
   Font* font = blink::test::CreateTestFont(
       AtomicString("Ahem"), blink::test::PlatformTestDataPath("Ahem.woff"), 12,
@@ -929,7 +930,7 @@ TEST_F(HarfBuzzShaperTest, FontVariantEmojiTextSystemFallback) {
 #endif
   String text(u"\u26CE");
   Font* color_font = CreateNotoColorEmoji(FontVariantEmoji::kTextVariantEmoji);
-  EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(*color_font, text),
+  EXPECT_EQ(GetShapedFontFamilyNameForEmojiVs(*color_font, text),
             StringView(mono_font_name));
 }
 
@@ -1246,7 +1247,7 @@ TEST_F(HarfBuzzShaperTest, PositionForOffsetArabic) {
   ASSERT_NEAR(result->Width(), result->PositionForOffset(0), 0.1);
 }
 
-TEST_F(HarfBuzzShaperTest, EmojiZWJSequence) {
+TEST_F(HarfBuzzShaperTest, EmojiZwjSequence) {
   Font* font = MakeGarbageCollected<Font>(font_description);
 
   UChar emoji_zwj_sequence[] = {0x270C, 0x200D, 0xD83C, 0xDFFF,

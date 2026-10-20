@@ -66,8 +66,8 @@ bool SymbolsIterator::Consume(wtf_size_t* symbols_limit,
 
   if (curr_has_vs) {
     *font_fallback_priority = current_token_emoji
-                                  ? FontFallbackPriority::kEmojiEmojiWithVS
-                                  : FontFallbackPriority::kEmojiTextWithVS;
+                                  ? FontFallbackPriority::kEmojiEmojiWithVs
+                                  : FontFallbackPriority::kEmojiTextWithVs;
   } else {
     *font_fallback_priority = current_token_emoji
                                   ? FontFallbackPriority::kEmojiEmoji

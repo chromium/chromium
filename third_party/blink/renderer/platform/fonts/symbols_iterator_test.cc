@@ -98,15 +98,15 @@ TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, LatinColorEmojiTextEmoji) {
              {"☎", FontFallbackPriority::kText}});
 }
 
-TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, IgnoreVSInMath) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, IgnoreVsInMath) {
   CheckRuns({{"⊆⊇⊈\U0000FE0E⊙⊚⊚", FontFallbackPriority::kText}});
 }
 
-TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, IgnoreVS15InText) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, IgnoreVs15InText) {
   CheckRuns({{"abcdef\U0000FE0Eghji", FontFallbackPriority::kText}});
 }
 
-TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, IgnoreVS16InText) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, IgnoreVs16InText) {
   CheckRuns({{"abcdef\U0000FE0Fghji", FontFallbackPriority::kText}});
 }
 
@@ -121,67 +121,67 @@ TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest,
   CheckRuns({{"0123456789#*", FontFallbackPriority::kText},
              {"0\uFE0F⃣1\uFE0F⃣2\uFE0F⃣3\uFE0F⃣4\uFE0F⃣5\uFE0F⃣6\uFE0F⃣7\uFE0F⃣8\uFE0F⃣9"
               "\uFE0F⃣*\uFE0F⃣",
-              FontFallbackPriority::kEmojiEmojiWithVS},
+              FontFallbackPriority::kEmojiEmojiWithVs},
              {"0123456789#*", FontFallbackPriority::kText}});
 }
 
-TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, VS16onDigits) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Vs16onDigits) {
   CheckRuns({{"#", FontFallbackPriority::kText},
-             {"#\uFE0F\u20E3", FontFallbackPriority::kEmojiEmojiWithVS},
+             {"#\uFE0F\u20E3", FontFallbackPriority::kEmojiEmojiWithVs},
              {"#", FontFallbackPriority::kText}});
 }
 
-TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, VS15onDigits) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Vs15onDigits) {
   CheckRuns({{"#", FontFallbackPriority::kText},
-             {"#\uFE0E\u20E3", FontFallbackPriority::kEmojiTextWithVS},
+             {"#\uFE0E\u20E3", FontFallbackPriority::kEmojiTextWithVs},
              {"#", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, EmojiVS15AndVS16) {
+TEST_F(SymbolsIteratorTest, EmojiVs15AndVs16) {
   CheckRuns(
       {{"\U0001F642", FontFallbackPriority::kEmojiEmoji},
-       {"\U0001F642\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
-       {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS}});
+       {"\U0001F642\U0000FE0E", FontFallbackPriority::kEmojiTextWithVs},
+       {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVs}});
 }
 
-TEST_F(SymbolsIteratorTest, EmojiVSSplitStartsWithText) {
+TEST_F(SymbolsIteratorTest, EmojiVsSplitStartsWithText) {
   CheckRuns({{"abc", FontFallbackPriority::kText},
              {"\U00002614", FontFallbackPriority::kEmojiEmoji},
              {"\U00002603", FontFallbackPriority::kText},
-             {"\U00002614\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS}});
+             {"\U00002614\U0000FE0E", FontFallbackPriority::kEmojiTextWithVs}});
 }
 
-TEST_F(SymbolsIteratorTest, EmojiVSSplitStartsWithEmoji) {
+TEST_F(SymbolsIteratorTest, EmojiVsSplitStartsWithEmoji) {
   CheckRuns(
-      {{"\U00002614\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
+      {{"\U00002614\U0000FE0E", FontFallbackPriority::kEmojiTextWithVs},
        {"abc", FontFallbackPriority::kText},
-       {"\U00002614\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
+       {"\U00002614\U0000FE0E", FontFallbackPriority::kEmojiTextWithVs},
        {"\U00002614", FontFallbackPriority::kEmojiEmoji},
-       {"\U00002614\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS}});
+       {"\U00002614\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVs}});
 }
 
-TEST_F(SymbolsIteratorTest, EmojiVSSplitWithExcessiveVS) {
+TEST_F(SymbolsIteratorTest, EmojiVsSplitWithExcessiveVs) {
   CheckRuns({{"\U00002603", FontFallbackPriority::kText},
-             {"\U00002603\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
-             {"\U00002614\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS},
+             {"\U00002603\U0000FE0E", FontFallbackPriority::kEmojiTextWithVs},
+             {"\U00002614\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVs},
              {"\U00002614", FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(SymbolsIteratorTest, EmojiAndTextVSSplit) {
+TEST_F(SymbolsIteratorTest, EmojiAndTextVsSplit) {
   CheckRuns({{"\U00002603", FontFallbackPriority::kText},
-             {"\U00002603\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS},
-             {"\U00002614\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
+             {"\U00002603\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVs},
+             {"\U00002614\U0000FE0E", FontFallbackPriority::kEmojiTextWithVs},
              {"\U00002614", FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_F(SymbolsIteratorTest, EmojiTextVSSplit) {
-  CheckRuns({{"\U00002614\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS},
+TEST_F(SymbolsIteratorTest, EmojiTextVsSplit) {
+  CheckRuns({{"\U00002614\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVs},
              {"a\U00002603bc", FontFallbackPriority::kText},
              {"\U00002603\U0000FE0E\U00002614\U0000FE0E",
-              FontFallbackPriority::kEmojiTextWithVS}});
+              FontFallbackPriority::kEmojiTextWithVs}});
 }
 
-TEST_F(SymbolsIteratorTest, ZWJWithVS) {
+TEST_F(SymbolsIteratorTest, ZwjWithVs) {
   // Variation selector 16 after ZWJ sequences is excessive, hence it should not
   // affect segmentation.
   // ZWJ sequences from the test below:
@@ -198,15 +198,15 @@ TEST_F(SymbolsIteratorTest, ZWJWithVS) {
              {"\U0000FE0E", FontFallbackPriority::kText}});
 }
 
-TEST_F(SymbolsIteratorTest, MultipleMisplacedVS) {
+TEST_F(SymbolsIteratorTest, MultipleMisplacedVs) {
   CheckRuns({
       {"\U0000FE0E\U0000FE0F", FontFallbackPriority::kText},
-      {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS},
-      {"\U0001F642\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
-      {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS},
+      {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVs},
+      {"\U0001F642\U0000FE0E", FontFallbackPriority::kEmojiTextWithVs},
+      {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVs},
       {"\U0000FE0E\U0000FE0F", FontFallbackPriority::kText},
-      {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVS},
-      {"\U0001F642\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
+      {"\U0001F642\U0000FE0F", FontFallbackPriority::kEmojiEmojiWithVs},
+      {"\U0001F642\U0000FE0E", FontFallbackPriority::kEmojiTextWithVs},
       {"\U0000FE0E\U0000FE0F", FontFallbackPriority::kText},
   });
 }
@@ -236,13 +236,13 @@ TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, FlagsVsNonFlags) {
              {"a🇿", FontFallbackPriority::kText}});
 }
 
-TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, EmojiVS15) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, EmojiVs15) {
   // A VS15 after the anchor must trigger text display.
-  CheckRuns({{"⚓\U0000FE0E", FontFallbackPriority::kEmojiTextWithVS},
+  CheckRuns({{"⚓\U0000FE0E", FontFallbackPriority::kEmojiTextWithVs},
              {"⛵", FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, EmojiZWSSequences) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, EmojiZwsSequences) {
   CheckRuns(
       {{"👩‍👩‍👧‍👦👩‍❤️‍💋‍👨",
         FontFallbackPriority::kEmojiEmoji},
@@ -303,14 +303,14 @@ TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest,
   CheckRuns({{"⛹🏻✍🏻✊🏼", FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, ExtraZWJPrefix) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, ExtraZwjPrefix) {
   CheckRuns({{"\U0000200D", FontFallbackPriority::kText},
              {"\U0001F469\U0000200D\U00002764\U0000FE0F\U0000200D\U0001F48B"
               "\U0000200D\U0001F468",
               FontFallbackPriority::kEmojiEmoji}});
 }
 
-TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, StrayZWJAndVS) {
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, StrayZwjAndVs) {
   CheckRuns({{"\U0000200D\U0000FE0E\U0000FE0E\U0000FE0E\U0000200D\U0000200D",
               FontFallbackPriority::kText},
              {"\U0001F469\U0000200D\U00002764\U0000FE0F\U0000200D\U0001F48B"

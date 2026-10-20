@@ -18,10 +18,10 @@ void SkFontGetGlyphWidthForHarfBuzz(const SkStrikeRef& strike_ref,
                                     bool subpixel,
                                     hb_codepoint_t codepoint,
                                     hb_position_t* width) {
-  // We don't want to compute glyph extents for kUnmatchedVSGlyphId
+  // We don't want to compute glyph extents for kUnmatchedVsGlyphId
   // cases yet. Since we will do that during the second shaping pass,
   // when VariationSelectorMode is set to kIgnoreVariationSelector.
-  if (codepoint == kUnmatchedVSGlyphId) {
+  if (codepoint == kUnmatchedVsGlyphId) {
     return;
   }
   DCHECK_LE(codepoint, 0xFFFFu);
@@ -102,7 +102,7 @@ void SkFontGetGlyphExtentsForHarfBuzz(const SkFont& font,
   // We don't want to compute glyph extents for kUnmatchedVSGlyphId
   // cases yet. Since we will do that during the second shaping pass,
   // when VariationSelectorMode is set to kIgnoreVariationSelector.
-  if (codepoint == kUnmatchedVSGlyphId) {
+  if (codepoint == kUnmatchedVsGlyphId) {
     return;
   }
   DCHECK_LE(codepoint, 0xFFFFu);
