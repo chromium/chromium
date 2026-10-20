@@ -6881,7 +6881,7 @@
       // On a separate flag to collect data on runtime performance impact.
       name: "TrackAnimatedSourcesForInheritedProperties",
       depends_on: ["TrackAnimatedSources"],
-      status: "test",
+      status: "experimental",
     },
     {
       name: "TransferableRTCDataChannel",
