@@ -243,6 +243,11 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, SubmitQueryCuiOutcome_Failure) {
     return histogram_tester.GetBucketCount("Glic.CUI.SubmitQuery.Outcome",
                                            GlicCuiOutcome::kFailed) == 1;
   }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.CUI.ResponseCompletion.Outcome",
+               GlicCuiOutcome::kFailed) == 1;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
@@ -271,6 +276,11 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return histogram_tester.GetBucketCount("Glic.CUI.SubmitQuery.Outcome",
                                            GlicCuiOutcome::kAbandoned) == 1;
+  }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.CUI.ResponseCompletion.Outcome",
+               GlicCuiOutcome::kAbandoned) == 1;
   }));
 }
 
@@ -454,6 +464,15 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return histogram_tester.GetBucketCount("Glic.CUI.SubmitQuery.Outcome",
                                            GlicCuiOutcome::kSuccess) == 1;
+  }));
+
+  // Log response stopped to verify ResponseCompletion CUI tracking.
+  instance->instance_metrics().OnResponseStopped(
+      mojom::ResponseStopCause::kUnknown);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount(
+               "Glic.CUI.ResponseCompletion.Outcome",
+               GlicCuiOutcome::kSuccess) == 1;
   }));
 }
 

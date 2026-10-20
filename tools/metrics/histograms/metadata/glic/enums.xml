@@ -607,7 +607,7 @@ chromium-metrics-reviews@google.com.
   <int value="41" label="User Input Submitted"/>
   <int value="42" label="Focused Tab Context Requested"/>
   <int value="43" label="Response Started"/>
-  <int value="44" label="Response Stopped"/>
+  <int value="44" label="(Obsolete) Response Stopped"/>
   <int value="45" label="Turn Completed"/>
   <int value="46" label="Reaction Logged on Response"/>
   <int value="47" label="Shown"/>
@@ -619,6 +619,9 @@ chromium-metrics-reviews@google.com.
   <int value="53" label="Client Ready"/>
   <int value="54" label="Tab Context Requested"/>
   <int value="55" label="Opt-In Impression"/>
+  <int value="56" label="Response Stopped By User"/>
+  <int value="57" label="Response Stopped Other"/>
+  <int value="58" label="Response Stopped Success"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicInstanceEvent) -->

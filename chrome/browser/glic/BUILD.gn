@@ -92,6 +92,8 @@ source_set("glic") {
     "public/glic_provider_metrics.cc",
     "public/glic_provider_metrics.h",
     "public/glic_provider_spec.h",
+    "public/glic_response_completion_cui_tracker.cc",
+    "public/glic_response_completion_cui_tracker.h",
     "public/glic_side_panel_coordinator.cc",
     "public/glic_side_panel_coordinator.h",
     "public/glic_submit_query_cui_tracker.cc",

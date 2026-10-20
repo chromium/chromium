@@ -2045,4 +2045,35 @@ TEST_F(GlicInstanceMetricsTest,
                                      1);
 }
 
+TEST_F(GlicInstanceMetricsTest,
+       ResponseCompletionCuiTracker_SuccessAndUserStop) {
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+  metrics_.OnResponseStarted();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUnknown);
+
+  histogram_tester_.ExpectBucketCount("Glic.CUI.ResponseCompletion.Outcome",
+                                      GlicCuiOutcome::kSuccess, 1);
+
+  // Second turn stopped by user should resolve ResponseCompletion as kAbandoned
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+  metrics_.OnResponseStarted();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUser);
+
+  histogram_tester_.ExpectBucketCount("Glic.CUI.ResponseCompletion.Outcome",
+                                      GlicCuiOutcome::kAbandoned, 1);
+
+  // Third turn stopped by system (kOther) should resolve ResponseCompletion as
+  // kFailed
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+  metrics_.OnResponseStarted();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kOther);
+
+  histogram_tester_.ExpectBucketCount("Glic.CUI.ResponseCompletion.Outcome",
+                                      GlicCuiOutcome::kFailed, 1);
+}
+
 }  // namespace glic

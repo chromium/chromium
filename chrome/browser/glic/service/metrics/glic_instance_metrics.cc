@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_fre_impression_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
+#include "chrome/browser/glic/public/glic_response_completion_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_submit_query_cui_tracker.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
@@ -1274,6 +1275,8 @@ void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode,
   session_manager_.OnUserInputSubmitted(mode);
   LogEvent(GlicInstanceEvent::kUserInputSubmitted);
   cui_trackers_.push_back(std::make_unique<GlicSubmitQueryCuiTracker>());
+  cui_trackers_.push_back(
+      std::make_unique<GlicResponseCompletionCuiTracker>());
 
   base::RecordAction(base::UserMetricsAction("GlicResponseInputSubmit"));
   metric_reporter_.RecordEnumeration("Turn.PromptType", prompt_type);
@@ -1371,8 +1374,6 @@ void GlicInstanceMetrics::OnResponseStarted() {
 }
 
 void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
-  LogEvent(GlicInstanceEvent::kResponseStopped);
-
   bool has_input = !turn_.input_submitted_time_.is_null();
   bool has_action_result = !turn_.action_result_submitted_time_.is_null();
 
@@ -1388,15 +1389,20 @@ void GlicInstanceMetrics::OnResponseStopped(mojom::ResponseStopCause cause) {
     case mojom::ResponseStopCause::kUser:
       cause_suffix = ".ByUser";
       base::RecordAction(base::UserMetricsAction("GlicResponseStopByUser"));
+      LogEvent(GlicInstanceEvent::kResponseStoppedByUser);
       break;
     case mojom::ResponseStopCause::kOther:
       cause_suffix = ".Other";
       base::RecordAction(base::UserMetricsAction("GlicResponseStopOther"));
+      LogEvent(GlicInstanceEvent::kResponseStoppedOther);
       break;
     case mojom::ResponseStopCause::kUnknown:
+      // `kUnknown` represents an omitted stop cause (`cause === undefined`)
+      // from the web client, indicating normal, successful completion.
       cause_suffix = ".UnknownCause";
       base::RecordAction(
           base::UserMetricsAction("GlicResponseStopUnknownCause"));
+      LogEvent(GlicInstanceEvent::kResponseStoppedSuccess);
       break;
   }
 

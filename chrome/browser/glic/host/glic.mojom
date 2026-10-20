@@ -1768,6 +1768,8 @@ enum ClientErrorDialogType {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicClientErrorDialogType)
 [Stable, Extensible]
 enum ResponseStopCause {
+  // The stop cause was omitted by the web client (`cause === undefined`),
+  // indicating normal, successful response completion.
   [Default] kUnknown = 0,
   kUser = 1,
   kOther = 2,
