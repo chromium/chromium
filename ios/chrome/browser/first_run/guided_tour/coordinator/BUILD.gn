@@ -4,8 +4,8 @@
 
 source_set("coordinator") {
   sources = [
-    "guided_tour_coordinator.h",
-    "guided_tour_coordinator.mm",
+    "guided_tour_bubble_coordinator.h",
+    "guided_tour_bubble_coordinator.mm",
     "guided_tour_promo_coordinator.h",
     "guided_tour_promo_coordinator.mm",
   ]

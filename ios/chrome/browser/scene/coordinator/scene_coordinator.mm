@@ -51,7 +51,7 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_coordinator.h"
+#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_bubble_coordinator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_factory.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator.h"
@@ -291,7 +291,7 @@ inline LayoutStateScenePassKey PassKey() {
   // Completion block called when Settings are dismissed.
   ProceduralBlock _settingsDismissalCompletion;
   // Coordinator for the first step of the guided tour (NTP).
-  GuidedTourCoordinator* _guidedTourCoordinator;
+  GuidedTourBubbleCoordinator* _guidedTourCoordinator;
   // Coordinator for the undo sign-out flow.
   UndoSignoutCoordinator* _undoSignoutCoordinator;
 }
@@ -1238,15 +1238,15 @@ inline LayoutStateScenePassKey PassKey() {
   }
   __weak __typeof(self) weakSelf = self;
   _guidedTourCoordinator =
-      [[GuidedTourCoordinator alloc] initWithStep:GuidedTourStep::kNTP
-                               baseViewController:baseViewController
-                                          browser:self.currentBrowser
-                                  completionBlock:^{
-                                    [weakSelf hideGuidedTourNTPStep];
-                                    if (completion) {
-                                      completion();
-                                    }
-                                  }];
+      [[GuidedTourBubbleCoordinator alloc] initWithStep:GuidedTourStep::kNTP
+                                     baseViewController:baseViewController
+                                                browser:self.currentBrowser
+                                        completionBlock:^{
+                                          [weakSelf hideGuidedTourNTPStep];
+                                          if (completion) {
+                                            completion();
+                                          }
+                                        }];
   [_guidedTourCoordinator start];
 }
 

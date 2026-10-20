@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_FIRST_RUN_GUIDED_TOUR_COORDINATOR_GUIDED_TOUR_COORDINATOR_H_
-#define IOS_CHROME_BROWSER_FIRST_RUN_GUIDED_TOUR_COORDINATOR_GUIDED_TOUR_COORDINATOR_H_
+#ifndef IOS_CHROME_BROWSER_FIRST_RUN_GUIDED_TOUR_COORDINATOR_GUIDED_TOUR_BUBBLE_COORDINATOR_H_
+#define IOS_CHROME_BROWSER_FIRST_RUN_GUIDED_TOUR_COORDINATOR_GUIDED_TOUR_BUBBLE_COORDINATOR_H_
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/public/commands/guided_tour_commands.h"
 
+// Coordinator to present a Guided Tour step bubble.
+@interface GuidedTourBubbleCoordinator : ChromeCoordinator
 
-
-// Coordinator to present a Guided Tour step.
-@interface GuidedTourCoordinator : ChromeCoordinator
-
-// Initializes a GuidedTourCoordinator with `baseViewController`,
+// Initializes a `GuidedTourBubbleCoordinator` with `baseViewController`,
 // `browser`, and `completionBlock`.
 - (instancetype)initWithStep:(GuidedTourStep)step
           baseViewController:(UIViewController*)baseViewController
@@ -27,4 +25,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_FIRST_RUN_GUIDED_TOUR_COORDINATOR_GUIDED_TOUR_COORDINATOR_H_
+#endif  // IOS_CHROME_BROWSER_FIRST_RUN_GUIDED_TOUR_COORDINATOR_GUIDED_TOUR_BUBBLE_COORDINATOR_H_

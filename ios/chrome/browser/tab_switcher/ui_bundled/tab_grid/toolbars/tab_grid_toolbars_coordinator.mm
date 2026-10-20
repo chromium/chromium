@@ -10,7 +10,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_coordinator.h"
+#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_bubble_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -34,7 +34,7 @@
   // Mediator of all tab grid toolbars.
   TabGridToolbarsMediator* _mediator;
   // Coordinator for the first step of the guided tour.
-  GuidedTourCoordinator* _guidedTourCoordinator;
+  GuidedTourBubbleCoordinator* _guidedTourBubbleCoordinator;
 }
 
 - (void)start {
@@ -60,8 +60,8 @@
   [_mediator disconnect];
   _mediator = nil;
 
-  [_guidedTourCoordinator stop];
-  _guidedTourCoordinator = nil;
+  [_guidedTourBubbleCoordinator stop];
+  _guidedTourBubbleCoordinator = nil;
 
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
 }
@@ -123,12 +123,12 @@
   ProceduralBlock completionBlock = ^{
     [weakSelf guidedTourStepCompletedForCompletion:completion];
   };
-  _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
+  _guidedTourBubbleCoordinator = [[GuidedTourBubbleCoordinator alloc]
             initWithStep:GuidedTourStep::kTabGridIncognito
       baseViewController:self.baseViewController
                  browser:self.browser
          completionBlock:completionBlock];
-  [_guidedTourCoordinator start];
+  [_guidedTourBubbleCoordinator start];
 }
 
 - (void)showGuidedTourTabGroupStepWithDismissalCompletion:
@@ -138,18 +138,18 @@
   ProceduralBlock completionBlock = ^{
     [weakSelf guidedTourStepCompletedForCompletion:completion];
   };
-  _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
+  _guidedTourBubbleCoordinator = [[GuidedTourBubbleCoordinator alloc]
             initWithStep:GuidedTourStep::kTabGridTabGroup
       baseViewController:self.baseViewController
                  browser:self.browser
          completionBlock:completionBlock];
-  [_guidedTourCoordinator start];
+  [_guidedTourBubbleCoordinator start];
 }
 
 - (void)hideTabGridToolbarGuidedTour {
   [self.topToolbar resetLastPageControlHighlight];
-  [_guidedTourCoordinator stop];
-  _guidedTourCoordinator = nil;
+  [_guidedTourBubbleCoordinator stop];
+  _guidedTourBubbleCoordinator = nil;
 }
 
 #pragma mark - Private
@@ -157,8 +157,8 @@
 // Handles the completion of a guided tour step.
 - (void)guidedTourStepCompletedForCompletion:(ProceduralBlock)completion {
   [self.topToolbar resetLastPageControlHighlight];
-  [_guidedTourCoordinator stop];
-  _guidedTourCoordinator = nil;
+  [_guidedTourBubbleCoordinator stop];
+  _guidedTourBubbleCoordinator = nil;
   if (completion) {
     completion();
   }

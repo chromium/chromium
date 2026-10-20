@@ -41,7 +41,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
-#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_coordinator.h"
+#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_bubble_coordinator.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_delegate.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator_factory.h"
 #import "ios/chrome/browser/history/ui_bundled/public/history_presentation_delegate.h"
@@ -279,7 +279,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 @implementation TabGridCoordinator {
   // Coordinator for the long press step of the guided tour.
-  GuidedTourCoordinator* _guidedTourCoordinator;
+  GuidedTourBubbleCoordinator* _guidedTourBubbleCoordinator;
 
   // The presenter for the pin tab IPH bubble.
   BubbleViewControllerPresenter* _pinTabBubblePresenter;
@@ -714,8 +714,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 // Handles the completion of a guided tour step.
 - (void)guidedTourStepCompleted {
-  [_guidedTourCoordinator stop];
-  _guidedTourCoordinator = nil;
+  [_guidedTourBubbleCoordinator stop];
+  _guidedTourBubbleCoordinator = nil;
 }
 
 // Hides tab group views.
@@ -1222,8 +1222,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.dispatcher stopDispatchingForProtocol:@protocol(SceneCommands)];
 
   self.transitionHandler = nil;
-  [_guidedTourCoordinator stop];
-  _guidedTourCoordinator = nil;
+  [_guidedTourBubbleCoordinator stop];
+  _guidedTourBubbleCoordinator = nil;
 
   [_pinTabBubblePresenter dismissAnimated:NO];
   _pinTabBubblePresenter = nil;
@@ -1932,17 +1932,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       completion();
     }
   };
-  _guidedTourCoordinator = [[GuidedTourCoordinator alloc]
+  _guidedTourBubbleCoordinator = [[GuidedTourBubbleCoordinator alloc]
             initWithStep:GuidedTourStep::kTabGridLongPress
       baseViewController:_viewController
                  browser:self.regularBrowser
          completionBlock:completionBlock];
-  [_guidedTourCoordinator start];
+  [_guidedTourBubbleCoordinator start];
 }
 
 - (void)hideTabGridGuidedTour {
-  [_guidedTourCoordinator stop];
-  _guidedTourCoordinator = nil;
+  [_guidedTourBubbleCoordinator stop];
+  _guidedTourBubbleCoordinator = nil;
 }
 
 - (void)presentPinTabBubble {

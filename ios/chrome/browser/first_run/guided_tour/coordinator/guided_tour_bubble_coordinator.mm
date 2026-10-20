@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_coordinator.h"
+#import "ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_bubble_coordinator.h"
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/bubble/ui_bundled/guided_tour/guided_tour_bubble_view_controller_presenter.h"
@@ -23,11 +23,11 @@ const CGFloat kNTPAppBarTabGridButtonSpotlightCornerRadius = 14.0f;
 const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 }  // namespace
 
-@interface GuidedTourCoordinator () <
+@interface GuidedTourBubbleCoordinator () <
     GuidedTourBubbleViewControllerPresenterDelegate>
 @end
 
-@implementation GuidedTourCoordinator {
+@implementation GuidedTourBubbleCoordinator {
   GuidedTourStep _step;
   GuidedTourBubbleViewControllerPresenter* _presenter;
   ProceduralBlock _completionBlock;
@@ -127,8 +127,6 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
 
   return [anchorView.superview convertPoint:anchorPoint toView:nil];
 }
-
-
 
 // Returns the title string used for this step's Bubble View.
 - (NSString*)titleString {
