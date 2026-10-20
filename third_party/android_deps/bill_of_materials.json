@@ -1882,12 +1882,12 @@
     {
         "name": "grpc-api",
         "group": "io.grpc",
-        "version": "1.85.0"
+        "version": "1.85.1"
     },
     {
         "name": "grpc-stub",
         "group": "io.grpc",
-        "version": "1.85.0"
+        "version": "1.85.1"
     },
     {
         "name": "rxandroid",
