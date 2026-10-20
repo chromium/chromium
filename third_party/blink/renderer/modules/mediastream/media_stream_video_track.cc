@@ -570,6 +570,13 @@ void MediaStreamVideoTrack::FrameDeliverer::
   CHECK_NE(capture_version, media::CaptureVersion());
   CHECK(!capture_version_callbacks_.Contains(capture_version));
 
+  // Registration is posted from the main thread, so `capture_version` may
+  // already have been observed by the time this runs.
+  if (capture_version <= capture_version_) {
+    std::move(callback).Run();
+    return;
+  }
+
   capture_version_callbacks_.Set(capture_version, std::move(callback));
 }
 
