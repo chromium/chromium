@@ -179,37 +179,6 @@ Config::Config() {
         use_host_for_visit_deduping);
   }
 
-  // The `kOnDeviceClusteringVisitRanking` feature and child params.
-  {
-    visit_duration_ranking_weight = GetFieldTrialParamByFeatureAsDouble(
-        features::kOnDeviceClusteringVisitRanking,
-        "visit_duration_ranking_weight", visit_duration_ranking_weight);
-    DCHECK_GE(visit_duration_ranking_weight, 0.0f);
-
-    foreground_duration_ranking_weight = GetFieldTrialParamByFeatureAsDouble(
-        features::kOnDeviceClusteringVisitRanking,
-        "foreground_duration_ranking_weight",
-        foreground_duration_ranking_weight);
-    DCHECK_GE(foreground_duration_ranking_weight, 0.0f);
-
-    bookmark_ranking_weight = GetFieldTrialParamByFeatureAsDouble(
-        features::kOnDeviceClusteringVisitRanking, "bookmark_ranking_weight",
-        bookmark_ranking_weight);
-    DCHECK_GE(bookmark_ranking_weight, 0.0f);
-
-    search_results_page_ranking_weight = GetFieldTrialParamByFeatureAsDouble(
-        features::kOnDeviceClusteringVisitRanking,
-        "search_results_page_ranking_weight",
-        search_results_page_ranking_weight);
-    DCHECK_GE(search_results_page_ranking_weight, 0.0f);
-
-    has_url_keyed_image_ranking_weight = GetFieldTrialParamByFeatureAsDouble(
-        features::kOnDeviceClusteringVisitRanking,
-        "has_url_keyed_image_ranking_weight",
-        has_url_keyed_image_ranking_weight);
-    DCHECK_GE(has_url_keyed_image_ranking_weight, 0.0f);
-  }
-
   // The `kHistoryClustersNavigationContextClustering` feature and child params.
   {
     use_navigation_context_clusters = base::FeatureList::IsEnabled(

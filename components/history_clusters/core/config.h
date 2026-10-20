@@ -174,7 +174,7 @@ struct Config {
   // Use host instead of heavily-stripped URL as URL for deduping.
   bool use_host_for_visit_deduping = true;
 
-  // The `kOnDeviceClusteringVisitRanking` feature and child params.
+  // Visit ranking weights.
 
   // Returns the weight to use for the visit duration when ranking visits within
   // a cluster. Will always be greater than or equal to 0.

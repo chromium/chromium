@@ -22,9 +22,6 @@ BASE_DECLARE_FEATURE(kOnDeviceClusteringBlocklists);
 // Specifies how keywords get filtered and added to a cluster.
 BASE_DECLARE_FEATURE(kOnDeviceClusteringKeywordFiltering);
 
-// Specifies how visits within clusters are ranked.
-BASE_DECLARE_FEATURE(kOnDeviceClusteringVisitRanking);
-
 }  // namespace features
 }  // namespace history_clusters
 
