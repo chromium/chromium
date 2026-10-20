@@ -478,9 +478,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
                     }
                     tab_groups::TabGroupId group_id =
                         model->AddToNewGroup({1, 2});
-                    BrowserView::GetBrowserViewForBrowser(browser())
-                        ->GetWidget()
-                        ->LayoutRootViewIfNecessary();
+                    LayoutAndFinishAnimations();
 
                     TabGroupView* group_view = GetTabGroupView(group_id);
                     ASSERT_NE(group_view, nullptr);
@@ -517,13 +515,13 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
         auto* unpinned_container =
             views::AsViewClass<UnpinnedTabContainerView>(unpinned->view());
         ASSERT_NE(unpinned_container, nullptr);
-        ASSERT_TRUE(unpinned_container->GetAvailableMainAxisSpaceOverride()
-                        .has_value());
-        ASSERT_TRUE(unpinned_container->GetAvailableMainAxisSpaceOverride()
-                        ->is_bounded());
+        const auto* scroll_view =
+            views::ScrollView::GetScrollViewForContents(unpinned_container);
+        ASSERT_NE(scroll_view, nullptr);
 
         const int initial_available_space =
-            unpinned_container->GetAvailableMainAxisSpaceOverride()->value();
+            scroll_view->GetVisibleRect().width();
+        ASSERT_GT(initial_available_space, 0);
         const int initial_tab_width = unpinned->children()[0]->view()->width();
 
         // Close a middle tab.
@@ -564,13 +562,12 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
         auto* unpinned_container =
             views::AsViewClass<UnpinnedTabContainerView>(unpinned->view());
         ASSERT_NE(unpinned_container, nullptr);
-        ASSERT_TRUE(unpinned_container->GetAvailableMainAxisSpaceOverride()
-                        .has_value());
-        ASSERT_TRUE(unpinned_container->GetAvailableMainAxisSpaceOverride()
-                        ->is_bounded());
+        const auto* scroll_view =
+            views::ScrollView::GetScrollViewForContents(unpinned_container);
+        ASSERT_NE(scroll_view, nullptr);
 
-        const int available_space =
-            unpinned_container->GetAvailableMainAxisSpaceOverride()->value();
+        const int available_space = scroll_view->GetVisibleRect().width();
+        ASSERT_GT(available_space, 0);
         const int initial_tab_width = unpinned->children()[0]->view()->width();
 
         // Close tabs until the container transitions to non-overflowing.
@@ -614,13 +611,13 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabClosingHelperInteractiveUiTest,
         auto* unpinned_container =
             views::AsViewClass<UnpinnedTabContainerView>(unpinned->view());
         ASSERT_NE(unpinned_container, nullptr);
-        ASSERT_TRUE(unpinned_container->GetAvailableMainAxisSpaceOverride()
-                        .has_value());
-        ASSERT_TRUE(unpinned_container->GetAvailableMainAxisSpaceOverride()
-                        ->is_bounded());
+        const auto* scroll_view =
+            views::ScrollView::GetScrollViewForContents(unpinned_container);
+        ASSERT_NE(scroll_view, nullptr);
 
         const int initial_available_space =
-            unpinned_container->GetAvailableMainAxisSpaceOverride()->value();
+            scroll_view->GetVisibleRect().width();
+        ASSERT_GT(initial_available_space, 0);
         const int initial_tab_width = unpinned->children()[0]->view()->width();
 
         // Close the trailingmost tab while overflowing.

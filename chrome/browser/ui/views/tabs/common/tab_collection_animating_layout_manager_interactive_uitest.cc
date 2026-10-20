@@ -24,6 +24,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view_utils.h"
 
@@ -65,6 +66,15 @@ class HorizontalTabCollectionAnimatingLayoutManagerInteractiveUiTest
                ? region->root_node_for_testing()->GetChildNodeOfType(
                      TabCollectionNode::Type::UNPINNED)
                : nullptr;
+  }
+
+  void LayoutAndFinishAnimations() {
+    auto* controller = GetController();
+    CHECK(controller);
+    controller->animation_coordinator().AnimationEnded(nullptr);
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    CHECK(browser_view && browser_view->GetWidget());
+    browser_view->GetWidget()->LayoutRootViewIfNecessary();
   }
 
   void CreateHorizontalOverflowingTabs() {
@@ -186,8 +196,8 @@ IN_PROC_BROWSER_TEST_F(
       }));
 }
 
-// When overflowing, the animating layout manager's target layout and available
-// space override strictly use the visible viewport width.
+// When overflowing, the available size allocated to the scroll view strictly
+// matches the visible viewport width.
 IN_PROC_BROWSER_TEST_F(
     HorizontalTabCollectionAnimatingLayoutManagerInteractiveUiTest,
     TargetLayoutBoundsToScrollViewViewportWhenOverflowing) {
@@ -206,13 +216,57 @@ IN_PROC_BROWSER_TEST_F(
         ASSERT_NE(scroll_view, nullptr);
         EXPECT_TRUE(scroll_view->IsHorizontalContentOverflowing());
 
-        const auto space_override =
-            unpinned_container->GetAvailableMainAxisSpaceOverride();
-        ASSERT_TRUE(space_override.has_value());
-        ASSERT_TRUE(space_override->is_bounded());
+        ASSERT_NE(scroll_view->parent(), nullptr);
+        const views::SizeBounds available_size =
+            scroll_view->parent()->GetAvailableSize(scroll_view);
+        ASSERT_TRUE(available_size.width().is_bounded());
 
         const int viewport_width = scroll_view->GetVisibleRect().width();
-        EXPECT_EQ(space_override->value(), viewport_width);
+        EXPECT_EQ(available_size.width().value(), viewport_width);
         EXPECT_LT(viewport_width, unpinned_container->width());
+      }));
+}
+
+// Adding a tab animates the unpinned scroll view and TabStripView preferred
+// width smoothly rather than snapping immediately to the final target width.
+IN_PROC_BROWSER_TEST_F(
+    HorizontalTabCollectionAnimatingLayoutManagerInteractiveUiTest,
+    AddingTabAnimatesTabStripPreferredWidth) {
+  const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), Do([this]() {
+        auto* region = GetBaseTabStripRegionView();
+        ASSERT_NE(region, nullptr);
+        views::View* tab_strip_view = region->GetTabStripView();
+        ASSERT_NE(tab_strip_view, nullptr);
+
+        TabCollectionNode* unpinned = GetUnpinnedNode();
+        ASSERT_NE(unpinned, nullptr);
+        auto* unpinned_container =
+            views::AsViewClass<UnpinnedTabContainerView>(unpinned->view());
+        ASSERT_NE(unpinned_container, nullptr);
+
+        LayoutAndFinishAnimations();
+
+        const int initial_strip_width =
+            tab_strip_view->GetPreferredSize({}).width();
+        EXPECT_GT(initial_strip_width, 0);
+
+        chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                         /*foreground=*/true);
+
+        EXPECT_TRUE(TabCollectionAnimatingLayoutManager::IsViewAnimating(
+            unpinned_container));
+        const int target_unpinned_width =
+            unpinned_container->GetTargetPreferredSize().width();
+        EXPECT_GT(target_unpinned_width, initial_strip_width);
+
+        // Immediately at the start of the animation (progress = 0), the
+        // tab strip's preferred width should match the starting width rather
+        // than jumping immediately to `target_unpinned_width`.
+        EXPECT_EQ(tab_strip_view->GetPreferredSize({}).width(),
+                  initial_strip_width);
       }));
 }
