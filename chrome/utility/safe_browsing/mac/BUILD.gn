@@ -137,6 +137,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/common/safe_browsing:archive_analyzer_results",
     "//chrome/utility/safe_browsing",
+    "//components/safe_browsing/core/common:features",
     "//testing/gtest",
   ]
 }

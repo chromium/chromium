@@ -11,25 +11,45 @@
 #include <array>
 #include <memory>
 #include <string_view>
+#include <tuple>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/utility/safe_browsing/mac/dmg_test_utils.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
 namespace dmg {
 namespace {
 
-class HFSIteratorTest : public testing::Test {
+std::string GetRustParamName(const testing::TestParamInfo<bool>& info) {
+  return info.param ? "Rust" : "Cpp";
+}
+
+std::string GetHFSFileReadTestName(
+    const testing::TestParamInfo<std::tuple<const char*, bool>>& info) {
+  std::string_view file = std::get<0>(info.param);
+  return base::StrCat({file.substr(0, file.find('.')),
+                       std::get<1>(info.param) ? "_Rust" : "_Cpp"});
+}
+
+class HFSIteratorTest : public testing::TestWithParam<bool> {
  public:
+  HFSIteratorTest() {
+    scoped_feature_list_.InitWithFeatureState(kSafeBrowsingRustDmgParser,
+                                              GetParam());
+  }
+
   void GetTargetFiles(bool case_sensitive,
                       std::set<std::u16string>* files,
                       std::set<std::u16string>* dirs) {
@@ -70,6 +90,10 @@ class HFSIteratorTest : public testing::Test {
 
   void TestTargetFiles(safe_browsing::dmg::HFSIterator* hfs_reader,
                        bool case_sensitive) {
+    if (GetParam()) {
+      GTEST_SKIP() << "TODO(crbug.com/575525008): Remove once Rust "
+                      "HFSIterator is implemented.";
+    }
     std::set<std::u16string> files, dirs;
     GetTargetFiles(case_sensitive, &files, &dirs);
 
@@ -91,9 +115,12 @@ class HFSIteratorTest : public testing::Test {
       ADD_FAILURE() << "Unexpected missing file " << file;
     }
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(HFSIteratorTest, HFSPlus) {
+TEST_P(HFSIteratorTest, HFSPlus) {
   base::File file;
   ASSERT_NO_FATAL_FAILURE(test::GetTestFile("hfs_plus.img", &file));
 
@@ -102,7 +129,7 @@ TEST_F(HFSIteratorTest, HFSPlus) {
   TestTargetFiles(&hfs_reader, false);
 }
 
-TEST_F(HFSIteratorTest, HFSXCaseSensitive) {
+TEST_P(HFSIteratorTest, HFSXCaseSensitive) {
   base::File file;
   ASSERT_NO_FATAL_FAILURE(test::GetTestFile("hfsx_case_sensitive.img", &file));
 
@@ -111,10 +138,27 @@ TEST_F(HFSIteratorTest, HFSXCaseSensitive) {
   TestTargetFiles(&hfs_reader, true);
 }
 
-class HFSFileReadTest : public testing::TestWithParam<const char*> {
+INSTANTIATE_TEST_SUITE_P(All,
+                         HFSIteratorTest,
+                         testing::Bool(),
+                         GetRustParamName);
+
+class HFSFileReadTest
+    : public testing::TestWithParam<std::tuple<const char*, bool>> {
+ public:
+  HFSFileReadTest() {
+    scoped_feature_list_.InitWithFeatureState(kSafeBrowsingRustDmgParser,
+                                              std::get<1>(GetParam()));
+  }
+
  protected:
   void SetUp() override {
-    ASSERT_NO_FATAL_FAILURE(test::GetTestFile(GetParam(), &hfs_file_));
+    if (std::get<1>(GetParam())) {
+      GTEST_SKIP() << "TODO(crbug.com/575525008): Remove once Rust "
+                      "HFSIterator is implemented.";
+    }
+    ASSERT_NO_FATAL_FAILURE(
+        test::GetTestFile(std::get<0>(GetParam()), &hfs_file_));
 
     hfs_stream_ = std::make_unique<FileReadStream>(hfs_file_.GetPlatformFile());
     hfs_reader_ = std::make_unique<HFSIterator>(hfs_stream_.get());
@@ -134,6 +178,7 @@ class HFSFileReadTest : public testing::TestWithParam<const char*> {
   HFSIterator* hfs_reader() { return hfs_reader_.get(); }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::File hfs_file_;
   std::unique_ptr<FileReadStream> hfs_stream_;
   std::unique_ptr<HFSIterator> hfs_reader_;
@@ -224,12 +269,31 @@ TEST_P(HFSFileReadTest, DecmpfsFile) {
   EXPECT_EQ(0u, maybe_data->size());
 }
 
+class HFSBTreeIteratorTest : public testing::TestWithParam<bool> {
+ public:
+  HFSBTreeIteratorTest() {
+    scoped_feature_list_.InitWithFeatureState(kSafeBrowsingRustDmgParser,
+                                              GetParam());
+  }
+
+ protected:
+  void SetUp() override {
+    if (GetParam()) {
+      GTEST_SKIP() << "TODO(crbug.com/575525008): Remove once Rust "
+                      "HFSIterator is implemented.";
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Builds a minimal HFS+ image in memory whose catalog leaf node lays out
 // records using the trailing record-offset table and a `keyLength` larger than
 // the catalog key's name would imply. The iterator must locate records via the
 // offset table and locate each record's data via `keyLength`, as described in
 // TN1150 "Node Structure".
-TEST(HFSBTreeIteratorTest, LeafRecordsLocatedByOffsetTableAndKeyLength) {
+TEST_P(HFSBTreeIteratorTest, LeafRecordsLocatedByOffsetTableAndKeyLength) {
   constexpr uint32_t kBlockSize = 4096;
   constexpr uint16_t kNodeSize = 4096;
   constexpr uint32_t kCatalogStartBlock = 1;
@@ -393,7 +457,7 @@ TEST(HFSBTreeIteratorTest, LeafRecordsLocatedByOffsetTableAndKeyLength) {
   EXPECT_FALSE(hfs_reader.Next());
 }
 
-TEST(HFSBTreeIteratorTest, InconsistentOffsetTableRejected) {
+TEST_P(HFSBTreeIteratorTest, InconsistentOffsetTableRejected) {
   constexpr uint32_t kBlockSize = 4096;
   constexpr uint16_t kNodeSize = 4096;
   constexpr uint32_t kCatalogStartBlock = 1;
@@ -468,7 +532,23 @@ TEST(HFSBTreeIteratorTest, InconsistentOffsetTableRejected) {
   EXPECT_FALSE(hfs_reader.Next());
 }
 
-TEST(HFSForkReadStreamTest, ExtentExceedingMaxBufferSizeRejected) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         HFSBTreeIteratorTest,
+                         testing::Bool(),
+                         GetRustParamName);
+
+class HFSForkReadStreamTest : public testing::TestWithParam<bool> {
+ public:
+  HFSForkReadStreamTest() {
+    scoped_feature_list_.InitWithFeatureState(kSafeBrowsingRustDmgParser,
+                                              GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(HFSForkReadStreamTest, ExtentExceedingMaxBufferSizeRejected) {
   constexpr uint32_t kBlockSize = 512;
   constexpr uint32_t kTotalBlocks = 200000;  // ~100 MB
 
@@ -500,10 +580,17 @@ TEST(HFSForkReadStreamTest, ExtentExceedingMaxBufferSizeRejected) {
   EXPECT_FALSE(hfs_reader.Open());
 }
 
-INSTANTIATE_TEST_SUITE_P(HFSIteratorTest,
-                         HFSFileReadTest,
-                         testing::Values("hfs_plus.img",
-                                         "hfsx_case_sensitive.img"));
+INSTANTIATE_TEST_SUITE_P(All,
+                         HFSForkReadStreamTest,
+                         testing::Bool(),
+                         GetRustParamName);
+
+INSTANTIATE_TEST_SUITE_P(
+    HFSIteratorTest,
+    HFSFileReadTest,
+    testing::Combine(testing::Values("hfs_plus.img", "hfsx_case_sensitive.img"),
+                     testing::Bool()),
+    GetHFSFileReadTestName);
 
 }  // namespace
 }  // namespace dmg

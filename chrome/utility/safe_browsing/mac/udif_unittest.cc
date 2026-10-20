@@ -10,15 +10,19 @@
 #include <stdint.h>
 
 #include <array>
+#include <tuple>
 
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/utility/safe_browsing/mac/dmg_test_utils.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -66,16 +70,31 @@ struct UDIFTestCase {
 
   // Generates a human-friendly name for the parameterized test.
   static std::string GetTestName(
-      const testing::TestParamInfo<UDIFTestCase>& test) {
-    std::string file = test.param.file_name;
-    return file.substr(0, file.find('.'));
+      const testing::TestParamInfo<std::tuple<UDIFTestCase, bool>>& test) {
+    std::string file = std::get<0>(test.param).file_name;
+    return base::StrCat({file.substr(0, file.find('.')),
+                         std::get<1>(test.param) ? "_Rust" : "_Cpp"});
   }
 };
 
-class UDIFParserTest : public testing::TestWithParam<UDIFTestCase> {
+class UDIFParserTest
+    : public testing::TestWithParam<std::tuple<UDIFTestCase, bool>> {
+ public:
+  UDIFParserTest() {
+    scoped_feature_list_.InitWithFeatureState(kSafeBrowsingRustDmgParser,
+                                              IsRustEnabled());
+  }
+
  protected:
+  const UDIFTestCase& GetTestCase() const { return std::get<0>(GetParam()); }
+  bool IsRustEnabled() const { return std::get<1>(GetParam()); }
+
   void RunReadAllTest(size_t buffer_size) {
-    const UDIFTestCase& test_case = GetParam();
+    if (IsRustEnabled()) {
+      GTEST_SKIP() << "TODO(crbug.com/575525008): Remove once Rust UDIFParser "
+                      "is implemented.";
+    }
+    const UDIFTestCase& test_case = GetTestCase();
     if (!(test_case.expected_results & UDIFTestCase::READ_UDIF_DATA)) {
       return;
     }
@@ -108,10 +127,17 @@ class UDIFParserTest : public testing::TestWithParam<UDIFTestCase> {
       } while (total_bytes_read < total_size && success);
     }
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(UDIFParserTest, ParseUDIF) {
-  const UDIFTestCase& test_case = GetParam();
+  if (IsRustEnabled()) {
+    GTEST_SKIP() << "TODO(crbug.com/575525008): Remove once Rust UDIFParser "
+                    "is implemented.";
+  }
+  const UDIFTestCase& test_case = GetTestCase();
 
   base::File file;
   ASSERT_NO_FATAL_FAILURE(test::GetTestFile(test_case.file_name, &file));
@@ -199,11 +225,19 @@ TEST_P(UDIFParserTest, ReadAll_100000) {
 }
 
 TEST_P(UDIFParserTest, ReadAll_SmallDecompressChunk_64) {
+  if (IsRustEnabled()) {
+    // GetMaxDecompressChunkSize() only configures the C++ zlib/bz2 stream.
+    GTEST_SKIP();
+  }
   base::AutoReset<size_t> auto_reset(&GetMaxDecompressChunkSize(), 64);
   RunReadAllTest(512);
 }
 
 TEST_P(UDIFParserTest, ReadAll_SmallDecompressChunk_1024) {
+  if (IsRustEnabled()) {
+    // GetMaxDecompressChunkSize() only configures the C++ zlib/bz2 stream.
+    GTEST_SKIP();
+  }
   base::AutoReset<size_t> auto_reset(&GetMaxDecompressChunkSize(), 1024);
   RunReadAllTest(512);
 }
@@ -259,7 +293,8 @@ constexpr UDIFTestCase cases[] = {
 
 INSTANTIATE_TEST_SUITE_P(UDIFParserTest,
                          UDIFParserTest,
-                         testing::ValuesIn(cases),
+                         testing::Combine(testing::ValuesIn(cases),
+                                          testing::Bool()),
                          UDIFTestCase::GetTestName);
 
 }  // namespace
