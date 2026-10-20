@@ -371,6 +371,28 @@ TEST_F(WebInstallServiceImplTest, UmaInstallType_CurrentDocument_InProgress) {
                                WebInstallServiceResult::kInstallInProgress, 1);
 }
 
+// Preserve DataError if the command-level missing-icons check is reached.
+TEST_F(WebInstallServiceImplTest,
+       CurrentDocument_CommandReportsNoManifestIcons_DataError) {
+  base::HistogramTester histograms;
+
+  GURL custom_id("https://requesting-app.com/my_app_id");
+  auto manifest = CreateManifest(GURL(kDocumentUrl), custom_id);
+  SetupPageWithManifest(GURL(kDocumentUrl), std::move(manifest));
+  fake_ui_manager().SetTriggerInstallDialogResultCode(
+      webapps::InstallResultCode::kNoValidIconsInManifest);
+
+  BindService();
+  blink::mojom::WebInstallServiceResult result =
+      InstallFromApiCurrentDocument();
+
+  EXPECT_EQ(result, blink::mojom::WebInstallServiceResult::kDataError);
+  histograms.ExpectBucketCount(kInstallApiResultUma,
+                               WebInstallServiceResult::kNoManifestIcons, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kNoManifestIcons, 1);
+}
+
 // A current document install rejected by the promoter's HasCurrentInstall()
 // guard reports kInstallInProgress. This guard is distinct from the
 // per-instance install_in_progress_ flag: it fires when another surface already

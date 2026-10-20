@@ -1,0 +1,7 @@
+{
+  "name": "Web app install element test app without icons",
+  "id": "no-icons",
+  "icons": [],
+  "start_url": "index.html",
+  "display": "standalone"
+}

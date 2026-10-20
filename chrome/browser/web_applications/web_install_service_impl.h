@@ -58,8 +58,9 @@ enum class WebInstallServiceResult {
   kNoCustomManifestId = 7,
   kManifestIdMismatch = 8,
   kInstallInProgress = 9,
+  kNoManifestIcons = 10,
   // Insert new values above this line.
-  kMaxValue = kInstallInProgress,
+  kMaxValue = kNoManifestIcons,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebInstallServiceResult)
 

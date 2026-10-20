@@ -966,6 +966,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="No custom id field in manifest"/>
   <int value="8" label="Manifest id mismatch"/>
   <int value="9" label="Install in progress"/>
+  <int value="10" label="No icons in manifest"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/web_install_service_impl.h:WebInstallServiceResult) -->

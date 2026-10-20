@@ -76,6 +76,8 @@ constexpr char kInstallElementPageStartUrl[] =
 constexpr char kInstallElementPageId[] = "/some_id";
 constexpr char kInstallElementManifestUrl[] =
     "/web_apps/install_element/manifest.json";
+constexpr char kInstallElementNoIconsManifestUrl[] =
+    "/web_apps/install_element/manifest_no_icons.json";
 constexpr char kCrossOriginManifestPath[] =
     "/controlled_cross_origin_manifest.webmanifest";
 constexpr char kCrossOriginManifestCookie[] =
@@ -954,6 +956,31 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, ManifestIdMismatch) {
   ASSERT_TRUE(ClickElementWithId(kInstallElementId));
 
   WaitForInvalidDataEvent(kInstallElementId);
+  EXPECT_TRUE(provider().registrar_unsafe().GetAppIds().empty());
+}
+
+IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest, ManifestWithoutIcons) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL(kInstallElementPageStartUrl)));
+
+  bool dialog_shown = false;
+  views::AnyWidgetObserver observer{views::test::AnyWidgetTestPasskey{}};
+  observer.set_shown_callback(
+      base::BindLambdaForTesting([&dialog_shown](views::Widget* widget) {
+        if (widget->GetName() == "WebAppSimpleInstallDialog" ||
+            widget->GetName() == "WebAppInstallFlowDialog" ||
+            widget->GetName() == "WebInstallLaunchDialog") {
+          dialog_shown = true;
+        }
+      }));
+
+  ASSERT_TRUE(SetButtonManifest(
+      embedded_https_test_server().GetURL(kInstallElementNoIconsManifestUrl)));
+  ASSERT_TRUE(ClickElementWithId(kInstallElementId));
+  WaitForInvalidDataEvent(kInstallElementId);
+
+  EXPECT_FALSE(dialog_shown);
   EXPECT_TRUE(provider().registrar_unsafe().GetAppIds().empty());
 }
 

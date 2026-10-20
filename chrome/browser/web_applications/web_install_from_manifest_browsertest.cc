@@ -846,9 +846,9 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
-                       ManifestWithoutIcons_AbortError) {
+                       ManifestWithoutIcons_DataError) {
   NavigateToValidUrl();
-  SetPermissionResponse(/*permission_granted=*/true);
+  SetPermissionResponse(/*permission_granted=*/false);
   // Valid start_url/name and a custom id (so parsing and the id check pass),
   // but deliberately no "icons" member.
   SetDynamicManifestResponse(
@@ -860,43 +860,77 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
 
   base::HistogramTester histograms;
   permissions::PermissionRequestObserver observer(web_contents());
+  WebInstallDialogShownWatcher install_dialog_watcher;
+  WebInstallDialogShownWatcher launch_dialog_watcher("WebInstallLaunchDialog");
+  WebInstallDialogShownWatcher unsupported_dialog_watcher(
+      "WebAppInstallNotSupportedDialog");
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   ASSERT_TRUE(TryInstallFromManifest(manifest_url));
-  observer.Wait();
 
-  // Permission is requested and granted before the icon check runs in the
-  // command.
-  EXPECT_TRUE(observer.request_shown());
+  EXPECT_FALSE(observer.request_shown());
+  EXPECT_FALSE(install_dialog_watcher.shown());
+  EXPECT_FALSE(launch_dialog_watcher.shown());
+  EXPECT_FALSE(unsupported_dialog_watcher.shown());
 
   EXPECT_FALSE(ResultExists());
   ASSERT_TRUE(ErrorExists());
-  EXPECT_EQ(GetErrorName(), kAbortError);
+  EXPECT_EQ(GetErrorName(), kDataError);
+  EXPECT_TRUE(provider().registrar_unsafe().GetAppIds().empty());
 
-  histograms.ExpectUniqueSample(
-      "WebApp.InstallCommand.InstallFromManifestUrl.ResultCode",
-      webapps::InstallResultCode::kNoValidIconsInManifest, 1);
+  histograms.ExpectTotalCount(
+      "WebApp.InstallCommand.InstallFromManifestUrl.ResultCode", 0);
   histograms.ExpectBucketCount(kInstallTypeUma,
                                WebInstallServiceType::kBackgroundDocument, 1);
   histograms.ExpectBucketCount(kVariantedInstallTypeUma,
                                WebInstallServiceType::kBackgroundDocument, 1);
-  histograms.ExpectUniqueSample(
-      kInstallResultUma, WebInstallServiceResult::kInstallCommandFailed, 1);
+  histograms.ExpectUniqueSample(kInstallResultUma,
+                                WebInstallServiceResult::kNoManifestIcons, 1);
   histograms.ExpectUniqueSample(kVariantedInstallResultUma,
-                                WebInstallServiceResult::kInstallCommandFailed,
-                                1);
+                                WebInstallServiceResult::kNoManifestIcons, 1);
   auto ukm_entries = ukm_recorder.GetEntriesByName(
       ukm::builders::WebApp_WebInstall::kEntryName);
   ASSERT_EQ(2u, ukm_entries.size());
   ukm_recorder.ExpectEntryMetric(
       ukm_entries[0], kRequestingPageUkm,
-      static_cast<int>(WebInstallServiceResult::kInstallCommandFailed));
+      static_cast<int>(WebInstallServiceResult::kNoManifestIcons));
   EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[0]->source_id),
             ukm::SourceIdType::NAVIGATION_ID);
   ukm_recorder.ExpectEntryMetric(
       ukm_entries[1], kInstalledAppUkm,
-      static_cast<int>(WebInstallServiceResult::kInstallCommandFailed));
+      static_cast<int>(WebInstallServiceResult::kNoManifestIcons));
   EXPECT_EQ(ukm::GetSourceIdType(ukm_entries[1]->source_id),
             ukm::SourceIdType::APP_ID);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
+                       ManifestWithoutIcons_ReleasesInstallTracker) {
+  NavigateToValidUrl();
+  SetDynamicManifestResponse(
+      R"({"id": "/no-icons-app", "start_url": "/index.html",)"
+      R"( "name": "No Icons App", "display": "standalone"})");
+
+  ASSERT_TRUE(TryInstallFromManifest(
+      embedded_https_test_server().GetURL("/dynamic_manifest.json")));
+  ASSERT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kDataError);
+
+  webapps::MLInstallabilityPromoter* promoter =
+      webapps::MLInstallabilityPromoter::FromWebContents(web_contents());
+  ASSERT_TRUE(promoter);
+  EXPECT_FALSE(promoter->HasCurrentInstall());
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "delete window.webInstallResult; delete window.webInstallError;"));
+  base::AutoReset<web_app::InstallDialogTestResponse> auto_accept =
+      web_app::SetPwaInstallationAutoRespondForTesting(
+          web_app::InstallDialogTestResponse::kAcceptAndLaunch);
+  SetPermissionResponse(/*permission_granted=*/true);
+  ASSERT_TRUE(TryInstallFromManifest(
+      embedded_https_test_server().GetURL(kValidManifestWithId)));
+
+  EXPECT_TRUE(ResultExists());
+  EXPECT_FALSE(ErrorExists());
 }
 
 // User declines the install dialog after permission is granted.
@@ -1516,6 +1550,60 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
             ukm::SourceIdType::APP_ID);
 }
 
+IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
+                       AlreadyInstalled_ManifestWithoutIcons_DataError) {
+  const GURL install_url = embedded_https_test_server().GetURL(kTestPageWithId);
+  const webapps::AppId app_id =
+      web_app::InstallWebAppInNewTabAndClose(browser(), install_url);
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+
+  NavigateToValidUrl();
+  SetDynamicManifestResponse(
+      R"({"id": "/some_id",)"
+      R"( "start_url": "/banners/manifest_with_id_test_page.html",)"
+      R"( "name": "Manifest test app with id specified", "icons": []})");
+
+  base::HistogramTester histograms;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  permissions::PermissionRequestObserver observer(web_contents());
+  WebInstallDialogShownWatcher launch_dialog_watcher("WebInstallLaunchDialog");
+  ASSERT_TRUE(TryInstallFromManifest(
+      embedded_https_test_server().GetURL("/dynamic_manifest.json")));
+
+  EXPECT_FALSE(ResultExists());
+  ASSERT_TRUE(ErrorExists());
+  EXPECT_EQ(GetErrorName(), kDataError);
+  EXPECT_FALSE(observer.request_shown());
+  EXPECT_FALSE(launch_dialog_watcher.shown());
+  histograms.ExpectTotalCount(
+      "WebApp.InstallCommand.InstallFromManifestUrl.ResultCode", 0);
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectUniqueSample(kInstallResultUma,
+                                WebInstallServiceResult::kNoManifestIcons, 1);
+  histograms.ExpectUniqueSample(kVariantedInstallResultUma,
+                                WebInstallServiceResult::kNoManifestIcons, 1);
+  histograms.ExpectBucketCount("WebApp.LaunchSource", kLaunchSource, 0);
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::WebApp_WebInstall::kEntryName);
+  ASSERT_EQ(2u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], kRequestingPageUkm,
+      static_cast<int>(WebInstallServiceResult::kNoManifestIcons));
+  EXPECT_EQ(ukm::GetSourceIdType(entries[0]->source_id),
+            ukm::SourceIdType::NAVIGATION_ID);
+  ukm_recorder.ExpectEntryMetric(
+      entries[1], kInstalledAppUkm,
+      static_cast<int>(WebInstallServiceResult::kNoManifestIcons));
+  EXPECT_EQ(ukm::GetSourceIdType(entries[1]->source_id),
+            ukm::SourceIdType::APP_ID);
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+}
+
 // Same as above, but the caller also supplies a matching `id`.
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
                        AlreadyInstalled_WithId_UserAcceptsLaunchDialog) {
@@ -2084,6 +2172,44 @@ IN_PROC_BROWSER_TEST_P(WebInstallPrivacyInvariantTest,
   histograms.ExpectUniqueSample(kVariantedInstallResultUma,
                                 WebInstallServiceResult::kInstallCommandFailed,
                                 1);
+}
+
+IN_PROC_BROWSER_TEST_P(WebInstallPrivacyInvariantTest,
+                       ManifestEmptyOrDiscardedIcons_DataError) {
+  base::HistogramTester histograms;
+  content::WebContents* wc = NavigateAndGetWebContents();
+  const GURL manifest_url =
+      embedded_https_test_server().GetURL("/dynamic_manifest.json");
+  permissions::PermissionRequestObserver observer(wc);
+  WebInstallDialogShownWatcher install_dialog_watcher;
+  WebInstallDialogShownWatcher launch_dialog_watcher("WebInstallLaunchDialog");
+  WebInstallDialogShownWatcher unsupported_dialog_watcher(
+      "WebAppInstallNotSupportedDialog");
+
+  SetDynamicManifestResponse(
+      R"({"id": "/empty-icons-app", "start_url": "/index.html",)"
+      R"( "name": "Empty Icons App", "icons": []})");
+  ASSERT_TRUE(TryInstallFromManifest(manifest_url, wc));
+  ASSERT_TRUE(ErrorExists(wc));
+  EXPECT_EQ(GetErrorName(wc), kDataError);
+
+  ASSERT_TRUE(content::ExecJs(
+      wc, "delete window.webInstallResult; delete window.webInstallError;"));
+  SetDynamicManifestResponse(
+      R"({"id": "/discarded-icons-app", "start_url": "/index.html",)"
+      R"( "name": "Discarded Icons App", "icons": [{"src": {}}]})");
+  ASSERT_TRUE(TryInstallFromManifest(manifest_url, wc));
+  ASSERT_TRUE(ErrorExists(wc));
+  EXPECT_EQ(GetErrorName(wc), kDataError);
+
+  EXPECT_FALSE(observer.request_shown());
+  EXPECT_FALSE(install_dialog_watcher.shown());
+  EXPECT_FALSE(launch_dialog_watcher.shown());
+  EXPECT_FALSE(unsupported_dialog_watcher.shown());
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               WebInstallServiceResult::kNoManifestIcons, 2);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kNoManifestIcons, 2);
 }
 
 // A valid manifest with a custom id, but a non-matching id option, should
