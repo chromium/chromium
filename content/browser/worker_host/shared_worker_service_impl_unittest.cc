@@ -2322,4 +2322,79 @@ TEST_F(SharedWorkerServiceImplTest,
   }
 }
 
+TEST_F(SharedWorkerServiceImplTest,
+       PermissionsPolicyMismatchOnExistingSharedWorker) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      blink::features::kPermissionsPolicyForSharedWorkers);
+
+  const GURL kUrl("https://example.com/");
+  const GURL kWorkerUrl("https://example.com/worker.js");
+
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents(kUrl);
+  TestRenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+
+  auto make_info = [&](const network::PermissionsPolicyFeaturesBitset& policy) {
+    auto options = blink::mojom::WorkerOptions::New();
+    options->name = "name";
+    auto policies = blink::mojom::PolicyContainerPolicies::New();
+    policies->referrer_policy = network::mojom::ReferrerPolicy::kDefault;
+    return blink::mojom::SharedWorkerInfo::New(
+        kWorkerUrl, std::move(options),
+        std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+        blink::mojom::FetchClientSettingsObject::New(
+            std::move(policies), GURL(),
+            blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+        blink::mojom::SharedWorkerSameSiteCookies::kAll,
+        /*extended_lifetime=*/false, policy);
+  };
+
+  network::PermissionsPolicyFeaturesBitset policy;
+  policy.Add(network::mojom::PermissionsPolicyFeature::kSerial);
+  policy.Add(network::mojom::PermissionsPolicyFeature::kUsb);
+
+  SharedWorkerServiceImpl* service = static_cast<SharedWorkerServiceImpl*>(
+      browser_context_->GetDefaultStoragePartition()->GetSharedWorkerService());
+
+  // First client creates the SharedWorker with `{serial, usb}`.
+  blink::MessagePortDescriptorPair pipe1;
+  mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_proxy1;
+  MockSharedWorkerClient client1;
+  client1.Bind(client_proxy1.InitWithNewPipeAndPassReceiver());
+  service->ConnectToWorker(
+      render_frame_host->GetGlobalId(), make_info(policy),
+      std::move(client_proxy1),
+      blink::mojom::SharedWorkerCreationContextType::kSecure,
+      blink::MessagePortChannel(pipe1.TakePort1()), nullptr, std::nullopt);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return client1.CheckReceivedOnCreated(); }));
+
+  // Second client connects with a mismatched permissions policy (empty).
+  blink::MessagePortDescriptorPair pipe2;
+  mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_proxy2;
+  MockSharedWorkerClient client2;
+  client2.Bind(client_proxy2.InitWithNewPipeAndPassReceiver());
+  service->ConnectToWorker(
+      render_frame_host->GetGlobalId(),
+      make_info(network::PermissionsPolicyFeaturesBitset()),
+      std::move(client_proxy2),
+      blink::mojom::SharedWorkerCreationContextType::kSecure,
+      blink::MessagePortChannel(pipe2.TakePort1()), nullptr, std::nullopt);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return client2.CheckReceivedOnScriptLoadFailed(); }));
+
+  // Third client connects with a matching permissions policy (`{serial, usb}`).
+  blink::MessagePortDescriptorPair pipe3;
+  mojo::PendingRemote<blink::mojom::SharedWorkerClient> client_proxy3;
+  MockSharedWorkerClient client3;
+  client3.Bind(client_proxy3.InitWithNewPipeAndPassReceiver());
+  service->ConnectToWorker(
+      render_frame_host->GetGlobalId(), make_info(policy),
+      std::move(client_proxy3),
+      blink::mojom::SharedWorkerCreationContextType::kSecure,
+      blink::MessagePortChannel(pipe3.TakePort1()), nullptr, std::nullopt);
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return client3.CheckReceivedOnCreated(); }));
+  EXPECT_FALSE(client3.CheckReceivedOnScriptLoadFailed());
+}
+
 }  // namespace content

@@ -333,6 +333,17 @@ void SharedWorkerServiceImpl::ConnectToWorker(
           "match the existing shared worker's extendedLifetime.");
       return;
     }
+    if (base::FeatureList::IsEnabled(
+            blink::features::kPermissionsPolicyForSharedWorkers)) {
+      if (host->instance().permissions_policy() != info->permissions_policy) {
+        ScriptLoadFailed(
+            std::move(client),
+            "Failed to connect an existing shared worker because the allow "
+            "given on the SharedWorker constructor doesn't match the existing "
+            "shared worker's allow.");
+        return;
+      }
+    }
     // Step 11.4: "If worker global scope is not null, then check if worker
     // global scope's type and credentials match the options values. If not,
     // queue a task to fire an event named error and abort these steps."
@@ -373,7 +384,8 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   SharedWorkerInstance instance(
       info->url, info->options->type, info->options->credentials,
       info->options->name, storage_key, worker_storage_key, renderer_origin,
-      creation_context_type, info->same_site_cookies, info->extended_lifetime);
+      creation_context_type, info->same_site_cookies, info->extended_lifetime,
+      info->permissions_policy);
   host = CreateWorker(
       *render_frame_host, instance, std::move(info->content_security_policies),
       std::move(info->outside_fetch_client_settings_object), partition_domain,

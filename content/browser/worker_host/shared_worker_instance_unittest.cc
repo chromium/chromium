@@ -42,7 +42,8 @@ class SharedWorkerInstanceTest : public testing::Test {
         storage_key.IsFirstPartyContext()
             ? blink::mojom::SharedWorkerSameSiteCookies::kAll
             : blink::mojom::SharedWorkerSameSiteCookies::kNone,
-        /*extended_lifetime=*/false);
+        /*extended_lifetime=*/false,
+        network::PermissionsPolicyFeaturesBitset());
   }
 
   bool Matches(const SharedWorkerInstance& instance,
