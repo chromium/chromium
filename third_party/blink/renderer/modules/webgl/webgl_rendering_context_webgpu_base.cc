@@ -4504,7 +4504,10 @@ bool WebGLRenderingContextWebGPUBase::ValidateProgramOrShader(
     const char* function_name,
     const WebGLObject* object) {
   DCHECK(object);
-  if (object->MarkedForDeletion()) {
+  // Programs and shaders stay usable after deleteProgram/deleteShader while
+  // they are still in use (attached or current). Only reject them once the GL
+  // object is really gone.
+  if (!object->HasObject()) {
     InsertGLError(GL_INVALID_VALUE, function_name,
                   "attempt to use a deleted object");
     return false;

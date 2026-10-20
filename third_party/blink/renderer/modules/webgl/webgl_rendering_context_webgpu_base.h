@@ -1369,8 +1369,9 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   // deletion.
   bool ValidateObject(const char* function_name, const WebGLObject* object);
 
-  // Similar to ValidateObject but returns GL_INVALID_VALUE instead of
-  // GL_OPERATION_ERROR when a deleted object is used.
+  // Similar to ValidateObject, but deleted programs and shaders are accepted
+  // until the GL object is really deleted, and GL_INVALID_VALUE is returned
+  // instead of GL_INVALID_OPERATION once it is.
   bool ValidateProgramOrShader(const char* function_name,
                                const WebGLObject* object);
 
