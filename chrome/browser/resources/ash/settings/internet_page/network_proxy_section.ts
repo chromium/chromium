@@ -30,6 +30,7 @@ import type {CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/
 import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import type {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {ManagedProperties, ManagedString} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -89,10 +90,17 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
       useSharedProxies_: Boolean,
 
       /**
-       * Reflects whether prefs.settings.proxy_override_rules has values,
-       * for data binding.
+       * Reflects whether prefs.proxy_override_rules has values enforced by
+       * policy, for data binding.
        */
-      hasProxyOverrideRules_: Boolean,
+      hasProxyOverrideRulesPolicy_: Boolean,
+
+      /**
+       * Information about the extension controlling proxy override rules. Can
+       * be undefined if proxy override rules are not controlled by an
+       * extension.
+       */
+      overrideRulesExtensionInfo_: Object,
 
       /**
        * Information about the extension controlling the proxy. Can be null if
@@ -105,15 +113,16 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
   static get observers() {
     return [
       'useSharedProxiesChanged_(prefs.settings.use_shared_proxies.value)',
-      'proxyOverrideRulesChanged_(prefs.proxy_override_rules.value)',
+      'proxyOverrideRulesChanged_(prefs.proxy_override_rules.*)',
     ];
   }
 
   declare disabled: boolean;
   declare managedProperties: ManagedProperties|undefined;
   declare private extensionInfo_: ExtensionInfo|undefined;
+  declare private overrideRulesExtensionInfo_: ExtensionInfo|undefined;
   declare private useSharedProxies_: boolean;
-  declare private hasProxyOverrideRules_: boolean;
+  declare private hasProxyOverrideRulesPolicy_: boolean;
 
   /**
    * Returns the allow shared CrToggleElement.
@@ -135,18 +144,32 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
   }
 
   private proxyOverrideRulesChanged_(): void {
-    const overrideRules = this.getPref('proxy_override_rules');
-    this.hasProxyOverrideRules_ = overrideRules &&
-        Array.isArray(overrideRules.value) && overrideRules.value.length > 0;
+    const overrideRules = this.getPref<unknown[]>('proxy_override_rules');
+    const hasRules = !!overrideRules && Array.isArray(overrideRules.value) &&
+        overrideRules.value.length > 0;
+    this.hasProxyOverrideRulesPolicy_ = hasRules && !overrideRules.extensionId;
+    if (hasRules && overrideRules.extensionId &&
+        overrideRules.controlledByName) {
+      this.overrideRulesExtensionInfo_ = {
+        id: overrideRules.extensionId,
+        name: overrideRules.controlledByName,
+        canBeDisabled: overrideRules.extensionCanBeDisabled,
+      };
+    } else {
+      this.overrideRulesExtensionInfo_ = undefined;
+    }
   }
+
   /**
    * Return true if the proxy is controlled by an extension.
    */
   private isProxySetByExtension_(): boolean {
     const property = this.getProxySettingsTypeProperty_();
+    if (!property || !this.isExtensionControlled(property) || !this.prefs) {
+      return false;
+    }
     const proxyPref = this.getPref<unknown>('proxy');
-    if (!property || !this.isExtensionControlled(property) ||
-        !proxyPref.controlledByName) {
+    if (!proxyPref.controlledByName) {
       return false;
     }
     this.extensionInfo_ = {
@@ -191,15 +214,31 @@ export class NetworkProxySectionElement extends NetworkProxySectionElementBase {
   }
 
   private shouldShowOverridePolicyIndicator_(): boolean {
-    return this.hasProxyOverrideRules_ && !this.hasProxySettingsPolicy_();
+    return this.hasProxyOverrideRulesPolicy_ && !this.hasProxySettingsPolicy_();
   }
 
   private shouldShowNetworkPolicyIndicator_(): boolean {
-    return this.hasProxySettingsPolicy_() && !this.hasProxyOverrideRules_;
+    return this.hasProxySettingsPolicy_() && !this.hasProxyOverrideRulesPolicy_;
   }
 
   private shouldShowCombinedNetworkPolicyIndicator_(): boolean {
-    return this.hasProxyOverrideRules_ && this.hasProxySettingsPolicy_();
+    return this.hasProxyOverrideRulesPolicy_ && this.hasProxySettingsPolicy_();
+  }
+
+  private shouldShowOverrideExtensionIndicator_(): boolean {
+    if (!this.overrideRulesExtensionInfo_) {
+      return false;
+    }
+    if (!this.isProxySetByExtension_()) {
+      return true;
+    }
+    return this.overrideRulesExtensionInfo_.id !== this.extensionInfo_?.id;
+  }
+
+  private getOverrideRulesExtensionLabel_(extensionName: string|undefined):
+      string {
+    return loadTimeData.getStringF(
+        'networkProxyOverrideControlledByExtension', extensionName || '');
   }
 
   private shouldShowAllowShared_(_property: OncMojo.ManagedProperty): boolean {

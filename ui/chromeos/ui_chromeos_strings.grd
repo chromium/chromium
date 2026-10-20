@@ -1724,6 +1724,9 @@
       <message name="IDS_SETTINGS_INTERNET_NETWORK_PROXY_OVERRIDE_ENFORCED_POLICY" desc="Settings > Internet > Network details: Text to show when a proxy routing override rules policy is enforced via an enterprise policy.">
         Your admin set proxy override rules
       </message>
+      <message name="IDS_SETTINGS_INTERNET_NETWORK_PROXY_OVERRIDE_CONTROLLED_BY_EXTENSION" desc="Settings > Internet > Network details: Text to show when proxy routing override rules are set by an extension.">
+        <ph name="EXTENSION_NAME">$1<ex>Sample Extension</ex></ph> set proxy override rules
+      </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_PROXY_ENFORCED_COMBINED_POLICIES" desc="Settings > Internet > Network details: Text to show when enterprise policies both enforce proxy routing override rules as well as a fallback network proxy.">
         Your admin set proxy override rules in addition to enforcing the following proxy
       </message>

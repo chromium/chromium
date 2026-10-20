@@ -27,14 +27,19 @@ export class ExtensionControlledIndicatorElement extends PolymerElement {
       extensionCanBeDisabled: Boolean,
       extensionId: String,
       extensionName: String,
+      label: String,
     };
   }
 
   declare extensionCanBeDisabled: boolean;
   declare extensionId: string;
   declare extensionName: string;
+  declare label: string|undefined;
 
   private getLabel_(): string {
+    if (this.label) {
+      return this.label;
+    }
     return loadTimeData.getStringF('controlledByExtension', this.extensionName);
   }
 

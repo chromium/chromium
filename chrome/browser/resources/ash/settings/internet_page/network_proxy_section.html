@@ -18,7 +18,7 @@
 <template is="dom-if"
     if="[[shouldShowOverridePolicyIndicator_(
       managedProperties,
-      hasProxyOverrideRules_)]]">
+      hasProxyOverrideRulesPolicy_)]]">
   <div class="settings-box" id="overrideRulesPolicy">
     <div class="layout horizontal center">
       <cr-policy-network-indicator-mojo
@@ -34,7 +34,7 @@
 <template is="dom-if"
     if="[[shouldShowNetworkPolicyIndicator_(
       managedProperties,
-      hasProxyOverrideRules_)]]">
+      hasProxyOverrideRulesPolicy_)]]">
   <div class="settings-box" id="networkPolicy">
     <div class="layout horizontal center">
       <cr-policy-network-indicator-mojo
@@ -51,7 +51,7 @@
 <template is="dom-if"
     if="[[shouldShowCombinedNetworkPolicyIndicator_(
       managedProperties,
-      hasProxyOverrideRules_)]]">
+      hasProxyOverrideRulesPolicy_)]]">
   <div class="settings-box" id="combinedPolicies">
     <div class="layout horizontal center">
       <cr-policy-network-indicator-mojo
@@ -63,8 +63,26 @@
   </div>
 </template>
 
-<template is="dom-if" if="[[isProxySetByExtension_(managedProperties)]]">
-  <div class="settings-box">
+<template is="dom-if"
+    if="[[shouldShowOverrideExtensionIndicator_(
+      managedProperties,
+      overrideRulesExtensionInfo_,
+      prefs.proxy.*)]]">
+  <div class="settings-box" id="overrideRulesExtension">
+    <extension-controlled-indicator
+        extension-id="[[overrideRulesExtensionInfo_.id]]"
+        extension-name="[[overrideRulesExtensionInfo_.name]]"
+        extension-can-be-disabled="[[
+            overrideRulesExtensionInfo_.canBeDisabled]]"
+        label="[[getOverrideRulesExtensionLabel_(
+            overrideRulesExtensionInfo_.name)]]">
+    </extension-controlled-indicator>
+  </div>
+</template>
+
+<template is="dom-if"
+    if="[[isProxySetByExtension_(managedProperties, prefs.proxy.*)]]">
+  <div class="settings-box" id="proxyExtension">
     <extension-controlled-indicator
         extension-id="[[extensionInfo_.id]]"
         extension-name="[[extensionInfo_.name]]"

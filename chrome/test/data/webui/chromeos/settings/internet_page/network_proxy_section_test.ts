@@ -187,6 +187,16 @@ suite('<network-proxy-section>', () => {
     return proxySection.shadowRoot!.querySelector('#overrideRulesPolicy');
   }
 
+  function getOverrideRulesExtensionElement(): Element|null {
+    return proxySection.shadowRoot!.querySelector(
+        '#overrideRulesExtension extension-controlled-indicator');
+  }
+
+  function getProxyExtensionElement(): Element|null {
+    return proxySection.shadowRoot!.querySelector(
+        '#proxyExtension extension-controlled-indicator');
+  }
+
   function getNetworkPolicyElement(): Element|null {
     return proxySection.shadowRoot!.querySelector('#networkPolicy');
   }
@@ -307,5 +317,105 @@ suite('<network-proxy-section>', () => {
     assertNotVisible(getExtensionElement());
     assertNotVisible(getOverrideRulesElement());
     assertNotVisible(getCombinedPoliciesElement());
+  });
+
+  test('Proxy override rules set by extension', () => {
+    const kOverrideExtensionId = 'override-ext-id';
+    const kOverrideExtensionName = 'override-ext-name';
+
+    assertNotVisible(getOverrideRulesElement());
+    assertNotVisible(getOverrideRulesExtensionElement());
+    assertNotVisible(getProxyExtensionElement());
+    assertNotVisible(getNetworkPolicyElement());
+    assertNotVisible(getCombinedPoliciesElement());
+
+    // Case 1: Only proxy_override_rules is set by an extension.
+    proxySection.set('prefs.proxy_override_rules', {
+      key: 'proxy_override_rules',
+      type: chrome.settingsPrivate.PrefType.LIST,
+      value: ['some_value'],
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
+      extensionId: kOverrideExtensionId,
+      controlledByName: kOverrideExtensionName,
+      extensionCanBeDisabled: true,
+    });
+    flush();
+
+    const overrideExtensionIndicator = getOverrideRulesExtensionElement();
+    assertVisible(overrideExtensionIndicator);
+    assertEquals(
+        kOverrideExtensionName,
+        (overrideExtensionIndicator as any).extensionName);
+    assertEquals(
+        kOverrideExtensionId, (overrideExtensionIndicator as any).extensionId);
+    assertTrue((overrideExtensionIndicator as any).extensionCanBeDisabled);
+    assertEquals(
+        `${kOverrideExtensionName} set proxy override rules`,
+        overrideExtensionIndicator!.shadowRoot!.querySelector(
+                                                   'span')!.textContent.trim());
+    assertNotVisible(getOverrideRulesElement());
+    assertNotVisible(getProxyExtensionElement());
+    assertNotVisible(getNetworkPolicyElement());
+    assertNotVisible(getCombinedPoliciesElement());
+
+    // Case 2: proxy_override_rules is set by an extension and proxySettings is
+    // enforced by policy.
+    setPolicyProxySettings();
+
+    assertVisible(getOverrideRulesExtensionElement());
+    assertVisible(getNetworkPolicyElement());
+    assertNotVisible(getOverrideRulesElement());
+    assertNotVisible(getCombinedPoliciesElement());
+    assertNotVisible(getProxyExtensionElement());
+
+    // Case 3: Both proxy_override_rules and proxy are set by the same
+    // extension. Only a single extension indicator should be shown.
+    proxySection.set('prefs.proxy', {
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
+      extensionId: kOverrideExtensionId,
+      controlledByName: kOverrideExtensionName,
+      extensionCanBeDisabled: true,
+    });
+    setExtensionProxyConfig();
+
+    assertNotVisible(getOverrideRulesExtensionElement());
+    assertVisible(getProxyExtensionElement());
+    assertNotVisible(getOverrideRulesElement());
+    assertNotVisible(getNetworkPolicyElement());
+    assertNotVisible(getCombinedPoliciesElement());
+
+    // Case 4: proxy_override_rules and proxy are set by different extensions
+    // (updating prefs.proxy without changing managedProperties). Both
+    // extension indicators should be shown with distinct labels.
+    proxySection.set('prefs.proxy', {
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {},
+      extensionId: kExtensionId,
+      controlledByName: kExtensionName,
+      extensionCanBeDisabled: false,
+    });
+    flush();
+
+    assertVisible(getOverrideRulesExtensionElement());
+    assertVisible(getProxyExtensionElement());
+    assertEquals(
+        `${kOverrideExtensionName} set proxy override rules`,
+        getOverrideRulesExtensionElement()!.shadowRoot!.querySelector('span')!
+            .textContent.trim());
+    assertEquals(
+        `${kExtensionName} is controlling this setting`,
+        getProxyExtensionElement()!.shadowRoot!.querySelector(
+                                                   'span')!.textContent.trim());
+    assertNotVisible(getOverrideRulesElement());
+    assertNotVisible(getNetworkPolicyElement());
+    assertNotVisible(getCombinedPoliciesElement());
+
+    // Clearing extension proxy_override_rules hides its indicator.
+    proxySection.setPrefValue('proxy_override_rules', []);
+    flush();
+
+    assertNotVisible(getOverrideRulesExtensionElement());
+    assertVisible(getProxyExtensionElement());
   });
 });
