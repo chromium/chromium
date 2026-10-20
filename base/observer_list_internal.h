@@ -102,6 +102,9 @@ class BASE_EXPORT CheckedObserverAdapter {
   }
 
   bool IsMarkedForRemoval() const {
+    if (weak_ptr_) {
+      return false;
+    }
     // If |weak_ptr_| was invalidated then this attempt to iterate over the
     // pointer is a UAF. Tip: If it's unclear where the `delete` occurred, try
     // adding CHECK(!IsInObserverList()) to the ~CheckedObserver() (destructor)
@@ -109,7 +112,7 @@ class BASE_EXPORT CheckedObserverAdapter {
     // observer can exist in an ObserverList so long as nothing iterates over
     // the ObserverList before the list itself is destroyed.
     CHECK(!weak_ptr_.WasInvalidated());
-    return weak_ptr_ == nullptr;
+    return true;
   }
 
   bool IsEqual(const CheckedObserver* rhs) const {
@@ -124,8 +127,9 @@ class BASE_EXPORT CheckedObserverAdapter {
         std::is_base_of_v<CheckedObserver, ObserverType>,
         "Observers should inherit from base::CheckedObserver. "
         "Use ObserverList<T>::Unchecked to observe with raw pointers.");
-    DCHECK(adapter.weak_ptr_);
-    return static_cast<ObserverType*>(adapter.weak_ptr_.get());
+    CheckedObserver* observer = adapter.weak_ptr_.get();
+    DCHECK(observer);
+    return static_cast<ObserverType*>(observer);
   }
 
 #if DCHECK_IS_ON()
