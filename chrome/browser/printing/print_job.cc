@@ -180,7 +180,9 @@ PrintJob::PrintJob() = default;
 PrintJob::~PrintJob() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   // The job should be finished (or at least canceled) when it is destroyed.
-  CHECK(!is_job_pending_, base::NotFatalUntil::M162);
+  // TODO(crbug.com/574773963): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!is_job_pending_);
   CHECK(!is_canceling_, base::NotFatalUntil::M162);
   CHECK(!worker_ || !worker_->IsRunning(), base::NotFatalUntil::M162);
 
