@@ -155,6 +155,8 @@ BASE_DECLARE_FEATURE(kDevToolsTargetLevelEvaluation);
 BASE_DECLARE_FEATURE(kDevToolsNetworkBackendLinking);
 
 BASE_DECLARE_FEATURE(kDevToolsAiNaturalLanguageInterface);
+
+BASE_DECLARE_FEATURE(kEventReportingCdpAttribution);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

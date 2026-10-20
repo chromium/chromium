@@ -268,4 +268,7 @@ BASE_FEATURE(kDevToolsNetworkBackendLinking, base::FEATURE_DISABLED_BY_DEFAULT);
 // Whether the Natural Language Interface feature enabled.
 BASE_FEATURE(kDevToolsAiNaturalLanguageInterface,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Whether CDP attribution is recorded for enterprise event reporting.
+BASE_FEATURE(kEventReportingCdpAttribution, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
