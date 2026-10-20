@@ -954,7 +954,7 @@ bool ReadAnythingUntrustedPageHandler::AreActionsAllowedInTree(
     const ui::AXTreeID& tree_id) const {
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromAXTreeID(tree_id);
-  if (!rfh) {
+  if (!rfh || rfh->IsErrorDocument()) {
     return false;
   }
 
@@ -1265,6 +1265,14 @@ void ReadAnythingUntrustedPageHandler::ScrollToTargetNode(
         ReadAnythingRendererRequestResult::kNotObservedTree);
     VLOG(1) << "Received scroll request for tree_id " << target_tree_id
             << " which is not currently being observed";
+    return;
+  }
+
+  // If the render frame is in an errored state, return early instead of
+  // scrolling to avoid performing actions on invalid nodes.
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromAXTreeID(target_tree_id);
+  if (!rfh || rfh->IsErrorDocument()) {
     return;
   }
 
@@ -1791,6 +1799,7 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
     RequestDomDistillerDistillation(contents);
   }
 }
+
 bool ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
     content::WebContents* content) {
   if (!content || !features::IsReadAnythingWithReadabilityEnabled() ||
@@ -1816,8 +1825,10 @@ bool ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
   const GURL& url = content->GetLastCommittedURL();
   RecordDistillationSchemeHistogram(url);
 
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    VLOG(1) << kReadAnythingPrefix << ": URL is not HTTP/HTTPS, skipping for "
+  content::RenderFrameHost* rfh = content->GetPrimaryMainFrame();
+  if (!url.SchemeIsHTTPOrHTTPS() || !rfh || rfh->IsErrorDocument()) {
+    VLOG(1) << kReadAnythingPrefix
+            << ": URL is not HTTP/HTTPS or is error document, skipping for "
             << url.spec();
     // Call UpdateContent with empty values so status can be updated from show
     // loading to no content.

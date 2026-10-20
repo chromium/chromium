@@ -3989,6 +3989,60 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       ErrorDocument_DisallowsActions) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/close-socket")));
+  SetUpHandler();
+
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  content::RenderFrameHost* main_rfh =
+      browser()->GetActiveTabInterface()->GetContents()->GetPrimaryMainFrame();
+  ASSERT_TRUE(main_rfh->GetLastCommittedURL().SchemeIsHTTPOrHTTPS());
+  ASSERT_TRUE(main_rfh->IsErrorDocument());
+  ui::AXTreeID tree_id = main_rfh->GetAXTreeID();
+
+  GrantUserActivation(rfh);
+
+  // Link clicks are dropped on error documents even with an HTTP/HTTPS URL.
+  handler_remote_->OnLinkClicked(tree_id, /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForLinkClick.Result",
+      ReadAnythingRendererRequestResult::kDisallowedActionOnPageType,
+      /*expected_bucket_count=*/1);
+
+  // Image data requests are dropped on error documents.
+  handler_remote_->OnImageDataRequested(tree_id, /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForImageDataDownload.Result",
+      ReadAnythingRendererRequestResult::kDisallowedActionOnPageType,
+      /*expected_bucket_count=*/1);
+
+  // Scroll requests are dropped on error documents without logging a scroll
+  // request result histogram.
+  handler_remote_->ScrollToTargetNode(tree_id, /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.RendererRequestForScrollToTargetNode.Result",
+      /*expected_count=*/0);
+
+  // Selection change requests are dropped on error documents.
+  base::test::TestFuture<bool> selection_applied;
+  handler_remote_->OnSelectionChange(tree_id, /*anchor_node_id=*/1, 0,
+                                     /*focus_node_id=*/2, 5,
+                                     selection_applied.GetCallback());
+  EXPECT_FALSE(selection_applied.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForSelection.Result",
+      ReadAnythingRendererRequestResult::kDisallowedActionOnPageType,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        Pdf_AllowsActions) {
   base::HistogramTester histogram_tester;
 
