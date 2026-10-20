@@ -5,17 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_WEBDATA_SERVICES_MODEL_WEB_DATA_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_WEBDATA_SERVICES_MODEL_WEB_DATA_SERVICE_FACTORY_H_
 
-#import <memory>
-
 #import "base/memory/scoped_refptr.h"
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "components/webdata_services/web_data_service_wrapper.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_access.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 class KeywordWebDataService;
-class ProfileIOS;
-enum class ServiceAccessType;
 class TokenWebData;
-class WebDataServiceWrapper;
 
 namespace autofill {
 class AutofillWebDataService;
@@ -24,14 +20,12 @@ class AutofillWebDataService;
 namespace ios {
 // Singleton that owns all WebDataServiceWrappers and associates them with
 // ProfileIOS.
-class WebDataServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class WebDataServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
+                                  WebDataServiceFactory,
+                                  WebDataServiceWrapper,
+                                  RejectImplicitAccessIfIncognito> {
  public:
-  // Returns the AutofillWebDataService associated with `profile`.
-  static WebDataServiceWrapper* GetForProfile(ProfileIOS* profile,
-                                              ServiceAccessType access_type);
-  static WebDataServiceWrapper* GetForProfileIfExists(
-      ProfileIOS* profile,
-      ServiceAccessType access_type);
+  explicit WebDataServiceFactory(PassKey key);
 
   // Returns the AutofillWebDataService associated with `profile`.
   static scoped_refptr<autofill::AutofillWebDataService>
@@ -54,17 +48,10 @@ class WebDataServiceFactory : public ProfileKeyedServiceFactoryIOS {
       ProfileIOS* profile,
       ServiceAccessType access_type);
 
-  static WebDataServiceFactory* GetInstance();
-
   // Returns the default factory, useful in tests where it's null by default.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<WebDataServiceFactory>;
-
-  WebDataServiceFactory();
-  ~WebDataServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

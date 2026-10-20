@@ -8,7 +8,6 @@
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
-#import "base/no_destructor.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -38,26 +37,6 @@ std::unique_ptr<KeyedService> BuildWebDataService(ProfileIOS* profile) {
 }
 
 }  // namespace
-
-// static
-WebDataServiceWrapper* WebDataServiceFactory::GetForProfile(
-    ProfileIOS* profile,
-    ServiceAccessType access_type) {
-  DCHECK(access_type == ServiceAccessType::EXPLICIT_ACCESS ||
-         !profile->IsOffTheRecord());
-  return GetInstance()->GetServiceForProfileAs<WebDataServiceWrapper>(
-      profile, /*create=*/true);
-}
-
-// static
-WebDataServiceWrapper* WebDataServiceFactory::GetForProfileIfExists(
-    ProfileIOS* profile,
-    ServiceAccessType access_type) {
-  DCHECK(access_type == ServiceAccessType::EXPLICIT_ACCESS ||
-         !profile->IsOffTheRecord());
-  return GetInstance()->GetServiceForProfileAs<WebDataServiceWrapper>(
-      profile, /*create*/ false);
-}
 
 // static
 scoped_refptr<autofill::AutofillWebDataService>
@@ -95,23 +74,17 @@ scoped_refptr<TokenWebData> WebDataServiceFactory::GetTokenWebDataForProfile(
 }
 
 // static
-WebDataServiceFactory* WebDataServiceFactory::GetInstance() {
-  static base::NoDestructor<WebDataServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 WebDataServiceFactory::TestingFactory
 WebDataServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildWebDataService);
 }
 
-WebDataServiceFactory::WebDataServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("WebDataService",
-                                    ProfileSelection::kRedirectedInIncognito,
-                                    TestingCreation::kNoServiceForTests) {}
-
-WebDataServiceFactory::~WebDataServiceFactory() {}
+WebDataServiceFactory::WebDataServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "WebDataService",
+          ProfileSelection::kRedirectedInIncognito,
+          TestingCreation::kNoServiceForTests) {}
 
 std::unique_ptr<KeyedService> WebDataServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
