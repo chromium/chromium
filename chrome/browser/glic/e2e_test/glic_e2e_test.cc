@@ -102,7 +102,6 @@ GlicE2ETest::GlicE2ETest(
 
   std::vector<base::test::FeatureRef> disabled = {
       syncer::kReplaceSyncPromosWithSignInPromos,
-      syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
       // Don't disable glic based on country/locale.
       features::kGlicCountryFiltering,
       features::kGlicLocaleFiltering,
