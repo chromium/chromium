@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/back_to_opener/back_to_opener_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
@@ -90,8 +89,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, BasicBackToOpener) {
   tabs::TabInterface* dest_tab =
       tabs::TabInterface::GetFromContents(dest_contents);
   ASSERT_NE(dest_tab, nullptr);
-  BackToOpenerController* controller =
-      dest_tab->GetTabFeatures()->back_to_opener_controller();
+  BackToOpenerController* controller = BackToOpenerController::From(dest_tab);
   ASSERT_NE(controller, nullptr);
 
   // Verify relationship is established
@@ -209,8 +207,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
 
   tabs::TabInterface* dest_tab =
       tabs::TabInterface::GetFromContents(dest_contents);
-  BackToOpenerController* controller =
-      dest_tab->GetTabFeatures()->back_to_opener_controller();
+  BackToOpenerController* controller = BackToOpenerController::From(dest_tab);
 
   EXPECT_TRUE(controller->HasValidOpener());
   EXPECT_TRUE(controller->CanGoBackToOpener());
@@ -250,8 +247,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
 
   tabs::TabInterface* dest_tab =
       tabs::TabInterface::GetFromContents(dest_contents);
-  BackToOpenerController* controller =
-      dest_tab->GetTabFeatures()->back_to_opener_controller();
+  BackToOpenerController* controller = BackToOpenerController::From(dest_tab);
 
   // Verify relationship exists before navigation
   EXPECT_TRUE(controller->HasValidOpener());
@@ -304,8 +300,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
 
   tabs::TabInterface* dest_tab =
       tabs::TabInterface::GetFromContents(dest_contents);
-  BackToOpenerController* controller =
-      dest_tab->GetTabFeatures()->back_to_opener_controller();
+  BackToOpenerController* controller = BackToOpenerController::From(dest_tab);
 
   // Close opener
   browser()->tab_strip_model()->CloseWebContents(opener_contents,
@@ -341,8 +336,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, PinnedTabDisablesBackButton) {
 
   tabs::TabInterface* dest_tab =
       tabs::TabInterface::GetFromContents(dest_contents);
-  BackToOpenerController* controller =
-      dest_tab->GetTabFeatures()->back_to_opener_controller();
+  BackToOpenerController* controller = BackToOpenerController::From(dest_tab);
 
   // Verify relationship exists before pinning
   EXPECT_TRUE(controller->HasValidOpener());
@@ -389,8 +383,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, OpenerMovedToAnotherWindow) {
 
   tabs::TabInterface* dest_tab =
       tabs::TabInterface::GetFromContents(dest_contents);
-  BackToOpenerController* controller =
-      dest_tab->GetTabFeatures()->back_to_opener_controller();
+  BackToOpenerController* controller = BackToOpenerController::From(dest_tab);
 
   EXPECT_TRUE(controller->HasValidOpener());
 
@@ -435,8 +428,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
   tabs::TabInterface* new_tab =
       tabs::TabInterface::GetFromContents(new_tab_contents);
   ASSERT_NE(new_tab, nullptr);
-  BackToOpenerController* controller =
-      new_tab->GetTabFeatures()->back_to_opener_controller();
+  BackToOpenerController* controller = BackToOpenerController::From(new_tab);
   ASSERT_NE(controller, nullptr);
 
   // Verify no relationship exists
@@ -467,8 +459,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest, BackToOpenerMenuAppears) {
   tabs::TabInterface* dest_tab =
       tabs::TabInterface::GetFromContents(dest_contents);
   ASSERT_NE(dest_tab, nullptr);
-  BackToOpenerController* controller =
-      dest_tab->GetTabFeatures()->back_to_opener_controller();
+  BackToOpenerController* controller = BackToOpenerController::From(dest_tab);
   ASSERT_NE(controller, nullptr);
 
   // Verify relationship is established
@@ -551,8 +542,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
   tabs::TabInterface* dest_tab =
       tabs::TabInterface::GetFromContents(dest_contents);
   ASSERT_NE(dest_tab, nullptr);
-  BackToOpenerController* controller =
-      dest_tab->GetTabFeatures()->back_to_opener_controller();
+  BackToOpenerController* controller = BackToOpenerController::From(dest_tab);
   ASSERT_NE(controller, nullptr);
 
   // Verify relationship is established
@@ -650,8 +640,7 @@ IN_PROC_BROWSER_TEST_F(BackToOpenerBrowserTest,
   tabs::TabInterface* dest_tab =
       tabs::TabInterface::GetFromContents(dest_contents);
   ASSERT_NE(dest_tab, nullptr);
-  BackToOpenerController* controller =
-      dest_tab->GetTabFeatures()->back_to_opener_controller();
+  BackToOpenerController* controller = BackToOpenerController::From(dest_tab);
   ASSERT_NE(controller, nullptr);
 
   // Verify relationship is established

@@ -92,8 +92,6 @@ class MemorySaverChipTabHelper : public tabs::ContentsObservingTabFeature,
       performance_manager::user_tuning::UserPerformanceTuningManager::Observer>
       user_performance_tuning_manager_observation_{this};
   bool is_memory_saver_mode_enabled_ = false;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_MEMORY_SAVER_CHIP_TAB_HELPER_H_

@@ -403,5 +403,3 @@ void TranslateBubbleController::OnPartialTranslateBubbleClosed() {
   partial_translate_bubble_view_ = nullptr;
   action_item_->SetIsShowingBubble(false);
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TranslateBubbleController);

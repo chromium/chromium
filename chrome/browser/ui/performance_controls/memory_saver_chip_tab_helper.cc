@@ -176,5 +176,3 @@ void MemorySaverChipTabHelper::OnMemorySaverModeChanged() {
     UpdatePageActionState();
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(MemorySaverChipTabHelper);

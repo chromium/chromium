@@ -168,7 +168,6 @@
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_page_action_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_on_close_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/tab_creation_metrics_controller.h"
@@ -1044,7 +1043,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   // behavior for destination tabs with opener relationships.
   if (base::FeatureList::IsEnabled(tabs::kBackToOpener)) {
     back_to_opener_controller_ =
-        std::make_unique<back_to_opener::BackToOpenerController>(tab);
+        GetUserDataFactory()
+            .CreateInstance<back_to_opener::BackToOpenerController>(tab, tab);
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \

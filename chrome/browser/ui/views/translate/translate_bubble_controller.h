@@ -125,7 +125,6 @@ class TranslateBubbleController : public TranslateController,
   base::OneShotTimer partial_translate_timer_;
 
   friend class TranslateBubbleControllerTest;
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 
   const raw_ptr<BrowserWindowInterface> browser_window_;
 

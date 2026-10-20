@@ -295,7 +295,6 @@ class SyncSessionsRouterTabHelper;
 
 namespace tab_groups {
 class SavedTabGroupWebContentsListener;
-class SavedTabGroupOnCloseHelper;
 }  // namespace tab_groups
 
 namespace page_actions {
@@ -454,11 +453,6 @@ class TabFeatures {
     return saved_tab_group_web_contents_listener_.get();
   }
 
-  tab_groups::SavedTabGroupOnCloseHelper* saved_tab_group_on_close_helper()
-      const {
-    return saved_tab_group_on_close_helper_.get();
-  }
-
   TabDialogManager* tab_dialog_manager() { return tab_dialog_manager_.get(); }
 
   page_actions::PageActionController* page_action_controller() {
@@ -505,10 +499,6 @@ class TabFeatures {
     return inactive_window_mouse_event_controller_.get();
   }
 
-  MemorySaverChipTabHelper* memory_saver_chip_helper() {
-    return memory_saver_chip_helper_.get();
-  }
-
   TabUIHelper* SetTabUIHelperForTesting(
       std::unique_ptr<TabUIHelper> tab_ui_helper);
 
@@ -520,29 +510,12 @@ class TabFeatures {
   TabAlertController* SetTabAlertControllerForTesting(
       std::unique_ptr<TabAlertController> tab_alert_controller);
 
-  TabCreationMetricsController* tab_creation_metrics_controller() {
-    return tab_creation_metrics_controller_.get();
-  }
-
-  autofill::PaymentsChurnedUsersPageActionController*
-  payments_churned_users_page_action_controller() {
-    return payments_churned_users_page_action_controller_.get();
-  }
-
   autofill::BubbleManager* autofill_bubble_manager() {
     return autofill_bubble_manager_.get();
   }
 
   autofill::BubbleManager* SetBubbleManagerForTesting(
       std::unique_ptr<autofill::BubbleManager> bubble_manager);
-
-  AskBeforeHttpDialogController* ask_before_http_dialog_controller() {
-    return ask_before_http_dialog_controller_.get();
-  }
-
-  back_to_opener::BackToOpenerController* back_to_opener_controller() {
-    return back_to_opener_controller_.get();
-  }
 
   BookmarkBarPreloadPipelineManager* bookmarkbar_preload_pipeline_manager() {
     return bookmarkbar_preload_pipeline_manager_.get();
@@ -618,9 +591,6 @@ class TabFeatures {
   // tab counterpart from sync.
   std::unique_ptr<tab_groups::SavedTabGroupWebContentsListener>
       saved_tab_group_web_contents_listener_;
-
-  std::unique_ptr<tab_groups::SavedTabGroupOnCloseHelper>
-      saved_tab_group_on_close_helper_;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Manages the protocol handler picker dialog on ChromeOS. Must be destroyed
