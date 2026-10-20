@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
@@ -987,6 +988,17 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     return overlay_view;
   }
 
+  // Document PiP frame views show the auto-PiP setting bubble from a posted
+  // task (see DocumentPipFrameView::AddedToWidget() and
+  // PictureInPictureBrowserFrameView::AddedToWidget()), so the bubble's view
+  // may not exist yet when the enter-PiP notification ends the test's wait.
+  // Waits until the view exists, so tests can interact with it.
+  [[nodiscard]] bool WaitForAutoPipSettingView(
+      AutoPipSettingOverlayView* overlay_view) {
+    return base::test::RunUntil(
+        [&]() { return overlay_view->get_view_for_testing() != nullptr; });
+  }
+
   void CheckPromptResultUkmRecorded(GURL url,
                                     std::string_view expected_metric_name,
                                     PromptResult expected_prompt_result) {
@@ -1798,6 +1810,7 @@ IN_PROC_BROWSER_TEST_P(AutoPictureInPictureDocumentPipBackendBrowserTest,
   auto* overlay_view = GetOverlayViewFromDocumentPipWindow();
   // The overlay should be shown.
   ASSERT_TRUE(overlay_view);
+  ASSERT_TRUE(WaitForAutoPipSettingView(overlay_view));
 
   // Verify that input has been blocked.
   CheckIfEventsAreForwarded(pip_contents, /*expect_events=*/false);
@@ -1831,6 +1844,7 @@ IN_PROC_BROWSER_TEST_P(AutoPictureInPictureDocumentPipBackendBrowserTest,
 
   auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
   ASSERT_TRUE(overlay_view);
+  ASSERT_TRUE(WaitForAutoPipSettingView(overlay_view));
   overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
       AutoPipSettingView::UiResult::kAllowOnce);
 
@@ -3208,6 +3222,7 @@ IN_PROC_BROWSER_TEST_P(
 
   auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
   ASSERT_TRUE(overlay_view);
+  ASSERT_TRUE(WaitForAutoPipSettingView(overlay_view));
   overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
       AutoPipSettingView::UiResult::kAllowOnce);
 
@@ -3285,6 +3300,7 @@ IN_PROC_BROWSER_TEST_P(
 
   auto* const overlay_view = GetOverlayViewFromDocumentPipWindow();
   ASSERT_TRUE(overlay_view);
+  ASSERT_TRUE(WaitForAutoPipSettingView(overlay_view));
   overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
       AutoPipSettingView::UiResult::kAllowOnce);
 
@@ -4493,6 +4509,7 @@ IN_PROC_BROWSER_TEST_P(AutoPictureInPictureTabHelperHatsDocumentPipBrowserTest,
     case AutoPipSettingHelper::PromptResult::kBlock: {
       auto* overlay_view = GetOverlayViewFromDocumentPipWindow();
       ASSERT_TRUE(overlay_view);
+      ASSERT_TRUE(WaitForAutoPipSettingView(overlay_view));
       overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
           GetParam().prompt_result == AutoPipSettingHelper::PromptResult::kBlock
               ? AutoPipSettingView::UiResult::kBlock
