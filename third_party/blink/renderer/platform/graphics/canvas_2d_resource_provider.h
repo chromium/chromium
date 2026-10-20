@@ -21,7 +21,6 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
@@ -119,27 +118,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
       RasterMode raster_mode,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       base::OnceClosure context_lost_callback = {});
-  static std::unique_ptr<Canvas2DResourceProvider> CreateWithClear(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-          context_provider_wrapper,
-      RasterMode raster_mode,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      base::OnceClosure context_lost_callback = {}) {
-    return CreateWithClear(size, format, alpha_type, color_space,
-                           gfx::HDRMetadata(), context_provider_wrapper,
-                           raster_mode, shared_image_usage_flags,
-                           std::move(context_lost_callback));
-  }
-  static std::unique_ptr<Canvas2DResourceProvider> CreateWithClear(
-      gfx::Size size,
-      const Canvas2DColorParams& color_params,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      RasterMode raster_mode,
-      gpu::SharedImageUsageSet shared_image_usage_flags);
 
   static std::unique_ptr<Canvas2DResourceProvider>
   CreateWithClearForSoftwareCompositor(
