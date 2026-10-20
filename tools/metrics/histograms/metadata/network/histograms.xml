@@ -980,7 +980,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.{NetworkType}.ConnectionResult.NonUserInitiated"
-    enum="ShillConnectResult" expires_after="2027-02-14">
+    enum="ShillConnectResult" expires_after="2027-04-18">
   <owner>jiajunz@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -992,7 +992,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.{NetworkType}.ConnectionResult.UserInitiated"
-    enum="UserInitiatedNetworkConnectResult" expires_after="2027-02-14">
+    enum="UserInitiatedNetworkConnectResult" expires_after="2027-04-18">
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -5124,7 +5124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.ConnectionAllowlist.Type"
-    enum="ConnectionAllowlistType" expires_after="2027-02-14">
+    enum="ConnectionAllowlistType" expires_after="2027-04-18">
   <owner>averge@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>

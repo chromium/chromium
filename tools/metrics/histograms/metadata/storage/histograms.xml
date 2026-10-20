@@ -1350,7 +1350,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Storage.DeclarativePerformanceObserver.StoreReportResult"
     enum="DeclarativePerformanceObserverStoreReportResult"
-    expires_after="2026-12-19">
+    expires_after="2027-04-18">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>

@@ -218,7 +218,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BookmarkBar.Android.ShownOnStartUpReason"
-    enum="BookmarkBarShownReason" expires_after="2027-02-14">
+    enum="BookmarkBarShownReason" expires_after="2027-04-18">
   <owner>mschillaci@google.com</owner>
   <owner>eleanorlee@google.com</owner>
   <owner>clank-app-team@google.com</owner>
@@ -387,7 +387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BookmarkBar.TriState.VisibilityStateOnStartUp"
-    enum="BookmarkBarVisibilityState" expires_after="2027-02-15">
+    enum="BookmarkBarVisibilityState" expires_after="2027-04-18">
   <owner>mschillaci@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -399,7 +399,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.BookmarkBar.TriState.VisibilityStateOnStartUpReason"
-    enum="BookmarkBarVisibilityStateOnStartUpReason" expires_after="2027-02-15">
+    enum="BookmarkBarVisibilityStateOnStartUpReason" expires_after="2027-04-18">
   <owner>mschillaci@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -772,7 +772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bookmarks.ParentFolderType" enum="BookmarkFolderType"
-    expires_after="2027-02-14">
+    expires_after="2027-04-18">
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -1182,7 +1182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PowerBookmarks.SidePanel.BookmarksShown" units="Bookmarks"
-    expires_after="2027-02-14">
+    expires_after="2027-04-18">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-sea@google.com</owner>
   <component>1457140</component>

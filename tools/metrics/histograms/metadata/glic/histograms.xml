@@ -373,7 +373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.AnimatedEffect.ShaderEmpty" enum="Boolean"
-    expires_after="2027-02-17">
+    expires_after="2027-04-18">
   <owner>iwells@chromium.org</owner>
   <summary>
     Recorded when the AnimatedEffectView fails to load a shader resource or the
@@ -1326,7 +1326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.TurnCount{Profile}" units="count"
-    expires_after="2027-02-14">
+    expires_after="2027-04-18">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -1923,7 +1923,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Preferences.HotkeyScopeChange"
-    enum="GlicHotkeyScopeChange" expires_after="2027-02-01">
+    enum="GlicHotkeyScopeChange" expires_after="2027-04-18">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-glic@google.com</owner>
   <summary>
@@ -2352,7 +2352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.TabContextMenu.UnpinnedTabs" units="tabs"
-    expires_after="2027-02-07">
+    expires_after="2027-04-18">
   <owner>sanaakbani@google.com</owner>
   <owner>birnie@google.com</owner>
   <summary>
@@ -2535,7 +2535,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.ZoomAction.{GlicZoomSourceModifier}"
-    enum="GlicZoomAction" expires_after="2027-01-24">
+    enum="GlicZoomAction" expires_after="2027-04-18">
   <owner>cuianthony@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
@@ -2828,7 +2828,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.InputModesUsed"
-    enum="GlicInputModesUsed" expires_after="2027-02-14">
+    enum="GlicInputModesUsed" expires_after="2027-04-18">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3504,7 +3504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Response.Segmentation"
-    enum="GlicResponseSegmentation" expires_after="2027-02-14">
+    enum="GlicResponseSegmentation" expires_after="2027-04-18">
   <owner>iwells@google.com</owner>
   <owner>erikchen@chromium.org</owner>
   <summary>
@@ -3633,7 +3633,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Turn.Actuation.ResponseStartTime"
-    units="ms" expires_after="2027-02-14">
+    units="ms" expires_after="2027-04-18">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3675,7 +3675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Turn.Duration.{Model}" units="ms"
-    expires_after="2027-02-14">
+    expires_after="2027-04-18">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3690,7 +3690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Turn.InvocationSource"
-    enum="GlicInvocationSource" expires_after="2027-02-14">
+    enum="GlicInvocationSource" expires_after="2027-04-18">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3727,7 +3727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Turn.ResponseStartTime" units="ms"
-    expires_after="2027-02-14">
+    expires_after="2027-04-18">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3739,7 +3739,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Turn.ResponseStartTime.InputMode.{Mode}"
-    units="ms" expires_after="2027-02-14">
+    units="ms" expires_after="2027-04-18">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3754,7 +3754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Turn.ResponseStartTime.{TabContext}"
-    units="ms" expires_after="2027-02-14">
+    units="ms" expires_after="2027-04-18">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3789,7 +3789,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Turn.ResponseStopTime.{Cause}" units="ms"
-    expires_after="2027-02-14">
+    expires_after="2027-04-18">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -3806,7 +3806,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Turn.Source" enum="GlicTurnSource"
-    expires_after="2027-02-14">
+    expires_after="2027-04-18">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>

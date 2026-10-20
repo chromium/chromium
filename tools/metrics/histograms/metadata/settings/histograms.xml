@@ -272,7 +272,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.GlassFrame.Enabled" enum="BooleanEnabled"
-    expires_after="2027-02-14">
+    expires_after="2027-04-18">
   <owner>dominicaustria@google.com</owner>
   <owner>dpenning@chromium.org</owner>
   <summary>

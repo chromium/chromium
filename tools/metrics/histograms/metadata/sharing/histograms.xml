@@ -525,7 +525,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome"
     enum="SendTabToSelfScrollPositionGenerationOutcome"
-    expires_after="2027-02-14">
+    expires_after="2027-04-18">
   <owner>mtatarski@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>

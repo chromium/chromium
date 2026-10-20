@@ -509,7 +509,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.PageContent.Eligibility"
-    enum="CustomTabsPageContentEligibility" expires_after="2027-02-14">
+    enum="CustomTabsPageContentEligibility" expires_after="2027-04-18">
   <owner>jinsukkim@google.com</owner>
   <owner>tivi@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
@@ -521,7 +521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.PageContent.Outcome"
-    enum="CustomTabsPageContentExtractionResult" expires_after="2027-02-14">
+    enum="CustomTabsPageContentExtractionResult" expires_after="2027-04-18">
   <owner>jinsukkim@google.com</owner>
   <owner>tivi@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
@@ -533,7 +533,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.PageContent.RequestedTypes"
-    enum="CustomTabsPageContentRequestedType" expires_after="2027-02-14">
+    enum="CustomTabsPageContentRequestedType" expires_after="2027-04-18">
   <owner>jinsukkim@google.com</owner>
   <owner>tivi@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
