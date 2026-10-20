@@ -1299,9 +1299,12 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertEquals(longText.length, inputElement.selectionEnd);
     // Verify scroll position was adjusted to show cursor at the end.
     // The browser clamps scrollLeft to max (scrollWidth - clientWidth).
-    assertEquals(
-        inputElement.scrollWidth - inputElement.clientWidth,
-        inputElement.scrollLeft);
+    // scrollLeft can be fractional while scrollWidth and clientWidth are
+    // rounded.
+    assertTrue(
+        Math.abs(
+            inputElement.scrollLeft -
+            (inputElement.scrollWidth - inputElement.clientWidth)) <= 1);
   });
 
   test('SetInputStateScrollsBackToTextStart', async () => {
@@ -6363,8 +6366,19 @@ suite('OmniboxPopupSearchboxTest', function() {
    testSearchbox.style.setProperty('--location-bar-height', '40px');
    testSearchbox.style.setProperty('--omnibox-primary-font-size', '16px');
    testSearchbox.style.setProperty('--location-bar-icon-size', '22px');
+   testSearchbox.style.setProperty('--location-bar-chip-icon-size', '20px');
    testSearchbox.style.setProperty(
        '--location-bar-page-info-icon-vertical-padding', '6px');
+   testSearchbox.style.setProperty(
+       '--location-bar-page-info-icon-padding-start', '4px');
+   testSearchbox.style.setProperty(
+       '--location-bar-page-info-icon-padding-end', '4px');
+   testSearchbox.style.setProperty(
+       '--location-bar-leading-decoration-edge-padding', '7px');
+   testSearchbox.style.setProperty(
+       '--location-bar-leading-decoration-inner-padding', '9px');
+   testSearchbox.style.setProperty(
+       '--location-bar-trailing-decoration-aim-edge-padding', '6px');
    const hostStyle = getComputedStyle(testSearchbox);
    assertEquals(
        '40px', hostStyle.getPropertyValue('--cr-searchbox-height').trim());
@@ -6378,6 +6392,22 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertEquals('16px', hostStyle.fontSize);
    assertEquals(
        '28px', getComputedStyle(testSearchbox.$.input.inputElement).height);
+   const iconStyle = getComputedStyle(testSearchbox.$.input.$.icon);
+   assertEquals('30px', iconStyle.width);
+   assertEquals('7px', iconStyle.paddingInlineStart);
+   assertEquals('9px', iconStyle.paddingInlineEnd);
+   const composeIcon =
+       testSearchbox.$.composeButton.shadowRoot.querySelector<HTMLElement>(
+           '.compose-icon');
+   assertTrue(!!composeIcon);
+   const composeIconStyle = getComputedStyle(composeIcon);
+   assertEquals('20px', composeIconStyle.width);
+   assertEquals('20px', composeIconStyle.height);
+   const glowContainer =
+       testSearchbox.$.composeButton.shadowRoot.querySelector<HTMLElement>(
+           '.glow-container');
+   assertTrue(!!glowContainer);
+   assertEquals('4px', getComputedStyle(glowContainer).marginInlineEnd);
 
    testSearchbox.remove();
    // Restore original values so `loadTimeData` does not leak into other tests.
