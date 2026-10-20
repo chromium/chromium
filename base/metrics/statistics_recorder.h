@@ -371,7 +371,7 @@ class BASE_EXPORT StatisticsRecorder {
   //
   // This method is thread safe.
   static void AddHistogramSampleObserver(
-      const std::string& histogram_name,
+      std::string_view histogram_name,
       ScopedHistogramSampleObserver* observer);
 
   // Clears the given |observer| set on the histogram referred to by
@@ -379,7 +379,7 @@ class BASE_EXPORT StatisticsRecorder {
   //
   // This method is thread safe.
   static void RemoveHistogramSampleObserver(
-      const std::string& histogram_name,
+      std::string_view histogram_name,
       ScopedHistogramSampleObserver* observer);
 
   typedef std::vector<WeakPtr<HistogramProvider>> HistogramProviders;
