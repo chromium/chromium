@@ -1111,17 +1111,35 @@ class LocalDeviceInstrumentationTestRun(
         if raw_tests is None:
             if use_dexdump:
                 # This path is hit by CTS tests.
-                # Dexdump is not able to find parameterized tests, so some tests might
-                # be missed.
-                # We should consider using AndroidJunitRunner's "-e annotation Foo,Bar"
-                # and "-e notAnnotation Foo,Bar" to list tests when annotation filters
-                # exist instead.
+                # The androidx test runner does not surface annotations, and
+                # dexdump does not handle parameterized tests. Combine the two
+                # to capture both parameterization and annotations.
                 logging.info(
-                    'Getting tests from dexdump (due to annotation filters)'
+                    'Getting tests from runner and annotations from dexdump'
                 )
-                raw_tests = instrumentation_test_instance.GetTestsFromDexdump(
+                dex_tests = instrumentation_test_instance.GetTestsFromDexdump(
                     ti.test_apk.path
                 )
+                dex_by_class = {
+                    c['class']: (
+                        c['annotations'],
+                        {m['method']: m['annotations'] for m in c['methods']},
+                    )
+                    for c in dex_tests
+                }
+                no_annotations = ({}, {})
+                default_method_annotations = {'MediumTest': None}
+                raw_tests = self._GetTestsFromRunner(run_disabled=run_disabled)
+                for clazz in raw_tests:
+                    class_ann, method_anns = dex_by_class.get(
+                        clazz['class'], no_annotations
+                    )
+                    clazz['annotations'] = class_ann
+                    for method in clazz['methods']:
+                        base_method = method['method'].split('[')[0]
+                        method['annotations'] = method_anns.get(
+                            base_method, default_method_annotations
+                        )
             else:
                 logging.info(
                     'Getting tests by having %s list them.',

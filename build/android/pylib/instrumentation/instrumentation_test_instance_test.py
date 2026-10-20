@@ -857,13 +857,13 @@ class InstrumentationTestInstanceTest(unittest.TestCase):
         }
         self.assertEqual(
             instrumentation_test_instance.GetTestNameWithoutParameterSuffix(
-                test, sep='.'
+                test
             ),
             'org.chromium.TestA',
         )
         self.assertEqual(
             instrumentation_test_instance.GetTestNameWithoutParameterSuffix(
-                unqualified_class_test, sep='.'
+                unqualified_class_test
             ),
             'TestA',
         )

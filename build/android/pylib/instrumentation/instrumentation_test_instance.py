@@ -343,11 +343,11 @@ def FilterTests(
         unique_test_name = GetUniqueTestName(test, sep='.')
         test_names.add(unique_test_name)
 
-        junit4_test_name = GetTestNameWithoutParameterSuffix(test, sep='.')
+        junit4_test_name = GetTestNameWithoutParameterSuffix(test)
         test_names.add(junit4_test_name)
 
         unqualified_junit4_test_name = GetTestNameWithoutParameterSuffix(
-            unqualified_class_test, sep='.'
+            unqualified_class_test
         )
         test_names.add(unqualified_junit4_test_name)
         return test_names
@@ -564,25 +564,23 @@ def GetTestName(test, sep='#'):
     return test_name
 
 
-def GetTestNameWithoutParameterSuffix(test, sep='#', parameterization_sep='__'):
+def GetTestNameWithoutParameterSuffix(test):
     """Gets the name of the given JUnit4 test without parameter suffix.
 
     For most WebView JUnit4 javatests, each test is parameterizatized with
     "__sandboxed_mode" to run in both non-sandboxed mode and sandboxed mode.
+    JUnit4 @RunWith(Parameterized.class) tests carry a "[...]" suffix instead.
 
     This function returns the name of the test without parameterization
     so test filters can match both parameterized and non-parameterized tests.
 
     Args:
       test: the instrumentation test dict.
-      sep: the character(s) that should join the class name and the method name.
-      parameterization_sep: the character(s) that separate method name and method
-                            parameterization suffix.
     Returns:
-      The test name without parameter suffix as a string.
+      The '.'-joined test name without parameter suffix as a string.
     """
-    name = GetTestName(test, sep=sep)
-    return name.split(parameterization_sep)[0]
+    name = GetTestName(test, sep='.')
+    return name.split('__')[0].split('[')[0]
 
 
 def GetUniqueTestName(test, sep='#'):
