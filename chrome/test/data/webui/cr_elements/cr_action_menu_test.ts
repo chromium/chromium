@@ -835,6 +835,64 @@ suite('CrActionMenu', function() {
     });
 
     test(
+        'fires unbounded-shown event on successful unbounded presentation',
+        async () => {
+          const shownPromise = eventToPromise('unbounded-shown', menu);
+          menu.showAt(dots);
+          await shownPromise;
+          assertTrue(menu.open);
+          assertTrue(menu.getDialog().matches(':unbounded'));
+          menu.close();
+        });
+
+    test(
+        'fires unbounded-show-error when showUnboundedElement rejects with non-AbortError',
+        async () => {
+          const dialog = menu.getDialog() as UnboundedDialogElement;
+          const originalShow = dialog.showUnboundedElement;
+          dialog.showUnboundedElement = () =>
+              Promise.reject(new Error('Presentation failed'));
+
+          const errorPromise = eventToPromise('unbounded-show-error', menu);
+          const originalConsoleError = console.error;
+          console.error = () => {};
+          try {
+            menu.showAt(dots);
+            await errorPromise;
+          } finally {
+            console.error = originalConsoleError;
+          }
+
+          dialog.showUnboundedElement = originalShow;
+          menu.close();
+        });
+
+    test(
+        'does not fire unbounded-shown or unbounded-show-error on AbortError',
+        async () => {
+          const dialog = menu.getDialog() as UnboundedDialogElement;
+          const originalShow = dialog.showUnboundedElement;
+          dialog.showUnboundedElement = () =>
+              Promise.reject(new DOMException('Dismissed', 'AbortError'));
+
+          let eventFired = false;
+          const onEvent = () => {
+            eventFired = true;
+          };
+          menu.addEventListener('unbounded-shown', onEvent);
+          menu.addEventListener('unbounded-show-error', onEvent);
+
+          menu.showAt(dots);
+          await microtasksFinished();
+          assertFalse(eventFired);
+
+          menu.removeEventListener('unbounded-shown', onEvent);
+          menu.removeEventListener('unbounded-show-error', onEvent);
+          dialog.showUnboundedElement = originalShow;
+          menu.close();
+        });
+
+    test(
         'activates and deactivates unbounded dialog in unbounded mode', () => {
           let showEventFired = false;
           let hideEventFired = false;

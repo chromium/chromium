@@ -237,8 +237,6 @@ build_webui("build") {
 
   in_folder = "."
 
-  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
-
   static_files = [
     "context_library.html",
     "lens_button.html",
@@ -291,6 +289,11 @@ build_webui("build") {
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
+  ]
+
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_histograms.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
   ]
   mojo_files_deps = [ ":rewrite_mojo_imports" ]
   mojo_files = [

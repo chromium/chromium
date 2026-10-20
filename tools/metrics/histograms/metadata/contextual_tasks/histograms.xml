@@ -763,6 +763,56 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ContextualTasks.TabPicker.IframeRenderLatencyMs" units="ms"
+    expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Time from the tab picker iframe navigation start (performance.timeOrigin) in
+    the Contextual Tasks component extension until the tab picker element
+    completes its initial DOM render (firstUpdated) of the trigger button.
+    Recorded once per tab picker iframe load.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.TabPicker.MenuOpenLatencyMs" units="ms"
+    expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Time from when the user triggers opening the tab picker flyout in the
+    Contextual Tasks component extension (via hover, click, or keyboard) until
+    the menu is positioned and presented to the user. Recorded each time the
+    menu successfully finishes opening in either unbounded mode or fallback
+    bounded mode.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.TabPicker.SuggestionsLoadLatencyMs" units="ms"
+    expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Time from the tab picker iframe navigation start (performance.timeOrigin) in
+    the Contextual Tasks component extension until recent tab suggestions are
+    fetched from the browser and rendered into the flyout menu. Recorded once
+    per tab picker iframe load when getRecentTabs() succeeds.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.TabPicker.UnboundedPresentationResult"
+    enum="ContextualTasksTabPickerUnboundedPresentationResult"
+    expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Records the presentation outcome when opening the tab picker flyout in the
+    Contextual Tasks component extension. Differentiates successful presentation
+    via the Unbounded Element API from fallbacks when the API is unsupported by
+    the platform and runtime presentation failures.
+  </summary>
+</histogram>
+
 <histogram
     name="ContextualTasks.ToolbarCloseTabButton.UserAction.CloseTabAndExpandSidePanel"
     enum="Boolean" expires_after="2027-06-18">

@@ -33,6 +33,8 @@ export function getHtml(this: TabPickerAppElement) {
         role-description="menu"
         non-modal
         @close="${this.onMenuClose_}"
+        @unbounded-shown="${this.onMenuUnboundedShown_}"
+        @unbounded-show-error="${this.onMenuUnboundedShowError_}"
         @pointerenter="${this.onMenuPointerenter_}"
         @pointermove="${this.onMenuPointermove_}"
         @pointerleave="${this.onMenuPointerleave_}"

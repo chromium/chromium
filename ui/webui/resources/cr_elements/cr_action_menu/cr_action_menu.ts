@@ -296,8 +296,12 @@ export class CrActionMenuElement extends CrLitElement {
   }
 
   private showUnboundedDialog_() {
-    this.getUnboundedDialog_().showUnboundedElement().catch(
-        err => this.handleUnboundedError_('showUnboundedElement', err));
+    this.getUnboundedDialog_()
+        .showUnboundedElement()
+        .then(() => {
+          this.fire('unbounded-shown');
+        })
+        .catch(err => this.handleUnboundedError_('showUnboundedElement', err));
   }
 
   private hideUnboundedDialog_() {
@@ -312,6 +316,9 @@ export class CrActionMenuElement extends CrLitElement {
       return;
     }
     console.error(`${operation} failed:`, err);
+    if (operation === 'showUnboundedElement') {
+      this.fire('unbounded-show-error');
+    }
   }
 
   private removeListeners_() {

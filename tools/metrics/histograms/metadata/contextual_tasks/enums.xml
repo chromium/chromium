@@ -57,6 +57,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h:ContextualTasksTabCloseState) -->
 
+<!-- LINT.IfChange(ContextualTasksTabPickerUnboundedPresentationResult) -->
+
+<enum name="ContextualTasksTabPickerUnboundedPresentationResult">
+  <int value="0" label="Shown Unbounded"/>
+  <int value="1" label="Fallback API Unsupported"/>
+  <int value="2" label="Show Unbounded Element Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/contextual_tasks/extension/tab_picker_app.ts:ContextualTasksTabPickerUnboundedPresentationResult) -->
+
 </enums>
 
 </histogram-configuration>

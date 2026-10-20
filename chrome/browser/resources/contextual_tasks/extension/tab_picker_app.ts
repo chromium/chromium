@@ -14,6 +14,7 @@ import {recordTabPickerTabSelected, TabPickerSurface} from 'chrome://resources/c
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement, ShowAtConfig} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -33,6 +34,15 @@ export interface TabPickerAppElement {
     tabMenu: CrActionMenuElement,
   };
 }
+
+// LINT.IfChange(ContextualTasksTabPickerUnboundedPresentationResult)
+export enum TabPickerUnboundedPresentationResult {
+  SHOWN_UNBOUNDED = 0,
+  FALLBACK_API_UNSUPPORTED = 1,
+  SHOW_UNBOUNDED_ELEMENT_FAILED = 2,
+  MAX_VALUE = 3,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_tasks/enums.xml:ContextualTasksTabPickerUnboundedPresentationResult)
 
 const TabPickerAppElementBase = I18nMixinLit(CrLitElement);
 
@@ -86,13 +96,18 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   private listenerIds_: number[] = [];
   private browserProxy_: TabPickerBrowserProxy =
       TabPickerBrowserProxyImpl.getInstance();
+  // Caches the pending setUnbounded() call initiated in firstUpdated() so that
+  // openTabMenu_() can await it if triggered before initial Lit rendering
+  // completes.
+  private unboundedInitPromise_: Promise<boolean>|null = null;
+  private menuOpenStartTime_: number|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
     this.setFocusOutlineVisible_(false);
     this.darkMode = this.isDarkModeEnabled_();
     this.updateSharingTabsText_();
-    this.fetchTabSuggestions_();
+    this.fetchTabSuggestions_(/*recordInitialLoadLatency=*/ true);
 
     const callbackRouter =
         ExtensionBrowserProxyImpl.getInstance().callbackRouter;
@@ -117,6 +132,9 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   override firstUpdated() {
     this.$.tabMenu.addEventListener(
         'keydown', this.onMenuKeydown_.bind(this), true);
+    this.recordLatencyMetric_(
+        'ContextualTasks.TabPicker.IframeRenderLatencyMs',
+        Math.round(performance.now()));
     this.initializeUnboundedMenu_();
   }
 
@@ -128,22 +146,39 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     }
 
     if (changedProperties.has('useUnbounded')) {
+      this.unboundedInitPromise_ = null;
       this.initializeUnboundedMenu_();
     }
   }
 
-  private async initializeUnboundedMenu_() {
-    if (this.isUnboundedMenuEnabled_()) {
-      await this.$.tabMenu.setUnbounded();
+  private initializeUnboundedMenu_(): Promise<boolean> {
+    if (!this.isUnboundedMenuEnabled_()) {
+      return Promise.resolve(false);
     }
+    if (!this.unboundedInitPromise_) {
+      const promise = this.$.tabMenu.setUnbounded().finally(() => {
+        if (this.unboundedInitPromise_ === promise) {
+          this.unboundedInitPromise_ = null;
+        }
+      });
+      this.unboundedInitPromise_ = promise;
+    }
+    return this.unboundedInitPromise_;
   }
 
-  private async fetchTabSuggestions_() {
+  private async fetchTabSuggestions_(
+      recordInitialLoadLatency: boolean = false) {
     try {
       const {tabs} = await this.browserProxy_.getRecentTabs();
       this.tabSuggestions = tabs || [];
       this.recentTabId =
           this.tabSuggestions.length > 0 ? this.tabSuggestions[0]!.tabId : null;
+      if (recordInitialLoadLatency) {
+        await this.updateComplete;
+        this.recordLatencyMetric_(
+            'ContextualTasks.TabPicker.SuggestionsLoadLatencyMs',
+            Math.round(performance.now()));
+      }
     } catch {
       // Standalone or test environment without proxy implementation.
     }
@@ -323,10 +358,27 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   protected onMenuClose_() {
     this.shouldOpenMenu_ = false;
     ++this.openMenuRequestId_;
+    this.menuOpenStartTime_ = null;
     this.tabMenuOpen = false;
     if (!FocusOutlineManager.forDocument(document).visible) {
       this.$.shareTabsTrigger.blur();
     }
+  }
+
+  protected onMenuUnboundedShown_() {
+    if (this.menuOpenStartTime_ === null) {
+      return;
+    }
+    const latencyMs = Math.round(performance.now() - this.menuOpenStartTime_);
+    this.menuOpenStartTime_ = null;
+    this.recordMenuOpenMetrics_(
+        TabPickerUnboundedPresentationResult.SHOWN_UNBOUNDED, latencyMs);
+  }
+
+  protected onMenuUnboundedShowError_() {
+    this.menuOpenStartTime_ = null;
+    this.recordUnboundedResult_(
+        TabPickerUnboundedPresentationResult.SHOW_UNBOUNDED_ELEMENT_FAILED);
   }
 
   protected onTabClick_(e: Event) {
@@ -365,6 +417,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 
   private async openTabMenu_(focusFirstItem: boolean = false) {
     const wasOpen = this.$.tabMenu.open;
+    const startTime = performance.now();
     const requestId = ++this.openMenuRequestId_;
     await this.fetchTabSuggestions_();
     await this.updateComplete;
@@ -381,9 +434,12 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
         requestId !== this.openMenuRequestId_ || !this.isConnected) {
       return;
     }
-    if (this.isUnboundedMenuEnabled_() &&
-        !this.$.tabMenu.getDialog().hasAttribute('unbounded')) {
-      await this.$.tabMenu.setUnbounded();
+
+    assert(this.isUnboundedMenuEnabled_());
+    let isApiSupported = true;
+    if (!this.$.tabMenu.getDialog().hasAttribute('unbounded')) {
+      isApiSupported =
+          await (this.unboundedInitPromise_ ?? this.$.tabMenu.setUnbounded());
       // Abort if the pointer left or the menu state changed while awaiting
       // setUnbounded().
       if (!this.shouldOpenMenu_ || this.$.tabMenu.open ||
@@ -391,6 +447,8 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
         return;
       }
     }
+
+    this.menuOpenStartTime_ = startTime;
     this.tabMenuOpen = true;
     const config: ShowAtConfig = {
       anchorAlignmentX: AnchorAlignment.AFTER_END,
@@ -422,12 +480,48 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
         }
       });
     }
+
+    if (!isApiSupported) {
+      this.menuOpenStartTime_ = null;
+      this.recordMenuOpenMetrics_(
+          TabPickerUnboundedPresentationResult.FALLBACK_API_UNSUPPORTED,
+          Math.round(performance.now() - startTime));
+    }
   }
 
   private focusFirstTabItem_() {
     const firstItem = this.$.tabMenu.querySelector<HTMLElement>(
         'button.dropdown-item:not([disabled])');
     firstItem?.focus({preventScroll: this.isUnboundedMenuEnabled_()});
+  }
+
+  async openTabMenuForTesting(): Promise<void> {
+    this.shouldOpenMenu_ = true;
+    await this.openTabMenu_();
+    await Promise.resolve();
+  }
+
+  private recordMenuOpenMetrics_(
+      result: TabPickerUnboundedPresentationResult, latencyMs: number) {
+    this.recordUnboundedResult_(result);
+    this.recordLatencyMetric_(
+        'ContextualTasks.TabPicker.MenuOpenLatencyMs', latencyMs);
+  }
+
+  private recordLatencyMetric_(metricName: string, latencyMs: number) {
+    const metricsService = chrome.histograms || chrome.metricsPrivate;
+    if (metricsService) {
+      metricsService.recordMediumTime(metricName, latencyMs);
+    }
+  }
+
+  private recordUnboundedResult_(result: TabPickerUnboundedPresentationResult) {
+    const metricsService = chrome.histograms || chrome.metricsPrivate;
+    if (metricsService) {
+      metricsService.recordEnumerationValue(
+          'ContextualTasks.TabPicker.UnboundedPresentationResult', result,
+          TabPickerUnboundedPresentationResult.MAX_VALUE);
+    }
   }
 
   private scheduleCloseTimer_() {
