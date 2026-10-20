@@ -15,6 +15,9 @@
 #include <windows.devices.enumeration.h>
 #include <wrl.h>
 
+#include <map>
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -57,6 +60,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
   VideoCaptureErrorOrDevice CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
+  void GetDevicesInfo(mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+                      GetDevicesInfoCallback callback) override;
 
   void set_use_media_foundation_for_testing(bool use) {
     use_media_foundation_ = use;
@@ -107,15 +112,26 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
   void OnGpuInfoUpdate(const CHROME_LUID& luid) override;
 
  private:
-  void DeviceInfoReady(std::vector<VideoCaptureDeviceInfo> devices_info,
-                       GetDevicesInfoCallback result_callback);
+  // With activation-free enumeration enabled, maps Media Foundation IDs
+  // returned for devices captured through DirectShow to their DirectShow IDs.
+  using MFToDirectShowDeviceIdMap = std::map<std::string, std::string>;
+
+  void DeviceInfoReady(
+      mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      MFToDirectShowDeviceIdMap mf_to_direct_show_device_ids,
+      GetDevicesInfoCallback result_callback,
+      std::vector<VideoCaptureDeviceInfo> devices_info);
   std::vector<VideoCaptureDeviceInfo> GetDevicesInfoMediaFoundation(
+      mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
       scoped_refptr<DXGIDeviceManager> dxgi_device_manager);
   void AugmentDevicesListWithDirectShowOnlyDevices(
+      mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      MFToDirectShowDeviceIdMap* mf_to_direct_show_device_ids,
       std::vector<VideoCaptureDeviceInfo>* devices_info);
   // Queries DirectShow devices, skips over devices listed in |known_devices|
   // with non-empty supported formats.
   std::vector<VideoCaptureDeviceInfo> GetDevicesInfoDirectShow(
+      mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
       const std::vector<VideoCaptureDeviceInfo>& known_devices);
 
   void UpdateDevicesInfoAvailability(
@@ -133,6 +149,17 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryWin
   scoped_refptr<ComThreadData> com_thread_data_;
   // For hardware acceleration in MediaFoundation capture engine
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
+
+  // A device found through both APIs uses a Media Foundation
+  // VideoCaptureDeviceDescriptor in kDevicesOnly results. If only DirectShow
+  // reports formats in a later kDevicesWithCapabilities enumeration, the
+  // replacement DeviceInfo uses DirectShow's API and capabilities but keeps
+  // the Media Foundation ID and list position to avoid a false device-list
+  // change notification.
+  // This map translates the Media Foundation ID kept in the descriptor to
+  // the DirectShow ID needed to create the device for capture.
+  // Only kDevicesWithCapabilities results replace the map.
+  MFToDirectShowDeviceIdMap mf_to_direct_show_device_ids_;
 
   class UsageReportHandler;
   scoped_refptr<UsageReportHandler> report_handler_;

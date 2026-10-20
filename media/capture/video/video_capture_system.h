@@ -5,6 +5,7 @@
 #ifndef MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_SYSTEM_H_
 #define MEDIA_CAPTURE_VIDEO_VIDEO_CAPTURE_SYSTEM_H_
 
+#include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video/video_capture_device_factory.h"
 #include "media/capture/video/video_capture_device_info.h"
 
@@ -23,7 +24,9 @@ class CAPTURE_EXPORT VideoCaptureSystem {
   // VideoCaptureSystem instance to guarantee that it stays alive during the
   // asynchronous operation. |result_callback| is invoked on the same thread
   // that calls GetDeviceInfosAsync()
-  virtual void GetDeviceInfosAsync(DeviceInfoCallback result_callback) = 0;
+  virtual void GetDeviceInfosAsync(
+      mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      DeviceInfoCallback result_callback) = 0;
 
   // Creates a VideoCaptureErrorOrDevice object. Contains an error code if
   // something goes wrong.

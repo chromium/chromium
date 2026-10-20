@@ -440,9 +440,12 @@ class MediaDevicesManagerTest : public ::testing::Test {
     ON_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
         .WillByDefault(
             [&](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
-              video_capture_system_->GetDeviceInfosAsync(base::BindOnce(
-                  std::move(result_callback),
-                  media::mojom::DeviceEnumerationResult::kSuccess));
+              video_capture_system_->GetDeviceInfosAsync(
+                  media::mojom::VideoCaptureDeviceEnumerationMode::
+                      kDevicesWithCapabilities,
+                  base::BindOnce(
+                      std::move(result_callback),
+                      media::mojom::DeviceEnumerationResult::kSuccess));
             });
 
     video_capture_manager_ = new VideoCaptureManager(
@@ -1569,9 +1572,12 @@ TEST_F(MediaDevicesManagerTest, EnumerateVideoInputFailsOnce) {
           })
       .WillRepeatedly(
           [&](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
-            video_capture_system_->GetDeviceInfosAsync(base::BindOnce(
-                std::move(result_callback),
-                media::mojom::DeviceEnumerationResult::kSuccess));
+            video_capture_system_->GetDeviceInfosAsync(
+                media::mojom::VideoCaptureDeviceEnumerationMode::
+                    kDevicesWithCapabilities,
+                base::BindOnce(
+                    std::move(result_callback),
+                    media::mojom::DeviceEnumerationResult::kSuccess));
           });
   EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo())
       .Times(kNumCalls - 1);

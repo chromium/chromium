@@ -40,6 +40,11 @@ bool IsMediaFoundationCameraUsageMonitoringEnabled() {
   return base::FeatureList::IsEnabled(
       features::kMediaFoundationCameraUsageMonitoring);
 }
+
+bool IsWinDeviceEnumerationWithoutActivationEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kWinDeviceEnumerationWithoutActivation);
+}
 #endif
 
 }  // namespace switches
@@ -58,6 +63,10 @@ BASE_FEATURE(kWebRtcPipeWireCamera, base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls monitoring for camera usage by other applications.
 BASE_FEATURE(kMediaFoundationCameraUsageMonitoring,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Avoids activating capture devices when only the device list is required.
+BASE_FEATURE(kWinDeviceEnumerationWithoutActivation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace features

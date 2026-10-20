@@ -41,6 +41,14 @@ VideoCaptureDeviceFactory::VideoCaptureDeviceFactory() {
 
 VideoCaptureDeviceFactory::~VideoCaptureDeviceFactory() = default;
 
+void VideoCaptureDeviceFactory::GetDevicesInfo(
+    mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+    GetDevicesInfoCallback callback) {
+  // Only VideoCaptureDeviceFactoryWin honors the mode. Other platforms always
+  // enumerate fully (equivalent to `kDevicesWithCapabilities`).
+  GetDevicesInfo(std::move(callback));
+}
+
 #if BUILDFLAG(IS_WIN)
 scoped_refptr<DXGIDeviceManager>
 VideoCaptureDeviceFactory::GetDxgiDeviceManager() {

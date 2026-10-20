@@ -19,6 +19,7 @@ CAPTURE_EXPORT bool IsVideoCaptureUseGpuMemoryBufferEnabled();
 
 #if BUILDFLAG(IS_WIN)
 CAPTURE_EXPORT bool IsMediaFoundationCameraUsageMonitoringEnabled();
+CAPTURE_EXPORT bool IsWinDeviceEnumerationWithoutActivationEnabled();
 #endif
 
 }  // namespace switches
@@ -33,6 +34,7 @@ CAPTURE_EXPORT BASE_DECLARE_FEATURE(kWebRtcPipeWireCamera);
 
 #if BUILDFLAG(IS_WIN)
 CAPTURE_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationCameraUsageMonitoring);
+CAPTURE_EXPORT BASE_DECLARE_FEATURE(kWinDeviceEnumerationWithoutActivation);
 #endif
 
 }  // namespace features

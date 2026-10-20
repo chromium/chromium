@@ -98,6 +98,7 @@ DeviceFactoryImpl::~DeviceFactoryImpl() = default;
 
 void DeviceFactoryImpl::GetDeviceInfos(GetDeviceInfosCallback callback) {
   capture_system_->GetDeviceInfosAsync(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
       base::BindOnce(&TranslateDeviceInfos, std::move(callback)));
   has_called_get_device_infos_ = true;
 }
@@ -137,6 +138,7 @@ void DeviceFactoryImpl::CreateDevice(const std::string& device_id,
   }
 
   capture_system_->GetDeviceInfosAsync(
+      media::mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
       base::BindOnce(&DiscardDeviceInfosAndCallContinuation,
                      std::move(create_and_add_new_device_cb)));
   has_called_get_device_infos_ = true;

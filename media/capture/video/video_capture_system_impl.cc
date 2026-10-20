@@ -12,6 +12,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "media/base/scoped_async_trace.h"
+#include "media/capture/video/video_capture_device_enumeration_mode_util.h"
 #include "media/capture/video/video_capture_device_factory.h"
 #include "media/capture/video/video_capture_metrics.h"
 
@@ -89,17 +90,29 @@ VideoCaptureSystemImpl::VideoCaptureSystemImpl(
 VideoCaptureSystemImpl::~VideoCaptureSystemImpl() = default;
 
 void VideoCaptureSystemImpl::GetDeviceInfosAsync(
+    mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
     DeviceInfoCallback result_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  device_enum_request_queue_.push_back(base::BindOnce(
-      &DeviceInfosCallbackTrampoline, std::move(result_callback),
-      ScopedCaptureTrace::CreateIfEnabled("GetDeviceInfosAsync")));
-  if (device_enum_request_queue_.size() == 1) {
-    // base::Unretained() is safe because |factory_| is owned and it guarantees
-    // not to call the callback after destruction.
-    factory_->GetDevicesInfo(base::BindOnce(
-        &VideoCaptureSystemImpl::DevicesInfoReady, base::Unretained(this)));
+  device_enum_request_queue_.push_back(DeviceEnumRequest{
+      enumeration_mode,
+      base::BindOnce(
+          &DeviceInfosCallbackTrampoline, std::move(result_callback),
+          ScopedCaptureTrace::CreateIfEnabled("GetDeviceInfosAsync"))});
+  if (!enumeration_mode_in_progress_) {
+    StartDeviceEnumeration(device_enum_request_queue_.front().enumeration_mode);
   }
+}
+
+void VideoCaptureSystemImpl::StartDeviceEnumeration(
+    mojom::VideoCaptureDeviceEnumerationMode enumeration_mode) {
+  CHECK(!enumeration_mode_in_progress_);
+  enumeration_mode_in_progress_ = enumeration_mode;
+  // base::Unretained() is safe because |factory_| is owned and it guarantees
+  // not to call the callback after destruction.
+  factory_->GetDevicesInfo(
+      enumeration_mode,
+      base::BindOnce(&VideoCaptureSystemImpl::DevicesInfoReady,
+                     base::Unretained(this), enumeration_mode));
 }
 
 VideoCaptureErrorOrDevice VideoCaptureSystemImpl::CreateDevice(
@@ -118,41 +131,74 @@ VideoCaptureErrorOrDevice VideoCaptureSystemImpl::CreateDevice(
 const VideoCaptureDeviceInfo* VideoCaptureSystemImpl::LookupDeviceInfoFromId(
     const std::string& device_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  auto iter = std::ranges::find(devices_info_cache_, device_id,
+  auto iter = std::ranges::find(devices_descriptors_cache_, device_id,
                                 [](const VideoCaptureDeviceInfo& device_info) {
                                   return device_info.descriptor.device_id;
                                 });
-  if (iter == devices_info_cache_.end())
+  if (iter == devices_descriptors_cache_.end()) {
     return nullptr;
+  }
   return &(*iter);
 }
 
 void VideoCaptureSystemImpl::DevicesInfoReady(
+    mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
     std::vector<VideoCaptureDeviceInfo> devices_info) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!device_enum_request_queue_.empty());
+  CHECK(enumeration_mode_in_progress_);
+  CHECK_EQ(*enumeration_mode_in_progress_, enumeration_mode);
 
-  // Only save metrics the first time device infos are populated.
-  if (devices_info_cache_.empty()) {
+  // TODO(crbug.com/565332594): Also add metrics for devices-only enumeration
+  // on Windows.
+  //
+  // Log metrics for the first nonempty full enumeration
+  // (kDevicesWithCapabilities) result. After an empty enumeration, log again
+  // for the next nonempty full enumeration.
+  if (devices_info.empty()) {
+    has_logged_capture_device_metrics_ = false;
+  } else if (!has_logged_capture_device_metrics_ &&
+             enumeration_mode == mojom::VideoCaptureDeviceEnumerationMode::
+                                     kDevicesWithCapabilities) {
     LogCaptureDeviceMetrics(devices_info);
+    has_logged_capture_device_metrics_ = true;
   }
 
   for (auto& device_info : devices_info) {
     ConsolidateCaptureFormats(&device_info.supported_formats);
   }
 
-  devices_info_cache_ = std::move(devices_info);
+  devices_descriptors_cache_ = std::move(devices_info);
 
-  DeviceEnumQueue requests;
-  std::swap(requests, device_enum_request_queue_);
+  // Move all requests that can use these results to the ready queue.
+  DeviceEnumQueue ready_requests;
+  for (auto it = device_enum_request_queue_.begin();
+       it != device_enum_request_queue_.end();) {
+    // Keep an iterator to the current request while advancing `it` to the next
+    // pending request. We can then splice the current request into
+    // `ready_requests` if it matches, while continuing to iterate through
+    // `device_enum_request_queue_`.
+    auto current_request_it = it++;
+    if (CanEnumerationResultSatisfyRequest(
+            enumeration_mode, current_request_it->enumeration_mode)) {
+      ready_requests.splice(ready_requests.end(), device_enum_request_queue_,
+                            current_request_it);
+    }
+  }
+  enumeration_mode_in_progress_.reset();
 
   auto weak_this = weak_factory_.GetWeakPtr();
-  for (auto& request : requests) {
-    std::move(request).Run(devices_info_cache_);
+  for (auto& request : ready_requests) {
+    std::move(request.callback).Run(devices_descriptors_cache_);
 
     // Callbacks may destroy |this|.
-    if (!weak_this)
+    if (!weak_this) {
       return;
+    }
+  }
+
+  if (!enumeration_mode_in_progress_ && !device_enum_request_queue_.empty()) {
+    StartDeviceEnumeration(device_enum_request_queue_.front().enumeration_mode);
   }
 }
 

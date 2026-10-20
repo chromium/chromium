@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -25,7 +26,9 @@ class CAPTURE_EXPORT VideoCaptureSystemImpl : public VideoCaptureSystem {
       std::unique_ptr<VideoCaptureDeviceFactory> factory);
   ~VideoCaptureSystemImpl() override;
 
-  void GetDeviceInfosAsync(DeviceInfoCallback result_callback) override;
+  void GetDeviceInfosAsync(
+      mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      DeviceInfoCallback result_callback) override;
   VideoCaptureErrorOrDevice CreateDevice(const std::string& device_id) override;
 
   VideoCaptureDeviceFactory* GetFactory() override;
@@ -34,17 +37,33 @@ class CAPTURE_EXPORT VideoCaptureSystemImpl : public VideoCaptureSystem {
       media::VideoCaptureFormats* formats);
 
  private:
-  using DeviceEnumQueue = std::list<DeviceInfoCallback>;
+  struct DeviceEnumRequest {
+    mojom::VideoCaptureDeviceEnumerationMode enumeration_mode;
+    DeviceInfoCallback callback;
+  };
+  using DeviceEnumQueue = std::list<DeviceEnumRequest>;
 
   // Returns nullptr if no descriptor found.
   const VideoCaptureDeviceInfo* LookupDeviceInfoFromId(
       const std::string& device_id);
 
-  void DevicesInfoReady(std::vector<VideoCaptureDeviceInfo> devices_info);
+  void StartDeviceEnumeration(
+      mojom::VideoCaptureDeviceEnumerationMode enumeration_mode);
+  void DevicesInfoReady(
+      mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      std::vector<VideoCaptureDeviceInfo> devices_info);
 
   const std::unique_ptr<VideoCaptureDeviceFactory> factory_;
   DeviceEnumQueue device_enum_request_queue_;
-  std::vector<VideoCaptureDeviceInfo> devices_info_cache_;
+  // Set while an enumeration is running to prevent another from starting.
+  // The stored mode is checked when results arrive.
+  std::optional<mojom::VideoCaptureDeviceEnumerationMode>
+      enumeration_mode_in_progress_;
+  // Stores VideoCaptureDeviceInfo from the latest enumeration. Only
+  // descriptors are guaranteed to be populated. On Windows, supported
+  // formats and control support may not have been queried.
+  std::vector<VideoCaptureDeviceInfo> devices_descriptors_cache_;
+  bool has_logged_capture_device_metrics_ = false;
 
   base::ThreadChecker thread_checker_;
 

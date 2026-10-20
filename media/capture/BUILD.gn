@@ -146,6 +146,7 @@ component("capture_lib") {
     "video/video_capture_buffer_tracker_factory_impl.h",
     "video/video_capture_device_client.cc",
     "video/video_capture_device_client.h",
+    "video/video_capture_device_enumeration_mode_util.h",
     "video/video_capture_system.h",
     "video/video_capture_system_impl.cc",
     "video/video_capture_system_impl.h",

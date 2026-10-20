@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
+#include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
 
@@ -74,6 +75,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactory {
   using GetDevicesInfoCallback = base::OnceCallback<void(
       std::vector<VideoCaptureDeviceInfo> devices_info)>;
   virtual void GetDevicesInfo(GetDevicesInfoCallback callback) = 0;
+  virtual void GetDevicesInfo(
+      mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      GetDevicesInfoCallback callback);
 
 #if BUILDFLAG(IS_WIN)
   // Returns used DXGI device manager.

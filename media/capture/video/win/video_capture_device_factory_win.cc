@@ -374,8 +374,10 @@ class VideoCaptureDeviceFactoryWin::ComThreadData
         use_media_foundation_(use_media_foundation),
         dxgi_device_manager_(std::move(dxgi_device_manager)) {}
 
-  void GetDevicesInfoOnComThread(VideoCaptureDeviceFactoryWin* factory,
-                                 GetDevicesInfoCallback result_callback);
+  void GetDevicesInfoOnComThread(
+      VideoCaptureDeviceFactoryWin* factory,
+      mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+      GetDevicesInfoCallback result_callback);
   void EnumerateDevicesUWP(std::vector<VideoCaptureDeviceInfo> devices_info,
                            GetDevicesInfoCallback result_callback);
 
@@ -657,7 +659,13 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
     }
     case VideoCaptureApi::WIN_DIRECT_SHOW: {
       ComPtr<IBaseFilter> capture_filter;
-      if (!CreateDeviceFilterDirectShow(device_descriptor.device_id,
+      const MFToDirectShowDeviceIdMap::const_iterator direct_show_device_id_it =
+          mf_to_direct_show_device_ids_.find(device_descriptor.device_id);
+      const std::string& direct_show_device_id =
+          direct_show_device_id_it == mf_to_direct_show_device_ids_.end()
+              ? device_descriptor.device_id
+              : direct_show_device_id_it->second;
+      if (!CreateDeviceFilterDirectShow(direct_show_device_id,
                                         &capture_filter)) {
         return VideoCaptureErrorOrDevice(
             VideoCaptureError::kWinDirectShowDeviceFilterCreationFailed);
@@ -695,7 +703,7 @@ bool VideoCaptureDeviceFactoryWin::CreateDeviceEnumMonikerDirectShow(
   }
 
   hr = dev_enum->CreateClassEnumerator(CLSID_VideoInputDeviceCategory,
-                                       enum_moniker, 0);
+                                       enum_moniker, /*dwFlags=*/0);
   // CreateClassEnumerator returns S_FALSE on some Windows OS
   // when no camera exist. Therefore the FAILED macro can't be used.
   if (hr != S_OK) {
@@ -714,8 +722,9 @@ bool VideoCaptureDeviceFactoryWin::CreateDeviceFilterDirectShow(
   DCHECK(!*capture_filter);
 
   ComPtr<IEnumMoniker> enum_moniker;
-  if (!CreateDeviceEnumMonikerDirectShow(&enum_moniker))
+  if (!CreateDeviceEnumMonikerDirectShow(&enum_moniker)) {
     return false;
+  }
 
   HRESULT hr = S_OK;
   for (ComPtr<IMoniker> moniker;
@@ -830,7 +839,20 @@ bool VideoCaptureDeviceFactoryWin::EnumerateDeviceSourcesMediaFoundation(
 
 void VideoCaptureDeviceFactoryWin::GetDevicesInfo(
     GetDevicesInfoCallback callback) {
+  GetDevicesInfo(
+      mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities,
+      std::move(callback));
+}
+
+void VideoCaptureDeviceFactoryWin::GetDevicesInfo(
+    mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+    GetDevicesInfoCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  if (!switches::IsWinDeviceEnumerationWithoutActivationEnabled()) {
+    enumeration_mode =
+        mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities;
+  }
 
   if (use_media_foundation_) {
     DCHECK(PlatformSupportsMediaFoundation());
@@ -854,11 +876,13 @@ void VideoCaptureDeviceFactoryWin::GetDevicesInfo(
   com_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&VideoCaptureDeviceFactoryWin::ComThreadData::
                                     GetDevicesInfoOnComThread,
-                                com_thread_data_, this, std::move(callback)));
+                                com_thread_data_, this, enumeration_mode,
+                                std::move(callback)));
 }
 
 void VideoCaptureDeviceFactoryWin::ComThreadData::GetDevicesInfoOnComThread(
     VideoCaptureDeviceFactoryWin* factory,
+    mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
     GetDevicesInfoCallback result_callback) {
   DCHECK(com_thread_runner_->BelongsToCurrentThread());
   // It's not required to run MediaFoundation and DirectShow enumeration on
@@ -866,14 +890,23 @@ void VideoCaptureDeviceFactoryWin::ComThreadData::GetDevicesInfoOnComThread(
   // sense to run them here too to not block the main utility thread, which
   // is used to pump camera frames.
   std::vector<VideoCaptureDeviceInfo> devices_info;
+  MFToDirectShowDeviceIdMap mf_to_direct_show_device_ids;
   if (use_media_foundation_) {
-    devices_info = factory->GetDevicesInfoMediaFoundation(dxgi_device_manager_);
-    factory->AugmentDevicesListWithDirectShowOnlyDevices(&devices_info);
+    devices_info = factory->GetDevicesInfoMediaFoundation(enumeration_mode,
+                                                          dxgi_device_manager_);
+    factory->AugmentDevicesListWithDirectShowOnlyDevices(
+        enumeration_mode, &mf_to_direct_show_device_ids, &devices_info);
   } else {
-    devices_info = factory->GetDevicesInfoDirectShow(devices_info);
+    devices_info =
+        factory->GetDevicesInfoDirectShow(enumeration_mode, devices_info);
   }
 
-  EnumerateDevicesUWP(std::move(devices_info), std::move(result_callback));
+  GetDevicesInfoCallback device_info_ready_callback = base::BindOnce(
+      &VideoCaptureDeviceFactoryWin::DeviceInfoReady, device_factory_,
+      enumeration_mode, std::move(mf_to_direct_show_device_ids),
+      std::move(result_callback));
+  EnumerateDevicesUWP(std::move(devices_info),
+                      std::move(device_info_ready_callback));
 }
 
 void VideoCaptureDeviceFactoryWin::ComThreadData::EnumerateDevicesUWP(
@@ -944,9 +977,7 @@ void VideoCaptureDeviceFactoryWin::ComThreadData::FoundAllDevicesUWP(
   if (!operation) {
     origin_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&VideoCaptureDeviceFactoryWin::DeviceInfoReady,
-                       device_factory_, std::move(devices_info),
-                       std::move(result_callback)));
+        base::BindOnce(std::move(result_callback), std::move(devices_info)));
     return;
   }
 
@@ -1009,9 +1040,8 @@ void VideoCaptureDeviceFactoryWin::ComThreadData::FoundAllDevicesUWP(
   FindAndSetDefaultVideoCamera(&devices_info);
 
   origin_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&VideoCaptureDeviceFactoryWin::DeviceInfoReady,
-                                device_factory_, std::move(devices_info),
-                                std::move(result_callback)));
+      FROM_HERE,
+      base::BindOnce(std::move(result_callback), std::move(devices_info)));
 
   auto it = async_ops_.find(operation);
   CHECK(it != async_ops_.end());
@@ -1027,14 +1057,22 @@ void VideoCaptureDeviceFactoryWin::UpdateDevicesInfoAvailability(
 }
 
 void VideoCaptureDeviceFactoryWin::DeviceInfoReady(
-    std::vector<VideoCaptureDeviceInfo> devices_info,
-    GetDevicesInfoCallback result_callback) {
+    mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+    MFToDirectShowDeviceIdMap mf_to_direct_show_device_ids,
+    GetDevicesInfoCallback result_callback,
+    std::vector<VideoCaptureDeviceInfo> devices_info) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (enumeration_mode ==
+      mojom::VideoCaptureDeviceEnumerationMode::kDevicesWithCapabilities) {
+    mf_to_direct_show_device_ids_ = std::move(mf_to_direct_show_device_ids);
+  }
   UpdateDevicesInfoAvailability(&devices_info);
 
   std::move(result_callback).Run(std::move(devices_info));
 }
 
 DevicesInfo VideoCaptureDeviceFactoryWin::GetDevicesInfoMediaFoundation(
+    mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
     scoped_refptr<DXGIDeviceManager> dxgi_device_manager) {
   DVLOG(1) << " GetDevicesInfoMediaFoundation";
 
@@ -1089,7 +1127,9 @@ DevicesInfo VideoCaptureDeviceFactoryWin::GetDevicesInfoMediaFoundation(
             VideoCaptureFormats supported_formats;
             const bool banned_for_d3d11 =
                 IsDeviceBlockedForMediaFoundationD3D11ByModelId(model_id);
-            if (CreateDeviceSourceMediaFoundation(
+            if (enumeration_mode == mojom::VideoCaptureDeviceEnumerationMode::
+                                        kDevicesWithCapabilities &&
+                CreateDeviceSourceMediaFoundation(
                     device_id, api_attributes.first, banned_for_d3d11,
                     dxgi_device_manager,
                     &source) == MFSourceOutcome::kSuccess) {
@@ -1115,18 +1155,31 @@ DevicesInfo VideoCaptureDeviceFactoryWin::GetDevicesInfoMediaFoundation(
   return devices_info;
 }
 
-// Adds descriptors that are only reported by the DirectShow API.
-// Replaces MediaFoundation descriptors with corresponding DirectShow
-// ones if the MediaFoundation one has no supported formats,
-// but the DirectShow one does.
+// Adds descriptors that are only reported by the DirectShow API. During
+// enumeration with capabilities, replaces MediaFoundation descriptors with
+// corresponding DirectShow ones if only DirectShow reports supported formats.
 void VideoCaptureDeviceFactoryWin::AugmentDevicesListWithDirectShowOnlyDevices(
+    mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
+    MFToDirectShowDeviceIdMap* mf_to_direct_show_device_ids,
     DevicesInfo* devices_info) {
   // DirectShow virtual cameras are not supported by MediaFoundation.
   // To overcome this, based on device name and model, we append
   // missing DirectShow device descriptor to full devices list.
   DevicesInfo direct_show_devices_info =
-      GetDevicesInfoDirectShow(*devices_info);
-  for (const auto& direct_show_device_info : direct_show_devices_info) {
+      GetDevicesInfoDirectShow(enumeration_mode, *devices_info);
+  if (enumeration_mode ==
+      mojom::VideoCaptureDeviceEnumerationMode::kDevicesOnly) {
+    // DirectShow representations of devices already reported by Media
+    // Foundation were filtered out.
+    for (VideoCaptureDeviceInfo& direct_show_device_info :
+         direct_show_devices_info) {
+      devices_info->push_back(std::move(direct_show_device_info));
+    }
+    return;
+  }
+
+  for (VideoCaptureDeviceInfo& direct_show_device_info :
+       direct_show_devices_info) {
     // DirectShow can produce two descriptors with same name and model.
     // If those descriptors are missing from MediaFoundation, we want them both
     // appended to the full descriptors list.
@@ -1152,13 +1205,31 @@ void VideoCaptureDeviceFactoryWin::AugmentDevicesListWithDirectShowOnlyDevices(
       // Devices, already known from MediaFoundation, shouldn't be queried with
       // DirectShow.
       DCHECK(matching_non_direct_show_device->supported_formats.size() == 0);
+      if (switches::IsWinDeviceEnumerationWithoutActivationEnabled()) {
+        const std::string& mf_device_id =
+            matching_non_direct_show_device->descriptor.device_id;
+        // Keep the Media Foundation ID and position from devices-only
+        // enumeration to avoid a false device-list change when capabilities
+        // are enumerated. Map that ID to the DirectShow ID required for
+        // capture.
+        mf_to_direct_show_device_ids->insert_or_assign(
+            mf_device_id,
+            std::move(direct_show_device_info.descriptor.device_id));
+        direct_show_device_info.descriptor.device_id = mf_device_id;
+        const size_t matching_non_direct_show_device_index =
+            matching_non_direct_show_device - devices_info->cbegin();
+        (*devices_info)[matching_non_direct_show_device_index] =
+            std::move(direct_show_device_info);
+        continue;
+      }
       devices_info->erase(matching_non_direct_show_device);
     }
-    devices_info->emplace_back(direct_show_device_info);
+    devices_info->push_back(std::move(direct_show_device_info));
   }
 }
 
 DevicesInfo VideoCaptureDeviceFactoryWin::GetDevicesInfoDirectShow(
+    mojom::VideoCaptureDeviceEnumerationMode enumeration_mode,
     const DevicesInfo& known_devices) {
   DVLOG(1) << __func__;
 
@@ -1209,18 +1280,22 @@ DevicesInfo VideoCaptureDeviceFactoryWin::GetDevicesInfoDirectShow(
         FindNonDirectShowDeviceInfoByNameAndModel(
             known_devices, device_descriptor.GetNameAndModel());
 
-    // Skip the DirectShow device, if the same device is already known from
-    // MediaFoundation and has some supported formats, since the MediaFoundation
-    // descriptor would be used in the end.
+    // Keep the MediaFoundation descriptor in devices-only mode. In
+    // devices-with-capabilities mode, query DirectShow only if MediaFoundation
+    // has no formats.
     if (matching_non_direct_show_device != known_devices.end() &&
-        matching_non_direct_show_device->supported_formats.size() > 0) {
+        (enumeration_mode ==
+             mojom::VideoCaptureDeviceEnumerationMode::kDevicesOnly ||
+         matching_non_direct_show_device->supported_formats.size() > 0)) {
       continue;
     }
 
     VideoCaptureControlSupport control_support;
     VideoCaptureFormats supported_formats;
     ComPtr<IBaseFilter> capture_filter;
-    if (CreateDeviceFilterDirectShow(std::move(moniker), &capture_filter)) {
+    if (enumeration_mode == mojom::VideoCaptureDeviceEnumerationMode::
+                                kDevicesWithCapabilities &&
+        CreateDeviceFilterDirectShow(std::move(moniker), &capture_filter)) {
       control_support =
           VideoCaptureDeviceWin::GetControlSupport(capture_filter);
       supported_formats =
