@@ -517,8 +517,10 @@ chrome.runtime.onInstalled;
 chrome.runtime.onEnabled;
 
 /**
- * Fired when the extension is added to the set of active extensions (e.g. on
- * install, update, reload, enable, or browser startup/update).
+ * Fired when the extension is added to the set of active extensions. This can
+ * occur in multiple scenarios: when an extension is first installed, updated to
+ * a new version, re-enabled after being disabled, reloaded, loaded during
+ * browser startup, or loaded when the browser is updated to a new version.
  * @type {!ChromeEvent}
  * @see https://developer.chrome.com/extensions/runtime#event-onExtensionLoaded
  */

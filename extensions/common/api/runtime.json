@@ -199,11 +199,9 @@
             "description": "The reason that this event is being dispatched."
           },
           "previousVersion": {
-            // TODO(crbug.com/550447466): Follow up on whether 'previousVersion'
-            // should also be populated when 'reason' is 'enable'.
             "type": "string",
             "optional": true,
-            "description": "Indicates the previous version of the extension, which has just been updated. This is present only if 'reason' is 'update'."
+            "description": "Indicates the previous version of the extension. This is present only if 'reason' is 'update' or 'enable'. If 'reason' is 'update', this is the version of the extension before it was updated. If 'reason' is 'enable', this is the current version of the extension."
           }
         }
       },

@@ -362,22 +362,50 @@ void RuntimeAPI::OnExtensionLoaded(content::BrowserContext* browser_context,
   }
 }
 
+void RuntimeAPI::OnExtensionUnloaded(content::BrowserContext* browser_context,
+                                     const Extension* extension,
+                                     UnloadedExtensionReason reason) {
+  // Drop any `pending_install_load_versions_` entry whose posted
+  // `MaybeDispatchInstallOrUpdateLoadedEvent()` task hasn't run yet:
+  // - If the extension stays unloaded, that pending `kInstall` or `kUpdate`
+  //   event wouldn't be dispatched anyway, since the extension isn't enabled.
+  // - If the extension is re-enabled before that task runs, a stale entry
+  //   would make `OnExtensionEnabled()` skip `kEnable`, so `kEnable` is
+  //   dispatched instead.
+  pending_install_load_versions_.erase(extension->id());
+}
+
 void RuntimeAPI::OnExtensionEnabled(content::BrowserContext* browser_context,
                                     const Extension* extension) {
-  // Dispatch `runtime.onEnabled` and `runtime.onExtensionLoaded` (with reason
-  // `kEnable`) when the extension is re-enabled from a disabled state.
+  // Dispatch `runtime.onEnabled` when the extension is re-enabled from a
+  // disabled state.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&RuntimeEventRouter::DispatchOnEnabledEvent,
                      base::UnsafeDangling(static_cast<void*>(browser_context_)),
                      extension->id()));
 
+  // If the extension was installed or updated while it was disabled (including
+  // when the update itself disabled it), the same
+  // `ExtensionRegistrar::EnableExtension()` call already ran
+  // `OnExtensionInstalledAndLoaded()` when it loaded the extension, before
+  // notifying that it was enabled. That queued a `kInstall` or `kUpdate`
+  // `runtime.onExtensionLoaded` event and recorded it in
+  // `pending_install_load_versions_`. `kInstall` and `kUpdate` take precedence
+  // over `kEnable` (see `RuntimeEventRouter::DispatchOnExtensionLoadedEvent()`
+  // in `runtime_api.h`), so skip `kEnable`.
+  if (pending_install_load_versions_.contains(extension->id())) {
+    return;
+  }
+
+  // Dispatch `runtime.onExtensionLoaded` with reason `kEnable` and the
+  // extension's current version.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&RuntimeEventRouter::DispatchOnExtensionLoadedEvent,
                      base::UnsafeDangling(static_cast<void*>(browser_context_)),
                      extension->id(), api::runtime::OnLoadedReason::kEnable,
-                     /*previous_version=*/std::nullopt));
+                     /*previous_version=*/extension->version().GetString()));
 }
 
 void RuntimeAPI::OnExtensionReloaded(content::BrowserContext* browser_context,
@@ -749,11 +777,11 @@ void RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
 
   api::runtime::ExtensionLoadDetails details;
   details.reason = reason;
-  // Populate `details.previous_version` only when `reason` is `kUpdate` (see
-  // `RuntimeEventRouter::DispatchOnExtensionLoadedEvent` in `runtime_api.h`).
-  // TODO(crbug.com/550447466): Follow up on whether `details.previous_version`
-  // should also be populated when `reason` is `kEnable`.
-  if (reason == api::runtime::OnLoadedReason::kUpdate &&
+  // Populate `details.previous_version` only when `reason` is `kUpdate` or
+  // `kEnable` (see `RuntimeEventRouter::DispatchOnExtensionLoadedEvent` in
+  // `runtime_api.h`).
+  if ((reason == api::runtime::OnLoadedReason::kUpdate ||
+       reason == api::runtime::OnLoadedReason::kEnable) &&
       previous_version.has_value()) {
     details.previous_version = *previous_version;
   }
@@ -863,9 +891,33 @@ void RuntimeAPI::OnExtensionInstalledAndLoaded(
                      base::UnsafeDangling(static_cast<void*>(browser_context_)),
                      extension->id(), previous_version, false));
 
+  // Dispatch `runtime.onExtensionLoaded` with reason `kUpdate` or `kInstall`
+  // from a posted task. If the extension is being enabled after an install or
+  // update while disabled, `OnExtensionEnabled()` runs before that task and
+  // checks the `pending_install_load_versions_` entry so that it doesn't also
+  // dispatch `kEnable`.
+  pending_install_load_versions_.insert_or_assign(extension->id(),
+                                                  previous_version);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RuntimeAPI::MaybeDispatchInstallOrUpdateLoadedEvent,
+                     weak_ptr_factory_.GetWeakPtr(), extension->id()));
+}
+
+void RuntimeAPI::MaybeDispatchInstallOrUpdateLoadedEvent(
+    const ExtensionId& extension_id) {
+  auto pending_install_load =
+      pending_install_load_versions_.extract(extension_id);
+  if (pending_install_load.empty()) {
+    // Either `OnExtensionUnloaded()` dropped the entry, or an earlier posted
+    // task for the same extension already dispatched it.
+    return;
+  }
+
   // Dispatch `runtime.onExtensionLoaded` with reason `kUpdate` (and the
-  // previous version string) if `previous_version` is valid, or `kInstall` for
-  // a fresh install.
+  // previous version string) if the previous version is valid, or `kInstall`
+  // for a fresh install.
+  const base::Version& previous_version = pending_install_load.mapped();
   api::runtime::OnLoadedReason loaded_reason =
       previous_version.IsValid() ? api::runtime::OnLoadedReason::kUpdate
                                  : api::runtime::OnLoadedReason::kInstall;
@@ -874,11 +926,9 @@ void RuntimeAPI::OnExtensionInstalledAndLoaded(
           ? std::make_optional(previous_version.GetString())
           : std::nullopt;
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RuntimeEventRouter::DispatchOnExtensionLoadedEvent,
-                     base::UnsafeDangling(static_cast<void*>(browser_context_)),
-                     extension->id(), loaded_reason, previous_version_str));
+  RuntimeEventRouter::DispatchOnExtensionLoadedEvent(
+      browser_context_.get(), extension_id, loaded_reason,
+      previous_version_str);
 }
 
 ExtensionFunction::ResponseAction RuntimeGetBackgroundPageFunction::Run() {
