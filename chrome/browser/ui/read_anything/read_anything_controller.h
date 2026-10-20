@@ -62,7 +62,6 @@ class WebContentsObserverInstance : public content::WebContentsObserver {
  public:
   WebContentsObserverInstance(
       content::WebContents* web_contents,
-      base::RepeatingClosure primary_page_changed_callback,
       base::RepeatingClosure renderer_crashed_callback,
       base::RepeatingCallback<void(content::Visibility)>
           visibility_changed_callback);
@@ -73,7 +72,6 @@ class WebContentsObserverInstance : public content::WebContentsObserver {
   ~WebContentsObserverInstance() override;
 
   // content::WebContentsObserver:
-  void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
@@ -81,7 +79,6 @@ class WebContentsObserverInstance : public content::WebContentsObserver {
       content::RenderProcessHost* render_process_host) override;
 
  private:
-  base::RepeatingClosure primary_page_changed_callback_;
   base::RepeatingClosure renderer_crashed_callback_;
   base::RepeatingCallback<void(content::Visibility)>
       visibility_changed_callback_;

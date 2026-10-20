@@ -132,9 +132,6 @@ declare namespace chrome {
     // enabled.
     let isReadAnythingReadAloudExperimentalPlaybackUiEnabled: boolean;
 
-    // Whether Read Anything is pinned to the toolbar.
-    let isReadAnythingPinned: boolean;
-
     // Whether Readability.js is used as the primary distillation method.
     let isReadabilityEnabled: boolean;
 

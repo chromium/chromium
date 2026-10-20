@@ -86,22 +86,16 @@ GURL GetPdfUrlWithFitToWidth(const GURL& pdf_url) {
 
 WebContentsObserverInstance::WebContentsObserverInstance(
     content::WebContents* web_contents,
-    base::RepeatingClosure primary_page_changed_callback,
     base::RepeatingClosure renderer_crashed_callback,
     base::RepeatingCallback<void(content::Visibility)>
         visibility_changed_callback)
     : content::WebContentsObserver(web_contents),
-      primary_page_changed_callback_(primary_page_changed_callback),
       renderer_crashed_callback_(renderer_crashed_callback),
       visibility_changed_callback_(visibility_changed_callback) {}
 
 WebContentsObserverInstance::~WebContentsObserverInstance() = default;
 
 // content::WebContentsObserver:
-void WebContentsObserverInstance::PrimaryPageChanged(content::Page& page) {
-  primary_page_changed_callback_.Run();
-}
-
 void WebContentsObserverInstance::OnVisibilityChanged(
     content::Visibility visibility) {
   visibility_changed_callback_.Run(visibility);
@@ -383,7 +377,6 @@ ReadAnythingContentsWrapper ReadAnythingController::GetOrCreateWebUIWrapper(
 
     ra_web_ui_observer_ = std::make_unique<WebContentsObserverInstance>(
         /*web_contents=*/web_ui_wrapper_->web_contents(),
-        /*primary_page_changed_callback=*/base::DoNothing(),
         /*renderer_crashed_callback=*/
         base::BindRepeating(&ReadAnythingController::OnRendererCrashed,
                             base::Unretained(this)),

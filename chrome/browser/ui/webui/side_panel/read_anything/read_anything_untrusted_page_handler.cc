@@ -1494,8 +1494,7 @@ void ReadAnythingUntrustedPageHandler::Activate(
     bool active,
     ReadAnythingOpenTrigger open_trigger,
     std::optional<base::TimeDelta> completed_session_duration) {
-  active_ = active;
-  if (active_) {
+  if (active) {
     if (features::IsReadAnythingImprovedUiEnabled() &&
         open_trigger == ReadAnythingOpenTrigger::kListenToThisPageContextMenu) {
       if (listen_to_this_page_playback_state_ !=

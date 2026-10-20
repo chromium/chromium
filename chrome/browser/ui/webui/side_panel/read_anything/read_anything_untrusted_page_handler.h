@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_translate_observer.h"
 #include "chrome/common/read_anything/distillation_evaluator.mojom.h"
@@ -479,9 +478,6 @@ class ReadAnythingUntrustedPageHandler :
   const mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
   const mojo::Remote<read_anything::mojom::UntrustedPage> page_;
 
-  // Whether the Read Anything feature is currently active. The feature is
-  // active when it is currently shown in the Side Panel.
-  bool active_ = true;
   // Whether the tab is going to detach soon.
   bool tab_will_detach_ = false;
 

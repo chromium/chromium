@@ -13,8 +13,6 @@
 
 using read_anything::mojom::ReadAnythingOpenTrigger;
 
-class ReadAnythingController;
-
 namespace read_anything {
 
 // Maintains and handles entry points for the ReadAnythingController.
@@ -24,7 +22,6 @@ class ReadAnythingEntryPointController {
       delete;
   ReadAnythingEntryPointController& operator=(
       const ReadAnythingEntryPointController&) = delete;
-  ~ReadAnythingEntryPointController();
 
   // Toggles Reading Mode on or off.
   // This and other methods below can handle null `bwi`.

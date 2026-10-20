@@ -304,7 +304,6 @@ class ReadAnythingAppController
   bool IsSuperscript(ui::AXNodeID ax_node_id) const;
   bool IsSubscript(ui::AXNodeID ax_node_id) const;
   bool IsLeafNode(ui::AXNodeID ax_node_id) const;
-  bool IsReadAnythingPinned() const;
   void OnConnected();
   void OnCopy() const;
   void OnScroll(bool on_selection) const;
