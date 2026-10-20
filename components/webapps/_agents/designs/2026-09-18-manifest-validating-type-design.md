@@ -14,7 +14,7 @@ bug: crbug.com/485890278
 > the project's AGENTS.md (if it exists).
 
 **Execution Plans:**
-*   `plans/2026-09-18-manifest-validating-type-plan.md` (To be created upon approval)
+*   [2026-09-18-manifest-validating-type-plan.md](../plans/2026-09-18-manifest-validating-type-plan.md)
 -->
 
 # Design: Validating Web App Manifest Mojo Type
