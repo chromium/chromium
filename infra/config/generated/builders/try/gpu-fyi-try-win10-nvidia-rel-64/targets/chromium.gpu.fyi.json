@@ -3,8 +3,6 @@
   "Win10 FYI x64 Release (NVIDIA)": {
     "gtest_tests": [
       {
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -31,8 +29,6 @@
           "--gtest_filter=WebNN*",
           "--use-gpu-in-tests"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -68,8 +64,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -113,8 +107,6 @@
           "${buildername}",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -154,8 +146,6 @@
           "--use-angle=gl-null",
           "--fast-run"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--smoke-test-mode"
@@ -197,8 +187,6 @@
           "${buildername}",
           "--jobs=1"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -243,8 +231,6 @@
           "--dont-restore-color-profile-after-test",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -283,8 +269,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -325,8 +309,6 @@
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_win_runtimes.json",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -366,8 +348,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

@@ -2,8 +2,6 @@
   "mac14-x64-enterprise-companion-tester-asan-dbg": {
     "gtest_tests": [
       {
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -22,8 +20,6 @@
         "test_id_prefix": "ninja://chrome/enterprise_companion:enterprise_companion_integration_tests/"
       },
       {
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

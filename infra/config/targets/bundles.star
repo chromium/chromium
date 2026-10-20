@@ -2528,15 +2528,9 @@ targets.bundle(
     per_test_modifications = {
         "enterprise_companion_integration_tests": [
             "updater-tests-pool",
-            # Temporary for ATL97 outage (b/570133826).
-            "ci_only",
-            "experiments",
         ],
         "enterprise_companion_tests": [
             "updater-tests-pool",
-            # Temporary for ATL97 outage (b/570133826).
-            "ci_only",
-            "experiments",
         ],
     },
 )
@@ -6649,9 +6643,6 @@ targets.bundle(
         ],
         "updater_tests_system": [
             targets.mixin(
-                # Temporary for ATL97 outage (b/570133826).
-                ci_only = True,
-                experiment_percentage = 100,
                 swarming = targets.swarming(
                     shards = 2,
                 ),

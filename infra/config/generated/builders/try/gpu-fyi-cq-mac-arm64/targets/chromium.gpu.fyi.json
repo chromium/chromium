@@ -2,8 +2,6 @@
   "Mac FYI Retina Release (Apple M2)": {
     "gtest_tests": [
       {
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -34,8 +32,6 @@
           "--gtest_filter=*ScreenCaptureKitRealCaptureTest.*",
           "--test-launcher-jobs=1"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -65,8 +61,6 @@
           "--gtest_filter=*Detection*",
           "--use-gpu-in-tests"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -105,8 +99,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -151,8 +143,6 @@
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_mac_runtimes.json",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -196,8 +186,6 @@
           "--jobs=4",
           "--test-filter=conformance/rendering/gl-drawelements.html"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -239,8 +227,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

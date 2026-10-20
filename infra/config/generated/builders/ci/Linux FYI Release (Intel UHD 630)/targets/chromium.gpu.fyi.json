@@ -5,8 +5,6 @@
         "args": [
           "--no-xvfb"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -36,8 +34,6 @@
           "--use-gpu-in-tests",
           "--no-xvfb"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -67,8 +63,6 @@
           "--git-revision=${got_revision}",
           "--bypass-skia-gold-functionality"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -102,8 +96,6 @@
           "--gtest_filter=*MappableBufferTest*",
           "--no-xvfb"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -130,8 +122,6 @@
           "--use-gpu-in-tests",
           "--no-xvfb"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -167,8 +157,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -212,8 +200,6 @@
           "${buildername}",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -257,8 +243,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -297,8 +281,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -341,8 +323,6 @@
           "9bc5",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -386,8 +366,6 @@
           "${buildername}",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -432,8 +410,6 @@
           "--dont-restore-color-profile-after-test",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -472,8 +448,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -512,8 +486,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -554,8 +526,6 @@
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_linux_runtimes.json",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -596,8 +566,6 @@
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_linux_runtimes.json",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -637,8 +605,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

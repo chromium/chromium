@@ -8,8 +8,6 @@
           "--use-gpu-in-tests",
           "--no-xvfb"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -38,8 +36,6 @@
           "--git-revision=${got_revision}",
           "--bypass-skia-gold-functionality"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -68,8 +64,6 @@
     ],
     "isolated_scripts": [
       {
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -101,8 +95,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -138,8 +130,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -180,8 +170,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -221,8 +209,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -263,8 +249,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -304,8 +288,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -345,8 +327,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -386,7 +366,6 @@
           "--use-webgpu-power-preference=default-high-performance"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -427,8 +406,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -462,8 +439,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -499,8 +474,6 @@
           "--no-xvfb",
           "--additional-driver-flag=--enable-features=Vulkan"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -543,8 +516,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -587,8 +558,6 @@
           "--jobs=4",
           "--use-webgpu-power-preference=default-high-performance"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

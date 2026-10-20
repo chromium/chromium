@@ -6,7 +6,6 @@
           "--disable-field-trial-config"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -29,7 +28,6 @@
           "--disable-field-trial-config"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -53,7 +51,6 @@
           "--disable-field-trial-config"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -76,7 +73,6 @@
           "--disable-field-trial-config"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -100,7 +96,6 @@
           "--disable-field-trial-config"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -123,7 +118,6 @@
           "--disable-field-trial-config"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

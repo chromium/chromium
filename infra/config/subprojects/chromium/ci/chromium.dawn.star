@@ -570,9 +570,6 @@ ci.thin_tester(
         ],
         mixins = [
             "linux_intel_uhd_630_stable",
-            # Temporary for ATL97 outage (b/570132975).
-            "ci_only",
-            "experiments",
         ],
         per_test_modifications = {
             # TODO(crbug.com/40932096): Enable on Intel trybots once there is
@@ -643,9 +640,6 @@ ci.thin_tester(
         ],
         mixins = [
             "linux_nvidia_gtx_1660_stable",
-            # Temporary for ATL97 outage (b/570132975).
-            "ci_only",
-            "experiments",
         ],
         per_test_modifications = {
             "webgpu_cts_tests": targets.mixin(
@@ -1551,9 +1545,6 @@ ci.thin_tester(
         ],
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_stable",
-            # Temporary for ATL97 outage (b/570133826).
-            "ci_only",
-            "experiments",
         ],
     ),
     targets_settings = targets.settings(
@@ -2657,9 +2648,6 @@ ci.thin_tester(
         ],
         mixins = [
             "win10_intel_uhd_630_stable",
-            # Temporary for ATL97 outage (b/570132975).
-            "ci_only",
-            "experiments",
         ],
         per_test_modifications = {
             "webgpu_blink_web_tests_with_backend_validation": targets.remove(
@@ -2722,9 +2710,6 @@ ci.thin_tester(
         ],
         mixins = [
             "win10_nvidia_gtx_1660_stable",
-            # Temporary for ATL97 outage (b/570132975).
-            "ci_only",
-            "experiments",
         ],
         per_test_modifications = {
             "webgpu_cts_tests": targets.mixin(
@@ -3173,9 +3158,6 @@ ci.thin_tester(
         ],
         mixins = [
             "win10_intel_uhd_630_stable",
-            # Temporary for ATL97 outage (b/570132975).
-            "ci_only",
-            "experiments",
         ],
         per_test_modifications = {
             "webgpu_cts_fxc_with_validation_tests": targets.remove(
@@ -3229,9 +3211,6 @@ ci.thin_tester(
         ],
         mixins = [
             "win10_nvidia_gtx_1660_stable",
-            # Temporary for ATL97 outage (b/570132975).
-            "ci_only",
-            "experiments",
         ],
         per_test_modifications = {
             "webgpu_cts_fxc_with_validation_tests": targets.remove(

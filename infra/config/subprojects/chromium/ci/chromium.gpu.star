@@ -432,9 +432,6 @@ ci.thin_tester(
         ],
         mixins = [
             "linux_nvidia_gtx_1660_stable",
-            # Temporary for ATL97 outage (b/570132975).
-            "ci_only",
-            "experiments",
             # TODO(crbug.com/331756538): Specify the puppet_production mixin
             # once testing is moved to Ubuntu 22.
         ],
@@ -750,9 +747,6 @@ ci.thin_tester(
         mixins = [
             "win10_nvidia_gtx_1660_stable",
             "puppet_production",
-            # Temporary for ATL97 outage (b/570132975).
-            "ci_only",
-            "experiments",
         ],
         per_test_modifications = {
             "pixel_skia_gold_passthrough_test": targets.per_test_modification(

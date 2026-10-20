@@ -33,13 +33,11 @@
     },
   },
   'amd_radeon_rx_5500_xt': {
-    'ci_only': True,
     'swarming': {
       'dimensions': {
         'gpu': '1002:7340',
       },
     },
-    'experiment_percentage': 100,
   },
   'android': {
     'swarming': {
@@ -60,13 +58,11 @@
     ],
   },
   'chrome-finch-swarming-pool': {
-    'ci_only': True,
     'swarming': {
       'dimensions': {
         'pool': 'chrome.tests.finch',
       },
     },
-    'experiment_percentage': 100,
   },
   'chrome-flame-fleet-pool': {
     'swarming': {
@@ -452,13 +448,11 @@
     },
   },
   'intel_uhd_630_or_770': {
-    'ci_only': True,
     'swarming': {
       'dimensions': {
         'gpu': '8086:9bc5|8086:4680',
       },
     },
-    'experiment_percentage': 100,
   },
   'ios_runtime_cache_18_5': {
     'swarming': {
