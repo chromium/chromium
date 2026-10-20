@@ -35,6 +35,16 @@ export function getHtml(this: MemoryBanksPaletteElement) {
         </div>
       </div>
 
+      <div class="search-container">
+        <cr-search-field
+            class="search-input"
+            label="Search your memories, #tags, or collections..."
+            clear-label="Clear search"
+            @search-changed="${this.onSearchChanged}"
+            autofocus>
+        </cr-search-field>
+      </div>
+
       <div class="filter-bar">
         <div
             class="filter-chip ${this.filterType === 'all' ? 'active' : ''}"
