@@ -502,4 +502,31 @@ TEST_F(ChromeExtensionNavigationTest,
   EXPECT_FALSE(tab_object.highlighted);
 }
 
+// Verifies that ExtensionTabUtil::GetWindowControllerOfTab falls back to
+// resolving the WindowController via SessionTabHelper window ID when the
+// WebContents is hosted in a standalone WindowController.
+TEST_F(ChromeExtensionNavigationTest,
+       GetWindowControllerOfTab_StandaloneWindowController) {
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const SessionID window_id = SessionID::NewUnique();
+  sessions::SessionTabHelper::FromWebContents(web_contents.get())
+      ->SetWindowID(window_id);
+
+  {
+    TestStandaloneWindowController controller(
+        /*base_window=*/nullptr, profile(), window_id, web_contents.get());
+    ASSERT_EQ(nullptr, controller.GetBrowserWindowInterface());
+    EXPECT_EQ(&controller,
+              ExtensionTabUtil::GetWindowControllerOfTab(web_contents.get()));
+  }
+
+  // Once the standalone WindowController is destroyed and unregistered,
+  // GetWindowControllerOfTab should return nullptr.
+  EXPECT_EQ(nullptr,
+            ExtensionTabUtil::GetWindowControllerOfTab(web_contents.get()));
+}
+
 }  // namespace extensions

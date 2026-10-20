@@ -289,6 +289,11 @@ class ExtensionTabUtil {
       const Extension* extension,
       content::WebContents* web_contents);
 
+  // Returns the WindowController associated with the given `web_contents`, or
+  // nullptr if none exists. First checks if `web_contents` belongs to a
+  // BrowserWindowInterface; otherwise falls back to looking up the
+  // WindowController by the window SessionID recorded on `web_contents` (e.g.
+  // for standalone WindowControllers or transiently detached tabs).
   static WindowController* GetWindowControllerOfTab(
       content::WebContents* web_contents);
 

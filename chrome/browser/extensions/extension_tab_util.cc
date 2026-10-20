@@ -1237,6 +1237,20 @@ WindowController* ExtensionTabUtil::GetWindowControllerOfTab(
   if (browser) {
     return BrowserExtensionWindowController::From(browser);
   }
+  // For non-Browser window controllers (which do not have a
+  // BrowserWindowInterface), IdForWindowContainingTab() consistently returns
+  // the owning window's SessionID. Note that this fallback also matches
+  // transiently detached browser tabs (e.g. tabs mid-drag between windows), for
+  // which IdForWindowContainingTab() returns the SessionID of the window the
+  // tab was previously attached to rather than returning nullptr.
+  SessionID window_id =
+      sessions::SessionTabHelper::IdForWindowContainingTab(web_contents);
+  if (window_id.is_valid()) {
+    const auto& controllers = *WindowControllerList::GetInstance();
+    auto it = std::ranges::find(controllers, window_id.id(),
+                                &WindowController::GetWindowId);
+    return it != controllers.end() ? *it : nullptr;
+  }
   return nullptr;
 }
 
