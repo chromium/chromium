@@ -61,9 +61,7 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   bool ShouldEvictOnHide() const override;
   bool ShouldSizeWebViewToPreferredHeight() const override;
   bool ShouldDrawShadowInWebUI() const override;
-  bool ShouldHideForInitialLayout() const override;
 
-  bool IsDeactivating() const override;
   bool ShouldReceiveFocus() const override;
 
  protected:
@@ -185,7 +183,6 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
 
   // Whether the "first shown" metrics have been logged at least once.
   bool logged_first_shown_metric_ = false;
-  bool is_deactivating_ = false;
 
   base::WeakPtrFactory<OmniboxPopupFullPresenter> weak_factory_{this};
 };

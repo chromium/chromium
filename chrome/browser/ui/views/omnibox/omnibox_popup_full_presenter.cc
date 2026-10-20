@@ -285,10 +285,6 @@ bool OmniboxPopupFullPresenter::ShouldDrawShadowInWebUI() const {
   return omnibox::ShouldDrawFullPopupShadowInWebUI();
 }
 
-bool OmniboxPopupFullPresenter::ShouldHideForInitialLayout() const {
-  return false;
-}
-
 std::unique_ptr<RoundedOmniboxResultsFrame>
 OmniboxPopupFullPresenter::CreateResultsFrame(
     std::unique_ptr<views::View> contents,
@@ -300,10 +296,6 @@ OmniboxPopupFullPresenter::CreateResultsFrame(
 
 bool OmniboxPopupFullPresenter::ShouldPreserveRequestedFocus() const {
   return true;
-}
-
-bool OmniboxPopupFullPresenter::IsDeactivating() const {
-  return is_deactivating_;
 }
 
 bool OmniboxPopupFullPresenter::ShouldReceiveFocus() const {
@@ -654,7 +646,6 @@ void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus(
     FocusAfterBlur focus_after_blur) {
   pending_focus_task_.Cancel();
   ResetPermissionPromptShowingState();
-  is_deactivating_ = true;
   OmniboxEditModel* edit_model = controller()->edit_model();
 
   // Keyword mode is an uncommitted draft even when the user text is empty,
@@ -726,8 +717,6 @@ void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus(
           OmniboxPopupState::kNone);
     }
   }
-
-  is_deactivating_ = false;
 }
 
 void OmniboxPopupFullPresenter::OnWidgetPresentedChanged(bool presented) {
