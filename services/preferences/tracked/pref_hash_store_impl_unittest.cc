@@ -890,6 +890,89 @@ class PrefHashStoreImplEncryptedTest : public testing::Test {
   DictionaryHashStoreContents dictionary_contents_;
 };
 
+class PrefHashStoreImplSuperEncryptedHashTest
+    : public PrefHashStoreImplEncryptedTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PrefHashStoreImplSuperEncryptedHashTest() {
+    feature_list_.InitWithFeatureState(tracked::kDisallowLegacyPrefMacFallback,
+                                       GetParam());
+  }
+
+ protected:
+  void StoreInitialHashes() {
+    base::Value value("existing value");
+    base::DictValue split_value;
+    split_value.Set("key", "existing split value");
+    auto transaction = BeginTransaction(/*with_encryptor=*/true);
+    transaction->StoreEncryptedHash("existing.pref", &value);
+    transaction->StoreSplitEncryptedHash("existing.split", &split_value);
+    transaction->StoreHmac("legacy.pref", &value);
+  }
+
+  void ExpectUnknownValuesState(ValueState expected_state) {
+    constexpr int kMatch = 0;
+    constexpr int kMismatch = 1;
+    base::HistogramTester histogram_tester;
+    base::Value value("new value");
+    base::DictValue split_value;
+    split_value.Set("key", "new split value");
+    std::vector<std::string> invalid_keys;
+    auto transaction = BeginTransaction(/*with_encryptor=*/true);
+    EXPECT_TRUE(transaction->IsSuperHmacValid());
+    EXPECT_EQ(expected_state, transaction->CheckValue("new.pref", &value));
+    EXPECT_EQ(expected_state, transaction->CheckSplitValue(
+                                  "new.split", &split_value, &invalid_keys));
+    EXPECT_TRUE(invalid_keys.empty());
+    const int expected_sample =
+        expected_state == ValueState::TRUSTED_UNKNOWN_VALUE ? kMatch
+                                                            : kMismatch;
+    histogram_tester.ExpectUniqueSample(
+        "Settings.TrackedPreferenceSuperEncryptedHashResult", expected_sample,
+        1);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(PrefHashStoreImplSuperEncryptedHashTest, ValidatesPersistedHashes) {
+  StoreInitialHashes();
+  ASSERT_FALSE(dictionary_contents_.GetSuperEncryptedHash().empty());
+  ExpectUnknownValuesState(ValueState::TRUSTED_UNKNOWN_VALUE);
+}
+
+TEST_P(PrefHashStoreImplSuperEncryptedHashTest, IgnoresLegacyHmacChanges) {
+  StoreInitialHashes();
+  SeedAtomicHmac("legacy.pref", "changed legacy hmac");
+  MakeSuperHmacValid();
+  ExpectUnknownValuesState(ValueState::TRUSTED_UNKNOWN_VALUE);
+}
+
+TEST_P(PrefHashStoreImplSuperEncryptedHashTest, RejectsChangedEncryptedHashes) {
+  StoreInitialHashes();
+  SeedAtomicEncryptedHash("existing.pref", "changed encrypted hash");
+  MakeSuperHmacValid();
+  ExpectUnknownValuesState(ValueState::UNTRUSTED_UNKNOWN_VALUE);
+}
+
+TEST_P(PrefHashStoreImplSuperEncryptedHashTest,
+       RejectsCorruptedSuperEncryptedHash) {
+  StoreInitialHashes();
+  auto encrypted_hash =
+      base::Base64Decode(dictionary_contents_.GetSuperEncryptedHash());
+  ASSERT_TRUE(encrypted_hash);
+  ASSERT_FALSE(encrypted_hash->empty());
+  encrypted_hash->back() ^= 1;
+  dictionary_contents_.SetSuperEncryptedHash(
+      base::Base64Encode(*encrypted_hash));
+  ExpectUnknownValuesState(ValueState::UNTRUSTED_UNKNOWN_VALUE);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrefHashStoreImplSuperEncryptedHashTest,
+                         testing::Bool());
+
 TEST_F(PrefHashStoreImplEncryptedTest, SuperEncryptedHashOnly) {
   base::Value value("test_value");
   std::string path = "test.pref";

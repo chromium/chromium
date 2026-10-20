@@ -333,9 +333,10 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::PrefHashStoreTransactionImpl(
       base::DictValue filtered_dict;
       // Filter out legacy HMACs to compute the hash over encrypted hashes only.
       FilterEncryptedHashesRecursive(*contents, filtered_dict);
-      std::string expected_hash =
-          outer_->ComputeEncryptedHash("", &filtered_dict, encryptor_.get());
-      if (super_encrypted_hash == expected_hash) {
+      base::Value filtered_value(std::move(filtered_dict));
+      if (outer_->pref_hash_calculator_.ValidateEncryptedHash(
+              "", &filtered_value, super_encrypted_hash, encryptor_.get()) ==
+          ValidationResult::VALID_ENCRYPTED) {
         super_encrypted_hash_valid_ = true;
       } else {
         super_encrypted_hash_mismatch_ = true;
