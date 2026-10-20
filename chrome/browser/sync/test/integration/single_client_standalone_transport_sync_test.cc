@@ -95,7 +95,9 @@ class SingleClientStandaloneTransportSyncTest : public SyncTest {
     override_features_.InitWithFeatures(
         /*enabled_features=*/
         {
+#if BUILDFLAG(IS_CHROMEOS)
             syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
+#endif  // BUILDFLAG(IS_CHROMEOS)
             switches::kSyncEnableBookmarksInTransportMode,
 #if !BUILDFLAG(IS_ANDROID)
             syncer::kReadingListEnableSyncTransportModeUponSignIn,
@@ -413,9 +415,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
 
   // CONTACT_INFO is controlled by the kAutofill datatype. With a custom
   // passphrase, it's additionally guarded by
-  // kSyncEnableContactInfoDataTypeForCustomPassphraseUsers. The feature is
-  // enabled by default on mobile, but disabled on desktop. This test enables
-  // it on all platforms.
+  // IsContactInfoDataTypeForCustomPassphraseUsersEnabled(). It is enabled by
+  // default on mobile and desktop, and enabled by this test on ChromeOS.
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
 }

@@ -39,19 +39,18 @@ BASE_FEATURE(kSyncAutofillEntitySuppression, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUnoPhase2FollowUp, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool IsContactInfoDataTypeForCustomPassphraseUsersEnabled() {
+#if BUILDFLAG(IS_CHROMEOS)
   return base::FeatureList::IsEnabled(
-             kSyncEnableContactInfoDataTypeForCustomPassphraseUsers) ||
-         base::FeatureList::IsEnabled(
-             kReplaceSyncPromosWithSigninPromosNewSignin);
+      kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
+#else
+  return true;
+#endif
 }
 
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers,

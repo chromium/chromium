@@ -806,8 +806,12 @@ TEST_F(
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {syncer::kReplaceSyncPromosWithSignInPromos,
-       syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers},
+      {
+          syncer::kReplaceSyncPromosWithSignInPromos,
+#if BUILDFLAG(IS_CHROMEOS)
+          syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      },
       /*disabled_features=*/{});
 
   // Sign-in.
@@ -862,12 +866,8 @@ TEST_F(
 TEST_F(
     SyncServiceImplTest,
     AddressesSyncValueShouldRemainUnchangedForCustomPassphraseUsersAfterTheirInitialSignin) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {syncer::kReplaceSyncPromosWithSignInPromos,
-       syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kReplaceSyncPromosWithSignInPromos};
 
   // Sign-in.
   SignInWithoutSyncConsent();
@@ -928,12 +928,8 @@ TEST_F(
 TEST_F(
     SyncServiceImplTest,
     AddressesSyncShouldNotBeDisabledForSignedInUsersWithNewlyCustomPassphraseSet) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {syncer::kReplaceSyncPromosWithSignInPromos,
-       syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList scoped_feature_list{
+      syncer::kReplaceSyncPromosWithSignInPromos};
 
   // Sign-in.
   SignInWithoutSyncConsent();

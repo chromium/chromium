@@ -302,9 +302,11 @@ class SingleClientContactInfoPassphraseSyncTest
  public:
   SingleClientContactInfoPassphraseSyncTest()
       : SingleClientContactInfoSyncTestBase(GetSetupSyncMode()) {
+#if BUILDFLAG(IS_CHROMEOS)
     passphrase_feature_.InitWithFeatureState(
         syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
         EnabledForPassphraseUsersTestParam());
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
@@ -316,13 +318,21 @@ class SingleClientContactInfoPassphraseSyncTest
   }
 
  private:
+#if BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList passphrase_feature_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     SingleClientContactInfoPassphraseSyncTest,
-    testing::Combine(GetSyncTestModes(), testing::Bool()),
+    testing::Combine(GetSyncTestModes(),
+#if BUILDFLAG(IS_CHROMEOS)
+                     testing::Bool()
+#else
+                     testing::Values(true)
+#endif
+                         ),
     [](const testing::TestParamInfo<std::tuple<SyncTest::SetupSyncMode, bool>>&
            info) {
       return testing::PrintToString(std::get<0>(info.param)) +

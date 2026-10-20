@@ -67,9 +67,11 @@ BASE_DECLARE_FEATURE(kSyncAutofillEntitySuppression);
 BASE_DECLARE_FEATURE(kUnoPhase2FollowUp);
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Do not use this flag directly. Use
 // IsContactInfoDataTypeForCustomPassphraseUsersEnabled() instead.
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // If enabled, the Contact Info data type will be enabled for users with custom
 // passphrase.

@@ -3506,8 +3506,7 @@ const flags_ui::FeatureEntry::FeatureVariation
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 const char kReplaceSyncPromosWithSignInPromosDesktopFeatures[] =
     "ReplaceSyncPromosWithSignInPromos,"
-    "IPH_SignInBenefits,"
-    "SyncEnableContactInfoDataTypeForCustomPassphraseUsers";
+    "IPH_SignInBenefits";
 
 const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosDesktopChoices[] =
     {{"Default", "", ""},
