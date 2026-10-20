@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -16,6 +17,8 @@
 #include "ui/base/x/x11_move_loop.h"
 #include "ui/base/x/x11_move_loop_delegate.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
+#include "ui/events/pointer_details.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_ui_types.h"
@@ -54,6 +57,19 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WholeScreenMoveLoop
   void UpdateCursor(scoped_refptr<ui::X11Cursor> cursor) override;
   void EndMoveLoop() override;
 
+  // A touch sequence whose release or cancel was consumed by the loop, so it
+  // never reached the window the touch was targeted at.
+  struct ConsumedTouch {
+    x11::Window window;
+    PointerId id;
+    gfx::PointF location;
+  };
+
+  // Returns and clears the touch sequences consumed by the last loop. The
+  // caller is expected to end them (e.g. by dispatching a touch cancel) once
+  // the loop has returned; otherwise they remain active indefinitely.
+  std::vector<ConsumedTouch> TakeConsumedTouches();
+
  private:
   // Grabs the pointer, setting the mouse cursor to |cursor|. Returns true if
   // successful.
@@ -91,6 +107,9 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WholeScreenMoveLoop
   // Keeps track of whether the move-loop is cancled by the user (e.g. by
   // pressing escape).
   bool canceled_;
+
+  // Touch sequences whose release or cancel was consumed by the loop.
+  std::vector<ConsumedTouch> consumed_touches_;
 
   base::WeakPtrFactory<X11WholeScreenMoveLoop> weak_factory_{this};
 };

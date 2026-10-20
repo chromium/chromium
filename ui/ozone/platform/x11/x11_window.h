@@ -20,6 +20,7 @@
 #include "ui/base/x/x11_desktop_window_move_client.h"
 #include "ui/base/x/x11_drag_drop_client.h"
 #include "ui/base/x/x11_move_loop_delegate.h"
+#include "ui/base/x/x11_whole_screen_move_loop.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/x/connection.h"
@@ -194,6 +195,14 @@ class X11Window : public PlatformWindow,
   uint32_t DispatchEvent(const PlatformEvent& event) override;
 
   void DispatchUiEvent(ui::Event* event, const x11::Event& xev);
+
+  // Dispatches a touch cancel for each touch sequence whose release or cancel
+  // was consumed by an X11WholeScreenMoveLoop, to the window the touch was
+  // targeted at (or `fallback` if that is unknown). Without this, aura would
+  // consider those touches active indefinitely. May destroy any window.
+  static void CancelConsumedTouches(
+      base::WeakPtr<X11Window> fallback,
+      std::vector<X11WholeScreenMoveLoop::ConsumedTouch> touches);
 
   // WmMoveResizeHandler
   void DispatchHostWindowDragMovement(

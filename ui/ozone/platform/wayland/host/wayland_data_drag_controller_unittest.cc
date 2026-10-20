@@ -42,6 +42,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
@@ -1633,6 +1634,32 @@ TEST_P(WaylandDataDragControllerTest,
 
   drag_controller()->CancelSession();
   EXPECT_FALSE(drag_controller()->IsDragInProgress());
+}
+
+// The compositor owns the touch sequence once a touch-sourced drag starts and
+// typically ends it without sending wl_touch.up to the client. Verify that the
+// touch point does not stay live, and that the platform window delegate is
+// told the touch sequence is over.
+TEST_P(WaylandDataDragControllerTest, TouchDragEndsTouchSequence) {
+  SendTouchDown(window_.get(), &delegate_, 1, {10, 10});
+  ASSERT_EQ(1u, connection_->event_source()->GetActiveTouchPointIds().size());
+
+  std::vector<EventType> touch_events;
+  EXPECT_CALL(delegate_, DispatchEvent(_))
+      .WillRepeatedly([&touch_events](Event* event) {
+        if (event->IsTouchEvent()) {
+          touch_events.push_back(event->type());
+        }
+      });
+
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    SendDndDropPerformed();
+    SendDndFinished();
+  }));
+  RunTouchDragWithSampleData(window_.get(), DragDropTypes::DRAG_COPY);
+
+  EXPECT_TRUE(connection_->event_source()->GetActiveTouchPointIds().empty());
+  EXPECT_THAT(touch_events, ::testing::ElementsAre(EventType::kTouchCancelled));
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,

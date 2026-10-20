@@ -1637,7 +1637,14 @@ void X11Window::DispatchHostWindowDragMovement(
 }
 
 bool X11Window::RunMoveLoop(const gfx::Vector2d& drag_offset) {
-  return x11_window_move_client_->RunMoveLoop(!HasCapture(), drag_offset);
+  auto alive = weak_ptr_factory_.GetWeakPtr();
+  const bool moved =
+      x11_window_move_client_->RunMoveLoop(!HasCapture(), drag_offset);
+  if (alive) {
+    CancelConsumedTouches(alive,
+                          x11_window_move_client_->TakeConsumedTouches());
+  }
+  return moved;
 }
 
 void X11Window::EndMoveLoop() {
@@ -1662,7 +1669,9 @@ bool X11Window::StartDrag(
   allowed_drag_operations_ = 0;
   notified_enter_ = false;
 
-  drag_loop_ = std::make_unique<X11WholeScreenMoveLoop>(this);
+  auto drag_loop = std::make_unique<X11WholeScreenMoveLoop>(this);
+  X11WholeScreenMoveLoop* const whole_screen_drag_loop = drag_loop.get();
+  drag_loop_ = std::move(drag_loop);
 
   auto alive = weak_ptr_factory_.GetWeakPtr();
   const bool dropped =
@@ -1672,10 +1681,33 @@ bool X11Window::StartDrag(
     return false;
   }
 
+  auto consumed_touches = whole_screen_drag_loop->TakeConsumedTouches();
   drag_loop_.reset();
   drag_location_delegate_ = nullptr;
   drag_drop_client_->CleanupDrag();
+  CancelConsumedTouches(alive, std::move(consumed_touches));
   return dropped;
+}
+
+// static
+void X11Window::CancelConsumedTouches(
+    base::WeakPtr<X11Window> fallback,
+    std::vector<X11WholeScreenMoveLoop::ConsumedTouch> touches) {
+  auto* window_manager = X11WindowManager::GetInstance();
+  for (const auto& touch : touches) {
+    X11Window* target =
+        touch.window == x11::Window::None
+            ? fallback.get()
+            : window_manager->GetWindow(
+                  static_cast<gfx::AcceleratedWidget>(touch.window));
+    if (!target) {
+      continue;
+    }
+    TouchEvent cancel(EventType::kTouchCancelled, touch.location,
+                      touch.location, EventTimeForNow(),
+                      PointerDetails(EventPointerType::kTouch, touch.id));
+    target->platform_window_delegate()->DispatchEvent(&cancel);
+  }
 }
 
 void X11Window::CancelDrag() {

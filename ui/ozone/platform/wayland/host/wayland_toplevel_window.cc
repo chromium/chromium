@@ -140,8 +140,13 @@ void WaylandToplevelWindow::DispatchHostWindowDragMovement(
 
   connection()->Flush();
   // TODO(crbug.com/40917147): Revisit to resolve the correct impl.
-  connection()->event_source()->ReleasePressedPointerButtons(this,
-                                                             EventTimeForNow());
+  // `event_source` is owned by the connection, so it outlives this window even
+  // if dispatching the events below destroys it.
+  auto* event_source = connection()->event_source();
+  event_source->ReleasePressedPointerButtons(this, EventTimeForNow());
+  // The compositor now owns any touch sequence that started the move, and need
+  // not send wl_touch.up or wl_touch.cancel for it, so end it here.
+  event_source->CancelActiveTouches(EventTimeForNow());
 }
 
 void WaylandToplevelWindow::Show(bool inactive) {

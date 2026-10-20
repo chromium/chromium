@@ -48,6 +48,11 @@ class COMPONENT_EXPORT(UI_BASE_X) X11DesktopWindowMoveClient
   bool RunMoveLoop(bool can_grab_pointer, const gfx::Vector2d& drag_offset);
   void EndMoveLoop();
 
+  // See X11WholeScreenMoveLoop::TakeConsumedTouches().
+  std::vector<X11WholeScreenMoveLoop::ConsumedTouch> TakeConsumedTouches() {
+    return move_loop_.TakeConsumedTouches();
+  }
+
  private:
   X11WholeScreenMoveLoop move_loop_{this};
 

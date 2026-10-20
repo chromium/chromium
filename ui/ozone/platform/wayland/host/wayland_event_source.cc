@@ -845,9 +845,11 @@ void WaylandEventSource::OnTouchCancelEvent() {
   if (connection_->IsDragInProgress()) {
     return;
   }
+  CancelActiveTouches(base::TimeTicks::Now());
+}
 
+void WaylandEventSource::CancelActiveTouches(base::TimeTicks timestamp) {
   gfx::PointF location;
-  base::TimeTicks timestamp = base::TimeTicks::Now();
   std::vector<PointerId> ids;
   ids.reserve(touch_points_.size());
   for (const auto& touch_point : touch_points_) {

@@ -135,6 +135,15 @@ uint32_t X11WholeScreenMoveLoop::DispatchEvent(const ui::PlatformEvent& event) {
     }
     case ui::EventType::kTouchReleased:
     case ui::EventType::kTouchCancelled: {
+      // The touch sequence ends here without reaching its window. Remember it
+      // so the owner can end it once the loop returns.
+      const auto* touch_event = event->AsTouchEvent();
+      const auto* xev = x11::Connection::Get()->dispatching_event();
+      const auto* device_event =
+          xev ? xev->As<x11::Input::DeviceEvent>() : nullptr;
+      consumed_touches_.push_back(
+          {device_event ? device_event->event : x11::Window::None,
+           touch_event->pointer_details().id, touch_event->location_f()});
       delegate_->OnMouseReleased();
       return ui::POST_DISPATCH_NONE;
     }
@@ -195,6 +204,7 @@ bool X11WholeScreenMoveLoop::RunMoveLoop(
 
   in_move_loop_ = true;
   canceled_ = false;
+  consumed_touches_.clear();
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
@@ -211,6 +221,11 @@ void X11WholeScreenMoveLoop::UpdateCursor(scoped_refptr<ui::X11Cursor> cursor) {
   if (in_move_loop_) {
     ui::ChangeActivePointerGrabCursor(cursor);
   }
+}
+
+std::vector<X11WholeScreenMoveLoop::ConsumedTouch>
+X11WholeScreenMoveLoop::TakeConsumedTouches() {
+  return std::exchange(consumed_touches_, {});
 }
 
 void X11WholeScreenMoveLoop::EndMoveLoop() {

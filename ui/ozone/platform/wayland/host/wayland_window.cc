@@ -969,15 +969,20 @@ void WaylandWindow::OnDragSessionClose(DragOperation operation) {
   // quit in that case.
   base::OnceClosure quit_closure = std::move(drag_loop_quit_closure_);
   auto alive = AsWeakPtr();
+  WaylandConnection* const connection = this->connection();
   std::move(drag_finished_callback_).Run(operation);
   // Skip releasing any pointer buttons for the case of a window drag driven by
   // the data drag controller.
   // TODO: crbug.com/40238145 - Refactor this per discussion at
   // crrev.com/c/5570335/comment/0b8811fc_818028c9/.
   if (alive &&
-      !connection()->data_drag_controller()->IsWindowDragSessionRunning()) {
-    connection()->event_source()->ReleasePressedPointerButtons(
-        this, EventTimeForNow());
+      !connection->data_drag_controller()->IsWindowDragSessionRunning()) {
+    connection->event_source()->ReleasePressedPointerButtons(this,
+                                                             EventTimeForNow());
+    // The compositor owns the touch sequences for the duration of the drag and
+    // need not send wl_touch.up for them afterwards, so end any that are still
+    // tracked. Otherwise they would remain active indefinitely.
+    connection->event_source()->CancelActiveTouches(EventTimeForNow());
   }
   std::move(quit_closure).Run();
 }
