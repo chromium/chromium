@@ -17,6 +17,7 @@
 #include <tuple>
 
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -243,7 +244,7 @@ PlatformThreadId PlatformThreadBase::CurrentId() {
       g_is_main_thread = false;
     }
   } else {
-#if DCHECK_IS_ON()
+#if EXPENSIVE_DCHECKS_ARE_ON()
     if (g_thread_id != syscall(__NR_gettid)) {
       RAW_LOG(
           FATAL,
