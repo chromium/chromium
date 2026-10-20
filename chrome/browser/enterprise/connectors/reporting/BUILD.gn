@@ -23,6 +23,7 @@ source_set("reporting") {
 
   if (enterprise_cloud_content_analysis && enable_extensions_core) {
     sources += [
+      "extension_actor_tracker.h",
       "extension_install_event_router.h",
       "extension_telemetry_event_router.h",
       "extension_telemetry_event_router_factory.h",
@@ -72,6 +73,7 @@ source_set("impl") {
 
   if (enterprise_cloud_content_analysis && enable_extensions_core) {
     sources += [
+      "extension_actor_tracker.cc",
       "extension_install_event_router.cc",
       "extension_telemetry_event_router.cc",
       "extension_telemetry_event_router_factory.cc",
@@ -131,6 +133,7 @@ source_set("unit_tests") {
   if (enterprise_cloud_content_analysis && enable_extensions_core) {
     sources += [
       "event_initiator_utils_unittest.cc",
+      "extension_actor_tracker_unittest.cc",
       "extension_install_event_router_unittest.cc",
       "extension_telemetry_event_router_unittest.cc",
     ]
@@ -156,7 +159,10 @@ source_set("unit_tests") {
   ]
 
   if (enterprise_cloud_content_analysis && enable_extensions_core) {
-    deps += [ "//extensions:test_support" ]
+    deps += [
+      "//chrome/test/base:chrome_render_view_host_test_harness",
+      "//extensions:test_support",
+    ]
   }
 }
 
