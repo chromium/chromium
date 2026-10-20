@@ -423,6 +423,8 @@ void TimeZoneRequest::MakeRequest(TimeZoneResponseCallback callback) {
 void TimeZoneRequest::Retry(bool server_error) {
   const base::TimeDelta delay(server_error ? retry_sleep_on_server_error_
                                            : retry_sleep_on_bad_response_);
+  retry_sleep_on_server_error_ *= 2;
+  retry_sleep_on_bad_response_ *= 2;
   timezone_request_scheduled_.Start(
       FROM_HERE, delay, this, &TimeZoneRequest::StartRequest);
 }

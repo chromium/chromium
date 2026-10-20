@@ -104,14 +104,16 @@ class TestTimeZoneAPILoaderFactory : public network::TestURLLoaderFactory {
     EXPECT_NE(nullptr, provider_);
     EXPECT_EQ(provider_->requests_.size(), 1U);
 
-    TimeZoneRequest* timezone_request = provider_->requests_[0].get();
+    if (attempts_ == 0) {
+      TimeZoneRequest* timezone_request = provider_->requests_[0].get();
 
-    const base::TimeDelta base_retry_interval =
-        base::Milliseconds(kRequestRetryIntervalMilliSeconds);
-    timezone_request->set_retry_sleep_on_server_error_for_testing(
-        base_retry_interval);
-    timezone_request->set_retry_sleep_on_bad_response_for_testing(
-        base_retry_interval);
+      const base::TimeDelta base_retry_interval =
+          base::Milliseconds(kRequestRetryIntervalMilliSeconds);
+      timezone_request->set_retry_sleep_on_server_error_for_testing(
+          base_retry_interval);
+      timezone_request->set_retry_sleep_on_bad_response_for_testing(
+          base_retry_interval);
+    }
 
     if (++attempts_ > require_retries_)
       AddResponseWithCode(net::OK);
@@ -166,7 +168,8 @@ class TimeZoneReceiver {
 
 class TimeZoneTest : public testing::Test {
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(TimeZoneTest, ResponseOK) {
@@ -208,6 +211,7 @@ TEST_F(TimeZoneTest, ResponseOKWithRetries) {
 
   TimeZoneReceiver receiver;
 
+  const base::TimeTicks start = base::TimeTicks::Now();
   provider.RequestTimezone(simple_request.position, simple_request.timestamp,
                            base::Seconds(1),
                            base::BindOnce(&TimeZoneReceiver::OnRequestDone,
@@ -217,6 +221,8 @@ TEST_F(TimeZoneTest, ResponseOKWithRetries) {
             receiver.timezone()->ToStringForDebug());
   EXPECT_FALSE(receiver.server_error());
   EXPECT_EQ(4U, url_factory.attempts());
+  // Retry intervals: 200ms, 400ms, 800ms.
+  EXPECT_EQ(base::Milliseconds(1400), base::TimeTicks::Now() - start);
 }
 
 TEST_F(TimeZoneTest, InvalidResponse) {
@@ -233,10 +239,7 @@ TEST_F(TimeZoneTest, InvalidResponse) {
   TimeZoneReceiver receiver;
 
   const int timeout_seconds = 1;
-  size_t expected_retries = static_cast<size_t>(
-      timeout_seconds * 1000 / kRequestRetryIntervalMilliSeconds);
-  ASSERT_GE(expected_retries, 2U);
-
+  const base::TimeTicks start = base::TimeTicks::Now();
   provider.RequestTimezone(simple_request.position, simple_request.timestamp,
                            base::Seconds(timeout_seconds),
                            base::BindOnce(&TimeZoneReceiver::OnRequestDone,
@@ -252,17 +255,10 @@ TEST_F(TimeZoneTest, InvalidResponse) {
 
   EXPECT_TRUE(receiver_timezone.contains("status=6 (REQUEST_ERROR)"));
   EXPECT_FALSE(receiver.server_error());
-  EXPECT_GE(url_factory.attempts(), 2U);
-  if (url_factory.attempts() > expected_retries + 1) {
-    LOG(WARNING) << "TimeZoneTest::InvalidResponse: Too many attempts ("
-                 << url_factory.attempts() << "), no more than "
-                 << expected_retries + 1 << " expected.";
-  }
-  if (url_factory.attempts() < expected_retries - 1) {
-    LOG(WARNING) << "TimeZoneTest::InvalidResponse: Too less attempts ("
-                 << url_factory.attempts() << "), greater than "
-                 << expected_retries - 1 << " expected.";
-  }
+  // Initial request at 0ms, then retries at 200ms (+200ms), 600ms (+400ms),
+  // and 1400ms (+800ms, which exceeds the 1s timeout).
+  EXPECT_EQ(4U, url_factory.attempts());
+  EXPECT_EQ(base::Milliseconds(1400), base::TimeTicks::Now() - start);
 }
 
 TEST(TimeZoneResolverTest, CheckIntervals) {
