@@ -376,7 +376,7 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
   }
 
   auto ShowSidePanelForKey(SidePanelEntryKey key) {
-    return Do(([&]() { SidePanelUI::From(browser())->Show(key); }));
+    return Do(([this, key]() { SidePanelUI::From(browser())->Show(key); }));
   }
 };
 
