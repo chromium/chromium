@@ -41,9 +41,11 @@ AutofillOfferData CreateTestOffer(const std::vector<GURL>& merchant_origins,
   display_strings.see_details_text = "See details";
   display_strings.usage_instructions_text =
       "Click the promo code field at checkout to autofill it.";
-  return AutofillOfferData::GPayPromoCodeOffer(
-      offer_id, expiry, merchant_origins, /*offer_details_url=*/GURL(),
-      display_strings, promo_code);
+  return AutofillOfferData(offer_id, expiry, merchant_origins,
+                           /*offer_details_url=*/GURL("https://pay.google.com"),
+                           display_strings, promo_code,
+                           /*offer_reward_amount=*/"5% off",
+                           /*issue_time=*/base::Time());
 }
 
 class OfferNotificationIconViewBrowserTest

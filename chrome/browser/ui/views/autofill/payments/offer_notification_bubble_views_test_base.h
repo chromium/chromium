@@ -77,16 +77,8 @@ class OfferNotificationBubbleViewsTestBase
   // OfferNotificationBubbleControllerImpl::ObserverForTest:
   void OnBubbleShown() override;
 
-  std::unique_ptr<AutofillOfferData> CreateGPayPromoCodeOfferDataWithDomains(
-      const std::vector<GURL>& domains);
-
   std::unique_ptr<AutofillOfferData> CreateWalletDirectOfferDataWithDomains(
       const std::vector<GURL>& domains);
-
-  void SetUpOfferDataWithDomains(AutofillOfferData::OfferType offer_type,
-                                 const std::vector<GURL>& domains);
-
-  void SetUpGPayPromoCodeOfferDataWithDomains(const std::vector<GURL>& domains);
 
   void SetUpWalletDirectOfferDataWithDomains(const std::vector<GURL>& domains);
 
@@ -125,19 +117,8 @@ class OfferNotificationBubbleViewsTestBase
   // can be expected on UI elements if desired.
   std::string GetDefaultTestPromoCode() const;
 
-  // Returns the value prop string used for the default test GPay promo code,
-  // so that it can be expected on UI elements if desired.
-  std::string GetDefaultTestValuePropText() const;
-
-  // Returns the see details string used for the default test GPay promo code.
-  std::string GetDefaultTestSeeDetailsText() const;
-
-  // Returns the user instructions string used for the default GPay promo code
-  // data.
-  std::string GetDefaultTestUsageInstructionsText() const;
-
-  // Returns the offer details url string used for the default GPay promo code
-  // and Wallet direct offer data.
+  // Returns the offer details url string used for the default Wallet direct
+  // offer data.
   std::string GetDefaultTestDetailsUrlString() const;
 
   // Returns the offer short title used for the default Wallet direct offer

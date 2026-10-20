@@ -60,9 +60,6 @@ void OfferNotificationBubbleViews::Hide() {
 
 void OfferNotificationBubbleViews::Init() {
   switch (controller_->GetOffer()->GetOfferType()) {
-    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
-      InitWithGPayPromoCodeOfferContent();
-      return;
     case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
       InitWithWalletDirectOfferContent();
       return;
@@ -108,57 +105,6 @@ void OfferNotificationBubbleViews::OnWidgetDestroying(views::Widget* widget) {
   CHECK_NE(widget->closed_reason(),
            views::Widget::ClosedReason::kCancelButtonClicked,
            base::NotFatalUntil::M162);
-}
-
-void OfferNotificationBubbleViews::InitWithGPayPromoCodeOfferContent() {
-  // Promo code offers have no CTA buttons:
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-
-  // Create bubble content:
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
-  layout->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
-
-  const AutofillOfferData* offer = controller_->GetOffer();
-  CHECK(offer, base::NotFatalUntil::M162);
-  const std::string& value_prop_text =
-      offer->GetDisplayStrings().value_prop_text;
-  // Add the first line of `value_prop_text` with see details link.
-  if (!value_prop_text.empty()) {
-    // Hide See details if the link is not valid.
-    const std::string& see_details_text =
-        offer->GetOfferDetailsUrl().is_valid()
-            ? offer->GetDisplayStrings().see_details_text
-            : "";
-    promo_code_label_ = AddChildView(std::make_unique<views::StyledLabel>());
-    std::vector<size_t> offsets;
-    auto label_text = l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_VALUE_PROP_TEXT,
-        base::UTF8ToUTF16(value_prop_text), base::UTF8ToUTF16(see_details_text),
-        &offsets);
-    promo_code_label_->SetText(label_text);
-    promo_code_label_->SetTextContext(
-        ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL);
-    promo_code_label_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
-    promo_code_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    if (!see_details_text.empty()) {
-      promo_code_label_->AddStyleRange(
-          gfx::Range(offsets.at(1), offsets.at(1) + see_details_text.length()),
-          views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-              &OfferNotificationBubbleViews::OnOfferDetailsLinkClicked,
-              base::Unretained(this))));
-    }
-  }
-  // Add the usage instructions text.
-  if (!offer->GetDisplayStrings().usage_instructions_text.empty()) {
-    instructions_label_ = AddChildView(std::make_unique<views::Label>(
-        base::ASCIIToUTF16(offer->GetDisplayStrings().usage_instructions_text),
-        ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-        views::style::STYLE_SECONDARY));
-    instructions_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    instructions_label_->SetMultiLine(true);
-  }
 }
 
 void OfferNotificationBubbleViews::InitWithWalletDirectOfferContent() {

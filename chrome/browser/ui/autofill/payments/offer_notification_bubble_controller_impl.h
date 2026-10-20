@@ -51,7 +51,6 @@ class OfferNotificationBubbleControllerImpl
 
   // OfferBubbleController:
   std::u16string GetWindowTitle() const override;
-  std::u16string GetPromoCodeButtonTooltip() const override;
   AutofillBubbleBase* GetOfferNotificationBubbleView() const override;
   const AutofillOfferData* GetOffer() const override;
   bool IsIconVisible() const override;
@@ -126,10 +125,6 @@ class OfferNotificationBubbleControllerImpl
   // Denotes whether the bubble is shown due to user gesture. If this is true,
   // it means the bubble is a reshown bubble.
   bool is_user_gesture_ = false;
-
-  // Denotes whether the promo code label button was clicked yet or not.
-  // Determines the appropriate hover tooltip for the button.
-  bool promo_code_button_clicked_ = false;
 
   // Whether the omnibox icon for the bubble should be visible.
   bool is_icon_visible_ = false;

@@ -31,10 +31,6 @@ namespace autofill {
 
 namespace {
 constexpr char kDefaultTestPromoCode[] = "5PCTOFFSHOES";
-constexpr char kDefaultTestValuePropText[] = "5% off on shoes. Up to $50.";
-constexpr char kDefaultTestSeeDetailsText[] = "See details";
-constexpr char kDefaultTestUsageInstructionsText[] =
-    "Click the promo code field at checkout to autofill it.";
 constexpr char kDefaultTestDetailsUrlString[] = "https://pay.google.com";
 constexpr char kDefaultTestOfferShortTitle[] = "5% off";
 }  // namespace
@@ -106,28 +102,6 @@ void OfferNotificationBubbleViewsTestBase::OnBubbleShown() {
 }
 
 std::unique_ptr<AutofillOfferData>
-OfferNotificationBubbleViewsTestBase::CreateGPayPromoCodeOfferDataWithDomains(
-    const std::vector<GURL>& domains) {
-  std::string offer_id = "5555";
-  base::Time expiry = AutofillClock::Now() + base::Days(2);
-  std::vector<GURL> merchant_origins;
-  for (auto url : domains) {
-    merchant_origins.emplace_back(url.DeprecatedGetOriginAsURL());
-  }
-  DisplayStrings display_strings;
-  display_strings.value_prop_text = GetDefaultTestValuePropText();
-  display_strings.see_details_text = GetDefaultTestSeeDetailsText();
-  display_strings.usage_instructions_text =
-      GetDefaultTestUsageInstructionsText();
-  auto promo_code = GetDefaultTestPromoCode();
-  GURL offer_details_url = GURL(GetDefaultTestDetailsUrlString());
-  return std::make_unique<AutofillOfferData>(
-      AutofillOfferData::GPayPromoCodeOffer(offer_id, expiry, merchant_origins,
-                                            offer_details_url, display_strings,
-                                            promo_code));
-}
-
-std::unique_ptr<AutofillOfferData>
 OfferNotificationBubbleViewsTestBase::CreateWalletDirectOfferDataWithDomains(
     const std::vector<GURL>& domains) {
   std::string offer_id = "6666";
@@ -143,30 +117,6 @@ OfferNotificationBubbleViewsTestBase::CreateWalletDirectOfferDataWithDomains(
       GURL(GetDefaultTestDetailsUrlString()), DisplayStrings(),
       GetDefaultTestPromoCode(), GetDefaultTestOfferShortTitle(),
       /*issue_time=*/base::Time());
-}
-
-void OfferNotificationBubbleViewsTestBase::SetUpOfferDataWithDomains(
-    AutofillOfferData::OfferType offer_type,
-    const std::vector<GURL>& domains) {
-  switch (offer_type) {
-    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
-      SetUpGPayPromoCodeOfferDataWithDomains(domains);
-      break;
-    case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
-      SetUpWalletDirectOfferDataWithDomains(domains);
-      break;
-    case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
-    case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED();
-  }
-}
-
-void OfferNotificationBubbleViewsTestBase::
-    SetUpGPayPromoCodeOfferDataWithDomains(const std::vector<GURL>& domains) {
-  personal_data_->payments_data_manager().ClearAllServerDataForTesting();
-  test_api(personal_data_->payments_data_manager())
-      .AddOfferData(CreateGPayPromoCodeOfferDataWithDomains(domains));
-  test_api(personal_data_->payments_data_manager()).NotifyObservers();
 }
 
 void OfferNotificationBubbleViewsTestBase::
@@ -242,22 +192,6 @@ void OfferNotificationBubbleViewsTestBase::ResetEventWaiterForSequence(
 std::string OfferNotificationBubbleViewsTestBase::GetDefaultTestPromoCode()
     const {
   return kDefaultTestPromoCode;
-}
-
-std::string OfferNotificationBubbleViewsTestBase::GetDefaultTestValuePropText()
-    const {
-  return kDefaultTestValuePropText;
-}
-
-std::string OfferNotificationBubbleViewsTestBase::GetDefaultTestSeeDetailsText()
-    const {
-  return kDefaultTestSeeDetailsText;
-}
-
-std::string
-OfferNotificationBubbleViewsTestBase::GetDefaultTestUsageInstructionsText()
-    const {
-  return kDefaultTestUsageInstructionsText;
 }
 
 std::string

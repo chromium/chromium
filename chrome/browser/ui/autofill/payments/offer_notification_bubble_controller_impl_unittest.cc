@@ -161,22 +161,6 @@ class OfferNotificationBubbleControllerImplTest
     controller()->ReshowBubble();
   }
 
-  AutofillOfferData CreateTestGPayPromoCodeOffer(
-      const std::vector<GURL>& merchant_origins,
-      const std::string& promo_code) {
-    std::string offer_id = "2468";
-    base::Time expiry = base::Time::Now() + base::Days(2);
-    DisplayStrings display_strings;
-    display_strings.value_prop_text = "5% off on shoes. Up to $50.";
-    display_strings.see_details_text = "See details";
-    display_strings.usage_instructions_text =
-        "Click the promo code field at checkout to autofill it.";
-    GURL offer_details_url = GURL("https://pay.google.com");
-    return AutofillOfferData::GPayPromoCodeOffer(
-        offer_id, expiry, merchant_origins, offer_details_url, display_strings,
-        promo_code);
-  }
-
  private:
   std::unique_ptr<tabs::TabInterface> tab_interface_;
   std::unique_ptr<tabs::TabFeatures> tab_features_;
@@ -225,20 +209,6 @@ TEST_F(OfferNotificationBubbleControllerImplTest,
   ShowBubble(offer);
 
   EXPECT_TRUE(*controller()->GetOffer() == offer);
-}
-
-// Tests that the offer notification bubble will be shown, and coupon service
-// will not be called for a GPay promo code offer.
-TEST_F(OfferNotificationBubbleControllerImplTest, GPayPromoCode_BubbleShown) {
-  AutofillOfferData offer = CreateTestGPayPromoCodeOffer(
-      /*merchant_origins=*/{GURL("https://www.example.com")},
-      /*promo_code=*/"FREEFALL5678");
-  ShowBubble(offer);
-
-  EXPECT_TRUE(controller()->GetOfferNotificationBubbleView());
-  EXPECT_EQ(controller()->GetWindowTitle(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE));
 }
 
 // Tests that the offer notification bubble will be shown for a wallet direct

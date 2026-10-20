@@ -4354,7 +4354,6 @@ source_set("browser") {
       "//chrome/browser/ui/views/autofill/payments:omnibox_autofill_suggestion_view",
       "//chrome/browser/ui/views/autofill/payments:payments_churned_users_bubble_view",
       "//chrome/browser/ui/views/autofill/payments:payments_window_user_consent_dialog_view",
-      "//chrome/browser/ui/views/autofill/payments:promo_code_label_button",
       "//chrome/browser/ui/views/autofill/payments:save_and_fill_view_desktop",
       "//chrome/browser/ui/views/autofill/payments:save_card_bubble_views",
       "//chrome/browser/ui/views/autofill/payments:save_card_manage_cards_bubble_views",

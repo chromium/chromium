@@ -79,23 +79,12 @@ OfferNotificationBubbleControllerImpl::OfferNotificationBubbleControllerImpl(
 
 std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
   switch (offer_.GetOfferType()) {
-    case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE);
     case AutofillOfferData::OfferType::WALLET_DIRECT_OFFER:
       return base::UTF8ToUTF16(offer_.GetOfferRewardAmount());
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
   }
-}
-
-std::u16string
-OfferNotificationBubbleControllerImpl::GetPromoCodeButtonTooltip() const {
-  return l10n_util::GetStringUTF16(
-      promo_code_button_clicked_
-          ? IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_CLICKED
-          : IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_NORMAL);
 }
 
 AutofillBubbleBase*
@@ -115,7 +104,6 @@ bool OfferNotificationBubbleControllerImpl::IsIconVisible() const {
 void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
   ResetBubbleViewAndInformBubbleManager();
-  promo_code_button_clicked_ = false;
 
   autofill_metrics::LogOfferNotificationBubbleResult(closed_reason);
 

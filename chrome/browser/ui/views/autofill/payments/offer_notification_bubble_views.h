@@ -23,13 +23,9 @@ namespace autofill {
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kOfferNotificationBubbleElementId);
 
-// This class implements the Desktop bubble that displays any eligible offers or
-// rewards linked to the current page domain. This can include merchant promo
-// code offers, which shows the code the user should apply at checkout, or
-// offers saved to the user's Google Wallet, which shows the offer's short title
-// and a link to its terms and conditions.
-// TODO(crbug.com/546252995): Deprecate the GPay promo code bubble since Wallet
-// direct offers are the only supported offer type.
+// This class implements the Desktop bubble that displays an offer saved to the
+// user's Google Wallet for the current page domain. It shows the offer's short
+// title and a link to its terms and conditions.
 class OfferNotificationBubbleViews : public AutofillLocationBarBubble {
   METADATA_HEADER(OfferNotificationBubbleViews, AutofillLocationBarBubble)
  public:
@@ -45,13 +41,9 @@ class OfferNotificationBubbleViews : public AutofillLocationBarBubble {
  private:
   // TODO(crbug.com/40947801) : Remove these friended test and convert the test
   // to use Kombucha framework.
-  FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
-                           CopyPromoCode);
   FRIEND_TEST_ALL_PREFIXES(
       OfferNotificationBubbleViewsInteractiveUiTest,
       ReshowOfferNotificationBubble_OfferDeletedBetweenShows);
-  FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
-                           ShowGPayPromoCodeBubble);
   FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
                            ShowWalletDirectOfferBubble);
   FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
@@ -67,7 +59,6 @@ class OfferNotificationBubbleViews : public AutofillLocationBarBubble {
   void WindowClosing() override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  void InitWithGPayPromoCodeOfferContent();
   void InitWithWalletDirectOfferContent();
 
   // Called when the link of the offer's body text is clicked. Browser will
@@ -75,11 +66,6 @@ class OfferNotificationBubbleViews : public AutofillLocationBarBubble {
   void OnOfferDetailsLinkClicked();
 
   raw_ptr<OfferNotificationBubbleController> controller_;
-
-  // TODO(crbug.com/40228302): Replace tests with Pixel tests.
-  raw_ptr<views::StyledLabel> promo_code_label_ = nullptr;
-
-  raw_ptr<views::Label> instructions_label_ = nullptr;
 
   // Body text of the Wallet direct offer bubble, which ends with a link to the
   // terms and conditions of the offer.

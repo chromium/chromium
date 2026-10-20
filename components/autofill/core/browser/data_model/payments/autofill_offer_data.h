@@ -42,8 +42,6 @@ class AutofillOfferData {
     UNKNOWN,
     // GPay-activated card linked offer.
     GPAY_CARD_LINKED_OFFER,
-    // GPay-activated promo code offer.
-    GPAY_PROMO_CODE_OFFER,
     // Google Wallet direct offer.
     WALLET_DIRECT_OFFER,
   };
@@ -59,14 +57,6 @@ class AutofillOfferData {
       const DisplayStrings& display_strings,
       const std::vector<int64_t>& eligible_instrument_id,
       const std::string& offer_reward_amount);
-  // Returns an AutofillOfferData for a GPay promo code offer.
-  static AutofillOfferData GPayPromoCodeOffer(
-      std::string offer_id,
-      base::Time expiry,
-      const std::vector<GURL>& merchant_origins,
-      const GURL& offer_details_url,
-      const DisplayStrings& display_strings,
-      const std::string& promo_code);
   // Returns an AutofillOfferData for a Google Wallet direct offer.
   static AutofillOfferData WalletDirectOffer(
       std::string offer_id,
@@ -159,8 +149,7 @@ class AutofillOfferData {
                     const DisplayStrings& display_strings,
                     const std::vector<int64_t>& eligible_instrument_id,
                     const std::string& offer_reward_amount);
-  // Constructs an AutofillOfferData for a GPay promo code offer or Wallet
-  // direct offer.
+  // Constructs an AutofillOfferData for a Wallet direct offer.
   AutofillOfferData(OfferType offer_type,
                     std::string offer_id,
                     base::Time expiry,

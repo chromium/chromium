@@ -33,19 +33,6 @@ AutofillOfferData AutofillOfferData::GPayCardLinkedOffer(
 }
 
 // static
-AutofillOfferData AutofillOfferData::GPayPromoCodeOffer(
-    std::string offer_id,
-    base::Time expiry,
-    const std::vector<GURL>& merchant_origins,
-    const GURL& offer_details_url,
-    const DisplayStrings& display_strings,
-    const std::string& promo_code) {
-  return AutofillOfferData(OfferType::GPAY_PROMO_CODE_OFFER,
-                           std::move(offer_id), expiry, merchant_origins,
-                           offer_details_url, display_strings, promo_code);
-}
-
-// static
 AutofillOfferData AutofillOfferData::WalletDirectOffer(
     std::string offer_id,
     base::Time expiry,
