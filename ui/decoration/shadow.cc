@@ -104,9 +104,9 @@ void Shadow::SetColorMap(const ElevationToColorsMap& color_map) {
   NotifyDecorationChanged();
 }
 
-std::optional<DecorationSource::Details> Shadow::GetDetails(
+std::optional<gfx::ShadowValues> Shadow::GetSpec(
     const gfx::Rect& content_bounds,
-    const gfx::RoundedCornersF& rounded_corners) {
+    const gfx::RoundedCornersF& rounded_corners) const {
   CHECK(!content_bounds.IsEmpty());
 
   const int smaller_dimension =
@@ -132,20 +132,40 @@ std::optional<DecorationSource::Details> Shadow::GetDetails(
   const int size_adjusted_elevation = std::min(max_safe_elevation, elevation_);
   CHECK_GE(size_adjusted_elevation, 0);
 
-  // Do not generate or set nine-patch details if the shadow has never had a
-  // positive elevation set. This keeps the decoration layer unconfigured and
-  // avoids unnecessary image allocations for zero-elevation shadows.
-  if (size_adjusted_elevation == 0 && !details_.has_value()) {
+  if (size_adjusted_elevation == 0) {
     return std::nullopt;
   }
 
   auto iter = color_map_.find(elevation_);
-  const gfx::ShadowValues values = MakeShadowValues(
-      size_adjusted_elevation, style_,
-      iter != color_map_.end() ? std::make_optional(iter->second)
-                               : std::nullopt,
-      is_pill_shaped);
-  const auto& details = ShadowDetails::Get(rounded_corners, values);
+  return MakeShadowValues(size_adjusted_elevation, style_,
+                          iter != color_map_.end()
+                              ? std::make_optional(iter->second)
+                              : std::nullopt,
+                          is_pill_shaped);
+}
+
+std::optional<DecorationSource::Details> Shadow::GetDetails(
+    const gfx::Rect& content_bounds,
+    const gfx::RoundedCornersF& rounded_corners) {
+  std::optional<gfx::ShadowValues> values =
+      GetSpec(content_bounds, rounded_corners);
+
+  if (!values.has_value()) {
+    // Do not generate or set nine-patch details if the shadow has never had a
+    // positive elevation set. This keeps the decoration layer unconfigured and
+    // avoids unnecessary image allocations for zero-elevation shadows.
+    if (!details_.has_value()) {
+      return std::nullopt;
+    }
+
+    auto iter = color_map_.find(elevation_);
+    values = MakeShadowValues(0, style_,
+                              iter != color_map_.end()
+                                  ? std::make_optional(iter->second)
+                                  : std::nullopt);
+  }
+
+  const auto& details = ShadowDetails::Get(rounded_corners, *values);
 
   details_ = details;
 

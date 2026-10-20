@@ -16,6 +16,8 @@ component("decoration") {
     "highlight_border_value.h",
     "shadow.cc",
     "shadow.h",
+    "shadow_with_highlight_border.cc",
+    "shadow_with_highlight_border.h",
   ]
 
   defines = [ "IS_UI_DECORATION_IMPL" ]

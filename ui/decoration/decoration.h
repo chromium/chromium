@@ -18,6 +18,7 @@
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/decoration/decoration_source.h"
+#include "ui/decoration/highlight_border.h"
 #include "ui/decoration/shadow.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -61,6 +62,12 @@ class COMPONENT_EXPORT(UI_DECORATION) Decoration final
   static std::unique_ptr<Decoration> CreateHighlightBorder(
       SkColor highlight_color,
       SkColor border_color);
+
+  // Creates an initialized decoration that draws an optional drop shadow and an
+  // optional highlight border on the same nine-patch layer.
+  static std::unique_ptr<Decoration> CreateShadowWithHighlightBorder(
+      std::unique_ptr<decoration::Shadow> shadow = nullptr,
+      std::unique_ptr<decoration::HighlightBorder> highlight_border = nullptr);
 
   explicit Decoration(std::unique_ptr<decoration::DecorationSource> source,
                       std::string_view debug_name = {});

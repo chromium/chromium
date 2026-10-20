@@ -49,9 +49,9 @@ void HighlightBorder::SetThickness(int thickness) {
   NotifyDecorationChanged();
 }
 
-std::optional<DecorationSource::Details> HighlightBorder::GetDetails(
+std::optional<HighlightBorderValue> HighlightBorder::GetSpec(
     const gfx::Rect& content_bounds,
-    const gfx::RoundedCornersF& rounded_corners) {
+    const gfx::RoundedCornersF& rounded_corners) const {
   const gfx::Insets corner_insets = GetInsetsForRoundedCorners(rounded_corners);
 
   // The ninebox assumption breaks down when the content is too small for the
@@ -69,15 +69,27 @@ std::optional<DecorationSource::Details> HighlightBorder::GetDetails(
     return std::nullopt;
   }
 
-  const HighlightBorderDetails& details = HighlightBorderDetails::Get(
-      rounded_corners, HighlightBorderValue(highlight_color_, border_color_,
-                                            size_adjusted_thickness));
+  return HighlightBorderValue(highlight_color_, border_color_,
+                              size_adjusted_thickness);
+}
+
+std::optional<DecorationSource::Details> HighlightBorder::GetDetails(
+    const gfx::Rect& content_bounds,
+    const gfx::RoundedCornersF& rounded_corners) {
+  const std::optional<HighlightBorderValue> value =
+      GetSpec(content_bounds, rounded_corners);
+  if (!value.has_value()) {
+    return std::nullopt;
+  }
+
+  const HighlightBorderDetails& details =
+      HighlightBorderDetails::Get(rounded_corners, *value);
 
   // Both rings sit inside the content, so only the content inside them (and
   // inside the rounded corners) is guaranteed to be covered.
   gfx::Rect occlusion_rect(content_bounds.size());
-  occlusion_rect.Inset(gfx::Insets(2 * size_adjusted_thickness) +
-                       corner_insets);
+  occlusion_rect.Inset(gfx::Insets(2 * value->thickness()) +
+                       GetInsetsForRoundedCorners(rounded_corners));
 
   return Details{
       .appearance =

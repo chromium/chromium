@@ -74,6 +74,14 @@ class COMPONENT_EXPORT(UI_DECORATION) Shadow : public DecorationSource {
   void SetColorMap(const ElevationToColorsMap& color_map);
   const ElevationToColorsMap& color_map() const { return color_map_; }
 
+  // Computes the size-adjusted shadow values for `content_bounds` and
+  // `rounded_corners`. Returns std::nullopt when there is no shadow to draw,
+  // either because no elevation was requested or because the content is too
+  // small to hold one.
+  std::optional<gfx::ShadowValues> GetSpec(
+      const gfx::Rect& content_bounds,
+      const gfx::RoundedCornersF& rounded_corners) const;
+
   // DecorationSource:
   std::optional<Details> GetDetails(
       const gfx::Rect& content_bounds,

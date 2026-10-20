@@ -43,6 +43,13 @@ class COMPONENT_EXPORT(UI_DECORATION) HighlightBorder
   void SetThickness(int thickness);
   int thickness() const { return thickness_; }
 
+  // Computes the size-adjusted highlight border value for `content_bounds` and
+  // `rounded_corners`. Returns std::nullopt when the content is too small to
+  // hold even a hairline border.
+  std::optional<HighlightBorderValue> GetSpec(
+      const gfx::Rect& content_bounds,
+      const gfx::RoundedCornersF& rounded_corners) const;
+
   // DecorationSource:
   std::optional<Details> GetDetails(
       const gfx::Rect& content_bounds,

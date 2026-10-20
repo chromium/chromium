@@ -20,6 +20,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/decoration/highlight_border.h"
 #include "ui/decoration/shadow.h"
+#include "ui/decoration/shadow_with_highlight_border.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -106,6 +107,15 @@ std::unique_ptr<Decoration> Decoration::CreateHighlightBorder(
   return Create(std::make_unique<decoration::HighlightBorder>(highlight_color,
                                                               border_color),
                 /*debug_name=*/"HighlightBorder");
+}
+
+// static
+std::unique_ptr<Decoration> Decoration::CreateShadowWithHighlightBorder(
+    std::unique_ptr<decoration::Shadow> shadow,
+    std::unique_ptr<decoration::HighlightBorder> highlight_border) {
+  return Create(std::make_unique<decoration::ShadowWithHighlightBorder>(
+                    std::move(shadow), std::move(highlight_border)),
+                /*debug_name=*/"ShadowWithHighlightBorder");
 }
 
 Decoration::Decoration(std::unique_ptr<decoration::DecorationSource> source,

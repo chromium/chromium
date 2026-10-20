@@ -5,6 +5,8 @@
 #include "ui/decoration/decoration_util.h"
 
 #include <algorithm>
+#include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -183,5 +185,9 @@ template class EXPORT_TEMPLATE_DEFINE(COMPONENT_EXPORT(UI_DECORATION))
 
 template class EXPORT_TEMPLATE_DEFINE(COMPONENT_EXPORT(UI_DECORATION))
     internal::DecorationCache<HighlightBorderValue, HighlightBorderGenerator>;
+
+template class EXPORT_TEMPLATE_DEFINE(COMPONENT_EXPORT(UI_DECORATION))
+    internal::DecorationCache<ShadowWithHighlightBorderValue,
+                              ShadowWithHighlightBorderGenerator>;
 
 }  // namespace ui::decoration
