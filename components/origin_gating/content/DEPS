@@ -1,0 +1,17 @@
+include_rules = [
+  "+components/origin_gating/core",
+  "+content/public/browser",
+  "+content/public/common",
+  "+content/public/test",
+  "+testing/gmock",
+  "+testing/gtest",
+  "+ui/base",
+  "+url",
+]
+
+specific_include_rules = {
+  ".*_browsertest\\.cc": [
+    "+content/shell/browser",
+    "+net/test",
+  ],
+}

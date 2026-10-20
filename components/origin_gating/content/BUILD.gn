@@ -1,0 +1,63 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+assert(use_blink)
+
+source_set("content") {
+  sources = [
+    "origin_gating_tab_controller.cc",
+    "origin_gating_tab_controller.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/origin_gating/core",
+    "//content/public/browser",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "origin_gating_tab_controller_unittest.cc" ]
+
+  deps = [
+    ":content",
+    "//base",
+    "//base/test:test_support",
+    "//components/origin_gating/core",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "origin_gating_tab_controller_browsertest.cc" ]
+
+  deps = [
+    ":content",
+    "//base",
+    "//components/origin_gating/core",
+    "//content/public/browser",
+    "//content/shell:content_shell_lib",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
