@@ -3466,6 +3466,11 @@ void PaintLayerScrollableArea::
 
   CreateAndSetSnappedQueryScrollSnapshotIfNeeded(new_target_ids);
 
+  // A short scroll that starts and ends between compositor commits can skip
+  // intermediate scrollsnapchanging updates. Ensure scrollsnapchanging targets
+  // and events catch up before dispatching scrollsnapchange.
+  UpdateScrollSnapChangingTargetsAndEnqueueScrollSnapChanging(new_target_ids);
+
   auto& rare_data = EnsureRareData();
   bool scrollsnapchange =
       !rare_data.scrollsnapchange_target_ids_ ||

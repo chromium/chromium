@@ -732,6 +732,13 @@ class CC_EXPORT LayerTreeImpl {
 
   void DidUpdateScrollOffset(ElementId id,
                              bool pushed_from_main_or_pending_tree);
+  // Sets the snap targets of the snap container scroll node with
+  // `scroll_element_id`. When called on the active tree, this also updates the
+  // pending tree (or the recycle tree) so that they don't overwrite the active
+  // tree's snap targets with stale ones when activated. Returns whether the
+  // snap targets changed on this tree.
+  bool SetTargetSnapAreaElementIds(ElementId scroll_element_id,
+                                   TargetSnapAreaElementIds snap_target_ids);
 
   // See LayerTreeHost.
   bool have_scroll_event_handlers() const {

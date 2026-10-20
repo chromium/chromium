@@ -704,6 +704,9 @@ int PropertyTreeManager::EnsureCompositorScrollNodeInternal(
       scroll_node.GetMainThreadRepaintReasons();
 
   scroll_node.SetCcNodeId(new_sequence_number_, id);
+  if (scroll_node.NodeChanged() != PaintPropertyChangeType::kUnchanged) {
+    root_layer_.SetNeedsCommit();
+  }
   return id;
 }
 

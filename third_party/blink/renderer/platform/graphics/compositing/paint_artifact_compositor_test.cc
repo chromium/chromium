@@ -5215,6 +5215,62 @@ TEST_P(PaintArtifactCompositorTest, NoCommitRequestForUnchangedScroll) {
   EXPECT_FALSE(host.CommitRequested());
 }
 
+TEST_P(PaintArtifactCompositorTest,
+       CommitRequestForChangedNonCompositedScroll) {
+  auto& host = GetLayerTreeHost();
+  auto scroll_state = ScrollState1(PropertyTreeState::Root(), {}, {});
+  auto& scroll_node = const_cast<ScrollPaintPropertyNode&>(
+      *scroll_state.Transform().ScrollNode());
+  StackTransformPaintPropertyNodeVector scroll_translation_nodes = {
+      &scroll_state.Transform()};
+  EXPECT_EQ(PaintPropertyChangeType::kNodeAddedOrRemoved,
+            scroll_node.NodeChanged());
+
+  auto* hit_test_client =
+      MakeGarbageCollected<FakeDisplayItemClient>("hit_test");
+  auto* contents_client =
+      MakeGarbageCollected<FakeDisplayItemClient>("contents");
+  auto build_artifact = [&]() -> const PaintArtifact& {
+    return TestPaintArtifact()
+        .ScrollHitTestChunk(*hit_test_client, scroll_state)
+        .ScrollingContentsChunk(*contents_client, scroll_state)
+        .Build();
+  };
+
+  Update(build_artifact(), ViewportProperties(), scroll_translation_nodes);
+  EXPECT_EQ(PaintPropertyChangeType::kUnchanged, scroll_node.NodeChanged());
+  EXPECT_TRUE(host.CommitRequested());
+
+  host.CompositeForTest(base::TimeTicks::Now(), true, base::OnceClosure());
+  EXPECT_FALSE(host.CommitRequested());
+
+  // Updating with an unchanged non-composited scroll node should not request a
+  // commit.
+  Update(build_artifact(), ViewportProperties(), scroll_translation_nodes);
+  EXPECT_FALSE(host.CommitRequested());
+
+  // Updating snap_container_data on a non-composited scroll node should clear
+  // its changed flag and request a commit.
+  ScrollPaintPropertyNode::State new_state;
+  new_state.container_rect = scroll_node.ContainerRect();
+  new_state.contents_rect = scroll_node.ContentsRect();
+  new_state.overflow_clip_node = scroll_node.OverflowClipNode();
+  new_state.compositor_element_id = scroll_node.GetCompositorElementId();
+  new_state.user_scrollable_horizontal = scroll_node.UserScrollableHorizontal();
+  new_state.user_scrollable_vertical = scroll_node.UserScrollableVertical();
+  cc::SnapContainerData snap_data;
+  snap_data.SetTargetSnapAreaElementIds(cc::TargetSnapAreaElementIds(
+      CompositorElementId(10), CompositorElementId(20)));
+  new_state.snap_container_data = snap_data;
+  scroll_node.Update(*scroll_node.Parent(), std::move(new_state));
+  EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
+            scroll_node.NodeChanged());
+
+  Update(build_artifact(), ViewportProperties(), scroll_translation_nodes);
+  EXPECT_EQ(PaintPropertyChangeType::kUnchanged, scroll_node.NodeChanged());
+  EXPECT_TRUE(host.CommitRequested());
+}
+
 TEST_P(PaintArtifactCompositorTest, AddIndirectlyCompositedScrollNodes) {
   auto scroll_state = ScrollState1(PropertyTreeState::Root(), {}, {});
   StackTransformPaintPropertyNodeVector scroll_translation_nodes = {

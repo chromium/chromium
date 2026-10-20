@@ -1437,6 +1437,9 @@ void InputHandler::DidCommit() {
   if (scroll_elasticity_helper_) {
     scroll_elasticity_helper_->ApplyStretchAmountsToPending();
   }
+  for (const auto& [element_id, target_ids] : updated_snapped_elements_) {
+    ActiveTree().SetTargetSnapAreaElementIds(element_id, target_ids);
+  }
 }
 
 void InputHandler::DidImplSideInvalidate() {
@@ -1528,8 +1531,8 @@ void InputHandler::ScrollOffsetAnimationFinished(ElementId element_id) {
     if (finished_node && finished_node->snap_container_data.has_value()) {
       TargetSnapAreaElementIds target_ids =
           GetAnimatingSnapTargetsForElement(finished_node->element_id);
-      finished_node->snap_container_data.value().SetTargetSnapAreaElementIds(
-          target_ids);
+      ActiveTree().SetTargetSnapAreaElementIds(finished_node->element_id,
+                                               target_ids);
       updated_snapped_elements_[finished_node->element_id] = target_ids;
       SetNeedsCommit();
     }
@@ -2527,7 +2530,8 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
       EnsureSnapAnimationData(CurrentlyScrollingNode()->element_id);
       SetAnimatingSnapTargetsForElement(CurrentlyScrollingNode()->element_id,
                                         snap.target_element_ids);
-    } else if (data.SetTargetSnapAreaElementIds(snap.target_element_ids)) {
+    } else if (ActiveTree().SetTargetSnapAreaElementIds(
+                   scroll_node->element_id, snap.target_element_ids)) {
       updated_snapped_elements_[scroll_node->element_id] =
           snap.target_element_ids;
     }
@@ -2574,7 +2578,8 @@ bool InputHandler::SnapAtScrollEnd(SnapReason reason) {
     // The updated snap target will be set when the animation is completed.
     SetAnimatingSnapTargetsForElement(scroll_node->element_id,
                                       snap.target_element_ids);
-  } else if (data.SetTargetSnapAreaElementIds(snap.target_element_ids)) {
+  } else if (ActiveTree().SetTargetSnapAreaElementIds(
+                 scroll_node->element_id, snap.target_element_ids)) {
     updated_snapped_elements_[scroll_node->element_id] =
         snap.target_element_ids;
     SetNeedsCommit();

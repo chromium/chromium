@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cinttypes>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -14,6 +15,7 @@
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/features.h"
+#include "cc/input/scroll_snap_data.h"
 #include "cc/layers/append_quads_context.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
@@ -25,6 +27,7 @@
 #include "cc/trees/debug_rect_history.h"
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/layer_tree_host_impl.h"
+#include "cc/trees/scroll_node.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
@@ -40,6 +43,20 @@ std::pair<gfx::PointF, gfx::PointF> GetVisibleSelectionEndPoints(
                     std::clamp(top.y(), rect.y(), rect.bottom()));
   gfx::PointF end = start + (bottom - top);
   return {start, end};
+}
+
+// Returns the snap targets of the snap container with `scroll_element_id` in
+// `tree`, or nullopt if `tree` doesn't have it.
+std::optional<TargetSnapAreaElementIds> GetTargetSnapAreaElementIds(
+    const LayerTreeImpl* tree,
+    ElementId scroll_element_id) {
+  const ScrollNode* scroll_node =
+      tree->property_trees()->scroll_tree().FindNodeFromElementId(
+          scroll_element_id);
+  if (!scroll_node || !scroll_node->snap_container_data.has_value()) {
+    return std::nullopt;
+  }
+  return scroll_node->snap_container_data->GetTargetSnapAreaElementIds();
 }
 
 class LayerTreeImplTest : public LayerTreeImplTestBase, public testing::Test {
@@ -2827,6 +2844,128 @@ TEST_F(LayerTreeImplTest, TotalScrollOffsetForElement) {
   EXPECT_POINTF_EQ(
       gfx::PointF(0, 0),
       host_impl().active_tree()->TotalMaxScrollOffset(ElementId(999)));
+}
+
+TEST_F(LayerTreeImplTest, SetTargetSnapAreaElementIdsSyncsTrees) {
+  host_impl().CreatePendingTree();
+  LayerTreeImpl* pending_tree = host_impl().pending_tree();
+  LayerImpl* root = EnsureRootLayerInPendingTree();
+  root->SetBounds(gfx::Size(100, 100));
+
+  const ElementId kScrollerId(100);
+  LayerImpl* scroller = AddLayerInPendingTree<LayerImpl>();
+  scroller->SetBounds(gfx::Size(50, 50));
+  scroller->SetElementId(kScrollerId);
+  CopyProperties(root, scroller);
+  CreateTransformNode(scroller);
+  ScrollNode& pending_scroll_node =
+      CreateScrollNode(scroller, gfx::Size(50, 50));
+  pending_scroll_node.bounds = gfx::Size(100, 200);
+  pending_scroll_node.snap_container_data.emplace();
+
+  pending_tree->SetDeviceViewportRect(gfx::Rect(root->bounds()));
+  UpdateDrawProperties(pending_tree);
+
+  // Activate the pending tree so that active_tree and recycle_tree both have
+  // the scroll node with snap_container_data.
+  host_impl().ActivateSyncTree();
+  ASSERT_EQ(nullptr, host_impl().pending_tree());
+  ASSERT_NE(nullptr, host_impl().recycle_tree());
+  const TargetSnapAreaElementIds kInitialTargets;
+  EXPECT_EQ(kInitialTargets, GetTargetSnapAreaElementIds(
+                                 host_impl().active_tree(), kScrollerId));
+  EXPECT_EQ(kInitialTargets, GetTargetSnapAreaElementIds(
+                                 host_impl().recycle_tree(), kScrollerId));
+
+  // Setting new targets on active_tree also updates recycle_tree.
+  const TargetSnapAreaElementIds kTargets1(ElementId(10), ElementId(20));
+  EXPECT_TRUE(host_impl().active_tree()->SetTargetSnapAreaElementIds(
+      kScrollerId, kTargets1));
+  EXPECT_EQ(kTargets1, GetTargetSnapAreaElementIds(host_impl().active_tree(),
+                                                   kScrollerId));
+  EXPECT_EQ(kTargets1, GetTargetSnapAreaElementIds(host_impl().recycle_tree(),
+                                                   kScrollerId));
+
+  // Setting the same targets again returns false and changes nothing.
+  EXPECT_FALSE(host_impl().active_tree()->SetTargetSnapAreaElementIds(
+      kScrollerId, kTargets1));
+  EXPECT_EQ(kTargets1, GetTargetSnapAreaElementIds(host_impl().active_tree(),
+                                                   kScrollerId));
+  EXPECT_EQ(kTargets1, GetTargetSnapAreaElementIds(host_impl().recycle_tree(),
+                                                   kScrollerId));
+
+  // Simulate an impl-side invalidation (e.g. for a raster-inducing scroll)
+  // which swaps recycle_tree into pending_tree and activates it. The snap
+  // targets on active_tree must not be overwritten with stale values.
+  host_impl().CreatePendingTree();
+  ASSERT_EQ(nullptr, host_impl().recycle_tree());
+  // pending_tree is the former recycle_tree, so it already has kTargets1.
+  EXPECT_EQ(kTargets1, GetTargetSnapAreaElementIds(host_impl().pending_tree(),
+                                                   kScrollerId));
+
+  const TargetSnapAreaElementIds kTargets2(ElementId(30), ElementId(40));
+  EXPECT_TRUE(host_impl().active_tree()->SetTargetSnapAreaElementIds(
+      kScrollerId, kTargets2));
+  EXPECT_EQ(kTargets2, GetTargetSnapAreaElementIds(host_impl().active_tree(),
+                                                   kScrollerId));
+  EXPECT_EQ(kTargets2, GetTargetSnapAreaElementIds(host_impl().pending_tree(),
+                                                   kScrollerId));
+
+  host_impl().ActivateSyncTree();
+  EXPECT_EQ(kTargets2, GetTargetSnapAreaElementIds(host_impl().active_tree(),
+                                                   kScrollerId));
+  EXPECT_EQ(kTargets2, GetTargetSnapAreaElementIds(host_impl().recycle_tree(),
+                                                   kScrollerId));
+
+  // Setting targets on a tree other than active_tree doesn't sync them back
+  // to active_tree.
+  const TargetSnapAreaElementIds kTargets3(ElementId(50), ElementId(60));
+  EXPECT_TRUE(host_impl().recycle_tree()->SetTargetSnapAreaElementIds(
+      kScrollerId, kTargets3));
+  EXPECT_EQ(kTargets3, GetTargetSnapAreaElementIds(host_impl().recycle_tree(),
+                                                   kScrollerId));
+  EXPECT_EQ(kTargets2, GetTargetSnapAreaElementIds(host_impl().active_tree(),
+                                                   kScrollerId));
+}
+
+// A commit may remove a scroller from the pending tree while the active tree
+// still has it. Setting snap targets on the active tree should still work, and
+// should leave the pending tree alone.
+TEST_F(LayerTreeImplTest,
+       SetTargetSnapAreaElementIdsWithScrollerMissingFromPendingTree) {
+  LayerImpl* root = root_layer();
+  const ElementId kScrollerId(100);
+  LayerImpl* scroller = AddLayerInActiveTree<LayerImpl>();
+  scroller->SetBounds(gfx::Size(50, 50));
+  scroller->SetElementId(kScrollerId);
+  CopyProperties(root, scroller);
+  CreateTransformNode(scroller);
+  ScrollNode& scroll_node = CreateScrollNode(scroller, gfx::Size(50, 50));
+  scroll_node.bounds = gfx::Size(100, 200);
+  scroll_node.snap_container_data.emplace();
+  UpdateDrawProperties(host_impl().active_tree());
+
+  // The pending tree only has a root layer, as if a commit removed the
+  // scroller.
+  host_impl().CreatePendingTree();
+  EnsureRootLayerInPendingTree();
+  LayerTreeImpl* pending_tree = host_impl().pending_tree();
+  ASSERT_FALSE(
+      GetTargetSnapAreaElementIds(pending_tree, kScrollerId).has_value());
+
+  const TargetSnapAreaElementIds kTargets(ElementId(10), ElementId(20));
+  EXPECT_TRUE(host_impl().active_tree()->SetTargetSnapAreaElementIds(
+      kScrollerId, kTargets));
+  EXPECT_EQ(kTargets, GetTargetSnapAreaElementIds(host_impl().active_tree(),
+                                                  kScrollerId));
+  EXPECT_FALSE(
+      GetTargetSnapAreaElementIds(pending_tree, kScrollerId).has_value());
+
+  // Setting the targets on the pending tree directly does nothing.
+  EXPECT_FALSE(
+      pending_tree->SetTargetSnapAreaElementIds(kScrollerId, kTargets));
+  EXPECT_FALSE(
+      GetTargetSnapAreaElementIds(pending_tree, kScrollerId).has_value());
 }
 
 TEST_F(LayerTreeImplTest, AsValueIntoRenderSurfaceLayerList) {

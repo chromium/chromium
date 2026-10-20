@@ -293,6 +293,35 @@ void LayerTreeImpl::DidUpdateScrollOffset(
   }
 }
 
+bool LayerTreeImpl::SetTargetSnapAreaElementIds(
+    ElementId scroll_element_id,
+    TargetSnapAreaElementIds snap_target_ids) {
+  ScrollNode* scroll_node =
+      property_trees()->scroll_tree_mutable().MutableFindNodeFromElementId(
+          scroll_element_id);
+  if (!scroll_node || !scroll_node->snap_container_data.has_value()) {
+    // A commit may have removed the scroller, or its snap container data, from
+    // the sync tree. E.g. the pending tree may no longer contain a scroller
+    // that's still on the active tree.
+    return false;
+  }
+  bool changed = scroll_node->snap_container_data->SetTargetSnapAreaElementIds(
+      snap_target_ids);
+  if (IsActiveTree()) {
+    // Keep the pending tree in sync. If there isn't one, update the recycle
+    // tree instead, since it's reused as the next pending tree.
+    if (host_impl_->pending_tree()) {
+      host_impl_->pending_tree()->SetTargetSnapAreaElementIds(scroll_element_id,
+                                                              snap_target_ids);
+    }
+    if (host_impl_->recycle_tree()) {
+      host_impl_->recycle_tree()->SetTargetSnapAreaElementIds(scroll_element_id,
+                                                              snap_target_ids);
+    }
+  }
+  return changed;
+}
+
 void LayerTreeImpl::UpdateAllScrollbarGeometries() {
   if (!IsActiveTree())
     return;

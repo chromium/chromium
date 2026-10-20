@@ -1361,6 +1361,13 @@ void PaintArtifactCompositor::Update(
           g_s_property_tree_sequence_number);
     }
   }
+  for (auto& node : scroll_translation_nodes) {
+    node->ClearChangedToRoot(g_s_property_tree_sequence_number);
+  }
+  if (viewport_properties.outer_scroll_translation) {
+    viewport_properties.outer_scroll_translation->ClearChangedToRoot(
+        g_s_property_tree_sequence_number);
+  }
 
   DVLOG(2) << "PaintArtifactCompositor::Update() done\n"
            << "Composited layers:\n"
