@@ -10,10 +10,7 @@ assert(!is_android)
 build_webui("build") {
   grd_prefix = "webui_toolbar"
 
-  static_files = [
-    "webui_toolbar.html",
-    "webui_toolbar.css",
-  ]
+  static_files = [ "webui_toolbar.html" ]
 
   ts_files = [
     "app.html.ts",

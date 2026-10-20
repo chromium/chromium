@@ -4,7 +4,24 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
-  <link rel="stylesheet" href="webui_toolbar.css">
+  <style>
+    html,
+    body {
+      /* Ensure the WebUI viewport matches the full height of the parent WebView
+       * container, allowing inner flex elements to center vertically. */
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    toolbar-app {
+      display: flex;
+    }
+
+    toolbar-app[webui-toolbar-fully-enabled] {
+      width: max-content;
+    }
+  </style>
   <title></title>
 </head>
 <body>

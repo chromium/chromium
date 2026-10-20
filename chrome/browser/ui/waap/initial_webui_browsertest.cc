@@ -295,6 +295,11 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   EXPECT_TRUE(initial_webui_web_contents->GetPrimaryMainFrame()
                   ->GetProcess()
                   ->IsForTopChromeWebUI());
+
+  EXPECT_EQ("flex",
+            content::EvalJs(initial_webui_web_contents.get(),
+                            "getComputedStyle(document.querySelector("
+                            "'toolbar-app')).display"));
 }
 
 // Initial WebUI process should not be shared with non-Initial WebUI per
