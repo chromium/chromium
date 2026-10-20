@@ -297,6 +297,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // This access type can be used on any thread.
     kCanAccessDataForCommittedOrigin,
   };
+  bool CanAccessOrigin(ChildProcessId child_id,
+                       const url::Origin& origin,
+                       AccessType access_type);
+  // TODO(crbug.com/379869738): Remove this method when usages are ported.
   bool CanAccessOrigin(int child_id,
                        const url::Origin& origin,
                        AccessType access_type);

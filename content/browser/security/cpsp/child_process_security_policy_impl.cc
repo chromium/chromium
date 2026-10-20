@@ -2518,6 +2518,13 @@ bool ChildProcessSecurityPolicyImpl::HostsOrigin(int child_id,
 bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(int child_id,
                                                      const url::Origin& origin,
                                                      AccessType access_type) {
+  return CanAccessOrigin(ChildProcessId::FromUnsafeValue(child_id), origin,
+                         access_type);
+}
+
+bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(ChildProcessId child_id,
+                                                     const url::Origin& origin,
+                                                     AccessType access_type) {
   GURL url_to_check;
   if (origin.opaque()) {
     auto precursor_tuple = origin.GetTupleOrPrecursorTupleIfOpaque();
@@ -2528,10 +2535,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(int child_id,
       // precursor information (or the process lock is compatible with a missing
       // precursor). Remove this logic once that has been completed.
       base::AutoLock lock(lock_);
-      // TODO(crbug.com/379869738) Remove FromUnsafeValue.
       const ProcessState* process_state =
-          process_states_.GetProcessStateForQuery(
-              ChildProcessId::FromUnsafeValue(child_id));
+          process_states_.GetProcessStateForQuery(child_id);
       return !!process_state;
     } else {
       url_to_check = precursor_tuple.GetURL();
@@ -2539,9 +2544,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessOrigin(int child_id,
   } else {
     url_to_check = origin.GetURL();
   }
-  bool success =
-      CanAccessMaybeOpaqueOrigin(ChildProcessId::FromUnsafeValue(child_id),
-                                 url_to_check, origin.opaque(), access_type);
+  bool success = CanAccessMaybeOpaqueOrigin(child_id, url_to_check,
+                                            origin.opaque(), access_type);
   if (success) {
     return true;
   }
