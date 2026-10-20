@@ -32,11 +32,6 @@ class ASH_EXPORT WmGestureHandler {
   // scrolls.
   static constexpr int kContinuousGestureMoveThresholdDp = 5;
 
-  // The amount that a user must have scrolled, after ending a vertical
-  // continuous gesture, to enter overview mode. Otherwise, animate back to
-  // the original state before the gesture began.
-  static constexpr int kEnterOverviewModeThresholdDp = kVerticalThresholdDp / 2;
-
   WmGestureHandler();
   WmGestureHandler(const WmGestureHandler&) = delete;
   WmGestureHandler& operator=(const WmGestureHandler&) = delete;
@@ -60,7 +55,6 @@ class ASH_EXPORT WmGestureHandler {
     // Continuous gestures need to first pass a threshold before we update the
     // UI. We still update this struct before that happens.
     bool horizontal_continuous_gesture_started = false;
-    bool vertical_continuous_gesture_started = false;
   };
 
   // Called by ProcessScrollEvent(). Depending on |finger_count|, may switch
@@ -71,9 +65,6 @@ class ASH_EXPORT WmGestureHandler {
 
   // Called when a scroll is ended. Returns true if the scroll is processed.
   bool EndScroll();
-
-  // Called when a scroll is updated. Returns true if the scroll is processed.
-  bool UpdateScrollForContinuousOverviewAnimation();
 
   // Tries to move the overview selector. Returns true if successful. Called in
   // the middle of scrolls and when scrolls have ended.
