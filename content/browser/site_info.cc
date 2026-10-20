@@ -1094,7 +1094,9 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
   }
 
   // All other URLs use a site-keyed agent cluster based on their scheme.
-  CHECK(!url.scheme().empty(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/575290990): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!url.scheme().empty());
   GURL site_url = GURL(base::StrCat({url.scheme(), ":"}));
   return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
 }
