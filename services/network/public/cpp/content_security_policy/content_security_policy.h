@@ -142,6 +142,13 @@ bool IsValidRequiredCSPAttr(
 
 // Checks whether |policy_a| subsumes the policy list |policies_b| according to
 // the algorithm https://w3c.github.io/webappsec-cspee/#subsume-policy-list.
+//
+// When network::features::kCSPEmbeddedEnforcementTrustedTypes is enabled,
+// this also checks the 'require-trusted-types-for' and 'trusted-types'
+// directives. See https://github.com/w3c/webappsec-csp/issues/628 and
+// https://github.com/w3c/webappsec-cspee/pull/36. When the feature is
+// disabled, Trusted Types directives are ignored, preserving the legacy
+// source-list-only subsumption behavior.
 COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
               const std::vector<mojom::ContentSecurityPolicyPtr>& policies_b);

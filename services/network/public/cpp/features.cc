@@ -436,6 +436,9 @@ BASE_FEATURE(kCSPScriptSrcHashesInV1,
              "ScriptSrcHashesV1",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCSPEmbeddedEnforcementTrustedTypes,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCacheSharingForPervasiveResources,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

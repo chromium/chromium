@@ -48,10 +48,18 @@ struct TestData {
   ExpectedResult expected_result = ExpectedResult();
 };
 
-std::vector<mojom::ContentSecurityPolicyPtr> ParseCSP(std::string expression) {
+// Parses `expression` as a Content-Security-Policy header, and, if
+// non-empty, `report_only` as a Content-Security-Policy-Report-Only header,
+// to build a mix of enforced and report-only policies.
+std::vector<mojom::ContentSecurityPolicyPtr> ParseCSP(
+    std::string_view expression,
+    std::string_view report_only = "") {
   scoped_refptr<net::HttpResponseHeaders> headers(
       new net::HttpResponseHeaders("HTTP/1.1 200 OK"));
   headers->SetHeader("Content-Security-Policy", expression);
+  if (!report_only.empty()) {
+    headers->SetHeader("Content-Security-Policy-Report-Only", report_only);
+  }
   std::vector<mojom::ContentSecurityPolicyPtr> policies;
   AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                       &policies);
@@ -1905,6 +1913,432 @@ TEST(ContentSecurityPolicy, Subsumes) {
     EXPECT_EQ(test.expected, Subsumes(*required_csp[0], returned_csp))
         << test.name;
   }
+}
+
+// Covers Subsumes() handling of the 'require-trusted-types-for' and
+// 'trusted-types' directives. These directives aren't stored in
+// ContentSecurityPolicy::directives (they have dedicated fields), so they
+// need dedicated coverage on top of the source-list-focused tests above.
+TEST(ContentSecurityPolicy, TrustedTypesConservativeNormalizedExactEquality) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      network::features::kCSPEmbeddedEnforcementTrustedTypes);
+
+  struct TestCase {
+    std::string name;
+    std::string required;
+    std::string returned_enforced;
+    std::string returned_report_only;
+    bool expected;
+  } cases[] = {
+      // require-trusted-types-for: absent in the required policy imposes no
+      // constraint, regardless of what the returned policy does.
+      {
+          "Absent in required: not checked.",
+          "script-src 'none'",
+          "script-src 'none'; require-trusted-types-for 'script'",
+          "",
+          true,
+      },
+      // require-trusted-types-for: present in required, absent in returned.
+      // The required policy has no entry in `directives`, so it must not be
+      // trivially treated as imposing no restriction.
+      {
+          "Present in required, absent in returned: not subsumed.",
+          "require-trusted-types-for 'script'",
+          "script-src 'self'",
+          "",
+          false,
+      },
+      {
+          "Present in required, present in returned: subsumed.",
+          "require-trusted-types-for 'script'",
+          "require-trusted-types-for 'script'",
+          "",
+          true,
+      },
+      {
+          "Present in required, satisfied by one of several enforcing "
+          "returned policies: subsumed.",
+          "require-trusted-types-for 'script'",
+          "script-src 'self', require-trusted-types-for 'script'",
+          "",
+          true,
+      },
+      {
+          "Present in required, only enforced in a report-only returned "
+          "policy: not subsumed.",
+          "require-trusted-types-for 'script'",
+          "script-src 'self'",
+          "require-trusted-types-for 'script'",
+          false,
+      },
+      // trusted-types: absent in the required policy imposes no constraint.
+      {
+          "trusted-types absent in required: not checked.",
+          "script-src 'none'",
+          "script-src 'none'; trusted-types foo",
+          "",
+          true,
+      },
+      // trusted-types: normalized exact set equality is order independent.
+      {
+          "trusted-types same policy names in different order: exact match.",
+          "trusted-types foo bar",
+          "trusted-types bar foo",
+          "",
+          true,
+      },
+      {
+          "trusted-types duplicate policy names are ignored: exact match.",
+          "trusted-types foo foo",
+          "trusted-types foo",
+          "",
+          true,
+      },
+      // The initial implementation conservatively rejects a stricter returned
+      // subset.
+      {
+          "trusted-types returned is a strict subset of required: not "
+          "an exact match.",
+          "trusted-types foo bar",
+          "trusted-types foo",
+          "",
+          false,
+      },
+      // trusted-types: '*' must match on both sides.
+      {
+          "trusted-types '*' matches '*': exact match.",
+          "trusted-types *",
+          "trusted-types *",
+          "",
+          true,
+      },
+      {
+          "trusted-types wildcard duplicate permission mismatch: not an exact "
+          "match.",
+          "trusted-types * 'allow-duplicates'",
+          "trusted-types *",
+          "",
+          false,
+      },
+      {
+          "trusted-types '*' required but returned has explicit list only: "
+          "not an exact match.",
+          "trusted-types *",
+          "trusted-types foo",
+          "",
+          false,
+      },
+      // trusted-types: 'none' (empty list) must match 'none'.
+      {
+          "trusted-types 'none' matches 'none': exact match.",
+          "trusted-types 'none'",
+          "trusted-types 'none'",
+          "",
+          true,
+      },
+      {
+          "trusted-types 'none' required but returned allows a policy: not "
+          "an exact match.",
+          "trusted-types 'none'",
+          "trusted-types foo",
+          "",
+          false,
+      },
+      // trusted-types: duplicate permission must match for a non-empty domain.
+      {
+          "trusted-types 'allow-duplicates' present on both sides: "
+          "exact match.",
+          "trusted-types foo 'allow-duplicates'",
+          "trusted-types foo 'allow-duplicates'",
+          "",
+          true,
+      },
+      {
+          "trusted-types 'allow-duplicates' required but missing in "
+          "returned: not an exact match.",
+          "trusted-types foo 'allow-duplicates'",
+          "trusted-types foo",
+          "",
+          false,
+      },
+      {
+          "trusted-types duplicate permission is ignored for an empty "
+          "policy-name domain.",
+          "trusted-types 'allow-duplicates'",
+          "trusted-types 'none'",
+          "",
+          true,
+      },
+      // trusted-types: multiple enforcing returned policies are intersected,
+      // mirroring source-list combination semantics.
+      {
+          "trusted-types intersection of several enforcing returned "
+          "policies exactly matches required.",
+          "trusted-types foo",
+          "trusted-types foo bar, trusted-types foo",
+          "",
+          true,
+      },
+      {
+          "trusted-types intersection of several enforcing returned "
+          "policies differs from required.",
+          "trusted-types foo bar",
+          "trusted-types foo bar, trusted-types foo",
+          "",
+          false,
+      },
+      {
+          "trusted-types intersected duplicate permission is false for an "
+          "empty policy-name domain.",
+          "trusted-types 'none'",
+          "trusted-types foo 'allow-duplicates', trusted-types bar "
+          "'allow-duplicates'",
+          "",
+          true,
+      },
+      {
+          "trusted-types wildcard combined with explicit list across "
+          "returned policies: wildcard first, still intersects.",
+          "trusted-types foo",
+          "trusted-types *, trusted-types foo",
+          "",
+          true,
+      },
+      {
+          "trusted-types wildcard combined with explicit list across "
+          "returned policies: wildcard last, doesn't relax the "
+          "already-restrictive intersection.",
+          "trusted-types foo",
+          "trusted-types foo, trusted-types *",
+          "",
+          true,
+      },
+      // trusted-types: only the declaring returned policy is considered when
+      // combining across multiple enforcing returned policies.
+      {
+          "trusted-types only one of several enforcing returned policies "
+          "declares the directive: exact match.",
+          "trusted-types foo",
+          "script-src 'self', trusted-types foo",
+          "",
+          true,
+      },
+      {
+          "trusted-types present in required, absent in all enforcing "
+          "returned policies: no exact match.",
+          "trusted-types foo",
+          "script-src 'self'",
+          "",
+          false,
+      },
+      {
+          "trusted-types present in required, only enforced in a "
+          "report-only returned policy: no exact match.",
+          "trusted-types foo",
+          "script-src 'self'",
+          "trusted-types foo",
+          false,
+      },
+      // Both Trusted Types directives must hold.
+      {
+          "Both Trusted Types directives match: subsumed.",
+          "require-trusted-types-for 'script'; trusted-types foo",
+          "require-trusted-types-for 'script'; trusted-types foo",
+          "",
+          true,
+      },
+      {
+          "require-trusted-types-for matches but trusted-types does not: "
+          "not subsumed.",
+          "require-trusted-types-for 'script'; trusted-types foo",
+          "require-trusted-types-for 'script'; trusted-types bar",
+          "",
+          false,
+      },
+      {
+          "trusted-types matches but require-trusted-types-for does not: "
+          "not subsumed.",
+          "require-trusted-types-for 'script'; trusted-types foo",
+          "trusted-types foo",
+          "",
+          false,
+      },
+      // Combined source-list and Trusted Types requirements: both must hold.
+      {
+          "Combined script-src and require-trusted-types-for both match: "
+          "subsumed.",
+          "script-src 'self'; require-trusted-types-for 'script'",
+          "script-src 'self'; require-trusted-types-for 'script'",
+          "",
+          true,
+      },
+      {
+          "Combined requirement: script-src mismatches even though "
+          "require-trusted-types-for matches: not subsumed.",
+          "script-src 'self'; require-trusted-types-for 'script'",
+          "script-src *; require-trusted-types-for 'script'",
+          "",
+          false,
+      },
+      {
+          "Combined requirement: require-trusted-types-for mismatches even "
+          "though script-src matches: not subsumed.",
+          "script-src 'self'; require-trusted-types-for 'script'",
+          "script-src 'self'",
+          "",
+          false,
+      },
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.name);
+    std::vector<mojom::ContentSecurityPolicyPtr> required_csp =
+        ParseCSP(test.required);
+    ASSERT_EQ(1u, required_csp.size());
+    std::vector<mojom::ContentSecurityPolicyPtr> returned_csp =
+        ParseCSP(test.returned_enforced, test.returned_report_only);
+    EXPECT_EQ(test.expected, Subsumes(*required_csp[0], returned_csp));
+  }
+}
+
+// When kCSPEmbeddedEnforcementTrustedTypes is disabled (the default),
+// Subsumes() must preserve the pre-Trusted-Types behavior exactly:
+// source-list subsumption stays active, but 'require-trusted-types-for' and
+// 'trusted-types' are skipped entirely. In particular, a required policy
+// consisting solely of Trusted Types directives has an empty `directives`
+// map and so takes the legacy empty-directives fast path.
+TEST(ContentSecurityPolicy, TrustedTypesIgnoredWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      network::features::kCSPEmbeddedEnforcementTrustedTypes);
+
+  struct TestCase {
+    std::string name;
+    std::string required;
+    std::string returned;
+    bool expected;
+  } cases[] = {
+      {
+          "require-trusted-types-for-only required: legacy "
+          "empty-directives fast path, trivially subsumed even though "
+          "returned lacks the directive.",
+          "require-trusted-types-for 'script'",
+          "script-src 'none'",
+          true,
+      },
+      {
+          "trusted-types-only required: legacy empty-directives fast "
+          "path, trivially subsumed even though returned lacks the "
+          "directive.",
+          "trusted-types foo",
+          "script-src 'none'",
+          true,
+      },
+      // Combined source-list and Trusted Types requirement: only the
+      // source-list part is enforced; the Trusted Types mismatch is ignored.
+      {
+          "Combined requirement, Trusted Types mismatch ignored: subsumed "
+          "because script-src matches.",
+          "script-src 'self'; require-trusted-types-for 'script'",
+          "script-src 'self'",
+          true,
+      },
+      {
+          "Combined requirement, script-src mismatch still enforced: not "
+          "subsumed even though Trusted Types would match.",
+          "script-src 'self'; require-trusted-types-for 'script'",
+          "script-src *; require-trusted-types-for 'script'",
+          false,
+      },
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.name);
+    std::vector<mojom::ContentSecurityPolicyPtr> required_csp =
+        ParseCSP(test.required);
+    ASSERT_EQ(1u, required_csp.size());
+    std::vector<mojom::ContentSecurityPolicyPtr> returned_csp =
+        ParseCSP(test.returned);
+    EXPECT_EQ(test.expected, Subsumes(*required_csp[0], returned_csp));
+  }
+}
+
+// A required CSP that consists solely of Trusted Types directives has an
+// empty `directives` map (since those directives are stored in dedicated
+// fields), so IsValidRequiredCSPAttr must not treat it as imposing no
+// restriction.
+TEST(ContentSecurityPolicy, IsValidRequiredCSPAttrTrustedTypesOnly) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      network::features::kCSPEmbeddedEnforcementTrustedTypes);
+
+  std::vector<mojom::ContentSecurityPolicyPtr> parent_required_csp =
+      ParseCSP("require-trusted-types-for 'script'");
+  ASSERT_EQ(1u, parent_required_csp.size());
+  ASSERT_TRUE(parent_required_csp[0]->directives.empty());
+
+  struct TestCase {
+    const char* csp;
+    bool expected;
+  } cases[] = {
+      {"require-trusted-types-for 'script'", true},
+      {"script-src 'none'", false},
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.csp);
+    std::vector<mojom::ContentSecurityPolicyPtr> csp = ParseCSP(test.csp);
+    std::string out;
+    EXPECT_EQ(test.expected,
+              IsValidRequiredCSPAttr(csp, parent_required_csp[0].get(), out));
+  }
+
+  // The same condition applies when the parent required CSP instead consists
+  // solely of a 'trusted-types' directive, which is also stored in a dedicated
+  // field rather than in the `directives` map.
+  std::vector<mojom::ContentSecurityPolicyPtr> parent_required_csp_tt =
+      ParseCSP("trusted-types foo");
+  ASSERT_EQ(1u, parent_required_csp_tt.size());
+  ASSERT_TRUE(parent_required_csp_tt[0]->directives.empty());
+
+  TestCase trusted_types_cases[] = {
+      {"trusted-types foo", true},
+      {"script-src 'none'", false},
+  };
+
+  for (const auto& test : trusted_types_cases) {
+    SCOPED_TRACE(test.csp);
+    std::vector<mojom::ContentSecurityPolicyPtr> csp = ParseCSP(test.csp);
+    std::string out;
+    EXPECT_EQ(test.expected, IsValidRequiredCSPAttr(
+                                 csp, parent_required_csp_tt[0].get(), out));
+  }
+}
+
+// Mirrors IsValidRequiredCSPAttrTrustedTypesOnly above, but with the feature
+// disabled (the default). A required policy consisting solely of Trusted
+// Types directives takes the legacy empty-directives fast path and so
+// imposes no restriction, unlike when the feature is enabled.
+TEST(ContentSecurityPolicy,
+     IsValidRequiredCSPAttrTrustedTypesOnlyFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      network::features::kCSPEmbeddedEnforcementTrustedTypes);
+
+  std::vector<mojom::ContentSecurityPolicyPtr> parent_required_csp =
+      ParseCSP("require-trusted-types-for 'script'");
+  ASSERT_EQ(1u, parent_required_csp.size());
+  ASSERT_TRUE(parent_required_csp[0]->directives.empty());
+
+  // A csp attribute that doesn't declare 'require-trusted-types-for' is
+  // still considered valid, since the legacy empty-directives fast path is
+  // taken regardless of what the csp attribute does.
+  std::vector<mojom::ContentSecurityPolicyPtr> csp =
+      ParseCSP("script-src 'none'");
+  std::string out;
+  EXPECT_TRUE(IsValidRequiredCSPAttr(csp, parent_required_csp[0].get(), out));
 }
 
 TEST(ContentSecurityPolicy, SubsumesBasedOnCSPSourcesOnly) {

@@ -4745,6 +4745,25 @@
     "expires": "Jul 1, 2026"
   },
   {
+    "prefix": "csp-embedded-enforcement-trusted-types",
+    "owners": [
+      "vizlatin@microsoft.com"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-trusted_types.tentative.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=CSPEmbeddedEnforcementTrustedTypes"
+    ],
+    "expires": "Feb 1, 2027"
+  },
+  {
     "prefix": "unrestricted-spellcheck",
     "owners": [
       "arichiv@chromium.org",

@@ -1572,6 +1572,96 @@ void UpgradeInsecureRequest(GURL* url) {
   *url = url->ReplaceComponents(replacements);
 }
 
+namespace {
+
+mojom::CSPRequireTrustedTypesFor CombinedRequireTrustedTypesFor(
+    const std::vector<mojom::ContentSecurityPolicyPtr>& policies) {
+  bool any_policy_enforces_trusted_types = std::ranges::any_of(
+      policies, [](const mojom::ContentSecurityPolicyPtr& policy) {
+        return policy->header->type ==
+                   mojom::ContentSecurityPolicyType::kEnforce &&
+               policy->require_trusted_types_for ==
+                   mojom::CSPRequireTrustedTypesFor::Script;
+      });
+  return any_policy_enforces_trusted_types
+             ? mojom::CSPRequireTrustedTypesFor::Script
+             : mojom::CSPRequireTrustedTypesFor::None;
+}
+
+bool NormalizedAllowDuplicates(const mojom::CSPTrustedTypes& trusted_types) {
+  return trusted_types.allow_duplicates &&
+         (trusted_types.allow_any || !trusted_types.list.empty());
+}
+
+mojom::CSPTrustedTypesPtr CombinedTrustedTypes(
+    const std::vector<mojom::ContentSecurityPolicyPtr>& policies) {
+  bool has_trusted_types_directive = false;
+  bool combined_allow_any = true;
+  bool combined_allow_duplicates = true;
+  bool has_restrictive_policy = false;
+  base::flat_set<std::string> combined_list;
+
+  for (const auto& policy : policies) {
+    if (policy->header->type != mojom::ContentSecurityPolicyType::kEnforce) {
+      continue;
+    }
+    if (!policy->trusted_types) {
+      continue;
+    }
+    has_trusted_types_directive = true;
+    const mojom::CSPTrustedTypes& trusted_types = *policy->trusted_types;
+    combined_allow_any = combined_allow_any && trusted_types.allow_any;
+    combined_allow_duplicates =
+        combined_allow_duplicates && trusted_types.allow_duplicates;
+
+    // '*' doesn't restrict allowed names, so intersect only explicit lists.
+    if (!trusted_types.allow_any) {
+      if (!has_restrictive_policy) {
+        combined_list.insert(trusted_types.list.begin(),
+                             trusted_types.list.end());
+      } else {
+        base::EraseIf(combined_list, [&trusted_types](const std::string& name) {
+          return !std::ranges::contains(trusted_types.list, name);
+        });
+      }
+      has_restrictive_policy = true;
+    }
+  }
+
+  if (!has_trusted_types_directive) {
+    return nullptr;
+  }
+
+  auto combined = mojom::CSPTrustedTypes::New();
+  combined->allow_any = combined_allow_any;
+  if (!combined_allow_any) {
+    combined->list.assign(combined_list.begin(), combined_list.end());
+  }
+  combined->allow_duplicates = combined_allow_duplicates &&
+                               (combined_allow_any || !combined_list.empty());
+  return combined;
+}
+
+// Compares normalized Trusted Types configurations using exact equality.
+// TODO(crbug.com/40912894): Replace exact equality with semantic subsumption
+// if CSP:EE defines richer 'trusted-types' subsumption.
+bool TrustedTypesNormalizedExactMatch(const mojom::CSPTrustedTypes& required,
+                                      const mojom::CSPTrustedTypes& combined) {
+  if (required.allow_any != combined.allow_any ||
+      NormalizedAllowDuplicates(required) !=
+          NormalizedAllowDuplicates(combined)) {
+    return false;
+  }
+  // The explicit list is redundant once '*' is present on both sides.
+  if (required.allow_any) {
+    return true;
+  }
+  return base::flat_set<std::string>(required.list) ==
+         base::flat_set<std::string>(combined.list);
+}
+
+}  // namespace
+
 bool IsValidRequiredCSPAttr(
     const std::vector<mojom::ContentSecurityPolicyPtr>& policy,
     const mojom::ContentSecurityPolicy* context,
@@ -1606,11 +1696,48 @@ bool Subsumes(const mojom::ContentSecurityPolicy& policy_a,
   if (policy_a.header->type == mojom::ContentSecurityPolicyType::kReport)
     return true;
 
-  if (policy_a.directives.empty())
+  // Trusted Types directives ('require-trusted-types-for' and
+  // 'trusted-types') use dedicated fields rather than `directives`, so
+  // handling them requires dedicated checks below, gated behind this feature.
+  // See https://github.com/w3c/webappsec-csp/issues/628 and
+  // https://github.com/w3c/webappsec-cspee/pull/36. When disabled, CSP:EE
+  // subsumption preserves the legacy source-list-only behavior exactly.
+  const bool check_trusted_types = base::FeatureList::IsEnabled(
+      network::features::kCSPEmbeddedEnforcementTrustedTypes);
+
+  // `directives` contains only source-list directives, so include the
+  // Trusted Types fields in the empty-policy check too, when they're
+  // considered.
+  bool policy_a_has_trusted_types_restriction =
+      check_trusted_types &&
+      (policy_a.trusted_types || policy_a.require_trusted_types_for !=
+                                     mojom::CSPRequireTrustedTypesFor::None);
+
+  if (policy_a.directives.empty() && !policy_a_has_trusted_types_restriction) {
     return true;
+  }
 
   if (policies_b.empty())
     return false;
+
+  if (check_trusted_types) {
+    // Apply Trusted Types intersection and subsumption.
+    // https://github.com/w3c/webappsec-cspee/pull/36
+    if (policy_a.require_trusted_types_for ==
+            mojom::CSPRequireTrustedTypesFor::Script &&
+        CombinedRequireTrustedTypesFor(policies_b) !=
+            mojom::CSPRequireTrustedTypesFor::Script) {
+      return false;
+    }
+
+    if (policy_a.trusted_types) {
+      mojom::CSPTrustedTypesPtr combined = CombinedTrustedTypes(policies_b);
+      if (!combined || !TrustedTypesNormalizedExactMatch(
+                           *policy_a.trusted_types, *combined)) {
+        return false;
+      }
+    }
+  }
 
   // All policies in |policies_b| must have the same self_origin.
   mojom::CSPSource* origin_b = policies_b[0]->self_origin.get();
