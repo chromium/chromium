@@ -155,9 +155,10 @@ CSSParserContext* CSSStyleSheet::InlineParserContext(
           // document. `Referrer::ClientReferrerString()` for a fetch request
           // just means "use the default referrer", which will be computed from
           // the client (in this case, the owner document's ExecutionContext)
-          // when fetching.
+          // when fetching. The referrer policy is the owner document's policy
+          // at the time the inline CSS is parsed.
           Referrer::ClientReferrerString(),
-          network::mojom::ReferrerPolicy::kDefault),
+          owner_node_document.GetReferrerPolicy()),
       encoding);
   if (AdTracker::IsAdScriptExecutingInDocument(&owner_node_document)) {
     parser_context->SetIsAdRelated();

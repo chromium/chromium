@@ -500,7 +500,8 @@ void ExecutionContext::ParseAndSetReferrerPolicy(
 }
 
 network::mojom::ReferrerPolicy ExecutionContext::GetReferrerPolicy() const {
-  return policy_container_->GetReferrerPolicy();
+  return policy_container_ ? policy_container_->GetReferrerPolicy()
+                           : network::mojom::ReferrerPolicy::kDefault;
 }
 
 void ExecutionContext::SetReferrerPolicy(
