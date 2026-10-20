@@ -935,10 +935,7 @@ class CrossbenchTest(object):
     if self.options.benchmarks.startswith('motionmark') and not self.is_android:
       # TODO(crbug.com/413452730): Enable local file server in all platforms.
       return []
-    if (self.options.benchmarks in self.BENCHMARK_FILESERVERS) and not (
-      self.options.benchmarks.startswith('speedometer')
-      and sys.platform == 'darwin'
-    ):
+    if self.options.benchmarks in self.BENCHMARK_FILESERVERS:
       # Use file server when it is available.
       arg = '--fileserver'
       args.append(arg)

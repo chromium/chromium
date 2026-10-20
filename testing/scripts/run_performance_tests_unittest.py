@@ -397,6 +397,23 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     network_dict = json.loads(crosebench_test.network[0].split('=', 1)[1])
     self.assertDictEqual(network_dict, expected_dict)
 
+  def testCrossbenchGetImplicitFileServerOnDarwin(self):
+    fake_args = _create_crossbench_args()
+    options = run_performance_tests.parse_arguments(fake_args)
+    src_dir = run_performance_tests.CHROMIUM_SRC_DIR
+    local_fileserver = str(src_dir / 'third_party/speedometer/v3.0')
+    expected_dict = {
+      'type': 'local',
+      'path': local_fileserver,
+      'url': 'http://localhost:0',
+    }
+
+    with mock.patch.object(sys, 'platform', 'darwin'):
+      crossbench_test = run_performance_tests.CrossbenchTest(options, 'dir')
+
+    network_dict = json.loads(crossbench_test.network[0].split('=', 1)[1])
+    self.assertDictEqual(network_dict, expected_dict)
+
   def testCrossbenchGetTargetFileServer(self):
     fake_args = _create_crossbench_args() + ['--fileserver=foo']
     options = run_performance_tests.parse_arguments(fake_args)
