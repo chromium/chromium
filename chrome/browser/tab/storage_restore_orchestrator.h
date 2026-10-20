@@ -50,6 +50,9 @@ class StorageRestoreOrchestrator
   void OnRestoreCancelled() override;
 
  private:
+  // Saves a structural snapshot of the TabStripCollection to divergent_nodes.
+  void SaveStructureSnapshot();
+
   class ObserverImpl : public StorageLoadedData::Observer {
    public:
     explicit ObserverImpl(StorageRestoreOrchestrator* orchestrator);

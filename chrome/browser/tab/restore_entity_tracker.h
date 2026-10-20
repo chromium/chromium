@@ -66,6 +66,9 @@ class RestoreEntityTracker {
   // Returns true if the collection was successfully associated.
   virtual bool AssociateCollection(const TabCollection* collection) = 0;
 
+  // Returns true if the tab has been associated.
+  virtual bool HasTabBeenAssociated(const TabInterface* tab) = 0;
+
   // Returns true if the collection has been associated.
   virtual bool HasCollectionBeenAssociated(TabCollection::Handle handle) = 0;
 

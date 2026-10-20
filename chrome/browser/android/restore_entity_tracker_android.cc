@@ -187,6 +187,12 @@ bool RestoreEntityTrackerAndroid::AssociateSplitTabCollection(
                                     collection);
 }
 
+bool RestoreEntityTrackerAndroid::HasTabBeenAssociated(
+    const TabInterface* tab) {
+  CHECK(context_, base::NotFatalUntil::M161);
+  return associated_nodes_.contains(tab->GetHandle());
+}
+
 bool RestoreEntityTrackerAndroid::HasCollectionBeenAssociated(
     TabCollection::Handle handle) {
   CHECK(context_, base::NotFatalUntil::M161);

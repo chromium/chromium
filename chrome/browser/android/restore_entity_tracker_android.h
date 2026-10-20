@@ -46,6 +46,7 @@ class RestoreEntityTrackerAndroid : public RestoreEntityTracker {
 
   bool AssociateTab(const TabInterface* tab) override;
   bool AssociateCollection(const TabCollection* collection) override;
+  bool HasTabBeenAssociated(const TabInterface* tab) override;
   bool HasCollectionBeenAssociated(TabCollection::Handle handle) override;
 
   bool HasNothingToAssociate() override;

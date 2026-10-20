@@ -95,6 +95,40 @@ void StorageRestoreOrchestrator::ObserverImpl::OnNodeRejected(StorageId node) {
   orchestrator_->OnNodeRejected(node);
 }
 
+// Post-order crawler for structural snapshots during restoration.
+class RestoreStructureSnapshotCrawler : public DirectChildWalker::Processor {
+ public:
+  RestoreStructureSnapshotCrawler(
+      TabStateStorageService* service,
+      RestoreEntityTracker* tracker,
+      base::PassKey<StorageRestoreOrchestrator> passkey)
+      : service_(service), tracker_(tracker), passkey_(passkey) {}
+
+  void ProcessTab(const TabInterface* tab) override {
+    if (!tracker_->AssociateTab(tab) && !tracker_->HasTabBeenAssociated(tab)) {
+      service_->Save(tab);
+    }
+  }
+
+  void ProcessCollection(const TabCollection* collection) override {
+    DirectChildWalker walker(collection, this);
+    walker.Walk();
+
+    if (!tracker_->AssociateCollection(collection) &&
+        !tracker_->HasCollectionBeenAssociated(collection->GetHandle())) {
+      service_->Save(collection);
+    } else {
+      service_->SavePayload(collection);
+      service_->SaveDivergentChildren(collection, passkey_);
+    }
+  }
+
+ private:
+  raw_ptr<TabStateStorageService> service_;
+  raw_ptr<RestoreEntityTracker> tracker_;
+  base::PassKey<StorageRestoreOrchestrator> passkey_;
+};
+
 // StorageRestoreOrchestrator implementation.
 StorageRestoreOrchestrator::StorageRestoreOrchestrator(
     TabStripCollection* collection,
@@ -111,8 +145,7 @@ StorageRestoreOrchestrator::StorageRestoreOrchestrator(
   // This is required to save the unique collections that do not emit observable
   // events on creation.
   if (tracker->HasNothingToAssociate()) {
-    StorageCollectionSynchronizer synchronizer(collection_, service_);
-    synchronizer.FullSave(base::NullCallback());
+    SaveStructureSnapshot();
   } else {
     tracker->AssociateCollection(collection_);
     PreRestoreChangesCrawler crawler(
@@ -251,6 +284,17 @@ void StorageRestoreOrchestrator::SaveChildNodeOnly(TabCollectionNodeHandle handl
   } else {
     OnSaveChildCollection(handle, /*was_inserted=*/false);
   }
+}
+
+void StorageRestoreOrchestrator::SaveStructureSnapshot() {
+  if (is_restore_cancelled_) {
+    return;
+  }
+  auto batch = service_->CreateScopedBatch();
+  RestoreStructureSnapshotCrawler crawler(
+      service_, loaded_data_->GetTracker(),
+      base::PassKey<StorageRestoreOrchestrator>());
+  crawler.ProcessCollection(collection_);
 }
 
 }  // namespace tabs

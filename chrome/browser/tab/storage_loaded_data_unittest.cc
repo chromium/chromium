@@ -52,6 +52,7 @@ class TestRestoreEntityTracker : public RestoreEntityTracker {
   bool AssociateCollection(const TabCollection* collection) override {
     return true;
   }
+  bool HasTabBeenAssociated(const TabInterface* tab) override { return true; }
   bool HasCollectionBeenAssociated(TabCollection::Handle handle) override {
     return true;
   }
