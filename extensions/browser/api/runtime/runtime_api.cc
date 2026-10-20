@@ -284,9 +284,8 @@ RuntimeAPI::RuntimeAPI(content::BrowserContext* context)
   dispatch_chrome_updated_event_ =
       ExtensionsBrowserClient::Get()->DidVersionUpdate(browser_context_);
 
-  EventRouter::Get(browser_context_)
-      ->lazy_event_dispatch_util()
-      ->AddObserver(this);
+  lazy_event_dispatch_util_observation_.Observe(
+      EventRouter::Get(browser_context_)->lazy_event_dispatch_util());
 }
 
 RuntimeAPI::~RuntimeAPI() = default;
@@ -403,9 +402,7 @@ void RuntimeAPI::OnExtensionUninstalled(
 
 void RuntimeAPI::Shutdown() {
   delegate_->RemoveUpdateObserver(this);
-  EventRouter::Get(browser_context_)
-      ->lazy_event_dispatch_util()
-      ->RemoveObserver(this);
+  lazy_event_dispatch_util_observation_.Reset();
 }
 
 void RuntimeAPI::OnAppUpdateAvailable(const Extension& extension) {

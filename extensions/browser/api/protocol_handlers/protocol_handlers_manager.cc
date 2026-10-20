@@ -53,7 +53,8 @@ ProtocolHandlersManager::ProtocolHandlersManager(
     content::BrowserContext* context)
     : browser_context_(context) {
   DCHECK(browser_context_);
-  ExtensionRegistry::Get(browser_context_)->AddObserver(this);
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
   ExtensionSystem::Get(browser_context_)
       ->ready()
       .Post(
@@ -65,7 +66,7 @@ ProtocolHandlersManager::ProtocolHandlersManager(
 ProtocolHandlersManager::~ProtocolHandlersManager() = default;
 
 void ProtocolHandlersManager::Shutdown() {
-  ExtensionRegistry::Get(browser_context_)->RemoveObserver(this);
+  extension_registry_observation_.Reset();
 }
 
 // static

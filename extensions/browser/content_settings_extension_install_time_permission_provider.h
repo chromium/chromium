@@ -5,10 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_CONTENT_SETTINGS_EXTENSION_INSTALL_TIME_PERMISSION_PROVIDER_H_
 #define EXTENSIONS_BROWSER_CONTENT_SETTINGS_EXTENSION_INSTALL_TIME_PERMISSION_PROVIDER_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/browser/content_settings_origin_value_map.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 namespace content {
@@ -16,6 +15,8 @@ class BrowserContext;
 }
 
 namespace extensions {
+
+class ExtensionRegistry;
 
 // A provider that returns whether extensions have declared permissions in the
 // manifest.
@@ -60,8 +61,9 @@ class ExtensionInstallTimePermissionProvider final
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   content_settings::OriginValueMap value_map_;
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 };
 
 }  // namespace extensions

@@ -76,12 +76,10 @@ ServiceWorkerHost::ServiceWorkerHost(
   receiver_.set_disconnect_handler(base::BindOnce(
       &ServiceWorkerHost::RemoteDisconnected, base::Unretained(this)));
 
-  render_process_host_->AddObserver(this);
+  render_process_host_observation_.Observe(render_process_host_);
 }
 
-ServiceWorkerHost::~ServiceWorkerHost() {
-  render_process_host_->RemoveObserver(this);
-}
+ServiceWorkerHost::~ServiceWorkerHost() = default;
 
 // static
 base::AutoReset<ServiceWorkerHost::FactoryCallback*>

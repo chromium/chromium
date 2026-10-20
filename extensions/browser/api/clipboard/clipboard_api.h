@@ -8,11 +8,16 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/api/clipboard/clipboard_api_types.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/clipboard.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+
+namespace ui {
+class ClipboardMonitor;
+}  // namespace ui
 
 namespace extensions {
 
@@ -35,6 +40,9 @@ class ClipboardAPI : public BrowserContextKeyedAPI,
   static const char* service_name() { return "ClipboardAPI"; }
 
   const raw_ptr<content::BrowserContext> browser_context_;
+
+  base::ScopedObservation<ui::ClipboardMonitor, ui::ClipboardObserver>
+      clipboard_monitor_observation_{this};
 };
 
 class ClipboardSetImageDataFunction : public ExtensionFunction {

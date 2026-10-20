@@ -5,10 +5,13 @@
 #ifndef EXTENSIONS_BROWSER_API_PROTOCOL_HANDLERS_PROTOCOL_HANDLERS_MANAGER_H_
 #define EXTENSIONS_BROWSER_API_PROTOCOL_HANDLERS_PROTOCOL_HANDLERS_MANAGER_H_
 
+#include "base/scoped_observation.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 namespace extensions {
+
+class ExtensionRegistry;
 
 class ProtocolHandlersManager : public BrowserContextKeyedAPI,
                                 public ExtensionRegistryObserver {
@@ -46,6 +49,8 @@ class ProtocolHandlersManager : public BrowserContextKeyedAPI,
   void ProtocolHandlersSanityCheck();
 
   const raw_ptr<content::BrowserContext> browser_context_;
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
   // Use this factory to generate weak pointers bound to the UI thread.
   base::WeakPtrFactory<ProtocolHandlersManager> weak_ptr_factory_{this};
 };

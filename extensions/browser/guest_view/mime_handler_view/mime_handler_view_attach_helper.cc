@@ -82,7 +82,7 @@ void MimeHandlerViewAttachHelper::RenderProcessHostDestroyed(
   if (render_process_host != render_process_host_) {
     return;
   }
-  render_process_host->RemoveObserver(this);
+  render_process_host_observation_.Reset();
   GetProcessIdToHelperMap()->erase(render_process_host_->GetID());
 }
 
@@ -111,7 +111,7 @@ void MimeHandlerViewAttachHelper::CreateFullPageMimeHandlerView(
 MimeHandlerViewAttachHelper::MimeHandlerViewAttachHelper(
     content::RenderProcessHost* render_process_host)
     : render_process_host_(render_process_host) {
-  render_process_host->AddObserver(this);
+  render_process_host_observation_.Observe(render_process_host);
 }
 
 MimeHandlerViewAttachHelper::~MimeHandlerViewAttachHelper() = default;

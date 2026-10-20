@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/scoped_observation.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "extensions/browser/api/content_settings/content_settings_store.h"
 #include "extensions/common/extension_id.h"
@@ -58,6 +59,10 @@ class CustomExtensionProvider : public ObservableProvider,
 
   // The backend storing content setting rules defined by extensions.
   scoped_refptr<extensions::ContentSettingsStore> extensions_settings_;
+
+  base::ScopedObservation<extensions::ContentSettingsStore,
+                          extensions::ContentSettingsStore::Observer>
+      content_settings_store_observation_{this};
 };
 
 }  // namespace content_settings

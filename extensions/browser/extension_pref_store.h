@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/prefs/value_map_pref_store.h"
 #include "extensions/browser/extension_pref_value_map.h"
 
@@ -35,6 +36,10 @@ class ExtensionPrefStore : public ValueMapPrefStore,
  private:
   raw_ptr<ExtensionPrefValueMap> extension_pref_value_map_;  // Weak pointer.
   bool incognito_pref_store_;
+
+  base::ScopedObservation<ExtensionPrefValueMap,
+                          ExtensionPrefValueMap::Observer>
+      extension_pref_value_map_observation_{this};
 };
 
 #endif  // EXTENSIONS_BROWSER_EXTENSION_PREF_STORE_H_

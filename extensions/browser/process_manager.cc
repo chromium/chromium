@@ -209,7 +209,7 @@ ProcessManager::ProcessManager(BrowserContext* context,
       browser_context_(context),
       startup_background_hosts_created_(false),
       last_background_close_sequence_id_(0) {
-  extension_registry_->AddObserver(this);
+  extension_registry_observation_.Observe(extension_registry_);
 
   // Only the original profile needs to listen for ready to create background
   // pages for all spanning extensions.
@@ -227,7 +227,7 @@ ProcessManager::~ProcessManager() {
 }
 
 void ProcessManager::Shutdown() {
-  extension_registry_->RemoveObserver(this);
+  extension_registry_observation_.Reset();
   CloseBackgroundHosts();
   DCHECK(background_hosts_.empty());
   content::DevToolsAgentHost::RemoveObserver(this);

@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/common/child_process_id.h"
@@ -116,6 +117,10 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   // Allows delaying ResumeAttachOrDestroy for testing.
   base::OnceCallback<void(base::OnceClosure)>
       resume_attach_callback_for_testing_;
+
+  base::ScopedObservation<content::RenderProcessHost,
+                          content::RenderProcessHostObserver>
+      render_process_host_observation_{this};
 
   base::WeakPtrFactory<MimeHandlerViewAttachHelper> weak_factory_{this};
 };

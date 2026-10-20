@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -165,6 +166,10 @@ class ServiceWorkerHost :
   mojo::AssociatedReceiver<mojom::ServiceWorkerHost> receiver_{this};
   mojo::AssociatedRemote<mojom::ServiceWorker> remote_;
   WorkerId worker_id_;
+
+  base::ScopedObservation<content::RenderProcessHost,
+                          content::RenderProcessHostObserver>
+      render_process_host_observation_{this};
 };
 
 }  // namespace extensions

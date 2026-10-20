@@ -119,7 +119,8 @@ PowerAPI::PowerAPI(content::BrowserContext* context)
                                                      base::Unretained(this))),
       is_wake_lock_active_(false),
       current_level_(api::power::Level::kSystem) {
-  ExtensionRegistry::Get(browser_context_)->AddObserver(this);
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 }
 
 PowerAPI::~PowerAPI() = default;
@@ -150,9 +151,7 @@ void PowerAPI::UpdateWakeLock() {
 }
 
 void PowerAPI::Shutdown() {
-  // Unregister here rather than in the d'tor; otherwise this call will recreate
-  // the already-deleted ExtensionRegistry.
-  ExtensionRegistry::Get(browser_context_)->RemoveObserver(this);
+  extension_registry_observation_.Reset();
   cancel_wake_lock_function_.Run();
 }
 

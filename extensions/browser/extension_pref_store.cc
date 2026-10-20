@@ -12,7 +12,7 @@ ExtensionPrefStore::ExtensionPrefStore(
     bool incognito_pref_store)
     : extension_pref_value_map_(extension_pref_value_map),
       incognito_pref_store_(incognito_pref_store) {
-  extension_pref_value_map_->AddObserver(this);
+  extension_pref_value_map_observation_.Observe(extension_pref_value_map_);
 }
 
 void ExtensionPrefStore::OnInitializationCompleted() {
@@ -33,12 +33,8 @@ void ExtensionPrefStore::OnPrefValueChanged(const std::string& key) {
 
 void ExtensionPrefStore::OnExtensionPrefValueMapDestruction() {
   CHECK(extension_pref_value_map_);
-  extension_pref_value_map_->RemoveObserver(this);
+  extension_pref_value_map_observation_.Reset();
   extension_pref_value_map_ = nullptr;
 }
 
-ExtensionPrefStore::~ExtensionPrefStore() {
-  if (extension_pref_value_map_) {
-    extension_pref_value_map_->RemoveObserver(this);
-  }
-}
+ExtensionPrefStore::~ExtensionPrefStore() = default;

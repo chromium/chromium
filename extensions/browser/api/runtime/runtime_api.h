@@ -177,6 +177,9 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
       extension_registry_observation_{this};
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>
       process_manager_observation_{this};
+  base::ScopedObservation<LazyEventDispatchUtil,
+                          LazyEventDispatchUtil::Observer>
+      lazy_event_dispatch_util_observation_{this};
 
   // The ID of the first extension to call the restartAfterDelay API. Any other
   // extensions to call this API after that will fail.

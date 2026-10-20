@@ -163,7 +163,7 @@ ExtensionHost::ExtensionHost(const Extension* extension,
   // be the same extension that this points to.
   auto* registry = ExtensionRegistry::Get(browser_context_);
   DCHECK(registry);
-  registry->AddObserver(this);
+  extension_registry_observation_.Observe(registry);
 
   // Set up web contents observers and pref observers.
   delegate_->OnExtensionHostCreated(host_contents());
@@ -181,7 +181,9 @@ ExtensionHost::ExtensionHost(const Extension* extension,
 }
 
 ExtensionHost::~ExtensionHost() {
-  ExtensionRegistry::Get(browser_context_)->RemoveObserver(this);
+  // Stop observing up front, rather than when the member is destroyed, so that
+  // no ExtensionRegistry events are received during the teardown below.
+  extension_registry_observation_.Reset();
 
   if (extension_host_type_ == mojom::ViewType::kExtensionBackgroundPage &&
       extension_ && BackgroundInfo::HasLazyBackgroundPage(extension_) &&

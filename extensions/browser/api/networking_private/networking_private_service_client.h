@@ -14,6 +14,7 @@
 #include "base/containers/id_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
 #include "components/wifi/wifi_service.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
@@ -175,6 +176,11 @@ class NetworkingPrivateServiceClient
   std::unique_ptr<wifi::WiFiService> wifi_service_;
   // Task runner for worker tasks.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  // Observes connection changes until Shutdown().
+  base::ScopedObservation<
+      network::NetworkConnectionTracker,
+      network::NetworkConnectionTracker::NetworkConnectionObserver>
+      network_connection_tracker_observation_{this};
   // Use WeakPtrs for callbacks from |wifi_service_|.
   base::WeakPtrFactory<NetworkingPrivateServiceClient> weak_factory_{this};
 };

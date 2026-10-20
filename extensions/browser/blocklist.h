@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/buildflags/buildflags.h"
@@ -51,7 +52,7 @@ class Blocklist : public KeyedService {
     ~Observer() override;
 
    private:
-    raw_ptr<Blocklist> blocklist_;
+    base::ScopedObservation<Blocklist, Observer> blocklist_observation_{this};
   };
 
   using BlocklistStateMap = std::map<ExtensionId, BlocklistState>;

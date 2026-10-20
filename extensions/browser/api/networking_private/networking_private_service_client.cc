@@ -64,7 +64,8 @@ NetworkingPrivateServiceClient::NetworkingPrivateServiceClient(
           base::BindRepeating(&NetworkingPrivateServiceClient::
                                   OnNetworkListChangedEventOnUIThread,
                               weak_factory_.GetWeakPtr())));
-  content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
+  network_connection_tracker_observation_.Observe(
+      content::GetNetworkConnectionTracker());
 }
 
 NetworkingPrivateServiceClient::~NetworkingPrivateServiceClient() {
@@ -75,7 +76,7 @@ NetworkingPrivateServiceClient::~NetworkingPrivateServiceClient() {
 
 void NetworkingPrivateServiceClient::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
+  network_connection_tracker_observation_.Reset();
   // Clear callbacks map to release callbacks from UI thread.
   callbacks_map_.Clear();
   // Post ShutdownWifiServiceOnWorkerThread task to delete services when all

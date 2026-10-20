@@ -168,13 +168,11 @@ void CheckOneExtensionState(Blocklist::IsBlocklistedCallback callback,
 
 }  // namespace
 
-Blocklist::Observer::Observer(Blocklist* blocklist) : blocklist_(blocklist) {
-  blocklist_->AddObserver(this);
+Blocklist::Observer::Observer(Blocklist* blocklist) {
+  blocklist_observation_.Observe(blocklist);
 }
 
-Blocklist::Observer::~Observer() {
-  blocklist_->RemoveObserver(this);
-}
+Blocklist::Observer::~Observer() = default;
 
 Blocklist::Blocklist(content::BrowserContext* context) : context_(context) {
   auto& lazy_database_manager = g_database_manager.Get();

@@ -32,12 +32,10 @@ ClipboardAPI::GetFactoryInstance() {
 
 ClipboardAPI::ClipboardAPI(content::BrowserContext* context)
     : browser_context_(context) {
-  ui::ClipboardMonitor::GetInstance()->AddObserver(this);
+  clipboard_monitor_observation_.Observe(ui::ClipboardMonitor::GetInstance());
 }
 
-ClipboardAPI::~ClipboardAPI() {
-  ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
-}
+ClipboardAPI::~ClipboardAPI() = default;
 
 void ClipboardAPI::OnClipboardDataChanged() {
   EventRouter* router = EventRouter::Get(browser_context_);

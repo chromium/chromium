@@ -368,7 +368,8 @@ void AppWindow::Init(const GURL& url,
 
   OnNativeWindowChanged();
 
-  ExtensionRegistry::Get(browser_context_)->AddObserver(this);
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 
   // Close when the browser process is exiting.
   app_delegate_->SetTerminatingCallback(base::BindOnce(
@@ -377,9 +378,7 @@ void AppWindow::Init(const GURL& url,
   app_window_contents_->LoadContents(new_params.creator_process_id);
 }
 
-AppWindow::~AppWindow() {
-  ExtensionRegistry::Get(browser_context_)->RemoveObserver(this);
-}
+AppWindow::~AppWindow() = default;
 
 void AppWindow::RequestMediaAccessPermission(
     content::WebContents* web_contents,

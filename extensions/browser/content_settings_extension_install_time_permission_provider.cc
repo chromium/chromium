@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
@@ -33,9 +34,8 @@ static constexpr auto kTypesToPermissions =
 
 ExtensionInstallTimePermissionProvider::ExtensionInstallTimePermissionProvider(
     content::BrowserContext* context,
-    extensions::ExtensionRegistry* extension_registry)
-    : extension_registry_(extension_registry) {
-  extension_registry_->AddObserver(this);
+    extensions::ExtensionRegistry* extension_registry) {
+  extension_registry_observation_.Observe(extension_registry);
   for (const scoped_refptr<const Extension>& extension :
        extension_registry->enabled_extensions()) {
     OnExtensionLoaded(context, extension.get());
@@ -80,8 +80,7 @@ void ExtensionInstallTimePermissionProvider::ClearAllContentSettingsRules(
 void ExtensionInstallTimePermissionProvider::ShutdownOnUIThread() {
   DCHECK(CalledOnValidThread());
   RemoveAllObservers();
-  extension_registry_->RemoveObserver(this);
-  extension_registry_ = nullptr;
+  extension_registry_observation_.Reset();
   base::AutoLock auto_lock(value_map_.GetLock());
   value_map_.clear();
 }

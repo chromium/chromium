@@ -17,7 +17,7 @@ CustomExtensionProvider::CustomExtensionProvider(
     const scoped_refptr<extensions::ContentSettingsStore>& extensions_settings,
     bool incognito)
     : incognito_(incognito), extensions_settings_(extensions_settings) {
-  extensions_settings_->AddObserver(this);
+  content_settings_store_observation_.Observe(extensions_settings_.get());
 }
 
 CustomExtensionProvider::~CustomExtensionProvider() = default;
@@ -49,7 +49,7 @@ bool CustomExtensionProvider::SetWebsiteSetting(
 
 void CustomExtensionProvider::ShutdownOnUIThread() {
   RemoveAllObservers();
-  extensions_settings_->RemoveObserver(this);
+  content_settings_store_observation_.Reset();
 }
 
 void CustomExtensionProvider::OnContentSettingChanged(

@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -39,6 +40,7 @@ class Extension;
 class ExtensionHostDelegate;
 class ExtensionHostObserver;
 class ExtensionHostQueue;
+class ExtensionRegistry;
 
 enum class EventDispatchSource;
 
@@ -283,6 +285,9 @@ class ExtensionHost : public DeferredStartRenderHost,
   bool called_close_handler_ = false;
 
   base::ObserverList<ExtensionHostObserver> observer_list_;
+
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   base::WeakPtrFactory<ExtensionHost> weak_ptr_factory_{this};
 };

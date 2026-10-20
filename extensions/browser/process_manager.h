@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "base/uuid.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
@@ -421,6 +422,9 @@ class ProcessManager : public KeyedService,
   // start notification. In that case we want to avoid decrementing keepalive.
   std::map<int, raw_ptr<ExtensionHost, CtnExperimental>>
       pending_network_requests_;
+
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   // Observers of Service Worker RPH this ProcessManager manages.
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
