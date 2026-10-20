@@ -733,8 +733,6 @@ if (!is_robolectric && enable_java_templates) {
   #     merged into apks that directly or indirectly depend on this target.
   #   android_manifest_dep: Target that generates AndroidManifest (if applicable)
   #   custom_package: java package for generated .java files.
-  #   allow_missing_resources: Do not fail if a resource exists in a directory
-  #      but is not listed in sources.
   #   shared_resources: If true make a resource package that can be loaded by a
   #     different application at runtime to access the package's resources.
   #   resource_overlay: Whether the resources in 'sources' should override
@@ -834,12 +832,34 @@ if (!is_robolectric && enable_java_templates) {
       }
     }
 
-    prepare_resources(target_name) {
+    _prepare_target_name = "${target_name}__prepare"
+
+    prepare_resources(_prepare_target_name) {
       forward_variables_from(invoker,
                              [
-                               "allow_missing_resources",
                                "public_deps",
                                "strip_drawables",
+                             ])
+
+      # Only depend on non-java targets that might generate input resource
+      # files.
+      deps = filter_exclude(_deps, java_target_patterns)
+
+      res_sources_path = _res_sources_path
+      sources = _resource_files
+
+      resources_zip = _resources_zip
+      rtxt_out_path = _rtxt_out_path
+
+      if (defined(invoker.rtxt_file)) {
+        rtxt_in_path = invoker.rtxt_file
+      }
+    }
+
+    group(target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "public_deps",
                                "visibility",
                              ])
       _lib_deps = filter_exclude(filter_include(_deps, java_library_patterns),
@@ -854,22 +874,18 @@ if (!is_robolectric && enable_java_templates) {
                    "target=${target_name}, public_deps=${public_deps}")
       }
 
-      # Depend on non-library deps and on __assetres subtargets of library deps.
-      deps = filter_exclude(_deps, _lib_deps) + [ _android_sdk_dep ]
+      # Depend on non-library deps and on __assetres subtargets of library deps
+      # so that downstream generate_r_java and compile_resources steps wait for
+      # transitive resource targets without making prepare_resources.py wait for
+      # them.
+      deps = [
+               ":$_prepare_target_name",
+               _android_sdk_dep,
+             ] + filter_exclude(_deps, _lib_deps)
       foreach(_lib_dep, _lib_deps) {
         # Expand //foo/java -> //foo/java:java
         _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
         deps += [ "${_lib_dep}__assetres" ]
-      }
-
-      res_sources_path = _res_sources_path
-      sources = _resource_files
-
-      resources_zip = _resources_zip
-      rtxt_out_path = _rtxt_out_path
-
-      if (defined(invoker.rtxt_file)) {
-        rtxt_in_path = invoker.rtxt_file
       }
     }
   }

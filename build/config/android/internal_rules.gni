@@ -2033,7 +2033,6 @@ if (enable_java_templates) {
                                  ])
       script = "//build/android/gyp/prepare_resources.py"
 
-      depfile = "$target_gen_dir/${invoker.target_name}.d"
       outputs = [
         invoker.resources_zip,
         invoker.resources_zip + ".info",
@@ -2049,8 +2048,6 @@ if (enable_java_templates) {
           rebase_path(invoker.res_sources_path, root_build_dir)
 
       args = [
-        "--depfile",
-        rebase_path(depfile, root_build_dir),
         "--res-sources-path=$_rebased_res_sources_path",
         "--aapt2-path",
         rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
@@ -2071,10 +2068,6 @@ if (enable_java_templates) {
 
       if (defined(invoker.strip_drawables) && invoker.strip_drawables) {
         args += [ "--strip-drawables" ]
-      }
-      if (defined(invoker.allow_missing_resources) &&
-          invoker.allow_missing_resources) {
-        args += [ "--allow-missing-resources" ]
       }
       if (png_to_webp) {
         _webp_target = "//third_party/libwebp:cwebp($host_toolchain)"

@@ -20,12 +20,10 @@ import zipfile
 
 from util import build_utils
 from util import jar_info_utils
-from util import md5_check
 from util import parallel
 from util import resource_utils
 from util import resources_parser
-import action_helpers  # build_utils adds //build to sys.path.
-import zip_helpers
+import zip_helpers  # build_utils adds //build to sys.path.
 
 # Pngs that we shouldn't convert to webp. Please add rationale when updating.
 _PNG_WEBP_EXCLUSION_PATTERN = re.compile(
@@ -47,7 +45,6 @@ def _ParseArgs(args):
       An options object as from argparse.ArgumentParser.parse_args()
     """
     parser = argparse.ArgumentParser(description=__doc__)
-    action_helpers.add_depfile_arg(parser)
 
     input_group = parser.add_mutually_exclusive_group(required=True)
     input_group.add_argument(
@@ -63,13 +60,6 @@ def _ParseArgs(args):
         '--r-text-in',
         help='Path to pre-existing R.txt. Its resource IDs override those found '
         'in the generated R.txt when generating R.java.',
-    )
-
-    parser.add_argument(
-        '--allow-missing-resources',
-        action='store_true',
-        help='Do not fail if some resources exist in the res/ dir but are not '
-        'listed in the sources.',
     )
 
     parser.add_argument(
@@ -426,10 +416,26 @@ def _GenerateRTxt(
         ).WriteRTxtFile(options.r_text_out)
 
 
-def _OnStaleMd5(options, files_by_dir):
+def main(args):
+    args = build_utils.ExpandFileArgs(args)
+    options = _ParseArgs(args)
+
+    if options.resources_zip_path:
+        if options.resource_zip_out:
+            _CompileResourceZip(
+                options.aapt2_path,
+                options.resources_zip_path,
+                options.resource_zip_out,
+                before_join_callback=lambda: _GenerateRTxt(options),
+            )
+        else:
+            _GenerateRTxt(options)
+        return
+
+    files_by_dir = _CollectFilesByDirectory(options.resource_dirs)
     ignore_pattern = resource_utils.AAPT_IGNORE_PATTERN
     active_files_by_dir = _FilterFilesByDirectory(files_by_dir, ignore_pattern)
-    if options.sources and not options.allow_missing_resources:
+    if options.sources:
         _CheckAllFilesListed(options.sources, active_files_by_dir)
 
     if options.strip_drawables:
@@ -451,73 +457,6 @@ def _OnStaleMd5(options, files_by_dir):
         )
     else:
         _GenerateRTxt(options, active_files_by_dir, ignore_pattern)
-
-
-def main(args):
-    args = build_utils.ExpandFileArgs(args)
-    options = _ParseArgs(args)
-
-    if options.resources_zip_path:
-        if options.resource_zip_out:
-            _CompileResourceZip(
-                options.aapt2_path,
-                options.resources_zip_path,
-                options.resource_zip_out,
-                before_join_callback=lambda: _GenerateRTxt(options),
-            )
-        else:
-            _GenerateRTxt(options)
-        return
-
-    # Order of these must match order specified in GN so that the correct one
-    # appears first in the depfile.
-    output_paths = [
-        options.resource_zip_out,
-        options.resource_zip_out + '.info',
-    ]
-    if options.r_text_out:
-        output_paths.append(options.r_text_out)
-
-    input_paths = [options.aapt2_path, options.res_sources_path]
-    if options.r_text_in:
-        input_paths += [options.r_text_in]
-    if options.webp_binary:
-        input_paths += [options.webp_binary]
-
-    # Resource files aren't explicitly listed in GN. Listing them in the depfile
-    # ensures the target will be marked stale when resource files are removed.
-    depfile_deps = []
-    resource_names = []
-    files_by_dir = _CollectFilesByDirectory(options.resource_dirs)
-    for entries in files_by_dir.values():
-        for resource_file, archive_path in entries:
-            # Don't list the empty .keep file in depfile. Since it doesn't end up
-            # included in the .zip, it can lead to -w 'dupbuild=err' ninja errors
-            # if ever moved.
-            if archive_path != os.path.join('empty', '.keep'):
-                input_paths.append(resource_file)
-                depfile_deps.append(resource_file)
-            resource_names.append(archive_path)
-
-    # Resource filenames matter to the output, so add them to strings as well.
-    # This matters if a file is renamed but not changed (http://crbug.com/597126).
-    input_strings = sorted(resource_names) + [
-        options.strip_drawables,
-        bool(options.webp_binary),
-    ]
-
-    # Since android_resources targets like *__all_dfm_resources depend on java
-    # targets that they do not need (in reality it only needs the transitive
-    # resource targets that those java targets depend on), md5_check is used to
-    # prevent outputs from being re-written when real inputs have not changed.
-    md5_check.CallAndWriteDepfileIfStale(
-        lambda: _OnStaleMd5(options, files_by_dir),
-        options,
-        input_paths=input_paths,
-        input_strings=input_strings,
-        output_paths=output_paths,
-        depfile_deps=depfile_deps,
-    )
 
 
 if __name__ == '__main__':
