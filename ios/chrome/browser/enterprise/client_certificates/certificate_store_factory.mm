@@ -8,7 +8,6 @@
 #import "components/enterprise/client_certificates/core/leveldb_certificate_store.h"
 #import "ios/chrome/browser/enterprise/client_certificates/cert_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace client_certificates {
 
