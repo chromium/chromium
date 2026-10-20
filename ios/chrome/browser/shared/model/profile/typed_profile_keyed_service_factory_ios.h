@@ -8,7 +8,6 @@
 #include <concepts>
 #include <utility>
 
-#include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/parameter_pack.h"
 #include "base/types/pass_key.h"
@@ -91,7 +90,6 @@ class TypedProfileKeyedServiceFactoryIOS
   static Service* GetForProfile(ProfileIOS* profile)
     requires(sizeof...(AccessTraits) == 0)
   {
-    CHECK(profile);
     return GetInstance()->template GetServiceForProfileAs<Service>(
         profile,
         /*create=*/true);
@@ -111,9 +109,8 @@ class TypedProfileKeyedServiceFactoryIOS
                                 ServiceAccessType access_type)
     requires(sizeof...(AccessTraits) != 0)
   {
-    CHECK(profile);
     if (access_type == ServiceAccessType::IMPLICIT_ACCESS) {
-      if (ServiceAccessChecker<AccessTraits...>::Reject(*profile)) {
+      if (!profile || ServiceAccessChecker<AccessTraits...>::Reject(*profile)) {
         return nullptr;
       }
     }
@@ -128,7 +125,6 @@ class TypedProfileKeyedServiceFactoryIOS
   static Service* GetForProfileIfExists(ProfileIOS* profile)
     requires(sizeof...(AccessTraits) == 0)
   {
-    CHECK(profile);
     return GetInstance()->template GetServiceForProfileAs<Service>(
         profile,
         /*create=*/false);
@@ -146,9 +142,8 @@ class TypedProfileKeyedServiceFactoryIOS
                                         ServiceAccessType access_type)
     requires(sizeof...(AccessTraits) != 0)
   {
-    CHECK(profile);
     if (access_type == ServiceAccessType::IMPLICIT_ACCESS) {
-      if (ServiceAccessChecker<AccessTraits...>::Reject(*profile)) {
+      if (!profile || ServiceAccessChecker<AccessTraits...>::Reject(*profile)) {
         return nullptr;
       }
     }
