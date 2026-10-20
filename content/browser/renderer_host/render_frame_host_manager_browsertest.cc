@@ -3678,8 +3678,16 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, FileURLIsolation) {
   ASSERT_TRUE(NavigateToURL(shell(), file_url));
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  ChildProcessId file_process_id =
-      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+  RenderProcessHost* file_process =
+      web_contents->GetPrimaryMainFrame()->GetProcess();
+
+  // With full site isolation, the process should be locked to the file:// URL
+  // like any other site. Otherwise, it will be in an unlocked process. On
+  // Android WebView (though this test doesn't run there), navigating to a
+  // file:// URL should not cause a process swap.
+  EXPECT_EQ(file_process->IsProcessLockedToSiteForTesting(),
+            AreAllSitesIsolatedForTesting());
+  ChildProcessId file_process_id = file_process->GetID();
 
   // Navigate to a regular web page, a.com, with a same-site subframe.
   GURL a_url(embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
@@ -3690,10 +3698,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, FileURLIsolation) {
   RenderProcessHost* a_process =
       web_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_NE(a_process->GetID(), file_process_id);
-  // With full site isolation, the process should be locked to the file:// URL
-  // like any other site. Otherwise, it will be in an unlocked process. On
-  // Android WebView (though this test doesn't run there), navigating to a
-  // file:// URL should not cause a process swap.
   EXPECT_EQ(a_process->IsProcessLockedToSiteForTesting(),
             AreAllSitesIsolatedForTesting());
 
