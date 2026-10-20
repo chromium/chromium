@@ -1307,6 +1307,59 @@ suite('ReadAloudModel', () => {
         '2. turtle doves', getReadAloudModel().getCurrentTextContent().trim());
   });
 
+  test('getCurrentText for ordered list with some custom values', async () => {
+    const ol = document.createElement('ol');
+    const items = ['first', 'third', 'fourth', 'tenth'].map(text => {
+      const li = document.createElement('li');
+      li.textContent = text;
+      return li;
+    });
+    items[1]!.value = 3;
+    items[3]!.value = 10;
+    ol.append(...items);
+    document.body.appendChild(ol);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    assertEquals('\n', getReadAloudModel().getCurrentTextContent());
+
+    // Items without a value continue counting from the previous item.
+    for (const expected of ['1. first', '3. third', '4. fourth', '10. tenth']) {
+      getReadAloudModel().moveSpeechForward();
+      assertEquals(
+          expected, getReadAloudModel().getCurrentTextContent().trim());
+    }
+  });
+
+  test('getCurrentText numbers nested ordered lists separately', async () => {
+    const outer = document.createElement('ol');
+    const outer1 = document.createElement('li');
+    outer1.textContent = 'Outer one.';
+    const inner = document.createElement('ol');
+    const inner1 = document.createElement('li');
+    inner1.textContent = 'Inner one.';
+    const inner2 = document.createElement('li');
+    inner2.textContent = 'Inner two.';
+    inner.append(inner1, inner2);
+    outer1.appendChild(inner);
+    const outer2 = document.createElement('li');
+    outer2.textContent = 'Outer two.';
+    outer.append(outer1, outer2);
+    document.body.appendChild(outer);
+
+    await microtasksFinished();
+    getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+    let text = '';
+    while (getReadAloudModel().getCurrentTextContent()) {
+      text += getReadAloudModel().getCurrentTextContent();
+      getReadAloudModel().moveSpeechForward();
+    }
+
+    assertEquals(
+        '1. Outer one. 1. Inner one. 2. Inner two. 2. Outer two.',
+        text.replace(/\s+/g, ' ').trim());
+  });
+
   test(
       'getCurrentText when sentence split across paragraph without paragraph tags',
       async () => {
