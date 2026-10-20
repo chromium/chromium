@@ -56,10 +56,12 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton>,
   int GetSplitRoundedEdgeRadius() override;
   int GetIconSize() const override;
   ui::ColorId GetBackgroundColor();
+  SkColor GetForegroundColor(ButtonState state) const override;
 
   void Collapse() override;
   void Expand() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void OnThemeChanged() override;
   bool GetIsShowingNudge()
       const override;  // also overrides ToolbarGlicButtonInterface
 
@@ -75,6 +77,7 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton>,
  private:
   void UpdateBackground();
   void UpdateInkDrop();
+  void UpdateCloseButton();
 
   float GetWidthFactor() const override;
   void SetWidthFactor(float factor) override;
@@ -82,7 +85,6 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton>,
   // GlicButton:
   ui::ColorId GetCustomThemeForegroundId() const override;
   std::optional<SkColor> GetHighlightTextColor() const override;
-  void OnThemeChanged() override;
 
   std::optional<int> left_corner_radius_;
   std::optional<int> right_corner_radius_;

@@ -644,6 +644,9 @@ class GlicButton : public GlicBaseShim<T>,
     T::SetText(text);
     // Setting label text seems to clear the margin. Set it again.
     SetLabelMargins();
+    if (ShouldApplyCustomThemeFallback()) {
+      UpdateColors();
+    }
   }
 
   void NotifyClick(const ui::Event& event) override {

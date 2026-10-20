@@ -146,7 +146,7 @@ float TabStripGlicButton::GetWidthFactor() const {
 }
 
 ui::ColorId TabStripGlicButton::GetCustomThemeForegroundId() const {
-  return kColorTabSearchButtonCRForegroundFrameActive;
+  return kColorTabForegroundInactiveFrameActive;
 }
 
 ui::ColorId TabStripGlicButton::GetCustomThemeBackgroundActiveId() const {
@@ -158,11 +158,11 @@ ui::ColorId TabStripGlicButton::GetCustomThemeBackgroundInactiveId() const {
 }
 
 ui::ColorId TabStripGlicButton::GetCustomThemeForegroundActiveId() const {
-  return kColorTabSearchButtonCRForegroundFrameActive;
+  return kColorTabForegroundInactiveFrameActive;
 }
 
 ui::ColorId TabStripGlicButton::GetCustomThemeForegroundInactiveId() const {
-  return kColorTabSearchButtonCRForegroundFrameInactive;
+  return kColorTabForegroundInactiveFrameInactive;
 }
 
 BEGIN_METADATA(TabStripGlicButton)
