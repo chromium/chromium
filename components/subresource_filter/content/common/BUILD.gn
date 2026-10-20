@@ -7,7 +7,6 @@ static_library("common") {
     "utils.cc",
     "utils.h",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [ "//url" ]
   deps = [ "//content/public/common" ]
 }

@@ -97,10 +97,7 @@ source_set("browser") {
     "soft_navigation_tracker.cc",
     "soft_navigation_tracker.h",
   ]
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
   deps = [
     "//base",
     "//components/google/core/common",

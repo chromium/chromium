@@ -23,8 +23,6 @@ source_set("ios") {
   ]
 
   public_deps = [ "//base" ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

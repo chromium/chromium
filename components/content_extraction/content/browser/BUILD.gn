@@ -14,7 +14,6 @@ static_library("browser") {
     "//services/service_manager/public/cpp",
     "//third_party/blink/public/common",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

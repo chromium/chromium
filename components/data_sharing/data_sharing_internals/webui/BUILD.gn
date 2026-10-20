@@ -15,7 +15,6 @@ static_library("webui") {
     "//components/data_sharing/public:logger",
   ]
   public_deps = [ ":mojo_bindings" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 mojom("mojo_bindings") {

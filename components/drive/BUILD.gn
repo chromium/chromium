@@ -61,8 +61,6 @@ proto_library("proto") {
   defines = [ "COMPONENTS_DRIVE_IMPLEMENTATION" ]
 
   link_deps = [ ":drive_export_header" ]
-
-  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {

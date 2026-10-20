@@ -22,10 +22,7 @@ source_set("browser") {
     "search_preload_process_data.h",
     "search_prewarm_coverage_status.h",
   ]
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
   deps = [
     "//base",
     "//components/crash/core/common:crash_key",

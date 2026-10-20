@@ -20,8 +20,6 @@ source_set("media_gallery_util") {
     "safe_media_metadata_parser.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     "//base",
     "//components/strings",

@@ -141,6 +141,4 @@ static_library("service") {
       "//components/password_manager/core/browser:split_stores_and_local_upm",
     ]
   }
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

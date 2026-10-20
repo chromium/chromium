@@ -46,6 +46,4 @@ static_library("nigori") {
     "//components/sync/model/crypto",
     "//components/sync/protocol",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

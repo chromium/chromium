@@ -12,10 +12,7 @@ static_library("core") {
     "lookalike_url_util.cc",
     "lookalike_url_util.h",
   ]
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
   deps = [
     ":proto",
     ":safety_tips",
@@ -46,10 +43,7 @@ static_library("safety_tips") {
     "safety_tips_config.cc",
     "safety_tips_config.h",
   ]
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
   deps = [
     ":proto",
     "//base",

@@ -11,8 +11,6 @@ proto_library("proto") {
     "recovery_key_store.proto",
     "vault.proto",
   ]
-
-  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (is_android) {

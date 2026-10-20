@@ -72,7 +72,6 @@ source_set("browser") {
     "//components/media_router/common/mojom:media_router",
     "//extensions/buildflags",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_android) {
     sources += [

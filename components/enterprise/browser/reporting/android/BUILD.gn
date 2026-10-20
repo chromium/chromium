@@ -34,8 +34,6 @@ source_set("signals_reporting_scheduler") {
     "signals_reporting_scheduler_bridge.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [
     ":jni_headers",
     "//base",

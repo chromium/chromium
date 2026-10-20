@@ -53,8 +53,6 @@ source_set("identity_manager") {
     "token_binding_info.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     ":tribool",
     "//base",
@@ -110,7 +108,6 @@ source_set("tribool") {
     "tribool.cc",
     "tribool.h",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [ "//base" ]
 }
 

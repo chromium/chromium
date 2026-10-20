@@ -24,7 +24,6 @@ source_set("features") {
   ]
   configs += [
     ":gwp_asan_implementation",
-    "//build/config/compiler:wexit_time_destructors",
     "//build/config/compiler:wglobal_constructors",
   ]
 
@@ -84,10 +83,7 @@ component("client") {
     ]
   }
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
 
   public_deps = [ ":features" ]
 

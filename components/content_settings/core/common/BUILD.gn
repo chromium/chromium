@@ -35,8 +35,6 @@ static_library("common") {
     "third_party_site_data_access_type.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     ":content_settings_enums",
     ":content_settings_types",

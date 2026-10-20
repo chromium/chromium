@@ -25,7 +25,6 @@ static_library("webui") {
     ":url_constants",
     "//components/optimization_guide/optimization_guide_internals/resources",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("url_constants") {

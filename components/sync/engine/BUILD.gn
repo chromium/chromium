@@ -164,7 +164,6 @@ static_library("engine") {
     # The target has >50 .cc files, so speed up the build with
     # precompiled_headers.
     "//build/config:precompiled_headers",
-    "//build/config/compiler:wexit_time_destructors",
   ]
 
   public_deps = [

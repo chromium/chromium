@@ -33,8 +33,6 @@ source_set("switches") {
     "headless_command_switches.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [ "//base" ]
 }
 
@@ -43,8 +41,6 @@ static_library("command_handler") {
     "headless_command_handler.cc",
     "headless_command_handler.h",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     ":switches",

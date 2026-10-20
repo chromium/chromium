@@ -19,7 +19,6 @@ source_set("bloomfilter") {
     "//base",
     "//third_party/smhasher:murmurhash3",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("filters") {
@@ -43,7 +42,6 @@ static_library("filters") {
     "//url",
   ]
   public_deps = [ ":bloomfilter" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   visibility = [ ":*" ]
 }
 
@@ -101,7 +99,6 @@ component("features") {
   if (is_android) {
     deps += [ "//components/version_info/android:channel_getter" ]
   }
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_OPTIMIZATION_GUIDE_FEATURES_IMPL" ]
 }
 
@@ -552,7 +549,6 @@ static_library("prediction") {
     "//net/traffic_annotation",
     "//services/network/public/cpp",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("page_content") {

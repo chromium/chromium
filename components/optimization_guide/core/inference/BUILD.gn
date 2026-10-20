@@ -22,7 +22,6 @@ static_library("op_resolver") {
     "//third_party/tflite:buildflags",
     "//third_party/tflite:tflite_public_headers",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   visibility += [
     "//media/webrtc/*",
     "//services/on_device_model/safety/*",
@@ -70,7 +69,6 @@ static_library("inference") {
     "//net",
     "//url",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   if (build_with_mediapipe_lib) {
     sources += [
       "mediapipe_text_model_executor.cc",

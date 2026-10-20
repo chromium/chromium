@@ -74,8 +74,6 @@ static_library("model") {
     "wipe_model_upon_sync_disabled_behavior.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//base",
     "//components/prefs",

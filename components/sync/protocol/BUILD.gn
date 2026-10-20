@@ -9,7 +9,6 @@ proto_library("protocol") {
   proto_in_dir = "//"
   sources = sync_protocol_sources
   deps = [ "//third_party/protobuf:timestamp_proto" ]
-  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 # TODO(crbug.com/41449994): It seems some code implicitly depends on "util" due

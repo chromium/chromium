@@ -13,7 +13,6 @@ static_library("renderer") {
     "web_document_subresource_filter_impl.cc",
     "web_document_subresource_filter_impl.h",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [
     "//base",
     "//components/subresource_filter/content/mojom",

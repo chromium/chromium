@@ -12,7 +12,6 @@ source_set("sql_builder") {
   ]
   deps = [ "//sql" ]
   public_deps = [ "//base" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 fuzzable_proto_library("affiliation_proto") {
@@ -71,7 +70,6 @@ source_set("affiliations") {
     "//third_party/re2",
   ]
   public_deps = [ "//url" ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("test_support") {

@@ -15,10 +15,7 @@ source_set("features") {
   public = [ "features.h" ]
   public_deps = [ "//base" ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
 }
 
 source_set("browser") {
@@ -56,10 +53,7 @@ source_set("browser") {
 
   public_deps = [ "//url" ]
 
-  configs += [
-    "//build/config/compiler:wexit_time_destructors",
-    "//build/config/compiler:wglobal_constructors",
-  ]
+  configs += [ "//build/config/compiler:wglobal_constructors" ]
 
   deps = [
     ":features",

@@ -72,7 +72,6 @@ static_library("public") {
     "//components/webui/flags",
     "//extensions/buildflags",
   ]
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_android) {
     sources += [

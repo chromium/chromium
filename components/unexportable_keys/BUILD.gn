@@ -32,8 +32,6 @@ component("unexportable_keys") {
     "unexportable_key_tasks.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   defines = [ "IS_UNEXPORTABLE_KEYS_IMPL" ]
 
   public_deps = [

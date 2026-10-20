@@ -14,8 +14,6 @@ source_set("crypto") {
     "nigori.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     "//components/sync/protocol",
     "//crypto",

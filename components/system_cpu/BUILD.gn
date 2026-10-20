@@ -9,8 +9,6 @@ source_set("system_cpu") {
     "cpu_sample.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   deps = [ "//base" ]
 
   libs = []

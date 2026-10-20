@@ -273,8 +273,6 @@ source_set("permissions") {
     ":permissions_common",
     "//components/permissions/prediction_service",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("test_support") {

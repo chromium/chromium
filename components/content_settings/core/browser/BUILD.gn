@@ -82,8 +82,6 @@ static_library("browser") {
     ]
   }
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   # TODO(crbug.com/40145057): remove deprecated RWS and this include.
   # Allow access to /components/privacy_sandbox/privacy_sandbox_prefs.h
   # from /chrome/browser/ui/page_info/page_info_unittest.cc

@@ -47,8 +47,6 @@ static_library("core") {
     "//components/webdata/common",
     "//ui/base",
   ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("cookie_or_cache_deletion_choice") {

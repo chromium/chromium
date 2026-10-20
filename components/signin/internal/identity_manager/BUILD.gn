@@ -48,8 +48,6 @@ source_set("identity_manager") {
     "profile_oauth2_token_service_observer.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [
     ":capabilities",
     "//base",

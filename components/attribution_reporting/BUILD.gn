@@ -8,8 +8,6 @@ component("features") {
     "features.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   public_deps = [ "//base" ]
 
   defines = [ "IS_ATTRIBUTION_REPORTING_FEATURES_IMPL" ]

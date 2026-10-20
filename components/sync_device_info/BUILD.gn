@@ -59,8 +59,6 @@ static_library("sync_device_info") {
     "//ui/base",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
   if (is_android) {
     sources += [ "local_device_info_util_android.cc" ]
     deps += [ ":jni_headers" ]
