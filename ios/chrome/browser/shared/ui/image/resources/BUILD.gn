@@ -25,6 +25,11 @@ bundle_data_xcassets("resources") {
 bundle_data_xcassets("branded_assets") {
   catalog = "Chromium.xcassets"
   sources = [
+    "Chromium.xcassets/chromium_default_browser_1p_banner.imageset/Contents.json",
+    "Chromium.xcassets/chromium_default_browser_1p_banner.imageset/chromium_default_browser_1p_banner@2x.png",
+    "Chromium.xcassets/chromium_default_browser_1p_banner.imageset/chromium_default_browser_1p_banner@3x.png",
+    "Chromium.xcassets/chromium_default_browser_1p_banner.imageset/chromium_default_browser_1p_banner_dark@2x.png",
+    "Chromium.xcassets/chromium_default_browser_1p_banner.imageset/chromium_default_browser_1p_banner_dark@3x.png",
     "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/Contents.json",
     "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/chromium_default_browser_screen_banner@2x.png",
     "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/chromium_default_browser_screen_banner@3x.png",
