@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -129,6 +128,8 @@ class ModemMessagingClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
   // The SmsReceived signal handler given by the tested client.
   dbus::ObjectProxy::SignalCallback sms_received_callback_;
+  // Completion of the signal connection result callback.
+  base::test::TestFuture<void> signal_connected_future_;
   // Expected argument for Delete method.
   dbus::ObjectPath expected_sms_path_;
   // Response returned by mock methods.
@@ -145,7 +146,8 @@ class ModemMessagingClientTest : public testing::Test {
     const bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(std::move(on_connected_callback),
-                                  interface_name, signal_name, success));
+                                  interface_name, signal_name, success)
+                       .Then(signal_connected_future_.GetCallback()));
   }
 };
 
@@ -162,7 +164,7 @@ TEST_F(ModemMessagingClientTest, SmsReceived) {
                           base::Unretained(&handler)));
 
   // Run the message loop to run the signal connection result callback.
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(signal_connected_future_.Wait());
 
   // Send signal.
   dbus::Signal signal(modemmanager::kModemManager1MessagingInterface,
