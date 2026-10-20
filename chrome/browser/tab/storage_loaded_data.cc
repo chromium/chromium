@@ -72,6 +72,17 @@ void SortTabsInOrder(
   }
 }
 
+std::vector<uint8_t> SerializeChildren(base::span<const StorageId> children) {
+  tabs_pb::Children children_proto;
+  for (const auto& child_id : children) {
+    StorageIdToTokenProto(child_id, children_proto.add_storage_id());
+  }
+  std::vector<uint8_t> serialized_children(children_proto.ByteSizeLong());
+  children_proto.SerializeToArray(serialized_children.data(),
+                                  serialized_children.size());
+  return serialized_children;
+}
+
 }  // namespace
 
 StorageLoadedData::Builder::Builder(
@@ -203,18 +214,36 @@ void StorageLoadedData::Builder::ReconcileDivergentNodes(
     }
 
     // The reconciled children vector is now canonical. Save it to the database.
-    tabs_pb::Children children_proto;
-    for (const auto& child_id : reconciled_children) {
-      tabs_pb::Token* token = children_proto.add_storage_id();
-      StorageIdToTokenProto(child_id, token);
-    }
-
-    std::vector<uint8_t> serialized_children(children_proto.ByteSizeLong());
-    children_proto.SerializeToArray(serialized_children.data(),
-                                    serialized_children.size());
-    database->SaveNodeChildren(transaction, id, std::move(serialized_children));
+    database->SaveNodeChildren(transaction, id,
+                               SerializeChildren(reconciled_children));
 
     children_map_[id] = std::move(reconciled_children);
+  }
+
+  // Filter canonical collections that had no divergent entry of their own
+  // (e.g., an un-restored tab group whose child tab was restored out-of-order
+  // into the unpinned collection or deleted mid-restore).
+  for (auto& [id, canonical_children] : children_map_) {
+    if (divergent_children_map_.contains(id)) {
+      continue;
+    }
+
+    std::vector<StorageId> filtered_children;
+    filtered_children.reserve(canonical_children.size());
+    for (const auto& canonical_child : canonical_children) {
+      if (!all_divergent_children.contains(canonical_child) &&
+          !deleted_nodes.contains(canonical_child)) {
+        filtered_children.push_back(canonical_child);
+      }
+    }
+
+    if (filtered_children.size() == canonical_children.size()) {
+      continue;
+    }
+
+    database->SaveNodeChildren(transaction, id,
+                               SerializeChildren(filtered_children));
+    canonical_children = std::move(filtered_children);
   }
 
   // Clear the divergent window from the database now that we have reconciled

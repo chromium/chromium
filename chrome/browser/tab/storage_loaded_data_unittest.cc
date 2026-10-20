@@ -511,5 +511,78 @@ TEST_F(StorageLoadedDataTest, Reconcile_DeletedNode_Dropped) {
   EXPECT_EQ(loaded_tabs[1].tab_id(), 3);
 }
 
+// Tests that when a tab belonging to an un-restored group (which has no entry
+// in divergent_children_map_) is restored out-of-order into the unpinned
+// collection's divergent children, it is filtered out of the canonical group
+// and not duplicated.
+TEST_F(StorageLoadedDataTest,
+       Reconcile_MoveFromUnrestoredCollection_Deduplicated) {
+  StorageId root_id = StorageId::Create();
+  StorageId unpinned_id = StorageId::Create();
+  StorageId group1_id = StorageId::Create();
+  StorageId tab1_id = StorageId::Create();
+  StorageId tab2_id = StorageId::Create();
+  StorageId tab3_id = StorageId::Create();
+
+  auto* tx = db()->CreateTransaction();
+  db()->SaveNode(tx, root_id, "win0", false, TabStorageType::kTabStrip,
+                 SerializeTabStripState(std::nullopt), /*children=*/{});
+  db()->SaveNodeChildren(tx, root_id, SerializeChildren({unpinned_id}));
+
+  db()->SaveNode(tx, unpinned_id, "win0", false, TabStorageType::kUnpinned, {},
+                 /*children=*/{});
+  // Canonical: Unpinned contains [Group1, Tab3]. Group1 contains [Tab1, Tab2].
+  db()->SaveNodeChildren(tx, unpinned_id,
+                         SerializeChildren({group1_id, tab3_id}));
+
+  db()->SaveNode(tx, group1_id, "win0", false, TabStorageType::kGroup, {},
+                 /*children=*/{});
+  db()->SaveNodeChildren(tx, group1_id, SerializeChildren({tab1_id, tab2_id}));
+
+  db()->SaveNode(tx, tab1_id, "win0", false, TabStorageType::kTab,
+                 SerializeTabState(1), /*children=*/{});
+  db()->SaveNode(tx, tab2_id, "win0", false, TabStorageType::kTab,
+                 SerializeTabState(2), /*children=*/{});
+  db()->SaveNode(tx, tab3_id, "win0", false, TabStorageType::kTab,
+                 SerializeTabState(3), /*children=*/{});
+
+  // Out-of-order active tab restore: Tab1 (from Group1) was restored first
+  // into Unpinned before Group1 was instantiated in memory, so Group1 has NO
+  // divergent entry.
+  db()->SaveDivergentNode(tx, unpinned_id, "win0", false,
+                          SerializeChildren({tab1_id}));
+  ASSERT_TRUE(db()->CloseTransaction(tx));
+
+  auto tracker = std::make_unique<TestRestoreEntityTracker>();
+  auto builder = std::make_unique<StorageLoadedData::Builder>(
+      "win0", false, std::move(tracker));
+  std::unique_ptr<StorageLoadedData> data =
+      db()->LoadAllNodes("win0", false, std::move(builder));
+
+  ASSERT_NE(data, nullptr);
+  const auto& loaded_tabs = data->GetLoadedTabs();
+  ASSERT_EQ(loaded_tabs.size(), 3u);
+  EXPECT_EQ(loaded_tabs[0].tab_id(), 1);
+  EXPECT_EQ(loaded_tabs[1].tab_id(), 2);
+  EXPECT_EQ(loaded_tabs[2].tab_id(), 3);
+
+  // Verify the persisted state on a second load to ensure group1's children
+  // in the database actually had tab1 filtered out.
+  auto tracker2 = std::make_unique<TestRestoreEntityTracker>();
+  auto* tracker2_ptr = tracker2.get();
+  auto builder2 = std::make_unique<StorageLoadedData::Builder>(
+      "win0", false, std::move(tracker2));
+  std::unique_ptr<StorageLoadedData> data2 =
+      db()->LoadAllNodes("win0", false, std::move(builder2));
+  ASSERT_NE(data2, nullptr);
+  const auto& loaded_tabs2 = data2->GetLoadedTabs();
+  ASSERT_EQ(loaded_tabs2.size(), 3u);
+  EXPECT_EQ(loaded_tabs2[0].tab_id(), 1);
+  EXPECT_EQ(loaded_tabs2[1].tab_id(), 2);
+  EXPECT_EQ(loaded_tabs2[2].tab_id(), 3);
+  EXPECT_EQ(tracker2_ptr->GetRegisteredChildren(group1_id),
+            std::vector<StorageId>{tab2_id});
+}
+
 }  // namespace
 }  // namespace tabs
