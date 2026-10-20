@@ -658,12 +658,12 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
 
     /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
     public ColorStateList getPrimaryIconTintList() {
-        return ChromeColors.getPrimaryIconTint(mContext, isIncognito());
+        return mCache.getColorStateList(ChromeColors.getPrimaryIconTintRes(isIncognito()));
     }
 
     /** Resolves the secondary icon tint color. */
     public ColorStateList getSecondaryIconTintList() {
-        return ChromeColors.getSecondaryIconTint(mContext, isIncognito());
+        return mCache.getColorStateList(ChromeColors.getSecondaryIconTintRes(isIncognito()));
     }
 
     /**

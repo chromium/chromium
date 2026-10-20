@@ -121,6 +121,11 @@ class SuggestionLayout extends ViewGroup {
             return mSuggestionViewType;
         }
 
+        /** Returns whether the decoration icon is large. */
+        boolean isLargeDecoration() {
+            return mIsLargeDecoration;
+        }
+
         /** Returns the placement of the view, relative to the suggestion area start. */
         private Rect getPlacement() {
             return mPlacement;
@@ -200,23 +205,37 @@ class SuggestionLayout extends ViewGroup {
     }
 
     public void applySideSpacing(boolean applyOuterMargins, @Px int sideSpacing) {
+        @Px int marginSpacing = applyOuterMargins ? sideSpacing : 0;
+        int padding = applyOuterMargins ? 0 : mSuggestionPopoverShift;
+
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
+        boolean layoutParamsChanged = false;
         if (layoutParams == null) {
-            layoutParams =
+            MarginLayoutParams marginParams =
                     new MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            marginParams.setMargins(marginSpacing, 0, marginSpacing, 0);
+            layoutParams = marginParams;
+            layoutParamsChanged = true;
+        } else if (layoutParams instanceof MarginLayoutParams marginParams) {
+            if (marginParams.leftMargin != marginSpacing
+                    || marginParams.rightMargin != marginSpacing
+                    || marginParams.topMargin != 0
+                    || marginParams.bottomMargin != 0) {
+                marginParams.setMargins(marginSpacing, 0, marginSpacing, 0);
+                layoutParamsChanged = true;
+            }
+        }
+        if (layoutParamsChanged) {
+            setLayoutParams(layoutParams);
         }
 
-        @Px int marginSpacing = applyOuterMargins ? sideSpacing : 0;
-        if (layoutParams instanceof MarginLayoutParams) {
-            ((MarginLayoutParams) layoutParams).setMargins(marginSpacing, 0, marginSpacing, 0);
-        }
-        setLayoutParams(layoutParams);
         // If outer margins are not applied, then the content in the suggestion becomes too close to
         // the border of the Omnibox suggestions container. To avoid this, we need to add padding to
         // the left and right of the suggestion. This allows the suggestion hover highlight to span
         // the whole width and the content inside to be aligned correctly.
-        int padding = applyOuterMargins ? 0 : mSuggestionPopoverShift;
-        setPaddingRelative(padding, getPaddingTop(), padding, getPaddingBottom());
+        if (getPaddingStart() != padding || getPaddingEnd() != padding) {
+            setPaddingRelative(padding, getPaddingTop(), padding, getPaddingBottom());
+        }
     }
 
     @Override

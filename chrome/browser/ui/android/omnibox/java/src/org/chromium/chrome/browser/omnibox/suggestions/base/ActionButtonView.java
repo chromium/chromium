@@ -5,14 +5,20 @@
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
 
 import androidx.appcompat.widget.AppCompatImageView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 
 /**
  * A View that is displayed as an action button.
@@ -32,6 +38,37 @@ public class ActionButtonView extends AppCompatImageView {
         setFocusable(true);
         setScaleType(ImageView.ScaleType.CENTER);
         setForeground(context.getDrawable(R.drawable.action_button_foreground_selector));
+        setOnClickListener(
+                v -> {
+                    Action action = (Action) v.getTag();
+                    if (action != null) {
+                        action.callback.run();
+                    }
+                });
+        setAccessibilityDelegate(
+                new AccessibilityDelegate() {
+                    @Override
+                    public void onInitializeAccessibilityNodeInfo(
+                            View host, AccessibilityNodeInfo info) {
+                        super.onInitializeAccessibilityNodeInfo(host, info);
+                        info.addAction(AccessibilityAction.ACTION_CLICK);
+                    }
+
+                    @Override
+                    public boolean performAccessibilityAction(
+                            View host, int accessibilityAction, @Nullable Bundle arguments) {
+                        Action action = (Action) host.getTag();
+                        if (accessibilityAction == AccessibilityNodeInfo.ACTION_CLICK
+                                && action != null
+                                && action.onClickAnnouncement != null) {
+                            host.setContentDescription(action.onClickAnnouncement);
+                            host.sendAccessibilityEvent(
+                                    AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+                        }
+                        return super.performAccessibilityAction(
+                                host, accessibilityAction, arguments);
+                    }
+                });
     }
 
     /**

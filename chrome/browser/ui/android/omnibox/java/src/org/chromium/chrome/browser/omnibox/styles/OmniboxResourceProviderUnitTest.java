@@ -405,11 +405,12 @@ public class OmniboxResourceProviderUnitTest {
                 mContext.getColorStateList(R.color.default_icon_color_secondary_tint_list);
         ColorStateList incognitoSecondary =
                 mContext.getColorStateList(R.color.default_icon_color_secondary_light_tint_list);
-        OmniboxResourceProvider provider =
-                new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
-        assertEquals(adaptiveSecondary, provider.getSecondaryIconTintList());
-        provider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
-        assertEquals(incognitoSecondary, provider.getSecondaryIconTintList());
+        assertEquals(adaptiveSecondary, mProvider.getSecondaryIconTintList());
+        assertSame(mProvider.getSecondaryIconTintList(), mProvider.getSecondaryIconTintList());
+        assertSame(mProvider.getPrimaryIconTintList(), mProvider.getPrimaryIconTintList());
+        mProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
+        assertEquals(incognitoSecondary, mProvider.getSecondaryIconTintList());
+        assertSame(mProvider.getSecondaryIconTintList(), mProvider.getSecondaryIconTintList());
     }
 
     @Test

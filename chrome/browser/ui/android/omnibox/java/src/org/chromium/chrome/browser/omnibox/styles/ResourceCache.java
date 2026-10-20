@@ -100,7 +100,7 @@ class ResourceCache {
         ThreadUtils.assertOnUiThread();
         ColorStateList list = mColorStateLists.get(resId);
         if (list == null) {
-            list = AppCompatResources.getColorStateList(mContext, resId);
+            list = mContext.getColorStateList(resId);
             mColorStateLists.put(resId, list);
         }
         return list;
