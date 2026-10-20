@@ -381,7 +381,7 @@ void WebUIReadOnlyOmnibox::OnRevertTemporaryText(
 }
 
 void WebUIReadOnlyOmnibox::OnBeforePossibleChange() {
-  state_before_change_ = GetState();
+  state_before_change_ = GetStateWithoutInlineSuggestion();
 
   // User is editing or traversing the text, as opposed to moving
   // through suggestions. Clear the accessibility label
@@ -391,7 +391,7 @@ void WebUIReadOnlyOmnibox::OnBeforePossibleChange() {
 }
 
 bool WebUIReadOnlyOmnibox::OnAfterPossibleChange(bool allow_keyword_ui_change) {
-  State new_state = GetState();
+  State new_state = GetStateWithoutInlineSuggestion();
   OmniboxView::StateChanges state_changes =
       GetStateChanges(state_before_change_, new_state);
 
@@ -631,6 +631,22 @@ void WebUIReadOnlyOmnibox::ResetFormatting() {
 void WebUIReadOnlyOmnibox::ResetBrowserVersion() {
   ++browser_version_;
   ui_version_ = 0;
+}
+
+OmniboxView::State WebUIReadOnlyOmnibox::GetStateWithoutInlineSuggestion() {
+  auto state = GetState();
+  // GetState() fills in the text field of state with GetText(), which needs
+  // to include inline suggestion when handling Ctrl+K. The state handed to
+  // OnAfterPossibleChange should not include the inline suggestion, since
+  // it can make it look like like the selection got accepted.
+  //
+  // In views, this happens automatically because typing with an inline
+  // suggestion deletes that suggestion, and then it gets re-applied, but
+  // doing that in WebUI would be very flickery.
+  //
+  // See crbug.com/571658273
+  state.text = text_;
+  return state;
 }
 
 bool WebUIReadOnlyOmnibox::IsWebViewFocused() {

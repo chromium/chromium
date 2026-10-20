@@ -181,6 +181,8 @@ class WebUIReadOnlyOmnibox
   void ResetFormatting();
   void ResetBrowserVersion();
 
+  OmniboxView::State GetStateWithoutInlineSuggestion();
+
   // Returns whether the toolbar's views::WebView currently has Views focus.
   // This is distinct from `has_focus_`, which tracks whether the omnibox
   // element inside the WebUI has reported itself as focused.

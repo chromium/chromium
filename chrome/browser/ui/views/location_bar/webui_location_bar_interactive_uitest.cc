@@ -1288,6 +1288,42 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, InlineSuggestion) {
       WaitTillOmniboxViewText("local.test", View::kStatic));
 }
 
+// An inline suggestion where the case of one of the characters doesn't match.
+// See crbug.com/571658273
+IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
+                       InlineSuggestionCaseMismatch) {
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(this->browser()->GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  GURL url("https://local.test/");
+  history_service->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
+  ui_test_utils::WaitForHistoryToLoad(history_service);
+
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      EnsureNoPopup(), FocusOmnibox(),
+      // Shouldn't have a popup visible yet.
+      EnsureNoPopup(),
+      // Type some text, it should show up.
+      EnterText(u"https://local"), WaitForPopupShow(),
+      WaitTillInlineComplete("https://local", ".test"),
+
+      // Enter . to advance completion.
+      InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_OEM_PERIOD)),
+      WaitTillInlineComplete("https://local.", "test"),
+
+      // Now send an upper-case T.
+      InAnyContext(
+          SendKeyPress(InputWebContents(), ui::VKEY_T, ui::EF_SHIFT_DOWN)),
+      WaitTillInlineComplete("https://local.T", "est"),
+
+      // Accept it.
+      SendEnter(),
+      WaitForWebContentsNavigation(kTabId, GURL("https://local.test")),
+      WaitTillOmniboxViewText("local.test", View::kStatic));
+}
+
 IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
                        FocusLocationNoDefaultSuggestion) {
   FAILS_IN_MODE(Mode::kFull,
