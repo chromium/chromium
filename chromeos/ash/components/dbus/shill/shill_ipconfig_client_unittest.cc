@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_unittest_base.h"
@@ -40,8 +39,6 @@ class ShillIPConfigClientTest : public ShillClientUnittestBase {
     // Create a client with the mock bus.
     ShillIPConfigClient::Initialize(mock_bus_.get());
     client_ = ShillIPConfigClient::Get();
-    // Run the message loop to run the signal connection result callback.
-    base::RunLoop().RunUntilIdle();
   }
 
   void TearDown() override {
