@@ -77,11 +77,16 @@
   width: 20px;
 }
 
+#shareTabsTrigger:hover,
+#shareTabsTrigger[aria-expanded='true'] {
+  background-color: var(--tab-picker-hover-background-color);
+}
+
 #shareTabsTrigger:focus {
   outline: none;
 }
 
-#shareTabsTrigger:focus-visible {
+:host-context(.focus-outline-visible) #shareTabsTrigger:focus {
   background-color: var(--tab-picker-hover-background-color);
   outline: 2px solid var(--cr-focus-outline-color);
   outline-offset: -2px;
@@ -162,7 +167,7 @@ composebox-favicon-group {
   outline: none;
 }
 
-#tabMenu .dropdown-item:focus-visible {
+:host-context(.focus-outline-visible) #tabMenu .dropdown-item:focus {
   outline: 2px solid var(--cr-focus-outline-color);
   outline-offset: -2px;
 }

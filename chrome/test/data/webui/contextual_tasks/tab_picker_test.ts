@@ -584,4 +584,174 @@ suite('TabPickerTest', () => {
         await microtasksFinished();
         assertEquals('Sharing 1 tab', label.textContent.trim());
       });
+
+  test(
+      'Hides focus outline on pointer hover and shows on keyboard navigation',
+      async () => {
+        // Focus outlines start hidden when the element connects.
+        assertFalse(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+
+        // Focusing the trigger row without a pointer press (e.g. via Tab)
+        // enables the focus outline on the trigger button.
+        app.$.shareTabsTrigger.focus();
+        assertEquals(app.$.shareTabsTrigger, app.shadowRoot.activeElement);
+        assertTrue(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+        if (document.hasFocus()) {
+          assertEquals(
+              'solid',
+              window.getComputedStyle(app.$.shareTabsTrigger).outlineStyle);
+        }
+
+        // Opening via pointerenter clears focus outlines and does not
+        // auto-focus the first tab item.
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+        await microtasksFinished();
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        assertTrue(app.$.tabMenu.open);
+        assertFalse(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+        assertEquals(
+            'none',
+            window.getComputedStyle(app.$.shareTabsTrigger).outlineStyle);
+
+        const items =
+            app.$.tabMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item');
+        const [item0, item1] = items;
+        assert(item0);
+        assert(item1);
+        assertFalse(app.shadowRoot.activeElement === item0);
+        assertEquals('none', window.getComputedStyle(item0).outlineStyle);
+
+        // Hovering a tab item focuses it via cr-action-menu mouseover without
+        // showing a keyboard focus outline.
+        item0.dispatchEvent(
+            new MouseEvent('mouseover', {bubbles: true, composed: true}));
+        await microtasksFinished();
+        assertEquals(item0, app.shadowRoot.activeElement);
+        assertFalse(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+        assertEquals('none', window.getComputedStyle(item0).outlineStyle);
+
+        const closePromise1 = eventToPromise('close', app.$.tabMenu);
+        app.$.tabMenu.close();
+        await closePromise1;
+        await microtasksFinished();
+        assertFalse(app.$.tabMenu.open);
+        assertFalse(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+
+        // Pointer press on the trigger row suppresses the focus outline when
+        // the browser focuses the button on pointerdown, and clicking clears
+        // focus-outline-visible.
+        app.$.shareTabsTrigger.focus();
+        assertTrue(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+        app.$.shareTabsTrigger.blur();
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerdown'));
+        app.$.shareTabsTrigger.focus();
+        assertFalse(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+
+        app.$.shareTabsTrigger.dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
+        assertTrue(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+        app.$.shareTabsTrigger.click();
+        await microtasksFinished();
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        assertTrue(app.$.tabMenu.open);
+        assertFalse(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+        assertFalse(app.shadowRoot.activeElement === item0);
+
+        const closePromise2 = eventToPromise('close', app.$.tabMenu);
+        app.$.tabMenu.close();
+        await closePromise2;
+        await microtasksFinished();
+        assertFalse(app.$.tabMenu.open);
+
+        // Opening via keyboard enables focus outlines and focuses the first
+        // tab item.
+        app.$.shareTabsTrigger.dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'ArrowRight', bubbles: true}));
+        await microtasksFinished();
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        assertTrue(app.$.tabMenu.open);
+        assertTrue(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+        assertEquals(item0, app.shadowRoot.activeElement);
+        if (document.hasFocus()) {
+          assertEquals('solid', window.getComputedStyle(item0).outlineStyle);
+        }
+
+        // Moving the pointer over the menu clears the keyboard focus outline.
+        app.$.tabMenu.dispatchEvent(
+            new PointerEvent('pointermove', {bubbles: true}));
+        await microtasksFinished();
+        assertFalse(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+        assertEquals('none', window.getComputedStyle(item0).outlineStyle);
+
+        // Pressing ArrowDown inside the menu re-enables the keyboard focus
+        // outline and advances focus to the second tab item.
+        app.$.tabMenu.dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true}));
+        await microtasksFinished();
+        assertTrue(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+        assertEquals(item1, app.shadowRoot.activeElement);
+        if (document.hasFocus()) {
+          assertEquals('solid', window.getComputedStyle(item1).outlineStyle);
+        }
+
+        // Pressing ArrowLeft inside the menu closes the cascading submenu and
+        // preserves keyboard focus and outline on the trigger button.
+        const arrowLeftClosePromise = eventToPromise('close', app.$.tabMenu);
+        app.$.tabMenu.dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'ArrowLeft', bubbles: true}));
+        await arrowLeftClosePromise;
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        await microtasksFinished();
+        assertFalse(app.$.tabMenu.open);
+        assertEquals(app.$.shareTabsTrigger, app.shadowRoot.activeElement);
+        assertTrue(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+        if (document.hasFocus()) {
+          assertEquals(
+              'solid',
+              window.getComputedStyle(app.$.shareTabsTrigger).outlineStyle);
+        }
+
+        // Pressing Escape inside the menu also preserves keyboard focus and
+        // outline on the trigger button.
+        app.$.shareTabsTrigger.dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+        await microtasksFinished();
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        assertTrue(app.$.tabMenu.open);
+
+        const escapeClosePromise = eventToPromise('close', app.$.tabMenu);
+        app.$.tabMenu.dispatchEvent(
+            new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
+        await escapeClosePromise;
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        await microtasksFinished();
+        assertFalse(app.$.tabMenu.open);
+        assertEquals(app.$.shareTabsTrigger, app.shadowRoot.activeElement);
+        assertTrue(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+
+        // Moving the pointer over the trigger row clears the keyboard focus
+        // outline.
+        app.$.shareTabsTrigger.dispatchEvent(
+            new PointerEvent('pointermove', {bubbles: true}));
+        await microtasksFinished();
+        assertFalse(document.documentElement.classList.contains(
+            'focus-outline-visible'));
+        assertEquals(
+            'none',
+            window.getComputedStyle(app.$.shareTabsTrigger).outlineStyle);
+      });
 });
