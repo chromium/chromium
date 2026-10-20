@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <optional>
 #include <ranges>
 #include <sstream>
 #include <string_view>
@@ -223,6 +224,19 @@ class ScopedCursorHider {
   raw_ptr<Window> window_;
   bool hid_cursor_;
 };
+
+void CollectWindowsWithGestureState(Window* window,
+                                    std::optional<WindowTracker>& tracker) {
+  if (window->provider()) {
+    if (!tracker) {
+      tracker.emplace();
+    }
+    tracker->Add(window);
+  }
+  for (Window* child : window->children()) {
+    CollectWindowsWithGestureState(child, tracker);
+  }
+}
 
 }  // namespace
 
@@ -1650,34 +1664,43 @@ void Window::NotifyWindowVisibilityChangedUp(aura::Window* target,
 }
 
 bool Window::CleanupGestureState() {
+  Env* env = Env::GetInstance();
   // If it's in the process already, clean up the consumer state. Reentrant can
   // happen through some event handlers for CancelActiveTouches().
-  Env* env = Env::GetInstance();
   if (cleaning_up_gesture_state_) {
     return env->gesture_recognizer()->CleanupStateForConsumer(this);
   }
-  cleaning_up_gesture_state_ = true;
 
-  // Cancelling active touches may end up destroying this window. We use a
-  // tracker to detect this.
-  WindowTracker tracking_this({this});
-
-  bool state_modified = false;
-  state_modified |= env->gesture_recognizer()->CancelActiveTouches(this);
-  if (!tracking_this.Contains(this))
-    return state_modified;
-
-  state_modified |= env->gesture_recognizer()->CleanupStateForConsumer(this);
   // Potentially event handlers for CancelActiveTouches() within
   // CleanupGestureState may change the window hierarchy (or reorder the
   // |children_|), and therefore iterating over |children_| is not safe. Use
-  // WindowTracker to track the list of children.
-  WindowTracker children(children_);
-  while (!children.windows().empty()) {
-    Window* child = children.Pop();
-    state_modified |= child->CleanupGestureState();
+  // WindowTracker to track the windows that have gesture state.
+  std::optional<WindowTracker> windows;
+  CollectWindowsWithGestureState(this, windows);
+  if (!windows) {
+    return false;
   }
-  cleaning_up_gesture_state_ = false;
+
+  bool state_modified = false;
+  while (!windows->windows().empty()) {
+    Window* window = windows->windows().front();
+    if (window->cleaning_up_gesture_state_) {
+      windows->Remove(window);
+      state_modified |=
+          env->gesture_recognizer()->CleanupStateForConsumer(window);
+      continue;
+    }
+    window->cleaning_up_gesture_state_ = true;
+    state_modified |= env->gesture_recognizer()->CancelActiveTouches(window);
+    // Cancelling active touches may end up destroying `window`. `windows`
+    // tracks whether `window` is still alive.
+    if (windows->Contains(window)) {
+      windows->Remove(window);
+      state_modified |=
+          env->gesture_recognizer()->CleanupStateForConsumer(window);
+      window->cleaning_up_gesture_state_ = false;
+    }
+  }
   return state_modified;
 }
 

@@ -375,6 +375,9 @@ void GestureRecognizerImpl::CancelActiveTouchesExceptImpl(
 }
 
 bool GestureRecognizerImpl::CancelActiveTouchesImpl(GestureConsumer* consumer) {
+  if (!consumer || !consumer->provider()) {
+    return false;
+  }
   base::WeakPtr<GestureEventHelper> helper =
       FindDispatchHelperForConsumer(consumer);
 
