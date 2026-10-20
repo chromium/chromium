@@ -80,22 +80,29 @@ TEST(OmniboxDogfoodFeedbackTest, DiagnosticsListRelevantOverrides) {
 }
 
 // Checks the output for a feature enabled with params on the command line,
-// which is also how chrome://flags variations are applied.
-// TODO(b/574089081): Re-enable after switching from exact string match to
-// HasSubstr so runner-level --disable-features flags don't fail the test.
-TEST(OmniboxDogfoodFeedbackTest, DISABLED_DiagnosticsListCommandLineOverrides) {
+// which is also how chrome://flags variations are applied. ScopedFeatureList
+// keeps the overrides the test runner was started with (some bots pass
+// --disable-features for WebUI features), so the output can hold more lines
+// than the ones set here; check each line rather than the whole string.
+TEST(OmniboxDogfoodFeedbackTest, DiagnosticsListCommandLineOverrides) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitFromCommandLine(
       "OmniboxDogfoodFeedbackTestEnabled:foo/bar,"
       "UnrelatedDogfoodFeedbackTestFeature",
       "OmniboxDogfoodFeedbackTestDisabled");
 
-  EXPECT_EQ(GetDiagnostics(),
-            "Omnibox dogfood feedback diagnostics:\n"
-            "OmniboxDogfoodFeedbackTestEnabled: enabled "
-            "(StudyOmniboxDogfoodFeedbackTestEnabled/"
-            "GroupOmniboxDogfoodFeedbackTestEnabled) foo=bar\n"
-            "OmniboxDogfoodFeedbackTestDisabled: disabled\n");
+  const std::string diagnostics = GetDiagnostics();
+
+  EXPECT_TRUE(
+      diagnostics.starts_with("Omnibox dogfood feedback diagnostics:\n"))
+      << diagnostics;
+  EXPECT_THAT(diagnostics,
+              HasSubstr("\nOmniboxDogfoodFeedbackTestEnabled: enabled "
+                        "(StudyOmniboxDogfoodFeedbackTestEnabled/"
+                        "GroupOmniboxDogfoodFeedbackTestEnabled) foo=bar\n"));
+  EXPECT_THAT(diagnostics,
+              HasSubstr("\nOmniboxDogfoodFeedbackTestDisabled: disabled\n"));
+  EXPECT_THAT(diagnostics, Not(HasSubstr("UnrelatedDogfoodFeedbackTest")));
 }
 
 // Checks that a feature keeping its default state while tied to a trial (a "*"
