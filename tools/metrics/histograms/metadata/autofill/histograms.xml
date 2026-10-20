@@ -5365,7 +5365,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.FormEvents.CreditCard.{CreditCardDataAvailability}{AutofillSyncState}"
-    enum="AutofillFormEvent" expires_after="2027-02-14">
+    enum="AutofillFormEvent" expires_after="2027-04-18">
   <owner>osaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
