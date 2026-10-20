@@ -184,6 +184,30 @@ TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
           IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
   EXPECT_TRUE(ui_params.failure_ok_button_text.empty());
 }
+
+// Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+// attributes are correctly set for cardholder name update upload failure.
+TEST(SavePaymentMethodAndVirtualCardEnrollConfirmationUiParamsTest,
+     VerifyAttributesForSaveCardholderNameFailure) {
+  SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params =
+      SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+          CreateForSaveCardholderNameFailure();
+
+  EXPECT_FALSE(ui_params.is_success);
+  EXPECT_TRUE(ui_params.should_display_wallet_logo);
+  EXPECT_EQ(
+      ui_params.title_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_FAILURE_TITLE_TEXT));
+  EXPECT_EQ(
+      ui_params.description_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
+  EXPECT_EQ(
+      ui_params.failure_ok_button_text,
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Verify that SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams

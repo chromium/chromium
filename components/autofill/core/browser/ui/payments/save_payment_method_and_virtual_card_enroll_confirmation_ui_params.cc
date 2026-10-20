@@ -92,6 +92,25 @@ SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
 }
+
+// static
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+    CreateForSaveCardholderNameFailure() {
+  // Note: `should_display_wallet_logo` is only honored for success
+  // confirmations. For failure confirmations, the title logo visibility is
+  // determined by `features::kAutofillEnableWalletBranding` in
+  // `SavePaymentMethodAndVirtualCardEnrollConfirmationBubbleViews`.
+  return SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams(
+      /*is_success=*/false,
+      /*should_display_wallet_logo=*/true,
+      /*title_text=*/
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_FAILURE_TITLE_TEXT),
+      /*description_text=*/
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // static

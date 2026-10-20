@@ -45,6 +45,8 @@ struct SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
   CreateForSaveCardholderNameSuccess();
+  static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
+  CreateForSaveCardholderNameFailure();
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   static SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams
   CreateForVirtualCardSuccess();

@@ -116,6 +116,35 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
     destroyed_waiter.Wait();
   }
 
+  // Verifies the contents of the currently showing failure confirmation bubble.
+  void VerifyFailureBubbleViewContents(
+      const std::u16string& expected_title,
+      const std::u16string& expected_description) {
+    ASSERT_NE(BubbleView(), nullptr);
+    EXPECT_FALSE(BubbleView()->ShouldShowCloseButton());
+    EXPECT_EQ(BubbleView()->GetBubbleFrameView()->GetHeaderViewForTesting(),
+              nullptr);
+    EXPECT_EQ(BubbleView()->GetWindowTitle(), expected_title);
+
+    auto* description = static_cast<views::StyledLabel*>(
+        BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL));
+    ASSERT_NE(description, nullptr);
+    EXPECT_TRUE(description->GetVisible());
+    EXPECT_EQ(description->GetText(), expected_description);
+    EXPECT_EQ(description->GetViewAccessibility().GetCachedName(),
+              expected_description);
+
+    const std::u16string ok_button_text = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT);
+    EXPECT_EQ(BubbleView()->buttons(),
+              static_cast<int>(ui::mojom::DialogButton::kOk));
+    EXPECT_EQ(BubbleView()->GetDialogButtonLabel(ui::mojom::DialogButton::kOk),
+              ok_button_text);
+    EXPECT_EQ(
+        BubbleView()->GetOkButton()->GetViewAccessibility().GetCachedName(),
+        ok_button_text);
+  }
+
   bool IsWalletBrandingEnabled() { return std::get<0>(GetParam()); }
   bool IsWalletBrandingV2Enabled() { return std::get<1>(GetParam()); }
 
@@ -269,6 +298,47 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(GetIconAccessor().GetVisible());
 }
 
+IN_PROC_BROWSER_TEST_P(
+    SaveCardConfirmationBubbleViewsInteractiveUiTest,
+    ShowCardholderNameFailureBubbleViewThenHideBubbleView) {
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  GetController()->OfferUploadSave(
+      test::GetMaskedServerCard(), LegalMessageLines(),
+      payments::PaymentsAutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(payments::PaymentsAutofillClient::CardSaveType::
+                                   kCardholderNameUpdateOnly)
+          .with_show_prompt(false),
+      base::DoNothing());
+  ShowBubble(/*card_saved=*/false, /*is_for_save_and_fill=*/false);
+
+  EXPECT_NE(BubbleView(), nullptr);
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
+
+  VerifyFailureBubbleViewContents(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_FAILURE_TITLE_TEXT),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
+  // The failure bubble's title logo visibility is controlled by the Wallet
+  // branding flag rather than `should_display_wallet_logo`.
+  if (IsWalletBrandingEnabled()) {
+    EXPECT_EQ(BubbleView()->GetBubbleFrameView()->title()->GetViewByID(
+                  DialogViewId::BUBBLE_TITLE_ICON),
+              nullptr);
+  } else {
+    EXPECT_NE(BubbleView()->GetBubbleFrameView()->title()->GetViewByID(
+                  DialogViewId::BUBBLE_TITLE_ICON),
+              nullptr);
+  }
+  EXPECT_TRUE(GetIconAccessor().GetVisible());
+
+  HideBubble(views::Widget::ClosedReason::kLostFocus);
+  EXPECT_EQ(BubbleView(), nullptr);
+  EXPECT_FALSE(GetIconAccessor().GetVisible());
+}
+
 IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
                        ShowFailureBubbleViewThenHideBubbleView) {
   views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
@@ -280,41 +350,13 @@ IN_PROC_BROWSER_TEST_P(SaveCardConfirmationBubbleViewsInteractiveUiTest,
   // bubble is shown.
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 
-  EXPECT_FALSE(BubbleView()->ShouldShowCloseButton());
-  EXPECT_EQ(BubbleView()->GetBubbleFrameView()->GetHeaderViewForTesting(),
-            nullptr);
-  EXPECT_EQ(BubbleView()->GetWindowTitle(),
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT));
-  EXPECT_TRUE(
-      BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL)->GetVisible());
-  EXPECT_EQ(
-      static_cast<views::StyledLabel*>(
-          BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
-          ->GetText(),
+  VerifyFailureBubbleViewContents(
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT),
       l10n_util::GetStringUTF16(
           IsWalletBrandingEnabled()
               ? IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_FAILURE_DESCRIPTION_TEXT
               : IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
-  EXPECT_EQ(
-      static_cast<views::StyledLabel*>(
-          BubbleView()->GetViewByID(DialogViewId::DESCRIPTION_LABEL))
-          ->GetViewAccessibility()
-          .GetCachedName(),
-      l10n_util::GetStringUTF16(
-          IsWalletBrandingEnabled()
-              ? IDS_AUTOFILL_SAVE_CARD_TO_WALLET_CONFIRMATION_FAILURE_DESCRIPTION_TEXT
-              : IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_DESCRIPTION_TEXT));
-  EXPECT_EQ(BubbleView()->buttons(),
-            static_cast<int>(ui::mojom::DialogButton::kOk));
-  EXPECT_EQ(
-      BubbleView()->GetDialogButtonLabel(ui::mojom::DialogButton::kOk),
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
-  EXPECT_EQ(
-      BubbleView()->GetOkButton()->GetViewAccessibility().GetCachedName(),
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
   EXPECT_TRUE(GetIconAccessor().GetVisible());
 
   HideBubble(views::Widget::ClosedReason::kLostFocus);

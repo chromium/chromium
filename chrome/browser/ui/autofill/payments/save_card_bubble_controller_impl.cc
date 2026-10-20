@@ -259,12 +259,13 @@ void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(
   is_triggered_by_user_gesture_ = false;
   current_bubble_type_ = PaymentsBubbleType::kUploadComplete;
   if (options_.card_save_type ==
-          payments::PaymentsAutofillClient::CardSaveType::
-              kCardholderNameUpdateOnly &&
-      card_saved) {
+      payments::PaymentsAutofillClient::CardSaveType::
+          kCardholderNameUpdateOnly) {
     confirmation_ui_params_ =
-        SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
-            CreateForSaveCardholderNameSuccess();
+        card_saved ? SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+                         CreateForSaveCardholderNameSuccess()
+                   : SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::
+                         CreateForSaveCardholderNameFailure();
   } else {
     confirmation_ui_params_ =
         card_saved ? SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams::

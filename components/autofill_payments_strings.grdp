@@ -1805,6 +1805,12 @@
     <message name="IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT" desc="Description text for confirmation shown after cardholder name is successfully uploaded and saved to Google Wallet.">
       It's saved with your card info so it will be automatically filled at checkout
     </message>
+    <message name="IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_FAILURE_TITLE_TEXT" desc="Title text for confirmation shown after uploading and saving cardholder name to Google Wallet was unsuccessful.">
+      Something went wrong
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_CARDHOLDER_NAME_CONFIRMATION_FAILURE_DESCRIPTION_TEXT" desc="Description text for confirmation shown after uploading and saving cardholder name to Google Wallet was unsuccessful.">
+      Can't save cardholder name right now
+    </message>
   </if>
 
   <!-- Omnibox Autofill strings -->
