@@ -5916,6 +5916,14 @@
     "expiry_milestone": 172
   },
   {
+    "name": "glic-disable-hfcr",
+    "owners": [
+      "harringtond@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-experimental-triggering",
     "owners": [
       "sauski@google.com",

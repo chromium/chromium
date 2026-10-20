@@ -1997,6 +1997,10 @@ inline constexpr char kGlicDisableActorSafetyChecksName[] =
 inline constexpr char kGlicDisableActorSafetyChecksDescription[] =
     "Disables actor safety checks in Glic. Use with extreme caution, intended "
     "for testing only.";
+
+inline constexpr char kGlicDisableHfcrName[] = "Glic Disable HFCR";
+inline constexpr char kGlicDisableHfcrDescription[] =
+    "Disables the High Frequency Cookie Rotation frame in Glic.";
 inline constexpr char kGlicHorizontalTabToolbarButtonName[] =
     "Enable toolbar Gemini button on horizontal tab strip";
 inline constexpr char kGlicHorizontalTabToolbarButtonDescription[] =
@@ -4956,7 +4960,6 @@ inline constexpr char kNotificationOneTapUnsubscribeOnDesktopName[] =
 inline constexpr char kNotificationOneTapUnsubscribeOnDesktopDescription[] =
     "Enables an experimental UX  on Desktop that replaces the [Site settings]"
     "button on web push notifications with an [Unsubscribe] button.";
-
 
 inline constexpr char kVcRelightingInferenceBackendName[] =
     "Select relighting backend for video conferencing";
@@ -8049,7 +8052,6 @@ inline constexpr char kMicrophoneMuteSwitchDeviceDescription[] =
     "effective on devices that have a microphone mute toggle. Enabling the "
     "flag does not affect the toggle functionality, it only affects how the "
     "System UI handles the mute toggle state.";
-
 
 inline constexpr char kEnableNearbyBleV2Name[] = "Nearby BLE v2";
 inline constexpr char kEnableNearbyBleV2Description[] =

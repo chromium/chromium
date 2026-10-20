@@ -101,6 +101,9 @@ void GlicURLLoaderThrottle::SetHeaders(net::HttpRequestHeaders* headers,
     SetOnboardingCompletedHeader(headers, profile);
     MaybeSetOnboardingArmHeader(headers, profile);
   }
+  if (base::FeatureList::IsEnabled(features::kGlicDisableHfcr)) {
+    headers->SetHeader(kGlicDisableHfcrHeaderName, "1");
+  }
 }
 
 GlicURLLoaderThrottle::GlicURLLoaderThrottle() = default;

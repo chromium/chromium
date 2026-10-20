@@ -95,6 +95,17 @@ TEST_F(GlicURLLoaderThrottleTest, SetHeaders_OnboardingCompleted) {
 
   EXPECT_EQ(headers.GetHeader(kGlicOnboardingCompletedHeaderName), "true");
   EXPECT_EQ(headers.GetHeader(kGlicOnboardingArmHeaderName), std::nullopt);
+  EXPECT_EQ(headers.GetHeader(kGlicDisableHfcrHeaderName), std::nullopt);
+}
+
+TEST_F(GlicURLLoaderThrottleTest, SetHeaders_DisableHfcrEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicDisableHfcr);
+
+  net::HttpRequestHeaders headers;
+  GlicURLLoaderThrottle::SetHeaders(&headers, &profile_);
+
+  EXPECT_EQ(headers.GetHeader(kGlicDisableHfcrHeaderName), "1");
 }
 
 TEST_F(GlicURLLoaderThrottleTest, WillStartRequest_InjectsHeaders) {

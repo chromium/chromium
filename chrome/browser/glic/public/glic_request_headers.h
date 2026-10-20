@@ -18,6 +18,7 @@ inline constexpr char kGlicChannelHeaderName[] = "X-Glic-Chrome-Channel";
 inline constexpr char kGlicOnboardingCompletedHeaderName[] =
     "X-Glic-Onboarding-Completed";
 inline constexpr char kGlicOnboardingArmHeaderName[] = "X-Glic-Onboarding-Arm";
+inline constexpr char kGlicDisableHfcrHeaderName[] = "X-Glic-Disable-Hfcr";
 
 // Appends Glic custom request header names to the CORS exempt header list in
 // `params`.

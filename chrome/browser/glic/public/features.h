@@ -206,6 +206,9 @@ BASE_DECLARE_FEATURE(kGlicOptInDialogA11yFix);
 BASE_DECLARE_FEATURE(kGlicStructuredYieldMetadata);
 
 BASE_DECLARE_FEATURE(kGlicNoWebview);
+// When enabled alongside GlicNoWebview, disables the High Frequency Cookie
+// Rotation (HFCR) frame in Glic. See b/565392099.
+BASE_DECLARE_FEATURE(kGlicDisableHfcr);
 // When enabled, appends the primary account email as the authuser query
 // parameter to the guest URL when NoWebview is enabled.
 BASE_DECLARE_FEATURE(kGlicSetAuthUser);

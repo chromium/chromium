@@ -13193,6 +13193,7 @@ from previous Chrome versions.
   <int value="-550145191" label="AndroidThemeResourceProvider:disabled"/>
   <int value="-549795607" label="NtpScaledActionChips:disabled"/>
   <int value="-548082154" label="protect-sync-credential:disabled"/>
+  <int value="-547939141" label="GlicDisableHfcr:enabled"/>
   <int value="-547763795" label="SystemEmojiPickerExtension:disabled"/>
   <int value="-547301855" label="SyncPseudoUSSSupervisedUsers:enabled"/>
   <int value="-547179727" label="AutofillEnableFIDOProgressDialog:enabled"/>
@@ -16160,6 +16161,7 @@ from previous Chrome versions.
   <int value="351231040" label="OptimizeDataUrls:enabled"/>
   <int value="352191859" label="disabled-new-style-notification"/>
   <int value="352937987" label="OverflowIconsForMediaControls:disabled"/>
+  <int value="353424060" label="GlicDisableHfcr:disabled"/>
   <int value="353898777" label="ClipboardHistoryScreenshotNudge:disabled"/>
   <int value="354466842" label="UachOverrideBlank:enabled"/>
   <int value="354631905" label="RecoverFromNeverSaveAndroid:disabled"/>
