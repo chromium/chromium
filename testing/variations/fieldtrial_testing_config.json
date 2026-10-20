@@ -12742,6 +12742,28 @@
             ]
         }
     ],
+    "OnDeviceModelEviction": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261020",
+                    "params": {
+                        "retention_period": "30d"
+                    },
+                    "enable_features": [
+                        "OnDeviceModelEviction",
+                        "OnDeviceModelUsageTracking"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnTaskStatusCheck": [
         {
             "platforms": [
