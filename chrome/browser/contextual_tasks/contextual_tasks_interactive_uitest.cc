@@ -259,8 +259,12 @@ class ContextualTasksInteractiveUiTestBase
     change.type = StateChange::Type::kExistsAndConditionTrue;
     change.where = element;
     change.test_function =
-        "(el) => { const r = el.getBoundingClientRect(); return r.width > 0 && "
-        "r.height > 0; }";
+        "(el) => { const rect = el.getBoundingClientRect(); "
+        "const left = Math.max(0, rect.x); "
+        "const top = Math.max(0, rect.y); "
+        "const right = Math.min(rect.x + rect.width, window.innerWidth); "
+        "const bottom = Math.min(rect.y + rect.height, window.innerHeight); "
+        "return right > left && bottom > top; }";
     change.event = kElementExistsEvent;
     return WaitForStateChange(contents_id, change);
   }
@@ -1118,9 +1122,13 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksPinnedToolbarInteractiveUiTest,
       InstrumentNonTabWebView(kCustomizeChromeWebContentsId,
                               kCustomizeChromeSidePanelWebViewElementId),
       // Step 2: Toggle pinning for Contextual Tasks via Customize Chrome WebUI.
+      WaitForJsResultAt(
+          kCustomizeChromeWebContentsId, kContextualTasksToggle,
+          "(el) => { const r = el.getBoundingClientRect(); return r.width > 0 "
+          "&& r.height > 0; }"),
+      ScrollIntoView(kCustomizeChromeWebContentsId, kContextualTasksToggle),
       WaitForElementVisible(kCustomizeChromeWebContentsId,
                             kContextualTasksToggle),
-      ScrollIntoView(kCustomizeChromeWebContentsId, kContextualTasksToggle),
       ClickElement(kCustomizeChromeWebContentsId, kContextualTasksToggle),
       WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
 
