@@ -369,13 +369,6 @@ if (toolchain_has_rust) {
       visibility = [ ":*" ]
     }
 
-    config("prebuilt_stdlib_sysroot") {
-      # Match the output directory of :prebuilt_rustc_copy_to_sysroot
-      sysroot = rebase_path(prebuilt_rustc_sysroot, root_build_dir)
-      rustflags = [ "--sysroot=$sysroot" ]
-      visibility = [ ":*" ]
-    }
-
     # The prebuilt rlibs are not built by GN, so they are passed to the linker
     # via `libs`.  `libs` set on a target (rather than in a config) propagate
     # to dependents only until the nearest shared library or executable - the
