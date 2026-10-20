@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
+
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
@@ -16,6 +17,8 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -726,6 +729,74 @@ TEST_P(CompositingReasonFinderTest, WillChangeScrollPosition) {
       *target, {}));
   EXPECT_EQ(CompositingReasons{},
             CompositingReasonFinder::DirectReasonsForPaintProperties(*target));
+}
+
+TEST_P(CompositingReasonFinderTest, OverscrollContainer) {
+  ScopedCSSScrollSnapTypePairForTest scroll_snap_type_pair_enabled(true);
+  ScopedOverscrollAreasForTest overscroll_areas_enabled(true);
+  SetPreferCompositingToLCDText(false);
+  GetDocument().body()->SetAttributeWithoutValidation(
+      html_names::kOverscrollcontainerAttr, g_empty_atom);
+  SetBodyInnerHTML(R"HTML(
+    <div id="menu" overscrollarea></div>
+    <button command="toggle-overscroll" commandfor="menu"></button>
+    <div style="overflow: auto; width: 100px; height: 100px">
+      <div style="height: 200px"></div>
+    </div>
+  )HTML");
+
+  // The overflow of <body> is visible, so its scroll isn't user-scrollable, and
+  // a preference for composited scrolling would be ignored. It still needs
+  // composited scrolling, so that the compositor can chain scrolls from it to
+  // its overscroll areas (and move its content with them if not overlay).
+  auto check_scroll_is_composited = [&]() {
+    const auto* body = GetDocument().body()->GetLayoutBox();
+    ASSERT_TRUE(body->IsOverscrollContainer());
+    ASSERT_FALSE(body->IsScrollContainer());
+    EXPECT_EQ(CompositingReasons{CompositingReason::kOverscrollContainer},
+              CompositingReasonFinder::DirectReasonsForPaintProperties(*body));
+    EXPECT_TRUE(body->FirstFragment()
+                    .PaintProperties()
+                    ->ScrollTranslation()
+                    ->HasDirectCompositingReasons());
+    const cc::Layer* root_layer =
+        GetDocument().View()->GetPaintArtifactCompositor()->RootLayer();
+    // The scroll hit test of a composited scroll has its own cc layer.
+    EXPECT_TRUE(CcLayerByCcElementId(
+        root_layer, body->GetScrollableArea()->GetScrollElementId()));
+    if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+      // A non-composited scroll of <body> would need main thread scroll hit
+      // testing, because of the non-composited scroller inside it.
+      EXPECT_TRUE(ScrollingContentsCcLayerByScrollElementId(
+                      root_layer,
+                      GetLayoutView().GetScrollableArea()->GetScrollElementId())
+                      ->main_thread_scroll_hit_test_region()
+                      .IsEmpty());
+    }
+  };
+
+  {
+    SCOPED_TRACE("non-overlay");
+    check_scroll_is_composited();
+  }
+
+  GetDocument().body()->SetInlineStyleProperty(
+      CSSPropertyID::kOverscrollContainerType, "overlay");
+  UpdateAllLifecyclePhasesForTest();
+  {
+    SCOPED_TRACE("overlay");
+    check_scroll_is_composited();
+  }
+
+  // Like the scroll node, this doesn't depend on the overscroll areas.
+  GetDocument()
+      .getElementById(AtomicString("menu"))
+      ->removeAttribute(html_names::kOverscrollareaAttr);
+  UpdateAllLifecyclePhasesForTest();
+  {
+    SCOPED_TRACE("no overscroll areas");
+    check_scroll_is_composited();
+  }
 }
 
 TEST_P(CompositingReasonFinderTest, UnboundedElementCompositingReason) {

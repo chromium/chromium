@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll areas: gestures on a body overscroll container</title>
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+  #menu {
+    width: 200px;
+    height: 100%;
+    right: 100%; /* Overscrolls to the left of the body. */
+    background: green;
+  }
+  #content {
+    height: 2000px; /* Makes the document vertically scrollable. */
+    background: lightblue;
+  }
+</style>
+
+<!-- The overflow of body is visible, so body is not a scroll container. -->
+<body overscrollcontainer>
+  <div id="menu" overscrollarea></div>
+  <button id="button" command="toggle-overscroll" commandfor="menu"></button>
+  <div id="content"></div>
+</body>
+
+<script>
+// Resolves with the event that finishes the next overscroll of body.
+function overscrollFinished() {
+  return new Promise(resolve => {
+    document.body.addEventListener("overscrollend", resolve, { once: true });
+    document.body.addEventListener("overscrollcancel", resolve, { once: true });
+  });
+}
+
+async function closeMenu() {
+  if (menu.matches(":overscroll-open")) {
+    const finished = overscrollFinished();
+    button.click();
+    await finished;
+  }
+}
+
+function swipe(from_x, to_x) {
+  return new test_driver.Actions()
+    .addPointer("touchPointer", "touch")
+    .pointerMove(from_x, 100)
+    .pointerDown()
+    .pointerMove(to_x, 100, { duration: 500 })
+    .pointerUp()
+    .send();
+}
+
+function wheel(delta_x, delta_y) {
+  return new test_driver.Actions().scroll(100, 100, delta_x, delta_y).send();
+}
+
+promise_test(async t => {
+  t.add_cleanup(closeMenu);
+
+  let finished = overscrollFinished();
+  await swipe(10, 300);
+  let event = await finished;
+  assert_equals(event.type, "overscrollend", "open: event type");
+  assert_true(event.overscrolling, "open: overscrolling");
+  assert_equals(menu.getBoundingClientRect().left, 0, "open: menu position");
+  assert_equals(content.getBoundingClientRect().left, 200,
+                "open: content is pushed by the menu");
+
+  finished = overscrollFinished();
+  await swipe(300, 10);
+  event = await finished;
+  assert_equals(event.type, "overscrollend", "close: event type");
+  assert_false(event.overscrolling, "close: overscrolling");
+  assert_equals(menu.getBoundingClientRect().right, 0, "close: menu position");
+  assert_equals(content.getBoundingClientRect().left, 0,
+                "close: content position");
+}, "Swiping on body opens and closes its overscroll area");
+
+promise_test(async t => {
+  t.add_cleanup(closeMenu);
+
+  const finished = overscrollFinished();
+  await wheel(-4000, 0);
+  const event = await finished;
+  assert_equals(event.type, "overscrollend", "event type");
+  assert_true(event.overscrolling, "overscrolling");
+  assert_equals(menu.getBoundingClientRect().left, 0, "menu position");
+}, "Wheel scrolling on body opens its overscroll area");
+
+promise_test(async t => {
+  t.add_cleanup(() => window.scrollTo(0, 0));
+
+  const scrollend = new Promise(resolve =>
+      document.addEventListener("scrollend", resolve, { once: true }));
+  await wheel(0, 300);
+  await scrollend;
+  assert_greater_than(window.scrollY, 0, "document is scrolled");
+  assert_false(menu.matches(":overscroll-open"), "menu is closed");
+}, "Wheel scrolling on body without an overscroll area in that direction " +
+   "scrolls the document");
+</script>

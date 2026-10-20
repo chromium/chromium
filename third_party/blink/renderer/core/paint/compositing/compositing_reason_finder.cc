@@ -501,6 +501,19 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
     reasons.Put(CompositingReason::kFixedBackdropInOverscrollAreaParent);
   }
 
+  // Overscroll containers need composited scrolling, so that the compositor
+  // can move the content of non-overlay ones with their overscroll areas, and
+  // to avoid main thread scroll hit testing (e.g. with non-composited scrollers
+  // inside them). Preferring composited scrolling is not enough, because it's
+  // ignored for scrolls that are not user-scrollable, e.g. those of overscroll
+  // containers with visible overflow, such as <body overscrollcontainer>.
+  // ::-internal-overscroll-area-parent scrollers are regular scroll containers.
+  // TODO(crbug.com/486987060): Support raster inducing scroll on non-overlay
+  // overscroll areas.
+  if (object.IsOverscrollContainer() && !object.IsOverscrollAreaParent()) {
+    reasons.Put(CompositingReason::kOverscrollContainer);
+  }
+
   return reasons;
 }
 
@@ -519,7 +532,7 @@ bool CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
 
   // TODO(crbug.com/486987060): Support raster inducing scroll on non-overlay
   // overscroll areas.
-  if (object.IsContentMovingOverscrollContainer()) {
+  if (object.IsOverscrollAreaParent()) {
     return true;
   }
 

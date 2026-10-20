@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll areas: gestures on overscroll containers that are not scroll containers</title>
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<style>
+  body {
+    margin: 0;
+  }
+  .container {
+    /* The overflow is visible, so the containers are not scroll containers. */
+    width: 300px;
+    height: 200px;
+  }
+  #overlay {
+    overscroll-container-type: overlay;
+  }
+  .menu {
+    width: 100px;
+    height: 100%;
+    right: 100%; /* Overscrolls to the left of the container. */
+    background: green;
+  }
+  .content {
+    height: 100%;
+    background: lightblue;
+  }
+</style>
+
+<div id="push" class="container" overscrollcontainer>
+  <div id="pushMenu" class="menu" overscrollarea></div>
+  <div id="pushContent" class="content"></div>
+</div>
+<div id="overlay" class="container" overscrollcontainer>
+  <div id="overlayMenu" class="menu" overscrollarea></div>
+  <div id="overlayContent" class="content"></div>
+</div>
+<button id="pushButton" command="toggle-overscroll" commandfor="pushMenu">
+</button>
+<button id="overlayButton" command="toggle-overscroll" commandfor="overlayMenu">
+</button>
+
+<script>
+// Resolves with the event that finishes the next overscroll of `container`.
+function overscrollFinished(container) {
+  return new Promise(resolve => {
+    container.addEventListener("overscrollend", resolve, { once: true });
+    container.addEventListener("overscrollcancel", resolve, { once: true });
+  });
+}
+
+async function closeMenu(container, menu, button) {
+  if (menu.matches(":overscroll-open")) {
+    const finished = overscrollFinished(container);
+    button.click();
+    await finished;
+  }
+}
+
+function swipe(y, from_x, to_x) {
+  return new test_driver.Actions()
+    .addPointer("touchPointer", "touch")
+    .pointerMove(from_x, y)
+    .pointerDown()
+    .pointerMove(to_x, y, { duration: 500 })
+    .pointerUp()
+    .send();
+}
+
+promise_test(async t => {
+  t.add_cleanup(() => closeMenu(push, pushMenu, pushButton));
+
+  const finished = overscrollFinished(push);
+  await swipe(100, 10, 250);
+  const event = await finished;
+  assert_equals(event.type, "overscrollend", "event type");
+  assert_true(event.overscrolling, "overscrolling");
+  assert_equals(pushMenu.getBoundingClientRect().left, 0, "menu position");
+  assert_equals(pushContent.getBoundingClientRect().left, 100,
+                "content is pushed by the menu");
+}, "Swiping opens the overscroll area of an overscroll container that is " +
+   "not a scroll container");
+
+promise_test(async t => {
+  t.add_cleanup(() => closeMenu(overlay, overlayMenu, overlayButton));
+
+  const finished = overscrollFinished(overlay);
+  await swipe(300, 10, 250);
+  const event = await finished;
+  assert_equals(event.type, "overscrollend", "event type");
+  assert_true(event.overscrolling, "overscrolling");
+  assert_equals(overlayMenu.getBoundingClientRect().left, 0, "menu position");
+  assert_equals(overlayContent.getBoundingClientRect().left, 0,
+                "content is overlaid, not pushed, by the menu");
+}, "Swiping opens the overscroll area of an overlay overscroll container " +
+   "that is not a scroll container");
+</script>

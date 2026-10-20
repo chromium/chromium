@@ -63,6 +63,9 @@ constexpr auto kReasonMetadata = std::to_array<ReasonMetadata>({
     {CompositingReason::kFixedBackdropInOverscrollAreaParent,
      "FixedBackdropInOverscrollAreaParent",
      "Is a fixed backdrop inside an overscroll area parent scroller."},
+    {CompositingReason::kOverscrollContainer, "OverscrollContainer",
+     "Is an overscroll container that chains scrolls to its overscroll "
+     "areas."},
     {CompositingReason::kRootScroller, "RootScroller",
      "Is the document.rootScroller."},
     {CompositingReason::kViewport, "Viewport", "Is for the visual viewport."},
