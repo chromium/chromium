@@ -46,7 +46,6 @@
 #include "chrome/browser/ash/printing/usb_printer_detector.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
 #include "chrome/browser/ash/printing/zeroconf_printer_detector.h"
-#include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
@@ -97,17 +96,6 @@ constexpr auto kGoodStatePollingIntervalMap =
 bool IsIppUri(const chromeos::Uri& uri) {
   return (uri.GetScheme() == chromeos::kIppScheme ||
           uri.GetScheme() == chromeos::kIppsScheme);
-}
-
-// TODO(b/192467856) Remove this metric gathering by M99
-void SendScannerCountToUMA(std::unique_ptr<ZeroconfScannerDetector> detector) {
-  if (detector == nullptr) {
-    PRINTER_LOG(DEBUG) << "SendScannerCountToUMA detector was null";
-    return;
-  }
-  const uint16_t num_scanners = detector->GetScanners().size();
-  base::UmaHistogramCounts100("Scanning.NumDetectedScannersAtLogin",
-                              num_scanners);
 }
 
 namespace {
@@ -205,15 +193,6 @@ class CupsPrintersManagerImpl
         base::BindRepeating(&CupsPrintersManagerImpl::OnPrintersFound,
                             weak_ptr_factory_.GetWeakPtr(), kZeroconfDetector));
     OnPrintersFound(kZeroconfDetector, zeroconf_detector_->GetPrinters());
-
-    // TODO(b/192467856) Remove this metric gathering by M99
-    // Creates a ZeroconfScannerDetector, then logs the number of scanners
-    // detected after 5 minutes.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&SendScannerCountToUMA,
-                       ZeroconfScannerDetector::Create()),
-        base::Minutes(5));
 
     print_servers_manager_->AddObserver(this);
 

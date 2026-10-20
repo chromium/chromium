@@ -140,16 +140,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scanning.NumDetectedScannersAtLogin" units="scanners"
-    expires_after="2026-12-27">
-  <owner>bmgordon@chromium.org</owner>
-  <owner>project-bolton@google.com</owner>
-  <summary>
-    Records the number of detected scanners. Recorded after a 5 minute delay
-    after login when the CupsPrintersManager is created.
-  </summary>
-</histogram>
-
 <histogram name="Scanning.NumFilesCreated" units="files"
     expires_after="2027-09-27">
   <owner>bmgordon@chromium.org</owner>

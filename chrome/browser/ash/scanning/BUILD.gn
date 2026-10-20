@@ -90,8 +90,6 @@ static_library("scanning") {
     "//ui/shell_dialogs",
     "//url",
   ]
-
-  allow_circular_includes_from = [ "//chrome/browser/ash/printing" ]
 }
 
 static_library("test_support") {
