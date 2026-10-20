@@ -120,11 +120,7 @@ import java.util.List;
 /** Tests for various Safety Hub settings surfaces. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({
-    ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-    ChromeFeatureList.SETTINGS_IN_TAB,
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP
-})
+@Features.DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @DisableIf.Build(
         sdk_equals = Build.VERSION_CODES.Q,
@@ -358,6 +354,12 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"SafetyHubPermissions"})
+    // TODO(crbug.com/574950033): Remove once finishing a subpage returns to Safety Hub when
+    // settings is shown in a tab.
+    @Features.DisableFeatures({
+        ChromeFeatureList.SETTINGS_IN_TAB,
+        ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP
+    })
     public void testClearPermissionsReviewList() {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
                 new PermissionsData[] {PERMISSIONS_DATA_1, PERMISSIONS_DATA_2});
@@ -1993,6 +1995,12 @@ public final class SafetyHubTest {
     @Test
     @LargeTest
     @Feature({"SafetyHubPermissions"})
+    // TODO(crbug.com/574950033): Remove once finishing a subpage returns to Safety Hub when
+    // settings is shown in a tab.
+    @Features.DisableFeatures({
+        ChromeFeatureList.SETTINGS_IN_TAB,
+        ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP
+    })
     public void testClearAbusiveNotificationPermissionsReviewList() {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
                 new PermissionsData[] {PERMISSIONS_DATA_3});
