@@ -104,17 +104,16 @@ int ReadAloudAudioRenderer::Render(base::TimeDelta delay,
                              base::checked_cast<int>(delay_frames),
                              playback_rate);
 
-    // 5. Anchor the media clock to the wall clock. `delay_timestamp` is the
+    // 5. Anchor the audio clock to the wall clock. `delay_timestamp` is the
     // instant the sink paired with `delay`, so it is steadier than sampling
     // base::TimeTicks::Now() here, and avoids a clock read on the real-time
     // thread.
-    word_boundaries_.SetAudibleAnchor(audio_clock_->front_timestamp(),
-                                      delay_timestamp);
+    word_boundaries_.SetAnchorTime(delay_timestamp);
 
     // 6. Decide whether to wake the pump. Boundaries are deliberately not
     // detected here: noticing that a word has already started would report it
-    // up to one render quantum late. The pump instead extrapolates from the
-    // anchor above and dispatches each word when it becomes audible.
+    // up to one render quantum late. The pump instead works out from the
+    // anchored clock when each word becomes audible, and dispatches it then.
     if (!word_boundaries_.empty() && !pump_task_posted_) {
       pump_task_posted_ = true;
       post_pump = true;
@@ -123,7 +122,7 @@ int ReadAloudAudioRenderer::Render(base::TimeDelta delay,
   }
 
   // Posted after releasing `lock_`, which keeps the allocation and the task
-  // queue's own lock out of the critical section. If Flush() runs in between,
+  // queue's own lock out of the critical section. If `Flush()` runs in between,
   // it has already invalidated `pump_target`, so the task is dropped.
   // `pump_target` is only copied here: its validity may only be checked on the
   // owning sequence.
@@ -143,29 +142,31 @@ void ReadAloudAudioRenderer::PumpWordBoundaries() {
   // Dispatch every word that is already audible, then sleep until the next one
   // is. `word_boundary_callback_` is run outside `lock_`.
   while (true) {
-    std::optional<WordBoundaryQueue::DueWord> word;
+    std::optional<WordTiming> word;
     std::optional<base::TimeDelta> wait;
     {
       base::AutoLock auto_lock(lock_);
-      // Cleared on every run, so a Render() racing with this pump may post a
+      // Cleared on every run, so a `Render()` racing with this pump may post a
       // redundant one. That is harmless: each run recomputes everything from
       // the latest anchor.
       pump_task_posted_ = false;
       const base::TimeTicks now = base::TimeTicks::Now();
-      word = word_boundaries_.PopDueWord(now, rate);
+      // `audio_clock_` exists: words are only enqueued by `Render()`, after
+      // `Initialize()`.
+      word = word_boundaries_.PopDueWord(now, *audio_clock_, rate);
       if (!word) {
-        wait = word_boundaries_.TimeUntilNextWordDue(now, rate);
+        wait = word_boundaries_.TimeUntilNextWordDue(now, *audio_clock_, rate);
         pump_task_posted_ = wait.has_value();
       }
     }
 
     // Tasks are posted and callbacks run outside `lock_`, so that the
-    // real-time Render() never waits on them.
+    // real-time `Render()` never waits on them.
     if (word) {
       if (word_boundary_callback_) {
-        word_boundary_callback_.Run(word->timing.start_character_offset,
-                                    word->timing.end_character_offset,
-                                    word->audio_timestamp);
+        word_boundary_callback_.Run(word->start_character_offset,
+                                    word->end_character_offset,
+                                    /*audio_timestamp=*/word->start_time);
       }
       continue;
     }
@@ -176,7 +177,7 @@ void ReadAloudAudioRenderer::PumpWordBoundaries() {
                          weak_factory_.GetWeakPtr()),
           *wait);
     }
-    // Otherwise there is nothing to wait for; the next Render() restarts the
+    // Otherwise there is nothing to wait for; the next `Render()` restarts the
     // pump.
     return;
   }
@@ -191,12 +192,24 @@ void ReadAloudAudioRenderer::SetWordBoundaryCallback(
 void ReadAloudAudioRenderer::SetPlaybackRate(double rate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   playback_rate_.store(rate, std::memory_order_relaxed);
-  // A pump sleeping on a delay computed at the old rate is not woken: it
-  // recomputes its due time when it fires, and
-  // `WordBoundaryQueue::kMaxExtrapolation` caps how long that takes.
-  // TODO(b/527525845): Reschedule the pending pump here once the due time
-  // accounts for audio still buffered at the old rate. Until then a word can
-  // be dispatched late by up to kMaxExtrapolation after a speed-up.
+
+  // A pump sleeping on a delay computed at the old rate would dispatch words
+  // not yet written to the audio clock late after a speed-up. Replace it with
+  // one that recomputes at the new rate. Words already buffered keep the rate
+  // they were written at, which the clock tracks.
+  base::WeakPtr<ReadAloudAudioRenderer> pump_target;
+  {
+    base::AutoLock auto_lock(lock_);
+    if (word_boundaries_.empty()) {
+      return;
+    }
+    CancelPendingPump();
+    pump_task_posted_ = true;
+    pump_target = weak_this_;
+  }
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&ReadAloudAudioRenderer::PumpWordBoundaries,
+                                std::move(pump_target)));
 }
 
 void ReadAloudAudioRenderer::Flush() {
@@ -204,9 +217,7 @@ void ReadAloudAudioRenderer::Flush() {
   base::AutoLock auto_lock(lock_);
   algorithm_.FlushBuffers();
   // Drop any pump still pending, and the boundaries it would have dispatched.
-  weak_factory_.InvalidateWeakPtrs();
-  weak_this_ = weak_factory_.GetWeakPtr();
-  pump_task_posted_ = false;
+  CancelPendingPump();
   word_boundaries_.Clear();
   if (initialized_) {
     audio_clock_.emplace(/*start_timestamp=*/base::TimeDelta(),
@@ -222,6 +233,13 @@ base::TimeDelta ReadAloudAudioRenderer::GetMediaTime() const {
 
 void ReadAloudAudioRenderer::OnRenderError() {
   // TODO(b/524283367): Handle render errors in later phases.
+}
+
+void ReadAloudAudioRenderer::CancelPendingPump() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  weak_factory_.InvalidateWeakPtrs();
+  weak_this_ = weak_factory_.GetWeakPtr();
+  pump_task_posted_ = false;
 }
 
 }  // namespace readaloud

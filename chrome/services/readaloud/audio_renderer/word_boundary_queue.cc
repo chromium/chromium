@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "media/filters/audio_clock.h"
+
 namespace readaloud {
 
 WordBoundaryQueue::WordBoundaryQueue() = default;
@@ -22,23 +24,20 @@ void WordBoundaryQueue::Enqueue(base::span<const WordTiming> timings,
   enqueued_duration_ += duration;
 }
 
-void WordBoundaryQueue::SetAudibleAnchor(base::TimeDelta media_time,
-                                         base::TimeTicks wall_time) {
-  anchor_media_time_ = media_time;
+void WordBoundaryQueue::SetAnchorTime(base::TimeTicks wall_time) {
   anchor_wall_time_ = wall_time;
 }
 
-std::optional<WordBoundaryQueue::DueWord> WordBoundaryQueue::PopDueWord(
-    base::TimeTicks now,
+std::optional<WordTiming> WordBoundaryQueue::PopDueWord(
+    base::TimeTicks wall_now,
+    const media::AudioClock& clock,
     double rate) {
-  const std::optional<base::TimeTicks> due_time = FrontWordDueTime(now, rate);
-  if (!due_time || *due_time > now) {
+  const std::optional<base::TimeTicks> due_time =
+      FrontWordDueTime(wall_now, clock, rate);
+  if (!due_time || *due_time > wall_now) {
     return std::nullopt;
   }
-  DueWord word{
-      .timing = pending_words_.front(),
-      .audio_timestamp = anchor_media_time_ + (now - anchor_wall_time_) * rate,
-  };
+  const WordTiming word = pending_words_.front();
   pending_words_.pop_front();
   // TODO(b/524284442): Log the average delay between highlighting a word and
   // its audio becoming audible.
@@ -46,43 +45,61 @@ std::optional<WordBoundaryQueue::DueWord> WordBoundaryQueue::PopDueWord(
 }
 
 std::optional<base::TimeDelta> WordBoundaryQueue::TimeUntilNextWordDue(
-    base::TimeTicks now,
+    base::TimeTicks wall_now,
+    const media::AudioClock& clock,
     double rate) const {
-  const std::optional<base::TimeTicks> due_time = FrontWordDueTime(now, rate);
+  const std::optional<base::TimeTicks> due_time =
+      FrontWordDueTime(wall_now, clock, rate);
   if (!due_time) {
     return std::nullopt;
   }
 
-  return std::clamp(*due_time - now, base::TimeDelta(), kMaxExtrapolation);
+  return std::clamp(*due_time - wall_now, base::TimeDelta(), kMaxExtrapolation);
 }
 
 std::optional<base::TimeTicks> WordBoundaryQueue::FrontWordDueTime(
-    base::TimeTicks now,
+    base::TimeTicks wall_now,
+    const media::AudioClock& clock,
     double rate) const {
-  if (pending_words_.empty() || rate <= 0.0) {
+  if (pending_words_.empty()) {
     return std::nullopt;
   }
 
   // Staleness guard. An old anchor means playback is paused, stalled or
   // finished.
-  if (now - anchor_wall_time_ > kMaxExtrapolation) {
+  if (wall_now - anchor_wall_time_ > kMaxExtrapolation) {
     return std::nullopt;
   }
 
-  // TODO(b/527525845): This extrapolation assumes all audio after the anchor
-  // plays at `rate` with no gap. It ignores the output-delay silence the audio
-  // clock queues after a start or flush, and audio still buffered at an older
-  // rate after a rate change, so dispatch can be early by up to the output
-  // delay. Compute the due time with media::AudioClock::TimeUntilPlayback()
-  // instead.
-  return anchor_wall_time_ +
-         (pending_words_.front().start_time - anchor_media_time_) / rate;
+  const base::TimeDelta start_time = pending_words_.front().start_time;
+  const base::TimeDelta front = clock.front_timestamp();
+  const base::TimeDelta back = clock.back_timestamp();
+
+  // 1. Audio is already playing: due immediately.
+  if (start_time < front) {
+    return wall_now;
+  }
+
+  // 2. Audio is buffered for output: query `AudioClock` for the exact playback
+  // due time, accounting for silence padding and variable playback rates.
+  if (start_time <= back) {
+    return anchor_wall_time_ + clock.TimeUntilPlayback(start_time);
+  }
+
+  // 3. Audio has not been written to buffer yet: linearly project the playback
+  // due time past the buffer at `rate`. Any silence after the last buffered
+  // audio (an underflow) is not counted, so the next `Render()` refreshes the
+  // estimate.
+  if (rate <= 0.0) {
+    return std::nullopt;
+  }
+  return anchor_wall_time_ + clock.TimeUntilPlayback(back) +
+         (start_time - back) / rate;
 }
 
 void WordBoundaryQueue::Clear() {
   pending_words_.clear();
   enqueued_duration_ = base::TimeDelta();
-  anchor_media_time_ = base::TimeDelta();
   anchor_wall_time_ = base::TimeTicks();
 }
 

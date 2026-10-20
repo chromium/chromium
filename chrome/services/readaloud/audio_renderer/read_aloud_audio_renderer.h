@@ -44,7 +44,7 @@ class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
   // Invoked on the owning sequence when a word becomes audible.
   // `start_character_offset` and `end_character_offset` are the word's
   // document offsets from its `WordTiming`, and `audio_timestamp` is the media
-  // time audible at dispatch.
+  // time at which the word starts.
   using WordBoundaryCallback =
       base::RepeatingCallback<void(uint32_t start_character_offset,
                                    uint32_t end_character_offset,
@@ -102,6 +102,10 @@ class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
   // itself for the next one. Runs on the owning sequence.
   void PumpWordBoundaries();
 
+  // Drops any `PumpWordBoundaries()` task still pending, including those
+  // `Render()` posted with `weak_this_`. Runs on the owning sequence.
+  void CancelPendingPump() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Written on the owning sequence during Initialize(), read on the real-time
@@ -131,22 +135,22 @@ class ReadAloudAudioRenderer : public media::AudioRendererSink::RenderCallback {
   media::AudioRendererAlgorithm algorithm_ GUARDED_BY(lock_);
 
   // Tracks the media time of the audio being played out. Updated by every
-  // Render() with the frames written, the playback rate and the output delay
-  // reported by the sink. Created in Initialize() and recreated by Flush().
+  // `Render()` with the frames written, the playback rate and the output delay
+  // reported by the sink. Created in `Initialize()` and recreated by `Flush()`.
   std::optional<media::AudioClock> audio_clock_ GUARDED_BY(lock_);
 
   // Word timings of the audio handed to `algorithm_` that have not been
-  // dispatched yet, and the anchor tying media time to wall time, refreshed
-  // by every Render(). Guarded by `lock_` so that each segment's audio and
-  // timings are enqueued, and flushed, together.
+  // dispatched yet, and the wall time `audio_clock_` was last updated at,
+  // refreshed by every `Render()`. Guarded by `lock_` so that each segment's
+  // audio and timings are enqueued, and flushed, together.
   WordBoundaryQueue word_boundaries_ GUARDED_BY(lock_);
 
-  // True while a PumpWordBoundaries() task is posted, so that Render() does
+  // True while a `PumpWordBoundaries()` task is posted, so that `Render()` does
   // not pile up redundant ones.
   bool pump_task_posted_ GUARDED_BY(lock_) = false;
 
-  // Bound into the pump tasks Render() posts. Render() copies it on the audio
-  // thread, but it is only dereferenced on the owning sequence. Flush()
+  // Bound into the pump tasks `Render()` posts. `Render()` copies it on the
+  // audio thread, but it is only dereferenced on the owning sequence. `Flush()`
   // replaces it after invalidating `weak_factory_`, which drops pumps still
   // pending.
   base::WeakPtr<ReadAloudAudioRenderer> weak_this_ GUARDED_BY(lock_);

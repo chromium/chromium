@@ -12,33 +12,32 @@
 #include "base/time/time.h"
 #include "chrome/services/readaloud/word_timing.h"
 
+namespace media {
+class AudioClock;
+}  // namespace media
+
 namespace readaloud {
 
-// Holds the word timings of the audio handed to the renderer that have not
-// been dispatched yet, and predicts the wall clock time at which each word
-// starts playing, so it can be highlighted in sync with the audio.
+// Holds word timings for audio handed to the renderer and predicts the wall
+// clock time when each word starts playing, keeping UI highlights in sync.
 //
-// Timings are stored in media time: plain offsets into the audio enqueued
-// since the last Clear() rather than offsets into their own segment. An anchor
-// pairs one media time with the wall clock time at which the audio at that
-// media time is played, so PopDueWord() can extrapolate when later words will
-// be played.
+// Timings are tracked in media time (continuous offset since the last
+// `Clear()`). Callers pair this with a `media::AudioClock` and anchor wall time
+// (via `SetAnchorTime()`). The queue maps words to wall time by:
+// 1. Returning due immediately if audio already reached the speakers
+//    (start < front).
+// 2. Querying `AudioClock::TimeUntilPlayback()` for buffered audio
+//    (front <= start <= back), accounting for silence padding and variable
+//    playback rates.
+// 3. Extrapolating forward at `rate` for audio not yet buffered
+//    (start > back).
 //
 // Not thread-safe: callers must serialize access.
 class WordBoundaryQueue {
  public:
-  // The longest PopDueWord() extrapolates from one anchor. It bounds both how
-  // long a caller is told to wait and how old an anchor is trusted.
+  // The longest `PopDueWord()` trusts one anchor. It bounds both how long a
+  // caller is told to wait and how old an anchor is trusted.
   static constexpr base::TimeDelta kMaxExtrapolation = base::Milliseconds(200);
-
-  // A word that has started playing. `audio_timestamp` is the media time
-  // being played at the `now` passed to PopDueWord().
-  struct DueWord {
-    WordTiming timing;
-    base::TimeDelta audio_timestamp;
-
-    friend bool operator==(const DueWord&, const DueWord&) = default;
-  };
 
   WordBoundaryQueue();
 
@@ -51,18 +50,26 @@ class WordBoundaryQueue {
   // are relative to the start of that segment.
   void Enqueue(base::span<const WordTiming> timings, base::TimeDelta duration);
 
-  // Records that the audio at `media_time` is played at `wall_time`.
-  void SetAudibleAnchor(base::TimeDelta media_time, base::TimeTicks wall_time);
+  // Records that the audio clock passed to `PopDueWord()` and
+  // `TimeUntilNextWordDue()` was last updated at `wall_time`: its front
+  // timestamp is played at `wall_time`.
+  void SetAnchorTime(base::TimeTicks wall_time);
 
-  // Pops the front word if it has started playing by `now`, assuming media
-  // time advances at `rate` times wall time. A word is never popped before it
-  // plays, but it may be popped late. Returns nullopt if no word is due.
-  std::optional<DueWord> PopDueWord(base::TimeTicks now, double rate);
+  // Pops the front word if it has started playing by `wall_now`. `clock`
+  // describes the audio buffered for output as of the anchor time; audio not
+  // written to it yet is assumed to play right after it, at `rate`. A word is
+  // never popped before it plays, but it may be popped late. Returns nullopt if
+  // no word is due.
+  std::optional<WordTiming> PopDueWord(base::TimeTicks wall_now,
+                                       const media::AudioClock& clock,
+                                       double rate);
 
-  // Returns how long after `now` the front word starts playing, capped at
+  // Returns how long after `wall_now` the front word starts playing, capped at
   // kMaxExtrapolation. Returns nullopt if there is nothing to wait for.
-  std::optional<base::TimeDelta> TimeUntilNextWordDue(base::TimeTicks now,
-                                                      double rate) const;
+  std::optional<base::TimeDelta> TimeUntilNextWordDue(
+      base::TimeTicks wall_now,
+      const media::AudioClock& clock,
+      double rate) const;
 
   // Drops every word and restarts media time at zero.
   void Clear();
@@ -71,19 +78,20 @@ class WordBoundaryQueue {
 
  private:
   // Returns the wall time at which the front word starts playing, or nullopt
-  // under the same conditions as TimeUntilNextWordDue().
-  std::optional<base::TimeTicks> FrontWordDueTime(base::TimeTicks now,
-                                                  double rate) const;
+  // under the same conditions as `TimeUntilNextWordDue()`.
+  std::optional<base::TimeTicks> FrontWordDueTime(
+      base::TimeTicks wall_now,
+      const media::AudioClock& clock,
+      double rate) const;
 
   // Words not dispatched yet, in order, in media time.
   base::circular_deque<WordTiming> pending_words_;
 
-  // Duration of the audio enqueued since construction or the last Clear().
+  // Duration of the audio enqueued since construction or the last `Clear()`.
   // Shifts the next segment's timings into media time.
   base::TimeDelta enqueued_duration_;
 
-  // The audio at `anchor_media_time_` is played at `anchor_wall_time_`.
-  base::TimeDelta anchor_media_time_;
+  // The wall time at which the audio clock was last updated.
   base::TimeTicks anchor_wall_time_;
 };
 

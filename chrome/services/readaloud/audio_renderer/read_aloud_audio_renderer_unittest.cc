@@ -53,7 +53,7 @@ WordTiming MakeWord(base::TimeDelta start_time,
 }
 
 // Returns the boundary the renderer reports for `word` when `audio_timestamp`
-// is the media time audible at dispatch.
+// is the media time at which it starts.
 Boundary BoundaryFor(const WordTiming& word, base::TimeDelta audio_timestamp) {
   return {.start_character_offset = word.start_character_offset,
           .end_character_offset = word.end_character_offset,
@@ -757,6 +757,65 @@ TEST_F(ReadAloudAudioRendererTest,
 
   EXPECT_THAT(boundaries_,
               testing::ElementsAre(BoundaryFor(word, base::Milliseconds(1))));
+}
+
+TEST_F(ReadAloudAudioRendererTest, DispatchesFirstWordAfterOutputDelay) {
+  // The first render after a start or flush queues the output delay as
+  // silence ahead of the audio, so the first word is not audible until it has
+  // played out.
+  const media::AudioParameters params = MakeParams();
+  ASSERT_TRUE(renderer_->Initialize(params, queue_.get()));
+  RecordBoundaries();
+  const WordTiming word = MakeWord(base::TimeDelta(),
+                                   /*start_character_offset=*/0,
+                                   /*end_character_offset=*/5);
+  ASSERT_TRUE(
+      queue_->Push(GenerateSegmentWithTimings(params, /*frames=*/960, {word})));
+
+  RenderOnce(params, /*delay=*/base::Milliseconds(50));
+  task_environment_.FastForwardBy(base::Milliseconds(49));
+  EXPECT_THAT(boundaries_, testing::IsEmpty());
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_THAT(boundaries_,
+              testing::ElementsAre(BoundaryFor(word, base::TimeDelta())));
+}
+
+TEST_F(ReadAloudAudioRendererTest,
+       DispatchesWordOnTimeAfterSpeedUpWhilePumpSleeps) {
+  const media::AudioParameters params = MakeParams();
+  ASSERT_TRUE(renderer_->Initialize(params, queue_.get()));
+  RecordBoundaries();
+  const base::TimeDelta buffer_duration = params.GetBufferDuration();
+  const WordTiming word = MakeWord(base::Milliseconds(300),
+                                   /*start_character_offset=*/3,
+                                   /*end_character_offset=*/8);
+  ASSERT_TRUE(queue_->Push(GenerateSegmentWithTimings(
+      params, FramesFor(params, base::Seconds(1)), {word})));
+
+  // At 1x the word is 300 ms away, so the pump goes to sleep for the capped
+  // kMaxExtrapolation.
+  RenderOnce(params);
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  // Speed up and keep rendering until the word has been written. After the
+  // first 10 ms buffer at 1x, each buffer carries 20 ms of media.
+  renderer_->SetPlaybackRate(2.0);
+  for (int i = 0; i < 15; ++i) {
+    task_environment_.FastForwardBy(buffer_duration);
+    RenderOnce(params);
+  }
+  ASSERT_EQ(renderer_->GetMediaTime(), base::Milliseconds(290));
+
+  // The word is 10 ms of 2x media into the buffer now playing, so it is
+  // audible 5 ms later, well before the pump would have woken at the old
+  // rate.
+  task_environment_.FastForwardBy(base::Milliseconds(4));
+  EXPECT_THAT(boundaries_, testing::IsEmpty());
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_THAT(boundaries_,
+              testing::ElementsAre(BoundaryFor(word, base::Milliseconds(300))));
 }
 
 }  // namespace readaloud
