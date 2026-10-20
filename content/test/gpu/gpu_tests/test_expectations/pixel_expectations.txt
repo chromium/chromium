@@ -551,10 +551,10 @@ crbug.com/558993697 [ android android-pixel-11-pro-xl android-webview-instrument
 crbug.com/558993697 [ android android-pixel-11-pro-xl android-webview-instrumentation ] Pixel_WebGLWebCodecsBreakoutBoxDisplaysFrame [ Failure ]
 
 # MeetEffects failures
-crbug.com/286989320 [ linux nvidia ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure Slow ]
-crbug.com/286989320 [ linux amd-0x7340 ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure Slow ]
-crbug.com/286989320 [ mac no-clang-coverage no-asan  ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure Slow ]
-crbug.com/545524954 [ win target-cpu-32 ] Pixel_MeetEffects_rainbow_wig_and_eyelashes [ Failure ]
+crbug.com/286989320 [ linux nvidia ] Pixel_MeetEffects_ar_effect_rainbow_wig_and_eyelashes [ Failure Slow ]
+crbug.com/286989320 [ linux amd-0x7340 ] Pixel_MeetEffects_ar_effect_rainbow_wig_and_eyelashes [ Failure Slow ]
+crbug.com/286989320 [ mac no-clang-coverage no-asan  ] Pixel_MeetEffects_ar_effect_rainbow_wig_and_eyelashes [ Failure Slow ]
+crbug.com/545524954 [ win target-cpu-32 ] Pixel_MeetEffects_ar_effect_rainbow_wig_and_eyelashes [ Failure ]
 
 # Mac AMD flaky directory failures
 crbug.com/444653106 [ mac amd-0x7340 graphite-enabled angle-metal ] Pixel_CSSFilterEffects [ Slow ]
