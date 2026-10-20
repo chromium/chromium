@@ -387,8 +387,6 @@ void OfflineAudioContext::StartNextRender() {
 
   AudioBuffer* render_target = pending_render_targets_.front().Get();
 
-  destinationNode()
-      ->SetDestinationBuffer(render_target);
   DestinationHandler().SetSharedRenderTarget(render_target);
   DestinationHandler().StartRendering();
 }

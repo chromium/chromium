@@ -66,9 +66,4 @@ OfflineAudioDestinationNode::GetAudioDestinationHandler() const {
   return static_cast<OfflineAudioDestinationHandler&>(Handler());
 }
 
-void OfflineAudioDestinationNode::Trace(Visitor* visitor) const {
-  visitor->Trace(destination_buffer_);
-  AudioDestinationNode::Trace(visitor);
-}
-
 }  // namespace blink
