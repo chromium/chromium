@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -490,6 +491,45 @@ TEST_F(SizesAttributeParserTest, TwoDimensionalSizesAutoFallbackNotRendered) {
   SizesAttributeParser parser2(GetTestMediaValues(), "auto, 123px", nullptr,
                                img);
   EXPECT_EQ((TargetBoxSize{123}), parser2.Size());
+}
+
+TEST_F(SizesAttributeParserTest, AutoSizesTwoDimensional) {
+  ScopedSrcsetTwoDimensionalSizesForTest scoped_feature(true);
+  SetBodyInnerHTML(R"HTML(
+    <img id="target" loading="lazy" width="531" height="246" sizes="auto"
+         style="object-fit: scale-down">
+  )HTML");
+
+  auto* img = To<HTMLImageElement>(GetElementById("target"));
+  SizesAttributeParser parser(GetTestMediaValues(), "auto", nullptr, img);
+  EXPECT_EQ((TargetBoxSize{531, 246, EObjectFit::kScaleDown}), parser.Size());
+
+  img->setAttribute(html_names::kStyleAttr,
+                    AtomicString("object-fit: cover; display: none"));
+  GetDocument().UpdateStyleAndLayoutTree();
+  ASSERT_FALSE(img->IsBeingRendered());
+
+  // The last auto-sizes size and object-fit are used when not rendered.
+  SizesAttributeParser parser2(GetTestMediaValues(), "auto", nullptr, img);
+  EXPECT_EQ((TargetBoxSize{531, 246, EObjectFit::kScaleDown}), parser2.Size());
+
+  img->setAttribute(html_names::kStyleAttr, AtomicString("object-fit: cover"));
+  // Layout is needed so the new layout box has a content box size.
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  SizesAttributeParser parser3(GetTestMediaValues(), "auto", nullptr, img);
+  EXPECT_EQ((TargetBoxSize{531, 246, EObjectFit::kCover}), parser3.Size());
+}
+
+TEST_F(SizesAttributeParserTest, AutoSizesTwoDimensionalDisabled) {
+  ScopedSrcsetTwoDimensionalSizesForTest scoped_feature(false);
+  SetBodyInnerHTML(R"HTML(
+    <img id="target" loading="lazy" width="531" height="246" sizes="auto"
+         style="object-fit: cover">
+  )HTML");
+
+  auto* img = To<HTMLImageElement>(GetElementById("target"));
+  SizesAttributeParser parser(GetTestMediaValues(), "auto", nullptr, img);
+  EXPECT_EQ((TargetBoxSize{531}), parser.Size());
 }
 
 }  // namespace blink

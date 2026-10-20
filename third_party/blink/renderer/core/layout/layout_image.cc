@@ -115,6 +115,13 @@ void LayoutImage::StyleDidChange(
     NaturalSizeChanged();
   }
 
+  if (RuntimeEnabledFeatures::SrcsetTwoDimensionalSizesEnabled() && old_style &&
+      old_style->GetObjectFit() != new_style.GetObjectFit()) {
+    if (auto* image_element = DynamicTo<HTMLImageElement>(GetNode())) {
+      image_element->ObjectFitChanged();
+    }
+  }
+
   if (TRACE_EVENT_CATEGORY_ENABLED(
           TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))) {
     bool is_unsized = this->IsUnsizedImage();

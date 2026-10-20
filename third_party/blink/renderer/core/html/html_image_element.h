@@ -96,7 +96,9 @@ class CORE_EXPORT HTMLImageElement
   void UpdateLastAutoSizes(const TargetBoxSize& size) const {
     last_auto_sizes_size_ = size;
   }
-  // The box size that sizes=auto resolves to for this (rendered) image.
+  // The box size and 'object-fit' that sizes=auto resolves to for this
+  // (rendered) image. Without SrcsetTwoDimensionalSizes, only the width is
+  // populated.
   TargetBoxSize AutoSizesSize() const;
 
   const String& currentSrc() const;
@@ -169,6 +171,9 @@ class CORE_EXPORT HTMLImageElement
 
   std::optional<float> GetResourceWidth() const;
   TargetBoxSize SourceSize(Element&);
+
+  // Called by LayoutImage when the computed 'object-fit' changes.
+  void ObjectFitChanged();
 
   void ForceReload() const;
 

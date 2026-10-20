@@ -23,6 +23,8 @@
 
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 
+#include "base/functional/bind.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
@@ -1057,7 +1059,31 @@ TargetBoxSize HTMLImageElement::SourceSize(Element& element) {
 }
 
 TargetBoxSize HTMLImageElement::AutoSizesSize() const {
-  return {static_cast<float>(LayoutBoxWidth())};
+  if (!RuntimeEnabledFeatures::SrcsetTwoDimensionalSizesEnabled()) {
+    return {static_cast<float>(LayoutBoxWidth())};
+  }
+  // https://html.spec.whatwg.org/#parsing-a-sizes-attribute
+  // Source selection maps the computed 'object-fit' to how the image is fit
+  // into the box; see SourceConcreteWidth().
+  const LayoutBox* box = GetLayoutBox();
+  return {static_cast<float>(LayoutBoxWidth()),
+          static_cast<float>(LayoutBoxHeight()),
+          box ? box->Style().GetObjectFit() : EObjectFit::kFill};
+}
+
+void HTMLImageElement::ObjectFitChanged() {
+  // A change in the computed 'object-fit' of an image that allows auto-sizes
+  // is a relevant mutation: https://html.spec.whatwg.org/#relevant-mutations
+  // This is called during style recalc, so re-run source selection in a task
+  // rather than synchronously.
+  if (!RuntimeEnabledFeatures::SrcsetTwoDimensionalSizesEnabled() ||
+      !is_auto_sized_ || !HasLazyLoadingAttribute()) {
+    return;
+  }
+  GetDocument()
+      .GetTaskRunner(TaskType::kDOMManipulation)
+      ->PostTask(FROM_HERE, BindOnce(&HTMLImageElement::OnResize,
+                                     WrapWeakPersistent(this)));
 }
 
 void HTMLImageElement::ForceReload() const {
