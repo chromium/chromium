@@ -4,7 +4,6 @@
 
 #include "chrome/browser/glic/glic_metrics.h"
 
-#include <optional>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
@@ -371,29 +370,6 @@ TEST_F(GlicMetricsTest, WindowOpenUkm) {
   EXPECT_FALSE(source);
 }
 
-TEST_F(GlicMetricsTest, SessionDuration_LogsDuration) {
-  metrics()->OnGlicWindowStartedOpening(/*attached=*/true,
-                                        mojom::InvocationSource::kOsButton);
-  int minutes = 10;
-  task_environment().FastForwardBy(base::Minutes(minutes));
-  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
-
-  histogram_tester().ExpectTotalCount("Glic.Session.Duration", 1);
-  histogram_tester().ExpectTimeBucketCount(
-      "Glic.Session.Duration", base::Minutes(minutes), /*expected_count=*/1);
-}
-
-TEST_F(GlicMetricsTest, SessionDuration_LogsError) {
-  // Trigger a call to |OnGlicWindowClose()| without opening the window first.
-  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
-
-  histogram_tester().ExpectTotalCount("Glic.Session.Duration", 0);
-  histogram_tester().ExpectTotalCount("Glic.Metrics.Error", 1);
-  histogram_tester().ExpectBucketCount("Glic.Metrics.Error",
-                                       Error::kWindowCloseWithoutWindowOpen,
-                                       /*expected_count=*/1);
-}
-
 TEST_F(GlicMetricsTest, ClosedCaptionsResponse_PrefLogsFalse) {
   metrics()->LogClosedCaptionsShown();
 
@@ -687,7 +663,8 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ShortcutStatus) {
 TEST_F(GlicMetricsTest, TimeElapsedBetweenSessions) {
   base::TimeDelta elapsed_time = base::Hours(2);
 
-  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
+  metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
+                                        mojom::InvocationSource::kOsButton);
   task_environment().FastForwardBy(elapsed_time);
 
   metrics()->OnGlicWindowStartedOpening(/*attached=*/true,
@@ -770,7 +747,7 @@ TEST_F(GlicMetricsTrustFirstOnboardingTest, ShownAndAccepted) {
                                       1);
 
   // Closing after accept should NOT trigger "Dismissed".
-  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
+  metrics()->OnInstanceClosed();
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Dismissed"), 0);
   histogram_tester().ExpectUniqueSample("Glic.Fre.Shown.InvocationSource",
                                         mojom::InvocationSource::kOsButton, 1);
@@ -789,7 +766,7 @@ TEST_F(GlicMetricsTrustFirstOnboardingTest, NotShownIfConsented) {
                                         mojom::InvocationSource::kOsButton);
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Fre.Shown"), 0);
 
-  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
+  metrics()->OnInstanceClosed();
   EXPECT_EQ(
       user_action_tester().GetActionCount("Glic.Fre.Onboarding.Dismissed"), 0);
 }

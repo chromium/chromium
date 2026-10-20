@@ -758,17 +758,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/glic_invoke_task.h:GlicTaskType) -->
 
-<!-- LINT.IfChange(GlicResponseError) -->
-
-<enum name="GlicMetricsError">
-  <int value="0" label="Response start without input."/>
-  <int value="1" label="Response stop without input."/>
-  <int value="2" label="Response start while hiding or hidden."/>
-  <int value="3" label="Window close without window open."/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:Error) -->
-
 <!-- LINT.IfChange(GlicMultiInstanceSessionEndReason) -->
 
 <enum name="GlicMultiInstanceSessionEndReason">

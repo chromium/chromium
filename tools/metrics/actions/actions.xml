@@ -14696,28 +14696,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="GlicSessionBegin">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <description>
-    A glic session is defined as the period of time from a user opening the glic
-    window to a user closing the glic window. This event tracks the opening of
-    the glic window.
-  </description>
-</action>
-
-<action name="GlicSessionEnd">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <description>
-    A glic session is defined as the period of time from a user opening the glic
-    window to a user closing the glic window. This event tracks the act of
-    closing the glic window.
-  </description>
-</action>
-
 <action name="GlicSessionSettingsOpened.{GlicSettingsField}">
   <owner>lindaywang@google.com</owner>
   <owner>pauladedeji@google.com</owner>

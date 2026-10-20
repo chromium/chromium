@@ -1524,17 +1524,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Metrics.Error" enum="GlicMetricsError"
-    expires_after="2026-07-26">
-  <owner>dewittj@google.com</owner>
-  <owner>iwells@google.com</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Recorded when an unusual sequence of events is seen by glic metrics
-    recorder. Usually replaces a real histogram event.
-  </summary>
-</histogram>
-
 <histogram name="Glic.NavigationCapture.{FeatureEnabledStatus}"
     enum="GeminiNavigationCaptureResult" expires_after="2027-02-14">
   <owner>andreaxg@google.com</owner>
@@ -2259,36 +2248,6 @@ chromium-metrics-reviews@google.com.
     <variant name="PostFre" summary="User has accepted the FRE"/>
     <variant name="PreFre" summary="User has not accepted the FRE"/>
   </token>
-</histogram>
-
-<histogram name="Glic.Session.Duration" units="ms" expires_after="2026-07-26">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Time in milliseconds from when the window opens until it is closed. Recorded
-    each time the glic window is closed.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Session.Open.Attached" enum="Boolean"
-    expires_after="2027-04-11">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Recorded when a session starts. Records whether the window is attached.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Session.Open.InvocationSource"
-    enum="GlicInvocationSource" expires_after="2027-04-11">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Recorded when a session starts. Records the source of the invocation.
-  </summary>
 </histogram>
 
 <histogram name="Glic.SetAltOSIcon.OnChromeStart" enum="BooleanEnabled"

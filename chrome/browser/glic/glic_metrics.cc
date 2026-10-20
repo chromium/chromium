@@ -23,7 +23,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -260,15 +259,10 @@ void GlicMetrics::OnResponseRated(bool positive) {
 
 void GlicMetrics::OnGlicWindowStartedOpening(bool attached,
                                              mojom::InvocationSource source) {
-  // With the exception of setting invocation_source_ and OnInstanceOpened,
-  // everything in this method is deprecated post multi-instance side panel.
-  // It's kept for now to reduce merge conflicts.
-
-  base::RecordAction(base::UserMetricsAction("GlicSessionBegin"));
-  session_start_time_ = base::TimeTicks::Now();
+  // Sets `invocation_source_`, triggers trust-first FRE metrics via
+  // OnInstanceOpened(), and records the Glic.WindowOpen UKM and
+  // Glic.PanelWebUi.ElapsedTimeBetweenSessions.
   invocation_source_ = source;
-  base::UmaHistogramBoolean("Glic.Session.Open.Attached", attached);
-  base::UmaHistogramEnumeration("Glic.Session.Open.InvocationSource", source);
 
   // This method depends on first setting invocation_source_. This is used for
   // trust-first FRE metrics.
@@ -295,27 +289,6 @@ void GlicMetrics::OnGlicWindowStartedOpening(bool attached,
   // ungraceful shutdowns. As such, by updating the pref on opening the Glic
   // window, the dismissal timestamp will get approximated by the opening
   // timestamp, instead of the previously dismissal timestamp.
-  profile_->GetPrefs()->SetTime(prefs::kGlicWindowLastDismissedTime,
-                                base::Time::Now());
-}
-
-void GlicMetrics::OnGlicWindowClose(BrowserWindowInterface* last_active_browser,
-                                    std::optional<display::Display> display,
-                                    const gfx::Rect& glic_bounds) {
-  base::RecordAction(base::UserMetricsAction("GlicSessionEnd"));
-  if (session_start_time_.is_null()) {
-    base::UmaHistogramEnumeration("Glic.Metrics.Error",
-                                  Error::kWindowCloseWithoutWindowOpen);
-  } else {
-    base::TimeDelta open_time = base::TimeTicks::Now() - session_start_time_;
-    base::UmaHistogramCustomTimes("Glic.Session.Duration", open_time,
-                                  /*min=*/base::Seconds(1),
-                                  /*max=*/base::Days(10), /*buckets=*/50);
-  }
-  session_start_time_ = base::TimeTicks();
-
-  OnInstanceClosed();
-
   profile_->GetPrefs()->SetTime(prefs::kGlicWindowLastDismissedTime,
                                 base::Time::Now());
 }

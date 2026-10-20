@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 #define CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -17,10 +18,8 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "ui/display/display.h"
 
 class Profile;
-class BrowserWindowInterface;
 
 namespace glic {
 class GlicEnabling;
@@ -64,16 +63,6 @@ enum class ShareImageResult {
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ShareImageResult)
-
-// LINT.IfChange(Error)
-enum class Error {
-  kResponseStartWithoutInput = 0,
-  kResponseStopWithoutInput = 1,
-  kResponseStartWhileHidingOrHidden = 2,
-  kWindowCloseWithoutWindowOpen = 3,
-  kMaxValue = kWindowCloseWithoutWindowOpen,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseError)
 
 // LINT.IfChange(EntryPointStatus)
 enum class EntryPointStatus {
@@ -176,10 +165,6 @@ class GlicMetrics {
   // Called when the glic window starts to open.
   void OnGlicWindowStartedOpening(bool attached,
                                   mojom::InvocationSource source);
-  // Called when the detached glic window finishes closing.
-  void OnGlicWindowClose(BrowserWindowInterface* last_active_browser,
-                         std::optional<display::Display> display,
-                         const gfx::Rect& glic_bounds);
 
   // Called when a tab is pinned for sharing with glic. `success` is true if the
   // pinning was successful.
@@ -247,10 +232,6 @@ class GlicMetrics {
   // The last web client input mode used by the user.
   mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
 
-  // Session state. `session_start_time_` is a sentinel that is cleared in
-  // OnGlicWindowClose() and is used to determine whether
-  // OnGlicWindowStartedOpening was called.
-  base::TimeTicks session_start_time_;
   mojom::InvocationSource invocation_source_ =
       mojom::InvocationSource::kUnsupported;
   mojom::InvocationSource onboarding_invocation_source_ =
