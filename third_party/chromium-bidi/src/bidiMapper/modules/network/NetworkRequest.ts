@@ -684,7 +684,9 @@ export class NetworkRequest {
       ) {
         this.#interceptPhase = Network.InterceptPhase.ResponseStarted;
       } else {
-        void this.#continueResponse();
+        void this.#continueResponse().catch((error: unknown) => {
+          this.#logger?.(LogType.debugError)?.(error);
+        });
       }
     } else {
       this.#request.paused = event;
@@ -699,7 +701,9 @@ export class NetworkRequest {
       ) {
         this.#interceptPhase = Network.InterceptPhase.BeforeRequestSent;
       } else {
-        void this.#continueRequest();
+        void this.#continueRequest().catch((error: unknown) => {
+          this.#logger?.(LogType.debugError)?.(error);
+        });
       }
     }
 
@@ -722,6 +726,8 @@ export class NetworkRequest {
     } else {
       void this.#continueWithAuth({
         response: 'Default',
+      }).catch((error: unknown) => {
+        this.#logger?.(LogType.debugError)?.(error);
       });
     }
 

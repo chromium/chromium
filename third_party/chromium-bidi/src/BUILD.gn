@@ -354,6 +354,7 @@ ts_library("unit_tests") {
     "bidiMapper/modules/log/logHelper.test.ts",
     "bidiMapper/modules/network/NetworkModuleMocks.test.ts",
     "bidiMapper/modules/network/NetworkProcessor.test.ts",
+    "bidiMapper/modules/network/NetworkRequest.test.ts",
     "bidiMapper/modules/network/NetworkStorage.test.ts",
     "bidiMapper/modules/network/NetworkUtils.test.ts",
     "bidiMapper/modules/script/PreloadScriptStorage.test.ts",
