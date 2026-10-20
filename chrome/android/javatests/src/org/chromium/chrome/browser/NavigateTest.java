@@ -254,7 +254,8 @@ public class NavigateTest {
     @Feature({"Navigation"})
     @CommandLineFlags.Add({
         "enable-features=UserAgentClientHint",
-        "disable-features=AndroidDesktopUASpoofAsChromeOS,AndroidDesktopUAPlatform"
+        "disable-features=AndroidDesktopUASpoofAsChromeOS,AndroidDesktopUAPlatform,"
+                + "AndroidDesktopUACPUArch"
     })
     // TODO(crbug.com/40612550) Remove switch when UA-CH-* launched.
     public void testRequestDesktopSiteClientHints() throws Exception {
@@ -279,7 +280,8 @@ public class NavigateTest {
     @Feature({"Navigation"})
     @CommandLineFlags.Add({
         "enable-features=UserAgentClientHint",
-        "disable-features=AndroidDesktopUASpoofAsChromeOS,AndroidDesktopUAPlatform"
+        "disable-features=AndroidDesktopUASpoofAsChromeOS,AndroidDesktopUAPlatform,"
+                + "AndroidDesktopUACPUArch"
     })
     @Restriction(DeviceFormFactor.DESKTOP)
     // TODO(crbug.com/40612550) Remove switch when UA-CH-* launched.
