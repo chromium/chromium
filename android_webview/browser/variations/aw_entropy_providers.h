@@ -16,15 +16,15 @@ namespace android_webview {
 
 // A custom EntropyProviders that wraps an existing (standard) EntropyProviders.
 // It uses a low entropy provider that uses a specific
-// `nonembedded_low_entropy_source` for studies in an allowlist, and delegates
-// to the standard provider for all other studies.
+// `nonembedded_low_entropy_source` for studies not in a denylist, and delegates
+// to the standard provider for denylisted studies.
 class AwEntropyProviders : public variations::EntropyProviders {
  public:
   // `standard_providers`: The providers created by MetricsStateManager.
   // `nonembedded_low_entropy_source`: The low entropy source (0-7999) for
-  // allowlisted studies.
-  // `nonembedded_low_entropy_source_allowlist`: The set of study names to use
-  // the nonembedded low entropy source for.
+  // non-denylisted studies.
+  // `nonembedded_low_entropy_source_denylist`: The set of study names that
+  // should NOT use the nonembedded low entropy source.
   // `limited_entropy_randomization_source`: The limited entropy source used
   // to randomize limited-layer slots across clients and the groups of
   // limited-layer-constrained studies across clients.
@@ -32,7 +32,7 @@ class AwEntropyProviders : public variations::EntropyProviders {
       std::unique_ptr<const variations::EntropyProviders> standard_providers,
       uint32_t nonembedded_low_entropy_source,
       std::unique_ptr<const std::set<std::string_view>>
-          nonembedded_low_entropy_source_allowlist,
+          nonembedded_low_entropy_source_denylist,
       std::string_view limited_entropy_randomization_source =
           std::string_view());
 
@@ -44,14 +44,14 @@ class AwEntropyProviders : public variations::EntropyProviders {
 
  private:
   // An entropy provider that returns the nonembedded_low_entropy_source for
-  // allowlisted studies and delegates to the standard provider for others.
+  // non-denylisted studies and delegates to the standard provider for others.
   class DelegatingEntropyProvider : public base::FieldTrial::EntropyProvider {
    public:
     DelegatingEntropyProvider(
         std::unique_ptr<const variations::EntropyProviders> standard_providers,
         uint32_t nonembedded_low_entropy_source,
         std::unique_ptr<const std::set<std::string_view>>
-            nonembedded_low_entropy_source_allowlist);
+            nonembedded_low_entropy_source_denylist);
     ~DelegatingEntropyProvider() override;
 
     // base::FieldTrial::EntropyProvider:
@@ -61,7 +61,7 @@ class AwEntropyProviders : public variations::EntropyProviders {
    private:
     std::unique_ptr<const variations::EntropyProviders> standard_providers_;
     std::unique_ptr<const std::set<std::string_view>>
-        nonembedded_low_entropy_source_allowlist_;
+        nonembedded_low_entropy_source_denylist_;
     variations::NormalizedMurmurHashEntropyProvider
         nonembedded_low_entropy_source_provider_;
   };

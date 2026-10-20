@@ -18,7 +18,7 @@ AwEntropyProviders::AwEntropyProviders(
     std::unique_ptr<const variations::EntropyProviders> standard_providers,
     uint32_t nonembedded_low_entropy_source,
     std::unique_ptr<const std::set<std::string_view>>
-        nonembedded_low_entropy_source_allowlist,
+        nonembedded_low_entropy_source_denylist,
     std::string_view limited_entropy_randomization_source)
     : variations::EntropyProviders(
           /*high_entropy_source=*/"",
@@ -27,10 +27,10 @@ AwEntropyProviders::AwEntropyProviders(
            static_cast<uint32_t>(standard_providers->low_entropy_domain())},
           limited_entropy_randomization_source,
           standard_providers->benchmarking_enabled()),
-      delegating_provider_(
-          std::move(standard_providers),
-          nonembedded_low_entropy_source,
-          std::move(nonembedded_low_entropy_source_allowlist)) {}
+      delegating_provider_(std::move(standard_providers),
+                           nonembedded_low_entropy_source,
+                           std::move(nonembedded_low_entropy_source_denylist)) {
+}
 
 AwEntropyProviders::~AwEntropyProviders() = default;
 
@@ -48,10 +48,10 @@ AwEntropyProviders::DelegatingEntropyProvider::DelegatingEntropyProvider(
     std::unique_ptr<const variations::EntropyProviders> standard_providers,
     uint32_t nonembedded_low_entropy_source,
     std::unique_ptr<const std::set<std::string_view>>
-        nonembedded_low_entropy_source_allowlist)
+        nonembedded_low_entropy_source_denylist)
     : standard_providers_(std::move(standard_providers)),
-      nonembedded_low_entropy_source_allowlist_(
-          std::move(nonembedded_low_entropy_source_allowlist)),
+      nonembedded_low_entropy_source_denylist_(
+          std::move(nonembedded_low_entropy_source_denylist)),
       nonembedded_low_entropy_source_provider_(
           {nonembedded_low_entropy_source,
            metrics::EntropyState::kMaxLowEntropySize}) {}
@@ -62,7 +62,8 @@ AwEntropyProviders::DelegatingEntropyProvider::~DelegatingEntropyProvider() =
 double AwEntropyProviders::DelegatingEntropyProvider::GetEntropyForTrial(
     std::string_view trial_name,
     uint32_t randomization_seed) const {
-  if (nonembedded_low_entropy_source_allowlist_->contains(trial_name) ||
+  if ((!trial_name.empty() &&
+       !nonembedded_low_entropy_source_denylist_->contains(trial_name)) ||
       (trial_name.empty() && android_webview::CachedFlags::IsEnabled(
                                  features::kWebViewUseWVLESForLayeredStudy))) {
     return nonembedded_low_entropy_source_provider_.GetEntropyForTrial(

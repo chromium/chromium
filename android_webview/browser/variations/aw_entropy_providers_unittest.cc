@@ -20,7 +20,7 @@ const uint32_t kNonembeddedLowEntropySource = 1234;
 const uint32_t kStandardLowEntropySource = 5678;
 
 // A study name only used for testing.
-const char kTestAllowlistedStudyName[] = "MyTestStudy";
+const char kTestDenylistedStudyName[] = "MyTestStudy";
 
 }  // namespace
 
@@ -34,24 +34,43 @@ class AwEntropyProvidersTest : public ::testing::Test {
             /*limited_entropy_source=*/"")) {}
 
  protected:
-  const std::set<std::string_view> kTestAllowlist_{kTestAllowlistedStudyName};
+  const std::set<std::string_view> kTestDenylist_{kTestDenylistedStudyName};
   std::unique_ptr<variations::EntropyProviders> standard_providers_;
 };
 
-TEST_F(AwEntropyProvidersTest,
-       TestNonembeddedEntropyProvider_AllowlistedStudy) {
+TEST_F(AwEntropyProvidersTest, TestNonembeddedEntropyProvider_DenylistedStudy) {
   AwEntropyProviders providers(
       std::move(standard_providers_), kNonembeddedLowEntropySource,
-      std::make_unique<const std::set<std::string_view>>(kTestAllowlist_));
+      std::make_unique<const std::set<std::string_view>>(kTestDenylist_));
   const auto& low_entropy_provider = providers.low_entropy();
 
-  // This study name is defined only in this test file.
-  std::string trial_name = kTestAllowlistedStudyName;
+  // This study name is defined only in this test file and is in the denylist.
+  std::string trial_name = kTestDenylistedStudyName;
 
-  // Nonembedded source should be used.
-  // We can verify it differs from the standard source if we construct
-  // a standard provider with the same seed.
+  // Standard source should be used for denylisted study.
+  variations::NormalizedMurmurHashEntropyProvider nonembedded_provider(
+      {kNonembeddedLowEntropySource, 8000});
+  variations::NormalizedMurmurHashEntropyProvider standard_provider(
+      {kStandardLowEntropySource, 8000});
 
+  double expected = standard_provider.GetEntropyForTrial(trial_name, 0);
+  double actual = low_entropy_provider.GetEntropyForTrial(trial_name, 0);
+
+  EXPECT_EQ(expected, actual);
+  EXPECT_NE(nonembedded_provider.GetEntropyForTrial(trial_name, 0), actual);
+}
+
+TEST_F(AwEntropyProvidersTest,
+       TestNonembeddedEntropyProvider_NonDenylistedStudy) {
+  AwEntropyProviders providers(
+      std::move(standard_providers_), kNonembeddedLowEntropySource,
+      std::make_unique<const std::set<std::string_view>>(kTestDenylist_));
+  const auto& low_entropy_provider = providers.low_entropy();
+
+  // "SomeRandomTrial" is NOT in the denylist.
+  std::string trial_name = "SomeRandomTrial";
+
+  // Nonembedded source should be used for non-denylisted study.
   variations::NormalizedMurmurHashEntropyProvider nonembedded_provider(
       {kNonembeddedLowEntropySource, 8000});
   variations::NormalizedMurmurHashEntropyProvider standard_provider(
@@ -64,50 +83,37 @@ TEST_F(AwEntropyProvidersTest,
   EXPECT_NE(standard_provider.GetEntropyForTrial(trial_name, 0), actual);
 }
 
-TEST_F(AwEntropyProvidersTest,
-       TestNonembeddedEntropyProvider_NonAllowlistedStudy) {
-  AwEntropyProviders providers(
-      std::move(standard_providers_), kNonembeddedLowEntropySource,
-      std::make_unique<const std::set<std::string_view>>(kTestAllowlist_));
-  const auto& low_entropy_provider = providers.low_entropy();
-
-  // "SomeRandomTrial" is NOT in the allowlist.
-  std::string trial_name = "SomeRandomTrial";
-
-  variations::NormalizedMurmurHashEntropyProvider standard_provider(
-      {kStandardLowEntropySource, 8000});
-
-  double expected = standard_provider.GetEntropyForTrial(trial_name, 0);
-  double actual = low_entropy_provider.GetEntropyForTrial(trial_name, 0);
-
-  EXPECT_EQ(expected, actual);
-}
-
 TEST_F(AwEntropyProvidersTest, TestDefaultEntropy) {
   // Verify default_entropy() delegates to low_entropy() (which is the
   // nonembedded wrapper).
   AwEntropyProviders providers(
       std::move(standard_providers_), kNonembeddedLowEntropySource,
-      std::make_unique<const std::set<std::string_view>>(kTestAllowlist_));
-
-  // "MyTestStudy" should use nonembedded source via
-  // default_entropy too.
-  std::string trial_name = kTestAllowlistedStudyName;
+      std::make_unique<const std::set<std::string_view>>(kTestDenylist_));
 
   variations::NormalizedMurmurHashEntropyProvider nonembedded_provider(
       {kNonembeddedLowEntropySource, 8000});
+  variations::NormalizedMurmurHashEntropyProvider standard_provider(
+      {kStandardLowEntropySource, 8000});
 
-  double expected = nonembedded_provider.GetEntropyForTrial(trial_name, 0);
-  double actual = providers.default_entropy().GetEntropyForTrial(trial_name, 0);
+  // "SomeRandomTrial" is NOT in the denylist and should use nonembedded source
+  // via default_entropy too.
+  std::string non_denylisted_trial = "SomeRandomTrial";
+  EXPECT_EQ(
+      nonembedded_provider.GetEntropyForTrial(non_denylisted_trial, 0),
+      providers.default_entropy().GetEntropyForTrial(non_denylisted_trial, 0));
 
-  EXPECT_EQ(expected, actual);
+  // Denylisted study should use standard source via default_entropy.
+  std::string denylisted_trial = kTestDenylistedStudyName;
+  EXPECT_EQ(
+      standard_provider.GetEntropyForTrial(denylisted_trial, 0),
+      providers.default_entropy().GetEntropyForTrial(denylisted_trial, 0));
 }
 
 TEST_F(AwEntropyProvidersTest, TestLimitedEntropy) {
   const std::string kLimitedEntropySource = "0123456789ABCDEF0123456789ABCDEF";
   AwEntropyProviders providers(
       std::move(standard_providers_), kNonembeddedLowEntropySource,
-      std::make_unique<const std::set<std::string_view>>(kTestAllowlist_),
+      std::make_unique<const std::set<std::string_view>>(kTestDenylist_),
       kLimitedEntropySource);
   EXPECT_TRUE(providers.has_limited_entropy());
 
@@ -120,7 +126,7 @@ TEST_F(AwEntropyProvidersTest, TestLimitedEntropy) {
 TEST_F(AwEntropyProvidersTest, TestNoLimitedEntropy) {
   AwEntropyProviders providers(
       std::move(standard_providers_), kNonembeddedLowEntropySource,
-      std::make_unique<const std::set<std::string_view>>(kTestAllowlist_));
+      std::make_unique<const std::set<std::string_view>>(kTestDenylist_));
   EXPECT_FALSE(providers.has_limited_entropy());
 }
 

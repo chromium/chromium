@@ -17,7 +17,7 @@ namespace {
 
 const char kTestEnabledFeatureName[] = "AwFieldTrialTestEnabledFeature";
 const char kTestDisabledFeatureName[] = "AwFieldTrialTestDisabledFeature";
-const char kAllowlistedFeatureName[] = "MyTestStudy";
+const char kNonDenylistedFeatureName[] = "MyTestStudy";
 
 BASE_FEATURE(kTestEnabledFeature,
              kTestEnabledFeatureName,
@@ -25,8 +25,8 @@ BASE_FEATURE(kTestEnabledFeature,
 BASE_FEATURE(kTestDisabledFeature,
              kTestDisabledFeatureName,
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kAllowlistedFeature,
-             kAllowlistedFeatureName,
+BASE_FEATURE(kNonDenylistedFeature,
+             kNonDenylistedFeatureName,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
@@ -61,11 +61,11 @@ class AwFieldTrialsTest : public testing::Test {
     auto standard_providers = std::make_unique<variations::EntropyProviders>(
         "client_id", variations::ValueInRange{0, 8000},
         /*limited_entropy_randomization_source=*/std::string_view());
-    const std::set<std::string_view> kAllowlist{};
+    const std::set<std::string_view> kDenylist{};
     // Note: 0 is a valid nonembedded low entropy source.
     AwEntropyProviders entropy_providers(
         std::move(standard_providers), /*nonembedded_low_entropy_source=*/0,
-        std::make_unique<const std::set<std::string_view>>(kAllowlist));
+        std::make_unique<const std::set<std::string_view>>(kDenylist));
     scoped_refptr<base::FieldTrial> trial(
         base::FieldTrialList::FactoryGetFieldTrial(
             feature_name, /*total_probability=*/1000, "Default",
@@ -183,8 +183,9 @@ TEST_F(AwFieldTrialsTest, AwFeatureOverrides_WithPreviousUseDefaultOverride) {
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(kTestEnabledFeatureName));
 }
 
-TEST_F(AwFieldTrialsTest, AllowlistedFeature) {
-  // Verify that an allowlisted feature can be created with AwEntropyProviders.
+TEST_F(AwFieldTrialsTest, NonDenylistedFeature) {
+  // Verify that a non-denylisted feature can be created with
+  // AwEntropyProviders.
 
   AwFieldTrials aw_field_trials;
   auto feature_list = std::make_unique<base::FeatureList>();
@@ -192,13 +193,13 @@ TEST_F(AwFieldTrialsTest, AllowlistedFeature) {
   // Use a mock entropy source (0) that is different from the default if
   // possible, but here we just ensure it runs without crashing and registers
   // the override.
-  SetUpFeatureTrial(feature_list.get(), kAllowlistedFeatureName,
+  SetUpFeatureTrial(feature_list.get(), kNonDenylistedFeatureName,
                     base::FeatureList::OVERRIDE_ENABLE_FEATURE);
 
   aw_field_trials.RegisterFeatureOverrides(feature_list.get());
   base::FeatureList::SetInstance(std::move(feature_list));
 
-  EXPECT_TRUE(base::FeatureList::IsEnabled(kAllowlistedFeature));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kNonDenylistedFeature));
 }
 
 TEST_F(AwFieldTrialsTest, ResamplingScrollEventsFeatureOverride) {
