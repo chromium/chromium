@@ -9,8 +9,8 @@
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "content/public/browser/render_frame_host.h"
-#include "net/base/schemeful_site.h"
 #include "third_party/blink/public/mojom/webid/email_verification_request.mojom-shared.h"
+#include "url/origin.h"
 
 namespace content::webid {
 
@@ -28,8 +28,8 @@ class EmailVerifier : public base::SupportsUserData::Data {
     // The email address that is being verified.
     std::string email;
 
-    // The site of the issuer that verified the email.
-    net::SchemefulSite issuer_site;
+    // The origin of the issuer that verified the email.
+    url::Origin issuer_origin;
 
     // The endpoint to request tokens from.
     GURL issuance_endpoint;

@@ -1353,7 +1353,7 @@ TEST_F(ChromeAutofillClientTest,
 
   EXPECT_CALL(*bridge_ptr, ShowJavaBottomSheet);
   client()->ShowEmailVerificationPopup(
-      gfx::RectF(0, 0, 10, 10), net::SchemefulSite(GURL("https://google.com")),
+      gfx::RectF(0, 0, 10, 10), url::Origin::Create(GURL("https://google.com")),
       u"user@example.com", base::DoNothing());
 
   EXPECT_CALL(*bridge_ptr, HideJavaBottomSheet);

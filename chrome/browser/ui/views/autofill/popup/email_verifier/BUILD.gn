@@ -13,8 +13,8 @@ source_set("email_verifier") {
     "//chrome/browser/ui/autofill/email_verifier",
     "//chrome/browser/ui/views/autofill/popup",
     "//components/favicon_base",
-    "//net",
     "//ui/views",
+    "//url",
   ]
 
   deps = [
@@ -27,6 +27,7 @@ source_set("email_verifier") {
     "//components/url_formatter",
     "//components/vector_icons",
     "//content/public/browser",
+    "//net",
     "//ui/base",
     "//ui/gfx",
   ]
@@ -39,6 +40,10 @@ source_set("unit_tests") {
 
   deps = [
     ":email_verifier",
+    "//base/test:test_support",
+    "//chrome/browser/favicon",
     "//chrome/test:test_support",
+    "//components/favicon/core",
+    "//components/favicon/core/test:test_support",
   ]
 }

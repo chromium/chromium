@@ -10,12 +10,16 @@ static_library("test_support") {
     "favicon_driver_impl_test_helper.h",
     "mock_favicon_service.cc",
     "mock_favicon_service.h",
+    "mock_large_icon_service.cc",
+    "mock_large_icon_service.h",
   ]
 
   public_deps = [
     "//base",
     "//components/favicon/core",
     "//components/favicon_base",
+    "//net",
     "//testing/gmock",
+    "//url",
   ]
 }

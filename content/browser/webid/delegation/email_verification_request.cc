@@ -31,7 +31,6 @@
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
-#include "net/base/schemeful_site.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/structured_headers.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
@@ -547,7 +546,7 @@ void EmailVerificationRequest::OnAccountStatusFetched(
 
   EmailVerifier::Result result;
   result.email = email;
-  result.issuer_site = net::SchemefulSite(issuer_origin.GetURL());
+  result.issuer_origin = issuer_origin;
   result.issuance_endpoint = well_known->data->issuance_endpoint;
   result.jwks_uri = well_known->data->jwks_uri;
   result.signing_alg_values_supported =

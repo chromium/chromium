@@ -24,11 +24,11 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/webid/email_verifier.h"
-#include "net/base/schemeful_site.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/webid/email_verification_request.mojom-shared.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace autofill {
 
@@ -204,7 +204,7 @@ class EmailVerifierDelegate : public AutofillManager::Observer,
       FieldGlobalId email_field_id,
       uint64_t request_id,
       std::string email,
-      net::SchemefulSite issuer_site,
+      url::Origin issuer_origin,
       std::optional<std::string> token,
       blink::mojom::EmailVerificationRequestResult status,
       base::TimeDelta verify_duration);

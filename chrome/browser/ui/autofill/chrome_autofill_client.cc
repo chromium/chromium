@@ -1453,10 +1453,10 @@ void ChromeAutofillClient::ShowEmailVerifiedToast(const GURL& issuer) {
 
 void ChromeAutofillClient::ShowEmailVerificationPopup(
     const gfx::RectF& element_bounds,
-    const net::SchemefulSite& issuer_site,
+    const url::Origin& issuer_origin,
     const std::u16string& email,
     base::OnceCallback<void(EmailVerificationPermissionUiStatus)> callback) {
-  GetEmailVerificationController()->ShowPopup(element_bounds, issuer_site,
+  GetEmailVerificationController()->ShowPopup(element_bounds, issuer_origin,
                                               email, std::move(callback));
 }
 

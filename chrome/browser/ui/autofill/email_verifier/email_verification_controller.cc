@@ -23,7 +23,7 @@ EmailVerificationController::~EmailVerificationController() = default;
 
 void EmailVerificationController::ShowPopup(
     const gfx::RectF& element_bounds,
-    const net::SchemefulSite& issuer_site,
+    const url::Origin& issuer_origin,
     const std::u16string& email,
     base::OnceCallback<
         void(AutofillClient::EmailVerificationPermissionUiStatus)>
@@ -57,7 +57,7 @@ void EmailVerificationController::ShowPopup(
   prompt_state_ = PromptState::kShowing;
 
   ShowPopupImpl(
-      element_bounds, issuer_site, email,
+      element_bounds, issuer_origin, email,
       base::BindOnce(
           [](base::WeakPtr<EmailVerificationController> self,
              base::OnceCallback<void(

@@ -15,10 +15,10 @@
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "components/favicon_base/favicon_types.h"
-#include "net/base/schemeful_site.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/md_text_button_with_spinner.h"
 #include "ui/views/input_event_activation_protector.h"
+#include "url/origin.h"
 
 namespace ui {
 class Event;
@@ -49,14 +49,14 @@ class EmailVerificationPopupViewImpl : public EmailVerificationPopupView,
   static base::WeakPtr<EmailVerificationPopupViewImpl> Show(
       base::WeakPtr<EmailVerificationPopupController> controller,
       views::Widget* parent_widget,
-      const net::SchemefulSite& issuer_site,
+      const url::Origin& issuer_origin,
       const std::u16string& email,
       base::OnceCallback<void(bool)> callback);
 
   EmailVerificationPopupViewImpl(
       base::WeakPtr<EmailVerificationPopupController> controller,
       views::Widget* parent_widget,
-      const net::SchemefulSite& issuer_site,
+      const url::Origin& issuer_origin,
       const std::u16string& email,
       base::OnceCallback<void(bool)> callback);
   EmailVerificationPopupViewImpl(const EmailVerificationPopupViewImpl&) =
@@ -76,6 +76,7 @@ class EmailVerificationPopupViewImpl : public EmailVerificationPopupView,
       const views::SizeBounds& available_size) const override;
 
   views::Throbber* throbber_for_testing();
+  views::ImageView* icon_view_for_testing() { return icon_view_; }
   views::MdTextButton* confirm_button_for_testing() { return confirm_button_; }
   views::MdTextButton* cancel_button_for_testing() { return cancel_button_; }
 

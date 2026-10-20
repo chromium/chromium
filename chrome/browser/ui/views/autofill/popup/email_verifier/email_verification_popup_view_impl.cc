@@ -20,6 +20,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/schemeful_site.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -49,7 +50,6 @@
 namespace autofill {
 
 namespace {
-constexpr int kMinIconSize = 16;
 constexpr int kDesiredIconSize = 20;
 constexpr int kEmailVerificationMaxWidth = 400;
 }  // namespace
@@ -57,7 +57,7 @@ constexpr int kEmailVerificationMaxWidth = 400;
 EmailVerificationPopupViewImpl::EmailVerificationPopupViewImpl(
     base::WeakPtr<EmailVerificationPopupController> controller,
     views::Widget* parent_widget,
-    const net::SchemefulSite& issuer_site,
+    const url::Origin& issuer_origin,
     const std::u16string& email,
     base::OnceCallback<void(bool)> callback)
     : PopupBaseView(controller,
@@ -80,7 +80,7 @@ EmailVerificationPopupViewImpl::EmailVerificationPopupViewImpl(
 
   std::u16string issuer_site_string =
       url_formatter::FormatUrlForSecurityDisplay(
-          issuer_site.GetURL(),
+          net::SchemefulSite(issuer_origin).GetURL(),
           url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 
   // Headline: Email Icon + Title (horizontal)
@@ -104,11 +104,9 @@ EmailVerificationPopupViewImpl::EmailVerificationPopupViewImpl(
         controller->GetWebContents()->GetBrowserContext());
     if (auto* favicon_service =
             LargeIconServiceFactory::GetForBrowserContext(profile)) {
-      favicon_service->GetLargeIconRawBitmapForPageUrl(
-          issuer_site.GetURL(),
-          /*min_source_size_in_pixel=*/kMinIconSize,
-          /*size_in_pixel_to_resize_to=*/kDesiredIconSize,
-          favicon::LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
+      favicon_service->GetIconRawBitmapOrFallbackStyleForPageUrl(
+          issuer_origin.GetURL(),
+          /*desired_size_in_pixel=*/kDesiredIconSize,
           base::BindOnce(&EmailVerificationPopupViewImpl::OnFaviconLoaded,
                          weak_ptr_factory_.GetWeakPtr()),
           &favicon_task_tracker_);
@@ -272,11 +270,11 @@ END_METADATA
 base::WeakPtr<EmailVerificationPopupView> EmailVerificationPopupView::Show(
     base::WeakPtr<EmailVerificationPopupController> controller,
     views::Widget* parent_widget,
-    const net::SchemefulSite& issuer_site,
+    const url::Origin& issuer_origin,
     const std::u16string& email,
     base::OnceCallback<void(bool)> callback) {
   return EmailVerificationPopupViewImpl::Show(
-      controller, parent_widget, issuer_site, email, std::move(callback));
+      controller, parent_widget, issuer_origin, email, std::move(callback));
 }
 
 // static
@@ -284,11 +282,11 @@ base::WeakPtr<EmailVerificationPopupViewImpl>
 EmailVerificationPopupViewImpl::Show(
     base::WeakPtr<EmailVerificationPopupController> controller,
     views::Widget* parent_widget,
-    const net::SchemefulSite& issuer_site,
+    const url::Origin& issuer_origin,
     const std::u16string& email,
     base::OnceCallback<void(bool)> callback) {
   auto* view = new EmailVerificationPopupViewImpl(
-      controller, parent_widget, issuer_site, email, std::move(callback));
+      controller, parent_widget, issuer_origin, email, std::move(callback));
   view->Show();
   return view->weak_ptr_factory_.GetWeakPtr();
 }

@@ -40,7 +40,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
-#include "net/base/schemeful_site.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -136,7 +135,7 @@ class MockAutofillClient : public TestContentAutofillClient {
   MOCK_METHOD(void,
               ShowEmailVerificationPopup,
               (const gfx::RectF&,
-               const net::SchemefulSite&,
+               const url::Origin&,
                const std::u16string&,
                base::OnceCallback<
                    void(AutofillClient::EmailVerificationPermissionUiStatus)>),
@@ -238,7 +237,7 @@ class EmailVerifierDelegateTestBase
       const std::string& email = "johndoe@hades.com") {
     content::webid::EmailVerifier::Result result;
     result.email = email;
-    result.issuer_site = net::SchemefulSite(GURL("https://example.com"));
+    result.issuer_origin = url::Origin::Create(GURL("https://example.com"));
     return result;
   }
 
@@ -1238,10 +1237,11 @@ TEST_F(EmailVerifierDelegateTest, OnFillOrPreviewFieldVerificationTriggered) {
   popup_shown_run_loop_.Run();
 }
 
-// Verifies that ShowEmailVerificationPopup receives a valid `issuer_site`
+// Verifies that ShowEmailVerificationPopup receives a valid `issuer_origin`
 // that is not moved-from (which would trigger a SchemeHostPort::IsValid()
 // crash).
-TEST_F(EmailVerifierDelegateTest, Regression_ShowPopupReceivesValidIssuerSite) {
+TEST_F(EmailVerifierDelegateTest,
+       Regression_ShowPopupReceivesValidIssuerOrigin) {
   FormStructure* form = SetUpValidForm();
 
   EXPECT_CALL(email_verifier(), CheckIfVerifiable("johndoe@hades.com", _, _))
@@ -1252,13 +1252,13 @@ TEST_F(EmailVerifierDelegateTest, Regression_ShowPopupReceivesValidIssuerSite) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
-      .WillOnce([&](const gfx::RectF&, const net::SchemefulSite& issuer_site,
+      .WillOnce([&](const gfx::RectF&, const url::Origin& issuer_origin,
                     const std::u16string&,
                     base::OnceCallback<void(
                         AutofillClient::EmailVerificationPermissionUiStatus)>
                         callback) {
-        // Access issuer_site to verify it is not moved-from.
-        ASSERT_TRUE(issuer_site.GetURL().is_valid());
+        // Access issuer_origin to verify it is not moved-from.
+        ASSERT_TRUE(issuer_origin.GetURL().is_valid());
         std::move(callback).Run(
             AutofillClient::EmailVerificationPermissionUiStatus::kDeclined);
         run_loop.Quit();
@@ -1383,8 +1383,7 @@ TEST_F(EmailVerifierDelegateTest, DriverInactiveBeforeDecision) {
       saved_decision_callback;
   EXPECT_CALL(client(), ShowEmailVerificationPopup)
       .WillOnce(
-          [&](const gfx::RectF&, const net::SchemefulSite&,
-              const std::u16string&,
+          [&](const gfx::RectF&, const url::Origin&, const std::u16string&,
               base::OnceCallback<void(
                   AutofillClient::EmailVerificationPermissionUiStatus)>
                   callback) { saved_decision_callback = std::move(callback); });

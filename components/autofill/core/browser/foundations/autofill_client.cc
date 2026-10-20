@@ -42,8 +42,8 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "net/base/schemeful_site.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/autofill/core/browser/ui/autofill_tapjacking_protector.h"
@@ -498,7 +498,7 @@ void AutofillClient::ShowAutofillAiSuggestionRemovedNotification(
 
 void AutofillClient::ShowEmailVerificationPopup(
     const gfx::RectF& element_bounds,
-    const net::SchemefulSite& issuer_site,
+    const url::Origin& issuer_origin,
     const std::u16string& email,
     base::OnceCallback<void(EmailVerificationPermissionUiStatus)> callback) {
   NOTIMPLEMENTED();

@@ -17,8 +17,8 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "net/base/schemeful_site.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "url/origin.h"
 
 namespace views {
 class Widget;
@@ -48,7 +48,7 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
   // `callback` is invoked with the permission UI decision or dismissal status
   // (`AutofillClient::EmailVerificationPermissionUiStatus`).
   void Show(const gfx::RectF& element_bounds,
-            const net::SchemefulSite& issuer,
+            const url::Origin& issuer_origin,
             const std::u16string& email,
             base::OnceCallback<void(
                 AutofillClient::EmailVerificationPermissionUiStatus)> callback,
@@ -82,7 +82,7 @@ class EmailVerificationPopupController : public AutofillPopupViewDelegate,
       base::RepeatingCallback<base::WeakPtr<EmailVerificationPopupView>(
           base::WeakPtr<EmailVerificationPopupController> delegate,
           views::Widget* parent_widget,
-          const net::SchemefulSite& issuer,
+          const url::Origin& issuer_origin,
           const std::u16string& email,
           base::OnceCallback<void(bool)> callback)>;
 

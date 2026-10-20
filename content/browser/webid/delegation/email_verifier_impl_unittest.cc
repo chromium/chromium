@@ -20,10 +20,10 @@
 #include "content/public/browser/webid/email_verifier.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
-#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content::webid {
 
@@ -95,7 +95,7 @@ TEST_F(EmailVerifierImplTest, TestSingleRequest) {
 
   EmailVerifier::Result issuer;
   issuer.email = "test@example.com";
-  issuer.issuer_site = net::SchemefulSite(GURL("https://example.com"));
+  issuer.issuer_origin = url::Origin::Create(GURL("https://example.com"));
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>,
                          blink::mojom::EmailVerificationRequestResult,
@@ -154,7 +154,7 @@ TEST_F(EmailVerifierImplTest, TestStatefulFlow) {
 
   EmailVerifier::Result issuer;
   issuer.email = kEmail;
-  issuer.issuer_site = net::SchemefulSite(GURL("https://example.com"));
+  issuer.issuer_origin = url::Origin::Create(GURL("https://example.com"));
   issuer.issuance_endpoint = kIssuanceEndpoint;
 
   EXPECT_CALL(*request_ptr_is_verifiable, CheckIfVerifiable(kEmail, _, _))
@@ -221,11 +221,11 @@ TEST_F(EmailVerifierImplTest, TestTwoConcurrentRequests) {
 
   EmailVerifier::Result issuer1;
   issuer1.email = "test1@example.com";
-  issuer1.issuer_site = net::SchemefulSite(GURL("https://example.com"));
+  issuer1.issuer_origin = url::Origin::Create(GURL("https://example.com"));
 
   EmailVerifier::Result issuer2;
   issuer2.email = "test2@example.com";
-  issuer2.issuer_site = net::SchemefulSite(GURL("https://example.com"));
+  issuer2.issuer_origin = url::Origin::Create(GURL("https://example.com"));
 
   // Set up expectations and capture callbacks for the two requests.
   EXPECT_CALL(*request_ptr_is_verifiable1,
@@ -330,7 +330,7 @@ TEST_F(EmailVerifierImplTest, ForwardsDurationAndStatus) {
 
   EmailVerifier::Result issuer;
   issuer.email = kEmail;
-  issuer.issuer_site = net::SchemefulSite(GURL("https://example.com"));
+  issuer.issuer_origin = url::Origin::Create(GURL("https://example.com"));
   issuer.issuance_endpoint = kIssuanceEndpoint;
 
   EXPECT_CALL(*request_ptr_is_verifiable, CheckIfVerifiable(kEmail, _, _))

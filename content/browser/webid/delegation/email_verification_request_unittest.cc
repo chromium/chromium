@@ -28,7 +28,6 @@
 #include "content/test/test_render_frame_host.h"
 #include "crypto/sha2.h"
 #include "crypto/sign.h"
-#include "net/base/schemeful_site.h"
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_network_context.h"
@@ -674,8 +673,8 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
   std::optional<std::string> result = future.Get<0>();
   base::Time after = base::Time::Now();
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(issuer->issuer_site,
-            net::SchemefulSite(GURL("https://example.com")));
+  EXPECT_EQ(issuer->issuer_origin,
+            url::Origin::Create(GURL("https://issuer.example.com")));
 
   auto sd_jwt_kb = sdjwt::SdJwtKb::Parse(*result);
   ASSERT_TRUE(sd_jwt_kb);
@@ -894,8 +893,8 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
                                                 future.GetCallback());
   std::optional<EmailVerifier::Result> result = future.Get<0>();
   ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result->issuer_site,
-            net::SchemefulSite(GURL("https://example.com")));
+  EXPECT_EQ(result->issuer_origin,
+            url::Origin::Create(GURL("https://issuer.example.com")));
 
   base::test::TestFuture<std::optional<std::string>,
                          blink::mojom::EmailVerificationRequestResult,
@@ -1781,7 +1780,7 @@ TEST_P(EmailVerificationRequestJwksErrorTest, VerifyFailsOnJwksError) {
 
   EmailVerifier::Result issuer_result;
   issuer_result.email = "test@issuer.example.com";
-  issuer_result.issuer_site = net::SchemefulSite(kIssuerUrl);
+  issuer_result.issuer_origin = url::Origin::Create(kIssuerUrl);
   issuer_result.issuance_endpoint = kIssuanceEndpoint;
   issuer_result.jwks_uri = kJwksUri;
   issuer_result.signing_alg_values_supported.push_back("EdDSA");

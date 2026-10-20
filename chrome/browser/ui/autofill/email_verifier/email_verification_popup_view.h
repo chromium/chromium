@@ -10,8 +10,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
-namespace net {
-class SchemefulSite;
+namespace url {
+class Origin;
 }
 
 namespace views {
@@ -38,7 +38,7 @@ class EmailVerificationPopupView {
   static base::WeakPtr<EmailVerificationPopupView> Show(
       base::WeakPtr<EmailVerificationPopupController> controller,
       views::Widget* parent_widget,
-      const net::SchemefulSite& issuer_site,
+      const url::Origin& issuer_origin,
       const std::u16string& email,
       base::OnceCallback<void(bool)> callback);
 

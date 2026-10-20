@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/messages/android/message_enums.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/schemeful_site.h"
 
 namespace autofill {
 
@@ -46,7 +47,7 @@ EmailVerificationControllerAndroid::~EmailVerificationControllerAndroid() =
 
 void EmailVerificationControllerAndroid::ShowPopupImpl(
     const gfx::RectF& /*element_bounds*/,
-    const net::SchemefulSite& issuer_site,
+    const url::Origin& issuer_origin,
     const std::u16string& email,
     base::OnceCallback<void(
         AutofillClient::EmailVerificationPermissionUiStatus)> decision_callback,
@@ -91,8 +92,8 @@ void EmailVerificationControllerAndroid::ShowPopupImpl(
       std::move(on_dismissed), shared_decision_callback);
 
   bottom_sheet_bridge_->RequestShowContent(
-      base::UTF8ToUTF16(issuer_site.Serialize()), email, std::move(on_accepted),
-      std::move(on_dismissed_callback));
+      base::UTF8ToUTF16(net::SchemefulSite(issuer_origin).Serialize()), email,
+      std::move(on_accepted), std::move(on_dismissed_callback));
 }
 
 void EmailVerificationControllerAndroid::HidePopupImpl() {

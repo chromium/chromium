@@ -143,7 +143,7 @@ void EmailVerifierDelegate::Verify(
       result, nonce,
       base::BindOnce(&EmailVerifierDelegate::OnVerificationResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(), manager, email_field_id,
-                     request_id, email, result.issuer_site));
+                     request_id, email, result.issuer_origin));
 }
 
 void EmailVerifierDelegate::OnVerificationResponseReceived(
@@ -151,7 +151,7 @@ void EmailVerifierDelegate::OnVerificationResponseReceived(
     FieldGlobalId email_field_id,
     uint64_t request_id,
     std::string email,
-    net::SchemefulSite issuer_site,
+    url::Origin issuer_origin,
     std::optional<std::string> token,
     blink::mojom::EmailVerificationRequestResult status,
     base::TimeDelta verify_duration) {
@@ -192,9 +192,10 @@ void EmailVerifierDelegate::OnVerificationResponseReceived(
   }
   // On successful verification, dismiss the first-run permission popup if
   // showing and display the email verified toast.
+  GURL issuer_site_url = net::SchemefulSite(issuer_origin).GetURL();
   manager->client().HideEmailVerificationPopup();
-  manager->client().ShowEmailVerifiedToast(issuer_site.GetURL());
-  issuers_[email_field_id] = issuer_site.GetURL();
+  manager->client().ShowEmailVerifiedToast(issuer_site_url);
+  issuers_[email_field_id] = issuer_site_url;
   manager->driver().SendEmailVerificationToken(email_field_id, email, *token);
   NotifyFlowCompleted(email_field_id,
                       EvpAutofillFlowResult::kTokenSentToRenderer);
@@ -243,7 +244,8 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
           email_dict = existing->Clone();
         }
         email_dict.Set("allowed", true);
-        email_dict.Set("issuer_site", result.issuer_site.Serialize());
+        email_dict.Set("issuer_site",
+                       net::SchemefulSite(result.issuer_origin).Serialize());
         email_dict.Set("timestamp", base::TimeToValue(base::Time::Now()));
         update->Set(normalized_email, std::move(email_dict));
       }
@@ -362,9 +364,9 @@ void EmailVerifierDelegate::OnIsVerifiable(
     return;
   }
 
-  net::SchemefulSite issuer_site = result->issuer_site;
+  url::Origin issuer_origin = result->issuer_origin;
   manager->client().ShowEmailVerificationPopup(
-      email_field_bounds, issuer_site, base::UTF8ToUTF16(normalized_email),
+      email_field_bounds, issuer_origin, base::UTF8ToUTF16(normalized_email),
       base::BindOnce(&EmailVerifierDelegate::OnEmailVerificationDecision,
                      weak_ptr_factory_.GetWeakPtr(), manager, email_field_id,
                      request_id, email_utf8, nonce, std::move(*result)));

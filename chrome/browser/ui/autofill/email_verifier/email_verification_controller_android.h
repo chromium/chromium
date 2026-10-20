@@ -13,9 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_controller.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
-#include "net/base/schemeful_site.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 class WebContents;
@@ -43,7 +43,7 @@ class EmailVerificationControllerAndroid final
  protected:
   // EmailVerificationController:
   void ShowPopupImpl(const gfx::RectF& element_bounds,
-                     const net::SchemefulSite& issuer_site,
+                     const url::Origin& issuer_origin,
                      const std::u16string& email,
                      base::OnceCallback<void(
                          AutofillClient::EmailVerificationPermissionUiStatus)>

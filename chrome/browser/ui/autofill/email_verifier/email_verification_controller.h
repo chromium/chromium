@@ -15,9 +15,9 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
-#include "net/base/schemeful_site.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 class WebContents;
@@ -44,7 +44,7 @@ class EmailVerificationController {
 
   // Shows the permission prompt popup anchored to the element bounds.
   void ShowPopup(const gfx::RectF& element_bounds,
-                 const net::SchemefulSite& issuer_site,
+                 const url::Origin& issuer_origin,
                  const std::u16string& email,
                  base::OnceCallback<
                      void(AutofillClient::EmailVerificationPermissionUiStatus)>
@@ -113,7 +113,7 @@ class EmailVerificationController {
   // Platform-specific UI hooks implemented by subclasses.
   virtual void ShowPopupImpl(
       const gfx::RectF& element_bounds,
-      const net::SchemefulSite& issuer_site,
+      const url::Origin& issuer_origin,
       const std::u16string& email,
       base::OnceCallback<
           void(AutofillClient::EmailVerificationPermissionUiStatus)>

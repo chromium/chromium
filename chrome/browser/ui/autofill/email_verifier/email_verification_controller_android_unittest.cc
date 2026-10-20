@@ -25,13 +25,13 @@
 #include "components/messages/android/message_enums.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
-#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace autofill {
 namespace {
@@ -102,7 +102,7 @@ class EmailVerificationControllerAndroidTest
     }
     EXPECT_CALL(*bridge_, ShowJavaBottomSheet);
     evp_controller_->ShowPopup(gfx::RectF(0, 0, 10, 10),
-                               net::SchemefulSite(GURL("https://google.com")),
+                               url::Origin::Create(GURL("https://google.com")),
                                u"user@example.com", std::move(ui_callback));
   }
 
@@ -291,7 +291,7 @@ TEST_F(EmailVerificationControllerAndroidTest,
   EXPECT_CALL(*bridge_, HideJavaBottomSheet);
   EXPECT_CALL(*bridge_, ShowJavaBottomSheet);
   evp_controller_->ShowPopup(gfx::RectF(0, 0, 10, 10),
-                             net::SchemefulSite(GURL("https://google.com")),
+                             url::Origin::Create(GURL("https://google.com")),
                              u"other@example.com", base::DoNothing());
   EXPECT_FALSE(test_api(*evp_controller_).is_hide_popup_timer_running());
 }
@@ -316,7 +316,7 @@ TEST_F(EmailVerificationControllerAndroidTest,
               Run(AutofillClient::EmailVerificationPermissionUiStatus::
                       kOverlappingPrompt));
   evp_controller_->ShowPopup(gfx::RectF(0, 0, 10, 10),
-                             net::SchemefulSite(GURL("https://google.com")),
+                             url::Origin::Create(GURL("https://google.com")),
                              u"other@example.com", second_callback.Get());
 
   // The active first sheet's loading timer must still be preserved.
@@ -358,7 +358,7 @@ TEST_F(EmailVerificationControllerAndroidTest,
               Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
   EXPECT_CALL(*bridge_, ShowJavaBottomSheet);
   evp_controller_->ShowPopup(gfx::RectF(0, 0, 10, 10),
-                             net::SchemefulSite(GURL("https://google.com")),
+                             url::Origin::Create(GURL("https://google.com")),
                              u"other@example.com", base::DoNothing());
   EXPECT_EQ(test_api(*evp_controller_).prompt_state(),
             EmailVerificationControllerTestApi::PromptState::kShowing);
