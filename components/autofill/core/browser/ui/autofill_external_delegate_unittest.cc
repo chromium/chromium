@@ -258,6 +258,13 @@ class MockAutofillClient : public TestAutofillClient {
   MockAutofillClient() {
     set_payments_autofill_client(
         std::make_unique<MockPaymentsAutofillClient>(this));
+    ON_CALL(*this, GetDeviceAuthAvailabilityChecker).WillByDefault([] {
+      auto checker =
+          std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
+      ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+          .WillByDefault(Return(true));
+      return checker;
+    });
   }
   MockAutofillClient(const MockAutofillClient&) = delete;
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
@@ -316,6 +323,10 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
               (std::string),
+              (const, override));
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>,
+              GetDeviceAuthAvailabilityChecker,
+              (),
               (const, override));
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -2934,13 +2945,8 @@ TEST_P(AutofillExternalDelegateReauthTest,
   ON_CALL(autofill_client(), GetAutofillSuggestions)
       .WillByDefault(Return(all_suggestions));
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  autofill_client().set_device_auth_availability_checker(std::move(checker));
 
   auto authenticator =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -3010,13 +3016,8 @@ TEST_P(AutofillExternalDelegateReauthTest, AutofillAiReauthFlow_ReauthMessage) {
   IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER,
                             .origin = url::Origin::Create(kUrl)}}});
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  autofill_client().set_device_auth_availability_checker(std::move(checker));
 
   auto authenticator =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -3066,13 +3067,8 @@ TEST_P(AutofillExternalDelegateReauthTest,
   // technical re-auth.
   IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  autofill_client().set_device_auth_availability_checker(std::move(checker));
 
   auto authenticator =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -3116,13 +3112,8 @@ TEST_P(AutofillExternalDelegateReauthTest, AutofillAiReauthFlow_ResultMetrics) {
 
   {
     base::HistogramTester histogram_tester;
-    auto checker =
-        std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-    ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-        .WillByDefault(Return(true));
-    EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+    EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
         .Times(IsRefactorEnabled() ? 1 : 0);
-    autofill_client().set_device_auth_availability_checker(std::move(checker));
 
     auto authenticator =
         std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -3147,13 +3138,8 @@ TEST_P(AutofillExternalDelegateReauthTest, AutofillAiReauthFlow_ResultMetrics) {
 
   {
     base::HistogramTester histogram_tester;
-    auto checker =
-        std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-    ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-        .WillByDefault(Return(true));
-    EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+    EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
         .Times(IsRefactorEnabled() ? 1 : 0);
-    autofill_client().set_device_auth_availability_checker(std::move(checker));
 
     auto authenticator =
         std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -3197,13 +3183,16 @@ TEST_P(AutofillExternalDelegateReauthTest,
   // re-auth.
   IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(false));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  ON_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
+      .WillByDefault([] {
+        auto checker = std::make_unique<
+            device_reauth::MockDeviceAuthAvailabilityChecker>();
+        EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+            .WillOnce(Return(false));
+        return checker;
+      });
+  EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  autofill_client().set_device_auth_availability_checker(std::move(checker));
 
   auto authenticator =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -3280,10 +3269,7 @@ TEST_P(AutofillExternalDelegateReauthTest,
   // re-auth.
   IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock).Times(0);
-  autofill_client().set_device_auth_availability_checker(std::move(checker));
+  EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker).Times(0);
 
   EXPECT_CALL(autofill_client(),
               GetDeviceAuthenticator("Autofill.Ai.ReauthToFill"))
@@ -3395,6 +3381,8 @@ class AutofillExternalDelegateWithWalletPrivatePassesTest
     AutofillExternalDelegateTest::SetUp();
     autofill_client().set_wallet_pass_access_manager(
         std::make_unique<MockWalletPassAccessManager>());
+    prefs::SetAutofillAiReauthBeforeFillingEnabled(autofill_client().GetPrefs(),
+                                                   false);
   }
 
   MockWalletPassAccessManager& wallet_manager() {
@@ -3575,13 +3563,8 @@ TEST_P(AutofillExternalDelegateWithWalletPrivatePassesTest,
   ON_CALL(autofill_client(), GetAutofillSuggestions)
       .WillByDefault(Return(suggestions));
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  autofill_client().set_device_auth_availability_checker(std::move(checker));
 
   // Simulate a failed re-auth.
   auto authenticator =
@@ -3639,13 +3622,8 @@ TEST_P(AutofillExternalDelegateWithWalletPrivatePassesTest,
   ON_CALL(autofill_client(), GetAutofillSuggestions)
       .WillByDefault(Return(suggestions));
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  autofill_client().set_device_auth_availability_checker(std::move(checker));
 
   // Simulate a failed re-auth.
   auto authenticator =
@@ -3726,13 +3704,8 @@ TEST_P(AutofillExternalDelegateWithWalletPrivatePassesTest,
   ON_CALL(autofill_client(), GetAutofillSuggestions)
       .WillByDefault(Return(suggestions));
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  autofill_client().set_device_auth_availability_checker(std::move(checker));
 
   // Simulate a failed re-auth.
   auto authenticator =
@@ -3880,13 +3853,16 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
       .WillByDefault(Return(suggestions));
 
   // Authenticator is not supported by the platform.
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(false));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  ON_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
+      .WillByDefault([] {
+        auto checker = std::make_unique<
+            device_reauth::MockDeviceAuthAvailabilityChecker>();
+        EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+            .WillOnce(Return(false));
+        return checker;
+      });
+  EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  autofill_client().set_device_auth_availability_checker(std::move(checker));
 
   auto authenticator =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -3965,13 +3941,8 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
   ON_CALL(autofill_client(), GetAutofillSuggestions)
       .WillByDefault(Return(all_suggestions));
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  autofill_client().set_device_auth_availability_checker(std::move(checker));
 
   // Init the authenticator.
   auto authenticator =
@@ -4072,13 +4043,8 @@ TEST_P(AutofillExternalDelegateWithAmbientAutofillTest,
   ON_CALL(autofill_client(), GetAutofillSuggestions)
       .WillByDefault(Return(all_suggestions));
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  autofill_client().set_device_auth_availability_checker(std::move(checker));
 
   // Init the authenticator.
   auto authenticator =
@@ -4169,13 +4135,8 @@ TEST_P(
   ON_CALL(autofill_client(), GetAutofillSuggestions)
       .WillByDefault(Return(all_suggestions));
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  autofill_client().set_device_auth_availability_checker(std::move(checker));
 
   // Init the authenticator.
   auto authenticator =

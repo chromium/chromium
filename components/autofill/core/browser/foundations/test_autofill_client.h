@@ -581,9 +581,6 @@ class TestAutofillClientTemplate : public T {
 
   std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
   GetDeviceAuthAvailabilityChecker() const override {
-    if (device_auth_availability_checker_) {
-      return std::move(device_auth_availability_checker_);
-    }
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_CHROMEOS)
     return std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
@@ -591,13 +588,6 @@ class TestAutofillClientTemplate : public T {
     return nullptr;
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_CHROMEOS)
-  }
-
-  // Sets the `DeviceAuthAvailabilityChecker` to return on the next call to
-  // `GetDeviceAuthAvailabilityChecker()`.
-  void set_device_auth_availability_checker(
-      std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker) {
-    device_auth_availability_checker_ = std::move(checker);
   }
 
 #if BUILDFLAG(IS_IOS)
@@ -1016,9 +1006,6 @@ class TestAutofillClientTemplate : public T {
   bool is_credit_card_upload_enabled_ = true;
 
   bool supports_device_reauth_ = true;
-
-  mutable std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
-      device_auth_availability_checker_;
 
   bool is_tab_in_actor_mode_ = false;
 

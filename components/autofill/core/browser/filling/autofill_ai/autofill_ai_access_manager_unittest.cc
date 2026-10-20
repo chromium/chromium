@@ -55,7 +55,15 @@ class TestAutofillClientForAccessManager : public TestAutofillClient {
  public:
   explicit TestAutofillClientForAccessManager(
       std::unique_ptr<device_reauth::MockDeviceAuthenticator>* authenticator)
-      : authenticator_(authenticator) {}
+      : authenticator_(authenticator) {
+    ON_CALL(*this, GetDeviceAuthAvailabilityChecker).WillByDefault([] {
+      auto checker =
+          std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
+      ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+          .WillByDefault(Return(true));
+      return checker;
+    });
+  }
   ~TestAutofillClientForAccessManager() override = default;
 
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
@@ -65,6 +73,11 @@ class TestAutofillClientForAccessManager : public TestAutofillClient {
     }
     return nullptr;
   }
+
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>,
+              GetDeviceAuthAvailabilityChecker,
+              (),
+              (const, override));
 
  private:
   raw_ptr<std::unique_ptr<device_reauth::MockDeviceAuthenticator>>
@@ -205,13 +218,8 @@ TEST_P(AutofillAiAccessManagerReauthTest, ReauthRequired_ReauthAccepted) {
   EntityInstance passport = test::GetPassportEntityInstance();
   AddOrUpdateEntityInstance(passport);
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  client().set_device_auth_availability_checker(std::move(checker));
 
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -251,13 +259,8 @@ TEST_P(AutofillAiAccessManagerReauthTest, ReauthRequired_ReauthRejected) {
   EntityInstance passport = test::GetPassportEntityInstance();
   AddOrUpdateEntityInstance(passport);
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  client().set_device_auth_availability_checker(std::move(checker));
 
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -302,13 +305,8 @@ TEST_P(AutofillAiAccessManagerReauthTest,
           {.record_type = EntityInstance::RecordType::kPersonalContext}));
   AddOrUpdateEntityInstance(masked_passport);
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  client().set_device_auth_availability_checker(std::move(checker));
 
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -353,13 +351,15 @@ TEST_P(AutofillAiAccessManagerReauthTest, ReauthRequired_NoAuthenticator) {
   EntityInstance passport = test::GetPassportEntityInstance();
   AddOrUpdateEntityInstance(passport);
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(false));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  ON_CALL(client(), GetDeviceAuthAvailabilityChecker).WillByDefault([] {
+    auto checker =
+        std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
+    EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+        .WillOnce(Return(false));
+    return checker;
+  });
+  EXPECT_CALL(client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  client().set_device_auth_availability_checker(std::move(checker));
 
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -394,6 +394,7 @@ TEST_P(AutofillAiAccessManagerReauthTest, ReauthRequired_NoAuthenticator) {
 // Tests that when unmasking a server entity successfully, the unmasked entity
 // is passed to the callback.
 TEST_P(AutofillAiAccessManagerReauthTest, ServerFetch_Success) {
+  prefs::SetAutofillAiReauthBeforeFillingEnabled(client().GetPrefs(), false);
   EntityInstance full_passport = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kServerWallet});
   EntityInstance masked_passport = test::MaskEntityInstance(full_passport);
@@ -425,6 +426,7 @@ TEST_P(AutofillAiAccessManagerReauthTest, ServerFetch_Success) {
 // Tests that when unmasking a server entity fails, FailureReason::kFetchFailed
 // is passed to the callback.
 TEST_P(AutofillAiAccessManagerReauthTest, ServerFetch_Failure) {
+  prefs::SetAutofillAiReauthBeforeFillingEnabled(client().GetPrefs(), false);
   EntityInstance full_passport = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::RecordType::kServerWallet});
   EntityInstance masked_passport = test::MaskEntityInstance(full_passport);
@@ -466,13 +468,8 @@ TEST_P(AutofillAiAccessManagerReauthTest, ReauthAndServerFetch_Success) {
   EntityInstance masked_passport = test::MaskEntityInstance(full_passport);
   AddOrUpdateEntityInstance(masked_passport);
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  client().set_device_auth_availability_checker(std::move(checker));
 
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -520,13 +517,8 @@ TEST_P(AutofillAiAccessManagerReauthTest,
   EntityInstance masked_passport = test::MaskEntityInstance(full_passport);
   AddOrUpdateEntityInstance(masked_passport);
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  client().set_device_auth_availability_checker(std::move(checker));
 
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -572,13 +564,8 @@ TEST_P(AutofillAiAccessManagerReauthTest, ResetCancelsPendingOperations) {
   EntityInstance passport = test::GetPassportEntityInstance();
   AddOrUpdateEntityInstance(passport);
 
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  client().set_device_auth_availability_checker(std::move(checker));
 
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -617,13 +604,8 @@ TEST_P(AutofillAiAccessManagerReauthTest, ResetCancelsPendingOperations) {
 // Tests that when unmasking a personal context entity successfully, the
 // unmasked entity is passed to the callback.
 TEST_P(AutofillAiAccessManagerReauthTest, PersonalContextFetch_Success) {
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  client().set_device_auth_availability_checker(std::move(checker));
 
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -669,13 +651,8 @@ TEST_P(AutofillAiAccessManagerReauthTest, PersonalContextFetch_Success) {
 // Tests that when unmasking a personal context entity fails,
 // FailureReason::kFetchFailed is passed to the callback.
 TEST_P(AutofillAiAccessManagerReauthTest, PersonalContextFetch_Failure) {
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  client().set_device_auth_availability_checker(std::move(checker));
 
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
@@ -723,13 +700,8 @@ TEST_P(AutofillAiAccessManagerReauthTest, PersonalContextFetch_Failure) {
 // Tests that when AutofillAiPersonalContextAccessManager is not available,
 // unmasking fails with FailureReason::kFetchFailed.
 TEST_P(AutofillAiAccessManagerReauthTest, PersonalContextFetch_NoManager) {
-  auto checker =
-      std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
-  ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(Return(true));
-  EXPECT_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+  EXPECT_CALL(client(), GetDeviceAuthAvailabilityChecker)
       .Times(IsRefactorEnabled() ? 1 : 0);
-  client().set_device_auth_availability_checker(std::move(checker));
 
   mock_authenticator_ =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
