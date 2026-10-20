@@ -27,5 +27,6 @@ include_rules = [
   "+ios/chrome/browser/ntp/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/toolbar/ui/buttons",
+  "+ios/chrome/browser/web/model",
   # keep-sorted end
 ]
