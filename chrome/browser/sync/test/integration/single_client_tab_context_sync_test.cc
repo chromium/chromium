@@ -191,14 +191,13 @@ INSTANTIATE_TEST_SUITE_P(,
                          GetSyncTestModes(),
                          testing::PrintToStringParamName());
 
-IN_PROC_BROWSER_TEST_P(
-    SingleClientTabContextSyncTest,
-    ShouldActivateOnlyItemBridgeWithoutTrustedVaultPassphrase) {
+IN_PROC_BROWSER_TEST_P(SingleClientTabContextSyncTest,
+                       ShouldNotCreateContainerWithoutTrustedVaultPassphrase) {
   ASSERT_TRUE(SetupSync());
   ASSERT_NE(GetSyncService(0)->GetUserSettings()->GetPassphraseType(),
             syncer::PassphraseType::kTrustedVaultPassphrase);
 
-  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::ENCRYPTED_TAB_CONTEXT_ITEM));

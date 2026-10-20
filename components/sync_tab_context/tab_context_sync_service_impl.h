@@ -26,12 +26,14 @@ class DataTypeControllerDelegate;
 
 namespace sync_tab_context {
 
+class TabContextSyncClient;
 class TabContextItemSyncBridge;
 class TabContextContainerSyncBridge;
 
 class TabContextSyncServiceImpl : public TabContextSyncService {
  public:
   TabContextSyncServiceImpl(
+      std::unique_ptr<TabContextSyncClient> client,
       syncer::OnceDataTypeStoreFactory store_factory,
       std::unique_ptr<EphemeralKeyFetcher> ephemeral_key_fetcher,
       base::RepeatingClosure dump_stack);
@@ -72,6 +74,7 @@ class TabContextSyncServiceImpl : public TabContextSyncService {
       base::OnceCallback<void(std::optional<std::string>)> cb,
       std::optional<EphemeralKeyFetcher::Result> result);
 
+  const std::unique_ptr<TabContextSyncClient> client_;
   const std::unique_ptr<TabContextContainerSyncBridge> container_bridge_;
   const std::unique_ptr<TabContextItemSyncBridge> item_bridge_;
   const std::unique_ptr<EphemeralKeyFetcher> ephemeral_key_fetcher_;

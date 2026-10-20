@@ -39,6 +39,7 @@
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_worker.h"
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
+#include "components/sync_tab_context/tab_context_sync_client.h"
 #include "components/sync_tab_context/upload_outcome.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -136,14 +137,36 @@ class FakeEphemeralKeyFetcher : public EphemeralKeyFetcher {
   base::flat_map<std::string, sync_pb::AgileSymmetricKeySet> issued_key_sets_;
 };
 
+class FakeTabContextSyncClient : public TabContextSyncClient {
+ public:
+  FakeTabContextSyncClient() = default;
+  ~FakeTabContextSyncClient() override = default;
+
+  std::optional<syncer::PassphraseType> GetPassphraseType() const override {
+    return passphrase_type_;
+  }
+
+  void set_passphrase_type(
+      std::optional<syncer::PassphraseType> passphrase_type) {
+    passphrase_type_ = passphrase_type;
+  }
+
+ private:
+  std::optional<syncer::PassphraseType> passphrase_type_ =
+      syncer::PassphraseType::kTrustedVaultPassphrase;
+};
+
 class TabContextSyncServiceImplTest : public ::testing::Test {
  protected:
   TabContextSyncServiceImplTest() {
+    auto client = std::make_unique<FakeTabContextSyncClient>();
+    fake_client_ = client.get();
     auto fetcher = std::make_unique<FakeEphemeralKeyFetcher>();
     fake_fetcher_ = fetcher.get();
     store_ = syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
     syncer::DataTypeStoreTestUtil::WriteInitialSyncDoneAndWait(*store_);
     service_ = std::make_unique<TabContextSyncServiceImpl>(
+        std::move(client),
         syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(store_.get()),
         std::move(fetcher), base::DoNothing());
 
@@ -159,9 +182,9 @@ class TabContextSyncServiceImplTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    // Null out `fake_fetcher_` before `service_` is destroyed and frees the
-    // `FakeEphemeralKeyFetcher` instance, preventing PartitionAlloc dangling
-    // pointer warnings.
+    // Null out raw pointers before `service_` is destroyed and frees the
+    // owned instances, preventing PartitionAlloc dangling pointer warnings.
+    fake_client_ = nullptr;
     fake_fetcher_ = nullptr;
   }
 
@@ -176,10 +199,24 @@ class TabContextSyncServiceImplTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<syncer::DataTypeStore> store_;
+  raw_ptr<FakeTabContextSyncClient> fake_client_;
   raw_ptr<FakeEphemeralKeyFetcher> fake_fetcher_;
   std::unique_ptr<TabContextSyncServiceImpl> service_;
   std::unique_ptr<syncer::MockDataTypeWorker> item_worker_;
 };
+
+TEST_F(TabContextSyncServiceImplTest,
+       ShouldNotCreateContainerWhenPassphraseIsNotTrustedVault) {
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return service_->IsActiveForTesting(); }));
+
+  fake_client_->set_passphrase_type(
+      syncer::PassphraseType::kKeystorePassphrase);
+  EXPECT_EQ(service_->CreateContainer(), std::nullopt);
+
+  fake_client_->set_passphrase_type(std::nullopt);
+  EXPECT_EQ(service_->CreateContainer(), std::nullopt);
+}
 
 TEST_F(TabContextSyncServiceImplTest,
        ShouldReturnNulloptWhenContainerNotFound) {

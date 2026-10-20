@@ -81,7 +81,6 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/session_data_type_controller.h"
 #include "components/sync_sessions/session_sync_service.h"
-#include "components/sync_tab_context/tab_context_container_data_type_controller.h"
 #include "components/sync_tab_context/tab_context_sync_service.h"
 #include "components/sync_user_events/user_event_data_type_controller.h"
 #include "components/sync_user_events/user_event_service.h"
@@ -516,8 +515,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 
   if (!disabled_types.Has(syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER)) {
-    add_controller(
-        CreateEncryptedTabContextContainerDataTypeController(sync_service));
+    add_controller(CreateEncryptedTabContextContainerDataTypeController());
   }
 
   if (!disabled_types.Has(syncer::ENCRYPTED_TAB_CONTEXT_ITEM)) {
@@ -883,9 +881,8 @@ CommonControllerBuilder::CreateSavedTabGroupDataTypeController() {
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate));
 }
 
-std::unique_ptr<syncer::DataTypeController>
-CommonControllerBuilder::CreateEncryptedTabContextContainerDataTypeController(
-    syncer::SyncService* sync_service) {
+std::unique_ptr<syncer::DataTypeController> CommonControllerBuilder::
+    CreateEncryptedTabContextContainerDataTypeController() {
   if (!base::FeatureList::IsEnabled(
           syncer::kSyncEncryptedTabContextContainer) ||
       !tab_context_sync_service_.value()) {
@@ -895,13 +892,12 @@ CommonControllerBuilder::CreateEncryptedTabContextContainerDataTypeController(
       tab_context_sync_service_.value()
           ->GetSyncControllerDelegateForContainer()
           .get();
-  return std::make_unique<
-      sync_tab_context::TabContextContainerDataTypeController>(
+  return std::make_unique<syncer::DataTypeController>(
+      syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER,
       /*delegate_for_full_sync_mode=*/
       std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
       /*delegate_for_transport_mode=*/
-      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
-      sync_service);
+      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate));
 }
 
 std::unique_ptr<syncer::DataTypeController>

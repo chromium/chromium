@@ -21,6 +21,7 @@
 #include "components/sync_tab_context/ephemeral_key_fetcher.h"
 #include "components/sync_tab_context/tab_context_container_sync_bridge.h"
 #include "components/sync_tab_context/tab_context_item_sync_bridge.h"
+#include "components/sync_tab_context/tab_context_sync_client.h"
 #include "components/sync_tab_context/upload_outcome.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -70,10 +71,12 @@ CompressAndEncryptPageContextOnBackgroundThread(
 }  // namespace
 
 TabContextSyncServiceImpl::TabContextSyncServiceImpl(
+    std::unique_ptr<TabContextSyncClient> client,
     syncer::OnceDataTypeStoreFactory store_factory,
     std::unique_ptr<EphemeralKeyFetcher> ephemeral_key_fetcher,
     base::RepeatingClosure dump_stack)
-    : container_bridge_(std::make_unique<TabContextContainerSyncBridge>(
+    : client_(std::move(client)),
+      container_bridge_(std::make_unique<TabContextContainerSyncBridge>(
           std::move(store_factory),
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::ENCRYPTED_TAB_CONTEXT_CONTAINER,
@@ -86,12 +89,17 @@ TabContextSyncServiceImpl::TabContextSyncServiceImpl(
       backend_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
+  CHECK(client_);
   CHECK(ephemeral_key_fetcher_);
 }
 
 TabContextSyncServiceImpl::~TabContextSyncServiceImpl() = default;
 
 std::optional<ContainerId> TabContextSyncServiceImpl::CreateContainer() {
+  if (client_->GetPassphraseType() !=
+      syncer::PassphraseType::kTrustedVaultPassphrase) {
+    return std::nullopt;
+  }
   return container_bridge_->CreateContainer();
 }
 
