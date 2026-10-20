@@ -546,7 +546,8 @@ infobars::InfoBar* BrowserInfoBarManager::Replace(
   }
 
   content::WebContents* contents =
-      ContentInfoBarManager::WebContentsFromInfoBar(old_infobar);
+      static_cast<RegistryInfoBarDelegate*>(old_infobar->delegate())
+          ->web_contents();
   if (!contents) {
     return nullptr;
   }

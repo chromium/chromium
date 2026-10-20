@@ -90,6 +90,29 @@ source_set("unit_tests") {
     "//url",
   ]
 
+  if (!is_android) {
+    sources += [ "browser_infobar_manager_unittest.cc" ]
+
+    deps += [
+      "//base/test:test_support",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window/test:test_support",
+      "//chrome/browser/ui/tabs:tab_model",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs:test_support",
+      "//chrome/browser/ui/views:layout_provider",
+      "//chrome/test:test_support",
+      "//chrome/test/base:testing_browser_process",
+      "//components/infobars/content",
+      "//components/tabs:public",
+      "//components/tabs:test_support",
+      "//components/vector_icons",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//ui/gfx",
+    ]
+  }
+
   if (toolkit_views) {
     deps += [ "//ui/views" ]
   }
