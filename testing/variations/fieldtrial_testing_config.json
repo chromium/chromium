@@ -18780,6 +18780,27 @@
             ]
         }
     ],
+    "WebGPU": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "//0": "WebGPU kill switch. DO NOT REMOVE without first consulting ",
+                    "//1": "the WebGPU team (webgpu-dev-team@google.com).",
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebGPUService"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebGPUSupportMetrics": [
         {
             "platforms": [
