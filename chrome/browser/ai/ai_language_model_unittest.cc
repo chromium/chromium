@@ -1810,26 +1810,6 @@ TEST_F(AILanguageModelTest,
                   params->default_sampling_params->temperature);
 }
 
-TEST_F(AILanguageModelTest,
-       GetLanguageModelParamsReturnsGreedyWhenSpeculativeDecodingEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      on_device_model::features::kOnDeviceModelSpeculativeDecoding);
-
-  EnsureModelIsReady();
-
-  base::test::TestFuture<blink::mojom::AILanguageModelParamsPtr> future;
-  ai_manager_->GetLanguageModelParams(future.GetCallback());
-
-  EXPECT_TRUE(future.IsReady());
-  const auto& params = future.Get();
-
-  ASSERT_TRUE(!params.is_null());
-  ASSERT_TRUE(!params->default_sampling_params.is_null());
-  EXPECT_EQ(1u, params->default_sampling_params->top_k);
-  EXPECT_FLOAT_EQ(0.0f, params->default_sampling_params->temperature);
-}
-
 // Test class for `Tool Use` functionality.
 class AILanguageModelOpenLoopToolTest : public AILanguageModelTest {
  public:

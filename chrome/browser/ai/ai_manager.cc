@@ -1354,16 +1354,10 @@ blink::mojom::AILanguageModelParamsPtr AIManager::GetLanguageModelParams(
       blink::mojom::AILanguageModelSamplingParams::New(),
       blink::mojom::AILanguageModelSamplingParams::New());
 
-  if (base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelSpeculativeDecoding)) {
-    model_info->default_sampling_params->top_k = 1;
-    model_info->default_sampling_params->temperature = 0.0f;
-  } else {
-    model_info->default_sampling_params->top_k =
-        sampling_params_config->default_top_k;
-    model_info->default_sampling_params->temperature =
-        sampling_params_config->default_temperature;
-  }
+  model_info->default_sampling_params->top_k =
+      sampling_params_config->default_top_k;
+  model_info->default_sampling_params->temperature =
+      sampling_params_config->default_temperature;
 
   model_info->max_sampling_params->top_k =
       optimization_guide::features::GetOnDeviceModelMaxTopK();
