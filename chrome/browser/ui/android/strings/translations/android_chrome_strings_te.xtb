@@ -970,6 +970,7 @@
 <translation id="480990236307250886">హోమ్ పేజీని తెరువు</translation>
 <translation id="4812684235631257312">హోస్ట్</translation>
 <translation id="4816492930507672669">పేజీకి తగినట్లు అమర్చు</translation>
+<translation id="4819558594335204796">హోమ్ పేజీని తెరవండి</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> ట్యాబ్ గ్రూప్ మూసివేయబడింది, సేవ్ అయింది</translation>
 <translation id="4835385943915508971">Chrome రిక్వెస్ట్ చేసిన వనరుకు యాక్సెస్ కలిగి లేదు.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ట్యాబ్‌కు సంబంధించిన ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగును, కొత్త బ్యాక్‌గ్రౌండ్ ట్యాబ్ గ్రూప్‌గా రీస్టోర్ చేయండి.}other{<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లకు సంబంధించిన ట్యాబ్ గ్రూప్‌ను, <ph name="COLOR_NAME" /> రంగును, కొత్త బ్యాక్‌గ్రౌండ్ ట్యాబ్ గ్రూప్‌గా రీస్టోర్ చేయండి.}}</translation>
@@ -1309,6 +1310,7 @@
 <translation id="6246073558347462570">సంబంధిత పాప్‌అప్ విండో</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6248988683584659830">సెర్చ్ సెట్టింగ్‌లు</translation>
+<translation id="6250046936554288508">AI మోడ్ షార్ట్‌కట్</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, మల్టీసెలెక్టెడ్ పిన్ చేసిన అజ్ఞాత ట్యాబ్</translation>
 <translation id="6251449557817521191">మీ Chrome హిస్టరీని ఇక్కడ చూడండి</translation>
 <translation id="6254139308321626268">మీరు PDF ఫైల్‌ని చూస్తున్నారు</translation>

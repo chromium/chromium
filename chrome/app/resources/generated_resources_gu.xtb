@@ -1477,12 +1477,12 @@
 <translation id="2135456203358955318">ડૉક કરેલ મૅગ્નિફાયર</translation>
 <translation id="2135787500304447609">&amp;ફરી શરૂ કરો</translation>
 <translation id="2136476978468204130">તમે દાખલ કરેલો પાસફ્રેઝ ખોટો છે</translation>
-<translation id="2137128126782078222"><ph name="WEBSITE" />માંથી નોટિફિકેશનની મંજૂરી આપશો નહીં</translation>
 <translation id="2137871148058020508">પ્રોડક્ટમાંથી મદદ: PDF અનુવાદો વાંચન મોડની બાજુની પૅનલમાં દેખાય છે</translation>
 <translation id="2139919072249842737">સેટઅપ કરો બટન</translation>
 <translation id="2140788884185208305">બૅટરીની ક્ષમતા</translation>
 <translation id="2142328300403846845">આ રીતે લિંક ખોલો</translation>
 <translation id="2142582065325732898">તાજેતરની Chrome ટૅબ જોવા માટે, <ph name="LINK1_BEGIN" />Chrome સિંક<ph name="LINK1_END" />ની સુવિધા ચાલુ કરો. <ph name="LINK2_BEGIN" />વધુ જાણો<ph name="LINK2_END" /></translation>
+<translation id="2142826581348795579">અનફોકસ કરેલું ટૅબનું ગ્રૂપ</translation>
 <translation id="2143089736086572103">અમુક સંપર્કો જોઈ શકે છે</translation>
 <translation id="2143765403545170146">ટુલબારને હંમેશા સંપૂર્ણ સ્ક્રીનમાં બતાવો</translation>
 <translation id="2143778271340628265">મેન્યુઅલ પ્રૉક્સી ગોઠવણી</translation>
@@ -1594,6 +1594,7 @@
 <translation id="2220572644011485463">PIN અથવા પાસવર્ડ</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">નામ વગરનો મીડિયા સૉર્સ</translation>
+<translation id="2223747115628460234">ખુલ્લા ટૅબ પર પાછા જાઓ</translation>
 <translation id="2224337661447660594">ઇન્ટરનેટ ઍક્સેસ નથી</translation>
 <translation id="2224444042887712269">આ સેટિંગ <ph name="OWNER_EMAIL" /> ની છે.</translation>
 <translation id="2224551243087462610">ફોલ્ડરના નામમાં ફેરફાર કરો</translation>
@@ -1720,6 +1721,7 @@
 <translation id="2318143611928805047">કાગળનું કદ</translation>
 <translation id="2319459402137712349">કીબોર્ડ ખોલવા માટે ટેક્સ્ટ ફીલ્ડ પસંદ કરો. તમે તમારી સ્ક્રીનની સૌથી નીચે કીબોર્ડ આઇકન પણ પસંદ કરી શકો છો.</translation>
 <translation id="2319993584768066746">સાઇન ઇન સ્ક્રીન ફોટા</translation>
+<translation id="2322015964223112232">ખુલ્લા ટૅબ પર પાછા જાઓ</translation>
 <translation id="2322193970951063277">હેડર્સ અને ફૂટર્સ</translation>
 <translation id="2322622365472107569">સમાપ્તિ સમય <ph name="TIME" /></translation>
 <translation id="2323018538045954000">સાચવેલા વાઇ-ફાઇ નેટવર્ક</translation>
@@ -2479,6 +2481,7 @@
 <translation id="2878889940310164513">સેલ્યુલર ઉમેરો…</translation>
 <translation id="288042212351694283">તમારા યુનિવર્સલ 2જા ફેક્ટરના ઉપકરણોની ઍક્સેસ</translation>
 <translation id="2881076733170862447">તમે એક્સ્ટેંશનને ક્લિક કરો ત્યારે</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{અનફોકસ કરેલું ટૅબ}one{અનફોકસ કરેલું ટૅબ}other{અનફોકસ કરેલા ટૅબ}}</translation>
 <translation id="2882301808122022326">Omaha સંબંધિત જવાબ</translation>
 <translation id="2884070497102362193">તમારી બૅટરી, CPU, મેમરી, કનેક્ટિવિટી વગેરેનું પરીક્ષણ કરો</translation>
 <translation id="2885129935310217435">સમાન નામ ધરાવતું એક બટન છે. કૃપા કરીને બીજું કોઈ પસંદ કરો.</translation>
@@ -2567,7 +2570,6 @@
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> પર જાઓ</translation>
 <translation id="29488703364906173">આધુનિક વેબ માટે બનાવવામાં આવેલું, એક ઝડપી, સરળ અને સુરક્ષિત વેબ બ્રાઉઝર.</translation>
 <translation id="2952552057375331929">અલગ વિન્ડોમાં લિંક ખોલો</translation>
-<translation id="2953218713108551165"><ph name="SITE" /> માટે નોટિફિકેશનની મંજૂરી નથી. તમને તમારી આગલી મુલાકાત વખતે ફરી પૂછવામાં આવશે.</translation>
 <translation id="2954777802959138493">અપડેટકર્તાના સ્ટેટસ સંબંધિત ક્વેરી કરવામાં નિષ્ફળ રહ્યાં.</translation>
 <translation id="2955048943983973430">સંબંધિત Googleની સેવાઓ</translation>
 <translation id="2956070239128776395">ગ્રૂપમાં નેસ્ટ કરેલો વિભાગ: <ph name="ERROR_LINE" /></translation>
@@ -3553,7 +3555,6 @@
 <translation id="3686108296937784939">મારી સંસ્થાના શૉર્ટકટ</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{ચેડાં કરાયેલો 1 પાસવર્ડ મળ્યો}one{ચેડાં કરાયેલો {NUM_SITES} પાસવર્ડ મળ્યો}other{ચેડાં કરાયેલા {NUM_SITES} પાસવર્ડ મળ્યા}}</translation>
 <translation id="3687463694814266645">પુનઃ ક્રમાંકિત કરો</translation>
-<translation id="3687598459967813435"><ph name="WEBSITE" />માંથી નોટિફિકેશનને હંમેશાં માટે મંજૂરી આપો</translation>
 <translation id="3688507211863392146">તમે ઍપ્લિકેશનમાં ખોલો છે તે ફાઇલો અને ફોલ્ડરોમાં લખો</translation>
 <translation id="3688526734140524629">ચેનલ બદલો</translation>
 <translation id="3688578402379768763">અપ-ટુ-ડેટ</translation>
@@ -4208,7 +4209,6 @@
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> ની કેટલીક સેટિંગ તમારી સાથે શેર કરવામાં આવી રહી છે. એકથી વધુ સાઇન ઇનનો ઉપયોગ કરવા પર જ આ સેટિંગ તમારા એકાઉન્ટને પ્રભાવિત કરે છે.</translation>
 <translation id="4168651806173792090">અંતમાં <ph name="LAST_FOUR_DIGITS" /> ધરાવતું <ph name="NETWORK_NAME" /></translation>
 <translation id="4169275505426201952">આને રેટિંગ આપો...</translation>
-<translation id="4169535189173047238">મંજૂરી આપશો નહીં</translation>
 <translation id="4170314459383239649">બહાર નીકળવા પર સાફ કરો</translation>
 <translation id="4170685671197375581">શૉર્ટકટ ચાલુ કરો</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Gemini સાથે ટૅબ શેર કરો}one{Gemini સાથે # ટૅબ શેર કરો}other{Gemini સાથે # ટૅબ શેર કરો}}</translation>
@@ -4924,7 +4924,6 @@
 <translation id="4728558894243024398">પ્લેટફોર્મ</translation>
 <translation id="4729379213940929490">તમારા કાર્ય વિશે અપડેટ મેળવો</translation>
 <translation id="4730254775893450875">ચાલુ હોય, ત્યારે ડેટા તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે અને તમારા બધા ડિવાઇસ પર તેનો ઉપયોગ કરી શકાય છે. બંધ હોય, ત્યારે ડેટા ફક્ત આ ડિવાઇસ પર જ સાચવવામાં આવે છે. ChromeOSના સિંક કરવાના વિકલ્પો માટે, <ph name="LINK_BEGIN" />ChromeOS સેટિંગ<ph name="LINK_END" /> પર જાઓ.</translation>
-<translation id="4730888769809690665"><ph name="SITE" /> માટે નોટિફિકેશનની મંજૂરી આપેલી છે</translation>
 <translation id="4732799736617504962">કનેક્ટેડ માઇક માત્ર અવાજ રદ્દીકરણની સુવિધાને સપોર્ટ કરી શકે છે</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (ડાબે)</translation>
 <translation id="4733793249294335256">સ્થાન</translation>
@@ -5510,7 +5509,6 @@
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" />ના USB ડિવાઇસ</translation>
 <translation id="5161442190864186925">મીટિંગમાં જોડાઓ</translation>
 <translation id="5163910114647549394">ટૅબને ટૅબસ્ટ્રિપના અંતમાં ખસેડી</translation>
-<translation id="5164530241085602114"><ph name="SITE" /> માટે નોટિફિકેશનની મંજૂરી નથી</translation>
 <translation id="5166614864040402649">સેટિંગ ખોલીને, પછી વ્યૂ ખોલીને અને બાજુની પૅનલ પસંદ કરીને બાજુ-બાજુના વ્યૂ પર પાછા સ્વિચ કરો.</translation>
 <translation id="516747639689914043">હાઇપરટેક્સ્ટ ટ્રાન્સપોર્ટ પ્રોટોકૉલ (HTTP)</translation>
 <translation id="5170568018924773124">ફોલ્ડરમાં બતાવો</translation>
@@ -5583,6 +5581,7 @@
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' બુકમાર્ક બનાવ્યું.</translation>
 <translation id="5215450412607891876">વધારેલી સુરક્ષા અપડેટ ચાલુ કરો</translation>
 <translation id="5216674789212441076">લાઇવ કૅપ્શનનો ઑટોમૅટિક રીતે અનુવાદ કરો. અનુવાદ માટે કૅપ્શન Googleને મોકલવામાં આવે છે.</translation>
+<translation id="5217925057416367138">હમણાં વાગી રહ્યો છે</translation>
 <translation id="5220011581825921581">search + ઉપરની ઍરો કી</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> કાસ્ટ કરી શકતા નથી</translation>
 <translation id="5222403284441421673">બ્લૉક કરેલા અસુરક્ષિત ડાઉનલોડ</translation>
@@ -5654,7 +5653,6 @@
 <translation id="5276357196618041410">પહેલા લૉગ ઇન કર્યા વિના કન્ફિગ્યુરેશન સાચવી શકતા નથી</translation>
 <translation id="5277127016695466621">બાજુની પૅનલ બતાવો</translation>
 <translation id="5278823018825269962">સ્ટેટસ ID</translation>
-<translation id="5279600392753459966">તમામને અવરોધિત કરો</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> માટેની લૉગ ઇન વિગતો અપડેટ કરો</translation>
 <translation id="5280303168922585051">આ સેટિંગનું સેટઅપ તમારી સંસ્થા દ્વારા કરવામાં આવ્યું હતું. શું તમે ખરેખર આ શોધ એન્જિન ડિલીટ કરવા માગો છો?</translation>
 <translation id="5280426389926346830">શૉર્ટકટ બનાવીએ?</translation>
@@ -5915,7 +5913,6 @@
 <translation id="5487214759202665349">તમારા iPhone પર આ ઍડ્રેસનો ઉપયોગ કરો</translation>
 <translation id="5487460042548760727">પ્રોફાઇલનું નામ બદલીને <ph name="PROFILE_NAME" /> કરો</translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' કૉપિ કરી</translation>
-<translation id="5489077378642700219"><ph name="WEBSITE" />માંથી નોટિફિકેશનને મંજૂરી આપશો નહીં, પરંતુ પછીથી પૂછશો</translation>
 <translation id="5490798133083738649">Linuxને તમારા માઇક્રોફોનનો ઍક્સેસ કરવાની મંજૂરી આપો</translation>
 <translation id="549211519852037402">બેઝ રંગ અને સફેદ</translation>
 <translation id="5492637351392383067">ડિવાઇસ પર એન્ક્રિપ્શન</translation>
@@ -5951,7 +5948,6 @@
 <translation id="5505307013568720083">શાહી ખલાસ થઇ ગઇ છે</translation>
 <translation id="5509693895992845810">આ &amp;રૂપમાં સાચવો...</translation>
 <translation id="5509914365760201064">રજૂકર્તા: <ph name="CERTIFICATE_AUTHORITY" /></translation>
-<translation id="5510283697605334093">{NUM_SITES,plural, =1{1 સાઇટને નોટિફિકેશનની મંજૂરી નથી}one{{NUM_SITES} સાઇટને નોટિફિકેશનની મંજૂરી નથી}other{{NUM_SITES} સાઇટને નોટિફિકેશનની મંજૂરી નથી}}</translation>
 <translation id="5510775624736435856">Google તરફથી છબીના વર્ણન મેળવો</translation>
 <translation id="5511379779384092781">વધુ નાની</translation>
 <translation id="5512739112435045339">તમારા ડિવાઇસ પર સ્પેસ ખાલી કરો. પછી, ફરીથી ડાઉનલોડ કરવાનો પ્રયાસ કરો</translation>
@@ -6352,7 +6348,6 @@
 <translation id="5841338463993781099">એકાઉન્ટમાં સાચવીએ?</translation>
 <translation id="5842497610951477805">બ્લૂટૂથ ચાલુ</translation>
 <translation id="5844284118433003733">તમે સાઇન ઇન હો ત્યારે, સમગ્ર Googleની સેવાઓમાં તમને સંરક્ષિત કરવા માટે આ ડેટા તમારા Google એકાઉન્ટ સાથે લિંક કરવામાં આવે છે, ઉદાહરણ તરીકે કોઈ સુરક્ષા સંબંધી બનાવ બાદ Gmailમાં સુરક્ષા વધારવી.</translation>
-<translation id="5844624110926956645">{NUM_NOTIFICATION,plural, =1{દિવસમાં લગભગ 1 નોટિફિકેશન}one{દિવસમાં લગભગ {NUM_NOTIFICATION} નોટિફિકેશન}other{દિવસમાં લગભગ {NUM_NOTIFICATION} નોટિફિકેશન}}</translation>
 <translation id="5844685625984052392">સંકેત</translation>
 <translation id="5846200638699387931">રિલેશન સિન્ટેક્સ ભૂલ: <ph name="ERROR_LINE" /></translation>
 <translation id="5846504156837627898">સાઇટની પરવાનગીઓ મેનેજ કરો</translation>
@@ -6744,7 +6739,6 @@ USB ડિવાઇસ</translation>
 <translation id="6147253937684562370">પ્રોફાઇલ અનલૉક કરવા માટે, તમારા મુખ્ય એકાઉન્ટ ઇમેઇલ વડે સાઇન ઇન કરો: <ph name="EMAIL" /></translation>
 <translation id="6147279996212084542">સમજાવો</translation>
 <translation id="6148576794665275391">હમણાં ખોલો</translation>
-<translation id="614890671148262506">આ સાઇટ તરફથી આવતા નોટિફિકેશનને હંમેશાં માટે મંજૂરી આપો</translation>
 <translation id="6149015141270619212">ઇન્ટરનેટ સાથે કનેક્ટ કરી શકાતું નથી</translation>
 <translation id="6149061208933997199">પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="6149791593592044995">આધુનિક ટોન માર્ક પ્લેસમેન્ટનો ઉપયોગ કરો</translation>
@@ -6780,7 +6774,6 @@ USB ડિવાઇસ</translation>
 <translation id="6169967265765719844">Steam મારફતે ઇન્સ્ટૉલ કરેલી ગેમ અને ઍપ માટેની પરવાનગીઓને <ph name="LINK_BEGIN" />Steam ઍપ સેટિંગ<ph name="LINK_END" />માં મેનેજ કરી શકાય છે.</translation>
 <translation id="6170313103929479668">વિભાજિત વ્યૂની ગોઠવણ કરો</translation>
 <translation id="6170470584681422115">સેન્ડવિચ</translation>
-<translation id="6170675927290506430">નોટિફિકેશનના સેટિંગમાં જાઓ</translation>
 <translation id="6171779718418683144">દરેક મુલાકાત વખતે પૂછો</translation>
 <translation id="617213288191670920">કોઈ ભાષા ઉમેરી નથી</translation>
 <translation id="6174909075810107548">માઉસનું બટન દબાવવા માટે “5”નો ઉપયોગ કરો</translation>
@@ -7603,7 +7596,6 @@ USB ડિવાઇસ</translation>
 <translation id="6805236548654699520">તમારા સેટિંગને સલામત ડિફૉલ્ટ પર રિસ્ટોર કરીને અનિચ્છિત પૉપ-અપ કાઢી નાખો, નેટવર્ક સંબંધિત સમસ્યાઓ ઠીક કરો અને બીજું ઘણું કરો.</translation>
 <translation id="6805478749741295868">આ એક પ્રાયોગિક AI સુવિધા છે અને તે હંમેશાં સાચી જ હોય, એવું જરૂરી નથી.</translation>
 <translation id="6805817411033102703">શેર કરેલા ટૅબના ગ્રૂપ વિશેનો પ્રતિસાદ</translation>
-<translation id="6806089545527108739">મંજૂરી આપશો નહીં પરંતુ પછીથી પૂછશો</translation>
 <translation id="6806123901116522137">AI ઇનોવેશન પર જાઓ</translation>
 <translation id="6806781719264274042">માત્ર Google એકાઉન્ટમાંના તમારા સંપર્કો. <ph name="LINK_BEGIN" />સંપર્કો જુઓ<ph name="LINK_END" /></translation>
 <translation id="6807225474325352189">મીડિયાના કન્ટ્રોલ પર ક્લિક કરો</translation>
@@ -8061,6 +8053,7 @@ USB ડિવાઇસ</translation>
 <translation id="7148426638542880639">સાઇટ કદાચ તમારી અપેક્ષા મુજબ કામ કરશે નહીં. તમે મુલાકાત લો છો તે સાઇટ વિશેની માહિતી જો તમે તમારા ડિવાઇસ પર સાચવવા માગતા ન હો, તો આ વિકલ્પ પસંદ કરો.</translation>
 <translation id="7149893636342594995">છેલ્લા 24 કલાક</translation>
 <translation id="7152478047064750137">આ એક્સટેન્શનને કોઈ વિશિષ્ટ પરવાનગીઓની જરૂર નથી</translation>
+<translation id="7152923486458597248">ગ્રૂપ પર ફોકસ કરો</translation>
 <translation id="7153101072880472645">ઉચ્ચ કોન્ટ્રાસ્ટ ચાલુ/બંધ છે</translation>
 <translation id="715396040729904728">લૉન્ચર + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="7154130902455071009">તમારા શરૂઆતના પેજને આનાથી બદલો: <ph name="START_PAGE" /></translation>
@@ -8357,7 +8350,6 @@ USB ડિવાઇસ</translation>
 <translation id="73786666777299047">Chrome વેબ દુકાન ખોલો</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. એ જ કાર્યના ગ્રૂપમાં અન્ય કાર્ય: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. એ જ કાર્યના ગ્રૂપમાં અન્ય # કાર્ય: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. એ જ કાર્યના ગ્રૂપમાં અન્ય # કાર્ય: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380162005366861509"><ph name="ORIGIN" /> <ph name="FILENAME" /> જોઈ અને પોતાના માટે તેની કૉપિ બનાવી શકશે</translation>
-<translation id="7380253436337781870">{NUM_SITES,plural, =1{જે 1 સાઇટ દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}one{જે {NUM_SITES} સાઇટ દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેનો રિવ્યૂ કરો}other{જે {NUM_SITES} સાઇટ દ્વારા તાજેતરમાં અનેક નોટિફિકેશન મોકલવામાં આવ્યા હતા, તેમનો રિવ્યૂ કરો}}</translation>
 <translation id="7380272457268061606">સ્થાનિક ડેટા રિકવરી બંધ કરીએ?</translation>
 <translation id="7380459290951585794">ખાતરી કરો કે તમારો ફોન નજીકમાં હોય, અનલૉક કરેલો હોય અને તેમાં બ્લૂટૂથ તેમજ વાઇ-ફાઇની સુવિધા ચાલુ હોય</translation>
 <translation id="7380622428988553498">ડિવાઇસના નામમાં અમાન્ય અક્ષરો છો</translation>
@@ -9311,7 +9303,6 @@ USB ડિવાઇસ</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
 <translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{1 બુકમાર્કને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યું છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો. આ કોઈપણ ડુપ્લિકેટને ક્લિન અપ કરશે.}one{{BOOKMARK_COUNT} બુકમાર્કને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યું છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો. આ કોઈપણ ડુપ્લિકેટને ક્લિન અપ કરશે.}other{{BOOKMARK_COUNT} બુકમાર્કને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યા છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો. આ કોઈપણ ડુપ્લિકેટને ક્લિન અપ કરશે.}}</translation>
 <translation id="8090234456044969073">તમારી મોટાભાગની અવારનાવર મુલાકાત લીધેલ વેબસાઇટ્સની સૂચિ વાંચો</translation>
-<translation id="8090482108674923047">{NUM_SITES,plural, =1{તમે આ સાઇટને ભવિષ્યમાં નોટિફિકેશન મોકલતા રોકી શકો છો.}one{તમે આ સાઇટને ભવિષ્યમાં નોટિફિકેશન મોકલતા રોકી શકો છો.}other{તમે આ સાઇટને ભવિષ્યમાં નોટિફિકેશન મોકલતા રોકી શકો છો.}}</translation>
 <translation id="8090513782447872344">તમે ફરીથી જોવા માટે કોઈપણ સમયે પાછા આવી શકો છો</translation>
 <translation id="8090686009202681725">AI વડે થીમ બનાવો</translation>
 <translation id="8092792048365451089">આ પરિણામ સાથે ઑપરેશન પૂર્ણ થયું: <ph name="OUTCOME" /></translation>

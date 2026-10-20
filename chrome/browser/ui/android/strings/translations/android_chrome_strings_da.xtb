@@ -1178,6 +1178,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5715150588940290235">Vil du slette de gemte sikkerhedskoder?</translation>
 <translation id="572328651809341494">Seneste faner</translation>
 <translation id="5728072125198221967">Tilknyttede Google-tjenester</translation>
+<translation id="5733447028358645932">Hvem har browset</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, fastgjort inkognitofane, der afspiller lyd</translation>
 <translation id="5744751019568455640">Her er de stemmer, som du kan vælge imellem til højtlæsning af dine websider. Hvis du kan lide denne stemme og vil have, at jeg fortsætter med at bruge den, skal du bare trykke på stemmenavnet.</translation>
 <translation id="574845902699630049">Del som <ph name="OWNER_FULL_NAME" /></translation>
@@ -2031,6 +2032,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8863714995118816041">Der er igen givet tilladelser for <ph name="SITE_NAME" /></translation>
 <translation id="8864055848767439877">Deler <ph name="TAB_NAME" /> med <ph name="APP_NAME" /></translation>
 <translation id="8865415417596392024">Chrome-data på din konto</translation>
+<translation id="886968456388055613">Filtrér efter, hvem der har browset</translation>
 <translation id="8872506776304248286">Åbn i app</translation>
 <translation id="8880275451109933094">Tosidet visning</translation>
 <translation id="8890668505403261809">Søg i dine inkognitofaner</translation>

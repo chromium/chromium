@@ -1178,6 +1178,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5715150588940290235">Kas kustutada salvestatud turvakoodid?</translation>
 <translation id="572328651809341494">Hiljutised vahelehed</translation>
 <translation id="5728072125198221967">Lingitud Google’i teenused</translation>
+<translation id="5733447028358645932">Sirvija</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, kinnitatud kuuldav inkognito vaheleht</translation>
 <translation id="5744751019568455640">Siin on hääled, mida saate oma veebilehtede ettelugemiseks valida. Kui teile meeldib see hääl ja soovite, et jätkaksin selle kasutamist, puudutage lihtsalt hääle nime.</translation>
 <translation id="574845902699630049">Jagamine kasutajana <ph name="OWNER_FULL_NAME" /></translation>
@@ -2031,6 +2032,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8863714995118816041">Veebisaidile <ph name="SITE_NAME" /> on uuesti load antud</translation>
 <translation id="8864055848767439877">Vahelehe <ph name="TAB_NAME" /> jagamine rakenduses <ph name="APP_NAME" /></translation>
 <translation id="8865415417596392024">Chrome'i andmed teie kontol</translation>
+<translation id="886968456388055613">Filtreeri sirvija järgi</translation>
 <translation id="8872506776304248286">Ava rakenduses</translation>
 <translation id="8880275451109933094">Kahe lehe vaade</translation>
 <translation id="8890668505403261809">Otsige oma inkognito vahelehtedelt</translation>

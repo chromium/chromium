@@ -2371,7 +2371,7 @@ Chính sách này chỉ là biện pháp tạm thời để kiểm soát tính n
 <translation id="2479760962196319822">Chính sách này kiểm soát việc người dùng <ph name="PRODUCT_OS_NAME" /> có thể lưu trữ dữ liệu trên máy hay không.
       Nếu bạn đặt chính sách này thành False thì hệ thống sẽ chặn quyền truy cập vào bộ nhớ cục bộ trên <ph name="PRODUCT_OS_NAME" />, tức là người dùng không thể lưu trữ dữ liệu trên máy và cũng không thể truy cập vào các thư mục trên máy.
       Nếu bạn đặt chính sách này thành True hoặc không đặt thì hệ thống sẽ cho phép truy cập vào bộ nhớ cục bộ trên <ph name="PRODUCT_OS_NAME" />, tức là người dùng có thể lưu trữ dữ liệu ở bất cứ đâu và truy cập bất cứ thư mục nào.</translation>
-<translation id="2481931731272002134">Cho phép sử dụng các tính năng AI tạo sinh trong Tự động điền và tham gia cải tiến các mô hình AI.</translation>
+<translation id="2481931731272002134">Cho phép sử dụng các tính năng AI tạo sinh cho cơ chế Tự động điền và cải tiến các mô hình AI.</translation>
 <translation id="2482676533225429905">Máy chủ nhắn tin gốc</translation>
 <translation id="2483146640187052324">Dự đoán tác vụ mạng trên kết nối mạng bất kỳ</translation>
 <translation id="2487495476672607707">Tính năng đồng bộ hoá tệp <ph name="PRODUCT_OS_NAME" /> sẽ tự động đặt các tệp <ph name="GOOGLE_DRIVE_NAME" /> trong “Drive của tôi” của người dùng ở chế độ có thể sử dụng khi không có mạng (nếu có đủ dung lượng) trên thiết bị <ph name="CHROMEBOOK_PLUS_NAME" />.
@@ -4846,7 +4846,7 @@ Những điều cần lưu ý:
 <translation id="4027608872760987929">Bật nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="4030152268425532846">Tắt phím tắt bailout tự động đăng nhập</translation>
 <translation id="4032740546145417900">Không cho phép tính năng Nói để nhập.</translation>
-<translation id="4035252407064087455">Cho phép sử dụng các tính năng AI tạo sinh trong Tự động điền nhưng không tham gia cải tiến các mô hình AI.</translation>
+<translation id="4035252407064087455">Cho phép sử dụng các tính năng AI tạo sinh cho cơ chế Tự động điền mà không cải tiến các mô hình AI.</translation>
 <translation id="4043796890723386527">Ngăn người dùng tạo và sử dụng các hồ sơ phụ cũng như dùng chế độ khách trong trình duyệt <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">Khi bạn đặt chính sách này, hệ thống sẽ kiểm soát bộ lọc URL SafeSites. Bộ lọc này dùng API Tìm kiếm an toàn của Google để phân loại xem các URL có chứa nội dung khiêu dâm hay không.
 
@@ -6075,7 +6075,7 @@ Khi bạn đặt chính sách này thành Tắt, người dùng sẽ không th�
       <ph name="PAGE_SIZE_NAME" /> nên chứa một trong các định dạng được liệt kê hoặc giá trị "tùy chỉnh" nếu kích thước giấy bắt buộc không có trong danh sách đó. Nếu cung cấp giá trị "tùy chỉnh", thì bạn nên chỉ định thuộc tính <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Thuộc tính này mô tả chiều dài và chiều rộng mong muốn tính bằng micromet. Nếu không, bạn không nên chỉ định thuộc tính <ph name="PAGE_SIZE_CUSTOM_SIZE" />. Chính sách vi phạm những quy tắc này sẽ bị bỏ qua.
 
       Nếu kích thước trang không có sẵn trên máy in mà người dùng chọn, thì chính sách này sẽ bị bỏ qua.</translation>
-<translation id="4787894429283141328">Không cho phép sử dụng các tính năng AI tạo sinh trong Tự động điền.</translation>
+<translation id="4787894429283141328">Không cho phép sử dụng các tính năng AI tạo sinh cho cơ chế Tự động điền.</translation>
 <translation id="4789450349513792856">Chặn cửa sổ bật lên trên các trang web này</translation>
 <translation id="4790391579868456557">Sử dụng các cookie thiết yếu và không thiết yếu trong công cụ tìm kiếm.</translation>
 <translation id="4790588245699320140">Cho phép Trợ lý Google truy cập vào bối cảnh trên màn hình</translation>
@@ -6670,7 +6670,7 @@ Chính sách này là giải pháp tạm thời để bạn có thời gian di c
       </translation>
 <translation id="5118635822783657217">Không cho phép cập nhật các thành phần không quan trọng</translation>
 <translation id="5120168808610189805">Bật chính sách nhập trang chủ trong lần chạy đầu tiên</translation>
-<translation id="5124321040285474825">Chế độ cài đặt cho các tính năng AI tạo sinh trong Tự động điền</translation>
+<translation id="5124321040285474825">Chế độ cài đặt cho các tính năng AI tạo sinh cho cơ chế Tự động điền</translation>
 <translation id="5124368997194894978">Bật tính năng khởi động trên AC (dòng điện xoay chiều)</translation>
 <translation id="5130213897914754028">Ngăn các trang web sử dụng SharedArrayBuffers</translation>
 <translation id="5130935469849337738">Luôn cung cấp bản dịch</translation>
@@ -9068,17 +9068,17 @@ Trình bảo vệ màn hình của người dùng hiển thị những hình ả
 Bạn có thể điều chỉnh thời gian chờ ở trạng thái rảnh trước khi khởi động trình bảo vệ màn hình và khoảng thời gian hiển thị một hình ảnh lần lượt theo chính sách <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> và <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />. Nếu bạn không đặt chính sách nào đó trong số này, giá trị mặc định của chính sách sẽ được sử dụng.</translation>
 <translation id="651248769129998376">Không tạo hoặc tải yêu cầu cài đặt tiện ích lên Bảng điều khiển dành cho quản trị viên</translation>
 <translation id="6513453889192806240">Độ trễ https</translation>
-<translation id="6514006253468048943">Các tính năng này trong <ph name="PRODUCT_NAME" /> sử dụng mô hình AI tạo sinh để giúp người dùng điền vào các biểu mẫu trên web. Để sử dụng các tính năng này, <ph name="PRODUCT_NAME" /> phải thu thập các dữ liệu như cấu trúc của biểu mẫu mà người dùng tương tác, cũng như các truy vấn dạng văn bản tự do mà người dùng nhập để tìm kiếm trong các ứng dụng Gemini được kết nối (đối với tính năng Tìm và điền bằng Gemini). Dữ liệu này sau đó sẽ được gửi đến một máy chủ do Google sở hữu và chạy mô hình AI tạo sinh.
+<translation id="6514006253468048943">Các tính năng này trong <ph name="PRODUCT_NAME" /> sử dụng mô hình AI tạo sinh để giúp người dùng điền vào các biểu mẫu trên web. Để sử dụng các tính năng này, <ph name="PRODUCT_NAME" /> cần thu thập dữ liệu như cấu trúc của các biểu mẫu mà người dùng tương tác và đối với tính năng Tìm và điền bằng Gemini, cả các truy vấn văn bản tự do mà người dùng nhập để tìm kiếm trong các ứng dụng Gemini đã kết nối; sau đó gửi dữ liệu này đến máy chủ của Google để vận hành mô hình AI tạo sinh.
 
-Nếu bạn đặt chính sách này thành 0 (Cho phép sử dụng các tính năng AI tạo sinh trong Tự động điền và tham gia cải tiến các mô hình AI) thì người dùng có thể sử dụng các tính năng này, đồng thời Google được phép sử dụng dữ liệu liên quan để cải tiến các mô hình AI. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+Việc đặt chính sách này thành 0 (Cho phép sử dụng các tính năng AI tạo sinh cho cơ chế Tự động điền và cải tiến các mô hình AI) sẽ cho phép sử dụng các tính năng này, đồng thời cho phép Google sử dụng dữ liệu liên quan để cải tiến các mô hình AI của mình. Tuỳ thuộc vào tính năng, dữ liệu liên quan có thể bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
 
-Nếu bạn đặt chính sách này thành 1 (Cho phép sử dụng các tính năng AI tạo sinh trong Tự động điền nhưng không tham gia cải tiến các mô hình AI), thì người dùng có thể sử dụng các tính năng này nhưng Google không được phép sử dụng nội dung của người dùng (bao gồm cả câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản) để cải tiến các mô hình. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+Việc đặt chính sách này thành 1 (Cho phép sử dụng các tính năng AI tạo sinh cho cơ chế Tự động điền mà không cải tiến các mô hình AI) sẽ cho phép sử dụng các tính năng này, nhưng không cho phép Google cải tiến các mô hình bằng nội dung của người dùng (bao gồm câu lệnh, thông tin đầu vào, thông tin đầu ra, tài liệu nguồn và phản hồi bằng văn bản). 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
 
-Nếu bạn đặt chính sách này thành 2 (Không cho phép sử dụng các tính năng AI tạo sinh trong Tự động điền) thì người dùng sẽ không thể sử dụng các tính năng này.
+Việc đặt chính sách này thành 2 (Không cho phép sử dụng các tính năng AI tạo sinh cho cơ chế Tự động điền) sẽ không cho phép sử dụng các tính năng này.
 
 Nếu bạn không đặt chính sách này, hành vi của chính sách sẽ do chính sách <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> quyết định.
 
-Các tính năng AI tạo sinh trong Tự động điền bao gồm:
+Các tính năng AI tạo sinh cho cơ chế Tự động điền bao gồm:
 
 – Hiểu biểu mẫu thông minh hơn: sử dụng AI để xác định và phân loại các trường của biểu mẫu, nhờ đó có thể điền nhiều trường hơn.
 

@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">نئے ٹیب گروپ میں کھولیں</translation>
 <translation id="1670861525135254448">گاڑی کی معلومات محفوظ کریں</translation>
 <translation id="1671568970992212376">‏اپنی Google تصاویر میں تصاویر محفوظ کریں اور کسی بھی وقت ان تک رسائی حاصل کریں۔</translation>
+<translation id="1671824312818944549">‏نوٹ: یہ ترتیب iOS 27 یا اس سے نئے ورژن کے ساتھ بہتر کام کرتی ہے۔</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> سے <ph name="TARGET_LANGUAGE" /> میں</translation>
 <translation id="1676102443145105381">تلاش کرنے کے لیے اپنی اسکرین پر کچھ بھی ڈرا، ہائی لائٹ کریں یا تھپتھپائیں</translation>
 <translation id="1678855624321223424">آپ کی تنظیم کی پالیسیوں کی بنیاد پر، اس فائل میں حساس معلومات ہو سکتی ہیں</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">پھر سے خوش آمدید!</translation>
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہیے۔</translation>
 <translation id="201759455285471444">ٹیب گروپ کو پھیلائیں۔</translation>
+<translation id="2022431790688770637">‏‫Gemini کی تجاویز کا نظم کریں</translation>
 <translation id="2031515492007104071">‫Level Up</translation>
 <translation id="2044394949148788042">ٹیب گرڈ کھولیں</translation>
 <translation id="2044681667265133332">اکاؤنٹ <ph name="USER_EMAIL" /> کا نظم <ph name="HOSTED_DOMAIN" /> کے ذریعے کیا جاتا ہے جو کچھ معلومات دیکھنے کے قابل ہو سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
@@ -779,7 +781,6 @@
 <translation id="3441673211568148613">اپنی براؤزنگ کو نجی رکھیں</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> منٹ</translation>
 <translation id="344589138074534176">‏‫Google لینز کے بارے میں مزید جانیں</translation>
-<translation id="3447332786336558089">آپ کے سائن آؤٹ کرنے کے بعد، ٹیبز بند ہو جائیں گے اور غیر محفوظ کردہ اکاؤنٹ ڈیٹا کو اس آلہ سے حذف کر دیا جائے گا۔ اس میں پاس ورڈز، سرگزشت اور بہت کچھ شامل ہو سکتے ہیں۔</translation>
 <translation id="3449029510150690417">اپنے نئے ٹیب گروپ کو نام اور رنگ دے کر تخلیق کریں</translation>
 <translation id="345348365500626747">پتہ مل گیا</translation>
 <translation id="3459644598174926977">‏کسی صفحہ کے بارے میں پوچھنے، پرزور طریقے سے سوچ بچار کرنے اور دو طرفہ گفتگو کرنے کے لیے Gemini کے ساتھ لائیو ہوں۔</translation>
@@ -2180,6 +2181,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7758789811447313947">بیگنی تھیم</translation>
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7765158879357617694">منتقل کریں</translation>
+<translation id="7767651976342854115">ڈیٹا کے استعمال کی ترتیب میں ایک خرابی پیش آ گئی۔</translation>
 <translation id="7768507955883790804">آپ کے سائٹس کو ملاحظہ کرنے پر وہ خود کار طور پر اس ترتیب کی پیروی کرتی ہیں</translation>
 <translation id="7772032839648071052">پاس فریز کی توثیق کریں</translation>
 <translation id="7772948288262733182">پھر سے خوش آمدید</translation>

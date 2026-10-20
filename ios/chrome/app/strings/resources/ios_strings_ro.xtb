@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">Parole și chei de acces salvate</translation>
 <translation id="3143515551205905069">Anulează sincronizarea</translation>
 <translation id="3144126448740580210">TERMINAT</translation>
+<translation id="3147048678293362228">Gestionează informațiile de contact…</translation>
 <translation id="3147521114983561406">Cheile de acces se salvează în managerul de parole. Acestea sunt accesibile în filele incognito și cele normale.</translation>
 <translation id="3148052723910099040">Grila de file obișnuite</translation>
 <translation id="3148237711805373460">Accesează</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">Păstrează-ți navigarea privată</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="344589138074534176">Află mai multe despre Google Lens</translation>
-<translation id="3447332786336558089">După ce te deconectezi, filele se vor închide, iar datele contului nesalvate se vor șterge de pe acest dispozitiv. Aici pot fi incluse parole, istoric și altele.</translation>
 <translation id="3449029510150690417">Creează un grup de file dându-i un nume și o culoare</translation>
 <translation id="345348365500626747">Adresa a fost găsită</translation>
 <translation id="3459644598174926977">Discută Live cu Gemini pentru a întreba despre o pagină, a căuta idei cu voce tare și a purta o conversație.</translation>
@@ -1871,6 +1871,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6770452996697898492">[REZERVAT]</translation>
 <translation id="6775952316617222141">Folosește Live cu Gemini în Chrome</translation>
 <translation id="6779455296366983087">Datele de navigare vor fi șterse</translation>
+<translation id="6782311720357312958">Întreabă Google</translation>
 <translation id="6782531425936234573">Exportă date</translation>
 <translation id="6789665473250283877">Elimină <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Atinge Adaugă fila într-un grup nou</translation>
@@ -2178,6 +2179,7 @@ Poți reporni oricând.</translation>
 <translation id="7758789811447313947">Temă violet</translation>
 <translation id="7759809451544302770">Opțional</translation>
 <translation id="7765158879357617694">Mută</translation>
+<translation id="7767651976342854115">A apărut o eroare la setarea privind folosirea datelor.</translation>
 <translation id="7768507955883790804">Site-urile aplică automat această setare când le accesezi</translation>
 <translation id="7772032839648071052">Confirmă expresia de acces</translation>
 <translation id="7772948288262733182">Bun-venit înapoi!</translation>

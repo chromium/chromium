@@ -778,7 +778,6 @@
 <translation id="3441673211568148613">Zaštitite privatnost pregledavanja</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Saznajte više o Google objektivu</translation>
-<translation id="3447332786336558089">Nakon što se odjavite, kartice će se zatvoriti, a podaci računa koji nisu spremljeni izbrisat će se s ovog uređaja. To može uključivati zaporke, povijest i drugo.</translation>
 <translation id="3449029510150690417">Izradite novu grupu kartica tako da joj dodijelite naziv i boju</translation>
 <translation id="345348365500626747">Pronađena je adresa</translation>
 <translation id="3459644598174926977">Uključite Live s Geminijem da biste postavili pitanja o stranici, naglas razmotrili ideje i razgovarali.</translation>
@@ -2178,6 +2177,7 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="7758789811447313947">Ljubičasta tema</translation>
 <translation id="7759809451544302770">Izborno</translation>
 <translation id="7765158879357617694">Pomakni</translation>
+<translation id="7767651976342854115">Došlo je do pogreške u postavci upotrebe podataka.</translation>
 <translation id="7768507955883790804">Web-lokacije automatski primjenjuju ovu postavku kad ih posjetite</translation>
 <translation id="7772032839648071052">Potvrdi zaporku</translation>
 <translation id="7772948288262733182">Dobro došli natrag</translation>

@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">保存済みのパスワードとパスキー</translation>
 <translation id="3143515551205905069">同期をキャンセル</translation>
 <translation id="3144126448740580210">完了</translation>
+<translation id="3147048678293362228">連絡先情報を管理…</translation>
 <translation id="3147521114983561406">パスキーはパスワード マネージャーに保存されます。パスキーにはシークレット タブと通常のタブからアクセスできます。</translation>
 <translation id="3148052723910099040">通常のタブのグリッド</translation>
 <translation id="3148237711805373460">移動する</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">ブラウジングのプライバシーを保護</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="344589138074534176">Google レンズの詳細</translation>
-<translation id="3447332786336558089">ログアウトすると、タブが閉じられ、保存されていないアカウント データはこのデバイスから削除されます。これにはパスワード、履歴などが含まれます。</translation>
 <translation id="3449029510150690417">名前と色を指定して新しいタブグループを作成します</translation>
 <translation id="345348365500626747">住所が見つかりました</translation>
 <translation id="3459644598174926977">Gemini と Live で会話して、ページについての質問やブレインストーミングを声でやり取りできます。</translation>
@@ -1871,6 +1871,7 @@
 <translation id="6770452996697898492">[予約済み]</translation>
 <translation id="6775952316617222141">Chrome で Gemini と Live で会話する</translation>
 <translation id="6779455296366983087">閲覧データを削除します</translation>
+<translation id="6782311720357312958">Google で調べる</translation>
 <translation id="6782531425936234573">データをエクスポート</translation>
 <translation id="6789665473250283877"><ph name="TOOL_NAME" /> を削除</translation>
 <translation id="6791425686608802741">[新しいグループに追加] をタップします</translation>
@@ -2178,6 +2179,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7758789811447313947">バイオレットのテーマ</translation>
 <translation id="7759809451544302770">省略可</translation>
 <translation id="7765158879357617694">移動</translation>
+<translation id="7767651976342854115">データ使用の設定でエラーが発生しました。</translation>
 <translation id="7768507955883790804">サイトにアクセスしたときにこの設定の動作を自動的に行います</translation>
 <translation id="7772032839648071052">パスフレーズの確認</translation>
 <translation id="7772948288262733182">おかえりなさい</translation>

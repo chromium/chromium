@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">รหัสผ่านและพาสคีย์ที่บันทึกไว้</translation>
 <translation id="3143515551205905069">ยกเลิกการซิงค์</translation>
 <translation id="3144126448740580210">เสร็จสิ้น</translation>
+<translation id="3147048678293362228">จัดการข้อมูลติดต่อ…</translation>
 <translation id="3147521114983561406">ระบบจะบันทึกพาสคีย์ไว้ในเครื่องมือจัดการรหัสผ่าน โดยจะเข้าถึงได้ในแท็บที่ไม่ระบุตัวตนและแท็บปกติ</translation>
 <translation id="3148052723910099040">ตารางกริดของแท็บปกติ</translation>
 <translation id="3148237711805373460">นำฉันไป</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">รักษาความเป็นส่วนตัวในการท่องเว็บ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> นาที</translation>
 <translation id="344589138074534176">ดูข้อมูลเพิ่มเติมเกี่ยวกับ Google Lens</translation>
-<translation id="3447332786336558089">เมื่อออกจากระบบแล้ว ระบบจะปิดแท็บและลบข้อมูลบัญชีที่ไม่ได้บันทึกออกจากอุปกรณ์เครื่องนี้ ซึ่งอาจรวมถึงรหัสผ่าน ประวัติการเข้าชม และอื่นๆ</translation>
 <translation id="3449029510150690417">สร้างกลุ่มแท็บใหม่โดยตั้งชื่อและสีให้กลุ่มแท็บ</translation>
 <translation id="345348365500626747">พบที่อยู่</translation>
 <translation id="3459644598174926977">ใช้ฟีเจอร์ Live กับ Gemini เพื่อถามเกี่ยวกับหน้าเว็บ ระดมความคิดออกมา และพูดคุยโต้ตอบ</translation>
@@ -1871,6 +1871,7 @@
 <translation id="6770452996697898492">[จองแล้ว]</translation>
 <translation id="6775952316617222141">ใช้ฟีเจอร์ Live กับ Gemini ใน Chrome</translation>
 <translation id="6779455296366983087">ข้อมูลการท่องเว็บจะถูกลบ</translation>
+<translation id="6782311720357312958">ถาม Google</translation>
 <translation id="6782531425936234573">ส่งออกข้อมูล</translation>
 <translation id="6789665473250283877">นำ <ph name="TOOL_NAME" /> ออก</translation>
 <translation id="6791425686608802741">แตะ "เพิ่มแท็บไปยังกลุ่มใหม่"</translation>
@@ -2178,6 +2179,7 @@
 <translation id="7758789811447313947">ธีมสีม่วง</translation>
 <translation id="7759809451544302770">ไม่บังคับ</translation>
 <translation id="7765158879357617694">ย้าย</translation>
+<translation id="7767651976342854115">การตั้งค่าการใช้ข้อมูลพบข้อผิดพลาด</translation>
 <translation id="7768507955883790804">เว็บไซต์จะดำเนินการตามการตั้งค่านี้โดยอัตโนมัติเมื่อคุณเข้าชม</translation>
 <translation id="7772032839648071052">ยืนยันพาสเฟรส</translation>
 <translation id="7772948288262733182">ยินดีต้อนรับกลับมาอีกครั้ง</translation>

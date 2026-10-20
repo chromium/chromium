@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب کو سکیڑیں۔}other{ٹیب گروپ کو <ph name="TABS_COUNT_MANY" /> ٹیبز کے ساتھ سکیڑیں۔}}</translation>
 <translation id="2569352796411618312">تجویز: آپ کے ٹیبز میں سے <ph name="NUMBER_OF_TABS" /> کا استعمال حال میں نہیں ہوا ہے۔ انہیں بند کریں؟</translation>
 <translation id="257674075312929031">گروپ</translation>
+<translation id="2628148780487543078">پن کردہ ٹیبز کو بھی بند کریں</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{‫<ph name="TABS_COUNT_ONE" /> ٹیب، رنگ <ph name="COLOR_NAME" /> کے ساتھ ٹیب گروپ کو بحال اور کھولیں۔}other{‫<ph name="TABS_COUNT_MANY" /> ٹیبز، رنگ <ph name="COLOR_NAME" /> کے ساتھ ٹیب گروپ کو بحال اور کھولیں۔}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی</translation>
 <translation id="266935134738038806">سائٹ ملاحظہ کریں</translation>

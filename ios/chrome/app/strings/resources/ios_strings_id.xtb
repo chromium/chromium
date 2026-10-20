@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">Sandi &amp; kunci sandi tersimpan</translation>
 <translation id="3143515551205905069">Batalkan sinkronisasi</translation>
 <translation id="3144126448740580210">SELESAI</translation>
+<translation id="3147048678293362228">Kelola info kontak…</translation>
 <translation id="3147521114983561406">Kunci sandi disimpan ke pengelola sandi Anda. Kunci sandi dapat diakses di tab Samaran dan tab biasa.</translation>
 <translation id="3148052723910099040">Petak Tab Biasa</translation>
 <translation id="3148237711805373460">Arahkan ke sana</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">Jaga privasi penjelajahan Anda</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> menit</translation>
 <translation id="344589138074534176">Pelajari lebih lanjut Google Lens</translation>
-<translation id="3447332786336558089">Setelah Anda logout, tab akan ditutup dan data akun yang belum disimpan akan dihapus dari perangkat ini. Data ini dapat mencakup sandi, histori, dan lainnya.</translation>
 <translation id="3449029510150690417">Buat grup tab baru dengan memberinya nama dan warna</translation>
 <translation id="345348365500626747">Alamat ditemukan</translation>
 <translation id="3459644598174926977">Gunakan fitur Live dengan Gemini untuk bertanya tentang halaman, bertukar pikiran secara lisan, dan melakukan percakapan dua arah.</translation>
@@ -1871,6 +1871,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6770452996697898492">[DIPESAN]</translation>
 <translation id="6775952316617222141">Mulai percakapan Live dengan Gemini di Chrome</translation>
 <translation id="6779455296366983087">Data penjelajahan Anda akan dihapus</translation>
+<translation id="6782311720357312958">Tanya Google</translation>
 <translation id="6782531425936234573">Ekspor data</translation>
 <translation id="6789665473250283877">Hapus <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Ketuk "Tambahkan Tab ke Grup Baru"</translation>
@@ -2178,6 +2179,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7758789811447313947">Tema violet</translation>
 <translation id="7759809451544302770">Opsional</translation>
 <translation id="7765158879357617694">Pindahkan</translation>
+<translation id="7767651976342854115">Setelan penggunaan data mengalami error.</translation>
 <translation id="7768507955883790804">Situs akan otomatis mengikuti setelan ini saat Anda mengunjunginya</translation>
 <translation id="7772032839648071052">Konfirmasi frasa sandi</translation>
 <translation id="7772948288262733182">Selamat datang kembali</translation>

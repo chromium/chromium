@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">已儲存的密碼和密鑰</translation>
 <translation id="3143515551205905069">取消同步處理</translation>
 <translation id="3144126448740580210">完成</translation>
+<translation id="3147048678293362228">管理聯絡資訊…</translation>
 <translation id="3147521114983561406">密鑰會儲存至密碼管理工具，可以在無痕模式和一般分頁中取用。</translation>
 <translation id="3148052723910099040">一般分頁網格</translation>
 <translation id="3148237711805373460">立即前往</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">確保瀏覽資料保密</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="344589138074534176">進一步瞭解「Google 智能鏡頭」</translation>
-<translation id="3447332786336558089">當你登出後，系統會關閉此裝置上的分頁並刪除未儲存的帳戶資料，包括密碼、記錄等項目。</translation>
 <translation id="3449029510150690417">為新分頁群組命名並選擇顏色，即可建立群組</translation>
 <translation id="345348365500626747">找到地址</translation>
 <translation id="3459644598174926977">「使用 Gemini Live」功能可讓你就網頁內容提問、盡情集思廣益，甚至與 Gemini 來回對話。</translation>
@@ -1871,6 +1871,7 @@
 <translation id="6770452996697898492">[已預約]</translation>
 <translation id="6775952316617222141">使用 Chrome 版 Gemini Live</translation>
 <translation id="6779455296366983087">系統將刪除瀏覽資料</translation>
+<translation id="6782311720357312958">問問 Google</translation>
 <translation id="6782531425936234573">匯出資料</translation>
 <translation id="6789665473250283877">移除<ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">輕按 [將分頁加入新群組]</translation>
@@ -2176,6 +2177,7 @@
 <translation id="7758789811447313947">紫色主題</translation>
 <translation id="7759809451544302770">選用</translation>
 <translation id="7765158879357617694">移動</translation>
+<translation id="7767651976342854115">資料使用設定發生錯誤。</translation>
 <translation id="7768507955883790804">網頁會在您瀏覽時自動採用此設定</translation>
 <translation id="7772032839648071052">確認複雜密碼</translation>
 <translation id="7772948288262733182">歡迎回來</translation>

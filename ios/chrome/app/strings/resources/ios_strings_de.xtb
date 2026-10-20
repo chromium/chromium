@@ -697,6 +697,7 @@
 <translation id="3140825265190223781">Gespeicherte Passwörter und Passkeys</translation>
 <translation id="3143515551205905069">Synchronisierung abbrechen</translation>
 <translation id="3144126448740580210">Fertig</translation>
+<translation id="3147048678293362228">Kontaktdaten verwalten…</translation>
 <translation id="3147521114983561406">Passkeys werden in deinem Passwortmanager gespeichert. Sie sind in Inkognito- und normalen Tabs zugänglich.</translation>
 <translation id="3148052723910099040">Normales Tabraster</translation>
 <translation id="3148237711805373460">Weiter</translation>
@@ -777,7 +778,6 @@
 <translation id="3441673211568148613">Private Browsing-Aktivitäten schützen</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Weitere Informationen zu Google Lens</translation>
-<translation id="3447332786336558089">Nachdem du dich abmeldest, werden Tabs geschlossen und nicht gespeicherte Kontodaten von diesem Gerät gelöscht. Dazu gehören beispielsweise Passwörter und der Verlauf.</translation>
 <translation id="3449029510150690417">Erstelle eine neue Tabgruppe, indem du ihr einen Namen und eine Farbe gibst</translation>
 <translation id="345348365500626747">Adresse gefunden</translation>
 <translation id="3459644598174926977">Du kannst ganz natürliche Unterhaltungen mit Gemini Live führen, um Fragen zu einer Seite zu stellen oder Ideen zu sammeln.</translation>
@@ -1868,6 +1868,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6770452996697898492">[GEBUCHT]</translation>
 <translation id="6775952316617222141">Live-Funktion in Chrome verwenden</translation>
 <translation id="6779455296366983087">Deine Browserdaten werden gelöscht</translation>
+<translation id="6782311720357312958">Frag Google</translation>
 <translation id="6782531425936234573">Daten exportieren</translation>
 <translation id="6789665473250283877"><ph name="TOOL_NAME" /> entfernen</translation>
 <translation id="6791425686608802741">Tippe auf „Tab neuer Gruppe hinzufügen“</translation>
@@ -2174,6 +2175,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="7758789811447313947">Violettes Design</translation>
 <translation id="7759809451544302770">Optional</translation>
 <translation id="7765158879357617694">Verschieben</translation>
+<translation id="7767651976342854115">Bei der Einstellung für die Datennutzung ist ein Fehler aufgetreten.</translation>
 <translation id="7768507955883790804">Wenn du Websites aufrufst, wird diese Einstellung automatisch angewandt</translation>
 <translation id="7772032839648071052">Passphrase bestätigen</translation>
 <translation id="7772948288262733182">Willkommen zurück</translation>

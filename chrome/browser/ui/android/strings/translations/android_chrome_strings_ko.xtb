@@ -1178,6 +1178,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5715150588940290235">저장된 보안 코드를 삭제하시겠습니까?</translation>
 <translation id="572328651809341494">최근 탭</translation>
 <translation id="5728072125198221967">연결된 Google 서비스</translation>
+<translation id="5733447028358645932">탐색한 사용자</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, 고정되고 청취 가능한 시크릿 탭</translation>
 <translation id="5744751019568455640">다음은 웹페이지를 소리 내어 읽을 때 사용하실 수 있는 음성입니다. 이 음성이 마음에 들어 계속 사용하고 싶다면 음성 이름을 탭하세요.</translation>
 <translation id="574845902699630049"><ph name="OWNER_FULL_NAME" /> 이름으로 공유</translation>
@@ -2031,6 +2032,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8863714995118816041"><ph name="SITE_NAME" />에 대한 권한이 다시 허용됨</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> 탭을 <ph name="APP_NAME" /> 앱과 공유하는 중</translation>
 <translation id="8865415417596392024">계정의 Chrome 데이터</translation>
+<translation id="886968456388055613">탐색한 사용자별 필터링</translation>
 <translation id="8872506776304248286">앱에서 열기</translation>
 <translation id="8880275451109933094">두 페이지씩 보기</translation>
 <translation id="8890668505403261809">시크릿 탭 검색</translation>

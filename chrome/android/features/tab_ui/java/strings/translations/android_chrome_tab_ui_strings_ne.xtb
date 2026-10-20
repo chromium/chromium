@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब संक्षिप्त गर्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब भएको ट्याब समूह संक्षिप्त गर्नुहोस्।}}</translation>
 <translation id="2569352796411618312">सुझाव: तपाईंले केही समय यता आफ्ना <ph name="NUMBER_OF_TABS" /> वटा ट्याबहरू प्रयोग गर्नुभएको छैन। तिनलाई बन्द गर्ने हो?</translation>
 <translation id="257674075312929031">समूह</translation>
+<translation id="2628148780487543078">पिन गरिएका ट्याबहरू पनि बन्द गर्नुहोस्</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ट्याब र <ph name="COLOR_NAME" /> रङ भएको ट्याब समूह रिस्टोर गर्नुहोस् र खोल्नुहोस्।}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब र <ph name="COLOR_NAME" /> रङ भएको ट्याब समूह रिस्टोर गर्नुहोस् र खोल्नुहोस्।}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन</translation>
 <translation id="266935134738038806">साइटमा जानुहोस्</translation>

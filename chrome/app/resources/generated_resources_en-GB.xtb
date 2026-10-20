@@ -1487,7 +1487,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2135456203358955318">Docked magnifier</translation>
 <translation id="2135787500304447609">&amp;Resume</translation>
 <translation id="2136476978468204130">The passphrase you entered is incorrect</translation>
-<translation id="2137128126782078222">Don't allow notifications from <ph name="WEBSITE" /></translation>
 <translation id="2137871148058020508">In-product help: PDF translations appear in the reading mode side panel</translation>
 <translation id="2139919072249842737">Set up button</translation>
 <translation id="2140788884185208305">Battery health</translation>
@@ -2583,7 +2582,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2948300991547862301">Go to <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">A fast, simple and secure web browser, built for the modern web.</translation>
 <translation id="2952552057375331929">Open link in I&amp;solated Window</translation>
-<translation id="2953218713108551165">Notifications not allowed for <ph name="SITE" />. You’ll be asked again on your next visit.</translation>
 <translation id="2954777802959138493">Failed to query the updater state.</translation>
 <translation id="2955048943983973430">Related Google services</translation>
 <translation id="2956070239128776395">Section nested in group: <ph name="ERROR_LINE" /></translation>
@@ -3569,7 +3567,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3686108296937784939">My organisation's shortcuts</translation>
 <translation id="3687359570564207338">{NUM_SITES,plural, =1{Found 1 compromised password}other{Found {NUM_SITES} compromised passwords}}</translation>
 <translation id="3687463694814266645">Reorder</translation>
-<translation id="3687598459967813435">Always allow notifications from <ph name="WEBSITE" /></translation>
 <translation id="3688507211863392146">Write to files and folders that you open in the application</translation>
 <translation id="3688526734140524629">Change channel</translation>
 <translation id="3688578402379768763">Up-to-date</translation>
@@ -4224,7 +4221,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4168015872538332605">Some settings belonging to <ph name="PRIMARY_EMAIL" /> are being shared with you. These settings only affect your account when using multiple sign-in.</translation>
 <translation id="4168651806173792090"><ph name="NETWORK_NAME" /> ending in <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169275505426201952">Rate it…</translation>
-<translation id="4169535189173047238">Don't allow</translation>
 <translation id="4170314459383239649">Clear On Exit</translation>
 <translation id="4170685671197375581">Turn on shortcut</translation>
 <translation id="417112242673828206">{NUM_TABS,plural, =1{Share tab with Gemini}other{Share # tabs with Gemini}}</translation>
@@ -4940,7 +4936,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4728558894243024398">Platform</translation>
 <translation id="4729379213940929490">Get updates on your task</translation>
 <translation id="4730254775893450875">When on, data is saved in your Google Account and can be used on all your devices. When off, data is saved only to this device. For Chrome OS sync options, go to <ph name="LINK_BEGIN" />Chrome OS settings<ph name="LINK_END" />.</translation>
-<translation id="4730888769809690665">Notifications allowed for <ph name="SITE" /></translation>
 <translation id="4732799736617504962">The connected mic can only support noise cancellation</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (left)</translation>
 <translation id="4733793249294335256">Location</translation>
@@ -5526,7 +5521,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5161251470972801814">USB devices from <ph name="VENDOR_NAME" /></translation>
 <translation id="5161442190864186925">Join meeting</translation>
 <translation id="5163910114647549394">Tab moved to end of tabstrip</translation>
-<translation id="5164530241085602114">Notifications not allowed for <ph name="SITE" /></translation>
 <translation id="5166614864040402649">Switch back to the side-by-side view by opening Settings, then View and select Side panel.</translation>
 <translation id="516747639689914043">Hypertext Transport Protocol (HTTP)</translation>
 <translation id="5170568018924773124">Show in folder</translation>
@@ -5671,7 +5665,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5276357196618041410">Cannot save configuration without login first</translation>
 <translation id="5277127016695466621">Show side panel</translation>
 <translation id="5278823018825269962">Status ID</translation>
-<translation id="5279600392753459966">Block all</translation>
 <translation id="5280064835262749532">Update credentials for <ph name="SHARE_PATH" /></translation>
 <translation id="5280303168922585051">This setting was set up by your organisation. Are you sure that you want to delete this search engine?</translation>
 <translation id="5280426389926346830">Create Shortcut?</translation>
@@ -5932,7 +5925,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5487214759202665349">Use this address on your iPhone</translation>
 <translation id="5487460042548760727">Rename profile to <ph name="PROFILE_NAME" /></translation>
 <translation id="5488093641312826914">'<ph name="COPIED_ITEM_NAME" />' copied</translation>
-<translation id="5489077378642700219">Don’t allow notifications from <ph name="WEBSITE" /> but ask later</translation>
 <translation id="5490798133083738649">Allow Linux to access your microphone</translation>
 <translation id="549211519852037402">Beige and white</translation>
 <translation id="5492637351392383067">On-device encryption</translation>
@@ -5968,7 +5960,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5505307013568720083">Out of ink</translation>
 <translation id="5509693895992845810">Save &amp;As...</translation>
 <translation id="5509914365760201064">Issuer: <ph name="CERTIFICATE_AUTHORITY" /></translation>
-<translation id="5510283697605334093">{NUM_SITES,plural, =1{Notifications not allowed for 1 site}other{Notifications not allowed for {NUM_SITES} sites}}</translation>
 <translation id="5510775624736435856">Get Image Descriptions from Google</translation>
 <translation id="5511379779384092781">Extra small</translation>
 <translation id="5512739112435045339">Free up space on your device. Then, try to download again</translation>
@@ -6368,7 +6359,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5841338463993781099">Save in account?</translation>
 <translation id="5842497610951477805">Bluetooth enable</translation>
 <translation id="5844284118433003733">When you're signed in, this data is linked to your Google Account to protect you across Google services, for example increased protection in Gmail after a security incident.</translation>
-<translation id="5844624110926956645">{NUM_NOTIFICATION,plural, =1{About 1 notification a day}other{About {NUM_NOTIFICATION} notifications a day}}</translation>
 <translation id="5844685625984052392">Hint</translation>
 <translation id="5846200638699387931">Relation syntax error: <ph name="ERROR_LINE" /></translation>
 <translation id="5846504156837627898">Manage site permissions</translation>
@@ -6759,7 +6749,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6147253937684562370">To unlock the profile sign in with your main account email: <ph name="EMAIL" /></translation>
 <translation id="6147279996212084542">Explain</translation>
 <translation id="6148576794665275391">Open now</translation>
-<translation id="614890671148262506">Always allow notifications from this site</translation>
 <translation id="6149015141270619212">Can't connect to the Internet</translation>
 <translation id="6149061208933997199">Use password</translation>
 <translation id="6149791593592044995">Use modern tone mark placement</translation>
@@ -6795,7 +6784,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6169967265765719844">Permissions for games and apps installed via Steam can be managed in the <ph name="LINK_BEGIN" />Steam app settings<ph name="LINK_END" />.</translation>
 <translation id="6170313103929479668">Arrange split view</translation>
 <translation id="6170470584681422115">Sandwich</translation>
-<translation id="6170675927290506430">Go to notification settings</translation>
 <translation id="6171779718418683144">Ask on every visit</translation>
 <translation id="617213288191670920">No languages added</translation>
 <translation id="6174909075810107548">Use '5' to press a mouse button</translation>
@@ -7616,7 +7604,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6805236548654699520">Remove unwanted pop-ups, fix network issues and more by restoring your settings to safe defaults.</translation>
 <translation id="6805478749741295868">This is an experimental AI feature and won't always get it right.</translation>
 <translation id="6805817411033102703">Shared tab groups feedback</translation>
-<translation id="6806089545527108739">Don’t allow but ask later</translation>
 <translation id="6806123901116522137">Go to AI innovations</translation>
 <translation id="6806781719264274042">Only your contacts with a Google Account. <ph name="LINK_BEGIN" />View contacts<ph name="LINK_END" /></translation>
 <translation id="6807225474325352189">Click on Media controls</translation>
@@ -8371,7 +8358,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="73786666777299047">Open Chrome Web Store</translation>
 <translation id="7379178796923433598">{NUM_TASKS,plural, =0{<ph name="TASK_ROW" />}=1{<ph name="TASK_ROW" />. Another task in the same task group: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Other # tasks in the same task group: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="7380162005366861509"><ph name="ORIGIN" /> will be able to view and make its own copies of <ph name="FILENAME" /></translation>
-<translation id="7380253436337781870">{NUM_SITES,plural, =1{Review 1 site that recently sent a lot of notifications}other{Review {NUM_SITES} sites that recently sent a lot of notifications}}</translation>
 <translation id="7380272457268061606">Disable local data recovery?</translation>
 <translation id="7380459290951585794">Make sure that your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on</translation>
 <translation id="7380622428988553498">Device name contains invalid characters</translation>
@@ -9330,7 +9316,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="808894953321890993">Change password</translation>
 <translation id="8089782219932231262">{BOOKMARK_COUNT,plural, =1{1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account. This will also clean up any duplicates.}other{{BOOKMARK_COUNT} bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account. This will also clean up any duplicates.}}</translation>
 <translation id="8090234456044969073">Read a list of your most frequently visited websites</translation>
-<translation id="8090482108674923047">{NUM_SITES,plural, =1{You can stop this site from sending future notifications.}other{You can stop these sites from sending future notifications.}}</translation>
 <translation id="8090513782447872344">You can come back anytime to take another look</translation>
 <translation id="8090686009202681725">Create theme with AI</translation>
 <translation id="8092792048365451089">Operation completed with outcome: <ph name="OUTCOME" /></translation>

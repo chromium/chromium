@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">Gemte adgangskoder og adgangsnøgler</translation>
 <translation id="3143515551205905069">Annuller synkronisering</translation>
 <translation id="3144126448740580210">UDFØR</translation>
+<translation id="3147048678293362228">Administrer kontaktoplysninger…</translation>
 <translation id="3147521114983561406">Adgangsnøgler gemmes i din adgangskodeadministrator. Du kan tilgå dem via inkognitofaner og almindelige faner.</translation>
 <translation id="3148052723910099040">Gitter med almindelige faner</translation>
 <translation id="3148237711805373460">Gå derhen</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">Hold din browsing privat</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="344589138074534176">Få flere oplysninger om Google Lens</translation>
-<translation id="3447332786336558089">Når du logger ud, lukkes fanerne, og data, der ikke er gemt, slettes fra denne enhed. Disse data kan omfatte adgangskoder, historik m.m.</translation>
 <translation id="3449029510150690417">Opret din nye fanegruppe ved at give den et navn og en farve</translation>
 <translation id="345348365500626747">Adressen blev fundet</translation>
 <translation id="3459644598174926977">Brug Live med Gemini til at spørge om en side, brainstorme højt og føre samtaler.</translation>
@@ -1871,6 +1871,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6770452996697898492">[BOOKET]</translation>
 <translation id="6775952316617222141">Gå live med Gemini i Chrome</translation>
 <translation id="6779455296366983087">Dine browserdata slettes</translation>
+<translation id="6782311720357312958">Spørg Google</translation>
 <translation id="6782531425936234573">Eksportér data</translation>
 <translation id="6789665473250283877">Fjern <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Tryk på "Føj fane til ny gruppe"</translation>

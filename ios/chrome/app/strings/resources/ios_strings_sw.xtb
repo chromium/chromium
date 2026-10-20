@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">Manenosiri na funguo za siri zilizohifadhiwa</translation>
 <translation id="3143515551205905069">Ghairi usawazishaji</translation>
 <translation id="3144126448740580210">IMEKAMILIKA</translation>
+<translation id="3147048678293362228">Dhibiti maelezo ya mawasiliano…</translation>
 <translation id="3147521114983561406">Funguo za siri huhifadhiwa kwenye kidhibiti chako cha manenosiri. Unaweza kuzifikia katika vichupo vya kawaida na vya Faragha.</translation>
 <translation id="3148052723910099040">Gridi ya Kichupo cha Kawaida</translation>
 <translation id="3148237711805373460">Nipeleke hapo</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">Weka hali yako ya kuvinjari iwe ya faragha</translation>
 <translation id="3445288400492335833">Dakika <ph name="MINUTES" /></translation>
 <translation id="344589138074534176">Pata maelezo zaidi kuhusu Lenzi ya Google</translation>
-<translation id="3447332786336558089">Baada ya kuondoka kwenye akaunti, vichupo vitafungwa na data ambayo haijahifadhiwa itafutwa kwenye kifaa hiki. Hii inaweza kujumuisha manenosiri, historia na zaidi.</translation>
 <translation id="3449029510150690417">Tayarisha kikundi chako kipya cha vichupo kwa kukipatia jina pamoja na rangi</translation>
 <translation id="345348365500626747">Anwani imepatikana</translation>
 <translation id="3459644598174926977">Anzisha tukio Mubashara na Gemini ili uulize kuhusu ukurasa, ujadili ili kuchangia mawazo na uendeleze mazungumzo.</translation>
@@ -1871,6 +1871,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6770452996697898492">[UMEWEKA NAFASI]</translation>
 <translation id="6775952316617222141">Tiririsha Mubashara na Gemini kwenye Chrome</translation>
 <translation id="6779455296366983087">Data yako ya kuvinjari itafutwa</translation>
+<translation id="6782311720357312958">Uliza Google</translation>
 <translation id="6782531425936234573">Hamisha data</translation>
 <translation id="6789665473250283877">Ondoa <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Gusa "Weka Kichupo kwenye Kikundi Kipya"</translation>
@@ -2178,6 +2179,7 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="7758789811447313947">Mandhari ya urujuani</translation>
 <translation id="7759809451544302770">Ya hiari</translation>
 <translation id="7765158879357617694">Sogeza</translation>
+<translation id="7767651976342854115">Hitilafu imetokea kwenye mipangilio ya matumizi ya data.</translation>
 <translation id="7768507955883790804">Tovuti hufuata mipangilio hii kiotomatiki unapozitembelea</translation>
 <translation id="7772032839648071052">Thibitisha kaulisiri</translation>
 <translation id="7772948288262733182">Karibu tena</translation>

@@ -1178,6 +1178,7 @@
 <translation id="5715150588940290235">ลบรหัสความปลอดภัยที่บันทึกไว้ใช่ไหม</translation>
 <translation id="572328651809341494">แท็บล่าสุด</translation>
 <translation id="5728072125198221967">บริการของ Google ที่ลิงก์ไว้</translation>
+<translation id="5733447028358645932">ผู้ที่เรียกดู</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, แท็บที่ไม่ระบุตัวตนที่ปักหมุดซึ่งมีเสียง</translation>
 <translation id="5744751019568455640">นี่คือเสียงที่คุณเลือกใช้ในการอ่านหน้าเว็บได้ หากชอบเสียงนี้และต้องการใช้ต่อ ก็เพียงแตะที่ชื่อของเสียง</translation>
 <translation id="574845902699630049">แชร์ในชื่อ <ph name="OWNER_FULL_NAME" /></translation>
@@ -2031,6 +2032,7 @@
 <translation id="8863714995118816041">อนุญาตสิทธิ์อีกครั้งแล้วสำหรับ <ph name="SITE_NAME" /></translation>
 <translation id="8864055848767439877">กำลังแชร์ <ph name="TAB_NAME" /> กับ <ph name="APP_NAME" /></translation>
 <translation id="8865415417596392024">ข้อมูล Chrome ในบัญชี</translation>
+<translation id="886968456388055613">กรองตามผู้ที่เรียกดู</translation>
 <translation id="8872506776304248286">เปิดในแอป</translation>
 <translation id="8880275451109933094">ดูแบบ 2 หน้า</translation>
 <translation id="8890668505403261809">ค้นหาแท็บที่ไม่ระบุตัวตน</translation>

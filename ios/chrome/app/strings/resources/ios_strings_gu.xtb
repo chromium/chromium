@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">સાચવેલા પાસવર્ડ અને પાસકી</translation>
 <translation id="3143515551205905069">સિંક કરવાનું રદ કરો</translation>
 <translation id="3144126448740580210">થઈ ગયું</translation>
+<translation id="3147048678293362228">સંપર્ક માહિતી મેનેજ કરો…</translation>
 <translation id="3147521114983561406">પાસકી તમારા Password Managerમાં સાચવવામાં આવે છે. તેમને છૂપા અને નિયમિત ટૅબમાં ઍક્સેસ કરી શકાય છે.</translation>
 <translation id="3148052723910099040">નિયમિત ટૅબ ગ્રિડ</translation>
 <translation id="3148237711805373460">મને ત્યાં લઈ જાઓ</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">તમારા બ્રાઉઝિંગને ખાનગી રાખો</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> મિનિટ</translation>
 <translation id="344589138074534176">Google Lens વિશે વધુ જાણો</translation>
-<translation id="3447332786336558089">તમે સાઇન આઉટ કરો પછી, ટૅબ બંધ કરવામાં આવશે અને ન સાચવેલો એકાઉન્ટનો ડેટા આ ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે. આમાં પાસવર્ડ, ઇતિહાસ અને બીજું ઘણું શામેલ હોઈ શકે છે.</translation>
 <translation id="3449029510150690417">ટૅબના ગ્રૂપને નામ અને રંગ આપીને તમારું નવું ટૅબનું ગ્રૂપ બનાવો</translation>
 <translation id="345348365500626747">સરનામું મળ્યું</translation>
 <translation id="3459644598174926977">પેજ વિશે પૂછવા, મોટેથી વિચારવિનિમય કરવા અને નિરંતર વાતચીત કરવા Gemini વડે Live થાઓ.</translation>
@@ -1871,6 +1871,7 @@
 <translation id="6770452996697898492">[બુક કરવામાં આવી]</translation>
 <translation id="6775952316617222141">Gemini in Chrome વડે લાઇવ થાઓ</translation>
 <translation id="6779455296366983087">તમારો બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવશે</translation>
+<translation id="6782311720357312958">Googleને પૂછો</translation>
 <translation id="6782531425936234573">ડેટાની નિકાસ કરો</translation>
 <translation id="6789665473250283877"><ph name="TOOL_NAME" /> કાઢી નાખો</translation>
 <translation id="6791425686608802741">"નવા ગ્રૂપમાં ટૅબ ઉમેરો" પર ટૅપ કરો</translation>
@@ -2178,6 +2179,7 @@
 <translation id="7758789811447313947">વાયોલેટ થીમ</translation>
 <translation id="7759809451544302770">વૈકલ્પિક</translation>
 <translation id="7765158879357617694">સ્થાન</translation>
+<translation id="7767651976342854115">ડેટાના વપરાશના સેટિંગમાં કોઈ ભૂલ આવી.</translation>
 <translation id="7768507955883790804">જ્યારે તમે સાઇટની મુલાકાત લો, ત્યારે તે ઑટોમૅટિક રીતે આ સેટિંગને અનુસરે છે</translation>
 <translation id="7772032839648071052">પાસફ્રેઝની પુષ્ટિ કરો</translation>
 <translation id="7772948288262733182">આપનું ફરી સ્વાગત છે</translation>

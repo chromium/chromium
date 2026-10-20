@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">저장된 비밀번호 및 패스키</translation>
 <translation id="3143515551205905069">동기화 취소</translation>
 <translation id="3144126448740580210">완료</translation>
+<translation id="3147048678293362228">연락처 정보 관리…</translation>
 <translation id="3147521114983561406">패스키가 비밀번호 관리자에 저장됩니다. 시크릿 탭과 일반 탭에서 액세스할 수 있습니다</translation>
 <translation id="3148052723910099040">일반 탭 그리드</translation>
 <translation id="3148237711805373460">이동하기</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">인터넷 사용 기록을 비공개로 유지하세요.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="344589138074534176">Google 렌즈 자세히 알아보기</translation>
-<translation id="3447332786336558089">로그아웃하면 탭이 닫히고 저장되지 않은 계정 데이터가 기기에서 삭제됩니다. 여기에는 비밀번호, 방문 기록 등이 포함될 수 있습니다.</translation>
 <translation id="3449029510150690417">이름 및 색상을 지정하여 새로운 탭 그룹을 생성합니다.</translation>
 <translation id="345348365500626747">주소 찾음</translation>
 <translation id="3459644598174926977">Gemini Live 대화로 페이지에 관해 질문하고, 소리 내어 브레인스토밍하고, 대화를 주고받을 수 있습니다.</translation>
@@ -1871,6 +1871,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6770452996697898492">[예약됨]</translation>
 <translation id="6775952316617222141">Chrome의 Gemini와 Live로 대화하기</translation>
 <translation id="6779455296366983087">인터넷 사용 기록이 삭제됩니다</translation>
+<translation id="6782311720357312958">Google에 물어보기</translation>
 <translation id="6782531425936234573">데이터 내보내기</translation>
 <translation id="6789665473250283877"><ph name="TOOL_NAME" /> 삭제</translation>
 <translation id="6791425686608802741">'새 그룹에 탭 추가'를 탭합니다.</translation>
@@ -2178,6 +2179,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7758789811447313947">보라색 테마</translation>
 <translation id="7759809451544302770">선택사항</translation>
 <translation id="7765158879357617694">이동</translation>
+<translation id="7767651976342854115">데이터 사용 설정에 오류가 발생했습니다.</translation>
 <translation id="7768507955883790804">사이트를 방문할 때 이 설정을 자동으로 따릅니다.</translation>
 <translation id="7772032839648071052">암호 확인</translation>
 <translation id="7772948288262733182">다시 방문해 주셔서 감사합니다</translation>

@@ -1178,6 +1178,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="5715150588940290235">保存済みのセキュリティ コードを削除しますか？</translation>
 <translation id="572328651809341494">最近使ったタブ</translation>
 <translation id="5728072125198221967">リンクされている Google サービス</translation>
+<translation id="5733447028358645932">閲覧したユーザー</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />、音声ありの固定のシークレット タブ</translation>
 <translation id="5744751019568455640">ウェブページの読み上げに選択できる音声はこちらです。この音声を気に入って引き続き使用する場合は、音声の名前をタップしてください。</translation>
 <translation id="574845902699630049"><ph name="OWNER_FULL_NAME" /> として共有</translation>
@@ -2031,6 +2032,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> にもう一度権限を許可しました</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> を <ph name="APP_NAME" /> に共有しています</translation>
 <translation id="8865415417596392024">アカウント内の Chrome のデータ</translation>
+<translation id="886968456388055613">閲覧したユーザーでフィルタ</translation>
 <translation id="8872506776304248286">アプリで開く</translation>
 <translation id="8880275451109933094">2 ページ表示</translation>
 <translation id="8890668505403261809">シークレット タブを検索</translation>

@@ -1178,6 +1178,7 @@
 <translation id="5715150588940290235">要刪除已儲存的安全碼嗎？</translation>
 <translation id="572328651809341494">最近關閉的分頁</translation>
 <translation id="5728072125198221967">連結的 Google 服務</translation>
+<translation id="5733447028358645932">瀏覽者</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />，已固定的無痕分頁，正在播放音訊</translation>
 <translation id="5744751019568455640">你可以在這裡挑選讓我朗讀網頁內容的聲音。如果你喜歡這個聲音，只要輕觸語音名稱即可繼續使用。</translation>
 <translation id="574845902699630049">以<ph name="OWNER_FULL_NAME" />的身分共用</translation>
@@ -2031,6 +2032,7 @@
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> 已重獲權限</translation>
 <translation id="8864055848767439877">正在與 <ph name="APP_NAME" /> 共用 <ph name="TAB_NAME" /></translation>
 <translation id="8865415417596392024">你帳戶中的 Chrome 資料</translation>
+<translation id="886968456388055613">依瀏覽者篩選</translation>
 <translation id="8872506776304248286">在應用程式中開啟</translation>
 <translation id="8880275451109933094">雙頁檢視模式</translation>
 <translation id="8890668505403261809">搜尋無痕分頁</translation>

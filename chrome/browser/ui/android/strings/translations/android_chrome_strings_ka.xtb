@@ -970,6 +970,7 @@
 <translation id="480990236307250886">გახსენით საწყისი გვერდი</translation>
 <translation id="4812684235631257312">საკვანძო კომპიუტერი</translation>
 <translation id="4816492930507672669">მოარგეთ გვერდს</translation>
+<translation id="4819558594335204796">მთავარი გვერდის გახსნა</translation>
 <translation id="4822710610088666676">ჩანართების ჯგუფი „<ph name="TAB_GROUP_TITLE" />“ დახურული და შენახულია</translation>
 <translation id="4835385943915508971">Chrome-ს მოთხოვნილ რესურსზე წვდომა არ აქვს.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{ჩანართების ჯგუფის <ph name="COLOR_NAME" /> ფერის <ph name="TAB_COUNT_ONE" /> ჩანართის, როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.}other{ჩანართების ჯგუფის <ph name="COLOR_NAME" /> ფერის <ph name="TAB_COUNT_MANY" /> ჩანართის, როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.}}</translation>
@@ -1311,6 +1312,7 @@
 <translation id="6246073558347462570">ამომხტარი კონტექსტური ფანჯარა</translation>
 <translation id="6247557882553405851">Google პაროლების მმართველი</translation>
 <translation id="6248988683584659830">ძიების პარამეტრები</translation>
+<translation id="6250046936554288508">ხელოვნური ინტელექტის რეჟიმის მალსახმობი</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, არჩეულია რამდენიმე ჩამაგრებული ინკოგნიტო ჩანართი</translation>
 <translation id="6251449557817521191">იხილეთ Chrome-ის ისტორია აქ</translation>
 <translation id="6254139308321626268">თქვენ ათვალიერებთ PDF ფაილს</translation>

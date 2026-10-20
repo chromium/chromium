@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">Mentett jelszavak és azonosítókulcsok</translation>
 <translation id="3143515551205905069">Szinkronizálás megszakítása</translation>
 <translation id="3144126448740580210">KÉSZ</translation>
+<translation id="3147048678293362228">Kapcsolatfelvételi adatok kezelése…</translation>
 <translation id="3147521114983561406">Az azonosítókulcsokat a jelszókezelőbe menti a rendszer. Az inkognitó és a normál lapokon is hozzáférhetők.</translation>
 <translation id="3148052723910099040">Normál lap rács</translation>
 <translation id="3148237711805373460">Ugrás az oldalra</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">A böngészés privát jellegének megőrzése</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> perc</translation>
 <translation id="344589138074534176">További információ a Google Lensről</translation>
-<translation id="3447332786336558089">Amikor kijelentkezik, a lapok bezáródnak, a nem mentett fiókadatok pedig törlődnek erről az eszközről. Ide tartozhatnak a jelszavak, az előzmények és egyebek is.</translation>
 <translation id="3449029510150690417">Új lapcsoport létrehozásához adjon meg nevet és válasszon színt.</translation>
 <translation id="345348365500626747">Cím megtalálva</translation>
 <translation id="3459644598174926977">Az Élőben a Geminivel funkcióval kérdéseket tehet fel egy oldallal kapcsolatban, hangosan ötletelhet, és természetes beszélgetést folytathat.</translation>
@@ -1871,6 +1871,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6770452996697898492">[LEFOGLALVA]</translation>
 <translation id="6775952316617222141">Élő csevegés a Gemini a Chrome-ban szolgáltatással</translation>
 <translation id="6779455296366983087">Böngészési adatai törlődni fognak</translation>
+<translation id="6782311720357312958">Kérdezés a Google-tól</translation>
 <translation id="6782531425936234573">Adatok exportálása</translation>
 <translation id="6789665473250283877"><ph name="TOOL_NAME" /> eltávolítása</translation>
 <translation id="6791425686608802741">Koppintson a „Lap hozzáadása új csoporthoz” lehetőségre.</translation>

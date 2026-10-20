@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">Salvestatud paroolid ja pääsuvõtmed</translation>
 <translation id="3143515551205905069">Tühista sünkroonimine</translation>
 <translation id="3144126448740580210">VALMIS</translation>
+<translation id="3147048678293362228">Halda kontaktteavet…</translation>
 <translation id="3147521114983561406">Pääsuvõtmed salvestatakse teie paroolihaldurisse. Pääsete neile juurde nii inkognito kui ka tavalistel vahelehtedel.</translation>
 <translation id="3148052723910099040">Tavaline vahelehtede ruudustik</translation>
 <translation id="3148237711805373460">Vii mind sinna</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">Hoidke oma sirvimine privaatsena</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Lisateave Google Lensi kohta</translation>
-<translation id="3447332786336558089">Pärast väljalogimist suletakse vahekaardid ja salvestamata kontoandmed kustutatakse sellest seadmest. See võib hõlmata paroole, ajalugu ja muud.</translation>
 <translation id="3449029510150690417">Looge oma uus vahelehegrupp, andes sellele nime ja värvi</translation>
 <translation id="345348365500626747">Aadress leitud</translation>
 <translation id="3459644598174926977">Proovige kasutuskogemust Gemini Live, et lehe kohta küsimusi esitada, tõhusamalt ajurünnakuid teha ja suhelda.</translation>
@@ -1871,6 +1871,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6770452996697898492">[BRONEERITUD]</translation>
 <translation id="6775952316617222141">Kasutage Chrome'i Gemini funktsiooni Live</translation>
 <translation id="6779455296366983087">Teie sirvimisandmed kustutatakse</translation>
+<translation id="6782311720357312958">Küsige Google'ilt</translation>
 <translation id="6782531425936234573">Andmete eksportimine</translation>
 <translation id="6789665473250283877">Eemalda <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Puudutage valikut „Lisa vaheleht uude gruppi“</translation>

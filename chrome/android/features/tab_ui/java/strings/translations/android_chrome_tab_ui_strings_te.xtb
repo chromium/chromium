@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌ను కుదించండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో ట్యాబ్ గ్రూప్‌ను కుదించండి.}}</translation>
 <translation id="2569352796411618312">సూచన: మీ <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లను ఇటీవల ఉపయోగించలేదు. వాటిని మూసివేయాలా?</translation>
 <translation id="257674075312929031">గ్రూప్‌గా చేయి</translation>
+<translation id="2628148780487543078">పిన్ చేసిన ట్యాబ్‌లను కూడా మూసివేయండి</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్‌తో, <ph name="COLOR_NAME" /> కలర్‌తో, ట్యాబ్ గ్రూప్‌ను రీస్టోర్ చేసి తెరవండి.}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లతో, <ph name="COLOR_NAME" /> కలర్‌తో, ట్యాబ్ గ్రూప్‌ను రీస్టోర్ చేసి తెరవండి.}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్</translation>
 <translation id="266935134738038806">సైట్‌కు వెళ్లండి</translation>

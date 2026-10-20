@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">የተቀመጡ የይለፍ ቃሎች እና የይለፍ ቁልፎች</translation>
 <translation id="3143515551205905069">ስምረትን ሰርዝ</translation>
 <translation id="3144126448740580210">ተከናውኗል</translation>
+<translation id="3147048678293362228">የዕውቂያ መረጃን ያስተዳድሩ…</translation>
 <translation id="3147521114983561406">የይለፍ ቁልፎች በእርስዎ የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣሉ። ማንነት በማያሳውቁ እና በመደበኛ ትሮች ውስጥ ተደራሽ ናቸው።</translation>
 <translation id="3148052723910099040">የመደበኛ ትር ፍርግርግ</translation>
 <translation id="3148237711805373460">እዚያ ውሰደኝ</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">የእርስዎን አሰሳ ግላዊ አድርገው ይቆዩ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ደቂቃዎች</translation>
 <translation id="344589138074534176">ስለ Google ሌንስ የበለጠ ይወቁ</translation>
-<translation id="3447332786336558089">ዘግተው ከወጡ በኋላ ትሮች ይዘጋሉ እና ያልተቀመጠ የመለያ ውሂብ ከዚህ መሣሪያ ይሰረዛል። ይህ እንደ የይለፍ ቃላትን፣ ታሪክን እና ሌሎችንም ሊያካትት ይችላል።</translation>
 <translation id="3449029510150690417">ስም እና ቀለም በመስጠት አዲሱን የትር ቡድንዎን ይፍጠሩ</translation>
 <translation id="345348365500626747">አድራሻው ተገኝቷል</translation>
 <translation id="3459644598174926977">ስለ አንድ ገጽ ለመጠየቅ፣ ጮክ ብለው ለማሰብ እና በመመላለስ ለመነጋገር ከGemini ጋር Live ይሁኑ።</translation>
@@ -1871,6 +1871,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6770452996697898492">[BOOKED]</translation>
 <translation id="6775952316617222141">Gemini በChrome ውስጥ Live ይሁኑ</translation>
 <translation id="6779455296366983087">የአሰሳ ውሂብዎ ይሰረዛል</translation>
+<translation id="6782311720357312958">Googleን ይጠይቁ</translation>
 <translation id="6782531425936234573">ውሂብን ወደ ውጭ ላክ</translation>
 <translation id="6789665473250283877"><ph name="TOOL_NAME" />ን ያስወግዱ</translation>
 <translation id="6791425686608802741">«ትር ወደ አዲስ ቡድን አክል» ላይ መታ ያድርጉ</translation>

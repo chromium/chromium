@@ -240,6 +240,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1393071644879491291">Penyerang pada laman yang cuba anda lawati mungkin memperdaya anda untuk memasang perisian atau mendedahkan perkara seperti kata laluan, telefon atau nombor kad kredit anda. Chrome amat mengesyorkan untuk kembali ke tempat selamat. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut tentang amaran ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Tambahkan kad ID dengan selamat pada Google Wallet</translation>
 <translation id="1398743098754840707">Laman yang anda tambahkan di sini tidak akan dirujuk untuk mendapatkan respons, walaupun tab dibuka. Jika laman yang anda tambahkan sedang digunakan dalam urutan, urutan tersebut mungkin mengambil masa hingga 30 minit untuk berhenti merujuk laman tersebut.</translation>
+<translation id="1403359480263156644">Nama pemegang kad dikemaskinikan</translation>
 <translation id="1405567553485452995">Hijau Cerah</translation>
 <translation id="1406370515365284486">Kaedah pembayaran anda akan tetap disimpan</translation>
 <translation id="1406500794671479665">Mengesahkan...</translation>
@@ -908,6 +909,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2498091847651709837">Imbas kad baharu</translation>
 <translation id="2501270939904835585">Label (Satin)</translation>
 <translation id="2501278716633472235">Kembali</translation>
+<translation id="250307989715832083">Tambahkan tandatangan</translation>
 <translation id="250346157641628208">Kertas (Inkjet)</translation>
 <translation id="2505063700931618106">Maklumat kad telah disimpan</translation>
 <translation id="2505268675989099013">Lindungi Akaun</translation>
@@ -1922,6 +1924,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4218327733815631046">Kekalkan lokasi anggaran</translation>
 <translation id="4219596572397833317">Lihat sejarah harga dan pelbagai lagi untuk membantu anda membeli-belah dengan lebih pintar.</translation>
 <translation id="4220128509585149162">Nahas</translation>
+<translation id="4220745762102459826">dan banyak lagi</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Langkah 1: Log masuk ke portal&lt;/h4&gt;
     &lt;p&gt;Rangkaian Wi-Fi di tempat seperti kafe atau lapangan terbang menghendaki anda untuk log masuk. Untuk memaparkan halaman log masuk, lawati halaman yang menggunakan &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2883,6 +2886,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5794065675298686371">Hidupkan pemberitahuan penjejakan harga</translation>
 <translation id="5794093550048860249">Nombor penjejakan</translation>
 <translation id="5796050750059455142">Hidupkan “<ph name="BEGIN_LINK" />Ciri pintar dalam produk Google yang lain<ph name="LINK_END" />”</translation>
+<translation id="5797916798049571144">Nama tersebut disimpan dengan maklumat kad anda untuk nama tersebut diisi secara automatik semasa semak keluar</translation>
 <translation id="5797984091151707075">Disekat oleh dasar pentadbir</translation>
 <translation id="5804241973901381774">Kebenaran</translation>
 <translation id="5806871454498484178">Tatal &amp; zum disekat</translation>

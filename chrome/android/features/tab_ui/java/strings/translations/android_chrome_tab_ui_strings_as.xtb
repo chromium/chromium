@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেব সংকোচন কৰক।}one{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত টেবৰ গোটটো সংকোচন কৰক।}other{<ph name="TABS_COUNT_MANY" /> টা টেবযুক্ত টেবৰ গোটটো সংকোচন কৰক।}}</translation>
 <translation id="2569352796411618312">পৰামৰ্শ: শেহতীয়াকৈ আপোনাৰ <ph name="NUMBER_OF_TABS" /> টা টেব ব্যৱহাৰ কৰা হোৱা নাই। সেইকেইটা বন্ধ কৰিবনে?</translation>
 <translation id="257674075312929031">গোট</translation>
+<translation id="2628148780487543078">পিন কৰি থোৱা টেবসমূহো বন্ধ কৰক</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেবৰ সৈতে, <ph name="COLOR_NAME" /> ৰঙৰ টেবৰ গোটটো পুনঃস্থাপন কৰক আৰু খোলক।}one{<ph name="TABS_COUNT_MANY" /> টা টেবৰ সৈতে, <ph name="COLOR_NAME" /> ৰঙৰ টেবৰ গোটটো পুনঃস্থাপন কৰক আৰু খোলক।}other{<ph name="TABS_COUNT_MANY" /> টা টেবৰ সৈতে, <ph name="COLOR_NAME" /> ৰঙৰ টেবৰ গোটটো পুনঃস্থাপন কৰক আৰু খোলক।}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন</translation>
 <translation id="266935134738038806">ছাইটটোলৈ যাওক</translation>

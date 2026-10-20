@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">Išsaugoti slaptažodžiai ir prieigos raktai</translation>
 <translation id="3143515551205905069">Atšaukti sinchronizavimą</translation>
 <translation id="3144126448740580210">ATLIKTA</translation>
+<translation id="3147048678293362228">Tvarkyti kontaktinę informaciją</translation>
 <translation id="3147521114983561406">Prieigos raktai išsaugomi slaptažodžių tvarkyklėje. Jie pasiekiami inkognito ir įprastuose skirtukuose.</translation>
 <translation id="3148052723910099040">Įprastų skirtukų tinklelis</translation>
 <translation id="3148237711805373460">Apsilankyti</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">Išlaikyti privatų naršymą</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="344589138074534176">Sužinokite daugiau apie „Google Lens“</translation>
-<translation id="3447332786336558089">Atsijungus skirtukai bus uždaryti, o neišsaugoti paskyros duomenys bus ištrinti iš šio įrenginio. Tai gali būti slaptažodžiai, istorija ir kt.</translation>
 <translation id="3449029510150690417">Sukurkite naują skirtukų grupę, pasirinkdami jos pavadinimą ir spalvą</translation>
 <translation id="345348365500626747">Rastas adresas</translation>
 <translation id="3459644598174926977">Įjunkite „Live with Gemini“ ir užduokite klausimų apie puslapį, garsiai generuokite idėjas ir kalbėkitės.</translation>
@@ -1871,6 +1871,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6770452996697898492">[UŽSAKYTA]</translation>
 <translation id="6775952316617222141">Naudoti „Live“ su „Gemini“ naršyklėje „Chrome“</translation>
 <translation id="6779455296366983087">Naršymo duomenys bus ištrinti</translation>
+<translation id="6782311720357312958">Klausti „Google“</translation>
 <translation id="6782531425936234573">Eksportuoti duomenis</translation>
 <translation id="6789665473250283877">Pašalinti „<ph name="TOOL_NAME" />“</translation>
 <translation id="6791425686608802741">Palieskite „Pridėti skirtuką prie naujos grupės“</translation>
@@ -2178,6 +2179,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="7758789811447313947">Violetinė tema</translation>
 <translation id="7759809451544302770">Pasirenkama</translation>
 <translation id="7765158879357617694">Perkelti</translation>
+<translation id="7767651976342854115">Įkeliant duomenų naudojimo nustatymą įvyko klaida.</translation>
 <translation id="7768507955883790804">Svetainėms automatiškai pritaikomas šis nustatymas, kai jose apsilankote</translation>
 <translation id="7772032839648071052">Patvirtinti slaptafrazę</translation>
 <translation id="7772948288262733182">Sveiki sugrįžę</translation>

@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">Saglabātās paroles un piekļuves atslēgas</translation>
 <translation id="3143515551205905069">Atcelt sinhronizāciju</translation>
 <translation id="3144126448740580210">GATAVS</translation>
+<translation id="3147048678293362228">Pārvaldīt kontaktinformāciju…</translation>
 <translation id="3147521114983561406">Piekļuves atslēgas tiek saglabātas jūsu paroļu pārvaldniekā. Tām var piekļūt inkognito un parastajās cilnēs.</translation>
 <translation id="3148052723910099040">Parasto ciļņu režģis</translation>
 <translation id="3148237711805373460">Pāriet</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">Saglabājiet pārlūkošanas konfidencialitāti</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344589138074534176">Uzzināt vairāk par Google Lens</translation>
-<translation id="3447332786336558089">Pēc izrakstīšanās cilnes tiks aizvērtas, un nesaglabātie konta dati tiks dzēsti no šīs ierīces. Tie var ietvert paroles, vēsturi un citus datus.</translation>
 <translation id="3449029510150690417">Izveidojiet jaunu ciļņu grupu, piešķirot tai nosaukumu un krāsu.</translation>
 <translation id="345348365500626747">Adrese atrasta</translation>
 <translation id="3459644598174926977">Izmantojiet frāzi “Live ar Gemini”, lai uzdotu jautājumus par lapu, skaļi apspriestu idejas un sarunātos.</translation>
@@ -1871,6 +1871,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6770452996697898492">[REZERVĒTS]</translation>
 <translation id="6775952316617222141">Sāciet Live sarunu ar Gemini pārlūkā Chrome</translation>
 <translation id="6779455296366983087">Jūsu pārlūkošanas dati tiks dzēsti</translation>
+<translation id="6782311720357312958">Jautāt Google</translation>
 <translation id="6782531425936234573">Eksportēt datus</translation>
 <translation id="6789665473250283877">Noņemt: <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Pieskarieties vienumam “Pievienot cilni jaunai grupai”.</translation>
@@ -2178,6 +2179,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="7758789811447313947">Violets motīvs</translation>
 <translation id="7759809451544302770">Neobligātas</translation>
 <translation id="7765158879357617694">Pārvietot</translation>
+<translation id="7767651976342854115">Datu lietojuma iestatījumā radās kļūda.</translation>
 <translation id="7768507955883790804">Vietnēs tiks automātiski lietots šis iestatījums, kad tās apmeklēsiet.</translation>
 <translation id="7772032839648071052">Apstipriniet ieejas frāzi</translation>
 <translation id="7772948288262733182">Laipni lūdzam atpakaļ!</translation>

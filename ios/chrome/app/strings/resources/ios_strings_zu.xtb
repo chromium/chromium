@@ -698,6 +698,7 @@
 <translation id="3140825265190223781">Amaphasiwedi nezikhiye zokudlula okulondoloziwe</translation>
 <translation id="3143515551205905069">Khansela ukuvumelanisa</translation>
 <translation id="3144126448740580210">KWENZIWE</translation>
+<translation id="3147048678293362228">Lawula imininingwane yokuxhumana…</translation>
 <translation id="3147521114983561406">Okhiye bokudlula balondolozwa kusiphathi sakho sephasiwedi. Afinyeleleka ku-Incognito nakumathebhu avamile.</translation>
 <translation id="3148052723910099040">Igridi Yethebhu Ejwayelekile</translation>
 <translation id="3148237711805373460">Ngiyise lapho</translation>
@@ -778,7 +779,6 @@
 <translation id="3441673211568148613">Gcina ukubhrawuza kwakho kuyimfihlo</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> amaminithi</translation>
 <translation id="344589138074534176">Funda okwengeziwe ngeGoogle Lens</translation>
-<translation id="3447332786336558089">Ngemva kokuphuma ngemvume, amathebhu azovalwa futhi idatha ye-akhawunti engalondoloziwe izosulwa kule divayisi. Lokhu kungase kuhlanganise amaphasiwedi, umlando, nokunye.</translation>
 <translation id="3449029510150690417">Sungula iqembu lakho lethebhu elisha ngokuliqamba igama ulinike nombala</translation>
 <translation id="345348365500626747">Ikheli litholakele</translation>
 <translation id="3459644598174926977">Yiba Bukhoma ngeGemini ukuze ubuze ngekhasi, uxoxisane ngemibono ngokuzwakalayo, futhi ukhulume.</translation>
@@ -1871,6 +1871,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6770452996697898492">[KUBHUKIWE]</translation>
 <translation id="6775952316617222141">Yiba Bukhoma ngeGemini kuChrome</translation>
 <translation id="6779455296366983087">Idatha yakho yopheqululo izosulwa</translation>
+<translation id="6782311720357312958">Buza iGoogle</translation>
 <translation id="6782531425936234573">Khipha idatha</translation>
 <translation id="6789665473250283877">Susa i-<ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Thepha okuthi "Engeza Ithebhu Eqenjini Elisha"</translation>
