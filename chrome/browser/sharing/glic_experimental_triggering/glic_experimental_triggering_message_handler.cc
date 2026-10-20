@@ -165,6 +165,16 @@ GlicExperimentalTriggeringMessageHandler::
 }
 
 void GlicExperimentalTriggeringMessageHandler::CancelAllPendingMessages() {
+#if BUILDFLAG(IS_ANDROID)
+  if (profile_) {
+    if (actor::ActorKeyedService* actor_service =
+            actor::ActorKeyedService::Get(profile_)) {
+      for (const auto& [context_id, _] : pending_messages_) {
+        actor_service->RemovePendingTask(context_id);
+      }
+    }
+  }
+#endif
   for (auto& [context_id, message_list] : pending_messages_) {
     for (auto& pending_message : message_list) {
       if (pending_message.done_callback) {
@@ -282,6 +292,13 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
       VLOG(1) << "GlicTrigger: Received StopActuationRequest, intercepting to "
                  "clear pending messages before routing to Domain logic.";
 
+      if (profile_) {
+        if (actor::ActorKeyedService* actor_service =
+                actor::ActorKeyedService::Get(profile_)) {
+          actor_service->RemovePendingTask(context_id);
+        }
+      }
+
       // Delete any pending requests waiting for an offscreen tab
       auto it = pending_messages_.find(context_id);
       if (it != pending_messages_.end()) {
@@ -301,22 +318,30 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
       if (pending_messages_.empty()) {
         actor_service_observation_.Reset();
       }
-    } else if (profile_) {
-      actor::ActorKeyedService* actor_service =
-          actor::ActorKeyedService::Get(profile_);
-      if (actor_service) {
-        VLOG(1) << "GlicTrigger: Registering pending task in ActorKeyedService";
-        if (!actor_service_observation_.IsObserving()) {
-          actor_service_observation_.Observe(actor_service);
-        }
-        bool already_pending = pending_messages_.contains(context_id);
-        pending_messages_[context_id].push_back(
-            MessageData{std::move(message), std::move(done_callback),
-                        std::move(result_logger)});
-        if (!already_pending) {
+    } else if (pending_messages_.contains(context_id)) {
+      // Tab preparation is already in flight for this context. Queue the
+      // message.
+      pending_messages_[context_id].push_back(
+          MessageData{std::move(message), std::move(done_callback),
+                      std::move(result_logger)});
+      return;
+    } else if (request.has_request() &&
+               request.request().has_trigger_actuation_request()) {
+      if (profile_) {
+        actor::ActorKeyedService* actor_service =
+            actor::ActorKeyedService::Get(profile_);
+        if (actor_service) {
+          VLOG(1)
+              << "GlicTrigger: Registering pending task in ActorKeyedService";
+          if (!actor_service_observation_.IsObserving()) {
+            actor_service_observation_.Observe(actor_service);
+          }
+          pending_messages_[context_id].push_back(
+              MessageData{std::move(message), std::move(done_callback),
+                          std::move(result_logger)});
           actor_service->AddPendingTask(context_id);
+          return;
         }
-        return;
       }
     }
   } else {
@@ -436,6 +461,14 @@ void GlicExperimentalTriggeringMessageHandler::OnBackgroundTabPrepared(
 
 void GlicExperimentalTriggeringMessageHandler::OnBackgroundSetupFailed(
     const std::string& context_id) {
+#if BUILDFLAG(IS_ANDROID)
+  if (profile_) {
+    if (actor::ActorKeyedService* actor_service =
+            actor::ActorKeyedService::Get(profile_)) {
+      actor_service->RemovePendingTask(context_id);
+    }
+  }
+#endif
   auto it = pending_messages_.find(context_id);
   if (it == pending_messages_.end()) {
     return;

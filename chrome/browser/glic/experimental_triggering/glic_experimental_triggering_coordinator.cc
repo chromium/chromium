@@ -318,10 +318,41 @@ class ExperimentalTriggeringUpdatesHandler
         receiver_(this) {}
 
   ~ExperimentalTriggeringUpdatesHandler() override {
+    RemovePendingTask();
     if (is_actuation_started_ && !outcome_recorded_) {
       RecordOutcome(GlicExperimentalTriggeringExecutionOutcome::
                         kDestroyedBeforeCompletion);
     }
+  }
+
+  void RemovePendingTask() {
+    if (!coordinator_ || !coordinator_->profile_) {
+      return;
+    }
+    if (auto* actor_service =
+            actor::ActorKeyedService::Get(coordinator_->profile_)) {
+      actor_service->RemovePendingTask(context_id_);
+    }
+  }
+
+  void ObserveActorTaskCreation() {
+    if (!instance_ || actuating_subscription_) {
+      return;
+    }
+    if (auto* task_manager = instance_->GetActorTaskManager()) {
+      actuating_subscription_ =
+          task_manager->AddActuatingChangedCallback(base::BindRepeating(
+              &ExperimentalTriggeringUpdatesHandler::OnActuatingChanged,
+              weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
+
+  void OnActuatingChanged(bool is_actuating) {
+    if (!is_actuating) {
+      return;
+    }
+    actuating_subscription_ = {};
+    RemovePendingTask();
   }
 
   std::optional<ExperimentalTriggeringResponse> OnRequest(
@@ -332,6 +363,10 @@ class ExperimentalTriggeringUpdatesHandler
     if (update_callback) {
       update_callback_ = std::move(update_callback);
     }
+    base::ScopedClosureRunner cleanup_runner(base::BindOnce(
+        &GlicExperimentalTriggeringCoordinator::OnUpdatesHandlerCleanup,
+        coordinator_, context_id_));
+
     if (!request.task_metadata.has_value()) {
       result_logger.set_result(GlicExperimentalTriggeringIncomingMessageResult::
                                    kMissingTaskMetadata);
@@ -347,10 +382,6 @@ class ExperimentalTriggeringUpdatesHandler
       last_seen_sequence_number_ =
           *request.task_metadata->sender_sequence_number;
     }
-
-    base::ScopedClosureRunner cleanup_runner(base::BindOnce(
-        &GlicExperimentalTriggeringCoordinator::OnUpdatesHandlerCleanup,
-        coordinator_, context_id_));
 
     return std::visit(
         absl::Overload{
@@ -628,11 +659,13 @@ class ExperimentalTriggeringUpdatesHandler
       if (!pending_invoke_ids_.empty()) {
         return;
       }
+      RemovePendingTask();
       // Superseded by some other (non experimental triggering) invocation.
       outcome_recorded_ = true;
       CleanupAsync();
       return;
     }
+    RemovePendingTask();
     DLOG(WARNING) << "Glic invocation failed with error: "
                   << GlicInvokeErrorToString(error);
     HandleTerminalUpdate(TaskUpdate::State::kFailed,
@@ -644,6 +677,7 @@ class ExperimentalTriggeringUpdatesHandler
   }
 
   void OnDisconnect() {
+    RemovePendingTask();
     HandleTerminalUpdate(TaskUpdate::State::kFailed,
                          TaskUpdate::DataType::kErrorMessage,
                          GlicExperimentalTriggeringExecutionOutcome::
@@ -823,6 +857,9 @@ class ExperimentalTriggeringUpdatesHandler
         passkey_, std::move(options), std::move(auto_submit_options));
     if (weak_this) {
       weak_this->instance_ = std::move(instance);
+      if (!is_continuation) {
+        weak_this->ObserveActorTaskCreation();
+      }
     }
 
     result_logger.set_result(
@@ -1467,6 +1504,7 @@ class ExperimentalTriggeringUpdatesHandler
   InvokeWithAutoSubmitPasskey passkey_;
   base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator_;
   base::WeakPtr<GlicInstance> instance_;
+  base::CallbackListSubscription actuating_subscription_;
   std::unique_ptr<actor::ActorActionsRunner> actions_runner_;
   base::OneShotTimer actions_timeout_timer_;
   mojo::Receiver<mojom::ExperimentalTriggeringUpdatesHandler> receiver_;
@@ -1621,6 +1659,11 @@ GlicExperimentalTriggeringCoordinator::OnRequest(
 
 void GlicExperimentalTriggeringCoordinator::OnUpdatesHandlerCleanup(
     const std::string& context_id) {
+  if (profile_) {
+    if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
+      actor_service->RemovePendingTask(context_id);
+    }
+  }
   auto it = context_id_to_updates_handler_map_.find(context_id);
   if (it != context_id_to_updates_handler_map_.end()) {
     context_id_to_updates_handler_map_.erase(it);

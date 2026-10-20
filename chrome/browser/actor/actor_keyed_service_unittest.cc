@@ -462,28 +462,6 @@ TEST_F(ActorKeyedServiceTest, PendingTaskRemovedOnFailureAndCancellation) {
   EXPECT_FALSE(actor_service->HasPendingTask("cancel-msg"));
 }
 
-TEST_F(ActorKeyedServiceTest, PendingTaskResolvedOnCreateTask) {
-  auto* actor_service = ActorKeyedService::Get(profile());
-  ASSERT_TRUE(actor_service);
-
-  actor_service->AddPendingTask("trigger-123");
-  EXPECT_EQ(1u, actor_service->GetPendingTasksCount());
-  EXPECT_TRUE(actor_service->HasPendingTask("trigger-123"));
-
-  TaskSourceInfo source_info(TaskSourceInfo::Client::kExperimentalActor,
-                             "trigger-123");
-
-  TaskId id = actor_service->CreateTaskWithOptions(
-      source_info, NoEnterprisePolicyChecker(), /*options=*/nullptr,
-      /*delegate=*/nullptr, ui_state_manager());
-  EXPECT_FALSE(id.is_null());
-
-  // Task is now active and removed from pending.
-  EXPECT_EQ(1u, actor_service->GetActiveTasksCount());
-  EXPECT_EQ(0u, actor_service->GetPendingTasksCount());
-  EXPECT_FALSE(actor_service->HasPendingTask("trigger-123"));
-}
-
 }  // namespace
 
 }  // namespace actor
