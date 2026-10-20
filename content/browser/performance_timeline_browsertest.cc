@@ -563,13 +563,6 @@ IN_PROC_BROWSER_TEST_F(PerformanceEventTimingBrowserTest,
 class LongAnimationFrameStyleDurationBrowserTest
     : public PerformanceTimelineBrowserTest {
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PerformanceTimelineBrowserTest::SetUpCommandLine(command_line);
-    // Enable the experimental style duration feature
-    command_line->AppendSwitchASCII("enable-blink-features",
-                                    "LongAnimationFrameStyleDuration");
-  }
-
   void StartStyleTracing() {
     base::test::TestFuture<void> future;
     TracingController::GetInstance()->StartTracing(
