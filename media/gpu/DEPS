@@ -7,7 +7,6 @@ include_rules = [
   "+third_party/libsync",
   "+third_party/libyuv",
   "+third_party/microsoft_dxheaders",
-  "+third_party/v4l-utils",
   "+third_party/webrtc/common_video",
   "+ui/base",
   "+ui/display/display_switches.h",

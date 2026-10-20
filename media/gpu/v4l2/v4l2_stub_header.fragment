@@ -1,8 +1,0 @@
-// The extra include header needed in the generated stub file for defining
-// various Pulse types.
-
-extern "C" {
-
-#include "third_party/v4l-utils/lib/include/libv4l2.h"
-
-}
