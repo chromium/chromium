@@ -112,6 +112,9 @@ void MenuRunnerImpl::Release() {
 
   bool is_stack_active = controller_ && controller_->IsStackActive();
   if (is_stack_active) {
+    // Invlidate the menu runner's weakptrs now because the menu runner is
+    // considered deleted at this point.
+    weak_factory_.InvalidateWeakPtrs();
     // Transfer ownership to controller.
     controller_->DeferMenuRunnerDestruction(base::WrapUnique(this));
     return;
@@ -271,7 +274,6 @@ void MenuRunnerImpl::OnMenuClosed(NotifyType type,
     return;
   }
   running_ = false;
-  controller_ = nullptr;
   if (menu_->GetDelegate()) {
     // Executing the command may also delete this.
     base::WeakPtr<MenuRunnerImpl> ref(weak_factory_.GetWeakPtr());
