@@ -669,10 +669,15 @@ void WebGLRenderingContextWebGPUBase::attachShader(WebGLProgram* program,
   shader->OnAttached();
 }
 
-void WebGLRenderingContextWebGPUBase::bindAttribLocation(WebGLProgram*,
+void WebGLRenderingContextWebGPUBase::bindAttribLocation(WebGLProgram* program,
                                                          GLuint index,
                                                          const String& name) {
-  NOTIMPLEMENTED();
+  if (!ValidateProgramOrShader("bindAttribLocation", program)) {
+    return;
+  }
+
+  driver_gl_.fn.glBindAttribLocationFn(program->Object(), index,
+                                       name.Utf8().c_str());
 }
 
 void WebGLRenderingContextWebGPUBase::bindBuffer(GLenum target,
