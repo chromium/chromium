@@ -1070,9 +1070,11 @@ void NativeInputMethodEngineObserver::OnReset(const std::string& engine_id) {
 
 void NativeInputMethodEngineObserver::OnDeactivated(
     const std::string& engine_id) {
-  if (ShouldRouteToRuleBasedEngine(engine_id)) {
-    input_method_.reset();
-  }
+  // Release all Mojo connections to the ImeService process when deactivated.
+  connection_factory_.reset();
+  remote_manager_.reset();
+  input_method_.reset();
+  host_receiver_.reset();
   ime_base_observer_->OnDeactivated(engine_id);
 }
 

@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/ash/input_method/input_method_menu_item.h"
 #include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
 #include "chromeos/ash/components/login/session/process_shutdown.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -1046,7 +1047,20 @@ void InputMethodManagerImpl::SetState(
   auto* new_impl_state =
       static_cast<InputMethodManagerImpl::StateImpl*>(state.get());
 
+  Profile* old_profile = state_ ? state_->GetProfile() : nullptr;
   state_ = new_impl_state;
+  Profile* new_profile = state_ ? state_->GetProfile() : nullptr;
+
+  // Tear down the signin profile's active engine and ImeService process when
+  // transitioning to the user profile.
+  if (old_profile != nullptr && old_profile != new_profile &&
+      !ash::AnnotatedAccountId::Get(old_profile->GetOriginalProfile())) {
+    if (TextInputMethod* engine = IMEBridge::Get()->GetCurrentEngineHandler()) {
+      engine->Disable();
+      IMEBridge::Get()->SetCurrentEngineHandler(nullptr);
+    }
+    ime_service_connectors_.erase(old_profile);
+  }
 
   if (state_.get() && state_->GetNumEnabledInputMethods()) {
     // Initialize candidate window controller and widgets such as
