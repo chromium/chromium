@@ -95,7 +95,9 @@ AreaOfInterestWithScreenshot ToProtoAreaOfInterest(const AreaOfInterest& aoi) {
                  [](base::span<const gfx::Point> coordinates) {},
              },
              aoi.bounds);
-  *proto_aoi.mutable_annotated_page_content() = aoi.apc;
+  if (kSmartSelectionServerAppendApc.Get()) {
+    *proto_aoi.mutable_annotated_page_content() = aoi.apc;
+  }
   return {std::move(proto_aoi), std::move(screenshot)};
 }
 

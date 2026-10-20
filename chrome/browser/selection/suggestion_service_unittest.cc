@@ -341,6 +341,7 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
             EXPECT_EQ(proto_aoi.selection().y(), 20);
             EXPECT_EQ(proto_aoi.selection().width(), 30);
             EXPECT_EQ(proto_aoi.selection().height(), 40);
+            EXPECT_TRUE(proto_aoi.has_annotated_page_content());
             std::move(callback).Run(
                 optimization_guide::OptimizationGuideModelExecutionResult(
                     base::ok(optimization_guide::AnyWrapProto(response)),
@@ -358,6 +359,61 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
 
   EXPECT_THAT(future.Take(),
               ElementsAre(SuggestionWithLabel(u"Server Gemini Action")));
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+// Tests that `annotated_page_content` is omitted when
+// `kSmartSelectionServerAppendApc` is false.
+TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithoutApc) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSmartSelectionServerSuggestions,
+      {{kSmartSelectionServerAppendApc.name, "false"}});
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  optimization_guide::proto::SmartSelectionSuggestionsResponse response;
+  optimization_guide::proto::SmartSelectionSuggestion* s1 =
+      response.add_suggestions();
+  s1->set_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  s1->set_label("Action Without APC");
+
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kSmartSelectionSuggestions,
+                           _, _, _))
+      .WillOnce([&](optimization_guide::ModelBasedCapabilityKey feature,
+                    const google::protobuf::MessageLite& request_metadata,
+                    const optimization_guide::ModelExecutionOptions& options,
+                    optimization_guide::
+                        OptimizationGuideModelExecutionResultCallback
+                            callback) {
+        const auto& request = static_cast<
+            const optimization_guide::proto::SmartSelectionSuggestionsRequest&>(
+            request_metadata);
+        ASSERT_EQ(request.areas_of_interest().size(), 1);
+        EXPECT_FALSE(request.areas_of_interest(0).has_annotated_page_content());
+        std::move(callback).Run(
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                base::ok(optimization_guide::AnyWrapProto(response)),
+                /*execution_info=*/nullptr),
+            /*log_entry=*/nullptr);
+      });
+
+  AreaOfInterest aoi;
+  aoi.screenshot.allocN32Pixels(50, 50);
+  aoi.screenshot.eraseColor(SK_ColorRED);
+  aoi.bounds = gfx::Rect(10, 20, 30, 40);
+
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  service().RequestSuggestions(aoi, future.GetCallback());
+
+  EXPECT_THAT(future.Take(),
+              ElementsAre(SuggestionWithLabel(u"Action Without APC")));
 
   service().UnregisterTool(&gemini_tool);
 }

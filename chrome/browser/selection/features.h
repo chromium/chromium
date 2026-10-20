@@ -23,6 +23,10 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSmartSelectionServerTimeout);
 // the selected area expanded by a padding of this width in pixels.
 BASE_DECLARE_FEATURE_PARAM(int, kSmartSelectionServerCropPadding);
 
+// Whether to include the AnnotatedPageContent in the request sent to the Model
+// Execution Service.
+BASE_DECLARE_FEATURE_PARAM(bool, kSmartSelectionServerAppendApc);
+
 }  // namespace selection
 
 #endif  // CHROME_BROWSER_SELECTION_FEATURES_H_

@@ -19,4 +19,9 @@ BASE_FEATURE_PARAM(int,
                    &kSmartSelectionServerSuggestions,
                    -1);
 
+BASE_FEATURE_PARAM(bool,
+                   kSmartSelectionServerAppendApc,
+                   &kSmartSelectionServerSuggestions,
+                   true);
+
 }  // namespace selection
