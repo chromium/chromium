@@ -775,6 +775,23 @@ public class TileGroupUnitTest {
         assertEquals("Site 2", tiles.get(2).getTitle());
     }
 
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testAiModeTile_editIgnored() {
+        enableAiModeTileInsideMvt();
+        SiteSuggestion[] sites = createSiteSuggestions(2);
+
+        TileGroup tileGroup = initializeTileGroup(SuggestionsConfig.MAX_TILE_COUNT + 1, sites);
+        List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assertThat(tiles).isNotNull();
+        Tile aiTile = tiles.get(0);
+        assertTrue(aiTile.isAiMode());
+
+        tileGroup.getTileSetupDelegate().getCustomTileModificationDelegate().edit(aiTile.getData());
+
+        verify(mTileGroupDelegate, never()).createCustomTileEditCoordinator(any());
+    }
+
     private boolean isAddNewButton(View view) {
         View tileView = view.findViewById(R.id.tile_view_title);
         return tileView != null

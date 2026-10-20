@@ -126,6 +126,21 @@ public class TileInteractionDelegateTest {
                         mTileView);
     }
 
+    private void setupForAiModeTileTests() {
+        when(mTile.getSource()).thenReturn(TileSource.AI_MODE);
+        when(mTile.isAiMode()).thenReturn(true);
+        when(mTile.isCustomLink()).thenReturn(false);
+        when(mTile.getSectionType()).thenReturn(TileSectionType.PERSONALIZED);
+        mDelegate =
+                new TileInteractionDelegateImpl(
+                        mock(ContextMenuManager.class),
+                        mTileGroupDelegate,
+                        mTileDragDelegate,
+                        mCustomTileModificationDelegate,
+                        mTile,
+                        mTileView);
+    }
+
     private void setupDelegate() {
         mDelegate =
                 new TileInteractionDelegateImpl(
@@ -357,5 +372,44 @@ public class TileInteractionDelegateTest {
         setupForCustomTileTests();
         mDelegate.moveItemDown();
         verify(mTileDragDelegate).swapTiles(mTileView, 1, mDelegate);
+    }
+
+    @Test
+    public void testIsItemSupported_AiMode() {
+        setupForAiModeTileTests();
+
+        assertTrue(mDelegate.isItemSupported(ContextMenuItemId.OPEN_IN_NEW_TAB));
+        assertTrue(mDelegate.isItemSupported(ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP));
+        assertTrue(mDelegate.isItemSupported(ContextMenuItemId.OPEN_IN_NEW_WINDOW));
+        assertTrue(mDelegate.isItemSupported(ContextMenuItemId.OPEN_IN_OTHER_WINDOW));
+
+        assertFalse(mDelegate.isItemSupported(ContextMenuItemId.REMOVE));
+        assertFalse(mDelegate.isItemSupported(ContextMenuItemId.SAVE_FOR_OFFLINE));
+        assertFalse(mDelegate.isItemSupported(ContextMenuItemId.PIN_THIS_SHORTCUT));
+        assertFalse(mDelegate.isItemSupported(ContextMenuItemId.EDIT_SHORTCUT));
+        assertFalse(mDelegate.isItemSupported(ContextMenuItemId.UNPIN));
+
+        when(mTileDragDelegate.isFirstDraggableTile(mTileView)).thenReturn(true);
+        assertFalse(mDelegate.isItemSupported(ContextMenuItemId.MOVE_UP));
+        when(mTileDragDelegate.isFirstDraggableTile(mTileView)).thenReturn(false);
+        assertTrue(mDelegate.isItemSupported(ContextMenuItemId.MOVE_UP));
+
+        when(mTileDragDelegate.isLastDraggableTile(mTileView)).thenReturn(true);
+        assertFalse(mDelegate.isItemSupported(ContextMenuItemId.MOVE_DOWN));
+        when(mTileDragDelegate.isLastDraggableTile(mTileView)).thenReturn(false);
+        assertTrue(mDelegate.isItemSupported(ContextMenuItemId.MOVE_DOWN));
+    }
+
+    @Test
+    public void testRemoveItem_AiMode() {
+        setupForAiModeTileTests();
+        Runnable onRemoveRunnable = mock(Runnable.class);
+        mDelegate.setOnRemoveRunnable(onRemoveRunnable);
+
+        mDelegate.removeItem();
+
+        verify(onRemoveRunnable, never()).run();
+        verify(mCustomTileModificationDelegate).remove(mData);
+        verify(mTileGroupDelegate, never()).removeMostVisitedItem(any());
     }
 }

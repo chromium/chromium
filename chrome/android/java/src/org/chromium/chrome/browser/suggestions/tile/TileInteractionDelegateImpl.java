@@ -184,6 +184,12 @@ class TileInteractionDelegateImpl
 
     @Override
     public void removeItem() {
+        // Wires up the "Remove" context menu option for the AI Mode tile
+        if (isAiMode()) {
+            mCustomTileModificationDelegate.remove(mTile.getData());
+            return;
+        }
+
         if (mOnRemoveRunnable != null) mOnRemoveRunnable.run();
 
         mTileGroupDelegate.removeMostVisitedItem(mTile);
@@ -240,10 +246,13 @@ class TileInteractionDelegateImpl
                 return IncognitoUtils.shouldOpenIncognitoAsWindow();
             case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
             case ContextMenuItemId.OPEN_IN_OTHER_WINDOW:
-            case ContextMenuItemId.SAVE_FOR_OFFLINE:
                 return true;
+            case ContextMenuItemId.SAVE_FOR_OFFLINE:
+                return !isAiMode();
             case ContextMenuItemId.REMOVE:
-                return !isCustomizationItemSupported(/* matchIsCustomLink= */ true);
+                // TODO(crbug.com/549681251): Enables REMOVE for the AI Mode tile once removal and
+                // undo are implemented
+                return !isCustomizationItemSupported(/* matchIsCustomLink= */ true) && !isAiMode();
             case ContextMenuItemId.PIN_THIS_SHORTCUT:
                 return isCustomizationItemSupported(/* matchIsCustomLink= */ false);
             case ContextMenuItemId.EDIT_SHORTCUT: // Fall through.
@@ -321,14 +330,17 @@ class TileInteractionDelegateImpl
         return mTile.isCustomLink();
     }
 
+    boolean isAiMode() {
+        return mTile.isAiMode();
+    }
+
     boolean isDraggable() {
-        return mTile.isCustomLink() || mTile.isAiMode();
+        return isCustomLink() || isAiMode();
     }
 
     boolean isCustomizationItemSupported(boolean matchIsCustomLink) {
-        if (!isCustomizationEnabledForTileSection()) {
-            return false;
-        }
+        if (!isCustomizationEnabledForTileSection() || isAiMode()) return false;
+
         return isCustomLink() == matchIsCustomLink;
     }
 }

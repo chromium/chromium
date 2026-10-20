@@ -246,8 +246,8 @@ public class TileGroup implements MostVisitedSites.Observer {
         void convert(@Nullable SiteSuggestion suggestion);
 
         /**
-         * Searches for an existing Custom Tile matching {@code suggestion}. If found, attempts to
-         * remove it. If successful, refreshes the MVT.
+         * Searches for an existing Custom Tile or AI Mode tile matching {@code suggestion}. If
+         * found, attempts to remove it. If successful, refreshes the MVT.
          */
         void remove(SiteSuggestion suggestion);
 
@@ -817,13 +817,20 @@ public class TileGroup implements MostVisitedSites.Observer {
             @Nullable Tile tile = findTile(suggestion);
             if (tile == null) return;
 
+            if (tile.isAiMode()) {
+                deleteAiModeTileAndUpdateOnSuccess();
+                return;
+            }
+
             deleteCustomLinkAndUpdateOnSuccess(tile);
         }
 
         @Override
         public void edit(SiteSuggestion suggestion) {
             @Nullable Tile tile = findTile(suggestion);
-            if (tile == null) return;
+            // tile.isAiMode() is a defensive guard to protect edit() from modifying the AI Mode
+            // tile
+            if (tile == null || tile.isAiMode()) return;
 
             CustomTileEditCoordinator customTileEditCoordinator =
                     mTileGroupDelegate.createCustomTileEditCoordinator(tile);
@@ -981,6 +988,10 @@ public class TileGroup implements MostVisitedSites.Observer {
                                     tile.getTitle(), tile.getUrl(), tile.getIndex());
                         });
             }
+        }
+
+        private void deleteAiModeTileAndUpdateOnSuccess() {
+            // TODO(crbug.com/549681251): Implements AI Mode tile removal and undo snackbar
         }
 
         /**
