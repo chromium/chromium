@@ -431,11 +431,6 @@ TEST_F(LoadingDataCollectorTest, RecordFailedNavigation) {
 }
 
 TEST_F(LoadingDataCollectorTest, ManyNavigations) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kLoadingPredictorTableConfig,
-      {{"max_navigation_lifetime_seconds", "60"}});
-
   auto navigation_id1 = GetNextId();
   auto navigation_id2 = GetNextId();
   auto navigation_id3 = GetNextId();

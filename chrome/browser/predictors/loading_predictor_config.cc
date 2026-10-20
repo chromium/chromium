@@ -4,8 +4,6 @@
 
 #include "chrome/browser/predictors/loading_predictor_config.h"
 
-#include "base/metrics/field_trial_params.h"
-#include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "third_party/blink/public/common/features.h"
@@ -36,20 +34,11 @@ std::string GetStringNameForHintOrigin(HintOrigin hint_origin) {
 }
 
 LoadingPredictorConfig::LoadingPredictorConfig()
-    : max_navigation_lifetime_seconds(base::GetFieldTrialParamByFeatureAsInt(
-          features::kLoadingPredictorTableConfig,
-          "max_navigation_lifetime_seconds",
-          60)),
-      max_hosts_to_track(base::GetFieldTrialParamByFeatureAsInt(
-          features::kLoadingPredictorTableConfig,
-          "max_hosts_to_track",
-          100)),
+    : max_navigation_lifetime_seconds(60),
+      max_hosts_to_track(100),
       max_hosts_to_track_for_lcpp(
           blink::features::kLCPCriticalPathPredictorMaxHostsToTrack.Get()),
-      max_origins_per_entry(base::GetFieldTrialParamByFeatureAsInt(
-          features::kLoadingPredictorTableConfig,
-          "max_origins_per_entry",
-          50)),
+      max_origins_per_entry(50),
       max_consecutive_misses(3),
       max_redirect_consecutive_misses(5),
       flush_data_to_disk_delay_seconds(30),

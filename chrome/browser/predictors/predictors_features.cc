@@ -29,9 +29,6 @@ BASE_FEATURE(kLoadingPredictorUseLocalPredictions,
 BASE_FEATURE(kLoadingOnlyLearnHighPriorityResources,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Configures the loading predictor table size and other base parameters.
-BASE_FEATURE(kLoadingPredictorTableConfig, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Modifies loading predictor so that the predictions also contain origins of
 // the redirect target of the navigation.
 BASE_FEATURE(kLoadingPreconnectToRedirectTarget,
