@@ -4,11 +4,12 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/compiler/compiler.gni")
+import("//third_party/jdk/jdk.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-_JAVAP_PATH = "//third_party/jdk/current/bin/javap"
+_JAVAP_PATH = "$android_jdk_home/bin/javap"
 
 declare_args() {
   # Enables JNI multiplexing to reduce JNI native methods overhead. Component

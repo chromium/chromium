@@ -14,6 +14,7 @@
 ../../../catapult/devil/devil/android/sdk/version_codes.py
 ../../../catapult/devil/devil/constants/__init__.py
 ../../../catapult/devil/devil/constants/exit_codes.py
+../../../jdk/java_home.py
 stack.py
 stack_core.py
 symbol.py

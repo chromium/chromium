@@ -42,6 +42,7 @@
 ../../third_party/catapult/tracing/tracing/value/__init__.py
 ../../third_party/catapult/tracing/tracing/value/convert_chart_json.py
 ../../third_party/catapult/tracing/tracing_project.py
+../../third_party/jdk/java_home.py
 ../gn_helpers.py
 ../util/lib/__init__.py
 ../util/lib/common/__init__.py

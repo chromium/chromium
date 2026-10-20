@@ -51,6 +51,7 @@ if (is_android) {
     data = [
       # Emulator
       "//build/android/pylib/",
+      "//third_party/jdk/java_home.py",
 
       # Common expectation
       "//third_party/blink/web_tests/LeakExpectations",

@@ -37,7 +37,6 @@ from devil.utils import run_tests_helper
 _DIR_SOURCE_ROOT = os.path.normpath(
     os.path.join(os.path.dirname(__file__), '..', '..')
 )
-_JAVA_HOME = os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current')
 
 with devil_env.SysPath(
     os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'colorama', 'src')
@@ -2560,7 +2559,7 @@ class _PrintCertsCommand(_Command):
         )
 
     def Run(self):
-        keytool = os.path.join(_JAVA_HOME, 'bin', 'keytool')
+        keytool = os.path.join(constants.JAVA_HOME, 'bin', 'keytool')
         pem_certificate_pattern = re.compile(
             r'-+BEGIN CERTIFICATE-+([\r\n0-9A-Za-z+/=]+)-+END CERTIFICATE-+[\r\n]*'
         )
@@ -2614,7 +2613,7 @@ class _PrintCertsCommand(_Command):
                 logging.warning('Running: %s', shlex.join(cmd))
                 env = os.environ.copy()
                 env['PATH'] = os.path.pathsep.join(
-                    [os.path.join(_JAVA_HOME, 'bin'), env.get('PATH')]
+                    [os.path.join(constants.JAVA_HOME, 'bin'), env.get('PATH')]
                 )
                 # Redirect stderr to hide verification failures (see explanation below).
                 return subprocess.check_output(

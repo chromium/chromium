@@ -451,6 +451,7 @@
 ../../third_party/catapult/tracing/tracing_build/render_histograms_viewer.py
 ../../third_party/catapult/tracing/tracing_build/vulcanize_histograms_viewer.py
 ../../third_party/catapult/tracing/tracing_project.py
+../../third_party/jdk/java_home.py
 ../../third_party/logdog/logdog/__init__.py
 ../../third_party/logdog/logdog/bootstrap.py
 ../../third_party/logdog/logdog/stream.py
