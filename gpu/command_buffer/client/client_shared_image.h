@@ -364,6 +364,13 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   // waiting on the appropriate SyncToken(s). When the
   // UseAutomaticSyncTokenManagement feature is enabled, this function waits on
   // all tracked SyncTokens for this SharedImage, ignoring `sync_token`. When
+  // the feature is disabled, it waits on `sync_token` if valid.
+  void CopyToGpuMemoryBuffer(const SyncToken& sync_token);
+
+  // Updates the GpuMemoryBuffer associated with this SharedImage after
+  // waiting on the appropriate SyncToken(s). When the
+  // UseAutomaticSyncTokenManagement feature is enabled, this function waits on
+  // all tracked SyncTokens for this SharedImage, ignoring `sync_token`. When
   // the feature is disabled, it waits on `sync_token` if valid. The `callback`
   // is run denoting if the copy was successful and the GpuMemoryBuffer is ready
   // to be mapped by the client.

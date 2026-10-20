@@ -79,7 +79,7 @@ class GPU_IPC_CLIENT_EXPORT ClientSharedImageInterface
   // later to get the shared memory mapping.
   scoped_refptr<ClientSharedImage> CreateSharedImageForSoftwareCompositor(
       const SharedImageInfo& si_info) override;
-  void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
+  void CopyToGpuMemoryBuffer(std::vector<SyncToken> sync_tokens,
                              const Mailbox& mailbox) override;
 #if BUILDFLAG(IS_WIN)
   void CopyToGpuMemoryBufferAsync(

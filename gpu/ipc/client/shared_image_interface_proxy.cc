@@ -281,10 +281,10 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
 }
 
 void SharedImageInterfaceProxy::CopyToGpuMemoryBuffer(
-    const SyncToken& sync_token,
+    std::vector<SyncToken> sync_tokens,
     const Mailbox& mailbox) {
   std::vector<SyncToken> dependencies =
-      GenerateDependenciesFromSyncToken(std::move(sync_token), host_);
+      GenerateDependenciesFromSyncTokens(std::move(sync_tokens), host_);
   {
     base::AutoLock lock(lock_);
     last_flush_id_ = host_->EnqueueDeferredMessage(

@@ -187,8 +187,7 @@ void CopyToGpuMemoryBuffer(
         blit_done_sync_token, base::BindOnce(std::move(copy_to_gmb_done_lambda),
                                              std::move(callback)));
   } else {
-    sii->CopyToGpuMemoryBuffer(blit_done_sync_token,
-                               dst_frame->shared_image()->mailbox());
+    dst_frame->shared_image()->CopyToGpuMemoryBuffer(blit_done_sync_token);
   }
 
   // Synchronize RasterInterface with SharedImageInterface.

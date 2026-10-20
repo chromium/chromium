@@ -232,9 +232,9 @@ ClientSharedImageInterface::CreateSharedImageForSoftwareCompositor(
 }
 
 void ClientSharedImageInterface::CopyToGpuMemoryBuffer(
-    const SyncToken& sync_token,
+    std::vector<SyncToken> sync_tokens,
     const Mailbox& mailbox) {
-  proxy_->CopyToGpuMemoryBuffer(sync_token, mailbox);
+  proxy_->CopyToGpuMemoryBuffer(std::move(sync_tokens), mailbox);
 }
 
 #if BUILDFLAG(IS_WIN)
