@@ -54,7 +54,7 @@ ShelfViewTestAPI::ShelfViewTestAPI(ShelfView* shelf_view)
 ShelfViewTestAPI::~ShelfViewTestAPI() = default;
 
 size_t ShelfViewTestAPI::GetButtonCount() {
-  return shelf_view_->view_model_->view_size();
+  return shelf_view()->view_model_->view_size();
 }
 
 ShelfAppButton* ShelfViewTestAPI::GetButton(int index) {
@@ -65,34 +65,34 @@ ShelfID ShelfViewTestAPI::AddItem(ShelfItemType type) {
   ShelfItem item;
   item.type = type;
   item.id = ShelfID(base::NumberToString(id_++));
-  shelf_view_->model_->Add(item,
-                           std::make_unique<TestShelfItemDelegate>(item.id));
+  shelf_view()->model_->Add(item,
+                            std::make_unique<TestShelfItemDelegate>(item.id));
   return item.id;
 }
 
 void ShelfViewTestAPI::RemoveItemAt(int index) {
-  shelf_view_->model_->RemoveItemAt(index);
+  shelf_view()->model_->RemoveItemAt(index);
 }
 
 views::View* ShelfViewTestAPI::GetViewAt(int index) {
-  return shelf_view_->view_model_->view_at(index);
+  return shelf_view()->view_model_->view_at(index);
 }
 
 const gfx::Rect& ShelfViewTestAPI::GetBoundsByIndex(int index) {
-  return shelf_view_->view_model_->view_at(index)->bounds();
+  return shelf_view()->view_model_->view_at(index)->bounds();
 }
 
 const gfx::Rect& ShelfViewTestAPI::GetIdealBoundsByIndex(int index) {
-  return shelf_view_->view_model_->ideal_bounds(index);
+  return shelf_view()->view_model_->ideal_bounds(index);
 }
 
 base::TimeDelta ShelfViewTestAPI::GetAnimationDuration() const {
-  DCHECK(shelf_view_->bounds_animator_);
-  return shelf_view_->bounds_animator_->GetAnimationDuration();
+  DCHECK(shelf_view()->bounds_animator_);
+  return shelf_view()->bounds_animator_->GetAnimationDuration();
 }
 
 void ShelfViewTestAPI::SetAnimationDuration(base::TimeDelta duration) {
-  shelf_view_->bounds_animator_->SetAnimationDuration(duration);
+  shelf_view()->bounds_animator_->SetAnimationDuration(duration);
 }
 
 void ShelfViewTestAPI::RunMessageLoopUntilAnimationsDone(
@@ -114,32 +114,34 @@ void ShelfViewTestAPI::RunMessageLoopUntilAnimationsDone(
 }
 
 void ShelfViewTestAPI::RunMessageLoopUntilAnimationsDone() {
-  if (!shelf_view_->bounds_animator_->IsAnimating())
+  if (!shelf_view()->bounds_animator_->IsAnimating()) {
     return;
+  }
 
-  RunMessageLoopUntilAnimationsDone(shelf_view_->bounds_animator_.get());
+  RunMessageLoopUntilAnimationsDone(shelf_view()->bounds_animator_.get());
 }
 
 gfx::Rect ShelfViewTestAPI::GetMenuAnchorRect(const views::View& source,
                                               const gfx::Point& location,
                                               bool context_menu) const {
-  return shelf_view_->GetMenuAnchorRect(source, location, context_menu);
+  return shelf_view()->GetMenuAnchorRect(source, location, context_menu);
 }
 
 bool ShelfViewTestAPI::CloseMenu() {
-  if (!shelf_view_->IsShowingMenu())
+  if (!shelf_view()->IsShowingMenu()) {
     return false;
+  }
 
-  shelf_view_->shelf_menu_model_adapter_->Cancel();
+  shelf_view()->shelf_menu_model_adapter_->Cancel();
   return true;
 }
 
 const gfx::Rect& ShelfViewTestAPI::visible_shelf_item_bounds_union() const {
-  return shelf_view_->visible_shelf_item_bounds_union_;
+  return shelf_view()->visible_shelf_item_bounds_union_;
 }
 
 ShelfTooltipManager* ShelfViewTestAPI::tooltip_manager() {
-  return shelf_view_->shelf()->tooltip();
+  return shelf_view()->shelf()->tooltip();
 }
 
 int ShelfViewTestAPI::GetMinimumDragDistance() const {
@@ -148,41 +150,42 @@ int ShelfViewTestAPI::GetMinimumDragDistance() const {
 
 bool ShelfViewTestAPI::SameDragType(ShelfItemType typea,
                                     ShelfItemType typeb) const {
-  return shelf_view_->SameDragType(typea, typeb);
+  return shelf_view()->SameDragType(typea, typeb);
 }
 
 gfx::Rect ShelfViewTestAPI::GetBoundsForDragInsertInScreen() {
-  return shelf_view_->GetBoundsForDragInsertInScreen();
+  return shelf_view()->GetBoundsForDragInsertInScreen();
 }
 
 bool ShelfViewTestAPI::IsRippedOffFromShelf() {
-  return shelf_view_->dragged_off_shelf_;
+  return shelf_view()->dragged_off_shelf_;
 }
 
 ShelfButtonPressedMetricTracker*
 ShelfViewTestAPI::shelf_button_pressed_metric_tracker() {
-  return &(shelf_view_->shelf_button_pressed_metric_tracker_);
+  return &(shelf_view()->shelf_button_pressed_metric_tracker_);
 }
 
 void ShelfViewTestAPI::SetShelfContextMenuCallback(
     base::RepeatingClosure closure) {
-  DCHECK(shelf_view_->context_menu_shown_callback_.is_null());
-  shelf_view_->context_menu_shown_callback_ = std::move(closure);
+  DCHECK(shelf_view()->context_menu_shown_callback_.is_null());
+  shelf_view()->context_menu_shown_callback_ = std::move(closure);
 }
 
 std::optional<size_t> ShelfViewTestAPI::GetSeparatorIndex() const {
-  return shelf_view_->separator_index_;
+  return shelf_view()->separator_index_;
 }
 
 bool ShelfViewTestAPI::IsSeparatorVisible() const {
-  return shelf_view_->separator_->GetVisible();
+  return shelf_view()->separator_->GetVisible();
 }
 
 bool ShelfViewTestAPI::HasPendingPromiseAppRemoval(
     const std::string& promise_app_id) const {
-  auto found = shelf_view_->pending_promise_apps_removals_.find(promise_app_id);
+  auto found =
+      shelf_view()->pending_promise_apps_removals_.find(promise_app_id);
 
-  return found != shelf_view_->pending_promise_apps_removals_.end();
+  return found != shelf_view()->pending_promise_apps_removals_.end();
 }
 
 }  // namespace ash

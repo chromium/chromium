@@ -9,10 +9,12 @@
 #include <string>
 
 #include "ash/public/cpp/shelf_item.h"
+#include "ash/shelf/shelf_view.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/views/view_tracker.h"
 
 namespace base {
 class TimeDelta;
@@ -33,7 +35,6 @@ class OverflowBubble;
 class ShelfAppButton;
 class ShelfButtonPressedMetricTracker;
 class ShelfTooltipManager;
-class ShelfView;
 
 // Use the api in this class to test ShelfView.
 class ShelfViewTestAPI {
@@ -99,7 +100,12 @@ class ShelfViewTestAPI {
   const gfx::Rect& visible_shelf_item_bounds_union() const;
 
   // An accessor for |shelf_view|.
-  ShelfView* shelf_view() { return shelf_view_; }
+  ShelfView* shelf_view() {
+    return static_cast<ShelfView*>(shelf_view_.view());
+  }
+  const ShelfView* shelf_view() const {
+    return static_cast<const ShelfView*>(shelf_view_.view());
+  }
 
   // An accessor for the shelf tooltip manager.
   ShelfTooltipManager* tooltip_manager();
@@ -138,7 +144,7 @@ class ShelfViewTestAPI {
   bool HasPendingPromiseAppRemoval(const std::string& promise_app_id) const;
 
  private:
-  raw_ptr<ShelfView, DanglingUntriaged> shelf_view_;
+  views::ViewTracker shelf_view_;
   int id_ = 0;
 };
 
