@@ -245,8 +245,6 @@ if (!is_chromeos_device) {
       "password_bubble_interactive_uitest.cc",
     ]
 
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
     deps = [
       ":passwords",
       ":test_support",

@@ -122,8 +122,6 @@ if (!is_chromeos_device) {
       "shared_tab_group_interactive_uitest.cc",
     ]
 
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
     deps = [
       ":saved_tab_groups",
       "//chrome/browser:chrome_content_browser_client",

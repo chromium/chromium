@@ -124,8 +124,6 @@ source_set("unit_tests") {
     "web_contents_display_observer_view_unittest.cc",
   ]
 
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   deps = [
     ":media_router",
     "//base",
@@ -165,8 +163,6 @@ source_set("browser_tests") {
     "presentation_receiver_window_view_browsertest.cc",
   ]
 
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   deps = [
     ":media_router",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
@@ -194,8 +190,6 @@ if (!is_chromeos_device) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [ "media_router_dialog_controller_views_interactive_uitest.cc" ]
-
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
     deps = [
       ":media_router",

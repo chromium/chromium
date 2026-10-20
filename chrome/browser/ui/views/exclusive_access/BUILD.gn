@@ -48,8 +48,6 @@ source_set("browser_tests") {
 
   sources = [ "exclusive_access_bubble_views_browsertest.cc" ]
 
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   deps = [
     ":exclusive_access",
     "//chrome/app:command_ids",
@@ -71,8 +69,6 @@ source_set("interactive_ui_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [ "exclusive_access_bubble_views_interactive_uitest.cc" ]
-
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
   deps = [
     ":exclusive_access",

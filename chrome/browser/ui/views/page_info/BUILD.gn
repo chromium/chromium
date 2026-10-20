@@ -210,7 +210,6 @@ source_set("browser_tests") {
     "//testing/gtest",
     "//ui/events:test_support",
   ]
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
   if (safe_browsing_mode != 0) {
     sources += [ "suspicious_site_bubble_view_browsertest.cc" ]
@@ -231,7 +230,6 @@ source_set("interactive_ui_tests") {
     "//content/test:test_support",
     "//ui/events:test_support",
   ]
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
   if (is_chromeos) {
     deps += [ "//chrome/browser/smart_card" ]

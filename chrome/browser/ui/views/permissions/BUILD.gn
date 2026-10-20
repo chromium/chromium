@@ -215,8 +215,6 @@ if (toolkit_views) {
       "permission_request_chip_browsertest.cc",
     ]
 
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
     deps = [
       ":permission_prompt_observer",
       ":permissions",
@@ -250,8 +248,6 @@ if (toolkit_views) {
         "permission_rhs_indicators_interactive_uitest.cc",
         "quiet_prompt_interactive_uitest.cc",
       ]
-
-      configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
       deps = [
         ":permissions",

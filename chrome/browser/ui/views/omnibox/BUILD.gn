@@ -213,8 +213,6 @@ source_set("unit_tests") {
     "webui_readonly_omnibox_unittest.cc",
   ]
 
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   deps = [
     ":omnibox",
     ":test_support",
@@ -291,8 +289,6 @@ source_set("browser_tests") {
     "omnibox_suggestion_button_row_browsertest.cc",
     "omnibox_webui_popup_defer_creation_browsertest.cc",
   ]
-
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
   deps = [
     ":omnibox",
