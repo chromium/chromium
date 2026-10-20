@@ -27,6 +27,8 @@ This is a testharness.js-based test.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['line-clamp'] = "\\" etc., etc. \\" 12" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['line-clamp'] = "3 ellipsis auto" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['line-clamp'] = "1 -webkit-legacy" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['line-clamp'] = "auto -webkit-legacy" should set the property value
@@ -34,6 +36,8 @@ This is a testharness.js-based test.
 [FAIL] e.style['line-clamp'] = "no-ellipsis -webkit-legacy" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['line-clamp'] = "3 auto -webkit-legacy" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['line-clamp'] = "3 ellipsis auto -webkit-legacy" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.
 

@@ -5,7 +5,11 @@ This is a testharness.js-based test.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['line-clamp'] = "\\" etc., etc. \\" 12" should set the property value
   assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['line-clamp'] = "3 ellipsis auto" should set the property value
+  assert_equals: serialization should be canonical expected "3 ellipsis auto" but got "3 auto"
 [FAIL] e.style['line-clamp'] = "no-ellipsis -webkit-legacy" should set the property value
   assert_equals: serialization should be canonical expected "auto no-ellipsis -webkit-legacy" but got "no-ellipsis -webkit-legacy"
+[FAIL] e.style['line-clamp'] = "3 ellipsis auto -webkit-legacy" should set the property value
+  assert_equals: serialization should be canonical expected "3 ellipsis auto -webkit-legacy" but got "3 auto -webkit-legacy"
 Harness: the test ran to completion.
 
