@@ -594,8 +594,7 @@ void ContextualTasksSidePanelCoordinator::Close() {
 
   // When scoped to the tab, `CleanUpUnusedWebContents()` already removed the
   // WebContents if no other tab is associated with its task.
-  if (!scoped_to_tab &&
-      kShowEntryPoint.Get() == EntryPointOption::kNoEntryPoint) {
+  if (!scoped_to_tab && !ShouldPreserveTaskOnClose()) {
     if (content::WebContents* active_web_contents = GetActiveWebContents()) {
       MaybeDetachWebContents(active_web_contents);
       for (auto it = task_id_to_web_contents_cache_.begin();
@@ -1429,14 +1428,23 @@ void ContextualTasksSidePanelCoordinator::DisassociateTabFromTask(
   }
 }
 
+bool ContextualTasksSidePanelCoordinator::ShouldPreserveTaskOnClose() const {
+  const bool can_resume_from_pinned_button =
+      contextual_tasks::IsContextualTasksPinningV2Enabled() &&
+      contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() &&
+      contextual_tasks::GetEffectivePinState(browser_window_->GetProfile());
+  return contextual_tasks::kShowEntryPoint.Get() ==
+             contextual_tasks::EntryPointOption::kToolbarEphemeralBranded ||
+         can_resume_from_pinned_button;
+}
+
 void ContextualTasksSidePanelCoordinator::DisassociateAllTabsFromCurrentTask() {
   if (!contextual_tasks_service_) {
     return;
   }
   std::optional<ContextualTask> current_task = GetCurrentTask();
   if (current_task) {
-    if (contextual_tasks::kShowEntryPoint.Get() ==
-        contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    if (ShouldPreserveTaskOnClose()) {
       return;
     }
 
@@ -1459,7 +1467,7 @@ void ContextualTasksSidePanelCoordinator::DisassociateAllTabsFromCurrentTask() {
 }
 
 void ContextualTasksSidePanelCoordinator::DisassociateActiveTabOnClose() {
-  if (kShowEntryPoint.Get() == EntryPointOption::kToolbarEphemeralBranded) {
+  if (ShouldPreserveTaskOnClose()) {
     return;
   }
   tabs::TabInterface* active_tab =

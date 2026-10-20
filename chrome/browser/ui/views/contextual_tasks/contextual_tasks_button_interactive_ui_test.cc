@@ -1219,12 +1219,15 @@ class ContextualTasksEphemeralButtonCobrowseDisabledInteractiveTest
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{contextual_tasks::kContextualTasksSidePanel, {}},
-         {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
-          {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}},
-         {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}}},
-        {contextual_tasks::kContextualTasks});
+        GetEnabledFeatures(), {contextual_tasks::kContextualTasks});
     InteractiveBrowserTest::SetUp();
+  }
+
+  virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
+    return {{contextual_tasks::kContextualTasksSidePanel, {}},
+            {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
+             {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}},
+            {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}}};
   }
 
   void SetUpOnMainThread() override {
@@ -1334,6 +1337,89 @@ IN_PROC_BROWSER_TEST_F(
       Do([&]() {
         tabs::TabInterface* tab =
             browser()->GetTabStripModel()->GetTabAtIndex(0);
+        new_task_id =
+            GetContextualTasksService()
+                ->GetContextualTaskForTab(
+                    sessions::SessionTabHelper::IdForTab(tab->GetContents()))
+                ->GetTaskId();
+        EXPECT_NE(initial_task_id, new_task_id);
+      }));
+}
+
+class ContextualTasksEphemeralButtonCobrowseDisabledPinningV2InteractiveTest
+    : public ContextualTasksEphemeralButtonCobrowseDisabledInteractiveTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        ContextualTasksEphemeralButtonCobrowseDisabledInteractiveTest::
+            GetEnabledFeatures();
+    enabled_features.push_back(
+        {contextual_tasks::kContextualTasksPinningV2, {}});
+    return enabled_features;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksEphemeralButtonCobrowseDisabledPinningV2InteractiveTest,
+    PermanentPinButtonTogglesExistingTaskAndOpensZeroStateWhenNone) {
+  base::Uuid initial_task_id;
+  base::Uuid resumed_task_id;
+  base::Uuid pinned_resumed_task_id;
+  base::Uuid new_task_id;
+
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      // Create initial task and open side panel.
+      CreateTaskForTab(0), Do([&]() {
+        tabs::TabInterface* tab =
+            browser()->GetTabStripModel()->GetTabAtIndex(0);
+        initial_task_id =
+            GetContextualTasksService()
+                ->GetContextualTaskForTab(
+                    sessions::SessionTabHelper::IdForTab(tab->GetContents()))
+                ->GetTaskId();
+      }),
+      SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      // Pressing the ephemeral button resumes the original task.
+      PressButton(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
+        tabs::TabInterface* tab =
+            browser()->GetTabStripModel()->GetTabAtIndex(0);
+        resumed_task_id =
+            GetContextualTasksService()
+                ->GetContextualTaskForTab(
+                    sessions::SessionTabHelper::IdForTab(tab->GetContents()))
+                ->GetTaskId();
+        EXPECT_EQ(initial_task_id, resumed_task_id);
+      }),
+      SimulateClosingContextualTaskSidePanel(),
+      // Pin to toolbar and press permanent button: should toggle existing task
+      // open because tab 0 already has an associated session.
+      Do([&]() {
+        PinnedToolbarActionsModel::Get(browser()->GetProfile())
+            ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+      }),
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      Do([&]() {
+        tabs::TabInterface* tab =
+            browser()->GetTabStripModel()->GetTabAtIndex(0);
+        pinned_resumed_task_id =
+            GetContextualTasksService()
+                ->GetContextualTaskForTab(
+                    sessions::SessionTabHelper::IdForTab(tab->GetContents()))
+                ->GetTaskId();
+        EXPECT_EQ(initial_task_id, pinned_resumed_task_id);
+      }),
+      // Switch to tab 1 (which has no associated task) and press permanent
+      // button: should open a new zero-state thread.
+      SelectTab(kTabStripElementId, 1),
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      Do([&]() {
+        tabs::TabInterface* tab =
+            browser()->GetTabStripModel()->GetTabAtIndex(1);
         new_task_id =
             GetContextualTasksService()
                 ->GetContextualTaskForTab(

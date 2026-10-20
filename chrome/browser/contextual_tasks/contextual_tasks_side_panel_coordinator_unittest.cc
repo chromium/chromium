@@ -877,6 +877,38 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       CloseTaskPreservesTabWhenToolbarButtonPinned) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasksEphemeralBrandedEntryPoint,
+        {{"ContextualTasksEntryPoint", "no-entry-point"}}},
+       {kEnableContextualTasksPinButtonInToolbar, {}},
+       {kContextualTasksPinningV2, {}}},
+      {});
+
+  auto* model = PinnedToolbarActionsModel::Get(profile_.get());
+  ASSERT_TRUE(model);
+  model->UpdatePinnedState(kActionSidePanelShowContextualTasks,
+                           /*should_pin=*/true);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(active_tab_id))
+      .WillRepeatedly(Return(task));
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(task.GetTaskId()))
+      .WillRepeatedly(Return(std::vector<SessionID>{active_tab_id}));
+
+  EXPECT_CALL(*mock_controller_,
+              DisassociateTabFromTask(task.GetTaskId(), active_tab_id))
+      .Times(0);
+
+  coordinator_->Close();
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
        OpenInZeroState_PinnedToolbarButton) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableContextualTasksPinButtonInToolbar);

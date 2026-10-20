@@ -275,6 +275,11 @@ class ContextualTasksSidePanelCoordinator
   // Disassociate the tab from the task if it's associated with it.
   void DisassociateTabFromTask(content::WebContents* web_contents);
 
+  // Returns whether the current task and its tab associations should be
+  // preserved when the side panel is closed so the user can resume it from the
+  // ephemeral toolbar button or the pinned toolbar button (under Pinning V2).
+  bool ShouldPreserveTaskOnClose() const;
+
   // Disassociate all tabs associated with the current task, or the active tab
   // if no current task exists. Under kToolbarEphemeralBranded mode, active
   // tasks with conversation threads are preserved on panel close to allow

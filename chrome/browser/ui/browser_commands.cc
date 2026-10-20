@@ -152,6 +152,7 @@
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -2615,6 +2616,13 @@ void ToggleContextualTasksSidePanelZeroState(BrowserWindowInterface* browser) {
   CHECK(controller);
   if (controller->IsPanelOpenForContextualTask()) {
     controller->Close();
+  } else if (contextual_tasks::IsContextualTasksPinningV2Enabled() &&
+             controller->GetCurrentTask().has_value()) {
+    // If there is an active task, toggle the side panel.
+    controller->Show(
+        /*transition_from_tab=*/false,
+        omnibox::ChromeAimEntryPoint::
+            DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
   } else if (contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(
                  browser ? browser->GetProfile() : nullptr)) {
     ExecAskGoogleAboutThisPage(
