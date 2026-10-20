@@ -1910,23 +1910,18 @@ void AXObjectCacheImpl::Remove(Node* node, bool notify_parent) {
                                layout_object_mapping_.end())
       << "AXObject cannot be backed by both a layout object and node.";
 
-  if (node == active_aria_modal_dialog_ &&
-      lifecycle_.StateAllowsAXObjectsToBeDirtied()) {
-    UpdateActiveAriaModalDialog(FocusedNode());
-  }
-
-  CHECK(lifecycle_.StateAllowsRemovingAXObjects()) << *this;
-
-  AXID axid = DOMNodeIds::ExistingIdForNode(node);
-  if (!axid) {
-    return;
-  }
+  AXID axid = node->GetDomNodeId();
 
   // HTML ids belong to connected DOM elements, not their AXObjects. Elements
   // may be registered before an AXObject exists, and connected AXObjects can be
   // removed and recreated without removing their DOM elements.
   if (!node->isConnected() && relation_cache_) {
     relation_cache_->RemoveRegisteredIdAttribute(axid);
+  }
+
+  if (node == active_aria_modal_dialog_ &&
+      lifecycle_.StateAllowsAXObjectsToBeDirtied()) {
+    UpdateActiveAriaModalDialog(FocusedNode());
   }
 
   DCHECK_GE(axid, 1);
@@ -2438,8 +2433,9 @@ void AXObjectCacheImpl::TextChanged(Node* node) {
     return;
 
   // A text changed event is redundant with children changed on the same node.
-  if (AXID node_id = DOMNodeIds::ExistingIdForNode(node)) {
-    if (nodes_with_pending_children_changed_.Contains(node_id)) {
+  if (AXID node_id = static_cast<AXID>(node->GetDomNodeId())) {
+    if (nodes_with_pending_children_changed_.find(node_id) !=
+        nodes_with_pending_children_changed_.end()) {
       return;
     }
   }
@@ -2469,7 +2465,7 @@ void AXObjectCacheImpl::TextChanged(const LayoutObject* layout_object) {
     // If the text changed in a pseudo-element, rebuild the entire subtree.
     if (node->IsPseudoElement()) {
       RemoveAXObjectsInLayoutSubtree(node->GetLayoutObject());
-    } else if (AXID node_id = DOMNodeIds::ExistingIdForNode(node)) {
+    } else if (AXID node_id = static_cast<AXID>(node->GetDomNodeId())) {
       // Text changed is redundant with children changed on the same node.
       if (nodes_with_pending_children_changed_.Contains(node_id)) {
         return;
@@ -3418,14 +3414,10 @@ int AXObjectCacheImpl::GetLocationSerializationDelay() {
   // currently focused object, so schedule serializations (almost )immediately
   // if that object changes. The root is an exception because it often has focus
   // while the page is loading.
-  Node* focused_node = FocusedNode();
-  if (focused_node != document_) {
-    if (DOMNodeId focused_node_id =
-            DOMNodeIds::ExistingIdForNode(focused_node)) {
-      if (changed_bounds_ids_.Contains(focused_node_id)) {
-        return kDelayForLocationUpdatesFocused;
-      }
-    }
+  DOMNodeId focused_node_id = FocusedNode()->GetDomNodeId();
+  if (focused_node_id != document_->GetDomNodeId() &&
+      changed_bounds_ids_.Contains(focused_node_id)) {
+    return kDelayForLocationUpdatesFocused;
   }
 
   if (accessibility_focus_ != ui::AXNodeData::kInvalidAXID &&
@@ -6740,8 +6732,9 @@ void AXObjectCacheImpl::HandleTextMarkerDataAddedWithCleanLayout(Node* node) {
             .is_new_entry) {
       ChildrenChangedWithCleanLayout(node);
     }
-  } else if (AXID node_id = DOMNodeIds::ExistingIdForNode(node)) {
-    const auto& iter = nodes_with_spelling_or_grammar_markers_.find(node_id);
+  } else {
+    const auto& iter =
+        nodes_with_spelling_or_grammar_markers_.find(node->GetDomNodeId());
     if (iter != nodes_with_spelling_or_grammar_markers_.end()) {
       nodes_with_spelling_or_grammar_markers_.erase(iter);
       ChildrenChangedWithCleanLayout(node);
@@ -6901,8 +6894,8 @@ void AXObjectCacheImpl::HandleScrollPositionChanged(
   InvalidateBoundingBoxForFixedOrStickyPosition();
 
   Node* node = GetClosestNodeForLayoutObject(layout_object);
-  if (AXID node_id = DOMNodeIds::ExistingIdForNode(node)) {
-    InvalidateBoundingBox(node_id);
+  if (node) {
+    InvalidateBoundingBox(node->GetDomNodeId());
   }
 }
 
