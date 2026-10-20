@@ -17,8 +17,6 @@
 #include "third_party/blink/renderer/modules/webaudio/oscillator_handler.h"
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "v8/include/v8-isolate.h"
 
 #if defined(ARCH_CPU_X86_FAMILY)
 #include <xmmintrin.h>
@@ -57,20 +55,22 @@ constexpr unsigned GetPeriodicWaveSize(float sample_rate) {
 
 }  // namespace
 
-PeriodicWaveHandler* PeriodicWaveHandler::Create(float sample_rate,
-                                                 base::span<const float> real,
-                                                 base::span<const float> imag,
-                                                 bool disable_normalization) {
-  auto* handler = MakeGarbageCollected<PeriodicWaveHandler>(sample_rate);
+scoped_refptr<PeriodicWaveHandler> PeriodicWaveHandler::Create(
+    float sample_rate,
+    base::span<const float> real,
+    base::span<const float> imag,
+    bool disable_normalization) {
+  auto handler = base::MakeRefCounted<PeriodicWaveHandler>(sample_rate);
   if (!handler->CreateBandLimitedTables(real, imag, disable_normalization)) {
     return nullptr;
   }
   return handler;
 }
 
-PeriodicWaveHandler* PeriodicWaveHandler::CreateBasicWaveform(float sample_rate,
-                                                              int shape) {
-  auto* handler = MakeGarbageCollected<PeriodicWaveHandler>(sample_rate);
+scoped_refptr<PeriodicWaveHandler> PeriodicWaveHandler::CreateBasicWaveform(
+    float sample_rate,
+    int shape) {
+  auto handler = base::MakeRefCounted<PeriodicWaveHandler>(sample_rate);
   if (!handler->GenerateBasicWaveform(shape)) {
     return nullptr;
   }
@@ -85,10 +85,6 @@ PeriodicWaveHandler::PeriodicWaveHandler(float sample_rate)
           std::lround(kNumberOfOctaveBands * log2f(periodic_wave_size_)))),
       lowest_fundamental_frequency_(sample_rate / periodic_wave_size_),
       rate_scale_(periodic_wave_size_ / sample_rate) {}
-
-PeriodicWaveHandler::~PeriodicWaveHandler() {
-  external_memory_accounter_.Clear(v8::Isolate::GetCurrent());
-}
 
 void PeriodicWaveHandler::WaveDataForFundamentalFrequency(
     float fundamental_frequency,
@@ -347,8 +343,6 @@ bool PeriodicWaveHandler::CreateBandLimitedTables(
     if (!table->TryAllocate(periodic_wave_size_)) {
       return false;
     }
-    external_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
-                                        periodic_wave_size_ * sizeof(float));
     band_limited_tables_.push_back(std::move(table));
 
     // Apply an inverse FFT to generate the time-domain table data.

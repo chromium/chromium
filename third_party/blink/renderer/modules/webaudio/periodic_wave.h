@@ -29,10 +29,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_PERIODIC_WAVE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_PERIODIC_WAVE_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave_handler.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -65,19 +66,22 @@ class MODULES_EXPORT PeriodicWave final : public ScriptWrappable {
                               const PeriodicWaveOptions*,
                               ExceptionState&);
 
-  explicit PeriodicWave(const PeriodicWaveHandler* handler);
-  ~PeriodicWave() final = default;
+  explicit PeriodicWave(scoped_refptr<const PeriodicWaveHandler> handler);
+  ~PeriodicWave() final;
 
-  void Trace(Visitor*) const final;
-
-  const PeriodicWaveHandler* handler() const {
-    return periodic_wave_handler_.Get();
+  scoped_refptr<const PeriodicWaveHandler> handler() const {
+    return periodic_wave_handler_;
   }
 
  private:
   static PeriodicWave* CreateBasicWaveform(float sample_rate, int shape);
 
-  const Member<const PeriodicWaveHandler> periodic_wave_handler_;
+  const scoped_refptr<const PeriodicWaveHandler> periodic_wave_handler_;
+
+  // Held by PeriodicWave rather than PeriodicWaveHandler so that V8 external
+  // memory accounting remains associated with the script wrapper on the main
+  // thread while PeriodicWaveHandler remains a pure audio data structure.
+  V8ExternalMemoryAccounter external_memory_accounter_;
 };
 
 }  // namespace blink

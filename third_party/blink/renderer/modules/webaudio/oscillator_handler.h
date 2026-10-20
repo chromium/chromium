@@ -9,13 +9,13 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/thread_annotations.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_oscillator_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_oscillator_type.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_scheduled_source_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
@@ -27,6 +27,8 @@ class MODULES_EXPORT OscillatorHandler final
     : public AudioScheduledSourceHandler {
   FRIEND_TEST_ALL_PREFIXES(OscillatorHandlerTest, RoundingBug);
   FRIEND_TEST_ALL_PREFIXES(OscillatorHandlerTest, NegativeIncrementRoundingBug);
+  FRIEND_TEST_ALL_PREFIXES(OscillatorHandlerTest,
+                           PeriodicWaveGarbageCollectedWhilePlaying);
 
  public:
   // The waveform type.
@@ -59,7 +61,7 @@ class MODULES_EXPORT OscillatorHandler final
   V8OscillatorType::Enum GetType() const;
   void SetType(V8OscillatorType::Enum, ExceptionState&);
 
-  void SetPeriodicWave(const PeriodicWaveHandler*);
+  void SetPeriodicWave(scoped_refptr<const PeriodicWaveHandler>);
 
   void HandleStoppableSourceNode() override;
 
@@ -67,7 +69,7 @@ class MODULES_EXPORT OscillatorHandler final
   bool SetInitialType(const String& oscillator_type);
 
   // Sets the initial periodic wave.
-  void SetInitialPeriodicWave(const PeriodicWaveHandler*);
+  void SetInitialPeriodicWave(scoped_refptr<const PeriodicWaveHandler>);
 
  private:
   OscillatorHandler(AudioNode&,
@@ -79,7 +81,8 @@ class MODULES_EXPORT OscillatorHandler final
   bool SetType(uint8_t);
 
   // Returns true if there are sample-accurate timeline parameter changes.
-  bool CalculateSampleAccuratePhaseIncrements(uint32_t frames_to_process);
+  bool CalculateSampleAccuratePhaseIncrements(uint32_t frames_to_process)
+      EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
   bool PropagatesSilence() const override;
 
@@ -88,7 +91,8 @@ class MODULES_EXPORT OscillatorHandler final
   // Compute the output for k-rate AudioParams
   double ProcessKRate(int n,
                       base::span<float> destination,
-                      double virtual_read_index) const;
+                      double virtual_read_index) const
+      EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
   // Scalar version for the main loop in ProcessKRate().  Returns the updated
   // virtual_read_index.
@@ -97,7 +101,8 @@ class MODULES_EXPORT OscillatorHandler final
                             base::span<float> destination,
                             double virtual_read_index,
                             float frequency,
-                            float rate_scale) const;
+                            float rate_scale) const
+      EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
   // Vectorized version (if available) for the main loop in ProcessKRate().
   // Returns the number of elements processed and the updated
@@ -106,13 +111,15 @@ class MODULES_EXPORT OscillatorHandler final
                                              base::span<float> destination,
                                              double virtual_read_index,
                                              float frequency,
-                                             float rate_scale) const;
+                                             float rate_scale) const
+      EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
   // Compute the output for a-rate AudioParams
   double ProcessARate(int n,
                       base::span<float> destination,
                       double virtual_read_index,
-                      base::span<float> phase_increments) const;
+                      base::span<float> phase_increments) const
+      EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
   // Scalar version of ProcessARate().  Also handles any values not handled by
   // the vector version.
@@ -133,7 +140,8 @@ class MODULES_EXPORT OscillatorHandler final
                             int n,
                             base::span<float> destination,
                             double virtual_read_index,
-                            base::span<const float> phase_increments) const;
+                            base::span<const float> phase_increments) const
+      EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
   // Vector version of ProcessARate().  Returns the number of frames processed
   // and the update virtual_read_index.
@@ -141,7 +149,8 @@ class MODULES_EXPORT OscillatorHandler final
       int n,
       base::span<float> destination,
       double virtual_read_index,
-      base::span<const float> phase_increments) const;
+      base::span<const float> phase_increments) const
+      EXCLUSIVE_LOCKS_REQUIRED(process_lock_);
 
   // Handles the linear interpolation in ProcessARateVector().
   //
@@ -191,9 +200,8 @@ class MODULES_EXPORT OscillatorHandler final
   AudioFloatArray phase_increments_;
   AudioFloatArray detune_values_;
 
-  // PeriodicWaveHandler cannot cause cycles with OscillatorNode as it is not
-  // scriptable.
-  CrossThreadPersistent<const PeriodicWaveHandler> periodic_wave_;
+  scoped_refptr<const PeriodicWaveHandler> periodic_wave_
+      GUARDED_BY(process_lock_);
 
   base::WeakPtrFactory<AudioScheduledSourceHandler> weak_ptr_factory_{this};
 };

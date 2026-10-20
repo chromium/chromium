@@ -6,6 +6,7 @@
 
 #include <array>
 #include <limits>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -21,7 +22,6 @@
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -188,9 +188,9 @@ bool OscillatorHandler::SetInitialType(const String& oscillator_type) {
 }
 
 void OscillatorHandler::SetInitialPeriodicWave(
-    const PeriodicWaveHandler* periodic_wave_handler) {
+    scoped_refptr<const PeriodicWaveHandler> periodic_wave_handler) {
   DCHECK(periodic_wave_handler);
-  SetPeriodicWave(periodic_wave_handler);
+  SetPeriodicWave(std::move(periodic_wave_handler));
 }
 
 scoped_refptr<OscillatorHandler> OscillatorHandler::Create(
@@ -680,8 +680,8 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
     return;
   }
 
-  // We must access m_periodicWave only inside the lock.
-  if (!periodic_wave_.Get()) {
+  // We must access `periodic_wave_` only inside the lock.
+  if (!periodic_wave_) {
     output_bus->Zero();
     return;
   }
@@ -761,18 +761,20 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
 }
 
 void OscillatorHandler::SetPeriodicWave(
-    const PeriodicWaveHandler* periodic_wave) {
+    scoped_refptr<const PeriodicWaveHandler> periodic_wave) {
   DCHECK(IsMainThread());
   DCHECK(periodic_wave);
 
   // This synchronizes with process().
   base::AutoLock process_locker(process_lock_);
-  periodic_wave_ = periodic_wave;
+  // Swap so that any destruction of the previous `PeriodicWaveHandler` occurs
+  // outside `process_lock_` when `periodic_wave` goes out of scope.
+  std::swap(periodic_wave_, periodic_wave);
   type_ = CUSTOM;
 }
 
 bool OscillatorHandler::PropagatesSilence() const {
-  return !IsPlayingOrScheduled() || HasFinished() || !periodic_wave_;
+  return !IsPlayingOrScheduled() || HasFinished();
 }
 
 base::WeakPtr<AudioScheduledSourceHandler> OscillatorHandler::AsWeakPtr() {

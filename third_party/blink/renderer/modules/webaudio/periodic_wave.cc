@@ -28,6 +28,9 @@
 
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_periodic_wave_options.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
@@ -37,6 +40,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "v8/include/v8-isolate.h"
 
 namespace blink {
 
@@ -72,10 +76,11 @@ PeriodicWave* PeriodicWave::Create(BaseAudioContext& context,
     return nullptr;
   }
 
-  PeriodicWaveHandler* handler = PeriodicWaveHandler::Create(
+  scoped_refptr<PeriodicWaveHandler> handler = PeriodicWaveHandler::Create(
       context.sampleRate(), base::span<const float>(real),
       base::span<const float>(imag), disable_normalization);
-  return handler ? MakeGarbageCollected<PeriodicWave>(handler) : nullptr;
+  return handler ? MakeGarbageCollected<PeriodicWave>(std::move(handler))
+                 : nullptr;
 }
 
 PeriodicWave* PeriodicWave::Create(BaseAudioContext* context,
@@ -125,18 +130,26 @@ PeriodicWave* PeriodicWave::CreateTriangle(float sample_rate) {
   return CreateBasicWaveform(sample_rate, OscillatorHandler::TRIANGLE);
 }
 
-PeriodicWave::PeriodicWave(const PeriodicWaveHandler* handler)
-    : periodic_wave_handler_(handler) {}
+PeriodicWave::PeriodicWave(scoped_refptr<const PeriodicWaveHandler> handler)
+    : periodic_wave_handler_(std::move(handler)) {
+  CHECK(periodic_wave_handler_);
+  if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
+    external_memory_accounter_.Set(
+        isolate, periodic_wave_handler_->AllocatedMemorySize());
+  }
+}
 
-void PeriodicWave::Trace(Visitor* visitor) const {
-  visitor->Trace(periodic_wave_handler_);
-  ScriptWrappable::Trace(visitor);
+PeriodicWave::~PeriodicWave() {
+  if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
+    external_memory_accounter_.Clear(isolate);
+  }
 }
 
 PeriodicWave* PeriodicWave::CreateBasicWaveform(float sample_rate, int shape) {
-  PeriodicWaveHandler* handler =
+  scoped_refptr<PeriodicWaveHandler> handler =
       PeriodicWaveHandler::CreateBasicWaveform(sample_rate, shape);
-  return handler ? MakeGarbageCollected<PeriodicWave>(handler) : nullptr;
+  return handler ? MakeGarbageCollected<PeriodicWave>(std::move(handler))
+                 : nullptr;
 }
 
 }  // namespace blink
