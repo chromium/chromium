@@ -414,5 +414,102 @@ TEST_F(StorageLoadedDataTest, Reconcile_MidRestoreMove_Preserved) {
   EXPECT_EQ(loaded_tabs[2].tab_id(), 3);
 }
 
+// Tests that when an active tab is restored out-of-order first into a divergent
+// collection vector, ReconcileDivergentNodes does not duplicate the active tab
+// and does not drop the first un-restored canonical tab.
+TEST_F(StorageLoadedDataTest, Reconcile_OutOfOrderActiveTab_Deduplicated) {
+  StorageId root_id = StorageId::Create();
+  StorageId unpinned_id = StorageId::Create();
+  StorageId tab1_id = StorageId::Create();
+  StorageId tab2_id = StorageId::Create();
+  StorageId tab3_id = StorageId::Create();
+
+  auto* tx = db()->CreateTransaction();
+  // 1. Root collection and Unpinned collection.
+  db()->SaveNode(tx, root_id, "win0", false, TabStorageType::kTabStrip,
+                 SerializeTabStripState(tab3_id), /*children=*/{});
+  db()->SaveNodeChildren(tx, root_id, SerializeChildren({unpinned_id}));
+
+  db()->SaveNode(tx, unpinned_id, "win0", false, TabStorageType::kUnpinned, {},
+                 /*children=*/{});
+  // Canonical unpinned children: [Tab1, Tab2, Tab3]
+  db()->SaveNodeChildren(tx, unpinned_id,
+                         SerializeChildren({tab1_id, tab2_id, tab3_id}));
+
+  // 2. Tab payloads.
+  db()->SaveNode(tx, tab1_id, "win0", false, TabStorageType::kTab,
+                 SerializeTabState(1), /*children=*/{});
+  db()->SaveNode(tx, tab2_id, "win0", false, TabStorageType::kTab,
+                 SerializeTabState(2), /*children=*/{});
+  db()->SaveNode(tx, tab3_id, "win0", false, TabStorageType::kTab,
+                 SerializeTabState(3), /*children=*/{});
+
+  // 3. Out-of-order restoration: Tab 3 is restored first into divergent nodes.
+  db()->SaveDivergentNode(tx, unpinned_id, "win0", false,
+                          SerializeChildren({tab3_id}));
+  ASSERT_TRUE(db()->CloseTransaction(tx));
+
+  // 4. LoadAllNodes should reconcile divergent nodes with canonical nodes.
+  auto builder = std::make_unique<StorageLoadedData::Builder>(
+      "win0", false, std::make_unique<TestRestoreEntityTracker>());
+  std::unique_ptr<StorageLoadedData> data =
+      db()->LoadAllNodes("win0", false, std::move(builder));
+
+  ASSERT_NE(data, nullptr);
+  const auto& loaded_tabs = data->GetLoadedTabs();
+  ASSERT_EQ(loaded_tabs.size(), 3u);
+
+  // Tab 3 was restored first, followed by remaining canonical tabs (Tab 1, Tab
+  // 2). Neither Tab 1 nor Tab 2 should be dropped, and Tab 3 must not be
+  // duplicated.
+  EXPECT_EQ(loaded_tabs[0].tab_id(), 3);
+  EXPECT_EQ(loaded_tabs[1].tab_id(), 1);
+  EXPECT_EQ(loaded_tabs[2].tab_id(), 2);
+}
+
+// Tests that an explicitly deleted node mid-restore is excluded from
+// reconciliation.
+TEST_F(StorageLoadedDataTest, Reconcile_DeletedNode_Dropped) {
+  StorageId root_id = StorageId::Create();
+  StorageId unpinned_id = StorageId::Create();
+  StorageId tab1_id = StorageId::Create();
+  StorageId tab2_id = StorageId::Create();
+  StorageId tab3_id = StorageId::Create();
+
+  auto* tx = db()->CreateTransaction();
+  db()->SaveNode(tx, root_id, "win0", false, TabStorageType::kTabStrip,
+                 SerializeTabStripState(std::nullopt), /*children=*/{});
+  db()->SaveNodeChildren(tx, root_id, SerializeChildren({unpinned_id}));
+
+  db()->SaveNode(tx, unpinned_id, "win0", false, TabStorageType::kUnpinned, {},
+                 /*children=*/{});
+  // Canonical: Unpinned has [Tab1, Tab2, Tab3].
+  db()->SaveNodeChildren(tx, unpinned_id,
+                         SerializeChildren({tab1_id, tab2_id, tab3_id}));
+
+  db()->SaveNode(tx, tab1_id, "win0", false, TabStorageType::kTab,
+                 SerializeTabState(1), /*children=*/{});
+  // Tab2 row was DELETED from nodes table!
+  db()->SaveNode(tx, tab3_id, "win0", false, TabStorageType::kTab,
+                 SerializeTabState(3), /*children=*/{});
+
+  // Divergent nodes recorded Tab1.
+  db()->SaveDivergentNode(tx, unpinned_id, "win0", false,
+                          SerializeChildren({tab1_id}));
+  ASSERT_TRUE(db()->CloseTransaction(tx));
+
+  auto builder = std::make_unique<StorageLoadedData::Builder>(
+      "win0", false, std::make_unique<TestRestoreEntityTracker>());
+  std::unique_ptr<StorageLoadedData> data =
+      db()->LoadAllNodes("win0", false, std::move(builder));
+
+  ASSERT_NE(data, nullptr);
+  const auto& loaded_tabs = data->GetLoadedTabs();
+  // Tab2 was deleted, so only Tab1 and Tab3 should be loaded.
+  ASSERT_EQ(loaded_tabs.size(), 2u);
+  EXPECT_EQ(loaded_tabs[0].tab_id(), 1);
+  EXPECT_EQ(loaded_tabs[1].tab_id(), 3);
+}
+
 }  // namespace
 }  // namespace tabs

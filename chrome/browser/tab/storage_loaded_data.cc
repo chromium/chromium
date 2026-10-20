@@ -151,8 +151,8 @@ void StorageLoadedData::Builder::AddNode(
     // are supported on Android.
     NOTIMPLEMENTED();
   }
-  tracker_->RegisterCollection(id, type, *children_proto, collection_specific_id,
-                               passkey);
+  tracker_->RegisterCollection(id, type, *children_proto,
+                               collection_specific_id, passkey);
 }
 
 void StorageLoadedData::Builder::AddDivergentNode(
@@ -192,18 +192,12 @@ void StorageLoadedData::Builder::ReconcileDivergentNodes(
 
     auto canonical_it = children_map_.find(id);
     if (canonical_it != children_map_.end()) {
-      bool found_divergent_match = false;
-
-      // Append canonical children starting from the first that is not in any
-      // divergent vector and not deleted.
+      // Append canonical children that are not in any divergent vector and not
+      // deleted.
       for (const auto& canonical_child : canonical_it->second) {
-        if (deleted_nodes.contains(canonical_child)) {
-          continue;
-        } else if (found_divergent_match) {
+        if (!all_divergent_children.contains(canonical_child) &&
+            !deleted_nodes.contains(canonical_child)) {
           reconciled_children.push_back(canonical_child);
-        } else if (all_divergent_children.find(canonical_child) ==
-                       all_divergent_children.end()) {
-          found_divergent_match = true;
         }
       }
     }
