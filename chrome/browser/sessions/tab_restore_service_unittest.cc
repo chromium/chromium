@@ -144,6 +144,8 @@ class MockLiveTabContext : public sessions::LiveTabContext {
   MOCK_CONST_METHOD1(
       GetGroupIdForSavedGroup,
       const std::optional<tab_groups::TabGroupId>(const base::Uuid& saved));
+  MOCK_CONST_METHOD1(IsEphemeralTabGroup,
+                     bool(const tab_groups::TabGroupId& group));
   MOCK_CONST_METHOD1(IsTabPinned, bool(int index));
   MOCK_METHOD2(SetVisualDataForGroup,
                void(const tab_groups::TabGroupId& group,

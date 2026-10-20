@@ -4021,4 +4021,97 @@ IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest, RestoreFocusedTabGroup) {
             restored_tab_strip_model->GetFocusedGroup());
 }
 
+IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
+                       DoNotRestoreEphemeralFocusedTabGroupOnWindowClose) {
+  AddFileSchemeTabs(browser(), 2);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+
+  const tab_groups::TabGroupId group =
+      tab_strip_model->AddToNewGroup({0, 1}, /*is_ephemeral=*/true);
+  tab_strip_model->EnterFocusMode(group);
+  EXPECT_EQ(group, tab_strip_model->GetFocusedGroup());
+  EXPECT_TRUE(tab_strip_model->IsEphemeralTabGroup(group));
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), chrome::ChromeUINewTabURLAsGURL(),
+      WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+  EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  // Close the first browser while the ephemeral group is focused.
+  CloseBrowserSynchronously(browser());
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  // Restore the closed window.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  chrome::RestoreTab(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+  BrowserWindowInterface* const restored_browser_window =
+      browser_created_observer.Wait();
+
+  // Verify that the restored window is NOT in focus mode and has no tab groups.
+  TabStripModel* restored_tab_strip_model =
+      restored_browser_window->GetTabStripModel();
+  EXPECT_FALSE(restored_tab_strip_model->GetFocusedGroup().has_value());
+  EXPECT_TRUE(restored_tab_strip_model->group_model()->ListTabGroups().empty());
+  for (int i = 0; i < restored_tab_strip_model->count(); ++i) {
+    EXPECT_FALSE(restored_tab_strip_model->GetTabGroupForTab(i).has_value());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(TabRestoreFocusModeTest,
+                       RestoreTabFromEphemeralTabGroup) {
+  AddFileSchemeTabs(browser(), 2);
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_TRUE(tab_strip_model->SupportsTabGroups());
+  ASSERT_EQ(3, tab_strip_model->count());
+
+  const tab_groups::TabGroupId group =
+      tab_strip_model->AddToNewGroup({0, 1, 2}, /*is_ephemeral=*/true);
+  tab_strip_model->EnterFocusMode(group);
+  ASSERT_TRUE(tab_strip_model->IsEphemeralTabGroup(group));
+
+  // Close one tab in the ephemeral group.
+  CloseTab(2);
+  ASSERT_EQ(2, tab_strip_model->count());
+
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_FALSE(service->entries().empty());
+  ASSERT_EQ(sessions::tab_restore::Type::TAB, service->entries().front()->type);
+  const auto* closed_tab = static_cast<const sessions::tab_restore::Tab*>(
+      service->entries().front().get());
+  EXPECT_EQ(group, closed_tab->group);
+  EXPECT_TRUE(closed_tab->is_group_ephemeral);
+
+  // Restoring while the ephemeral group is still open should restore the tab
+  // back into the ephemeral group without saving the group to sync.
+  chrome::RestoreTab(browser());
+  ASSERT_EQ(3, tab_strip_model->count());
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(2));
+  EXPECT_TRUE(tab_strip_model->IsEphemeralTabGroup(group));
+
+  tab_groups::TabGroupSyncService* sync_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser()->GetProfile());
+  if (sync_service) {
+    EXPECT_FALSE(sync_service->GetGroup(group).has_value());
+  }
+
+  // Close the tab again, then exit focus mode (which closes the ephemeral
+  // group).
+  CloseTab(2);
+  ASSERT_EQ(2, tab_strip_model->count());
+  tab_strip_model->ExitFocusMode();
+  EXPECT_FALSE(tab_strip_model->GetFocusedGroup().has_value());
+  EXPECT_TRUE(tab_strip_model->group_model()->ListTabGroups().empty());
+
+  // Restoring after the ephemeral group is closed should restore as a normal
+  // ungrouped tab and not recreate the group.
+  chrome::RestoreTab(browser());
+  ASSERT_EQ(3, tab_strip_model->count());
+  EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(2).has_value());
+  EXPECT_TRUE(tab_strip_model->group_model()->ListTabGroups().empty());
+}
+
 }  // namespace sessions

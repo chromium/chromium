@@ -141,6 +141,12 @@ AndroidLiveTabContext::GetGroupIdForSavedGroup(const base::Uuid& saved) const {
   return std::nullopt;
 }
 
+bool AndroidLiveTabContext::IsEphemeralTabGroup(
+    const tab_groups::TabGroupId& group) const {
+  // Focus Selection is currently not supported on the Android platform.
+  return false;
+}
+
 bool AndroidLiveTabContext::IsTabPinned(int index) const {
   TabAndroid* tab_android = tab_model_->GetTabAt(index);
   return tab_android && tab_android->IsPinned();

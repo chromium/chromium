@@ -332,6 +332,13 @@ std::optional<SessionID> TabRestoreServiceHelper::BrowserClosing(
     }
     tab->browser_id = context->GetSessionID().id();
 
+    if (tab->is_group_ephemeral) {
+      tab->group = std::nullopt;
+      tab->saved_group_id = std::nullopt;
+      tab->group_visual_data = std::nullopt;
+      tab->is_group_ephemeral = false;
+    }
+
     if (tab->group.has_value() &&
         !window->tab_groups.contains(tab->group.value())) {
       // Add new groups to the mapping if we haven't already.
@@ -396,7 +403,7 @@ TabRestoreServiceHelper::CreateHistoricalGroupImpl(
 std::optional<SessionID> TabRestoreServiceHelper::CreateHistoricalGroup(
     LiveTabContext* context,
     const tab_groups::TabGroupId& id) {
-  if (restoring_) {
+  if (restoring_ || (context && context->IsEphemeralTabGroup(id))) {
     return std::nullopt;
   }
 
@@ -1515,6 +1522,8 @@ void TabRestoreServiceHelper::PopulateTab(Tab* tab,
     }
 
     if (tab->group.has_value()) {
+      tab->is_group_ephemeral =
+          context->IsEphemeralTabGroup(tab->group.value());
       tab->saved_group_id =
           context->GetSavedTabGroupIdForGroup(tab->group.value());
 

@@ -593,7 +593,7 @@ void RecentTabsSubMenuModel::BuildLocalTabItem(
   // visual_data should only be populated if the tab was part of a tab group
   // when closed. We shouldn't set the minor icon for the item most recently
   // closed, as this creates visual clutter alongside the shortcut text.
-  if (tab.group_visual_data.has_value() &&
+  if (tab.group_visual_data.has_value() && !tab.is_group_ephemeral &&
       curr_model_index > recent_tabs_title_index_.value() + 1) {
     const ui::ColorProvider* color_provider =
         BrowserWindow::FromBrowser(browser_)->GetColorProvider();

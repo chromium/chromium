@@ -219,7 +219,8 @@ BrowserLiveTabContext::GetExtraDataForWindow() const {
 
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
     if (std::optional<tab_groups::TabGroupId> focused_group =
-            tab_strip_model_->GetFocusedGroup()) {
+            tab_strip_model_->GetFocusedGroup();
+        focused_group.has_value() && !IsEphemeralTabGroup(*focused_group)) {
       data[tabs::TabStripModelSelectionState::kFocusedTabGroupIdKey] =
           focused_group->ToString();
     }
@@ -295,6 +296,11 @@ BrowserLiveTabContext::GetGroupIdForSavedGroup(const base::Uuid& saved) const {
   return std::nullopt;
 }
 
+bool BrowserLiveTabContext::IsEphemeralTabGroup(
+    const tab_groups::TabGroupId& group) const {
+  return tab_strip_model_->IsEphemeralTabGroup(group);
+}
+
 bool BrowserLiveTabContext::IsTabPinned(int index) const {
   return tab_strip_model_->IsTabPinned(index);
 }
@@ -363,6 +369,11 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
   // normal tab instead. See crbug.com/368139715.
   std::optional<tab_groups::TabGroupId> group_id =
       tab_strip_model_->SupportsTabGroups() ? tab.group : std::nullopt;
+  if (tab.is_group_ephemeral && group_id.has_value() &&
+      (!tab_strip_model_->group_model() ||
+       !tab_strip_model_->group_model()->ContainsTabGroup(group_id.value()))) {
+    group_id = std::nullopt;
+  }
   std::optional<base::Uuid> saved_group_id = tab.saved_group_id;
   content::WebContents* web_contents = nullptr;
 
@@ -382,7 +393,7 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
         tab.extra_data,
         /*from_session_restore=*/false, /*is_active_browser=*/std::nullopt);
 
-    if (group_id.has_value() &&
+    if (group_id.has_value() && !IsEphemeralTabGroup(group_id.value()) &&
         !tab_group_service->GetGroup(group_id.value()).has_value()) {
       // It's possible a tab's group was deleted or was unsaved before this tab
       // was restored. In that case, if the local group didn't become saved add

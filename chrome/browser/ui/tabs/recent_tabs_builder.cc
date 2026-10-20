@@ -103,7 +103,8 @@ RecentTabItem BuildTabItem(const sessions::tab_restore::Tab& tab,
   item.set_icon(favicon::GetDefaultFaviconModel());
   item.set_is_local(true);
 
-  if (show_group_minor_icon && tab.group_visual_data.has_value()) {
+  if (show_group_minor_icon && tab.group_visual_data.has_value() &&
+      !tab.is_group_ephemeral) {
     const ui::ColorId color_id =
         GetTabGroupContextMenuColorId(tab.group_visual_data.value().color());
     constexpr int kIconSize = 12;

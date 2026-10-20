@@ -127,6 +127,12 @@ LiveTabContextBrowserAgent::GetGroupIdForSavedGroup(
   NOTREACHED();
 }
 
+bool LiveTabContextBrowserAgent::IsEphemeralTabGroup(
+    const tab_groups::TabGroupId& group) const {
+  // iOS does not support focus selection mode.
+  return false;
+}
+
 void LiveTabContextBrowserAgent::SetVisualDataForGroup(
     const tab_groups::TabGroupId& group,
     const tab_groups::TabGroupVisualData& visual_data) {

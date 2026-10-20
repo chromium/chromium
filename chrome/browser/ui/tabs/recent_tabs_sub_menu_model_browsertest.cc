@@ -1217,3 +1217,27 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelWithOtherDeviceTabsInAppMenuTest,
     EXPECT_NE(RecentTabItem::Type::kDevice, item.type());
   }
 }
+
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
+                       RecentlyClosedEphemeralGroupTabAndWindow) {
+  Init();
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  DisableSync();
+
+  TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
+
+  AddTabToBrowser(GURL("http://foo/1"));
+  AddTabToBrowser(GURL("http://foo/2"));
+
+  // Put tabs 1 and 2 into an ephemeral group and close tab 2.
+  browser()->tab_strip_model()->AddToNewGroup({1, 2}, /*is_ephemeral=*/true);
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      2, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+
+  RecentTabsSubMenuModel model(nullptr, browser());
+  // Index 4 is the first item under "Recently closed". It should be a command
+  // (tab) with no group minor icon.
+  ASSERT_GT(model.GetItemCount(), 4u);
+  EXPECT_EQ(ui::MenuModel::TYPE_COMMAND, model.GetTypeAt(4));
+  EXPECT_TRUE(model.GetMinorIconAt(4).IsEmpty());
+}

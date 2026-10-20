@@ -1724,9 +1724,10 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest,
 
 IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, EphemeralTabGroupFilteredOut) {
   AddTabWithTitle(browser1(), tab_url1_, kTabName1);
+  AddTabWithTitle(browser1(), tab_url2_, kTabName2);
 
   TabStripModel* tab_strip_model = browser1()->tab_strip_model();
-  tab_strip_model->AddToNewGroup({0}, /*is_ephemeral=*/true);
+  tab_strip_model->AddToNewGroup({0, 1}, /*is_ephemeral=*/true);
 
   tab_search::mojom::PageHandler::GetProfileDataCallback callback =
       base::BindLambdaForTesting(
@@ -1739,6 +1740,23 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, EphemeralTabGroupFilteredOut) {
             }
           });
   handler()->GetProfileData(std::move(callback));
+
+  // Close one tab in the ephemeral group and verify it does not show group
+  // metadata in recently closed tabs.
+  const int tab_id = tab_strip_model->GetTabAtIndex(0)->GetHandle().raw_value();
+  handler()->CloseTab(tab_id);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return tab_strip_model->count() == 2; }));
+
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback2 =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            EXPECT_TRUE(profile_tabs->tab_groups.empty());
+            ASSERT_EQ(1u, profile_tabs->recently_closed_tabs.size());
+            EXPECT_FALSE(
+                profile_tabs->recently_closed_tabs[0]->group_id.has_value());
+          });
+  handler()->GetProfileData(std::move(callback2));
 }
 
 }  // namespace
