@@ -86,6 +86,7 @@ inline constexpr base::FeatureParam<int>
         250};
 BASE_DECLARE_FEATURE(kOmniboxAimDeferShowUntilVisualStateReadyWithFullWebUI);
 BASE_DECLARE_FEATURE(kOmniboxAimPopupDeferCreation);
+BASE_DECLARE_FEATURE(kOmniboxWebUIPopupDeferCreation);
 BASE_DECLARE_FEATURE(kOmniboxWebUIDebounceResize);
 BASE_DECLARE_FEATURE(kOmniboxAimDebounceResize);
 BASE_DECLARE_FEATURE(kOmniboxFullWebUIDebounceResize);
