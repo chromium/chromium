@@ -10,10 +10,12 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -88,9 +90,10 @@ const FetchAPIRequestHeadersMap kHeaders({{"a", "a"}, {"b", "b"}});
 void SizeCallback(base::RunLoop* run_loop,
                   bool* callback_called,
                   int64_t* out_size,
-                  int64_t size) {
+                  std::optional<base::ByteSize> size) {
   *callback_called = true;
-  *out_size = size;
+  EXPECT_TRUE(size.has_value());
+  *out_size = size.value().AsByteSizeDelta().InBytes();
   if (run_loop)
     run_loop->Quit();
 }
@@ -646,8 +649,8 @@ class TestCacheStorageCache : public CacheStorageCache {
                           cache_storage,
                           quota_manager_proxy,
                           std::move(blob_storage_context),
-                          0 /* cache_size */,
-                          0 /* cache_padding */),
+                          base::ByteSize() /* cache_size */,
+                          base::ByteSize() /* cache_padding */),
         delay_backend_creation_(false) {}
 
   TestCacheStorageCache(const TestCacheStorageCache&) = delete;
@@ -733,7 +736,7 @@ class MockCacheStorage : public CacheStorage {
                      owner) {}
 
   void CacheUnreferenced(CacheStorageCache* cache,
-                         int64_t size_bytes) override {
+                         std::optional<base::ByteSize> size) override {
     // Normally the CacheStorage will attempt to delete the cache
     // from its map when the cache has become unreferenced.  Since we are
     // using detached cache objects we instead override to do nothing here.
@@ -2921,9 +2924,9 @@ TEST_P(CacheStorageCacheTestP, OperationsFailDuringAndAfterForceClose) {
     EXPECT_FALSE(Delete(body_request_));
     EXPECT_EQ(CacheStorageError::kErrorStorage, callback_error_);
 
-    base::test::TestFuture<int64_t> size;
+    base::test::TestFuture<std::optional<base::ByteSize>> size;
     cache_->Size(size.GetCallback());
-    EXPECT_EQ(CacheStorage::kSizeUnknown, size.Get());
+    EXPECT_EQ(std::nullopt, size.Get());
   }
 }
 

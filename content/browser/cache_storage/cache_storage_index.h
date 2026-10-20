@@ -5,12 +5,15 @@
 #ifndef CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_INDEX_H_
 #define CONTENT_BROWSER_CACHE_STORAGE_CACHE_STORAGE_INDEX_H_
 
+#include <stdint.h>
+
 #include <list>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
+#include "base/byte_size.h"
 #include "base/gtest_prod_util.h"
-#include "content/browser/cache_storage/cache_storage.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -21,18 +24,18 @@ namespace content {
 class CONTENT_EXPORT CacheStorageIndex {
  public:
   struct CacheMetadata {
-    CacheMetadata(const std::u16string& name, int64_t size, int64_t padding)
+    CacheMetadata(const std::u16string& name,
+                  std::optional<base::ByteSize> size,
+                  std::optional<base::ByteSize> padding)
         : name(name), size(size), padding(padding) {}
 
     std::u16string name;
 
-    // The size (in bytes) of the cache. Set to CacheStorage::kSizeUnknown if
-    // size not known.
-    int64_t size;
+    // The size of the cache, or std::nullopt if unknown.
+    std::optional<base::ByteSize> size;
 
-    // The padding (in bytes) of the cache. Set to CacheStorage::kSizeUnknown
-    // if padding not known.
-    int64_t padding;
+    // The padding of the cache, or std::nullopt if unknown.
+    std::optional<base::ByteSize> padding;
 
     // The algorithm version used to calculate this padding.
     int32_t padding_version;
@@ -52,7 +55,8 @@ class CONTENT_EXPORT CacheStorageIndex {
 
   // Sets the actual (unpadded) cache size. Returns true if the new size is
   // different than the current size else false.
-  bool SetCacheSize(const std::u16string& cache_name, int64_t size);
+  bool SetCacheSize(const std::u16string& cache_name,
+                    std::optional<base::ByteSize> size);
 
   // Get the cache metadata for a given cache name. If not found nullptr is
   // returned.
@@ -60,7 +64,8 @@ class CONTENT_EXPORT CacheStorageIndex {
 
   // Sets the cache padding. Returns true if the new padding is different than
   // the current padding else false.
-  bool SetCachePadding(const std::u16string& cache_name, int64_t padding);
+  bool SetCachePadding(const std::u16string& cache_name,
+                       std::optional<base::ByteSize> padding);
 
   const std::list<CacheMetadata>& ordered_cache_metadata() const {
     return ordered_cache_metadata_;
@@ -69,7 +74,7 @@ class CONTENT_EXPORT CacheStorageIndex {
   size_t num_entries() const { return ordered_cache_metadata_.size(); }
 
   // Will calculate (if necessary), and return the total sum of all cache sizes.
-  int64_t GetPaddedStorageSize();
+  std::optional<base::ByteSize> GetPaddedStorageSize();
 
   // Mark the cache as doomed. This removes the cache metadata from the index.
   // All const methods (eg: num_entries) will behave as if the doomed cache is
@@ -93,12 +98,15 @@ class CONTENT_EXPORT CacheStorageIndex {
   void ClearDoomedCache();
 
   // Return the size (in bytes) of the specified cache. Will return
-  // CacheStorage::kSizeUnknown if the specified cache does not exist.
-  int64_t GetCacheSizeForTesting(const std::u16string& cache_name) const;
+  // std::nullopt if the size is unknown or the specified cache does not exist.
+  std::optional<base::ByteSize> GetCacheSizeForTesting(
+      const std::u16string& cache_name) const;
 
   // Return the padding (in bytes) of the specified cache. Will return
-  // CacheStorage::kSizeUnknown if the specified cache does not exist.
-  int64_t GetCachePaddingForTesting(const std::u16string& cache_name) const;
+  // std::nullopt if the padding is unknown or the specified cache does not
+  // exist.
+  std::optional<base::ByteSize> GetCachePaddingForTesting(
+      const std::u16string& cache_name) const;
 
   // Use a list to keep saved iterators valid during insert/erase.
   // Note: ordered by cache creation.
@@ -107,10 +115,10 @@ class CONTENT_EXPORT CacheStorageIndex {
       cache_metadata_map_;
 
   // The total unpadded size of all caches in this store.
-  int64_t storage_size_ = CacheStorage::kSizeUnknown;
+  std::optional<base::ByteSize> storage_size_;
 
   // The total padding of all caches in this store.
-  int64_t storage_padding_ = CacheStorage::kSizeUnknown;
+  std::optional<base::ByteSize> storage_padding_;
 
   // The doomed cache metadata saved when calling DoomCache.
   CacheMetadata doomed_cache_metadata_;

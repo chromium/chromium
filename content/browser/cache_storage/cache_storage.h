@@ -9,9 +9,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -60,9 +62,7 @@ FORWARD_DECLARE_TEST(CacheStorageManagerTest, TestErrorInitializingCache);
 // on the IO thread. The asynchronous methods are executed serially.
 class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
  public:
-  constexpr static int64_t kSizeUnknown = -1;
-
-  using SizeCallback = base::OnceCallback<void(int64_t)>;
+  using SizeCallback = base::OnceCallback<void(std::optional<base::ByteSize>)>;
 
   using BoolAndErrorCallback =
       base::OnceCallback<void(bool, blink::mojom::CacheStorageError)>;
@@ -163,6 +163,7 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
 
   // The size of all of the storage key's contents. This value should be used as
   // an estimate only since the cache may be modified at any time.
+  // Returns std::nullopt if the operation is cancelled.
   void Size(SizeCallback callback);
 
   // The functions below are for tests to verify that the operations run
@@ -191,7 +192,8 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
 
  protected:
   // Virtual for testing
-  virtual void CacheUnreferenced(CacheStorageCache* cache, int64_t size_bytes);
+  virtual void CacheUnreferenced(CacheStorageCache* cache,
+                                 std::optional<base::ByteSize> size);
 
  private:
   friend class CacheStorageCache;

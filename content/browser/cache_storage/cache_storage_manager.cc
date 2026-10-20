@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/byte_size.h"
 #include "base/containers/id_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -53,6 +54,11 @@ namespace {
 blink::mojom::QuotaStatusCode BoolToQuotaStatusCode(bool rv) {
   return rv ? blink::mojom::QuotaStatusCode::kOk
             : blink::mojom::QuotaStatusCode::kErrorAbort;
+}
+
+// Converts a `base::ByteSize` to an int64_t for quota reporting.
+int64_t SizeToUsage(std::optional<base::ByteSize> size) {
+  return size.value_or(base::ByteSize()).AsByteSizeDelta().InBytes();
 }
 
 void DidDeleteAllBuckets(
@@ -449,7 +455,8 @@ void CacheStorageManager::GetBucketUsage(
       return;
     }
     CacheStorageHandle cache_storage = OpenCacheStorage(bucket_locator, owner);
-    CacheStorage::From(cache_storage)->Size(std::move(callback));
+    CacheStorage::From(cache_storage)
+        ->Size(base::BindOnce(&SizeToUsage).Then(std::move(callback)));
     return;
   }
   cache_task_runner_->PostTaskAndReplyWithResult(
@@ -475,7 +482,8 @@ void CacheStorageManager::GetBucketUsageDidGetExists(
   }
 
   CacheStorageHandle cache_storage = OpenCacheStorage(bucket_locator, owner);
-  CacheStorage::From(cache_storage)->Size(std::move(callback));
+  CacheStorage::From(cache_storage)
+      ->Size(base::BindOnce(&SizeToUsage).Then(std::move(callback)));
 }
 
 // Used by QuotaClient which only wants the storage keys that have data in the

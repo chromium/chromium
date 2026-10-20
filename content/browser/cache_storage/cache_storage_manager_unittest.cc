@@ -9,11 +9,13 @@
 
 #include <cstdint>
 #include <list>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
@@ -104,6 +106,7 @@ enum class StorageKeyAndBucketTestCase {
 using ResponseHeaderMap = base::flat_map<std::string, std::string>;
 
 constexpr char16_t kReplacementCharacter = 0xFFFD;
+constexpr int64_t kOpaqueResponsePadding = 10;
 
 class DelayedBlob : public storage::FakeBlob {
  public:
@@ -654,8 +657,10 @@ class CacheStorageManagerTest : public testing::Test {
       FetchResponseType response_type = FetchResponseType::kDefault,
       ResponseHeaderMap response_headers = ResponseHeaderMap()) {
     // CacheStorage depends on fetch to provide the opaque response padding
-    // value now.  We prepolute a padding value here to simulate that.
-    int64_t padding = response_type == FetchResponseType::kOpaque ? 10 : 0;
+    // value now.  We prepopulate a padding value here to simulate that.
+    int64_t padding = response_type == FetchResponseType::kOpaque
+                          ? kOpaqueResponsePadding
+                          : 0;
 
     auto response = blink::mojom::FetchAPIResponse::New(
         std::vector<GURL>({request->url}), status_code, "OK", response_type,
@@ -778,17 +783,16 @@ class CacheStorageManagerTest : public testing::Test {
   }
 
   int64_t Size(const storage::BucketLocator& bucket_locator) {
-    base::RunLoop loop;
+    base::test::TestFuture<std::optional<base::ByteSize>> future;
     CacheStorageHandle cache_storage = CacheStorageForBucket(bucket_locator);
-    CacheStorage::From(cache_storage)
-        ->Size(base::BindOnce(&CacheStorageManagerTest::UsageCallback,
-                              base::Unretained(this), &loop));
-    loop.Run();
-    return callback_usage_;
+    CacheStorage::From(cache_storage)->Size(future.GetCallback());
+    const std::optional<base::ByteSize>& size = future.Get();
+    EXPECT_TRUE(size.has_value());
+    return size.value().AsByteSizeDelta().InBytes();
   }
 
   int64_t GetQuotaKeyUsage(const blink::StorageKey& storage_key) {
-    int64_t usage(CacheStorage::kSizeUnknown);
+    std::optional<int64_t> usage;
     base::RunLoop loop;
     quota_manager_proxy_->GetUsageAndQuota(
         storage_key, base::SingleThreadTaskRunner::GetCurrentDefault(),
@@ -796,14 +800,16 @@ class CacheStorageManagerTest : public testing::Test {
                        base::Unretained(this), base::Unretained(&usage),
                        &loop));
     loop.Run();
-    return usage;
+    EXPECT_TRUE(usage.has_value());
+    return usage.value();
   }
 
-  void DidGetQuotaOriginUsage(int64_t* out_usage,
+  void DidGetQuotaOriginUsage(std::optional<int64_t>* out_usage,
                               base::RunLoop* run_loop,
                               blink::mojom::QuotaStatusCode status_code,
                               int64_t usage,
                               int64_t quota) {
+    EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, status_code);
     if (status_code == blink::mojom::QuotaStatusCode::kOk) {
       *out_usage = usage;
     }
@@ -1667,6 +1673,81 @@ TEST_F(CacheStorageManagerTest, CacheSizePaddedAfterReopen) {
   EXPECT_EQ(0, quota_manager_proxy_->notify_bucket_modified_count());
 
   EXPECT_EQ(cache_size_before_close, Size(bucket_locator1_));
+}
+
+// Check that an error during cache padding accounting will lead to cache
+// padding being recalculated eventually. This can occur if the index becomes
+// out of sync with the underlying Cache database, e.g. due to disk corruption.
+TEST_F(CacheStorageManagerTest, CachePaddingUnderflowRecalculatedAfterReopen) {
+  const std::u16string kCacheName = u"foo";
+  const GURL kFooURL = storage_key1_.origin().GetURL().Resolve("foo");
+  const GURL kBarURL = storage_key1_.origin().GetURL().Resolve("bar");
+
+  // Create a Cache and put a couple values that need padding.
+  ASSERT_TRUE(Open(bucket_locator1_, kCacheName));
+  ASSERT_TRUE(CachePut(callback_cache_handle_.value(), kFooURL,
+                       FetchResponseType::kOpaque));
+  ASSERT_TRUE(CachePut(callback_cache_handle_.value(), kBarURL,
+                       FetchResponseType::kOpaque));
+  ASSERT_EQ(base::ByteSize(2 * kOpaqueResponsePadding),
+            callback_cache_handle_.value()->cache_padding());
+  const base::FilePath index_path =
+      CacheStorageCache::From(callback_cache_handle_)
+          ->path()
+          .DirName()
+          .AppendASCII(CacheStorage::kIndexFileName);
+  ASSERT_TRUE(FlushCacheStorageIndex(bucket_locator1_));
+  DestroyStorageManager();
+  disk_cache::FlushCacheThreadForTesting();
+
+  // Corrupt the saved padding.
+  std::string serialized_index;
+  proto::CacheStorageIndex index;
+  ASSERT_TRUE(base::ReadFileToString(index_path, &serialized_index));
+  ASSERT_TRUE(index.ParseFromString(serialized_index));
+  ASSERT_EQ(1, index.cache_size());
+  ASSERT_EQ(2 * kOpaqueResponsePadding, index.cache(0).padding());
+  // Leave the recorded size unchanged so opening the cache trusts the padding.
+  index.mutable_cache(0)->set_padding(kOpaqueResponsePadding - 1);
+  ASSERT_TRUE(index.SerializeToString(&serialized_index));
+  ASSERT_TRUE(base::WriteFile(index_path, serialized_index));
+
+  // Open the Cache again and use it, deleting the values and causing underflow
+  // on cache padding accounting.
+  CreateStorageManager();
+  ASSERT_TRUE(Open(bucket_locator1_, kCacheName));
+  ASSERT_TRUE(CacheMatch(callback_cache_handle_.value(), kFooURL));
+  ASSERT_EQ(base::ByteSize(kOpaqueResponsePadding - 1),
+            callback_cache_handle_.value()->cache_padding());
+  ASSERT_TRUE(CacheDelete(callback_cache_handle_.value(), kFooURL));
+  EXPECT_EQ(std::nullopt, callback_cache_handle_.value()->cache_padding());
+  EXPECT_EQ(std::nullopt, quota_manager_proxy_->last_notified_bucket_delta());
+  ASSERT_TRUE(FlushCacheStorageIndex(bucket_locator1_));
+  DestroyStorageManager();
+  disk_cache::FlushCacheThreadForTesting();
+
+  // The value saved to the index now should be empty.
+  ASSERT_TRUE(base::ReadFileToString(index_path, &serialized_index));
+  ASSERT_TRUE(index.ParseFromString(serialized_index));
+  ASSERT_EQ(1, index.cache_size());
+  EXPECT_FALSE(index.cache(0).has_padding());
+  EXPECT_TRUE(index.cache(0).has_size());
+
+  // This triggers the padding to be recalculated the next time the Cache is
+  // opened.
+  CreateStorageManager();
+  ASSERT_TRUE(Open(bucket_locator1_, kCacheName));
+  ASSERT_TRUE(CacheMatch(callback_cache_handle_.value(), kBarURL));
+  EXPECT_EQ(base::ByteSize(kOpaqueResponsePadding),
+            callback_cache_handle_.value()->cache_padding());
+  EXPECT_FALSE(CacheMatch(callback_cache_handle_.value(), kFooURL));
+  ASSERT_TRUE(FlushCacheStorageIndex(bucket_locator1_));
+
+  ASSERT_TRUE(base::ReadFileToString(index_path, &serialized_index));
+  ASSERT_TRUE(index.ParseFromString(serialized_index));
+  ASSERT_EQ(1, index.cache_size());
+  ASSERT_TRUE(index.cache(0).has_padding());
+  EXPECT_EQ(kOpaqueResponsePadding, index.cache(0).padding());
 }
 
 TEST_F(CacheStorageManagerTest, QuotaCorrectAfterReopen) {

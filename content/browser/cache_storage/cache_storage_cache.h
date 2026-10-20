@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/id_map.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
@@ -32,7 +33,6 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/disk_cache.h"
 #include "services/network/public/mojom/cache_storage_side_data_writer.mojom.h"
@@ -89,8 +89,10 @@ class CONTENT_EXPORT CacheStorageCache {
       base::OnceCallback<void(blink::mojom::CacheStorageError,
                               std::unique_ptr<Requests>)>;
 
-  using SizeCallback = base::OnceCallback<void(int64_t)>;
-  using SizePaddingCallback = base::OnceCallback<void(int64_t, int64_t)>;
+  using SizeCallback = base::OnceCallback<void(std::optional<base::ByteSize>)>;
+  using SizePaddingCallback =
+      base::OnceCallback<void(std::optional<base::ByteSize>,
+                              std::optional<base::ByteSize>)>;
 
   // The stream index for a cache Entry. This cannot be extended without changes
   // in the Entry implementation. INDEX_SIDE_DATA is used for storing any
@@ -117,8 +119,8 @@ class CONTENT_EXPORT CacheStorageCache {
       const base::FilePath& path,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
-      int64_t cache_size,
-      int64_t cache_padding);
+      std::optional<base::ByteSize> cache_size,
+      std::optional<base::ByteSize> cache_padding);
   static int32_t GetResponsePaddingVersion();
 
   // Returns ERROR_TYPE_NOT_FOUND if not found.
@@ -174,6 +176,7 @@ class CONTENT_EXPORT CacheStorageCache {
   // size.  If you want the unpadded size you may call the cache_size()
   // getter method on the cache object when the callback is invoked; the
   // getter will have an up-to-date value at that point.
+  // Returns std::nullopt if the size is unknown or the operation is cancelled.
   void Size(SizeCallback callback);
 
   // Similar to MatchAll, but returns the associated requests as well.
@@ -197,13 +200,13 @@ class CONTENT_EXPORT CacheStorageCache {
 
   std::u16string cache_name() const { return cache_name_; }
 
-  int64_t cache_size() const { return cache_size_; }
+  std::optional<base::ByteSize> cache_size() const { return cache_size_; }
 
-  int64_t cache_padding() const { return cache_padding_; }
+  std::optional<base::ByteSize> cache_padding() const { return cache_padding_; }
 
   // Return the total cache size (actual size + padding). If either is unknown
-  // then CacheStorage::kSizeUnknown is returned.
-  int64_t PaddedCacheSize() const;
+  // then std::nullopt is returned.
+  std::optional<base::ByteSize> PaddedCacheSize() const;
 
   // Set the one observer that will be notified of changes to this cache.
   // Note: Either the observer must have a lifetime longer than this instance
@@ -290,8 +293,8 @@ class CONTENT_EXPORT CacheStorageCache {
       CacheStorage* cache_storage,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
-      int64_t cache_size,
-      int64_t cache_padding);
+      std::optional<base::ByteSize> cache_size,
+      std::optional<base::ByteSize> cache_padding);
 
   // Callback passed to operations. If |error| is a real error, invokes
   // |error_callback|. Always invokes |completion_closure| to signal
@@ -473,7 +476,7 @@ class CONTENT_EXPORT CacheStorageCache {
   void UpdateCacheSize(base::OnceClosure callback);
   void UpdateCacheSizeGotSize(CacheStorageCacheHandle,
                               base::OnceClosure callback,
-                              int64_t current_cache_size);
+                              std::optional<base::ByteSize> current_cache_size);
   void UpdateCacheSizeNotifiedStorageModified(base::OnceClosure callback);
 
   // GetAllMatchedEntries callbacks.
@@ -515,30 +518,32 @@ class CONTENT_EXPORT CacheStorageCache {
   void CreateBackendDidCreate(ErrorCallback callback,
                               disk_cache::BackendResult result);
 
+  // Marks padding as unknown if the adjustment would underflow.
+  void AdjustCachePadding(base::ByteSizeDelta delta);
+
   // Calculate the size and padding of the cache.
-  void CalculateCacheSizePadding(SizePaddingCallback callback);
   void CalculateCacheSizePaddingGotSize(SizePaddingCallback callback,
-                                        int64_t cache_size);
+                                        base::ByteSize cache_size);
   void PaddingDidQueryCache(
       SizePaddingCallback callback,
-      int64_t cache_size,
+      base::ByteSize cache_size,
       blink::mojom::CacheStorageError error,
       std::unique_ptr<QueryCacheResults> query_cache_results);
 
   // Calculate the size (but not padding) of the cache.
-  void CalculateCacheSize(net::Int64CompletionOnceCallback callback);
+  void CalculateCacheSize(SizeCallback callback);
 
   void InitBackend();
   void InitDidCreateBackend(base::OnceClosure callback,
                             blink::mojom::CacheStorageError cache_create_error);
   void InitGotCacheSize(base::OnceClosure callback,
                         blink::mojom::CacheStorageError cache_create_error,
-                        int64_t cache_size);
+                        std::optional<base::ByteSize> cache_size);
   void InitGotCacheSizeAndPadding(
       base::OnceClosure callback,
       blink::mojom::CacheStorageError cache_create_error,
-      int64_t cache_size,
-      int64_t cache_padding);
+      std::optional<base::ByteSize> cache_size,
+      std::optional<base::ByteSize> cache_padding);
   void DeleteBackendCompletedIO();
 
   // Calculate the required safe space to put the entry in the cache.
@@ -595,9 +600,9 @@ class CONTENT_EXPORT CacheStorageCache {
   std::unique_ptr<CacheStorageScheduler> scheduler_;
   bool initializing_ = false;
   // The actual cache size (not including padding).
-  int64_t cache_size_;
-  int64_t cache_padding_ = 0;
-  int64_t last_reported_size_ = 0;
+  std::optional<base::ByteSize> cache_size_;
+  std::optional<base::ByteSize> cache_padding_;
+  std::optional<base::ByteSize> last_reported_size_{base::ByteSize()};
   size_t max_query_size_bytes_;
   size_t handle_ref_count_ = 0;
   int query_cache_recursive_depth_ = 0;

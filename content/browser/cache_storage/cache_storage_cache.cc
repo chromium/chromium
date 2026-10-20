@@ -20,10 +20,12 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -78,6 +80,14 @@ namespace content {
 namespace {
 
 using ResponseHeaderMap = base::flat_map<std::string, std::string>;
+
+std::optional<base::ByteSize> CacheSizeFromResult(int64_t result) {
+  if (result < 0) {
+    DLOG(ERROR) << "Failed to calculate cache size: " << result;
+    return std::nullopt;
+  }
+  return base::ByteSize(base::checked_cast<uint64_t>(result));
+}
 
 const size_t kMaxQueryCacheResultBytes =
     1024 * 1024 * 10;  // 10MB query cache limit
@@ -699,11 +709,11 @@ std::unique_ptr<CacheStorageCache> CacheStorageCache::CreateMemoryCache(
     CacheStorage* cache_storage,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context) {
-  CacheStorageCache* cache =
-      new CacheStorageCache(bucket_locator, owner, cache_name, base::FilePath(),
-                            cache_storage, std::move(quota_manager_proxy),
-                            std::move(blob_storage_context), /*cache_size=*/0,
-                            /*cache_padding=*/0);
+  CacheStorageCache* cache = new CacheStorageCache(
+      bucket_locator, owner, cache_name, base::FilePath(), cache_storage,
+      std::move(quota_manager_proxy), std::move(blob_storage_context),
+      /*cache_size=*/base::ByteSize(),
+      /*cache_padding=*/base::ByteSize());
   cache->SetObserver(cache_storage);
   cache->InitBackend();
   return base::WrapUnique(cache);
@@ -718,8 +728,8 @@ std::unique_ptr<CacheStorageCache> CacheStorageCache::CreatePersistentCache(
     const base::FilePath& path,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
-    int64_t cache_size,
-    int64_t cache_padding) {
+    std::optional<base::ByteSize> cache_size,
+    std::optional<base::ByteSize> cache_padding) {
   CacheStorageCache* cache = new CacheStorageCache(
       bucket_locator, owner, cache_name, path, cache_storage,
       std::move(quota_manager_proxy), std::move(blob_storage_context),
@@ -1077,7 +1087,7 @@ void CacheStorageCache::Keys(blink::mojom::FetchAPIRequestPtr request,
 
 void CacheStorageCache::Size(SizeCallback callback) {
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback), CacheStorage::kSizeUnknown);
+      std::move(callback), std::optional<base::ByteSize>());
   if (backend_state_ == BACKEND_CLOSED) {
     // TODO(jkarlin): Delete caches that can't be initialized.
     return;
@@ -1129,8 +1139,8 @@ CacheStorageCache::CacheStorageCache(
     CacheStorage* cache_storage,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
-    int64_t cache_size,
-    int64_t cache_padding)
+    std::optional<base::ByteSize> cache_size,
+    std::optional<base::ByteSize> cache_padding)
     : bucket_locator_(bucket_locator),
       owner_(owner),
       cache_name_(cache_name),
@@ -1153,10 +1163,9 @@ CacheStorageCache::CacheStorageCache(
         base::NotFatalUntil::M158);
   CHECK(quota_manager_proxy_.get(), base::NotFatalUntil::M158);
 
-  if (cache_size_ != CacheStorage::kSizeUnknown &&
-      cache_padding_ != CacheStorage::kSizeUnknown) {
+  if (cache_size_ && cache_padding_) {
     // The size of this cache has already been reported to the QuotaManager.
-    last_reported_size_ = cache_size_ + cache_padding_;
+    last_reported_size_ = PaddedCacheSize();
   }
 }
 
@@ -1771,11 +1780,11 @@ void CacheStorageCache::WriteSideDataDidWrite(
   auto* response = metadata->mutable_response();
 
   if (ShouldPadResourceSize(response)) {
-    cache_padding_ -= response->side_data_padding();
+    AdjustCachePadding(-base::ByteSizeDelta(response->side_data_padding()));
 
     response->set_side_data_padding(
         CalculateSideDataPadding(bucket_locator_, response, rv));
-    cache_padding_ += response->side_data_padding();
+    AdjustCachePadding(base::ByteSizeDelta(response->side_data_padding()));
 
     // Get a temporary copy of the entry pointer before passing it in
     // base::Bind.
@@ -1823,7 +1832,8 @@ void CacheStorageCache::WriteSideDataComplete(
     // returning.
     if (error != CacheStorageError::kErrorNotFound) {
       entry.reset();
-      cache_padding_ -= (padding + side_data_padding);
+      AdjustCachePadding(-(base::ByteSizeDelta(padding) +
+                           base::ByteSizeDelta(side_data_padding)));
       UpdateCacheSize(std::move(callback));
       return;
     }
@@ -2062,7 +2072,8 @@ void CacheStorageCache::PutDidWriteHeaders(
     return;
   }
 
-  cache_padding_ += padding + side_data_padding;
+  AdjustCachePadding(base::ByteSizeDelta(padding) +
+                     base::ByteSizeDelta(side_data_padding));
 
   PutWriteBlobToCache(std::move(put_context), INDEX_RESPONSE_BODY);
 }
@@ -2250,21 +2261,24 @@ void CacheStorageCache::PutComplete(std::unique_ptr<PutContext> put_context,
   UpdateCacheSize(base::BindOnce(std::move(put_context->callback), error));
 }
 
-void CacheStorageCache::CalculateCacheSizePadding(
-    SizePaddingCallback got_sizes_callback) {
-  auto split_callback = base::SplitOnceCallback(base::BindOnce(
-      &CacheStorageCache::CalculateCacheSizePaddingGotSize,
-      weak_ptr_factory_.GetWeakPtr(), std::move(got_sizes_callback)));
-
-  int64_t rv =
-      backend_->CalculateSizeOfAllEntries(std::move(split_callback.first));
-  if (rv != net::ERR_IO_PENDING)
-    std::move(split_callback.second).Run(rv);
+void CacheStorageCache::AdjustCachePadding(base::ByteSizeDelta delta) {
+  if (!cache_padding_) {
+    return;
+  }
+  // Cache padding accounting results in a negative value due to a corrupt
+  // index file. Reset the value here (and in the index) to null for now, and
+  // recalculate from scratch the next time the cache is opened.
+  if (delta < -cache_padding_->AsByteSizeDelta()) {
+    DLOG(ERROR) << "Cache padding underflow";
+    cache_padding_.reset();
+    return;
+  }
+  *cache_padding_ += delta;
 }
 
 void CacheStorageCache::CalculateCacheSizePaddingGotSize(
     SizePaddingCallback callback,
-    int64_t cache_size) {
+    base::ByteSize cache_size) {
   // Enumerating entries is only done during cache initialization and only if
   // necessary.
   CHECK_EQ(backend_state_, BACKEND_UNINITIALIZED, base::NotFatalUntil::M158);
@@ -2282,23 +2296,27 @@ void CacheStorageCache::CalculateCacheSizePaddingGotSize(
 
 void CacheStorageCache::PaddingDidQueryCache(
     SizePaddingCallback callback,
-    int64_t cache_size,
+    base::ByteSize cache_size,
     CacheStorageError error,
     std::unique_ptr<QueryCacheResults> query_cache_results) {
-  int64_t cache_padding = 0;
-  if (error == CacheStorageError::kSuccess) {
-    for (const auto& result : *query_cache_results) {
-      cache_padding += result.padding + result.side_data_padding;
-    }
+  if (error != CacheStorageError::kSuccess) {
+    std::move(callback).Run(cache_size, std::nullopt);
+    return;
+  }
+  base::ByteSize cache_padding;
+  for (const auto& result : *query_cache_results) {
+    cache_padding +=
+        base::ByteSize(base::checked_cast<uint64_t>(result.padding)) +
+        base::ByteSize(base::checked_cast<uint64_t>(result.side_data_padding));
   }
 
   std::move(callback).Run(cache_size, cache_padding);
 }
 
-void CacheStorageCache::CalculateCacheSize(
-    net::Int64CompletionOnceCallback callback) {
+void CacheStorageCache::CalculateCacheSize(SizeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(
+      base::BindOnce(&CacheSizeFromResult).Then(std::move(callback)));
   int64_t rv =
       backend_->CalculateSizeOfAllEntries(std::move(split_callback.first));
   if (rv != net::ERR_IO_PENDING)
@@ -2322,13 +2340,15 @@ void CacheStorageCache::UpdateCacheSize(base::OnceClosure callback) {
 void CacheStorageCache::UpdateCacheSizeGotSize(
     CacheStorageCacheHandle cache_handle,
     base::OnceClosure callback,
-    int64_t current_cache_size) {
+    std::optional<base::ByteSize> current_cache_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_NE(current_cache_size, CacheStorage::kSizeUnknown,
-           base::NotFatalUntil::M158);
   cache_size_ = current_cache_size;
-  int64_t size_delta = PaddedCacheSize() - last_reported_size_;
-  last_reported_size_ = PaddedCacheSize();
+  const std::optional<base::ByteSize> padded_size = PaddedCacheSize();
+  std::optional<int64_t> size_delta;
+  if (padded_size && last_reported_size_) {
+    size_delta = (*padded_size - *last_reported_size_).InBytes();
+  }
+  last_reported_size_ = padded_size;
 
   quota_manager_proxy_->NotifyBucketModified(
       CacheStorageQuotaClient::GetClientTypeFromOwner(owner_), bucket_locator_,
@@ -2501,7 +2521,8 @@ void CacheStorageCache::DeleteDidQueryCache(
     disk_cache::ScopedEntryPtr entry = std::move(result.entry);
     InvalidateSideDataWriters(GURL(entry->GetKey()));
     if (ShouldPadResourceSize(*result.response)) {
-      cache_padding_ -= (result.padding + result.side_data_padding);
+      AdjustCachePadding(-(base::ByteSizeDelta(result.padding) +
+                           base::ByteSizeDelta(result.side_data_padding)));
     }
     entry->Doom();
   }
@@ -2646,24 +2667,23 @@ void CacheStorageCache::InitDidCreateBackend(
     base::OnceClosure callback,
     CacheStorageError cache_create_error) {
   if (cache_create_error != CacheStorageError::kSuccess) {
-    InitGotCacheSize(std::move(callback), cache_create_error, 0);
+    InitGotCacheSizeAndPadding(std::move(callback), cache_create_error,
+                               base::ByteSize(), base::ByteSize());
     return;
   }
 
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
-  int64_t rv = backend_->CalculateSizeOfAllEntries(base::BindOnce(
-      &CacheStorageCache::InitGotCacheSize, weak_ptr_factory_.GetWeakPtr(),
-      std::move(split_callback.first), cache_create_error));
-
-  if (rv != net::ERR_IO_PENDING)
-    InitGotCacheSize(std::move(split_callback.second), cache_create_error, rv);
+  CalculateCacheSize(base::BindOnce(&CacheStorageCache::InitGotCacheSize,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(callback), cache_create_error));
 }
 
-void CacheStorageCache::InitGotCacheSize(base::OnceClosure callback,
-                                         CacheStorageError cache_create_error,
-                                         int64_t cache_size) {
-  if (cache_create_error != CacheStorageError::kSuccess) {
-    InitGotCacheSizeAndPadding(std::move(callback), cache_create_error, 0, 0);
+void CacheStorageCache::InitGotCacheSize(
+    base::OnceClosure callback,
+    CacheStorageError cache_create_error,
+    std::optional<base::ByteSize> cache_size) {
+  if (!cache_size) {
+    InitGotCacheSizeAndPadding(std::move(callback), cache_create_error,
+                               std::nullopt, base::ByteSize());
     return;
   }
 
@@ -2671,10 +2691,10 @@ void CacheStorageCache::InitGotCacheSize(base::OnceClosure callback,
   // (which is why the size was calculated), or 2) it must match the current
   // size. If the sizes aren't equal then there is a bug in how the cache size
   // is saved in the store's index.
-  if (cache_size_ != CacheStorage::kSizeUnknown) {
+  if (cache_size_) {
     DLOG_IF(ERROR, cache_size_ != cache_size)
-        << "Cache size: " << cache_size
-        << " does not match size from index: " << cache_size_;
+        << "Cache size: " << cache_size->InBytes()
+        << " does not match size from index: " << cache_size_->InBytes();
     if (cache_size_ != cache_size) {
       // We assume that if the sizes match then then cached padding is still
       // correct. If not then we recalculate the padding.
@@ -2682,17 +2702,17 @@ void CacheStorageCache::InitGotCacheSize(base::OnceClosure callback,
           base::BindOnce(&CacheStorageCache::InitGotCacheSizeAndPadding,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                          cache_create_error),
-          cache_size);
+          *cache_size);
       return;
     }
   }
 
-  if (cache_padding_ == CacheStorage::kSizeUnknown || cache_padding_ < 0) {
+  if (!cache_padding_) {
     CalculateCacheSizePaddingGotSize(
         base::BindOnce(&CacheStorageCache::InitGotCacheSizeAndPadding,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        cache_create_error),
-        cache_size);
+        *cache_size);
     return;
   }
 
@@ -2705,17 +2725,18 @@ void CacheStorageCache::InitGotCacheSize(base::OnceClosure callback,
 void CacheStorageCache::InitGotCacheSizeAndPadding(
     base::OnceClosure callback,
     CacheStorageError cache_create_error,
-    int64_t cache_size,
-    int64_t cache_padding) {
+    std::optional<base::ByteSize> cache_size,
+    std::optional<base::ByteSize> cache_padding) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   cache_size_ = cache_size;
   cache_padding_ = cache_padding;
 
   initializing_ = false;
-  backend_state_ = (cache_create_error == CacheStorageError::kSuccess &&
-                    backend_ && backend_state_ == BACKEND_UNINITIALIZED)
-                       ? BACKEND_OPEN
-                       : BACKEND_CLOSED;
+  backend_state_ =
+      (cache_create_error == CacheStorageError::kSuccess && cache_size_ &&
+       cache_padding_ && backend_ && backend_state_ == BACKEND_UNINITIALIZED)
+          ? BACKEND_OPEN
+          : BACKEND_CLOSED;
 
   if (cache_observer_)
     cache_observer_->CacheSizeUpdated(this);
@@ -2723,12 +2744,11 @@ void CacheStorageCache::InitGotCacheSizeAndPadding(
   std::move(callback).Run();
 }
 
-int64_t CacheStorageCache::PaddedCacheSize() const {
-  if (cache_size_ == CacheStorage::kSizeUnknown ||
-      cache_padding_ == CacheStorage::kSizeUnknown) {
-    return CacheStorage::kSizeUnknown;
+std::optional<base::ByteSize> CacheStorageCache::PaddedCacheSize() const {
+  if (!cache_size_ || !cache_padding_) {
+    return std::nullopt;
   }
-  return cache_size_ + cache_padding_;
+  return *cache_size_ + *cache_padding_;
 }
 
 base::CheckedNumeric<uint64_t>
