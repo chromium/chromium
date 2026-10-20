@@ -39,8 +39,10 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "media/base/format_utils.h"
+#include "media/base/limits.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_frame_layout.h"
 #include "media/base/video_util.h"
 #include "media/gfx/video_frame_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -796,6 +798,117 @@ TEST_F(PaintCanvasVideoRendererTest, Yuv420P12OddWidth) {
   for (int i = 0; i < kImgHeight; ++i) {
     for (int j = 0; j < kImgWidth; ++j) {
       EXPECT_EQ(rgba[i * kImgWidth + j], 0xffffffff);
+    }
+  }
+}
+
+TEST_F(PaintCanvasVideoRendererTest, RGBUnalignedStride) {
+  constexpr int kImgWidth = 8;
+  constexpr int kImgHeight = 4;
+  constexpr size_t kStride = kImgWidth * 4 + 1;
+  auto data = base::HeapArray<uint8_t>::WithSize(kStride * kImgHeight);
+  for (int y = 0; y < kImgHeight; ++y) {
+    for (int x = 0; x < kImgWidth; ++x) {
+      base::span<uint8_t> pixel = data.subspan(y * kStride + x * 4, 4u);
+      pixel[0] = 0x12;
+      pixel[1] = 0x34;
+      pixel[2] = 0x56;
+      pixel[3] = 0xff;
+    }
+    data[y * kStride + kImgWidth * 4] = 0xaa;
+  }
+
+  const gfx::Size size(kImgWidth, kImgHeight);
+  auto layout = VideoFrameLayout::CreateWithPlanes(
+      PIXEL_FORMAT_ABGR, size, {ColorPlaneLayout(kStride, 0, data.size())});
+  ASSERT_TRUE(layout.has_value());
+  scoped_refptr<VideoFrame> frame = VideoFrame::WrapExternalDataWithLayout(
+      *layout, gfx::Rect(size), size, data, base::TimeDelta());
+  ASSERT_TRUE(frame);
+
+  auto rgba = base::HeapArray<uint32_t>::Uninit(kImgWidth * kImgHeight);
+  std::ranges::fill(rgba, 0xdeadbeef);
+  PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
+      frame.get(), base::as_writable_byte_span(rgba), kImgWidth * 4,
+      kRGBA_8888_SkColorType, /*premultiply_alpha=*/true);
+  for (uint32_t pixel : rgba) {
+    EXPECT_EQ(pixel, 0xff563412u);
+  }
+
+  SkBitmap bitmap = AllocBitmap(kImgWidth, kImgHeight);
+  bitmap.eraseColor(SK_ColorMAGENTA);
+  cc::SkiaPaintCanvas canvas(bitmap);
+  cc::PaintFlags flags;
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kNone);
+  PaintCanvasVideoRenderer::PaintParams paint_params;
+  paint_params.dest_rect = gfx::RectF(kImgWidth, kImgHeight);
+  renderer_.Paint(frame, &canvas, flags, paint_params, nullptr);
+  for (int y = 0; y < kImgHeight; ++y) {
+    for (int x = 0; x < kImgWidth; ++x) {
+      EXPECT_EQ(SkColorSetARGB(0xff, 0x12, 0x34, 0x56), bitmap.getColor(x, y));
+    }
+  }
+}
+
+TEST_F(PaintCanvasVideoRendererTest, HighBitMaxDimension) {
+  constexpr int kMaxWidth = limits::kMaxDimension;
+  constexpr int kImgHeight = 2;
+  constexpr int kUvWidth = (kMaxWidth + 1) / 2;
+  constexpr int kUvHeight = kImgHeight;
+  auto y_plane = base::HeapArray<uint16_t>::Uninit(kMaxWidth * kImgHeight);
+  auto u_plane = base::HeapArray<uint16_t>::Uninit(kUvWidth * kUvHeight);
+  auto v_plane = base::HeapArray<uint16_t>::Uninit(kUvWidth * kUvHeight);
+  std::ranges::fill(y_plane, 4095);
+  std::ranges::fill(u_plane, 2048);
+  std::ranges::fill(v_plane, 2048);
+
+  const int32_t y_stride = sizeof(uint16_t) * kMaxWidth;
+  const int32_t uv_stride = sizeof(uint16_t) * kUvWidth;
+  const gfx::Size coded_size(kMaxWidth, kImgHeight);
+
+  // When visible_rect is smaller than coded_size, DownShiftHighbitVideoFrame
+  // should succeed by allocating only the visible size.
+  {
+    const gfx::Rect cropped_rect(16, kImgHeight);
+    scoped_refptr<VideoFrame> cropped_frame = VideoFrame::WrapExternalYuvData(
+        PIXEL_FORMAT_YUV422P12, coded_size, cropped_rect, cropped_rect.size(),
+        y_stride, uv_stride, uv_stride, base::as_byte_span(y_plane),
+        base::as_byte_span(u_plane), base::as_byte_span(v_plane),
+        base::TimeDelta());
+    ASSERT_TRUE(cropped_frame);
+
+    auto rgba =
+        base::HeapArray<uint32_t>::Uninit(cropped_rect.width() * kImgHeight);
+    std::ranges::fill(rgba, 0xdeadbeef);
+    PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
+        cropped_frame.get(), base::as_writable_byte_span(rgba),
+        cropped_rect.width() * 4, kN32_SkColorType,
+        /*premultiply_alpha=*/true);
+    for (uint32_t pixel : rgba) {
+      EXPECT_EQ(pixel, 0xffffffffu);
+    }
+  }
+
+  // When visible_rect has the odd maximum width (32767),
+  // VideoFrame::CreateFrame fails inside DownShiftHighbitVideoFrame because
+  // DetermineAlignedSize pads 32767 to 32768 (> limits::kMaxDimension).
+  // ConvertVideoFrameToRGBPixels must still zero-initialize the destination
+  // buffer rather than leaving stale data.
+  {
+    scoped_refptr<VideoFrame> full_frame = VideoFrame::WrapExternalYuvData(
+        PIXEL_FORMAT_YUV422P12, coded_size, gfx::Rect(coded_size), coded_size,
+        y_stride, uv_stride, uv_stride, base::as_byte_span(y_plane),
+        base::as_byte_span(u_plane), base::as_byte_span(v_plane),
+        base::TimeDelta());
+    ASSERT_TRUE(full_frame);
+
+    auto rgba = base::HeapArray<uint32_t>::Uninit(kMaxWidth * kImgHeight);
+    std::ranges::fill(rgba, 0xdeadbeef);
+    PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
+        full_frame.get(), base::as_writable_byte_span(rgba), kMaxWidth * 4,
+        kN32_SkColorType, /*premultiply_alpha=*/true);
+    for (uint32_t pixel : rgba) {
+      EXPECT_EQ(pixel, 0u);
     }
   }
 }
