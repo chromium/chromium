@@ -36,6 +36,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace selection {
@@ -332,6 +333,10 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
                 request.areas_of_interest(0);
             EXPECT_FALSE(proto_aoi.image_bytes().empty());
             EXPECT_EQ(proto_aoi.mime_type(), "image/png");
+            SkBitmap decoded = gfx::PNGCodec::Decode(
+                base::as_byte_span(proto_aoi.image_bytes()));
+            EXPECT_EQ(decoded.width(), 50);
+            EXPECT_EQ(decoded.height(), 50);
             EXPECT_EQ(proto_aoi.selection().x(), 10);
             EXPECT_EQ(proto_aoi.selection().y(), 20);
             EXPECT_EQ(proto_aoi.selection().width(), 30);
@@ -353,6 +358,73 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
 
   EXPECT_THAT(future.Take(),
               ElementsAre(SuggestionWithLabel(u"Server Gemini Action")));
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+// Tests that screenshot cropping and selection coordinate rebasing work when
+// `kSmartSelectionServerCropPadding` is non-negative.
+TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithCroppedScreenshot) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSmartSelectionServerSuggestions,
+      {{kSmartSelectionServerCropPadding.name, "15"}});
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  optimization_guide::proto::SmartSelectionSuggestionsResponse response;
+  optimization_guide::proto::SmartSelectionSuggestion* s1 =
+      response.add_suggestions();
+  s1->set_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  s1->set_label("Cropped Action");
+
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kSmartSelectionSuggestions,
+                           _, _, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            const auto& request =
+                static_cast<const optimization_guide::proto::
+                                SmartSelectionSuggestionsRequest&>(
+                    request_metadata);
+            ASSERT_EQ(request.areas_of_interest().size(), 1);
+            const optimization_guide::proto::AreaOfInterest& proto_aoi =
+                request.areas_of_interest(0);
+            SkBitmap decoded = gfx::PNGCodec::Decode(
+                base::as_byte_span(proto_aoi.image_bytes()));
+            // Selection (10, 20, 30, 40) outset by 15 is (-5, 5, 60, 70),
+            // which clamps to (0, 5, 55, 70) within the 100x100 screenshot.
+            EXPECT_EQ(decoded.width(), 55);
+            EXPECT_EQ(decoded.height(), 70);
+            EXPECT_EQ(proto_aoi.selection().x(), 10);
+            EXPECT_EQ(proto_aoi.selection().y(), 15);
+            EXPECT_EQ(proto_aoi.selection().width(), 30);
+            EXPECT_EQ(proto_aoi.selection().height(), 40);
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    base::ok(optimization_guide::AnyWrapProto(response)),
+                    /*execution_info=*/nullptr),
+                /*log_entry=*/nullptr);
+          });
+
+  AreaOfInterest aoi;
+  aoi.screenshot.allocN32Pixels(100, 100);
+  aoi.screenshot.eraseColor(SK_ColorRED);
+  aoi.bounds = gfx::Rect(10, 20, 30, 40);
+
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  service().RequestSuggestions(aoi, future.GetCallback());
+
+  EXPECT_THAT(future.Take(),
+              ElementsAre(SuggestionWithLabel(u"Cropped Action")));
 
   service().UnregisterTool(&gemini_tool);
 }

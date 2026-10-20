@@ -14,4 +14,9 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kSmartSelectionServerSuggestions,
                    base::Seconds(20));
 
+BASE_FEATURE_PARAM(int,
+                   kSmartSelectionServerCropPadding,
+                   &kSmartSelectionServerSuggestions,
+                   -1);
+
 }  // namespace selection

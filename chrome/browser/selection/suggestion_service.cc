@@ -34,8 +34,10 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/variations/service/google_groups_manager.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace selection {
 
@@ -43,22 +45,68 @@ namespace {
 
 namespace proto = ::optimization_guide::proto;
 
-// Converts `aoi` into its proto representation, excluding screenshot data.
-proto::AreaOfInterest ToProtoAreaOfInterest(const AreaOfInterest& aoi) {
-  proto::AreaOfInterest proto_aoi;
-  if (const gfx::Rect* rect = std::get_if<gfx::Rect>(&aoi.bounds)) {
-    proto::Rectangle& selection = *proto_aoi.mutable_selection();
-    selection.set_x(rect->x());
-    selection.set_y(rect->y());
-    selection.set_width(rect->width());
-    selection.set_height(rect->height());
+// If `kSmartSelectionServerCropPadding` is non-negative, crops `screenshot` to
+// `selection` expanded by the padding and updates `selection` to be relative to
+// the top-left of the cropped screenshot (as required by
+// `proto::AreaOfInterest::selection`).
+void MaybeCropScreenshot(SkBitmap& screenshot, gfx::Rect& selection) {
+  const int padding = kSmartSelectionServerCropPadding.Get();
+  if (padding < 0 || screenshot.drawsNothing()) {
+    return;
   }
-  *proto_aoi.mutable_annotated_page_content() = aoi.apc;
-  return proto_aoi;
+  const gfx::Rect screenshot_bounds = gfx::SkIRectToRect(screenshot.bounds());
+  const gfx::Rect clamped_selection =
+      gfx::IntersectRects(selection, screenshot_bounds);
+  if (clamped_selection.IsEmpty()) {
+    return;
+  }
+  gfx::Rect padded_selection = clamped_selection;
+  padded_selection.Outset(padding);
+  padded_selection.Intersect(screenshot_bounds);
+  SkBitmap cropped;
+  if (!screenshot.extractSubset(&cropped,
+                                gfx::RectToSkIRect(padded_selection))) {
+    return;
+  }
+  screenshot = std::move(cropped);
+  // Shift `selection` so its origin is relative to the top-left of `cropped`.
+  selection = clamped_selection - padded_selection.OffsetFromOrigin();
 }
 
-// Builds a request proto for `aoi` and `tools`, excluding screenshot data.
-proto::SmartSelectionSuggestionsRequest BuildServerSuggestionsRequest(
+struct AreaOfInterestWithScreenshot {
+  proto::AreaOfInterest proto_aoi;
+  SkBitmap screenshot;
+};
+
+// Converts `aoi` into its proto representation (excluding screenshot data) and
+// returns the (potentially cropped) screenshot to encode.
+AreaOfInterestWithScreenshot ToProtoAreaOfInterest(const AreaOfInterest& aoi) {
+  SkBitmap screenshot = aoi.screenshot;
+  proto::AreaOfInterest proto_aoi;
+  std::visit(absl::Overload{
+                 [&](gfx::Rect selection_rect) {
+                   MaybeCropScreenshot(screenshot, selection_rect);
+                   proto::Rectangle& selection = *proto_aoi.mutable_selection();
+                   selection.set_x(selection_rect.x());
+                   selection.set_y(selection_rect.y());
+                   selection.set_width(selection_rect.width());
+                   selection.set_height(selection_rect.height());
+                 },
+                 [](base::span<const gfx::Point> coordinates) {},
+             },
+             aoi.bounds);
+  *proto_aoi.mutable_annotated_page_content() = aoi.apc;
+  return {std::move(proto_aoi), std::move(screenshot)};
+}
+
+struct SuggestionRequestWithScreenshot {
+  proto::SmartSelectionSuggestionsRequest request;
+  SkBitmap screenshot;
+};
+
+// Builds a request proto for `aoi` and `tools` (excluding screenshot data) and
+// returns the (potentially cropped) screenshot to encode.
+SuggestionRequestWithScreenshot BuildServerSuggestionsRequest(
     const AreaOfInterest& aoi,
     const base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>>&
         tools) {
@@ -82,8 +130,9 @@ proto::SmartSelectionSuggestionsRequest BuildServerSuggestionsRequest(
   capabilities.set_chrome_version(
       std::string(version_info::GetVersionNumber()));
 
-  *request.add_areas_of_interest() = ToProtoAreaOfInterest(aoi);
-  return request;
+  auto [proto_aoi, screenshot] = ToProtoAreaOfInterest(aoi);
+  *request.add_areas_of_interest() = std::move(proto_aoi);
+  return {std::move(request), std::move(screenshot)};
 }
 
 // Invokes the corresponding `tools` to create `Suggestion`s from `response`.
@@ -240,16 +289,14 @@ void SuggestionService::RequestSuggestions(AreaOfInterest processed_area,
   if (tools_.empty() || !remote_model_executor_ ||
       !IsFeatureGroupEnabled(kSmartSelectionServerSuggestions)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       std::vector<std::unique_ptr<Suggestion>>()));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  std::vector<std::unique_ptr<Suggestion>>()));
     return;
   }
 
-  proto::SmartSelectionSuggestionsRequest request =
+  auto [request, screenshot] =
       BuildServerSuggestionsRequest(processed_area, tools_);
 
-  SkBitmap screenshot = processed_area.screenshot;
   // TODO(crbug.com/561489586): Investigate alternative image encoding and
   // compression mechanisms.
   base::ThreadPool::PostTaskAndReplyWithResult(

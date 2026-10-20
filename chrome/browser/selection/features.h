@@ -19,6 +19,10 @@ BASE_DECLARE_FEATURE(kSmartSelectionServerSuggestions);
 // Execution Service.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSmartSelectionServerTimeout);
 
+// If non-negative, crops the screenshot sent to the Model Execution Service to
+// the selected area expanded by a padding of this width in pixels.
+BASE_DECLARE_FEATURE_PARAM(int, kSmartSelectionServerCropPadding);
+
 }  // namespace selection
 
 #endif  // CHROME_BROWSER_SELECTION_FEATURES_H_

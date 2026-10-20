@@ -33,6 +33,7 @@ source_set("selection") {
     "//components/variations/service",
     "//components/version_info",
     "//ui/gfx/codec",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 }
 
@@ -58,5 +59,6 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx/codec",
   ]
 }
