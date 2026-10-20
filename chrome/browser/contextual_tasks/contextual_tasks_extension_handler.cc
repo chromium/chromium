@@ -201,13 +201,6 @@ void ContextualTasksExtensionHandler::CreateExtensionPageHandler(
         base::BindRepeating(&ContextualTasksExtensionHandler::OnLensCropUpdated,
                             weak_ptr_factory_.GetWeakPtr()));
   }
-#if !BUILDFLAG(IS_ANDROID)
-  if (auto* controller = GetLensSearchController()) {
-    if (controller->IsShowingUI()) {
-      contextual_tasks_page_->OnLensOverlayStateChanged(/*is_showing=*/true);
-    }
-  }
-#endif
   InitializeInputStateModel();
   // Do not reset the session's tab context here. The session is shared by every
   // extension frame in this WebContents, so a frame binding in the middle of a

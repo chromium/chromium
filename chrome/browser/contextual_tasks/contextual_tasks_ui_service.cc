@@ -3895,10 +3895,16 @@ void ContextualTasksUiService::OnLensOverlayStateChanged(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
+  // Only notify the extension handler if the overlay is showing for the
+  // composebox.
+  const bool is_showing_for_composebox =
+      is_showing &&
+      invocation_source ==
+          lens::LensOverlayInvocationSource::kContextualTasksComposebox;
   panel_contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
     if (auto* handler =
             ContextualTasksExtensionHandler::GetForCurrentDocument(rfh)) {
-      handler->OnLensOverlayStateChanged(is_showing);
+      handler->OnLensOverlayStateChanged(is_showing_for_composebox);
     }
   });
 #endif

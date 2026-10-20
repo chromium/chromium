@@ -2783,36 +2783,6 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
-    CreateExtensionPageHandler_SyncsInitialLensOverlayStateWhenShowing) {
-  EXPECT_CALL(*mock_lens_controller_, IsShowingUI())
-      .WillRepeatedly(Return(true));
-
-  ASSERT_TRUE(
-      content::ExecJs(web_contents_,
-                      "const iframe = document.createElement('iframe'); "
-                      "document.body.appendChild(iframe);"));
-  content::RenderFrameHost* child_rfh =
-      content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0);
-  ASSERT_NE(child_rfh, nullptr);
-
-  ContextualTasksExtensionHandler::CreateForCurrentDocument(child_rfh);
-  auto* child_handler =
-      ContextualTasksExtensionHandler::GetForCurrentDocument(child_rfh);
-  ASSERT_NE(child_handler, nullptr);
-
-  testing::NiceMock<MockContextualTasksExtensionPage> mock_child_page;
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_child_page, OnLensOverlayStateChanged(true))
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-
-  mojo::PendingReceiver<mojom::ExtensionPageHandler> child_handler_receiver;
-  child_handler->CreateExtensionPageHandler(mock_child_page.BindAndGetRemote(),
-                                            std::move(child_handler_receiver));
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ContextualTasksExtensionHandlerBrowserTest,
     ContextualTasksUiService_OnLensOverlayStateChanged_RoutesOnlyToActivePanel) {
   // When the contextual tasks side panel is not open, calling
   // ContextualTasksUiService::OnLensOverlayStateChanged does not route to
@@ -2822,8 +2792,43 @@ IN_PROC_BROWSER_TEST_F(
   auto* ui_service = ContextualTasksUiServiceFactory::GetForBrowserContext(
       browser()->GetProfile());
   ASSERT_TRUE(ui_service);
-  ui_service->OnLensOverlayStateChanged(browser(), true, std::nullopt);
+  ui_service->OnLensOverlayStateChanged(
+      browser(), true,
+      lens::LensOverlayInvocationSource::kContextualTasksComposebox);
   mock_page_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    ContextualTasksUiService_OnLensOverlayStateChanged_OnlyActiveForComposeboxSource) {
+  EmbedHandlerInSidePanel();
+  ContextualTasksPanelController::From(browser())->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/true);
+
+  auto* ui_service = ContextualTasksUiServiceFactory::GetForBrowserContext(
+      browser()->GetProfile());
+  ASSERT_TRUE(ui_service);
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_panel_page_, OnLensOverlayStateChanged(false))
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+    ui_service->OnLensOverlayStateChanged(
+        browser(), true, lens::LensOverlayInvocationSource::kAppMenu);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock_panel_page_, OnLensOverlayStateChanged(true))
+        .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+    ui_service->OnLensOverlayStateChanged(
+        browser(), true,
+        lens::LensOverlayInvocationSource::kContextualTasksComposebox);
+    run_loop.Run();
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(
