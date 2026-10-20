@@ -905,7 +905,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "WebViewIgnoreDuplicateNavs",
                 "Ignore duplicate navigations, keeping the older navigations instead."),
-        Flag.baseFeature("OverrideAPIKey"),
+        Flag.baseFeature("OverrideAPIKeyFeature"),
         Flag.baseFeature("CacheStylusSettings", "Cache stylus related settings."),
         Flag.baseFeature("Prerender2FallbackPrefetchSpecRules"),
         Flag.baseFeature(
