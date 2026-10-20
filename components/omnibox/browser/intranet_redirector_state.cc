@@ -17,8 +17,7 @@ IntranetRedirectorBehavior GetInterceptionChecksBehavior(
   const PrefService::Preference* behavior_pref = nullptr;
   // Expected to exist unless unregistered in tests.
   if (pref_service) {
-    behavior_pref =
-        pref_service->FindPreference(omnibox::kIntranetRedirectBehavior);
+    behavior_pref = pref_service->FindPreference(kIntranetRedirectBehavior);
   }
   if (behavior_pref && !behavior_pref->IsDefaultValue()) {
     // We filter the integer pref value to known policy/setting options.

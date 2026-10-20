@@ -31,7 +31,6 @@
 // expands to more than one code point that will not be handled properly. Such
 // characters will be compared case-sensitively.
 struct SimpleCaseInsensitiveCompareUCS2 {
- public:
   bool operator()(char16_t x, char16_t y) const {
     return u_tolower(x) == u_tolower(y);
   }

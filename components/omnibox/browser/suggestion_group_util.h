@@ -67,9 +67,8 @@ inline constexpr int kIPHZeroSuggestRelevance = 300;
 using GroupConfigMap = std::unordered_map<GroupId, GroupConfig>;
 
 // Builds the pre-defined static groups that are useful for sorting suggestions.
-const omnibox::GroupConfigMap& BuildDefaultGroupsForInput(
-    const AutocompleteInput& input,
-    bool is_incognito);
+const GroupConfigMap& BuildDefaultGroupsForInput(const AutocompleteInput& input,
+                                                 bool is_incognito);
 
 // Returns the omnibox::GroupId enum object corresponding to |value|, or
 // omnibox::GROUP_INVALID when there is no corresponding enum object.

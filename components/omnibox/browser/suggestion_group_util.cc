@@ -187,9 +187,8 @@ const GroupConfigMap& BuildDefaultTabSearchOverlayGroups(bool is_incognito) {
 
 }  // namespace
 
-const omnibox::GroupConfigMap& BuildDefaultGroupsForInput(
-    const AutocompleteInput& input,
-    bool is_incognito) {
+const GroupConfigMap& BuildDefaultGroupsForInput(const AutocompleteInput& input,
+                                                 bool is_incognito) {
   using OEP = ::metrics::OmniboxEventProto;
   switch (input.current_page_classification()) {
     case OEP::ANDROID_HUB:

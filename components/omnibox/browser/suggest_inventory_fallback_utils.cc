@@ -87,7 +87,7 @@ std::vector<AutocompleteMatch> MaybeCreateFallbackMatchesForSuggestInventory(
     AutocompleteMatch match(provider, relevance--, false,
                             AutocompleteMatchType::kSearchSuggest);
     match.keyword = template_url->keyword();
-    match.suggestion_group_id = omnibox::GROUP_AI_MODE_ZERO_SUGGEST_CANNED;
+    match.suggestion_group_id = GROUP_AI_MODE_ZERO_SUGGEST_CANNED;
     match.contents = prompt.first;
     match.contents_class = ClassifyTermMatches({}, match.contents.length(),
                                                ACMatchClassification::NONE,
@@ -105,9 +105,9 @@ std::vector<AutocompleteMatch> MaybeCreateFallbackMatchesForSuggestInventory(
     }
     match.transition = ui::PAGE_TRANSITION_GENERATED;
 
-    omnibox::SuggestTemplateInfo suggest_template_info;
+    SuggestTemplateInfo suggest_template_info;
     suggest_template_info.set_type_icon(
-        omnibox::SuggestTemplateInfo_IconType_SEARCH_LOOP_WITH_SPARKLE);
+        SuggestTemplateInfo_IconType_SEARCH_LOOP_WITH_SPARKLE);
     match.suggest_template = suggest_template_info;
 
     matches.push_back(std::move(match));

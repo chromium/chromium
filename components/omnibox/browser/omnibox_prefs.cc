@@ -32,12 +32,12 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       kShowSearchTools, true, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
-  registry->RegisterBooleanPref(omnibox::kDismissedGeminiIph, false);
+  registry->RegisterBooleanPref(kDismissedGeminiIph, false);
+  registry->RegisterBooleanPref(kDismissedEnterpriseSearchAggregatorIphPrefName,
+                                false);
   registry->RegisterBooleanPref(
-      omnibox::kDismissedEnterpriseSearchAggregatorIphPrefName, false);
-  registry->RegisterBooleanPref(
-      omnibox::kDismissedFeaturedEnterpriseSiteSearchIphPrefName, false);
-  registry->RegisterBooleanPref(omnibox::kDismissedHistoryScopePromo, false);
+      kDismissedFeaturedEnterpriseSiteSearchIphPrefName, false);
+  registry->RegisterBooleanPref(kDismissedHistoryScopePromo, false);
   registry->RegisterBooleanPref(kBottomOmniboxEverUsed, false);
 
   registry->RegisterIntegerPref(kShownCountGeminiIph, 0);
@@ -63,7 +63,7 @@ void SetUserPreferenceForZeroSuggestCachedResponse(PrefService* prefs,
   DCHECK(prefs);
 
   if (is_composebox) {
-    prefs->SetString(omnibox::kZeroSuggestCachedResultsComposebox, response);
+    prefs->SetString(kZeroSuggestCachedResultsComposebox, response);
     return;
   }
 
@@ -84,15 +84,15 @@ std::string GetUserPreferenceForZeroSuggestCachedResponse(
   DCHECK(prefs);
 
   if (is_composebox) {
-    return prefs->GetString(omnibox::kZeroSuggestCachedResultsComposebox);
+    return prefs->GetString(kZeroSuggestCachedResultsComposebox);
   }
 
   if (page_url.empty()) {
-    return prefs->GetString(omnibox::kZeroSuggestCachedResults);
+    return prefs->GetString(kZeroSuggestCachedResults);
   }
 
   const base::DictValue& dictionary =
-      prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL);
+      prefs->GetDict(kZeroSuggestCachedResultsWithURL);
   auto* value_ptr = dictionary.FindString(page_url);
   return value_ptr ? *value_ptr : std::string();
 }
