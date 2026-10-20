@@ -79,6 +79,9 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   private closeTimer_: number|null = null;
   private pointerDownOnTrigger_: boolean = false;
   private shouldOpenMenu_: boolean = false;
+  // Tracks the latest open request so an in-flight async fetch does not open
+  // the menu after the pointer leaves the trigger or the menu is closed.
+  private openMenuRequestId_: number = 0;
   private listenerIds_: number[] = [];
   private browserProxy_: TabPickerBrowserProxy =
       TabPickerBrowserProxyImpl.getInstance();
@@ -100,6 +103,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    ++this.openMenuRequestId_;
     this.cancelCloseTimer_();
     const callbackRouter =
         ExtensionBrowserProxyImpl.getInstance().callbackRouter;
@@ -135,9 +139,8 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     try {
       const {tabs} = await this.browserProxy_.getRecentTabs();
       this.tabSuggestions = tabs || [];
-      if (this.tabSuggestions.length > 0) {
-        this.recentTabId = this.tabSuggestions[0]!.tabId;
-      }
+      this.recentTabId =
+          this.tabSuggestions.length > 0 ? this.tabSuggestions[0]!.tabId : null;
     } catch {
       // Standalone or test environment without proxy implementation.
     }
@@ -225,6 +228,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   protected onShareTabsRowPointerleave_() {
     this.pointerDownOnTrigger_ = false;
     this.shouldOpenMenu_ = false;
+    ++this.openMenuRequestId_;
     this.$.shareTabsTrigger.blur();
     this.scheduleCloseTimer_();
   }
@@ -240,6 +244,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     this.cancelCloseTimer_();
     if (this.$.tabMenu.open) {
       this.shouldOpenMenu_ = false;
+      ++this.openMenuRequestId_;
       this.$.tabMenu.close();
     } else {
       this.shouldOpenMenu_ = true;
@@ -258,8 +263,14 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     }
   }
 
-  protected onMenuPointerenter_() {
+  protected async onMenuPointerenter_() {
     this.cancelCloseTimer_();
+    await this.fetchTabSuggestions_();
+    // If all eligible tabs were closed while the menu remained open, close it
+    // so an empty modal dialog is not left on screen.
+    if (!this.hasTabSuggestions_ && this.$.tabMenu.open) {
+      this.$.tabMenu.close();
+    }
   }
 
   protected onMenuPointermove_() {
@@ -281,6 +292,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 
   protected onMenuClose_() {
     this.shouldOpenMenu_ = false;
+    ++this.openMenuRequestId_;
     this.tabMenuOpen = false;
     if (!FocusOutlineManager.forDocument(document).visible) {
       this.$.shareTabsTrigger.blur();
@@ -312,7 +324,21 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   }
 
   private async openTabMenu_() {
-    if (!this.hasTabSuggestions_ || this.$.tabMenu.open) {
+    const wasOpen = this.$.tabMenu.open;
+    const requestId = ++this.openMenuRequestId_;
+    await this.fetchTabSuggestions_();
+    await this.updateComplete;
+    if (!this.hasTabSuggestions_) {
+      // `openTabMenu_()` can be triggered on hover while `#tabMenu` is already
+      // open; if all eligible tabs were closed in the meantime, close the
+      // already-open menu so an empty modal dialog does not stay visible.
+      if (this.$.tabMenu.open) {
+        this.$.tabMenu.close();
+      }
+      return;
+    }
+    if (wasOpen || !this.shouldOpenMenu_ || this.$.tabMenu.open ||
+        requestId !== this.openMenuRequestId_ || !this.isConnected) {
       return;
     }
     if (this.isUnboundedMenuEnabled_() &&
@@ -320,7 +346,8 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       await this.$.tabMenu.setUnbounded();
       // Abort if the pointer left or the menu state changed while awaiting
       // setUnbounded().
-      if (!this.shouldOpenMenu_ || this.$.tabMenu.open) {
+      if (!this.shouldOpenMenu_ || this.$.tabMenu.open ||
+          requestId !== this.openMenuRequestId_ || !this.isConnected) {
         return;
       }
     }
