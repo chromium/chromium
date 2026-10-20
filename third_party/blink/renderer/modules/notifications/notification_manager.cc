@@ -57,8 +57,9 @@ NotificationManager::NotificationManager(ExecutionContext& context)
 NotificationManager::~NotificationManager() = default;
 
 mojom::blink::PermissionStatus NotificationManager::GetPermissionStatus() {
-  if (GetSupplementable()->IsContextDestroyed())
+  if (GetSupplementable()->IsContextDestroyed()) {
     return mojom::blink::PermissionStatus::DENIED;
+  }
 
   // Tentatively have an early return to avoid calling GetNotificationService()
   // during prerendering. The return value is the same as
@@ -261,6 +262,7 @@ void NotificationManager::DidDisplayPersistentNotification(
 
 void NotificationManager::ClosePersistentNotification(
     const WebString& notification_id) {
+  CHECK(!notification_id.IsEmpty());
   GetNotificationService()->ClosePersistentNotification(notification_id);
 }
 
@@ -281,8 +283,9 @@ void NotificationManager::DidGetNotifications(
     Vector<mojom::blink::NotificationDataPtr> notification_datas) {
   DCHECK_EQ(notification_ids.size(), notification_datas.size());
   ExecutionContext* context = resolver->GetExecutionContext();
-  if (!context)
+  if (!context) {
     return;
+  }
 
   HeapVector<Member<Notification>> notifications;
   notifications.ReserveInitialCapacity(notification_ids.size());

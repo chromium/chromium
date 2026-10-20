@@ -48,6 +48,11 @@ void NotificationStorage::WriteNotificationData(
     const NotificationDatabaseData& data,
     PlatformNotificationContext::WriteResultCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  if (data.notification_id.empty()) {
+    std::move(callback).Run(/* success= */ false, std::string());
+    return;
+  }
+
   std::string serialized_data;
   if (!SerializeNotificationDatabaseData(data, &serialized_data)) {
     DLOG(ERROR) << "Unable to serialize data for a notification belonging "
@@ -85,6 +90,11 @@ void NotificationStorage::ReadNotificationDataAndRecordInteraction(
     PlatformNotificationContext::Interaction interaction,
     PlatformNotificationContext::ReadResultCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  if (notification_id.empty()) {
+    std::move(callback).Run(/* success= */ false, NotificationDatabaseData());
+    return;
+  }
+
   service_worker_context_->GetRegistrationUserData(
       service_worker_registration_id, {CreateDataKey(notification_id)},
       base::BindOnce(&NotificationStorage::OnReadCompleteUpdateInteraction,
@@ -105,7 +115,8 @@ void NotificationStorage::OnReadCompleteUpdateInteraction(
   }
 
   auto data = std::make_unique<NotificationDatabaseData>();
-  if (!DeserializeNotificationDatabaseData(database_data[0], data.get())) {
+  if (!DeserializeNotificationDatabaseData(database_data[0], data.get()) ||
+      data->notification_id.empty()) {
     DLOG(ERROR) << "Unable to deserialize data for a notification belonging "
                 << "to: " << data->origin;
     std::move(callback).Run(/* success= */ false, NotificationDatabaseData());

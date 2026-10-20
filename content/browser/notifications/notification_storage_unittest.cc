@@ -263,4 +263,22 @@ TEST_F(NotificationStorageTest, ReadAndUpdateInteraction) {
   EXPECT_EQ(true, read_data.time_until_close_millis.has_value());
 }
 
+TEST_F(NotificationStorageTest, EmptyNotificationId) {
+  NotificationDatabaseData data;
+  data.origin = url_;
+  data.service_worker_registration_id = RegisterServiceWorker();
+  ASSERT_NE(blink::mojom::kInvalidServiceWorkerRegistrationId,
+            data.service_worker_registration_id);
+
+  // Writing with an empty notification_id should fail gracefully.
+  WriteNotificationDataSynchronous(data);
+  EXPECT_FALSE(success_);
+
+  // Reading with an empty notification_id should fail gracefully.
+  ReadNotificationDataAndRecordInteractionSynchronous(
+      data.service_worker_registration_id, /*notification_id=*/"",
+      PlatformNotificationContext::Interaction::NONE);
+  EXPECT_FALSE(success_);
+}
+
 }  // namespace content

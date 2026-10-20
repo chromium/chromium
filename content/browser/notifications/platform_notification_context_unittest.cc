@@ -1396,6 +1396,54 @@ TEST_F(PlatformNotificationContextTest,
   EXPECT_FALSE(base::IsDirectoryEmpty(db_path));
 }
 
+TEST_F(PlatformNotificationContextTest,
+       PurgeNonPersistentNotificationIdOnReadAll) {
+  base::ScopedTempDir database_dir;
+  ASSERT_TRUE(database_dir.CreateUniqueTempDir());
+
+  GURL origin("https://example.com");
+  const std::string kCorruptedId = "not-a-persistent-id";
+  base::FilePath db_path = database_dir.GetPath().Append(
+      FILE_PATH_LITERAL("Platform Notifications"));
+
+  // Write a corrupted DATA: record whose ID lacks the persistent prefix. It is
+  // a pending scheduled notification so that the startup sync keeps it.
+  {
+    NotificationDatabaseData corrupted_data;
+    corrupted_data.notification_id = kCorruptedId;
+    corrupted_data.origin = origin;
+    corrupted_data.service_worker_registration_id =
+        kFakeServiceWorkerRegistrationId;
+    corrupted_data.creation_time_millis = base::Time::Now();
+    corrupted_data.notification_data.show_trigger_timestamp =
+        base::Time::Now() + base::Days(1);
+    std::string serialized_data;
+    ASSERT_TRUE(
+        SerializeNotificationDatabaseData(corrupted_data, &serialized_data));
+
+    std::unique_ptr<leveldb::DB> db;
+    leveldb_env::Options options;
+    options.create_if_missing = true;
+    ASSERT_TRUE(leveldb_env::OpenDB(options, db_path.AsUTF8Unsafe(), &db).ok());
+    std::string key = "DATA:" + storage::GetIdentifierFromOrigin(origin) +
+                      '\0' + kCorruptedId;
+    ASSERT_TRUE(db->Put(leveldb::WriteOptions(), key, serialized_data).ok());
+  }
+
+  auto context = CreatePlatformNotificationContext(database_dir.GetPath());
+
+  // Reading all notifications with synchronization support must not hit a
+  // CHECK on the non-persistent ID; the record is dropped from the result.
+  EXPECT_EQ(0u, GetStoredNotificationsSync(context.get(), origin).size());
+
+  // The corrupted record should have been purged from the database.
+  base::test::TestFuture<bool, const NotificationDatabaseData&> read_future;
+  context->ReadNotificationDataAndRecordInteraction(
+      kCorruptedId, origin, PlatformNotificationContext::Interaction::NONE,
+      read_future.GetCallback());
+  EXPECT_FALSE(read_future.Get<0>());
+}
+
 TEST_F(PlatformNotificationContextTest, EmptyNotificationIdAndInvalidOrigin) {
   scoped_refptr<PlatformNotificationContextImpl> context =
       CreatePlatformNotificationContext();

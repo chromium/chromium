@@ -144,9 +144,15 @@ NotificationLaunchId::NotificationLaunchId(const std::string& input) {
   // Notification IDs is the rest of the string (delimiters not stripped off).
   const size_t kMinVectorSize = 6;
   for (size_t i = kMinVectorSize; i < tokens.size(); ++i) {
-    if (i > kMinVectorSize)
+    if (i > kMinVectorSize) {
       notification_id_ += kDelimiter;
+    }
     notification_id_ += tokens[i];
+  }
+
+  if (notification_id_.empty()) {
+    LogLaunchIdDecodeStatus(LaunchIdDecodeStatus::kTokensInsufficient);
+    return;
   }
 
   is_valid_ = true;
@@ -161,17 +167,19 @@ std::string NotificationLaunchId::Serialize() const {
   // http://www.ietf.org/rfc/rfc1738.txt).
   std::string prefix;
   LaunchIdComponents type;
-  if (is_for_context_menu_)
+  if (is_for_context_menu_) {
     type = CONTEXT_MENU;
-  else if (is_for_dismiss_button_)
+  } else if (is_for_dismiss_button_) {
     type = DISMISS_BUTTON;
-  else if (button_index_ > -1)
+  } else if (button_index_ > -1) {
     type = BUTTON_INDEX;
-  else
+  } else {
     type = NORMAL;
+  }
 
-  if (button_index_ > -1)
+  if (button_index_ > -1) {
     prefix = base::StringPrintf("|%d", button_index_);
+  }
   return base::StringPrintf(
       "%d%s|%d|%s|%s|%d|%s|%s", type, prefix.c_str(),
       static_cast<int>(notification_type_), profile_id_.c_str(),

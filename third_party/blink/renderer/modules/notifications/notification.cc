@@ -240,6 +240,9 @@ void Notification::close() {
   }
 
   state_ = State::kClosed;
+  if (notification_id_.empty()) {
+    return;
+  }
 
   NotificationManager::From(GetExecutionContext())
       ->ClosePersistentNotification(notification_id_);

@@ -911,12 +911,12 @@ void PlatformNotificationContextImpl::
     if (supports_synchronization) {
       for (auto it = notification_datas.begin();
            it != notification_datas.end();) {
-        // The database is only used for persistent notifications.
-        CHECK(NotificationIdGenerator::IsPersistentNotification(
-                  it->notification_id),
-              base::NotFatalUntil::M159);
-        if (displayed_notifications.count(it->notification_id) ||
-            CanTrigger(*it) || it->creation_time_millis >= start_time) {
+        // The database is only used for persistent notifications. Treat any
+        // other ID as corrupted and purge it rather than returning it.
+        if (NotificationIdGenerator::IsPersistentNotification(
+                it->notification_id) &&
+            (displayed_notifications.count(it->notification_id) ||
+             CanTrigger(*it) || it->creation_time_millis >= start_time)) {
           ++it;
         } else {
           obsolete_notifications.push_back(it->notification_id);

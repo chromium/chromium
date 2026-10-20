@@ -169,6 +169,8 @@ TEST(NotificationLaunchIdTest, ParsingErrorCases) {
       {"1|a|0|Default|1|https://example.com/|notification_id"},
       // Missing notification id from end.
       {"0|0|Default|1|https://example.com/"},
+      // Empty notification id after trailing delimiter.
+      {"0|0|Default|aumi|1|https://example.com/|"},
       // Missing notification id, and origin.
       {"0|0|Default|1"},
       // Missing notification id, origin, and incognito.
