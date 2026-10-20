@@ -110,9 +110,8 @@ void MenuRunnerImpl::Release() {
     }
   }
 
-  bool is_stack_active = controller_ && controller_->IsStackActive();
-  if (is_stack_active) {
-    // Invlidate the menu runner's weakptrs now because the menu runner is
+  if (controller_ && controller_->IsStackActive()) {
+    // Invalidate the menu runner's weakptrs now because the menu runner is
     // considered deleted at this point.
     weak_factory_.InvalidateWeakPtrs();
     // Transfer ownership to controller.
@@ -263,14 +262,8 @@ void MenuRunnerImpl::OnMenuClosed(NotifyType type,
 
   if (delete_after_run_) {
     FireFocusAfterMenuClose(parent_widget);
-
-    bool is_stack_active = controller_ && controller_->IsStackActive();
-    if (is_stack_active) {
-      // Transfer ownership to controller.
-      controller_->DeferMenuRunnerDestruction(base::WrapUnique(this));
-    } else {
-      delete this;
-    }
+    running_ = false;
+    Release();
     return;
   }
   running_ = false;
