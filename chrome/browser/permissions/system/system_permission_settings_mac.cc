@@ -5,9 +5,12 @@
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/apple/bundle_locations.h"
 #include "base/check_deref.h"
 #include "base/mac/mac_util.h"
 #include "base/notreached.h"
@@ -114,14 +117,15 @@ class PlatformHandleImpl : public PlatformHandle {
                           ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::NOTIFICATIONS: {
-        const webapps::AppId* app_id =
-            web_app::WebAppTabHelper::GetAppId(web_contents);
-        if (!app_id) {
-          return;
+        std::string bundle_identifier = base::apple::MainBundleIdentifier();
+        if (std::optional<webapps::AppId> app_id =
+                web_app::WebAppTabHelper::GetAppIdForNotificationAttribution(
+                    web_contents);
+            app_id.has_value()) {
+          bundle_identifier = web_app::GetBundleIdentifierForShim(*app_id);
         }
         base::mac::OpenSystemSettingsPane(
-            base::mac::SystemSettingsPane::kNotifications,
-            web_app::GetBundleIdentifierForShim(*app_id));
+            base::mac::SystemSettingsPane::kNotifications, bundle_identifier);
         return;
       }
       case ContentSettingsType::MEDIASTREAM_CAMERA:

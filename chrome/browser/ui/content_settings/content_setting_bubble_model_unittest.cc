@@ -2082,4 +2082,29 @@ TEST_F(ContentSettingBubbleModelTest, NotificationsBubbleModel_DontAllow) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "ContentSettings.NotificationsDialog.Closed"));
 }
+
+TEST_F(ContentSettingBubbleModelTest,
+       NotificationsBubbleModel_OpenSystemSettings) {
+  const GURL url("https://www.example.com/");
+  WebContentsTester::For(web_contents())->NavigateAndCommit(url);
+
+  system_permission_settings::MockPlatformHandle mock_platform_handle;
+  system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
+
+  EXPECT_CALL(
+      mock_platform_handle,
+      OpenSystemSettings(web_contents(), ContentSettingsType::NOTIFICATIONS));
+
+  base::UserActionTester user_action_tester;
+  {
+    ContentSettingNotificationsBubbleModel bubble_model(nullptr, page());
+    bubble_model.OnDoneButtonClicked();
+    EXPECT_EQ(
+        1,
+        user_action_tester.GetActionCount(
+            "ContentSettings.NotificationsDialog.OpenSystemSettingsClicked"));
+  }
+
+  system_permission_settings::SetInstanceForTesting(nullptr);
+}
 #endif  // BUILDFLAG(IS_MAC)
