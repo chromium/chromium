@@ -5,40 +5,22 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_PROXY_MODEL_PROXY_SERVICE_CONTROLLER_FACTORY_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_PROXY_MODEL_PROXY_SERVICE_CONTROLLER_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class ProxyServiceController;
+#import "ios/chrome/browser/enterprise/proxy/model/proxy_service_controller.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all `ProxyServiceController` instances and associates
 // them with `ProfileIOS`.
-class ProxyServiceControllerFactory : public ProfileKeyedServiceFactoryIOS {
+class ProxyServiceControllerFactory
+    : public TypedProfileKeyedServiceFactoryIOS<ProxyServiceControllerFactory,
+                                                ProxyServiceController> {
  public:
-  ProxyServiceControllerFactory(const ProxyServiceControllerFactory&) = delete;
-  ProxyServiceControllerFactory& operator=(
-      const ProxyServiceControllerFactory&) = delete;
-  ProxyServiceControllerFactory(ProxyServiceControllerFactory&&) = delete;
-  ProxyServiceControllerFactory& operator=(ProxyServiceControllerFactory&&) =
-      delete;
-
-  // Returns the `ProxyServiceController` associated with `profile`, or nullptr
-  // if enterprise dynamic route fetching is disabled or `profile` is incognito.
-  static ProxyServiceController* GetForProfile(ProfileIOS* profile);
-
-  // Returns the singleton instance of `ProxyServiceControllerFactory`.
-  static ProxyServiceControllerFactory* GetInstance();
+  explicit ProxyServiceControllerFactory(PassKey key);
 
   // Returns the default factory used to build `ProxyServiceController`. Can be
   // registered with `AddTestingFactory` to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<ProxyServiceControllerFactory>;
-
-  ProxyServiceControllerFactory();
-  ~ProxyServiceControllerFactory() override;
-
   // `ProfileKeyedServiceFactoryIOS` implementation:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

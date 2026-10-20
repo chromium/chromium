@@ -11,26 +11,13 @@
 
 namespace enterprise_connectors {
 
-// static
-ConnectorsServiceFactory* ConnectorsServiceFactory::GetInstance() {
-  static base::NoDestructor<ConnectorsServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-ConnectorsService* ConnectorsServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ConnectorsService>(
-      profile, /*create=*/true);
-}
-
-ConnectorsServiceFactory::ConnectorsServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ConnectorsService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+ConnectorsServiceFactory::ConnectorsServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "ConnectorsService",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-ConnectorsServiceFactory::~ConnectorsServiceFactory() = default;
 
 std::unique_ptr<KeyedService> ConnectorsServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

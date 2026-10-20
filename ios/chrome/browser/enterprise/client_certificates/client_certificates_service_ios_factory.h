@@ -7,27 +7,19 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/enterprise/client_certificates/client_certificates_service_ios.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace client_certificates {
 
-class ClientCertificatesServiceIOS;
-
 class ClientCertificatesServiceIOSFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          ClientCertificatesServiceIOSFactory,
+          ClientCertificatesServiceIOS> {
  public:
-  static ClientCertificatesServiceIOSFactory* GetInstance();
-  static ClientCertificatesServiceIOS* GetForProfile(ProfileIOS* profile);
+  explicit ClientCertificatesServiceIOSFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<ClientCertificatesServiceIOSFactory>;
-
-  ClientCertificatesServiceIOSFactory();
-  ~ClientCertificatesServiceIOSFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

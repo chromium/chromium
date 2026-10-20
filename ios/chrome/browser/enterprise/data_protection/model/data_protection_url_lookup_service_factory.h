@@ -5,14 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_MODEL_DATA_PROTECTION_URL_LOOKUP_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_MODEL_DATA_PROTECTION_URL_LOOKUP_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace enterprise_data_protection {
-class DataProtectionUrlLookupService;
-}  // namespace enterprise_data_protection
+#import "components/enterprise/data_protection/data_protection_url_lookup_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton factory that creates and manages one instance of
 // DataProtectionUrlLookupService per ProfileIOS.
@@ -20,31 +14,13 @@ class DataProtectionUrlLookupService;
 // it supports (e.g., real-time URL checks for screenshot protection)
 // are not active in Incognito mode.
 class DataProtectionUrlLookupServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          DataProtectionUrlLookupServiceFactory,
+          enterprise_data_protection::DataProtectionUrlLookupService> {
  public:
-  // Returns the DataProtectionUrlLookupService instance for the given
-  // `profile`. Returns nullptr if the profile is an Incognito profile.
-  // The service is created if it doesn't exist yet for the profile.
-  static enterprise_data_protection::DataProtectionUrlLookupService*
-  GetForProfile(ProfileIOS* profile);
-
-  // Returns the singleton instance of the
-  // DataProtectionUrlLookupServiceFactory.
-  static DataProtectionUrlLookupServiceFactory* GetInstance();
-
-  // DataProtectionUrlLookupServiceFactory is a singleton and should not be
-  // copied.
-  DataProtectionUrlLookupServiceFactory(
-      const DataProtectionUrlLookupServiceFactory&) = delete;
-  DataProtectionUrlLookupServiceFactory& operator=(
-      const DataProtectionUrlLookupServiceFactory&) = delete;
+  explicit DataProtectionUrlLookupServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<DataProtectionUrlLookupServiceFactory>;
-
-  DataProtectionUrlLookupServiceFactory();
-  ~DataProtectionUrlLookupServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

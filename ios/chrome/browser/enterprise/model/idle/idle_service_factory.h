@@ -5,26 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_MODEL_IDLE_IDLE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_MODEL_IDLE_IDLE_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "components/pref_registry/pref_registry_syncable.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace enterprise_idle {
-class IdleService;
 
 // Singleton that owns all IdleServices and associates them with
 // ProfileIOS.
-class IdleServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class IdleServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<IdleServiceFactory,
+                                                IdleService> {
  public:
-  static IdleService* GetForProfile(ProfileIOS* profile);
-  static IdleServiceFactory* GetInstance();
+  explicit IdleServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IdleServiceFactory>;
-
-  IdleServiceFactory();
-  ~IdleServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

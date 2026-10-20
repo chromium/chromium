@@ -28,36 +28,21 @@ std::unique_ptr<KeyedService> BuildEnterpriseNetworkAuthService(
 }  // namespace
 
 // static
-enterprise_net::EnterpriseNetworkAuthService*
-EnterpriseNetworkAuthServiceFactoryIOS::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<enterprise_net::EnterpriseNetworkAuthService>(
-          profile, /*create=*/true);
-}
-
-// static
-EnterpriseNetworkAuthServiceFactoryIOS*
-EnterpriseNetworkAuthServiceFactoryIOS::GetInstance() {
-  static base::NoDestructor<EnterpriseNetworkAuthServiceFactoryIOS> instance;
-  return instance.get();
-}
-
-// static
 EnterpriseNetworkAuthServiceFactoryIOS::TestingFactory
 EnterpriseNetworkAuthServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&BuildEnterpriseNetworkAuthService);
 }
 
-EnterpriseNetworkAuthServiceFactoryIOS::EnterpriseNetworkAuthServiceFactoryIOS()
-    : ProfileKeyedServiceFactoryIOS("EnterpriseNetworkAuthServiceIOS",
-                                    ProfileSelection::kNoInstanceInIncognito,
-                                    TestingCreation::kNoServiceForTests) {
+EnterpriseNetworkAuthServiceFactoryIOS::EnterpriseNetworkAuthServiceFactoryIOS(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "EnterpriseNetworkAuthServiceIOS",
+          ProfileSelection::kNoInstanceInIncognito,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(enterprise::ProfileIdServiceFactoryIOS::GetInstance());
 }
-
-EnterpriseNetworkAuthServiceFactoryIOS::
-    ~EnterpriseNetworkAuthServiceFactoryIOS() = default;
 
 std::unique_ptr<KeyedService>
 EnterpriseNetworkAuthServiceFactoryIOS::BuildServiceInstanceFor(

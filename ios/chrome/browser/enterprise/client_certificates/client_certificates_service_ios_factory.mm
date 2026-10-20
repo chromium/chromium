@@ -14,28 +14,14 @@
 
 namespace client_certificates {
 
-// static
-ClientCertificatesServiceIOSFactory*
-ClientCertificatesServiceIOSFactory::GetInstance() {
-  static base::NoDestructor<ClientCertificatesServiceIOSFactory> instance;
-  return instance.get();
-}
-
-// static
-ClientCertificatesServiceIOS*
-ClientCertificatesServiceIOSFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ClientCertificatesServiceIOS>(
-      profile, /*create=*/true);
-}
-
-ClientCertificatesServiceIOSFactory::ClientCertificatesServiceIOSFactory()
-    : ProfileKeyedServiceFactoryIOS("ClientCertificatesServiceIOS",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+ClientCertificatesServiceIOSFactory::ClientCertificatesServiceIOSFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "ClientCertificatesServiceIOS",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(CertificateProvisioningServiceFactoryIOS::GetInstance());
 }
-
-ClientCertificatesServiceIOSFactory::~ClientCertificatesServiceIOSFactory() =
-    default;
 
 std::unique_ptr<KeyedService>
 ClientCertificatesServiceIOSFactory::BuildServiceInstanceFor(

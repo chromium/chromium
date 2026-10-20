@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory_ios.h"
 
-#import "base/no_destructor.h"
 #import "components/enterprise/client_certificates/core/dm_server_client.h"
 #import "components/enterprise/client_certificates/core/key_upload_client.h"
 #import "components/enterprise/client_certificates/core/profile_cloud_management_delegate.h"
@@ -31,33 +30,17 @@ policy::DeviceManagementService* GetDeviceManagementService() {
 
 }  // namespace
 
-// static
-CertificateProvisioningServiceFactoryIOS*
-CertificateProvisioningServiceFactoryIOS::GetInstance() {
-  static base::NoDestructor<CertificateProvisioningServiceFactoryIOS> instance;
-  return instance.get();
-}
-
-// static
-CertificateProvisioningServiceIOS*
-CertificateProvisioningServiceFactoryIOS::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<CertificateProvisioningServiceIOS>(
-          profile, /*create=*/true);
-}
-
 CertificateProvisioningServiceFactoryIOS::
-    CertificateProvisioningServiceFactoryIOS()
-    : ProfileKeyedServiceFactoryIOS("IOSCertificateProvisioningService",
-                                    ProfileSelection::kNoInstanceInIncognito,
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+    CertificateProvisioningServiceFactoryIOS(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "IOSCertificateProvisioningService",
+          ProfileSelection::kNoInstanceInIncognito,
+          ServiceCreation::kCreateWithProfile,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(CertificateStoreFactory::GetInstance());
   DependsOn(enterprise::ProfileIdServiceFactoryIOS::GetInstance());
 }
-
-CertificateProvisioningServiceFactoryIOS::
-    ~CertificateProvisioningServiceFactoryIOS() = default;
 
 std::unique_ptr<KeyedService>
 CertificateProvisioningServiceFactoryIOS::BuildServiceInstanceFor(

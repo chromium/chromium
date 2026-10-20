@@ -9,7 +9,6 @@
 #import <vector>
 
 #import "base/functional/bind.h"
-#import "base/no_destructor.h"
 #import "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #import "components/enterprise/device_trust/core/attestation/attester.h"
 #import "components/enterprise/device_trust/core/attestation/browser_attestation_service.h"
@@ -113,35 +112,21 @@ std::unique_ptr<KeyedService> CreateDeviceTrustService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-enterprise_connectors::DeviceTrustService*
-DeviceTrustServiceFactoryIOS::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<enterprise_connectors::DeviceTrustService>(
-          profile, /*create=*/true);
-}
-
-// static
-DeviceTrustServiceFactoryIOS* DeviceTrustServiceFactoryIOS::GetInstance() {
-  static base::NoDestructor<DeviceTrustServiceFactoryIOS> instance;
-  return instance.get();
-}
-
-// static
 ProfileKeyedServiceFactoryIOS::TestingFactory
 DeviceTrustServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&CreateDeviceTrustService);
 }
 
-DeviceTrustServiceFactoryIOS::DeviceTrustServiceFactoryIOS()
-    : ProfileKeyedServiceFactoryIOS("DeviceTrustService",
-                                    ProfileSelection::kNoInstanceInIncognito,
-                                    TestingCreation::kNoServiceForTests) {
+DeviceTrustServiceFactoryIOS::DeviceTrustServiceFactoryIOS(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "DeviceTrustService",
+          ProfileSelection::kNoInstanceInIncognito,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(DeviceTrustConnectorServiceFactoryIOS::GetInstance());
   DependsOn(IOSSignalsAggregatorFactory::GetInstance());
   DependsOn(enterprise::ProfileIdServiceFactoryIOS::GetInstance());
 }
-
-DeviceTrustServiceFactoryIOS::~DeviceTrustServiceFactoryIOS() = default;
 
 std::unique_ptr<KeyedService>
 DeviceTrustServiceFactoryIOS::BuildServiceInstanceFor(

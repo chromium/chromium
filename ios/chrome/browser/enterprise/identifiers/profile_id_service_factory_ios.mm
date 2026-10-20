@@ -18,29 +18,16 @@ std::unique_ptr<KeyedService> BuildProfileIdService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-ProfileIdServiceFactoryIOS* ProfileIdServiceFactoryIOS::GetInstance() {
-  static base::NoDestructor<ProfileIdServiceFactoryIOS> instance;
-  return instance.get();
-}
-
-// static
-ProfileIdService* ProfileIdServiceFactoryIOS::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ProfileIdService>(
-      profile, /*create=*/true);
-}
-
-// static
 ProfileIdServiceFactoryIOS::TestingFactory
 ProfileIdServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&BuildProfileIdService);
 }
 
-ProfileIdServiceFactoryIOS::ProfileIdServiceFactoryIOS()
-    : ProfileKeyedServiceFactoryIOS("ProfileIdServiceIOS",
-                                    ProfileSelection::kNoInstanceInIncognito) {}
-
-ProfileIdServiceFactoryIOS::~ProfileIdServiceFactoryIOS() = default;
+ProfileIdServiceFactoryIOS::ProfileIdServiceFactoryIOS(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "ProfileIdServiceIOS",
+          ProfileSelection::kNoInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService>
 ProfileIdServiceFactoryIOS::BuildServiceInstanceFor(ProfileIOS* profile) const {

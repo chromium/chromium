@@ -23,34 +23,20 @@ std::unique_ptr<KeyedService> BuildRealtimeReportingClient(
 }  // namespace
 
 // static
-IOSRealtimeReportingClientFactory*
-IOSRealtimeReportingClientFactory::GetInstance() {
-  static base::NoDestructor<IOSRealtimeReportingClientFactory> instance;
-  return instance.get();
-}
-
-// static
-IOSRealtimeReportingClient* IOSRealtimeReportingClientFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<IOSRealtimeReportingClient>(
-      profile, /*create=*/true);
-}
-
-// static
 IOSRealtimeReportingClientFactory::TestingFactory
 IOSRealtimeReportingClientFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildRealtimeReportingClient);
 }
 
-IOSRealtimeReportingClientFactory::IOSRealtimeReportingClientFactory()
-    : ProfileKeyedServiceFactoryIOS("IOSRealtimeReportingClient",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+IOSRealtimeReportingClientFactory::IOSRealtimeReportingClientFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "IOSRealtimeReportingClient",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ConnectorsServiceFactory::GetInstance());
 }
-
-IOSRealtimeReportingClientFactory::~IOSRealtimeReportingClientFactory() =
-    default;
 
 std::unique_ptr<KeyedService>
 IOSRealtimeReportingClientFactory::BuildServiceInstanceFor(

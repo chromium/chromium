@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/enterprise/proxy/model/proxy_service_controller_factory.h"
 
 #import "base/functional/bind.h"
-#import "base/no_destructor.h"
 #import "components/enterprise/net/core/features.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_error_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_service_factory_ios.h"
@@ -28,34 +27,21 @@ std::unique_ptr<KeyedService> BuildProxyServiceController(ProfileIOS* profile) {
 }  // namespace
 
 // static
-ProxyServiceController* ProxyServiceControllerFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ProxyServiceController>(
-      profile, /*create=*/true);
-}
-
-// static
-ProxyServiceControllerFactory* ProxyServiceControllerFactory::GetInstance() {
-  static base::NoDestructor<ProxyServiceControllerFactory> instance;
-  return instance.get();
-}
-
-// static
 ProxyServiceControllerFactory::TestingFactory
 ProxyServiceControllerFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildProxyServiceController);
 }
 
-ProxyServiceControllerFactory::ProxyServiceControllerFactory()
-    : ProfileKeyedServiceFactoryIOS("ProxyServiceController",
-                                    ProfileSelection::kNoInstanceInIncognito,
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+ProxyServiceControllerFactory::ProxyServiceControllerFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "ProxyServiceController",
+          ProfileSelection::kNoInstanceInIncognito,
+          ServiceCreation::kCreateWithProfile,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(EnterpriseProxyServiceFactoryIOS::GetInstance());
   DependsOn(EnterpriseProxyErrorServiceFactoryIOS::GetInstance());
 }
-
-ProxyServiceControllerFactory::~ProxyServiceControllerFactory() = default;
 
 std::unique_ptr<KeyedService>
 ProxyServiceControllerFactory::BuildServiceInstanceFor(

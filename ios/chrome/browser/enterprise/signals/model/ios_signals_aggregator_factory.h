@@ -5,27 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_SIGNALS_MODEL_IOS_SIGNALS_AGGREGATOR_FACTORY_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_SIGNALS_MODEL_IOS_SIGNALS_AGGREGATOR_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "components/device_signals/core/browser/signals_aggregator.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
-namespace device_signals {
-class SignalsAggregator;
-}  // namespace device_signals
-
-class ProfileIOS;
-
-class IOSSignalsAggregatorFactory : public ProfileKeyedServiceFactoryIOS {
+class IOSSignalsAggregatorFactory : public TypedProfileKeyedServiceFactoryIOS<
+                                        IOSSignalsAggregatorFactory,
+                                        device_signals::SignalsAggregator> {
  public:
-  static IOSSignalsAggregatorFactory* GetInstance();
-  static device_signals::SignalsAggregator* GetForProfile(ProfileIOS* profile);
+  explicit IOSSignalsAggregatorFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IOSSignalsAggregatorFactory>;
-
-  IOSSignalsAggregatorFactory();
-  ~IOSSignalsAggregatorFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

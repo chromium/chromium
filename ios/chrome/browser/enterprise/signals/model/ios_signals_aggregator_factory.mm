@@ -11,7 +11,6 @@
 
 #import "base/check.h"
 #import "base/functional/bind.h"
-#import "base/no_destructor.h"
 #import "components/device_signals/core/browser/signals_aggregator_impl.h"
 #import "components/device_signals/core/browser/signals_collector.h"
 #import "components/device_signals/core/browser/user_permission_service.h"
@@ -65,28 +64,13 @@ device_signals::UserPermissionService* GetIOSUserPermissionService() {
 
 }  // namespace
 
-// static
-IOSSignalsAggregatorFactory* IOSSignalsAggregatorFactory::GetInstance() {
-  static base::NoDestructor<IOSSignalsAggregatorFactory> instance;
-  return instance.get();
-}
-
-// static
-device_signals::SignalsAggregator* IOSSignalsAggregatorFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<device_signals::SignalsAggregator>(
-          profile, /*create=*/true);
-}
-
-IOSSignalsAggregatorFactory::IOSSignalsAggregatorFactory()
-    : ProfileKeyedServiceFactoryIOS("IOSSignalsAggregator") {
+IOSSignalsAggregatorFactory::IOSSignalsAggregatorFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "IOSSignalsAggregator") {
   DependsOn(enterprise::ProfileIdServiceFactoryIOS::GetInstance());
   DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
   DependsOn(ReauthenticationServiceFactory::GetInstance());
 }
-
-IOSSignalsAggregatorFactory::~IOSSignalsAggregatorFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSSignalsAggregatorFactory::BuildServiceInstanceFor(

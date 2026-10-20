@@ -7,38 +7,22 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "components/enterprise/device_trust/core/device_trust_connector_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace enterprise_connectors {
-class DeviceTrustConnectorService;
-}  // namespace enterprise_connectors
-
 // Factory for creating `DeviceTrustConnectorService` instances on iOS.
 class DeviceTrustConnectorServiceFactoryIOS
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          DeviceTrustConnectorServiceFactoryIOS,
+          enterprise_connectors::DeviceTrustConnectorService> {
  public:
-  static enterprise_connectors::DeviceTrustConnectorService* GetForProfile(
-      ProfileIOS* profile);
-  static DeviceTrustConnectorServiceFactoryIOS* GetInstance();
-
-  DeviceTrustConnectorServiceFactoryIOS(
-      const DeviceTrustConnectorServiceFactoryIOS&) = delete;
-  DeviceTrustConnectorServiceFactoryIOS& operator=(
-      const DeviceTrustConnectorServiceFactoryIOS&) = delete;
+  explicit DeviceTrustConnectorServiceFactoryIOS(PassKey key);
 
  private:
-  friend class base::NoDestructor<DeviceTrustConnectorServiceFactoryIOS>;
-
-  DeviceTrustConnectorServiceFactoryIOS();
-  ~DeviceTrustConnectorServiceFactoryIOS() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;

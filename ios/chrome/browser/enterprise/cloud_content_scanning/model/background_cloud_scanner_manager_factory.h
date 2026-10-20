@@ -5,31 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_ENTERPRISE_CLOUD_CONTENT_SCANNING_MODEL_BACKGROUND_CLOUD_SCANNER_MANAGER_FACTORY_H_
 #define IOS_CHROME_BROWSER_ENTERPRISE_CLOUD_CONTENT_SCANNING_MODEL_BACKGROUND_CLOUD_SCANNER_MANAGER_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/background_cloud_scanner_manager.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace enterprise_connectors {
 
-class BackgroundCloudScannerManager;
-
 class BackgroundCloudScannerManagerFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          BackgroundCloudScannerManagerFactory,
+          BackgroundCloudScannerManager> {
  public:
-  // Returns the instance of BackgroundCloudScannerManagerFactory.
-  static BackgroundCloudScannerManagerFactory* GetInstance();
-
-  // Returns the BackgroundCloudScannerManager for `profile`, creating it if it
-  // is not yet created.
-  static BackgroundCloudScannerManager* GetForProfile(ProfileIOS* profile);
+  explicit BackgroundCloudScannerManagerFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<BackgroundCloudScannerManagerFactory>;
-
-  BackgroundCloudScannerManagerFactory();
-  ~BackgroundCloudScannerManagerFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

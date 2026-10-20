@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/enterprise/groups/model/enterprise_groups_profile_handler_factory.h"
 
 #import "base/feature_list.h"
-#import "base/no_destructor.h"
 #import "components/enterprise/browser/groups/enterprise_groups_handler.h"
 #import "components/enterprise/browser/groups/groups_features.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -14,25 +13,12 @@
 
 namespace enterprise_groups {
 
-// static
-policy::EnterpriseGroupsProfileHandler*
-EnterpriseGroupsProfileHandlerFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<policy::EnterpriseGroupsProfileHandler>(
-          profile, /*create=*/true);
-}
-
-// static
-EnterpriseGroupsProfileHandlerFactory*
-EnterpriseGroupsProfileHandlerFactory::GetInstance() {
-  static base::NoDestructor<EnterpriseGroupsProfileHandlerFactory> instance;
-  return instance.get();
-}
-
-EnterpriseGroupsProfileHandlerFactory::EnterpriseGroupsProfileHandlerFactory()
-    : ProfileKeyedServiceFactoryIOS("EnterpriseGroupsProfileHandler",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {}
+EnterpriseGroupsProfileHandlerFactory::EnterpriseGroupsProfileHandlerFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "EnterpriseGroupsProfileHandler",
+                                         ServiceCreation::kCreateWithProfile,
+                                         TestingCreation::kNoServiceForTests) {}
 
 std::unique_ptr<KeyedService>
 EnterpriseGroupsProfileHandlerFactory::BuildServiceInstanceFor(

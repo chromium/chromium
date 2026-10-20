@@ -38,36 +38,21 @@ std::unique_ptr<KeyedService> BuildEnterpriseProxyService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-enterprise_net::EnterpriseProxyService*
-EnterpriseProxyServiceFactoryIOS::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<enterprise_net::EnterpriseProxyService>(
-          profile, /*create=*/true);
-}
-
-// static
-EnterpriseProxyServiceFactoryIOS*
-EnterpriseProxyServiceFactoryIOS::GetInstance() {
-  static base::NoDestructor<EnterpriseProxyServiceFactoryIOS> instance;
-  return instance.get();
-}
-
-// static
 EnterpriseProxyServiceFactoryIOS::TestingFactory
 EnterpriseProxyServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&BuildEnterpriseProxyService);
 }
 
-EnterpriseProxyServiceFactoryIOS::EnterpriseProxyServiceFactoryIOS()
-    : ProfileKeyedServiceFactoryIOS("EnterpriseProxyServiceIOS",
-                                    ProfileSelection::kNoInstanceInIncognito,
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+EnterpriseProxyServiceFactoryIOS::EnterpriseProxyServiceFactoryIOS(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "EnterpriseProxyServiceIOS",
+          ProfileSelection::kNoInstanceInIncognito,
+          ServiceCreation::kCreateWithProfile,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(EnterpriseNetworkAuthServiceFactoryIOS::GetInstance());
   DependsOn(enterprise::ProfileIdServiceFactoryIOS::GetInstance());
 }
-
-EnterpriseProxyServiceFactoryIOS::~EnterpriseProxyServiceFactoryIOS() = default;
 
 std::unique_ptr<KeyedService>
 EnterpriseProxyServiceFactoryIOS::BuildServiceInstanceFor(
