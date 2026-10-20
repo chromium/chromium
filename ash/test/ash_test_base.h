@@ -303,7 +303,8 @@ class AshTestBase : public testing::Test {
   AccountId SimulateUserLogin(
       LoginInfo login_info,
       std::optional<AccountId> opt_account_id = std::nullopt,
-      std::unique_ptr<PrefService> pref_service = nullptr);
+      std::unique_ptr<PrefService> pref_service = nullptr,
+      bool activate_session = true);
 
   // Similar to above, but it uses AccountId with default values.
   void SimulateUserLogin(const AccountId& account_id);

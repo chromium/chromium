@@ -35,9 +35,6 @@ struct LoginInfo {
 
   // True if the account should be under policy management.
   const bool is_account_managed = false;
-
-  // True to set the `SessionController`'s state to ACTIVE state.
-  const bool activate_session = true;
 };
 
 inline constexpr std::string_view kDefaultUserEmail("user0@tray");

@@ -289,7 +289,8 @@ TEST_F(UserEducationUtilAshTest, IsPrimaryAccountActive) {
 
   // Case: primary user session added and activate it.
   auto* session_controller_client = GetSessionControllerClient();
-  SimulateUserLogin({.activate_session = false}, primary_account_id);
+  SimulateUserLogin({}, primary_account_id, /*pref_service=*/nullptr,
+                    /*activate_session=*/false);
 
   // Case: primary user session activated.
   session_controller_client->SetSessionState(SessionState::ACTIVE);
@@ -302,7 +303,8 @@ TEST_F(UserEducationUtilAshTest, IsPrimaryAccountActive) {
   EXPECT_TRUE(IsPrimaryAccountActive());
 
   // Case: secondary user session added and activate it.
-  SimulateUserLogin({.activate_session = false}, secondary_account_id);
+  SimulateUserLogin({}, secondary_account_id, /*pref_service=*/nullptr,
+                    /*activate_session=*/false);
   session_controller_client->SwitchActiveUser(secondary_account_id);
   EXPECT_FALSE(IsPrimaryAccountActive());
   session_controller_client->SwitchActiveUser(primary_account_id);

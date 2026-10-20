@@ -649,7 +649,9 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
   controller->AddObserver(&mock_session_observer);
 
   // Switch to test user.
-  SimulateUserLogin({.display_email = kUser1Email, .activate_session = false});
+  SimulateUserLogin({.display_email = kUser1Email},
+                    /*opt_account_id=*/std::nullopt, /*pref_service=*/nullptr,
+                    /*activate_session=*/false);
 
   // Initially time of last session activation is expected to be `base::Time()`.
   base::Time expected_time_of_last_session_activation;

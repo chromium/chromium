@@ -638,7 +638,8 @@ display::Display AshTestHelper::GetSecondaryDisplay() const {
 AccountId AshTestHelper::SimulateUserLogin(
     LoginInfo login_info,
     std::optional<AccountId> opt_account_id,
-    std::unique_ptr<PrefService> pref_service) {
+    std::unique_ptr<PrefService> pref_service,
+    bool activate_session) {
   AccountId account_id = session_controller_client_->AddUserSession(
       login_info, opt_account_id, std::move(pref_service));
 
@@ -661,7 +662,7 @@ AccountId AshTestHelper::SimulateUserLogin(
 
   session_controller_client_->SwitchActiveUser(account_id);
 
-  if (login_info.activate_session) {
+  if (activate_session) {
     session_controller_client_->SetSessionState(
         session_manager::SessionState::ACTIVE);
   }

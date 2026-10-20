@@ -287,9 +287,10 @@ TEST_F(SnoopingProtectionControllerTestPresent, Oobe) {
   TestSessionControllerClient* session = GetSessionControllerClient();
 
   // Simulate end of OOBE when user is logged in.
-  SimulateUserLogin({.display_email = "testuser@gmail.com",
-                     .is_new_profile = true,
-                     .activate_session = false});
+  SimulateUserLogin(
+      {.display_email = "testuser@gmail.com", .is_new_profile = true},
+      /*opt_account_id=*/std::nullopt, /*pref_service=*/nullptr,
+      /*activate_session=*/false);
   session->SetSessionState(session_manager::SessionState::OOBE);
 
   // Shouldn't configure, as the session isn't active.
