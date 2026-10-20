@@ -60,7 +60,7 @@ SyncWorker::SyncWorker(
       sync_enabled_(false),
       browser_context_(browser_context) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK(base_dir_.IsAbsolute());
+  CHECK(base_dir_.IsAbsolute(), base::NotFatalUntil::M162);
 }
 
 SyncWorker::~SyncWorker() {
@@ -69,7 +69,7 @@ SyncWorker::~SyncWorker() {
 
 void SyncWorker::Initialize(std::unique_ptr<SyncEngineContext> context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!task_manager_);
+  CHECK(!task_manager_, base::NotFatalUntil::M162);
 
   context_ = std::move(context);
 
@@ -305,7 +305,7 @@ void SyncWorker::DoEnableApp(const std::string& app_id,
 
 void SyncWorker::PostInitializeTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!GetMetadataDatabase());
+  CHECK(!GetMetadataDatabase(), base::NotFatalUntil::M162);
 
   // This initializer task may not run if MetadataDatabase in context_ is
   // already initialized when it runs.
@@ -348,7 +348,7 @@ void SyncWorker::DidInitialize(SyncEngineInitializer* initializer,
 void SyncWorker::UpdateRegisteredApps() {
   MetadataDatabase* metadata_db = GetMetadataDatabase();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(metadata_db);
+  CHECK(metadata_db, base::NotFatalUntil::M162);
 
   std::unique_ptr<std::vector<std::string>> app_ids(
       new std::vector<std::string>);
@@ -403,7 +403,7 @@ void SyncWorker::DidQueryAppStatus(const AppStatusMap* app_status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   MetadataDatabase* metadata_db = GetMetadataDatabase();
-  DCHECK(metadata_db);
+  CHECK(metadata_db, base::NotFatalUntil::M162);
 
   // Update the status of every origin using status from ExtensionService.
   for (auto itr = app_status->begin(); itr != app_status->end(); ++itr) {
@@ -425,8 +425,9 @@ void SyncWorker::DidQueryAppStatus(const AppStatusMap* app_status) {
       continue;
     }
 
-    DCHECK(itr->second == APP_STATUS_ENABLED ||
-           itr->second == APP_STATUS_DISABLED);
+    CHECK(
+        itr->second == APP_STATUS_ENABLED || itr->second == APP_STATUS_DISABLED,
+        base::NotFatalUntil::M162);
     bool is_app_enabled = (itr->second == APP_STATUS_ENABLED);
     bool is_app_root_tracker_enabled =
         (tracker.tracker_kind() == TRACKER_KIND_APP_ROOT);

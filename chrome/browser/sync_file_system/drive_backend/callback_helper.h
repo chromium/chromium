@@ -43,7 +43,7 @@ class CallbackHolder {
       : task_runner_(task_runner),
         from_here_(from_here),
         callback_(std::move(callback)) {
-    DCHECK(task_runner_.get());
+    CHECK(task_runner_.get(), base::NotFatalUntil::M162);
   }
 
   CallbackHolder(const CallbackHolder&) = delete;
@@ -78,7 +78,7 @@ base::OnceCallback<void(Args...)> RelayCallbackToTaskRunner(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const base::Location& from_here,
     base::OnceCallback<void(Args...)> callback) {
-  DCHECK(task_runner->RunsTasksInCurrentSequence());
+  CHECK(task_runner->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
 
   if (callback.is_null())
     return {};
@@ -96,7 +96,7 @@ base::RepeatingCallback<void(Args...)> RelayCallbackToTaskRunner(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     const base::Location& from_here,
     base::RepeatingCallback<void(Args...)> callback) {
-  DCHECK(task_runner->RunsTasksInCurrentSequence());
+  CHECK(task_runner->RunsTasksInCurrentSequence(), base::NotFatalUntil::M162);
 
   if (callback.is_null())
     return {};

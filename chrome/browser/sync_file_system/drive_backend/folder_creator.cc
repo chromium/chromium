@@ -113,7 +113,7 @@ void FolderCreator::DidListFolders(
     return;
   }
 
-  DCHECK(!file_id.empty());
+  CHECK(!file_id.empty(), base::NotFatalUntil::M162);
   if (!metadata_database_->FindFileByFileID(file_id, nullptr)) {
     std::move(callback).Run(std::string(), SYNC_FILE_ERROR_NOT_FOUND);
     return;

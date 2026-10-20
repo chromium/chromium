@@ -57,7 +57,7 @@ std::unique_ptr<SyncTaskToken> SyncTaskToken::CreateForBackgroundTask(
 
 void SyncTaskToken::UpdateTask(const base::Location& location,
                                SyncStatusCallback callback) {
-  DCHECK(callback_.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M162);
   location_ = location;
   callback_ = std::move(callback);
   DVLOG(2) << "Token updated: " << location_.ToString();
@@ -99,13 +99,13 @@ void SyncTaskToken::FinalizeTaskLog(const std::string& result_description) {
                   perfetto::Track(task_log_->log_id), "result_description",
                   result_description);
 
-  DCHECK(task_log_);
+  CHECK(task_log_, base::NotFatalUntil::M162);
   task_log_->result_description = result_description;
   task_log_->end_time = base::TimeTicks::Now();
 }
 
 void SyncTaskToken::RecordLog(const std::string& message) {
-  DCHECK(task_log_);
+  CHECK(task_log_, base::NotFatalUntil::M162);
   task_log_->details.push_back(message);
 }
 

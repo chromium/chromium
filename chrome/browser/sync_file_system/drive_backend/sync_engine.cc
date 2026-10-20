@@ -209,7 +209,7 @@ std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(
 
 void SyncEngine::AppendDependsOnFactories(
     std::set<BrowserContextKeyedServiceFactory*>* factories) {
-  DCHECK(factories);
+  CHECK(factories, base::NotFatalUntil::M162);
   factories->insert(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   factories->insert(IdentityManagerFactory::GetInstance());
@@ -241,7 +241,7 @@ void SyncEngine::Reset() {
 }
 
 void SyncEngine::Initialize() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   Reset();
 
   if (!identity_manager_ ||
@@ -249,7 +249,7 @@ void SyncEngine::Initialize() {
     return;
   }
 
-  DCHECK(drive_service_factory_);
+  CHECK(drive_service_factory_, base::NotFatalUntil::M162);
   std::unique_ptr<drive::DriveServiceInterface> drive_service =
       drive_service_factory_->CreateDriveService(
           identity_manager_, url_loader_factory_, drive_task_runner_.get());
@@ -640,7 +640,7 @@ SyncEngine::SyncEngine(
       network_available_(false),
       sync_enabled_(false),
       env_override_(env_override) {
-  DCHECK(sync_file_system_dir_.IsAbsolute());
+  CHECK(sync_file_system_dir_.IsAbsolute(), base::NotFatalUntil::M162);
   if (profile) {
     profile_ = profile->GetWeakPtr();
   } else {

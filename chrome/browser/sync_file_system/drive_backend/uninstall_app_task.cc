@@ -41,7 +41,8 @@ void UninstallAppTask::RunExclusive(SyncStatusCallback callback) {
     std::move(callback).Run(status);
     return;
   }
-  DCHECK_EQ(RemoteFileSyncService::UNINSTALL_AND_PURGE_REMOTE, uninstall_flag_);
+  CHECK_EQ(RemoteFileSyncService::UNINSTALL_AND_PURGE_REMOTE, uninstall_flag_,
+           base::NotFatalUntil::M162);
 
   int64_t sync_root_tracker_id = metadata_database()->GetSyncRootTrackerID();
   TrackerIDSet trackers;
@@ -58,7 +59,7 @@ void UninstallAppTask::RunExclusive(SyncStatusCallback callback) {
     NOTREACHED();
   }
   app_root_tracker_id_ = app_root_tracker.tracker_id();
-  DCHECK(app_root_tracker.has_synced_details());
+  CHECK(app_root_tracker.has_synced_details(), base::NotFatalUntil::M162);
 
   drive_service()->DeleteResource(
       app_root_tracker.file_id(),

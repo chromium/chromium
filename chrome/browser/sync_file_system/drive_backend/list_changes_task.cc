@@ -115,7 +115,7 @@ void ListChangesTask::CheckInChangeList(int64_t largest_change_id,
                                       " changes, updating MetadataDatabase.",
                                       change_list_.size()));
 
-  DCHECK(file_ids_.empty());
+  CHECK(file_ids_.empty(), base::NotFatalUntil::M162);
   file_ids_.reserve(change_list_.size());
   for (size_t i = 0; i < change_list_.size(); ++i)
     file_ids_.push_back(change_list_[i]->file_id());

@@ -153,7 +153,7 @@ std::string GenerateDemotedDirtyIDKey(int64_t tracker_id) {
 
 void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
                                   int64_t sync_root_tracker_id) {
-  DCHECK(db);
+  CHECK(db, base::NotFatalUntil::M162);
 
   typedef std::map<int64_t, std::set<int64_t>> ChildTrackersByParent;
   ChildTrackersByParent trackers_by_parent;
@@ -195,7 +195,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
 
     while (!pending.empty()) {
       int64_t tracker_id = pending.back();
-      DCHECK_NE(kInvalidTrackerID, tracker_id);
+      CHECK_NE(kInvalidTrackerID, tracker_id, base::NotFatalUntil::M162);
       pending.pop_back();
 
       if (!visited_trackers.insert(tracker_id).second) {
@@ -258,7 +258,7 @@ void RemoveUnreachableItemsFromDB(LevelDBWrapper* db,
 // static
 std::unique_ptr<MetadataDatabaseIndexOnDisk>
 MetadataDatabaseIndexOnDisk::Create(LevelDBWrapper* db) {
-  DCHECK(db);
+  CHECK(db, base::NotFatalUntil::M162);
 
   std::unique_ptr<ServiceMetadata> service_metadata =
       InitializeServiceMetadata(db);
@@ -341,13 +341,13 @@ bool MetadataDatabaseIndexOnDisk::GetFileTracker(int64_t tracker_id,
 
 void MetadataDatabaseIndexOnDisk::StoreFileMetadata(
     std::unique_ptr<FileMetadata> metadata) {
-  DCHECK(metadata);
+  CHECK(metadata, base::NotFatalUntil::M162);
   PutFileMetadataToDB(*metadata, db_);
 }
 
 void MetadataDatabaseIndexOnDisk::StoreFileTracker(
     std::unique_ptr<FileTracker> tracker) {
-  DCHECK(tracker);
+  CHECK(tracker, base::NotFatalUntil::M162);
 
   int64_t tracker_id = tracker->tracker_id();
   FileTracker old_tracker;
@@ -446,6 +446,7 @@ std::vector<int64_t> MetadataDatabaseIndexOnDisk::GetFileTrackerIDsByParent(
       break;
 
     size_t pos = title_and_id.rfind('\0');
+    // CHECK-exclusion: Keys are read from on-disk LevelDB.
     DCHECK(pos != std::string::npos);
 
     int64_t tracker_id;
@@ -743,7 +744,8 @@ void MetadataDatabaseIndexOnDisk::AddToAppIDIndex(const FileTracker& tracker) {
   DVLOG(1) << "  Add to App root by App ID: " << tracker.app_id();
 
   const std::string db_key = GenerateAppRootIDByAppIDKey(tracker.app_id());
-  DCHECK(tracker.active());
+  CHECK(tracker.active(), base::NotFatalUntil::M162);
+  // CHECK-exclusion: DBHasKey() is expensive (LevelDB iterator seek).
   DCHECK(!DBHasKey(db_key));
   db_->Put(db_key, base::NumberToString(tracker.tracker_id()));
 }
@@ -751,20 +753,23 @@ void MetadataDatabaseIndexOnDisk::AddToAppIDIndex(const FileTracker& tracker) {
 void MetadataDatabaseIndexOnDisk::UpdateInAppIDIndex(
     const FileTracker& old_tracker,
     const FileTracker& new_tracker) {
-  DCHECK_EQ(old_tracker.tracker_id(), new_tracker.tracker_id());
+  CHECK_EQ(old_tracker.tracker_id(), new_tracker.tracker_id(),
+           base::NotFatalUntil::M162);
 
   if (IsAppRoot(old_tracker) && !IsAppRoot(new_tracker)) {
-    DCHECK(old_tracker.active());
-    DCHECK(!new_tracker.active());
+    CHECK(old_tracker.active(), base::NotFatalUntil::M162);
+    CHECK(!new_tracker.active(), base::NotFatalUntil::M162);
     const std::string key = GenerateAppRootIDByAppIDKey(old_tracker.app_id());
+    // CHECK-exclusion: DBHasKey() is expensive (LevelDB iterator seek).
     DCHECK(DBHasKey(key));
 
     DVLOG(1) << "  Remove from App root by App ID: " << old_tracker.app_id();
     db_->Delete(key);
   } else if (!IsAppRoot(old_tracker) && IsAppRoot(new_tracker)) {
-    DCHECK(!old_tracker.active());
-    DCHECK(new_tracker.active());
+    CHECK(!old_tracker.active(), base::NotFatalUntil::M162);
+    CHECK(new_tracker.active(), base::NotFatalUntil::M162);
     const std::string key = GenerateAppRootIDByAppIDKey(new_tracker.app_id());
+    // CHECK-exclusion: DBHasKey() is expensive (LevelDB iterator seek).
     DCHECK(!DBHasKey(key));
 
     DVLOG(1) << "  Add to App root by App ID: " << new_tracker.app_id();
@@ -779,8 +784,9 @@ void MetadataDatabaseIndexOnDisk::RemoveFromAppIDIndex(
     return;
   }
 
-  DCHECK(tracker.active());
+  CHECK(tracker.active(), base::NotFatalUntil::M162);
   const std::string key = GenerateAppRootIDByAppIDKey(tracker.app_id());
+  // CHECK-exclusion: DBHasKey() is expensive (LevelDB iterator seek).
   DCHECK(DBHasKey(key));
 
   DVLOG(1) << "  Remove from App root by App ID: " << tracker.app_id();
@@ -807,11 +813,14 @@ void MetadataDatabaseIndexOnDisk::AddToFileIDIndexes(
 void MetadataDatabaseIndexOnDisk::UpdateInFileIDIndexes(
     const FileTracker& old_tracker,
     const FileTracker& new_tracker) {
-  DCHECK_EQ(old_tracker.tracker_id(), new_tracker.tracker_id());
-  DCHECK_EQ(old_tracker.file_id(), new_tracker.file_id());
+  CHECK_EQ(old_tracker.tracker_id(), new_tracker.tracker_id(),
+           base::NotFatalUntil::M162);
+  CHECK_EQ(old_tracker.file_id(), new_tracker.file_id(),
+           base::NotFatalUntil::M162);
 
   const std::string& file_id = new_tracker.file_id();
   const std::string prefix = GenerateTrackerIDByFileIDKeyPrefix(file_id);
+  // CHECK-exclusion: DBHasKey() is expensive (LevelDB iterator seek).
   DCHECK(DBHasKey(prefix + base::NumberToString(new_tracker.tracker_id())));
 
   if (old_tracker.active() && !new_tracker.active()) {
@@ -887,10 +896,13 @@ void MetadataDatabaseIndexOnDisk::AddToPathIndexes(
 void MetadataDatabaseIndexOnDisk::UpdateInPathIndexes(
     const FileTracker& old_tracker,
     const FileTracker& new_tracker) {
-  DCHECK_EQ(old_tracker.tracker_id(), new_tracker.tracker_id());
-  DCHECK_EQ(old_tracker.parent_tracker_id(), new_tracker.parent_tracker_id());
-  DCHECK(GetTrackerTitle(old_tracker) == GetTrackerTitle(new_tracker) ||
-         !old_tracker.has_synced_details());
+  CHECK_EQ(old_tracker.tracker_id(), new_tracker.tracker_id(),
+           base::NotFatalUntil::M162);
+  CHECK_EQ(old_tracker.parent_tracker_id(), new_tracker.parent_tracker_id(),
+           base::NotFatalUntil::M162);
+  CHECK(GetTrackerTitle(old_tracker) == GetTrackerTitle(new_tracker) ||
+            !old_tracker.has_synced_details(),
+        base::NotFatalUntil::M162);
 
   int64_t tracker_id = new_tracker.tracker_id();
   int64_t parent_id = new_tracker.parent_tracker_id();
@@ -978,6 +990,7 @@ void MetadataDatabaseIndexOnDisk::RemoveFromPathIndexes(
 void MetadataDatabaseIndexOnDisk::AddToDirtyTrackerIndexes(
     const FileTracker& new_tracker) {
   const std::string dirty_key = GenerateDirtyIDKey(new_tracker.tracker_id());
+  // CHECK-exclusion: DBHasKey() is expensive (LevelDB iterator seek).
   DCHECK(!DBHasKey(dirty_key));
   DCHECK(!DBHasKey(GenerateDemotedDirtyIDKey(new_tracker.tracker_id())));
 
@@ -991,12 +1004,14 @@ void MetadataDatabaseIndexOnDisk::AddToDirtyTrackerIndexes(
 void MetadataDatabaseIndexOnDisk::UpdateInDirtyTrackerIndexes(
     const FileTracker& old_tracker,
     const FileTracker& new_tracker) {
-  DCHECK_EQ(old_tracker.tracker_id(), new_tracker.tracker_id());
+  CHECK_EQ(old_tracker.tracker_id(), new_tracker.tracker_id(),
+           base::NotFatalUntil::M162);
 
   int64_t tracker_id = new_tracker.tracker_id();
   const std::string dirty_key = GenerateDirtyIDKey(tracker_id);
   const std::string demoted_key = GenerateDemotedDirtyIDKey(tracker_id);
   if (old_tracker.dirty() && !new_tracker.dirty()) {
+    // CHECK-exclusion: DBHasKey() is expensive (LevelDB iterator seek).
     DCHECK(DBHasKey(dirty_key) || DBHasKey(demoted_key));
 
     DVLOG(1) << "  Remove from dirty trackers IDs: " << tracker_id;
@@ -1006,6 +1021,7 @@ void MetadataDatabaseIndexOnDisk::UpdateInDirtyTrackerIndexes(
     db_->Delete(dirty_key);
     db_->Delete(demoted_key);
   } else if (!old_tracker.dirty() && new_tracker.dirty()) {
+    // CHECK-exclusion: DBHasKey() is expensive (LevelDB iterator seek).
     DCHECK(!DBHasKey(dirty_key));
     DCHECK(!DBHasKey(demoted_key));
 
@@ -1022,6 +1038,7 @@ void MetadataDatabaseIndexOnDisk::RemoveFromDirtyTrackerIndexes(
     int64_t tracker_id = tracker.tracker_id();
     const std::string dirty_key = GenerateDirtyIDKey(tracker_id);
     const std::string demoted_key = GenerateDemotedDirtyIDKey(tracker_id);
+    // CHECK-exclusion: DBHasKey() is expensive (LevelDB iterator seek).
     DCHECK(DBHasKey(dirty_key) || DBHasKey(demoted_key));
 
     DVLOG(1) << "  Remove from dirty tracker IDs: " << tracker_id;
@@ -1056,7 +1073,7 @@ TrackerIDSet MetadataDatabaseIndexOnDisk::GetTrackerIDSetByPrefix(
   leveldb::Status status = db_->Get(active_tracker_key, &value);
   int64_t active_tracker;
   if (status.ok() && base::StringToInt64(value, &active_tracker)) {
-    DCHECK_NE(kInvalidTrackerID, active_tracker);
+    CHECK_NE(kInvalidTrackerID, active_tracker, base::NotFatalUntil::M162);
     trackers.Activate(active_tracker);
   }
 
@@ -1066,7 +1083,7 @@ TrackerIDSet MetadataDatabaseIndexOnDisk::GetTrackerIDSetByPrefix(
 void MetadataDatabaseIndexOnDisk::AddToTrackerIDSetWithPrefix(
     const std::string& active_tracker_key, const std::string& key_prefix,
     const FileTracker& tracker) {
-  DCHECK(tracker.tracker_id());
+  CHECK(tracker.tracker_id(), base::NotFatalUntil::M162);
 
   const std::string id_str = base::NumberToString(tracker.tracker_id());
   db_->Put(key_prefix + id_str, std::string());
@@ -1100,6 +1117,7 @@ void MetadataDatabaseIndexOnDisk::ActivateInTrackerIDSetWithPrefix(
     const std::string& active_tracker_key,
     const std::string& key_prefix,
     int64_t tracker_id) {
+  // CHECK-exclusion: DBHasKey() is expensive (LevelDB iterator seek).
   DCHECK(DBHasKey(key_prefix + base::NumberToString(tracker_id)));
 
   std::string value;
@@ -1107,7 +1125,7 @@ void MetadataDatabaseIndexOnDisk::ActivateInTrackerIDSetWithPrefix(
   int64_t active_tracker_id = kInvalidTrackerID;
   if (status.IsNotFound() ||
       (status.ok() && base::StringToInt64(value, &active_tracker_id))) {
-    DCHECK(active_tracker_id != tracker_id);
+    CHECK(active_tracker_id != tracker_id, base::NotFatalUntil::M162);
     db_->Put(active_tracker_key, base::NumberToString(tracker_id));
   }
 }
@@ -1116,13 +1134,14 @@ void MetadataDatabaseIndexOnDisk::DeactivateInTrackerIDSetWithPrefix(
     const std::string& active_tracker_key,
     const std::string& key_prefix,
     int64_t tracker_id) {
+  // CHECK-exclusion: DBHasKey() is expensive (LevelDB iterator seek).
   DCHECK(DBHasKey(key_prefix + base::NumberToString(tracker_id)));
 
   std::string value;
   leveldb::Status status = db_->Get(active_tracker_key, &value);
   int64_t active_tracker_id;
   if (status.ok() && base::StringToInt64(value, &active_tracker_id)) {
-    DCHECK(active_tracker_id == tracker_id);
+    CHECK(active_tracker_id == tracker_id, base::NotFatalUntil::M162);
     db_->Delete(active_tracker_key);
   }
 }

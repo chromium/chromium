@@ -15,7 +15,7 @@ namespace drive_backend {
 DriveServiceWrapper::DriveServiceWrapper(
     drive::DriveServiceInterface* drive_service)
     : drive_service_(drive_service) {
-  DCHECK(drive_service_);
+  CHECK(drive_service_, base::NotFatalUntil::M162);
 }
 
 DriveServiceWrapper::~DriveServiceWrapper() = default;

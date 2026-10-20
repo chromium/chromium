@@ -24,47 +24,47 @@ namespace sync_file_system {
 namespace drive_backend {
 
 void PutVersionToDB(int64_t version, LevelDBWrapper* db) {
-  DCHECK(db);
+  CHECK(db, base::NotFatalUntil::M162);
   db->Put(kDatabaseVersionKey, base::NumberToString(version));
 }
 
 void PutServiceMetadataToDB(const ServiceMetadata& service_metadata,
                             LevelDBWrapper* db) {
-  DCHECK(db);
+  CHECK(db, base::NotFatalUntil::M162);
 
   std::string value;
   bool success = service_metadata.SerializeToString(&value);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M162);
   db->Put(kServiceMetadataKey, value);
 }
 
 void PutFileMetadataToDB(const FileMetadata& file, LevelDBWrapper* db) {
-  DCHECK(db);
+  CHECK(db, base::NotFatalUntil::M162);
 
   std::string value;
   bool success = file.SerializeToString(&value);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M162);
   db->Put(kFileMetadataKeyPrefix + file.file_id(), value);
 }
 
 void PutFileTrackerToDB(const FileTracker& tracker, LevelDBWrapper* db) {
-  DCHECK(db);
+  CHECK(db, base::NotFatalUntil::M162);
 
   std::string value;
   bool success = tracker.SerializeToString(&value);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M162);
   db->Put(kFileTrackerKeyPrefix + base::NumberToString(tracker.tracker_id()),
           value);
 }
 
 void PutFileMetadataDeletionToDB(const std::string& file_id,
                                  LevelDBWrapper* db) {
-  DCHECK(db);
+  CHECK(db, base::NotFatalUntil::M162);
   db->Delete(kFileMetadataKeyPrefix + file_id);
 }
 
 void PutFileTrackerDeletionToDB(int64_t tracker_id, LevelDBWrapper* db) {
-  DCHECK(db);
+  CHECK(db, base::NotFatalUntil::M162);
   db->Delete(kFileTrackerKeyPrefix + base::NumberToString(tracker_id));
 }
 
@@ -162,7 +162,7 @@ bool RemovePrefix(const std::string& str,
 std::unique_ptr<ServiceMetadata> InitializeServiceMetadata(LevelDBWrapper* db) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  DCHECK(db);
+  CHECK(db, base::NotFatalUntil::M162);
 
   std::unique_ptr<ServiceMetadata> service_metadata;
 

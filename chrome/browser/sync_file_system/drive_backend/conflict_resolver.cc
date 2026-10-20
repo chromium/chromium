@@ -199,13 +199,15 @@ std::string ConflictResolver::PickPrimaryFile(const TrackerIDSet& trackers) {
       continue;
     }
 
-    DCHECK(primary->details().file_kind() == FILE_KIND_FOLDER);
+    CHECK(primary->details().file_kind() == FILE_KIND_FOLDER,
+          base::NotFatalUntil::M162);
     if (file_metadata->details().file_kind() == FILE_KIND_FILE) {
       // Prioritize folders over regular files.
       continue;
     }
 
-    DCHECK(file_metadata->details().file_kind() == FILE_KIND_FOLDER);
+    CHECK(file_metadata->details().file_kind() == FILE_KIND_FOLDER,
+          base::NotFatalUntil::M162);
     if (primary->details().creation_time() >
         file_metadata->details().creation_time()) {
       // Prioritize first create for folders.
@@ -221,13 +223,13 @@ std::string ConflictResolver::PickPrimaryFile(const TrackerIDSet& trackers) {
 
 void ConflictResolver::RemoveNonPrimaryFiles(
     std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(!non_primary_file_ids_.empty());
+  CHECK(!non_primary_file_ids_.empty(), base::NotFatalUntil::M162);
 
   std::string file_id = non_primary_file_ids_.back().first;
   std::string etag = non_primary_file_ids_.back().second;
   non_primary_file_ids_.pop_back();
 
-  DCHECK_NE(target_file_id_, file_id);
+  CHECK_NE(target_file_id_, file_id, base::NotFatalUntil::M162);
 
   token->RecordLog(
       base::StringPrintf("Remove non-primary file %s", file_id.c_str()));

@@ -176,7 +176,7 @@ std::unique_ptr<FileTracker> CloneFileTracker(const FileTracker* obj) {
 
 // Returns true if |db| has no content.
 bool IsDatabaseEmpty(LevelDBWrapper* db) {
-  DCHECK(db);
+  CHECK(db, base::NotFatalUntil::M162);
   std::unique_ptr<LevelDBWrapper::Iterator> itr(db->NewIterator());
   itr->SeekToFirst();
   return !itr->Valid();
@@ -188,9 +188,9 @@ SyncStatusCode OpenDatabase(const base::FilePath& path,
                             bool* created) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  DCHECK(db_out);
-  DCHECK(created);
-  DCHECK(path.IsAbsolute());
+  CHECK(db_out, base::NotFatalUntil::M162);
+  CHECK(created, base::NotFatalUntil::M162);
+  CHECK(path.IsAbsolute(), base::NotFatalUntil::M162);
 
   leveldb_env::Options options;
   options.max_open_files = 0;  // Use minimum.
@@ -215,7 +215,7 @@ SyncStatusCode MigrateDatabaseIfNeeded(LevelDBWrapper* db) {
   // See metadata_database_index.cc for the database schema.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  DCHECK(db);
+  CHECK(db, base::NotFatalUntil::M162);
   std::string value;
   leveldb::Status status = db->Get(kDatabaseVersionKey, &value);
   int64_t version = 0;
@@ -233,7 +233,7 @@ SyncStatusCode MigrateDatabaseIfNeeded(LevelDBWrapper* db) {
     case 2:
       NOTREACHED();
     case 3:
-      DCHECK_EQ(3, kCurrentDatabaseVersion);
+      CHECK_EQ(3, kCurrentDatabaseVersion, base::NotFatalUntil::M162);
       // If MetadataDatabaseOnDisk is enabled, migration will be done in
       // MetadataDatabaseOnDisk::Create().
       // TODO(peria): Move the migration code (from v3 to v4) here.
@@ -420,8 +420,9 @@ enum DirtyingOption {
 void ActivateFileTracker(int64_t tracker_id,
                          int dirtying_options,
                          MetadataDatabaseIndexInterface* index) {
-  DCHECK(dirtying_options == MARK_NOTHING_DIRTY ||
-         dirtying_options == MARK_ITSELF_DIRTY);
+  CHECK(dirtying_options == MARK_NOTHING_DIRTY ||
+            dirtying_options == MARK_ITSELF_DIRTY,
+        base::NotFatalUntil::M162);
 
   std::unique_ptr<FileTracker> tracker(new FileTracker);
   index->GetFileTracker(tracker_id, tracker.get());
@@ -462,7 +463,7 @@ void DeactivateFileTracker(int64_t tracker_id,
 void RemoveFileTracker(int64_t tracker_id,
                        int dirtying_options,
                        MetadataDatabaseIndexInterface* index) {
-  DCHECK(!(dirtying_options & MARK_ITSELF_DIRTY));
+  CHECK(!(dirtying_options & MARK_ITSELF_DIRTY), base::NotFatalUntil::M162);
 
   FileTracker tracker;
   if (!index->GetFileTracker(tracker_id, &tracker))
@@ -547,9 +548,9 @@ MetadataDatabase::~MetadataDatabase() = default;
 // static
 void MetadataDatabase::ClearDatabase(
     std::unique_ptr<MetadataDatabase> metadata_database) {
-  DCHECK(metadata_database);
+  CHECK(metadata_database, base::NotFatalUntil::M162);
   base::FilePath database_path = metadata_database->database_path_;
-  DCHECK(!database_path.empty());
+  CHECK(!database_path.empty(), base::NotFatalUntil::M162);
   leveldb::Options options = leveldb_env::Options();
   if (metadata_database->env_override_)
     options.env = metadata_database->env_override_;
@@ -566,7 +567,8 @@ int64_t MetadataDatabase::GetSyncRootTrackerID() const {
 }
 
 int64_t MetadataDatabase::GetLargestKnownChangeID() const {
-  DCHECK_LE(GetLargestFetchedChangeID(), largest_known_change_id_);
+  CHECK_LE(GetLargestFetchedChangeID(), largest_known_change_id_,
+           base::NotFatalUntil::M162);
   return largest_known_change_id_;
 }
 
@@ -667,8 +669,9 @@ SyncStatusCode MetadataDatabase::DisableApp(const std::string& app_id) {
     return SYNC_STATUS_OK;
   }
 
-  DCHECK_EQ(TRACKER_KIND_APP_ROOT, tracker->tracker_kind());
-  DCHECK(tracker->active());
+  CHECK_EQ(TRACKER_KIND_APP_ROOT, tracker->tracker_kind(),
+           base::NotFatalUntil::M162);
+  CHECK(tracker->active(), base::NotFatalUntil::M162);
 
   // Keep the app-root tracker active (but change the tracker_kind) so that
   // other conflicting trackers won't become active.
@@ -689,8 +692,9 @@ SyncStatusCode MetadataDatabase::EnableApp(const std::string& app_id) {
     return SYNC_STATUS_OK;
   }
 
-  DCHECK_EQ(TRACKER_KIND_DISABLED_APP_ROOT, tracker->tracker_kind());
-  DCHECK(tracker->active());
+  CHECK_EQ(TRACKER_KIND_DISABLED_APP_ROOT, tracker->tracker_kind(),
+           base::NotFatalUntil::M162);
+  CHECK(tracker->active(), base::NotFatalUntil::M162);
 
   tracker->set_tracker_kind(TRACKER_KIND_APP_ROOT);
   index_->StoreFileTracker(std::move(tracker));
@@ -795,8 +799,8 @@ bool MetadataDatabase::FindNearestActiveAncestor(
     const base::FilePath& full_path,
     FileTracker* tracker_out,
     base::FilePath* path_out) const {
-  DCHECK(tracker_out);
-  DCHECK(path_out);
+  CHECK(tracker_out, base::NotFatalUntil::M162);
+  CHECK(path_out, base::NotFatalUntil::M162);
 
   if (full_path.IsAbsolute() ||
       !FindAppRootTracker(app_id, tracker_out) ||
@@ -820,7 +824,7 @@ bool MetadataDatabase::FindNearestActiveAncestor(
     FileTracker tracker;
     index_->GetFileTracker(trackers.active_tracker(), &tracker);
 
-    DCHECK(tracker.has_synced_details());
+    CHECK(tracker.has_synced_details(), base::NotFatalUntil::M162);
     const FileDetails& details = tracker.synced_details();
     if (details.file_kind() != FILE_KIND_FOLDER && i != components.size() - 1) {
       // This non-last component indicates file. Give up search.
@@ -837,7 +841,8 @@ bool MetadataDatabase::FindNearestActiveAncestor(
 SyncStatusCode MetadataDatabase::UpdateByChangeList(
     int64_t largest_change_id,
     std::vector<std::unique_ptr<google_apis::ChangeResource>> changes) {
-  DCHECK_LE(index_->GetLargestChangeID(), largest_change_id);
+  CHECK_LE(index_->GetLargestChangeID(), largest_change_id,
+           base::NotFatalUntil::M162);
 
   for (size_t i = 0; i < changes.size(); ++i) {
     const google_apis::ChangeResource& change = *changes[i];
@@ -898,6 +903,7 @@ SyncStatusCode MetadataDatabase::UpdateByDeletedRemoteFileList(
 SyncStatusCode MetadataDatabase::ReplaceActiveTrackerWithNewResource(
     int64_t parent_tracker_id,
     const google_apis::FileResource& resource) {
+  // CHECK-exclusion: Avoid expensive LevelDB lookups in release builds.
   DCHECK(!index_->GetFileMetadata(resource.file_id(), nullptr));
   DCHECK(index_->GetFileTracker(parent_tracker_id, nullptr));
 
@@ -906,6 +912,7 @@ SyncStatusCode MetadataDatabase::ReplaceActiveTrackerWithNewResource(
       CreateFileMetadataFromFileResource(GetLargestKnownChangeID(), resource),
       UPDATE_TRACKER_FOR_SYNCED_FILE);
 
+  // CHECK-exclusion: Avoid expensive LevelDB lookups in release builds.
   DCHECK(index_->GetFileMetadata(resource.file_id(), nullptr));
   DCHECK(!index_->GetFileTrackerIDsByFileID(resource.file_id()).has_active());
 
@@ -994,10 +1001,11 @@ SyncStatusCode MetadataDatabase::UpdateTracker(
   }
 
   // Sync-root deletion should be handled separately by SyncEngine.
-  DCHECK(tracker_id != GetSyncRootTrackerID() ||
-         (tracker.has_synced_details() &&
-          tracker.synced_details().title() == updated_details.title() &&
-          !updated_details.missing()));
+  CHECK(tracker_id != GetSyncRootTrackerID() ||
+            (tracker.has_synced_details() &&
+             tracker.synced_details().title() == updated_details.title() &&
+             !updated_details.missing()),
+        base::NotFatalUntil::M162);
 
   if (tracker_id != GetSyncRootTrackerID()) {
     // Check if the tracker's parent is still in |parent_tracker_ids|.
@@ -1074,7 +1082,7 @@ MetadataDatabase::ActivationStatus MetadataDatabase::TryActivateTracker(
     NOTREACHED();
   }
   std::string title = metadata.details().title();
-  DCHECK(!HasInvalidTitle(title));
+  CHECK(!HasInvalidTitle(title), base::NotFatalUntil::M162);
 
   TrackerIDSet same_file_id_trackers =
       index_->GetFileTrackerIDsByFileID(file_id);
@@ -1173,8 +1181,8 @@ size_t MetadataDatabase::CountDirtyTracker() const {
 
 bool MetadataDatabase::GetMultiParentFileTrackers(std::string* file_id_out,
                                                   TrackerIDSet* trackers_out) {
-  DCHECK(file_id_out);
-  DCHECK(trackers_out);
+  CHECK(file_id_out, base::NotFatalUntil::M162);
+  CHECK(trackers_out, base::NotFatalUntil::M162);
 
   std::string file_id = index_->PickMultiTrackerFileID();
   if (file_id.empty())
@@ -1199,7 +1207,7 @@ size_t MetadataDatabase::CountFileTracker() const {
 }
 
 bool MetadataDatabase::GetConflictingTrackers(TrackerIDSet* trackers_out) {
-  DCHECK(trackers_out);
+  CHECK(trackers_out, base::NotFatalUntil::M162);
 
   ParentIDAndTitle parent_and_title = index_->PickMultiBackingFilePath();
   if (parent_and_title.parent_id == kInvalidTrackerID)
@@ -1216,7 +1224,7 @@ bool MetadataDatabase::GetConflictingTrackers(TrackerIDSet* trackers_out) {
 }
 
 void MetadataDatabase::GetRegisteredAppIDs(std::vector<std::string>* app_ids) {
-  DCHECK(app_ids);
+  CHECK(app_ids, base::NotFatalUntil::M162);
   *app_ids = index_->GetRegisteredAppIDs();
 }
 
@@ -1303,7 +1311,7 @@ void MetadataDatabase::CreateTrackerForParentAndFileMetadata(
     const FileTracker& parent_tracker,
     const FileMetadata& file_metadata,
     UpdateOption option) {
-  DCHECK(file_metadata.has_details());
+  CHECK(file_metadata.has_details(), base::NotFatalUntil::M162);
   CreateTrackerInternal(parent_tracker,
                         file_metadata.file_id(),
                         &file_metadata.details(),
@@ -1383,13 +1391,14 @@ void MetadataDatabase::MaybeAddTrackersForNewFile(
 int64_t MetadataDatabase::IncrementTrackerID() {
   int64_t tracker_id = index_->GetNextTrackerID();
   index_->SetNextTrackerID(tracker_id + 1);
-  DCHECK_GT(tracker_id, 0);
+  CHECK_GT(tracker_id, 0, base::NotFatalUntil::M162);
   return tracker_id;
 }
 
 bool MetadataDatabase::CanActivateTracker(const FileTracker& tracker) {
-  DCHECK(!tracker.active());
-  DCHECK_NE(index_->GetSyncRootTrackerID(), tracker.tracker_id());
+  CHECK(!tracker.active(), base::NotFatalUntil::M162);
+  CHECK_NE(index_->GetSyncRootTrackerID(), tracker.tracker_id(),
+           base::NotFatalUntil::M162);
 
   if (HasActiveTrackerForFileID(tracker.file_id()))
     return false;
@@ -1405,7 +1414,7 @@ bool MetadataDatabase::CanActivateTracker(const FileTracker& tracker) {
     return false;
   if (HasInvalidTitle(tracker.synced_details().title()))
     return false;
-  DCHECK(tracker.parent_tracker_id());
+  CHECK(tracker.parent_tracker_id(), base::NotFatalUntil::M162);
 
   return !HasActiveTrackerForPath(tracker.parent_tracker_id(),
                                   tracker.synced_details().title());
@@ -1415,14 +1424,14 @@ bool MetadataDatabase::ShouldKeepDirty(const FileTracker& tracker) const {
   if (HasDisabledAppRoot(tracker))
     return false;
 
-  DCHECK(tracker.dirty());
+  CHECK(tracker.dirty(), base::NotFatalUntil::M162);
   if (!tracker.has_synced_details())
     return true;
 
   FileMetadata metadata;
   if (!index_->GetFileMetadata(tracker.file_id(), &metadata))
     return true;
-  DCHECK(metadata.has_details());
+  CHECK(metadata.has_details(), base::NotFatalUntil::M162);
 
   const FileDetails& local_details = tracker.synced_details();
   const FileDetails& remote_details = metadata.details();
@@ -1484,8 +1493,8 @@ void MetadataDatabase::UpdateByFileMetadata(
     const base::Location& from_where,
     std::unique_ptr<FileMetadata> metadata,
     UpdateOption option) {
-  DCHECK(metadata);
-  DCHECK(metadata->has_details());
+  CHECK(metadata, base::NotFatalUntil::M162);
+  CHECK(metadata->has_details(), base::NotFatalUntil::M162);
 
   DVLOG(1) << from_where.function_name() << ": "
            << metadata->file_id() << " ("
@@ -1517,7 +1526,7 @@ bool MetadataDatabase::HasNewerFileMetadata(const std::string& file_id,
   FileMetadata metadata;
   if (!index_->GetFileMetadata(file_id, &metadata))
     return false;
-  DCHECK(metadata.has_details());
+  CHECK(metadata.has_details(), base::NotFatalUntil::M162);
   return metadata.details().change_id() >= change_id;
 }
 

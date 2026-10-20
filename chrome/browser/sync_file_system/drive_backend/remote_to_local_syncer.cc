@@ -64,11 +64,12 @@ bool HasFolderAsParent(const FileDetails& details,
 
 bool HasDisabledAppRoot(MetadataDatabase* database,
                         const FileTracker& tracker) {
-  DCHECK(tracker.active());
+  CHECK(tracker.active(), base::NotFatalUntil::M162);
   FileTracker app_root_tracker;
   if (database->FindAppRootTracker(tracker.app_id(), &app_root_tracker)) {
-    DCHECK(app_root_tracker.tracker_kind() == TRACKER_KIND_APP_ROOT ||
-           app_root_tracker.tracker_kind() == TRACKER_KIND_DISABLED_APP_ROOT);
+    CHECK(app_root_tracker.tracker_kind() == TRACKER_KIND_APP_ROOT ||
+              app_root_tracker.tracker_kind() == TRACKER_KIND_DISABLED_APP_ROOT,
+          base::NotFatalUntil::M162);
     return app_root_tracker.tracker_kind() == TRACKER_KIND_DISABLED_APP_ROOT;
   }
   return false;
@@ -131,7 +132,7 @@ void RemoteToLocalSyncer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
 
 void RemoteToLocalSyncer::ResolveRemoteChange(
     std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(dirty_tracker_);
+  CHECK(dirty_tracker_, base::NotFatalUntil::M162);
   remote_metadata_ =
       GetFileMetadata(metadata_database(), dirty_tracker_->file_id());
 
@@ -150,8 +151,8 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     return;
   }
 
-  DCHECK(remote_metadata_);
-  DCHECK(remote_metadata_->has_details());
+  CHECK(remote_metadata_, base::NotFatalUntil::M162);
+  CHECK(remote_metadata_->has_details(), base::NotFatalUntil::M162);
   const FileDetails& remote_details = remote_metadata_->details();
 
   if (!dirty_tracker_->active() ||
@@ -162,7 +163,8 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     return;
   }
 
-  DCHECK(dirty_tracker_->active());
+  CHECK(dirty_tracker_->active(), base::NotFatalUntil::M162);
+  // CHECK-exclusion: Avoid expensive LevelDB lookups in release builds.
   DCHECK(!HasDisabledAppRoot(metadata_database(), *dirty_tracker_));
 
   if (!dirty_tracker_->has_synced_details()) {
@@ -172,7 +174,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     NOTREACHED();
   }
 
-  DCHECK(dirty_tracker_->has_synced_details());
+  CHECK(dirty_tracker_->has_synced_details(), base::NotFatalUntil::M162);
   const FileDetails& synced_details = dirty_tracker_->synced_details();
 
   if (dirty_tracker_->tracker_id() ==
@@ -190,14 +192,15 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
     return;
   }
 
-  DCHECK_NE(dirty_tracker_->tracker_id(),
-            metadata_database()->GetSyncRootTrackerID());
+  CHECK_NE(dirty_tracker_->tracker_id(),
+           metadata_database()->GetSyncRootTrackerID(),
+           base::NotFatalUntil::M162);
 
   if (!BuildFileSystemURL(metadata_database(), *dirty_tracker_, &url_)) {
     NOTREACHED();
   }
 
-  DCHECK(url_.is_valid());
+  CHECK(url_.is_valid(), base::NotFatalUntil::M162);
 
   if (remote_details.missing()) {
     if (!synced_details.missing()) {
@@ -208,14 +211,14 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
       return;
     }
 
-    DCHECK(synced_details.missing());
+    CHECK(synced_details.missing(), base::NotFatalUntil::M162);
     token->RecordLog("Found a stray missing tracker: " +
                      dirty_tracker_->file_id());
     NOTREACHED();
   }
 
   // Most of remote_details field is valid from here.
-  DCHECK(!remote_details.missing());
+  CHECK(!remote_details.missing(), base::NotFatalUntil::M162);
 
   if (synced_details.file_kind() != remote_details.file_kind()) {
     token->RecordLog(base::StringPrintf(
@@ -225,15 +228,17 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
         remote_details.file_kind()));
     NOTREACHED();
   }
-  DCHECK_EQ(synced_details.file_kind(), remote_details.file_kind());
+  CHECK_EQ(synced_details.file_kind(), remote_details.file_kind(),
+           base::NotFatalUntil::M162);
 
   if (synced_details.file_kind() == FILE_KIND_UNSUPPORTED) {
     token->RecordLog("Found an unsupported active file: " +
                      remote_metadata_->file_id());
     NOTREACHED();
   }
-  DCHECK(remote_details.file_kind() == FILE_KIND_FILE ||
-         remote_details.file_kind() == FILE_KIND_FOLDER);
+  CHECK(remote_details.file_kind() == FILE_KIND_FILE ||
+            remote_details.file_kind() == FILE_KIND_FOLDER,
+        base::NotFatalUntil::M162);
 
   if (synced_details.title() != remote_details.title()) {
     // Handle rename as deletion + addition.
@@ -244,7 +249,8 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
                                     weak_ptr_factory_.GetWeakPtr()));
     return;
   }
-  DCHECK_EQ(synced_details.title(), remote_details.title());
+  CHECK_EQ(synced_details.title(), remote_details.title(),
+           base::NotFatalUntil::M162);
 
   FileTracker parent_tracker;
   if (!metadata_database()->FindTrackerByTrackerID(
@@ -273,7 +279,8 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
       return;
     }
   } else {
-    DCHECK_EQ(FILE_KIND_FOLDER, synced_details.file_kind());
+    CHECK_EQ(FILE_KIND_FOLDER, synced_details.file_kind(),
+             base::NotFatalUntil::M162);
     if (synced_details.missing()) {
       token->RecordLog("Detected folder update.");
       MoveToBackground(std::move(token),
@@ -298,7 +305,7 @@ void RemoteToLocalSyncer::ResolveRemoteChange(
 
 void RemoteToLocalSyncer::MoveToBackground(std::unique_ptr<SyncTaskToken> token,
                                            Continuation continuation) {
-  DCHECK(dirty_tracker_);
+  CHECK(dirty_tracker_, base::NotFatalUntil::M162);
 
   std::unique_ptr<TaskBlocker> blocker(new TaskBlocker);
   blocker->app_id = dirty_tracker_->app_id();
@@ -316,7 +323,7 @@ void RemoteToLocalSyncer::MoveToBackground(std::unique_ptr<SyncTaskToken> token,
 void RemoteToLocalSyncer::ContinueAsBackgroundTask(
     Continuation continuation,
     std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(dirty_tracker_);
+  CHECK(dirty_tracker_, base::NotFatalUntil::M162);
 
   // The SyncTask runs as a background task beyond this point.
   // Not that any task can run between MoveToBackground() and
@@ -381,7 +388,7 @@ void RemoteToLocalSyncer::ContinueAsBackgroundTask(
 
 void RemoteToLocalSyncer::HandleMissingRemoteMetadata(
     std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(dirty_tracker_);
+  CHECK(dirty_tracker_, base::NotFatalUntil::M162);
 
   drive_service()->GetFileResource(
       dirty_tracker_->file_id(),
@@ -393,7 +400,8 @@ void RemoteToLocalSyncer::DidGetRemoteMetadata(
     std::unique_ptr<SyncTaskToken> token,
     google_apis::ApiErrorCode error,
     std::unique_ptr<google_apis::FileResource> entry) {
-  DCHECK(sync_context_->GetWorkerTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(sync_context_->GetWorkerTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
 
   SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK && error != google_apis::HTTP_NOT_FOUND) {
@@ -432,9 +440,9 @@ void RemoteToLocalSyncer::DidPrepareForAddOrUpdateFile(
     return;
   }
 
-  DCHECK(url_.is_valid());
-  DCHECK(local_metadata_);
-  DCHECK(local_changes_);
+  CHECK(url_.is_valid(), base::NotFatalUntil::M162);
+  CHECK(local_metadata_, base::NotFatalUntil::M162);
+  CHECK(local_changes_, base::NotFatalUntil::M162);
 
   // Check if the local file exists.
   if (local_metadata_->file_type == SYNC_FILE_TYPE_UNKNOWN ||
@@ -447,7 +455,8 @@ void RemoteToLocalSyncer::DidPrepareForAddOrUpdateFile(
     return;
   }
 
-  DCHECK(local_changes_->empty() || local_changes_->back().IsAddOrUpdate());
+  CHECK(local_changes_->empty() || local_changes_->back().IsAddOrUpdate(),
+        base::NotFatalUntil::M162);
   if (local_changes_->empty()) {
     if (local_metadata_->file_type == SYNC_FILE_TYPE_FILE) {
       file_type_ = SYNC_FILE_TYPE_FILE;
@@ -457,7 +466,8 @@ void RemoteToLocalSyncer::DidPrepareForAddOrUpdateFile(
       return;
     }
 
-    DCHECK_EQ(SYNC_FILE_TYPE_DIRECTORY, local_metadata_->file_type);
+    CHECK_EQ(SYNC_FILE_TYPE_DIRECTORY, local_metadata_->file_type,
+             base::NotFatalUntil::M162);
 
     // Got a remote regular file modification for existing local folder.
     // Our policy prioritize folders in this case.
@@ -470,7 +480,7 @@ void RemoteToLocalSyncer::DidPrepareForAddOrUpdateFile(
     return;
   }
 
-  DCHECK(local_changes_->back().IsAddOrUpdate());
+  CHECK(local_changes_->back().IsAddOrUpdate(), base::NotFatalUntil::M162);
   // Conflict case.
   // Do nothing for the change now, and handle this in LocalToRemoteSync phase.
   SyncCompleted(std::move(token), SYNC_STATUS_RETRY);
@@ -478,14 +488,16 @@ void RemoteToLocalSyncer::DidPrepareForAddOrUpdateFile(
 
 void RemoteToLocalSyncer::HandleFolderUpdate(
     std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(dirty_tracker_);
-  DCHECK(dirty_tracker_->active());
+  CHECK(dirty_tracker_, base::NotFatalUntil::M162);
+  CHECK(dirty_tracker_->active(), base::NotFatalUntil::M162);
+  // CHECK-exclusion: Avoid expensive LevelDB lookups in release builds.
   DCHECK(!HasDisabledAppRoot(metadata_database(), *dirty_tracker_));
 
-  DCHECK(remote_metadata_);
-  DCHECK(remote_metadata_->has_details());
-  DCHECK(!remote_metadata_->details().missing());
-  DCHECK_EQ(FILE_KIND_FOLDER, remote_metadata_->details().file_kind());
+  CHECK(remote_metadata_, base::NotFatalUntil::M162);
+  CHECK(remote_metadata_->has_details(), base::NotFatalUntil::M162);
+  CHECK(!remote_metadata_->details().missing(), base::NotFatalUntil::M162);
+  CHECK_EQ(FILE_KIND_FOLDER, remote_metadata_->details().file_kind(),
+           base::NotFatalUntil::M162);
 
   Prepare(base::BindOnce(&RemoteToLocalSyncer::DidPrepareForFolderUpdate,
                          weak_ptr_factory_.GetWeakPtr(), std::move(token)));
@@ -499,9 +511,9 @@ void RemoteToLocalSyncer::DidPrepareForFolderUpdate(
     return;
   }
 
-  DCHECK(url_.is_valid());
-  DCHECK(local_metadata_);
-  DCHECK(local_changes_);
+  CHECK(url_.is_valid(), base::NotFatalUntil::M162);
+  CHECK(local_metadata_, base::NotFatalUntil::M162);
+  CHECK(local_changes_, base::NotFatalUntil::M162);
 
   // Check if the local file exists.
   if (local_metadata_->file_type == SYNC_FILE_TYPE_UNKNOWN ||
@@ -524,7 +536,8 @@ void RemoteToLocalSyncer::DidPrepareForFolderUpdate(
     return;
   }
 
-  DCHECK_EQ(SYNC_FILE_TYPE_FILE, local_metadata_->file_type);
+  CHECK_EQ(SYNC_FILE_TYPE_FILE, local_metadata_->file_type,
+           base::NotFatalUntil::M162);
   file_type_ = SYNC_FILE_TYPE_DIRECTORY;
   sync_action_ = SYNC_ACTION_ADDED;
   // Got a remote folder for existing local file.
@@ -533,29 +546,31 @@ void RemoteToLocalSyncer::DidPrepareForFolderUpdate(
 }
 
 void RemoteToLocalSyncer::HandleDeletion(std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(dirty_tracker_);
-  DCHECK(dirty_tracker_->active());
+  CHECK(dirty_tracker_, base::NotFatalUntil::M162);
+  CHECK(dirty_tracker_->active(), base::NotFatalUntil::M162);
+  // CHECK-exclusion: Avoid expensive LevelDB lookups in release builds.
   DCHECK(!HasDisabledAppRoot(metadata_database(), *dirty_tracker_));
-  DCHECK(dirty_tracker_->has_synced_details());
-  DCHECK(!dirty_tracker_->synced_details().missing());
+  CHECK(dirty_tracker_->has_synced_details(), base::NotFatalUntil::M162);
+  CHECK(!dirty_tracker_->synced_details().missing(), base::NotFatalUntil::M162);
 
-  DCHECK(remote_metadata_);
-  DCHECK(remote_metadata_->has_details());
-  DCHECK(remote_metadata_->details().missing());
+  CHECK(remote_metadata_, base::NotFatalUntil::M162);
+  CHECK(remote_metadata_->has_details(), base::NotFatalUntil::M162);
+  CHECK(remote_metadata_->details().missing(), base::NotFatalUntil::M162);
 
   Prepare(base::BindOnce(&RemoteToLocalSyncer::DidPrepareForDeletion,
                          weak_ptr_factory_.GetWeakPtr(), std::move(token)));
 }
 
 void RemoteToLocalSyncer::HandleFileMove(std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(dirty_tracker_);
-  DCHECK(dirty_tracker_->active());
+  CHECK(dirty_tracker_, base::NotFatalUntil::M162);
+  CHECK(dirty_tracker_->active(), base::NotFatalUntil::M162);
+  // CHECK-exclusion: Avoid expensive LevelDB lookups in release builds.
   DCHECK(!HasDisabledAppRoot(metadata_database(), *dirty_tracker_));
-  DCHECK(dirty_tracker_->has_synced_details());
+  CHECK(dirty_tracker_->has_synced_details(), base::NotFatalUntil::M162);
 
-  DCHECK(remote_metadata_);
-  DCHECK(remote_metadata_->has_details());
-  DCHECK(!remote_metadata_->details().missing());
+  CHECK(remote_metadata_, base::NotFatalUntil::M162);
+  CHECK(remote_metadata_->has_details(), base::NotFatalUntil::M162);
+  CHECK(!remote_metadata_->details().missing(), base::NotFatalUntil::M162);
 
   Prepare(base::BindOnce(&RemoteToLocalSyncer::DidPrepareForDeletion,
                          weak_ptr_factory_.GetWeakPtr(), std::move(token)));
@@ -569,9 +584,9 @@ void RemoteToLocalSyncer::DidPrepareForDeletion(
     return;
   }
 
-  DCHECK(url_.is_valid());
-  DCHECK(local_metadata_);
-  DCHECK(local_changes_);
+  CHECK(url_.is_valid(), base::NotFatalUntil::M162);
+  CHECK(local_metadata_, base::NotFatalUntil::M162);
+  CHECK(local_changes_, base::NotFatalUntil::M162);
 
   // Check if the local file exists.
   if (local_metadata_->file_type == SYNC_FILE_TYPE_UNKNOWN ||
@@ -581,7 +596,8 @@ void RemoteToLocalSyncer::DidPrepareForDeletion(
     return;
   }
 
-  DCHECK(local_changes_->empty() || local_changes_->back().IsAddOrUpdate());
+  CHECK(local_changes_->empty() || local_changes_->back().IsAddOrUpdate(),
+        base::NotFatalUntil::M162);
   if (local_changes_->empty()) {
     file_type_ = local_metadata_->file_type;
     sync_action_ = SYNC_ACTION_DELETED;
@@ -589,7 +605,7 @@ void RemoteToLocalSyncer::DidPrepareForDeletion(
     return;
   }
 
-  DCHECK(local_changes_->back().IsAddOrUpdate());
+  CHECK(local_changes_->back().IsAddOrUpdate(), base::NotFatalUntil::M162);
   // File is remotely deleted and locally updated.
   // Ignore the remote deletion and handle it as if applied successfully.
   SyncCompleted(std::move(token), SYNC_STATUS_OK);
@@ -597,18 +613,20 @@ void RemoteToLocalSyncer::DidPrepareForDeletion(
 
 void RemoteToLocalSyncer::HandleContentUpdate(
     std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(dirty_tracker_);
-  DCHECK(dirty_tracker_->active());
+  CHECK(dirty_tracker_, base::NotFatalUntil::M162);
+  CHECK(dirty_tracker_->active(), base::NotFatalUntil::M162);
+  // CHECK-exclusion: Avoid expensive LevelDB lookups in release builds.
   DCHECK(!HasDisabledAppRoot(metadata_database(), *dirty_tracker_));
-  DCHECK(dirty_tracker_->has_synced_details());
-  DCHECK_EQ(FILE_KIND_FILE, dirty_tracker_->synced_details().file_kind());
+  CHECK(dirty_tracker_->has_synced_details(), base::NotFatalUntil::M162);
+  CHECK_EQ(FILE_KIND_FILE, dirty_tracker_->synced_details().file_kind(),
+           base::NotFatalUntil::M162);
 
-  DCHECK(remote_metadata_);
-  DCHECK(remote_metadata_->has_details());
-  DCHECK(!remote_metadata_->details().missing());
+  CHECK(remote_metadata_, base::NotFatalUntil::M162);
+  CHECK(remote_metadata_->has_details(), base::NotFatalUntil::M162);
+  CHECK(!remote_metadata_->details().missing(), base::NotFatalUntil::M162);
 
-  DCHECK_NE(dirty_tracker_->synced_details().md5(),
-            remote_metadata_->details().md5());
+  CHECK_NE(dirty_tracker_->synced_details().md5(),
+           remote_metadata_->details().md5(), base::NotFatalUntil::M162);
 
   Prepare(base::BindOnce(&RemoteToLocalSyncer::DidPrepareForAddOrUpdateFile,
                          weak_ptr_factory_.GetWeakPtr(), std::move(token)));
@@ -616,17 +634,19 @@ void RemoteToLocalSyncer::HandleContentUpdate(
 
 void RemoteToLocalSyncer::ListFolderContent(
     std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(dirty_tracker_);
-  DCHECK(dirty_tracker_->active());
+  CHECK(dirty_tracker_, base::NotFatalUntil::M162);
+  CHECK(dirty_tracker_->active(), base::NotFatalUntil::M162);
+  // CHECK-exclusion: Avoid expensive LevelDB lookups in release builds.
   DCHECK(!HasDisabledAppRoot(metadata_database(), *dirty_tracker_));
-  DCHECK(dirty_tracker_->has_synced_details());
-  DCHECK(!dirty_tracker_->synced_details().missing());
-  DCHECK_EQ(FILE_KIND_FOLDER, dirty_tracker_->synced_details().file_kind());
-  DCHECK(dirty_tracker_->needs_folder_listing());
+  CHECK(dirty_tracker_->has_synced_details(), base::NotFatalUntil::M162);
+  CHECK(!dirty_tracker_->synced_details().missing(), base::NotFatalUntil::M162);
+  CHECK_EQ(FILE_KIND_FOLDER, dirty_tracker_->synced_details().file_kind(),
+           base::NotFatalUntil::M162);
+  CHECK(dirty_tracker_->needs_folder_listing(), base::NotFatalUntil::M162);
 
-  DCHECK(remote_metadata_);
-  DCHECK(remote_metadata_->has_details());
-  DCHECK(!remote_metadata_->details().missing());
+  CHECK(remote_metadata_, base::NotFatalUntil::M162);
+  CHECK(remote_metadata_->has_details(), base::NotFatalUntil::M162);
+  CHECK(!remote_metadata_->details().missing(), base::NotFatalUntil::M162);
 
   // TODO(tzik): Replace this call with ChildList version.
   drive_service()->GetFileListInDirectory(
@@ -692,9 +712,9 @@ void RemoteToLocalSyncer::SyncCompleted(std::unique_ptr<SyncTaskToken> token,
     return;
   }
 
-  DCHECK(dirty_tracker_);
-  DCHECK(remote_metadata_);
-  DCHECK(remote_metadata_->has_details());
+  CHECK(dirty_tracker_, base::NotFatalUntil::M162);
+  CHECK(remote_metadata_, base::NotFatalUntil::M162);
+  CHECK(remote_metadata_->has_details(), base::NotFatalUntil::M162);
 
   FileDetails updated_details = remote_metadata_->details();
   if (!dirty_tracker_->active() ||
@@ -728,7 +748,7 @@ void RemoteToLocalSyncer::FinalizeSync(std::unique_ptr<SyncTaskToken> token,
 }
 
 void RemoteToLocalSyncer::Prepare(SyncStatusCallback callback) {
-  DCHECK(url_.is_valid());
+  CHECK(url_.is_valid(), base::NotFatalUntil::M162);
   // TODO(crbug.com/40733540): convert passed parameters to moved
   // parameters when this is converted to base::BindOnce.
   remote_change_processor()->PrepareForProcessRemoteChange(
@@ -761,7 +781,8 @@ void RemoteToLocalSyncer::DeleteLocalFile(
 }
 
 void RemoteToLocalSyncer::DownloadFile(std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(sync_context_->GetWorkerTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(sync_context_->GetWorkerTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
 
   storage::ScopedFile file = CreateTemporaryFile(
       base::WrapRefCounted(sync_context_->GetWorkerTaskRunner()));
@@ -779,7 +800,8 @@ void RemoteToLocalSyncer::DidDownloadFile(std::unique_ptr<SyncTaskToken> token,
                                           storage::ScopedFile file,
                                           google_apis::ApiErrorCode error,
                                           const base::FilePath&) {
-  DCHECK(sync_context_->GetWorkerTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(sync_context_->GetWorkerTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
 
   SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
   if (status != SYNC_STATUS_OK) {
@@ -830,7 +852,7 @@ MetadataDatabase* RemoteToLocalSyncer::metadata_database() {
 }
 
 RemoteChangeProcessor* RemoteToLocalSyncer::remote_change_processor() {
-  DCHECK(sync_context_->GetRemoteChangeProcessor());
+  CHECK(sync_context_->GetRemoteChangeProcessor(), base::NotFatalUntil::M162);
   return sync_context_->GetRemoteChangeProcessor();
 }
 

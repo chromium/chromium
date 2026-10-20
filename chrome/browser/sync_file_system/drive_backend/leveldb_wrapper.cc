@@ -70,7 +70,7 @@ void LevelDBWrapper::Iterator::Next() {
 }
 
 void LevelDBWrapper::Iterator::Delete() {
-  DCHECK(Valid());
+  CHECK(Valid(), base::NotFatalUntil::M162);
 
   const std::string key_str = key().ToString();
   Transaction deletion(DELETE_OPERATION, std::string());
@@ -86,7 +86,7 @@ void LevelDBWrapper::Iterator::Delete() {
 }
 
 leveldb::Slice LevelDBWrapper::Iterator::key() {
-  DCHECK(Valid());
+  CHECK(Valid(), base::NotFatalUntil::M162);
 
   if (!db_iterator_->Valid())
     return map_iterator_->first;
@@ -99,7 +99,7 @@ leveldb::Slice LevelDBWrapper::Iterator::key() {
 }
 
 leveldb::Slice LevelDBWrapper::Iterator::value() {
-  DCHECK(Valid());
+  CHECK(Valid(), base::NotFatalUntil::M162);
 
   if (!db_iterator_->Valid())
     return map_iterator_->second.second;
@@ -111,7 +111,8 @@ leveldb::Slice LevelDBWrapper::Iterator::value() {
   if (db_key.compare(map_key) < 0)
     return db_iterator_->value();
 
-  DCHECK(map_iterator_->second.first == PUT_OPERATION);
+  CHECK(map_iterator_->second.first == PUT_OPERATION,
+        base::NotFatalUntil::M162);
   return map_iterator_->second.second;
 }
 
@@ -147,7 +148,7 @@ void LevelDBWrapper::Iterator::AdvanceIterators() {
 // ---------------------------------------------------------------------------
 LevelDBWrapper::LevelDBWrapper(std::unique_ptr<leveldb::DB> db)
     : db_(std::move(db)), num_puts_(0), num_deletes_(0) {
-  DCHECK(db_);
+  CHECK(db_, base::NotFatalUntil::M162);
 }
 
 LevelDBWrapper::~LevelDBWrapper() = default;

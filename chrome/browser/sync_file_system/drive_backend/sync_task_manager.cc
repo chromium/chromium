@@ -83,7 +83,7 @@ SyncTaskManager::~SyncTaskManager() {
 
 void SyncTaskManager::Initialize(SyncStatusCode status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!token_);
+  CHECK(!token_, base::NotFatalUntil::M162);
   NotifyTaskDone(
       SyncTaskToken::CreateForForegroundTask(
           weak_ptr_factory_.GetWeakPtr(), task_runner_.get()),
@@ -147,11 +147,11 @@ bool SyncTaskManager::ScheduleSyncTaskIfIdle(const base::Location& from_here,
 // static
 void SyncTaskManager::NotifyTaskDone(std::unique_ptr<SyncTaskToken> token,
                                      SyncStatusCode status) {
-  DCHECK(token);
+  CHECK(token, base::NotFatalUntil::M162);
 
   SyncTaskManager* manager = token->manager();
   if (token->token_id() == SyncTaskToken::kTestingTaskTokenID) {
-    DCHECK(!manager);
+    CHECK(!manager, base::NotFatalUntil::M162);
     token->take_callback().Run(status);
     return;
   }
@@ -165,11 +165,11 @@ void SyncTaskManager::UpdateTaskBlocker(
     std::unique_ptr<SyncTaskToken> current_task_token,
     std::unique_ptr<TaskBlocker> task_blocker,
     Continuation continuation) {
-  DCHECK(current_task_token);
+  CHECK(current_task_token, base::NotFatalUntil::M162);
 
   SyncTaskManager* manager = current_task_token->manager();
   if (current_task_token->token_id() == SyncTaskToken::kTestingTaskTokenID) {
-    DCHECK(!manager);
+    CHECK(!manager, base::NotFatalUntil::M162);
     std::move(continuation).Run(std::move(current_task_token));
     return;
   }
@@ -212,7 +212,7 @@ void SyncTaskManager::DetachFromSequence() {
 void SyncTaskManager::NotifyTaskDoneBody(std::unique_ptr<SyncTaskToken> token,
                                          SyncStatusCode status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(token);
+  CHECK(token, base::NotFatalUntil::M162);
 
   DVLOG(3) << "NotifyTaskDone: " << "finished with status=" << status
            << " (" << SyncStatusCodeToString(status) << ")"
@@ -271,8 +271,8 @@ void SyncTaskManager::UpdateTaskBlockerBody(
 
   // Run the task directly if the parallelization is disabled.
   if (!maximum_background_task_) {
-    DCHECK(foreground_task_token);
-    DCHECK(!background_task_token);
+    CHECK(foreground_task_token, base::NotFatalUntil::M162);
+    CHECK(!background_task_token, base::NotFatalUntil::M162);
     foreground_task_token->SetTaskLog(std::move(task_log));
     std::move(continuation).Run(std::move(foreground_task_token));
     return;
@@ -288,7 +288,7 @@ void SyncTaskManager::UpdateTaskBlockerBody(
   // Try to get |foreground_task_token|.  If it's not available, wait for
   // current foreground task to finish.
   if (!foreground_task_token) {
-    DCHECK(background_task_token);
+    CHECK(background_task_token, base::NotFatalUntil::M162);
     foreground_task_token = GetUnupdatedToken();
     if (!foreground_task_token) {
       PushPendingTask(
@@ -314,8 +314,8 @@ void SyncTaskManager::UpdateTaskBlockerBody(
       running_background_tasks_.size() >= maximum_background_task_;
   if (task_number_limit_exceeded ||
       !dependency_manager_.Insert(task_blocker.get())) {
-    DCHECK(!running_background_tasks_.empty());
-    DCHECK(pending_backgrounding_task_.is_null());
+    CHECK(!running_background_tasks_.empty(), base::NotFatalUntil::M162);
+    CHECK(pending_backgrounding_task_.is_null(), base::NotFatalUntil::M162);
 
     // Wait for NotifyTaskDone to release a |task_blocker|.
     pending_backgrounding_task_ = base::BindOnce(
@@ -361,7 +361,7 @@ void SyncTaskManager::PushPendingTask(base::OnceClosure closure,
 void SyncTaskManager::RunTask(std::unique_ptr<SyncTaskToken> token,
                               std::unique_ptr<SyncTask> task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!running_foreground_task_);
+  CHECK(!running_foreground_task_, base::NotFatalUntil::M162);
 
   running_foreground_task_ = std::move(task);
   running_foreground_task_->RunPreflight(std::move(token));
@@ -372,7 +372,7 @@ void SyncTaskManager::MaybeStartNextForegroundTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (token) {
-    DCHECK(!token_);
+    CHECK(!token_, base::NotFatalUntil::M162);
     token_ = std::move(token);
   }
 
