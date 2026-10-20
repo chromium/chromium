@@ -31,7 +31,6 @@
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "sandbox/policy/switches.h"
-#include "services/webnn/public/cpp/compiler_disconnect_reason.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_compiler_context.mojom.h"
@@ -68,6 +67,10 @@ namespace {
 // Maximum number of unexpected Compiler-process disconnects allowed before
 // relaunch is blocked.
 constexpr int kMaxCompilerCrashCount = 3;
+
+// How long to wait after the last compiler context disconnects before
+// shutting down the Compiler process.
+constexpr base::TimeDelta kCompilerIdleTimeout = base::Seconds(30);
 
 #if BUILDFLAG(IS_WIN)
 // Number of times each WebNN Compiler process has crashed, keyed by device.
@@ -242,8 +245,9 @@ void WebNNBrowserHostImpl::RequestCompilerContext(
       return;
     }
 
-    webnn_compiler_remote_.set_disconnect_with_reason_handler(base::BindOnce(
+    webnn_compiler_remote_.set_disconnect_handler(base::BindOnce(
         &WebNNBrowserHostImpl::OnDisconnected, base::Unretained(this)));
+    webnn_compiler_remote_.reset_on_idle_timeout(kCompilerIdleTimeout);
   }
 
   webnn_compiler_remote_->CreateCompilerContext(
@@ -287,9 +291,10 @@ void WebNNBrowserHostImpl::OnEpsResolvedForCompilerContext(
       return;
     }
 
-    compiler_remote.set_disconnect_with_reason_handler(
+    compiler_remote.set_disconnect_handler(
         base::BindOnce(&WebNNBrowserHostImpl::OnDisconnected,
                        base::Unretained(this), target_device));
+    compiler_remote.reset_on_idle_timeout(kCompilerIdleTimeout);
   }
 
   // Tell the Compiler process to create a per-context compiler state.
@@ -302,27 +307,11 @@ void WebNNBrowserHostImpl::OnEpsResolvedForCompilerContext(
 }
 
 void WebNNBrowserHostImpl::OnDisconnected(
-    const webnn::EpDeviceInfo& device_info,
-    uint32_t reason,
-    const std::string& description) {
+    const webnn::EpDeviceInfo& device_info) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
   webnn_compiler_remotes_.erase(device_info);
 
-  // `reason` comes from a less-trusted child process. Verify it matches a
-  // known disconnect reason before acting on it; treat any unrecognized
-  // value as an unexpected crash.
-  switch (reason) {
-    case static_cast<uint32_t>(webnn::CompilerDisconnectReason::kIdleShutdown):
-      // The Compiler process shut down gracefully after all compiler
-      // contexts disconnected and the idle timeout elapsed. Not a crash.
-      DVLOG(1) << "[WebNN] Compiler process idle shutdown for ["
-               << device_info.ToSwitchValue() << "] (" << description << ").";
-      return;
-    default:
-      break;
-  }
-
-  // Any other disconnect is unexpected and treated as a crash.
+  // Any disconnect is unexpected and treated as a crash.
   int crash_count = ++GetWebNNCompilerCrashCounts()[device_info];
   base::UmaHistogramExactLinear(
       base::StrCat({"WebNN.CompilerProcess.CrashCount.", device_info.ep_name,
@@ -432,19 +421,9 @@ void WebNNBrowserHostImpl::CopyCompiledModel(
       std::move(callback));
 }
 
-void WebNNBrowserHostImpl::OnDisconnected(uint32_t reason,
-                                          const std::string& description) {
+void WebNNBrowserHostImpl::OnDisconnected() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   webnn_compiler_remote_.reset();
-
-  switch (reason) {
-    case static_cast<uint32_t>(webnn::CompilerDisconnectReason::kIdleShutdown):
-      DVLOG(1) << "[WebNN] Compiler process idle shutdown (" << description
-               << ").";
-      return;
-    default:
-      break;
-  }
 
   int crash_count = ++g_webnn_compiler_crash_count;
   base::UmaHistogramExactLinear("WebNN.CompilerProcess.CrashCount.CoreML",

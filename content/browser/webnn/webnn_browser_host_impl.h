@@ -109,9 +109,7 @@ class CONTENT_EXPORT WebNNBrowserHostImpl
 
   // Handles disconnection of the Compiler process for `device_info`, erasing
   // its remote and updating crash accounting.
-  void OnDisconnected(const webnn::EpDeviceInfo& device_info,
-                      uint32_t reason,
-                      const std::string& description);
+  void OnDisconnected(const webnn::EpDeviceInfo& device_info);
 
   // Per-EP-device remotes to Compiler processes, launched on demand.
   base::flat_map<webnn::EpDeviceInfo,
@@ -120,7 +118,7 @@ class CONTENT_EXPORT WebNNBrowserHostImpl
 
   base::WeakPtrFactory<WebNNBrowserHostImpl> weak_ptr_factory_{this};
 #elif BUILDFLAG(IS_APPLE)
-  void OnDisconnected(uint32_t reason, const std::string& description);
+  void OnDisconnected();
 
   mojo::Remote<webnn::mojom::WebNNCompilerService> webnn_compiler_remote_;
 
