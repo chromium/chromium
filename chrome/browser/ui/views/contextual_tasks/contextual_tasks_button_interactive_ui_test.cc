@@ -497,6 +497,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
                        RightClickRemoveHidesEphemeralButtonUntilNextAdded) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
@@ -514,7 +517,15 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       ClickMouse(ui_controls::RIGHT),
       SelectMenuItem(ContextualTasksButton::
                          kContextualTasksEphemeralButtonRemoveForTaskMenuItem),
-      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "RemoveByContextMenu"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.UserAction."
+            "RemoveByContextMenu",
+            true, 1);
+      }),
       // Switching away and back keeps the ephemeral button removed.
       SelectTab(kTabStripElementId, 1), SelectTab(kTabStripElementId, 0),
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),

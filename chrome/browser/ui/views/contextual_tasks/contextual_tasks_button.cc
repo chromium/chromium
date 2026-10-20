@@ -336,6 +336,13 @@ void ContextualTasksButton::ExecuteCommand(int command_id, int event_flags) {
   }
   switch (command_id) {
     case kCommandRemoveForCurrentTask:
+      base::RecordAction(base::UserMetricsAction(
+          "ContextualTasks.EphemeralToolbarButton.UserAction."
+          "RemoveByContextMenu"));
+      base::UmaHistogramBoolean(
+          "ContextualTasks.EphemeralToolbarButton.UserAction."
+          "RemoveByContextMenu",
+          true);
       controller->RemoveEphemeralButtonForCurrentTask();
       break;
     default:
