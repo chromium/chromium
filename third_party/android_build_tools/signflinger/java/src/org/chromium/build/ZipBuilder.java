@@ -32,11 +32,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -127,6 +131,10 @@ public final class ZipBuilder {
     private static final Method GENERATE_V3_BLOCK_METHOD;
     private static final Constructor<V4Signature.HashingInfo> HASHING_INFO_CTOR;
     private static final Method GENERATE_V4_SIGNATURE_METHOD;
+    private static final Field ZIP_ARCHIVE_WRITER_FIELD;
+    private static final Field ZIP_WRITER_CHANNEL_FIELD;
+    private static final Field ZIP_WRITER_IS_OPEN_FIELD;
+    private static final Field ENTRY_VERSION_MADE_BY_FIELD;
 
     static {
         try {
@@ -158,8 +166,237 @@ public final class ZipBuilder {
                             byte[].class,
                             long.class);
             GENERATE_V4_SIGNATURE_METHOD.setAccessible(true);
+
+            ZIP_ARCHIVE_WRITER_FIELD = ZipArchive.class.getDeclaredField("writer");
+            ZIP_ARCHIVE_WRITER_FIELD.setAccessible(true);
+
+            ZIP_WRITER_CHANNEL_FIELD = ZipWriter.class.getDeclaredField("channel");
+            ZIP_WRITER_CHANNEL_FIELD.setAccessible(true);
+
+            ZIP_WRITER_IS_OPEN_FIELD = ZipWriter.class.getDeclaredField("isOpen");
+            ZIP_WRITER_IS_OPEN_FIELD.setAccessible(true);
+
+            ENTRY_VERSION_MADE_BY_FIELD = Entry.class.getDeclaredField("versionMadeBy");
+            ENTRY_VERSION_MADE_BY_FIELD.setAccessible(true);
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    // zipflinger writes each entry directly to an unbuffered FileChannel, issuing ~6 syscalls per
+    // entry: lseek(SEEK_SET) before the header, write() for the local header, lseek(0, SEEK_CUR)
+    // after the header, and fstat() + copy_file_range() for zip-to-zip copies (b/574603563).
+    // BufferedFileChannel caches the file position in memory and coalesces small writes into a
+    // 256 KiB direct buffer on non-v1-signed archives, where nothing reads back from the output
+    // file until archive.close() / archive.closeWithInfo().
+    private static final class BufferedFileChannel extends FileChannel {
+        private final FileChannel mRaw;
+        private final ByteBuffer mBuffer = ByteBuffer.allocateDirect(DIRECT_BUFFER_SIZE);
+        private long mPosition;
+
+        BufferedFileChannel(FileChannel raw) {
+            mRaw = raw;
+        }
+
+        private void flushBuffer() throws IOException {
+            if (mBuffer.position() == 0) {
+                return;
+            }
+            mBuffer.flip();
+            while (mBuffer.hasRemaining()) {
+                mRaw.write(mBuffer);
+            }
+            mBuffer.clear();
+        }
+
+        void transferFromFileChannel(FileChannel src, long srcPos, long count) throws IOException {
+            flushBuffer();
+            long copied = 0;
+            while (copied < count) {
+                long n = src.transferTo(srcPos + copied, count - copied, mRaw);
+                if (n <= 0) {
+                    throw new IOException("Short transfer: " + copied + " of " + count);
+                }
+                copied += n;
+            }
+            mPosition += count;
+        }
+
+        @Override
+        public long position() {
+            return mPosition;
+        }
+
+        @Override
+        public FileChannel position(long newPosition) throws IOException {
+            if (newPosition != mPosition) {
+                flushBuffer();
+                mRaw.position(newPosition);
+                mPosition = newPosition;
+            }
+            return this;
+        }
+
+        @Override
+        public int write(ByteBuffer src) throws IOException {
+            int total = src.remaining();
+            if (total == 0) {
+                return 0;
+            }
+            if (total > mBuffer.remaining()) {
+                flushBuffer();
+            }
+            if (total >= mBuffer.capacity()) {
+                int written = 0;
+                while (src.hasRemaining()) {
+                    int n = mRaw.write(src);
+                    written += n;
+                    mPosition += n;
+                }
+                return written;
+            }
+            mBuffer.put(src);
+            mPosition += total;
+            return total;
+        }
+
+        @Override
+        public long write(ByteBuffer[] srcs, int offset, int length) throws IOException {
+            long total = 0;
+            for (int i = 0; i < length; i++) {
+                total += write(srcs[offset + i]);
+            }
+            return total;
+        }
+
+        @Override
+        public int write(ByteBuffer src, long position) throws IOException {
+            flushBuffer();
+            return mRaw.write(src, position);
+        }
+
+        @Override
+        public FileChannel truncate(long size) throws IOException {
+            flushBuffer();
+            mRaw.truncate(size);
+            if (mPosition > size) {
+                mPosition = size;
+            }
+            return this;
+        }
+
+        @Override
+        public long size() throws IOException {
+            return Math.max(mRaw.size(), mPosition);
+        }
+
+        @Override
+        public int read(ByteBuffer dst) throws IOException {
+            flushBuffer();
+            int n = mRaw.read(dst);
+            if (n > 0) {
+                mPosition += n;
+            }
+            return n;
+        }
+
+        @Override
+        public long read(ByteBuffer[] dsts, int offset, int length) throws IOException {
+            long total = 0;
+            for (int i = 0; i < length; i++) {
+                int n = read(dsts[offset + i]);
+                if (n < 0) {
+                    return total == 0 ? -1 : total;
+                }
+                total += n;
+            }
+            return total;
+        }
+
+        @Override
+        public int read(ByteBuffer dst, long position) throws IOException {
+            flushBuffer();
+            return mRaw.read(dst, position);
+        }
+
+        @Override
+        public long transferTo(long position, long count, WritableByteChannel target)
+                throws IOException {
+            flushBuffer();
+            return mRaw.transferTo(position, count, target);
+        }
+
+        @Override
+        public long transferFrom(ReadableByteChannel src, long position, long count)
+                throws IOException {
+            flushBuffer();
+            return mRaw.transferFrom(src, position, count);
+        }
+
+        @Override
+        public void force(boolean metaData) throws IOException {
+            flushBuffer();
+            mRaw.force(metaData);
+        }
+
+        @Override
+        public MappedByteBuffer map(MapMode mode, long position, long size) throws IOException {
+            flushBuffer();
+            return mRaw.map(mode, position, size);
+        }
+
+        @Override
+        public FileLock lock(long position, long size, boolean shared) throws IOException {
+            return mRaw.lock(position, size, shared);
+        }
+
+        @Override
+        public FileLock tryLock(long position, long size, boolean shared) throws IOException {
+            return mRaw.tryLock(position, size, shared);
+        }
+
+        @Override
+        protected void implCloseChannel() throws IOException {
+            try {
+                flushBuffer();
+            } finally {
+                mRaw.close();
+            }
+        }
+    }
+
+    private static ZipArchive createBufferedZipArchive(Path output) throws IOException {
+        ZipArchive archive = new ZipArchive(output);
+        boolean installed = false;
+        FileChannel rawChannel =
+                FileChannel.open(output, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        try {
+            ZipWriter writer = (ZipWriter) ZIP_ARCHIVE_WRITER_FIELD.get(archive);
+            ZIP_WRITER_CHANNEL_FIELD.set(writer, new BufferedFileChannel(rawChannel));
+            ZIP_WRITER_IS_OPEN_FIELD.setBoolean(writer, true);
+            installed = true;
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (!installed) {
+                rawChannel.close();
+            }
+        }
+        return archive;
+    }
+
+    private static void transferToWriter(FileChannel src, long pos, long count, ZipWriter writer)
+            throws IOException {
+        FileChannel dst;
+        try {
+            dst = (FileChannel) ZIP_WRITER_CHANNEL_FIELD.get(writer);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+        if (dst instanceof BufferedFileChannel buffered) {
+            buffered.transferFromFileChannel(src, pos, count);
+        } else {
+            writer.transferFrom(src, pos, count);
         }
     }
 
@@ -191,9 +428,78 @@ public final class ZipBuilder {
         @Override
         public long writeTo(ZipWriter writer) throws IOException {
             try (FileChannel ch = FileChannel.open(mPath, StandardOpenOption.READ)) {
-                writer.transferFrom(ch, 0, compressedSize);
+                transferToWriter(ch, 0, compressedSize, writer);
             }
             return compressedSize;
+        }
+    }
+
+    // Replaces ZipSourceEntry for raw zip-to-zip copies so small entries (< 64 KiB) can be sliced
+    // from a single MappedByteBuffer and coalesced inside BufferedFileChannel without per-entry
+    // fstat + copy_file_range syscalls (b/574603563).
+    private static final class ZipEntrySource extends Source {
+        private final long mPayloadOffset;
+        private FileChannel mSrcChannel;
+        private MappedByteBuffer mSrcMap;
+
+        ZipEntrySource(String destName, Entry entry, long alignment) {
+            super(destName);
+            compressedSize = entry.getCompressedSize();
+            uncompressedSize = entry.getUncompressedSize();
+            crc = entry.getCrc();
+            compressionFlag = entry.getCompressionFlag();
+            externalAttributes = entry.getExternalAttributes();
+            try {
+                versionMadeBy = ENTRY_VERSION_MADE_BY_FIELD.getShort(entry);
+            } catch (ReflectiveOperationException e) {
+                throw new RuntimeException(e);
+            }
+            mPayloadOffset = entry.getPayloadLocation().first;
+            align(alignment);
+        }
+
+        void setInput(FileChannel srcChannel, MappedByteBuffer srcMap) {
+            mSrcChannel = srcChannel;
+            mSrcMap = srcMap;
+        }
+
+        @Override
+        public void prepare() {}
+
+        @Override
+        public long writeTo(ZipWriter writer) throws IOException {
+            if (compressedSize == 0) {
+                return 0;
+            }
+            if (compressedSize < STORED_FILE_THRESHOLD && mSrcMap != null) {
+                ByteBuffer slice = mSrcMap.duplicate();
+                int offset = Math.toIntExact(mPayloadOffset);
+                slice.position(offset).limit(offset + Math.toIntExact(compressedSize));
+                while (slice.hasRemaining()) {
+                    writer.write(slice);
+                }
+                return compressedSize;
+            }
+            transferToWriter(mSrcChannel, mPayloadOffset, compressedSize, writer);
+            return compressedSize;
+        }
+    }
+
+    private static final class ZipRunItem {
+        final Path zipPath;
+        final List<Object> entries;
+        final boolean hasSmallRawCopies;
+        final boolean hasAnyRawCopies;
+
+        ZipRunItem(
+                Path zipPath,
+                List<Object> entries,
+                boolean hasSmallRawCopies,
+                boolean hasAnyRawCopies) {
+            this.zipPath = zipPath;
+            this.entries = entries;
+            this.hasSmallRawCopies = hasSmallRawCopies;
+            this.hasAnyRawCopies = hasAnyRawCopies;
         }
     }
 
@@ -269,11 +575,27 @@ public final class ZipBuilder {
     }
 
     private static void selectFromZip(
-            ZipSource zip, Entry entry, String destName, int compressLevel, long alignment) {
-        int level = compressLevel < 0 ? ZipSource.COMPRESSION_NO_CHANGE : compressLevel;
+            ZipMap zipMap,
+            List<Object> entries,
+            Entry entry,
+            String destName,
+            int compressLevel,
+            long alignment) {
         boolean isStored = compressLevel == 0 || (compressLevel < 0 && !entry.isCompressed());
         long align = (alignment > 0 && isStored) ? alignment : Source.NO_ALIGNMENT;
-        zip.select(entry.getName(), destName, level, align);
+        boolean rawCopy = compressLevel < 0 || (compressLevel == 0 && !entry.isCompressed());
+        if (rawCopy) {
+            entries.add(new ZipEntrySource(destName, entry, align));
+        } else {
+            ZipSource zip;
+            if (!entries.isEmpty() && entries.get(entries.size() - 1) instanceof ZipSource last) {
+                zip = last;
+            } else {
+                zip = new ZipSource(zipMap);
+                entries.add(zip);
+            }
+            zip.select(entry.getName(), destName, compressLevel, align);
+        }
     }
 
     private static Source createLooseSource(
@@ -332,7 +654,7 @@ public final class ZipBuilder {
 
     /**
      * Parses the spec file into a queue of {@code Future<?>} items (yielding either a {@link
-     * Source} or a {@link ZipSource}).
+     * Source} or a {@link ZipRunItem}).
      *
      * <p>To keep the largest stored entries (such as {@code libchrome.so} at the end of the spec)
      * on the critical path as early as possible, the very first item is submitted first (so the
@@ -429,7 +751,7 @@ public final class ZipBuilder {
                     runLines.add(runLine);
                     currentRun = runLines;
                     FutureTask<ZipMap> finalMapFuture = mapFuture;
-                    FutureTask<ZipSource> zipTask =
+                    FutureTask<ZipRunItem> zipTask =
                             new FutureTask<>(
                                     () -> buildZipSource(specPath, finalMapFuture.get(), runLines));
                     if (items.isEmpty()) {
@@ -456,13 +778,14 @@ public final class ZipBuilder {
         return items;
     }
 
-    private static ZipSource buildZipSource(
+    private static ZipRunItem buildZipSource(
             Path specPath, ZipMap zipMap, List<ZipRunLine> runLines) {
-        ZipSource zip = new ZipSource(zipMap);
+        Map<String, Entry> mapEntries = zipMap.getEntries();
+        List<Object> entries = new ArrayList<>();
         Set<String> localSelected = new HashSet<>();
         for (ZipRunLine rl : runLines) {
             if (!rl.srcEntryName.isEmpty()) {
-                Entry entry = zip.entries().get(rl.srcEntryName);
+                Entry entry = mapEntries.get(rl.srcEntryName);
                 if (entry == null) {
                     throw new IllegalArgumentException(
                             specPath
@@ -472,10 +795,10 @@ public final class ZipBuilder {
                                     + rl.rawLine);
                 }
                 localSelected.add(rl.srcEntryName);
-                selectFromZip(zip, entry, rl.destName, rl.compressLevel, rl.alignment);
+                selectFromZip(zipMap, entries, entry, rl.destName, rl.compressLevel, rl.alignment);
             } else if (!rl.skipAllRemaining) {
                 List<Entry> remaining = new ArrayList<>();
-                for (Entry entry : zip.entries().values()) {
+                for (Entry entry : mapEntries.values()) {
                     String name = entry.getName();
                     if (!entry.isDirectory()
                             && !rl.priorSelectedSnapshot.contains(name)
@@ -487,11 +810,29 @@ public final class ZipBuilder {
                 for (Entry entry : remaining) {
                     String name = entry.getName();
                     localSelected.add(name);
-                    selectFromZip(zip, entry, rl.destName + name, rl.compressLevel, rl.alignment);
+                    selectFromZip(
+                            zipMap,
+                            entries,
+                            entry,
+                            rl.destName + name,
+                            rl.compressLevel,
+                            rl.alignment);
                 }
             }
         }
-        return zip;
+        boolean hasSmallRawCopies = false;
+        boolean hasAnyRawCopies = false;
+        for (Object item : entries) {
+            if (item instanceof ZipEntrySource entrySource) {
+                hasAnyRawCopies = true;
+                long size = entrySource.getCompressedSize();
+                if (size > 0 && size < STORED_FILE_THRESHOLD) {
+                    hasSmallRawCopies = true;
+                    break;
+                }
+            }
+        }
+        return new ZipRunItem(zipMap.getPath(), entries, hasSmallRawCopies, hasAnyRawCopies);
     }
 
     private static RunnablesExecutor createExecutor(ExecutorService pool) {
@@ -1031,14 +1372,42 @@ public final class ZipBuilder {
         Files.deleteIfExists(idsigPath(options));
     }
 
+    private static void writeZipRun(Archive archive, ZipRunItem run) throws IOException {
+        if (!run.hasAnyRawCopies) {
+            for (Object entry : run.entries) {
+                archive.add((ZipSource) entry);
+            }
+            return;
+        }
+        try (FileChannel srcChannel = FileChannel.open(run.zipPath, StandardOpenOption.READ)) {
+            long srcSize = srcChannel.size();
+            MappedByteBuffer srcMap =
+                    (run.hasSmallRawCopies && srcSize <= Integer.MAX_VALUE)
+                            ? srcChannel.map(FileChannel.MapMode.READ_ONLY, 0, srcSize)
+                            : null;
+            for (Object entry : run.entries) {
+                if (entry instanceof ZipEntrySource entrySource) {
+                    entrySource.setInput(srcChannel, srcMap);
+                    try {
+                        archive.add(entrySource);
+                    } finally {
+                        entrySource.setInput(null, null);
+                    }
+                } else {
+                    archive.add((ZipSource) entry);
+                }
+            }
+        }
+    }
+
     private static void writeItems(Archive archive, Deque<Future<?>> items) throws Exception {
         // Poll rather than iterate so that each source's in-memory payload can
         // be garbage collected once it has been written.
         Future<?> itemFuture;
         while ((itemFuture = items.pollFirst()) != null) {
             Object item = itemFuture.get();
-            if (item instanceof ZipSource) {
-                archive.add((ZipSource) item);
+            if (item instanceof ZipRunItem run) {
+                writeZipRun(archive, run);
             } else {
                 archive.add((Source) item);
             }
@@ -1060,7 +1429,7 @@ public final class ZipBuilder {
                     fastSign ? pool.submit(() -> createFastSignerState(options)) : null;
 
             if (fastSign) {
-                ZipArchive archive = new ZipArchive(options.output);
+                ZipArchive archive = createBufferedZipArchive(options.output);
                 ZipInfo zipInfo;
                 try {
                     writeItems(archive, items);
@@ -1080,7 +1449,7 @@ public final class ZipBuilder {
             } else {
                 try (Archive archive =
                         options.keystore == null
-                                ? new ZipArchive(options.output)
+                                ? createBufferedZipArchive(options.output)
                                 : createV1Archive(options, pool)) {
                     writeItems(archive, items);
                 } catch (Exception e) {
