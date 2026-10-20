@@ -37,7 +37,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -170,6 +169,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
                            views::BubbleBorder::Arrow::TOP_RIGHT,
                            views::BubbleBorder::DIALOG_SHADOW,
                            true),
+      AnimationDelegateViews(this),
       menu_model_(model.GetAnchoredMessageMenuModel()),
       delegate_(delegate) {
   set_close_on_deactivate(base::FeatureList::IsEnabled(
@@ -180,6 +180,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   set_corner_radius(kAnchoredMessageHeight / 2);
   set_margins(gfx::Insets());
   set_highlight_button_when_shown(false);
+  slide_animation_.SetTweenType(kAnchoredMessageAnimationTween);
 
   animating_layout_ =
       SetLayoutManager(std::make_unique<views::AnimatingLayoutManager>());
@@ -305,13 +306,11 @@ void AnchoredMessageBubbleView::UpdateContent(
 
 void AnchoredMessageBubbleView::AddedToWidget() {
   views::View::AddedToWidget();
-  // Animate the frame view so the border and shadow move with the contents.
+  // Fade the frame view so the border and shadow fade with the contents.
   views::View* frame = GetBubbleFrameView();
   frame->SetPaintToLayer();
   frame->layer()->SetFillsBoundsOpaquely(false);
   // Start hidden until AnimateIn().
-  frame->layer()->SetTransform(
-      gfx::Transform::MakeTranslation(0, kAnchoredMessageAnimationYOffset));
   frame->layer()->SetOpacity(0.0f);
 }
 
@@ -319,40 +318,47 @@ void AnchoredMessageBubbleView::AnimateIn() {
   // Catch up with anchor moves ignored while animating out.
   if (is_closing_) {
     is_closing_ = false;
-    BubbleDialogDelegate::OnAnchorBoundsChanged();
+    OnAnchorBoundsChanged();
   }
 
-  views::View* frame = GetBubbleFrameView();
+  const base::TimeDelta duration =
+      gfx::Animation::RichAnimationDuration(kAnchoredMessageAnimateInDuration);
+  slide_animation_.SetSlideDuration(duration);
+  slide_animation_.Show();
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
-      .SetDuration(gfx::Animation::RichAnimationDuration(
-          kAnchoredMessageAnimateInDuration))
-      .SetTransform(frame, gfx::Transform(), kAnchoredMessageAnimationTween)
-      .SetOpacity(frame, 1.0f, kAnchoredMessageAnimationTween);
+      .SetDuration(duration)
+      .SetOpacity(GetBubbleFrameView(), 1.0f, kAnchoredMessageAnimationTween);
 }
 
 void AnchoredMessageBubbleView::AnimateOut() {
   if (is_closing_) {
     return;
   }
+  closing_bounds_ = BubbleDialogDelegate::GetBubbleBounds();
   is_closing_ = true;
 
-  views::View* frame = GetBubbleFrameView();
+  const base::TimeDelta duration =
+      gfx::Animation::RichAnimationDuration(kAnchoredMessageAnimateOutDuration);
+  if (duration.is_positive()) {
+    slide_animation_.SetSlideDuration(duration);
+    slide_animation_.Hide();
+  }
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .OnEnded(base::BindOnce(&AnchoredMessageBubbleView::CloseWidget,
                               weak_factory_.GetWeakPtr()))
       .Once()
-      .SetDuration(gfx::Animation::RichAnimationDuration(
-          kAnchoredMessageAnimateOutDuration))
-      .SetTransform(
-          frame,
-          gfx::Transform::MakeTranslation(0, kAnchoredMessageAnimationYOffset),
-          kAnchoredMessageAnimationTween)
-      .SetOpacity(frame, 0.0f, kAnchoredMessageAnimationTween);
+      .SetDuration(duration)
+      .SetOpacity(GetBubbleFrameView(), 0.0f, kAnchoredMessageAnimationTween);
+}
+
+void AnchoredMessageBubbleView::AnimationProgressed(
+    const gfx::Animation* animation) {
+  SizeToContents();
 }
 
 void AnchoredMessageBubbleView::CloseWidget() {
@@ -416,12 +422,15 @@ gfx::Rect AnchoredMessageBubbleView::GetAnchorRect() const {
   return anchor_rect;
 }
 
-void AnchoredMessageBubbleView::OnAnchorBoundsChanged() {
+gfx::Rect AnchoredMessageBubbleView::GetBubbleBounds() {
   // Hold position while animating out, since hiding the page action moves the
   // anchor.
-  if (!is_closing_) {
-    BubbleDialogDelegate::OnAnchorBoundsChanged();
-  }
+  gfx::Rect bounds =
+      is_closing_ ? closing_bounds_ : BubbleDialogDelegate::GetBubbleBounds();
+  bounds.Offset(
+      0, gfx::Tween::IntValueBetween(slide_animation_.GetCurrentValue(),
+                                     kAnchoredMessageAnimationYOffset, 0));
+  return bounds;
 }
 
 views::View* AnchoredMessageBubbleView::GetContentsView() {

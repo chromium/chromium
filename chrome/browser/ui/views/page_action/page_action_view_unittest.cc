@@ -47,7 +47,6 @@
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
-#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/animation/ink_drop.h"
@@ -834,15 +833,12 @@ TEST_F(PageActionViewTest, AnchoredMessageAnimation) {
   ASSERT_TRUE(bubble);
   views::View* frame = bubble->GetBubbleFrameView();
   ASSERT_TRUE(frame->layer());
-  EXPECT_EQ(frame->layer()->GetTargetTransform(), gfx::Transform());
   EXPECT_EQ(frame->layer()->GetTargetOpacity(), 1.0f);
 
   EXPECT_CALL(*model(), ShouldShowAnchoredMessage())
       .WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
 
-  EXPECT_EQ(frame->layer()->GetTargetTransform(),
-            gfx::Transform::MakeTranslation(0, -16));
   EXPECT_EQ(frame->layer()->GetTargetOpacity(), 0.0f);
   EXPECT_FALSE(page_action_view()->IsAnchoredMessageVisible());
   EXPECT_EQ(page_action_view()->GetAnchoredMessageForTesting(), bubble);

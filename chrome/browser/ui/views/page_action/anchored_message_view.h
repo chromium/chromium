@@ -19,6 +19,9 @@
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -45,7 +48,8 @@ class MultiIconButton;
 // AnchoredMessageBubbleView is the view displaying the anchored message for a
 // given page action. It is created and destroyed dynamically.
 class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
-                                  public views::View {
+                                  public views::View,
+                                  public views::AnimationDelegateViews {
   METADATA_HEADER(AnchoredMessageBubbleView, views::View)
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageBubbleId);
@@ -77,7 +81,7 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   views::View* GetContentsView() override;
   bool CanActivate() const override;
   gfx::Rect GetAnchorRect() const override;
-  void OnAnchorBoundsChanged() override;
+  gfx::Rect GetBubbleBounds() override;
 
   // views::View:
   views::Widget* GetWidget() override;
@@ -103,6 +107,9 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   void OnThemeChanged() override;
 
  private:
+  // views::AnimationDelegateViews:
+  void AnimationProgressed(const gfx::Animation* animation) override;
+
   void ChipCallback();
   void MenuButtonPressed();
   void OnMenuClosed();
@@ -135,6 +142,10 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
   bool expanded_ = false;
   bool is_closing_ = false;
+  gfx::Rect closing_bounds_;
+  // Slides the widget, rather than its contents, so the widget's bounds don't
+  // clip the bubble.
+  gfx::SlideAnimation slide_animation_{this};
   std::optional<AnchoredMessageExpandableContent> expandable_content_;
   const raw_ref<Delegate> delegate_;
 

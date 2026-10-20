@@ -28,7 +28,6 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/menus/simple_menu_model.h"
@@ -715,14 +714,11 @@ TEST_F(AnchoredMessageBubbleViewTest, AnimateOutClosesWidgetWhenEnded) {
   EXPECT_FALSE(frame->layer()->fills_bounds_opaquely());
 
   bubble_view_->AnimateIn();
-  EXPECT_EQ(frame->layer()->GetTargetTransform(), gfx::Transform());
   EXPECT_EQ(frame->layer()->GetTargetOpacity(), 1.0f);
   frame->layer()->GetAnimator()->StopAnimating();
 
   bubble_view_->AnimateOut();
   EXPECT_TRUE(bubble_view_->is_closing());
-  EXPECT_EQ(frame->layer()->GetTargetTransform(),
-            gfx::Transform::MakeTranslation(0, -16));
   EXPECT_EQ(frame->layer()->GetTargetOpacity(), 0.0f);
   EXPECT_FALSE(bubble_widget_->IsClosed());
 
@@ -766,6 +762,42 @@ TEST_F(AnchoredMessageBubbleViewTest,
 
   bubble_view_->AnimateOut();
   EXPECT_TRUE(bubble_widget_->IsClosed());
+}
+
+TEST_F(AnchoredMessageBubbleViewTest, AnimationsSlideWidget) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+  const gfx::Rect raised_bounds = bubble_widget_->GetWindowBoundsInScreen();
+  const gfx::Rect shown_bounds = raised_bounds + gfx::Vector2d(0, 16);
+
+  bubble_view_->AnimateIn();
+  gfx::AnimationContainerTestApi(bubble_view_->container())
+      .IncrementTime(base::Milliseconds(250));
+  EXPECT_EQ(bubble_widget_->GetWindowBoundsInScreen(), shown_bounds);
+
+  bubble_view_->AnimateOut();
+  gfx::AnimationContainerTestApi(bubble_view_->container())
+      .IncrementTime(base::Milliseconds(150));
+  EXPECT_EQ(bubble_widget_->GetWindowBoundsInScreen(), raised_bounds);
+}
+
+TEST_F(AnchoredMessageBubbleViewTest, AnimationsSnapWithoutRichAnimations) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  const gfx::Rect shown_bounds =
+      bubble_widget_->GetWindowBoundsInScreen() + gfx::Vector2d(0, 16);
+
+  bubble_view_->AnimateIn();
+  EXPECT_EQ(bubble_widget_->GetWindowBoundsInScreen(), shown_bounds);
+  EXPECT_EQ(bubble_view_->GetBubbleFrameView()->layer()->opacity(), 1.0f);
+
+  bubble_view_->AnimateOut();
+  EXPECT_TRUE(bubble_widget_->IsClosed());
+  EXPECT_EQ(bubble_widget_->GetWindowBoundsInScreen(), shown_bounds);
 }
 
 }  // namespace page_actions
