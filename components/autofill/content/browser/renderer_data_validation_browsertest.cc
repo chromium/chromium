@@ -19,6 +19,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace autofill {
@@ -29,6 +30,7 @@ class RendererDataValidationBrowserTest : public content::ContentBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::ContentBrowserTest::SetUpCommandLine(command_line);
     content::IsolateAllSitesForTesting(command_line);
+    command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1.0");
   }
 
   void SetUpOnMainThread() override {
