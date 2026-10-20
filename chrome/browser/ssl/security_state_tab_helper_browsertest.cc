@@ -997,7 +997,7 @@ class PKPModelClientTest : public SecurityStateTabHelperTest {
         browser()->GetProfile()->GetDefaultStoragePartition();
     {
       base::test::TestFuture<void> future;
-      partition->GetNetworkContext()->EnableStaticKeyPinningForTesting(
+      partition->GetNetworkContext()->ReinitializeKeyPinningForTesting(
           future.GetCallback());
       EXPECT_TRUE(future.Wait());
     }

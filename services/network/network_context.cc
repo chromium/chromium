@@ -103,6 +103,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_transaction_factory.h"
+#include "net/http/transport_security_state.h"
 #include "net/log/net_log_source_type.h"
 #include "net/net_buildflags.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
@@ -2509,12 +2510,11 @@ void NetworkContext::DeleteDynamicDataForHost(
       transport_security_state->DeleteDynamicDataForHost(host));
 }
 
-void NetworkContext::EnableStaticKeyPinningForTesting(
-    EnableStaticKeyPinningForTestingCallback callback) {
+void NetworkContext::ReinitializeKeyPinningForTesting(
+    ReinitializeKeyPinningForTestingCallback callback) {
   net::TransportSecurityState* state =
       url_request_context_->transport_security_state();
-  state->EnableStaticPinsForTesting();
-  state->SetPinningListAlwaysTimelyForTesting(true);
+  state->ReinitializePinningForTesting();
   std::move(callback).Run();
 }
 

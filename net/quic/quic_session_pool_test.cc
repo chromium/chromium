@@ -135,6 +135,10 @@
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 #endif
 
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+#include "net/cert/key_pinning_state_chrome_test_util.h"
+#endif
+
 using std::string;
 
 namespace net::test {
@@ -2420,6 +2424,14 @@ TEST_P(QuicSessionPoolTest, HttpsPooling) {
   socket_data.ExpectAllWriteDataConsumed();
 }
 
+// The PKP tests depend on ScopedKeyPinningStateChromeDefaults and
+// KeyPinningStateChrome which are only available when the builtin pin list is
+// compiled in. We could also make a separate version of these tests that use
+// the dynamic PKP path for testing on cronet, but it's not really worth the
+// effort, especially since this is only a temporary state. Once PKP refactor
+// is complete and pinning is only done in cert verification, then these tests
+// can just configure the mock cert verifier to test the desired pkp results.
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 TEST_P(QuicSessionPoolTest, HttpsPoolingWithMatchingPins) {
   Initialize();
   MockQuicData socket_data(version_);
@@ -2429,8 +2441,8 @@ TEST_P(QuicSessionPoolTest, HttpsPoolingWithMatchingPins) {
 
   url::SchemeHostPort server1(url::kHttpsScheme, kDefaultServerHostName, 443);
   url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName, 443);
-  transport_security_state_.EnableStaticPinsForTesting();
-  ScopedTransportSecurityStateSource scoped_security_state_source;
+  ScopedKeyPinningStateChromeDefaults scoped_key_pinning_enable;
+  transport_security_state_.ReinitializePinningForTesting();
 
   std::optional<HashValue> primary_pin = HashValue::FromString(
       "sha256/Nn8jk5By4Vkq6BeOVZ7R7AC6XUUBZsWmUbJR1f1Y5FY=");
@@ -2482,9 +2494,8 @@ TEST_P(QuicSessionPoolTest, NoHttpsPoolingWithDifferentPins) {
 
   url::SchemeHostPort server1(url::kHttpsScheme, kDefaultServerHostName, 443);
   url::SchemeHostPort server2(url::kHttpsScheme, kServer2HostName, 443);
-  transport_security_state_.EnableStaticPinsForTesting();
-  transport_security_state_.SetPinningListAlwaysTimelyForTesting(true);
-  ScopedTransportSecurityStateSource scoped_security_state_source;
+  ScopedKeyPinningStateChromeDefaults scoped_key_pinning_enable;
+  transport_security_state_.ReinitializePinningForTesting();
 
   ProofVerifyDetailsChromium verify_details1 = DefaultProofVerifyDetails();
   uint8_t bad_pin = 3;
@@ -2526,6 +2537,7 @@ TEST_P(QuicSessionPoolTest, NoHttpsPoolingWithDifferentPins) {
   socket_data2.ExpectAllReadDataConsumed();
   socket_data2.ExpectAllWriteDataConsumed();
 }
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 TEST_P(QuicSessionPoolTest, Goaway) {
   Initialize();
