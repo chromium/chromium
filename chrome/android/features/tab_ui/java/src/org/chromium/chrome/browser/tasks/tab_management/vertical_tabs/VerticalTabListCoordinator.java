@@ -786,16 +786,16 @@ public class VerticalTabListCoordinator {
                     new AppHeaderObserver() {
                         @Override
                         public void onAppHeaderStateChanged(AppHeaderState newState) {
-                            updateSpacerVisibility(newState);
+                            updateSpacerHeight(newState);
                         }
 
                         @Override
                         public void onDesktopWindowingModeChanged(boolean isInDesktopWindow) {
-                            updateSpacerVisibility(mDesktopWindowStateManager.getAppHeaderState());
+                            updateSpacerHeight(mDesktopWindowStateManager.getAppHeaderState());
                         }
                     };
             mDesktopWindowStateManager.addObserver(mAppHeaderObserver);
-            updateSpacerVisibility(mDesktopWindowStateManager.getAppHeaderState());
+            updateSpacerHeight(mDesktopWindowStateManager.getAppHeaderState());
         } else {
             mAppHeaderObserver = null;
         }
@@ -2530,9 +2530,12 @@ public class VerticalTabListCoordinator {
                         && mCollapseButtonContextMenuCoordinator.isMenuShowing());
     }
 
-    private void updateSpacerVisibility(@Nullable AppHeaderState appHeaderState) {
-        boolean isInDesktopWindow = appHeaderState != null && appHeaderState.isInDesktopWindow();
-        mContainerView.setDesktopWindowSpacerVisible(isInDesktopWindow);
+    private void updateSpacerHeight(@Nullable AppHeaderState appHeaderState) {
+        int spacerHeight =
+                appHeaderState != null && appHeaderState.isInDesktopWindow()
+                        ? appHeaderState.getAppHeaderHeight()
+                        : 0;
+        mContainerView.setDesktopWindowSpacerHeight(spacerHeight);
     }
 
     // Only show the separator if 1. The rail uses collapsed positioning (collapsed or expanded for

@@ -430,10 +430,27 @@ public class VerticalTabRailLayoutUnitTest {
     @Test
     public void testSetDesktopWindowSpacerVisible() {
         View spacer = mRailLayout.findViewById(R.id.desktop_window_spacer);
-        mRailLayout.setDesktopWindowSpacerVisible(true);
+        mRailLayout.setDesktopWindowSpacerVisibleForTesting(true);
         assertEquals(View.VISIBLE, spacer.getVisibility());
 
-        mRailLayout.setDesktopWindowSpacerVisible(false);
+        mRailLayout.setDesktopWindowSpacerVisibleForTesting(false);
+        assertEquals(View.GONE, spacer.getVisibility());
+    }
+
+    @Test
+    public void testSetDesktopWindowSpacerHeight() {
+        View spacer = mRailLayout.findViewById(R.id.desktop_window_spacer);
+
+        mRailLayout.setDesktopWindowSpacerHeight(48);
+        assertEquals(View.VISIBLE, spacer.getVisibility());
+        assertEquals(48, spacer.getLayoutParams().height);
+
+        // Fullscreen / split-screen with status bar + caption bar height.
+        mRailLayout.setDesktopWindowSpacerHeight(72);
+        assertEquals(View.VISIBLE, spacer.getVisibility());
+        assertEquals(72, spacer.getLayoutParams().height);
+
+        mRailLayout.setDesktopWindowSpacerHeight(0);
         assertEquals(View.GONE, spacer.getVisibility());
     }
 

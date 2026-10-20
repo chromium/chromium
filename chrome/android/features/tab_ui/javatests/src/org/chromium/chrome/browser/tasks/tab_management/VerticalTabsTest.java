@@ -658,7 +658,7 @@ public class VerticalTabsTest {
                 () -> {
                     VerticalTabRailLayout railLayout =
                             cta.findViewById(R.id.vertical_tab_rail_container);
-                    railLayout.setDesktopWindowSpacerVisible(/* visible= */ true);
+                    railLayout.setDesktopWindowSpacerVisibleForTesting(/* visible= */ true);
                 });
 
         // 3. Verify the spacer transitions to VISIBLE.
@@ -669,7 +669,7 @@ public class VerticalTabsTest {
                 () -> {
                     VerticalTabRailLayout railLayout =
                             cta.findViewById(R.id.vertical_tab_rail_container);
-                    railLayout.setDesktopWindowSpacerVisible(/* visible= */ false);
+                    railLayout.setDesktopWindowSpacerVisibleForTesting(/* visible= */ false);
                 });
 
         onView(withId(R.id.desktop_window_spacer)).check(matches(withEffectiveVisibility(GONE)));
@@ -679,7 +679,7 @@ public class VerticalTabsTest {
                 () -> {
                     VerticalTabRailLayout railLayout =
                             cta.findViewById(R.id.vertical_tab_rail_container);
-                    railLayout.setDesktopWindowSpacerVisible(initialSpacerVisible);
+                    railLayout.setDesktopWindowSpacerVisibleForTesting(initialSpacerVisible);
                 });
     }
 

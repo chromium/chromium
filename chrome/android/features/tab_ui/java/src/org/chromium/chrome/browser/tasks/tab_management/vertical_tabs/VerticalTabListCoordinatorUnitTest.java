@@ -1478,7 +1478,7 @@ public class VerticalTabListCoordinatorUnitTest {
         var appHeaderState =
                 new AppHeaderState(
                         new Rect(0, 0, 100, 100),
-                        new Rect(10, 0, 80, 100),
+                        new Rect(10, 0, 80, 48),
                         /* isInDesktopWindow= */ true);
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
 
@@ -1496,10 +1496,29 @@ public class VerticalTabListCoordinatorUnitTest {
         View spacer = view.findViewById(R.id.desktop_window_spacer);
         assertNotNull("Spacer view should exist.", spacer);
         assertEquals("Spacer view should be visible.", View.VISIBLE, spacer.getVisibility());
+        assertEquals(
+                "Spacer height should match app header height.",
+                48,
+                spacer.getLayoutParams().height);
+
+        // Enter fullscreen / split-screen where caption controls are offset below the status bar.
+        var fullscreenAppHeaderState =
+                new AppHeaderState(
+                        new Rect(0, 0, 100, 100),
+                        new Rect(10, 24, 80, 72),
+                        /* isInDesktopWindow= */ true);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(fullscreenAppHeaderState);
+        observer.onAppHeaderStateChanged(fullscreenAppHeaderState);
+
+        assertEquals("Spacer view should remain visible.", View.VISIBLE, spacer.getVisibility());
+        assertEquals(
+                "Spacer height should include status bar offset and caption controls height.",
+                72,
+                spacer.getLayoutParams().height);
 
         // Exit desktop window.
         var appHeaderState2 =
-                new AppHeaderState(new Rect(0, 0, 100, 100), new Rect(10, 0, 80, 100), false);
+                new AppHeaderState(new Rect(0, 0, 100, 100), new Rect(10, 0, 80, 48), false);
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState2);
         observer.onAppHeaderStateChanged(appHeaderState2);
 

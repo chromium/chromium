@@ -275,8 +275,25 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     }
 
     /** Sets the visibility of the desktop window top spacer. */
-    public void setDesktopWindowSpacerVisible(boolean visible) {
+    public void setDesktopWindowSpacerVisibleForTesting(boolean visible) {
         mSpacerView.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Sets the height and visibility of the desktop window top spacer. The spacer is shown when
+     * {@code heightPx > 0} and hidden when {@code heightPx <= 0}.
+     */
+    public void setDesktopWindowSpacerHeight(@Px int heightPx) {
+        if (heightPx > 0) {
+            ViewGroup.LayoutParams lp = mSpacerView.getLayoutParams();
+            if (lp.height != heightPx) {
+                lp.height = heightPx;
+                mSpacerView.setLayoutParams(lp);
+            }
+            mSpacerView.setVisibility(View.VISIBLE);
+        } else {
+            mSpacerView.setVisibility(View.GONE);
+        }
     }
 
     /** Sets the listener that receives the raw pointer events dispatched to the rail. */
