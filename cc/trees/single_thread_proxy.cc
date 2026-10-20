@@ -333,6 +333,12 @@ void SingleThreadProxy::SetTargetLocalSurfaceId(
   host_impl_->SetTargetLocalSurfaceId(target_local_surface_id);
 }
 
+void SingleThreadProxy::SetMemoryPolicy(const ManagedMemoryPolicy& policy) {
+  DCHECK(task_runner_provider_->IsMainThread());
+  DebugScopedSetImplThread impl(task_runner_provider_);
+  host_impl_->SetMemoryPolicy(policy);
+}
+
 void SingleThreadProxy::SetUnboundedFrameSink(
     std::unique_ptr<LayerTreeFrameSink> unbounded_frame_sink,
     const viz::LocalSurfaceId& local_surface_id) {

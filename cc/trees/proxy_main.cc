@@ -773,6 +773,13 @@ void ProxyMain::SetTargetLocalSurfaceId(
                                 target_local_surface_id));
 }
 
+void ProxyMain::SetMemoryPolicy(const ManagedMemoryPolicy& policy) {
+  DCHECK(IsMainThread());
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyImpl::SetMemoryPolicyOnImpl,
+                                base::Unretained(proxy_impl_.get()), policy));
+}
+
 void ProxyMain::DetachInputDelegateAndRenderFrameObserver() {
   DCHECK(IsMainThread());
   auto completion_event = std::make_unique<CompletionEvent>(

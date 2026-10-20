@@ -1765,6 +1765,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUnloadBlocklisted);
 
+// When enabled, recompute the compositor's ManagedMemoryPolicy when the
+// original screen size or device scale factor changes.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kUpdateCompositorMemoryPolicyOnScreenChange);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUrgentMainFrameForInput);
 
 // If enabled, URLPattern will use standard defined dummy URL canonicalization

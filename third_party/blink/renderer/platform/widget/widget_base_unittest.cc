@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "cc/trees/layer_tree_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/widget/compositing/layer_tree_settings.h"
 #include "third_party/blink/renderer/platform/widget/compositing/test/stub_widget_base_client.h"
 #include "ui/display/screen_info.h"
 #include "ui/display/screen_infos.h"
@@ -40,20 +42,36 @@ class FlushCountingTestingPlatformSupport : public TestingPlatformSupport {
 
 class TestWidgetBaseClient : public StubWidgetBaseClient {
  public:
-  // WidgetBaseClient:
-  const display::ScreenInfos& GetOriginalScreenInfos() override {
-    return screen_infos_;
+  void set_emulated_original_screen_infos(
+      std::optional<display::ScreenInfos> screen_infos) {
+    emulated_original_screen_infos_ = std::move(screen_infos);
   }
 
+  // WidgetBaseClient:
+  const display::ScreenInfos& GetOriginalScreenInfos() override {
+    if (emulated_original_screen_infos_) {
+      return *emulated_original_screen_infos_;
+    }
+    if (widget_base_ && !widget_base_->screen_infos().screen_infos.empty()) {
+      return widget_base_->screen_infos();
+    }
+    return default_screen_infos_;
+  }
+
+  void set_widget_base(WidgetBase* widget_base) { widget_base_ = widget_base; }
+
  private:
-  display::ScreenInfos screen_infos_{display::ScreenInfo()};
+  raw_ptr<WidgetBase> widget_base_ = nullptr;
+  display::ScreenInfos default_screen_infos_{display::ScreenInfo()};
+  std::optional<display::ScreenInfos> emulated_original_screen_infos_;
 };
 
 class WidgetBaseTest : public testing::Test {
  public:
   explicit WidgetBaseTest(
       const std::vector<base::test::FeatureRef>& disabled_features = {})
-      : feature_list_({features::kDelayLayerTreeViewDeletionOnLocalSwap},
+      : feature_list_({features::kDelayLayerTreeViewDeletionOnLocalSwap,
+                       features::kUpdateCompositorMemoryPolicyOnScreenChange},
                       disabled_features) {}
 
   void SetUp() override {
@@ -67,10 +85,16 @@ class WidgetBaseTest : public testing::Test {
         scheduler::GetSingleThreadTaskRunnerForTesting(), /*hidden=*/true,
         /*never_composited=*/false, /*is_embedded=*/false,
         /*is_for_scalable_page=*/false);
+    client_.set_widget_base(widget_base_.get());
     widget_base_->InitializeCompositing(
         *page_scheduler_, client_.GetOriginalScreenInfos(),
         /*settings=*/nullptr, /*frame_widget_input_handler=*/nullptr,
         /*previous_widget=*/nullptr);
+  }
+
+  void TearDown() override {
+    client_.set_widget_base(nullptr);
+    widget_base_.reset();
   }
 
  protected:
@@ -95,6 +119,7 @@ TEST_F(WidgetBaseTest, ReleasingLayerTreeViewFlushesGpuChannel) {
   const base::TimeDelta delay =
       features::kDelayLayerTreeViewDeletionOnLocalSwapTaskDelayParam.Get();
   widget_base_->Shutdown(/*delay_release=*/true);
+  client_.set_widget_base(nullptr);
   widget_base_.reset();
 
   task_environment_.FastForwardBy(delay - base::Milliseconds(1));
@@ -113,12 +138,127 @@ class WidgetBaseKillSwitchTest : public WidgetBaseTest {
 
 TEST_F(WidgetBaseKillSwitchTest, ReleasingLayerTreeViewDoesNotFlushGpuChannel) {
   widget_base_->Shutdown(/*delay_release=*/true);
+  client_.set_widget_base(nullptr);
   widget_base_.reset();
 
   task_environment_.FastForwardBy(
       features::kDelayLayerTreeViewDeletionOnLocalSwapTaskDelayParam.Get());
   EXPECT_EQ(platform_->flush_count(), 0);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(WidgetBaseTest, UpdateScreenInfoUpdatesLayerTreeHostMemoryPolicy) {
+  display::ScreenInfo external_screen_info;
+  external_screen_info.rect = gfx::Rect(0, 0, 3008, 1692);
+  external_screen_info.device_scale_factor = 2.0f;
+  const display::ScreenInfos external_screen_infos(external_screen_info);
+  widget_base_->UpdateScreenInfo(external_screen_infos);
+
+  const cc::ManagedMemoryPolicy expected_external_policy =
+      GetGpuMemoryPolicy(widget_base_->LayerTreeHost()->memory_policy(),
+                         external_screen_info.rect.size(),
+                         external_screen_info.device_scale_factor);
+  EXPECT_EQ(expected_external_policy,
+            widget_base_->LayerTreeHost()->memory_policy());
+
+  // Emulating a smaller mobile screen while GetOriginalScreenInfos() remains on
+  // the external display should keep the physical display's memory policy.
+  client_.set_emulated_original_screen_infos(external_screen_infos);
+  display::ScreenInfo emulated_mobile_screen_info;
+  emulated_mobile_screen_info.rect = gfx::Rect(0, 0, 375, 667);
+  emulated_mobile_screen_info.device_scale_factor = 2.0f;
+  widget_base_->UpdateScreenInfo(
+      display::ScreenInfos(emulated_mobile_screen_info));
+  EXPECT_EQ(expected_external_policy,
+            widget_base_->LayerTreeHost()->memory_policy());
+  client_.set_emulated_original_screen_infos(std::nullopt);
+
+  display::ScreenInfo internal_screen_info;
+  internal_screen_info.rect = gfx::Rect(0, 0, 1440, 900);
+  internal_screen_info.device_scale_factor = 2.0f;
+  const display::ScreenInfos internal_screen_infos(internal_screen_info);
+  widget_base_->UpdateScreenInfo(internal_screen_infos);
+
+  const cc::ManagedMemoryPolicy expected_internal_policy =
+      GetGpuMemoryPolicy(widget_base_->LayerTreeHost()->memory_policy(),
+                         internal_screen_info.rect.size(),
+                         internal_screen_info.device_scale_factor);
+  EXPECT_EQ(expected_internal_policy,
+            widget_base_->LayerTreeHost()->memory_policy());
+  EXPECT_LT(expected_internal_policy.bytes_limit_when_visible,
+            expected_external_policy.bytes_limit_when_visible);
+
+  widget_base_->Shutdown(/*delay_release=*/false);
+}
+
+TEST_F(WidgetBaseTest,
+       InitializeCompositingWithPreviousWidgetUpdatesMemoryPolicy) {
+  display::ScreenInfo internal_screen_info;
+  internal_screen_info.rect = gfx::Rect(0, 0, 1440, 900);
+  internal_screen_info.device_scale_factor = 2.0f;
+  widget_base_->UpdateScreenInfo(display::ScreenInfos(internal_screen_info));
+
+  const cc::ManagedMemoryPolicy expected_internal_policy =
+      GetGpuMemoryPolicy(widget_base_->LayerTreeHost()->memory_policy(),
+                         internal_screen_info.rect.size(),
+                         internal_screen_info.device_scale_factor);
+  EXPECT_EQ(expected_internal_policy,
+            widget_base_->LayerTreeHost()->memory_policy());
+
+  display::ScreenInfo external_screen_info;
+  external_screen_info.rect = gfx::Rect(0, 0, 3008, 1692);
+  external_screen_info.device_scale_factor = 2.0f;
+  const display::ScreenInfos external_screen_infos(external_screen_info);
+
+  mojo::AssociatedRemote<mojom::blink::WidgetHost> next_widget_host;
+  std::ignore = next_widget_host.BindNewEndpointAndPassDedicatedReceiver();
+  mojo::AssociatedRemote<mojom::blink::Widget> next_widget_remote;
+  auto next_widget = std::make_unique<WidgetBase>(
+      &client_, next_widget_host.Unbind(),
+      next_widget_remote.BindNewEndpointAndPassDedicatedReceiver(),
+      scheduler::GetSingleThreadTaskRunnerForTesting(), /*hidden=*/true,
+      /*never_composited=*/false, /*is_embedded=*/false,
+      /*is_for_scalable_page=*/false);
+  client_.set_widget_base(next_widget.get());
+  next_widget->InitializeCompositing(*page_scheduler_, external_screen_infos,
+                                     /*settings=*/nullptr,
+                                     /*frame_widget_input_handler=*/nullptr,
+                                     /*previous_widget=*/widget_base_.get());
+
+  const cc::ManagedMemoryPolicy expected_external_policy =
+      GetGpuMemoryPolicy(next_widget->LayerTreeHost()->memory_policy(),
+                         external_screen_info.rect.size(),
+                         external_screen_info.device_scale_factor);
+  EXPECT_EQ(expected_external_policy,
+            next_widget->LayerTreeHost()->memory_policy());
+
+  client_.set_widget_base(nullptr);
+  widget_base_->Shutdown(/*delay_release=*/false);
+  next_widget->Shutdown(/*delay_release=*/false);
+}
+
+class WidgetBaseMemoryPolicyKillSwitchTest : public WidgetBaseTest {
+ public:
+  WidgetBaseMemoryPolicyKillSwitchTest()
+      : WidgetBaseTest(
+            {features::kUpdateCompositorMemoryPolicyOnScreenChange}) {}
+};
+
+TEST_F(WidgetBaseMemoryPolicyKillSwitchTest,
+       UpdateScreenInfoDoesNotUpdateLayerTreeHostMemoryPolicyWhenDisabled) {
+  const cc::ManagedMemoryPolicy initial_policy =
+      widget_base_->LayerTreeHost()->memory_policy();
+
+  display::ScreenInfo external_screen_info;
+  external_screen_info.rect = gfx::Rect(0, 0, 3008, 1692);
+  external_screen_info.device_scale_factor = 2.0f;
+  widget_base_->UpdateScreenInfo(display::ScreenInfos(external_screen_info));
+
+  EXPECT_EQ(initial_policy, widget_base_->LayerTreeHost()->memory_policy());
+
+  widget_base_->Shutdown(/*delay_release=*/false);
+}
+#endif
 
 }  // namespace
 }  // namespace blink

@@ -96,6 +96,20 @@ void OnDidPresentForceDrawFrame(
   std::move(callback).Run();
 }
 
+bool ShouldUpdateCompositorMemoryPolicyOnScreenChange(
+    const display::ScreenInfo& previous,
+    const display::ScreenInfo& current) {
+#if BUILDFLAG(IS_ANDROID)
+  if (Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView()) {
+    return false;
+  }
+#endif
+  return (previous.rect.size() != current.rect.size() ||
+          previous.device_scale_factor != current.device_scale_factor) &&
+         base::FeatureList::IsEnabled(
+             features::kUpdateCompositorMemoryPolicyOnScreenChange);
+}
+
 bool IsDateTimeInput(ui::TextInputType type) {
   return type == ui::TEXT_INPUT_TYPE_DATE ||
          type == ui::TEXT_INPUT_TYPE_DATE_TIME ||
@@ -222,6 +236,15 @@ void WidgetBase::InitializeCompositing(
     CHECK(!settings);
     AssertAreCompatible(*this, *previous_widget);
 
+    // Preserve `previous_widget`'s `screen_infos_` until `UpdateScreenInfo`
+    // below so that any screen change since `previous_widget` was last updated
+    // is detected.
+    screen_infos_ =
+        ShouldUpdateCompositorMemoryPolicyOnScreenChange(
+            previous_widget->screen_infos_.current(), screen_infos.current())
+            ? previous_widget->screen_infos_
+            : screen_infos;
+
     // `screen_infos` is applied to this LayerTreeView below.
     previous_widget->DisconnectLayerTreeView(this, /*delay_release=*/false);
     CHECK(layer_tree_view_);
@@ -243,9 +266,9 @@ void WidgetBase::InitializeCompositing(
             : nullptr,
         cc::CategorizedWorkerPool::GetOrCreate(
             &BlinkCategorizedWorkerPoolDelegate::Get()));
+    screen_infos_ = screen_infos;
   }
 
-  screen_infos_ = screen_infos;
   max_render_buffer_bounds_sw_ =
       LayerTreeHost()->GetSettings().max_render_buffer_bounds_for_sw;
   FrameWidget* frame_widget = client_->FrameWidget();
@@ -1916,6 +1939,17 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
 
   local_surface_id_from_parent_ = new_local_surface_id;
   screen_infos_ = new_screen_infos;
+
+  const display::ScreenInfo& previous_original_screen_info =
+      previous_original_screen_infos.current();
+  const display::ScreenInfo& new_original_screen_info =
+      client_->GetOriginalScreenInfos().current();
+  if (ShouldUpdateCompositorMemoryPolicyOnScreenChange(
+          previous_original_screen_info, new_original_screen_info)) {
+    LayerTreeHost()->SetMemoryPolicy(GetGpuMemoryPolicy(
+        LayerTreeHost()->memory_policy(), new_original_screen_info.rect.size(),
+        new_original_screen_info.device_scale_factor));
+  }
 
   // Note carefully that the DSF specified in |new_screen_info| is not the
   // DSF used by the compositor during device emulation!

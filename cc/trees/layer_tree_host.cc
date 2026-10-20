@@ -151,6 +151,7 @@ LayerTreeHost::LayerTreeHost(InitParams params, CompositorMode mode)
       pending_commit_state_(std::make_unique<CommitState>()),
       thread_unsafe_commit_state_(params.mutator_host),
       settings_(*params.settings),
+      memory_policy_(settings_.memory_policy),
       id_(s_layer_tree_host_sequence_number.GetNext() + 1),
       task_graph_runner_(params.task_graph_runner),
       mutator_host_(params.mutator_host),
@@ -1552,6 +1553,16 @@ void LayerTreeHost::SetVisualDeviceViewportSize(
   pending_commit_state()->visual_device_viewport_size =
       visual_device_viewport_size;
   SetNeedsCommit();
+}
+
+void LayerTreeHost::SetMemoryPolicy(const ManagedMemoryPolicy& policy) {
+  DCHECK(IsMainThread());
+  if (memory_policy_ == policy) {
+    return;
+  }
+
+  memory_policy_ = policy;
+  proxy_->SetMemoryPolicy(policy);
 }
 
 void LayerTreeHost::SetMaxSafeAreaInsets(

@@ -12356,6 +12356,44 @@ class LayerTreeHostTestTreesInVizSyncViewportDeltas : public LayerTreeHostTest {
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestTreesInVizSyncViewportDeltas);
 
+class LayerTreeHostTestSetMemoryPolicy : public LayerTreeHostTest {
+ public:
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    settings->memory_policy = ManagedMemoryPolicy(
+        256u * 1024u * 1024u, gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE,
+        ManagedMemoryPolicy::kDefaultNumResourcesLimit);
+  }
+
+  void BeginTest() override { PostSetNeedsCommitToMainThread(); }
+
+  void DidCommit() override {
+    if (layer_tree_host()->SourceFrameNumber() == 1) {
+      layer_tree_host()->SetMemoryPolicy(
+          ManagedMemoryPolicy(1024u * 1024u * 1024u,
+                              gpu::MemoryAllocation::CUTOFF_ALLOW_NICE_TO_HAVE,
+                              ManagedMemoryPolicy::kDefaultNumResourcesLimit));
+      PostSetNeedsCommitToMainThread();
+    }
+  }
+
+  void CommitCompleteOnThread(LayerTreeHostImpl* host_impl) override {
+    if (host_impl->sync_tree()->source_frame_number() == 0) {
+      EXPECT_EQ(
+          256u * 1024u * 1024u,
+          host_impl->ActualManagedMemoryPolicy().bytes_limit_when_visible);
+    } else if (host_impl->sync_tree()->source_frame_number() == 1) {
+      EXPECT_EQ(
+          1024u * 1024u * 1024u,
+          host_impl->ActualManagedMemoryPolicy().bytes_limit_when_visible);
+      EXPECT_EQ(1024u * 1024u * 1024u,
+                host_impl->global_tile_state().hard_memory_limit_in_bytes);
+      EndTest();
+    }
+  }
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestSetMemoryPolicy);
+
 // A parent can send an invalid viz::LocalSurfaceId after a valid one, for
 // example when the browser resizes a hidden view that has no surface yet.
 // Hashing that id for the "viz.surface_id_flow" trace flows used to DCHECK

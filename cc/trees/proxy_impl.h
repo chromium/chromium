@@ -42,6 +42,7 @@ class LayerTreeHost;
 class ClientLayerTreeHostImpl;
 class LayerTreeMutator;
 class LayerTreeSettings;
+struct ManagedMemoryPolicy;
 class PaintWorkletLayerPainter;
 class ProxyMain;
 class RenderFrameMetadataObserver;
@@ -88,6 +89,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
   void SendEarlyFinalBeginMainFrame();
   void SetTargetLocalSurfaceIdOnImpl(
       const viz::LocalSurfaceId& target_local_surface_id);
+  void SetMemoryPolicyOnImpl(const ManagedMemoryPolicy& policy);
   void BeginMainFrameAbortedOnImpl(
       CommitEarlyOutReason reason,
       base::TimeTicks main_thread_start_time,

@@ -306,6 +306,11 @@ void ProxyImpl::SetTargetLocalSurfaceIdOnImpl(
   host_impl_->SetTargetLocalSurfaceId(target_local_surface_id);
 }
 
+void ProxyImpl::SetMemoryPolicyOnImpl(const ManagedMemoryPolicy& policy) {
+  DCHECK(IsImplThread());
+  host_impl_->SetMemoryPolicy(policy);
+}
+
 void ProxyImpl::BeginMainFrameAbortedOnImpl(
     CommitEarlyOutReason reason,
     base::TimeTicks main_thread_start_time,
