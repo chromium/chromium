@@ -315,6 +315,13 @@ component("network_service") {
     ]
   }
 
+  if (enable_device_bound_sessions) {
+    sources += [
+      "restricted_device_bound_session_manager_impl.cc",
+      "restricted_device_bound_session_manager_impl.h",
+    ]
+  }
+
   if (is_chromeos) {
     sources += [
       "dhcp_pac_file_fetcher_mojo.cc",
@@ -607,6 +614,7 @@ source_set("tests") {
     sources += [
       "device_bound_session_manager_unittest.cc",
       "device_bound_session_service_delegate_unittest.cc",
+      "restricted_device_bound_session_manager_impl_unittest.cc",
     ]
   }
 

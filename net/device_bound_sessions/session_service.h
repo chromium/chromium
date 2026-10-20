@@ -221,7 +221,11 @@ class NET_EXPORT SessionService {
       const GURL& url,
       base::RepeatingCallback<void(const SessionAccess&)> callback) = 0;
 
-  // Add an observer for DBSC events. This is used for DevTools.
+  // Adds an observer for DBSC events. Used by DevTools and by the
+  // renderer-facing RestrictedDeviceBoundSessionManager. `callback` will only
+  // be notified until the destruction of the returned
+  // `CallbackListSubscription`. Creation events are dispatched after the new
+  // session is visible through GetSession().
   virtual base::CallbackListSubscription AddEventObserver(
       OnEventCallback callback) = 0;
 

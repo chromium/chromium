@@ -1,0 +1,44 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+// Minimal renderer-facing projection of a bound session. A subset of
+// net::device_bound_sessions::Session with no wrapped keys, attestation keys,
+// scope, credentials, or refresh initiators.
+struct RestrictedDeviceBoundSession {
+  string session_id;
+  url.mojom.Url refresh_url;
+  mojo_base.mojom.Time creation_time;
+};
+
+// Renderer-facing push channel for newly created sessions. Each
+// SubscribeToRegistrations() call binds its own observer, so a Document can
+// have several. A notification carries one session the Document may see: the
+// session's scope includes at least one URL on the Document's origin, and the
+// Document is a first-party context with full cookie access.
+interface RestrictedDeviceBoundSessionObserver {
+  // Called for each new session the Document may see.
+  OnDeviceBoundSessionRegistered(RestrictedDeviceBoundSession session);
+};
+
+// This interface lives in the Network Service and is bound 1:1 to a Document by
+// the Browser Process broker, which supplies the Document's origin and its
+// net::IsolationInfo.
+interface RestrictedDeviceBoundSessionManager {
+  // Pushes each new session this Document may see to `observer`, and replies
+  // with the sessions that already exist. Pushes can arrive before the reply.
+  // A session created while the reply is pending can be in both, and then the
+  // push arrives first. That order holds only if the client binds the
+  // `observer` receiver on the same sequence as this interface's remote.
+  // TODO(crbug.com/494489935): Have the manager hold new sessions until this
+  // reply is sent. Then no push arrives before the reply, no session is in
+  // both, and clients need no merge.
+  SubscribeToRegistrations(
+      pending_associated_remote<RestrictedDeviceBoundSessionObserver> observer)
+      => (array<RestrictedDeviceBoundSession> existing_sessions);
+};

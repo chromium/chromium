@@ -287,6 +287,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::CookieSettingOverrides& devtools_cookie_setting_overrides,
       bool prefer_bound_cookie_context,
       mojo::PendingRemote<mojom::CookieAccessObserver> observer) override;
+  void GetRestrictedDeviceBoundSessionManager(
+      mojo::PendingReceiver<mojom::RestrictedDeviceBoundSessionManager>
+          receiver,
+      const url::Origin& origin,
+      const net::IsolationInfo& isolation_info) override;
   void GetTrustTokenQueryAnswerer(
       mojo::PendingReceiver<mojom::TrustTokenQueryAnswerer> receiver,
       const url::Origin& top_frame_origin) override;
@@ -1053,6 +1058,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // |trust_token_store_|.
   mojo::UniqueReceiverSet<mojom::TrustTokenQueryAnswerer>
       trust_token_query_answerers_;
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  // One manager per Document pipe. Ordering: this must be after
+  // `url_request_context_owner_`, which owns the SessionService, and after
+  // `cookie_manager_`, which owns the CookieSettings. Each manager holds
+  // non-owning pointers to both, so it must be destroyed first.
+  mojo::UniqueReceiverSet<mojom::RestrictedDeviceBoundSessionManager>
+      restricted_device_bound_session_managers_;
+#endif
 
   // Whether the user is blocking Trust Tokens, value provided by the
   // PrivacySandboxSettings service.

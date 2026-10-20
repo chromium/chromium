@@ -188,6 +188,7 @@
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 #include "services/network/device_bound_session_service_delegate.h"
+#include "services/network/restricted_device_bound_session_manager_impl.h"
 #include "services/network/ssl_private_key_proxy.h"
 #endif
 
@@ -1208,6 +1209,26 @@ void NetworkContext::GetRestrictedCookieManager(
                                  base::Unretained(this), ptr.get());
   ptr->InstallReceiver(std::move(receiver), std::move(callback));
   restricted_cookie_managers_.insert(std::move(ptr));
+}
+
+void NetworkContext::GetRestrictedDeviceBoundSessionManager(
+    mojo::PendingReceiver<mojom::RestrictedDeviceBoundSessionManager> receiver,
+    const url::Origin& origin,
+    const net::IsolationInfo& isolation_info) {
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  // Without a SessionService no session can exist, so the receiver is dropped,
+  // which closes the pipe.
+  net::device_bound_sessions::SessionService* session_service =
+      url_request_context_->device_bound_session_service();
+  if (!session_service) {
+    return;
+  }
+  restricted_device_bound_session_managers_.Add(
+      std::make_unique<RestrictedDeviceBoundSessionManagerImpl>(
+          *session_service, cookie_manager_->cookie_settings(), origin,
+          isolation_info),
+      std::move(receiver));
+#endif
 }
 
 void NetworkContext::GetTrustTokenQueryAnswerer(

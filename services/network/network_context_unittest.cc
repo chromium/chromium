@@ -189,6 +189,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/proxy_config.mojom.h"
 #include "services/network/public/mojom/reporting_service.mojom.h"
+#include "services/network/public/mojom/restricted_device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
@@ -1604,6 +1605,61 @@ TEST_F(NetworkContextTest,
 
   EXPECT_FALSE(network_context->HasCookieAccessForDeviceBoundSession(
       {.provider_origin{provider}, .relying_party_origin{rp}}));
+}
+
+// Destroys the NetworkContext while a manager holds a subscription and an
+// open observer endpoint, and checks that the manager pipe closes.
+TEST_F(NetworkContextTest,
+       RestrictedDeviceBoundSessionManagerDestroyedWithContext) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->device_bound_sessions_enabled = true;
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+  ASSERT_TRUE(
+      network_context->url_request_context()->device_bound_session_service());
+
+  const url::Origin origin = url::Origin::Create(GURL("https://example.test"));
+  mojo::Remote<mojom::RestrictedDeviceBoundSessionManager> manager;
+  network_context->GetRestrictedDeviceBoundSessionManager(
+      manager.BindNewPipeAndPassReceiver(), origin,
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 origin, origin,
+                                 net::SiteForCookies::FromOrigin(origin)));
+
+  // Keeps the observer endpoint open too.
+  mojo::PendingAssociatedReceiver<mojom::RestrictedDeviceBoundSessionObserver>
+      observer;
+  manager->SubscribeToRegistrations(observer.InitWithNewEndpointAndPassRemote(),
+                                    base::DoNothing());
+  // Waits until the manager has handled the call and holds its subscription.
+  manager.FlushForTesting();
+
+  network_context.reset();
+  manager.FlushForTesting();
+  EXPECT_FALSE(manager.is_connected());
+}
+
+// Without a SessionService, NetworkContext drops the manager receiver, so
+// the pipe closes.
+TEST_F(NetworkContextTest,
+       RestrictedDeviceBoundSessionManagerWithoutServiceClosesPipe) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+  ASSERT_FALSE(
+      network_context->url_request_context()->device_bound_session_service());
+
+  const url::Origin origin = url::Origin::Create(GURL("https://example.test"));
+  mojo::Remote<mojom::RestrictedDeviceBoundSessionManager> manager;
+  network_context->GetRestrictedDeviceBoundSessionManager(
+      manager.BindNewPipeAndPassReceiver(), origin,
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 origin, origin,
+                                 net::SiteForCookies::FromOrigin(origin)));
+  manager.FlushForTesting();
+  EXPECT_FALSE(manager.is_connected());
 }
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 

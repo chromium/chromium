@@ -60,6 +60,7 @@ import "services/network/public/mojom/proxy_lookup_client.mojom";
 import "services/network/public/mojom/proxy_resolving_socket.mojom";
 import "services/network/public/mojom/reporting_service.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
+import "services/network/public/mojom/restricted_device_bound_sessions.mojom";
 import "services/network/public/mojom/restricted_udp_socket.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "services/network/public/mojom/shared_dictionary_access_observer.mojom";
@@ -1110,6 +1111,19 @@ interface NetworkContext {
       CookieSettingOverrides devtools_cookie_setting_overrides,
       bool prefer_bound_cookie_context,
       pending_remote<CookieAccessObserver>? cookie_observer);
+
+  // Binds a RestrictedDeviceBoundSessionManager for one Document. `origin` is
+  // the Document's committed origin and `isolation_info` its isolation info
+  // for subresources, both supplied by the browser process. The network
+  // service CHECKs that `isolation_info.frame_origin()` equals `origin`, that
+  // `origin` is potentially trustworthy and not opaque, and that
+  // `isolation_info` has no nonce and is first-party for `origin`. The
+  // comment on RestrictedDeviceBoundSessionObserver says which sessions the
+  // manager shows the Document.
+  GetRestrictedDeviceBoundSessionManager(
+      pending_receiver<RestrictedDeviceBoundSessionManager> manager,
+      url.mojom.Origin origin,
+      IsolationInfo isolation_info);
 
   // Provides a TrustTokenQueryAnswerer scoped to the given top-frame origin
   // (subsequent calls to its HasTrustTokens(issuer) and

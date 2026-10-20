@@ -503,7 +503,8 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // All observers of sessions.
   absl::flat_hash_map<net::SchemefulSite, ObserverSet> observers_by_site_;
 
-  // Observers for DBSC events. Used for DevTools.
+  // Observers for DBSC events. Used by DevTools and by the renderer-facing
+  // RestrictedDeviceBoundSessionManager.
   base::RepeatingCallbackList<void(const SessionEvent&)> event_callbacks_;
 
   // Per-site record of the most recent refresh result. This is used
