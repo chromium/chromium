@@ -1752,7 +1752,7 @@
     },
     {
       name: "CSSCustomHighlightUniversalSelector",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSCustomMedia",
