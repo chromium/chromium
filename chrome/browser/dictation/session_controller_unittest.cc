@@ -937,6 +937,33 @@ TEST_F(DictationSessionControllerTest, EscapeEndsActiveStreamElseEndsSession) {
   EXPECT_EQ(controller_, nullptr);
 }
 
+TEST_F(DictationSessionControllerTest, WebContentsDestroyedEndsSession) {
+  auto mock_ui = std::make_unique<testing::NiceMock<MockSessionUi>>();
+  MockSessionUi* ui_ptr = mock_ui.get();
+  EXPECT_CALL(mock_delegate_, CreateUi(_)).WillOnce(Return(std::move(mock_ui)));
+  controller_->ResetUi();
+
+  std::unique_ptr<content::WebContents> overlay_contents =
+      CreateTestWebContents();
+  content::GlobalDOMNodeId target_id{
+      overlay_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      blink::DOMNodeIdType(1)};
+  controller_->StartDictationStream(TargetDetails(target_id),
+                                    DictationStreamStartTrigger::kSessionStart,
+                                    base::TimeTicks::Now());
+  EXPECT_EQ(controller_->GetState(), SessionState::kStreamInitializing);
+
+  EXPECT_CALL(*ui_ptr, OnStopped());
+  EXPECT_CALL(mock_delegate_, EndSession()).WillOnce([this]() {
+    controller_.reset();
+  });
+
+  overlay_contents.reset();
+  WaitForPostedTasks();
+
+  EXPECT_EQ(controller_, nullptr);
+}
+
 TEST_F(DictationSessionControllerTest,
        AutoSessionEndDelayedShutdownFiresAfterDelay) {
   base::test::ScopedFeatureList feature_list;

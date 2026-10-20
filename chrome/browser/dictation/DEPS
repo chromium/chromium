@@ -2,6 +2,7 @@ include_rules = [
   "+base",
   "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/views",
+  "+chrome/browser/ui/webui/webui_embedding_context.h",
   "+chrome/common/extensions/api",
   "+extensions/browser",
   "+testing/gmock",

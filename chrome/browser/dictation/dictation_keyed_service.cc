@@ -26,11 +26,13 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_utils.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_utils.h"
@@ -49,9 +51,15 @@ content::WebContents* GetWebContentsForHotkey(
             browser_view->GetFocusManager()) {
       if (auto* const web_view = views::AsViewClass<views::WebView>(
               focus_manager->GetFocusedView())) {
-        if (content::WebContents* const guest_contents =
-                glic::GetGlicGuestWebContents(web_view->web_contents())) {
-          return guest_contents;
+        if (content::WebContents* const web_contents =
+                web_view->web_contents()) {
+          if (content::WebContents* const guest_contents =
+                  glic::GetGlicGuestWebContents(web_contents)) {
+            return guest_contents;
+          }
+          if (webui::GetTabInterface(web_contents) == active_tab) {
+            return web_contents;
+          }
         }
       }
     }
@@ -126,6 +134,13 @@ tabs::TabInterface* GetTabFromTargetId(
     return tab;
   }
 
+  // Check if `web_contents` is a WebUI embedded in a tab (e.g. Glic selection
+  // overlay).
+  if (tabs::TabInterface* embedding_tab =
+          webui::GetTabInterface(web_contents)) {
+    return embedding_tab;
+  }
+
   // If the Glic side panel is being targeted, then associate the session with
   // the active tab of the window.
   if (tabs::TabInterface* tab = GetActiveTabFromGlic(web_contents)) {
@@ -150,6 +165,10 @@ std::optional<DictationUrlCategory> GetUrlCategoryFromTargetId(
 
   if (glic::IsGlicGuest(web_contents) || glic::IsGlicWebUI(web_contents)) {
     return DictationUrlCategory::kGlic;
+  }
+
+  if (content::HasWebUIScheme(rfh->GetLastCommittedURL())) {
+    return DictationUrlCategory::kWebUI;
   }
 
   return DictationUrlCategory::kWeb;

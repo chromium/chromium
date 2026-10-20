@@ -24,6 +24,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/blink/public/mojom/dictation/dictation_agent.mojom.h"
@@ -144,11 +145,13 @@ void DictationContextFetcher::Fetch(Target& target,
     return;
   }
 
-  if (glic::IsGlicGuest(web_contents)) {
-    // TODO(b/535731618): Straightforward context fetch appears to never return
-    // and needs more investigation. For now, just eliding context is better
-    // than breaking the feature. (Also, we probably want to include the web
-    // page content _in addition to_ the side panel content since that's likely
+  if (glic::IsGlicGuest(web_contents) ||
+      content::HasWebUIScheme(rfh->GetLastCommittedURL())) {
+    // TODO(b/535731618): Straightforward context fetch on Glic guests and
+    // general WebUI surfaces appears to never return and needs more
+    // investigation. For now, just eliding context is better than breaking the
+    // feature. (Also, for Glic, we probably want to include the web page
+    // content _in addition to_ the side panel content since that's likely
     // relevant for speech biasing)
     DictationContext context;
     std::move(callback).Run(std::move(context));

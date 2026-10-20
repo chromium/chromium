@@ -22,6 +22,7 @@
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
@@ -115,6 +116,19 @@ IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
 
   histogram_tester.ExpectUniqueSample(kSessionUrlCategoryHistogramName,
                                       DictationUrlCategory::kWeb, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,
+                       RecordSessionUrlCategoryWebUIOnSessionStart) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GURL("chrome://version")));
+
+  SimulateInvokeViaContextMenu(web_contents()->GetPrimaryMainFrame(),
+                               blink::DOMNodeIdType(123));
+
+  histogram_tester.ExpectUniqueSample(kSessionUrlCategoryHistogramName,
+                                      DictationUrlCategory::kWebUI, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DictationMetricsBrowserTest,

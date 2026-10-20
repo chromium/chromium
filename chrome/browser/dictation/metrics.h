@@ -56,9 +56,10 @@ enum class DictationSessionEntryPoint {
 // numeric values should never be reused.
 // LINT.IfChange(DictationUrlCategory)
 enum class DictationUrlCategory {
-  kWeb = 0,   // Standard Web page loaded in a browser tab.
-  kGlic = 1,  // Gemini in Chrome UI surface.
-  kMaxValue = kGlic,
+  kWeb = 0,    // Standard Web page loaded in a browser tab.
+  kGlic = 1,   // Gemini in Chrome UI surface.
+  kWebUI = 2,  // Chrome WebUI surface.
+  kMaxValue = kWebUI,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/voice_typing/enums.xml:DictationUrlCategory)
 
