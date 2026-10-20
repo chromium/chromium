@@ -483,7 +483,9 @@ views::ProposedLayout VerticalTabStripRegionView::CalculateProposedLayout(
   gfx::Rect contents_bounds = available;
   gfx::Rect organizer_bounds = available;
   const int adjustment =
-      base::ClampRound(available.width() * organizer_panel_show_percent_);
+      blending_with_organizer_tray
+          ? 0
+          : base::ClampRound(available.width() * organizer_panel_show_percent_);
   contents_bounds.Offset(-adjustment, 0);
   organizer_bounds.Offset(available.width() - adjustment, 0);
   layout.child_layouts.push_back({.child_view = content_area_view_.get(),
