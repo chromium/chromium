@@ -703,6 +703,10 @@ void HistoryBackend::UpdateWithPageEndTime(ContextID context_id,
   TRACE_EVENT0("browser", "HistoryBackend::UpdateWithPageEndTime");
   // Will be filled with the URL ID and the visit ID of the last addition.
   VisitID visit_id = tracker_.GetLastVisit(context_id, nav_entry_id, url);
+  if (visit_id == kInvalidVisitID) {
+    return;
+  }
+
   UpdateVisitDuration(visit_id, end_ts);
 }
 
@@ -711,7 +715,7 @@ void HistoryBackend::SetPageLanguageForVisit(ContextID context_id,
                                              const GURL& url,
                                              const std::string& page_language) {
   VisitID visit_id = tracker_.GetLastVisit(context_id, nav_entry_id, url);
-  if (!visit_id) {
+  if (visit_id == kInvalidVisitID) {
     return;
   }
 
@@ -750,7 +754,7 @@ void HistoryBackend::SetPasswordStateForVisit(
     const GURL& url,
     VisitContentAnnotations::PasswordState password_state) {
   VisitID visit_id = tracker_.GetLastVisit(context_id, nav_entry_id, url);
-  if (!visit_id) {
+  if (visit_id == kInvalidVisitID) {
     return;
   }
 
