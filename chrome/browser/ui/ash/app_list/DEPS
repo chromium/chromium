@@ -10,9 +10,7 @@ include_rules = [
   "+chrome/browser/ash/app_list/search",
   "+chrome/browser/ash/app_list/test",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/extensions/extension_browsertest.h",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/browser/ui/browser_window.h",
 ]
 
 specific_include_rules = {
@@ -26,5 +24,10 @@ specific_include_rules = {
   # TODO(crbug.com/379262505) - Remove this.
   "app_list_with_recent_apps_browsertest\\.cc": [
     "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h",
+    "+chrome/browser/extensions/extension_browsertest.h",
+    "+chrome/browser/ui/browser_window.h",
+  ],
+  "apps_grid_drag_browsertest\\.cc": [
+    "+chrome/browser/ui/browser_window.h",
   ],
 }

@@ -1,5 +1,4 @@
 include_rules = [
-  "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/base/locale_util.h",
   "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/system_web_apps",
@@ -8,13 +7,14 @@ include_rules = [
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/web_applications/policy/web_app_policy_manager.h",
-  "+chrome/browser/web_applications/web_app_command_manager.h",
   "+chrome/browser/web_applications/web_app_provider.h",
 ]
 
 specific_include_rules = {
   "graduation_manager_impl_browsertest\\.cc": [
+    "+chrome/browser/apps/app_service",
     "+chrome/browser/browser_process.h",
     "+chrome/browser/global_features.h",
+    "+chrome/browser/web_applications/web_app_command_manager.h",
   ]
 }
