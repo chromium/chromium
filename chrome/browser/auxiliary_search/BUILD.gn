@@ -28,6 +28,7 @@ source_set("auxiliary_search") {
     "//components/page_content_annotations/core",
     "//components/signin/public/identity_manager",
     "//components/visited_url_ranking/public",
+    "//url",
   ]
 }
 
@@ -49,11 +50,13 @@ source_set("impl") {
     "//chrome/browser/android:tabs_public",
     "//chrome/browser/auxiliary_search/proto",
     "//chrome/browser/flags:flags_android",
+    "//chrome/browser/history",
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/browser/visited_url_ranking",
     "//chrome/common:constants",
+    "//components/history/core/browser",
     "//components/ntp_tiles",
     "//components/visited_url_ranking/public",
     "//url",
@@ -68,6 +71,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":auxiliary_search",
+    "//base",
     "//base/test:test_support",
     "//chrome/common:constants",
     "//components/history/core/test",
@@ -78,6 +82,7 @@ source_set("unit_tests") {
     "//components/visited_url_ranking/public:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }
 

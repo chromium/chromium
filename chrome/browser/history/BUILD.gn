@@ -51,6 +51,7 @@ source_set("impl") {
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/renderer_host",
+    "//chrome/browser/search",
     "//chrome/browser/search_engines",
     "//chrome/browser/signin",
     "//chrome/browser/sync:factories",
@@ -205,28 +206,38 @@ source_set("unit_tests") {
   sources = [
     "history_tab_helper_unittest.cc",
     "history_utils_unittest.cc",
+    "top_sites_factory_unittest.cc",
   ]
   deps = [
     ":history",
     "//base",
     "//base/test:test_support",
+    "//chrome/app/resources:locale_settings",
     "//chrome/browser/actor",
     "//chrome/browser/actor:test_support",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/search_engines:test_support",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/history/core/browser",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/search_engines",
     "//content/public/browser",
     "//content/test:test_support",
+    "//extensions/buildflags",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/common",
     "//ui/base",
+    "//url",
   ]
 
   if (is_android) {
     deps += [
       "//chrome/browser/feed",
+      "//chrome/browser/flags:flags_android",
       "//components/feed/core/v2:feed_core_stubs",
       "//components/feed/core/v2:feed_core_v2",
     ]

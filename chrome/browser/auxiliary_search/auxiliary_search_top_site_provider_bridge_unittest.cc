@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "components/ntp_tiles/icon_cacher.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/visited_url_ranking/public/testing/mock_visited_url_ranking_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 constexpr size_t kMaxNumMostVisitedSites = 4;
@@ -50,7 +52,8 @@ class AuxiliarySearchTopSiteProviderBridgeTest : public ::testing::Test {
         std::make_unique<MockMostVisitedSites>(&testing_prefs_);
     auxiliary_search_top_site_provider_bridge_ =
         std::make_unique<AuxiliarySearchTopSiteProviderBridge>(
-            std::move(mock_most_visited_sites));
+            std::move(mock_most_visited_sites),
+            /*excluded_urls=*/base::flat_set<GURL>());
   }
 
   AuxiliarySearchTopSiteProviderBridgeTest(

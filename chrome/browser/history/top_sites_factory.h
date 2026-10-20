@@ -39,6 +39,9 @@ class TopSitesFactory : public RefcountedProfileKeyedServiceFactory {
       content::BrowserContext* context,
       const std::vector<history::PrepopulatedPage>& prepopulated_page_list);
 
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
+
   TopSitesFactory(const TopSitesFactory&) = delete;
   TopSitesFactory& operator=(const TopSitesFactory&) = delete;
 
