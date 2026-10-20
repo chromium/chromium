@@ -804,8 +804,8 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
   if (!run_in_safe_mode) {
     safe_seed_manager->SetActiveSeedState(
         std::move(seed_data), std::move(base64_seed_signature),
-        local_state()->GetInteger(prefs::kVariationsSeedMilestone),
-        std::move(client_state), seed_store_->GetLatestSeedFetchTime());
+        GetSeedStore()->GetLatestMilestone(), std::move(client_state),
+        GetSeedStore()->GetLatestSeedFetchTime());
   }
 
   base::UmaHistogramCounts1M("Variations.AppliedSeed.Size", applied_seed_size);
