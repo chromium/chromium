@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/command_line.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -25,7 +24,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
-#include "content/public/common/content_switches.h"
 #else
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -45,19 +43,6 @@ class ActorWindowManagementToolBrowserTest : public ActorToolsTest {
  public:
   ActorWindowManagementToolBrowserTest() = default;
   ~ActorWindowManagementToolBrowserTest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ActorToolsTest::SetUpCommandLine(command_line);
-#if BUILDFLAG(IS_ANDROID)
-    // Test devices are often offline. The offline status indicator that
-    // appears a few seconds after startup resizes the top controls, which
-    // causes asserts if the controls are hidden by tab fullscreen.
-    // TODO(crbug.com/574927722): Remove once BrowserControlsManager handles
-    // height changes while the controls are hidden.
-    command_line->AppendSwitch(
-        switches::kForceOnlineConnectionStateForIndicator);
-#endif
-  }
 
   void SetUpOnMainThread() override {
 #if BUILDFLAG(IS_ANDROID)

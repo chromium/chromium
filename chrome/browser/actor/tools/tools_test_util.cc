@@ -38,6 +38,7 @@
 #include "chrome/browser/actor/ui/actor_task_unload_handler.h"
 #else
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
+#include "content/public/common/content_switches.h"
 #endif
 
 namespace actor {
@@ -264,6 +265,15 @@ void ActorToolsTest::SetUpCommandLine(base::CommandLine* command_line) {
   PlatformBrowserTest::SetUpCommandLine(command_line);
   SetUpBlocklist(command_line, "blocked.example.com");
   command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1");
+#if BUILDFLAG(IS_ANDROID)
+  // Test devices are often offline. The offline status indicator that appears
+  // a few seconds after startup resizes the top controls, which asserts if the
+  // controls are not fully shown at that moment (e.g. during tab fullscreen or
+  // a tab switch). Java instrumentation tests pass this switch globally too.
+  // TODO(crbug.com/574927722): Remove once BrowserControlsManager handles
+  // height changes while the controls are hidden.
+  command_line->AppendSwitch(switches::kForceOnlineConnectionStateForIndicator);
+#endif
 }
 
 void ActorToolsTest::TearDownOnMainThread() {

@@ -29,6 +29,7 @@
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/actor/tools/open_known_page_tool_request.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_registry.h"
@@ -58,10 +59,6 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/actor/tools/open_known_page_tool_request.h"
-#endif
 
 namespace ttc {
 
@@ -206,11 +203,9 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
       case actor::ToolId::kExitFullscreen:
         SetFullscreen(/*fullscreen=*/false, std::move(callback));
         return;
-#if !BUILDFLAG(IS_ANDROID)
       case actor::ToolId::kOpenKnownPage:
         OpenKnownPage(tool_request.arguments, std::move(callback));
         return;
-#endif
       default:
         break;
     }
@@ -273,9 +268,7 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
       actor::ToolId::kSwitchTab,
       actor::ToolId::kEnterFullscreen,
       actor::ToolId::kExitFullscreen,
-#if !BUILDFLAG(IS_ANDROID)
       actor::ToolId::kOpenKnownPage,
-#endif
   });
 
   std::vector<const actor::ToolDefinition*> actor_tools =
@@ -528,7 +521,6 @@ void ToolController::SwitchTab(const base::DictValue& arguments,
                 std::move(callback));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ToolController::OpenKnownPage(const base::DictValue& arguments,
                                    ToolResponseCallback callback) {
   const std::string* query =
@@ -543,7 +535,6 @@ void ToolController::OpenKnownPage(const base::DictValue& arguments,
   PerformAction(std::make_unique<actor::OpenKnownPageToolRequest>(*query),
                 std::move(callback));
 }
-#endif
 
 void ToolController::FindAndHighlight(const base::DictValue& arguments,
                                       ToolResponseCallback callback) {

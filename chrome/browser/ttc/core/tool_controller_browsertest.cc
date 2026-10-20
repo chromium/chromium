@@ -1870,15 +1870,23 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   const std::set<actor::ToolId> kExpectedToolIds = {
-      actor::ToolId::kNavigate,         actor::ToolId::kPerformSearch,
-      actor::ToolId::kGoBack,           actor::ToolId::kGoForward,
-      actor::ToolId::kReloadPage,       actor::ToolId::kFindAndHighlight,
-      actor::ToolId::kPlayVideo,        actor::ToolId::kPauseVideo,
-      actor::ToolId::kSeekToTimestamp,  actor::ToolId::kTranslatePage,
-      actor::ToolId::kCloseTab,         actor::ToolId::kSwitchTab,
-      actor::ToolId::kEnterFullscreen,  actor::ToolId::kExitFullscreen,
+      actor::ToolId::kNavigate,
+      actor::ToolId::kPerformSearch,
+      actor::ToolId::kGoBack,
+      actor::ToolId::kGoForward,
+      actor::ToolId::kReloadPage,
+      actor::ToolId::kFindAndHighlight,
+      actor::ToolId::kPlayVideo,
+      actor::ToolId::kPauseVideo,
+      actor::ToolId::kSeekToTimestamp,
+      actor::ToolId::kTranslatePage,
+      actor::ToolId::kCloseTab,
+      actor::ToolId::kSwitchTab,
+      actor::ToolId::kEnterFullscreen,
+      actor::ToolId::kExitFullscreen,
+      actor::ToolId::kOpenKnownPage,
 #if !BUILDFLAG(IS_ANDROID)
-      actor::ToolId::kOpenKnownPage,    actor::ToolId::kPromptGeminiPanel,
+      actor::ToolId::kPromptGeminiPanel,
       actor::ToolId::kCloseGeminiPanel,
 #endif
   };
