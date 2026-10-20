@@ -137,9 +137,13 @@ struct NavigationEventList {
       const content::GlobalRenderFrameHostId& outermost_main_frame_id,
       size_t start_index);
 
-  // Finds the the navigation event in the |pending_navigation_events_| map that
+  // Finds the navigation event in the |pending_navigation_events_| map that
   // has the same destination URL as the |target_url|. If there are multiple
-  // matches, returns the one with the latest updated time.
+  // matches, returns the one with the latest updated time. If the matched
+  // pending navigation event has an empty |source_url| and
+  // |source_main_frame_url| (e.g. the initial navigation in a newly opened
+  // tab), looks up and returns the preceding retargeting NavigationEvent from
+  // |navigation_events_| with updated destination and initiation attributes.
   NavigationEvent* FindPendingNavigationEvent(const GURL& target_url);
 
   // Finds the index of the most recent retargeting NavigationEvent index in the

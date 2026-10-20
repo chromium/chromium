@@ -243,6 +243,27 @@ NavigationEvent* NavigationEventList::FindPendingNavigationEvent(
       return_event = it.second.get();
     }
   }
+  if (return_event && return_event->source_url.is_empty() &&
+      return_event->source_main_frame_url.is_empty() &&
+      !navigation_events_.empty()) {
+    size_t retargeting_nav_event_index = FindRetargetingNavigationEvent(
+        return_event->last_updated, return_event->target_tab_id,
+        navigation_events_.size() - 1);
+    if (static_cast<int>(retargeting_nav_event_index) != -1) {
+      auto* retargeting_nav_event =
+          GetNavigationEvent(retargeting_nav_event_index);
+      retargeting_nav_event->server_redirect_urls =
+          return_event->server_redirect_urls;
+      retargeting_nav_event->original_request_url =
+          return_event->original_request_url;
+      if (return_event->navigation_initiation ==
+          ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE) {
+        retargeting_nav_event->navigation_initiation =
+            ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+      }
+      return retargeting_nav_event;
+    }
+  }
   return return_event;
 }
 

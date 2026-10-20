@@ -1361,4 +1361,47 @@ TEST_F(SBNavigationObserverTest,
   EXPECT_FALSE(referrer_chain.Get(0).is_retargeting());
 }
 
+// Regression test for b/568560137.
+TEST_F(SBNavigationObserverTest, PendingNavigationEventNewTabIsRetargeting) {
+  sessions::SessionTabHelper::CreateForWebContents(web_contents(),
+                                                   base::NullCallback());
+  std::unique_ptr<content::WebContents> target_web_contents =
+      CreateTestWebContents();
+  sessions::SessionTabHelper::CreateForWebContents(target_web_contents.get(),
+                                                   base::NullCallback());
+  auto target_navigation_observer =
+      std::make_unique<SafeBrowsingNavigationObserver>(
+          target_web_contents.get(), settings_map_.get(),
+          navigation_observer_manager_.get());
+
+  navigation_observer_manager_->RecordNewWebContents(
+      web_contents(), main_rfh(), GURL("http://foo/new_tab"),
+      ui::PAGE_TRANSITION_LINK, target_web_contents.get(),
+      /*renderer_initiated=*/true);
+
+  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("http://foo/new_tab"), target_web_contents->GetPrimaryMainFrame());
+  navigation->SetHasUserGesture(true);
+  navigation->Start();
+  navigation->Redirect(GURL("http://foo/redirected"));
+
+  ReferrerChain referrer_chain;
+  EXPECT_EQ(
+      SafeBrowsingNavigationObserverManager::SUCCESS,
+      navigation_observer_manager_->IdentifyReferrerChainByPendingEventURL(
+          GURL("http://foo/redirected"), /*user_gesture_count_limit=*/2,
+          &referrer_chain));
+  ASSERT_EQ(1, referrer_chain.size());
+  EXPECT_EQ("http://foo/redirected", referrer_chain.Get(0).url());
+  EXPECT_EQ("http://foo/0", referrer_chain.Get(0).referrer_url());
+  EXPECT_EQ(ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
+            referrer_chain.Get(0).navigation_initiation());
+  EXPECT_TRUE(referrer_chain.Get(0).is_retargeting());
+  ASSERT_EQ(2, referrer_chain.Get(0).server_redirect_chain_size());
+  EXPECT_EQ("http://foo/new_tab",
+            referrer_chain.Get(0).server_redirect_chain(0).url());
+  EXPECT_EQ("http://foo/redirected",
+            referrer_chain.Get(0).server_redirect_chain(1).url());
+}
+
 }  // namespace safe_browsing
