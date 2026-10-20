@@ -47,7 +47,7 @@ class SimpleAPIPermission : public APIPermission {
     return (value == nullptr);
   }
 
-  std::unique_ptr<base::Value> ToValue() const override { return nullptr; }
+  std::optional<base::Value> ToValue() const override { return std::nullopt; }
 
   std::unique_ptr<APIPermission> Clone() const override {
     return std::make_unique<SimpleAPIPermission>(info());

@@ -41,7 +41,7 @@ class AutomationManifestPermission : public ManifestPermission {
 
   bool FromValue(const base::Value* value) override;
 
-  std::unique_ptr<base::Value> ToValue() const override;
+  base::Value ToValue() const override;
 
   std::unique_ptr<ManifestPermission> Diff(
       const ManifestPermission* rhs) const override;
@@ -76,6 +76,9 @@ PermissionIDSet AutomationManifestPermission::GetPermissions() const {
 }
 
 bool AutomationManifestPermission::FromValue(const base::Value* value) {
+  if (!value) {
+    return false;
+  }
   std::u16string error;
   automation_info_.reset(
       AutomationInfo::FromValue(*value, nullptr /* install_warnings */, &error)
@@ -83,7 +86,7 @@ bool AutomationManifestPermission::FromValue(const base::Value* value) {
   return error.empty();
 }
 
-std::unique_ptr<base::Value> AutomationManifestPermission::ToValue() const {
+base::Value AutomationManifestPermission::ToValue() const {
   return AutomationInfo::ToValue(*automation_info_);
 }
 
@@ -202,22 +205,20 @@ std::unique_ptr<AutomationInfo> AutomationInfo::FromValue(
 }
 
 // static
-std::unique_ptr<base::Value> AutomationInfo::ToValue(
-    const AutomationInfo& info) {
-  return base::Value::ToUniquePtrValue(AsManifestType(info)->ToValue());
+base::Value AutomationInfo::ToValue(const AutomationInfo& info) {
+  return AsManifestType(info).ToValue();
 }
 
 // static
-std::unique_ptr<Automation> AutomationInfo::AsManifestType(
-    const AutomationInfo& info) {
-  std::unique_ptr<Automation> automation(new Automation);
+Automation AutomationInfo::AsManifestType(const AutomationInfo& info) {
+  Automation automation;
   if (!info.desktop) {
-    automation->as_boolean = true;
+    automation.as_boolean = true;
     return automation;
   }
 
-  automation->as_object.emplace();
-  automation->as_object->desktop = info.desktop;
+  automation.as_object.emplace();
+  automation.as_object->desktop = info.desktop;
 
   return automation;
 }

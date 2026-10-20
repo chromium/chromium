@@ -41,7 +41,7 @@ struct RecordingCondition {
   using MatchData = int;
 
   raw_ptr<URLMatcherConditionFactory> factory;
-  std::unique_ptr<base::Value> value;
+  base::Value value;
 
   void GetURLMatcherConditionSets(
       URLMatcherConditionSet::Vector* condition_sets) const {
@@ -60,7 +60,7 @@ struct RecordingCondition {
 
     auto result = std::make_unique<RecordingCondition>();
     result->factory = url_matcher_condition_factory;
-    result->value = base::Value::ToUniquePtrValue(condition.Clone());
+    result->value = condition.Clone();
     return result;
   }
 };
@@ -94,7 +94,7 @@ TEST(DeclarativeConditionTest, CreateConditionSet) {
   EXPECT_EQ(2u, result->conditions().size());
 
   EXPECT_EQ(matcher.condition_factory(), result->conditions()[0]->factory);
-  EXPECT_EQ(ParseJson("{\"key\": 1}"), *result->conditions()[0]->value);
+  EXPECT_EQ(ParseJson("{\"key\": 1}"), result->conditions()[0]->value);
 }
 
 struct FulfillableCondition {

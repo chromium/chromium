@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_COMMON_PERMISSIONS_SETTINGS_OVERRIDE_PERMISSION_H_
 #define EXTENSIONS_COMMON_PERMISSIONS_SETTINGS_OVERRIDE_PERMISSION_H_
 
+#include <optional>
 #include <string>
 
 #include "extensions/common/permissions/api_permission.h"
@@ -28,7 +29,7 @@ class SettingsOverrideAPIPermission : public APIPermission {
   bool FromValue(const base::Value* value,
                  std::string* error,
                  std::vector<std::string>* unhandled_permissions) override;
-  std::unique_ptr<base::Value> ToValue() const override;
+  std::optional<base::Value> ToValue() const override;
   std::unique_ptr<APIPermission> Clone() const override;
   std::unique_ptr<APIPermission> Diff(const APIPermission* rhs) const override;
   std::unique_ptr<APIPermission> Union(const APIPermission* rhs) const override;

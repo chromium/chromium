@@ -8,11 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "extensions/common/permissions/api_permission_set.h"
-
-namespace base {
-class Value;
-}
 
 namespace extensions {
 
@@ -41,8 +38,8 @@ class ManifestPermission {
   // Parses the ManifestPermission from `value`. Returns false if error happens.
   virtual bool FromValue(const base::Value* value) = 0;
 
-  // Stores this into a new created Value.
-  virtual std::unique_ptr<base::Value> ToValue() const = 0;
+  // Stores this into a Value.
+  virtual base::Value ToValue() const = 0;
 
   // Clones this.
   std::unique_ptr<ManifestPermission> Clone() const;

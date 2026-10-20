@@ -45,7 +45,7 @@ class SocketsManifestPermission : public ManifestPermission {
   std::string id() const override;
   PermissionIDSet GetPermissions() const override;
   bool FromValue(const base::Value* value) override;
-  std::unique_ptr<base::Value> ToValue() const override;
+  base::Value ToValue() const override;
   std::unique_ptr<ManifestPermission> Diff(
       const ManifestPermission* rhs) const override;
   std::unique_ptr<ManifestPermission> Union(

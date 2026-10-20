@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -134,12 +135,12 @@ class SetDisjunctionPermission : public APIPermission {
     return true;
   }
 
-  std::unique_ptr<base::Value> ToValue() const override {
+  std::optional<base::Value> ToValue() const override {
     base::ListValue list;
     for (const auto& item : data_set_) {
       list.Append(item.ToValue());
     }
-    return std::make_unique<base::Value>(std::move(list));
+    return base::Value(std::move(list));
   }
 
  protected:

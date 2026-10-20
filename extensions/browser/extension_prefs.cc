@@ -874,27 +874,38 @@ std::unique_ptr<PermissionSet> ExtensionPrefs::ReadPrefAsPermissionSet(
 
 namespace {
 
-// Set the API or Manifest permissions.
-// The format of api_values is:
+// Creates the list of API permissions stored in prefs. The format is:
 // [ "permission_name1",   // permissions do not support detail.
 //   "permission_name2",
 //   {"permission_name3": value },
 //   // permission supports detail, permission detail will be stored in value.
 //   ...
 // ]
-template <typename T>
-base::Value CreatePermissionList(const T& permissions) {
+base::Value CreateAPIPermissionList(const APIPermissionSet& permissions) {
   base::ListValue values;
-  for (const auto* permission : permissions) {
-    std::unique_ptr<base::Value> detail(permission->ToValue());
+  for (const APIPermission* permission : permissions) {
+    std::optional<base::Value> detail = permission->ToValue();
     if (detail) {
       base::DictValue tmp;
-      tmp.Set(permission->name(),
-              base::Value::FromUniquePtrValue(std::move(detail)));
+      tmp.Set(permission->name(), *std::move(detail));
       values.Append(std::move(tmp));
     } else {
       values.Append(permission->name());
     }
+  }
+  return base::Value(std::move(values));
+}
+
+// Creates the list of manifest permissions stored in prefs. Manifest
+// permissions always have details, so every entry is a dictionary:
+// [ {"permission_name1": value1}, {"permission_name2": value2}, ... ]
+base::Value CreateManifestPermissionList(
+    const ManifestPermissionSet& permissions) {
+  base::ListValue values;
+  for (const ManifestPermission* permission : permissions) {
+    base::DictValue tmp;
+    tmp.Set(permission->name(), permission->ToValue());
+    values.Append(std::move(tmp));
   }
   return base::Value(std::move(values));
 }
@@ -907,12 +918,13 @@ void ExtensionPrefs::SetExtensionPrefPermissionSet(
     const PermissionSet& new_value) {
   std::string api_pref = JoinPrefs({pref_key, kPrefAPIs});
   UpdateExtensionPref(extension_id, api_pref,
-                      CreatePermissionList(new_value.apis()));
+                      CreateAPIPermissionList(new_value.apis()));
 
   std::string manifest_permissions_pref =
       JoinPrefs({pref_key, kPrefManifestPermissions});
-  UpdateExtensionPref(extension_id, manifest_permissions_pref,
-                      CreatePermissionList(new_value.manifest_permissions()));
+  UpdateExtensionPref(
+      extension_id, manifest_permissions_pref,
+      CreateManifestPermissionList(new_value.manifest_permissions()));
 
   // Set the explicit host permissions.
   SetExtensionPrefURLPatternSet(extension_id,

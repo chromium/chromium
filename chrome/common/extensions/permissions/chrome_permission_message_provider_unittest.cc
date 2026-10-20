@@ -299,11 +299,10 @@ TEST_F(ChromePermissionMessageProviderUnittest, BluetoothSocketEscalation) {
   ASSERT_TRUE(v2_permission);
 
   // Test serialization round-trip of V2 before comparing, to show it loses data
-  std::unique_ptr<base::Value> serialized = v2_permission->ToValue();
-  ASSERT_TRUE(serialized);
+  base::Value serialized = v2_permission->ToValue();
 
   auto restored = std::make_unique<BluetoothManifestPermission>();
-  ASSERT_TRUE(restored->FromValue(serialized.get()));
+  ASSERT_TRUE(restored->FromValue(&serialized));
   // This will fail before the fix because ToValue/FromValue is lossy
   EXPECT_TRUE(restored->CheckSocketPermitted(nullptr));
 

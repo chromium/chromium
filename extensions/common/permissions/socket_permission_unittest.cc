@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/common/permissions/socket_permission.h"
+
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/pickle.h"
 #include "base/values.h"
 #include "extensions/common/permissions/permissions_info.h"
-#include "extensions/common/permissions/socket_permission.h"
 #include "extensions/common/permissions/socket_permission_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -280,9 +282,9 @@ TEST(SocketPermissionTest, Value) {
 
   EXPECT_FALSE(permission1->Equal(permission2.get()));
 
-  std::unique_ptr<base::Value> vtmp(permission1->ToValue());
+  std::optional<base::Value> vtmp = permission1->ToValue();
   ASSERT_TRUE(vtmp);
-  ASSERT_TRUE(permission2->FromValue(vtmp.get(), nullptr, nullptr));
+  ASSERT_TRUE(permission2->FromValue(&*vtmp, nullptr, nullptr));
   EXPECT_TRUE(permission1->Equal(permission2.get()));
 }
 

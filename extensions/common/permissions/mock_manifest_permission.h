@@ -10,10 +10,6 @@
 
 #include "extensions/common/permissions/manifest_permission.h"
 
-namespace base {
-class Value;
-}
-
 namespace extensions {
 
 // Useful for mocking ManifestPermission in tests.
@@ -32,7 +28,7 @@ class MockManifestPermission : public ManifestPermission {
   PermissionIDSet GetPermissions() const override;
 
   bool FromValue(const base::Value* value) override;
-  std::unique_ptr<base::Value> ToValue() const override;
+  base::Value ToValue() const override;
 
   std::unique_ptr<ManifestPermission> Diff(
       const ManifestPermission* rhs) const override;

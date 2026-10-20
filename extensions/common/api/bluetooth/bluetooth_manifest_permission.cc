@@ -157,7 +157,7 @@ bool BluetoothManifestPermission::FromValue(const base::Value* value) {
   return true;
 }
 
-std::unique_ptr<base::Value> BluetoothManifestPermission::ToValue() const {
+base::Value BluetoothManifestPermission::ToValue() const {
   api::extensions_manifest_types::Bluetooth bluetooth;
   if (!uuids_.empty()) {
     bluetooth.uuids.emplace(uuids_.begin(), uuids_.end());
@@ -171,7 +171,7 @@ std::unique_ptr<base::Value> BluetoothManifestPermission::ToValue() const {
   if (peripheral_) {
     bluetooth.peripheral = peripheral_;
   }
-  return std::make_unique<base::Value>(bluetooth.ToValue());
+  return base::Value(bluetooth.ToValue());
 }
 
 std::unique_ptr<ManifestPermission> BluetoothManifestPermission::Diff(

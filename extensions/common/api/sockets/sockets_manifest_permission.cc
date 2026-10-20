@@ -235,7 +235,7 @@ bool SocketsManifestPermission::FromValue(const base::Value* value) {
   return true;
 }
 
-std::unique_ptr<base::Value> SocketsManifestPermission::ToValue() const {
+base::Value SocketsManifestPermission::ToValue() const {
   Sockets sockets;
 
   sockets.udp.emplace();
@@ -265,7 +265,7 @@ std::unique_ptr<base::Value> SocketsManifestPermission::ToValue() const {
     sockets.tcp_server.reset();
   }
 
-  return base::Value::ToUniquePtrValue(base::Value(sockets.ToValue()));
+  return base::Value(sockets.ToValue());
 }
 
 std::unique_ptr<ManifestPermission> SocketsManifestPermission::Diff(

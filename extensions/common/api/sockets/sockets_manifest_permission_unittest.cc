@@ -155,12 +155,11 @@ TEST(SocketsManifestPermissionTest, Empty) {
   EXPECT_TRUE(permission->Equal(clone));
 
   // ToValue()/FromValue()
-  std::unique_ptr<const base::Value> value(permission->ToValue());
-  EXPECT_TRUE(value.get());
+  base::Value value = permission->ToValue();
 
   std::unique_ptr<SocketsManifestPermission> permission2(
       new SocketsManifestPermission());
-  EXPECT_TRUE(permission2->FromValue(value.get()));
+  EXPECT_TRUE(permission2->FromValue(&value));
   AssertEmptyPermission(permission2.get());
 
   // Union/Diff/Intersection
@@ -290,32 +289,28 @@ TEST(SocketsManifestPermissionTest, FromToValue) {
   EXPECT_EQ(2u, permission4->entries().size());
 
   // ToValue()
-  std::unique_ptr<base::Value> value1 = permission1->ToValue();
-  EXPECT_TRUE(value1);
+  base::Value value1 = permission1->ToValue();
   std::unique_ptr<SocketsManifestPermission> permission1_1(
       new SocketsManifestPermission());
-  EXPECT_TRUE(permission1_1->FromValue(value1.get()));
+  EXPECT_TRUE(permission1_1->FromValue(&value1));
   EXPECT_TRUE(permission1->Equal(permission1_1.get()));
 
-  std::unique_ptr<base::Value> value2 = permission2->ToValue();
-  EXPECT_TRUE(value2);
+  base::Value value2 = permission2->ToValue();
   std::unique_ptr<SocketsManifestPermission> permission2_1(
       new SocketsManifestPermission());
-  EXPECT_TRUE(permission2_1->FromValue(value2.get()));
+  EXPECT_TRUE(permission2_1->FromValue(&value2));
   EXPECT_TRUE(permission2->Equal(permission2_1.get()));
 
-  std::unique_ptr<base::Value> value3 = permission3->ToValue();
-  EXPECT_TRUE(value3);
+  base::Value value3 = permission3->ToValue();
   std::unique_ptr<SocketsManifestPermission> permission3_1(
       new SocketsManifestPermission());
-  EXPECT_TRUE(permission3_1->FromValue(value3.get()));
+  EXPECT_TRUE(permission3_1->FromValue(&value3));
   EXPECT_TRUE(permission3->Equal(permission3_1.get()));
 
-  std::unique_ptr<base::Value> value4 = permission4->ToValue();
-  EXPECT_TRUE(value4);
+  base::Value value4 = permission4->ToValue();
   std::unique_ptr<SocketsManifestPermission> permission4_1(
       new SocketsManifestPermission());
-  EXPECT_TRUE(permission4_1->FromValue(value4.get()));
+  EXPECT_TRUE(permission4_1->FromValue(&value4));
   EXPECT_TRUE(permission4->Equal(permission4_1.get()));
 }
 

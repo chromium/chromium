@@ -7,7 +7,9 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string_view>
+#include <utility>
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -237,7 +239,7 @@ std::unique_ptr<Permissions> PackPermissionSet(const PermissionSet& set) {
   auto permissions = std::make_unique<Permissions>();
   permissions->permissions.emplace();
   for (const APIPermission* api : set.apis()) {
-    std::unique_ptr<base::Value> value(api->ToValue());
+    std::optional<base::Value> value = api->ToValue();
     if (!value) {
       permissions->permissions->push_back(api->name());
     } else {

@@ -81,8 +81,8 @@ bool MimeTypesHandlerPermission::FromValue(const base::Value* value) {
   return true;
 }
 
-std::unique_ptr<base::Value> MimeTypesHandlerPermission::ToValue() const {
-  return std::make_unique<base::Value>(base::ToValueList(mime_types_));
+base::Value MimeTypesHandlerPermission::ToValue() const {
+  return base::Value(base::ToValueList(mime_types_));
 }
 
 std::unique_ptr<ManifestPermission> MimeTypesHandlerPermission::Diff(

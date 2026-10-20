@@ -6,6 +6,7 @@
 #define EXTENSIONS_COMMON_PERMISSIONS_API_PERMISSION_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -82,8 +83,9 @@ class APIPermission {
                          std::string* error,
                          std::vector<std::string>* unhandled_permissions) = 0;
 
-  // Stores this into a new created `value`.
-  virtual std::unique_ptr<base::Value> ToValue() const = 0;
+  // Stores this into a `Value`, or returns `std::nullopt` if there is no
+  // associated detail value.
+  virtual std::optional<base::Value> ToValue() const = 0;
 
   // Clones this.
   virtual std::unique_ptr<APIPermission> Clone() const = 0;

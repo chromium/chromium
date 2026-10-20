@@ -19,7 +19,7 @@ bool ManifestPermission::Contains(const ManifestPermission* rhs) const {
 }
 
 bool ManifestPermission::Equal(const ManifestPermission* rhs) const {
-  return *ToValue() == *rhs->ToValue();
+  return ToValue() == rhs->ToValue();
 }
 
 bool ManifestPermission::RequiresManagedSessionFullLoginWarning() const {

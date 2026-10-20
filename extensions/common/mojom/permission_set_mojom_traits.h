@@ -28,11 +28,7 @@ struct StructTraits<extensions::mojom::APIPermissionDataView,
 
   static std::optional<base::Value> value(
       const std::unique_ptr<extensions::APIPermission>& permission) {
-    std::unique_ptr<base::Value> value = permission->ToValue();
-
-    if (value == nullptr)
-      return std::nullopt;
-    return base::Value::FromUniquePtrValue(std::move(value));
+    return permission->ToValue();
   }
 
   static bool Read(extensions::mojom::APIPermissionDataView data,
@@ -62,11 +58,7 @@ struct StructTraits<extensions::mojom::ManifestPermissionDataView,
 
   static std::optional<base::Value> value(
       const std::unique_ptr<extensions::ManifestPermission>& permission) {
-    std::unique_ptr<base::Value> value = permission->ToValue();
-
-    if (value == nullptr)
-      return std::nullopt;
-    return base::Value::FromUniquePtrValue(std::move(value));
+    return permission->ToValue();
   }
 
   static bool Read(extensions::mojom::ManifestPermissionDataView data,

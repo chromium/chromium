@@ -31,7 +31,7 @@ struct AutomationInfo : public Extension::ManifestData {
       std::vector<InstallWarning>* install_warnings,
       std::u16string* error);
 
-  static std::unique_ptr<base::Value> ToValue(const AutomationInfo& info);
+  static base::Value ToValue(const AutomationInfo& info);
 
   AutomationInfo(const AutomationInfo&) = delete;
   AutomationInfo& operator=(const AutomationInfo&) = delete;
@@ -45,8 +45,8 @@ struct AutomationInfo : public Extension::ManifestData {
   AutomationInfo();
   explicit AutomationInfo(bool desktop);
 
-  static std::unique_ptr<api::extensions_manifest_types::Automation>
-  AsManifestType(const AutomationInfo& info);
+  static api::extensions_manifest_types::Automation AsManifestType(
+      const AutomationInfo& info);
   friend class AutomationManifestPermission;
   friend class AutomationHandler;
 };

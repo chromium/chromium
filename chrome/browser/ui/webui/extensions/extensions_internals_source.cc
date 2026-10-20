@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
 
-#include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -484,20 +484,32 @@ base::DictValue FormatServiceWorkerKeepaliveData(
   return keepalive_data;
 }
 
-// Formats API and Manifest permissions, which can have details that we add as a
-// dictionary rather than just the string name
-template <typename T>
-base::ListValue FormatDetailedPermissionSet(const T& permissions) {
+// Formats API permissions. Permissions with details are added as a
+// {name: details} dictionary rather than just the string name.
+base::ListValue FormatDetailedAPIPermissionSet(
+    const extensions::APIPermissionSet& permissions) {
   base::ListValue value_list;
-  for (const auto& permission : permissions) {
-    if (auto detail = permission->ToValue()) {
+  for (const auto* permission : permissions) {
+    if (std::optional<base::Value> detail = permission->ToValue()) {
       base::DictValue tmp;
-      tmp.Set(permission->name(),
-              base::Value::FromUniquePtrValue(std::move(detail)));
+      tmp.Set(permission->name(), *std::move(detail));
       value_list.Append(std::move(tmp));
     } else {
       value_list.Append(permission->name());
     }
+  }
+  return value_list;
+}
+
+// Formats manifest permissions, which always have details, as
+// {name: details} dictionaries.
+base::ListValue FormatDetailedManifestPermissionSet(
+    const extensions::ManifestPermissionSet& permissions) {
+  base::ListValue value_list;
+  for (const auto* permission : permissions) {
+    base::DictValue tmp;
+    tmp.Set(permission->name(), permission->ToValue());
+    value_list.Append(std::move(tmp));
   }
   return value_list;
 }
@@ -511,9 +523,10 @@ base::DictValue FormatPermissionSet(
   value.Set(kPermissionsScriptableHostsKey,
             permission_set.scriptable_hosts().ToValue());
   value.Set(kPermissionsManifestKey,
-            FormatDetailedPermissionSet(permission_set.manifest_permissions()));
+            FormatDetailedManifestPermissionSet(
+                permission_set.manifest_permissions()));
   value.Set(kPermissionsApiKey,
-            FormatDetailedPermissionSet(permission_set.apis()));
+            FormatDetailedAPIPermissionSet(permission_set.apis()));
 
   return value;
 }

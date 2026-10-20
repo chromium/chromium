@@ -51,23 +51,21 @@ TEST(MimeTypesHandlerPermissionTest, Empty) {
   auto permission = std::make_unique<MimeTypesHandlerPermission>();
   AssertEmptyPermission(permission.get());
 
-  std::unique_ptr<base::Value> value = permission->ToValue();
-  ASSERT_TRUE(value);
+  base::Value value = permission->ToValue();
   auto restored = std::make_unique<MimeTypesHandlerPermission>();
-  EXPECT_TRUE(restored->FromValue(value.get()));
+  EXPECT_TRUE(restored->FromValue(&value));
   AssertEmptyPermission(restored.get());
 }
 
 TEST(MimeTypesHandlerPermissionTest, FromToValue) {
   auto permission = MakePermission({kText, kPdf});
 
-  std::unique_ptr<base::Value> value = permission->ToValue();
-  ASSERT_TRUE(value);
-  ASSERT_TRUE(value->is_list());
-  EXPECT_THAT(value->GetList(), ElementsAre(kPdf, kText));
+  base::Value value = permission->ToValue();
+  ASSERT_TRUE(value.is_list());
+  EXPECT_THAT(value.GetList(), ElementsAre(kPdf, kText));
 
   auto restored = std::make_unique<MimeTypesHandlerPermission>();
-  EXPECT_TRUE(restored->FromValue(value.get()));
+  EXPECT_TRUE(restored->FromValue(&value));
   EXPECT_TRUE(permission->Equal(restored.get()));
   EXPECT_THAT(restored->mime_types(), ElementsAre(kPdf, kText));
 }

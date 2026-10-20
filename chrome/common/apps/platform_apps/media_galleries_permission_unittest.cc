@@ -4,10 +4,12 @@
 
 // These tests make sure MediaGalleriesPermission values are parsed correctly.
 
+#include "chrome/common/apps/platform_apps/media_galleries_permission.h"
+
 #include <memory>
+#include <optional>
 
 #include "base/values.h"
-#include "chrome/common/apps/platform_apps/media_galleries_permission.h"
 #include "chrome/common/apps/platform_apps/media_galleries_permission_data.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_info.h"
@@ -268,9 +270,9 @@ TEST(MediaGalleriesPermissionTest, ToFromValue) {
   value_list.Append(MediaGalleriesPermission::kReadPermission);
   ASSERT_TRUE(permission1->FromValue(&value, nullptr, nullptr));
 
-  std::unique_ptr<base::Value> vtmp(permission1->ToValue());
+  std::optional<base::Value> vtmp = permission1->ToValue();
   ASSERT_TRUE(vtmp);
-  ASSERT_TRUE(permission2->FromValue(vtmp.get(), nullptr, nullptr));
+  ASSERT_TRUE(permission2->FromValue(&*vtmp, nullptr, nullptr));
   EXPECT_TRUE(permission1->Equal(permission2.get()));
 
   value_list.clear();
@@ -281,7 +283,7 @@ TEST(MediaGalleriesPermissionTest, ToFromValue) {
 
   vtmp = permission1->ToValue();
   ASSERT_TRUE(vtmp);
-  ASSERT_TRUE(permission2->FromValue(vtmp.get(), nullptr, nullptr));
+  ASSERT_TRUE(permission2->FromValue(&*vtmp, nullptr, nullptr));
   EXPECT_TRUE(permission1->Equal(permission2.get()));
 
   value_list.clear();
@@ -291,7 +293,7 @@ TEST(MediaGalleriesPermissionTest, ToFromValue) {
 
   vtmp = permission1->ToValue();
   ASSERT_TRUE(vtmp);
-  ASSERT_TRUE(permission2->FromValue(vtmp.get(), nullptr, nullptr));
+  ASSERT_TRUE(permission2->FromValue(&*vtmp, nullptr, nullptr));
   EXPECT_TRUE(permission1->Equal(permission2.get()));
 
   value_list.clear();
@@ -300,7 +302,7 @@ TEST(MediaGalleriesPermissionTest, ToFromValue) {
 
   vtmp = permission1->ToValue();
   ASSERT_TRUE(vtmp);
-  ASSERT_TRUE(permission2->FromValue(vtmp.get(), nullptr, nullptr));
+  ASSERT_TRUE(permission2->FromValue(&*vtmp, nullptr, nullptr));
   EXPECT_TRUE(permission1->Equal(permission2.get()));
 }
 
