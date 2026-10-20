@@ -230,7 +230,7 @@ PA_ALWAYS_INLINE PartitionPageMetadata* PartitionPageMetadata::FromAddr(
     [[maybe_unused]] std::ptrdiff_t metadata_offset) {
   uintptr_t super_page = address & kSuperPageBaseMask;
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   PA_DCHECK(IsWithinSuperPagePayload(address));
 #endif
 
@@ -319,7 +319,9 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
   PA_DCHECK(page_metadata->is_valid);
   PA_DCHECK(!page_metadata->slot_span_metadata_offset);
   auto* slot_span = &page_metadata->slot_span_metadata;
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   PA_DCHECK(DeducedRootIsValid(slot_span));
+#endif
   // For direct map, if |address| doesn't point within the first partition page,
   // |slot_span_metadata_offset| will be 0, |page_metadata| won't get shifted,
   // leaving |slot_size| at 0.
@@ -339,7 +341,9 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
   PA_DCHECK(page_metadata->is_valid);
   PA_DCHECK(!page_metadata->slot_span_metadata_offset);
   auto* slot_span = &page_metadata->slot_span_metadata;
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   PA_DCHECK(DeducedRootIsValid(slot_span));
+#endif
   // For direct map, if |address| doesn't point within the first partition page,
   // |slot_span_metadata_offset| will be 0, |page_metadata| won't get shifted,
   // leaving |slot_size| at 0.
@@ -369,7 +373,7 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromSlotStart(
     [[maybe_unused]] std::ptrdiff_t offset) {
   auto* slot_span = FromAddr(slot_start.value(), offset);
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   // Checks that the pointer is a multiple of slot size.
   size_t offset_in_slot_span = static_cast<size_t>(
       ToSlotSpanStart(slot_span, offset).offset(slot_start));
@@ -400,14 +404,14 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerAddr(
     uintptr_t address,
     [[maybe_unused]] std::ptrdiff_t offset) {
   auto* slot_span = FromAddr(address, offset);
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   // Checks that the address is within the expected object boundaries.
   ptrdiff_t shift_from_slot_start =
       ToSlotSpanStart(slot_span, offset).offset(address) %
       static_cast<ptrdiff_t>(slot_span->bucket->slot_size);
   DCheckIsValidShiftFromSlotStart(
       slot_span, static_cast<uintptr_t>(shift_from_slot_start));
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   return slot_span;
 }
 

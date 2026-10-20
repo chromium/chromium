@@ -583,7 +583,11 @@ PartitionRoot::GetSlotStartAndSlotSpanFromAddress(void* object) {
   PA_CHECK(IsManagedByPartitionAlloc(object_addr));
 #endif
 
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   SlotStart slot_start = SlotStart::Checked(object, this);
+#else
+  SlotStart slot_start = SlotStart::Unchecked(object);
+#endif
   SlotSpanMetadata* slot_span =
       SlotSpanMetadata::FromAddr(slot_start.Untag().value(), this);
   PA_DCHECK(PartitionRoot::FromSlotSpanMetadata(slot_span) == this);
@@ -638,7 +642,9 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
   //   b. Otherwise, call the "raw" allocator <-- Locking
   PA_DCHECK(slot_start);
   PA_DCHECK(slot_span);
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   PA_DCHECK(DeducedRootIsValid(slot_span));
+#endif
 
   // Layout inside the slot:
   //   |...object...|[empty]|[cookie]|[unused]|[metadata]|
@@ -1473,7 +1479,7 @@ PartitionRoot::AllocInternalNoHooks(size_t requested_size,
           .usable_size = AdjustSizeForExtrasSubtract(maybe_slot_and_size->size),
       };
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
       // Make sure that the allocated pointer comes from the same place it would
       // for a non-thread cache allocation.
       SlotSpanMetadata* slot_span = SlotSpanMetadata::FromSlotStart(
