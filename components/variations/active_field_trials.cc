@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/process/launch.h"
@@ -33,7 +34,7 @@ std::string& GetSeedVersionInternal() {
 }
 
 void AppendActiveGroupIdsAsStrings(
-    const std::vector<ActiveGroupId> name_group_ids,
+    base::span<const ActiveGroupId> name_group_ids,
     std::vector<std::string>* output) {
   for (const auto& active_group_id : name_group_ids) {
     output->push_back(base::StringPrintf("%x-%x", active_group_id.name,
@@ -146,22 +147,17 @@ void GetSyntheticTrialGroupIdsAsString(std::vector<std::string>* output) {
 }
 
 bool HasSyntheticTrial(std::string_view trial_name) {
-  std::vector<std::string> synthetic_trials;
-  variations::GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
-  std::string trial_hash = variations::HashNameAsHexString(trial_name);
-  return std::ranges::any_of(synthetic_trials, [&trial_hash](
-                                                   const auto& trial) {
-    return base::StartsWith(trial, trial_hash, base::CompareCase::SENSITIVE);
-  });
+  uint32_t trial_hash = HashName(trial_name);
+  return std::ranges::contains(
+      SyntheticTrialsActiveGroupIdProvider::GetInstance()->GetActiveGroupIds(),
+      trial_hash, &ActiveGroupId::name);
 }
 
 bool IsInSyntheticTrialGroup(std::string_view trial_name,
                              std::string_view trial_group) {
-  std::vector<std::string> synthetic_trials;
-  GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
   return std::ranges::contains(
-      synthetic_trials,
-      base::StringPrintf("%x-%x", HashName(trial_name), HashName(trial_group)));
+      SyntheticTrialsActiveGroupIdProvider::GetInstance()->GetActiveGroupIds(),
+      MakeActiveGroupId(trial_name, trial_group));
 }
 
 void SetSeedVersion(std::string_view seed_version) {

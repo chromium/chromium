@@ -31,6 +31,9 @@ inline constexpr std::string_view kOverrideSuffix = "_MANUALLY_FORCED";
 // The Unique ID of a trial and its active group, where the name and group
 // identifiers are hashes of the trial and group name strings.
 struct COMPONENT_EXPORT(VARIATIONS) ActiveGroupId {
+  friend constexpr bool operator==(const ActiveGroupId&,
+                                   const ActiveGroupId&) = default;
+
   uint32_t name;
   uint32_t group;
 };

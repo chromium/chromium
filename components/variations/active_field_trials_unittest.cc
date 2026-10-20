@@ -8,7 +8,11 @@
 
 #include <string_view>
 
+#include "base/test/task_environment.h"
 #include "components/variations/hashing.h"
+#include "components/variations/synthetic_trials.h"
+#include "components/variations/synthetic_trials_active_group_id_provider.h"
+#include "components/variations/variations_crash_keys.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
@@ -99,6 +103,48 @@ TEST(ActiveFieldTrialsTest,
   EXPECT_EQ(active_group_ids[0].name, HashName("trial one_suffix"));
   EXPECT_EQ(active_group_ids[0].group,
             HashName("group one_suffix_MANUALLY_FORCED"));
+}
+
+TEST(ActiveFieldTrialsTest, HasSyntheticTrial) {
+  base::test::TaskEnvironment task_environment;
+  InitCrashKeys();
+  auto* provider = SyntheticTrialsActiveGroupIdProvider::GetInstance();
+  provider->ResetForTesting();
+
+  EXPECT_FALSE(HasSyntheticTrial("SyntheticTrialA"));
+
+  SyntheticTrialGroup group("SyntheticTrialA", "GroupA",
+                            SyntheticTrialAnnotationMode::kNextLog);
+  static_cast<SyntheticTrialObserver*>(provider)->OnSyntheticTrialsChanged(
+      {group}, {}, {group});
+
+  EXPECT_TRUE(HasSyntheticTrial("SyntheticTrialA"));
+  EXPECT_FALSE(HasSyntheticTrial("SyntheticTrialB"));
+
+  provider->ResetForTesting();
+  ClearCrashKeysInstanceForTesting();
+}
+
+TEST(ActiveFieldTrialsTest, IsInSyntheticTrialGroup) {
+  base::test::TaskEnvironment task_environment;
+  InitCrashKeys();
+  auto* provider = SyntheticTrialsActiveGroupIdProvider::GetInstance();
+  provider->ResetForTesting();
+
+  EXPECT_FALSE(IsInSyntheticTrialGroup("SyntheticTrialA", "GroupA"));
+
+  SyntheticTrialGroup group("SyntheticTrialA", "GroupA",
+                            SyntheticTrialAnnotationMode::kNextLog);
+  static_cast<SyntheticTrialObserver*>(provider)->OnSyntheticTrialsChanged(
+      {group}, {}, {group});
+
+  EXPECT_TRUE(IsInSyntheticTrialGroup("SyntheticTrialA", "GroupA"));
+  EXPECT_FALSE(IsInSyntheticTrialGroup("SyntheticTrialA", "GroupB"));
+  EXPECT_FALSE(IsInSyntheticTrialGroup("SyntheticTrialB", "GroupA"));
+  EXPECT_FALSE(IsInSyntheticTrialGroup("SyntheticTrialB", "GroupB"));
+
+  provider->ResetForTesting();
+  ClearCrashKeysInstanceForTesting();
 }
 
 }  // namespace
