@@ -77,7 +77,6 @@ if (!is_android) {
     deps = [
       ":headless",
       "//base",
-      "//chrome/common:non_code_constants",
       "//components/headless/command_handler",
       "//components/keep_alive_registry",
       "//content/public/browser",
