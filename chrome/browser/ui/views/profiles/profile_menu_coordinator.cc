@@ -36,8 +36,10 @@ ProfileMenuCoordinator::~ProfileMenuCoordinator() {
   }
 }
 
-void ProfileMenuCoordinator::Show(bool is_source_accelerator,
-                                  bool from_avatar_promo) {
+void ProfileMenuCoordinator::Show(
+    bool is_source_accelerator,
+    bool from_avatar_promo,
+    base::ScopedClosureRunner keep_anchor_visible) {
   // TODO(crbug.com/425953501): Update this code.
   auto avatar_toolbar_button = GetAvatarToolbarButton();
 
@@ -54,20 +56,27 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator,
   // other promos (such as History Sync), while still fetching local data count
   // to show the batch upload row item in the menu.
   const bool allow_batch_upload_promos = from_avatar_promo;
+
+  // `keep_anchor_visible` is bound to the callback, so that the avatar button
+  // stays visible while waiting for the results. If the callback is dropped,
+  // `keep_anchor_visible` will be destroyed, allowing the button to be hidden
+  // again.
   signin::ComputeProfileMenuAvatarButtonPromoInfo(
       *GetProfile(),
       base::BindOnce(&ProfileMenuCoordinator::ShowWithPromoResults,
                      weak_pointer_factory_.GetWeakPtr(), is_source_accelerator,
-                     from_avatar_promo),
+                     from_avatar_promo, std::move(keep_anchor_visible)),
       allow_batch_upload_promos);
 #else
-  ShowWithPromoResults(is_source_accelerator, from_avatar_promo);
+  ShowWithPromoResults(is_source_accelerator, from_avatar_promo,
+                       std::move(keep_anchor_visible));
 #endif
 }
 
 void ProfileMenuCoordinator::ShowWithPromoResults(
     bool is_source_accelerator,
-    bool from_avatar_promo
+    bool from_avatar_promo,
+    base::ScopedClosureRunner keep_anchor_visible
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     ,
     signin::ProfileMenuAvatarButtonPromoInfo promo_info
@@ -117,6 +126,9 @@ void ProfileMenuCoordinator::ShowWithPromoResults(
   auto* bubble_ptr = bubble.get();
   CHECK_EQ(nullptr, bubble_tracker_.view(), base::NotFatalUntil::M162);
   bubble_tracker_.SetView(bubble_ptr);
+  // Keep the avatar button from being hidden until the bubble is destroyed.
+  bubble_tracker_.SetIsDeletingCallback(
+      base::DoNothingWithBoundArgs(std::move(keep_anchor_visible)));
 
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));

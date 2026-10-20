@@ -474,6 +474,7 @@ export class ToolbarAppElement extends AppElementBase {
       accessibilityDescription: '',
       enabled: true,
       hasLinearGradientRing: false,
+      preventOverflow: false,
     },
     overflowButtonControlState: {
       isContextMenuVisible: false,

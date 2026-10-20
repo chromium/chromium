@@ -447,7 +447,10 @@ void AvatarToolbarButton::OnThemeChanged() {
 }
 
 void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
-  state_manager_.HandleButtonPressed(is_source_accelerator);
+  // The Views toolbar pops the button out once the profile menu is shown (see
+  // ToolbarController's PopOutHandler), so no token is needed.
+  state_manager_.HandleButtonPressed(is_source_accelerator,
+                                     /*keep_anchor_visible=*/{});
 }
 
 void AvatarToolbarButton::AfterPropertyChange(const void* key,

@@ -1340,7 +1340,9 @@ void WebUIToolbarWebView::OverflowButtonClicked(
     media_control_.OnClicked();
     return;
   } else if (identifier == kToolbarAvatarButtonElementId) {
-    // TODO(crbug.com/556290451): Make buttons work with overflow menu clicks.
+    // ButtonPressed() makes the button visible before showing any bubble
+    // anchored to it.
+    avatar_control_.ButtonPressed(/*is_source_accelerator=*/false);
     return;
   }
   NOTREACHED();

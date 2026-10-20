@@ -75,6 +75,10 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
     accessibilityDescription: '',
     enabled: true,
     hasLinearGradientRing: false,
+
+    // This field is from OverflowableButtonState (in addition to
+    // AvatarControlState), and is used by OverflowableButtonMixin.
+    preventOverflow: false,
   };
 
   protected highlightTracker: HighlightTracker = new HighlightTracker();

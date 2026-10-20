@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/signin_promo_util.h"
@@ -40,7 +41,13 @@ class ProfileMenuCoordinator {
   //
   // If `from_avatar_promo` is set, then trigger of the menu originated from a
   // promo that was shown on the AvatarButton.
-  void Show(bool is_source_accelerator, bool from_avatar_promo = false);
+  //
+  // `keep_anchor_visible` is kept alive until the menu is closed, or destroyed
+  // immediately if no menu is shown, so callers can keep the avatar button
+  // visible while the menu is anchored to it.
+  void Show(bool is_source_accelerator,
+            bool from_avatar_promo = false,
+            base::ScopedClosureRunner keep_anchor_visible = {});
 
   // Returns true if the bubble is currently showing for the owning browser.
   bool IsShowing() const;
@@ -56,7 +63,8 @@ class ProfileMenuCoordinator {
   views::BubbleAnchor GetAvatarToolbarButton();
 
   void ShowWithPromoResults(bool is_source_accelerator,
-                            bool from_avatar_promo
+                            bool from_avatar_promo,
+                            base::ScopedClosureRunner keep_anchor_visible
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
                             ,
                             signin::ProfileMenuAvatarButtonPromoInfo promo_info

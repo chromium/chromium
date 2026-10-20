@@ -59,6 +59,8 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -2880,8 +2882,14 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
 
   // Simulates a mouse click on the MenuItemView labelled with the string
   // `label_id` within `overflow_menu`, and waits for the menu to close.
-  [[nodiscard]] bool ClickOverflowMenuItem(OverflowMenu& overflow_menu,
-                                           int label_id) {
+  // `overflow_menu` must belong to `browser_instance`, if non-null, or
+  // browser() otherwise.
+  [[nodiscard]] bool ClickOverflowMenuItem(
+      OverflowMenu& overflow_menu,
+      int label_id,
+      BrowserWindowInterface* browser_instance = nullptr) {
+    BrowserWindowInterface* target_browser =
+        browser_instance ? browser_instance : browser();
     views::MenuItemView* root_item = overflow_menu.root_menu_item();
     if (!root_item || !root_item->GetSubmenu()) {
       return false;
@@ -2911,11 +2919,61 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
     }
 
     WebUIOverflowButton* overflow_button =
-        &GetWebUIToolbar()->overflow_button_for_testing();
+        &GetWebUIToolbar(target_browser)->overflow_button_for_testing();
     // Wait for overflow menu to fully close.
     return base::test::RunUntil([&]() -> bool {
       return !overflow_button->overflow_menu_for_testing();
     });
+  }
+
+  // Clicks the avatar item on `overflow_menu` (which must belong to
+  // `target_browser`) and checks that the profile menu is shown anchored to the
+  // avatar button, which stays visible until the menu is closed. Expects the
+  // forward button to stay overflowed.
+  void ClickOverflowMenuAvatarButtonAndCheckProfileMenu(
+      OverflowMenu& overflow_menu,
+      BrowserWindowInterface* target_browser) {
+    // Click the avatar button in the overflow menu and wait for the overflow
+    // menu to close.
+    ASSERT_TRUE(ClickOverflowMenuItem(
+        overflow_menu, IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE, target_browser));
+
+    // The button is hidden when the overflow menu item is clicked, so the
+    // browser has to ask the WebUI to display it before the profile menu can be
+    // anchored to it.
+    ASSERT_TRUE(WaitForTrackedElementVisible(kToolbarAvatarButtonElementId,
+                                             target_browser));
+
+    // The profile menu should be shown once the button becomes visible.
+    ProfileMenuCoordinator* const profile_menu_coordinator =
+        ProfileMenuCoordinator::From(target_browser);
+    ASSERT_TRUE(profile_menu_coordinator);
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() -> bool { return profile_menu_coordinator->IsShowing(); }));
+
+    // The profile menu must be anchored to the button itself. The element is
+    // looked up again here rather than reusing the one above, since showing the
+    // menu may have destroyed and recreated it.
+    ui::TrackedElement* avatar_element = WaitForTrackedElementVisible(
+        kToolbarAvatarButtonElementId, target_browser);
+    ASSERT_TRUE(avatar_element);
+    ProfileMenuViewBase* const profile_menu =
+        profile_menu_coordinator->GetProfileMenuViewBaseForTesting();
+    ASSERT_TRUE(profile_menu);
+    EXPECT_EQ(profile_menu->GetAnchorRect(), avatar_element->GetScreenBounds());
+
+    // The button must stay visible for as long as the profile menu is anchored
+    // to it, even though it would otherwise overflow at this window size.
+    EXPECT_TRUE(WaitForTrackedElements(
+        {kToolbarOverflowButtonElementId, kToolbarAvatarButtonElementId},
+        {kToolbarForwardButtonElementId}, target_browser));
+
+    // Closing the profile menu should allow the button to overflow again.
+    profile_menu->GetWidget()->Close();
+    EXPECT_TRUE(WaitForTrackedElements(
+        {kToolbarOverflowButtonElementId},
+        {kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId},
+        target_browser));
   }
 
   // Waits until the pinned toolbar actions, from left to right, match
@@ -3779,9 +3837,46 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   overflow_menu->root_menu_item()->Cancel();
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// Test clicking the avatar button when it appears on the overflow menu.
+// ChromeOS doesn't show the avatar button for normal profiles, so it's covered
+// by OverflowMenuAvatarButtonChromeOSEnabled instead.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
+                       OverflowMenuClickAvatarButton) {
+  // Wait until avatar button is visible initially.
+  ASSERT_TRUE(WaitForTrackedElements({kToolbarAvatarButtonElementId}));
+
+  // Set the spacer width to the full width of the window, forcing all
+  // overflowable elements into the overflow menu.
+  gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
+  ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
+
+  // Wait for forward and avatar buttons to be hidden and overflow button to be
+  // visible.
+  ASSERT_TRUE(WaitForTrackedElements(
+      {kToolbarOverflowButtonElementId},
+      {kToolbarForwardButtonElementId, kToolbarAvatarButtonElementId}));
+
+  OverflowMenu* overflow_menu = OpenOverflowMenu();
+  ASSERT_TRUE(overflow_menu);
+
+  // Check that the overflow menu has forward, a separator, and the avatar
+  // button, in that order.
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu,
+      {// The forward button should be disabled, since the back button has
+       // never been pressed.
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false}},
+      /*expect_avatar_button_if_not_chromeos=*/true));
+
+  ASSERT_NO_FATAL_FAILURE(ClickOverflowMenuAvatarButtonAndCheckProfileMenu(
+      *overflow_menu, browser()));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Test that on ChromeOS, the avatar button on the overflow menu is enabled
-// in an Incognito profile.
+// in an Incognito profile, and clicking it shows the profile menu.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
                        OverflowMenuAvatarButtonChromeOSEnabled) {
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
@@ -3831,6 +3926,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
        kSeparator,
        {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE}},
       /*expect_avatar_button_if_not_chromeos=*/false));
+
+  // Clicking the avatar button should show the (Incognito) profile menu.
+  ASSERT_NO_FATAL_FAILURE(ClickOverflowMenuAvatarButtonAndCheckProfileMenu(
+      *overflow_menu, incognito_browser));
 }
 
 class WebUIToolbarChromeOSGuestInteractiveUiTest

@@ -134,11 +134,18 @@ class StateProvider {
   // Returns the accessibility label of the button.
   virtual std::optional<std::u16string> GetAccessibilityLabel() const;
 
+  // Action run when the button is pressed. `keep_anchor_visible` keeps the
+  // button from being hidden (e.g., due to WebUI toolbar overflow) while alive.
+  // Actions that show a bubble anchored to the avatar button should keep it
+  // alive while that bubble is open; otherwise it should be destroyed.
+  using ButtonAction = base::RepeatingCallback<void(
+      bool is_source_accelerator,
+      base::ScopedClosureRunner keep_anchor_visible)>;
+
   // Returns the action to be used when the button is pressed. This is used to
   // override the default action of the button (defined by
   // `AvatarToolbarButtonDelegate`) when it is pressed.
-  virtual std::optional<base::RepeatingCallback<void(bool)>>
-  GetButtonActionOverride();
+  virtual std::optional<ButtonAction> GetButtonActionOverride();
 
   virtual void OnButtonPressed();
   virtual void OnIconUpdated();
@@ -265,8 +272,13 @@ class AvatarToolbarButtonStateManager
                               int avatar_size,
                               bool is_label_visible) const;
 
-  // Shared button press logic.
-  void HandleButtonPressed(bool is_source_accelerator);
+  // Shared button press logic. Callers should make the button visible first,
+  // where possible. `keep_anchor_visible` keeps the button from being hidden
+  // (e.g., due to WebUI toolbar overflow) while alive. It is passed along to
+  // whatever action is taken, which will keep it alive as long as it shows a
+  // bubble anchored to the button.
+  void HandleButtonPressed(bool is_source_accelerator,
+                           base::ScopedClosureRunner keep_anchor_visible);
 
   void MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
       const AccountInfo& account_info);

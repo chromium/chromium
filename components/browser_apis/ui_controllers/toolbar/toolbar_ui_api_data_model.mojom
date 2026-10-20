@@ -391,6 +391,17 @@ struct AvatarControlState {
   mojo_base.mojom.String16 accessibility_description;
   bool enabled = true;
   bool has_linear_gradient_ring = false;
+
+  // When true, the button is exempt from overflow logic, which normally hides
+  // the button and adds it to the overflow menu when there's insufficient space
+  // for it to fit.
+  //
+  // Set while the browser is waiting to show a bubble anchored to the avatar
+  // button (e.g., the profile menu), and while that bubble is open, since the
+  // bubble needs the button to remain visible.
+  //
+  // Corresponds to `OverflowableButtonState.preventOverflow`.
+  bool prevent_overflow = false;
 };
 
 // Current state related to and managed by the overflow button.

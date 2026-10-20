@@ -428,9 +428,21 @@ class ExplicitStateProvider : public StateProvider {
     return accessibility_label_;
   }
 
-  std::optional<base::RepeatingCallback<void(bool)>> GetButtonActionOverride()
-      override {
-    return explicit_action_;
+  std::optional<ButtonAction> GetButtonActionOverride() override {
+    if (!explicit_action_) {
+      return std::nullopt;
+    }
+    // Explicit actions don't show bubbles anchored to the avatar button, so
+    // `keep_anchor_visible` can be released as soon as the action is run.
+    // TODO(crbug.com/556290451): Avoid waiting for the button to become visible
+    // before running explicit actions.
+    return base::BindRepeating(
+        [](const base::RepeatingCallback<void(bool)>& action,
+           bool is_source_accelerator,
+           base::ScopedClosureRunner keep_anchor_visible) {
+          action.Run(is_source_accelerator);
+        },
+        *explicit_action_);
   }
 
   // Used as the callback closure to the setter of the explicit state,
@@ -664,8 +676,7 @@ class OnSigninStateProvider : public StateProvider {
     return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS);
   }
 
-  std::optional<base::RepeatingCallback<void(bool)>> GetButtonActionOverride()
-      override {
+  std::optional<ButtonAction> GetButtonActionOverride() override {
     return base::BindRepeating(
         &OnSigninStateProvider::OnButtonClick,
         // This is safe because `AvatarToolbarButtonDelegate`
@@ -676,8 +687,11 @@ class OnSigninStateProvider : public StateProvider {
   void ClearForTesting() override { coordinator_->Collapse(); }
 
  private:
-  void OnButtonClick(bool is_source_accelerator) {
-    ProfileMenuCoordinator::From(&browser_.get())->Show(is_source_accelerator);
+  void OnButtonClick(bool is_source_accelerator,
+                     base::ScopedClosureRunner keep_anchor_visible) {
+    ProfileMenuCoordinator::From(&browser_.get())
+        ->Show(is_source_accelerator, /*from_avatar_promo=*/false,
+               std::move(keep_anchor_visible));
     coordinator_->Collapse();
   }
 
@@ -1327,8 +1341,7 @@ class PromoStateProvider : public StateProvider {
     }
   }
 
-  std::optional<base::RepeatingCallback<void(bool)>> GetButtonActionOverride()
-      override {
+  std::optional<ButtonAction> GetButtonActionOverride() override {
     return base::BindRepeating(
         &PromoStateProvider::OnButtonClick,
         // This is safe because `AvatarToolbarButtonStateManager`
@@ -1343,10 +1356,11 @@ class PromoStateProvider : public StateProvider {
   }
 
  private:
-  void OnButtonClick(bool is_source_accelerator) {
+  void OnButtonClick(bool is_source_accelerator,
+                     base::ScopedClosureRunner keep_anchor_visible) {
     ProfileMenuCoordinator::From(&browser_.get())
         ->Show(is_source_accelerator,
-               /*from_avatar_promo=*/true);
+               /*from_avatar_promo=*/true, std::move(keep_anchor_visible));
     coordinator_->PromoUsed();
   }
 
@@ -2105,7 +2119,7 @@ std::optional<std::u16string> StateProvider::GetAccessibilityLabel() const {
   return std::nullopt;
 }
 
-std::optional<base::RepeatingCallback<void(bool)>>
+std::optional<StateProvider::ButtonAction>
 StateProvider::GetButtonActionOverride() {
   return std::nullopt;
 }
@@ -2253,7 +2267,8 @@ void AvatarToolbarButtonStateManager::RegisterObserver(Observer* observer) {
 }
 
 void AvatarToolbarButtonStateManager::HandleButtonPressed(
-    bool is_source_accelerator) {
+    bool is_source_accelerator,
+    base::ScopedClosureRunner keep_anchor_visible) {
 #if !BUILDFLAG(IS_CHROMEOS)
   if (browser_ &&
       BrowserUserEducationInterface::From(browser_)->IsFeaturePromoActive(
@@ -2283,16 +2298,18 @@ void AvatarToolbarButtonStateManager::HandleButtonPressed(
   NotifyButtonPressed();
 
   StateProvider* active_state_provider = GetActiveStateProvider();
-  std::optional<base::RepeatingCallback<void(bool)>> action_override =
+  std::optional<StateProvider::ButtonAction> action_override =
       active_state_provider->GetButtonActionOverride();
   if (action_override.has_value()) {
-    action_override->Run(is_source_accelerator);
+    action_override->Run(is_source_accelerator, std::move(keep_anchor_visible));
     return;
   }
 
   // By default, show the profile menu.
   if (browser_ && ProfileMenuCoordinator::From(browser_)) {
-    ProfileMenuCoordinator::From(browser_)->Show(is_source_accelerator);
+    ProfileMenuCoordinator::From(browser_)->Show(
+        is_source_accelerator, /*from_avatar_promo=*/false,
+        std::move(keep_anchor_visible));
   }
 }
 

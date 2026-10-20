@@ -4,14 +4,20 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_avatar_toolbar_button.h"
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
@@ -20,6 +26,7 @@
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/user_education/common/user_education_class_properties.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/image_model_utils.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -187,7 +194,13 @@ void WebUIAvatarToolbarButton::RemoveObserver(
 
 void WebUIAvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
   if (state_manager_ && delegate_->GetView()->GetWidget()) {
-    state_manager_->HandleButtonPressed(is_source_accelerator);
+    // Pressing the button typically shows a bubble anchored to it, so wait
+    // until the button is visible before handling the press. This is needed
+    // for presses from the overflow menu or accelerators while the button is
+    // overflowed.
+    RunWhenVisible(
+        base::BindOnce(&WebUIAvatarToolbarButton::OnButtonPressedAndVisible,
+                       weak_ptr_factory_.GetWeakPtr(), is_source_accelerator));
   }
 }
 
@@ -317,6 +330,7 @@ void WebUIAvatarToolbarButton::UpdateState() {
   state->accessibility_name = name;
   state->accessibility_description = description;
   state->enabled = is_enabled;
+  state->prevent_overflow = prevent_overflow_count_ > 0;
 
   if (delegate_) {
     delegate_->OnAvatarControlStateChanged(std::move(state));
@@ -325,4 +339,109 @@ void WebUIAvatarToolbarButton::UpdateState() {
 
 void WebUIAvatarToolbarButton::UpdateAccessibilityLabel() {
   UpdateState();
+}
+
+void WebUIAvatarToolbarButton::RunWhenVisible(WhenVisibleCallback callback) {
+  // In unit tests, there may be no browser object.
+  if (!delegate_->GetBrowser()) {
+    return;
+  }
+
+  // If the button is never shown for this profile (e.g., regular profiles on
+  // ChromeOS), it will never become visible, so there's no point in waiting for
+  // it. Run `callback` immediately instead.
+  if (!AvatarToolbarButtonInterface::CanShowForProfile(
+          delegate_->GetBrowser()->GetProfile())) {
+    std::move(callback).Run(base::ScopedClosureRunner());
+    return;
+  }
+
+  // Prevent overflow even if the button is currently visible, as the caller
+  // may show a bubble anchored to it, and the button must remain visible as
+  // long as that bubble is open.
+  base::ScopedClosureRunner keep_visible = PreventOverflow();
+
+  if (GetVisibleButtonElement()) {
+    std::move(callback).Run(std::move(keep_visible));
+    return;
+  }
+
+  // Otherwise, the button is not visible, most likely because it has
+  // overflowed. PreventOverflow() above will have pushed a state update telling
+  // the WebUI to show it, so wait until it's visible. `keep_visible` is bound
+  // to the callback, so overflow stays prevented while waiting.
+  pending_callbacks_.push_back(
+      base::BindOnce(std::move(callback), std::move(keep_visible)));
+  if (!button_shown_subscription_) {
+    BrowserElements* const elements =
+        BrowserElements::From(delegate_->GetBrowser());
+    CHECK(elements);
+    button_shown_subscription_ =
+        ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+            kToolbarAvatarButtonElementId, elements->GetContext(),
+            base::BindRepeating(&WebUIAvatarToolbarButton::OnButtonShown,
+                                base::Unretained(this)));
+  }
+}
+
+base::ScopedClosureRunner WebUIAvatarToolbarButton::PreventOverflow() {
+  ++prevent_overflow_count_;
+  // Need to UpdateState() if we're starting to prevent overflow, to inform the
+  // WebUI. Otherwise, incrementing has no effect.
+  if (prevent_overflow_count_ == 1) {
+    UpdateState();
+  }
+  return base::ScopedClosureRunner(
+      base::BindOnce(&WebUIAvatarToolbarButton::OnPreventOverflowReleased,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WebUIAvatarToolbarButton::OnPreventOverflowReleased() {
+  CHECK_GT(prevent_overflow_count_, 0);
+  --prevent_overflow_count_;
+  // Need to UpdateState() if we're no longer preventing overflow, to inform the
+  // WebUI. Otherwise, decrementing is a no-op.
+  if (prevent_overflow_count_ == 0) {
+    UpdateState();
+  }
+}
+
+ui::TrackedElement* WebUIAvatarToolbarButton::GetVisibleButtonElement() {
+  BrowserElements* const elements =
+      BrowserElements::From(delegate_->GetBrowser());
+  // The BrowserElements class is owned by the browser, so should always exist
+  // as long as the browser does, and this class should be torn down with the
+  // browser.
+  CHECK(elements);
+  return elements->GetElement(kToolbarAvatarButtonElementId);
+}
+
+void WebUIAvatarToolbarButton::OnButtonShown(ui::TrackedElement* element) {
+  // This is always true, because there's no way to cancel requests.
+  CHECK(!pending_callbacks_.empty());
+
+  button_shown_subscription_ = {};
+  std::vector<base::OnceClosure> callbacks =
+      std::exchange(pending_callbacks_, {});
+
+  // The button is only hidden in response to messages from the WebUI, so it
+  // can't be hidden again while these run.
+  for (base::OnceClosure& callback : callbacks) {
+    std::move(callback).Run();
+  }
+}
+
+void WebUIAvatarToolbarButton::OnButtonPressedAndVisible(
+    bool is_source_accelerator,
+    base::ScopedClosureRunner keep_visible) {
+  // The widget may have been destroyed while waiting for the button to be
+  // shown.
+  if (!delegate_->GetView()->GetWidget()) {
+    return;
+  }
+
+  // `state_manager_` was checked before binding this method, and is not
+  // modified after construction, so cannot be nullptr.
+  state_manager_->HandleButtonPressed(is_source_accelerator,
+                                      std::move(keep_visible));
 }
