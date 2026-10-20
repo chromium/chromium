@@ -17,6 +17,7 @@ from . import (
 
 pytestmark = pytest.mark.asyncio
 
+CONTEXT_DESTROYED_EVENT = "browsingContext.contextDestroyed"
 CONTEXT_LOAD_EVENT = "browsingContext.load"
 
 
@@ -29,13 +30,14 @@ async def test_down_closes_browsing_context(
     inline,
     subscribe_events,
     wait_for_event,
+    wait_for_future_safe,
     mouse_up
 ):
     url = inline("""<input onmousedown="window.close()">close</input>""")
 
     # Opening a new context via `window.open` is required
     # for the script to be able to close it.
-    await subscribe_events(events=[CONTEXT_LOAD_EVENT])
+    await subscribe_events(events=[CONTEXT_LOAD_EVENT, CONTEXT_DESTROYED_EVENT])
     on_load = wait_for_event(CONTEXT_LOAD_EVENT)
 
     await bidi_session.script.evaluate(
@@ -48,6 +50,10 @@ async def test_down_closes_browsing_context(
 
     element = await get_element("input", context=new_context)
     origin = get_element_origin(element)
+
+    # Listen for contextDestroyed before performing actions, as the context may
+    # be destroyed before perform_actions returns.
+    on_destroyed = wait_for_event(CONTEXT_DESTROYED_EVENT)
 
     if mouse_up:
         actions = Actions()
@@ -74,6 +80,11 @@ async def test_down_closes_browsing_context(
         await bidi_session.input.perform_actions(
             actions=actions, context=new_context["context"]
         )
+
+    # Wait for the context to be destroyed, as window.close() queues a task to
+    # close and destroy the traversable:
+    # https://html.spec.whatwg.org/#dom-window-close
+    await wait_for_future_safe(on_destroyed)
 
     with pytest.raises(NoSuchFrameException):
         await bidi_session.browsing_context.get_tree(root=new_context["context"], max_depth=0)

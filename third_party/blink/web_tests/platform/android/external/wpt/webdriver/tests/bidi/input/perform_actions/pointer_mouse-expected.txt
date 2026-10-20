@@ -1,6 +1,4 @@
 This is a wdspec test.
-[FAIL] test_down_closes_browsing_context[without up]
-  Failed: DID NOT RAISE <class 'webdriver.bidi.error.NoSuchFrameException'>
 [FAIL] test_click_at_coordinates
   assert 0 == 4
 Harness: the test ran to completion.
