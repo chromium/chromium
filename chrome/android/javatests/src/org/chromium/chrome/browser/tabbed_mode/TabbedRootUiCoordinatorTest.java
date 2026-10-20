@@ -67,7 +67,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.glic.GlicEnabling;
-import org.chromium.chrome.browser.glic.GlicNavigationUtils;
+import org.chromium.chrome.browser.glic.settings.GlicNavigationUtils;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.metrics.UmaSessionStatsJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;

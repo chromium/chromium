@@ -20,8 +20,8 @@ import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonControll
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
-import org.chromium.chrome.browser.glic.GlicButtonDelegate;
-import org.chromium.chrome.browser.glic.GlicToolbarButtonController;
+import org.chromium.chrome.browser.glic.toolbar_button.GlicButtonDelegate;
+import org.chromium.chrome.browser.glic.toolbar_button.GlicToolbarButtonController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonController;

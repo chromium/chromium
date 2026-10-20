@@ -8,7 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
-#include "chrome/browser/glic/android/glic_navigation_utils_android.h"
+#include "chrome/browser/glic/android/settings/glic_navigation_utils_android.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 
 namespace glic {

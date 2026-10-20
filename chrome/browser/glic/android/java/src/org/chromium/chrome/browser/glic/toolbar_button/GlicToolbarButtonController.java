@@ -1,0 +1,332 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.glic.toolbar_button;
+
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+
+import androidx.appcompat.content.res.AppCompatResources;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ActorTask;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.glic.GlicHelper;
+import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
+import org.chromium.chrome.browser.glic.GlicUiHelper;
+import org.chromium.chrome.browser.glic.R;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.drawable.DirtyDotDrawableWrapper;
+
+import java.util.List;
+import java.util.function.Supplier;
+
+/** Defines a toolbar button to open the Glic bottom sheet. */
+@NullMarked
+public class GlicToolbarButtonController extends BaseButtonDataProvider {
+    public static final int ACTION_CHIP_COLLAPSE_DELAY_MS = 30000;
+
+    private final Activity mActivity;
+    private final GlicButtonDelegate mToggleGlicCallback;
+    private final Supplier<@Nullable Tracker> mTrackerSupplier;
+    private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
+    private final @Nullable Runnable mRecomputeUiStateCallback;
+    private final ButtonSpec mDefaultSpec;
+    private @Nullable ButtonSpec mWorkingSpec;
+    private @Nullable ButtonSpec mReviewSpec;
+    private @Nullable ButtonSpec mDoneSpec;
+    private @Nullable Drawable mCollapsedDrawable;
+    private final GlicButtonStateController mStateController;
+
+    private @Nullable GlicTaskMenuCoordinator mTaskMenuCoordinator;
+
+    /**
+     * @param activity The Android activity.
+     * @param activeTabSupplier The currently active tab.
+     * @param toggleGlicCallback Callback to run when the button is clicked to open Glic.
+     * @param trackerSupplier Supplier for the current profile tracker.
+     * @param taskSupplier Supplier for the ChromeAndroidTask.
+     * @param browserControlsVisibilityManager Manager for browser controls.
+     * @param tabModelSelectorSupplier Supplier for the TabModelSelector.
+     * @param recomputeUiStateCallback Callback to trigger recomputation of adaptive toolbar button.
+     */
+    public GlicToolbarButtonController(
+            Activity activity,
+            Supplier<@Nullable Tab> activeTabSupplier,
+            GlicButtonDelegate toggleGlicCallback,
+            Supplier<@Nullable Tracker> trackerSupplier,
+            Supplier<@Nullable ChromeAndroidTask> taskSupplier,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
+            @Nullable Runnable recomputeUiStateCallback) {
+        super(
+                activeTabSupplier,
+                /* modalDialogManager= */ null,
+                new ButtonSpec.Builder(
+                                AppCompatResources.getDrawable(activity, R.drawable.ic_spark_24dp),
+                                activity.getString(
+                                        R.string.glic_button_entrypoint_ask_gemini_label),
+                                /* supportsTinting= */ true)
+                        .setButtonVariant(AdaptiveToolbarButtonVariant.GLIC)
+                        .build());
+        mActivity = activity;
+        mToggleGlicCallback = toggleGlicCallback;
+        mTrackerSupplier = trackerSupplier;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mRecomputeUiStateCallback = recomputeUiStateCallback;
+        mDefaultSpec = mButtonData.getButtonSpec();
+
+        mStateController =
+                new GlicButtonStateController(
+                        activity,
+                        (state, isPanelOpen) -> {
+                            if (mRecomputeUiStateCallback != null) {
+                                mRecomputeUiStateCallback.run();
+                            } else {
+                                notifyObservers(true);
+                            }
+                        },
+                        taskSupplier,
+                        browserControlsVisibilityManager);
+
+        setShouldShowOnIncognitoTabs(true);
+    }
+
+    private Drawable getCollapsedDrawable() {
+        if (mCollapsedDrawable == null) {
+            mCollapsedDrawable =
+                    new DirtyDotDrawableWrapper(
+                            AppCompatResources.getDrawable(mActivity, R.drawable.ic_spark_24dp),
+                            mActivity.getColor(R.color.default_icon_color_accent1_baseline),
+                            mActivity
+                                    .getResources()
+                                    .getDimensionPixelSize(R.dimen.glic_dirty_dot_size));
+        }
+        return mCollapsedDrawable;
+    }
+
+    private ButtonSpec getWorkingSpec() {
+        if (mWorkingSpec == null) {
+            mWorkingSpec = createWorkingSpec(mActivity);
+        }
+        return mWorkingSpec;
+    }
+
+    private ButtonSpec getReviewSpec() {
+        if (mReviewSpec == null) {
+            mReviewSpec =
+                    new ButtonSpec.Builder(createReviewSpec())
+                            .setCollapsedDrawable(getCollapsedDrawable())
+                            .build();
+        }
+        return mReviewSpec;
+    }
+
+    private ButtonSpec getDoneSpec() {
+        if (mDoneSpec == null) {
+            mDoneSpec =
+                    new ButtonSpec.Builder(createDoneSpec())
+                            .setCollapsedDrawable(getCollapsedDrawable())
+                            .build();
+        }
+        return mDoneSpec;
+    }
+
+    private ButtonSpec createReviewSpec() {
+        return new ButtonSpec.Builder(mDefaultSpec)
+                .setActionChipLabelResId(R.string.glic_button_status_review)
+                .setContentDescription(
+                        mActivity.getString(R.string.glic_button_status_review_a11y_label))
+                .setShouldSuppressCpa(true)
+                .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
+                .setActionChipBackgroundColorResId(R.attr.colorSecondaryContainer)
+                .setActionChipTextColorResId(R.attr.colorOnSecondaryContainer)
+                .build();
+    }
+
+    private ButtonSpec createDoneSpec() {
+        return new ButtonSpec.Builder(mDefaultSpec)
+                .setActionChipLabelResId(R.string.glic_button_status_done)
+                .setContentDescription(
+                        mActivity.getString(R.string.glic_button_status_done_a11y_label))
+                .setShouldSuppressCpa(true)
+                .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
+                .setActionChipBackgroundColorResId(R.attr.colorTertiaryContainer)
+                .setActionChipTextColorResId(R.attr.colorOnTertiaryContainer)
+                .build();
+    }
+
+    private ButtonSpec createWorkingSpec(Context context) {
+        Drawable sparkIcon = AppCompatResources.getDrawable(context, R.drawable.ic_spark_24dp);
+        Drawable layerDrawable = GlicUiHelper.createWorkingDrawable(context, sparkIcon);
+        return new ButtonSpec.Builder(mDefaultSpec)
+                .setDrawable(layerDrawable)
+                .setContentDescription(
+                        context.getString(R.string.glic_button_status_working_a11y_label))
+                .setShouldSuppressCpa(true)
+                .build();
+    }
+
+    /**
+     * Returns whether the Glic button should be forcibly shown on the toolbar.
+     *
+     * @param profile The current profile.
+     */
+    public boolean shouldForciblyShowGlicButton(Profile profile) {
+        if (!AdaptiveToolbarFeatures.isGlicEnabledForAdaptiveToolbar(
+                mActivity, profile.getOriginalProfile())) {
+            return false;
+        }
+        mStateController.updateObservations(profile.getOriginalProfile());
+        List<ActorTask> activeTasks = mStateController.getActiveTasks();
+        return mStateController.isPanelOpen() || (activeTasks != null && !activeTasks.isEmpty());
+    }
+
+    @Override
+    protected boolean shouldShowButton(@Nullable Tab tab) {
+        if (tab == null || UrlUtilities.isNtpUrl(tab.getUrl())) {
+            return false;
+        }
+        if (!AdaptiveToolbarFeatures.isGlicEnabledForAdaptiveToolbar(
+                mActivity, tab.getProfile().getOriginalProfile())) {
+            return false;
+        }
+        return super.shouldShowButton(tab);
+    }
+
+    @Override
+    public ButtonData get(@Nullable Tab tab) {
+        ButtonData buttonData = super.get(tab);
+        if (!buttonData.canShow()) {
+            return buttonData;
+        }
+
+        assumeNonNull(tab);
+        assert AdaptiveToolbarFeatures.isGlicEnabledForAdaptiveToolbar(
+                        mActivity, tab.getProfile().getOriginalProfile())
+                : "Glic get() called when Glic is not eligible/enabled for profile";
+        if (tab.isOffTheRecord()) {
+            mButtonData.setButtonSpec(new ButtonSpec.Builder(mDefaultSpec).build());
+            return buttonData;
+        }
+
+        mStateController.updateObservations(tab.getProfile());
+        mStateController.updateButtonState();
+
+        ButtonSpec desiredSpec = mDefaultSpec;
+        switch (mStateController.getButtonState()) {
+            case GlicButtonStateController.ButtonState.NEEDS_REVIEW:
+                desiredSpec = getReviewSpec();
+                break;
+            case GlicButtonStateController.ButtonState.WORKING:
+                desiredSpec = getWorkingSpec();
+                break;
+            case GlicButtonStateController.ButtonState.DONE:
+                desiredSpec = getDoneSpec();
+                break;
+            case GlicButtonStateController.ButtonState.DEFAULT:
+            default:
+                desiredSpec = mDefaultSpec;
+        }
+        mButtonData.setButtonSpec(
+                new ButtonSpec.Builder(desiredSpec)
+                        .setIsChecked(mStateController.isPanelOpen())
+                        .setIphCommandBuilder(buttonData.getButtonSpec().getIphCommandBuilder())
+                        .setIsSelected(mStateController.isPanelOpen())
+                        .build());
+
+        mButtonData.setEnabled(true);
+        return buttonData;
+    }
+
+    @Override
+    public void destroy() {
+        mStateController.destroy();
+        if (mTaskMenuCoordinator != null) {
+            mTaskMenuCoordinator.dismiss();
+            mTaskMenuCoordinator = null;
+        }
+        super.destroy();
+    }
+
+    @Override
+    protected @Nullable IphCommandBuilder getIphCommandBuilder(Tab tab) {
+        return new IphCommandBuilder(
+                mActivity.getResources(),
+                FeatureConstants.GLIC_PROMO_ANDROID_FEATURE,
+                R.string.iph_glic_promo_text,
+                R.string.iph_glic_promo_accessibility_text);
+    }
+
+    @Override
+    public void onClick(View view) {
+        Tab tab = mActiveTabSupplier.get();
+        assert tab != null
+                        && AdaptiveToolbarFeatures.isGlicEnabledForAdaptiveToolbar(
+                                mActivity, tab.getProfile().getOriginalProfile())
+                : "Glic click invoked when Glic is not eligible/enabled for profile";
+        mStateController.setPersistDoneState(false);
+
+        if (mTaskMenuCoordinator != null && mTaskMenuCoordinator.isShowing()) {
+            mTaskMenuCoordinator.dismiss();
+            return;
+        }
+        if (tab != null && tab.isOffTheRecord()) {
+            GlicHelper.showNotAvailableInIncognitoSnackbar(mActivity);
+            return;
+        }
+
+        List<ActorTask> tasks = mStateController.getActiveTasks();
+        if (tasks != null) {
+            Tab currentTab = mActiveTabSupplier.get();
+            boolean isOnActingTab =
+                    currentTab != null
+                            && mStateController.getActiveTaskIdOnTab(currentTab.getId()) != null;
+
+            if ((!isOnActingTab || tasks.size() > 1) && !tasks.isEmpty()) {
+                if (mTaskMenuCoordinator == null) {
+                    mTaskMenuCoordinator =
+                            new GlicTaskMenuCoordinator(
+                                    mActivity,
+                                    mTabModelSelectorSupplier,
+                                    mToggleGlicCallback,
+                                    GlicInvocationSource.TOP_CHROME_BUTTON,
+                                    GlicTaskMenuCoordinator.ButtonSource.TOOLBAR);
+                }
+                mTaskMenuCoordinator.show(view, tasks);
+                return;
+            }
+        }
+
+        mToggleGlicCallback.onClick(false, GlicInvocationSource.TOP_CHROME_BUTTON);
+        Tracker tracker = mTrackerSupplier.get();
+        if (tracker != null) {
+            tracker.notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_GLIC_CLICKED);
+        }
+        mStateController.updateButtonState();
+        notifyObservers(true);
+    }
+
+    void onGlobalShowHideForTesting() {
+        mStateController.onGlobalShowHide();
+    }
+}

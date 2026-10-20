@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
+import org.chromium.chrome.browser.glic.toolbar_button.GlicButtonStateController;
 import org.chromium.chrome.browser.ui.bottombar.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;

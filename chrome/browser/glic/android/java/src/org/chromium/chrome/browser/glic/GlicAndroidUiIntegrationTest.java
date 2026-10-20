@@ -57,6 +57,8 @@ import org.chromium.chrome.browser.actor.ui.ControlOwnership;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.glic.toolbar_button.GlicButtonStateController;
+import org.chromium.chrome.browser.glic.toolbar_button.GlicToolbarButtonController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;

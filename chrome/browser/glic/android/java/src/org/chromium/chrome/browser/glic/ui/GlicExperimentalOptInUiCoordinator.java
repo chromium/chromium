@@ -1,0 +1,317 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.glic.ui;
+
+import android.app.Activity;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.Outline;
+import android.graphics.drawable.ColorDrawable;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewOutlineProvider;
+import android.view.Window;
+import android.widget.FrameLayout;
+
+import androidx.activity.ComponentDialog;
+
+import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
+
+import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.thinwebview.ThinWebView;
+import org.chromium.components.thinwebview.ThinWebViewAttachParams;
+import org.chromium.components.thinwebview.ThinWebViewConstraints;
+import org.chromium.components.thinwebview.ThinWebViewFactory;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ChromeImageButton;
+
+/**
+ * Coordinator for displaying the Glic experimental opt-in dialog on Android using
+ * ModalDialogManager. It displays a centered modal card dialog containing a ThinWebView rendering
+ * the opt-in WebUI.
+ */
+@JNINamespace("glic")
+@NullMarked
+public class GlicExperimentalOptInUiCoordinator {
+    private long mNativePtr;
+    private final Activity mActivity;
+    private final WindowAndroid mWindowAndroid;
+    private final ModalDialogManager mModalDialogManager;
+    private final WebContents mWebContents;
+    private @Nullable PropertyModel mModel;
+    private @Nullable ThinWebView mThinWebView;
+    private @Nullable ContentView mContentView;
+    private @Nullable ChromeImageButton mCloseButton;
+    private int mTargetWidthPx;
+    private int mTargetHeightPx;
+
+    // The dialog window is wider than ModalDialogView, so its background shows as a strip on each
+    // side of the web contents. Clear it; the card draws the rounded corners instead.
+    private final ModalDialogManager.ModalDialogManagerObserver mDialogObserver =
+            new ModalDialogManager.ModalDialogManagerObserver() {
+                @Override
+                public void onDialogCreated(PropertyModel model, @Nullable ComponentDialog dialog) {
+                    if (model != mModel || dialog == null) return;
+                    Window window = dialog.getWindow();
+                    if (window != null) {
+                        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    }
+                }
+            };
+
+    private final ModalDialogProperties.Controller mDialogController =
+            new ModalDialogProperties.Controller() {
+                @Override
+                public void onClick(
+                        PropertyModel model, @ModalDialogProperties.ButtonType int buttonType) {}
+
+                @Override
+                public void onDismiss(
+                        PropertyModel model, @DialogDismissalCause int dismissalCause) {
+                    onDialogDismissed();
+                }
+            };
+
+    @CalledByNative
+    public static @Nullable GlicExperimentalOptInUiCoordinator show(
+            long nativePtr,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
+            @JniType("content::WebContents*") WebContents webContents) {
+        if (windowAndroid.getActivity() == null) {
+            return null;
+        }
+        Activity activity = windowAndroid.getActivity().get();
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+            return null;
+        }
+        ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
+        if (modalDialogManager == null) {
+            return null;
+        }
+
+        GlicExperimentalOptInUiCoordinator coordinator =
+                new GlicExperimentalOptInUiCoordinator(
+                        nativePtr, activity, windowAndroid, modalDialogManager, webContents);
+        if (!coordinator.showInternal()) {
+            return null;
+        }
+        return coordinator;
+    }
+
+    private GlicExperimentalOptInUiCoordinator(
+            long nativePtr,
+            Activity activity,
+            WindowAndroid windowAndroid,
+            ModalDialogManager modalDialogManager,
+            WebContents webContents) {
+        mNativePtr = nativePtr;
+        mActivity = activity;
+        mWindowAndroid = windowAndroid;
+        mModalDialogManager = modalDialogManager;
+        mWebContents = webContents;
+        updateTargetSize();
+    }
+
+    // TODO(crbug.com/559823681): Investigate using ModalDialogProperties for sizing
+    // rather than manually calculating target dimensions on the custom view.
+    // Landscape has its own size, and Chrome keeps the dialog open on rotation, so this is called
+    // again on configuration changes.
+    private void updateTargetSize() {
+        Resources res = mActivity.getResources();
+        boolean nonScrollable =
+                ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.GLIC_EXPERIMENTAL_OPT_IN_DIALOG_NON_SCROLLABLE);
+        int heightRes =
+                nonScrollable
+                        ? R.dimen.glic_experimental_opt_in_dialog_non_scrollable_max_height
+                        : R.dimen.glic_experimental_opt_in_dialog_max_height;
+        mTargetWidthPx =
+                res.getDimensionPixelSize(R.dimen.glic_experimental_opt_in_dialog_max_width);
+        mTargetHeightPx = res.getDimensionPixelSize(heightRes);
+    }
+
+    /** Returns an exact spec for {@code targetPx}, capped to the space {@code spec} offers. */
+    private static int capToSpec(int targetPx, int spec) {
+        int size = targetPx;
+        if (View.MeasureSpec.getMode(spec) != View.MeasureSpec.UNSPECIFIED) {
+            size = Math.min(size, View.MeasureSpec.getSize(spec));
+        }
+        return View.MeasureSpec.makeMeasureSpec(size, View.MeasureSpec.EXACTLY);
+    }
+
+    private boolean showInternal() {
+        mContentView = ContentView.createContentView(mActivity, mWebContents);
+        mWebContents.setDelegates(
+                VersionInfo.getProductVersion(),
+                ViewAndroidDelegate.createBasicDelegate(mContentView),
+                mContentView,
+                mWindowAndroid,
+                WebContents.createDefaultInternalsHolder());
+
+        int backgroundColor = SemanticColorUtils.getDefaultBgColor(mActivity);
+
+        var tracker = mWindowAndroid.getIntentRequestTracker();
+        if (tracker == null) {
+            return false;
+        }
+
+        ThinWebViewConstraints constraints = new ThinWebViewConstraints();
+        constraints.supportsOpacity = true;
+        constraints.backgroundColor = backgroundColor;
+        mThinWebView =
+                ThinWebViewFactory.create(
+                        mActivity, constraints, tracker, /* enablePermissionRequests= */ true);
+        mThinWebView.attachWebContents(
+                mWebContents,
+                mContentView,
+                new ThinWebViewAttachParams.Builder().setSupportTheming(true).build());
+
+        // Card container to size ThinWebView within the modal dialog. Its size is capped to the
+        // space the dialog offers, so the web contents isn't cut off.
+        FrameLayout cardContainer =
+                new FrameLayout(mActivity) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        super.onMeasure(
+                                capToSpec(mTargetWidthPx, widthMeasureSpec),
+                                capToSpec(mTargetHeightPx, heightMeasureSpec));
+                    }
+
+                    @Override
+                    protected void onConfigurationChanged(Configuration newConfig) {
+                        super.onConfigurationChanged(newConfig);
+                        updateTargetSize();
+                        if (mModel != null) {
+                            mModel.set(ModalDialogProperties.MAX_HEIGHT, mTargetHeightPx);
+                        }
+                    }
+                };
+        cardContainer.addView(
+                mThinWebView.getView(),
+                new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        cardContainer.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        LayoutParams.WRAP_CONTENT,
+                        LayoutParams.WRAP_CONTENT,
+                        Gravity.CENTER_HORIZONTAL));
+        int cornerRadiusPx =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.dialog_corner_radius);
+        cardContainer.setOutlineProvider(
+                new ViewOutlineProvider() {
+                    @Override
+                    public void getOutline(View view, Outline outline) {
+                        outline.setRoundRect(
+                                0, 0, view.getWidth(), view.getHeight(), cornerRadiusPx);
+                    }
+                });
+        cardContainer.setClipToOutline(true);
+
+        // The close button is overlaid on top of the web contents rather than using
+        // ModalDialogProperties.TITLE_CLOSE_BUTTON_*. This dialog has no title, so the shared
+        // title row would collapse to just the close button, aligning it to the start and
+        // exposing a strip of the dialog's window background above the web contents.
+        LayoutInflater.from(mActivity)
+                .inflate(
+                        R.layout.glic_experimental_opt_in_close_button,
+                        cardContainer,
+                        /* attachToRoot= */ true);
+        ChromeImageButton closeButton =
+                cardContainer.findViewById(R.id.glic_experimental_opt_in_close_button);
+        closeButton.setOnClickListener(v -> dismiss());
+        mCloseButton = closeButton;
+
+        mModel =
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, mDialogController)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, cardContainer)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, false)
+                        .with(ModalDialogProperties.MAX_HEIGHT, mTargetHeightPx)
+                        .build();
+
+        mModalDialogManager.addObserver(mDialogObserver);
+        mModalDialogManager.showDialog(mModel, ModalDialogManager.ModalDialogType.APP);
+        mContentView.requestFocus();
+        return true;
+    }
+
+    @CalledByNative
+    private void dismiss() {
+        if (mModel != null) {
+            mModalDialogManager.dismissDialog(mModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+        }
+    }
+
+    private void onDialogDismissed() {
+        if (mNativePtr != 0) {
+            GlicExperimentalOptInUiCoordinatorJni.get().onDismissed(mNativePtr);
+        }
+        destroy();
+    }
+
+    private void destroy() {
+        mNativePtr = 0;
+        mModalDialogManager.removeObserver(mDialogObserver);
+        if (mThinWebView != null) {
+            mThinWebView.destroy();
+            mThinWebView = null;
+        }
+        mCloseButton = null;
+        mContentView = null;
+        mModel = null;
+    }
+
+    @CalledByNative
+    void onNativeDestroyed() {
+        // Must clear before dismiss(): onDismiss() runs synchronously, so
+        // onDialogDismissed() would otherwise call back into a destructing host.
+        mNativePtr = 0;
+        dismiss();
+    }
+
+    /**
+     * Dismisses the dialog the same way the user would (e.g. by pressing back), so that tests can
+     * exercise the full Java -> native dismissal path. Notifying native directly instead would
+     * leave the dialog on screen holding a stale native pointer.
+     */
+    @CalledByNativeForTesting
+    void simulateDismissingForTesting() {
+        if (mModel != null) {
+            mModalDialogManager.dismissDialog(
+                    mModel, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+        }
+    }
+
+    public @Nullable PropertyModel getPropertyModelForTesting() {
+        return mModel;
+    }
+
+    public @Nullable ChromeImageButton getCloseButtonForTesting() {
+        return mCloseButton;
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onDismissed(long nativeGlicExperimentalOptInUIHostAndroid);
+    }
+}

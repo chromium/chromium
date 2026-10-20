@@ -26,7 +26,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/android/glic_navigation_utils_android.h"
+#include "chrome/browser/glic/android/settings/glic_navigation_utils_android.h"
 #endif
 
 namespace glic {

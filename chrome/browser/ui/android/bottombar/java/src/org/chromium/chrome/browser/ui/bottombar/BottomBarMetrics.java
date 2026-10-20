@@ -9,7 +9,7 @@ import androidx.annotation.StringDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.glic.GlicButtonStateController;
+import org.chromium.chrome.browser.glic.toolbar_button.GlicButtonStateController;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

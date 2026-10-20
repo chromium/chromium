@@ -63,7 +63,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/android/glic_navigation_utils_android.h"
+#include "chrome/browser/glic/android/settings/glic_navigation_utils_android.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #endif
