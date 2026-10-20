@@ -50,6 +50,7 @@
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/texture_layer_impl.h"
+#include "cc/layers/view_transition_content_layer_impl.h"
 #include "cc/layers/viewport.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/frame_info.h"
@@ -96,6 +97,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
+#include "components/viz/common/quads/shared_element_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -14787,6 +14789,348 @@ TEST_P(LayerTreeHostImplTest, ViewTransitionRequestCausesDamage) {
                      false);
   EXPECT_TRUE(did_request_redraw_);
   EXPECT_FALSE(last_on_draw_frame_->has_no_damage);
+}
+
+TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
+       ViewTransitionCaptureWithoutNestedElementCreatesSingleRenderPass) {
+  auto* root = SetupDefaultRootLayer(gfx::Size(100, 100));
+
+  blink::ViewTransitionToken transition_token;
+  viz::ViewTransitionElementResourceId resource_id(transition_token, 1, false);
+
+  auto* capture_layer =
+      AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
+  capture_layer->SetBounds(gfx::Size(80, 80));
+  capture_layer->SetDrawsContent(true);
+  capture_layer->SetBackgroundColor(SkColors::kBlue);
+  CopyProperties(root, capture_layer);
+  auto& capture_effect = CreateEffectNode(capture_layer);
+  capture_effect.element_id = ElementId(100);
+  capture_effect.render_surface_reason =
+      RenderSurfaceReason::kViewTransitionParticipant;
+  capture_effect.view_transition_element_resource_id = resource_id;
+
+  auto* child_layer = AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
+  child_layer->SetBounds(gfx::Size(40, 40));
+  child_layer->SetDrawsContent(true);
+  child_layer->SetBackgroundColor(SkColors::kGreen);
+  CopyProperties(capture_layer, child_layer);
+
+  host_impl_->active_tree()->AddViewTransitionRequest(
+      ViewTransitionRequest::CreateCapture(
+          transition_token, /*maybe_cross_frame_sink=*/false, {resource_id},
+          base::DoNothing(), /*delay_layer_tree_view_deletion=*/false));
+
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  RenderSurfaceImpl* capture_surface = GetRenderSurface(capture_layer);
+  ASSERT_TRUE(capture_surface);
+  EXPECT_FALSE(capture_surface->has_view_transition_capture_contributions());
+
+  DrawFrame();
+
+  auto* fake_layer_tree_frame_sink =
+      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
+  const auto* frame = fake_layer_tree_frame_sink->last_sent_frame();
+  ASSERT_TRUE(frame);
+
+  // Only 2 render passes should be created: 1 for `capture_surface` and 1 for
+  // the root surface (no duplicate capture render pass).
+  ASSERT_EQ(2u, frame->render_pass_list.size());
+  EXPECT_EQ(capture_surface->render_pass_id(), frame->render_pass_list[0]->id);
+  EXPECT_EQ(resource_id,
+            frame->render_pass_list[0]->view_transition_element_resource_id);
+  EXPECT_EQ(2u, frame->render_pass_list[0]->quad_list.size());
+
+  ASSERT_EQ(1u, frame->metadata.transition_directives.size());
+  const auto& save_directive = frame->metadata.transition_directives[0];
+  ASSERT_EQ(1u, save_directive.shared_elements().size());
+  EXPECT_EQ(
+      resource_id,
+      save_directive.shared_elements()[0].view_transition_element_resource_id);
+  EXPECT_EQ(capture_surface->render_pass_id(),
+            save_directive.shared_elements()[0].render_pass_id);
+}
+
+TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
+       ViewTransitionAvoidDuplicateCaptureRenderPassDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kViewTransitionsAvoidDuplicateCaptureRenderPass);
+
+  auto* root = SetupDefaultRootLayer(gfx::Size(100, 100));
+
+  blink::ViewTransitionToken transition_token;
+  viz::ViewTransitionElementResourceId resource_id(transition_token, 1, false);
+
+  auto* capture_layer =
+      AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
+  capture_layer->SetBounds(gfx::Size(80, 80));
+  capture_layer->SetDrawsContent(true);
+  capture_layer->SetBackgroundColor(SkColors::kBlue);
+  CopyProperties(root, capture_layer);
+  auto& capture_effect = CreateEffectNode(capture_layer);
+  capture_effect.element_id = ElementId(100);
+  capture_effect.render_surface_reason =
+      RenderSurfaceReason::kViewTransitionParticipant;
+  capture_effect.view_transition_element_resource_id = resource_id;
+
+  auto* child_layer = AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
+  child_layer->SetBounds(gfx::Size(40, 40));
+  child_layer->SetDrawsContent(true);
+  child_layer->SetBackgroundColor(SkColors::kGreen);
+  CopyProperties(capture_layer, child_layer);
+
+  host_impl_->active_tree()->AddViewTransitionRequest(
+      ViewTransitionRequest::CreateCapture(
+          transition_token, /*maybe_cross_frame_sink=*/false, {resource_id},
+          base::DoNothing(), /*delay_layer_tree_view_deletion=*/false));
+
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  RenderSurfaceImpl* capture_surface = GetRenderSurface(capture_layer);
+  ASSERT_TRUE(capture_surface);
+  EXPECT_TRUE(capture_surface->has_view_transition_capture_contributions());
+
+  DrawFrame();
+
+  auto* fake_layer_tree_frame_sink =
+      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
+  const auto* frame = fake_layer_tree_frame_sink->last_sent_frame();
+  ASSERT_TRUE(frame);
+
+  // With the feature disabled, 3 render passes should be created: a capture
+  // render pass and a regular render pass for `capture_surface`, and 1 for the
+  // root surface.
+  ASSERT_EQ(3u, frame->render_pass_list.size());
+  const auto& capture_pass = frame->render_pass_list[0];
+  EXPECT_EQ(capture_surface->view_transition_capture_render_pass_id(),
+            capture_pass->id);
+  EXPECT_EQ(resource_id, capture_pass->view_transition_element_resource_id);
+  EXPECT_EQ(2u, capture_pass->quad_list.size());
+
+  const auto& regular_pass = frame->render_pass_list[1];
+  EXPECT_EQ(capture_surface->render_pass_id(), regular_pass->id);
+  EXPECT_FALSE(regular_pass->view_transition_element_resource_id.IsValid());
+  EXPECT_EQ(2u, regular_pass->quad_list.size());
+
+  ASSERT_EQ(1u, frame->metadata.transition_directives.size());
+  const auto& save_directive = frame->metadata.transition_directives[0];
+  ASSERT_EQ(1u, save_directive.shared_elements().size());
+  EXPECT_EQ(
+      resource_id,
+      save_directive.shared_elements()[0].view_transition_element_resource_id);
+  EXPECT_EQ(capture_surface->view_transition_capture_render_pass_id(),
+            save_directive.shared_elements()[0].render_pass_id);
+}
+
+TEST_P(
+    CompositorFrameProducingLayerTreeHostImplTest,
+    ViewTransitionCaptureWithNestedElementCreatesCaptureRenderPassOnlyForAncestor) {
+  auto* root = SetupDefaultRootLayer(gfx::Size(100, 100));
+
+  blink::ViewTransitionToken transition_token;
+  viz::ViewTransitionElementResourceId parent_resource_id(transition_token, 1,
+                                                          false);
+  viz::ViewTransitionElementResourceId child_resource_id(transition_token, 2,
+                                                         false);
+
+  auto* parent_capture_layer =
+      AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
+  parent_capture_layer->SetBounds(gfx::Size(80, 80));
+  parent_capture_layer->SetDrawsContent(true);
+  parent_capture_layer->SetBackgroundColor(SkColors::kBlue);
+  CopyProperties(root, parent_capture_layer);
+  auto& parent_effect = CreateEffectNode(parent_capture_layer);
+  parent_effect.element_id = ElementId(100);
+  parent_effect.render_surface_reason =
+      RenderSurfaceReason::kViewTransitionParticipant;
+  parent_effect.view_transition_element_resource_id = parent_resource_id;
+
+  auto* child_capture_layer =
+      AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
+  child_capture_layer->SetBounds(gfx::Size(40, 40));
+  child_capture_layer->SetDrawsContent(true);
+  child_capture_layer->SetBackgroundColor(SkColors::kGreen);
+  CopyProperties(parent_capture_layer, child_capture_layer);
+  auto& child_effect = CreateEffectNode(child_capture_layer);
+  child_effect.element_id = ElementId(200);
+  child_effect.render_surface_reason =
+      RenderSurfaceReason::kViewTransitionParticipant;
+  child_effect.view_transition_element_resource_id = child_resource_id;
+
+  host_impl_->active_tree()->AddViewTransitionRequest(
+      ViewTransitionRequest::CreateCapture(
+          transition_token, /*maybe_cross_frame_sink=*/false,
+          {parent_resource_id, child_resource_id}, base::DoNothing(),
+          /*delay_layer_tree_view_deletion=*/false));
+
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  RenderSurfaceImpl* parent_surface = GetRenderSurface(parent_capture_layer);
+  RenderSurfaceImpl* child_surface = GetRenderSurface(child_capture_layer);
+  ASSERT_TRUE(parent_surface);
+  ASSERT_TRUE(child_surface);
+  EXPECT_TRUE(parent_surface->has_view_transition_capture_contributions());
+  EXPECT_FALSE(child_surface->has_view_transition_capture_contributions());
+
+  DrawFrame();
+
+  auto* fake_layer_tree_frame_sink =
+      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
+  const auto* frame = fake_layer_tree_frame_sink->last_sent_frame();
+  ASSERT_TRUE(frame);
+
+  // 4 render passes:
+  // - 1 pass for child_surface (no duplicate capture pass)
+  // - 2 passes for parent_surface (1 capture pass excluding child_surface, and
+  //   1 regular pass including child_surface)
+  // - 1 pass for root
+  ASSERT_EQ(4u, frame->render_pass_list.size());
+
+  auto find_pass =
+      [&](viz::CompositorRenderPassId id) -> const viz::CompositorRenderPass* {
+    for (const auto& pass : frame->render_pass_list) {
+      if (pass->id == id) {
+        return pass.get();
+      }
+    }
+    return nullptr;
+  };
+
+  const auto* child_pass = find_pass(child_surface->render_pass_id());
+  ASSERT_TRUE(child_pass);
+  EXPECT_EQ(child_resource_id, child_pass->view_transition_element_resource_id);
+  EXPECT_EQ(1u, child_pass->quad_list.size());
+
+  const auto* parent_capture_pass =
+      find_pass(parent_surface->view_transition_capture_render_pass_id());
+  ASSERT_TRUE(parent_capture_pass);
+  EXPECT_EQ(parent_resource_id,
+            parent_capture_pass->view_transition_element_resource_id);
+  EXPECT_EQ(1u, parent_capture_pass->quad_list.size());
+
+  const auto* parent_regular_pass = find_pass(parent_surface->render_pass_id());
+  ASSERT_TRUE(parent_regular_pass);
+  EXPECT_FALSE(
+      parent_regular_pass->view_transition_element_resource_id.IsValid());
+  EXPECT_EQ(2u, parent_regular_pass->quad_list.size());
+
+  ASSERT_EQ(1u, frame->metadata.transition_directives.size());
+  const auto& save_directive = frame->metadata.transition_directives[0];
+  ASSERT_EQ(2u, save_directive.shared_elements().size());
+  EXPECT_EQ(
+      parent_resource_id,
+      save_directive.shared_elements()[0].view_transition_element_resource_id);
+  EXPECT_EQ(parent_surface->view_transition_capture_render_pass_id(),
+            save_directive.shared_elements()[0].render_pass_id);
+  EXPECT_EQ(
+      child_resource_id,
+      save_directive.shared_elements()[1].view_transition_element_resource_id);
+  EXPECT_EQ(child_surface->render_pass_id(),
+            save_directive.shared_elements()[1].render_pass_id);
+}
+
+TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
+       ViewTransitionScopeSnapshotBetweenNestedCapturesUsesFullContentRect) {
+  auto* root = SetupDefaultRootLayer(gfx::Size(100, 100));
+
+  blink::ViewTransitionToken transition_token;
+  viz::ViewTransitionElementResourceId parent_resource_id(
+      transition_token, 1, /*for_scope_snapshot=*/false);
+  viz::ViewTransitionElementResourceId scope_resource_id(
+      transition_token, 2, /*for_scope_snapshot=*/true);
+  viz::ViewTransitionElementResourceId child_resource_id(
+      transition_token, 3, /*for_scope_snapshot=*/false);
+
+  auto* parent_capture_layer =
+      AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
+  parent_capture_layer->SetBounds(gfx::Size(80, 80));
+  parent_capture_layer->SetDrawsContent(true);
+  parent_capture_layer->SetBackgroundColor(SkColors::kBlue);
+  CopyProperties(root, parent_capture_layer);
+  auto& parent_effect = CreateEffectNode(parent_capture_layer);
+  parent_effect.element_id = ElementId(100);
+  parent_effect.render_surface_reason =
+      RenderSurfaceReason::kViewTransitionParticipant;
+  parent_effect.view_transition_element_resource_id = parent_resource_id;
+
+  // Intermediate scope snapshot surface (`for_scope_snapshot=true`) with its
+  // own smaller layer (20x20), plus a larger nested capture layer (60x60).
+  auto* scope_snapshot_layer =
+      AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
+  scope_snapshot_layer->SetBounds(gfx::Size(20, 20));
+  scope_snapshot_layer->SetDrawsContent(true);
+  scope_snapshot_layer->SetBackgroundColor(SkColors::kRed);
+  CopyProperties(parent_capture_layer, scope_snapshot_layer);
+  auto& scope_effect = CreateEffectNode(scope_snapshot_layer);
+  scope_effect.element_id = ElementId(200);
+  scope_effect.render_surface_reason =
+      RenderSurfaceReason::kViewTransitionParticipant;
+  scope_effect.view_transition_element_resource_id = scope_resource_id;
+
+  auto* child_capture_layer =
+      AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
+  child_capture_layer->SetBounds(gfx::Size(60, 60));
+  child_capture_layer->SetDrawsContent(true);
+  child_capture_layer->SetBackgroundColor(SkColors::kGreen);
+  CopyProperties(scope_snapshot_layer, child_capture_layer);
+  auto& child_effect = CreateEffectNode(child_capture_layer);
+  child_effect.element_id = ElementId(300);
+  child_effect.render_surface_reason =
+      RenderSurfaceReason::kViewTransitionParticipant;
+  child_effect.view_transition_element_resource_id = child_resource_id;
+
+  // Live content layer displaying the intermediate scope snapshot surface.
+  auto* scope_content_layer = AddLayer<ViewTransitionContentLayerImpl>(
+      host_impl_->active_tree(), scope_resource_id,
+      /*is_live_content_layer=*/true, /*max_extents_rect=*/gfx::RectF(60, 60));
+  scope_content_layer->SetBounds(gfx::Size(60, 60));
+  scope_content_layer->SetDrawsContent(true);
+  CopyProperties(root, scope_content_layer);
+
+  host_impl_->active_tree()->AddViewTransitionRequest(
+      ViewTransitionRequest::CreateCapture(
+          transition_token, /*maybe_cross_frame_sink=*/false,
+          {parent_resource_id, child_resource_id}, base::DoNothing(),
+          /*delay_layer_tree_view_deletion=*/false));
+
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  RenderSurfaceImpl* scope_surface = GetRenderSurface(scope_snapshot_layer);
+  ASSERT_TRUE(scope_surface);
+  // `scope_surface` is between `parent_capture_layer` and
+  // `child_capture_layer`, so it has view transition capture contributions even
+  // though it is a scope snapshot
+  // (`MatchesToken(capture_view_transition_tokens)` is false).
+  EXPECT_TRUE(scope_surface->has_view_transition_capture_contributions());
+  EXPECT_EQ(gfx::Rect(60, 60), scope_surface->content_rect());
+  EXPECT_EQ(gfx::Rect(20, 20),
+            scope_surface->view_transition_capture_content_rect());
+  // Because `scope_surface` is not being captured by this transition (its
+  // resource ID is placed on its regular render pass, not its capture render
+  // pass), the corresponding content layer must use `content_rect()` (60x60)
+  // rather than `view_transition_capture_content_rect()` (20x20).
+  EXPECT_EQ(gfx::Rect(60, 60),
+            scope_content_layer->visible_drawable_content_rect());
+
+  DrawFrame();
+
+  auto* fake_layer_tree_frame_sink =
+      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
+  const auto* frame = fake_layer_tree_frame_sink->last_sent_frame();
+  ASSERT_TRUE(frame);
+
+  const viz::SharedElementDrawQuad* shared_element_quad = nullptr;
+  for (const auto* quad : frame->render_pass_list.back()->quad_list) {
+    if (quad->material == viz::DrawQuad::Material::kSharedElement) {
+      shared_element_quad = viz::SharedElementDrawQuad::MaterialCast(quad);
+      break;
+    }
+  }
+  ASSERT_TRUE(shared_element_quad);
+  EXPECT_EQ(scope_resource_id, shared_element_quad->element_resource_id);
+  EXPECT_EQ(gfx::Rect(60, 60), shared_element_quad->rect);
 }
 
 TEST_P(LayerTreeHostImplTest, CollectRegionCaptureBounds) {

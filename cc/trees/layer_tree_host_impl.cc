@@ -3160,7 +3160,8 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
           << view_transition_element_map[view_transition_element_resource_id]
                  .GetUnsafeValue();
 
-      if (view_transition_element_resource_id.MatchesToken(
+      if (render_surface->has_view_transition_capture_contributions() &&
+          view_transition_element_resource_id.MatchesToken(
               capture_view_transition_tokens)) {
         view_transition_element_map[view_transition_element_resource_id] =
             render_surface->view_transition_capture_render_pass_id();

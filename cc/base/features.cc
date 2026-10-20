@@ -354,4 +354,7 @@ BASE_FEATURE(kDeferMainFrameBeforeCommitWithPendingTree,
 BASE_FEATURE(kOmitTransparentSolidQuadsForNoopBlendModes,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kViewTransitionsAvoidDuplicateCaptureRenderPass,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

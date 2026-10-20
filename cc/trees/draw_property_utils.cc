@@ -18,6 +18,7 @@
 #include "base/containers/stack.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -952,8 +953,11 @@ void AddSurfaceToRenderSurfaceList(
   render_surface->set_is_render_surface_list_member(true);
   if (render_surface->ViewTransitionElementResourceId().MatchesToken(
           capture_view_transition_tokens)) {
-    // The capture surface itself has contributions.
-    render_surface->set_has_view_transition_capture_contributions(true);
+    if (!base::FeatureList::IsEnabled(
+            features::kViewTransitionsAvoidDuplicateCaptureRenderPass)) {
+      // The capture surface itself has contributions.
+      render_surface->set_has_view_transition_capture_contributions(true);
+    }
     view_transition_capture_surfaces.push_back(render_surface);
   }
   if (is_root) {
@@ -1235,22 +1239,32 @@ void ComputeInitialRenderSurfaceList(
         view_transition_content_layer;
   }
 
-  // Mark any intermediate surfaces as having view transition contributions.
+  // Mark any ancestor capture surfaces and intermediate surfaces as having view
+  // transition capture contributions. A capture surface without nested capture
+  // surfaces has the same content for capture and display, so it only needs a
+  // single render pass.
   for (RenderSurfaceImpl* render_surface : view_transition_capture_surfaces) {
     CHECK(render_surface->IsViewTransitionElement());
-    CHECK(render_surface->has_view_transition_capture_contributions());
-    // Find an ancestor that is also a view transition capture element.
+    // Find an ancestor that is also a view transition capture element (or
+    // already has capture contributions).
     RenderSurfaceImpl* view_transition_target = render_surface->render_target();
     while (
         view_transition_target != root_surface &&
-        !view_transition_target->has_view_transition_capture_contributions()) {
+        !view_transition_target->has_view_transition_capture_contributions() &&
+        !view_transition_target->ViewTransitionElementResourceId().MatchesToken(
+            capture_view_transition_tokens)) {
       view_transition_target = view_transition_target->render_target();
     }
 
-    // If we found a `view_transition_target` which has view transition capture
-    // contributions, then mark the chain between render_surface and the
-    // `view_transition_target` as having contributions.
-    if (view_transition_target->has_view_transition_capture_contributions()) {
+    // If we found a `view_transition_target` which is a view transition capture
+    // surface or has view transition capture contributions, then mark it and
+    // the chain between `render_surface` and `view_transition_target` as having
+    // contributions.
+    if (view_transition_target->has_view_transition_capture_contributions() ||
+        view_transition_target->ViewTransitionElementResourceId().MatchesToken(
+            capture_view_transition_tokens)) {
+      view_transition_target->set_has_view_transition_capture_contributions(
+          true);
       RenderSurfaceImpl* intermediate_target = render_surface->render_target();
       while (intermediate_target != view_transition_target) {
         intermediate_target->set_has_view_transition_capture_contributions(
@@ -1306,11 +1320,12 @@ void ComputeSurfaceContentRects(
       continue;
     }
 
-    // We use the view_transition_capture_content_rect if we're in the capture
-    // phase and content_rect otherwise, which is important for live captures.
+    // We use the view_transition_capture_content_rect if we're creating a
+    // separate capture render pass and content_rect otherwise, which is
+    // important for live captures.
     const auto& output_rect =
-        render_surface->ViewTransitionElementResourceId().MatchesToken(
-            capture_view_transition_tokens)
+        render_surface->has_view_transition_capture_contributions() &&
+                view_transition_id.MatchesToken(capture_view_transition_tokens)
             ? render_surface->view_transition_capture_content_rect()
             : render_surface->content_rect();
     auto unscaled_output_rect =

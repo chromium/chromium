@@ -353,6 +353,13 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kDeferMainFrameBeforeCommitWithPendingTree);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(
     kOmitTransparentSolidQuadsForNoopBlendModes);
 
+// When enabled, a view transition capture surface without nested capture
+// surfaces only produces a single render pass, which is used for both capture
+// and display, instead of a separate capture render pass in addition to the
+// regular render pass.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kViewTransitionsAvoidDuplicateCaptureRenderPass);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
