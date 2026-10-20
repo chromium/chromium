@@ -147,9 +147,6 @@ base::ListValue GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
   basic_info.Append(display::BuildGpuInfoEntry(
       "AMD switchable", base::Value(gpu_info.amd_switchable)));
 #if BUILDFLAG(IS_WIN)
-  basic_info.Append(
-      display::BuildGpuInfoEntry("Desktop compositing", "Aero Glass"));
-
   basic_info.Append(display::BuildGpuInfoEntry(
       "Direct composition",
       base::Value(gpu_info.overlay_info.direct_composition)));
