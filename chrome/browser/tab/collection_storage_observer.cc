@@ -4,11 +4,41 @@
 
 #include "chrome/browser/tab/collection_storage_observer.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "components/tabs/public/direct_child_walker.h"
 #include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_interface.h"
+#include "components/tabs/public/tab_strip_collection.h"
 
 namespace tabs {
+
+// Post-order crawler for post-restore structural snapshots.
+class StructureSnapshotCrawler : public DirectChildWalker::Processor {
+ public:
+  StructureSnapshotCrawler(TabStateStorageService* service,
+                           std::vector<StorageId>& live_ids)
+      : service_(service), live_ids_(live_ids) {}
+
+  void ProcessTab(const TabInterface* tab) override {
+    live_ids_->push_back(service_->GetStorageId(tab));
+  }
+
+  void ProcessCollection(const TabCollection* collection) override {
+    DirectChildWalker walker(collection, this);
+    walker.Walk();
+
+    service_->Save(collection);
+    live_ids_->push_back(service_->GetStorageId(collection));
+  }
+
+ private:
+  raw_ptr<TabStateStorageService> service_;
+  const raw_ref<std::vector<StorageId>> live_ids_;
+};
 
 // Traverses a TabCollection subtree and removes all encountered collections
 // and tabs from the provided TabStateStorageService.
@@ -32,8 +62,29 @@ class SubTreeRemoveCrawler : public DirectChildWalker::Processor {
 };
 
 CollectionStorageObserver::CollectionStorageObserver(
-    tabs::TabStateStorageService* service)
-    : service_(service) {}
+    TabStripCollection* collection,
+    TabStateStorageService* service)
+    : collection_(collection), service_(service) {}
+
+void CollectionStorageObserver::SaveStructureSnapshot(bool clear_unused_nodes) {
+  auto batch = service_->CreateScopedBatch();
+  std::vector<StorageId> live_ids;
+  StructureSnapshotCrawler crawler(service_, live_ids);
+  DirectChildWalker walker(collection_, &crawler);
+  walker.Walk();
+
+  service_->Save(collection_);
+  live_ids.push_back(service_->GetStorageId(collection_));
+
+  std::string window_tag = service_->GetWindowTag(collection_);
+  bool is_off_the_record = service_->IsOffTheRecord(collection_);
+
+  service_->ClearDivergentNodesForWindow(window_tag, is_off_the_record);
+  if (clear_unused_nodes) {
+    service_->ClearNodesForWindowExcept(window_tag, is_off_the_record,
+                                        std::move(live_ids));
+  }
+}
 
 CollectionStorageObserver::~CollectionStorageObserver() = default;
 

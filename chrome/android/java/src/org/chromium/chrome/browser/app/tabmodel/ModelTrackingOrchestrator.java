@@ -441,7 +441,8 @@ public class ModelTrackingOrchestrator {
         var synchronizer = getSynchronizer(profileAndCollection, incognito);
 
         CollectionStorageObserverFactory factory =
-                new CollectionStorageObserverFactory(profileAndCollection.profile);
+                new CollectionStorageObserverFactory(
+                        profileAndCollection.profile, profileAndCollection.collection);
         synchronizer.consumeCollectionObserverFactory(factory);
     }
 

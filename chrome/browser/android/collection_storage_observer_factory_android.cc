@@ -7,8 +7,10 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/android/tab_state_storage_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab/collection_storage_observer.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "components/tabs/public/android/jni_conversion.h"
+#include "components/tabs/public/tab_strip_collection.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -17,13 +19,15 @@
 
 namespace tabs {
 
-static int64_t JNI_CollectionStorageObserverFactory_Build(JNIEnv* env,
-                                                          Profile* profile) {
+static int64_t JNI_CollectionStorageObserverFactory_Build(
+    JNIEnv* env,
+    Profile* profile,
+    TabStripCollection* collection) {
   TabStateStorageService* service =
       TabStateStorageServiceFactory::GetForProfile(profile);
-  CollectionStorageObserver* orchestrator =
-      new CollectionStorageObserver(service);
-  return reinterpret_cast<intptr_t>(orchestrator);
+  CollectionStorageObserver* observer =
+      new CollectionStorageObserver(collection, service);
+  return reinterpret_cast<intptr_t>(observer);
 }
 
 // static

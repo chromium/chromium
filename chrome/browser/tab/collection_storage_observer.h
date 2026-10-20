@@ -10,6 +10,7 @@
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_observer.h"
+#include "components/tabs/public/tab_strip_collection.h"
 
 namespace tabs {
 
@@ -19,7 +20,8 @@ namespace tabs {
 class CollectionStorageObserver
     : public StorageCollectionSynchronizer::CollectionSynchronizerObserver {
  public:
-  explicit CollectionStorageObserver(TabStateStorageService* service);
+  CollectionStorageObserver(TabStripCollection* collection,
+                            TabStateStorageService* service);
   ~CollectionStorageObserver() override;
 
   CollectionStorageObserver(const CollectionStorageObserver&) = delete;
@@ -36,11 +38,15 @@ class CollectionStorageObserver
                     const NodeData& node_data) override;
   void SaveChildNodeOnly(TabCollectionNodeHandle handle) override;
 
+  // Saves a structural snapshot of the TabStripCollection.
+  void SaveStructureSnapshot(bool clear_unused_nodes);
+
   // Removes `collection` and all its descendants from storage.
   static void ClearSubTree(const TabCollection* collection,
                            TabStateStorageService* service);
 
  private:
+  raw_ptr<TabStripCollection> collection_;
   raw_ptr<TabStateStorageService> service_;
 };
 

@@ -299,6 +299,18 @@ void TabStateStorageService::ClearNodesForWindowExcept(
                                          std::move(ids));
 }
 
+std::string TabStateStorageService::GetWindowTag(
+    const TabCollection* collection) const {
+  DCHECK(packager_);
+  return packager_->GetWindowTag(collection);
+}
+
+bool TabStateStorageService::IsOffTheRecord(
+    const TabCollection* collection) const {
+  DCHECK(packager_);
+  return packager_->IsOffTheRecord(collection);
+}
+
 void TabStateStorageService::SetKey(std::string_view window_tag,
                                     std::vector<uint8_t> key) {
   tab_backend_.SetKey(window_tag, std::move(key));
