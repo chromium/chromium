@@ -283,6 +283,13 @@ class ContextualTasksButtonInteractiveTestMixin : public T {
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
             this->browser()->GetProfile());
+    // These tests expect the contextual tasks button to start docked on the
+    // leading edge of the toolbar, so align the contextual tasks side panel to
+    // the left instead of relying on its default alignment.
+    ScopedDictPrefUpdate(this->browser()->GetProfile()->GetPrefs(),
+                         prefs::kSidePanelAlignmentOverrides)
+        ->Set(SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks),
+              false);
   }
 
   void TearDownOnMainThread() override {

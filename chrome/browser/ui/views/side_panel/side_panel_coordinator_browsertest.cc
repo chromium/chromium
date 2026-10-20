@@ -720,17 +720,12 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, SidePanelAlignmentOverrides) {
             SidePanel::HorizontalAlignment::kRight);
 
   // Verify overridden panels use their overrides despite the default pref.
-  // Glic is kRight and ContextualTasks is kLeft.
+  // Glic is kRight.
   GetSidePanel()->UpdateHorizontalAlignment(SidePanelEntryId::kGlic);
   EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
             SidePanel::HorizontalAlignment::kRight);
 
-  GetSidePanel()->UpdateHorizontalAlignment(SidePanelEntryId::kContextualTasks);
-  EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
-            SidePanel::HorizontalAlignment::kLeft);
-
-  // Toggle the default pref and verify glic and contextual tasks alignment is
-  // unchanged.
+  // Toggle the default pref and verify glic alignment is unchanged.
   prefs->SetBoolean(prefs::kSidePanelHorizontalAlignment, false);
 
   GetSidePanel()->UpdateHorizontalAlignment(SidePanelEntryId::kReadingList);
@@ -741,15 +736,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, SidePanelAlignmentOverrides) {
   EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
             SidePanel::HorizontalAlignment::kRight);
 
-  GetSidePanel()->UpdateHorizontalAlignment(SidePanelEntryId::kContextualTasks);
-  EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
-            SidePanel::HorizontalAlignment::kLeft);
-
-  // Verify changes to glic/contextual tasks only apply to that feature.
+  // Verify changes to glic only apply to that feature.
   base::DictValue new_overrides;
   new_overrides.Set(SidePanelEntryIdToString(SidePanelEntryId::kGlic), false);
-  new_overrides.Set(
-      SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks), true);
   prefs->Set(prefs::kSidePanelAlignmentOverrides,
              base::Value(std::move(new_overrides)));
 
@@ -760,36 +749,55 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, SidePanelAlignmentOverrides) {
   GetSidePanel()->UpdateHorizontalAlignment(SidePanelEntryId::kGlic);
   EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
             SidePanel::HorizontalAlignment::kLeft);
-
-  GetSidePanel()->UpdateHorizontalAlignment(SidePanelEntryId::kContextualTasks);
-  EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
-            SidePanel::HorizontalAlignment::kRight);
 }
 
 class SidePanelCoordinatorContextualTasksDefaultRightTest
-    : public SidePanelCoordinatorTest {
+    : public SidePanelCoordinatorTest,
+      public testing::WithParamInterface<bool> {
  public:
   SidePanelCoordinatorContextualTasksDefaultRightTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        contextual_tasks::kContextualTasksSidePanelDefaultRight);
+    scoped_feature_list_.InitWithFeatureState(
+        contextual_tasks::kContextualTasksSidePanelDefaultRight, GetParam());
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorContextualTasksDefaultRightTest,
-                       ContextualTasksDefaultAlignmentRight) {
+IN_PROC_BROWSER_TEST_P(SidePanelCoordinatorContextualTasksDefaultRightTest,
+                       ContextualTasksDefaultAlignment) {
   Init();
   PrefService* prefs = BrowserView::GetBrowserViewForBrowser(browser())
                            ->GetProfile()
                            ->GetPrefs();
+  const SidePanel::HorizontalAlignment expected_default_alignment =
+      GetParam() ? SidePanel::HorizontalAlignment::kRight
+                 : SidePanel::HorizontalAlignment::kLeft;
+
+  prefs->SetBoolean(prefs::kSidePanelHorizontalAlignment, true);
+  GetSidePanel()->UpdateHorizontalAlignment(SidePanelEntryId::kContextualTasks);
+  EXPECT_EQ(GetSidePanel()->horizontal_alignment(), expected_default_alignment);
 
   prefs->SetBoolean(prefs::kSidePanelHorizontalAlignment, false);
   GetSidePanel()->UpdateHorizontalAlignment(SidePanelEntryId::kContextualTasks);
+  EXPECT_EQ(GetSidePanel()->horizontal_alignment(), expected_default_alignment);
+
+  base::DictValue new_overrides;
+  new_overrides.Set(
+      SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks),
+      !GetParam());
+  prefs->Set(prefs::kSidePanelAlignmentOverrides,
+             base::Value(std::move(new_overrides)));
+
+  GetSidePanel()->UpdateHorizontalAlignment(SidePanelEntryId::kContextualTasks);
   EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
-            SidePanel::HorizontalAlignment::kRight);
+            GetParam() ? SidePanel::HorizontalAlignment::kLeft
+                       : SidePanel::HorizontalAlignment::kRight);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SidePanelCoordinatorContextualTasksDefaultRightTest,
+                         testing::Bool());
 
 // Verify that right and left alignment works the same as when in LTR mode.
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignmentRTL) {

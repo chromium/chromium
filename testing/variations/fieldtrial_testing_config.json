@@ -11189,6 +11189,7 @@
                     },
                     "enable_features": [
                         "ContextualTasksSidePanel",
+                        "ContextualTasksSidePanelDefaultRight",
                         "LensSidePanelUnification"
                     ]
                 }

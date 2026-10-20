@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -431,6 +432,15 @@ class ToolbarViewInteriorMarginBrowserTestBase
     expected.set_right(0);
     EXPECT_EQ(flex_layout()->interior_margin(), expected);
   }
+
+  // Aligns the contextual tasks side panel to the right or left. The contextual
+  // tasks button is placed on the toolbar edge next to the side panel.
+  void SetContextualTasksRightAligned(bool right_aligned) {
+    ScopedDictPrefUpdate(browser()->GetProfile()->GetPrefs(),
+                         prefs::kSidePanelAlignmentOverrides)
+        ->Set(SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks),
+              right_aligned);
+  }
 };
 
 class ToolbarViewContextualTasksInteriorMarginBrowserTest
@@ -444,6 +454,14 @@ class ToolbarViewContextualTasksInteriorMarginBrowserTest
                                {{contextual_tasks::kShowEntryPoint.name,
                                  "toolbar-ephemeral-branded"}}}},
         /*disabled_features=*/{features::kWebUIBackForwardButton});
+  }
+
+  void SetUpOnMainThread() override {
+    ToolbarViewInteriorMarginBrowserTestBase::SetUpOnMainThread();
+    // These tests expect the contextual tasks button on the leading edge, so
+    // align the side panel to the leading side (left in LTR, right in RTL)
+    // instead of relying on its default alignment.
+    SetContextualTasksRightAligned(/*right_aligned=*/base::i18n::IsRTL());
   }
 
  private:
@@ -628,14 +646,6 @@ class ToolbarViewCircularContextualTasksBrowserTest
   void SetUpOnMainThread() override {
     ToolbarViewInteriorMarginBrowserTestBase::SetUpOnMainThread();
     SetContextualTasksRightAligned(true);
-  }
-
-  void SetContextualTasksRightAligned(bool right_aligned) {
-    ScopedDictPrefUpdate(browser()->GetProfile()->GetPrefs(),
-                         prefs::kSidePanelAlignmentOverrides)
-        ->Set("kContextualTasks", right_aligned);
-    browser()->GetProfile()->GetPrefs()->SetBoolean(
-        prefs::kSidePanelHorizontalAlignment, right_aligned);
   }
 
  private:
