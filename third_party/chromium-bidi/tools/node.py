@@ -32,6 +32,13 @@ def main():
     chromium_src = os.path.abspath(os.path.join(script_dir, "..", "..", ".."))
     chromium_node_py = os.path.join(chromium_src, "third_party", "node", "node.py")
 
+    # Ensure that Node.js finds the chromium-bidi node_modules folder even if
+    # the out folder is not a descendant of the chromium-bidi folder.
+    sys.path.insert(0, script_dir)
+    from test_runner_utils import get_node_env
+
+    os.environ.update(get_node_env())
+
     if os.path.exists(chromium_node_py):
         # Import chromium's node.py as a module.
         sys.path.insert(0, os.path.dirname(chromium_node_py))

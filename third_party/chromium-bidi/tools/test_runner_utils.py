@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import fnmatch
 import os
+import pathlib
 import re
 import shutil
 import sys
@@ -59,10 +60,11 @@ def get_repo_root() -> str:
 def setup_runtime_env(
     gen_dir: str, src_dir: str | None = None, force: bool = False
 ) -> str:
-    """Sets up package.json and node_modules in the gen directory for tests.
+    """Sets up package.json in the gen directory for tests.
 
-    Uses symlinking for node_modules where possible for performance,
-    falling back to copying if symlinks are not permitted.
+    The package.json file sets the module type of the compiled files. Node.js
+    finds `node_modules` through the hook from `get_node_env`, so the gen
+    directory does not get a symlink or a copy of `node_modules`.
     Returns the absolute path to the prepared directory inside gen_dir.
     """
     if src_dir is None:
@@ -76,28 +78,28 @@ def setup_runtime_env(
     if os.path.exists(pkg_src) and (force or not os.path.exists(pkg_dst)):
         shutil.copy2(pkg_src, pkg_dst)
 
-    nm_src = os.path.join(src_dir, "node_modules")
-    nm_dst = os.path.join(dst_dir, "node_modules")
-    if os.path.exists(nm_src):
-        if force and os.path.exists(nm_dst):
-            if os.path.islink(nm_dst):
-                os.unlink(nm_dst)
-            else:
-                shutil.rmtree(nm_dst)
-
-        if not os.path.exists(nm_dst):
-            try:
-                os.symlink(nm_src, nm_dst)
-            except OSError:
-                shutil.copytree(
-                    nm_src,
-                    nm_dst,
-                    symlinks=False,
-                    ignore=shutil.ignore_patterns(".bin"),
-                    ignore_dangling_symlinks=True,
-                )
-
     return dst_dir
+
+
+def get_node_modules_hook_url() -> str:
+    """Returns the file URL of the Node.js `node_modules` resolution hook."""
+    hook_path = os.path.join(get_repo_root(), "tools", "node_modules_hook.mjs")
+    return pathlib.Path(hook_path).resolve().as_uri()
+
+
+def get_node_env(base_env: dict[str, str] | None = None) -> dict[str, str]:
+    """Returns an environment that lets Node.js find chromium-bidi node_modules.
+
+    The out directory is not always a descendant of the chromium-bidi
+    directory. The hook resolves bare specifiers against the chromium-bidi
+    `package.json` when the default resolution fails.
+    """
+    env = dict(os.environ if base_env is None else base_env)
+    import_arg = f"--import={get_node_modules_hook_url()}"
+    node_options = env.get("NODE_OPTIONS", "")
+    if import_arg not in node_options.split():
+        env["NODE_OPTIONS"] = f"{node_options} {import_arg}".strip()
+    return env
 
 
 def get_node_binary_path(node_py_path: str | None = None) -> str:

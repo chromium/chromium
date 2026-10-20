@@ -23,6 +23,7 @@ import sys
 from test_runner_utils import (
     extract_isolated_script_args,
     get_node_binary_path,
+    get_node_env,
     resolve_test_files_and_patterns,
     setup_runtime_env,
     strip_leading_dashes,
@@ -35,7 +36,7 @@ def main():
     parser.add_argument("--node-py", required=True)
     args, unknown_args = parser.parse_known_args()
 
-    # Prepare runtime dependencies (package.json and node_modules)
+    # Prepare runtime dependencies (package.json)
     setup_runtime_env(args.gen_dir)
 
     node_args = strip_leading_dashes(unknown_args)
@@ -69,7 +70,7 @@ def main():
         cmd.append(f"--test-name-pattern={pattern_regex}")
 
     cmd.extend(target_test_files)
-    return subprocess.call(cmd)
+    return subprocess.call(cmd, env=get_node_env())
 
 
 if __name__ == "__main__":

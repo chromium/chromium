@@ -98,7 +98,7 @@ def main():
         args.chromedriver_bin or get_default_chromedriver_bin()
     )
 
-    # Prepare runtime node_modules and package.json
+    # Prepare runtime package.json
     setup_runtime_env(gen_dir, src_dir=repo_root)
 
     extra_args = strip_leading_dashes(unknown_args)
