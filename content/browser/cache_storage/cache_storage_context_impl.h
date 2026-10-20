@@ -97,7 +97,6 @@ class CONTENT_EXPORT CacheStorageContextImpl
       const network::DocumentIsolationPolicy& document_isolation_policy,
       mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
           dip_reporter_remote,
-      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> result);

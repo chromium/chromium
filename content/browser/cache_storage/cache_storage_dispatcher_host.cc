@@ -1131,15 +1131,11 @@ void CacheStorageDispatcherHost::AddReceiver(
     const DocumentIsolationPolicy& document_isolation_policy,
     mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
         dip_reporter,
-    const blink::StorageKey& storage_key,
     const std::optional<storage::BucketLocator>& bucket,
     storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (bucket.has_value()) {
-    // TODO(crbug.com/562197478): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
-    DCHECK_EQ(bucket->storage_key, storage_key);
     if (WasNotifiedOfBucketDataDeletion(bucket.value())) {
       // The list of deleted buckets gets added to each time
       // `CacheStorageManager::DeleteBucketData()` is called, but it's not

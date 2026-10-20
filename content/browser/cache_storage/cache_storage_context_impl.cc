@@ -108,8 +108,7 @@ void CacheStorageContextImpl::AddReceiver(
       base::BindOnce(&CacheStorageContextImpl::AddReceiverWithBucketInfo,
                      weak_factory_.GetWeakPtr(), cross_origin_embedder_policy,
                      std::move(coep_reporter), document_isolation_policy,
-                     std::move(dip_reporter), bucket_locator.storage_key, owner,
-                     std::move(receiver));
+                     std::move(dip_reporter), owner, std::move(receiver));
 
   if (bucket_locator.is_default) {
     CHECK_EQ(storage::BucketId(), bucket_locator.id, base::NotFatalUntil::M158);
@@ -151,7 +150,6 @@ void CacheStorageContextImpl::AddReceiverWithBucketInfo(
     const network::DocumentIsolationPolicy& document_isolation_policy,
     mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
         dip_reporter,
-    const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
@@ -163,8 +161,8 @@ void CacheStorageContextImpl::AddReceiverWithBucketInfo(
 
   dispatcher_host_->AddReceiver(
       cross_origin_embedder_policy, std::move(coep_reporter),
-      document_isolation_policy, std::move(dip_reporter), storage_key, bucket,
-      owner, std::move(receiver));
+      document_isolation_policy, std::move(dip_reporter), bucket, owner,
+      std::move(receiver));
 }
 
 }  // namespace content
