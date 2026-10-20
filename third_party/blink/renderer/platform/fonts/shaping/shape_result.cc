@@ -267,13 +267,20 @@ float ShapeResultRun::XPositionForOffset(
   if (glyph_data_.IsCompact()) [[unlikely]] {
     const wtf_size_t num_glyphs = glyph_data_.size();
     CHECK_GT(num_glyphs, 0u);
-    const int64_t advance_raw = glyph_data_.CompactAdvance().RawValue();
-    const wtf_size_t whole =
-        offset < num_glyphs
-            ? offset
-            : (adjust_mid_cluster == AdjustMidCluster::kToEnd ? num_glyphs
-                                                              : num_glyphs - 1);
-    return InlineLayoutUnit::FromRawValue(int64_t{whole} * advance_raw)
+    wtf_size_t whole = num_glyphs;
+    if (glyph_data_.IsCompactRtl()) {
+      CHECK_EQ(num_glyphs, num_characters_);
+      if (offset < num_glyphs) {
+        whole = num_glyphs - offset;
+      } else if (adjust_mid_cluster == AdjustMidCluster::kToEnd) {
+        --whole;
+      }
+    } else if (offset < num_glyphs) {
+      whole = offset;
+    } else if (adjust_mid_cluster == AdjustMidCluster::kToStart) {
+      --whole;
+    }
+    return (glyph_data_.CompactAdvance().To<InlineLayoutUnit>() * whole)
         .ToFloat();
   }
   const auto& glyphs = glyph_data_.NonCompactGlyphs();
@@ -417,14 +424,13 @@ void ShapeResultRun::CharacterIndexForXPositionCompact(
     GlyphIndexResult* result) const {
   const unsigned num_glyphs = glyph_data_.size();
   const TextRunLayoutUnit advance = glyph_data_.CompactAdvance();
-  const int64_t advance_raw = advance.RawValue();
   const float advance_float = advance.ToFloat();
   // Fixed-point products keep this path constant-time and match glyph
   // positions. The full-storage path instead sums floats, so materializing a
   // fractional-advance run can change hit-testing near boundaries, with larger
   // differences on long runs. We intentionally do not reproduce that drift.
-  const auto position_for_glyph = [advance_raw](unsigned index) {
-    return InlineLayoutUnit::FromRawValue(advance_raw * index).ToFloat();
+  const auto position_for_glyph = [advance](unsigned index) {
+    return (advance.To<InlineLayoutUnit>() * index).ToFloat();
   };
   CHECK_GT(num_glyphs, 0u);
   unsigned glyph_index = num_glyphs - 1;
@@ -439,8 +445,13 @@ void ShapeResultRun::CharacterIndexForXPositionCompact(
       ++glyph_index;
     }
   }
-  result->left_character_index = glyph_index;
-  result->right_character_index = glyph_index + 1;
+  if (glyph_data_.IsCompactRtl()) {
+    result->left_character_index = num_glyphs - glyph_index;
+    result->right_character_index = num_glyphs - glyph_index - 1;
+  } else {
+    result->left_character_index = glyph_index;
+    result->right_character_index = glyph_index + 1;
+  }
   result->origin_x = position_for_glyph(glyph_index);
   result->advance = advance_float;
 }
@@ -583,7 +594,6 @@ bool ShapeResult::IsStartSafeToBreak() const {
   if (runs_.empty()) [[unlikely]] {
     return false;
   }
-  // TODO(crbug.com/523940241): Handle RTL compact runs.
   if (IsLtr()) {
     const ShapeResultRun* const run = runs_.front().Get();
     if (run->glyph_data_.IsCompact()) [[unlikely]] {
@@ -598,6 +608,9 @@ bool ShapeResult::IsStartSafeToBreak() const {
   }
 
   const ShapeResultRun* const run = runs_.back().Get();
+  if (run->glyph_data_.IsCompact()) [[unlikely]] {
+    return StartIndex() == run->start_index_;
+  }
   const HarfBuzzRunGlyphData& glyph_data =
       run->glyph_data_.NonCompactGlyphs().back();
   return glyph_data.IsSafeToBreakBefore() &&
@@ -2305,43 +2318,43 @@ void ShapeResult::ComputePositionData(bool allow_compaction) const {
     // |x_position| is in ascending order.
     DCHECK_EQ(IsRtl(), run.IsRtl());
 
-    // TODO(523940241): Handle RTL compact runs.
-    if constexpr (!kIsRtl) {
-      if (run.glyph_data_.IsCompact()) [[unlikely]] {
-        const TextRunLayoutUnit advance = run.glyph_data_.CompactAdvance();
-        const unsigned num_glyphs = run.glyph_data_.size();
-        CHECK_GE(run.start_index_, start_index_);
-
-        const unsigned first_character_index = run.start_index_ - start_index_;
-        CHECK_LE(first_character_index, num_characters_);
-        CHECK_LE(num_glyphs, num_characters_ - first_character_index);
-
-        if (advance_type != AdvanceType::kVariable) {
-          if (first_character_index != mono_glyph_count ||
-              (advance_type == AdvanceType::kMono && mono_advance != advance)) {
-            advance_type = AdvanceType::kVariable;
-          } else {
-            mono_advance = advance;
-            advance_type = AdvanceType::kMono;
-            mono_glyph_count += num_glyphs;
-          }
+    if (run.glyph_data_.IsCompact()) [[unlikely]] {
+      CHECK_EQ(run.glyph_data_.IsCompactRtl(), kIsRtl);
+      CHECK_GE(run.start_index_, start_index_);
+      const unsigned first_logical_index = run.start_index_ - start_index_;
+      CHECK_LE(first_logical_index, num_characters_);
+      CHECK_LE(run.glyph_data_.size(), num_characters_ - first_logical_index);
+      unsigned first_character_index = first_logical_index;
+      LayoutUnit gap_position = last_x_position;
+      if constexpr (kIsRtl) {
+        first_character_index =
+            num_characters_ - first_logical_index - run.glyph_data_.size();
+        gap_position = total_advance.ToCeil<LayoutUnit>();
+      } else if (advance_type != AdvanceType::kVariable) {
+        if (first_character_index != mono_glyph_count ||
+            (advance_type == AdvanceType::kMono &&
+             mono_advance != run.glyph_data_.CompactAdvance())) {
+          advance_type = AdvanceType::kVariable;
+        } else {
+          mono_advance = run.glyph_data_.CompactAdvance();
+          advance_type = AdvanceType::kMono;
+          mono_glyph_count += run.glyph_data_.size();
         }
-
-        CHECK_GE(first_character_index, next_character_index);
-        for (unsigned i = next_character_index; i < first_character_index;
-             ++i) {
-          character_position_[i].SetCachedData(last_x_position, false, false);
-        }
-
-        for (unsigned glyph_i = 0; glyph_i < num_glyphs; ++glyph_i) {
-          last_x_position = total_advance.ToCeil<LayoutUnit>();
-          character_position_[first_character_index + glyph_i].SetCachedData(
-              last_x_position, true, true);
-          total_advance += advance;
-        }
-        next_character_index = first_character_index + num_glyphs;
-        continue;
       }
+
+      CHECK_GE(first_character_index, next_character_index);
+      for (unsigned i = next_character_index; i < first_character_index; ++i) {
+        character_position_[i].SetCachedData(gap_position, false, false);
+      }
+
+      for (unsigned glyph_i = 0; glyph_i < run.glyph_data_.size(); ++glyph_i) {
+        last_x_position = total_advance.ToCeil<LayoutUnit>();
+        character_position_[first_character_index + glyph_i].SetCachedData(
+            last_x_position, true, true);
+        total_advance += run.glyph_data_.CompactAdvance();
+      }
+      next_character_index = first_character_index + run.glyph_data_.size();
+      continue;
     }
 
     for (const HarfBuzzRunGlyphData& glyph_data :

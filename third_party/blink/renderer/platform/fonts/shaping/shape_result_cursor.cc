@@ -65,13 +65,23 @@ void ShapeResultCursor::MoveToCharacter(wtf_size_t character_index) {
       DCHECK_GE(character_index, run_->start_index_);
       wtf_size_t character_index_in_run = character_index - run_->start_index_;
       if (character_index_in_run < run_->NumCharacters()) {
-        const auto& glyphs = run_->glyph_data_.NonCompactGlyphs();
-        for (;; --glyph_index_) {
-          if (glyphs[glyph_index_].character_index >= character_index_in_run) {
+        if (run_->glyph_data_.IsCompact()) [[unlikely]] {
+          if (run_->NumGlyphs() > character_index_in_run) {
+            const wtf_size_t glyph_index =
+                run_->NumGlyphs() - character_index_in_run - 1;
+            glyph_index_ = std::min(glyph_index_, glyph_index);
             return;
           }
-          if (!glyph_index_) {
-            break;
+        } else {
+          const auto& glyphs = run_->glyph_data_.NonCompactGlyphs();
+          for (;; --glyph_index_) {
+            if (glyphs[glyph_index_].character_index >=
+                character_index_in_run) {
+              return;
+            }
+            if (!glyph_index_) {
+              break;
+            }
           }
         }
       }

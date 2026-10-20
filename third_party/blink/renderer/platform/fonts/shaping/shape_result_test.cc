@@ -448,6 +448,41 @@ TEST_F(ShapeResultTest, CompactRunsForceFullPositionData) {
   EXPECT_EQ(kNumCharacters, PositionDataSize(*result));
 }
 
+TEST_F(ShapeResultTest, CompactPositionDataWithGapsMatchesFullStorage) {
+  constexpr unsigned kStartIndex = 5;
+  constexpr unsigned kNumCharacters = 24;
+  for (TextDirection direction : {TextDirection::kLtr, TextDirection::kRtl}) {
+    SCOPED_TRACE(direction);
+    ShapeResult* full_result = MakeGarbageCollected<ShapeResult>(
+        kStartIndex, kNumCharacters, direction);
+    ShapeResult* compact_result = MakeGarbageCollected<ShapeResult>(
+        kStartIndex, kNumCharacters, direction);
+    for (ShapeResult* result : {full_result, compact_result}) {
+      InsertConstantAdvanceRun(result, kStartIndex + 2, 8,
+                               TextRunLayoutUnit(10),
+                               /*compact=*/result == compact_result);
+      InsertConstantAdvanceRun(result, kStartIndex + 13, 8,
+                               TextRunLayoutUnit(20),
+                               /*compact=*/result == compact_result);
+      result->EnsurePositionData(/*allow_compaction=*/false);
+      ASSERT_EQ(kNumCharacters, PositionDataSize(*result));
+    }
+
+    for (unsigned offset = kStartIndex; offset < kStartIndex + kNumCharacters;
+         ++offset) {
+      SCOPED_TRACE(offset);
+      const ShapeResultCharacterData& expected =
+          full_result->CharacterData(offset);
+      const ShapeResultCharacterData& actual =
+          compact_result->CharacterData(offset);
+      EXPECT_EQ(expected.x_position, actual.x_position);
+      EXPECT_EQ(expected.is_cluster_base, actual.is_cluster_base);
+      EXPECT_EQ(expected.safe_to_break_before, actual.safe_to_break_before);
+    }
+    EXPECT_EQ(full_result->Width(), compact_result->Width());
+  }
+}
+
 TEST_F(ShapeResultTest, ComputeInkBoundsWithZeroOffset) {
   String string(u"abc");
   HarfBuzzShaper shaper(string);

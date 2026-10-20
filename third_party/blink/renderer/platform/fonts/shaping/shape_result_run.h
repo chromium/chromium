@@ -858,6 +858,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                            CompactRejectsNonIdentityRtlClusters);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           RtlCompactStorageMatchesFullStorage);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                            RtlNestedCompactRangesMatchFullStorage);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                            CompactReaderMatchesGlyphAtForSubRange);
