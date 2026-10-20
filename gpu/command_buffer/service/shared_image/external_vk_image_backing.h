@@ -133,6 +133,15 @@ class GPU_GLES2_EXPORT ExternalVkImageBacking final
   }
   uint32_t reads_in_progress() const { return reads_in_progress_; }
   uint32_t gl_reads_in_progress() const { return gl_reads_in_progress_; }
+  // Returns true if the most recent write access to the backing was done via
+  // GL (i.e. GL wrote the image and signaled the end access semaphore).
+  bool get_and_reset_wait_for_gl_finish() {
+    bool needs_wait = wait_for_gl_finish_;
+    if (wait_for_gl_finish_) {
+      wait_for_gl_finish_ = false;
+    }
+    return needs_wait;
+  }
 
   // Returns VkImage layouts for each plane as GL layouts.
   std::vector<GLenum> GetVkImageLayoutsForGL();
@@ -242,6 +251,7 @@ class GPU_GLES2_EXPORT ExternalVkImageBacking final
   uint32_t reads_in_progress_ = 0;
   bool is_updating_content_ = false;
   uint32_t gl_reads_in_progress_ = 0;
+  bool wait_for_gl_finish_ = false;
 
   std::vector<scoped_refptr<GLTextureHolder>> gl_textures_;
 

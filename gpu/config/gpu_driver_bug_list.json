@@ -3674,6 +3674,18 @@
       "features": [
         "check_graphics_reset_status_after_readback"
       ]
+    },
+    {
+      "id": 504,
+      "description": "Mesa drivers on Intel GPUs on Linux require prior GL work to be finished before Dawn accesses a Vulkan-backed shared image that was last written by GL",
+      "os": {
+        "type": "linux"
+      },
+      "vendor_id": "0x8086",
+      "driver_vendor": "Mesa",
+      "features": [
+        "finish_gl_before_dawn_vulkan_image_access"
+      ]
     }
   ]
 }

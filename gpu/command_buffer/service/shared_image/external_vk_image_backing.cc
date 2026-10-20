@@ -621,6 +621,7 @@ void ExternalVkImageBacking::EndAccess(bool readonly,
 
   EndAccessInternal(readonly, std::move(external_semaphore));
   if (!readonly) {
+    wait_for_gl_finish_ = is_gl;
     if (use_separate_gl_texture()) {
       latest_content_ = is_gl ? kInGLTexture : kInVkImage;
     } else {
@@ -699,6 +700,7 @@ bool ExternalVkImageBacking::UploadFromMemory(
   }
 
   latest_content_ = kInVkImage;
+  wait_for_gl_finish_ = false;
 
   // Also upload to GL texture if there is a separate one.
   if (use_separate_gl_texture() && !gl_textures_.empty()) {

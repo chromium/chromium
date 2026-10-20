@@ -13,6 +13,8 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "gpu/command_buffer/service/feature_info.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_image.h"
 #include "third_party/skia/include/gpu/MutableTextureState.h"
@@ -20,6 +22,8 @@
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkTypes.h"
 #include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
+#include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_context.h"
 
 namespace gpu {
 
@@ -47,6 +51,18 @@ ExternalVkImageDawnImageRepresentation::
 wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
     wgpu::TextureUsage usage,
     wgpu::TextureUsage internal_usage) {
+  // On some drivers (Mesa on Intel GPUs on Linux) prior GL work on the shared
+  // image must be finished before Dawn/Vulkan accesses it when the image was
+  // last written (and its semaphore signaled) by GL.
+  gles2::FeatureInfo* feature_info =
+      backing_impl()->context_state()->feature_info();
+  if (feature_info &&
+      feature_info->workarounds().finish_gl_before_dawn_vulkan_image_access &&
+      backing_impl()->get_and_reset_wait_for_gl_finish() &&
+      gl::GLContext::GetCurrent()) {
+    gl::GLApi* api = gl::g_current_gl_context;
+    api->glFinishFn();
+  }
   DCHECK(begin_access_semaphores_.empty());
   if (!backing_impl()->BeginAccess(false, &begin_access_semaphores_,
                                    /*is_gl=*/false)) {
