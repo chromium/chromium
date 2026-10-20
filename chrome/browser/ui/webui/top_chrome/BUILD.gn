@@ -118,7 +118,6 @@ if (!is_android) {
   source_set("browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
     sources = [
       "preload_context_browsertest.cc",
       "webui_contents_preload_manager_browsertest.cc",

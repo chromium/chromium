@@ -98,8 +98,6 @@ source_set("browser_tests") {
     "permission_dashboard_browsertest.cc",
   ]
 
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   deps = [
     ":chip",
     "//chrome/browser/ui:browser_window_header",
@@ -124,8 +122,6 @@ if (!is_chromeos_device) {
       "permission_chip_interactive_uitest.cc",
       "permission_chip_kombucha_interactive_uitest.cc",
     ]
-
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
     deps = [
       ":chip",

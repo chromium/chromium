@@ -108,7 +108,6 @@ source_set("unit_tests") {
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   sources = [ "downloads_page_interactive_uitest.cc" ]
   deps = [
     ":downloads",
