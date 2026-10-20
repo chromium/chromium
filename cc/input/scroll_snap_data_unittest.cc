@@ -75,7 +75,7 @@ TEST_F(ScrollSnapDataTest, StartAlignmentCalculation) {
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(10, 10, 200, 300), gfx::PointF(600, 800));
   SnapAreaData area(ScrollSnapAlign(SnapAlignment::kStart),
-                    gfx::RectF(100, 150, 100, 100), false, false,
+                    gfx::RectF(100, 150, 100, 100), SnapStop::kNormal, false,
                     ElementId(10));
   container.AddSnapAreaData(area);
 
@@ -96,7 +96,7 @@ TEST_F(ScrollSnapDataTest, CenterAlignmentCalculation) {
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(10, 10, 200, 300), gfx::PointF(600, 800));
   SnapAreaData area(ScrollSnapAlign(SnapAlignment::kCenter),
-                    gfx::RectF(100, 150, 100, 100), false, false,
+                    gfx::RectF(100, 150, 100, 100), SnapStop::kNormal, false,
                     ElementId(10));
   container.AddSnapAreaData(area);
 
@@ -117,7 +117,7 @@ TEST_F(ScrollSnapDataTest, EndAlignmentCalculation) {
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(10, 10, 200, 200), gfx::PointF(600, 800));
   SnapAreaData area(ScrollSnapAlign(SnapAlignment::kEnd),
-                    gfx::RectF(150, 200, 100, 100), false, false,
+                    gfx::RectF(150, 200, 100, 100), SnapStop::kNormal, false,
                     ElementId(10));
   container.AddSnapAreaData(area);
 
@@ -137,7 +137,8 @@ TEST_F(ScrollSnapDataTest, UnreachableSnapPositionCalculation) {
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 200, 200), gfx::PointF(100, 100));
   SnapAreaData area(ScrollSnapAlign(SnapAlignment::kEnd, SnapAlignment::kStart),
-                    gfx::RectF(200, 0, 100, 100), false, false, ElementId(10));
+                    gfx::RectF(200, 0, 100, 100), SnapStop::kNormal, false,
+                    ElementId(10));
   container.AddSnapAreaData(area);
 
   std::unique_ptr<SnapSelectionStrategy> strategy =
@@ -160,13 +161,13 @@ TEST_F(ScrollSnapDataTest, FindsClosestSnapPositionIndependently) {
       gfx::RectF(0, 0, 200, 200), gfx::PointF(600, 800));
   SnapAreaData snap_x_only(
       ScrollSnapAlign(SnapAlignment::kNone, SnapAlignment::kStart),
-      gfx::RectF(80, 0, 150, 150), false, false, ElementId(10));
+      gfx::RectF(80, 0, 150, 150), SnapStop::kNormal, false, ElementId(10));
   SnapAreaData snap_y_only(
       ScrollSnapAlign(SnapAlignment::kStart, SnapAlignment::kNone),
-      gfx::RectF(0, 70, 150, 150), false, false, ElementId(20));
+      gfx::RectF(0, 70, 150, 150), SnapStop::kNormal, false, ElementId(20));
   SnapAreaData snap_on_both(ScrollSnapAlign(SnapAlignment::kStart),
-                            gfx::RectF(50, 150, 150, 150), false, false,
-                            ElementId(30));
+                            gfx::RectF(50, 150, 150, 150), SnapStop::kNormal,
+                            false, ElementId(30));
   container.AddSnapAreaData(snap_x_only);
   container.AddSnapAreaData(snap_y_only);
   container.AddSnapAreaData(snap_on_both);
@@ -187,9 +188,10 @@ TEST_F(ScrollSnapDataTest, AlignedSiblingSnapAreasUseTreeOrder) {
       ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 300, 300), gfx::PointF(0, 800));
   SnapAreaData first(ScrollSnapAlign(SnapAlignment::kStart),
-                     gfx::RectF(0, 100, 200, 100), false, false, ElementId(10));
+                     gfx::RectF(0, 100, 200, 100), SnapStop::kNormal, false,
+                     ElementId(10));
   SnapAreaData second(ScrollSnapAlign(SnapAlignment::kStart),
-                      gfx::RectF(0, 100, 100, 100), false, false,
+                      gfx::RectF(0, 100, 100, 100), SnapStop::kNormal, false,
                       ElementId(20));
   container.AddSnapAreaData(first);
   container.AddSnapAreaData(second);
@@ -208,17 +210,17 @@ TEST_F(ScrollSnapDataTest, AlignedDescendantSnapAreaIsPreferred) {
       ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 300, 300), gfx::PointF(0, 800));
   SnapAreaData ancestor(ScrollSnapAlign(SnapAlignment::kStart),
-                        gfx::RectF(0, 100, 200, 100), false, false,
+                        gfx::RectF(0, 100, 200, 100), SnapStop::kNormal, false,
                         ElementId(10));
   SnapAreaData sibling(ScrollSnapAlign(SnapAlignment::kNone),
-                       gfx::RectF(0, 100, 175, 100), false, false,
+                       gfx::RectF(0, 100, 175, 100), SnapStop::kNormal, false,
                        ElementId(15), 1u);
   SnapAreaData intermediate(ScrollSnapAlign(SnapAlignment::kNone),
-                            gfx::RectF(0, 100, 150, 100), false, false,
-                            ElementId(20), 2u);
+                            gfx::RectF(0, 100, 150, 100), SnapStop::kNormal,
+                            false, ElementId(20), 2u);
   SnapAreaData descendant(ScrollSnapAlign(SnapAlignment::kStart),
-                          gfx::RectF(0, 100, 100, 100), false, false,
-                          ElementId(30), 1u);
+                          gfx::RectF(0, 100, 100, 100), SnapStop::kNormal,
+                          false, ElementId(30), 1u);
   container.AddSnapAreaData(ancestor);
   container.AddSnapAreaData(sibling);
   container.AddSnapAreaData(intermediate);
@@ -237,15 +239,16 @@ TEST_F(ScrollSnapDataTest, SnapAreaParentChainCrossesAxes) {
   SnapContainerData container(
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 300, 300), gfx::PointF(800, 800));
-  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
-                                         gfx::RectF(100, 100, 200, 200), false,
-                                         false, ElementId(10)));
   container.AddSnapAreaData(SnapAreaData(
-      ScrollSnapAlign(SnapAlignment::kNone, SnapAlignment::kStart),
-      gfx::RectF(100, 100, 150, 150), false, false, ElementId(20), 1u));
-  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
-                                         gfx::RectF(100, 100, 100, 100), false,
-                                         false, ElementId(30), 1u));
+      ScrollSnapAlign(SnapAlignment::kStart), gfx::RectF(100, 100, 200, 200),
+      SnapStop::kNormal, false, ElementId(10)));
+  container.AddSnapAreaData(
+      SnapAreaData(ScrollSnapAlign(SnapAlignment::kNone, SnapAlignment::kStart),
+                   gfx::RectF(100, 100, 150, 150), SnapStop::kNormal, false,
+                   ElementId(20), 1u));
+  container.AddSnapAreaData(SnapAreaData(
+      ScrollSnapAlign(SnapAlignment::kStart), gfx::RectF(100, 100, 100, 100),
+      SnapStop::kNormal, false, ElementId(30), 1u));
 
   std::unique_ptr<SnapSelectionStrategy> horizontal_strategy =
       SnapSelectionStrategy::CreateForEndPosition(gfx::PointF(100, 100), true,
@@ -271,13 +274,13 @@ TEST_F(ScrollSnapDataTest,
       gfx::RectF(0, 0, 300, 300), gfx::PointF(800, 800));
   container.AddSnapAreaData(SnapAreaData(
       ScrollSnapAlign(SnapAlignment::kNone, SnapAlignment::kStart),
-      gfx::RectF(100, 100, 100, 100), false, false, ElementId(10)));
-  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
-                                         gfx::RectF(100, 100, 200, 200), false,
-                                         false, ElementId(20)));
-  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
-                                         gfx::RectF(100, 100, 50, 50), false,
-                                         false, ElementId(30)));
+      gfx::RectF(100, 100, 100, 100), SnapStop::kNormal, false, ElementId(10)));
+  container.AddSnapAreaData(SnapAreaData(
+      ScrollSnapAlign(SnapAlignment::kStart), gfx::RectF(100, 100, 200, 200),
+      SnapStop::kNormal, false, ElementId(20)));
+  container.AddSnapAreaData(SnapAreaData(
+      ScrollSnapAlign(SnapAlignment::kStart), gfx::RectF(100, 100, 50, 50),
+      SnapStop::kNormal, false, ElementId(30)));
 
   std::unique_ptr<SnapSelectionStrategy> strategy =
       SnapSelectionStrategy::CreateForEndPosition(gfx::PointF(100, 100), true,
@@ -294,15 +297,15 @@ TEST_F(ScrollSnapDataTest,
   SnapContainerData container(
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 300, 300), gfx::PointF(800, 800));
-  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
-                                         gfx::RectF(100, 300, 100, 100), false,
-                                         false, ElementId(10)));
-  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
-                                         gfx::RectF(300, 100, 100, 100), false,
-                                         false, ElementId(20)));
-  container.AddSnapAreaData(SnapAreaData(ScrollSnapAlign(SnapAlignment::kStart),
-                                         gfx::RectF(100, 100, 100, 100), false,
-                                         false, ElementId(30)));
+  container.AddSnapAreaData(SnapAreaData(
+      ScrollSnapAlign(SnapAlignment::kStart), gfx::RectF(100, 300, 100, 100),
+      SnapStop::kNormal, false, ElementId(10)));
+  container.AddSnapAreaData(SnapAreaData(
+      ScrollSnapAlign(SnapAlignment::kStart), gfx::RectF(300, 100, 100, 100),
+      SnapStop::kNormal, false, ElementId(20)));
+  container.AddSnapAreaData(SnapAreaData(
+      ScrollSnapAlign(SnapAlignment::kStart), gfx::RectF(100, 100, 100, 100),
+      SnapStop::kNormal, false, ElementId(30)));
 
   std::unique_ptr<SnapSelectionStrategy> strategy =
       SnapSelectionStrategy::CreateForEndPosition(gfx::PointF(100, 100), true,
@@ -320,13 +323,13 @@ TEST_F(ScrollSnapDataTest, FindsClosestSnapPositionOnAxisValueBoth) {
       gfx::RectF(0, 0, 200, 200), gfx::PointF(600, 800));
   SnapAreaData snap_x_only(
       ScrollSnapAlign(SnapAlignment::kNone, SnapAlignment::kStart),
-      gfx::RectF(80, 0, 150, 150), false, false, ElementId(10));
+      gfx::RectF(80, 0, 150, 150), SnapStop::kNormal, false, ElementId(10));
   SnapAreaData snap_y_only(
       ScrollSnapAlign(SnapAlignment::kStart, SnapAlignment::kNone),
-      gfx::RectF(0, 70, 150, 150), false, false, ElementId(20));
+      gfx::RectF(0, 70, 150, 150), SnapStop::kNormal, false, ElementId(20));
   SnapAreaData snap_on_both(ScrollSnapAlign(SnapAlignment::kStart),
-                            gfx::RectF(50, 150, 150, 150), false, false,
-                            ElementId(30));
+                            gfx::RectF(50, 150, 150, 150), SnapStop::kNormal,
+                            false, ElementId(30));
 
   container.AddSnapAreaData(snap_x_only);
   container.AddSnapAreaData(snap_y_only);
@@ -348,10 +351,10 @@ TEST_F(ScrollSnapDataTest, DoesNotSnapOnNonScrolledAxis) {
       gfx::RectF(0, 0, 200, 200), gfx::PointF(600, 800));
   SnapAreaData snap_x_only(
       ScrollSnapAlign(SnapAlignment::kNone, SnapAlignment::kStart),
-      gfx::RectF(80, 0, 150, 150), false, false, ElementId(10));
+      gfx::RectF(80, 0, 150, 150), SnapStop::kNormal, false, ElementId(10));
   SnapAreaData snap_y_only(
       ScrollSnapAlign(SnapAlignment::kStart, SnapAlignment::kNone),
-      gfx::RectF(0, 70, 150, 150), false, false, ElementId(20));
+      gfx::RectF(0, 70, 150, 150), SnapStop::kNormal, false, ElementId(20));
   container.AddSnapAreaData(snap_x_only);
   container.AddSnapAreaData(snap_y_only);
 
@@ -372,10 +375,10 @@ TEST_F(ScrollSnapDataTest, DoesNotSnapOnNonVisibleAreas) {
       gfx::RectF(0, 0, 200, 200), gfx::PointF(600, 800));
   SnapAreaData snap_x_only(
       ScrollSnapAlign(SnapAlignment::kNone, SnapAlignment::kStart),
-      gfx::RectF(300, 400, 100, 100), false, false, ElementId(10));
+      gfx::RectF(300, 400, 100, 100), SnapStop::kNormal, false, ElementId(10));
   SnapAreaData snap_y_only(
       ScrollSnapAlign(SnapAlignment::kStart, SnapAlignment::kNone),
-      gfx::RectF(400, 300, 100, 100), false, false, ElementId(20));
+      gfx::RectF(400, 300, 100, 100), SnapStop::kNormal, false, ElementId(20));
 
   container.AddSnapAreaData(snap_x_only);
   container.AddSnapAreaData(snap_y_only);
@@ -399,13 +402,13 @@ TEST_F(ScrollSnapDataTest, SnapOnClosestAxisFirstIfVisibilityConflicts) {
   // conflict with the snap point on x.
   SnapAreaData snap_x(
       ScrollSnapAlign(SnapAlignment::kNone, SnapAlignment::kStart),
-      gfx::RectF(150, 0, 100, 100), false, false, ElementId(10));
+      gfx::RectF(150, 0, 100, 100), SnapStop::kNormal, false, ElementId(10));
   SnapAreaData snap_y1(
       ScrollSnapAlign(SnapAlignment::kStart, SnapAlignment::kNone),
-      gfx::RectF(0, 180, 100, 100), false, false, ElementId(20));
+      gfx::RectF(0, 180, 100, 100), SnapStop::kNormal, false, ElementId(20));
   SnapAreaData snap_y2(
       ScrollSnapAlign(SnapAlignment::kStart, SnapAlignment::kNone),
-      gfx::RectF(250, 80, 100, 100), false, false, ElementId(30));
+      gfx::RectF(250, 80, 100, 100), SnapStop::kNormal, false, ElementId(30));
   container.AddSnapAreaData(snap_x);
   container.AddSnapAreaData(snap_y1);
   container.AddSnapAreaData(snap_y2);
@@ -428,7 +431,8 @@ TEST_F(ScrollSnapDataTest, DoesNotSnapToPositionsOutsideProximityRange) {
   container.set_proximity_range(gfx::PointF(50, 50));
 
   SnapAreaData area(ScrollSnapAlign(SnapAlignment::kStart),
-                    gfx::RectF(80, 160, 100, 100), false, false, ElementId(10));
+                    gfx::RectF(80, 160, 100, 100), SnapStop::kNormal, false,
+                    ElementId(10));
   container.AddSnapAreaData(area);
 
   std::unique_ptr<SnapSelectionStrategy> strategy =
@@ -451,7 +455,8 @@ TEST_F(ScrollSnapDataTest, MandatoryReturnsToCurrentIfNoValidAreaForward) {
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 200, 200), gfx::PointF(2000, 2000));
   SnapAreaData area(ScrollSnapAlign(SnapAlignment::kStart),
-                    gfx::RectF(600, 0, 100, 100), false, false, ElementId(10));
+                    gfx::RectF(600, 0, 100, 100), SnapStop::kNormal, false,
+                    ElementId(10));
   container.AddSnapAreaData(area);
 
   std::unique_ptr<SnapSelectionStrategy> direction_strategy =
@@ -498,7 +503,8 @@ TEST_F(ScrollSnapDataTest, MandatorySnapsBackwardIfNoValidAreaForward) {
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 200, 200), gfx::PointF(2000, 2000));
   SnapAreaData area(ScrollSnapAlign(SnapAlignment::kStart),
-                    gfx::RectF(600, 0, 100, 100), false, false, ElementId(10));
+                    gfx::RectF(600, 0, 100, 100), SnapStop::kNormal, false,
+                    ElementId(10));
   container.AddSnapAreaData(area);
 
   std::unique_ptr<SnapSelectionStrategy> direction_strategy =
@@ -545,14 +551,14 @@ TEST_F(ScrollSnapDataTest, ShouldNotPassScrollSnapStopAlwaysElement) {
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 200, 200), gfx::PointF(2000, 2000));
   SnapAreaData must_snap_1(ScrollSnapAlign(SnapAlignment::kStart),
-                           gfx::RectF(200, 0, 100, 100), true, false,
-                           ElementId(10));
+                           gfx::RectF(200, 0, 100, 100), SnapStop::kAlways,
+                           false, ElementId(10));
   SnapAreaData must_snap_2(ScrollSnapAlign(SnapAlignment::kStart),
-                           gfx::RectF(400, 0, 100, 100), true, false,
-                           ElementId(20));
+                           gfx::RectF(400, 0, 100, 100), SnapStop::kAlways,
+                           false, ElementId(20));
   SnapAreaData closer_to_target(ScrollSnapAlign(SnapAlignment::kStart),
-                                gfx::RectF(600, 0, 100, 100), false, false,
-                                ElementId(30));
+                                gfx::RectF(600, 0, 100, 100), SnapStop::kNormal,
+                                false, ElementId(30));
   container.AddSnapAreaData(must_snap_1);
   container.AddSnapAreaData(must_snap_2);
   container.AddSnapAreaData(closer_to_target);
@@ -579,11 +585,11 @@ TEST_F(ScrollSnapDataTest, SnapStopAlwaysOverridesCoveringSnapArea) {
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 200, 200), gfx::PointF(600, 800));
   SnapAreaData stop_area(ScrollSnapAlign(SnapAlignment::kStart),
-                         gfx::RectF(100, 0, 100, 100), true, false,
+                         gfx::RectF(100, 0, 100, 100), SnapStop::kAlways, false,
                          ElementId(10));
   SnapAreaData covering_area(ScrollSnapAlign(SnapAlignment::kStart),
-                             gfx::RectF(250, 0, 600, 600), false, false,
-                             ElementId(20));
+                             gfx::RectF(250, 0, 600, 600), SnapStop::kNormal,
+                             false, ElementId(20));
   container.AddSnapAreaData(stop_area);
   container.AddSnapAreaData(covering_area);
 
@@ -609,7 +615,7 @@ TEST_F(ScrollSnapDataTest, SnapStopAlwaysInReverseDirection) {
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 200, 300), gfx::PointF(600, 800));
   SnapAreaData stop_area(ScrollSnapAlign(SnapAlignment::kStart),
-                         gfx::RectF(100, 0, 100, 100), true, false,
+                         gfx::RectF(100, 0, 100, 100), SnapStop::kAlways, false,
                          ElementId(10));
   container.AddSnapAreaData(stop_area);
 
@@ -634,10 +640,11 @@ TEST_F(ScrollSnapDataTest, SnapStopAlwaysNotInterferingWithDirectionStrategy) {
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 200, 300), gfx::PointF(600, 800));
   SnapAreaData closer_area(ScrollSnapAlign(SnapAlignment::kStart),
-                           gfx::RectF(100, 0, 1, 1), false, false,
+                           gfx::RectF(100, 0, 1, 1), SnapStop::kNormal, false,
                            ElementId(10));
   SnapAreaData stop_area(ScrollSnapAlign(SnapAlignment::kStart),
-                         gfx::RectF(120, 0, 1, 1), true, false, ElementId(20));
+                         gfx::RectF(120, 0, 1, 1), SnapStop::kAlways, false,
+                         ElementId(20));
   container.AddSnapAreaData(closer_area);
   container.AddSnapAreaData(stop_area);
 
@@ -661,14 +668,14 @@ TEST_F(ScrollSnapDataTest, SnapToOneTargetElementOnX) {
       gfx::RectF(0, 0, 200, 300), gfx::PointF(600, 800));
 
   SnapAreaData closer_area_x(ScrollSnapAlign(SnapAlignment::kStart),
-                             gfx::RectF(100, 0, 1, 1), false, false,
+                             gfx::RectF(100, 0, 1, 1), SnapStop::kNormal, false,
                              ElementId(10));
   SnapAreaData target_area_x(ScrollSnapAlign(SnapAlignment::kStart),
-                             gfx::RectF(200, 100, 1, 1), false, false,
-                             ElementId(20));
+                             gfx::RectF(200, 100, 1, 1), SnapStop::kNormal,
+                             false, ElementId(20));
   SnapAreaData closer_area_y(ScrollSnapAlign(SnapAlignment::kStart),
-                             gfx::RectF(300, 50, 1, 1), false, false,
-                             ElementId(30));
+                             gfx::RectF(300, 50, 1, 1), SnapStop::kNormal,
+                             false, ElementId(30));
 
   container.AddSnapAreaData(closer_area_x);
   container.AddSnapAreaData(target_area_x);
@@ -697,14 +704,14 @@ TEST_F(ScrollSnapDataTest, SnapToOneTargetElementOnY) {
       gfx::RectF(0, 0, 200, 300), gfx::PointF(600, 800));
 
   SnapAreaData closer_area_y(ScrollSnapAlign(SnapAlignment::kStart),
-                             gfx::RectF(0, 100, 1, 1), false, false,
+                             gfx::RectF(0, 100, 1, 1), SnapStop::kNormal, false,
                              ElementId(10));
   SnapAreaData target_area_y(ScrollSnapAlign(SnapAlignment::kStart),
-                             gfx::RectF(100, 200, 1, 1), false, false,
-                             ElementId(20));
+                             gfx::RectF(100, 200, 1, 1), SnapStop::kNormal,
+                             false, ElementId(20));
   SnapAreaData closer_area_x(ScrollSnapAlign(SnapAlignment::kStart),
-                             gfx::RectF(50, 300, 1, 1), false, false,
-                             ElementId(30));
+                             gfx::RectF(50, 300, 1, 1), SnapStop::kNormal,
+                             false, ElementId(30));
 
   container.AddSnapAreaData(closer_area_y);
   container.AddSnapAreaData(target_area_y);
@@ -733,14 +740,14 @@ TEST_F(ScrollSnapDataTest, SnapToTwoTargetElementsMutualVisible) {
       gfx::RectF(0, 0, 300, 300), gfx::PointF(600, 800));
 
   SnapAreaData target_area_x(ScrollSnapAlign(SnapAlignment::kStart),
-                             gfx::RectF(100, 200, 1, 1), false, false,
-                             ElementId(10));
+                             gfx::RectF(100, 200, 1, 1), SnapStop::kNormal,
+                             false, ElementId(10));
   SnapAreaData target_area_y(ScrollSnapAlign(SnapAlignment::kStart),
-                             gfx::RectF(200, 100, 1, 1), false, false,
-                             ElementId(20));
+                             gfx::RectF(200, 100, 1, 1), SnapStop::kNormal,
+                             false, ElementId(20));
   SnapAreaData closer_area_both(ScrollSnapAlign(SnapAlignment::kStart),
-                                gfx::RectF(0, 0, 1, 1), false, false,
-                                ElementId(30));
+                                gfx::RectF(0, 0, 1, 1), SnapStop::kNormal,
+                                false, ElementId(30));
 
   container.AddSnapAreaData(target_area_x);
   container.AddSnapAreaData(target_area_y);
@@ -768,14 +775,14 @@ TEST_F(ScrollSnapDataTest, SnapToTwoTargetElementsNotMutualVisible) {
       gfx::RectF(0, 0, 300, 300), gfx::PointF(600, 800));
 
   SnapAreaData target_area_x(ScrollSnapAlign(SnapAlignment::kStart),
-                             gfx::RectF(100, 500, 1, 1), false, false,
-                             ElementId(10));
+                             gfx::RectF(100, 500, 1, 1), SnapStop::kNormal,
+                             false, ElementId(10));
   SnapAreaData target_area_y(ScrollSnapAlign(SnapAlignment::kStart),
-                             gfx::RectF(500, 100, 1, 1), false, false,
-                             ElementId(20));
+                             gfx::RectF(500, 100, 1, 1), SnapStop::kNormal,
+                             false, ElementId(20));
   SnapAreaData area_mutually_visible_to_targets(
-      ScrollSnapAlign(SnapAlignment::kStart), gfx::RectF(350, 350, 1, 1), false,
-      false, ElementId(30));
+      ScrollSnapAlign(SnapAlignment::kStart), gfx::RectF(350, 350, 1, 1),
+      SnapStop::kNormal, false, ElementId(30));
 
   container.AddSnapAreaData(target_area_x);
   container.AddSnapAreaData(target_area_y);
@@ -803,11 +810,11 @@ TEST_F(ScrollSnapDataTest, SnapToFocusedElementHorizontal) {
       ScrollSnapType(false, SnapAxis::kX, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 300, 300), gfx::PointF(600, 800));
   SnapAreaData unfocused_area(ScrollSnapAlign(SnapAlignment::kStart),
-                              gfx::RectF(0, 0, 100, 100), false, false,
-                              ElementId(10));
+                              gfx::RectF(0, 0, 100, 100), SnapStop::kNormal,
+                              false, ElementId(10));
   SnapAreaData focused_area(ScrollSnapAlign(SnapAlignment::kStart),
-                            gfx::RectF(0, 100, 100, 100), false, true,
-                            ElementId(20));
+                            gfx::RectF(0, 100, 100, 100), SnapStop::kNormal,
+                            true, ElementId(20));
   container.AddSnapAreaData(unfocused_area);
   container.AddSnapAreaData(focused_area);
 
@@ -836,11 +843,11 @@ TEST_F(ScrollSnapDataTest, SnapToFocusedElementVertical) {
       ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 300, 300), gfx::PointF(600, 800));
   SnapAreaData unfocused_area(ScrollSnapAlign(SnapAlignment::kStart),
-                              gfx::RectF(0, 0, 100, 100), false, false,
-                              ElementId(10));
+                              gfx::RectF(0, 0, 100, 100), SnapStop::kNormal,
+                              false, ElementId(10));
   SnapAreaData focused_area(ScrollSnapAlign(SnapAlignment::kStart),
-                            gfx::RectF(100, 0, 100, 100), false, true,
-                            ElementId(20));
+                            gfx::RectF(100, 0, 100, 100), SnapStop::kNormal,
+                            true, ElementId(20));
   container.AddSnapAreaData(unfocused_area);
   container.AddSnapAreaData(focused_area);
 
@@ -869,10 +876,10 @@ TEST_F(ScrollSnapDataTest, SnapToFocusedElementBoth) {
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 300, 300), gfx::PointF(600, 800));
   SnapAreaData unfocused_area(ScrollSnapAlign(SnapAlignment::kStart),
-                              gfx::RectF(0, 0, 100, 100), false, false,
-                              ElementId(10));
+                              gfx::RectF(0, 0, 100, 100), SnapStop::kNormal,
+                              false, ElementId(10));
   SnapAreaData focused_area(ScrollSnapAlign(SnapAlignment::kStart),
-                            gfx::RectF(0, 0, 100, 100), false, true,
+                            gfx::RectF(0, 0, 100, 100), SnapStop::kNormal, true,
                             ElementId(20));
   container.AddSnapAreaData(unfocused_area);
   container.AddSnapAreaData(focused_area);
@@ -904,7 +911,8 @@ TEST_F(ScrollSnapDataTest, ReportCoveringArea) {
       ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 200, 200), gfx::PointF(0, 2000));
   SnapAreaData area(ScrollSnapAlign(SnapAlignment::kStart),
-                    gfx::RectF(0, 50, 200, 1000), false, false, ElementId(10));
+                    gfx::RectF(0, 50, 200, 1000), SnapStop::kNormal, false,
+                    ElementId(10));
   container.AddSnapAreaData(area);
 
   std::unique_ptr<SnapSelectionStrategy> end_direction_strategy =
@@ -936,13 +944,13 @@ TEST_F(ScrollSnapDataTest, CoveringWithOverlap1) {
       ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 200, 200), gfx::PointF(0, 4800));
   SnapAreaData big_area(ScrollSnapAlign(SnapAlignment::kStart),
-                        gfx::RectF(0, 50, 200, 4900), false, false,
+                        gfx::RectF(0, 50, 200, 4900), SnapStop::kNormal, false,
                         ElementId(10));
   SnapAreaData small_1(ScrollSnapAlign(SnapAlignment::kStart),
-                       gfx::RectF(0, 2000, 200, 300), false, false,
+                       gfx::RectF(0, 2000, 200, 300), SnapStop::kNormal, false,
                        ElementId(20));
   SnapAreaData small_2(ScrollSnapAlign(SnapAlignment::kStart),
-                       gfx::RectF(0, 2300, 200, 300), false, false,
+                       gfx::RectF(0, 2300, 200, 300), SnapStop::kNormal, false,
                        ElementId(30));
 
   container.AddSnapAreaData(big_area);
@@ -972,13 +980,13 @@ TEST_F(ScrollSnapDataTest, CoveringWithOverlap2) {
       ScrollSnapType(false, SnapAxis::kX, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 200, 200), gfx::PointF(4800, 0));
   SnapAreaData big_area(ScrollSnapAlign(SnapAlignment::kEnd),
-                        gfx::RectF(0, 0, 5000, 200), false, false,
+                        gfx::RectF(0, 0, 5000, 200), SnapStop::kNormal, false,
                         ElementId(10));
   SnapAreaData small_1(ScrollSnapAlign(SnapAlignment::kStart),
-                       gfx::RectF(100, 0, 300, 200), false, false,
+                       gfx::RectF(100, 0, 300, 200), SnapStop::kNormal, false,
                        ElementId(20));
   SnapAreaData small_2(ScrollSnapAlign(SnapAlignment::kStart),
-                       gfx::RectF(500, 0, 300, 200), false, false,
+                       gfx::RectF(500, 0, 300, 200), SnapStop::kNormal, false,
                        ElementId(30));
 
   container.AddSnapAreaData(big_area);
@@ -1006,11 +1014,14 @@ TEST_F(ScrollSnapDataTest, SnapFlingNearExtremes) {
 
   // Add three regular snap areas.
   SnapAreaData area1(ScrollSnapAlign(SnapAlignment::kStart),
-                     gfx::RectF(100, 0, 10, 10), false, false, ElementId(10));
+                     gfx::RectF(100, 0, 10, 10), SnapStop::kNormal, false,
+                     ElementId(10));
   SnapAreaData area2(ScrollSnapAlign(SnapAlignment::kStart),
-                     gfx::RectF(500, 0, 10, 10), false, false, ElementId(20));
+                     gfx::RectF(500, 0, 10, 10), SnapStop::kNormal, false,
+                     ElementId(20));
   SnapAreaData area3(ScrollSnapAlign(SnapAlignment::kStart),
-                     gfx::RectF(900, 0, 10, 10), false, false, ElementId(30));
+                     gfx::RectF(900, 0, 10, 10), SnapStop::kNormal, false,
+                     ElementId(30));
 
   container.AddSnapAreaData(area1);
   container.AddSnapAreaData(area2);
@@ -1018,7 +1029,7 @@ TEST_F(ScrollSnapDataTest, SnapFlingNearExtremes) {
 
   // Fling towards start, targeting area1.
   // Current position 150, delta -20. Target would be 100.
-  // Since it's the first area and not must_snap, it should be marked as
+  // Since it's the first area and not SnapStop::kAlways, it should be marked as
   // extremity.
   std::unique_ptr<SnapSelectionStrategy> strategy1 =
       SnapSelectionStrategy::CreateForDisplacement(
@@ -1030,7 +1041,7 @@ TEST_F(ScrollSnapDataTest, SnapFlingNearExtremes) {
 
   // Fling towards end, targeting area3.
   // Current position 850, delta 20. Target would be 900.
-  // Since it's the last area and not must_snap, it should be marked as
+  // Since it's the last area and not SnapStop::kAlways, it should be marked as
   // extremity.
   std::unique_ptr<SnapSelectionStrategy> strategy3 =
       SnapSelectionStrategy::CreateForDisplacement(
@@ -1040,8 +1051,8 @@ TEST_F(ScrollSnapDataTest, SnapFlingNearExtremes) {
   EXPECT_EQ(900, result3.position.x());
   EXPECT_TRUE(result3.is_extremity);
 
-  // If we target area2 (must_snap), it should snap to it normally and NOT be
-  // marked as extremity. Current position 450, delta 20. Target 500.
+  // If we target area2 (SnapStop::kAlways), it should snap to it normally and
+  // NOT be marked as extremity. Current position 450, delta 20. Target 500.
   std::unique_ptr<SnapSelectionStrategy> strategy2 =
       SnapSelectionStrategy::CreateForDisplacement(
           gfx::PointF(450, 0), gfx::Vector2dF(20, 0), false);
@@ -1061,11 +1072,14 @@ TEST_F(ScrollSnapDataTest, SnapFlingNearExtremesMustStop) {
 
   // Add three must-stop snap areas.
   SnapAreaData area1(ScrollSnapAlign(SnapAlignment::kStart),
-                     gfx::RectF(100, 0, 10, 10), true, false, ElementId(10));
+                     gfx::RectF(100, 0, 10, 10), SnapStop::kAlways, false,
+                     ElementId(10));
   SnapAreaData area2(ScrollSnapAlign(SnapAlignment::kStart),
-                     gfx::RectF(500, 0, 10, 10), true, false, ElementId(20));
+                     gfx::RectF(500, 0, 10, 10), SnapStop::kAlways, false,
+                     ElementId(20));
   SnapAreaData area3(ScrollSnapAlign(SnapAlignment::kStart),
-                     gfx::RectF(900, 0, 10, 10), true, false, ElementId(30));
+                     gfx::RectF(900, 0, 10, 10), SnapStop::kAlways, false,
+                     ElementId(30));
 
   container.AddSnapAreaData(area1);
   container.AddSnapAreaData(area2);
@@ -1073,7 +1087,7 @@ TEST_F(ScrollSnapDataTest, SnapFlingNearExtremesMustStop) {
 
   // Fling towards start, targeting area1.
   // Current position 150, delta -20. Target would be 100.
-  // Since it must_snap, it should not be marked as
+  // Since it is SnapStop::kAlways, it should not be marked as
   // extremity.
   std::unique_ptr<SnapSelectionStrategy> strategy1 =
       SnapSelectionStrategy::CreateForDisplacement(
@@ -1091,7 +1105,8 @@ TEST_F(ScrollSnapDataTest, SnapFlingLargeAreaExtremes) {
 
   // Add a large snap area.
   SnapAreaData area(ScrollSnapAlign(SnapAlignment::kStart),
-                    gfx::RectF(100, 0, 500, 100), false, false, ElementId(10));
+                    gfx::RectF(100, 0, 500, 100), SnapStop::kNormal, false,
+                    ElementId(10));
 
   container.AddSnapAreaData(area);
 

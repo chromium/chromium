@@ -89,6 +89,7 @@ ALIGNMENT_ORDER = [
     'StyleSelfAlignmentData',
     'cc::ScrollSnapAlign',
     'cc::ScrollSnapType',
+    'cc::SnapStop',
     'gfx::Size',
     'int',
     'std::optional<PhysicalOffset>',

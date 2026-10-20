@@ -222,7 +222,7 @@ bool DirectionStrategy::IsValidSnapArea(SearchAxis axis,
                                         const SnapAreaData& area) const {
   return SnapSelectionStrategy::IsValidSnapArea(axis, area) &&
          (snap_stop_always_filter_ == SnapStopAlwaysFilter::kIgnore ||
-          area.must_snap);
+          area.snap_stop == SnapStop::kAlways);
 }
 
 bool DirectionStrategy::ShouldRespectSnapStop() const {

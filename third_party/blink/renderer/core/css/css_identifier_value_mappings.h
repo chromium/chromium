@@ -1661,6 +1661,37 @@ inline cc::SnapAlignment CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
+inline CSSIdentifierValue::CSSIdentifierValue(cc::SnapStop stop)
+    : CSSValue(kIdentifierClass) {
+  switch (stop) {
+    case cc::SnapStop::kNormal:
+      value_id_ = CSSValueID::kNormal;
+      break;
+    case cc::SnapStop::kAlways:
+      value_id_ = CSSValueID::kAlways;
+      break;
+    case cc::SnapStop::kBefore:
+      value_id_ = CSSValueID::kBefore;
+      break;
+  }
+}
+
+template <>
+inline cc::SnapStop CSSIdentifierValue::ConvertTo() const {
+  switch (GetValueID()) {
+    case CSSValueID::kNormal:
+      return cc::SnapStop::kNormal;
+    case CSSValueID::kAlways:
+      return cc::SnapStop::kAlways;
+    case CSSValueID::kBefore:
+      return cc::SnapStop::kBefore;
+    default:
+      break;
+  }
+  NOTREACHED();
+}
+
+template <>
 inline Containment CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
     case CSSValueID::kNone:

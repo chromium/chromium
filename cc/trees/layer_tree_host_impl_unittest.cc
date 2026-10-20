@@ -2449,10 +2449,10 @@ TEST_P(LayerTreeHostImplTest, NativeFlingInSnapArea) {
       ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 900));
   ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_2, false, false, ElementId(20)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_1, SnapStop::kNormal,
+                                         false, ElementId(10)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_2, SnapStop::kNormal,
+                                         false, ElementId(20)));
   GetScrollNode(overflow)->snap_container_data.emplace(container);
   DrawFrame();
 
@@ -2519,10 +2519,10 @@ TEST_P(LayerTreeHostImplTest, HybridFlingNearExtremes) {
       ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 900));
   ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_2, false, false, ElementId(20)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_1, SnapStop::kNormal,
+                                         false, ElementId(10)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_2, SnapStop::kNormal,
+                                         false, ElementId(20)));
   GetScrollNode(overflow)->snap_container_data.emplace(container);
   DrawFrame();
 
@@ -2602,10 +2602,10 @@ TEST_P(LayerTreeHostImplTest,
       ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 900));
   ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_2, false, false, ElementId(20)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_1, SnapStop::kNormal,
+                                         false, ElementId(10)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_2, SnapStop::kNormal,
+                                         false, ElementId(20)));
   GetScrollNode(overflow)->snap_container_data.emplace(container);
   DrawFrame();
 
@@ -2662,12 +2662,12 @@ TEST_P(LayerTreeHostImplTest, LargeSnapAreaFling) {
       ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 900));
   ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_2, false, false, ElementId(20)));
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_3, false, false, ElementId(30)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_1, SnapStop::kNormal,
+                                         false, ElementId(10)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_2, SnapStop::kNormal,
+                                         false, ElementId(20)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_3, SnapStop::kNormal,
+                                         false, ElementId(30)));
   GetScrollNode(overflow)->snap_container_data.emplace(container);
   DrawFrame();
 
@@ -13844,16 +13844,16 @@ TEST_P(LayerTreeHostImplTest, PageBasedScrollSnap) {
       ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 200));
   ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_2, false, false, ElementId(20)));
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_3, false, false, ElementId(30)));
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_4, false, false, ElementId(40)));
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_5, false, false, ElementId(50)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_1, SnapStop::kNormal,
+                                         false, ElementId(10)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_2, SnapStop::kNormal,
+                                         false, ElementId(20)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_3, SnapStop::kNormal,
+                                         false, ElementId(30)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_4, SnapStop::kNormal,
+                                         false, ElementId(40)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_5, SnapStop::kNormal,
+                                         false, ElementId(50)));
   GetScrollNode(overflow)->snap_container_data.emplace(container);
   DrawFrame();
 
@@ -15022,10 +15022,10 @@ TEST_P(LayerTreeHostImplTest, FlingSnapStrategyCurrentOffset) {
       ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 4900));
   ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_2, false, false, ElementId(20)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_1, SnapStop::kNormal,
+                                         false, ElementId(10)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_2, SnapStop::kNormal,
+                                         false, ElementId(20)));
   GetScrollNode(snapping_layer)->snap_container_data.emplace(container);
   DrawFrame();
 
@@ -15576,14 +15576,14 @@ class ConcurrentSnapAnimationsTest : public LayerTreeHostImplTest {
 
     // Add snap areas to both snap containers.
     ScrollSnapAlign start_alignment = ScrollSnapAlign(SnapAlignment::kStart);
-    container1.AddSnapAreaData(SnapAreaData(start_alignment, snap_area_1, false,
-                                            false, ElementId(10)));
-    container1.AddSnapAreaData(SnapAreaData(start_alignment, snap_area_2, false,
-                                            false, ElementId(20)));
-    container2.AddSnapAreaData(SnapAreaData(start_alignment, snap_area_1, false,
-                                            false, ElementId(30)));
-    container2.AddSnapAreaData(SnapAreaData(start_alignment, snap_area_2, false,
-                                            false, ElementId(40)));
+    container1.AddSnapAreaData(SnapAreaData(
+        start_alignment, snap_area_1, SnapStop::kNormal, false, ElementId(10)));
+    container1.AddSnapAreaData(SnapAreaData(
+        start_alignment, snap_area_2, SnapStop::kNormal, false, ElementId(20)));
+    container2.AddSnapAreaData(SnapAreaData(
+        start_alignment, snap_area_1, SnapStop::kNormal, false, ElementId(30)));
+    container2.AddSnapAreaData(SnapAreaData(
+        start_alignment, snap_area_2, SnapStop::kNormal, false, ElementId(40)));
 
     scroll_node1_ = GetScrollNode(snapping_layer1_.get());
     scroll_node2_ = GetScrollNode(snapping_layer2_.get());

@@ -801,6 +801,7 @@ _CONFIG = [
             'cc::SnappedTargetData',
             'cc::SnapPositionData',
             'cc::SnapSelectionStrategy',
+            'cc::SnapStop',
             'cc::SnapStrictness',
             'cc::TargetSnapAreaElementIds',
             'ui::ScrollGranularity',

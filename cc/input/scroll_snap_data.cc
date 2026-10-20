@@ -550,7 +550,7 @@ SnapPositionData SnapContainerData::FindSnapPosition(
 
     // Check if this is a directional scroll towards the first or last available
     // snap point in the given direction.
-    if (!selected_x->area()->must_snap &&
+    if (selected_x->area()->snap_stop != SnapStop::kAlways &&
         ((direction.x() > 0.f && max_snap_offset_x_ &&
           (selected_x->snap_offset() == *max_snap_offset_x_ ||
            (selected_x->covered_range() &&
@@ -569,7 +569,7 @@ SnapPositionData SnapContainerData::FindSnapPosition(
 
     // Check if this is a directional scroll towards the first or last available
     // snap point in the given direction.
-    if (!selected_y->area()->must_snap &&
+    if (selected_y->area()->snap_stop != SnapStop::kAlways &&
         ((direction.y() > 0.f && max_snap_offset_y_ &&
           (selected_y->snap_offset() == *max_snap_offset_y_ ||
            (selected_y->covered_range() &&

@@ -1304,8 +1304,8 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
       ScrollSnapType(false, SnapAxis::kY, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 100, 100), gfx::PointF(0, 900));
   ScrollSnapAlign start = ScrollSnapAlign(SnapAlignment::kStart);
-  container.AddSnapAreaData(
-      SnapAreaData(start, snap_area_1, false, false, ElementId(10)));
+  container.AddSnapAreaData(SnapAreaData(start, snap_area_1, SnapStop::kNormal,
+                                         false, ElementId(10)));
   host_impl_->OuterViewportScrollNode()->snap_container_data.emplace(container);
 
   DrawFrame();

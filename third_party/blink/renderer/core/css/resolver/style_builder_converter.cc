@@ -3376,6 +3376,11 @@ cc::ScrollSnapAlign StyleBuilderConverter::ConvertSnapAlign(
   return snapAlign;
 }
 
+cc::SnapStop StyleBuilderConverter::ConvertSnapStop(StyleResolverState&,
+                                                    const CSSValue& value) {
+  return To<CSSIdentifierValue>(value).ConvertTo<cc::SnapStop>();
+}
+
 TranslateTransformOperation* StyleBuilderConverter::ConvertTranslate(
     StyleResolverState& state,
     const CSSValue& value) {

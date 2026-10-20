@@ -774,7 +774,7 @@ LayerImpl* LayerTreeHostImplTestBase::CreateLayerForSnapping() {
       ScrollSnapType(false, SnapAxis::kBoth, SnapStrictness::kMandatory),
       gfx::RectF(0, 0, 200, 200), gfx::PointF(300, 300));
   SnapAreaData area_data(ScrollSnapAlign(SnapAlignment::kStart),
-                         gfx::RectF(50, 50, 100, 100), false, false,
+                         gfx::RectF(50, 50, 100, 100), SnapStop::kNormal, false,
                          ElementId(10));
   container_data.AddSnapAreaData(area_data);
   GetScrollNode(overflow)->snap_container_data.emplace(container_data);

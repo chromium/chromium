@@ -369,6 +369,7 @@ class StyleBuilderConverter {
                                             const CSSValue&);
   static cc::ScrollSnapAlign ConvertSnapAlign(StyleResolverState&,
                                               const CSSValue&);
+  static cc::SnapStop ConvertSnapStop(StyleResolverState&, const CSSValue&);
   static TranslateTransformOperation* ConvertTranslate(StyleResolverState&,
                                                        const CSSValue&);
   static RotateTransformOperation* ConvertRotate(StyleResolverState&,

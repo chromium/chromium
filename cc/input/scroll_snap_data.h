@@ -40,6 +40,10 @@ enum class SnapStrictness : unsigned { kProximity, kMandatory };
 // See https://www.w3.org/TR/css-scroll-snap-1/#scroll-snap-align
 enum class SnapAlignment : unsigned { kNone, kStart, kEnd, kCenter };
 
+// See https://drafts.csswg.org/css-scroll-snap-1/#scroll-snap-stop and
+// https://github.com/w3c/csswg-drafts/issues/8549 for `before`.
+enum class SnapStop : unsigned { kNormal, kAlways, kBefore };
+
 struct ScrollSnapType {
   ScrollSnapType()
       : is_none(true),
@@ -103,13 +107,13 @@ struct SnapAreaData {
 
   SnapAreaData(const ScrollSnapAlign& align,
                const gfx::RectF& rec,
-               bool msnap,
+               SnapStop stop,
                bool has_focus_within,
                ElementId id,
                size_t parent_offset = 0)
       : scroll_snap_align(align),
         rect(rec),
-        must_snap(msnap),
+        snap_stop(stop),
         has_focus_within(has_focus_within),
         element_id(id),
         parent_snap_area_offset(parent_offset) {}
@@ -117,7 +121,7 @@ struct SnapAreaData {
   bool operator==(const SnapAreaData& other) const {
     return (other.element_id == element_id) &&
            (other.scroll_snap_align == scroll_snap_align) &&
-           (other.rect == rect) && (other.must_snap == must_snap) &&
+           (other.rect == rect) && (other.snap_stop == snap_stop) &&
            (other.has_focus_within == has_focus_within) &&
            (other.parent_snap_area_offset == parent_snap_area_offset);
   }
@@ -132,9 +136,9 @@ struct SnapAreaData {
   // The snap area rect relative to its snap container's boundary
   gfx::RectF rect;
 
-  // Whether this area has scroll-snap-stop: always.
+  // The scroll-snap-stop value of this area.
   // See https://www.w3.org/TR/css-scroll-snap-1/#scroll-snap-stop
-  bool must_snap = false;
+  SnapStop snap_stop = SnapStop::kNormal;
 
   // Whether this area has focus or has a descendant element which has focus.
   bool has_focus_within = false;
