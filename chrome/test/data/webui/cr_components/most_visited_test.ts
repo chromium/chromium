@@ -2430,6 +2430,31 @@ suite('ShortcutsReorder', () => {
     assertEquals('', tileLink.getAttribute('href'));
     assertEquals(tileLink, mostVisited.shadowRoot?.activeElement);
   });
+  test('tiles reorder correctly with arrow keys', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    await setUpTest({shortcutsReorderEnabled: true});
+    await addTiles(3);
+    const tilesBefore = queryTiles();
+    const firstTitleBefore = tilesBefore[0]!.title;
+    const secondTitleBefore = tilesBefore[1]!.title;
+
+    // Enter reorder mode on the first tile.
+    tilesBefore[0]!.querySelector<HTMLElement>('#actionMenuButton')!.click();
+    await microtasksFinished();
+    $$<HTMLElement>(mostVisited, '#actionMenuReorder').click();
+    await microtasksFinished();
+
+    // Press Right arrow to swap the first and second tiles.
+    tilesBefore[0]!.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowRight', bubbles: true}));
+    await microtasksFinished();
+
+    const tilesAfter = queryTiles();
+    // The second tile should now be first, and the first tile should now be
+    // second
+    assertEquals(secondTitleBefore, tilesAfter[0]!.title);
+    assertEquals(firstTitleBefore, tilesAfter[1]!.title);
+  });
 });
 
 suite('ShortcutsAutoRemovalToast', () => {
