@@ -3,3 +3,6 @@ buganizer {
 }
 
 team_email: "chrome-browser-actuator-infra@google.com"
+
+agentic_review {}
+
