@@ -1,0 +1,7 @@
+<html>
+ <body>
+  <script src="/gen/mojo/public/js/mojo_bindings_lite.js"></script>
+  <script src="/gen/nested-external-interface.test-mojom-lite.js"></script>
+  <script src="/gen/external-interface.test-mojom-lite.js"></script>
+ </body>
+</html>

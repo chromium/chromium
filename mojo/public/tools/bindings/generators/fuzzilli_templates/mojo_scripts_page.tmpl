@@ -1,0 +1,8 @@
+<html>
+ <body>
+  <script src="/gen/mojo/public/js/mojo_bindings_lite.js"></script>
+{%- for js_module in js_modules %}
+  <script src="/{{js_module}}"></script>
+{%- endfor %}
+ </body>
+</html>

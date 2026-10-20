@@ -1,0 +1,6 @@
+<html>
+ <body>
+  <script src="/gen/mojo/public/js/mojo_bindings_lite.js"></script>
+  <script src="/gen/basic-interface.test-mojom-lite.js"></script>
+ </body>
+</html>

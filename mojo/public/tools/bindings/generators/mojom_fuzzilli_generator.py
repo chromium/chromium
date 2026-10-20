@@ -375,10 +375,46 @@ class Generator(generator.Generator):
   def _GenerateFuzzilliModule(self):
     return self._GetParameters()
 
+  def _GetMojoScriptsPagePath(self):
+    """Returns the path of the Mojo scripts page of the module, i.e. the page
+    loading the MojoJS bindings of the module, relative to the root gen
+    directory."""
+    return "%s-scripts-page.html" % self.module.path
+
+  def _CollectModuleDependencies(
+    self,
+    m: mojom.Module,
+    js_modules: dict[str, None],
+  ):
+    """Appends the lite bindings of |m| and of its transitive imports to
+    |js_modules|, in dependency order."""
+    js_path = f'gen/{m.path}-lite.js'
+    if js_path in js_modules:
+      return
+
+    for imported_module in m.imports:
+      self._CollectModuleDependencies(imported_module, js_modules)
+
+    js_modules[js_path] = None
+
+  @UseJinja("mojo_scripts_page.tmpl")
+  def _GenerateMojoScriptsPage(self):
+    js_modules: dict[str, None] = {}
+    self._CollectModuleDependencies(
+      self.module,
+      js_modules,
+    )
+    return {
+      "module": self.module,
+      "js_modules": js_modules,
+    }
+
   def GenerateFiles(self, unparsed_args):
     parser = argparse.ArgumentParser()
     parser.add_argument('--fuzzilli_primary_interface_name')
     args = parser.parse_args(unparsed_args)
+
+    self.Write(self._GenerateMojoScriptsPage(), self._GetMojoScriptsPagePath())
 
     primary_interface_name = args.fuzzilli_primary_interface_name
     self.primary_interface = next(

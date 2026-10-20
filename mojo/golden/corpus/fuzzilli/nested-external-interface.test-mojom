@@ -1,0 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module nested_external;
+
+// This interface exists to test how the generated profiles and HTML files
+// handle imported interfaces.
+//
+// TODO(crbug.com/570690240): Move this interface to another directory once the
+// golden file generator supports importing modules in other directories
+// without also generating a Fuzzilli profile and HTML file for mojom files in
+// those directories.
+interface Primary {};
