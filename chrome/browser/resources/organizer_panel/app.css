@@ -20,6 +20,8 @@
 }
 
 #searchField {
+  --color-toolbar-search-field-background-hover:
+      var(--color-sys-state-hover-on-subtle);
   --cr-toolbar-search-field-background: var(--color-toolbar);
   flex-shrink: 0;
   margin: 12px;
