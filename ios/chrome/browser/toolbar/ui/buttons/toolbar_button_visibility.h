@@ -11,6 +11,7 @@
 enum class ToolbarButtonVisibility {
   kAlways,
   kRegularRegular,
+  kCompactWidth,
   // Toolbar button visible for size classes corresponding to a wide layout
   // (iPhone landscape, iPad regular width window).
   kWideLayout,
