@@ -8,10 +8,13 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/map_util.h"
 #include "base/no_destructor.h"
 #include "components/crx_file/id_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "content/public/browser/browser_context.h"
+#include "extensions/browser/browser_context_lifetime_tracker.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -20,6 +23,7 @@
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/pref_types.h"
+#include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 
 namespace extensions {
@@ -115,6 +119,49 @@ void MigrateMimeHandlerEnabledToOptions(ExtensionPrefs& prefs) {
   }
 }
 
+// Returns a copy of `options_by_mime_type` with only the MIME types that
+// `handler` declares. Returns an empty dict if `handler` is null.
+base::DictValue CopyOptionsOfDeclaredMimeTypes(
+    const base::DictValue& options_by_mime_type,
+    const MimeTypesHandler* handler) {
+  const std::vector<std::string> declared_mime_types =
+      handler ? handler->GetSupportedMimeTypes() : std::vector<std::string>();
+  base::DictValue kept_options = options_by_mime_type.Clone();
+  for (const auto [mime_type, _] : options_by_mime_type) {
+    if (!std::ranges::contains(declared_mime_types, mime_type)) {
+      kept_options.Remove(mime_type);
+    }
+  }
+  return kept_options;
+}
+
+// Returns nullopt if `options_by_mime_type` is null or holds no `key` value for
+// `mime_type`.
+std::optional<bool> FindOptionInMimeTypeRecord(
+    const base::DictValue* options_by_mime_type,
+    const std::string& mime_type,
+    std::string_view key) {
+  const base::DictValue* record =
+      options_by_mime_type ? options_by_mime_type->FindDict(mime_type)
+                           : nullptr;
+  return record ? record->FindBool(key) : std::nullopt;
+}
+
+// Returns true if `context` is off-the-record and the extension with
+// `extension_id` runs in split incognito mode. The registry keeps separate
+// incognito options for such an extension.
+bool ShouldUseIncognitoOptions(content::BrowserContext* context,
+                               const ExtensionId& extension_id) {
+  if (!context->IsOffTheRecord()) {
+    return false;
+  }
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
+  CHECK(extension);
+  return IncognitoInfo::IsSplitMode(extension);
+}
+
 }  // namespace
 
 // static
@@ -129,7 +176,9 @@ void MimeHandlerRegistry::EnsureFactoryBuilt() {
 }
 
 MimeHandlerRegistry::MimeHandlerRegistry(content::BrowserContext* context)
-    : browser_context_(*context) {
+    : browser_context_(*context),
+      browser_context_lifetime_tracker_(
+          ExtensionsBrowserClient::Get()->GetBrowserContextLifetimeTracker()) {
   MigrateMimeHandlerEnabledToOptions(*ExtensionPrefs::Get(context));
 
   observation_.Observe(ExtensionRegistry::Get(context));
@@ -139,26 +188,36 @@ MimeHandlerRegistry::MimeHandlerRegistry(content::BrowserContext* context)
        ExtensionRegistry::Get(context)->enabled_extensions()) {
     RegisterExtension(extension.get());
   }
+
+  if (browser_context_lifetime_tracker_) {
+    browser_context_lifetime_tracker_->StartObserving(*context, *this);
+  }
 }
 
-MimeHandlerRegistry::~MimeHandlerRegistry() = default;
+MimeHandlerRegistry::~MimeHandlerRegistry() {
+  if (browser_context_lifetime_tracker_) {
+    browser_context_lifetime_tracker_->StopObserving(*this);
+  }
+}
 
 std::vector<ExtensionId> MimeHandlerRegistry::GetHandlersForMimeType(
-    const std::string& mime_type) const {
+    const std::string& mime_type,
+    content::BrowserContext* context) const {
   auto it = handlers_by_type_.find(mime_type);
   if (it == handlers_by_type_.end()) {
     return {};
   }
   CHECK(!it->second.empty());
-  return EnabledHandlers(mime_type, it->second);
+  return EnabledHandlers(mime_type, it->second, context);
 }
 
 MimeHandlerRegistry::HandlersByMimeType
-MimeHandlerRegistry::GetHandlersByMimeType() const {
+MimeHandlerRegistry::GetHandlersByMimeType(
+    content::BrowserContext* context) const {
   HandlersByMimeType enabled_handlers_by_type;
   for (const auto& [mime_type, handlers] : handlers_by_type_) {
     std::vector<ExtensionId> enabled_handlers =
-        EnabledHandlers(mime_type, handlers);
+        EnabledHandlers(mime_type, handlers, context);
     if (!enabled_handlers.empty()) {
       enabled_handlers_by_type[mime_type] = std::move(enabled_handlers);
     }
@@ -168,12 +227,13 @@ MimeHandlerRegistry::GetHandlersByMimeType() const {
 
 bool MimeHandlerRegistry::IsEnabledForMimeType(
     const ExtensionId& extension_id,
-    const std::string& mime_type) const {
+    const std::string& mime_type,
+    content::BrowserContext* context) const {
   const MimeTypesHandler& handler =
       GetHandlerOfMimeType(extension_id, mime_type);
 
-  std::optional<bool> stored =
-      ReadStoredOption(extension_id, mime_type, kMimeHandlerEnabledKey);
+  std::optional<bool> stored = ReadStoredOption(
+      extension_id, mime_type, kMimeHandlerEnabledKey, context);
   if (stored.has_value()) {
     return stored.value();
   }
@@ -182,37 +242,48 @@ bool MimeHandlerRegistry::IsEnabledForMimeType(
 
 bool MimeHandlerRegistry::CanEmbedForMimeType(
     const ExtensionId& extension_id,
-    const std::string& mime_type) const {
+    const std::string& mime_type,
+    content::BrowserContext* context) const {
   const MimeTypesHandler& handler =
       GetHandlerOfMimeType(extension_id, mime_type);
 
-  std::optional<bool> stored =
-      ReadStoredOption(extension_id, mime_type, kMimeHandlerCanEmbedKey);
+  std::optional<bool> stored = ReadStoredOption(
+      extension_id, mime_type, kMimeHandlerCanEmbedKey, context);
   if (stored.has_value()) {
     return stored.value();
   }
   return handler.CanEmbedMimeType(mime_type);
 }
 
-void MimeHandlerRegistry::SetEnabledForMimeType(const ExtensionId& extension_id,
-                                                const std::string& mime_type,
-                                                bool enabled) {
+void MimeHandlerRegistry::SetEnabledForMimeType(
+    const ExtensionId& extension_id,
+    const std::string& mime_type,
+    bool enabled,
+    content::BrowserContext* context) {
   // Called only to validate the input. The `mimeHandler` API is gated on
   // `manifest:mime_types_handler` and disabled-extension calls are dropped
   // before reaching here, so the calling extension is loaded and has a
   // `MimeTypesHandler`.
   GetHandlerOfMimeType(extension_id, mime_type);
 
-  StoreOption(extension_id, mime_type, kMimeHandlerEnabledKey, enabled);
+  StoreOption(extension_id, mime_type, kMimeHandlerEnabledKey, enabled,
+              context);
 }
 
 void MimeHandlerRegistry::SetCanEmbedForMimeType(
     const ExtensionId& extension_id,
     const std::string& mime_type,
-    bool can_embed) {
+    bool can_embed,
+    content::BrowserContext* context) {
   // Called only to validate the input. See SetEnabledForMimeType().
   GetHandlerOfMimeType(extension_id, mime_type);
-  StoreOption(extension_id, mime_type, kMimeHandlerCanEmbedKey, can_embed);
+  StoreOption(extension_id, mime_type, kMimeHandlerCanEmbedKey, can_embed,
+              context);
+}
+
+void MimeHandlerRegistry::OnRelatedOffTheRecordBrowserContextDestroyed(
+    content::BrowserContext& off_the_record_context) {
+  incognito_options_.clear();
 }
 
 void MimeHandlerRegistry::OnExtensionWillBeInstalled(
@@ -220,25 +291,20 @@ void MimeHandlerRegistry::OnExtensionWillBeInstalled(
     const Extension* extension,
     bool is_update,
     const std::string& old_name) {
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(&*browser_context_);
-  const base::DictValue* options =
-      prefs->ReadPrefAsDictionary(extension->id(), kMimeHandlerOptions);
-  if (!options) {
-    return;
-  }
   // The handler is missing when an update removes every MIME type from the
   // manifest.
   const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
-  const std::vector<std::string> declared_mime_types =
-      handler ? handler->GetSupportedMimeTypes() : std::vector<std::string>();
-  base::DictValue kept_options = options->Clone();
-  for (const auto [mime_type, _] : *options) {
-    if (!std::ranges::contains(declared_mime_types, mime_type)) {
-      kept_options.Remove(mime_type);
-    }
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(&*browser_context_);
+  if (const base::DictValue* options =
+          prefs->ReadPrefAsDictionary(extension->id(), kMimeHandlerOptions)) {
+    prefs->SetDictionaryPref(extension->id(), kMimeHandlerOptions,
+                             CopyOptionsOfDeclaredMimeTypes(*options, handler));
   }
-  prefs->SetDictionaryPref(extension->id(), kMimeHandlerOptions,
-                           std::move(kept_options));
+  if (base::DictValue* incognito_options =
+          base::FindOrNull(incognito_options_, extension->id())) {
+    *incognito_options =
+        CopyOptionsOfDeclaredMimeTypes(*incognito_options, handler);
+  }
 }
 
 void MimeHandlerRegistry::OnExtensionLoaded(
@@ -252,6 +318,13 @@ void MimeHandlerRegistry::OnExtensionUnloaded(
     const Extension* extension,
     UnloadedExtensionReason reason) {
   UnregisterExtension(extension->id());
+}
+
+void MimeHandlerRegistry::OnExtensionUninstalled(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    UninstallReason reason) {
+  incognito_options_.erase(extension->id());
 }
 
 void MimeHandlerRegistry::RegisterExtension(const Extension* extension) {
@@ -290,10 +363,11 @@ const MimeTypesHandler& MimeHandlerRegistry::GetHandlerOfMimeType(
 
 std::vector<ExtensionId> MimeHandlerRegistry::EnabledHandlers(
     const std::string& mime_type,
-    const std::vector<ExtensionId>& handlers) const {
+    const std::vector<ExtensionId>& handlers,
+    content::BrowserContext* context) const {
   std::vector<ExtensionId> enabled_handlers = handlers;
   std::erase_if(enabled_handlers, [&](const ExtensionId& extension_id) {
-    return !IsEnabledForMimeType(extension_id, mime_type);
+    return !IsEnabledForMimeType(extension_id, mime_type, context);
   });
   return enabled_handlers;
 }
@@ -301,23 +375,30 @@ std::vector<ExtensionId> MimeHandlerRegistry::EnabledHandlers(
 std::optional<bool> MimeHandlerRegistry::ReadStoredOption(
     const ExtensionId& extension_id,
     const std::string& mime_type,
-    std::string_view key) const {
-  const base::DictValue* options =
+    std::string_view key,
+    content::BrowserContext* context) const {
+  if (ShouldUseIncognitoOptions(context, extension_id)) {
+    std::optional<bool> incognito_value = FindOptionInMimeTypeRecord(
+        base::FindOrNull(incognito_options_, extension_id), mime_type, key);
+    if (incognito_value.has_value()) {
+      return incognito_value;
+    }
+  }
+  return FindOptionInMimeTypeRecord(
       ExtensionPrefs::Get(&*browser_context_)
-          ->ReadPrefAsDictionary(extension_id, kMimeHandlerOptions);
-  const base::DictValue* record =
-      options ? options->FindDict(mime_type) : nullptr;
-  return record ? record->FindBool(key) : std::nullopt;
+          ->ReadPrefAsDictionary(extension_id, kMimeHandlerOptions),
+      mime_type, key);
 }
 
 void MimeHandlerRegistry::StoreOption(const ExtensionId& extension_id,
                                       const std::string& mime_type,
                                       std::string_view key,
-                                      bool value) {
-  // TODO(crbug.com/495538206): Define behavior for split-mode incognito -
-  // ExtensionPrefs are not split by profile mode, so an incognito-side
-  // write here silently overwrites the on-record setting. In-memory,
-  // profile-keyed storage for OTR may be the right answer.
+                                      bool value,
+                                      content::BrowserContext* context) {
+  if (ShouldUseIncognitoOptions(context, extension_id)) {
+    incognito_options_[extension_id].EnsureDict(mime_type)->Set(key, value);
+    return;
+  }
   ExtensionPrefs* prefs = ExtensionPrefs::Get(&*browser_context_);
   base::DictValue options;
   if (const base::DictValue* existing =

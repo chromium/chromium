@@ -17,6 +17,11 @@ chrome.test.runTests([
     if (options) {
       await chrome.mimeHandler.setMimeHandlerOptions(
           'application/pdf', options);
+      const storedOptions =
+          await chrome.mimeHandler.getMimeHandlerOptions('application/pdf');
+      for (const [member, value] of Object.entries(options)) {
+        chrome.test.assertEq(value, storedOptions[member]);
+      }
       chrome.test.succeed();
       return;
     }

@@ -18,6 +18,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
+#include "extensions/browser/uninstall_reason.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -63,6 +64,18 @@ class MimeHandlerRegistryTest : public ExtensionsTest {
         .SetManifestKey(
             "mime_types_handler",
             base::DictValue().Set(mime_type, std::move(extra_entry)))
+        .Build();
+  }
+
+  // `extra_entry` adds keys to the PDF entry next to "handler_url".
+  scoped_refptr<const Extension> CreateSplitModePdfHandlerExtension(
+      base::DictValue extra_entry = base::DictValue()) {
+    extra_entry.Set("handler_url", kViewerUrl);
+    return ExtensionBuilder("Split PDF Handler")
+        .SetManifestKey("incognito", "split")
+        .SetManifestKey(
+            "mime_types_handler",
+            base::DictValue().Set(kPdfMimeType, std::move(extra_entry)))
         .Build();
   }
 
@@ -128,7 +141,7 @@ class MimeHandlerRegistryTest : public ExtensionsTest {
   // id when the registry holds none.
   ExtensionId GetHandlerForMimeType(const std::string& mime_type) {
     const std::vector<ExtensionId> handlers =
-        registry()->GetHandlersForMimeType(mime_type);
+        registry()->GetHandlersForMimeType(mime_type, browser_context());
     return handlers.empty() ? ExtensionId() : handlers.front();
   }
 
@@ -238,7 +251,7 @@ TEST_F(MimeHandlerRegistryTest, GetHandlersByMimeTypeReturnsAllTypes) {
   LoadExtension(pdf_handler.get());
   LoadExtension(doc_handler.get());
 
-  auto all = registry()->GetHandlersByMimeType();
+  auto all = registry()->GetHandlersByMimeType(browser_context());
   ASSERT_EQ(all.size(), 2u);
 
   auto pdf_it = all.find(kPdfMimeType);
@@ -281,7 +294,7 @@ TEST_F(MimeHandlerRegistryTest, GetHandlersForMimeTypeIsOrdered) {
   LoadExtension(public_new.get());
 
   const std::vector<ExtensionId> candidates =
-      registry()->GetHandlersForMimeType(kPdfMimeType);
+      registry()->GetHandlersForMimeType(kPdfMimeType, browser_context());
   ASSERT_EQ(candidates.size(), 4u);
   EXPECT_EQ(candidates[0], public_new->id());
   EXPECT_EQ(candidates[1], public_old->id());
@@ -314,13 +327,13 @@ TEST_F(MimeHandlerRegistryTest, MultipleMimeTypesWithOverlap) {
   EXPECT_EQ(allowlisted->id(), GetHandlerForMimeType(kDocMimeType));
 
   const std::vector<ExtensionId> pdf_candidates =
-      registry()->GetHandlersForMimeType(kPdfMimeType);
+      registry()->GetHandlersForMimeType(kPdfMimeType, browser_context());
   ASSERT_EQ(pdf_candidates.size(), 2u);
   EXPECT_EQ(pdf_candidates[0], public_pdf->id());
   EXPECT_EQ(pdf_candidates[1], allowlisted->id());
 
   const std::vector<ExtensionId> doc_candidates =
-      registry()->GetHandlersForMimeType(kDocMimeType);
+      registry()->GetHandlersForMimeType(kDocMimeType, browser_context());
   ASSERT_EQ(doc_candidates.size(), 1u);
   EXPECT_EQ(doc_candidates[0], allowlisted->id());
 }
@@ -407,20 +420,33 @@ TEST_F(MimeHandlerRegistryTest, EnabledByDefaultUntilDisabled) {
   LoadExtension(ext.get());
 
   // Default: enabled, present in every accessor.
-  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType));
+  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                               browser_context()));
   EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
-  EXPECT_EQ(registry()->GetHandlersForMimeType(kPdfMimeType).size(), 1u);
-  EXPECT_EQ(registry()->GetHandlersByMimeType().count(kPdfMimeType), 1u);
+  EXPECT_EQ(registry()
+                ->GetHandlersForMimeType(kPdfMimeType, browser_context())
+                .size(),
+            1u);
+  EXPECT_EQ(
+      registry()->GetHandlersByMimeType(browser_context()).count(kPdfMimeType),
+      1u);
 
   // After disabling: gone from every accessor.
-  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, false);
-  EXPECT_FALSE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType));
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, false,
+                                    browser_context());
+  EXPECT_FALSE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                                browser_context()));
   EXPECT_TRUE(GetHandlerForMimeType(kPdfMimeType).empty());
-  EXPECT_TRUE(registry()->GetHandlersForMimeType(kPdfMimeType).empty());
-  EXPECT_EQ(registry()->GetHandlersByMimeType().count(kPdfMimeType), 0u);
+  EXPECT_TRUE(registry()
+                  ->GetHandlersForMimeType(kPdfMimeType, browser_context())
+                  .empty());
+  EXPECT_EQ(
+      registry()->GetHandlersByMimeType(browser_context()).count(kPdfMimeType),
+      0u);
 
   // Re-enable: comes back.
-  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, true);
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, true,
+                                    browser_context());
   EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
 }
 
@@ -431,18 +457,22 @@ TEST_F(MimeHandlerRegistryTest, ManifestEnabledFalseStartsDisabled) {
   LoadExtension(ext.get());
 
   EXPECT_TRUE(GetHandlerForMimeType(kPdfMimeType).empty());
-  EXPECT_FALSE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType));
+  EXPECT_FALSE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                                browser_context()));
 
-  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, true);
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, true,
+                                    browser_context());
   EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
-  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType));
+  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                               browser_context()));
 
   // The PDF handler should stay enabled after the extension is loaded again,
   // because the stored choice wins over the manifest.
   UnloadExtension(ext.get());
   LoadExtension(ext.get());
   EXPECT_EQ(ext->id(), GetHandlerForMimeType(kPdfMimeType));
-  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType));
+  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                               browser_context()));
 }
 
 TEST_F(MimeHandlerRegistryTest, DisableRollsBackToPreviouslyInstalledHandler) {
@@ -459,11 +489,13 @@ TEST_F(MimeHandlerRegistryTest, DisableRollsBackToPreviouslyInstalledHandler) {
   LoadExtension(ext_new.get());
   ASSERT_EQ(ext_new->id(), GetHandlerForMimeType(kPdfMimeType));
 
-  registry()->SetEnabledForMimeType(ext_new->id(), kPdfMimeType, false);
+  registry()->SetEnabledForMimeType(ext_new->id(), kPdfMimeType, false,
+                                    browser_context());
   EXPECT_EQ(ext_old->id(), GetHandlerForMimeType(kPdfMimeType));
 
   // Re-enable: ext_new wins again (newer install time beats ext_old).
-  registry()->SetEnabledForMimeType(ext_new->id(), kPdfMimeType, true);
+  registry()->SetEnabledForMimeType(ext_new->id(), kPdfMimeType, true,
+                                    browser_context());
   EXPECT_EQ(ext_new->id(), GetHandlerForMimeType(kPdfMimeType));
 }
 
@@ -510,8 +542,10 @@ TEST_F(MimeHandlerRegistryTest, ChoicesForSeveralMimeTypesSurviveReload) {
           .Build();
   LoadExtension(ext.get());
 
-  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, false);
-  registry()->SetEnabledForMimeType(ext->id(), kDottedMimeType, false);
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, false,
+                                    browser_context());
+  registry()->SetEnabledForMimeType(ext->id(), kDottedMimeType, false,
+                                    browser_context());
   UnloadExtension(ext.get());
   LoadExtension(ext.get());
 
@@ -571,6 +605,195 @@ TEST_F(MimeHandlerRegistryTest, UpdateForgetsOptionsOfUndeclaredMimeTypes) {
     ASSERT_TRUE(options);
     EXPECT_THAT(*options, base::test::IsJson(test_case.expected_options_json));
   }
+}
+
+// For a split mode extension, options set from incognito should change only
+// incognito. They should not be saved in the prefs. For a spanning mode
+// extension, they should change the regular profile too and be saved.
+TEST_F(MimeHandlerRegistryTest,
+       IncognitoChangesReachRegularOnlyInSpanningMode) {
+  struct {
+    const char* name;
+    scoped_refptr<const Extension> extension;
+    bool expected_enabled_in_regular;
+    bool expected_can_embed_in_regular;
+  } kTestCases[] = {
+      {.name = "Split mode",
+       .extension = CreateSplitModePdfHandlerExtension(),
+       .expected_enabled_in_regular = true,
+       .expected_can_embed_in_regular = false},
+      {.name = "Spanning mode",
+       .extension =
+           CreateMimeHandlerExtension("PDF Handler", kPdfMimeType, kViewerUrl),
+       .expected_enabled_in_regular = false,
+       .expected_can_embed_in_regular = true},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+    const Extension* ext = test_case.extension.get();
+    LoadExtension(ext);
+    ASSERT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                                 incognito_context()));
+    ASSERT_FALSE(registry()->CanEmbedForMimeType(ext->id(), kPdfMimeType,
+                                                 incognito_context()));
+
+    registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, false,
+                                      incognito_context());
+    registry()->SetCanEmbedForMimeType(ext->id(), kPdfMimeType, true,
+                                       incognito_context());
+
+    EXPECT_FALSE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                                  incognito_context()));
+    EXPECT_TRUE(registry()->CanEmbedForMimeType(ext->id(), kPdfMimeType,
+                                                incognito_context()));
+    EXPECT_TRUE(registry()
+                    ->GetHandlersForMimeType(kPdfMimeType, incognito_context())
+                    .empty());
+    EXPECT_EQ(registry()
+                  ->GetHandlersByMimeType(incognito_context())
+                  .count(kPdfMimeType),
+              0u);
+
+    EXPECT_EQ(test_case.expected_enabled_in_regular,
+              registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                               browser_context()));
+    EXPECT_EQ(test_case.expected_can_embed_in_regular,
+              registry()->CanEmbedForMimeType(ext->id(), kPdfMimeType,
+                                              browser_context()));
+
+    UnloadExtension(ext);
+  }
+}
+
+// Incognito should use the options set from the regular profile until
+// incognito sets its own. An option set from incognito should replace only that
+// specific option.
+TEST_F(MimeHandlerRegistryTest, IncognitoInheritsRegularOptions) {
+  // The manifest values are the opposite of the options set below, so each
+  // check shows whether the regular profile or the manifest decided.
+  auto ext = CreateSplitModePdfHandlerExtension(
+      base::DictValue().Set("enabled", false));
+  LoadExtension(ext.get());
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, true,
+                                    browser_context());
+  registry()->SetCanEmbedForMimeType(ext->id(), kPdfMimeType, true,
+                                     browser_context());
+
+  {
+    // Nothing is set from incognito yet.
+    EXPECT_THAT(
+        registry()->GetHandlersForMimeType(kPdfMimeType, incognito_context()),
+        testing::ElementsAre(ext->id()));
+    EXPECT_TRUE(registry()->CanEmbedForMimeType(ext->id(), kPdfMimeType,
+                                                incognito_context()));
+  }
+
+  {
+    // After incognito disables the handler, canEmbed in incognito is expected
+    // to still come from the regular profile.
+    registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, false,
+                                      incognito_context());
+    EXPECT_TRUE(registry()
+                    ->GetHandlersForMimeType(kPdfMimeType, incognito_context())
+                    .empty());
+    EXPECT_TRUE(registry()->CanEmbedForMimeType(ext->id(), kPdfMimeType,
+                                                incognito_context()));
+  }
+}
+
+// Incognito sets only `enabled`. Later changes in the regular profile should
+// show in incognito for canEmbed, but not for `enabled`.
+TEST_F(MimeHandlerRegistryTest, IncognitoFollowsLaterRegularChanges) {
+  auto ext = CreateSplitModePdfHandlerExtension();
+  LoadExtension(ext.get());
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, false,
+                                    incognito_context());
+  ASSERT_FALSE(registry()->CanEmbedForMimeType(ext->id(), kPdfMimeType,
+                                               incognito_context()));
+
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, true,
+                                    browser_context());
+  registry()->SetCanEmbedForMimeType(ext->id(), kPdfMimeType, true,
+                                     browser_context());
+
+  EXPECT_FALSE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                                incognito_context()));
+  EXPECT_TRUE(registry()->CanEmbedForMimeType(ext->id(), kPdfMimeType,
+                                              incognito_context()));
+}
+
+// An update that still handles PDFs should keep the options set from
+// incognito.
+TEST_F(MimeHandlerRegistryTest, UpdateKeepsIncognitoChanges) {
+  auto ext = CreateSplitModePdfHandlerExtension();
+  LoadExtension(ext.get());
+  ASSERT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                               incognito_context()));
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, false,
+                                    incognito_context());
+
+  UnloadExtension(ext.get());
+  UpdateExtension(ext.get());
+  ExtensionRegistry::Get(browser_context())->TriggerOnLoaded(ext.get());
+
+  EXPECT_FALSE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                                incognito_context()));
+}
+
+// An update that stops handling PDFs should delete the PDF options set from
+// incognito. A later version that handles PDFs again should start from the
+// manifest.
+TEST_F(MimeHandlerRegistryTest, UpdateForgetsIncognitoChangesOfDroppedType) {
+  auto declares_pdf = CreateSplitModePdfHandlerExtension();
+  LoadExtension(declares_pdf.get());
+  registry()->SetEnabledForMimeType(declares_pdf->id(), kPdfMimeType, false,
+                                    incognito_context());
+  ASSERT_FALSE(registry()->IsEnabledForMimeType(
+      declares_pdf->id(), kPdfMimeType, incognito_context()));
+
+  UpdateExtension(
+      ExtensionBuilder("Dropped").SetID(declares_pdf->id()).Build().get());
+  UpdateExtension(declares_pdf.get());
+
+  EXPECT_TRUE(registry()->IsEnabledForMimeType(declares_pdf->id(), kPdfMimeType,
+                                               incognito_context()));
+}
+
+// Uninstalling the extension should delete the options set from incognito.
+TEST_F(MimeHandlerRegistryTest, UninstallForgetsIncognitoChanges) {
+  auto ext = CreateSplitModePdfHandlerExtension();
+  LoadExtension(ext.get());
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, false,
+                                    incognito_context());
+  ASSERT_FALSE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                                incognito_context()));
+
+  UnloadExtension(ext.get());
+  ExtensionRegistry::Get(browser_context())
+      ->TriggerOnUninstalled(ext.get(), UNINSTALL_REASON_FOR_TESTING);
+  LoadExtension(ext.get());
+
+  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                               incognito_context()));
+}
+
+// Ending the incognito session should delete the options set from incognito.
+TEST_F(MimeHandlerRegistryTest, IncognitoSessionEndForgetsIncognitoChanges) {
+  auto ext = CreateSplitModePdfHandlerExtension();
+  LoadExtension(ext.get());
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, false,
+                                    incognito_context());
+  ASSERT_FALSE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                                incognito_context()));
+
+  // The test browser client has no lifetime tracker, so call the observer
+  // method directly.
+  registry()->OnRelatedOffTheRecordBrowserContextDestroyed(
+      *incognito_context());
+
+  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType,
+                                               incognito_context()));
 }
 
 }  // namespace

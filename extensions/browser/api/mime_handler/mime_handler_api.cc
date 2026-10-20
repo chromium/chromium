@@ -174,11 +174,11 @@ MimeHandlerSetMimeHandlerOptionsFunction::Run() {
   MimeHandlerRegistry* registry = MimeHandlerRegistry::Get(browser_context());
   if (enabled.has_value()) {
     registry->SetEnabledForMimeType(extension_id(), params->mime_type,
-                                    enabled.value());
+                                    enabled.value(), browser_context());
   }
   if (can_embed.has_value()) {
     registry->SetCanEmbedForMimeType(extension_id(), params->mime_type,
-                                     can_embed.value());
+                                     can_embed.value(), browser_context());
   }
   return RespondNow(NoArguments());
 }
@@ -201,10 +201,10 @@ MimeHandlerGetMimeHandlerOptionsFunction::Run() {
 
   MimeHandlerRegistry* registry = MimeHandlerRegistry::Get(browser_context());
   api::mime_handler::MimeHandlerOptions idl_options;
-  idl_options.enabled =
-      registry->IsEnabledForMimeType(extension_id(), params->mime_type);
-  idl_options.can_embed =
-      registry->CanEmbedForMimeType(extension_id(), params->mime_type);
+  idl_options.enabled = registry->IsEnabledForMimeType(
+      extension_id(), params->mime_type, browser_context());
+  idl_options.can_embed = registry->CanEmbedForMimeType(
+      extension_id(), params->mime_type, browser_context());
   return RespondNow(WithArguments(idl_options.ToValue()));
 }
 

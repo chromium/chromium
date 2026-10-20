@@ -47,7 +47,10 @@ interface MimeHandler {
   // will be torn down; callers should not expect further execution.
   static Promise<undefined> abortAndFallbackToNativeHandler();
 
-  // Sets the configuration options for a specified MIME type.
+  // Sets the configuration options for a specified MIME type. If the extension
+  // runs in split incognito mode, options set from incognito apply only to
+  // incognito and last until the incognito session ends. Options not set from
+  // incognito follow the values set outside incognito.
   // |mimeType|: The MIME type to configure. It must be a MIME type the
   // extension handles through mime_types_handler.
   // |options|: The options to change.
