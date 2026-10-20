@@ -542,7 +542,6 @@ bool ShouldShowUniversalOptOutSettings(
   if (hasError) {
     _universalOptOutDetailItem.detailText = nil;
     _universalOptOutDetailItem.badgeType = BadgeType::kWarning;
-    _universalOptOutDetailItem.badgeLayout = BadgeLayout::kTrailing;
   } else {
     _universalOptOutDetailItem.badgeType = BadgeType::kNone;
     _universalOptOutDetailItem.detailText =

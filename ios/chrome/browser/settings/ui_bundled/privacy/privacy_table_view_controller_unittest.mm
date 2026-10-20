@@ -549,7 +549,6 @@ TEST_P(PrivacyTableViewControllerTest, TestUniversalOptOutErrorBadge) {
   // Simulate load error.
   fake_service->SetHasGPCLoadError(true);
   EXPECT_TRUE(item.badgeType == BadgeType::kWarning);
-  EXPECT_TRUE(item.badgeLayout == BadgeLayout::kTrailing);
   EXPECT_EQ(item.detailText, nil);
 
   // Simulate load success / resolved error.

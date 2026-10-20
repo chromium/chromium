@@ -46,7 +46,6 @@ const NSInteger kDefaultNumberOfLinesSubtitle = 1;
   if (self) {
     self.cellClass = [LegacyTableViewCell class];
     self.badgeType = BadgeType::kNone;
-    self.badgeLayout = BadgeLayout::kInline;
     _textNumberOfLines = kDefaultNumberOfLinesTitle;
     _detailTextNumberOfLines = kDefaultNumberOfLinesSubtitle;
     _textLineBreakMode = NSLineBreakByTruncatingTail;
@@ -65,7 +64,7 @@ const NSInteger kDefaultNumberOfLinesSubtitle = 1;
       [[TableViewCellContentConfiguration alloc] init];
 
   UIImage* badgeImage = [self createBadgeImage];
-  if (badgeImage && self.badgeLayout == BadgeLayout::kInline) {
+  if (badgeImage && self.badgeType != BadgeType::kWarning) {
     contentConfiguration.attributedTitle =
         [self createAttributedTitleWithImage:badgeImage];
   } else if (self.textFont || self.textColor) {
@@ -88,7 +87,7 @@ const NSInteger kDefaultNumberOfLinesSubtitle = 1;
   contentConfiguration.verticalAlignment = self.verticalAlignment;
   contentConfiguration.reservesLeadingSpace = self.reservesLeadingSpace;
 
-  if (badgeImage && self.badgeLayout == BadgeLayout::kTrailing) {
+  if (badgeImage && self.badgeType == BadgeType::kWarning) {
     ImageContentConfiguration* trailingImageConfiguration =
         [[ImageContentConfiguration alloc] init];
     trailingImageConfiguration.image = badgeImage;

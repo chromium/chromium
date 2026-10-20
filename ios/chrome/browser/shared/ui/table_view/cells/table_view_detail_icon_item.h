@@ -17,12 +17,6 @@ enum class BadgeType {
   kWarning,          // The warning badge.
 };
 
-// Enum defining the layout of the badge in the cell.
-enum class BadgeLayout {
-  kInline,    // The badge is inlined at the end of the text.
-  kTrailing,  // The badge is displayed at the trailing side of the cell.
-};
-
 // TableViewDetailIconItem is a model class for a cell with details and icon.
 @interface TableViewDetailIconItem : TableViewItem
 
@@ -59,11 +53,10 @@ enum class BadgeLayout {
 
 // Selects the badge shown in the Cell. These are only supported when
 // `textLayoutConstraintAxis` is set to `UILayoutConstraintAxisHorizontal`.
-// Default is no badge (BadgeType::kNone).
+// Warning badge is displayed at the trailing side of the cell, while other
+// badges are inlined at the end of the text. Default is no badge
+// (BadgeType::kNone).
 @property(nonatomic, assign) BadgeType badgeType;
-
-// Layout of the badge. Default is BadgeLayout::kInline.
-@property(nonatomic, assign) BadgeLayout badgeLayout;
 
 // Maximum number of lines for the `text`. Default is 1.
 @property(nonatomic, assign) NSInteger textNumberOfLines;

@@ -933,12 +933,10 @@ TEST_F(SettingsTableViewControllerTest, TestPrivacyItemErrorBadge) {
   // Simulate extension load error.
   fake_service->SetHasGPCLoadError(true);
   EXPECT_TRUE(privacy_item.badgeType == BadgeType::kWarning);
-  EXPECT_TRUE(privacy_item.badgeLayout == BadgeLayout::kTrailing);
 
   // Simulate error resolution.
   fake_service->SetHasGPCLoadError(false);
   EXPECT_TRUE(privacy_item.badgeType == BadgeType::kNone);
-  EXPECT_TRUE(privacy_item.badgeLayout == BadgeLayout::kInline);
 }
 
 // Tests that the privacy detail item does not display a warning badge when

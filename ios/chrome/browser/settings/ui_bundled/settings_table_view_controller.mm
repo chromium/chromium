@@ -2464,11 +2464,6 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   BadgeType badgeType = hasError ? BadgeType::kWarning : BadgeType::kNone;
   if (badgeType != _privacyDetailItem.badgeType) {
     _privacyDetailItem.badgeType = badgeType;
-    if (badgeType == BadgeType::kWarning) {
-      _privacyDetailItem.badgeLayout = BadgeLayout::kTrailing;
-    } else {
-      _privacyDetailItem.badgeLayout = BadgeLayout::kInline;
-    }
     if ([self.tableViewModel hasItem:_privacyDetailItem]) {
       [self reconfigureCellsForItems:@[ _privacyDetailItem ]];
     }

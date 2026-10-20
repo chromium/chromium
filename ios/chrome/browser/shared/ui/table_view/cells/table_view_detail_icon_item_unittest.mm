@@ -38,7 +38,6 @@ TEST_F(TableViewDetailIconItemTest, ItemProperties) {
   item.iconBackgroundColor = UIColor.blackColor;
   item.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
   EXPECT_TRUE(item.badgeType == BadgeType::kNone);
-  EXPECT_TRUE(item.badgeLayout == BadgeLayout::kInline);
 
   LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[LegacyTableViewCell class]]);
@@ -172,14 +171,13 @@ TEST_F(TableViewDetailIconItemTest, TestReservesLeadingSpace) {
   EXPECT_TRUE(configuration.reservesLeadingSpace);
 }
 
-// Tests that warning badge is set properly inline after a call to
+// Tests that notification dot badge is set properly inline after a call to
 // `configureCell:`.
-TEST_F(TableViewDetailIconItemTest, ItemWithWarningBadgeInline) {
+TEST_F(TableViewDetailIconItemTest, ItemWithNotificationDotBadge) {
   TableViewDetailIconItem* item =
       [[TableViewDetailIconItem alloc] initWithType:0];
-  item.text = @"Universal Opt-Out";
-  item.badgeType = BadgeType::kWarning;
-  item.badgeLayout = BadgeLayout::kInline;
+  item.text = @"New Feature";
+  item.badgeType = BadgeType::kNotificationDot;
 
   LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[LegacyTableViewCell class]]);
@@ -194,22 +192,21 @@ TEST_F(TableViewDetailIconItemTest, ItemWithWarningBadgeInline) {
   EXPECT_NE(nil, configuration.attributedTitle);
   EXPECT_EQ(nil, configuration.trailingConfiguration);
 
-  NSString* warningHint =
-      l10n_util::GetNSString(IDS_IOS_ITEM_WARNING_BADGE_ACCESSIBILITY_HINT);
+  NSString* notificationHint =
+      l10n_util::GetNSString(IDS_IOS_NEW_ITEM_ACCESSIBILITY_HINT);
   NSString* expectedAccessibilityLabel =
       [NSString stringWithFormat:@"%@, %@", configuration.accessibilityLabel,
-                                 warningHint];
+                                 notificationHint];
   EXPECT_NSEQ(expectedAccessibilityLabel, cell.accessibilityLabel);
 }
 
-// Tests that warning badge is set properly trailing after a call to
+// Tests that warning badge is automatically set trailing after a call to
 // `configureCell:`.
-TEST_F(TableViewDetailIconItemTest, ItemWithWarningBadgeTrailing) {
+TEST_F(TableViewDetailIconItemTest, ItemWithWarningBadge) {
   TableViewDetailIconItem* item =
       [[TableViewDetailIconItem alloc] initWithType:0];
   item.text = @"Universal Opt-Out";
   item.badgeType = BadgeType::kWarning;
-  item.badgeLayout = BadgeLayout::kTrailing;
 
   LegacyTableViewCell* cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[LegacyTableViewCell class]]);
