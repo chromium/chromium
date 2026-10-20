@@ -14,19 +14,22 @@ export function getHtml(this: HistoryFilterChipsElement) {
       aria-label="$i18n{sourceFilterChipsAriaLabel}">
     ${this.showActorFilter ? html`
       ${this.showActorFilterDropDownVersion_() ? html`
-        <select id="actorSelect" class="md-select"
-            @change="${this.onActorSelectChange_}">
-          <option value="all"
-              .selected="${!this.isUserSelected() && !this.isActorSelected()}">
-            $i18n{sourceFilterAllActors}
-          </option>
-          <option value="user" .selected="${this.isUserSelected()}">
-            $i18n{sourceFilterChipUser}
-          </option>
-          <option value="actor" .selected="${this.isActorSelected()}">
-            $i18n{sourceFilterChipActor}
-          </option>
-        </select>
+        <div class="filter-chips">
+          <cr-icon icon="cr:check" aria-hidden="true"></cr-icon>
+          <select id="actorFilterChip" class="md-select"
+              @change="${this.onActorSelectChange_}">
+            <option value="all"
+                .selected="${!this.isUserSelected() && !this.isActorSelected()}">
+              $i18n{sourceFilterAllActors}
+            </option>
+            <option value="user" .selected="${this.isUserSelected()}">
+              $i18n{sourceFilterChipUser}
+            </option>
+            <option value="actor" .selected="${this.isActorSelected()}">
+              $i18n{sourceFilterChipActor}
+            </option>
+          </select>
+        </div>
       ` : html`
         <cr-chip id="userVisitsChip" ?selected="${this.isUserSelected()}"
             @click="${this.onUserVisitsClick_}">

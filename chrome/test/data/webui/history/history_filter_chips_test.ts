@@ -42,42 +42,49 @@ suite('HistoryFilterChipsTest', function() {
       // by default.
       assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
       assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
-      assertFalse(!!element.shadowRoot.querySelector('#actorSelect'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorFilterChip'));
 
       element.showActorFilter = true;
       await microtasksFinished();
-      const actorSelect =
-          element.shadowRoot.querySelector<HTMLSelectElement>('#actorSelect');
-      assertTrue(!!actorSelect);
+      const actorFilterChip =
+          element.shadowRoot.querySelector<HTMLSelectElement>(
+              '#actorFilterChip');
+      assertTrue(!!actorFilterChip);
       assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
       assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
-      assertEquals(3, actorSelect.options.length);
+      assertEquals(3, actorFilterChip.options.length);
       assertEquals(
           loadTimeData.getString('sourceFilterAllActors'),
-          actorSelect.options[0]!.textContent.trim());
-      assertTrue(actorSelect.options[0]!.selected);
+          actorFilterChip.options[0]!.textContent.trim());
+      assertTrue(actorFilterChip.options[0]!.selected);
       assertEquals(
           loadTimeData.getString('sourceFilterChipUser'),
-          actorSelect.options[1]!.textContent.trim());
-      assertFalse(actorSelect.options[1]!.selected);
+          actorFilterChip.options[1]!.textContent.trim());
+      assertFalse(actorFilterChip.options[1]!.selected);
       assertEquals(
           loadTimeData.getString('sourceFilterChipActor'),
-          actorSelect.options[2]!.textContent.trim());
-      assertFalse(actorSelect.options[2]!.selected);
+          actorFilterChip.options[2]!.textContent.trim());
+      assertFalse(actorFilterChip.options[2]!.selected);
 
       element.showActorFilter = false;
       await microtasksFinished();
       assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
       assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
-      assertFalse(!!element.shadowRoot.querySelector('#actorSelect'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorFilterChip'));
     });
 
     test('SelectActorOptions', async () => {
       element.showActorFilter = true;
       await microtasksFinished();
-      const actorSelect =
-          element.shadowRoot.querySelector<HTMLSelectElement>('#actorSelect');
-      assertTrue(!!actorSelect);
+      const actorFilterChip =
+          element.shadowRoot.querySelector<HTMLSelectElement>(
+              '#actorFilterChip');
+      assertTrue(!!actorFilterChip);
+
+      const icon = element.shadowRoot.querySelector<HTMLElement>(
+          '.filter-chips cr-icon');
+      assertTrue(!!icon);
+      assertFalse(isVisible(icon));
 
       let eventDetail: {userVisits: boolean, actorVisits: boolean}|undefined;
       element.addEventListener('filter-changed', ((e: CustomEvent) => {
@@ -85,8 +92,8 @@ suite('HistoryFilterChipsTest', function() {
                                                  }) as EventListener);
 
       // Select 'User' visits only.
-      actorSelect.value = 'user';
-      actorSelect.dispatchEvent(new Event('change'));
+      actorFilterChip.value = 'user';
+      actorFilterChip.dispatchEvent(new Event('change'));
       const action1 = await browserService.whenCalled('recordAction');
       assertEquals('HistoryPage_ShowUserOnlyEnabled', action1);
       await microtasksFinished();
@@ -95,15 +102,16 @@ suite('HistoryFilterChipsTest', function() {
       assertTrue(!!eventDetail);
       assertTrue(eventDetail.userVisits);
       assertFalse(eventDetail.actorVisits);
-      assertFalse(actorSelect.options[0]!.selected);
-      assertTrue(actorSelect.options[1]!.selected);
-      assertFalse(actorSelect.options[2]!.selected);
+      assertFalse(actorFilterChip.options[0]!.selected);
+      assertTrue(actorFilterChip.options[1]!.selected);
+      assertFalse(actorFilterChip.options[2]!.selected);
+      assertTrue(isVisible(icon));
       eventDetail =
           undefined as {userVisits: boolean, actorVisits: boolean} | undefined;
 
       // Select 'Actor' visits only.
-      actorSelect.value = 'actor';
-      actorSelect.dispatchEvent(new Event('change'));
+      actorFilterChip.value = 'actor';
+      actorFilterChip.dispatchEvent(new Event('change'));
       const action2 = await browserService.whenCalled('recordAction');
       assertEquals('HistoryPage_ShowActorOnlyEnabled', action2);
       await microtasksFinished();
@@ -112,15 +120,16 @@ suite('HistoryFilterChipsTest', function() {
       assertTrue(!!eventDetail);
       assertFalse(eventDetail.userVisits);
       assertTrue(eventDetail.actorVisits);
-      assertFalse(actorSelect.options[0]!.selected);
-      assertFalse(actorSelect.options[1]!.selected);
-      assertTrue(actorSelect.options[2]!.selected);
+      assertFalse(actorFilterChip.options[0]!.selected);
+      assertFalse(actorFilterChip.options[1]!.selected);
+      assertTrue(actorFilterChip.options[2]!.selected);
+      assertTrue(isVisible(icon));
       eventDetail =
           undefined as {userVisits: boolean, actorVisits: boolean} | undefined;
 
       // Select 'All sources' (both user and actor visits).
-      actorSelect.value = 'all';
-      actorSelect.dispatchEvent(new Event('change'));
+      actorFilterChip.value = 'all';
+      actorFilterChip.dispatchEvent(new Event('change'));
       const action3 = await browserService.whenCalled('recordAction');
       assertEquals('HistoryPage_ShowAllEnabled', action3);
       await microtasksFinished();
@@ -129,9 +138,10 @@ suite('HistoryFilterChipsTest', function() {
       assertTrue(!!eventDetail);
       assertTrue(eventDetail.userVisits);
       assertTrue(eventDetail.actorVisits);
-      assertTrue(actorSelect.options[0]!.selected);
-      assertFalse(actorSelect.options[1]!.selected);
-      assertFalse(actorSelect.options[2]!.selected);
+      assertTrue(actorFilterChip.options[0]!.selected);
+      assertFalse(actorFilterChip.options[1]!.selected);
+      assertFalse(actorFilterChip.options[2]!.selected);
+      assertFalse(isVisible(icon));
     });
   });
 
@@ -147,7 +157,7 @@ suite('HistoryFilterChipsTest', function() {
       // by default.
       assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
       assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
-      assertFalse(!!element.shadowRoot.querySelector('#actorSelect'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorFilterChip'));
 
       element.showActorFilter = true;
       await microtasksFinished();
@@ -157,7 +167,7 @@ suite('HistoryFilterChipsTest', function() {
           element.shadowRoot.querySelector<HTMLElement>('#actorVisitsChip');
       assertTrue(!!userChip);
       assertTrue(!!actorChip);
-      assertFalse(!!element.shadowRoot.querySelector('#actorSelect'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorFilterChip'));
       assertFalse(userChip.hasAttribute('selected'));
       assertFalse(actorChip.hasAttribute('selected'));
 
@@ -165,7 +175,7 @@ suite('HistoryFilterChipsTest', function() {
       await microtasksFinished();
       assertFalse(!!element.shadowRoot.querySelector('#userVisitsChip'));
       assertFalse(!!element.shadowRoot.querySelector('#actorVisitsChip'));
-      assertFalse(!!element.shadowRoot.querySelector('#actorSelect'));
+      assertFalse(!!element.shadowRoot.querySelector('#actorFilterChip'));
     });
 
     test('ToggleUserChip', async () => {
@@ -458,18 +468,18 @@ suite('HistoryFilterChipsTest', function() {
     ];
     await microtasksFinished();
 
-    const actorSelect =
-        element.shadowRoot.querySelector<HTMLSelectElement>('#actorSelect');
+    const actorFilterChip =
+        element.shadowRoot.querySelector<HTMLSelectElement>('#actorFilterChip');
     const deviceFilterChip =
         element.shadowRoot.querySelector<HTMLSelectElement>(
             '#deviceFilterChip');
-    assertTrue(!!actorSelect);
+    assertTrue(!!actorFilterChip);
     assertTrue(!!deviceFilterChip);
     assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
 
     // Selecting an actor filter shows the clear all button.
-    actorSelect.value = 'user';
-    actorSelect.dispatchEvent(new Event('change'));
+    actorFilterChip.value = 'user';
+    actorFilterChip.dispatchEvent(new Event('change'));
     await microtasksFinished();
     assertTrue(!!element.shadowRoot.querySelector('#clearAllButton'));
 
@@ -481,8 +491,8 @@ suite('HistoryFilterChipsTest', function() {
 
     // Deselecting one filter while another is still active keeps the clear all
     // button visible.
-    actorSelect.value = 'all';
-    actorSelect.dispatchEvent(new Event('change'));
+    actorFilterChip.value = 'all';
+    actorFilterChip.dispatchEvent(new Event('change'));
     await microtasksFinished();
     assertTrue(!!element.shadowRoot.querySelector('#clearAllButton'));
 
@@ -494,8 +504,8 @@ suite('HistoryFilterChipsTest', function() {
 
     // Clicking the clear all button resets all active filters and hides the
     // button.
-    actorSelect.value = 'user';
-    actorSelect.dispatchEvent(new Event('change'));
+    actorFilterChip.value = 'user';
+    actorFilterChip.dispatchEvent(new Event('change'));
     deviceFilterChip.value = '0';
     deviceFilterChip.dispatchEvent(new Event('change'));
     await microtasksFinished();
@@ -517,8 +527,8 @@ suite('HistoryFilterChipsTest', function() {
     await microtasksFinished();
 
     assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
-    assertEquals('all', actorSelect.value);
-    assertTrue(actorSelect.options[0]!.selected);
+    assertEquals('all', actorFilterChip.value);
+    assertTrue(actorFilterChip.options[0]!.selected);
     assertEquals('-1', deviceFilterChip.value);
     assertTrue(deviceFilterChip.options[0]!.selected);
 
