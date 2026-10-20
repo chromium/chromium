@@ -85,6 +85,7 @@ inline constexpr base::FeatureParam<int>
         "omnibox_full_webui_defer_show_until_visual_state_ready_timeout_ms",
         250};
 BASE_DECLARE_FEATURE(kOmniboxAimDeferShowUntilVisualStateReadyWithFullWebUI);
+BASE_DECLARE_FEATURE(kOmniboxAimPopupDeferCreation);
 BASE_DECLARE_FEATURE(kOmniboxWebUIDebounceResize);
 BASE_DECLARE_FEATURE(kOmniboxAimDebounceResize);
 BASE_DECLARE_FEATURE(kOmniboxFullWebUIDebounceResize);

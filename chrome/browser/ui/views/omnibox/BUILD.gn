@@ -303,6 +303,7 @@ source_set("browser_tests") {
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/themes:test_support",
+    "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui:browser_window_header",
@@ -333,9 +334,11 @@ source_set("browser_tests") {
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/compositor",
     "//ui/events:test_support",
     "//ui/shell_dialogs:test_support",
     "//ui/views",
+    "//url",
   ]
 
   if (use_ozone) {

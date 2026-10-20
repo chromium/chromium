@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -119,6 +120,22 @@ class OmniboxPopupPresenterBase
   OmniboxPopupWebUIBaseContent* GetWebUIContent();
   const OmniboxPopupWebUIBaseContent* GetWebUIContent() const;
 
+  // Creates the WebUI content with `CreateWebUIContent()` if it does not
+  // exist yet. Presenters that defer creating their content call this, or
+  // `Show()` and other callers that need the content call it.
+  void EnsureWebUIContentCreated();
+
+  // Called when the browser window that hosts this popup presents a frame
+  // after `CreateWebUIContentAfterBrowserWindowPresentation()`. If the WebUI
+  // content does not exist yet, posts a task that creates it. Later calls do
+  // nothing.
+  void OnBrowserWindowPresented();
+
+  // While the returned object is alive, `OnBrowserWindowPresented()` does
+  // nothing, so deferred content is created only when something needs it.
+  [[nodiscard]] static base::AutoReset<bool>
+  IgnoreBrowserWindowPresentationForTesting();
+
   // Returns the timeout if showing should be deferred until the WebUI has
   // painted a new frame, or std::nullopt if it should not be deferred.
   virtual std::optional<base::TimeDelta> ShouldDeferUntilVisualStateReady()
@@ -206,6 +223,18 @@ class OmniboxPopupPresenterBase
   // Sets the webview content reference.
   void SetWebUIContent(
       std::unique_ptr<OmniboxPopupWebUIBaseContent> webui_content);
+
+  // Returns the WebUI content for `EnsureWebUIContentCreated()`. A presenter
+  // that defers creating its content overrides this and does not call
+  // `SetWebUIContent()` in its constructor. Returns null by default.
+  virtual std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent();
+
+  // Requests `OnBrowserWindowPresented()` for the next frame that the location
+  // bar's widget presents. A presenter that defers creating its content calls
+  // this from its constructor. The presenters are built with the browser
+  // window, before its first paint, so that frame is the window's first frame.
+  // A presenter built later gets the next frame.
+  void CreateWebUIContentAfterBrowserWindowPresentation();
 
   void EnsureWidgetCreated();
 
@@ -328,6 +357,9 @@ class OmniboxPopupPresenterBase
 
   // The WebUI content WebView. Owned by the container.
   raw_ptr<OmniboxPopupWebUIBaseContent> omnibox_popup_webui_content_ = nullptr;
+
+  // Whether `OnBrowserWindowPresented()` has posted the creation task.
+  bool deferred_creation_scheduled_ = false;
 
   // The popup widget that contains this WebView. Created, closed and owned by
   // `this`; see `ReleaseWidget()` for how it is destroyed.
