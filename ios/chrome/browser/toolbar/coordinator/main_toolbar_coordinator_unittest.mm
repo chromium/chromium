@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -228,6 +229,12 @@ class MainToolbarCoordinatorTest : public PlatformTest {
     [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_fullscreen_commands
                      forProtocol:@protocol(FullscreenCommands)];
+
+    id tab_picker_commands_handler =
+        OCMProtocolMock(@protocol(TabPickerCommands));
+    [browser->GetCommandDispatcher()
+        startDispatchingToTarget:tab_picker_commands_handler
+                     forProtocol:@protocol(TabPickerCommands)];
 
     OmniboxFocusBrowserAgent::CreateForBrowser(browser);
     AutocompleteBrowserAgent::CreateForBrowser(browser);

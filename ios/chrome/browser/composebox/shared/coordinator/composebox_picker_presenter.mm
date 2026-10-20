@@ -547,6 +547,9 @@ constexpr int kChromeIOSProductId = 71720513;
 - (void)dismissPickerWithCompletion:(ProceduralBlock)completion {
   UIViewController* presentingVC = _picker.presentingViewController;
   if (!presentingVC) {
+    id<TabPickerCommands> tabPickerHandler =
+        HandlerForProtocol(_browser->GetCommandDispatcher(), TabPickerCommands);
+    [tabPickerHandler hideTabPicker];
     if (completion) {
       completion();
     }

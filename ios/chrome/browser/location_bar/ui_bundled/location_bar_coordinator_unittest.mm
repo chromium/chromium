@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
@@ -192,6 +193,10 @@ class LocationBarCoordinatorTest : public PlatformTest {
         startDispatchingToTarget:mock_contextual_panel_entrypoint_iph_handler
                      forProtocol:@protocol(
                                      ContextualPanelEntrypointIPHCommands)];
+    id tab_picker_commands_handler =
+        OCMProtocolMock(@protocol(TabPickerCommands));
+    [dispatcher startDispatchingToTarget:tab_picker_commands_handler
+                             forProtocol:@protocol(TabPickerCommands)];
 
     // Set up application and settings handler mocks.
     id mock_application_handler = OCMProtocolMock(@protocol(SceneCommands));

@@ -81,6 +81,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_coordinator.h"
@@ -238,6 +239,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         OCMProtocolMock(@protocol(FindInPageCommands));
     [dispatcher startDispatchingToTarget:mock_find_in_page_handler
                              forProtocol:@protocol(FindInPageCommands)];
+
+    id tab_picker_commands_handler =
+        OCMProtocolMock(@protocol(TabPickerCommands));
+    [dispatcher startDispatchingToTarget:tab_picker_commands_handler
+                             forProtocol:@protocol(TabPickerCommands)];
     id mock_fullscreen_commands_handler =
         OCMProtocolMock(@protocol(FullscreenCommands));
     [dispatcher startDispatchingToTarget:mock_fullscreen_commands_handler

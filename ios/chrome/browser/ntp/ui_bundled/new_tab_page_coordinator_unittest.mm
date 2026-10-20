@@ -70,6 +70,7 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -345,6 +346,9 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     [browser_.get()->GetCommandDispatcher()
         startDispatchingToTarget:OCMProtocolMock(@protocol(LevelUpCommands))
                      forProtocol:@protocol(LevelUpCommands)];
+    [browser_.get()->GetCommandDispatcher()
+        startDispatchingToTarget:OCMProtocolMock(@protocol(TabPickerCommands))
+                     forProtocol:@protocol(TabPickerCommands)];
   }
 
   // Dynamically calls a selector on an object.
