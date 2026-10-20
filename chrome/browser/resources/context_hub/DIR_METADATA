@@ -1,5 +1,1 @@
-buganizer {
-  component_id: 2146373
-}
-
-team_email: "chrome-pcontext-exploration-eng@google.com"
+mixins: "//chrome/browser/context_hub/COMMON_METADATA"
