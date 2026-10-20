@@ -161,6 +161,14 @@ TEST_F(AwContentBrowserClientTest, IsFullCookieAccessAllowed) {
       net::CookieSettingOverrides()));
 }
 
+TEST_F(AwContentBrowserClientTest, IsHandledURL) {
+  EXPECT_TRUE(client_.IsHandledURL(GURL("https://example.com")));
+  EXPECT_TRUE(client_.IsHandledURL(GURL("file:///etc/hosts")));
+  EXPECT_TRUE(client_.IsHandledURL(GURL("file:///android_asset/test.html")));
+  EXPECT_TRUE(client_.IsHandledURL(GURL("file:///android_res/raw/test.png")));
+  EXPECT_FALSE(client_.IsHandledURL(GURL("custom-scheme://example")));
+}
+
 }  // namespace
 
 }  // namespace android_webview

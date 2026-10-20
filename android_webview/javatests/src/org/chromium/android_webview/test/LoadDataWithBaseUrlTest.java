@@ -24,12 +24,16 @@ import org.chromium.android_webview.AwCookieManager;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
+import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.net.test.util.WebServer;
@@ -92,6 +96,9 @@ public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
     private static final String SCRIPT_LOADED = "Loaded";
     private static final String SCRIPT_NOT_LOADED = "Not loaded";
     private static final String SCRIPT_JS = "script_was_loaded = true;";
+    private static final String ASSET_URL = "file:///android_asset/asset_file.html";
+    // URL committed by the browser process when a navigation is blocked.
+    private static final String ABOUT_BLANK_BLOCKED_URL = "about:blank#blocked";
 
     private String getScriptFileTestPageHtml(final String scriptUrl) {
         return "<html>"
@@ -428,6 +435,132 @@ public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
         }
     }
 
+    private String getIframeTestPageHtml(final String iframeUrl) {
+        return "<html><body><iframe src='" + iframeUrl + "'></iframe></body></html>";
+    }
+
+    /** Returns the URL the browser process recorded as committed in the page's only iframe. */
+    private String getIframeLastCommittedUrl() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<RenderFrameHost> frames =
+                            mWebContents.getMainFrame().getAllRenderFrameHosts();
+                    Assert.assertEquals(2, frames.size());
+                    return frames.get(1).getLastCommittedURL().getSpec();
+                });
+    }
+
+    /** Returns the URL the browser process recorded as committed in the top-level frame. */
+    private String getTopFrameLastCommittedUrl() {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> mWebContents.getMainFrame().getLastCommittedURL().getSpec());
+    }
+
+    private void navigateTopFrameFromJsSync(final String url) throws Throwable {
+        mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setJavaScriptEnabled(true);
+        TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
+                mContentsClient.getOnPageFinishedHelper();
+        int currentCallCount = onPageFinishedHelper.getCallCount();
+        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                mAwContents, mContentsClient, "location.href = '" + url + "';");
+        onPageFinishedHelper.waitForCallback(currentCallCount);
+    }
+
+    // Navigating an iframe to an asset URL is allowed with a non-data: base URL.
+    // See crbug.com/541264468.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testIframeCanNavigateToAssetUrlWithNonDataBaseUrl() throws Throwable {
+        final String html = getIframeTestPageHtml(ASSET_URL);
+        loadDataWithBaseUrlSync(html, "text/html", false, "http://example.com", null);
+        Assert.assertEquals(ASSET_URL, getIframeLastCommittedUrl());
+    }
+
+    // Navigating the top frame to an asset URL is allowed with a non-data: base URL.
+    // See crbug.com/541264468.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testTopFrameCanNavigateToAssetUrlWithNonDataBaseUrl() throws Throwable {
+        loadDataWithBaseUrlSync(
+                CommonResources.ABOUT_HTML, "text/html", false, "http://example.com", null);
+        navigateTopFrameFromJsSync(ASSET_URL);
+        Assert.assertEquals(ASSET_URL, getTopFrameLastCommittedUrl());
+    }
+
+    // Navigating an iframe to an asset URL is blocked with a data: base URL; the browser process
+    // rewrites the blocked target URL to about:blank#blocked. Web security is disabled so that
+    // Blink does not block the navigation itself, leaving the browser process as the sole enforcer.
+    // See crbug.com/541264468.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add(ContentSwitches.DISABLE_WEB_SECURITY)
+    public void testIframeCannotNavigateToAssetUrlWithDataBaseUrl() throws Throwable {
+        final String html = getIframeTestPageHtml(ASSET_URL);
+        loadDataWithBaseUrlSync(html, "text/html", false, "data:", null);
+        Assert.assertEquals(ABOUT_BLANK_BLOCKED_URL, getIframeLastCommittedUrl());
+    }
+
+    // Navigating the top frame to an asset URL is blocked with a data: base URL; the browser
+    // process rewrites the blocked target URL to about:blank#blocked. Web security is disabled so
+    // that Blink does not block the navigation itself, leaving the browser process as the sole
+    // enforcer. See crbug.com/541264468.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add(ContentSwitches.DISABLE_WEB_SECURITY)
+    public void testTopFrameCannotNavigateToAssetUrlWithDataBaseUrl() throws Throwable {
+        loadDataWithBaseUrlSync(CommonResources.ABOUT_HTML, "text/html", false, "data:", null);
+        navigateTopFrameFromJsSync(ASSET_URL);
+        Assert.assertEquals(ABOUT_BLANK_BLOCKED_URL, getTopFrameLastCommittedUrl());
+    }
+
+    // Same as above, but from a regular https origin rather than loadDataWithBaseURL. This is the
+    // scenario from crbug.com/541264468.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add(ContentSwitches.DISABLE_WEB_SECURITY)
+    public void testIframeCannotNavigateToAssetUrlFromHttpsOrigin() throws Throwable {
+        TestWebServer webServer = TestWebServer.startSsl();
+        try {
+            final String pageUrl =
+                    webServer.setResponse(
+                            "/page.html",
+                            getIframeTestPageHtml(ASSET_URL),
+                            CommonResources.getTextHtmlHeaders(true));
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+            Assert.assertEquals(ABOUT_BLANK_BLOCKED_URL, getIframeLastCommittedUrl());
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
+    // Same as above, but navigating the top frame from a regular https origin.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add(ContentSwitches.DISABLE_WEB_SECURITY)
+    public void testTopFrameCannotNavigateToAssetUrlFromHttpsOrigin() throws Throwable {
+        TestWebServer webServer = TestWebServer.startSsl();
+        try {
+            final String pageUrl =
+                    webServer.setResponse(
+                            "/page.html",
+                            CommonResources.ABOUT_HTML,
+                            CommonResources.getTextHtmlHeaders(true));
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+            navigateTopFrameFromJsSync(ASSET_URL);
+            Assert.assertEquals(ABOUT_BLANK_BLOCKED_URL, getTopFrameLastCommittedUrl());
+        } finally {
+            webServer.shutdown();
+        }
+    }
+
     /**
      * @return true if |fileUrl| was accessible from a data url with |baseUrl| as it's
      * base URL.
@@ -616,8 +749,10 @@ public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
         AwSettings contentSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
         contentSettings.setJavaScriptEnabled(true);
 
-        String contentHistogramName = "Android.WebView.LoadDataWithBaseUrl.ContentAccessDestination";
-        // RequestDestination.DOCUMENT is 3 (defined in services/network/public/mojom/fetch_api.mojom)
+        String contentHistogramName =
+                "Android.WebView.LoadDataWithBaseUrl.ContentAccessDestination";
+        // RequestDestination.DOCUMENT is 3.
+        // Defined in services/network/public/mojom/fetch_api.mojom.
         int destinationDocument = 3;
         String nonDataBaseUrl = "http://example.com";
         String targetContentUrl = TestContentProvider.createContentUrl("target");
