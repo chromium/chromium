@@ -1454,10 +1454,6 @@ if (use_blink) {
     if (!is_fuchsia) {
       deps += [ "//components/persistent_cache:perf_tests" ]
     }
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
