@@ -604,9 +604,7 @@ void DlpContentManager::OnActiveWebContentsChanged(
     content::WebContents* old_contents,
     content::WebContents* new_contents,
     bool selection_only) {
-  // Checking only after selecting the possible moved tab as in this case it
-  // already was added to the new window.
-  if (selection_only) {
+  if (new_contents) {
     TabLocationMaybeChanged(new_contents);
   }
 }

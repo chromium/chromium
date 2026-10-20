@@ -1908,7 +1908,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   helper_->ChangeConfidentiality(web_contents2, screen_share_restricted_);
 
   // Resize both contents to be visible so that visibility state won't change.
-  browser1->GetWindow()->SetBounds(gfx::Rect(0, 00, 500, 500));
+  browser1->GetWindow()->SetBounds(gfx::Rect(0, 0, 500, 500));
   browser2->GetWindow()->SetBounds(gfx::Rect(150, 150, 500, 500));
 
   EXPECT_CALL(state_change_cb_,
@@ -1928,6 +1928,65 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   browser1->tab_strip_model()->InsertDetachedTabAt(0, std::move(detached_tab),
                                                    AddTabTypes::ADD_NONE);
   browser1->tab_strip_model()->ActivateTabAt(0);
+
+  // Cleanup and check reporting.
+  browser2->GetWindow()->Close();
+  histogram_tester_.ExpectUniqueSample(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenSharePausedOrResumedUMA,
+      true, 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              web_contents2->GetLastCommittedURL().spec(),
+              DlpRulesManager::Level::kBlock, 1u);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
+                       ScreenSharePausedWhenConfidentialTabMovedAndActivated) {
+  SetupReporting();
+  DlpContentManagerAsh* manager =
+      static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
+
+  // Open first browser window.
+  BrowserWindowInterface* browser1 = browser();
+  chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL(kExampleUrl)));
+  aura::Window* browser1_window = browser()->GetWindow()->GetNativeWindow();
+
+  // Open second browser window.
+  BrowserWindowInterface* browser2 =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+          browser()->GetProfile(), /*from_user_gesture=*/true));
+  chrome::NewTab(browser2, NewTabTypes::kNoUserAction);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL(kGoogleUrl)));
+  content::WebContents* web_contents2 =
+      browser2->tab_strip_model()->GetActiveWebContents();
+
+  // Make second window content as confidential.
+  helper_->ChangeConfidentiality(web_contents2, screen_share_restricted_);
+
+  // Resize both contents to be visible so that visibility state won't change.
+  browser1->GetWindow()->SetBounds(gfx::Rect(0, 0, 500, 500));
+  browser2->GetWindow()->SetBounds(gfx::Rect(150, 150, 500, 500));
+
+  EXPECT_CALL(state_change_cb_,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
+      .Times(1);
+
+  // Start screen share of the first window.
+  const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_WINDOW, browser1_window);
+  manager->OnScreenShareStarted(kLabel, {media_id}, application_title_,
+                                stop_cb_.Get(), state_change_cb_.Get(),
+                                /*source_callback=*/base::DoNothing());
+
+  // Move restricted tab from second window to shared first window and activate
+  // it during insertion.
+  const int tab_index =
+      browser2->tab_strip_model()->GetIndexOfWebContents(web_contents2);
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser2->tab_strip_model()->DetachTabAtForInsertion(tab_index);
+  browser1->tab_strip_model()->InsertDetachedTabAt(0, std::move(detached_tab),
+                                                   AddTabTypes::ADD_ACTIVE);
 
   // Cleanup and check reporting.
   browser2->GetWindow()->Close();
