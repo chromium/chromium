@@ -601,6 +601,15 @@ void ResponseBodyLoader::Resume() {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ResponseBodyLoader::DidCancelLoadingBody,
                                   WrapPersistent(this)));
+  } else if (delegating_bytes_consumer_) {
+    // While suspended, the drained consumer may have swallowed a readable
+    // notification without reading (and thus without re-arming the underlying
+    // consumer's watcher). Re-notify it so it reads the buffered data.
+    // https://crbug.com/571671613
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DelegatingBytesConsumer::OnStateChange,
+                       WrapPersistent(delegating_bytes_consumer_.Get())));
   } else {
     task_runner_->PostTask(FROM_HERE,
                            base::BindOnce(&ResponseBodyLoader::OnStateChange,

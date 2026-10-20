@@ -1482,6 +1482,47 @@ TEST_F(ResponseBodyLoaderTest,
   EXPECT_EQ(Result::kError, consumer.BeginRead(buffer));
 }
 
+// Regression test for https://issues.chromium.org/issues/571671613:
+// a readable notification delivered while the loader is suspended (page freeze,
+// LoaderFreezeMode::kStrict) is swallowed by the drained
+// DelegatingBytesConsumer. Resume() must re-notify it, otherwise the body
+// stream stalls forever.
+TEST_F(ResponseBodyLoaderTest,
+       DrainedBytesConsumerIsNotifiedOnResumeAfterNotificationWhileSuspended) {
+  auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  auto* original_consumer =
+      MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
+  original_consumer->Add(Command(Command::kWait));
+  original_consumer->Add(Command(Command::kData, "hello"));
+  original_consumer->Add(Command(Command::kDone));
+
+  auto* client = MakeGarbageCollected<TestClient>();
+  auto* body_loader =
+      MakeResponseBodyLoader(*original_consumer, *client, task_runner);
+  BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
+  auto* reading_client = MakeGarbageCollected<ReadingClient>(consumer, *client);
+  consumer.SetClient(reading_client);
+
+  // Nothing to read yet; the underlying consumer schedules a readable
+  // notification.
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kShouldWait, consumer.BeginRead(buffer));
+
+  // The page freezes before the notification is delivered.
+  body_loader->Suspend(LoaderFreezeMode::kStrict);
+  task_runner->RunUntilIdle();
+  EXPECT_FALSE(reading_client->IsOnStateChangeCalled());
+
+  body_loader->Resume();
+  task_runner->RunUntilIdle();
+
+  EXPECT_TRUE(reading_client->IsOnStateChangeCalled());
+  EXPECT_EQ("hello", client->GetData());
+  EXPECT_TRUE(client->LoadingIsFinished());
+  EXPECT_FALSE(client->LoadingIsFailed());
+  EXPECT_FALSE(client->LoadingIsCancelled());
+}
+
 }  // namespace
 
 }  // namespace blink
