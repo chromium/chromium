@@ -98,15 +98,12 @@ class SignInObserver : public signin::IdentityManager::Observer {
 
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override {
-    // Note that `kSignin` is used here regardless of the ConsentLevel passed to
-    // `SignInWithUI()`, because ConsentLevel::kSync requires closing the sync
-    // confirmation dialog.
     if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
         signin::PrimaryAccountChangeEvent::Type::kSet) {
       return;
     }
 
-    DVLOG(1) << "Sign in finished: Sync primary account was set.";
+    DVLOG(1) << "Sign in finished: Primary account was set.";
     signed_in_ = true;
     QuitLoopRunner();
   }
@@ -491,8 +488,7 @@ void ExecuteJsToSigninInSigninFrame(content::WebContents* web_contents,
 
 bool SignInWithUI(BrowserWindowInterface* browser,
                   const std::string& username,
-                  const std::string& password,
-                  signin::ConsentLevel consent_level) {
+                  const std::string& password) {
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
@@ -503,31 +499,16 @@ bool SignInWithUI(BrowserWindowInterface* browser,
   scoped_signin_observation.Observe(
       IdentityManagerFactory::GetForProfile(browser->GetProfile()));
 
-  const signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::kProfileMenuPrimaryButton;
-
-  switch (consent_level) {
-    case signin::ConsentLevel::kSignin:
-      SigninViewController::From(browser)->ShowDiceAddAccountTab(
-          access_point,
-          /*email_hint=*/std::string());
-      break;
-    case signin::ConsentLevel::kSync:
-      SigninViewController::From(browser)->ShowDiceEnableSyncTab(
-          access_point,
-          signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-          /*email_hint=*/std::string());
-      break;
-  }
+  // Use an access point that does not automatically show a modal dialog after
+  // signing in.
+  SigninViewController::From(browser)->ShowDiceAddAccountTab(
+      signin_metrics::AccessPoint::kBookmarkBubble,
+      /*email_hint=*/std::string());
   content::WebContents* active_contents =
       browser->GetActiveTabInterface()->GetContents();
   DCHECK(active_contents);
   content::TestNavigationObserver observer(
       active_contents, 1, content::MessageLoopRunner::QuitMode::DEFERRED);
-  // Note that SignInObserver always uses `ConsentLevel::kSignin` regardless of
-  // the consent level passed to this function. This is because granting
-  // `ConsentLevel::kSync` requires closing the sync confirmation dialog, e.g.
-  // by invoking `ConfirmSyncConfirmationDialog()`.
   observer.Wait();
   DVLOG(1) << "Sign in user: " << username;
   ExecuteJsToSigninInSigninFrame(active_contents, username, password);

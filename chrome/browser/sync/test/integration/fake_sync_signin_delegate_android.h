@@ -19,7 +19,6 @@ class FakeSyncSigninDelegateAndroid : public SyncSigninDelegate {
   // SyncSigninDelegate:
   bool SignIn(SyncTestAccount account,
               signin::ConsentLevel consent_level) override;
-  bool ConfirmSync() override;
   void SignOut() override;
   GaiaId GetGaiaIdForAccount(SyncTestAccount account) override;
   std::string GetEmailForAccount(SyncTestAccount account) override;

@@ -11,10 +11,12 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "google_apis/gaia/core_account_id.h"
 
 namespace {
 
@@ -44,42 +46,45 @@ bool LiveSyncSigninDelegateDesktop::SignIn(SyncTestAccount account,
     return false;
   }
 
-  // Switch to `profile_` to ensure a browser exists.
-  profiles::testing::SwitchToProfileSync(profile_->GetPath(),
-                                         /*always_create=*/true);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_.get());
+  CHECK(identity_manager);
 
-  BrowserWindowInterface* browser =
-      ProfileBrowserCollection::GetForProfile(profile_.get())
-          ->GetLastActiveBrowser();
-  if (!browser) {
-    LOG(ERROR) << "Failed to open browser to sign in.";
-    return false;
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // Switch to `profile_` to ensure a browser exists.
+    profiles::testing::SwitchToProfileSync(profile_->GetPath(),
+                                           /*always_create=*/true);
+
+    BrowserWindowInterface* browser =
+        ProfileBrowserCollection::GetForProfile(profile_.get())
+            ->GetLastActiveBrowser();
+    if (!browser) {
+      LOG(ERROR) << "Failed to open browser to sign in.";
+      return false;
+    }
+
+    if (!login_ui_test_utils::SignInWithUI(browser, username, password)) {
+      LOG(ERROR) << "Could not sign in to GAIA servers.";
+      return false;
+    }
   }
 
-  if (!login_ui_test_utils::SignInWithUI(
-          browser, username, password,
-                                         consent_level)) {
-    LOG(ERROR) << "Could not sign in to GAIA servers.";
-    return false;
+  if (consent_level == signin::ConsentLevel::kSync &&
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    const CoreAccountId primary_account_id =
+        identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+    const signin::PrimaryAccountMutator::PrimaryAccountError error =
+        identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+            primary_account_id, signin::ConsentLevel::kSync,
+            signin_metrics::AccessPoint::kSetSyncConsentFromSyncInternals);
+    if (error != signin::PrimaryAccountMutator::PrimaryAccountError::kNoError) {
+      LOG(ERROR) << "Failed to grant Sync consent: " << static_cast<int>(error);
+      return false;
+    }
   }
-  return true;
-}
 
-bool LiveSyncSigninDelegateDesktop::ConfirmSync() {
-  BrowserWindowInterface* confirm_browser =
-      ProfileBrowserCollection::GetForProfile(profile_.get())
-          ->GetLastActiveBrowser();
-  if (!login_ui_test_utils::ConfirmSyncConfirmationDialog(confirm_browser)) {
-    LOG(ERROR) << "Failed to dismiss sync confirmation dialog.";
-    return false;
-  }
-  // OneClickSigninSyncStarter observer is created with a real user sign in.
-  // It is deleted on certain conditions which are not satisfied by our tests,
-  // and this causes the SigninTracker observer to stay hanging at shutdown.
-  // Calling LoginUIService::SyncConfirmationUIClosed forces the observer to
-  // be removed. http://crbug.com/40416788
-  LoginUIServiceFactory::GetForProfile(profile_.get())
-      ->SyncConfirmationUIClosed(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+  CHECK(identity_manager->HasPrimaryAccount(consent_level));
+  CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(consent_level));
   return true;
 }
 

@@ -37,12 +37,6 @@ bool LiveSyncSigninDelegateAndroid::SignIn(SyncTestAccount account,
   return true;
 }
 
-bool LiveSyncSigninDelegateAndroid::ConfirmSync() {
-  // Nothing to do: SetUpLiveAccountAndSignInForTesting(kSync) requires no
-  // further interactions with the UI.
-  return true;
-}
-
 void LiveSyncSigninDelegateAndroid::SignOut() {
   sync_test_utils_android::SignOutForTesting();
 }

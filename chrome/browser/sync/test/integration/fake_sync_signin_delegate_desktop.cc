@@ -101,12 +101,6 @@ bool FakeSyncSigninDelegateDesktop::SignIn(SyncTestAccount account,
   return true;
 }
 
-bool FakeSyncSigninDelegateDesktop::ConfirmSync() {
-  // Nothing to do: the fake sign-in used by this delegate doesn't require any
-  // further steps beyond what SyncServiceImplHarness already does.
-  return true;
-}
-
 void FakeSyncSigninDelegateDesktop::SignOut() {
   signin::ClearPrimaryAccount(
       IdentityManagerFactory::GetForProfile(profile_.get()));

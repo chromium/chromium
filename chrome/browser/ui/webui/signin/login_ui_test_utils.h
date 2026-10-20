@@ -9,7 +9,6 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
-#include "components/signin/public/base/consent_level.h"
 
 class BrowserWindowInterface;
 
@@ -38,12 +37,12 @@ void SigninInOldGaiaFlow(content::WebContents* web_contents,
                          const std::string& email,
                          const std::string& password);
 
-// A function to sign in a user using Chrome sign-in UI interface.
-// This will block until a signin succeeded or failed notification is observed.
+// Signs in a user at `ConsentLevel::kSignin` using Chrome sign-in UI
+// interface. This will block until a signin succeeded or failed notification
+// is observed.
 bool SignInWithUI(BrowserWindowInterface* browser,
                   const std::string& email,
-                  const std::string& password,
-                  signin::ConsentLevel consent_level);
+                  const std::string& password);
 
 // Waits for sync confirmation dialog to get displayed, then executes javascript
 // to click on confirm button. Returns false if dialog wasn't dismissed before

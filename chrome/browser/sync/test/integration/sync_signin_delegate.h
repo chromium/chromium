@@ -23,9 +23,6 @@ class SyncSigninDelegate {
   [[nodiscard]] virtual bool SignIn(SyncTestAccount account,
                                     signin::ConsentLevel consent_level) = 0;
 
-  // Confirms the Sync opt-in previously triggered via SignIn(kSync).
-  [[nodiscard]] virtual bool ConfirmSync() = 0;
-
   // Signs out and clears the primary account.
   virtual void SignOut() = 0;
 
