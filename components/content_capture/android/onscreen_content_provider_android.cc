@@ -278,15 +278,16 @@ ScopedJavaLocalRef<jobject> OnscreenContentProviderAndroid::GetJavaObject() {
 void OnscreenContentProviderAndroid::OnWebContentsChanged(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents) {
-  if (auto* web_contents =
-          content::WebContents::FromJavaWebContents(jweb_contents)) {
-    AttachToWebContents(web_contents);
-  }
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  AttachToWebContents(web_contents);
 }
 
 void OnscreenContentProviderAndroid::AttachToWebContents(
     content::WebContents* web_contents) {
   DetachFromWebContents();
+  if (!web_contents)
+    return;
   OnscreenContentProvider* provider =
       OnscreenContentProvider::FromWebContents(web_contents);
   if (!provider)
