@@ -175,7 +175,7 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
 void PolicyUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "listenPoliciesUpdates",
-      base::BindRepeating(&PolicyUIHandler::HandleListenPoliciesUpdates,
+      base::BindRepeating(&PolicyUIHandler::SendInitialState,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "reloadPolicies",
@@ -470,8 +470,26 @@ base::DictValue PolicyUIHandler::GetPolicyNames() const {
 
 base::flat_map<std::string, policy::mojom::PolicyGroupNamesPtr>
 PolicyUIHandler::GetPolicyNamesMojo() const {
-  // TODO(crbug.com/40897784): Implement.
-  return {};
+  scoped_refptr<policy::SchemaMap> schema_map =
+      profile_->GetPolicyConnector()->GetSchemaRegistry()->schema_map();
+  std::vector<std::string> chrome_policy_names;
+  const policy::Schema* chrome_schema = schema_map->GetSchema(
+      policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, ""));
+  for (auto it = chrome_schema->GetPropertiesIterator(); !it.IsAtEnd();
+       it.Advance()) {
+    chrome_policy_names.emplace_back(it.key());
+  }
+  base::flat_map<std::string, policy::mojom::PolicyGroupNamesPtr> names;
+  names.emplace(policy::kChromePoliciesId, policy::mojom::PolicyGroupNames::New(
+                                               policy::kChromePoliciesName,
+                                               std::move(chrome_policy_names)));
+  names.emplace(
+      policy::kPrecedencePoliciesId,
+      policy::mojom::PolicyGroupNames::New(
+          policy::kPrecedencePoliciesName,
+          std::vector<std::string>(std::begin(policy::metapolicy::kPrecedence),
+                                   std::end(policy::metapolicy::kPrecedence))));
+  return names;
 }
 
 base::DictValue PolicyUIHandler::GetPolicyValues() const {
@@ -493,11 +511,16 @@ base::DictValue PolicyUIHandler::GetPolicyValues() const {
 
 policy::mojom::PolicyGroupsResponsePtr PolicyUIHandler::GetPolicyValuesMojo()
     const {
-  // TODO(crbug.com/40897784): Implement.
-  return policy::mojom::PolicyGroupsResponse::New();
+  return policy::mojom::PolicyGroupsResponse::New(
+      std::vector<std::string>{policy::kChromePoliciesId,
+                               policy::kPrecedencePoliciesId},
+      policy::PolicyConversions(
+          std::make_unique<PolicyConversionsClientIOS>(&profile_.get()))
+          .UseChromePolicyConversions()
+          .ToMojoPolicyGroups());
 }
 
-void PolicyUIHandler::HandleListenPoliciesUpdates(const base::ListValue& args) {
+void PolicyUIHandler::SendInitialState(const base::ListValue& args) {
   OnRefreshPoliciesDone();
 }
 

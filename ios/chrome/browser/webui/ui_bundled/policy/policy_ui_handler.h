@@ -90,6 +90,9 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   void GetPoliciesJson(policy::mojom::GetPoliciesReason reason,
                        GetPoliciesJsonCallback callback) override;
 
+  // Called to send the initial state of the page to the UI.
+  void SendInitialState(const base::ListValue& args = base::ListValue());
+
  private:
   // UserCloudPolicyStatusProvider::Delegate.
   base::flat_set<std::string> GetDeviceAffiliationIds() override;
@@ -108,9 +111,6 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // TODO(crbug.com/40897784): Delete the non-mojo version once the migration is
   // complete.
   policy::mojom::PolicyGroupsResponsePtr GetPolicyValuesMojo() const;
-
-  // Called to handle the "listenPoliciesUpdates" WebUI message.
-  void HandleListenPoliciesUpdates(const base::ListValue& args);
 
   // Called to handle the "getPoliciesJson" WebUI message.
   void HandleGetPoliciesJson(const base::ListValue& args);

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
@@ -20,6 +21,7 @@
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_map.h"
 #include "components/policy/core/common/schema_registry.h"
+#include "components/policy/resources/webui/mojom/policy.mojom.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "components/policy/policy_constants.h"
@@ -86,6 +88,47 @@ base::DictValue ChromePoliciesValueProvider::GetNames() {
   return names;
 }
 
+policy::PolicyGroupMojoMap ChromePoliciesValueProvider::GetValuesMojo() const {
+  return policy::PolicyConversions(
+             std::make_unique<policy::ChromePolicyConversionsClient>(profile_))
+      .UseChromePolicyConversions()
+      .ToMojoPolicyGroups();
+}
+
+policy::PolicyGroupNamesMojoMap ChromePoliciesValueProvider::GetNamesMojo()
+    const {
+  policy::PolicyGroupNamesMojoMap names;
+
+  policy::SchemaRegistry* registry = profile_->GetOriginalProfile()
+                                         ->GetPolicySchemaRegistryService()
+                                         ->registry();
+  scoped_refptr<policy::SchemaMap> schema_map = registry->schema_map();
+
+  // Add Chrome policy names.
+  std::vector<std::string> chrome_policy_names;
+  policy::PolicyNamespace chrome_ns(policy::POLICY_DOMAIN_CHROME, "");
+  const policy::Schema* chrome_schema = schema_map->GetSchema(chrome_ns);
+  for (auto it = chrome_schema->GetPropertiesIterator(); !it.IsAtEnd();
+       it.Advance()) {
+    chrome_policy_names.emplace_back(it.key());
+  }
+  names.emplace(policy::kChromePoliciesId, policy::mojom::PolicyGroupNames::New(
+                                               policy::kChromePoliciesName,
+                                               std::move(chrome_policy_names)));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Add precedence policy names.
+  std::vector<std::string> precedence_policy_names(
+      std::begin(policy::metapolicy::kPrecedence),
+      std::end(policy::metapolicy::kPrecedence));
+  names.emplace(
+      policy::kPrecedencePoliciesId,
+      policy::mojom::PolicyGroupNames::New(policy::kPrecedencePoliciesName,
+                                           std::move(precedence_policy_names)));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+  return names;
+}
+
 void ChromePoliciesValueProvider::Refresh() {
   GetPolicyService(profile_)->RefreshPolicies(
       base::BindOnce(&ChromePoliciesValueProvider::OnRefreshPoliciesDone,
@@ -106,6 +149,7 @@ void ChromePoliciesValueProvider::OnPolicyUpdated(
 
 void ChromePoliciesValueProvider::OnSchemaRegistryUpdated(
     bool has_new_schemas) {
-  if (has_new_schemas)
+  if (has_new_schemas) {
     NotifyValueChange();
+  }
 }

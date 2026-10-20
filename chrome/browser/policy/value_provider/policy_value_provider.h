@@ -15,6 +15,11 @@
 
 namespace policy {
 
+using PolicyGroupMojoMap =
+    base::flat_map<std::string, policy::mojom::PolicyGroupPtr>;
+using PolicyGroupNamesMojoMap =
+    base::flat_map<std::string, policy::mojom::PolicyGroupNamesPtr>;
+
 // An interface for querying a policy provider about policy names and values and
 // refreshing them.
 class PolicyValueProvider {
@@ -33,15 +38,13 @@ class PolicyValueProvider {
   virtual base::DictValue GetValues() = 0;
   // TODO(crbug.com/40897784): Remove the non-mojo version once the migration is
   // complete and make the mojo definition pure.
-  virtual base::flat_map<std::string, policy::mojom::PolicyGroupPtr>
-  GetValuesMojo() const;
+  virtual PolicyGroupMojoMap GetValuesMojo() const;
 
   // Returns the dictionary containing the policy names.
   virtual base::DictValue GetNames() = 0;
   // TODO(crbug.com/40897784): Remove the non-mojo version once the migration is
   // complete and make the mojo definition pure.
-  virtual base::flat_map<std::string, policy::mojom::PolicyGroupNamesPtr>
-  GetNamesMojo() const;
+  virtual PolicyGroupNamesMojoMap GetNamesMojo() const;
 
   // Refreshes the policy values and notifies the observers.
   virtual void Refresh();

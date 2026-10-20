@@ -319,6 +319,7 @@ void PolicyUI::CreateHandler(
   handler_ =
       std::make_unique<PolicyUIHandler>(std::move(handler), std::move(client),
                                         ProfileIOS::FromWebUIIOS(web_ui()));
+  handler_->SendInitialState();
 }
 
 PolicyUI::~PolicyUI() {

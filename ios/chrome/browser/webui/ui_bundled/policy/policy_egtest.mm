@@ -567,12 +567,6 @@ id<GREYMatcher> DownloadButton() {
   return config;
 }
 
-- (void)testPolicyPageManagedWithCBCM {
-  // TODO(crbug.com/40897784): Enable for both versions of the test, once the
-  // required logic is implemented.
-  [super testPolicyPageManagedWithCBCM];
-}
-
 MULTIPLEX_TESTS
 
 @end
@@ -586,11 +580,6 @@ MULTIPLEX_TESTS
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(policy::features::kPolicyPageMojoMigration);
   return config;
-}
-
-- (void)testPolicyPageManagedWithCBCM {
-  // TODO(crbug.com/40897784): Re-enable once the required logic is implemented.
-  EARL_GREY_TEST_DISABLED(@"Disabled for Mojo migration");
 }
 
 MULTIPLEX_TESTS

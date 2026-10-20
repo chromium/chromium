@@ -84,8 +84,8 @@ class POLICY_EXPORT PolicyConversions {
     virtual base::DictValue ToValueDict() = 0;
 
     // Returns the policy data as mojo structs keyed by policy group id.
-    // TODO(crbug.com/40897784): Only supported by `ChromePolicyConversions`
-    // for now. Make this pure virtual once all delegates support it.
+    // Only `ChromePolicyConversions` supports this; the default delegate is
+    // used exclusively for JSON/log output and intentionally NOTREACHED()s.
     virtual base::flat_map<std::string, mojom::PolicyGroupPtr>
     ToMojoPolicyGroups();
 

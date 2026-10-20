@@ -94,8 +94,9 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void GetPoliciesJson(policy::mojom::GetPoliciesReason reason,
                        GetPoliciesJsonCallback callback) override;
 
+  void SendInitialState(const base::ListValue& args = base::ListValue());
+
  private:
-  void HandleListenPoliciesUpdates(const base::ListValue& args);
   void HandleReloadPolicies(const base::ListValue& args);
   void HandleSetLocalTestPolicies(const base::ListValue& args);
   void HandleRevertLocalTestPolicies(const base::ListValue& args);

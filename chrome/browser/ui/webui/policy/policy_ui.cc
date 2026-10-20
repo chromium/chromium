@@ -331,6 +331,7 @@ void PolicyUI::CreateHandler(
     mojo::PendingRemote<policy::mojom::PolicyPageClient> client) {
   page_handler_ = std::make_unique<PolicyUIHandler>(
       std::move(handler), std::move(client), Profile::FromWebUI(web_ui()));
+  page_handler_->SendInitialState();
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PolicyUI)

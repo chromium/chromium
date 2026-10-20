@@ -376,6 +376,19 @@ class PolicyUITest : public base::test::WithFeatureOverride,
   PolicyUITest()
       : base::test::WithFeatureOverride(
             policy::features::kPolicyPageMojoMigration) {}
+
+  // Returns true if the test should be skipped because it relies on
+  // `VerifyPolicies()`, which expects the Google Update policy rows on Windows
+  // and macOS.
+  // TODO(crbug.com/40897784): Remove once `UpdaterStatusAndValueProvider`
+  // implements `GetValuesMojo()`/`GetNamesMojo()`.
+  bool ShouldSkipVerifyPoliciesUnderMojo() const {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    return IsParamFeatureEnabled();
+#else
+    return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  }
 };
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PolicyUITest);
@@ -621,6 +634,10 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest, LogsPageRedirectsOnChromeOS) {
 }
 
 IN_PROC_BROWSER_TEST_P(PolicyUITest, SendPolicyNames) {
+  if (ShouldSkipVerifyPoliciesUnderMojo()) {
+    GTEST_SKIP() << "Google Update policies are not supported over mojo yet.";
+  }
+
   // Verifies that the names of known policies are sent to the UI and processed
   // there correctly by checking that the policy table contains all policies in
   // the correct order.
@@ -651,6 +668,10 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest, SendPolicyNames) {
 }
 
 IN_PROC_BROWSER_TEST_P(PolicyUITest, SendPolicyValues) {
+  if (ShouldSkipVerifyPoliciesUnderMojo()) {
+    GTEST_SKIP() << "Google Update policies are not supported over mojo yet.";
+  }
+
   // Verifies that policy values are sent to the UI and processed there
   // correctly by setting the values of four known and one unknown policy and
   // checking that the policy table contains the policy names, values and
@@ -1071,6 +1092,15 @@ class ExtensionPolicyUITest
 #endif
 IN_PROC_BROWSER_TEST_P(ExtensionPolicyUITest,
                        MAYBE_ExtensionLoadAndSendPolicy) {
+  // TODO(b/40897784): Re-enable once mojo migration is supports extension
+  // policies.
+  if (base::FeatureList::IsEnabled(
+          policy::features::kPolicyPageMojoMigration)) {
+    GTEST_SKIP()
+        << "Extension policy tests are not yet supported with the mojo "
+           "migration enabled.";
+  }
+
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir_;
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
