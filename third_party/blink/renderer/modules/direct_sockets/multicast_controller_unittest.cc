@@ -684,6 +684,25 @@ TEST_F(MulticastControllerSsmTest, ZeroAddressAsSourceFails) {
   EXPECT_TRUE(exception_state.HadException());
 }
 
+TEST_F(MulticastControllerSsmTest, LoopbackAddressAsSourceFails) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedMulticastCreator creator(MakeGarbageCollected<MulticastCreator>(scope));
+  MulticastController* multicast_controller = creator->Create(scope);
+
+  DummyExceptionStateForTesting ipv4_exception_state;
+  multicast_controller->joinGroup(scope.GetScriptState(), kIPv4MulticastAddress,
+                                  MakeSourceOptions("127.0.0.1"),
+                                  ipv4_exception_state);
+  EXPECT_TRUE(ipv4_exception_state.HadException());
+
+  DummyExceptionStateForTesting ipv6_exception_state;
+  multicast_controller->joinGroup(scope.GetScriptState(), kIPv6MulticastAddress,
+                                  MakeSourceOptions("::1"),
+                                  ipv6_exception_state);
+  EXPECT_TRUE(ipv6_exception_state.HadException());
+}
+
 TEST_F(MulticastControllerSsmTest, CannotLeaveAsmGroupWithSourceAddress) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;

@@ -86,6 +86,12 @@ std::optional<net::IPAddress> ParseAndValidateUnicastAddress(
     return std::nullopt;
   }
 
+  if (parsed_ip->IsLoopback()) {
+    exception_state.ThrowTypeError(
+        StrCat({param_name, " must not be a loopback address"}));
+    return std::nullopt;
+  }
+
   return parsed_ip;
 }
 
