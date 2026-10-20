@@ -4515,6 +4515,7 @@
     {
       // Support Nastaliq script. crbug.com/569667449
       name: "NastaliqScript",
+      status: "stable",
     },
     {
       name: "NavigateEventDeferCrossDocumentCommit",
