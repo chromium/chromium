@@ -7972,18 +7972,6 @@ inline constexpr char kFilesTrashDriveName[] = "Enable Files Trash for Drive.";
 inline constexpr char kFilesTrashDriveDescription[] =
     "Enable trash for Drive volume in Files App.";
 
-inline constexpr char kFileSystemProviderCloudFileSystemName[] =
-    "Enable CloudFileSystem for FileSystemProvider extensions.";
-inline constexpr char kFileSystemProviderCloudFileSystemDescription[] =
-    "Enable the ability for individual FileSystemProvider extensions to "
-    "be serviced by a CloudFileSystem.";
-
-inline constexpr char kFileSystemProviderContentCacheName[] =
-    "Enable content caching for FileSystemProvider extensions.";
-inline constexpr char kFileSystemProviderContentCacheDescription[] =
-    "Enable the ability for individual FileSystemProvider extensions being "
-    "serviced by CloudFileSystem to leverage a content cache.";
-
 inline constexpr char kFixStaticIpForTwoManagedEthPortsName[] =
     "Fix static ip on managed device with two ethernet ports.";
 inline constexpr char kFixStaticIpForTwoManagedEthPortsDescription[] =

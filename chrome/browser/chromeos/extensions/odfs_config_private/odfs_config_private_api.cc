@@ -19,7 +19,6 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/extensions/api/odfs_config_private.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/constants.h"
 
@@ -97,7 +96,7 @@ ExtensionFunction::ResponseAction
 OdfsConfigPrivateIsCloudFileSystemEnabledFunction::Run() {
   return RespondNow(ArgumentList(
       api::odfs_config_private::IsCloudFileSystemEnabled::Results::Create(
-          chromeos::features::IsFileSystemProviderCloudFileSystemEnabled())));
+          /*is_cloud_file_system_enabled=*/false)));
 }
 
 OdfsConfigPrivateIsContentCacheEnabledFunction::
@@ -110,7 +109,7 @@ ExtensionFunction::ResponseAction
 OdfsConfigPrivateIsContentCacheEnabledFunction::Run() {
   return RespondNow(ArgumentList(
       api::odfs_config_private::IsContentCacheEnabled::Results::Create(
-          chromeos::features::IsFileSystemProviderContentCacheEnabled())));
+          /*is_content_cache_enabled=*/false)));
 }
 
 OdfsConfigPrivateOpenInOfficeAppFunction::

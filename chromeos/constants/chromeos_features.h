@@ -55,10 +55,6 @@ BASE_DECLARE_FEATURE(kQuickAnswersRichCard);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kQuickAnswersV2SettingsSubToggle);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-BASE_DECLARE_FEATURE(kFileSystemProviderCloudFileSystem);
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-BASE_DECLARE_FEATURE(kFileSystemProviderContentCache);
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kWebAppManifestProtocolHandlerSupport);
 
 // Keep alphabetized.
@@ -74,10 +70,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool ShouldDisableChromeComposeOnChromeOS();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsDataControlsFileAccessDefaultDenyEnabled();
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-bool IsFileSystemProviderCloudFileSystemEnabled();
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-bool IsFileSystemProviderContentCacheEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsGeminiAppPreinstallFeatureManagementEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsMahiEnabled();
