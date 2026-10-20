@@ -65,6 +65,8 @@ public class TtcSessionMediatorTest {
         mModel = new PropertyModel(TtcSessionProperties.ALL_KEYS);
         mProfileSupplier = ObservableSuppliers.createMonotonic();
         when(mService.isEnabled()).thenReturn(true);
+        // A session that becomes active starts out connecting, as the native one does.
+        when(mService.getSessionLifecycle()).thenReturn(SessionLifecycle.INITIALIZING);
         // Matches the real service, which owns one tracker that ends its session.
         TtcSessionWindowTracker windowTracker = new TtcSessionWindowTracker(mService::endSession);
         when(mService.getWindowTracker()).thenReturn(windowTracker);
@@ -92,17 +94,32 @@ public class TtcSessionMediatorTest {
      * has its own model and lifecycle, and its profile is supplied by {@code profileSupplier}.
      */
     private TtcSessionMediator createOtherWindowMediator(
-            SettableMonotonicObservableSupplier<Profile> profileSupplier) {
+            PropertyModel model, SettableMonotonicObservableSupplier<Profile> profileSupplier) {
         if (profileSupplier.get() == null) profileSupplier.set(mProfile);
         return new TtcSessionMediator(
-                new PropertyModel(TtcSessionProperties.ALL_KEYS),
-                mWindowAndroid,
-                profileSupplier,
-                mOtherLifecycleDispatcher);
+                model, mWindowAndroid, profileSupplier, mOtherLifecycleDispatcher);
+    }
+
+    private TtcSessionMediator createOtherWindowMediator(
+            SettableMonotonicObservableSupplier<Profile> profileSupplier) {
+        return createOtherWindowMediator(
+                new PropertyModel(TtcSessionProperties.ALL_KEYS), profileSupplier);
     }
 
     private TtcSessionMediator createOtherWindowMediator() {
         return createOtherWindowMediator(ObservableSuppliers.createMonotonic());
+    }
+
+    /**
+     * Simulates the native session moving to {@code lifecycle}: the service starts reporting it and
+     * notifies {@code mediators}, i.e. the windows observing it.
+     */
+    private void setSessionLifecycle(
+            @SessionLifecycle int lifecycle, TtcSessionMediator... mediators) {
+        when(mService.getSessionLifecycle()).thenReturn(lifecycle);
+        for (TtcSessionMediator mediator : mediators) {
+            mediator.onSessionLifecycleChanged(lifecycle);
+        }
     }
 
     /**
@@ -144,6 +161,18 @@ public class TtcSessionMediatorTest {
         assertTrue(mModel.get(TtcSessionProperties.VISIBLE));
         assertEquals(
                 R.string.ttc_session_connecting,
+                mModel.get(TtcSessionProperties.STATUS_TEXT_RES_ID));
+    }
+
+    @Test
+    public void testListeningWhenLiveSessionAlreadyActiveOnCreation() {
+        when(mService.isSessionActive()).thenReturn(true);
+        setSessionLifecycle(SessionLifecycle.LIVE);
+        createMediator();
+
+        assertTrue(mModel.get(TtcSessionProperties.VISIBLE));
+        assertEquals(
+                R.string.ttc_session_listening,
                 mModel.get(TtcSessionProperties.STATUS_TEXT_RES_ID));
     }
 
@@ -411,6 +440,47 @@ public class TtcSessionMediatorTest {
         verify(mService).endSession();
     }
 
+    @Test
+    public void testWindowOpenedAfterSessionLiveShowsListening() {
+        when(mService.isSessionActive()).thenReturn(true);
+        TtcSessionMediator mediator = createMediator();
+        setSessionLifecycle(SessionLifecycle.LIVE, mediator);
+
+        // A window opened once the session is live must not show "connecting".
+        PropertyModel otherModel = new PropertyModel(TtcSessionProperties.ALL_KEYS);
+        createOtherWindowMediator(otherModel, ObservableSuppliers.createMonotonic());
+
+        assertTrue(otherModel.get(TtcSessionProperties.VISIBLE));
+        assertEquals(
+                R.string.ttc_session_listening,
+                otherModel.get(TtcSessionProperties.STATUS_TEXT_RES_ID));
+        assertEquals(
+                R.string.ttc_session_listening,
+                mModel.get(TtcSessionProperties.STATUS_TEXT_RES_ID));
+    }
+
+    @Test
+    public void testWindowSwitchingToSessionProfileAfterLiveShowsListening() {
+        when(mService.isSessionActive()).thenReturn(true);
+        TtcSessionMediator mediator = createMediator();
+        PropertyModel otherModel = new PropertyModel(TtcSessionProperties.ALL_KEYS);
+        SettableMonotonicObservableSupplier<Profile> otherProfileSupplier =
+                ObservableSuppliers.createMonotonic();
+        createOtherWindowMediator(otherModel, otherProfileSupplier);
+        switchToIncognito(otherProfileSupplier);
+        assertFalse(otherModel.get(TtcSessionProperties.VISIBLE));
+
+        // The session goes live while the other window isn't observing it.
+        setSessionLifecycle(SessionLifecycle.LIVE, mediator);
+
+        when(mService.isEnabled()).thenReturn(true);
+        otherProfileSupplier.set(mProfile);
+        assertTrue(otherModel.get(TtcSessionProperties.VISIBLE));
+        assertEquals(
+                R.string.ttc_session_listening,
+                otherModel.get(TtcSessionProperties.STATUS_TEXT_RES_ID));
+    }
+
     // Model updates from the service.
 
     @Test
@@ -424,37 +494,52 @@ public class TtcSessionMediatorTest {
                 mModel.get(TtcSessionProperties.STATUS_TEXT_RES_ID));
         assertEquals(0f, mModel.get(TtcSessionProperties.AUDIO_LEVEL), 0f);
 
-        mediator.onSessionInitialized();
+        setSessionLifecycle(SessionLifecycle.LIVE, mediator);
         assertEquals(
                 R.string.ttc_session_listening,
                 mModel.get(TtcSessionProperties.STATUS_TEXT_RES_ID));
     }
 
     @Test
-    public void testInitializedBeforeActiveShowsListening() {
+    public void testFinishedKeepsStatusUntilSessionEnds() {
         TtcSessionMediator mediator = createMediator();
-
-        // ConversationImpl::Start() can report initialization before the service broadcasts
-        // SESSION_ACTIVE; the pill must not regress to "connecting" in that case.
-        mediator.onSessionInitialized();
         mediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
+        setSessionLifecycle(SessionLifecycle.LIVE, mediator);
 
+        // The session finishes a task before the service reports it inactive.
+        setSessionLifecycle(SessionLifecycle.FINISHED, mediator);
         assertTrue(mModel.get(TtcSessionProperties.VISIBLE));
         assertEquals(
                 R.string.ttc_session_listening,
                 mModel.get(TtcSessionProperties.STATUS_TEXT_RES_ID));
+
+        mediator.onServiceStateChanged(ServiceState.SESSION_INACTIVE);
+        assertFalse(mModel.get(TtcSessionProperties.VISIBLE));
+    }
+
+    @Test
+    public void testLifecycleChangeDoesNotReplaceError() {
+        TtcSessionMediator mediator = createMediator();
+        mediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
+
+        mediator.onError(/* errorCode= */ 0);
+        setSessionLifecycle(SessionLifecycle.LIVE, mediator);
+        assertEquals(
+                R.string.ttc_session_error, mModel.get(TtcSessionProperties.STATUS_TEXT_RES_ID));
     }
 
     @Test
     public void testSessionInactiveHidesAndResetsForNextSession() {
         TtcSessionMediator mediator = createMediator();
         mediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
-        mediator.onSessionInitialized();
+        setSessionLifecycle(SessionLifecycle.LIVE, mediator);
 
+        setSessionLifecycle(SessionLifecycle.FINISHED, mediator);
         mediator.onServiceStateChanged(ServiceState.SESSION_INACTIVE);
         assertFalse(mModel.get(TtcSessionProperties.VISIBLE));
 
         // A new session starts over at "connecting".
+        setSessionLifecycle(SessionLifecycle.INITIALIZING, mediator);
         mediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
         assertEquals(
                 R.string.ttc_session_connecting,
@@ -502,7 +587,7 @@ public class TtcSessionMediatorTest {
     public void testNonFatalErrorReturnsToSessionStatus() {
         when(mService.isSessionActive()).thenReturn(true);
         TtcSessionMediator mediator = createMediator();
-        mediator.onSessionInitialized();
+        setSessionLifecycle(SessionLifecycle.LIVE, mediator);
 
         mediator.onError(/* errorCode= */ 0);
         assertEquals(

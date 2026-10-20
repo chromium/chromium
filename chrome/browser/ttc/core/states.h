@@ -20,6 +20,7 @@ enum class ServiceState {
 };
 
 // The lifecycle state of a single TTC session.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.ttc
 enum class SessionLifecycle {
   // The session has been created but the backend isn't yet connected.
   kInitializing,

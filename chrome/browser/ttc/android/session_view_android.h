@@ -14,8 +14,9 @@ class SessionViewDelegate;
 class TtcKeyedServiceAndroid;
 
 // Android SessionView. The session UI itself lives in Java, so this forwards
-// every view event to the profile's TtcKeyedServiceAndroid bridge, which
-// relays it to the Java TtcKeyedService observers.
+// view events to the profile's TtcKeyedServiceAndroid bridge, which relays them
+// to the Java TtcKeyedService observers. Session initialization isn't
+// forwarded: the Java UI follows the session's SessionLifecycle instead.
 class SessionViewAndroid : public SessionView {
  public:
   explicit SessionViewAndroid(SessionViewDelegate& delegate);

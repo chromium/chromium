@@ -8,6 +8,8 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Handler;
 
+import androidx.annotation.StringRes;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -48,12 +50,6 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
     // The service for the current profile, or null when no session can run against it (the
     // feature is off, or the profile has no service / isn't enabled for it).
     private @Nullable TtcKeyedService mService;
-
-    // Whether onSessionInitialized() has fired for the current session. The native side can
-    // signal initialization before it broadcasts SESSION_ACTIVE (ConversationImpl::Start()
-    // calls OnSessionInitialized() synchronously), so this is tracked independently of the
-    // service state.
-    private boolean mSessionInitialized;
 
     // Whether the pill is showing an error and should stay visible until the hide task runs,
     // even if the session has already ended.
@@ -143,14 +139,9 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
         boolean active = state == ServiceState.SESSION_ACTIVE;
         if (active) {
             clearError();
-            mModel.set(
-                    TtcSessionProperties.STATUS_TEXT_RES_ID,
-                    mSessionInitialized
-                            ? R.string.ttc_session_listening
-                            : R.string.ttc_session_connecting);
+            mModel.set(TtcSessionProperties.STATUS_TEXT_RES_ID, getSessionStatusTextResId());
             mModel.set(TtcSessionProperties.AUDIO_LEVEL, 0f);
         } else {
-            mSessionInitialized = false;
             // Leave the error on screen; hideAfterError() hides the pill.
             if (mShowingError) return;
         }
@@ -158,10 +149,11 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
     }
 
     @Override
-    public void onSessionInitialized() {
-        mSessionInitialized = true;
-        if (mShowingError) return;
-        mModel.set(TtcSessionProperties.STATUS_TEXT_RES_ID, R.string.ttc_session_listening);
+    public void onSessionLifecycleChanged(@SessionLifecycle int lifecycle) {
+        // FINISHED is reported just before SESSION_INACTIVE hides the pill; keep the current text
+        // (or error) until then rather than flashing "connecting".
+        if (mShowingError || lifecycle == SessionLifecycle.FINISHED) return;
+        mModel.set(TtcSessionProperties.STATUS_TEXT_RES_ID, getStatusTextResId(lifecycle));
     }
 
     @Override
@@ -230,14 +222,26 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
         mShowingError = false;
         if (mService != null && mService.isSessionActive()) {
             // A non-fatal error: the session is still running, so go back to its status.
-            mModel.set(
-                    TtcSessionProperties.STATUS_TEXT_RES_ID,
-                    mSessionInitialized
-                            ? R.string.ttc_session_listening
-                            : R.string.ttc_session_connecting);
+            mModel.set(TtcSessionProperties.STATUS_TEXT_RES_ID, getSessionStatusTextResId());
             return;
         }
         mModel.set(TtcSessionProperties.VISIBLE, false);
+    }
+
+    /**
+     * Returns the status to show for the active session. Read from the native session rather than
+     * tracked per window, so that every window agrees, including one that started showing the
+     * session after it went live.
+     */
+    private @StringRes int getSessionStatusTextResId() {
+        return getStatusTextResId(
+                mService != null ? mService.getSessionLifecycle() : SessionLifecycle.FINISHED);
+    }
+
+    private static @StringRes int getStatusTextResId(@SessionLifecycle int lifecycle) {
+        return lifecycle == SessionLifecycle.LIVE
+                ? R.string.ttc_session_listening
+                : R.string.ttc_session_connecting;
     }
 
     private void clearError() {

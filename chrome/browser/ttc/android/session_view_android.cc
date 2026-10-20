@@ -23,7 +23,8 @@ void SessionViewAndroid::UpdateAudioLevel(float audio_level) {
 }
 
 void SessionViewAndroid::OnSessionInitialized() {
-  bridge_->OnSessionInitialized();
+  // The Java UI follows the session's SessionLifecycle instead, which only
+  // becomes kLive once the backend has connected.
 }
 
 void SessionViewAndroid::OnError(ErrorCode error) {
