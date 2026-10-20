@@ -3854,6 +3854,32 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveAcrossWindows) {
   EXPECT_EQ(tab_list2->GetTab(4)->GetContents(), web_contentses[4]);
 }
 
+// Tests that moving the only tab of the caller's window to WINDOW_ID_CURRENT
+// leaves it in that window.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveOnlyTabToCurrentWindow) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MoveOnlyTabToCurrentWindowTest").Build();
+  BrowserWindowInterface* window = browser_window_interface();
+  TabListInterface* tab_list = TabListInterface::From(window);
+  ASSERT_EQ(1, tab_list->GetTabCount());
+  content::WebContents* contents = tab_list->GetTab(0)->GetContents();
+
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+  function->set_extension(extension.get());
+  base::DictValue tab =
+      utils::ToDict(RunFunctionWithDispatcherDelegateAndReturnValue(
+          function,
+          base::StringPrintf(R"([%d, {"windowId": %d, "index": 0}])",
+                             ExtensionTabUtil::GetTabId(contents),
+                             api::windows::WINDOW_ID_CURRENT),
+          window));
+
+  EXPECT_EQ(ExtensionTabUtil::GetWindowId(window),
+            utils::GetInteger(tab, "windowId"));
+  EXPECT_EQ(0, utils::GetInteger(tab, "index"));
+  EXPECT_EQ(contents, tab_list->GetTab(0)->GetContents());
+}
+
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
                        TabsMoveAcrossWindowsShouldRespectGroupContiguity) {
   scoped_refptr<const Extension> extension =

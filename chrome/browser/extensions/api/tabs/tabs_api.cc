@@ -1826,7 +1826,18 @@ bool TabsMoveFunction::MoveTab(int tab_id,
        source_browser->GetType() == BrowserWindowInterface::TYPE_APP);
 #endif
 
-  if (window_id && *window_id != ExtensionTabUtil::GetWindowIdOfTab(contents)) {
+  WindowController* target_controller = nullptr;
+  if (window_id) {
+    target_controller = ExtensionTabUtil::GetControllerFromWindowID(
+        ChromeExtensionFunctionDetails(this), *window_id, error);
+    if (!target_controller) {
+      return false;
+    }
+  }
+
+  // WINDOW_ID_CURRENT can resolve to the tab's own window.
+  if (target_controller && target_controller->GetWindowId() !=
+                               ExtensionTabUtil::GetWindowIdOfTab(contents)) {
 #if BUILDFLAG(IS_ANDROID)
     if (is_source_window_cct_or_app_on_android &&
         contents != source_window->GetActiveTab()) {
@@ -1835,13 +1846,6 @@ bool TabsMoveFunction::MoveTab(int tab_id,
       return false;
     }
 #endif
-
-    WindowController* target_controller =
-        ExtensionTabUtil::GetControllerFromWindowID(
-            ChromeExtensionFunctionDetails(this), *window_id, error);
-    if (!target_controller) {
-      return false;
-    }
 
 #if BUILDFLAG(IS_ANDROID)
     if (is_source_window_cct_or_app_on_android &&
