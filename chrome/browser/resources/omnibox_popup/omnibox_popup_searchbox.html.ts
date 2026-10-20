@@ -15,7 +15,6 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
           exportparts="searchbox-input, mirror"
           url-emphasis-enabled
           ?dropdown-is-visible="${this.dropdownIsVisible}"
-          input-aria-live="${this.inputAriaLive}"
           ?multi-line-enabled="${this.multiLineEnabled}"
           placeholder-text=""
           searchbox-aria-description="${this.searchboxAriaDescription}"

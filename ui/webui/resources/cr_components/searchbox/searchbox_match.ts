@@ -271,37 +271,11 @@ export class SearchboxMatchElement extends CrLitElement {
         'mousedown', (event) => this.onMatchMouseDown_(event));
   }
 
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-    if (changedProperties.has('selection') || changedProperties.has('match')) {
-      this.updateAriaLabel_();
-    }
-    // Virtual focus selection changes are narrated by the hosting searchbox's
-    // input (see `SearchboxMixin.getSelectionA11yLabel()`), so this match must
-    // not announce them too.
-  }
-
-  private updateAriaLabel_() {
-    if (!this.virtualFocusEnabled) {
-      return;
-    }
-
-    const state = this.selection.state;
-    if (this.selection.line === this.matchIndex) {
-      if (state === SelectionLineState.kNormal) {
-        this.ariaLabel = this.computeAriaLabel_();
-      } else if (state === SelectionLineState.kKeywordMode) {
-        this.ariaLabel = this.match.keywordModel?.chipA11y || '';
-      } else if (state === SelectionLineState.kFocusedButtonAction) {
-        const action = this.match.actions[this.selection.actionIndex];
-        this.ariaLabel = action ? action.a11yLabel : '';
-      } else if (state === SelectionLineState.kFocusedButtonRemoveSuggestion) {
-        this.ariaLabel = this.removeButtonAriaLabel_ || '';
-      }
-    } else {
-      this.ariaLabel = this.computeAriaLabel_();
-    }
-  }
+  // Note: the `aria-label` is the match's own label and does not follow the
+  // virtual focus selection. Virtual focus selection changes, including those
+  // onto this match's buttons, are narrated by the hosting searchbox (see
+  // `SearchboxMixin.narrateSelection()`), so this match must not announce them
+  // too, by any means.
 
   //============================================================================
   // Event handlers
