@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_NETWORK_NETWORK_PORTAL_SIGNIN_WINDOW_H_
-#define CHROME_BROWSER_CHROMEOS_NETWORK_NETWORK_PORTAL_SIGNIN_WINDOW_H_
+#ifndef CHROME_BROWSER_UI_ASH_NETWORK_NETWORK_PORTAL_SIGNIN_WINDOW_H_
+#define CHROME_BROWSER_UI_ASH_NETWORK_NETWORK_PORTAL_SIGNIN_WINDOW_H_
 
 #include <memory>
 
@@ -17,9 +17,9 @@ namespace content {
 class WebContents;
 }
 
-namespace chromeos {
+namespace ash {
 
-// Class controlling the captive portal signin window used in Ash and Lacros.
+// Class controlling the captive portal signin window.
 // See also the NetworkPortalSigninController class.
 class NetworkPortalSigninWindow {
  public:
@@ -53,6 +53,6 @@ class NetworkPortalSigninWindow {
   int portal_detection_requested_for_testing_ = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_CHROMEOS_NETWORK_NETWORK_PORTAL_SIGNIN_WINDOW_H_
+#endif  // CHROME_BROWSER_UI_ASH_NETWORK_NETWORK_PORTAL_SIGNIN_WINDOW_H_

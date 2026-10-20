@@ -12,15 +12,14 @@
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
-#include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/network/network_portal_signin_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -142,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninControllerBrowserTest,
       NetworkPortalSigninController::SigninSource::kNotification);
 
   BrowserWindowInterface* browser =
-      chromeos::NetworkPortalSigninWindow::Get()->GetBrowserForTesting();
+      NetworkPortalSigninWindow::Get()->GetBrowserForTesting();
   ASSERT_TRUE(browser);
   EXPECT_NE(browser->GetProfile(), ProfileManager::GetActiveUserProfile());
 }

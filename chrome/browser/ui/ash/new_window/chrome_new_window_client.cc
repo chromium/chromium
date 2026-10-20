@@ -36,11 +36,11 @@
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
-#include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/ash/network/network_portal_signin_window.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
@@ -431,7 +431,7 @@ void ChromeNewWindowClient::OpenPersonalizationHub() {
 }
 
 void ChromeNewWindowClient::OpenCaptivePortalSignin(const GURL& url) {
-  chromeos::NetworkPortalSigninWindow::Get()->Show(url);
+  ash::NetworkPortalSigninWindow::Get()->Show(url);
 }
 
 void ChromeNewWindowClient::OpenFile(const base::FilePath& file_path) {

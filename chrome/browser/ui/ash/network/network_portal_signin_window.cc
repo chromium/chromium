@@ -2,27 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/network/network_portal_signin_window.h"
+#include "chrome/browser/ui/ash/network/network_portal_signin_window.h"
 
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/device_event_log/device_event_log.h"
-#include "components/policy/core/common/policy_pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/proxy_config/proxy_prefs.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -70,9 +66,7 @@ class NetworkPortalSigninWindow::WindowObserver
   void RequestPortalDetection() {
     NET_LOG(EVENT) << "Request portal detection";
     controller_->portal_detection_requested_for_testing_++;
-    ash::NetworkHandler::Get()
-        ->network_state_handler()
-        ->RequestPortalDetection();
+    NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
   }
 
  private:
@@ -139,4 +133,4 @@ content::WebContents* NetworkPortalSigninWindow::GetWebContentsForTesting() {
   return window_observer_->web_contents();
 }
 
-}  // namespace chromeos
+}  // namespace ash

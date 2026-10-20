@@ -52,7 +52,6 @@ group("browser_tests") {
     "//chrome/browser/chromeos/extensions/login_screen/login_state:browser_tests",
     "//chrome/browser/chromeos/extensions/odfs_config_private:browser_tests",
     "//chrome/browser/chromeos/extensions/system_log:browser_tests",
-    "//chrome/browser/chromeos/network:browser_tests",
     "//chrome/browser/chromeos/policy:browser_tests",
     "//chrome/browser/chromeos/policy/dlp:browser_tests",
     "//chrome/browser/chromeos/reporting/network:browser_tests",

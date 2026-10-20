@@ -4,9 +4,9 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
-#include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/network/network_portal_signin_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -28,7 +28,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 class NetworkPortalSigninWindowAshBrowserTest : public InProcessBrowserTest {
  public:
@@ -108,7 +108,7 @@ class NetworkPortalSigninWindowAshGuestBrowserTest
   }
 
  protected:
-  ash::GuestSessionMixin guest_session_{&mixin_host_};
+  GuestSessionMixin guest_session_{&mixin_host_};
   base::test::ScopedFeatureList webui_omnibox_feature_list_;
 };
 
@@ -506,4 +506,4 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
       1);
 }
 
-}  // namespace chromeos
+}  // namespace ash
