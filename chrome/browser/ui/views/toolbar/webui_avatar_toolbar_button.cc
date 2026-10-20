@@ -80,12 +80,13 @@ toolbar_ui_api::mojom::AvatarToolbarButtonState MapAvatarState(
 WebUIAvatarToolbarButton::WebUIAvatarToolbarButton(
     WebUIToolbarControlDelegate* delegate)
     : delegate_(delegate) {
-  // Only build the state manager when `delegate_` provides a browser and
-  // ProfileManager exists -- lightweight test doubles don't set up a full
-  // browser_process environment (notably no ProfileManager), which
-  // AvatarToolbarButtonStateManager's initialization depends on.
-  if (delegate_->GetBrowser() && g_browser_process &&
-      g_browser_process->profile_manager()) {
+  // Only build the state manager when `WebUIAvatarButton` is enabled,
+  // `delegate_` provides a browser, and ProfileManager exists -- lightweight
+  // test doubles don't set up a full browser_process environment (notably no
+  // ProfileManager), which AvatarToolbarButtonStateManager's initialization
+  // depends on.
+  if (features::IsWebUIAvatarButtonEnabled() && delegate_->GetBrowser() &&
+      g_browser_process && g_browser_process->profile_manager()) {
     state_manager_ = std::make_unique<AvatarToolbarButtonStateManager>(
         *this, delegate_->GetBrowser());
     state_manager_->InitializeStates();

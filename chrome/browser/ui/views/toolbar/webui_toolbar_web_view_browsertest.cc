@@ -2769,6 +2769,20 @@ INSTANTIATE_TEST_SUITE_P(
     });
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       AvatarButtonNotInitializedWhenDisabled) {
+  ASSERT_FALSE(features::IsWebUIAvatarButtonEnabled());
+
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar_view);
+
+  auto* avatar_button = static_cast<WebUIAvatarToolbarButton*>(
+      webui_toolbar_view->GetAvatarToolbarButtonInterface());
+  ASSERT_TRUE(avatar_button);
+  EXPECT_FALSE(avatar_button->is_initialized());
+  EXPECT_FALSE(avatar_button->IsReadyForIPH());
+}
+
 class WebUIAvatarButtonBrowserTest : public WebUIToolbarWebViewBrowserTest {
  public:
   WebUIAvatarButtonBrowserTest()
