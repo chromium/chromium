@@ -40,14 +40,6 @@ using testing::Test;
 namespace blink {
 namespace {
 
-template <typename T>
-SkImageInfo GetSkImageInfo(T* provider) {
-  return SkImageInfo::Make(
-      provider->Size().width(), provider->Size().height(),
-      viz::ToClosestSkColorType(provider->GetSharedImageFormat()),
-      provider->GetAlphaType(), provider->GetColorSpace().ToSkColorSpace());
-}
-
 constexpr int kMaxTextureSize = 1024;
 
 }  // namespace
@@ -179,70 +171,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                            return info.param ? "AutomaticSyncTokens"
                                              : "ManualSyncTokens";
                          });
-
-TEST_P(Canvas2DResourceProviderSyncTokenTest, SharedImageResourceRecycling) {
-  const gfx::Size kSize(10, 10);
-  const SkImageInfo kInfo =
-      SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
-
-  const gpu::SharedImageUsageSet shared_image_usage_flags =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
-
-  Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
-                                   gfx::HDRMetadata(),
-                                   CanvasPixelFormat::kUint8,
-                                   /*has_alpha=*/true);
-  auto provider = Canvas2DResourceProvider::CreateWithClear(
-      kSize, color_params, context_provider_wrapper_, RasterMode::kGPU,
-      shared_image_usage_flags);
-
-  EXPECT_EQ(provider->Size(), kSize);
-  EXPECT_TRUE(provider->IsAccelerated());
-  EXPECT_FALSE(provider->IsSingleBuffered());
-  // As it is an accelerated canvas, it
-  // will internally force it to RGBA8, or BGRA8 on MacOS
-#if BUILDFLAG(IS_MAC)
-  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
-              kInfo.makeColorType(kBGRA_8888_SkColorType));
-#else
-  EXPECT_TRUE(GetSkImageInfo(provider.get()) ==
-              kInfo.makeColorType(kRGBA_8888_SkColorType));
-#endif
-
-  // Same resource and sync token if we query again without updating.
-  auto resource = provider->ProduceCanvasResource(/*surface=*/nullptr);
-  auto sync_token = GetSyncToken(resource.get());
-  ASSERT_TRUE(resource);
-  EXPECT_EQ(resource, provider->ProduceCanvasResource(/*surface=*/nullptr));
-  EXPECT_EQ(sync_token, GetSyncToken(resource.get()));
-
-  MemoryManagedPaintRecorder recorder(provider->Size(), nullptr);
-  recorder.getRecordingCanvas().clear(SkColors::kWhite);
-  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
-  auto new_resource = provider->ProduceCanvasResource(/*surface=*/nullptr);
-  EXPECT_NE(resource, new_resource);
-  if (base::FeatureList::IsEnabled(
-          features::kUseAutomaticSyncTokenManagement)) {
-    EXPECT_FALSE(GetSyncToken(resource.get()).HasData());
-    EXPECT_FALSE(GetSyncToken(new_resource.get()).HasData());
-  } else {
-    EXPECT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
-  }
-  auto* resource_ptr = resource.get();
-
-  EnsureResourceRecycled(std::move(resource));
-
-  recorder.getRecordingCanvas().clear(SkColors::kBlack);
-  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
-  auto resource_again = provider->ProduceCanvasResource(/*surface=*/nullptr);
-  EXPECT_EQ(resource_ptr, resource_again);
-  if (base::FeatureList::IsEnabled(
-          features::kUseAutomaticSyncTokenManagement)) {
-    EXPECT_FALSE(GetSyncToken(resource_again.get()).HasData());
-  } else {
-    EXPECT_NE(sync_token, GetSyncToken(resource_again.get()));
-  }
-}
 
 TEST_P(Canvas2DResourceProviderSyncTokenTest, UnusedResources) {
   base::test::ScopedFeatureList feature_list{kCanvas2DReclaimUnusedResources};

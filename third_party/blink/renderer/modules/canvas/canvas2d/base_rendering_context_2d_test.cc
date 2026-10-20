@@ -7,9 +7,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/byte_size.h"
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -23,6 +26,8 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -424,6 +429,15 @@ class BaseRenderingContext2DSharedImageTest : public testing::Test {
     return context;
   }
 
+  const gpu::SyncToken& GetSyncToken(const CanvasResource* resource) {
+    return resource->sync_token();
+  }
+
+  void EnsureResourceRecycled(scoped_refptr<CanvasResource>&& resource) {
+    auto transferable_resource = resource->PrepareTransferableResource();
+    CanvasResource::DropRefOnOwningThread(std::move(resource));
+  }
+
   test::TaskEnvironment task_environment_;
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform_;
@@ -485,6 +499,89 @@ TEST_F(BaseRenderingContext2DSharedImageTest, AllocatedBufferSizeAccelerated) {
   EXPECT_TRUE(context->Is2DCanvasAccelerated());
   EXPECT_EQ(context->AllocatedBufferSize(),
             base::ByteSize(kSize.width() * kSize.height() * 4));
+}
+
+class BaseRenderingContext2DSharedImageSyncTokenTest
+    : public BaseRenderingContext2DSharedImageTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BaseRenderingContext2DSharedImageSyncTokenTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          ::features::kUseAutomaticSyncTokenManagement);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          ::features::kUseAutomaticSyncTokenManagement);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BaseRenderingContext2DSharedImageSyncTokenTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "AutomaticSyncTokens"
+                                             : "ManualSyncTokens";
+                         });
+
+TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
+       ResourceRecyclingViaCanvasResource) {
+  V8TestingScope scope;
+  auto* context = CreateBackedContext(scope, RasterMode::kGPU);
+  ASSERT_TRUE(context->IsBackingValid());
+  EXPECT_TRUE(context->Is2DCanvasAccelerated());
+
+  // Same resource and sync token if we query again without updating.
+  auto resource = context->PaintRenderingResultsToResource(kBackBuffer,
+                                                           FlushReason::kOther);
+  auto sync_token = GetSyncToken(resource.get());
+  ASSERT_TRUE(resource);
+  auto shared_image = resource->GetSharedImage();
+  ASSERT_TRUE(shared_image);
+  EXPECT_EQ(shared_image->size(), kSize);
+  EXPECT_EQ(shared_image->alpha_type(), kPremul_SkAlphaType);
+  EXPECT_EQ(shared_image->color_space(), gfx::ColorSpace::CreateSRGB());
+  EXPECT_FALSE(
+      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE));
+  // As it is an accelerated canvas, it will internally force it to RGBA8, or
+  // BGRA8 on MacOS.
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(shared_image->format(), viz::SinglePlaneFormat::kBGRA_8888);
+#else
+  EXPECT_EQ(shared_image->format(), viz::SinglePlaneFormat::kRGBA_8888);
+#endif
+  EXPECT_EQ(resource, context->PaintRenderingResultsToResource(
+                          kBackBuffer, FlushReason::kOther));
+  EXPECT_EQ(sync_token, GetSyncToken(resource.get()));
+
+  context->fillRect(0, 0, 1, 1);
+  auto new_resource = context->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
+  EXPECT_NE(resource, new_resource);
+  if (base::FeatureList::IsEnabled(
+          ::features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_FALSE(GetSyncToken(resource.get()).HasData());
+    EXPECT_FALSE(GetSyncToken(new_resource.get()).HasData());
+  } else {
+    EXPECT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
+  }
+  auto* resource_ptr = resource.get();
+
+  EnsureResourceRecycled(std::move(resource));
+
+  context->fillRect(0, 0, 1, 1);
+  auto resource_again = context->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
+  EXPECT_EQ(resource_ptr, resource_again);
+  if (base::FeatureList::IsEnabled(
+          ::features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_FALSE(GetSyncToken(resource_again.get()).HasData());
+  } else {
+    EXPECT_NE(sync_token, GetSyncToken(resource_again.get()));
+  }
 }
 
 }  // namespace
