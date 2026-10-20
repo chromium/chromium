@@ -8,9 +8,11 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/prefs/pref_service.h"
 #import "components/universal_optout/prefs.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -305,6 +307,10 @@ NSString* const kUniversalOptOutErrorLearnMoreItemAccessibilityIdentifier =
   _universalOptOutSwitchItem.on = switchView.isOn;
 
   if (switchView.isOn) {
+    if (_profile) {
+      _profile->GetPrefs()->SetBoolean(prefs::kUniversalOptOutErrorToastShown,
+                                       false);
+    }
     base::RecordAction(
         base::UserMetricsAction("Privacy.UniversalOptOut.SettingsToggleOn"));
   } else {

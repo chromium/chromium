@@ -162,9 +162,11 @@
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator_delegate.h"
+#import "ios/chrome/browser/universal_optout/model/eligibility_utils.h"
 #import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/browser/web_extension/ui_bundled/web_extension_error_scene_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/whats_new/coordinator/promo/whats_new_scene_agent.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
@@ -2081,6 +2083,10 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     if (cobaltSceneAgent) {
       [sceneState addAgent:cobaltSceneAgent];
     }
+  }
+
+  if (universal_optout::IsGPCExtensionEnabled(profile)) {
+    [sceneState addAgent:[[WebExtensionErrorSceneAgent alloc] init]];
   }
 }
 

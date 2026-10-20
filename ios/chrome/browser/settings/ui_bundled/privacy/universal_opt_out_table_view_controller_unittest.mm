@@ -9,6 +9,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/universal_optout/prefs.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -113,6 +114,50 @@ TEST_F(UniversalOptOutTableViewControllerTest, TestToggleSwitchUpdatesPref) {
                    "Privacy.UniversalOptOut.SettingsToggleOn"));
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Privacy.UniversalOptOut.SettingsToggleOff"));
+}
+
+// Tests that turning on the Universal Opt Out setting resets the error toast
+// shown preference in profile prefs.
+TEST_F(UniversalOptOutTableViewControllerTest,
+       TestToggleSwitchOnResetsToastShownPref) {
+  CreateController();
+  CheckController();
+
+  PrefService* profile_prefs = profile_->GetPrefs();
+  ASSERT_TRUE(profile_prefs);
+
+  // Set the error toast shown pref to true.
+  profile_prefs->SetBoolean(prefs::kUniversalOptOutErrorToastShown, true);
+
+  TableViewCellContentView* content_view =
+      base::apple::ObjCCastStrict<TableViewCellContentView>([[controller()
+                      tableView:controller().tableView
+          cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0
+                                                    inSection:0]] contentView]);
+  ASSERT_TRUE(content_view);
+  SwitchContentView* switch_content_view =
+      base::apple::ObjCCastStrict<SwitchContentView>(
+          [content_view trailingContentViewForTesting]);
+  ASSERT_TRUE(switch_content_view);
+  UISwitch* switch_view = [switch_content_view switchForTesting];
+  ASSERT_TRUE(switch_view);
+
+  // Turn switch on: pref should be reset to false.
+  switch_view.on = YES;
+  [switch_view sendActionsForControlEvents:UIControlEventValueChanged];
+
+  EXPECT_FALSE(
+      profile_prefs->GetBoolean(prefs::kUniversalOptOutErrorToastShown));
+
+  // Set the error toast shown pref back to true.
+  profile_prefs->SetBoolean(prefs::kUniversalOptOutErrorToastShown, true);
+
+  // Turn switch off: pref should NOT be reset.
+  switch_view.on = NO;
+  [switch_view sendActionsForControlEvents:UIControlEventValueChanged];
+
+  EXPECT_TRUE(
+      profile_prefs->GetBoolean(prefs::kUniversalOptOutErrorToastShown));
 }
 
 // Tests that the footer link URL is properly set and simulating a tap on the
