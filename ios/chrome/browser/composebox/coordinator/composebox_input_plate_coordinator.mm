@@ -507,42 +507,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   }
 }
 
-- (void)composeboxViewControllerDidTapFileButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController {
-  [_metricsRecorder
-      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kFiles];
-  if (![_mediator canAddMoreAttachments]) {
-    [self showMaxAttachmentSnackbarError];
-    return;
-  }
-
-  [_pickerPresenter presentFilePicker];
-}
-
-- (void)composeboxViewControllerDidTapDriveButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController {
-  [_metricsRecorder
-      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kDriveFiles];
-  if (![_mediator canAddMoreAttachments]) {
-    [self showMaxAttachmentSnackbarError];
-    return;
-  }
-
-  [_pickerPresenter presentDriveFilePicker];
-}
-
-- (void)composeboxViewControllerDidTapAttachTabsButton:
-    (ComposeboxInputPlateViewController*)viewController {
-  if (![_mediator canAddMoreAttachments]) {
-    [self showMaxAttachmentSnackbarError];
-    return;
-  }
-
-  [_metricsRecorder
-      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kTabPicker];
-  [_pickerPresenter presentTabPicker];
-}
-
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)viewController
        didAttemptDragAndDropType:(ComposeboxDragAndDropType)type {
@@ -554,13 +518,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
                       didTapTool:(ComposeboxMode)toolMode
                 activationSource:(AiModeActivationSource)activationSource {
   [self selectTool:toolMode activationSource:activationSource];
-}
-
-- (void)composeboxViewController:
-            (ComposeboxInputPlateViewController*)composeboxViewController
-                  didSelectModel:(ComposeboxModelOption)modelOption {
-  [_mediator setModelOption:modelOption explicitUserAction:YES];
-  [_metricsRecorder recordModelSelected:modelOption];
 }
 
 - (void)composeboxViewController:

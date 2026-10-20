@@ -30,7 +30,6 @@ source_set("ui") {
     ":ui_util",
     "//base",
     "//base:i18n",
-    "//build:branding_buildflags",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/composebox/coordinator:constants",
     "//ios/chrome/browser/composebox/public:animation",

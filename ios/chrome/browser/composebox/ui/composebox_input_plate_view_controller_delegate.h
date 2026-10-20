@@ -11,7 +11,6 @@ enum class AiModeActivationSource;
 enum class ComposeboxDragAndDropType;
 @class ComposeboxInputPlateViewController;
 enum class ComposeboxMode;
-enum class ComposeboxModelOption;
 @class ComposeboxUIInputState;
 enum class FuseboxAttachmentButtonType;
 
@@ -54,18 +53,6 @@ enum class FuseboxAttachmentButtonType;
         (const std::vector<FuseboxAttachmentButtonType>&)visibleInternalButtons
                                  uiInputState:(ComposeboxUIInputState*)state;
 
-/// Informs the delegate that a user did tap on the file button.
-- (void)composeboxViewControllerDidTapFileButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
-
-/// Informs the delegate that a user did tap on the drive button.
-- (void)composeboxViewControllerDidTapDriveButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
-
-/// Informs the delegate that a user did tap on the attach tabs button.
-- (void)composeboxViewControllerDidTapAttachTabsButton:
-    (ComposeboxInputPlateViewController*)composeboxViewController;
-
 /// Informs the delegate that a drag and drop was attempted.
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)viewController
@@ -76,12 +63,6 @@ enum class FuseboxAttachmentButtonType;
             (ComposeboxInputPlateViewController*)composeboxViewController
                       didTapTool:(ComposeboxMode)toolMode
                 activationSource:(AiModeActivationSource)activationSource;
-
-/// Informs the delegate that a user did select a model option from the
-/// tool menu.
-- (void)composeboxViewController:
-            (ComposeboxInputPlateViewController*)composeboxViewController
-                  didSelectModel:(ComposeboxModelOption)modelOption;
 
 /// Informs the delegate that a user did tap on the plus button.
 - (void)composeboxViewControllerDidTapPlusButton:

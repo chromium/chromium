@@ -17,13 +17,11 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "base/unguessable_token.h"
-#import "build/branding_buildflags.h"
 #import "components/lens/lens_features.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_constants.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
-#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
@@ -1028,43 +1026,6 @@ UIImage* SendButtonImage(BOOL highlighted,
 /// Handles keyboard disappearance notifications to reset layout.
 - (void)keyboardWillHide:(NSNotification*)notification {
   _keyboardHeight = 0;
-}
-
-/// Notifies the delegate to show the tab attachment UI.
-- (void)handleAttachTabs {
-  [self.delegate composeboxViewControllerDidTapAttachTabsButton:self];
-}
-
-- (void)handleAIMTappedFromToolMenu {
-  [self.delegate composeboxViewController:self
-                               didTapTool:ComposeboxMode::kAIM
-                         activationSource:AiModeActivationSource::kToolMenu];
-}
-
-/// Notifies the delegate to handle canvas button tapped from the tool menu.
-- (void)handleImageGenTappedFromToolMenu {
-  [self.delegate composeboxViewController:self
-                               didTapTool:ComposeboxMode::kImageGeneration
-                         activationSource:AiModeActivationSource::kToolMenu];
-}
-
-/// Notifies the delegate to handle canvas tapped from the tool menu.
-- (void)handleCanvasTappedFromToolMenu {
-  [self.delegate composeboxViewController:self
-                               didTapTool:ComposeboxMode::kCanvas
-                         activationSource:AiModeActivationSource::kToolMenu];
-}
-
-/// Notifies the delegate to handle deep search tapped from the tool menu.
-- (void)handleDeepSearchTappedFromToolMenu {
-  [self.delegate composeboxViewController:self
-                               didTapTool:ComposeboxMode::kDeepSearch
-                         activationSource:AiModeActivationSource::kToolMenu];
-}
-/// Notifies the delegate to handle the selection of a new model option.
-- (void)handleModelChangeFromToolsMenuWithOption:
-    (ComposeboxModelOption)modelOption {
-  [self.delegate composeboxViewController:self didSelectModel:modelOption];
 }
 
 /// Updates the visibility of the leading/trailing fade views for the carousel.
