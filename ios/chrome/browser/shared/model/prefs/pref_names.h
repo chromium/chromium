@@ -247,6 +247,11 @@ inline constexpr char kIosDefaultBrowserPromoLastAction[] =
 inline constexpr char kIosDefaultBrowserPromoLastActionSurface[] =
     "ios.default_browser_promo.last_action_surface";
 
+// Integer indicating the experiment cohort ID for which the first-time default
+// browser promo opportunity telemetry was logged.
+inline constexpr char kIosDefaultBrowserPromoOpportunityFirstTimeCohort[] =
+    "ios.default_browser_promo.opportunity_first_time_cohort";
+
 // The time when the DiscoverFeed was last refreshed while the feed was visible
 // to the user.
 inline constexpr char kIosDiscoverFeedLastRefreshTime[] =

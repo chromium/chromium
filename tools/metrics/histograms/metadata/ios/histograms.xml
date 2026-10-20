@@ -1829,6 +1829,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="IOS.DefaultBrowserVideoPromo.Fullscreen.Opportunity.{OpportunityType}"
+    enum="IOSDefaultBrowserVideoPromoOpportunity" expires_after="2027-10-01">
+  <owner>joemerramos@google.com</owner>
+  <owner>fanzhg@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Recorded when evaluating the default browser promo propensity model after
+    all non-model promo eligibility and read-only FET cooldown checks pass.
+    Indicates which multi-threshold score bucket the client falls into.
+    {OpportunityType}
+  </summary>
+  <token key="OpportunityType">
+    <variant name="FirstTime"
+        summary="Recorded once per client per experiment cohort on their
+                 first eligible opportunity."/>
+    <variant name="Regular" summary="Recorded on every eligible session."/>
+  </token>
+</histogram>
+
+<histogram
+    name="IOS.DefaultBrowserVideoPromo.Fullscreen.OpportunityScore.{OpportunityType}"
+    units="%" expires_after="2027-10-01">
+  <owner>joemerramos@google.com</owner>
+  <owner>fanzhg@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Recorded when evaluating the default browser promo propensity model after
+    all non-model promo eligibility and read-only FET cooldown checks pass. Logs
+    the continuous propensity score as a percentage (0 to 100).
+    {OpportunityType}
+  </summary>
+  <token key="OpportunityType">
+    <variant name="FirstTime"
+        summary="Recorded once per client per experiment cohort on their
+                 first eligible opportunity."/>
+    <variant name="Regular" summary="Recorded on every eligible session."/>
+  </token>
+</histogram>
+
 <histogram name="IOS.DefaultStatusAPI.CooldownError.DaysLeft" units="Days"
     expires_after="2027-03-21">
   <owner>gujen@google.com</owner>

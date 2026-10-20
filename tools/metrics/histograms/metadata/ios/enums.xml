@@ -621,6 +621,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Tertiary Action Button"/>
 </enum>
 
+<!-- LINT.IfChange(IOSDefaultBrowserVideoPromoOpportunity) -->
+
+<enum name="IOSDefaultBrowserVideoPromoOpportunity">
+  <int value="0" label="[0.0, 0.1) - Score &lt; 0.1"/>
+  <int value="1" label="[0.1, 0.2) - 0.1 &lt;= Score &lt; 0.2"/>
+  <int value="2" label="[0.2, 0.4) - 0.2 &lt;= Score &lt; 0.4"/>
+  <int value="3" label="[0.4, 0.6) - 0.4 &lt;= Score &lt; 0.6"/>
+  <int value="4" label="[0.6, 1.0] - Score &gt;= 0.6 or fail-open"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/default_browser/model/utils.h:IOSDefaultBrowserVideoPromoOpportunity) -->
+
 <!-- LINT.IfChange(IOSDefaultStatusAPIOutcomeType) -->
 
 <enum name="IOSDefaultStatusAPIOutcomeType">

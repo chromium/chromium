@@ -78,6 +78,20 @@ enum class IOSDefaultBrowserVideoPromoAction {
   kMaxValue = kTertiaryActionTapped,
 };
 
+// Enum buckets for the IOS.DefaultBrowserVideoPromo.Fullscreen.Opportunity.*
+// UMA metrics. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(IOSDefaultBrowserVideoPromoOpportunity)
+enum class IOSDefaultBrowserVideoPromoOpportunity {
+  kScoreUnder0_1 = 0,
+  kScore0_1To0_2 = 1,
+  kScore0_2To0_4 = 2,
+  kScore0_4To0_6 = 3,
+  kScore0_6AndAbove = 4,
+  kMaxValue = kScore0_6AndAbove,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSDefaultBrowserVideoPromoOpportunity)
+
 // Enum actions for the IOS.DefaultBrowserPromo.OverflowMenu UMA metrics.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -222,6 +236,10 @@ bool IsPostRestoreDefaultBrowserEligibleUser();
 void LogDefaultBrowserPromoHistogramForAction(
     DefaultPromoType type,
     IOSDefaultBrowserPromoAction action);
+
+// Logs opportunity bucket and continuous score telemetry for the fullscreen
+// default browser video promo.
+void LogDefaultBrowserFullscreenPromoOpportunity(std::optional<float> score);
 
 // Returns the feature associated with a given promo reason.
 //

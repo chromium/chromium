@@ -13,6 +13,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
+#import "base/numerics/clamped_math.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
@@ -20,6 +21,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/promo/contextual/public/contextual_default_browser_promo_constants.h"
 #import "ios/chrome/browser/default_browser/promo/public/features.h"
@@ -470,6 +472,66 @@ void LogDefaultBrowserPromoHistogramForAction(
     default:
       NOTREACHED();
   }
+}
+
+void LogDefaultBrowserFullscreenPromoOpportunity(std::optional<float> score) {
+  IOSDefaultBrowserVideoPromoOpportunity opportunity_bucket;
+  int opportunity_score = 0;
+
+  if (score.has_value()) {
+    float score_value = score.value();
+    opportunity_score = base::ClampRound(score_value * 100.0f);
+
+    if (score_value < 0.1f) {
+      opportunity_bucket =
+          IOSDefaultBrowserVideoPromoOpportunity::kScoreUnder0_1;
+    } else if (score_value < 0.2f) {
+      opportunity_bucket =
+          IOSDefaultBrowserVideoPromoOpportunity::kScore0_1To0_2;
+    } else if (score_value < 0.4f) {
+      opportunity_bucket =
+          IOSDefaultBrowserVideoPromoOpportunity::kScore0_2To0_4;
+    } else if (score_value < 0.6f) {
+      opportunity_bucket =
+          IOSDefaultBrowserVideoPromoOpportunity::kScore0_4To0_6;
+    } else {
+      opportunity_bucket =
+          IOSDefaultBrowserVideoPromoOpportunity::kScore0_6AndAbove;
+    }
+  } else {
+    // Fail-open: on model error, default to top bucket so promo can show.
+    opportunity_bucket =
+        IOSDefaultBrowserVideoPromoOpportunity::kScore0_6AndAbove;
+    opportunity_score = 100;
+  }
+
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  if (local_state) {
+    int current_cohort =
+        segmentation_platform::features::
+            kDefaultBrowserPromoPropensityModelExperimentCohort.Get();
+    int logged_cohort = local_state->GetInteger(
+        prefs::kIosDefaultBrowserPromoOpportunityFirstTimeCohort);
+    // Log first-time opportunity metrics once per client per experiment cohort.
+    if (logged_cohort != current_cohort) {
+      base::UmaHistogramEnumeration(
+          "IOS.DefaultBrowserVideoPromo.Fullscreen.Opportunity.FirstTime",
+          opportunity_bucket);
+      base::UmaHistogramPercentage(
+          "IOS.DefaultBrowserVideoPromo.Fullscreen.OpportunityScore.FirstTime",
+          opportunity_score);
+      local_state->SetInteger(
+          prefs::kIosDefaultBrowserPromoOpportunityFirstTimeCohort,
+          current_cohort);
+    }
+  }
+
+  base::UmaHistogramEnumeration(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.Opportunity.Regular",
+      opportunity_bucket);
+  base::UmaHistogramPercentage(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.OpportunityScore.Regular",
+      opportunity_score);
 }
 
 const base::Feature& GetFeatureForPromoReason(

@@ -11,6 +11,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
@@ -593,5 +594,72 @@ TEST_F(DefaultBrowserUtilsTest, TestMaybeShowContextualDefaultBrowserPromo) {
                               ContextualDefaultBrowserPromoType::kGemini]);
   MaybeShowContextualDefaultBrowserPromo(&mock_tracker, mock_handler);
   EXPECT_OCMOCK_VERIFY(mock_handler);
+}
+
+// Tests LogDefaultBrowserFullscreenPromoOpportunity records FirstTime and
+// Regular histograms correctly across different score buckets and fail-open.
+TEST_F(DefaultBrowserUtilsTest, LogDefaultBrowserFullscreenPromoOpportunity) {
+  base::HistogramTester histogram_tester;
+
+  // 1. First eligible opportunity with score 0.05 (bucket < 0.1).
+  LogDefaultBrowserFullscreenPromoOpportunity(0.05f);
+
+  histogram_tester.ExpectUniqueSample(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.Opportunity.FirstTime",
+      IOSDefaultBrowserVideoPromoOpportunity::kScoreUnder0_1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.OpportunityScore.FirstTime", 5,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.Opportunity.Regular",
+      IOSDefaultBrowserVideoPromoOpportunity::kScoreUnder0_1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.OpportunityScore.Regular", 5, 1);
+
+  // 2. Second eligible opportunity with score 0.35 (bucket 0.2 - 0.4).
+  // FirstTime histograms should NOT be re-recorded.
+  LogDefaultBrowserFullscreenPromoOpportunity(0.35f);
+
+  histogram_tester.ExpectTotalCount(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.Opportunity.FirstTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.OpportunityScore.FirstTime", 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.Opportunity.Regular",
+      IOSDefaultBrowserVideoPromoOpportunity::kScore0_2To0_4, 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.OpportunityScore.Regular", 35,
+      1);
+
+  // 3. Third eligible opportunity with model failure (nullopt).
+  // Should fail-open to top bucket (kScore0_6AndAbove) and 100%.
+  LogDefaultBrowserFullscreenPromoOpportunity(std::nullopt);
+
+  histogram_tester.ExpectTotalCount(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.Opportunity.FirstTime", 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.Opportunity.Regular",
+      IOSDefaultBrowserVideoPromoOpportunity::kScore0_6AndAbove, 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.OpportunityScore.Regular", 100,
+      1);
+
+  // 4. Fourth opportunity with a new Finch experiment cohort (cohort 2).
+  // FirstTime histograms should record again for the new cohort.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      segmentation_platform::features::kDefaultBrowserPromoPropensityModel,
+      {{"opportunity_experiment_cohort", "2"}});
+
+  LogDefaultBrowserFullscreenPromoOpportunity(0.15f);
+
+  histogram_tester.ExpectTotalCount(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.Opportunity.FirstTime", 2);
+  histogram_tester.ExpectBucketCount(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.Opportunity.FirstTime",
+      IOSDefaultBrowserVideoPromoOpportunity::kScore0_1To0_2, 1);
+  histogram_tester.ExpectBucketCount(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.OpportunityScore.FirstTime", 15,
+      1);
 }
 }  // namespace
