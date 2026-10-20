@@ -10,8 +10,9 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
@@ -42,6 +43,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/skia_span_util.h"
 #include "v8/include/cppgc/allocation.h"
 #include "v8/include/v8-container.h"
 #include "v8/include/v8-context.h"
@@ -225,13 +227,13 @@ void SkiaBenchmarking::Rasterize(gin::Arguments* args) {
   PicturePlaybackController controller(benchmarking_canvas, playback_count);
   picture->picture->playback(&benchmarking_canvas, &controller);
 
-  const size_t bitmap_size_in_bytes = bitmap.computeByteSize();
-  auto buffer = blink::WebArrayBuffer::Create(bitmap_size_in_bytes, 1);
-  uint32_t* packed_pixels = reinterpret_cast<uint32_t*>(bitmap.getPixels());
+  base::span<const uint8_t> packed_pixels =
+      gfx::SkPixmapToSpan(bitmap.pixmap());
+  auto buffer = blink::WebArrayBuffer::Create(packed_pixels.size(), 1);
   base::span<uint8_t> buffer_pixels = buffer.ByteSpan();
   // Swizzle from native Skia format to RGBA as we copy out.
-  for (size_t i = 0; i < bitmap_size_in_bytes; i += 4) {
-    uint32_t c = UNSAFE_TODO(packed_pixels[i >> 2]);
+  while (!packed_pixels.empty()) {
+    uint32_t c = base::U32FromNativeEndian(packed_pixels.take_first<4>());
     auto rgba = buffer_pixels.take_first<4>();
     rgba[0] = SkPMColorGetR(c);
     rgba[1] = SkPMColorGetG(c);
