@@ -156,7 +156,7 @@ void DrawHighlightBorder(gfx::Canvas* canvas,
 gfx::Outsets HighlightBorderGenerator::GetMargins(
     const HighlightBorderValue& value) {
   DCHECK_GT(value.thickness(), 0);
-  return gfx::Outsets(value.thickness());
+  return gfx::Outsets();
 }
 
 // static
@@ -175,10 +175,7 @@ void HighlightBorderGenerator::Draw(gfx::Canvas* canvas,
                                     const HighlightBorderValue& value,
                                     const gfx::RoundedCornersF& rounded_corners,
                                     const gfx::Rect& content_rect) {
-  // The outer ring sits outside the content.
-  gfx::Rect bounds = content_rect;
-  bounds.Outset(value.thickness());
-  DrawHighlightBorder(canvas, value, rounded_corners, bounds);
+  DrawHighlightBorder(canvas, value, rounded_corners, content_rect);
 }
 
 template class EXPORT_TEMPLATE_DEFINE(COMPONENT_EXPORT(UI_DECORATION))

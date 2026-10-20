@@ -282,10 +282,13 @@ struct CompositeGenerator<DecorationDetails<Specs, Generators>...> {
       const Value& value,
       const gfx::RoundedCornersF& rounded_corners) {
     DCHECK(!value.IsEmpty());
-    gfx::Insets aperture;
-    (AccumulateAperture<Specs, Generators>(value, rounded_corners, aperture),
+    gfx::Insets inward_insets;
+    (AccumulateInwardAperture<Specs, Generators>(value, rounded_corners,
+                                                 inward_insets),
      ...);
-    return aperture;
+    // `ToInsets()` negates components, so `-GetMargins(value).ToInsets()` is
+    // the positive outward reach as `gfx::Insets`.
+    return inward_insets - GetMargins(value).ToInsets();
   }
 
   static void Draw(gfx::Canvas* canvas,
@@ -308,12 +311,19 @@ struct CompositeGenerator<DecorationDetails<Specs, Generators>...> {
   }
 
   template <DecorationSpec Spec, DecorationGenerator<Spec> Generator>
-  static void AccumulateAperture(const Value& value,
-                                 const gfx::RoundedCornersF& rounded_corners,
-                                 gfx::Insets& aperture) {
+  static void AccumulateInwardAperture(
+      const Value& value,
+      const gfx::RoundedCornersF& rounded_corners,
+      gfx::Insets& inward_insets) {
     if (const auto& spec = value.template Get<Spec>()) {
-      aperture.SetToMax(
-          Generator::GetNineboxApertureInsets(*spec, rounded_corners));
+      // Each part's aperture is measured from its own outer edge
+      // (`GetMargins()` outside the content). Since `ToInsets()` negates
+      // components, adding `GetMargins().ToInsets()` subtracts the part's
+      // outward reach, leaving how far its corner patch reaches inside the
+      // shared content rect.
+      inward_insets.SetToMax(
+          Generator::GetNineboxApertureInsets(*spec, rounded_corners) +
+          Generator::GetMargins(*spec).ToInsets());
     }
   }
 

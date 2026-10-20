@@ -56,13 +56,14 @@ std::optional<DecorationSource::Details> HighlightBorder::GetDetails(
 
   // The ninebox assumption breaks down when the content is too small for the
   // desired thickness: each border patch spans two thicknesses plus the corner
-  // insets, while the decoration layer is only one thickness larger than the
-  // content (see HighlightBorderGenerator). Thin the rings to the most the
-  // content can hold, and draw nothing once not even a hairline fits.
+  // insets on each side, so opposite patches together need four thicknesses
+  // plus the corner insets (see HighlightBorderGenerator). Thin the rings to
+  // the most the content can hold, and draw nothing once not even a hairline
+  // fits.
   const int max_safe_thickness =
       std::min(content_bounds.width() - corner_insets.width(),
                content_bounds.height() - corner_insets.height()) /
-      2;
+      4;
   const int size_adjusted_thickness = std::min(thickness_, max_safe_thickness);
   if (size_adjusted_thickness <= 0) {
     return std::nullopt;
@@ -72,10 +73,11 @@ std::optional<DecorationSource::Details> HighlightBorder::GetDetails(
       rounded_corners, HighlightBorderValue(highlight_color_, border_color_,
                                             size_adjusted_thickness));
 
-  // The inner ring overlaps the edge of the content, so only the content inside
-  // it (and inside the rounded corners) is guaranteed to be covered.
+  // Both rings sit inside the content, so only the content inside them (and
+  // inside the rounded corners) is guaranteed to be covered.
   gfx::Rect occlusion_rect(content_bounds.size());
-  occlusion_rect.Inset(gfx::Insets(size_adjusted_thickness) + corner_insets);
+  occlusion_rect.Inset(gfx::Insets(2 * size_adjusted_thickness) +
+                       corner_insets);
 
   return Details{
       .appearance =

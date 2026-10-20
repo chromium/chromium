@@ -95,7 +95,7 @@ TEST(ShadowUtilTest, ShadowDetailsKey) {
 
 TEST(HighlightBorderGeneratorTest, Insets) {
   const HighlightBorderValue value(kHighlight, kBorder);
-  EXPECT_EQ(gfx::Outsets(1), HighlightBorderGenerator::GetMargins(value));
+  EXPECT_EQ(gfx::Outsets(), HighlightBorderGenerator::GetMargins(value));
   EXPECT_EQ(gfx::Insets(2), HighlightBorderGenerator::GetNineboxApertureInsets(
                                 value, gfx::RoundedCornersF()));
   EXPECT_EQ(gfx::Insets(10), HighlightBorderGenerator::GetNineboxApertureInsets(
@@ -108,7 +108,7 @@ TEST(HighlightBorderGeneratorTest, Insets) {
                                             /*lower_left=*/16)));
 
   const HighlightBorderValue thick(kHighlight, kBorder, /*thickness=*/2);
-  EXPECT_EQ(gfx::Outsets(2), HighlightBorderGenerator::GetMargins(thick));
+  EXPECT_EQ(gfx::Outsets(), HighlightBorderGenerator::GetMargins(thick));
   EXPECT_EQ(gfx::Insets(12), HighlightBorderGenerator::GetNineboxApertureInsets(
                                  thick, gfx::RoundedCornersF(8)));
 }
@@ -196,15 +196,17 @@ TEST(CompositeGeneratorTest, Insets) {
   EXPECT_EQ(ShadowGenerator::GetNineboxApertureInsets(shadows, radii),
             TestCompositeGenerator::GetNineboxApertureInsets(combined, radii));
 
-  // Combined where thick border exceeds a small elevation-1 shadow at the top.
+  // Combined where thick border's inward reach exceeds a small elevation-1
+  // shadow.
   const gfx::ShadowValues small_shadows =
       Shadow::MakeShadowValues(/*elevation=*/1);
   const HighlightBorderValue thick_border(kHighlight, kBorder, /*thickness=*/3);
   const TestCompositeValue thick_combined(small_shadows, thick_border);
-  EXPECT_EQ(gfx::Outsets(3),
+  EXPECT_EQ(ShadowGenerator::GetMargins(small_shadows),
             TestCompositeGenerator::GetMargins(thick_combined));
-  EXPECT_EQ(gfx::Insets(14), TestCompositeGenerator::GetNineboxApertureInsets(
-                                 thick_combined, radii));
+  EXPECT_EQ(
+      gfx::Insets::TLBR(15, 16, 17, 16),
+      TestCompositeGenerator::GetNineboxApertureInsets(thick_combined, radii));
 }
 
 TEST(CompositeGeneratorTest, DetailsCacheKey) {

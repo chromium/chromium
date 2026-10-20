@@ -12,10 +12,9 @@
 namespace ui::decoration {
 
 // Describes a highlight border: two concentric rounded-rectangle rings around a
-// piece of content. The outer ring (`border_color`) hugs the content from the
-// outside and the inner ring (`highlight_color`) sits just inside the content
-// edge, which gives the content contrast against both light and dark
-// backgrounds.
+// piece of content. The outer ring (`border_color`) and the inner ring
+// (`highlight_color`) sit along the inside of the content edge, giving the
+// content contrast against both light and dark backgrounds.
 //
 // This is a pure value type with no dependency on layers or caching, and it
 // serves as the cache key for highlight border ninebox images.

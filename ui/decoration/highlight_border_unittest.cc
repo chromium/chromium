@@ -43,14 +43,14 @@ TEST(HighlightBorderTest, GetDetails) {
   const std::optional<DecorationSource::Details> details =
       border.GetDetails(content, radii);
   ASSERT_TRUE(details.has_value());
-  EXPECT_EQ(gfx::Outsets(1), details->appearance.margins);
+  EXPECT_EQ(gfx::Outsets(), details->appearance.margins);
   EXPECT_EQ(gfx::Insets(10), details->appearance.aperture_insets);
   EXPECT_EQ(gfx::Size(21, 21), details->appearance.nine_patch_image.size());
   EXPECT_TRUE(details->appearance.nine_patch_image.BackedBySameObjectAs(
       HighlightBorderDetails::Get(radii, kValue).nine_patch_image));
-  // Everything inside the inner ring and the rounded corners is covered, in
-  // content coordinates.
-  EXPECT_EQ(gfx::Rect(9, 9, 182, 182), details->occlusion_rect);
+  // Everything inside both rings and the rounded corners is covered, in content
+  // coordinates.
+  EXPECT_EQ(gfx::Rect(10, 10, 180, 180), details->occlusion_rect);
 }
 
 // The border is not drawn when its corner patches cannot fit in the content.
@@ -58,14 +58,14 @@ TEST(HighlightBorderTest, NoDetailsWhenContentTooSmall) {
   HighlightBorder border(kHighlight, kBorder);
 
   const gfx::RoundedCornersF square;
-  EXPECT_TRUE(border.GetDetails(gfx::Rect(2, 2), square).has_value());
-  EXPECT_FALSE(border.GetDetails(gfx::Rect(1, 2), square).has_value());
-  EXPECT_FALSE(border.GetDetails(gfx::Rect(2, 1), square).has_value());
+  EXPECT_TRUE(border.GetDetails(gfx::Rect(4, 4), square).has_value());
+  EXPECT_FALSE(border.GetDetails(gfx::Rect(3, 4), square).has_value());
+  EXPECT_FALSE(border.GetDetails(gfx::Rect(4, 3), square).has_value());
 
   const gfx::RoundedCornersF rounded(4);
-  EXPECT_TRUE(border.GetDetails(gfx::Rect(10, 10), rounded).has_value());
-  EXPECT_FALSE(border.GetDetails(gfx::Rect(9, 10), rounded).has_value());
-  EXPECT_FALSE(border.GetDetails(gfx::Rect(10, 9), rounded).has_value());
+  EXPECT_TRUE(border.GetDetails(gfx::Rect(12, 12), rounded).has_value());
+  EXPECT_FALSE(border.GetDetails(gfx::Rect(11, 12), rounded).has_value());
+  EXPECT_FALSE(border.GetDetails(gfx::Rect(12, 11), rounded).has_value());
 }
 
 // Rings thicker than the content can hold are thinned rather than dropped, the
@@ -74,30 +74,30 @@ TEST(HighlightBorderTest, ThicknessAdjustedToFitContent) {
   HighlightBorder border(kHighlight, kBorder, /*thickness=*/3);
   const gfx::RoundedCornersF radii(2);
 
-  // Each side needs two thicknesses plus the corner radius while the layer is
-  // only one thickness larger than the content, so 10 DIP hold the full rings.
+  // 16 DIP hold the full three-pixel rings.
   std::optional<DecorationSource::Details> details =
-      border.GetDetails(gfx::Rect(10, 20), radii);
+      border.GetDetails(gfx::Rect(16, 20), radii);
   ASSERT_TRUE(details.has_value());
-  EXPECT_EQ(gfx::Outsets(3), details->appearance.margins);
+  EXPECT_EQ(gfx::Outsets(), details->appearance.margins);
   EXPECT_EQ(gfx::Insets(8), details->appearance.aperture_insets);
 
-  // 9 DIP only hold two-pixel rings; the image and occlusion follow suit.
-  details = border.GetDetails(gfx::Rect(9, 20), radii);
+  // 15 DIP only hold two-pixel rings; the image and aperture follow suit.
+  details = border.GetDetails(gfx::Rect(15, 20), radii);
   ASSERT_TRUE(details.has_value());
-  EXPECT_EQ(gfx::Outsets(2), details->appearance.margins);
+  EXPECT_EQ(gfx::Outsets(), details->appearance.margins);
   EXPECT_EQ(gfx::Insets(6), details->appearance.aperture_insets);
   EXPECT_TRUE(details->appearance.nine_patch_image.BackedBySameObjectAs(
       HighlightBorderDetails::Get(
           radii, HighlightBorderValue(kHighlight, kBorder, /*thickness=*/2))
           .nine_patch_image));
-  EXPECT_EQ(gfx::Rect(4, 4, 1, 12), details->occlusion_rect);
+  EXPECT_EQ(gfx::Rect(6, 6, 3, 8), details->occlusion_rect);
 
-  // 6 DIP are down to hairlines, and 5 DIP cannot even hold those.
-  details = border.GetDetails(gfx::Rect(6, 20), radii);
+  // 8 DIP are down to hairlines, and 7 DIP cannot even hold those.
+  details = border.GetDetails(gfx::Rect(8, 20), radii);
   ASSERT_TRUE(details.has_value());
-  EXPECT_EQ(gfx::Outsets(1), details->appearance.margins);
-  EXPECT_FALSE(border.GetDetails(gfx::Rect(5, 20), radii).has_value());
+  EXPECT_EQ(gfx::Outsets(), details->appearance.margins);
+  EXPECT_EQ(gfx::Insets(4), details->appearance.aperture_insets);
+  EXPECT_FALSE(border.GetDetails(gfx::Rect(7, 20), radii).has_value());
 
   // The requested thickness is kept for when the content grows again.
   EXPECT_EQ(3, border.thickness());
@@ -173,16 +173,17 @@ TEST_F(HighlightBorderDecorationTest, LayerGeometry) {
   decoration().SetRoundedCorners(gfx::RoundedCornersF(8));
   decoration().SetContentBounds(gfx::Rect(50, 50, 200, 200));
 
-  // The decoration extends one ring thickness beyond the content.
-  EXPECT_EQ(gfx::Rect(49, 49, 202, 202), decoration().layer()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 0, 202, 202), decoration_layer()->bounds());
+  // Both rings sit inside the content, so the decoration layer matches the
+  // content bounds.
+  EXPECT_EQ(gfx::Rect(50, 50, 200, 200), decoration().layer()->bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 200, 200), decoration_layer()->bounds());
   // The 21x21 image stretches its center pixel; the patches around it span two
   // ring thicknesses plus the corner radius.
   EXPECT_EQ(gfx::Rect(10, 10, 1, 1), decoration_layer()->aperture());
   EXPECT_EQ(gfx::Rect(10, 10, 20, 20), decoration_layer()->border());
   // The occlusion is in the decoration layer's coordinates and matches the
   // stretched center exactly.
-  EXPECT_EQ(gfx::Rect(10, 10, 182, 182), decoration_layer()->occlusion());
+  EXPECT_EQ(gfx::Rect(10, 10, 180, 180), decoration_layer()->occlusion());
 }
 
 TEST_F(HighlightBorderDecorationTest, SetColorsSwapsImageOnly) {
@@ -219,12 +220,11 @@ TEST_F(HighlightBorderDecorationTest, SetThicknessUpdatesGeometry) {
 
   decoration().GetSourceAs<HighlightBorder>()->SetThickness(2);
 
-  // Two-pixel rings need twice the margin and twice the straight run before
-  // the corner arcs.
-  EXPECT_EQ(gfx::Rect(48, 48, 204, 204), decoration().layer()->bounds());
+  // Two-pixel rings need twice the straight run before the corner arcs.
+  EXPECT_EQ(gfx::Rect(50, 50, 200, 200), decoration().layer()->bounds());
   EXPECT_EQ(gfx::Rect(12, 12, 1, 1), decoration_layer()->aperture());
   EXPECT_EQ(gfx::Rect(12, 12, 24, 24), decoration_layer()->border());
-  EXPECT_EQ(gfx::Rect(12, 12, 180, 180), decoration_layer()->occlusion());
+  EXPECT_EQ(gfx::Rect(12, 12, 176, 176), decoration_layer()->occlusion());
 }
 
 }  // namespace

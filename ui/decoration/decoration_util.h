@@ -57,8 +57,8 @@ void DrawHighlightBorder(gfx::Canvas* canvas,
                          const gfx::RoundedCornersF& rounded_corners,
                          const gfx::Rect& bounds);
 
-// Generator for highlight border decoration rendering and insets. The outer
-// ring sits outside the content and the inner ring overlaps its edge.
+// Generator for highlight border decoration rendering and insets. Both rings
+// sit inside the content.
 struct COMPONENT_EXPORT(UI_DECORATION) HighlightBorderGenerator {
   static gfx::Outsets GetMargins(const HighlightBorderValue& value);
 
