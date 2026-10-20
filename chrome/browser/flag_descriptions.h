@@ -8167,13 +8167,6 @@ inline constexpr char kShowTouchHudDescription[] =
     "Ctrl-Alt-I shows a heads-up display view in the top-left corner. Helps "
     "debug hardware issues that generate spurious touch events.";
 
-inline constexpr char kContinuousOverviewScrollAnimationName[] =
-    "Makes the gesture for Overview continuous";
-inline constexpr char kContinuousOverviewScrollAnimationDescription[] =
-    "When a user does the Overview gesture (3 finger swipe), smoothly animates "
-    "the transition into Overview as the gesture is done. Allows for the user "
-    "to scrub (move forward and backward) through Overview.";
-
 inline constexpr char kSpectreVariant2MitigationName[] =
     "Spectre variant 2 mitigation";
 inline constexpr char kSpectreVariant2MitigationDescription[] =

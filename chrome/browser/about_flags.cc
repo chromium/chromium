@@ -10167,10 +10167,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"cros-labs-continuous-overview-animation",
-     flag_descriptions::kContinuousOverviewScrollAnimationName,
-     flag_descriptions::kContinuousOverviewScrollAnimationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kContinuousOverviewScrollAnimation)},
     {"cros-labs-window-splitting", flag_descriptions::kWindowSplittingName,
      flag_descriptions::kWindowSplittingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWindowSplitting)},

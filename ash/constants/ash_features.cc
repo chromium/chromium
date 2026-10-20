@@ -378,10 +378,6 @@ BASE_FEATURE(kConchLargeModel, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, conch will use microphone to capture system audio.
 BASE_FEATURE(kConchSystemAudioFromMic, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables a smooth overview mode transition based on the gesture position.
-BASE_FEATURE(kContinuousOverviewScrollAnimation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls enabling/disabling the coral feature.
 BASE_FEATURE(kCoralFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2094,10 +2090,6 @@ bool IsCaptureModeOnDeviceOcrEnabled() {
 
 bool IsClipboardHistoryPolicyEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryPolicy);
-}
-
-bool IsContinuousOverviewScrollAnimationEnabled() {
-  return base::FeatureList::IsEnabled(kContinuousOverviewScrollAnimation);
 }
 
 bool IsCoralFeatureEnabled() {
