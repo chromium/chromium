@@ -439,13 +439,11 @@ AmbientAshTestHelper* AshTestBase::GetAmbientAshTestHelper() {
 }
 
 AccountId AshTestBase::SimulateUserLogin(
-    LoginInfo info,
+    const LoginInfo& info,
     std::optional<AccountId> opt_account_id,
-    std::unique_ptr<PrefService> pref_service,
     bool activate_session) {
   auto account_id = ash_test_helper_->SimulateUserLogin(
-      std::move(info), std::move(opt_account_id), std::move(pref_service),
-      activate_session);
+      info, std::move(opt_account_id), activate_session);
   if (pixel_test_helper_) {
     pixel_test_helper_->StabilizeUi();
   }
@@ -453,7 +451,7 @@ AccountId AshTestBase::SimulateUserLogin(
 }
 
 void AshTestBase::SimulateUserLogin(const AccountId& account_id) {
-  ash_test_helper_->SimulateUserLogin({}, std::move(account_id), nullptr);
+  ash_test_helper_->SimulateUserLogin({}, std::move(account_id));
   if (pixel_test_helper_) {
     pixel_test_helper_->StabilizeUi();
   }

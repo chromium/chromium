@@ -2608,11 +2608,9 @@ class SystemShortcutBehaviorTest : public AcceleratorControllerTest {
   void SetUp() override {
     AcceleratorControllerTest::SetUp();
 
-    auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
-    user_prefs_ = user_prefs.get();
-    RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
-                             /*for_test=*/true);
-    SimulateUserLogin({kUserEmail}, std::nullopt, std::move(user_prefs));
+    AccountId account_id = SimulateUserLogin({kUserEmail});
+    user_prefs_ = static_cast<TestingPrefServiceSimple*>(
+        GetSessionControllerClient()->GetUserPrefService(account_id));
   }
 
   void TearDown() override {

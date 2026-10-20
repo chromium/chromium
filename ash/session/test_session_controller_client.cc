@@ -105,9 +105,8 @@ void TestSessionControllerClient::SetIsDemoSession() {
 }
 
 AccountId TestSessionControllerClient::AddUserSession(
-    LoginInfo login_info,
-    std::optional<AccountId> opt_account_id,
-    std::unique_ptr<PrefService> pref_service) {
+    const LoginInfo& login_info,
+    std::optional<AccountId> opt_account_id) {
   CHECK(opt_account_id || login_info.display_email);
 
   std::string_view display_email = login_info.display_email.value_or(
@@ -131,15 +130,18 @@ AccountId TestSessionControllerClient::AddUserSession(
       login_info.user_type == user_manager::UserType::kPublicAccount ||
       login_info.is_ephemeral;
   if (pref_service_must_exist_) {
-    CHECK(!pref_service);
+    CHECK(!login_info.init_pref_service_value);
     CHECK(GetUserPrefService(account_id));
-  } else if (pref_service) {
-    CHECK(!controller_->GetUserPrefServiceForUser(account_id));
-    prefs_provider_->SetUserPrefs(account_id, std::move(pref_service));
   } else if (!GetUserPrefService(account_id)) {
-    prefs_provider_->SetUserPrefs(
-        account_id, TestPrefServiceProvider::CreateUserPrefServiceSimple());
+    auto prefs = TestPrefServiceProvider::CreateUserPrefServiceSimple();
+    if (login_info.init_pref_service_value) {
+      for (auto [k, v] : *login_info.init_pref_service_value) {
+        prefs->Set(k, v);
+      }
+    }
+    prefs_provider_->SetUserPrefs(account_id, std::move(prefs));
   } else {
+    CHECK(!login_info.init_pref_service_value);
     CHECK(reuse_pref_service_);
     CHECK(GetUserPrefService(account_id));
   }

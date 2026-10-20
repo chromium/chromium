@@ -4798,39 +4798,29 @@ class DesksMultiUserTest : public NoSessionAshTestBase {
   MultiUserWindowManager* multi_user_window_manager() {
     return Shell::Get()->multi_user_window_manager();
   }
-  PrefService* user_1_prefs() { return user_1_prefs_; }
-  PrefService* user_2_prefs() { return user_2_prefs_; }
-
-  // AshTestBase:
-  void SetUp() override {
-    NoSessionAshTestBase::SetUp();
-
-    owned_user_1_prefs_ =
-        ash::TestPrefServiceProvider::CreateUserPrefServiceSimple();
-    user_1_prefs_ = owned_user_1_prefs_.get();
-    owned_user_2_prefs_ =
-        ash::TestPrefServiceProvider::CreateUserPrefServiceSimple();
-    user_2_prefs_ = owned_user_2_prefs_.get();
+  PrefService* user_1_prefs() {
+    return GetSessionControllerClient()->GetUserPrefService(
+        GetUser1AccountId());
+  }
+  PrefService* user_2_prefs() {
+    return GetSessionControllerClient()->GetUserPrefService(
+        GetUser2AccountId());
   }
 
-  void TearDown() override {
-    user_1_prefs_ = nullptr;
-    user_2_prefs_ = nullptr;
-    NoSessionAshTestBase::TearDown();
-  }
-
-  void SimulateUser1Login() {
-    auto account_id = SimulateUserLogin({kUser1Email}, std::nullopt,
-                                        std::move(owned_user_1_prefs_));
+  void SimulateUser1Login(
+      std::optional<base::DictValue> init_prefs = std::nullopt) {
+    SimulateUserLogin({.display_email = kUser1Email,
+                       .init_pref_service_value = std::move(init_prefs)});
     MultiUserWindowManager::Get()->SetAnimationSpeedForTest(
         MultiUserWindowManager::ANIMATION_SPEED_DISABLED);
     GetSessionControllerClient()->SetSessionState(
         session_manager::SessionState::ACTIVE);
   }
 
-  void SimulateUser2Login() {
-    SimulateUserLogin({kUser2Email}, std::nullopt,
-                      std::move(owned_user_2_prefs_));
+  void SimulateUser2Login(
+      std::optional<base::DictValue> init_prefs = std::nullopt) {
+    SimulateUserLogin({.display_email = kUser2Email,
+                       .init_pref_service_value = std::move(init_prefs)});
   }
 
   AccountId GetUser1AccountId() const {
@@ -4843,29 +4833,21 @@ class DesksMultiUserTest : public NoSessionAshTestBase {
 
   // Initializes the given |prefs| with a desks restore data of 3 desks, with
   // the third desk named "code", and the rest are default-named.
-  void InitPrefsWithDesksRestoreData(PrefService* prefs) {
+  void InitPrefsWithDesksRestoreData(base::DictValue& prefs) {
     InitPrefsWithDesksRestoreData(
         prefs, {std::string(), std::string(), std::string("code")});
   }
 
   // Initializes the given |prefs| with a desks restore data from the
   // |desk_names| list.
-  void InitPrefsWithDesksRestoreData(PrefService* prefs,
+  void InitPrefsWithDesksRestoreData(base::DictValue& prefs,
                                      std::vector<std::string> desk_names) {
-    DCHECK(prefs);
-    ScopedListPrefUpdate update(prefs, prefs::kDesksNamesList);
-    base::ListValue& pref_data = update.Get();
-    ASSERT_TRUE(pref_data.empty());
+    base::ListValue pref_data;
     for (auto desk_name : desk_names) {
       pref_data.Append(desk_name);
     }
+    prefs.Set(prefs::kDesksNamesList, std::move(pref_data));
   }
-
- private:
-  std::unique_ptr<PrefService> owned_user_1_prefs_;
-  std::unique_ptr<PrefService> owned_user_2_prefs_;
-  raw_ptr<PrefService> user_1_prefs_ = nullptr;
-  raw_ptr<PrefService> user_2_prefs_ = nullptr;
 };
 
 TEST_F(DesksMultiUserTest, SwitchUsersBackAndForth) {
@@ -5036,12 +5018,13 @@ using DesksRestoreMultiUserTest = DesksMultiUserTest;
 TEST_F(DesksRestoreMultiUserTest, DesksRestoredFromPrimaryUserPrefsOnly) {
   constexpr int kDefaultActiveDesk = 0;
   constexpr int kUser1StoredActiveDesk = 2;
-  InitPrefsWithDesksRestoreData(user_1_prefs());
+  base::DictValue user_1_init_prefs;
+  InitPrefsWithDesksRestoreData(user_1_init_prefs);
 
   // Set the primary user1's active desk prefs to kUser1StoredActiveDesk.
-  user_1_prefs()->SetInteger(prefs::kDesksActiveDesk, kUser1StoredActiveDesk);
+  user_1_init_prefs.Set(prefs::kDesksActiveDesk, kUser1StoredActiveDesk);
 
-  SimulateUser1Login();
+  SimulateUser1Login(std::move(user_1_init_prefs));
   // User 1 is the first to login, hence the primary user.
   auto* controller = DesksController::Get();
   const auto& desks = controller->desks();
@@ -5085,8 +5068,9 @@ TEST_F(DesksRestoreMultiUserTest, DesksRestoredFromPrimaryUserPrefsOnly) {
 
 TEST_F(DesksRestoreMultiUserTest,
        ChangesMadeBySecondaryUserAffectsOnlyPrimaryUserPrefs) {
-  InitPrefsWithDesksRestoreData(user_1_prefs());
-  SimulateUser1Login();
+  base::DictValue user_1_init_prefs;
+  InitPrefsWithDesksRestoreData(user_1_init_prefs);
+  SimulateUser1Login(std::move(user_1_init_prefs));
 
   auto* controller = DesksController::Get();
   const auto& desks = controller->desks();
@@ -5132,10 +5116,11 @@ TEST_F(DesksRestoreMultiUserTest,
   // initial order. Set the user1 active desk to the fourth desk.
   const int n_desks_per_user = 4;
   int user_1_active_desk_index = 3;
-  user_1_prefs()->SetInteger(prefs::kDesksActiveDesk, user_1_active_desk_index);
-  InitPrefsWithDesksRestoreData(user_1_prefs(),
+  base::DictValue user_1_init_prefs;
+  user_1_init_prefs.Set(prefs::kDesksActiveDesk, user_1_active_desk_index);
+  InitPrefsWithDesksRestoreData(user_1_init_prefs,
                                 std::vector<std::string>{"0", "1", "2", "3"});
-  SimulateUser1Login();
+  SimulateUser1Login(std::move(user_1_init_prefs));
   auto* controller = DesksController::Get();
   const auto& desks = controller->desks();
   ASSERT_EQ(4u, desks.size());

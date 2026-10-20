@@ -15,7 +15,6 @@
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/session/test_pref_service_provider.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller.h"
@@ -1838,10 +1837,9 @@ TEST_F(AmbientEQTest, TestAmbientRgbScalingUpdatesOnUserChangedToEnabled) {
   EXPECT_EQ(kDefaultScalingFactors, controller_->ambient_rgb_scaling_factors());
 
   // Enable the pref for user 2 then switch to user2 and the factors update.
-  auto user2_pref_service =
-      TestPrefServiceProvider::CreateUserPrefServiceSimple();
-  user2_pref_service->SetBoolean(prefs::kAmbientColorEnabled, true);
-  SimulateUserLogin({kUser2Email}, std::nullopt, std::move(user2_pref_service));
+  SimulateUserLogin({.display_email = kUser2Email,
+                     .init_pref_service_value = base::DictValue().Set(
+                         prefs::kAmbientColorEnabled, true)});
   const auto coolest_scaling_factors =
       controller_->ambient_rgb_scaling_factors();
   EXPECT_NE(kDefaultScalingFactors, coolest_scaling_factors);
@@ -1859,10 +1857,9 @@ TEST_F(AmbientEQTest, TestAmbientRgbScalingUpdatesOnUserChangedBothDisabled) {
 
   // Disable the pref for user 2 then switch to user2 and the factors still
   // shouldn't update.
-  auto user2_pref_service =
-      TestPrefServiceProvider::CreateUserPrefServiceSimple();
-  user2_pref_service->SetBoolean(prefs::kAmbientColorEnabled, false);
-  SimulateUserLogin({kUser2Email}, std::nullopt, std::move(user2_pref_service));
+  SimulateUserLogin({.display_email = kUser2Email,
+                     .init_pref_service_value = base::DictValue().Set(
+                         prefs::kAmbientColorEnabled, false)});
   EXPECT_EQ(kDefaultScalingFactors, controller_->ambient_rgb_scaling_factors());
 }
 

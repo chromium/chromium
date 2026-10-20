@@ -304,7 +304,9 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   base::TimeTicks NowTicks() const override { return task_runner_->NowTicks(); }
 
   void SimulateUserLoginWithCustomPrefs(std::string_view user_email) {
-    auto prefs = std::make_unique<TestingPrefServiceSimple>();
+    AccountId account_id = SimulateUserLogin({user_email});
+    auto* prefs = static_cast<TestingPrefServiceSimple*>(
+        GetSessionControllerClient()->GetUserPrefService(account_id));
     prefs->registry()->RegisterBooleanPref(kTestEnabledPref, false);
     prefs->registry()->RegisterIntegerPref(
         kTestScheduleTypePref, static_cast<int>(ScheduleType::kNone));
@@ -312,9 +314,6 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
                                            kTestCustomStartTimeOffsetMinutes);
     prefs->registry()->RegisterIntegerPref(kTestCustomEndTimePref,
                                            kTestCustomEndTimeOffsetMinutes);
-    RegisterUserProfilePrefs(prefs->registry(), /*country=*/"",
-                             /*for_test=*/true);
-    SimulateUserLogin({user_email}, std::nullopt, std::move(prefs));
   }
 
   void SwitchActiveUser(const std::string& email) {

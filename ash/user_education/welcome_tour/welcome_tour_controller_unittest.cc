@@ -381,7 +381,7 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   // *not* trigger the Welcome Tour to start.
   auto* const session_controller_client = GetSessionControllerClient();
   SimulateUserLogin({.is_new_profile = true}, primary_account_id,
-                    /*pref_service=*/nullptr, /*activate_session=*/false);
+                    /*activate_session=*/false);
 
   // Activate the primary user session. This *should* trigger the Welcome Tour
   // to be registered and started as well as notify observers. Note that
@@ -759,8 +759,7 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
   base::HistogramTester histogram_tester;
   auto primary_account_id = SimulateUserLogin(
       {.display_email = "primary@test", .is_new_profile = true},
-      /*opt_account_id=*/std::nullopt, /*pref_service=*/nullptr,
-      /*activate_session=*/false);
+      /*opt_account_id=*/std::nullopt, /*activate_session=*/false);
 
   // Enable the spoken feedback after the pref service is ready and before the
   // session becomes active.

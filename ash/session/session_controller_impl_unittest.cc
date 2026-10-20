@@ -650,7 +650,7 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
 
   // Switch to test user.
   SimulateUserLogin({.display_email = kUser1Email},
-                    /*opt_account_id=*/std::nullopt, /*pref_service=*/nullptr,
+                    /*opt_account_id=*/std::nullopt,
                     /*activate_session=*/false);
 
   // Initially time of last session activation is expected to be `base::Time()`.

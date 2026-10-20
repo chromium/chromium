@@ -301,9 +301,8 @@ class AshTestBase : public testing::Test {
   // Simulates a user sign-in, and returns an AccountId used to sign in.
   // Please see `AshTestHelper::SimulateUserLogin` for more details.
   AccountId SimulateUserLogin(
-      LoginInfo login_info,
+      const LoginInfo& login_info,
       std::optional<AccountId> opt_account_id = std::nullopt,
-      std::unique_ptr<PrefService> pref_service = nullptr,
       bool activate_session = true);
 
   // Similar to above, but it uses AccountId with default values.

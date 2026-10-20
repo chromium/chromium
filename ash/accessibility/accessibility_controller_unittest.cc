@@ -35,7 +35,6 @@
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/session/test_pref_service_provider.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/hover_text_bubble_controller.h"
 #include "ash/system/accessibility/hover_text_bubble_view.h"
@@ -2983,28 +2982,20 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
 
   void SimulateLogin() {
     constexpr char kUserEmail[] = "user1@test.com";
-    auto pref_service =
-        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
-                             /*for_test=*/true);
 
     switch (GetParam()) {
       case TestUserLoginType::kNewUser:
         ash_test_helper_->SimulateUserLogin(
-            {.display_email = kUserEmail, .is_new_profile = true},
-            /*opt_account_id=*/std::nullopt, std::move(pref_service));
+            {.display_email = kUserEmail, .is_new_profile = true});
         break;
 
       case TestUserLoginType::kGuest:
         ash_test_helper_->SimulateUserLogin(
-            {user_manager::kGuestUserName, user_manager::UserType::kGuest},
-            /*opt_account_id=*/std::nullopt, std::move(pref_service));
+            {user_manager::kGuestUserName, user_manager::UserType::kGuest});
         break;
 
       case TestUserLoginType::kExistingUser:
-        ash_test_helper_->SimulateUserLogin({kUserEmail},
-                                            /*opt_account_id=*/std::nullopt,
-                                            std::move(pref_service));
+        ash_test_helper_->SimulateUserLogin({kUserEmail});
         break;
     }
   }

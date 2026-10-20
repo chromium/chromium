@@ -30,7 +30,6 @@
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
-#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
@@ -51,6 +50,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/wm/window_state.h"
+#include "base/json/values_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/system_monitor.h"
@@ -4273,10 +4273,13 @@ class CameraPreviewWithHoldingSpaceTest : public CaptureModeCameraTest {
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(
         user_account, client(), model());
 
-    auto pref_service = TestPrefServiceProvider::CreateUserPrefServiceSimple();
-    holding_space_prefs::MarkTimeOfFirstAvailability(pref_service.get());
-    holding_space_prefs::MarkTimeOfFirstAdd(pref_service.get());
-    SimulateUserLogin({}, user_account, std::move(pref_service));
+    base::Value now = base::TimeToValue(base::Time::Now());
+    auto init_prefs =
+        base::DictValue()
+            .Set("ash.holding_space.time_of_first_availability", now.Clone())
+            .Set("ash.holding_space.time_of_first_add", std::move(now));
+    SimulateUserLogin({.init_pref_service_value = std::move(init_prefs)},
+                      user_account);
   }
 
   void TearDown() override {

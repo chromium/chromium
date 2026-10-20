@@ -82,10 +82,11 @@ TEST_F(LogoutButtonTrayTest, ButtonPressedSignOutImmediately) {
       GetSessionControllerClient();
 
   // Sign out immediately when duration is zero.
-  auto pref_service = TestPrefServiceProvider::CreateUserPrefServiceSimple();
-  pref_service->SetBoolean(prefs::kShowLogoutButtonInTray, true);
-  pref_service->SetInteger(prefs::kLogoutDialogDurationMs, 0);
-  SimulateUserLogin({kUserEmail}, std::nullopt, std::move(pref_service));
+  SimulateUserLogin(
+      {.display_email = kUserEmail,
+       .init_pref_service_value = base::DictValue()
+                                      .Set(prefs::kShowLogoutButtonInTray, true)
+                                      .Set(prefs::kLogoutDialogDurationMs, 0)});
 
   EXPECT_EQ(0, session_client->request_sign_out_count());
   EXPECT_EQ(0, Shell::Get()
@@ -108,10 +109,11 @@ TEST_F(LogoutButtonTrayTest, ButtonPressedShowConfirmationDialog) {
 
   // Call |LogoutConfirmationController::ConfirmLogout| when duration is
   // non-zero.
-  auto pref_service = TestPrefServiceProvider::CreateUserPrefServiceSimple();
-  pref_service->SetBoolean(prefs::kShowLogoutButtonInTray, true);
-  pref_service->SetInteger(prefs::kLogoutDialogDurationMs, 1000);
-  SimulateUserLogin({kUserEmail}, std::nullopt, std::move(pref_service));
+  SimulateUserLogin({.display_email = kUserEmail,
+                     .init_pref_service_value =
+                         base::DictValue()
+                             .Set(prefs::kShowLogoutButtonInTray, true)
+                             .Set(prefs::kLogoutDialogDurationMs, 1000)});
 
   EXPECT_EQ(0, session_client->request_sign_out_count());
   EXPECT_EQ(0, Shell::Get()
@@ -144,10 +146,11 @@ TEST_F(LogoutButtonTrayTest, ButtonPressedInDemoSession) {
 
   // Sign out immediately and record user action when duration is zero
   // and it is demo session.
-  auto pref_service = TestPrefServiceProvider::CreateUserPrefServiceSimple();
-  pref_service->SetBoolean(prefs::kShowLogoutButtonInTray, true);
-  pref_service->SetInteger(prefs::kLogoutDialogDurationMs, 0);
-  SimulateUserLogin({kUserEmail}, std::nullopt, std::move(pref_service));
+  SimulateUserLogin(
+      {.display_email = kUserEmail,
+       .init_pref_service_value = base::DictValue()
+                                      .Set(prefs::kShowLogoutButtonInTray, true)
+                                      .Set(prefs::kLogoutDialogDurationMs, 0)});
   session_client->SetIsDemoSession();
 
   LeftClickOn(button);

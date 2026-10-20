@@ -26,7 +26,6 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
-#include "ash/session/test_pref_service_provider.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -50,6 +49,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_preview_view.h"
 #include "base/files/file_path.h"
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -361,14 +361,15 @@ class HoldingSpaceTrayTestBase : public NoSessionAshTestBase {
     NoSessionAshTestBase::SetUp();
     test_api_ = std::make_unique<HoldingSpaceTestApi>();
 
-    auto pref_service = TestPrefServiceProvider::CreateUserPrefServiceSimple();
-    holding_space_prefs::MarkTimeOfFirstAvailability(pref_service.get());
-
     AccountId user_account = AccountId::FromUserEmail(kTestUser);
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(
         user_account, client(), model());
 
-    SimulateUserLogin({}, user_account, std::move(pref_service));
+    auto init_prefs =
+        base::DictValue().Set("ash.holding_space.time_of_first_availability",
+                              base::TimeToValue(base::Time::Now()));
+    SimulateUserLogin({.init_pref_service_value = std::move(init_prefs)},
+                      user_account);
   }
 
   void TearDown() override {
@@ -454,15 +455,17 @@ class HoldingSpaceTrayTestBase : public NoSessionAshTestBase {
   void SwitchToSecondaryUser(const std::string& user_id,
                              HoldingSpaceClient* client,
                              HoldingSpaceModel* model) {
-    auto pref_service = TestPrefServiceProvider::CreateUserPrefServiceSimple();
-    holding_space_prefs::MarkTimeOfFirstAvailability(pref_service.get());
-    holding_space_prefs::MarkTimeOfFirstAdd(pref_service.get());
-    holding_space_prefs::MarkTimeOfFirstPin(pref_service.get());
-
     AccountId user_account = AccountId::FromUserEmail(user_id);
     HoldingSpaceController::Get()->RegisterClientAndModelForUser(user_account,
                                                                  client, model);
-    SimulateUserLogin({user_id}, std::nullopt, std::move(pref_service));
+    base::Value now = base::TimeToValue(base::Time::Now());
+    auto init_prefs =
+        base::DictValue()
+            .Set("ash.holding_space.time_of_first_availability", now.Clone())
+            .Set("ash.holding_space.time_of_first_add", now.Clone())
+            .Set("ash.holding_space.time_of_first_pin", std::move(now));
+    SimulateUserLogin({.display_email = user_id,
+                       .init_pref_service_value = std::move(init_prefs)});
   }
 
   void UnregisterModelForUser(const std::string& user_id) {

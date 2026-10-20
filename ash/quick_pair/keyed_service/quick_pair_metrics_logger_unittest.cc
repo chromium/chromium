@@ -161,14 +161,7 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::SetUp();
     ClearLogin();
 
-    // Inject our own PrefServices for each user which enables us to setup the
-    // desks restore data before the user signs in.
-    auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
-    RegisterUserProfilePrefs(user_prefs->registry(), /*country=*/"",
-                             /*for_test=*/true);
-
-    SimulateUserLogin({kUserEmail},
-                      /*account_id=*/std::nullopt, std::move(user_prefs));
+    SimulateUserLogin({kUserEmail});
 
     adapter_ = base::MakeRefCounted<FakeMetricBluetoothAdapter>();
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);

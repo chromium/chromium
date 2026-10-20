@@ -636,12 +636,11 @@ display::Display AshTestHelper::GetSecondaryDisplay() const {
 }
 
 AccountId AshTestHelper::SimulateUserLogin(
-    LoginInfo login_info,
+    const LoginInfo& login_info,
     std::optional<AccountId> opt_account_id,
-    std::unique_ptr<PrefService> pref_service,
     bool activate_session) {
-  AccountId account_id = session_controller_client_->AddUserSession(
-      login_info, opt_account_id, std::move(pref_service));
+  AccountId account_id =
+      session_controller_client_->AddUserSession(login_info, opt_account_id);
 
   // Taken some concept from User::CanLock(). Kiosk/Guest accounts are
   // disallowed to lock screen here. Other accounts are allowed by default.
