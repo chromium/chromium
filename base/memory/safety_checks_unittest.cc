@@ -173,7 +173,7 @@ TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
   // Skip if AMSC quarantine is not configured. `base::ScopedFeatureList` does
   // not work here because the default `PartitionRoot` is configured before
   // running this test.
-  if (!branch.GetConfigurationForTesting().enable_quarantine) {
+  if (!branch.IsQuarantineEnabledForTesting()) {
     GTEST_SKIP();
   }
 

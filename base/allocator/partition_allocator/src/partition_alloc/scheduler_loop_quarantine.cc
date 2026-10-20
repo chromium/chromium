@@ -251,7 +251,6 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Configure(
   }
 
   ScopedGuardIfNeeded<kThreadBound> guard(lock_);
-  config_for_testing_ = config;
 
   if (enable_quarantine_) {
     // Already enabled, explicitly purging an existing instance.
@@ -513,13 +512,6 @@ template <bool thread_bound, QuarantineTarget quarantine_target>
 void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::
     DangerouslyDisablePurge() {
   g_no_purge.store(true, std::memory_order_relaxed);
-}
-
-template <bool thread_bound, QuarantineTarget quarantine_target>
-const SchedulerLoopQuarantineConfig&
-SchedulerLoopQuarantineBranch<thread_bound,
-                              quarantine_target>::GetConfigurationForTesting() {
-  return config_for_testing_;
 }
 
 template class PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(PARTITION_ALLOC))

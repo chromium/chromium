@@ -279,7 +279,7 @@ class SchedulerLoopQuarantineBranch {
   // is being terminated, this can help reduce hangs.
   static void DangerouslyDisablePurge();
 
-  const SchedulerLoopQuarantineConfig& GetConfigurationForTesting();
+  bool IsQuarantineEnabledForTesting() const { return enable_quarantine_; }
 
   class ScopedQuarantineExclusion {
     SchedulerLoopQuarantineBranch& branch_;
@@ -367,9 +367,6 @@ class SchedulerLoopQuarantineBranch {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   std::atomic_bool being_destructed_ = false;
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
-
-  // Kept for testing purposes only.
-  SchedulerLoopQuarantineConfig config_for_testing_;
 };
 
 using SanitizedObjectSchedulerLoopQuarantineBranch =
