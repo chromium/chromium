@@ -79,10 +79,7 @@ void AndroidSpareRendererNavigationThrottle::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
   // Resume the navigation when the browser receives the ProcessDied signal
-  // of the renderer. If the feature
-  // ResumeNavigationWithSpeculativeRFHProcessGone is enabled, the browser is
-  // able to resume the navigation with a new renderer process. Otherwise the
-  // navigation will be aborted.
+  // of the renderer.
   MaybeResume(/*is_alive=*/false);
 }
 

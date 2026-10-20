@@ -904,9 +904,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     // the navigation doesn't use the same process as the crashed process, we
     // can crash the process after the final RenderFrameHost has been picked
     // instead, and the navigation will commit normally.
-    if (!base::FeatureList::IsEnabled(
-            features::kResumeNavigationWithSpeculativeRFHProcessGone) &&
-        (ShouldCreateNewHostForAllFrames() || IsBackForwardCacheEnabled())) {
+    if (ShouldCreateNewHostForAllFrames() || IsBackForwardCacheEnabled()) {
       EXPECT_FALSE(dip_navigation.was_committed());
       return;
     }
@@ -989,9 +987,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     // the navigation doesn't use the same process as the crashed process, we
     // can crash the process after the final RenderFrameHost has been picked
     // instead, and the navigation will commit normally.
-    if (!base::FeatureList::IsEnabled(
-            features::kResumeNavigationWithSpeculativeRFHProcessGone) &&
-        (ShouldCreateNewHostForAllFrames() || IsBackForwardCacheEnabled())) {
+    if (ShouldCreateNewHostForAllFrames() || IsBackForwardCacheEnabled()) {
       EXPECT_FALSE(non_dip_navigation.was_committed());
       EXPECT_EQ(current_frame_host()
                     ->policy_container_host()

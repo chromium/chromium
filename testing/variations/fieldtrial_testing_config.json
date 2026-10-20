@@ -760,7 +760,6 @@
                     "enable_features": [
                         "AndroidWarmUpSpareRendererWithTimeout",
                         "OverrideAndroidOmniboxSpareRendererDelay",
-                        "ResumeNavigationWithSpeculativeRFHProcessGone",
                         "SpareRendererProcessPriority"
                     ]
                 }
@@ -15250,26 +15249,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "RestrictPendingInputEventType"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ResumeNavigationWithSpeculativeRFHProcessGone": [
-        {
-            "platforms": [
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ReportStuckThrottle",
-                        "ResumeNavigationWithSpeculativeRFHProcessGone"
                     ]
                 }
             ]

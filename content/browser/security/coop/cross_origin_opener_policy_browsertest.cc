@@ -1274,12 +1274,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     TestNavigationManager coop_navigation(web_contents(), coop_page);
     shell()->LoadURL(coop_page);
     if (ShouldCreateNewHostForAllFrames()) {
-      // If the feature ResumeNavigationWithSpeculativeRFHProcessGone is
-      // enabled, the result of the navigation with a process kill depends on
-      // whether the navigation has reached the response stage. We use
-      // WaitForResponse rather than WaitForSpeculativeRenderFrameHostCreation
-      // to deflake the test.
-      EXPECT_TRUE(coop_navigation.WaitForResponse());
+      coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
     } else {
       EXPECT_TRUE(coop_navigation.WaitForRequestStart());
     }
@@ -1394,12 +1389,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     TestNavigationManager non_coop_navigation(web_contents(), non_coop_page);
     shell()->LoadURL(non_coop_page);
     if (ShouldCreateNewHostForAllFrames()) {
-      // If the feature ResumeNavigationWithSpeculativeRFHProcessGone is
-      // enabled, the result of the navigation with a process kill depends on
-      // whether the navigation has reached the response stage. We use
-      // WaitForResponse rather than WaitForSpeculativeRenderFrameHostCreation
-      // to deflake the test.
-      EXPECT_TRUE(non_coop_navigation.WaitForResponse());
+      non_coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
     } else {
       EXPECT_TRUE(non_coop_navigation.WaitForRequestStart());
     }
@@ -1516,12 +1506,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
                                           coop_allow_popups_page);
     shell()->LoadURL(coop_allow_popups_page);
     if (ShouldCreateNewHostForAllFrames()) {
-      // If the feature ResumeNavigationWithSpeculativeRFHProcessGone is
-      // enabled, the result of the navigation with a process kill depends on
-      // whether the navigation has reached the response stage. We use
-      // WaitForResponse rather than WaitForSpeculativeRenderFrameHostCreation
-      // to deflake the test.
-      EXPECT_TRUE(coop_navigation.WaitForResponse());
+      coop_navigation.WaitForSpeculativeRenderFrameHostCreation();
     } else {
       EXPECT_TRUE(coop_navigation.WaitForRequestStart());
     }

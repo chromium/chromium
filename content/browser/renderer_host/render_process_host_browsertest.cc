@@ -1927,34 +1927,12 @@ class WorkerRefReleasingNavigationObserver : public WebContentsObserver {
 
 }  // namespace
 
-// Keeps a navigation alive when the process of its speculative RenderFrameHost
-// dies. Without this feature, crashes reset the navigation.
-class RenderProcessHostTestWithResumeNavigation : public RenderProcessHostTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    feature_list_.InitAndEnableFeature(
-        features::kResumeNavigationWithSpeculativeRFHProcessGone);
-    RenderProcessHostTest::SetUpCommandLine(command_line);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    RenderProcessHostTestWithResumeNavigation,
-    testing::Values(false, true),
-    [](const testing::TestParamInfo<RenderProcessHostTest::ParamType>& info) {
-      return info.param ? "KeepAliveInBrowserMigration" : "Default";
-    });
-
 // Regression test for b/569408565: Ensure that dropping the last worker
 // refcount during `FrameTreeNode::CancelNavigation()` while detaching a
 // non-live subframe does not make `RenderProcessHostImpl::Cleanup()` run
 // `FastShutdown()` -> `RenderProcessGone()` and destroy the `FrameTreeNode`
 // mid-detach. The process must still exit after the detach completes.
-IN_PROC_BROWSER_TEST_P(RenderProcessHostTestWithResumeNavigation,
+IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
                        NoReentrantCleanupOnSubframeDetachWithWorkerRef) {
   ASSERT_TRUE(embedded_test_server()->Start());
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
@@ -1969,12 +1947,14 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTestWithResumeNavigation,
   RenderFrameHostImpl* child_rfh1 = root->child_at(1)->current_frame_host();
   RenderProcessHost* process_b = child_rfh0->GetProcess();
 
-  // Start a same-site navigation in child-0 and pause it before commit while
-  // `child_rfh0` is still live (so no early RFH swap occurs).
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  TestNavigationManager nav_manager(shell()->web_contents(), url_b);
+  // Start a cross-site navigation in child-0 and pause it before commit while
+  // `child_rfh0` is still live (so no early RFH swap occurs, and the
+  // speculative RFH is in a different process so terminating `process_b` does
+  // not cancel the navigation).
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  TestNavigationManager nav_manager(shell()->web_contents(), url_c);
   ASSERT_TRUE(ExecJs(
-      root, JsReplace("document.getElementById('child-0').src = $1;", url_b)));
+      root, JsReplace("document.getElementById('child-0').src = $1;", url_c)));
   ASSERT_TRUE(nav_manager.WaitForRequestStart());
 
   // Terminate the b.com subframe process while the navigation is in flight so
