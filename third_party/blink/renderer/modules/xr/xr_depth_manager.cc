@@ -51,11 +51,24 @@ void XRDepthManager::ProcessDepthInformation(
         data_dirty_ = !!depth_data_;
         depth_data_ = nullptr;
         break;
-      case device::mojom::blink::XRDepthData::Tag::kUpdatedDepthData:
+      case device::mojom::blink::XRDepthData::Tag::kUpdatedDepthData: {
         // We got new depth buffer - store the current depth data as a member.
-        depth_data_ = std::move(depth_data->get_updated_depth_data());
+        auto updated_data = std::move(depth_data->get_updated_depth_data());
+        if (updated_data->shared_buffer.IsValid()) {
+          const uint32_t buffer_id = updated_data->buffer_id;
+          if (buffer_id < shared_buffer_regions_.size() &&
+              (!shared_buffer_regions_[buffer_id].IsValid() ||
+               shared_buffer_regions_[buffer_id].GetGUID() !=
+                   updated_data->shared_buffer.GetGUID())) {
+            shared_buffer_regions_[buffer_id] =
+                std::move(updated_data->shared_buffer);
+            data_buffers_[buffer_id] = nullptr;
+          }
+        }
+        depth_data_ = std::move(updated_data);
         data_dirty_ = true;
         break;
+      }
     }
   } else {
     data_dirty_ = !!depth_data_;
@@ -84,6 +97,9 @@ XRCPUDepthInformation* XRDepthManager::GetCpuDepthInformation(
   }
 
   EnsureData();
+  if (!data_) {
+    return nullptr;
+  }
 
   return MakeGarbageCollected<XRCPUDepthInformation>(
       xr_view, depth_data_->view_geometry, depth_data_->size,
@@ -113,7 +129,40 @@ XRWebGLDepthInformation* XRDepthManager::GetWebGLDepthInformation(
 void XRDepthManager::EnsureData() {
   CHECK(depth_data_);
 
+  const uint32_t buffer_id = depth_data_->buffer_id;
+  if (buffer_id < shared_buffer_regions_.size() &&
+      shared_buffer_regions_[buffer_id].IsValid() &&
+      depth_data_->pixel_data.size() == 0) {
+    const size_t expected_size = shared_buffer_regions_[buffer_id].GetSize();
+    auto& data_buffer = data_buffers_[buffer_id];
+    if (!data_buffer || data_buffer->IsDetached() ||
+        data_buffer->ByteSpan().size() != expected_size) {
+      base::UnsafeSharedMemoryRegion dup_region =
+          shared_buffer_regions_[buffer_id].Duplicate();
+      if (dup_region.IsValid()) {
+        // Wrap the platform shared memory handle directly into the V8
+        // ArrayBuffer backing store (zero-copy mapping via gin mapper).
+        ArrayBufferContents contents(
+            base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+                std::move(dup_region)),
+            /*offset=*/0, expected_size, ArrayBufferContents::kNotShared);
+        if (contents.IsValid()) {
+          data_buffer = DOMArrayBuffer::Create(std::move(contents));
+        }
+      }
+    }
+    data_ = data_buffer;
+    data_dirty_ = false;
+    return;
+  }
+
   if (!data_dirty_) {
+    return;
+  }
+
+  if (depth_data_->pixel_data.size() == 0) {
+    data_ = nullptr;
+    data_dirty_ = false;
     return;
   }
 
@@ -131,6 +180,9 @@ void XRDepthManager::EnsureData() {
 
 void XRDepthManager::Trace(Visitor* visitor) const {
   visitor->Trace(data_);
+  for (const auto& buffer : data_buffers_) {
+    visitor->Trace(buffer);
+  }
 }
 
 }  // namespace blink

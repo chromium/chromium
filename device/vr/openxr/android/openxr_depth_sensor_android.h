@@ -5,9 +5,14 @@
 #ifndef DEVICE_VR_OPENXR_ANDROID_OPENXR_DEPTH_SENSOR_ANDROID_H_
 #define DEVICE_VR_OPENXR_ANDROID_OPENXR_DEPTH_SENSOR_ANDROID_H_
 
+#include <array>
+
 #include "base/memory/raw_ref.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "device/vr/openxr/openxr_depth_sensor.h"
 #include "device/vr/openxr/openxr_extension_handler_factory.h"
+#include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/dev/xr_android.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -28,6 +33,29 @@ class OpenXrDepthSensorAndroid : public OpenXrDepthSensor {
   void SetDepthActive(bool depth_active) override;
 
  private:
+  struct EyeSharedBuffer {
+    EyeSharedBuffer();
+    ~EyeSharedBuffer();
+    EyeSharedBuffer(EyeSharedBuffer&&);
+    EyeSharedBuffer& operator=(EyeSharedBuffer&&);
+
+    base::UnsafeSharedMemoryRegion region;
+    base::WritableSharedMemoryMapping mapping;
+    XrTime last_copied_exposure_timestamp = 0;
+  };
+
+  static constexpr size_t kNumSharedBuffersPerEye = 2;
+
+  struct EyeSharedBufferArray {
+    EyeSharedBufferArray();
+    ~EyeSharedBufferArray();
+    EyeSharedBufferArray(EyeSharedBufferArray&&);
+    EyeSharedBufferArray& operator=(EyeSharedBufferArray&&);
+
+    std::array<EyeSharedBuffer, kNumSharedBuffersPerEye> buffers;
+    size_t active_index = 0;
+  };
+
   mojom::XRDepthDataPtr GetDepthDataForEye(
       const XrDepthAcquireResultANDROID& acquire_result,
       const mojom::XRViewPtr& view);
@@ -43,6 +71,7 @@ class OpenXrDepthSensorAndroid : public OpenXrDepthSensor {
   XrDepthCameraResolutionANDROID depth_camera_resolution_ =
       XR_DEPTH_CAMERA_RESOLUTION_MAX_ENUM_ANDROID;
   std::vector<XrDepthSwapchainImageANDROID> depth_images_;
+  std::array<EyeSharedBufferArray, kNumPrimaryViews> shared_buffers_;
 
   mojom::XRDepthConfigPtr depth_config_ = nullptr;
   bool match_depth_view_ = true;

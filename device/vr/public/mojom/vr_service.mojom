@@ -8,6 +8,7 @@ import "device/gamepad/public/mojom/gamepad.mojom";
 import "device/vr/public/mojom/xr_hand_tracking_data.mojom";
 import "device/vr/public/mojom/xr_session.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "gpu/ipc/common/exported_shared_image.mojom";
 import "gpu/ipc/common/shared_image_metadata.mojom";
@@ -734,13 +735,24 @@ struct XRDepthDataUpdated {
   // Array of numbers representing depth from the camera plane.
   // Size of the number is determined by the `XRDepthDataFormat` sent at session
   // creation. The numbers can be converted to meters by multiplying by
-  // `raw_value_to_meters`.
+  // `raw_value_to_meters`. Used by backends like ARCore when zero-copy shared
+  // memory is not supported.
   mojo_base.mojom.BigBuffer pixel_data;
+  // Optional shared memory region sent to establish or update a buffer in the
+  // shared memory pool for zero-copy depth buffer sharing with the renderer.
+  // When established, the renderer maps this region directly into a persistent
+  // V8 ArrayBuffer backing store, and `pixel_data` is left empty.
+  mojo_base.mojom.UnsafeSharedMemoryRegion? shared_buffer;
+  // Index indicating which buffer in the shared memory pool is active for this
+  // frame (e.g. 0 or 1 for double buffering to prevent tearing with renderer
+  // frame pipelining).
+  uint32 buffer_id = 0;
   // Transform that needs to be applied when indexing into pixel_data when using
   // normalized view coordinates (with origin at bottom left corner of the
   // screen).
   gfx.mojom.Transform norm_texture_from_norm_view;
-  // Size of the pixel array. Valid iff pixel_data is not null.
+  // Size of the pixel array. Valid iff pixel_data is not null or a persistent
+  // shared_buffer has been established.
   gfx.mojom.Size size;
   // Factor that needs to be applied when converting from raw values in the
   // |pixel_data| buffer into meters.

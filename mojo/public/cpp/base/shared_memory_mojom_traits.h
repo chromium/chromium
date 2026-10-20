@@ -9,11 +9,28 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/mojom/base/shared_memory.mojom-shared.h"
 
 namespace mojo {
+
+template <>
+struct CloneTraits<base::ReadOnlySharedMemoryRegion> {
+  static base::ReadOnlySharedMemoryRegion Clone(
+      const base::ReadOnlySharedMemoryRegion& input) {
+    return input.Duplicate();
+  }
+};
+
+template <>
+struct CloneTraits<base::UnsafeSharedMemoryRegion> {
+  static base::UnsafeSharedMemoryRegion Clone(
+      const base::UnsafeSharedMemoryRegion& input) {
+    return input.Duplicate();
+  }
+};
 
 template <>
 struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)

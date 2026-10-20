@@ -285,6 +285,24 @@ void CopyDepthData(base::span<const float> input,
 }
 }  // namespace
 
+OpenXrDepthSensorAndroid::EyeSharedBuffer::EyeSharedBuffer() = default;
+OpenXrDepthSensorAndroid::EyeSharedBuffer::~EyeSharedBuffer() = default;
+OpenXrDepthSensorAndroid::EyeSharedBuffer::EyeSharedBuffer(EyeSharedBuffer&&) =
+    default;
+OpenXrDepthSensorAndroid::EyeSharedBuffer&
+OpenXrDepthSensorAndroid::EyeSharedBuffer::operator=(EyeSharedBuffer&&) =
+    default;
+
+OpenXrDepthSensorAndroid::EyeSharedBufferArray::EyeSharedBufferArray() =
+    default;
+OpenXrDepthSensorAndroid::EyeSharedBufferArray::~EyeSharedBufferArray() =
+    default;
+OpenXrDepthSensorAndroid::EyeSharedBufferArray::EyeSharedBufferArray(
+    EyeSharedBufferArray&&) = default;
+OpenXrDepthSensorAndroid::EyeSharedBufferArray&
+OpenXrDepthSensorAndroid::EyeSharedBufferArray::operator=(
+    EyeSharedBufferArray&&) = default;
+
 OpenXrDepthSensorAndroid::OpenXrDepthSensorAndroid(
     const OpenXrExtensionHelper& extension_helper,
     XrSession session,
@@ -429,6 +447,9 @@ void OpenXrDepthSensorAndroid::DestroySwapchain() {
 
   swapchain_ = XR_NULL_HANDLE;
   depth_images_.clear();
+  for (auto& eye_buffers : shared_buffers_) {
+    eye_buffers = EyeSharedBufferArray();
+  }
 }
 
 XrResult OpenXrDepthSensorAndroid::Initialize() {
@@ -574,7 +595,42 @@ mojom::XRDepthDataPtr OpenXrDepthSensorAndroid::GetDepthDataForEye(
   }
 
   auto depth_views = base::span(acquire_result.views);
-  XrDepthViewANDROID depth_view = depth_views[GetDepthViewIndex(eye)];
+  const size_t view_index = GetDepthViewIndex(eye);
+  XrDepthViewANDROID depth_view = depth_views[view_index];
+  EyeSharedBufferArray& eye_buffers = shared_buffers_[view_index];
+  EyeSharedBuffer& current_buf = eye_buffers.buffers[eye_buffers.active_index];
+
+  // If we are not reprojecting onto the XRView (which moves every frame), we
+  // only need to copy the depth image when the depth sensor's exposureTimestamp
+  // actually advances.
+  const bool has_new_exposure =
+      acquire_result.exposureTimestamp !=
+          current_buf.last_copied_exposure_timestamp ||
+      acquire_result.exposureTimestamp == 0;
+  const bool need_pixel_copy =
+      match_depth_view_ || !current_buf.mapping.IsValid() || has_new_exposure;
+
+  // When writing new pixel data, advance to the alternate buffer in the
+  // double-buffered pair so the renderer can safely read the previous frame's
+  // buffer without data tearing during frame pipelining.
+  size_t target_index = eye_buffers.active_index;
+  if (need_pixel_copy && current_buf.mapping.IsValid()) {
+    target_index = (eye_buffers.active_index + 1) % kNumSharedBuffersPerEye;
+  }
+
+  EyeSharedBuffer& target_buf = eye_buffers.buffers[target_index];
+  if (!target_buf.mapping.IsValid() ||
+      target_buf.mapping.size() != buffer_size) {
+    target_buf = EyeSharedBuffer();
+    target_buf.region = base::UnsafeSharedMemoryRegion::Create(buffer_size);
+    if (target_buf.region.IsValid()) {
+      target_buf.mapping = target_buf.region.Map();
+    }
+    if (!target_buf.mapping.IsValid()) {
+      DLOG(ERROR) << __func__ << " Failed to allocate shared depth buffer";
+      return nullptr;
+    }
+  }
 
   size_t pixel_offset = GetDepthImageOffset(eye, num_pixels);
   auto* depth_image_ptr =
@@ -594,6 +650,7 @@ mojom::XRDepthDataPtr OpenXrDepthSensorAndroid::GetDepthDataForEye(
       full_depth_image_span.subspan(pixel_offset, num_pixels);
   mojom::XRDepthDataUpdatedPtr result = mojom::XRDepthDataUpdated::New();
   result->size = image_size;
+  result->buffer_id = static_cast<uint32_t>(target_index);
 
   // If we don't have to match our depth view, then we need to send up the
   // information about the depth camera's geometry.
@@ -609,26 +666,33 @@ mojom::XRDepthDataPtr OpenXrDepthSensorAndroid::GetDepthDataForEye(
         mojo_from_local * XrPoseToGfxTransform(depth_view.pose);
   }
 
+  result->shared_buffer = target_buf.region.Duplicate();
+  if (!result->shared_buffer.IsValid()) {
+    DLOG(ERROR) << __func__ << " Failed to duplicate shared depth buffer";
+    return nullptr;
+  }
+
   switch (depth_config_->depth_data_format) {
     case mojom::XRDepthDataFormat::kFloat32:
       CHECK(GetByteSize(data_format) == sizeof(float));
       // Results are already in meters.
       result->raw_value_to_meters = 1;
 
-      // SPECIAL CASE: If we don't need to reproject use big_buffer's "copy"
-      // constructor, since we already have the data in the format we need.
-      // Otherwise, allocate a BigBuffer of the appropriate size and perform the
-      // reprojection and copy.
-      if (!match_depth_view_) {
-        // Floating point types do not have unique object representations, but
-        // we're using the byte span for serialization, which is allowed.
-        result->pixel_data = mojo_base::BigBuffer(
-            base::as_byte_span(base::allow_nonunique_obj, depth_image_span));
-      } else {
-        result->pixel_data = mojo_base::BigBuffer(buffer_size);
-        CopyDepthData<float>(depth_image_span, result->pixel_data, image_size,
-                             depth_view, view, match_depth_view_,
-                             [](float val) { return val; });
+      if (need_pixel_copy) {
+        if (!match_depth_view_) {
+          // Floating point types do not have unique object representations, but
+          // we're using the byte span for serialization, which is allowed.
+          target_buf.mapping.GetMemoryAsSpan<uint8_t>().copy_from(
+              base::as_byte_span(base::allow_nonunique_obj, depth_image_span));
+        } else {
+          CopyDepthData<float>(depth_image_span,
+                               target_buf.mapping.GetMemoryAsSpan<uint8_t>(),
+                               image_size, depth_view, view, match_depth_view_,
+                               [](float val) { return val; });
+        }
+        target_buf.last_copied_exposure_timestamp =
+            acquire_result.exposureTimestamp;
+        eye_buffers.active_index = target_index;
       }
       break;
     case mojom::XRDepthDataFormat::kLuminanceAlpha:
@@ -636,14 +700,18 @@ mojom::XRDepthDataPtr OpenXrDepthSensorAndroid::GetDepthDataForEye(
       CHECK(GetByteSize(data_format) == sizeof(uint16_t));
       // We'll be converting to millimeters.
       result->raw_value_to_meters = 1 / 1000.0f;
-      result->pixel_data = mojo_base::BigBuffer(buffer_size);
 
-      CopyDepthData<uint16_t>(
-          depth_image_span, result->pixel_data, image_size, depth_view, view,
-          match_depth_view_, [](float val) {
-            // val is in meters, so convert to mm to avoid losing precision.
-            return base::saturated_cast<uint16_t>(std::nearbyint(val * 1000));
-          });
+      if (need_pixel_copy) {
+        CopyDepthData<uint16_t>(
+            depth_image_span, target_buf.mapping.GetMemoryAsSpan<uint8_t>(),
+            image_size, depth_view, view, match_depth_view_, [](float val) {
+              // val is in meters, so convert to mm to avoid losing precision.
+              return base::saturated_cast<uint16_t>(std::nearbyint(val * 1000));
+            });
+        target_buf.last_copied_exposure_timestamp =
+            acquire_result.exposureTimestamp;
+        eye_buffers.active_index = target_index;
+      }
       break;
   }
 

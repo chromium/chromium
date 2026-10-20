@@ -5,6 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_DEPTH_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_DEPTH_MANAGER_H_
 
+#include <array>
+
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/types/pass_key.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -47,8 +50,16 @@ class XRDepthManager : public GarbageCollected<XRDepthManager> {
   // Current depth data buffer.
   device::mojom::blink::XRDepthDataUpdatedPtr depth_data_;
 
+  // Optional persistent shared memory regions for double-buffering.
+  std::array<base::UnsafeSharedMemoryRegion, 2> shared_buffer_regions_;
+
+  // Cached DOMArrayBuffers mapping the shared memory regions in
+  // `shared_buffer_regions_`.
+  std::array<Member<DOMArrayBuffer>, 2> data_buffers_;
+
   // Cached version of the depth buffer data. If not null, contains the same
-  // information as |depth_data_.pixel_data| buffer.
+  // information as `depth_data_.pixel_data` buffer (or maps
+  // `shared_buffer_regions_` directly).
   Member<DOMArrayBuffer> data_;
   bool data_dirty_ = true;
 
