@@ -16,7 +16,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -86,6 +85,11 @@ bool TabCollectionAnimatingLayoutManager::Delegate::ShouldSnapToTarget(
 bool TabCollectionAnimatingLayoutManager::Delegate::
     ShouldAnimateOpacityForAddAndRemove(const views::View& child_view) const {
   return false;
+}
+
+std::optional<views::SizeBound> TabCollectionAnimatingLayoutManager::Delegate::
+    GetAvailableMainAxisSpaceOverride() const {
+  return std::nullopt;
 }
 
 void TabCollectionAnimatingLayoutManager::Delegate::OnAnimationEnded() {}
@@ -509,40 +513,25 @@ views::SizeBounds TabCollectionAnimatingLayoutManager::GetAvailableHostSize()
     return views::SizeBounds(std::max(host_view()->width(), 0), {});
   }
 
-  // For horizontal layouts, top-level containers in a ScrollView calculate
-  // target layouts using the available space allocated to the scroll view so
-  // tabs can expand to their preferred width rather than being constrained to
-  // the host's mid-animation width. Nested animating containers (e.g. tab
-  // groups) use their target bounds in the parent container. Other containers
-  // that do not animate their own host width fall back to their host view
-  // width.
+  // For horizontal layouts, top-level containers calculate target layouts
+  // using the total space available to the tab strip (to allow tabs to expand
+  // to their preferred width rather than being constrained to the host's
+  // mid-animation width). Nested animating containers (e.g. tab groups) use
+  // their target bounds in the parent container. Containers that do not
+  // provide an explicit available space override and do not animate their own
+  // host width fall back to their host view width.
   views::SizeBound available_width;
-  if (const auto* parent_layout_manager =
-          GetParentAnimatingLayoutManager(host_view())) {
+  if (const auto space_override =
+          delegate_->GetAvailableMainAxisSpaceOverride();
+      space_override.has_value() && space_override->is_bounded()) {
+    available_width = *space_override;
+  } else if (const auto* parent_layout_manager =
+                 GetParentAnimatingLayoutManager(host_view())) {
     if (auto it =
             parent_layout_manager->target_view_layout_map_.find(host_view());
         it != parent_layout_manager->target_view_layout_map_.end() &&
         it->second.bounds.width() > 0) {
       available_width = views::SizeBound(it->second.bounds.width());
-    }
-  } else if (const auto* scroll_view =
-                 views::ScrollView::GetScrollViewForContents(
-                     const_cast<views::View*>(host_view()))) {
-    if (scroll_view->parent()) {
-      const views::SizeBounds available_size =
-          scroll_view->parent()->GetAvailableSize(scroll_view);
-      if (available_size.width().is_bounded() &&
-          available_size.width().value() > 0) {
-        available_width = available_size.width();
-      }
-    }
-    if (!available_width.is_bounded()) {
-      const int viewport_width = scroll_view->GetVisibleRect().width();
-      if (viewport_width > 0) {
-        available_width = views::SizeBound(viewport_width);
-      } else if (scroll_view->width() > 0) {
-        available_width = views::SizeBound(scroll_view->width());
-      }
     }
   } else if (!animate_host_size_ && host_view()->width() > 0) {
     available_width = views::SizeBound(host_view()->width());

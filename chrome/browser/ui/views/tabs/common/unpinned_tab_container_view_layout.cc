@@ -135,7 +135,14 @@ views::ProposedLayout UnpinnedTabContainerViewLayout::CalculateHorizontalLayout(
           GetClosingModeOverrideWidth(tab_container_view)) {
     available_width = std::min(*override_width, available_width);
   }
-  if (size_bounds.width().is_bounded()) {
+  // Prioritize the container's space override (available viewport/strip
+  // capacity) over size bounds which may reflect intermediate layout
+  // measurements.
+  if (const auto space_override =
+          tab_container_view->GetAvailableMainAxisSpaceOverride();
+      space_override.has_value() && space_override->is_bounded()) {
+    available_width = std::min(space_override->value(), available_width);
+  } else if (size_bounds.width().is_bounded()) {
     available_width = std::min(size_bounds.width().value(), available_width);
   }
 

@@ -42,6 +42,8 @@ class UnpinnedTabContainerView
   bool ShouldSnapToTarget(const views::View& child_view) const override;
   bool ShouldAnimateOpacityForAddAndRemove(
       const views::View& child_view) const override;
+  std::optional<views::SizeBound> GetAvailableMainAxisSpaceOverride()
+      const override;
   bool IsAnimationAllowed() override;
 
   // DraggedTabsContainer:

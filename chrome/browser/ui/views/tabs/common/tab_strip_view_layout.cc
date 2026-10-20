@@ -88,12 +88,12 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
   const auto* unpinned_container = tab_strip_view->GetUnpinnedTabsContainer();
   const int pinned_preferred_width =
       pinned_tabs_scroll_view->GetPreferredSize(size_bounds).width();
-  // Query with unbounded size bounds so that at rest this returns the
-  // unconstrained preferred width of unpinned tabs and groups (clamped to any
-  // active tab-closing mode override), and during animations it returns the
-  // interpolated animated width.
-  const int unpinned_preferred_width =
-      unpinned_tabs_scroll_view->GetPreferredSize({}).width();
+  // Use unconstrained preferred size so the layout accounts for the total
+  // desired width of unpinned tabs and groups. The unpinned container may not
+  // be set yet so fallback to 0 if it doesn't exist.
+  int unpinned_preferred_width =
+      unpinned_container ? unpinned_container->GetUnconstrainedPreferredWidth()
+                         : 0;
 
   const auto override_width =
       GetClosingModeUnpinnedContainerOverrideWidth(tab_strip_view);
@@ -109,6 +109,8 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
     if (available_width.is_bounded()) {
       pinned_width = std::min(pinned_width, available_width.value());
     }
+    unpinned_preferred_width =
+        std::min(unpinned_preferred_width, *override_width);
   } else if (available_width.is_bounded()) {
     // Enforce the 50% cap without a minimum size override.
     pinned_width = CalculatePinnedContainerMainAxisSize(
@@ -124,10 +126,7 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
   const bool is_pinned_overflowing = pinned_width < pinned_preferred_width;
 
   const int min_unpinned_width =
-      unpinned_container
-          ? std::min(unpinned_container->GetMinimumSize().width(),
-                     unpinned_preferred_width)
-          : 0;
+      unpinned_container ? unpinned_container->GetMinimumSize().width() : 0;
   bool is_unpinned_overflowing = false;
   if (has_unpinned && available_width.is_bounded()) {
     const int available_unpinned_with_overlap = std::max(
@@ -174,7 +173,8 @@ views::ProposedLayout TabStripViewLayout::CalculateHorizontalLayout(
     // If placing the unpinned scroll view into the available space causes an
     // overflow, reserve space for the scroll buttons and overflow padding.
     const bool will_overflow_without_scroll_buttons =
-        unpinned_container && available_unpinned_width < min_unpinned_width;
+        unpinned_container &&
+        available_unpinned_width < unpinned_container->GetMinimumSize().width();
     const bool is_scroll_buttons_pinned =
         tab_strip_view->IsTabScrollButtonsPinned();
     if (has_unpinned && will_overflow_without_scroll_buttons &&

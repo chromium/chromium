@@ -225,6 +225,40 @@ bool UnpinnedTabContainerView::ShouldSnapToTarget(
   return views::IsViewClass<SplitTabView>(&child_view);
 }
 
+std::optional<views::SizeBound>
+UnpinnedTabContainerView::GetAvailableMainAxisSpaceOverride() const {
+  if (orientation_ != TabStripOrientation::kHorizontal) {
+    return std::nullopt;
+  }
+  const auto* scroll_view = GetScrollViewForContainer();
+  if (scroll_view && scroll_view->IsHorizontalContentOverflowing()) {
+    // When overflowing and scrollable, the available space for tab layout
+    // is strictly the visible viewport width so tabs do not expand to the
+    // total scrollable content width.
+    const int viewport_width = scroll_view->GetVisibleRect().width();
+    if (viewport_width > 0) {
+      return views::SizeBound(viewport_width);
+    }
+    if (scroll_view->width() > 0) {
+      return views::SizeBound(scroll_view->width());
+    }
+  }
+  // When not overflowing, return the total available unpinned capacity
+  // allocated by TabStripViewLayout so tabs have room to expand.
+  if (scroll_view && scroll_view->parent()) {
+    const views::SizeBounds available_size =
+        scroll_view->parent()->GetAvailableSize(scroll_view);
+    if (available_size.width().is_bounded() &&
+        available_size.width().value() > 0) {
+      return available_size.width();
+    }
+  }
+  if (scroll_view && scroll_view->width() > 0) {
+    return views::SizeBound(scroll_view->width());
+  }
+  return std::nullopt;
+}
+
 bool UnpinnedTabContainerView::IsAnimationAllowed() {
   if (!collection_node_) {
     return false;
