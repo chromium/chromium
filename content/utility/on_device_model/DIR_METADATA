@@ -1,3 +1,2 @@
-buganizer {
-    component_id: 1430831
-}
+mixins: "//services/on_device_model/COMMON_METADATA"
+
