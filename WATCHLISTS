@@ -1639,7 +1639,7 @@
                   '|third_party/blink/renderer/modules/manifest/',
     },
     'media': {
-      'filepath': 'media|third_party/(ffmpeg|opus|libvpx)'
+      'filepath': '(^|/)media/|^third_party/(ffmpeg|dav1d)(/|$)|^third_party/rust/.*symphonia',
     },
     'media_capture_from_element': {
       'filepath': 'content/renderer/media_capture_from_element/' \
