@@ -128,6 +128,16 @@ constexpr char kBlockingScansForMalware[] = R"(
 
 constexpr char kNothingEnabled[] = R"({ "service_provider": "google" })";
 
+// Connectors that `ContentAnalysisDelegateAuditOnlyTest` sets policies for.
+// Print scanning isn't supported on Android, where its pref isn't registered.
+constexpr AnalysisConnector kAuditOnlyTestConnectors[] = {
+    FILE_ATTACHED,
+    BULK_DATA_ENTRY,
+#if !BUILDFLAG(IS_ANDROID)
+    PRINT,
+#endif  // !BUILDFLAG(IS_ANDROID)
+};
+
 // Helpers to get text with sizes relative to the minimum required size of 100
 // bytes for scans to trigger.
 std::string large_text() {
@@ -138,6 +148,7 @@ std::string small_text() {
   return "random small text";
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 base::ReadOnlySharedMemoryRegion create_page(size_t size) {
   base::MappedReadOnlyRegion page =
       base::ReadOnlySharedMemoryRegion::Create(size);
@@ -148,6 +159,7 @@ base::ReadOnlySharedMemoryRegion create_page(size_t size) {
 base::ReadOnlySharedMemoryRegion normal_page() {
   return create_page(1024);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ScopedSetDMToken {
  public:
@@ -563,7 +575,7 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
     include_dlp_ = dlp;
     include_malware_ = malware;
 
-    for (auto connector : {FILE_ATTACHED, BULK_DATA_ENTRY, PRINT}) {
+    for (auto connector : kAuditOnlyTestConnectors) {
       if (include_dlp_ && include_malware_) {
         enterprise_connectors::test::SetAnalysisConnector(
             profile_->GetPrefs(), connector, kBlockingScansForDlpAndMalware);
@@ -583,12 +595,10 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
   void SetUp() override {
     BaseTest::SetUp();
 
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile_->GetPrefs(), FILE_ATTACHED, kBlockingScansForDlpAndMalware);
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile_->GetPrefs(), BULK_DATA_ENTRY, kBlockingScansForDlpAndMalware);
-    enterprise_connectors::test::SetAnalysisConnector(
-        profile_->GetPrefs(), PRINT, kBlockingScansForDlpAndMalware);
+    for (auto connector : kAuditOnlyTestConnectors) {
+      enterprise_connectors::test::SetAnalysisConnector(
+          profile_->GetPrefs(), connector, kBlockingScansForDlpAndMalware);
+    }
 
     ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
         &test::FakeContentAnalysisDelegate::Create, run_loop_.QuitClosure(),
@@ -800,6 +810,8 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData3) {
   EXPECT_TRUE(called);
 }
 
+// Print scanning isn't supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, PagePrintAllowed) {
   GURL url(kTestUrl);
   ContentAnalysisDelegate::Data data;
@@ -865,6 +877,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, PagePrintBlocked) {
             test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest,
        FileDataPositiveMalwareAndDlpVerdicts) {
@@ -954,6 +967,9 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileDataPositiveMalwareVerdict) {
   EXPECT_TRUE(called);
 }
 
+// Android doesn't detect encrypted archives (`FileAnalysisRequest` only runs
+// the sandboxed archive analyzers on desktop), so they're scanned as encrypted blobs
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileIsEncrypted) {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
 
@@ -1001,6 +1017,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileIsEncrypted) {
             test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileIsEncrypted_PolicyAllows) {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
@@ -2011,6 +2028,9 @@ TEST_F(ContentAnalysisDelegateReferrerChainTest, UnaffectedByNavigations) {
   EXPECT_EQ(current_referrer_chain[0].referrer_url(), kTestUrl);
 }
 
+// Frame URL chains are only collected with `ENTERPRISE_CONTENT_ANALYSIS`, which
+// Android doesn't have (see `CollectFrameUrls()`).
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 using ContentAnalysisDelegateFrameUrlChainTest = BaseTest;
 
 TEST_F(ContentAnalysisDelegateFrameUrlChainTest,
@@ -2117,5 +2137,6 @@ TEST_F(ContentAnalysisDelegateFrameUrlChainTest,
   ASSERT_EQ(1, frame_urls.size());
   EXPECT_EQ(untrusted_frame_url.spec(), frame_urls[0]);
 }
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 }  // namespace enterprise_connectors

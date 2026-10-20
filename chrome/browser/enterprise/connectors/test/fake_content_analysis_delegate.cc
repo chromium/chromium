@@ -10,7 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/connectors/analysis/page_print_request_handler.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/test/fake_clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/test/fake_files_request_handler.h"
@@ -19,12 +19,17 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/clipboard_request_handler.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/connectors/analysis/page_print_request_handler.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace enterprise_connectors::test {
 
 namespace {
 
 base::TimeDelta response_delay = base::Seconds(0);
 
+#if !BUILDFLAG(IS_ANDROID)
 class FakePagePrintRequestHandler : public PagePrintRequestHandler {
  public:
   static std::unique_ptr<PagePrintRequestHandler> Create(
@@ -57,6 +62,7 @@ class FakePagePrintRequestHandler : public PagePrintRequestHandler {
   base::OnceCallback<void(std::unique_ptr<BinaryUploadRequest>)>
       upload_callback_;
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -133,11 +139,13 @@ std::unique_ptr<ContentAnalysisDelegate> FakeContentAnalysisDelegate::Create(
       base::BindRepeating(
           &FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning,
           base::Unretained(ret.get()))));
+#if !BUILDFLAG(IS_ANDROID)
   PagePrintRequestHandler::SetFactoryForTesting(base::BindRepeating(
       &FakePagePrintRequestHandler::Create,
       base::BindRepeating(
           &FakeContentAnalysisDelegate::FakeUploadPageForDeepScanning,
           base::Unretained(ret.get()))));
+#endif  // !BUILDFLAG(IS_ANDROID)
   ClipboardRequestHandler::SetFactoryForTesting(base::BindRepeating(
       &FakeClipboardRequestHandler::Create, base::Unretained(ret.get())));
   return ret;
@@ -259,9 +267,14 @@ void FakeContentAnalysisDelegate::Response(
       std::move(file_request_callback.value()).Run(path, result_, response);
       break;
     case AnalysisConnector::PRINT:
+#if BUILDFLAG(IS_ANDROID)
+      // Print scanning isn't supported on Android.
+      NOTREACHED();
+#else
       PageRequestCallback(CalculateRequestHandlerResult(
           GetDataForTesting().settings, result_, response));
       break;
+#endif  // BUILDFLAG(IS_ANDROID)
     case AnalysisConnector::FILE_TRANSFER:
     case AnalysisConnector::NETWORK_REQUEST:
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:

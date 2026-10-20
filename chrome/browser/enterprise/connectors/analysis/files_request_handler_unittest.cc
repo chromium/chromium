@@ -146,6 +146,9 @@ class BaseTest : public testing::Test {
   Profile* profile() { return profile_; }
 
  protected:
+  // Must outlive `task_environment_` so that ThreadPool tasks never observe
+  // the FeatureList being torn down while they are still running.
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   TestingProfileManager profile_manager_;
@@ -456,7 +459,6 @@ class FilesRequestHandlerTest : public BaseTest {
   // To verify user action requests count in local content analysis request is
   // set correctly.
   uint64_t expected_user_action_requests_count_ = 0;
-  base::test::ScopedFeatureList scoped_feature_list_;
   bool upload_performed_ = false;
 
  protected:
@@ -541,6 +543,9 @@ TEST_F(FilesRequestHandlerTest, FileDataPositiveMalwareVerdict) {
                   true, FinalContentAnalysisResult::SUCCESS, ""));
 }
 
+// Android doesn't detect encrypted archives (`FileAnalysisRequest` only runs
+// the sandboxed archive analyzers on desktop), so they're uploaded as encrypted blobs
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(FilesRequestHandlerTest, FileIsEncrypted) {
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
 
@@ -576,6 +581,7 @@ TEST_F(FilesRequestHandlerTest, FileIsEncrypted) {
                   false, FinalContentAnalysisResult::ENCRYPTED_FILES, ""));
   EXPECT_FALSE(was_upload_performed());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // With a local service provider, a scan should not terminate early due to
 // encryption.

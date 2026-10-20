@@ -83,7 +83,7 @@
 // conditional statements in BUILD.gn files that import this file. See
 // "gn help nogncheck" for more information.
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"  // nogncheck
-#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"  // nogncheck
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #endif
