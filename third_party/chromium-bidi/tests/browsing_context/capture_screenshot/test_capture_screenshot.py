@@ -405,3 +405,54 @@ async def test_capture_screenshot_with_goog_options(websocket, context_id):
     # encoded payload size.
     assert_images_similar(fast_result["data"], default_result["data"])
     assert len(fast_result["data"]) > len(default_result["data"])
+
+
+@pytest.mark.asyncio
+async def test_screenshot_image_size(websocket, context_id, html):
+    await goto_url(
+        websocket,
+        context_id,
+        html("<div style='width: 200vw; height: 200vh; background: red;'></div>"),
+    )
+
+    # Set a fixed viewport
+    await send_JSON_command(
+        websocket,
+        {
+            "method": "browsingContext.setViewport",
+            "params": {
+                "context": context_id,
+                "viewport": {
+                    "width": 100,
+                    "height": 100,
+                },
+                "devicePixelRatio": 1.0,
+            },
+        },
+    )
+    await read_JSON_message(websocket)
+
+    # Capture with imageSize max_width=50
+    await send_JSON_command(
+        websocket,
+        {
+            "method": "browsingContext.captureScreenshot",
+            "params": {
+                "context": context_id,
+                "origin": "viewport",
+                "imageSize": {
+                    "maxWidth": 50,
+                },
+            },
+        },
+    )
+
+    resp = await read_JSON_message(websocket)
+    data = resp["result"]["data"]
+    import base64
+    import struct
+
+    png_data = base64.b64decode(data)
+    width, height = struct.unpack(">LL", png_data[16:24])
+
+    assert (width, height) == (50, 50)

@@ -1346,12 +1346,30 @@ export class BrowsingContextImpl {
       );
     }
 
+    // The specification requires `scale` to be reduced if the given `imageSize` dimensions
+    // result in a smaller viewport scale relative to the unscaled CSS framebuffer dimensions.
+    let scale = 1.0;
+    if (params.imageSize) {
+      if (
+        params.imageSize.maxWidth !== undefined &&
+        params.imageSize.maxWidth / rect.width < scale
+      ) {
+        scale = params.imageSize.maxWidth / rect.width;
+      }
+      if (
+        params.imageSize.maxHeight !== undefined &&
+        params.imageSize.maxHeight / rect.height < scale
+      ) {
+        scale = params.imageSize.maxHeight / rect.height;
+      }
+    }
+
     return await this.#cdpTarget.cdpClient.sendCommand(
       'Page.captureScreenshot',
       {
         // Standard BiDi options take precedence over `goog:` extensions.
         ...params['goog:params'],
-        clip: {...rect, scale: 1.0},
+        clip: {...rect, scale},
         ...formatParameters,
         captureBeyondViewport,
       } as Protocol.Page.CaptureScreenshotRequest,
