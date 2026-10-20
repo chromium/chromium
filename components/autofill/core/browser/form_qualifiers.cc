@@ -120,33 +120,43 @@ bool AtLeastNumFieldsSatisfy(const T& form, size_t num, Predicate p) {
   return num == 0;
 }
 
-// Returns true if `form` is considered a search form and should be ignored by
-// Autofill.
+// Returns true if `form` belongs to a search page and should not be relevant
+// for Autofill.
 template <typename T>
   requires IsForm<T>
-bool IsSearchForm(const T& form) {
-  // Checking `kUrlSearchActionRe` on the form's `action` URL alone is too
-  // aggressive: when a `<form>` omits the `action` attribute, its `action`
-  // defaults to the document URL, which means any form on a page with "/search"
-  // in its path (e.g., a login or booking lookup form) would match
+bool IsIrrelevantFormInSearchPage(const T& form) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillOnlyConsiderSingleFieldFormsAsSearchForms)) {
+    return MatchesRegex<kUrlSearchActionRe>(
+        base::UTF8ToUTF16(action(form).path()));
+  }
+  const GURL& target_url = !action(form).is_empty() ? action(form) : url(form);
+  if (!MatchesRegex<kUrlSearchActionRe>(base::UTF8ToUTF16(target_url.path()))) {
+    // Form does not belong to a search page.
+    return false;
+  }
+  // Making all forms on a search page irrelevant is too aggressive:
+  // - When a `<form>` omits the `action` attribute, its `action` defaults to
+  //   the document URL (`url(form)`).
+  // - For unowned forms (`form.renderer_id().is_null()`), `action(form)` is
+  //   empty, so we fall back to `url(form)` above.
+  // In both cases, any form on a page with "/search" in its path matches
   // `kUrlSearchActionRe`.
   //
-  // To avoid blocking legitimate multi-field forms while still filtering out
-  // common single-input search bars (and avoiding unnecessary server query
-  // traffic for them), we also require `fields(form).size() == 1`.
+  // To avoid blocking legitimate multi-field forms (e.g., a login or booking
+  // lookup form) while still filtering out common single-input search bars (or
+  // unowned forms with only hidden/select fields, such as on
+  // google.com/search), we consider forms with at least 2 focusable non-select
+  // fields as relevant for autofill.
   //
-  // Note on unowned forms and form-flattening:
-  // - Unowned forms (`form.renderer_id().is_null()`) have an empty `action`
-  //   URL, so they never match `kUrlSearchActionRe` regardless of field count.
-  // - For an owned `<form>`, `FormForest` only flattens `<iframe>`s that are
-  //   DOM descendants of that `<form>` element (other iframes on the page
-  //   belong to the unowned form or their own enclosing `<form>`), so a search
-  //   `<form>` won't pick up fields from unrelated iframes on the page.
-  return (fields(form).size() == 1 ||
-          !base::FeatureList::IsEnabled(
-              features::kAutofillOnlyConsiderSingleFieldFormsAsSearchForms)) &&
-         MatchesRegex<kUrlSearchActionRe>(
-             base::UTF8ToUTF16(action(form).path()));
+  // Note on form-flattening:
+  // For an owned `<form>`, `FormForest` only flattens `<iframe>`s that are
+  // DOM descendants of that `<form>` element (other iframes on the page
+  // belong to the unowned form or their own enclosing `<form>`), so a search
+  // `<form>` won't pick up fields from unrelated iframes on the page.
+  return !AtLeastNumFieldsSatisfy(form, 2, [](const FormFieldData& field) {
+    return field.is_focusable() && !field.IsSelectElement();
+  });
 }
 
 template <typename T>
@@ -174,7 +184,7 @@ DenseSet<FormParsingPermission> GetFormParsingPermissions(
     return {};
   }
 
-  if (IsSearchForm(form)) {
+  if (IsIrrelevantFormInSearchPage(form)) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
                         << LogMessage::kAbortParsingSearchForm << form;
     return {};
