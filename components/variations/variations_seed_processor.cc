@@ -8,6 +8,8 @@
 
 #include <map>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -215,38 +217,18 @@ void ForceExperimentState(
 void AssociateDefaultFeatures(const Study& study,
                               base::FieldTrial* trial,
                               base::FeatureList* feature_list) {
-  // Note: We only compute feature associations for ACTIVATE_ON_QUERY,
-  // ACTIVATE_ON_QUERY_RUNTIME_INHERIT, and STICKY_AFTER_QUERY studies since
-  // these associations are only used to ensure that the trial is activated when
-  // the feature is queried.
-  switch (study.activation_type()) {
-    case Study::ACTIVATE_ON_STARTUP:
-      return;
-    case Study::ACTIVATE_ON_QUERY:
-      // fall-through:
-    case Study::ACTIVATE_ON_QUERY_RUNTIME_INHERIT:
-      // fall-through:
-    case Study::STICKY_AFTER_QUERY:
-      break;
-    case Study_ActivationType_Study_ActivationType_INT_MIN_SENTINEL_DO_NOT_USE_:
-    case Study_ActivationType_Study_ActivationType_INT_MAX_SENTINEL_DO_NOT_USE_:
-      // Part of the enum but won't be seen in practice. See processed_study.cc.
-      return;
-  }
-
-  std::set<std::string> features_to_associate;
-  for (const auto& experiment : study.experiment()) {
-    const auto& features = experiment.feature_association();
-    for (const auto& feature : features.enable_feature()) {
-      features_to_associate.insert(feature);
-    }
-    for (const auto& feature : features.disable_feature()) {
-      features_to_associate.insert(feature);
-    }
-  }
-  for (const auto& feature_name : features_to_associate) {
+  // Note: We compute feature associations for all studies (including
+  // ACTIVATE_ON_STARTUP) so that:
+  // 1. For ACTIVATE_ON_QUERY, ACTIVATE_ON_QUERY_RUNTIME_INHERIT, and
+  //    STICKY_AFTER_QUERY studies, the trial is activated when any of the
+  //    study's features are queried.
+  // 2. FeatureList tracks that those features are controlled by `trial` (which
+  //    is needed, for example, for runtime mutability to know which startup
+  //    trial to override when a client started in a Default group).
+  for (std::string_view feature_name : GetStudyFeatureNames(study)) {
     feature_list->RegisterFieldTrialOverride(
-        feature_name, base::FeatureList::OVERRIDE_USE_DEFAULT, trial);
+        std::string(feature_name), base::FeatureList::OVERRIDE_USE_DEFAULT,
+        trial);
   }
 }
 
@@ -320,6 +302,22 @@ base::FieldTrial* CreateTrialWithFeatureConflictGroup(const Study& study) {
 }
 
 }  // namespace
+
+base::flat_set<std::string_view> GetStudyFeatureNames(const Study& study) {
+  // Collect into a vector first and construct the flat_set at once, which sorts
+  // and dedupes in O(N log N), rather than inserting into the flat_set one at a
+  // time, which is O(N^2).
+  std::vector<std::string_view> feature_names;
+  for (const auto& experiment : study.experiment()) {
+    const auto& features = experiment.feature_association();
+    feature_names.insert(feature_names.end(), features.enable_feature().begin(),
+                         features.enable_feature().end());
+    feature_names.insert(feature_names.end(),
+                         features.disable_feature().begin(),
+                         features.disable_feature().end());
+  }
+  return base::flat_set<std::string_view>(std::move(feature_names));
+}
 
 VariationsSeedProcessor::VariationsSeedProcessor(
     StickyActivationManager& sticky_activation_manager)

@@ -7,7 +7,10 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/pass_key.h"
@@ -49,6 +52,12 @@ class VariationsLayers;
 // based on Google group or enterprise group membership). Trials created from
 // such studies are marked as low anonymity.
 COMPONENT_EXPORT(VARIATIONS) bool StudyIsLowAnonymity(const Study& study);
+
+// Returns the names of all features enabled or disabled by any experiment in
+// `study`. The returned string_views point into `study`, so they must not
+// outlive it.
+COMPONENT_EXPORT(VARIATIONS)
+base::flat_set<std::string_view> GetStudyFeatureNames(const Study& study);
 
 // Helper class to instantiate field trials from a variations seed.
 class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {

@@ -910,14 +910,15 @@ TYPED_TEST(VariationsSeedProcessorTest, DefaultAssociatedFeaturesOnStartup) {
   base::test::ScopedFeatureList base_scoped_feature_list;
   base_scoped_feature_list.InitWithFeatureList(std::move(feature_list));
 
-  // Nothing should be associated with the default group for an
-  // ACTIVATE_ON_STARTUP trial.
+  // Even for an ACTIVATE_ON_STARTUP trial, all features should be associated
+  // with the group with no features (e.g. so FeatureList tracks the controlling
+  // trial for runtime mutability), while none should have their state changed.
   EXPECT_FALSE(base::FeatureList::IsEnabled(kDisabled));
-  EXPECT_EQ(AssociatedStudyGroup(kDisabled), "");
+  EXPECT_EQ(AssociatedStudyGroup(kDisabled), "Expected");
   EXPECT_TRUE(base::FeatureList::IsEnabled(kEnabled));
-  EXPECT_EQ(AssociatedStudyGroup(kEnabled), "");
+  EXPECT_EQ(AssociatedStudyGroup(kEnabled), "Expected");
   EXPECT_FALSE(base::FeatureList::IsEnabled(kRepeated));
-  EXPECT_EQ(AssociatedStudyGroup(kRepeated), "");
+  EXPECT_EQ(AssociatedStudyGroup(kRepeated), "Expected");
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, LowEntropyStudyTest) {

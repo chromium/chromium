@@ -57,6 +57,8 @@
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_crash_keys.h"
+#include "components/variations/variations_layers.h"
+#include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_seed_simulator.h"
 #include "components/variations/variations_switches.h"
 #include "components/version_info/channel.h"
@@ -1549,13 +1551,15 @@ VariationsSeed CreateTestRuntimeMutableSeed(
   experiment->set_name(experiment_name);
   experiment->set_probability_weight(probability_weight);
 
-  Study_Experiment_FeatureAssociation* feature_association =
-      experiment->mutable_feature_association();
-  for (const std::string& feature : enable_features) {
-    feature_association->add_enable_feature(feature);
-  }
-  for (const std::string& feature : disable_features) {
-    feature_association->add_disable_feature(feature);
+  if (!enable_features.empty() || !disable_features.empty()) {
+    Study_Experiment_FeatureAssociation* feature_association =
+        experiment->mutable_feature_association();
+    for (const std::string& feature : enable_features) {
+      feature_association->add_enable_feature(feature);
+    }
+    for (const std::string& feature : disable_features) {
+      feature_association->add_disable_feature(feature);
+    }
   }
 
   return seed;
@@ -2196,6 +2200,281 @@ TEST_F(VariationsServiceTest,
     }
     EXPECT_TRUE(found);
   }
+}
+
+// Verifies the typical case where a client that is not in a study at all has a
+// runtime-mutable study applied and falls into a "Default" group (e.g. a study
+// that is 1% Enabled, 1% Control, 98% Default). The "Default" group should be
+// associated with the study's features using `OVERRIDE_USE_DEFAULT`, so that:
+// 1. The `ACTIVATE_ON_QUERY` runtime override is activated when any of those
+//    features are queried.
+// 2. `FeatureList` tracks that the features are controlled by the study, so
+//    that the client can later move to another group (e.g. when the study is
+//    ramped up).
+TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NewStudyDefaultGroup) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureD,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  // The client is not in "MyStudy" at startup.
+  ASSERT_FALSE(base::FieldTrialList::Find("MyStudy"));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureD));
+
+  // Creates a seed for an ACTIVATE_ON_QUERY "MyStudy" study with "Enabled"
+  // (disables kTestRuntimeFeatureB and enables kTestRuntimeFeatureD), "Control"
+  // and "Default" groups. In practice, the groups would be e.g. 1% Enabled, 1%
+  // Control, 98% Default, but here `selected_group` gets all the weight so that
+  // the client deterministically falls into it.
+  auto create_seed = [](const std::string& selected_group) {
+    VariationsSeed seed;
+    Study* study = seed.add_study();
+    study->set_name("MyStudy");
+    study->set_default_experiment_name("Default");
+    study->set_runtime_mutable(true);
+    study->set_activation_type(Study::ACTIVATE_ON_QUERY);
+    study->set_consistency(Study::PERMANENT);
+    Study::Experiment* enabled = study->add_experiment();
+    enabled->set_name("Enabled");
+    enabled->mutable_feature_association()->add_disable_feature(
+        kTestRuntimeFeatureB.name);
+    enabled->mutable_feature_association()->add_enable_feature(
+        kTestRuntimeFeatureD.name);
+    Study::Experiment* control = study->add_experiment();
+    control->set_name("Control");
+    Study::Experiment* default_group = study->add_experiment();
+    default_group->set_name("Default");
+    for (Study::Experiment& experiment : *study->mutable_experiment()) {
+      experiment.set_probability_weight(
+          experiment.name() == selected_group ? 100 : 0);
+    }
+    return seed;
+  };
+
+  {
+    // 1. The study is applied at runtime and the client falls into "Default".
+    base::HistogramTester histogram_tester;
+    service.SimulateAndApplyRuntimeMutableChanges(create_seed("Default"));
+    histogram_tester.ExpectUniqueSample(
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
+
+    const auto* override_info =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "MyStudy");
+    ASSERT_TRUE(override_info != nullptr);
+    EXPECT_EQ(override_info->group_name(), "Default");
+    EXPECT_EQ(override_info->overridden_trial(), nullptr);
+    EXPECT_FALSE(override_info->is_active());
+
+    // Querying kTestRuntimeFeatureB should return its default state (true) and
+    // activate the "Default" runtime override.
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+    EXPECT_TRUE(override_info->is_active());
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureD));
+  }
+
+  {
+    // 2. The study is ramped up and the client moves from "Default" to
+    // "Enabled". Because "Default" was associated with kTestRuntimeFeatureB and
+    // kTestRuntimeFeatureD in FeatureList, this should succeed (rather than
+    // fail with e.g. `kTrialNameCollision`).
+    base::HistogramTester histogram_tester;
+    service.SimulateAndApplyRuntimeMutableChanges(create_seed("Enabled"));
+    histogram_tester.ExpectUniqueSample(
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kSuccess, 1);
+
+    const auto* override_info =
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "MyStudy");
+    ASSERT_TRUE(override_info != nullptr);
+    EXPECT_EQ(override_info->group_name(), "Enabled");
+    EXPECT_EQ(override_info->overridden_trial(), nullptr);
+    EXPECT_FALSE(override_info->is_active());
+
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureD));
+    EXPECT_TRUE(override_info->is_active());
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+  }
+}
+
+// Verifies that a client in a startup group that overrides the study's features
+// can be moved to a "Default" group at runtime, in which case the features use
+// their default states.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_StartupGroupToDefaultGroup) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureD,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+
+  // Start with a static FieldTrial that disables kTestRuntimeFeatureB
+  // (ENABLED_BY_DEFAULT) and enables kTestRuntimeFeatureD
+  // (DISABLED_BY_DEFAULT).
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial("MyStudy", "Group1");
+  feature_list->RegisterFieldTrialOverride(
+      kTestRuntimeFeatureB.name, base::FeatureList::OVERRIDE_DISABLE_FEATURE,
+      trial);
+  feature_list->RegisterFieldTrialOverride(
+      kTestRuntimeFeatureD.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+      trial);
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureD));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive("MyStudy"));
+
+  // Apply an ACTIVATE_ON_QUERY runtime seed that places the client into a
+  // "Default" group (no feature_association), while "Group1" (weight 0)
+  // references kTestRuntimeFeatureB and kTestRuntimeFeatureD.
+  base::HistogramTester histogram_tester;
+  VariationsSeed seed =
+      CreateTestRuntimeMutableSeed("MyStudy", "Default", {}, {});
+  Study* study = seed.mutable_study(0);
+  study->set_activation_type(Study::ACTIVATE_ON_QUERY);
+  Study::Experiment* other_exp = study->add_experiment();
+  other_exp->set_name("Group1");
+  other_exp->set_probability_weight(0);
+  other_exp->mutable_feature_association()->add_disable_feature(
+      kTestRuntimeFeatureB.name);
+  other_exp->mutable_feature_association()->add_enable_feature(
+      kTestRuntimeFeatureD.name);
+
+  service.SimulateAndApplyRuntimeMutableChanges(seed);
+  histogram_tester.ExpectUniqueSample(
+      kPrepareRuntimeMutableChangesResultMetric,
+      PrepareRuntimeMutableChangesResult::kSuccess, 1);
+
+  const auto* override_info =
+      base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+          "MyStudy");
+  ASSERT_TRUE(override_info != nullptr);
+  EXPECT_EQ(override_info->group_name(), "Default");
+  EXPECT_EQ(override_info->overridden_trial(), trial);
+  EXPECT_FALSE(override_info->is_active());
+
+  // Querying kTestRuntimeFeatureD should return its default state (false,
+  // overriding the static trial's OVERRIDE_ENABLE_FEATURE) and activate the
+  // "Default" runtime override.
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureD));
+  EXPECT_TRUE(override_info->is_active());
+  // kTestRuntimeFeatureB should also use its default state (true), overriding
+  // the static trial's OVERRIDE_DISABLE_FEATURE.
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+}
+
+// Verifies that when a client starts in the "Default" group of an
+// `ACTIVATE_ON_STARTUP` study created via `VariationsSeedProcessor`, the
+// study's features are still associated with the startup trial so a subsequent
+// runtime-mutable update (e.g. "Default" -> "Disabled") can override it without
+// failing with `kTrialNameCollision`.
+TEST_F(VariationsServiceTest,
+       ApplyRuntimeMutableChanges_StartupDefaultGroupToDisabled) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureB,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+
+  // Create the startup trial from a seed via VariationsSeedProcessor in the
+  // "Default" group (no feature_association), while "Disabled" (weight 0)
+  // disables kTestRuntimeFeatureB.
+  VariationsSeed startup_seed =
+      CreateTestRuntimeMutableSeed("MyStudy", "Default", {}, {});
+  Study* startup_study = startup_seed.mutable_study(0);
+  startup_study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  Study::Experiment* disabled_exp = startup_study->add_experiment();
+  disabled_exp->set_name("Disabled");
+  disabled_exp->set_probability_weight(0);
+  disabled_exp->mutable_feature_association()->add_disable_feature(
+      kTestRuntimeFeatureB.name);
+
+  StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
+  ClientFilterableState client_state(
+      base::BindOnce([] { return false; }),
+      base::BindOnce([] { return base::flat_set<uint64_t>(); }),
+      base::BindOnce([] { return base::flat_set<std::string>(); }));
+  client_state.version = version_info::GetVersion();
+  EntropyProviders entropy_providers("client_id", {0, 8000}, "");
+  VariationsLayers layers(startup_seed, entropy_providers);
+  VariationsSeedProcessor(sticky_activation_manager)
+      .CreateTrialsFromSeed(startup_seed, client_state, entropy_providers,
+                            layers, feature_list.get());
+
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  base::FieldTrial* startup_trial = base::FieldTrialList::Find("MyStudy");
+  ASSERT_TRUE(startup_trial != nullptr);
+  EXPECT_EQ(startup_trial->GetGroupNameWithoutActivation(), "Default");
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive("MyStudy"));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
+
+  // Now apply a runtime-mutable seed that moves the client from "Default" to
+  // "Disabled".
+  base::HistogramTester histogram_tester;
+  VariationsSeed runtime_seed = CreateTestRuntimeMutableSeed(
+      "MyStudy", "Disabled", {}, {kTestRuntimeFeatureB.name});
+  Study* runtime_study = runtime_seed.mutable_study(0);
+  runtime_study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  Study::Experiment* default_exp = runtime_study->add_experiment();
+  default_exp->set_name("Default");
+  default_exp->set_probability_weight(0);
+
+  service.SimulateAndApplyRuntimeMutableChanges(runtime_seed);
+  histogram_tester.ExpectUniqueSample(
+      kPrepareRuntimeMutableChangesResultMetric,
+      PrepareRuntimeMutableChangesResult::kSuccess, 1);
+
+  const auto* override_info =
+      base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+          "MyStudy");
+  ASSERT_TRUE(override_info != nullptr);
+  EXPECT_EQ(override_info->group_name(), "Disabled");
+  EXPECT_EQ(override_info->overridden_trial(), startup_trial);
+  EXPECT_TRUE(override_info->is_active());
+  EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
 }
 
 // Verifies that only session consistency studies cannot be applied.

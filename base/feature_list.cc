@@ -627,15 +627,6 @@ FeatureList::PrepareRuntimeMutableFeatureStateUpdateImpl(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(override_info);
 
-  // Runtime overrides must explicitly enable or disable the feature; reverting
-  // to `OVERRIDE_USE_DEFAULT` is not supported.
-  if (override_state == OVERRIDE_USE_DEFAULT) {
-    LogRuntimeMutabilityResult(
-        feature_name,
-        internal::RuntimeMutabilityResult::kFailure_StateNotSupported);
-    return std::nullopt;
-  }
-
   // Don't allow runtime mutability to override a feature that is already
   // overridden from the command line.
   if (IsFeatureOverriddenFromCommandLine(feature_name)) {
@@ -1308,7 +1299,7 @@ FeatureList::MaybeGetRuntimeOverrideState(
            "feature's state.";
     const auto& override_entry = it->second;
     DCHECK_EQ(&override_entry.feature.get(), &feature);
-    if (override_entry.override_state != OVERRIDE_USE_DEFAULT) {
+    if (override_entry.override_state.has_value()) {
       CHECK(override_entry.override_info);
       if (activate_trial) {
         override_entry.override_info->Activate();

@@ -6,6 +6,7 @@
 #define BASE_FEATURE_LIST_INTERNAL_H_
 
 #include <functional>
+#include <optional>
 #include <string>
 
 #include "base/base_export.h"
@@ -47,9 +48,7 @@ enum class RuntimeMutabilityResult {
   // A runtime-update was rejected because the targeted feature was not found
   // to be enabled for runtime mutability.
   kFailure = 2,
-  // A runtime-update was rejected because the requested feature state is not
-  // supported (e.g., OVERRIDE_USE_DEFAULT).
-  kFailure_StateNotSupported = 3,
+  // kFailure_StateNotSupported = 3,  // Obsolete.
   // The runtime-mutability of a feature has been disabled because the feature's
   // state was set via a command-line override. This is not an error, per se,
   // but is still worth logging to understand whether runtime mutability is
@@ -86,9 +85,9 @@ struct BASE_EXPORT RuntimeMutableFeatureState {
   FeatureList::OnRuntimeMutableFeatureStateChangedCallback
       post_mutation_callback;
 
-  // The runtime override state of the feature, or OVERRIDE_USE_DEFAULT if the
+  // The runtime override state of the feature, or `std::nullopt` if the
   // feature is not runtime overridden.
-  FeatureList::OverrideState override_state = FeatureList::OVERRIDE_USE_DEFAULT;
+  std::optional<FeatureList::OverrideState> override_state;
 
   // The runtime override info associated with this feature, or null if there is
   // none.

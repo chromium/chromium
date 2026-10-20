@@ -1381,10 +1381,6 @@ VariationsService::PrepareRuntimeMutableChanges(
   const Study::Experiment& experiment = study.experiment(experiment_index);
 
   // For now, only allow ACTIVATE_ON_STARTUP and ACTIVATE_ON_QUERY studies.
-  // TODO(crbug.com/536852160): For normal field trials, Default groups that
-  // have no features are still associated with features from the other groups
-  // (see `AssociateDefaultFeatures()`) for activation purposes. Implement this
-  // logic for runtime mutable experiments.
   if (study.activation_type() != Study::ACTIVATE_ON_STARTUP &&
       study.activation_type() != Study::ACTIVATE_ON_QUERY) {
     return base::unexpected(kInvalidActivationType);
@@ -1433,6 +1429,22 @@ VariationsService::PrepareRuntimeMutableChanges(
   if (feature_names.size() !=
       disable_features.size() + enable_features.size()) {
     return base::unexpected(kFeatureBothEnabledAndDisabled);
+  }
+
+  // If `experiment` does not specify any feature associations (e.g. a "Default"
+  // group), associate it with all features referenced by the other groups in
+  // `study` using `OVERRIDE_USE_DEFAULT` (similar to
+  // `AssociateDefaultFeatures()` for normal field trials). This ensures that:
+  // 1. For `ACTIVATE_ON_QUERY` studies, querying any of the study's features
+  //    will activate this runtime override.
+  // 2. `FeatureList` tracks that those features are controlled by this study.
+  base::flat_set<std::string_view> default_features;
+  if (!experiment.has_feature_association()) {
+    // `feature_names` is the union of `disable_features` and `enable_features`
+    // above, both of which are read from `experiment.feature_association()`.
+    CHECK(feature_names.empty());
+    default_features = GetStudyFeatureNames(study);
+    feature_names = default_features;
   }
 
   for (std::string_view feature_name : feature_names) {
@@ -1594,12 +1606,10 @@ VariationsService::PrepareRuntimeMutableChanges(
       study.name(), group_name, std::move(params), trial_to_override);
 
   auto prepare_feature_updates = [&](const auto& features,
-                                     base::FeatureList::OverrideState state) {
+                                     base::FeatureList::OverrideState state,
+                                     std::string_view action) {
     for (std::string_view feature_name : features) {
-      DVLOG(1) << "VariationsService: Preparing runtime override to "
-               << (state == base::FeatureList::OVERRIDE_ENABLE_FEATURE
-                       ? "enable"
-                       : "disable")
+      DVLOG(1) << "VariationsService: Preparing runtime override to " << action
                << " feature: " << feature_name;
       auto update = feature_list->PrepareRuntimeMutableFeatureStateUpdate(
           base::PassKey<VariationsService>(), changes.override_info.get(),
@@ -1609,10 +1619,13 @@ VariationsService::PrepareRuntimeMutableChanges(
     }
   };
 
-  prepare_feature_updates(disable_features,
-                          base::FeatureList::OVERRIDE_DISABLE_FEATURE);
+  prepare_feature_updates(
+      disable_features, base::FeatureList::OVERRIDE_DISABLE_FEATURE, "disable");
   prepare_feature_updates(enable_features,
-                          base::FeatureList::OVERRIDE_ENABLE_FEATURE);
+                          base::FeatureList::OVERRIDE_ENABLE_FEATURE, "enable");
+  prepare_feature_updates(default_features,
+                          base::FeatureList::OVERRIDE_USE_DEFAULT,
+                          "use default for");
 
   return base::ok(std::move(changes));
 }

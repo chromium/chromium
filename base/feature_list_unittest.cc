@@ -1552,6 +1552,7 @@ TEST_F(FeatureListTest,
   // unittests.
   std::unique_ptr<base::RuntimeFieldTrialInfo> override_info;
   std::unique_ptr<base::RuntimeFieldTrialInfo> reenable_override_info;
+  std::unique_ptr<base::RuntimeFieldTrialInfo> default_override_info;
   test::ScopedFeatureList scoped_feature_list;
   {
     auto feature_list = std::make_unique<FeatureList>();
@@ -1629,16 +1630,46 @@ TEST_F(FeatureListTest,
   EXPECT_EQ(2, post_callback_calls);
   EXPECT_TRUE(FeatureList::IsEnabled(kRuntimeMutableFeature));
 
-  // Attempting to update with OVERRIDE_USE_DEFAULT is not supported.
+  // Disable again and then update with OVERRIDE_USE_DEFAULT, which should use
+  // the feature's default state (enabled) and activate the override upon query.
+  auto disable_again_update =
+      FeatureList::GetInstance()
+          ->PrepareRuntimeMutableFeatureStateUpdateForTesting(
+              pass_key(), override_info.get(), kRuntimeMutableFeature.name,
+              FeatureList::OVERRIDE_DISABLE_FEATURE);
+  ASSERT_TRUE(disable_again_update.has_value());
+  disable_again_update->RunPreMutationCallback();
+  disable_again_update->UpdateState();
+  disable_again_update->RunPostMutationCallback();
+  EXPECT_FALSE(FeatureList::IsEnabled(kRuntimeMutableFeature));
+
+  default_override_info = std::make_unique<base::RuntimeFieldTrialInfo>(
+      "TrialC", "Default", base::FieldTrialParams(), nullptr);
   auto default_update =
       FeatureList::GetInstance()
           ->PrepareRuntimeMutableFeatureStateUpdateForTesting(
-              pass_key(), reenable_override_info.get(),
+              pass_key(), default_override_info.get(),
               kRuntimeMutableFeature.name, FeatureList::OVERRIDE_USE_DEFAULT);
-  EXPECT_FALSE(default_update.has_value());
-  histogram_tester.ExpectBucketCount(
-      kRuntimeMutabilityResult,
-      RuntimeMutabilityResult::kFailure_StateNotSupported, 1);
+  ASSERT_TRUE(default_update.has_value());
+  default_update->RunPreMutationCallback();
+  EXPECT_EQ(4, pre_callback_calls);
+  EXPECT_EQ("TrialC", pre_callback_data.trial_name);
+  EXPECT_EQ("Default", pre_callback_data.group_name);
+  EXPECT_EQ(FeatureList::OVERRIDE_USE_DEFAULT, pre_callback_data.state);
+  EXPECT_FALSE(pre_callback_data.feature_enabled);
+
+  default_update->UpdateState();
+  default_update->RunPostMutationCallback();
+  EXPECT_EQ(4, post_callback_calls);
+  EXPECT_EQ("TrialC", post_callback_data.trial_name);
+  EXPECT_EQ("Default", post_callback_data.group_name);
+  EXPECT_EQ(FeatureList::OVERRIDE_USE_DEFAULT, post_callback_data.state);
+  EXPECT_TRUE(post_callback_data.feature_enabled);
+
+  EXPECT_TRUE(FeatureList::IsEnabled(kRuntimeMutableFeature));
+  EXPECT_TRUE(default_override_info->is_active());
+  histogram_tester.ExpectBucketCount(kRuntimeMutabilityResult,
+                                     RuntimeMutabilityResult::kSuccess, 4);
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)
@@ -1865,7 +1896,7 @@ TEST_F(FeatureListTest, RuntimeMutability_GetRuntimeMutableFeatureState) {
   auto it = states.find(kRuntimeMutableFeature.name);
   ASSERT_NE(it, states.end());
   EXPECT_EQ(&kRuntimeMutableFeature, &it->second.feature.get());
-  EXPECT_EQ(FeatureList::OVERRIDE_USE_DEFAULT, it->second.override_state);
+  EXPECT_EQ(std::nullopt, it->second.override_state);
   EXPECT_TRUE(it->second.override_info == nullptr);
   // Now update the state.
   override_info = std::make_unique<base::RuntimeFieldTrialInfo>(
