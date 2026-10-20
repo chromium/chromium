@@ -16,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -44,6 +45,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/security_principal.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/event_router.h"
@@ -460,6 +462,41 @@ bool ExtensionMayAttachToWebContents(const Extension& extension,
       extension, extension_profile, web_contents.GetPrimaryMainFrame(), error);
 }
 
+// Returns whether `extension` may attach to non-WebContents targets (such as
+// service workers or shared workers) running in a guest `StoragePartition`.
+// Because worker `DevToolsAgentHost`s have no `WebContents` (and shared/service
+// workers have no parent host ID), we locate the `kTypeGuest` host(s) in the
+// same `StoragePartition` to check their embedder `WebContents`, failing closed
+// if no live guest `WebContents` exists in `partition`.
+bool ExtensionMayAttachToGuestPartition(const Extension& extension,
+                                        Profile* extension_profile,
+                                        content::StoragePartition& partition,
+                                        std::string* error) {
+  bool found_guest = false;
+  for (const auto& host : DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetType() != DevToolsAgentHost::kTypeGuest) {
+      continue;
+    }
+    content::RenderProcessHost* rph = host->GetProcessHost();
+    if (!rph || rph->GetStoragePartition() != &partition) {
+      continue;
+    }
+    CHECK(rph->IsForGuestsOnly());
+    if (content::WebContents* wc = host->GetWebContents()) {
+      found_guest = true;
+      if (!ExtensionMayAttachToWebContents(extension, extension_profile, *wc,
+                                           error)) {
+        return false;
+      }
+    }
+  }
+  if (!found_guest) {
+    *error = kRestrictedError;
+    return false;
+  }
+  return true;
+}
+
 bool ExtensionMayAttachToAgentHost(const Extension& extension,
                                    bool allow_incognito_access,
                                    Profile* extension_profile,
@@ -473,6 +510,14 @@ bool ExtensionMayAttachToAgentHost(const Extension& extension,
   if (WebContents* wc = agent_host.GetWebContents()) {
     return ExtensionMayAttachToWebContents(extension, extension_profile, *wc,
                                            error);
+  }
+  if (RenderProcessHost* rph = agent_host.GetProcessHost();
+      rph && rph->IsForGuestsOnly()) {
+    CHECK(rph->GetStoragePartition());
+    if (!ExtensionMayAttachToGuestPartition(
+            extension, extension_profile, *rph->GetStoragePartition(), error)) {
+      return false;
+    }
   }
 
   const GURL& url = agent_host.GetURL();
@@ -1357,6 +1402,7 @@ ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
   content::DevToolsAgentHost::List list = DevToolsAgentHost::GetOrCreateAll();
   base::ListValue result;
   Profile* profile = Profile::FromBrowserContext(browser_context());
+  base::flat_map<content::StoragePartition*, bool> allowed_guest_partitions;
   for (auto& host : list) {
     // TODO(crbug.com/40233332): hide all Tab targets for now to avoid
     // compatibility problems. Consider exposing them later when they're fully
@@ -1380,6 +1426,20 @@ ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
       if (auto* wc = host->GetWebContents();
           wc && !ExtensionMayAttachToWebContents(*extension(), profile, *wc,
                                                  &error)) {
+        continue;
+      }
+    } else if (RenderProcessHost* rph = host->GetProcessHost();
+               rph && rph->IsForGuestsOnly() && extension()) {
+      content::StoragePartition* partition = rph->GetStoragePartition();
+      CHECK(partition);
+      auto [it, inserted] =
+          allowed_guest_partitions.insert({partition, false});
+      if (inserted) {
+        std::string error;
+        it->second = ExtensionMayAttachToGuestPartition(
+            *extension(), profile, *partition, &error);
+      }
+      if (!it->second) {
         continue;
       }
     }

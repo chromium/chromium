@@ -2314,6 +2314,177 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestDebuggerApiTest,
       profile()));
 }
 
+// Tests that workers running in a WebUI-hosted guest partition cannot be
+// attached to or enumerated.
+IN_PROC_BROWSER_TEST_P(WebViewGuestDebuggerApiTest,
+                       CannotAttachToOrEnumerateWebUiWebViewGuestWorkers) {
+  if (GetParam()) {
+    GTEST_SKIP() << "MPArch implementation skipped. https://crbug.com/40202416";
+  }
+
+  CreateWebUiGuestView();
+  auto* guest_view = GetGuestViewManager()->GetLastGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+
+  GURL guest_url =
+      embedded_test_server()->GetURL("/workers/fetch_from_service_worker.html");
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+      guest_view->GetGuestMainFrame(), guest_url));
+
+  ASSERT_EQ(true, content::EvalJs(guest_view->GetGuestMainFrame(), R"(
+        new Promise(resolve => {
+          const worker = new Worker('/workers/post_ready.js');
+          worker.onmessage = () => resolve(true);
+          window.dedicatedWorker = worker;
+        });
+      )"));
+
+  ASSERT_EQ(true, content::EvalJs(guest_view->GetGuestMainFrame(), R"(
+        new Promise(resolve => {
+          const sw = new SharedWorker('/workers/shared_post_ready.js');
+          sw.port.onmessage = () => resolve(true);
+          sw.port.start();
+          window.sharedWorker = sw;
+        });
+      )"));
+
+  ASSERT_EQ("ready",
+            content::EvalJs(guest_view->GetGuestMainFrame(), "setup();"));
+
+  scoped_refptr<content::DevToolsAgentHost> dedicated_worker_host;
+  scoped_refptr<content::DevToolsAgentHost> shared_worker_host;
+  scoped_refptr<content::DevToolsAgentHost> service_worker_host;
+  for (const auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetType() == content::DevToolsAgentHost::kTypeDedicatedWorker) {
+      dedicated_worker_host = host;
+    } else if (host->GetType() ==
+                   content::DevToolsAgentHost::kTypeSharedWorker &&
+               host->GetURL().spec().contains("shared_post_ready.js")) {
+      shared_worker_host = host;
+    } else if (host->GetType() ==
+                   content::DevToolsAgentHost::kTypeServiceWorker &&
+               host->GetURL().spec().contains("fetch_from_service_worker.js")) {
+      service_worker_host = host;
+    }
+  }
+  ASSERT_TRUE(dedicated_worker_host);
+  ASSERT_TRUE(shared_worker_host);
+  ASSERT_TRUE(service_worker_host);
+
+  EXPECT_FALSE(HasTargetId(GetGuestAgentHost()->GetId()));
+  EXPECT_FALSE(HasTargetId(dedicated_worker_host->GetId()));
+  EXPECT_FALSE(HasTargetId(shared_worker_host->GetId()));
+  EXPECT_FALSE(HasTargetId(service_worker_host->GetId()));
+
+  for (const auto& worker_host :
+       {dedicated_worker_host, shared_worker_host, service_worker_host}) {
+    auto attach = base::MakeRefCounted<DebuggerAttachFunction>();
+    attach->set_extension(extension());
+    EXPECT_EQ(manifest_errors::kCannotAccessChromeUrl,
+              api_test_utils::RunFunctionAndReturnError(
+                  attach.get(),
+                  base::StringPrintf(R"([{"targetId": "%s"}, "1.1"])",
+                                     worker_host->GetId().c_str()),
+                  profile()));
+  }
+}
+
+// Control test: verifies that workers running in a <webview> guest embedded in
+// an ordinary extension page (not restricted WebUI) are enumerable and
+// attachable by its own extension.
+IN_PROC_BROWSER_TEST_P(WebViewGuestDebuggerApiTest,
+                       ControlExtensionWebViewGuestWorkersAllowed) {
+  if (GetParam()) {
+    GTEST_SKIP() << "MPArch implementation skipped. https://crbug.com/40202416";
+  }
+
+  content::WebContents* wc = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(wc, extension()->GetResourceURL("test_file.html")));
+  ASSERT_TRUE(content::ExecJs(
+      wc, "document.body.appendChild(document.createElement('iframe'));"));
+  auto* main = wc->GetPrimaryMainFrame();
+  auto* frame = content::ChildFrameAt(main, 0);
+  ASSERT_TRUE(frame);
+
+  // Because the <webview> HTML tag is restricted to platform apps and
+  // allowlisted WebUIs (which the test extension lacks), attach a WebViewGuest
+  // directly to an extension subframe via GuestViewManager.
+  auto* guest_manager = GetGuestViewManager();
+  base::test::TestFuture<std::unique_ptr<guest_view::GuestViewBase>> future;
+  guest_manager->CreateGuestAndTransferOwnership(
+      extensions::WebViewGuest::Type, main, nullptr, base::DictValue(),
+      future.GetCallback());
+  auto owned = future.Take();
+  auto* raw = owned.get();
+  base::DictValue params;
+  params.Set("src", "about:blank");
+  static_cast<guest_view::GuestViewManager*>(guest_manager)
+      ->AttachGuest(main->GetProcess()->GetID(), frame->GetRoutingID(),
+                    raw->guest_instance_id(), params);
+  base::RunLoop loop;
+  raw->AttachToOuterWebContentsFrame(std::move(owned), frame,
+                                     frame->GetRoutingID(), false,
+                                     loop.QuitClosure());
+  loop.Run();
+  ASSERT_TRUE(guest_manager->WaitUntilAttachedAndLoaded(raw));
+
+  GURL guest_url =
+      embedded_test_server()->GetURL("/workers/fetch_from_service_worker.html");
+  ASSERT_TRUE(
+      content::NavigateToURLFromRenderer(raw->GetGuestMainFrame(), guest_url));
+
+  ASSERT_EQ(true, content::EvalJs(raw->GetGuestMainFrame(), R"(
+        new Promise(resolve => {
+          const worker = new Worker('/workers/post_ready.js');
+          worker.onmessage = () => resolve(true);
+          window.dedicatedWorker = worker;
+        });
+      )"));
+
+  ASSERT_EQ(true, content::EvalJs(raw->GetGuestMainFrame(), R"(
+        new Promise(resolve => {
+          const sw = new SharedWorker('/workers/shared_post_ready.js');
+          sw.port.onmessage = () => resolve(true);
+          sw.port.start();
+          window.sharedWorker = sw;
+        });
+      )"));
+
+  ASSERT_EQ("ready", content::EvalJs(raw->GetGuestMainFrame(), "setup();"));
+
+  scoped_refptr<content::DevToolsAgentHost> dedicated_worker_host;
+  scoped_refptr<content::DevToolsAgentHost> shared_worker_host;
+  scoped_refptr<content::DevToolsAgentHost> service_worker_host;
+  for (const auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetType() == content::DevToolsAgentHost::kTypeDedicatedWorker) {
+      dedicated_worker_host = host;
+    } else if (host->GetType() ==
+                   content::DevToolsAgentHost::kTypeSharedWorker &&
+               host->GetURL().spec().contains("shared_post_ready.js")) {
+      shared_worker_host = host;
+    } else if (host->GetType() ==
+                   content::DevToolsAgentHost::kTypeServiceWorker &&
+               host->GetURL().spec().contains("fetch_from_service_worker.js")) {
+      service_worker_host = host;
+    }
+  }
+  ASSERT_TRUE(dedicated_worker_host);
+  ASSERT_TRUE(shared_worker_host);
+  ASSERT_TRUE(service_worker_host);
+
+  for (const auto& worker_host :
+       {dedicated_worker_host, shared_worker_host, service_worker_host}) {
+    EXPECT_TRUE(HasTargetId(worker_host->GetId()));
+    auto attach = base::MakeRefCounted<DebuggerAttachFunction>();
+    attach->set_extension(extension());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        attach.get(),
+        base::StringPrintf(R"([{"targetId": "%s"}, "1.1"])",
+                           worker_host->GetId().c_str()),
+        profile()));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All, WebViewGuestDebuggerApiTest, testing::Bool());
 
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
