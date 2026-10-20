@@ -371,55 +371,6 @@ void TraceShouldSwapBrowsingInstanceResult(FrameTreeNodeId frame_tree_node_id,
       });
 }
 
-// This method tries to find a process for |new_instance| to reuse by starting
-// from |rfh|'s outermost main frame, and then iterating through all the
-// embedded fenced frame FrameTrees and trying to reuse their BrowsingInstance's
-// default process (if one is set). By setting a process for |new_instance|, it
-// is also setting its BrowsingInstance's default process, and as a result, it
-// gets these groups of BrowsingInstances to share the same default process.
-//
-// Note that it is possible for a fenced frame BrowsingInstance to get assigned
-// a default process first, before its embedder (for example: if the embedder
-// only had a frame at an isolated site, which embeds a fenced frame at a
-// non-isolated site). If we were to assign the embedder BrowsingInstance a
-// default process later (from the previous example, if the embedder added a
-// non-isolated iframe), we would iterate through the entire set of FrameTrees
-// and find and reuse the fenced frame BrowsingInstance's default process.
-//
-// TODO(crbug.com/40232875): There are certain scenarios where this won't work,
-// see bug for an example scenario/proposed fix.
-void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
-    scoped_refptr<SiteInstanceImpl> new_instance,
-    RenderFrameHostImpl* rfh) {
-  CHECK(!new_instance->RequiresDedicatedProcess());
-  CHECK(!new_instance->HasProcess());
-  RenderFrameHostImpl* root = rfh->GetOutermostMainFrame();
-  root->ForEachRenderFrameHostImplWithAction(
-      [site_instance = std::move(new_instance),
-       root](RenderFrameHostImpl* rfhi) {
-        if (rfhi->GetParent())
-          return RenderFrameHost::FrameIterationAction::kContinue;
-
-        // Avoid traversing through any embedded pages that aren't fenced
-        // frames. Note that we use rfhi->GetParentOrOuterDocumentOrEmbedder()
-        // instead of rfhi->GetParentOrOuterDocument() to avoid traversing
-        // through guests.
-        if (rfhi != root && rfhi->GetParentOrOuterDocumentOrEmbedder() &&
-            !rfhi->IsNestedWithinFencedFrame())
-          return RenderFrameHost::FrameIterationAction::kSkipChildren;
-
-        if (RenderProcessHost* default_process =
-                rfhi->GetSiteInstance()
-                    ->GetDefaultProcessForBrowsingInstance()) {
-          site_instance->ReuseExistingProcessIfPossible(default_process);
-          if (site_instance->HasProcess())
-            return RenderFrameHost::FrameIterationAction::kStop;
-        }
-
-        return RenderFrameHost::FrameIterationAction::kContinue;
-      });
-}
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -3459,20 +3410,6 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       // new_instance tries to create a renderer process.
       new_instance->SetCOOPReuseProcessFailed();
     }
-  }
-
-  // We want fenced frame BrowsingInstances to share the same default
-  // process with their embedding BrowsingInstance. The code below forces
-  // SiteInstances in the embedder and fenced frame BrowsingInstances to
-  // share the same default process when they don't need a dedicated process.
-  // With sites that do require a dedicated process, we reuse processes via the
-  // subframe reuse policy (we set the reuse policy to
-  // kReusePendingOrCommittedSiteSubframe).
-  if (!current_frame_host()->IsOutermostMainFrame() &&
-      !new_instance->HasProcess() &&
-      !new_instance->RequiresDedicatedProcess()) {
-    ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
-        new_instance, current_frame_host());
   }
 
   return new_instance;

@@ -225,10 +225,6 @@ class CONTENT_EXPORT BrowsingInstance final
   void IncrementActiveContentsCount();
   void DecrementActiveContentsCount();
 
-  SiteInstanceImpl* default_site_instance() {
-    CHECK(!ShouldUseDefaultSiteInstanceGroup(), base::NotFatalUntil::M159);
-    return default_site_instance_;
-  }
   SiteInstanceGroup* default_site_instance_group() {
     CHECK(ShouldUseDefaultSiteInstanceGroup(), base::NotFatalUntil::M159);
     return default_site_instance_group_.get();

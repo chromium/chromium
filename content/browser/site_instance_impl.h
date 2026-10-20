@@ -493,7 +493,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
 
   // Returns the process used by non-isolated sites in this SiteInstance's
   // BrowsingInstance.
-  RenderProcessHost* GetDefaultProcessForBrowsingInstance();
+  RenderProcessHost* GetDefaultProcessForBrowsingInstanceForTesting();
 
   // Sets the process for `this`, creating a SiteInstanceGroup if necessary.
   void SetProcessForTesting(RenderProcessHost* process);

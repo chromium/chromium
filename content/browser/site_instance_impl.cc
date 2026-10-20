@@ -1708,14 +1708,15 @@ SiteInstanceImpl::GetCompatibleSandboxedSiteInstance(
   return result;
 }
 
-RenderProcessHost* SiteInstanceImpl::GetDefaultProcessForBrowsingInstance() {
+RenderProcessHost*
+SiteInstanceImpl::GetDefaultProcessForBrowsingInstanceForTesting() {
   if (ShouldUseDefaultSiteInstanceGroup()) {
     return browsing_instance_->has_default_site_instance_group()
                ? browsing_instance_->default_site_instance_group()->process()
                : nullptr;
   } else {
     if (SiteInstanceImpl* default_instance =
-            browsing_instance_->default_site_instance()) {
+            browsing_instance_->default_site_instance_.get()) {
       return default_instance->HasProcess() ? default_instance->GetProcess()
                                             : nullptr;
     }

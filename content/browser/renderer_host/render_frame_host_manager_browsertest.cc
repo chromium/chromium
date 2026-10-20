@@ -3551,19 +3551,21 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest, FileURLIsolation) {
     EXPECT_NE(root_instance, child_instance);
     EXPECT_NE(root_instance->group(), child_instance->group());
   } else {
+    // With default SiteInstanceGroup enabled, the file:// subframe should be in
+    // a different SiteInstance and group from the parent (since file:// URLs
+    // are excluded from the default SiteInstanceGroup for security reasons), so
+    // it gets its own process. Otherwise, it shares the parent's SiteInstance
+    // and process.
     // TODO(crbug.com/40704573): When default SiteInstanceGroup supports file://
     // URLs on Android WebView and low-end Clank, the file:// SiteInstance
     // should be in the default SiteInstanceGroup when site isolation is not
     // enabled.
-    EXPECT_EQ(a_process, child_process);
-
-    // With default SiteInstanceGroup enabled, the file:// subframe should be in
-    // a different SiteInstance from the parent. Otherwise it should share a
-    // site instance with the parent.
     if (ShouldUseDefaultSiteInstanceGroup()) {
+      EXPECT_NE(a_process, child_process);
       EXPECT_NE(root_instance, child_instance);
       EXPECT_NE(root_instance->group(), child_instance->group());
     } else {
+      EXPECT_EQ(a_process, child_process);
       EXPECT_EQ(root_instance, child_instance);
       EXPECT_EQ(root_instance->group(), child_instance->group());
     }
@@ -6343,9 +6345,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(NavigateToURL(shell(), foo_url));
   RenderProcessHost* original_process =
       web_contents->GetPrimaryMainFrame()->GetProcess();
-  EXPECT_EQ(original_process, web_contents->GetPrimaryMainFrame()
-                                  ->GetSiteInstance()
-                                  ->GetDefaultProcessForBrowsingInstance());
+  EXPECT_EQ(original_process,
+            web_contents->GetPrimaryMainFrame()
+                ->GetSiteInstance()
+                ->GetDefaultProcessForBrowsingInstanceForTesting());
   // This test expect a cross-site navigation to be same BrowsingInstance. With
   // ProactivelySwapBrowsingInstance, it won't be the case. Opening a popup
   // prevent the BrowsingInstance to change.
