@@ -16,6 +16,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "copy_shared_image_helper_unittest\\.cc": [
+    "+third_party/libyuv",
+  ],
   "drm_modifiers_filter_dawn\\.cc": [
     "+third_party/libdrm/src/include/drm/drm_fourcc.h",
   ],
