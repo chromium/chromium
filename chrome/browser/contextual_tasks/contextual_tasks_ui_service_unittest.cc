@@ -3562,6 +3562,245 @@ TEST_F(
 
 TEST_F(
     ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_SidePanel_CitationLink_BackgroundTab_OpensNewTab) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksSidePanelRearchitecture,
+       contextual_tasks::kContextualTasksSidePanelTabState},
+      {contextual_tasks::kContextualTasksClobberActiveTab});
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  auto panel_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  auto background_tab_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_.get(), content::SiteInstance::Create(profile_.get()));
+  auto active_tab_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      background_tab_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  sessions::SessionTabHelper::CreateForWebContents(
+      active_tab_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  ON_CALL(*contextual_tasks_service_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  GURL panel_url = net::AppendOrReplaceQueryParameter(
+      GURL("https://www.google.com/search?udm=50"), "chrome_task_id",
+      task_id.AsLowercaseString());
+  content::WebContentsTester::For(panel_contents.get())
+      ->SetLastCommittedURL(panel_url);
+
+  GURL article_url("https://example.com/article");
+  content::WebContentsTester::For(background_tab_contents.get())
+      ->SetLastCommittedURL(article_url);
+  content::WebContentsTester::For(active_tab_contents.get())
+      ->SetLastCommittedURL(GURL("https://example.com/other"));
+
+  tabs::MockTabInterface background_tab;
+  ON_CALL(background_tab, GetContents)
+      .WillByDefault(Return(background_tab_contents.get()));
+  tabs::MockTabInterface active_tab;
+  ON_CALL(active_tab, GetContents)
+      .WillByDefault(Return(active_tab_contents.get()));
+
+  NiceMock<MockBrowserWindowInterface> browser;
+  NiceMock<MockTabListInterface> mock_tab_list;
+  ON_CALL(mock_tab_list, GetTabCount).WillByDefault(Return(2));
+  ON_CALL(mock_tab_list, GetTab(0)).WillByDefault(Return(&background_tab));
+  ON_CALL(mock_tab_list, GetTab(1)).WillByDefault(Return(&active_tab));
+  ON_CALL(mock_tab_list, GetActiveTab).WillByDefault(Return(&active_tab));
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      browser.GetUnownedUserDataHost(), mock_tab_list);
+
+  webui::SetBrowserWindowInterface(panel_contents.get(), &browser);
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  GURL citation_url("https://example.com/article#:~:text=sample+text");
+
+  // Background tab should NOT be activated; instead, a new foreground tab
+  // should be opened via OpenUrl.
+  EXPECT_CALL(mock_tab_list, ActivateTab(_)).Times(0);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
+      .WillOnce([&](const content::OpenURLParams& params,
+                    const blink::mojom::WindowFeatures& features,
+                    BrowserWindowInterface* target_browser) {
+        EXPECT_EQ(citation_url, params.url);
+        EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                  params.disposition);
+        run_loop.Quit();
+      });
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(citation_url, /*is_renderer_initiated=*/true),
+      panel_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/false,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  run_loop.Run();
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_PostRearchitecture_Lens_OrganicResultClick_ExistingActiveTab_OpensNewTab) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksSidePanelRearchitecture,
+       contextual_tasks::kContextualTasksSidePanelTabState},
+      {contextual_tasks::kContextualTasksClobberActiveTab});
+
+  ON_CALL(*aim_eligibility_service_, IsAimUrl(_, _))
+      .WillByDefault(testing::Return(false));
+
+  auto panel_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  auto active_tab_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      active_tab_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  ON_CALL(*contextual_tasks_service_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  GURL panel_url = net::AppendOrReplaceQueryParameter(
+      GURL("https://www.google.com/search?q=test"), "chrome_task_id",
+      task_id.AsLowercaseString());
+  content::WebContentsTester::For(panel_contents.get())
+      ->SetLastCommittedURL(panel_url);
+
+  GURL organic_url("https://example.com/organic_result");
+  content::WebContentsTester::For(active_tab_contents.get())
+      ->SetLastCommittedURL(organic_url);
+
+  tabs::MockTabInterface active_tab;
+  ON_CALL(active_tab, GetContents)
+      .WillByDefault(Return(active_tab_contents.get()));
+
+  NiceMock<MockBrowserWindowInterface> browser;
+  NiceMock<MockTabListInterface> mock_tab_list;
+  ON_CALL(mock_tab_list, GetTabCount).WillByDefault(Return(1));
+  ON_CALL(mock_tab_list, GetTab(0)).WillByDefault(Return(&active_tab));
+  ON_CALL(mock_tab_list, GetActiveTab).WillByDefault(Return(&active_tab));
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      browser.GetUnownedUserDataHost(), mock_tab_list);
+
+  webui::SetBrowserWindowInterface(panel_contents.get(), &browser);
+
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  // Even though the active tab already has `organic_url` open and is associated
+  // with the task, clicking an organic search result link without text
+  // fragments must still open a new foreground tab.
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OpenUrl(_, _, _))
+      .WillOnce([&](const content::OpenURLParams& params,
+                    const blink::mojom::WindowFeatures& features,
+                    BrowserWindowInterface* target_browser) {
+        EXPECT_EQ(organic_url, params.url);
+        EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                  params.disposition);
+        run_loop.Quit();
+      });
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(organic_url, /*is_renderer_initiated=*/true),
+      panel_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/false,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       ShouldAllowNewTabOpen_OnlyBlocksActiveTabCitations) {
+  auto background_tab_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_.get(), content::SiteInstance::Create(profile_.get()));
+  auto active_tab_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  sessions::SessionTabHelper::CreateForWebContents(
+      background_tab_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+  sessions::SessionTabHelper::CreateForWebContents(
+      active_tab_contents.get(),
+      base::BindRepeating([](content::WebContents* contents) {
+        return static_cast<sessions::SessionTabHelperDelegate*>(nullptr);
+      }));
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  ON_CALL(*contextual_tasks_service_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  content::WebContentsTester::For(background_tab_contents.get())
+      ->SetLastCommittedURL(GURL("https://example.com/background"));
+  content::WebContentsTester::For(active_tab_contents.get())
+      ->SetLastCommittedURL(GURL("https://example.com/active"));
+
+  tabs::MockTabInterface background_tab;
+  ON_CALL(background_tab, GetContents)
+      .WillByDefault(Return(background_tab_contents.get()));
+  tabs::MockTabInterface active_tab;
+  ON_CALL(active_tab, GetContents)
+      .WillByDefault(Return(active_tab_contents.get()));
+
+  NiceMock<MockBrowserWindowInterface> browser;
+  NiceMock<MockTabListInterface> mock_tab_list;
+  ON_CALL(mock_tab_list, GetTabCount).WillByDefault(Return(2));
+  ON_CALL(mock_tab_list, GetTab(0)).WillByDefault(Return(&background_tab));
+  ON_CALL(mock_tab_list, GetTab(1)).WillByDefault(Return(&active_tab));
+  ON_CALL(mock_tab_list, GetActiveTab).WillByDefault(Return(&active_tab));
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      browser.GetUnownedUserDataHost(), mock_tab_list);
+
+  // When kContextualTasksSidePanelTabState is disabled (default), any matching
+  // open tab in the task blocks opening a new tab.
+  EXPECT_FALSE(service_for_nav_->ShouldAllowNewTabOpen(
+      GURL("https://example.com/active"), &browser, task_id));
+  EXPECT_FALSE(service_for_nav_->ShouldAllowNewTabOpen(
+      GURL("https://example.com/background#:~:text=foo"), &browser, task_id));
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      contextual_tasks::kContextualTasksSidePanelTabState);
+
+  // Regular URL without text fragments on active tab allows new tab open.
+  EXPECT_TRUE(service_for_nav_->ShouldAllowNewTabOpen(
+      GURL("https://example.com/active"), &browser, task_id));
+
+  // Text fragment citation matching background tab allows new tab open.
+  EXPECT_TRUE(service_for_nav_->ShouldAllowNewTabOpen(
+      GURL("https://example.com/background#:~:text=foo"), &browser, task_id));
+
+  // Text fragment citation matching active tab blocks new tab open so it can
+  // be highlighted in-place.
+  EXPECT_FALSE(service_for_nav_->ShouldAllowNewTabOpen(
+      GURL("https://example.com/active#:~:text=foo"), &browser, task_id));
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
     HandleNavigation_PostRearchitecture_SidePanel_CitationLink_ExistingTab_ClobberEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(

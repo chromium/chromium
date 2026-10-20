@@ -803,6 +803,29 @@ static bool IsVideoCitation(const GURL& url,
 }
 #endif
 
+namespace {
+
+// Checks if the current URL is a text fragment citation on `tab` associated
+// with `task_id`.
+bool IsTextFragmentCitation(const GURL& url,
+                            tabs::TabInterface* tab,
+                            const base::Uuid& task_id,
+                            ContextualTasksService* service) {
+  if (!tab || !tab->GetContents() ||
+      shared_highlighting::ExtractTextFragments(url.GetRef()).empty()) {
+    return false;
+  }
+  content::WebContents* web_contents = tab->GetContents();
+  std::optional<ContextualTask> task = service->GetContextualTaskForTab(
+      SessionTabHelper::IdForTab(web_contents));
+  return task && task->GetTaskId() == task_id &&
+         shared_highlighting::RemoveFragmentSelectorDirectives(
+             web_contents->GetLastCommittedURL()) ==
+             shared_highlighting::RemoveFragmentSelectorDirectives(url);
+}
+
+}  // namespace
+
 // Checks if the current URL is already open in the tab list. If so, returns a
 // pointer to that tab. If there is no existing tab with the given url, returns
 // nullptr.
@@ -886,6 +909,33 @@ bool ContextualTasksUiService::MaybeHandlePdfCitation(
 #endif
 }
 
+bool ContextualTasksUiService::MaybeHandleTextFragmentCitation(
+    const GURL& url,
+    tabs::TabInterface* tab,
+    const base::Uuid& task_id,
+    BrowserWindowInterface* browser) {
+  if (!IsTextFragmentCitation(url, tab, task_id, contextual_tasks_service_)) {
+    return false;
+  }
+
+  content::WebContents* web_contents = tab->GetContents();
+  if (web_contents->GetPrimaryMainFrame() &&
+      web_contents->GetPrimaryMainFrame()->IsRenderFrameLive()) {
+    std::vector<std::string> fragments =
+        shared_highlighting::ExtractTextFragments(url.GetRef());
+    content::Page& page = web_contents->GetPrimaryPage();
+    companion::TextFinderManager* text_finder_manager =
+        companion::TextFinderManager::GetOrCreateForPage(page);
+    text_finder_manager->CreateTextFinders(
+        fragments,
+        base::BindOnce(&ContextualTasksUiService::OnTextFinderLookupComplete,
+                       weak_ptr_factory_.GetWeakPtr(), tab->GetWeakPtr(), url,
+                       task_id, browser ? browser->GetWeakPtr() : nullptr));
+    return true;
+  }
+  return false;
+}
+
 void ContextualTasksUiService::OnThreadLinkClicked(
     const GURL& url,
     base::Uuid task_id,
@@ -917,7 +967,10 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   if (!tab) {
     tabs::TabInterface* active_tab = tab_list->GetActiveTab();
     if (MaybeHandleVideoCitation(url, active_tab, task_id) ||
-        MaybeHandlePdfCitation(url, active_tab, task_id)) {
+        MaybeHandlePdfCitation(url, active_tab, task_id) ||
+        (contextual_tasks::ShouldOpenNewTabOnSidePanelLinkClick() &&
+         MaybeHandleTextFragmentCitation(url, active_tab, task_id,
+                                         browser.get()))) {
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: OnThreadLinkClicked "
              "citation handled on active tab";
@@ -966,9 +1019,12 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks navigation trace: OnThreadLinkClicked source "
            "is panel, opening in tab";
-    // Attempt to focus an existing tab prior to creating a new one.
+    // Attempt to focus an existing tab prior to creating a new one when the
+    // new-tab-on-link-click behavior is disabled.
     tabs::TabInterface* existing_tab = nullptr;
-    existing_tab = MaybeFocusExistingOpenTab(url, tab_list, task_id);
+    if (!contextual_tasks::ShouldOpenNewTabOnSidePanelLinkClick()) {
+      existing_tab = MaybeFocusExistingOpenTab(url, tab_list, task_id);
+    }
     tabs::TabInterface* active_tab = tab_list->GetActiveTab();
     if (contextual_tasks::IsContextualTasksClobberActiveTabEnabled() &&
         active_tab && active_tab->GetContents()) {
@@ -1170,10 +1226,8 @@ bool ContextualTasksUiService::ShouldAllowNewTabOpen(
     const base::Uuid& task_id) {
   TabListInterface* tab_list =
       browser ? TabListInterface::From(browser) : nullptr;
-#if BUILDFLAG(ENABLE_PDF) || !BUILDFLAG(IS_ANDROID)
   tabs::TabInterface* active_tab =
       tab_list ? tab_list->GetActiveTab() : nullptr;
-#endif
 
 #if BUILDFLAG(ENABLE_PDF)
   if (IsPdfCitation(url, active_tab, task_id, contextual_tasks_service_)) {
@@ -1187,7 +1241,13 @@ bool ContextualTasksUiService::ShouldAllowNewTabOpen(
   }
 #endif
 
-  if (GetExistingTab(url, tab_list, task_id, contextual_tasks_service_)) {
+  if (contextual_tasks::ShouldOpenNewTabOnSidePanelLinkClick()) {
+    if (IsTextFragmentCitation(url, active_tab, task_id,
+                               contextual_tasks_service_)) {
+      return false;
+    }
+  } else if (GetExistingTab(url, tab_list, task_id,
+                            contextual_tasks_service_)) {
     return false;
   }
 
@@ -1720,7 +1780,10 @@ bool ContextualTasksUiService::HandleCitationClick(
   if (tab_list) {
     tabs::TabInterface* active_tab = tab_list->GetActiveTab();
     if (MaybeHandleVideoCitation(url, active_tab, task_id) ||
-        MaybeHandlePdfCitation(url, active_tab, task_id)) {
+        MaybeHandlePdfCitation(url, active_tab, task_id) ||
+        (contextual_tasks::ShouldOpenNewTabOnSidePanelLinkClick() &&
+         MaybeHandleTextFragmentCitation(url, active_tab, task_id,
+                                         browser_window))) {
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks HandleCitationClick: citation handled on active "
              "tab";
@@ -1728,8 +1791,12 @@ bool ContextualTasksUiService::HandleCitationClick(
     }
   }
 
+  // TODO(crbug.com/573278089): Scope ShouldHandleCitationClick and
+  // HandleCitationClick strictly to in-place citations on the active tab and
+  // move tab-opening / existing-tab-focusing to
+  // HandleSidePanelExternalNavigation / OpenUrl.
   tabs::TabInterface* existing_tab = nullptr;
-  if (tab_list) {
+  if (tab_list && !contextual_tasks::ShouldOpenNewTabOnSidePanelLinkClick()) {
     existing_tab = MaybeFocusExistingOpenTab(url, tab_list, task_id);
   }
 
@@ -1857,6 +1924,9 @@ bool ContextualTasksUiService::HandleLensNavigation(
     return false;
   }
 
+  // TODO(crbug.com/573278089): Scope ShouldHandleLensNavigation strictly to
+  // in-side-panel SRP navigations and remove this fallback delegation.
+  //
   // At this point, the navigation is either:
   // 1) An organic search result link clicked from the SRP (external web page),
   // 2) An unsupported search results mode (e.g. shopping mode udm=28),
@@ -2129,6 +2199,13 @@ void ContextualTasksUiService::OpenUrl(
     nav_params.opener = message_proxy_web_contents->GetPrimaryMainFrame();
   }
 
+  // Capture the active tab before navigating, since a foreground navigation
+  // activates the new tab.
+  TabListInterface* opener_tab_list =
+      browser ? TabListInterface::From(browser) : nullptr;
+  tabs::TabInterface* opener_tab =
+      opener_tab_list ? opener_tab_list->GetActiveTab() : nullptr;
+
   // Perform the navigation
   Navigate(&nav_params);
 
@@ -2149,17 +2226,14 @@ void ContextualTasksUiService::OpenUrl(
                                      current_task->GetTaskId());
         }
       }
-      TabListInterface* tab_list_interface = TabListInterface::From(browser);
-      tabs::TabInterface* active_tab =
-          tab_list_interface ? tab_list_interface->GetActiveTab() : nullptr;
-      if (tab_list_interface && active_tab) {
-        if (tabs::TabInterface* new_tab =
-                tabs::TabInterface::MaybeGetFromContents(new_contents_ptr)) {
-          if (tab_list_interface->GetIndexOfTab(new_tab->GetHandle()) !=
-              ::tab_list::kNoTabIndex) {
-            tab_list_interface->SetOpenerForTab(new_tab->GetHandle(),
-                                                active_tab->GetHandle());
-          }
+      if (opener_tab_list && opener_tab) {
+        tabs::TabInterface* new_tab =
+            tabs::TabInterface::MaybeGetFromContents(new_contents_ptr);
+        if (new_tab && new_tab != opener_tab &&
+            opener_tab_list->GetIndexOfTab(new_tab->GetHandle()) !=
+                ::tab_list::kNoTabIndex) {
+          opener_tab_list->SetOpenerForTab(new_tab->GetHandle(),
+                                           opener_tab->GetHandle());
         }
       }
     }
