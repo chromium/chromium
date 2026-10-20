@@ -348,6 +348,10 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
                         registration.counter.value_or(0),
                         std::move(credential_data), std::move(extensions))
           .SerializeToByteArray();
+  if (corrupt_authenticator_data_) {
+    // Too short to be valid authenticator data.
+    attestation->authenticator_data = {0x00};
+  }
   attestation->credential_id = credential_id;
   // For now, only support none attestation.
   attestation->attestation =
@@ -485,6 +489,11 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
       crypto::hash::Sha256(UNSAFE_TODO(base::span(
           client_data->pbClientDataJSON, client_data->cbClientDataJSON))));
   result->signature = registration->private_key->Sign(sign_data);
+
+  if (corrupt_authenticator_data_) {
+    // Too short to be valid authenticator data.
+    result->authenticator_data = {0x00};
+  }
 
   // Fill in the WEBAUTHN_ASSERTION struct returned to the caller.
   result->assertion = {};
