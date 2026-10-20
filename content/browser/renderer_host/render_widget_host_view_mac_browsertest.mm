@@ -633,6 +633,111 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
       << "Text replacement should be accepted on space.";
 }
 
+// Tests that text replacement suggestion is not shown when typing space before
+// the replacement string (i.e. when cursor is at the beginning of the
+// replacement string, rather than at the end).
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       TextReplacementNotShownWhenSpaceInsertedAtStart) {
+  GURL url("data:text/html,<textarea id=editor autofocus>omw</textarea>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  // Set up fake spell checker to provide text replacement ("omw" -> "On my
+  // way").
+  FakeSpellChecker* fakeSpellChecker = [[FakeSpellChecker alloc] init];
+  rwhv_cocoa.spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(fakeSpellChecker);
+
+  EXPECT_TRUE(ExecJs(shell(), "editor.focus()"));
+
+  // Ensure the input router is active to handle key events.
+  static_cast<RenderWidgetHostImpl*>(rwhv->GetRenderWidgetHost())
+      ->input_router()
+      ->MakeActive();
+
+  // Place the cursor at the beginning of the text (index 0, before "omw").
+  EXPECT_TRUE(ExecJs(shell(), "editor.setSelectionRange(0, 0);"));
+
+  EXPECT_TRUE(fakeSpellChecker.correctionCompletionHandler == nil);
+
+  // Press space at the beginning of the text.
+  NSEvent* spaceDownEvent = cocoa_test_event_utils::KeyEventWithKeyCode(
+      ' ', ' ', NSEventTypeKeyDown, 0);
+  [rwhv_cocoa keyEvent:spaceDownEvent];
+
+  NSEvent* spaceUpEvent = cocoa_test_event_utils::KeyEventWithKeyCode(
+      ' ', ' ', NSEventTypeKeyUp, 0);
+  [rwhv_cocoa keyEvent:spaceUpEvent];
+
+  [fakeSpellChecker waitForCheckString];
+
+  std::string text = EvalJs(shell(), "editor.value").ExtractString();
+  EXPECT_EQ(" omw", text);
+
+  // Correction indicator should not be shown because the cursor is at index 1
+  // (the start of "omw"), not at the end of "omw" (index 4).
+  EXPECT_TRUE(fakeSpellChecker.correctionCompletionHandler == nil)
+      << "showCorrectionIndicatorOfType should not be called when cursor is at "
+         "start";
+}
+
+// Tests that text replacement suggestion is not shown when completing a
+// replacement string in the middle (e.g. typing 'm' to make "ow" into "omw").
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       TextReplacementNotShownWhenCharInsertedInMiddle) {
+  GURL url("data:text/html,<textarea id=editor autofocus>ow</textarea>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  // Set up fake spell checker to provide text replacement ("omw" -> "On my
+  // way").
+  FakeSpellChecker* fakeSpellChecker = [[FakeSpellChecker alloc] init];
+  rwhv_cocoa.spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(fakeSpellChecker);
+
+  EXPECT_TRUE(ExecJs(shell(), "editor.focus()"));
+
+  // Ensure the input router is active to handle key events.
+  static_cast<RenderWidgetHostImpl*>(rwhv->GetRenderWidgetHost())
+      ->input_router()
+      ->MakeActive();
+
+  // Place the cursor in the middle (index 1, between 'o' and 'w').
+  EXPECT_TRUE(ExecJs(shell(), "editor.setSelectionRange(1, 1);"));
+
+  EXPECT_TRUE(fakeSpellChecker.correctionCompletionHandler == nil);
+
+  // Type 'm' in the middle of the text.
+  NSEvent* mDownEvent = cocoa_test_event_utils::KeyEventWithKeyCode(
+      'm', 'm', NSEventTypeKeyDown, 0);
+  [rwhv_cocoa keyEvent:mDownEvent];
+
+  NSEvent* mUpEvent = cocoa_test_event_utils::KeyEventWithKeyCode(
+      'm', 'm', NSEventTypeKeyUp, 0);
+  [rwhv_cocoa keyEvent:mUpEvent];
+
+  [fakeSpellChecker waitForCheckString];
+
+  std::string text = EvalJs(shell(), "editor.value").ExtractString();
+  EXPECT_EQ("omw", text);
+
+  // Correction indicator should not be shown because the cursor is at index 2
+  // (after 'm', in the middle of "omw"), not at the end of "omw" (index 3).
+  EXPECT_TRUE(fakeSpellChecker.correctionCompletionHandler == nil)
+      << "showCorrectionIndicatorOfType should not be called when cursor is in "
+         "middle";
+}
+
 // Tests that selection is synced between browser and renderer when
 // `EditContext::updateSelection` is called from a selectionchange handler. The
 // browser's cached selectedRange must reflect the current selection for IME

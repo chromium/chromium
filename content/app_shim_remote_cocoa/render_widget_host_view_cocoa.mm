@@ -510,10 +510,10 @@ static NSWindow* __weak _deferredResignKeyWindow;
   for (NSTextCheckingResult* result in textCheckingResults) {
     NSTextCheckingResult* adjustedResult =
         [result resultByAdjustingRangesWithOffset:_availableTextOffset];
-    if (!NSLocationInRange(cursorLocation,
-                           NSMakeRange(adjustedResult.range.location,
-                                       adjustedResult.range.length + 1)))
+    if (cursorLocation != NSMaxRange(adjustedResult.range)) {
       continue;
+    }
+
     constexpr NSTextCheckingType textCheckingTypesToReplaceImmediately =
         NSTextCheckingTypeQuote | NSTextCheckingTypeDash;
     if (adjustedResult.resultType & textCheckingTypesToReplaceImmediately) {
@@ -523,8 +523,10 @@ static NSWindow* __weak _deferredResignKeyWindow;
     }
     candidateResult = adjustedResult;
   }
-  if (!candidateResult)
+
+  if (!candidateResult) {
     return;
+  }
 
   NSRect textRectInScreenCoordinates =
       [self firstRectForCharacterRange:candidateResult.range
