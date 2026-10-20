@@ -38,6 +38,7 @@
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_internals_util.h"
+#include "components/sync/service/sync_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/net_errors.h"
@@ -504,8 +505,7 @@ bool SyncServiceImplHarness::EnableSelectableType(
     return true;
   }
 
-  selected_types.Put(type);
-  service()->GetUserSettings()->SetSelectedTypes(false, selected_types);
+  service()->GetUserSettings()->SetSelectedType(type, true);
   if (AwaitSyncTransportActive()) {
     DVLOG(1) << "EnableSelectableType(): Enabled sync for type "
              << syncer::GetUserSelectableTypeName(type) << " on "
@@ -537,8 +537,17 @@ bool SyncServiceImplHarness::DisableSelectableType(
     return true;
   }
 
-  selected_types.Remove(type);
-  service()->GetUserSettings()->SetSelectedTypes(false, selected_types);
+  if (service()->GetSyncAccountStateForPrefs() ==
+          syncer::SyncPrefs::SyncAccountState::kSyncing &&
+      service()->GetUserSettings()->IsSyncEverythingEnabled()) {
+    // `SyncUserSettings::SetSelectedType()` requires sync-everything to be
+    // disabled when Sync-the-feature is enabled.
+    selected_types.Remove(type);
+    service()->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
+                                                   selected_types);
+  } else {
+    service()->GetUserSettings()->SetSelectedType(type, false);
+  }
   if (AwaitSyncTransportActive()) {
     DVLOG(1) << "DisableSelectableType(): Disabled "
              << syncer::GetUserSelectableTypeName(type) << " on "
