@@ -55,6 +55,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -1243,10 +1244,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   // without an associated WebContents, like a service worker. In this case, UI
   // should not be shown, but a certificate may still be provided (such as when
   // the certificate is auto-selected by policy). `process_id` corresponds to
-  // the ID of the renderer process initiating the request.
+  // the ID of the renderer process initiating the request. It is null if the
+  // initiating renderer is unknown, or if the request was initiated by the
+  // browser process.
   virtual base::OnceClosure SelectClientCertificate(
       BrowserContext* browser_context,
-      int process_id,
+      ChildProcessId process_id,
       WebContents* web_contents,
       net::SSLCertRequestInfo* cert_request_info,
       net::ClientCertIdentityList client_certs,

@@ -122,6 +122,7 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
@@ -609,7 +610,7 @@ class SSLClientAuthDelegate : public SSLClientAuthHandler::Delegate {
       mojo::PendingRemote<network::mojom::ClientCertificateResponder>
           client_cert_responder_remote,
       BrowserContext* browser_context,
-      int process_id,
+      ChildProcessId process_id,
       base::WeakPtr<WebContents> web_contents,
       const scoped_refptr<net::SSLCertRequestInfo>& cert_info)
       : client_cert_responder_(std::move(client_cert_responder_remote)),
@@ -2516,16 +2517,17 @@ void StoragePartitionImpl::OnCertificateRequested(
   }
 
   base::WeakPtr<WebContents> web_contents_weak;
-  int process_id = network::mojom::kInvalidProcessId;
+  ChildProcessId process_id;
   if (context.type() == ContextType::kSharedOrServiceWorkerContext ||
       context.type() == ContextType::kDeviceBoundSessionContext) {
+    // TODO(crbug.com/479742988): Browser-process requests currently share
+    // SharedOrServiceWorkerContext, so guard against `is_browser()`.
     if (const auto* worker_context =
             std::get_if<URLLoaderNetworkContext::SharedOrServiceWorkerContext>(
-                &context.context())) {
-      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-      // TODO(crbug.com/479742988) This can be the browser process and
-      // shouldn't.
-      process_id = worker_context->process_id.GetUnsafeValue();
+                &context.context());
+        worker_context && !worker_context->process_id.is_browser()) {
+      process_id =
+          ToChildProcessId(worker_context->process_id.renderer_process_id());
     }
   } else {
     WebContents* web_contents = context.GetWebContents();
@@ -2540,7 +2542,7 @@ void StoragePartitionImpl::OnCertificateRequested(
     if (context.navigation_or_document()) {
       auto* render_frame_host = context.navigation_or_document()->GetDocument();
       if (render_frame_host) {
-        process_id = render_frame_host->GetProcess()->GetDeprecatedID();
+        process_id = render_frame_host->GetProcess()->GetID();
       }
     }
   }

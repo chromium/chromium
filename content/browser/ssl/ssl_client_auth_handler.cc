@@ -54,7 +54,7 @@ class SSLClientAuthHandler::ClientCertificateDelegateImpl
 SSLClientAuthHandler::SSLClientAuthHandler(
     std::unique_ptr<net::ClientCertStore> client_cert_store,
     base::WeakPtr<BrowserContext> browser_context,
-    int process_id,
+    ChildProcessId process_id,
     base::WeakPtr<WebContents> web_contents,
     net::SSLCertRequestInfo* cert_request_info,
     Delegate* delegate)
