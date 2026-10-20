@@ -1757,7 +1757,6 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/574207996")
     public void testSearchHistoryAndTabs_signedOut() {
         mSettingsSearchTestRule.startSettingsActivity();
 
