@@ -1424,6 +1424,8 @@ public class AwContents implements SmartClipProvider {
             recordAdoptResult(AdoptResult.DESTROYED);
             throw new IllegalStateException("AwContents is destroyed.");
         }
+        // The FullScreenView replaces the container view being swapped out, so exit it first.
+        if (isFullScreen()) requestExitFullscreen();
         if (mContainerView != null && mContainerView.isAttachedToWindow()) {
             recordAdoptResult(AdoptResult.OLD_CONTAINER_ATTACHED);
             throw new IllegalStateException(

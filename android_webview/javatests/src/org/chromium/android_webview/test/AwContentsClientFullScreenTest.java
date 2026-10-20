@@ -120,6 +120,24 @@ public class AwContentsClientFullScreenTest extends AwParameterizedTest {
         doTestOnShowAndHideCustomViewWithCallback(VIDEO_INSIDE_DIV_TEST_URL);
     }
 
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @Test
+    public void testAdoptExitsFullscreen() throws Throwable {
+        doOnShowCustomViewTest(VIDEO_INSIDE_DIV_TEST_URL);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AwTestContainerView newContainer =
+                            new AwTestContainerView(mActivityTestRule.getActivity(), false);
+                    ((ViewGroup) mTestContainerView.getParent()).removeView(mTestContainerView);
+                    mTestContainerView
+                            .getAwContents()
+                            .adopt(newContainer, newContainer.getInternalAccessDelegate());
+                    Assert.assertFalse(mTestContainerView.getAwContents().isFullScreen());
+                });
+        mContentsClient.waitForCustomViewHidden();
+    }
+
     public void doTestOnShowAndHideCustomViewWithCallback(String videoTestUrl) throws Throwable {
         doOnShowAndHideCustomViewTest(
                 videoTestUrl, () -> mContentsClient.getExitCallback().onCustomViewHidden());
