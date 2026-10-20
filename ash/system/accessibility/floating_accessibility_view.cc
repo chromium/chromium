@@ -162,25 +162,25 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
 
   std::unique_ptr<views::View> tray_button_container =
       CreateButtonRowContainer(kUnifiedTopShortcutSpacing);
-  a11y_tray_button_ =
+  a11y_tray_button_observation_.Observe(
       tray_button_container->AddChildView(std::make_unique<FloatingMenuButton>(
           base::BindRepeating(
               &FloatingAccessibilityView::OnA11yTrayButtonPressed,
               base::Unretained(this)),
           kUnifiedMenuAccessibilityIcon,
           IDS_ASH_FLOATING_ACCESSIBILITY_DETAILED_MENU_OPEN,
-          /*flip_for_rtl*/ true));
+          /*flip_for_rtl*/ true)));
 
   std::unique_ptr<views::View> position_button_container =
       CreateButtonRowContainer(kPanelPositionButtonPadding);
-  position_button_ = position_button_container->AddChildView(
+  position_button_observation_.Observe(position_button_container->AddChildView(
       std::make_unique<FloatingMenuButton>(
           base::BindRepeating(
               &FloatingAccessibilityView::OnPositionButtonPressed,
               base::Unretained(this)),
           kAutoclickPositionBottomLeftIcon,
           IDS_ASH_AUTOCLICK_OPTION_CHANGE_POSITION, /*flip_for_rtl*/ false,
-          kPanelPositionButtonSize, false, /* is_a11y_togglable */ false));
+          kPanelPositionButtonSize, false, /* is_a11y_togglable */ false)));
 
   if (IsKioskImeButtonEnabled()) {
     Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
@@ -203,8 +203,8 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
   AddChildView(std::move(position_button_container));
 
   // Set view IDs for testing.
-  position_button_->SetID(static_cast<int>(ButtonId::kPosition));
-  a11y_tray_button_->SetID(static_cast<int>(ButtonId::kSettingsList));
+  position_button()->SetID(static_cast<int>(ButtonId::kPosition));
+  a11y_tray_button()->SetID(static_cast<int>(ButtonId::kSettingsList));
   dictation_button()->SetID(static_cast<int>(ButtonId::kDictation));
   select_to_speak_button()->SetID(static_cast<int>(ButtonId::kSelectToSpeak));
   virtual_keyboard_button()->SetID(
@@ -242,35 +242,35 @@ void FloatingAccessibilityView::Initialize() {
 void FloatingAccessibilityView::SetMenuPosition(FloatingMenuPosition position) {
   switch (position) {
     case FloatingMenuPosition::kBottomRight:
-      position_button_->SetVectorIcon(kAutoclickPositionBottomRightIcon);
+      position_button()->SetVectorIcon(kAutoclickPositionBottomRightIcon);
       return;
     case FloatingMenuPosition::kBottomLeft:
-      position_button_->SetVectorIcon(kAutoclickPositionBottomLeftIcon);
+      position_button()->SetVectorIcon(kAutoclickPositionBottomLeftIcon);
       return;
     case FloatingMenuPosition::kTopLeft:
-      position_button_->SetVectorIcon(kAutoclickPositionTopLeftIcon);
+      position_button()->SetVectorIcon(kAutoclickPositionTopLeftIcon);
       return;
     case FloatingMenuPosition::kTopRight:
-      position_button_->SetVectorIcon(kAutoclickPositionTopRightIcon);
+      position_button()->SetVectorIcon(kAutoclickPositionTopRightIcon);
       return;
     case FloatingMenuPosition::kSystemDefault:
-      position_button_->SetVectorIcon(base::i18n::IsRTL()
-                                          ? kAutoclickPositionBottomLeftIcon
-                                          : kAutoclickPositionBottomRightIcon);
+      position_button()->SetVectorIcon(base::i18n::IsRTL()
+                                           ? kAutoclickPositionBottomLeftIcon
+                                           : kAutoclickPositionBottomRightIcon);
       return;
   }
 }
 
 void FloatingAccessibilityView::SetDetailedViewShown(bool shown) {
-  a11y_tray_button_->SetToggled(shown);
+  a11y_tray_button()->SetToggled(shown);
 }
 
 void FloatingAccessibilityView::FocusOnDetailedViewButton() {
-  a11y_tray_button_->RequestFocus();
+  a11y_tray_button()->RequestFocus();
 }
 
 void FloatingAccessibilityView::OnA11yTrayButtonPressed() {
-  delegate_->OnDetailedMenuEnabled(!a11y_tray_button_->GetToggled());
+  delegate_->OnDetailedMenuEnabled(!a11y_tray_button()->GetToggled());
 }
 
 void FloatingAccessibilityView::OnPositionButtonPressed() {

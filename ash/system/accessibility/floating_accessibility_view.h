@@ -129,6 +129,14 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
     return virtual_keyboard_button_observation_.GetSource();
   }
 
+  FloatingMenuButton* a11y_tray_button() {
+    return a11y_tray_button_observation_.GetSource();
+  }
+
+  FloatingMenuButton* position_button() {
+    return position_button_observation_.GetSource();
+  }
+
   ImeMenuTray* ime_button() { return ime_button_observation_.GetSource(); }
 
   // Feature buttons:
@@ -140,9 +148,11 @@ class FloatingAccessibilityView : public views::BoxLayoutView,
       virtual_keyboard_button_observation_{this};
 
   // Button to list all available features.
-  raw_ptr<FloatingMenuButton> a11y_tray_button_ = nullptr;
+  base::ScopedObservation<FloatingMenuButton, ViewObserver>
+      a11y_tray_button_observation_{this};
   // Button to move the view around corners.
-  raw_ptr<FloatingMenuButton> position_button_ = nullptr;
+  base::ScopedObservation<FloatingMenuButton, ViewObserver>
+      position_button_observation_{this};
   // Button to list all available keyboard languages.
   base::ScopedObservation<ImeMenuTray, ViewObserver> ime_button_observation_{
       this};

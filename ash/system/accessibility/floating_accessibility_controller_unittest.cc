@@ -786,4 +786,33 @@ TEST_F(FloatingAccessibilityControllerTest, CheckOpacity) {
   EXPECT_EQ(GetMenuOpacity(), 1.0f);
 }
 
+TEST_F(FloatingAccessibilityControllerTest,
+       CheckOpacityOnTrayAndPositionButtonsFocus) {
+  SetSingleAvailableIme();
+  SetUpVisibleMenu();
+  EXPECT_LT(GetMenuOpacity(), 1.0f);
+
+  ASSERT_TRUE(widget());
+  views::FocusManager* focus_manager = widget()->GetFocusManager();
+
+  // With a single IME and no other features enabled, FocusOnMenu() focuses the
+  // accessibility tray (settings list) button.
+  controller()->FocusOnMenu();
+  EXPECT_EQ(focus_manager->GetFocusedView(),
+            GetMenuButton(FloatingAccessibilityView::ButtonId::kSettingsList));
+  EXPECT_EQ(GetMenuOpacity(), 1.0f);
+
+  focus_manager->ClearFocus();
+  EXPECT_LT(GetMenuOpacity(), 1.0f);
+
+  // Focusing the position button should also make the menu opaque.
+  GetMenuButton(FloatingAccessibilityView::ButtonId::kPosition)->RequestFocus();
+  EXPECT_EQ(focus_manager->GetFocusedView(),
+            GetMenuButton(FloatingAccessibilityView::ButtonId::kPosition));
+  EXPECT_EQ(GetMenuOpacity(), 1.0f);
+
+  focus_manager->ClearFocus();
+  EXPECT_LT(GetMenuOpacity(), 1.0f);
+}
+
 }  // namespace ash
