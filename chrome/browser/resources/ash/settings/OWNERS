@@ -14,7 +14,6 @@ cros-settings-reviews@google.com
 agawronska@google.com #{LAST_RESORT_SUGGESTION}
 khorimoto@google.com  #{LAST_RESORT_SUGGESTION}
 skau@google.com       #{LAST_RESORT_SUGGESTION}
-wutao@google.com      #{LAST_RESORT_SUGGESTION}
 
 # Subdir OWNERS can approve icon changes related to their subdir.
 per-file os_settings_icons.html=file://chrome/browser/resources/ash/settings/crostini_page/OWNERS
