@@ -622,6 +622,7 @@ chromium-metrics-reviews@google.com.
   <int value="56" label="Response Stopped By User"/>
   <int value="57" label="Response Stopped Other"/>
   <int value="58" label="Response Stopped Success"/>
+  <int value="59" label="WebUI State Guest Loaded"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicInstanceEvent) -->
@@ -1645,9 +1646,11 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Web contents is warmed"/>
   <int value="14" label="Glic is unavailable due to country location mismatch"/>
   <int value="15" label="Glic is unavailable due to account capabilities"/>
+  <int value="16"
+      label="Web view is displayed while waiting for web client or timeout"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:WebUiState) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_webui.mojom:WebUiState) -->
 
 <!-- LINT.IfChange(WebViewAutoPlayProgress) -->
 

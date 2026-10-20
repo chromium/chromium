@@ -59,6 +59,9 @@ class GlicWebClientManager : public content::WebContentsObserver {
                                   bool is_api_allowed,
                                   mojom::GuestPageType page_type,
                                   bool is_initial_commit) {}
+    // The guest main frame completed its onload event for a regular allowed
+    // page (when kGlicShowLoaderUntilMainPageOnload is enabled).
+    virtual void OnGuestMainPageLoaded() {}
     // The guest process was terminated.
     virtual void OnGuestProcessGone(base::TerminationStatus status) {}
     // The web client receiver was created/bound.
@@ -110,6 +113,7 @@ class GlicWebClientManager : public content::WebContentsObserver {
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
@@ -140,6 +144,8 @@ class GlicWebClientManager : public content::WebContentsObserver {
   // as blocked, avoiding duplicate notifications when multiple throttles or
   // observers detect the same blocked navigation.
   bool current_navigation_blocked_ = false;
+  std::optional<mojom::GuestPageType> last_committed_page_type_;
+  bool last_committed_is_api_allowed_ = false;
 
   mojo::PendingReceiver<glic::mojom::WebClientHandler>
       pending_web_client_receiver_;

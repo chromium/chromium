@@ -1110,6 +1110,11 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
           "Glic.Instance.WebUiStateChanged.LocationMismatch"));
       LogEvent(GlicInstanceEvent::kWebUiStateLocationMismatch);
       break;
+    case mojom::WebUiState::kGuestLoaded:
+      base::RecordAction(base::UserMetricsAction(
+          "Glic.Instance.WebUiStateChanged.GuestLoaded"));
+      LogEvent(GlicInstanceEvent::kWebUiStateGuestLoaded);
+      break;
   }
 }
 

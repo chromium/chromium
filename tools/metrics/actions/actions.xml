@@ -14002,6 +14002,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Instance.WebUiStateChanged.GuestLoaded">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    The Glic instance WebUI guest main page has loaded and is displayed while
+    waiting for the web client to initialize.
+  </description>
+</action>
+
 <action name="Glic.Instance.WebUiStateChanged.HoldLoading">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>

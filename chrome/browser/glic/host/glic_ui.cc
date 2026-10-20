@@ -106,6 +106,9 @@ class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler,
     preload_page_->OnGuestNavigated(url, is_api_allowed, page_type,
                                     is_initial_commit);
   }
+  void OnGuestMainPageLoaded() override {
+    preload_page_->OnGuestMainPageLoaded();
+  }
   void OnGuestProcessGone(base::TerminationStatus status) override {
     preload_page_->OnGuestProcessGone();
   }
@@ -348,7 +351,8 @@ GlicUI::GlicUI(content::WebUI* web_ui)
 
   source->AddBoolean(
       "noLoader", base::FeatureList::IsEnabled(features::kGlicNoWebUiLoader) ||
-                      base::FeatureList::IsEnabled(features::kGlicSsr));
+                      (base::FeatureList::IsEnabled(features::kGlicSsr) &&
+                       !features::kGlicShowLoaderUntilMainPageOnload.Get()));
 
   source->AddBoolean("enableWebClientUnresponsiveMetrics",
                      base::FeatureList::IsEnabled(

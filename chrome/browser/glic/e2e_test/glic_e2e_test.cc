@@ -515,6 +515,7 @@ void GlicE2ETest::WebUiStateChanged(glic::mojom::WebUiState state) {
     case glic::mojom::WebUiState::kShowLoading:
     case glic::mojom::WebUiState::kHoldLoading:
     case glic::mojom::WebUiState::kFinishLoading:
+    case glic::mojom::WebUiState::kGuestLoaded:
     case glic::mojom::WebUiState::kReady:
     case glic::mojom::WebUiState::kWarmed:
     case glic::mojom::WebUiState::kSignIn:

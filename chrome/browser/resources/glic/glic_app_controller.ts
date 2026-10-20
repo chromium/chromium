@@ -220,6 +220,11 @@ export class GlicAppController implements WebviewDelegate {
           this.onGuestNavigated(url, isApiAllowed, pageType, isInitialCommit);
         });
 
+    this.browserProxy.preloadPageCallbackRouter.onGuestMainPageLoaded
+        .addListener(() => {
+          this.onGuestMainPageLoaded();
+        });
+
     this.browserProxy.preloadPageCallbackRouter.onGuestProcessGone.addListener(
         () => {
           this.webviewError('guest process gone');
@@ -252,6 +257,9 @@ export class GlicAppController implements WebviewDelegate {
 
   onGuestNavigationStarted(): void {
     this.webview?.onGuestNavigationStarted();
+    if (this.state === WebUiState.kGuestLoaded) {
+      this.setState(WebUiState.kShowLoading);
+    }
   }
 
   onGuestNavigated(
@@ -259,6 +267,18 @@ export class GlicAppController implements WebviewDelegate {
       isInitialCommit: boolean): void {
     this.webview?.onGuestNavigated(
         url, isApiAllowed, pageType, isInitialCommit);
+  }
+
+  onGuestMainPageLoaded(): void {
+    if (this.state === WebUiState.kHoldLoading) {
+      this.setState(WebUiState.kReady);
+      return;
+    }
+    if (this.state === WebUiState.kBeginLoad ||
+        this.state === WebUiState.kShowLoading ||
+        this.state === WebUiState.kFinishLoading) {
+      this.setState(WebUiState.kGuestLoaded);
+    }
   }
 
   webviewPageCommit(type: GuestPageType, _isApiAllowed: boolean) {
@@ -296,6 +316,7 @@ export class GlicAppController implements WebviewDelegate {
         if (loadTimeData.getBoolean('reloadAfterNavigation')) {
           if (this.state === WebUiState.kReady ||
               this.state === WebUiState.kWarmed ||
+              this.state === WebUiState.kGuestLoaded ||
               this.state === WebUiState.kGuestError) {
             this.setState(WebUiState.kBeginLoad);
           }
@@ -367,6 +388,7 @@ export class GlicAppController implements WebviewDelegate {
       case WebUiState.kShowLoading:
       case WebUiState.kHoldLoading:
       case WebUiState.kFinishLoading:
+      case WebUiState.kGuestLoaded:
       case WebUiState.kReady:
       case WebUiState.kWarmed:
       // An unresponsive client is left again by `webClientStateChanged()` on
@@ -452,6 +474,10 @@ export class GlicAppController implements WebviewDelegate {
     [
       WebUiState.kFinishLoading,
       {onEnter: this.finishLoading, onExit: this.cancelTimeout},
+    ],
+    [
+      WebUiState.kGuestLoaded,
+      {onEnter: this.guestLoaded, onExit: this.cancelTimeout},
     ],
     [
       WebUiState.kError,
@@ -593,7 +619,8 @@ export class GlicAppController implements WebviewDelegate {
     if (!loadTimeData.getBoolean('noLoader')) {
       this.loadingTimer = setTimeout(() => {
         if (this.state === WebUiState.kWarmed ||
-            this.state === WebUiState.kReady) {
+            this.state === WebUiState.kReady ||
+            this.state === WebUiState.kGuestLoaded) {
           return;
         }
         this.setState(WebUiState.kShowLoading);
@@ -720,7 +747,8 @@ export class GlicAppController implements WebviewDelegate {
     this.earliestLoadingDismissTime = performance.now() + kMinHoldLoadingTimeMs;
     this.loadingTimer = setTimeout(() => {
       if (this.state === WebUiState.kWarmed ||
-          this.state === WebUiState.kReady) {
+          this.state === WebUiState.kReady ||
+          this.state === WebUiState.kGuestLoaded) {
         return;
       }
       this.setState(WebUiState.kFinishLoading);
@@ -746,6 +774,19 @@ export class GlicAppController implements WebviewDelegate {
       this.setState(WebUiState.kWarmed);
       return;
     }
+    this.startClientLoadTimeout();
+  }
+
+  private guestLoaded(): void {
+    $.guestPanel.classList.toggle('show-header', false);
+    this.showPanel('guestPanel');
+    if (this.panelStateKind === PanelStateKind.kHidden) {
+      return;
+    }
+    this.startClientLoadTimeout();
+  }
+
+  private startClientLoadTimeout(): void {
     // The web client is not yet ready, so wait for the remainder of
     // `kMaxWaitTimeMs`. Switch to error state at that time unless interrupted
     // by `webClientReady`.
@@ -809,6 +850,7 @@ export class GlicAppController implements WebviewDelegate {
       WebUiState.kBeginLoad,
       WebUiState.kShowLoading,
       WebUiState.kFinishLoading,
+      WebUiState.kGuestLoaded,
     ];
     if (allowedStates.includes(this.state!)) {
       this.setState(WebUiState.kOffline);
@@ -836,7 +878,8 @@ export class GlicAppController implements WebviewDelegate {
       case WebClientState.kWarmed:
         if (this.state === WebUiState.kBeginLoad ||
             this.state === WebUiState.kFinishLoading ||
-            this.state === WebUiState.kShowLoading) {
+            this.state === WebUiState.kShowLoading ||
+            this.state === WebUiState.kGuestLoaded) {
           this.cancelTimeout();
           this.setState(WebUiState.kWarmed);
           if (this.panelStateKind !== PanelStateKind.kHidden) {
@@ -896,6 +939,7 @@ export class GlicAppController implements WebviewDelegate {
     }
     if (this.state === WebUiState.kBeginLoad ||
         this.state === WebUiState.kFinishLoading ||
+        this.state === WebUiState.kGuestLoaded ||
         this.state === WebUiState.kWarmed) {
       this.cancelTimeout();
       this.trackLoadingStageEnd();
@@ -915,9 +959,12 @@ export class GlicAppController implements WebviewDelegate {
     this.panelStateKind = panelStateKind;
     this.maybeReportClientLoadError();
 
-    if (this.panelStateKind !== PanelStateKind.kHidden &&
-        this.state === WebUiState.kWarmed) {
-      this.startWarmedTimeout();
+    if (this.panelStateKind !== PanelStateKind.kHidden) {
+      if (this.state === WebUiState.kWarmed) {
+        this.startWarmedTimeout();
+      } else if (this.state === WebUiState.kGuestLoaded && !this.loadingTimer) {
+        this.startClientLoadTimeout();
+      }
     }
 
     const panelStateKindSection = getRequiredElement('localPanels');

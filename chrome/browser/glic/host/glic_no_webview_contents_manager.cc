@@ -195,8 +195,14 @@ const char* ErrorPanelTypeToHistogramSuffix(mojom::ErrorPanelType error_type) {
   }
 }
 
-bool ShouldDisableLoadingOverlay() {
-  return base::FeatureList::IsEnabled(features::kGlicSsr);
+bool ShouldDisableLoadingOverlay(bool guest_main_page_loaded) {
+  if (!base::FeatureList::IsEnabled(features::kGlicSsr)) {
+    return false;
+  }
+  if (features::kGlicShowLoaderUntilMainPageOnload.Get()) {
+    return guest_main_page_loaded;
+  }
+  return true;
 }
 
 }  // namespace
@@ -317,11 +323,16 @@ class GlicNoWebviewContentsManager::Metrics {
 GlicNoWebviewContentsManager::OverlayContentsManager::OverlayContentsManager(
     Profile* profile,
     GlicNoWebviewContentsManager* owner,
-    ObservableValueView<GuestState>& guest_state)
+    ObservableValueView<GuestState>& guest_state,
+    ObservableValueView<bool>& guest_main_page_loaded)
     : profile_(profile),
       owner_(owner),
       guest_state_(guest_state),
       guest_state_subscription_(guest_state_->AddObserver(
+          base::BindRepeating(&OverlayContentsManager::UpdateOverlayState,
+                              base::Unretained(this)))),
+      guest_main_page_loaded_(guest_main_page_loaded),
+      guest_main_page_loaded_subscription_(guest_main_page_loaded_->AddObserver(
           base::BindRepeating(&OverlayContentsManager::UpdateOverlayState,
                               base::Unretained(this)))) {}
 
@@ -420,7 +431,8 @@ mojom::OverlayStatePtr
 GlicNoWebviewContentsManager::OverlayContentsManager::DetermineOverlayState(
     std::optional<mojom::ErrorPanelType> error_type,
     GuestState guest_state,
-    std::optional<mojom::PanelStateKind> panel_state_kind) {
+    std::optional<mojom::PanelStateKind> panel_state_kind,
+    bool guest_main_page_loaded) {
   // Input 1: Active error state. An error panel always takes precedence.
   if (error_type.has_value()) {
     return mojom::OverlayState::NewError(*error_type);
@@ -430,7 +442,8 @@ GlicNoWebviewContentsManager::OverlayContentsManager::DetermineOverlayState(
   // login, security interstitial, or in-page error page, or when the loading
   // overlay is disabled, the guest WebContents is shown and no overlay is
   // needed.
-  if (guest_state != GuestState::kLoading || ShouldDisableLoadingOverlay()) {
+  if (guest_state != GuestState::kLoading ||
+      ShouldDisableLoadingOverlay(guest_main_page_loaded)) {
     return nullptr;
   }
 
@@ -451,7 +464,8 @@ GlicNoWebviewContentsManager::OverlayContentsManager::DetermineOverlayState() {
     panel_state_kind = panel_state_->get().kind;
   }
   return DetermineOverlayState(error_type_, guest_state_->get(),
-                               panel_state_kind);
+                               panel_state_kind,
+                               guest_main_page_loaded_->get());
 }
 
 void GlicNoWebviewContentsManager::OverlayContentsManager::
@@ -624,7 +638,7 @@ GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(
       enabling_(enabling),
       metrics_(std::make_unique<Metrics>()),
       guest_state_{GuestState::kLoading},
-      overlay_manager_(profile, this, guest_state_),
+      overlay_manager_(profile, this, guest_state_, guest_main_page_loaded_),
       privileged_guest_contents_(pwc::PrivilegedWebContents::Create(
           pwc::PrivilegedComponent::kGlic,
           profile,
@@ -853,7 +867,7 @@ GlicNoWebviewContentsManager::CalculateDesiredState() const {
     return DisplayState::kShowingOverlay;
   }
   if (guest_state_.get() != GuestState::kLoading ||
-      ShouldDisableLoadingOverlay()) {
+      ShouldDisableLoadingOverlay(guest_main_page_loaded_.get())) {
     return DisplayState::kShowingGuest;
   }
   return DisplayState::kShowingOverlay;
@@ -891,11 +905,17 @@ void GlicNoWebviewContentsManager::UpdateDisplayState() {
 void GlicNoWebviewContentsManager::OnGuestNavigationStarted() {
   StopGuestBootstrap();
   ClearTransientErrorState();
+  guest_main_page_loaded_.Set(false);
   guest_state_.Set(GuestState::kLoading);
   UpdateClientLoadFailed();
   // Allow the full loading time after navigation. UpdateDisplayState() will
   // start the timer.
   loading_timer_.Stop();
+  UpdateDisplayState();
+}
+
+void GlicNoWebviewContentsManager::OnGuestMainPageLoaded() {
+  guest_main_page_loaded_.Set(true);
   UpdateDisplayState();
 }
 
@@ -905,6 +925,7 @@ void GlicNoWebviewContentsManager::OnGuestNavigated(
     mojom::GuestPageType page_type,
     bool is_initial_commit) {
   StopGuestBootstrap();
+  guest_main_page_loaded_.Set(false);
 
   switch (page_type) {
     case mojom::GuestPageType::kDisabledByAdmin:
@@ -981,6 +1002,7 @@ void GlicNoWebviewContentsManager::StopGuestBootstrap() {
 void GlicNoWebviewContentsManager::OnGuestProcessGone(
     base::TerminationStatus status) {
   StopGuestBootstrap();
+  guest_main_page_loaded_.Set(false);
   guest_state_.Set(GuestState::kLoading);
   SetErrorState(mojom::ErrorPanelType::kError,
                 ClientLoadErrorReason::kGuestProcessGone);
@@ -1019,6 +1041,7 @@ void GlicNoWebviewContentsManager::OnWebClientStateChanged(
 }
 
 void GlicNoWebviewContentsManager::LoadGuest() {
+  guest_main_page_loaded_.Set(false);
   guest_state_.Set(GuestState::kLoading);
   UpdateClientLoadFailed();
   ApplySizeToGuest();

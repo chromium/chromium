@@ -53,6 +53,11 @@ interface PreloadPage {
                    GuestPageType page_type,
                    bool is_initial_commit);
 
+  // Notifies the page when the guest main page is ready to display before the
+  // web client initializes (when kGlicShowLoaderUntilMainPageOnload is
+  // enabled).
+  OnGuestMainPageLoaded();
+
   // Notifies the page when the guest process terminates unexpectedly.
   OnGuestProcessGone();
 
@@ -173,6 +178,9 @@ enum WebUiState {
   kLocationMismatch = 14,
   // Glic is unavailable due to account capabilities.
   kIneligibleAccount = 15,
+  // Guest main page has loaded and web view is displayed while waiting for the
+  // web client to initialize, or until `kMaxWaitTimeMs` timeout is reached.
+  kGuestLoaded = 16,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebUiState)

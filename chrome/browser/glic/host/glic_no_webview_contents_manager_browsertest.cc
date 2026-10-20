@@ -877,14 +877,14 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   // Input 1: Active error state takes precedence over loading/guest readiness.
   auto error_state = OverlayContentsManager::DetermineOverlayState(
       mojom::ErrorPanelType::kSignIn, GuestState::kLoading,
-      mojom::PanelStateKind::kDetached);
+      mojom::PanelStateKind::kDetached, /*guest_main_page_loaded=*/false);
   ASSERT_TRUE(error_state && error_state->is_error());
   EXPECT_EQ(error_state->get_error(), mojom::ErrorPanelType::kSignIn);
 
   // Error also takes precedence even if guest is ready.
   auto error_ready_state = OverlayContentsManager::DetermineOverlayState(
       mojom::ErrorPanelType::kDisabledByAdmin, GuestState::kReady,
-      mojom::PanelStateKind::kAttached);
+      mojom::PanelStateKind::kAttached, /*guest_main_page_loaded=*/false);
   ASSERT_TRUE(error_ready_state && error_ready_state->is_error());
   EXPECT_EQ(error_ready_state->get_error(),
             mojom::ErrorPanelType::kDisabledByAdmin);
@@ -893,21 +893,21 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   // returns null (no overlay needed).
   EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kReady,
-      mojom::PanelStateKind::kAttached));
+      mojom::PanelStateKind::kAttached, /*guest_main_page_loaded=*/false));
   EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kLogin,
-      mojom::PanelStateKind::kAttached));
+      mojom::PanelStateKind::kAttached, /*guest_main_page_loaded=*/false));
   EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kSecurityInterstitial,
-      mojom::PanelStateKind::kAttached));
+      mojom::PanelStateKind::kAttached, /*guest_main_page_loaded=*/false));
   EXPECT_FALSE(OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kGuestError,
-      mojom::PanelStateKind::kAttached));
+      mojom::PanelStateKind::kAttached, /*guest_main_page_loaded=*/false));
 
   // Input 3: Panel state. When loading and detached, returns kFloating style.
   auto floating_state = OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kLoading,
-      mojom::PanelStateKind::kDetached);
+      mojom::PanelStateKind::kDetached, /*guest_main_page_loaded=*/false);
   ASSERT_TRUE(floating_state && floating_state->is_loading());
   EXPECT_EQ(floating_state->get_loading(), mojom::LoadingStyle::kFloating);
 
@@ -915,13 +915,13 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
   // style.
   auto attached_state = OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kLoading,
-      mojom::PanelStateKind::kAttached);
+      mojom::PanelStateKind::kAttached, /*guest_main_page_loaded=*/false);
   ASSERT_TRUE(attached_state && attached_state->is_loading());
   EXPECT_EQ(attached_state->get_loading(), mojom::LoadingStyle::kSidePanel);
 
   auto unattached_state = OverlayContentsManager::DetermineOverlayState(
       /*error_type=*/std::nullopt, GuestState::kLoading,
-      /*panel_state_kind=*/std::nullopt);
+      /*panel_state_kind=*/std::nullopt, /*guest_main_page_loaded=*/false);
   ASSERT_TRUE(unattached_state && unattached_state->is_loading());
   EXPECT_EQ(unattached_state->get_loading(), mojom::LoadingStyle::kSidePanel);
 }
@@ -1396,6 +1396,70 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewSsrOverlayBrowserTest,
   EXPECT_EQ(manager->state(),
             GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
   EXPECT_EQ(manager->active_web_contents(), manager->overlay_contents());
+}
+
+class GlicNoWebviewShowLoaderUntilMainPageOnloadBrowserTest
+    : public GlicNoWebviewOverlayBrowserTest {
+ public:
+  GlicNoWebviewShowLoaderUntilMainPageOnloadBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicSsr,
+        {{features::kGlicShowLoaderUntilMainPageOnload.name, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewShowLoaderUntilMainPageOnloadBrowserTest,
+                       ShowsLoadingOverlayUntilMainPageOnloadThenShowsGuest) {
+  // Before the guest main page completes its onload event, the loading overlay
+  // must be shown even though kGlicSsr is enabled.
+  GlicNoWebviewContentsManager direct_manager(
+      GetProfile(), &service()->enabling(), /*initially_hidden=*/false);
+  direct_manager.SetVisibility(content::Visibility::VISIBLE);
+  direct_manager.OnGuestNavigationStarted();
+  EXPECT_EQ(direct_manager.state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
+  auto initial_overlay_state = direct_manager.GetOverlayStateForTesting();
+  ASSERT_TRUE(initial_overlay_state && initial_overlay_state->is_loading());
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+
+  // Wait for the static /title1.html guest page to finish loading and fire
+  // DocumentOnLoadCompletedInPrimaryMainFrame.
+  ASSERT_TRUE(content::WaitForLoadStop(manager->guest_contents()));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return manager->state() ==
+           GlicNoWebviewContentsManager::DisplayState::kShowingGuest;
+  }));
+
+  // Once the regular guest page onload event completes, the loading overlay is
+  // dismissed and the guest WebContents is shown, while guest_state remains
+  // kLoading and the loading timeout timer stays active until client ready.
+  EXPECT_EQ(manager->guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kLoading);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+  EXPECT_EQ(manager->active_web_contents(), manager->guest_contents());
+  EXPECT_FALSE(manager->GetOverlayStateForTesting());
+  EXPECT_TRUE(manager->loading_timer_for_testing().IsRunning());
+
+  // Starting a new navigation resets the main page loaded state and restores
+  // the loading overlay until the new navigation completes its onload event.
+  manager->OnGuestNavigationStarted();
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
+  auto overlay_state = manager->GetOverlayStateForTesting();
+  ASSERT_TRUE(overlay_state && overlay_state->is_loading());
+
+  manager->OnGuestMainPageLoaded();
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+  EXPECT_EQ(manager->active_web_contents(), manager->guest_contents());
+  EXPECT_FALSE(manager->GetOverlayStateForTesting());
 }
 
 class GlicNoWebviewGuestInitialSizeBrowserTest

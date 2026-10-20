@@ -237,6 +237,7 @@ struct TestParams {
   bool trust_first_onboarding_arm2 = false;
   bool auto_open_pdf = false;
   bool enable_no_web_ui_loader = false;
+  bool enable_show_loader_until_main_page_onload = false;
   bool no_webview = false;
   bool skills_v2 = false;
   bool enable_embedded_pdf_bytes_extraction = false;
@@ -278,6 +279,9 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     }
     if (info.param.enable_no_web_ui_loader) {
       result.push_back("EnableNoWebUiLoader");
+    }
+    if (info.param.enable_show_loader_until_main_page_onload) {
+      result.push_back("EnableShowLoaderUntilMainPageOnload");
     }
     if (info.param.no_webview) {
       result.push_back("NoWebview");
@@ -718,6 +722,69 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestForNoWebUiLoader, testNoWebUiLoader) {
 
   ExecuteJsTest();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class GlicApiTestForShowLoaderUntilMainPageOnload : public GlicApiTest {
+ public:
+  GlicApiTestForShowLoaderUntilMainPageOnload() {
+    SetGlicPagePath("/title1.html");
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicWebClientLoadTimes,
+         {{features::kGlicPreLoadingTimeMs.name, "0"},
+          {features::kGlicMinLoadingTimeMs.name, "50"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (GetParam().enable_show_loader_until_main_page_onload) {
+      enabled_features.push_back(
+          {features::kGlicSsr,
+           {{features::kGlicShowLoaderUntilMainPageOnload.name, "true"}}});
+    } else {
+      disabled_features.push_back(features::kGlicSsr);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestForShowLoaderUntilMainPageOnload,
+                       testShowLoaderUntilMainPageOnload) {
+  ToggleGlicForActiveTab(/*prevent_close=*/true);
+  auto* instance = GetOnlyGlicInstance();
+  ASSERT_TRUE(instance);
+
+  WebUIStateListener listener(&instance->host());
+
+  ASSERT_OK(WaitForGlicOpen());
+
+  auto* webui_contents = instance->host().webui_contents();
+  ASSERT_TRUE(webui_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(webui_contents));
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return instance->host().web_client_contents() != nullptr; }));
+  ASSERT_TRUE(content::WaitForLoadStop(instance->host().web_client_contents()));
+
+  bool expect_guest_shown =
+      GetParam().enable_show_loader_until_main_page_onload;
+  mojom::WebUiState expected_state = expect_guest_shown
+                                         ? mojom::WebUiState::kGuestLoaded
+                                         : mojom::WebUiState::kFinishLoading;
+  ASSERT_TRUE(WaitForWebUiState(expected_state).has_value());
+  EXPECT_TRUE(listener.SawState(mojom::WebUiState::kShowLoading));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(webui_contents,
+                           "!document.getElementById('guestPanel').hidden")
+               .ExtractBool() == expect_guest_shown;
+  }));
+  EXPECT_EQ(!expect_guest_shown,
+            content::EvalJs(webui_contents,
+                            "!document.getElementById('loadingPanel').hidden")
+                .ExtractBool());
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class GlicOnboardingApiTest : public GlicApiTest {
  public:
@@ -5589,6 +5656,17 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(TestParams{.enable_no_web_ui_loader = false},
                     TestParams{.enable_no_web_ui_loader = true}),
     &WithTestParams::PrintTestVariant);
+
+#if !BUILDFLAG(IS_ANDROID)
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GlicApiTestForShowLoaderUntilMainPageOnload,
+    testing::Values(
+        TestParams{.enable_show_loader_until_main_page_onload = false},
+        TestParams{.enable_show_loader_until_main_page_onload = true,
+                   .enable_ssr = true}),
+    &WithTestParams::PrintTestVariant);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithWebActuationSettingDisabled,

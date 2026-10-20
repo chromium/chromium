@@ -240,6 +240,7 @@ BASE_DECLARE_FEATURE(kGlicBackfillWarmingUsePerformanceManager);
 BASE_DECLARE_FEATURE(kGlicColdWarmingUsePerformanceManager);
 
 BASE_DECLARE_FEATURE(kGlicSsr);
+extern const base::FeatureParam<bool> kGlicShowLoaderUntilMainPageOnload;
 
 BASE_DECLARE_FEATURE(kGlicClientDataStorage);
 
