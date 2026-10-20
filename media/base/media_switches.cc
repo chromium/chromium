@@ -443,6 +443,8 @@ const base::FeatureParam<double>
 
 BASE_FEATURE(kCastStreamingHardwareHevc, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls the maximum video bitrate for Cast Streaming mirroring sessions.
+// Configurable via chrome://flags/#cast-streaming-max-video-bitrate.
 BASE_FEATURE(kCastStreamingMaxVideoBitrate, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kCastStreamingMaxVideoBitrateMbps{
     &kCastStreamingMaxVideoBitrate, "max_bitrate_mbps", 5};

@@ -3466,6 +3466,27 @@
             ]
         }
     ],
+    "CastStreamingMaxVideoBitrate": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Max10Mbps",
+                    "params": {
+                        "max_bitrate_mbps": "10"
+                    },
+                    "enable_features": [
+                        "CastStreamingMaxVideoBitrate"
+                    ]
+                }
+            ]
+        }
+    ],
     "CctClientDataHeader": [
         {
             "platforms": [

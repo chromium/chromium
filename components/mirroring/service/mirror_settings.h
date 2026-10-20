@@ -44,6 +44,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirrorSettings {
 
   ~MirrorSettings();
 
+  // Returns the maximum video bitrate, in bits per second, as configured by
+  // `media::kCastStreamingMaxVideoBitrate`.
+  static uint32_t GetMaxVideoBitrate();
+
   // Get the audio/video config with given codec.
   media::cast::FrameSenderConfig GetVideoConfig(media::VideoCodec codec) const;
   media::cast::FrameSenderConfig GetAudioConfig(media::AudioCodec codec) const;

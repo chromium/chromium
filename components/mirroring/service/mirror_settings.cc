@@ -42,15 +42,9 @@ constexpr int kAudioFramerate = 100;
 // Minimum video bitrate (300 kbps).
 constexpr uint32_t kMinVideoBitrate = 300000;
 
-// Start video bitrate (5 Mbps).
-constexpr uint32_t kStartVideoBitrate = 5000000;
-
-uint32_t GetMaxVideoBitrate() {
-  if (!base::FeatureList::IsEnabled(media::kCastStreamingMaxVideoBitrate)) {
-    return 5000000;  // Fallback to legacy 5 Mbps
-  }
-  return media::kCastStreamingMaxVideoBitrateMbps.Get() * 1000000;
-}
+// Maximum video bitrate to start a session at (10 Mbps). If the maximum video
+// bitrate is configured higher, the bitrate ramps up from here.
+constexpr uint32_t kMaxStartVideoBitrate = 10000000;
 
 // Default maximum frame rate for video (30 FPS).
 constexpr int kDefaultMaxFrameRate = 30;
@@ -114,6 +108,14 @@ MirrorSettings::MirrorSettings(
 
 MirrorSettings::~MirrorSettings() = default;
 
+// static
+uint32_t MirrorSettings::GetMaxVideoBitrate() {
+  if (!base::FeatureList::IsEnabled(media::kCastStreamingMaxVideoBitrate)) {
+    return 5000000;  // Fallback to legacy 5 Mbps
+  }
+  return media::kCastStreamingMaxVideoBitrateMbps.Get() * 1000000;
+}
+
 FrameSenderConfig MirrorSettings::GetVideoConfig(
     media::VideoCodec codec) const {
   FrameSenderConfig config;
@@ -129,7 +131,10 @@ FrameSenderConfig MirrorSettings::GetVideoConfig(
   config.channels = 1;
   config.min_bitrate = kMinVideoBitrate;
   config.max_bitrate = GetMaxVideoBitrate();
-  config.start_bitrate = std::min(kStartVideoBitrate, config.max_bitrate);
+  // Start at the maximum bitrate, up to `kMaxStartVideoBitrate`, so that the
+  // quality budget is available immediately. The bitrate is reduced if the
+  // network cannot sustain it.
+  config.start_bitrate = std::min(config.max_bitrate, kMaxStartVideoBitrate);
   config.max_frame_rate = max_frame_rate_;
   config.video_codec_params = VideoCodecParams(codec);
 

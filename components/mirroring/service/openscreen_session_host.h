@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MIRRORING_SERVICE_OPENSCREEN_SESSION_HOST_H_
 #define COMPONENTS_MIRRORING_SERVICE_OPENSCREEN_SESSION_HOST_H_
 
+#include <algorithm>
 #include <optional>
 #include <vector>
 
@@ -67,8 +68,9 @@ class VideoCaptureClient;
 // Minimum required bitrate used for calculating bandwidth.
 inline constexpr int kMinRequiredBitrate = 384 << 10;  // 384 kbps
 
-// Default bitrate used before we have a calculation.
-inline constexpr int kDefaultBitrate = 5000000;  // 5 mbps
+// Default bitrate used before we have a calculation. The initial usable
+// bandwidth is this value, or the maximum video bitrate if that is lower.
+inline constexpr int kDefaultBitrate = 10000000;  // 10 mbps
 
 // Hosts a streaming session by hosting an `openscreen::cast::SenderSession` and
 // doing all of the necessary interfacing for audio and video capture, switching
@@ -404,7 +406,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // The portion of the bandwidth estimate that is currently available for use.
   // Note that the actual bandwidth will be effectively capped at the sum of the
   // current video and audio bitrates.
-  uint32_t usable_bandwidth_ = kDefaultBitrate;
+  uint32_t usable_bandwidth_ =
+      std::min<uint32_t>(kDefaultBitrate, MirrorSettings::GetMaxVideoBitrate());
 
   // Tracks the number of dropped video frames observed at the last bandwidth
   // update so downward bandwidth estimates during idle/static screen periods

@@ -4,6 +4,7 @@
 
 #include "components/mirroring/service/openscreen_session_host.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -171,6 +172,14 @@ class FakeVideoSender : public media::cast::VideoSender {
  private:
   int frames_dropped_ = 0;
 };
+
+// Returns the expected usable bandwidth before any estimate is available. This
+// depends on the configured maximum video bitrate, so tests use it instead of a
+// hard-coded value.
+uint32_t GetInitialBandwidth() {
+  return std::min<uint32_t>(kDefaultBitrate,
+                            MirrorSettings::GetMaxVideoBitrate());
+}
 
 }  // namespace
 
@@ -1026,8 +1035,8 @@ TEST_F(OpenscreenSessionHostTest, UpdateBandwidthEstimate) {
 
   constexpr uint32_t kMinVideoBitrate = 393216;
   constexpr uint32_t kMaxVideoBitrate = 1250000;
-  // Default bitrate should match kDefaultBitrate (5 Mbps).
-  EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
+  // The default bitrate is capped by the maximum video bitrate.
+  EXPECT_EQ(GetInitialBandwidth(), GetVideoNetworkBandwidth());
 
   // If the estimate is below the minimum and frames were dropped, it should
   // stay at the minimum.
@@ -1061,11 +1070,24 @@ TEST_F(OpenscreenSessionHostTest, PreservesBandwidthWhenNoFramesDropped) {
   CreateSession(SessionType::VIDEO_ONLY);
   StartSession();
 
-  EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
+  EXPECT_EQ(GetInitialBandwidth(), GetVideoNetworkBandwidth());
 
   // Updating bandwidth estimate with a lower estimate but without frame drops
   // should not reduce the available video bandwidth.
   UpdateBandwidthEstimate(1000);
+  EXPECT_EQ(GetInitialBandwidth(), GetVideoNetworkBandwidth());
+
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest,
+       InitialBandwidthUsesLegacyLimitWhenMaxBitrateDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(media::kCastStreamingMaxVideoBitrate);
+  CreateSession(SessionType::VIDEO_ONLY);
+  StartSession();
+
+  // The initial bandwidth must not exceed the legacy 5 Mbps maximum.
   EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
 
   StopSession();
@@ -1080,23 +1102,38 @@ TEST_F(OpenscreenSessionHostTest,
   FakeVideoSender* fake_sender_ptr = fake_video_sender.get();
   SetVideoSender(std::move(fake_video_sender));
 
-  EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
+  const uint32_t initial_bandwidth = GetInitialBandwidth();
+  EXPECT_EQ(initial_bandwidth, GetVideoNetworkBandwidth());
 
   // A frame is dropped at session startup (when bandwidth_estimate <= 0) or
-  // while bandwidth is saturated at the 5 Mbps cap.
+  // while bandwidth is saturated at the initial bandwidth.
   fake_sender_ptr->set_frames_dropped(1);
   UpdateBandwidthEstimate(0);
-  EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
+  EXPECT_EQ(initial_bandwidth, GetVideoNetworkBandwidth());
 
   fake_sender_ptr->set_frames_dropped(2);
-  UpdateBandwidthEstimate(6250000);
-  EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
+  // The usable bandwidth is 80% of the estimate, so this estimate saturates it.
+  UpdateBandwidthEstimate(initial_bandwidth / 4 * 5);
+  EXPECT_EQ(initial_bandwidth, GetVideoNetworkBandwidth());
 
   // Later, the screen becomes static and the bandwidth estimate drops, but no
   // new frames are dropped during the static period. Bandwidth must be
   // preserved.
   UpdateBandwidthEstimate(1000);
-  EXPECT_EQ(5000000u, GetVideoNetworkBandwidth());
+  EXPECT_EQ(initial_bandwidth, GetVideoNetworkBandwidth());
+
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest, InitialBandwidthIsCappedForHighMaxBitrate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      media::kCastStreamingMaxVideoBitrate, {{"max_bitrate_mbps", "50"}});
+  CreateSession(SessionType::VIDEO_ONLY);
+  StartSession();
+
+  // Sessions start at no more than 10 Mbps even if the maximum is higher.
+  EXPECT_EQ(10000000u, GetVideoNetworkBandwidth());
 
   StopSession();
 }
