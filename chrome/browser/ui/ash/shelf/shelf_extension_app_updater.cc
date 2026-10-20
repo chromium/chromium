@@ -78,7 +78,7 @@ void ShelfExtensionAppUpdater::OnExtensionUninstalled(
 
 void ShelfExtensionAppUpdater::OnShutdown(
     extensions::ExtensionRegistry* registry) {
-  DCHECK_EQ(extension_registry_, registry);
+  CHECK_EQ(extension_registry_, registry, base::NotFatalUntil::M162);
   StopObservingExtensionRegistry();
 }
 
@@ -101,7 +101,7 @@ void ShelfExtensionAppUpdater::OnPackageRemoved(const std::string& package_name,
 }
 
 void ShelfExtensionAppUpdater::StartObservingExtensionRegistry() {
-  DCHECK(!extension_registry_);
+  CHECK(!extension_registry_, base::NotFatalUntil::M162);
   extension_registry_ = extensions::ExtensionRegistry::Get(browser_context());
   extension_registry_->AddObserver(this);
 }

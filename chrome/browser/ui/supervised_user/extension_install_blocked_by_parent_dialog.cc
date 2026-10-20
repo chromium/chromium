@@ -51,7 +51,7 @@ void ShowExtensionInstallBlockedByParentDialog(
     const extensions::Extension* extension,
     content::WebContents* web_contents,
     base::OnceClosure done_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   std::u16string extension_type = GetExtensionType(extension);
 
   auto dialog_model =

@@ -47,8 +47,8 @@ PartialTranslateBubbleModelImpl::PartialTranslateBubbleModelImpl(
       target_text_(target_text),
       partial_translate_manager_(std::move(partial_translate_manager)),
       ui_languages_manager_(std::move(ui_languages_manager)) {
-  DCHECK_NE(VIEW_STATE_SOURCE_LANGUAGE, view_state);
-  DCHECK_NE(VIEW_STATE_TARGET_LANGUAGE, view_state);
+  CHECK_NE(VIEW_STATE_SOURCE_LANGUAGE, view_state, base::NotFatalUntil::M162);
+  CHECK_NE(VIEW_STATE_TARGET_LANGUAGE, view_state, base::NotFatalUntil::M162);
 }
 
 PartialTranslateBubbleModelImpl::~PartialTranslateBubbleModelImpl() = default;

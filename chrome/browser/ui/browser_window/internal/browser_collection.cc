@@ -113,7 +113,7 @@ BrowserWindowInterface* BrowserCollection::FindBrowserWithID(
 
 BrowserWindowInterface* BrowserCollection::FindBrowserWithTab(
     const content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
   tabs::TabInterface* tab = tabs::TabInterface::MaybeGetFromContents(
       const_cast<content::WebContents*>(web_contents));
   if (!tab) {

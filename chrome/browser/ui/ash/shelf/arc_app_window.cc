@@ -36,7 +36,7 @@ ArcAppWindow::ArcAppWindow(const arc::ArcAppShelfId& app_shelf_id,
       app_shelf_id_(app_shelf_id),
       owner_(owner),
       profile_(profile) {
-  DCHECK(owner_);
+  CHECK(owner_, base::NotFatalUntil::M162);
 
   // AppService uses app_shelf_id as the app_id to construct ShelfID.
   set_shelf_id(ash::ShelfID(app_shelf_id.ToString()));
@@ -47,7 +47,7 @@ ArcAppWindow::ArcAppWindow(const arc::ArcAppShelfId& app_shelf_id,
 ArcAppWindow::~ArcAppWindow() = default;
 
 void ArcAppWindow::SetFullscreenMode(FullScreenMode mode) {
-  DCHECK(mode != FullScreenMode::kNotDefined);
+  CHECK(mode != FullScreenMode::kNotDefined, base::NotFatalUntil::M162);
   fullscreen_mode_ = mode;
 }
 
@@ -110,7 +110,7 @@ void ArcAppWindow::SetDefaultAppIcon() {
     app_icon_loader_ = std::make_unique<AppServiceAppIconLoader>(
         profile_, kArcAppWindowIconSize, this);
   }
-  DCHECK(!image_fetching_);
+  CHECK(!image_fetching_, base::NotFatalUntil::M162);
   base::AutoReset<bool> auto_image_fetching(&image_fetching_, true);
   app_icon_loader_->FetchImage(app_shelf_id_.ToString());
 }

@@ -19,7 +19,7 @@ AppWindowBase::~AppWindowBase() {
 }
 
 void AppWindowBase::SetController(AppWindowShelfItemController* controller) {
-  DCHECK(!controller_ || !controller);
+  CHECK(!controller_ || !controller, base::NotFatalUntil::M162);
   if (!controller && controller_) {
     controller_->RemoveWindow(this);
   }

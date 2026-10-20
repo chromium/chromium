@@ -227,7 +227,8 @@ sync_pb::AppListSpecifics::ColorGroup CalculateBackgroundColorGroup(
         AppListSpecifics_ColorGroup_COLOR_WHITE;
   }
 
-  DCHECK_EQ(kN32_SkColorType, source.info().colorType());
+  CHECK_EQ(kN32_SkColorType, source.info().colorType(),
+           base::NotFatalUntil::M162);
 
   const int width = source.width();
   const int height = source.height();
@@ -337,8 +338,8 @@ IconColor CalculateIconColorForApp(const std::string& id,
     // within the interval [0, 360].
     hue += (IconColor::kHueMax - kRedHueCutoff);
 
-    DCHECK_GE(hue, 0);
-    DCHECK_LE(hue, IconColor::kHueMax);
+    CHECK_GE(hue, 0, base::NotFatalUntil::M162);
+    CHECK_LE(hue, IconColor::kHueMax, base::NotFatalUntil::M162);
   }
 
   return IconColor(
@@ -382,7 +383,7 @@ AppIconColorCache::AppIconColorCache(Profile* profile)
     : profile_(IsPersistentCacheEnabled() ? profile : nullptr) {
   // AppIconColorCache is only valid for a real user so profile must be valid
   // if it is not used.
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   if (IsPersistentCacheEnabled()) {
     profile_observation_.Observe(profile);
   }

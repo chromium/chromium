@@ -56,11 +56,11 @@ SlotUnlocker::SlotUnlocker(std::vector<crypto::ScopedPK11Slot> modules,
       server_(server),
       parent_(parent),
       callback_(std::move(callback)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 void SlotUnlocker::Start() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   for (; current_ < modules_.size(); ++current_) {
     if (ShouldShowDialog(modules_[current_].get())) {
@@ -106,7 +106,7 @@ void SlotUnlocker::GotPassword(const std::string& password) {
 }
 
 void SlotUnlocker::Done() {
-  DCHECK_EQ(current_, modules_.size());
+  CHECK_EQ(current_, modules_.size(), base::NotFatalUntil::M162);
   std::move(callback_).Run();
   delete this;
 }
@@ -120,7 +120,7 @@ void UnlockSlotsIfNecessary(std::vector<crypto::ScopedPK11Slot> modules,
                             const net::HostPortPair& server,
                             gfx::NativeWindow parent,
                             base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   for (size_t i = 0; i < modules.size(); ++i) {
     if (ShouldShowDialog(modules[i].get())) {
       (new SlotUnlocker(std::move(modules), reason, server, parent,

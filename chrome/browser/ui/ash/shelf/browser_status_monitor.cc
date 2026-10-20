@@ -78,16 +78,16 @@ class BrowserStatusMonitor::LocalWebContentsObserver
 BrowserStatusMonitor::BrowserStatusMonitor(
     ChromeShelfController* shelf_controller)
     : shelf_controller_(shelf_controller) {
-  DCHECK(shelf_controller_);
+  CHECK(shelf_controller_, base::NotFatalUntil::M162);
 
   app_service_instance_helper_ =
       shelf_controller->app_service_app_window_controller()
           ->app_service_instance_helper();
-  DCHECK(app_service_instance_helper_);
+  CHECK(app_service_instance_helper_, base::NotFatalUntil::M162);
 }
 
 BrowserStatusMonitor::~BrowserStatusMonitor() {
-  DCHECK(initialized_);
+  CHECK(initialized_, base::NotFatalUntil::M162);
 
   browser_observation_.Reset();
   tab_observation_.Reset();
@@ -102,7 +102,7 @@ BrowserStatusMonitor::~BrowserStatusMonitor() {
 }
 
 void BrowserStatusMonitor::Initialize() {
-  DCHECK(!initialized_);
+  CHECK(!initialized_, base::NotFatalUntil::M162);
   initialized_ = true;
 
   // Simulate OnBrowserCreated() and initial tab insertions for all existing
@@ -178,8 +178,8 @@ void BrowserStatusMonitor::ActiveUserChanged(const std::string& user_email) {
 
 void BrowserStatusMonitor::UpdateAppItemState(content::WebContents* contents,
                                               bool remove) {
-  DCHECK(contents);
-  DCHECK(initialized_);
+  CHECK(contents, base::NotFatalUntil::M162);
+  CHECK(initialized_, base::NotFatalUntil::M162);
   // It is possible to come here from Browser::SwapTabContent where the contents
   // cannot be associated with a browser. A removal however should be properly
   // processed.
@@ -192,12 +192,12 @@ void BrowserStatusMonitor::UpdateAppItemState(content::WebContents* contents,
 }
 
 void BrowserStatusMonitor::UpdateBrowserItemState() {
-  DCHECK(initialized_);
+  CHECK(initialized_, base::NotFatalUntil::M162);
   shelf_controller_->UpdateBrowserItemState();
 }
 
 void BrowserStatusMonitor::OnBrowserCreated(ash::BrowserDelegate* browser) {
-  DCHECK(initialized_);
+  CHECK(initialized_, base::NotFatalUntil::M162);
 
   if (IsAppBrowser(browser) && multi_user_util::IsProfileFromActiveUser(
                                    browser->GetBrowser().GetProfile())) {
@@ -206,7 +206,7 @@ void BrowserStatusMonitor::OnBrowserCreated(ash::BrowserDelegate* browser) {
 }
 
 void BrowserStatusMonitor::OnBrowserClosed(ash::BrowserDelegate* browser) {
-  DCHECK(initialized_);
+  CHECK(initialized_, base::NotFatalUntil::M162);
 
   RemoveAppBrowserFromShelf(browser);
   UpdateBrowserItemState();
@@ -255,8 +255,8 @@ void BrowserStatusMonitor::OnTabRemoved(ash::BrowserDelegate* browser,
 void BrowserStatusMonitor::OnTabReplaced(ash::BrowserDelegate* browser,
                                          content::WebContents* old_contents,
                                          content::WebContents* new_contents) {
-  DCHECK(old_contents);
-  DCHECK(new_contents);
+  CHECK(old_contents, base::NotFatalUntil::M162);
+  CHECK(new_contents, base::NotFatalUntil::M162);
 
   UpdateAppItemState(old_contents, true /*remove*/);
   RemoveWebContentsObserver(old_contents);
@@ -287,7 +287,7 @@ void BrowserStatusMonitor::OnActiveWebContentsChanged(
     content::WebContents* new_contents,
     bool selection_only) {
   // Use |new_contents|. |old_contents| could be nullptr.
-  DCHECK(new_contents);
+  CHECK(new_contents, base::NotFatalUntil::M162);
 
   // Update immediately on a tab change.
   if (old_contents &&
@@ -308,11 +308,11 @@ void BrowserStatusMonitor::OnActiveWebContentsChanged(
 }
 
 void BrowserStatusMonitor::AddAppBrowserToShelf(ash::BrowserDelegate* browser) {
-  DCHECK(IsAppBrowser(browser));
-  DCHECK(initialized_);
+  CHECK(IsAppBrowser(browser), base::NotFatalUntil::M162);
+  CHECK(initialized_, base::NotFatalUntil::M162);
 
   const std::string app_id = *browser->GetAppId();
-  DCHECK(!app_id.empty());
+  CHECK(!app_id.empty(), base::NotFatalUntil::M162);
   if (!IsAppBrowserInShelfWithAppId(app_id)) {
     if (auto* chrome_controller = ChromeShelfController::instance()) {
       chrome_controller->GetShelfSpinnerController()->CloseSpinner(app_id);
@@ -324,10 +324,10 @@ void BrowserStatusMonitor::AddAppBrowserToShelf(ash::BrowserDelegate* browser) {
 
 void BrowserStatusMonitor::RemoveAppBrowserFromShelf(
     ash::BrowserDelegate* browser) {
-  DCHECK(initialized_);
+  CHECK(initialized_, base::NotFatalUntil::M162);
   auto iter = browser_to_app_id_map_.find(browser);
   if (iter != browser_to_app_id_map_.end()) {
-    DCHECK(IsAppBrowser(browser));
+    CHECK(IsAppBrowser(browser), base::NotFatalUntil::M162);
     const std::string app_id = iter->second;
     browser_to_app_id_map_.erase(iter);
     if (!IsAppBrowserInShelfWithAppId(app_id)) {
@@ -374,8 +374,9 @@ void BrowserStatusMonitor::AddWebContentsObserver(
 
 void BrowserStatusMonitor::RemoveWebContentsObserver(
     content::WebContents* contents) {
-  DCHECK(webcontents_to_observer_map_.find(contents) !=
-         webcontents_to_observer_map_.end());
+  CHECK(webcontents_to_observer_map_.find(contents) !=
+            webcontents_to_observer_map_.end(),
+        base::NotFatalUntil::M162);
   webcontents_to_observer_map_.erase(contents);
 }
 

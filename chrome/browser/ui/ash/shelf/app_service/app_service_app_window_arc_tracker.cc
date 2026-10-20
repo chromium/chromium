@@ -72,7 +72,7 @@ bool GetTimeDeltaFromIntent(const arc::Intent& intent,
 
   *out = (base::TimeTicks::Now() - base::TimeTicks()) -
          base::Milliseconds(time_ms);
-  DCHECK_GE(*out, base::TimeDelta());
+  CHECK_GE(*out, base::TimeDelta(), base::NotFatalUntil::M162);
   return true;
 }
 
@@ -108,11 +108,11 @@ AppServiceAppWindowArcTracker::AppServiceAppWindowArcTracker(
     AppServiceAppWindowShelfController* app_service_controller)
     : observed_profile_(app_service_controller->owner()->profile()),
       app_service_controller_(app_service_controller) {
-  DCHECK(observed_profile_);
-  DCHECK(app_service_controller_);
+  CHECK(observed_profile_, base::NotFatalUntil::M162);
+  CHECK(app_service_controller_, base::NotFatalUntil::M162);
 
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(observed_profile_);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M162);
   prefs->AddObserver(this);
 
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
@@ -131,7 +131,7 @@ AppServiceAppWindowArcTracker::AppServiceAppWindowArcTracker(
 
 AppServiceAppWindowArcTracker::~AppServiceAppWindowArcTracker() {
   ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(observed_profile_);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M162);
   prefs->RemoveObserver(this);
 
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
@@ -245,13 +245,13 @@ void AppServiceAppWindowArcTracker::OnAppRemoved(const std::string& app_id) {
   for (const auto task_id : task_ids_to_remove) {
     OnTaskDestroyed(task_id);
   }
-  DCHECK(GetTaskIdsForApp(app_id).empty());
+  CHECK(GetTaskIdsForApp(app_id).empty(), base::NotFatalUntil::M162);
 
   const std::vector<int> session_ids_to_remove = GetSessionIdsForApp(app_id);
   for (const auto session_id : session_ids_to_remove) {
     OnSessionDestroyed(session_id);
   }
-  DCHECK(GetSessionIdsForApp(app_id).empty());
+  CHECK(GetSessionIdsForApp(app_id).empty(), base::NotFatalUntil::M162);
 }
 
 void AppServiceAppWindowArcTracker::OnTaskCreated(
@@ -262,8 +262,9 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
     int32_t session_id) {
   base::AutoReset<int> auto_reset(&task_id_being_created_, task_id);
 
-  DCHECK(task_id_to_arc_app_window_info_.find(task_id) ==
-         task_id_to_arc_app_window_info_.end());
+  CHECK(task_id_to_arc_app_window_info_.find(task_id) ==
+            task_id_to_arc_app_window_info_.end(),
+        base::NotFatalUntil::M162);
 
   // If there is a ghost window for `session_id`, reuse the ghost window info,
   // and clear the ghost window info from `session_id_to_arc_app_window_info_`,
@@ -430,7 +431,7 @@ void AppServiceAppWindowArcTracker::OnTaskSetActive(int32_t task_id) {
   auto it = task_id_to_arc_app_window_info_.find(active_task_id_);
   if (it != task_id_to_arc_app_window_info_.end()) {
     ArcAppWindowInfo* const previous_arc_app_window_info = it->second.get();
-    DCHECK(previous_arc_app_window_info);
+    CHECK(previous_arc_app_window_info, base::NotFatalUntil::M162);
     app_service_controller_->owner()->SetItemStatus(
         previous_arc_app_window_info->shelf_id(), ash::STATUS_RUNNING);
     auto* window = previous_arc_app_window_info->window();
@@ -462,7 +463,7 @@ void AppServiceAppWindowArcTracker::OnTaskSetActive(int32_t task_id) {
   }
   aura::Window* const window = current_arc_app_window_info->window();
   views::Widget* const widget = views::Widget::GetWidgetForNativeWindow(window);
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M162);
   if (widget && widget->IsActive()) {
     auto* controller = app_service_controller_->ControllerForWindow(window);
     if (controller) {
@@ -508,7 +509,7 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
   }
 
   views::Widget* const widget = views::Widget::GetWidgetForNativeWindow(window);
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M162);
   info->set_window(window);
   const ash::ShelfID shelf_id = info->shelf_id();
 
@@ -674,7 +675,7 @@ void AppServiceAppWindowArcTracker::OnArcPlayStoreEnabledChanged(bool enabled) {
     OnSessionDestroyed(session_id);
   }
 
-  DCHECK(session_id_to_arc_app_window_info_.empty());
+  CHECK(session_id_to_arc_app_window_info_.empty(), base::NotFatalUntil::M162);
 }
 
 int AppServiceAppWindowArcTracker::GetTaskIdSharingLogicalWindow(int task_id) {
@@ -734,7 +735,7 @@ void AppServiceAppWindowArcTracker::OnIconLoaded(int32_t task_id,
   }
 
   ArcAppWindowInfo* const info = it->second.get();
-  DCHECK(info);
+  CHECK(info, base::NotFatalUntil::M162);
   info->SetDescription(title, icon);
   AppWindowBase* app_window =
       app_service_controller_->GetAppWindow(it->second->window());

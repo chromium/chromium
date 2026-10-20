@@ -24,7 +24,7 @@ EditSearchEngineController::EditSearchEngineController(
     : template_url_(template_url),
       edit_keyword_delegate_(edit_keyword_delegate),
       profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M162);
 }
 
 bool EditSearchEngineController::IsTitleValid(
@@ -50,7 +50,7 @@ void EditSearchEngineController::AcceptAddOrEdit(
     const std::u16string& title_input,
     const std::u16string& keyword_input,
     const std::string& url_input) {
-  DCHECK(!keyword_input.empty());
+  CHECK(!keyword_input.empty(), base::NotFatalUntil::M162);
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   std::string fixed_up_url = GetFixedUpSearchEngineUrl(
@@ -73,7 +73,7 @@ void EditSearchEngineController::AcceptAddOrEdit(
   if (!edit_keyword_delegate_) {
     // Confiming an entry we got from JS. We have a template_url_, but it
     // hasn't yet been added to the model.
-    DCHECK(template_url_);
+    CHECK(template_url_, base::NotFatalUntil::M162);
     template_url_service->AddWithOverrides(
         base::WrapUnique(template_url_.get()), title_input, keyword_input,
         fixed_up_url);

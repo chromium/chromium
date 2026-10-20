@@ -179,7 +179,7 @@ ShelfSpinnerController::~ShelfSpinnerController() {
 
 void ShelfSpinnerController::MaybeApplySpinningEffect(const std::string& app_id,
                                                       gfx::ImageSkia* image) {
-  DCHECK(image);
+  CHECK(image, base::NotFatalUntil::M162);
   auto it = app_controller_map_.find(app_id);
   if (it == app_controller_map_.end()) {
     return;

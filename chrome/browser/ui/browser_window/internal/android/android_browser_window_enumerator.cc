@@ -36,7 +36,8 @@ void AndroidBrowserWindowEnumerator::OnBrowserCreated(
     return;
   }
 
-  DCHECK(!std::ranges::contains(browser_windows_, browser));
+  CHECK(!std::ranges::contains(browser_windows_, browser),
+        base::NotFatalUntil::M162);
   browser_windows_.push_back(browser);
 }
 

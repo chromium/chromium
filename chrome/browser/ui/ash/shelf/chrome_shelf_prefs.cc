@@ -269,7 +269,7 @@ void InsertPinsAfterChromeAndBeforeFirstPinnedApp(
   // Chrome must be pinned at this point.
   syncer::StringOrdinal chrome_position =
       syncable_service->GetPinPosition(app_constants::kChromeAppId);
-  DCHECK(chrome_position.IsValid());
+  CHECK(chrome_position.IsValid(), base::NotFatalUntil::M162);
 
   // New pins are inserted after this position.
   syncer::StringOrdinal after;
@@ -609,7 +609,7 @@ std::vector<ash::ShelfID> ChromeShelfPrefs::GetPinnedAppsFromSync(
 }
 
 void ChromeShelfPrefs::RemovePinPosition(const ash::ShelfID& shelf_id) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M162);
 
   const std::string& app_id = shelf_id.app_id;
   if (!shelf_id.launch_id.empty()) {
@@ -618,7 +618,7 @@ void ChromeShelfPrefs::RemovePinPosition(const ash::ShelfID& shelf_id) {
             << "' is not supported.";
     return;
   }
-  DCHECK(!app_id.empty());
+  CHECK(!app_id.empty(), base::NotFatalUntil::M162);
   app_list::AppListSyncableServiceFactory::GetForProfile(profile_)
       ->RemovePinPosition(app_id);
 }
@@ -638,8 +638,8 @@ void ChromeShelfPrefs::SetPinPosition(
 
   const std::string& app_id_before = shelf_id_before.app_id;
 
-  DCHECK(!app_id.empty());
-  DCHECK_NE(app_id, app_id_before);
+  CHECK(!app_id.empty(), base::NotFatalUntil::M162);
+  CHECK_NE(app_id, app_id_before, base::NotFatalUntil::M162);
 
   auto* syncable_service =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
@@ -654,11 +654,11 @@ void ChromeShelfPrefs::SetPinPosition(
   syncer::StringOrdinal position_after;
   for (const auto& shelf_id_after : shelf_ids_after) {
     const std::string& app_id_after = shelf_id_after.app_id;
-    DCHECK_NE(app_id_after, app_id);
-    DCHECK_NE(app_id_after, app_id_before);
+    CHECK_NE(app_id_after, app_id, base::NotFatalUntil::M162);
+    CHECK_NE(app_id_after, app_id_before, base::NotFatalUntil::M162);
     syncer::StringOrdinal position =
         syncable_service->GetPinPosition(app_id_after);
-    DCHECK(position.IsValid());
+    CHECK(position.IsValid(), base::NotFatalUntil::M162);
     if (!position.IsValid()) {
       LOG(ERROR) << "Sync pin position was not found for " << app_id_after;
       continue;

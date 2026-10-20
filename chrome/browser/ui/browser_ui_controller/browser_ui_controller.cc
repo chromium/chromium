@@ -113,7 +113,7 @@ void BrowserUiController::UpdateUIForNavigationInTab(
 
 void BrowserUiController::ScheduleUIUpdate(content::WebContents* source,
                                            unsigned changed_flags) {
-  DCHECK(source);
+  CHECK(source, base::NotFatalUntil::M162);
   // WebContents may in some rare cases send updates after they've been detached
   // from the tabstrip but before they are deleted, causing a potential crash if
   // we proceed. For now bail out.
@@ -194,7 +194,8 @@ void BrowserUiController::ProcessPendingUIUpdates() {
       processed_count++;
     }
   }
-  DCHECK_EQ(processed_count, scheduled_updates_.size());
+  CHECK_EQ(processed_count, scheduled_updates_.size(),
+           base::NotFatalUntil::M162);
 #endif
 
   chrome_updater_factory_.InvalidateWeakPtrs();

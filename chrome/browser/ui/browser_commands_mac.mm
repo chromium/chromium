@@ -26,7 +26,7 @@
 namespace chrome {
 
 void ToggleAlwaysShowToolbarInFullscreen(BrowserWindowInterface* browser) {
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M162);
 
   // If this browser belongs to an app, toggle the value for that app.
   web_app::AppBrowserController* app_controller =

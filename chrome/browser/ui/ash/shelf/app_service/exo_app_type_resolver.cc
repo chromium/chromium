@@ -44,7 +44,7 @@ void UpdatePropertiesForArc(std::optional<int> task_id,
   if (task_id.has_value()) {
     restore_window_id = app_restore::GetArcRestoreWindowIdForTaskId(*task_id);
   } else {
-    DCHECK(session_id.has_value());
+    CHECK(session_id.has_value(), base::NotFatalUntil::M162);
     out_properties_container.SetProperty(app_restore::kGhostWindowSessionIdKey,
                                          *session_id);
     restore_window_id =

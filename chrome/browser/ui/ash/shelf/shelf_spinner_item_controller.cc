@@ -17,12 +17,12 @@ ShelfSpinnerItemController::ShelfSpinnerItemController(
       start_time_(base::Time::Now()) {}
 
 ShelfSpinnerItemController::~ShelfSpinnerItemController() {
-  DCHECK(!(host_ && host_->HasApp(app_id())));
+  CHECK(!(host_ && host_->HasApp(app_id())), base::NotFatalUntil::M162);
 }
 
 void ShelfSpinnerItemController::SetHost(
     const base::WeakPtr<ShelfSpinnerController>& host) {
-  DCHECK(!host_ || host_.get() == host.get());
+  CHECK(!host_ || host_.get() == host.get(), base::NotFatalUntil::M162);
   host_ = host;
 }
 
@@ -30,7 +30,7 @@ void ShelfSpinnerItemController::ExecuteCommand(bool from_context_menu,
                                                 int64_t command_id,
                                                 int32_t event_flags,
                                                 int64_t display_id) {
-  DCHECK(!from_context_menu);
+  CHECK(!from_context_menu, base::NotFatalUntil::M162);
   NOTIMPLEMENTED();
 }
 

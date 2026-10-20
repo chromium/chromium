@@ -58,7 +58,7 @@ BrowserTabRestorer::~BrowserTabRestorer() {
 
 // static
 void BrowserTabRestorer::CreateIfNecessary(BrowserWindowInterface* browser) {
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M162);
   if (browser->GetProfile()->GetUserData(kBrowserTabRestorerKey)) {
     return;  // Only allow one restore for a given profile at a time.
   }
@@ -71,8 +71,8 @@ BrowserTabRestorer::BrowserTabRestorer(BrowserWindowInterface* browser)
     : browser_(browser),
       tab_restore_service_(
           TabRestoreServiceFactory::GetForProfile(browser->GetProfile())) {
-  DCHECK(tab_restore_service_);
-  DCHECK(!tab_restore_service_->IsLoaded());
+  CHECK(tab_restore_service_, base::NotFatalUntil::M162);
+  CHECK(!tab_restore_service_->IsLoaded(), base::NotFatalUntil::M162);
   tab_restore_service_->AddObserver(this);
   browser_did_close_subscription_ =
       browser->RegisterBrowserDidClose(base::BindRepeating(

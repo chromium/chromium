@@ -22,7 +22,7 @@ namespace extensions {
 void ShowExtensionInstallAskParentDialog(content::WebContents* web_contents,
                                          base::OnceClosure cancel_callback,
                                          base::OnceClosure approve_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Tests can auto confirm the dialog.
   switch (ScopedTestDialogAutoConfirm::GetAutoConfirmValue()) {

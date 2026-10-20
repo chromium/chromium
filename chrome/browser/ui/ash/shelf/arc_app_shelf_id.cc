@@ -26,7 +26,7 @@ ArcAppShelfId::ArcAppShelfId() = default;
 ArcAppShelfId::ArcAppShelfId(const std::string& shelf_group_id,
                              const std::string& app_id)
     : shelf_group_id_(shelf_group_id), app_id_(app_id) {
-  DCHECK(crx_file::id_util::IdIsValid(app_id));
+  CHECK(crx_file::id_util::IdIsValid(app_id), base::NotFatalUntil::M162);
 }
 
 ArcAppShelfId::ArcAppShelfId(const ArcAppShelfId& other) = default;

@@ -458,11 +458,11 @@ void AppServiceShelfContextMenu::BuildArcAppShortcutsMenu(
     size_t arc_shortcut_index) {
   const ArcAppListPrefs* arc_prefs =
       ArcAppListPrefs::Get(controller()->profile());
-  DCHECK(arc_prefs);
+  CHECK(arc_prefs, base::NotFatalUntil::M162);
 
   const arc::ArcAppShelfId& arc_shelf_id =
       arc::ArcAppShelfId::FromString(item().id.app_id);
-  DCHECK(arc_shelf_id.valid());
+  CHECK(arc_shelf_id.valid(), base::NotFatalUntil::M162);
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
       arc_prefs->GetApp(arc_shelf_id.app_id());
   if (!app_info && !arc_shelf_id.has_shelf_group_id()) {
@@ -474,7 +474,7 @@ void AppServiceShelfContextMenu::BuildArcAppShortcutsMenu(
   if (arc_shelf_id.has_shelf_group_id()) {
     const bool app_is_open = controller()->IsOpen(item().id);
     if (!app_is_open && !app_info->suspended) {
-      DCHECK(app_info->launchable);
+      CHECK(app_info->launchable, base::NotFatalUntil::M162);
       AddContextMenuOption(menu_model.get(), ash::LAUNCH_NEW,
                            IDS_APP_CONTEXT_MENU_ACTIVATE_ARC);
       launch_new_string_id_ = IDS_APP_CONTEXT_MENU_ACTIVATE_ARC;
@@ -605,11 +605,12 @@ extensions::LaunchType AppServiceShelfContextMenu::GetExtensionLaunchType()
 
 void AppServiceShelfContextMenu::ExecutePublisherContextMenuCommand(
     int command_id) {
-  DCHECK(command_id >= ash::LAUNCH_APP_SHORTCUT_FIRST &&
-         command_id <= ash::LAUNCH_APP_SHORTCUT_LAST);
+  CHECK(command_id >= ash::LAUNCH_APP_SHORTCUT_FIRST &&
+            command_id <= ash::LAUNCH_APP_SHORTCUT_LAST,
+        base::NotFatalUntil::M162);
   size_t index = command_id - ash::LAUNCH_APP_SHORTCUT_FIRST;
-  DCHECK(app_shortcut_items_);
-  DCHECK_LT(index, app_shortcut_items_->size());
+  CHECK(app_shortcut_items_, base::NotFatalUntil::M162);
+  CHECK_LT(index, app_shortcut_items_->size(), base::NotFatalUntil::M162);
 
   apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
       ->ExecuteContextMenuCommand(item().id.app_id, command_id,

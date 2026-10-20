@@ -45,14 +45,14 @@ ArcAppWindowInfo::ArcAppWindowInfo(const arc::ArcAppShelfId& app_shelf_id,
 ArcAppWindowInfo::~ArcAppWindowInfo() = default;
 
 void ArcAppWindowInfo::OnWindowDestroying(aura::Window* window) {
-  DCHECK(observed_window_.IsObservingSource(window));
+  CHECK(observed_window_.IsObservingSource(window), base::NotFatalUntil::M162);
   observed_window_.Reset();
   window_ = nullptr;
 }
 
 void ArcAppWindowInfo::SetDescription(const std::string& title,
                                       const gfx::ImageSkia& icon) {
-  DCHECK(base::IsStringUTF8(title));
+  CHECK(base::IsStringUTF8(title), base::NotFatalUntil::M162);
   title_ = title;
 
   // Chrome has custom Play Store icon. Don't overwrite it.

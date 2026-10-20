@@ -386,7 +386,7 @@ bool ExtensionsToolbarViewModel::ShowToolbarActionPopupForAPICall(
   }
 
   ToolbarActionViewModel* action = GetActionModelForId(action_id);
-  DCHECK(action);
+  CHECK(action, base::NotFatalUntil::M162);
   action->TriggerPopupForAPI(std::move(callback));
   return true;
 }

@@ -139,9 +139,9 @@ bool IsAppPinEditable(apps::AppType app_type,
     case apps::AppType::kArc: {
       const arc::ArcAppShelfId& arc_shelf_id =
           arc::ArcAppShelfId::FromString(app_id);
-      DCHECK(arc_shelf_id.valid());
+      CHECK(arc_shelf_id.valid(), base::NotFatalUntil::M162);
       const ArcAppListPrefs* arc_list_prefs = ArcAppListPrefs::Get(profile);
-      DCHECK(arc_list_prefs);
+      CHECK(arc_list_prefs, base::NotFatalUntil::M162);
       std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
           arc_list_prefs->GetApp(arc_shelf_id.app_id());
       if (!arc_shelf_id.has_shelf_group_id() && app_info &&

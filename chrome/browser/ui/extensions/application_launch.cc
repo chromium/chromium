@@ -122,7 +122,8 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
   ~EnableViaDialogFlow() override = default;
 
   void Run() {
-    DCHECK(!registrar_->IsExtensionEnabled(extension_id_));
+    CHECK(!registrar_->IsExtensionEnabled(extension_id_),
+          base::NotFatalUntil::M162);
     flow_ =
         std::make_unique<ExtensionEnableFlow>(profile_, extension_id_, this);
     flow_->Start();
@@ -186,7 +187,8 @@ GURL UrlForExtension(const extensions::Extension* extension,
 
   GURL url;
   if (!params.override_url.is_empty()) {
-    DCHECK(IsAllowedToOverrideURL(extension, params.override_url));
+    CHECK(IsAllowedToOverrideURL(extension, params.override_url),
+          base::NotFatalUntil::M162);
     url = params.override_url;
   } else {
     url = extensions::AppLaunchInfo::GetFullLaunchURL(extension);
@@ -333,7 +335,8 @@ WebContents* OpenApplicationTab(Profile* profile,
 #if BUILDFLAG(IS_CHROMEOS)
   // In ChromeOS, extensions::LaunchType::kFullscreen launches in the
   // OpenApplicationWindow function i.e. it should not reach here.
-  DCHECK(launch_type != extensions::LaunchType::kFullscreen);
+  CHECK(launch_type != extensions::LaunchType::kFullscreen,
+        base::NotFatalUntil::M162);
 #else
   // TODO(skerner):  If we are already in full screen mode, and the user set the
   // app to open as a regular or pinned tab, what should happen? Today we open

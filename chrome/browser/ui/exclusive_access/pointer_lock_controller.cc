@@ -44,7 +44,7 @@ bool PointerLockController::IsPointerLockedSilently() const {
 void PointerLockController::RequestToLockPointer(WebContents* web_contents,
                                                  bool user_gesture,
                                                  bool last_unlocked_by_target) {
-  DCHECK(!IsPointerLocked());
+  CHECK(!IsPointerLocked(), base::NotFatalUntil::M162);
 
   // To prevent misbehaving sites from constantly re-locking the pointer, the
   // lock-requesting frame must have transient user activation and it must not

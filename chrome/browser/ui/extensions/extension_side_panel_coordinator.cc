@@ -121,7 +121,7 @@ SidePanelType ExtensionSidePanelCoordinator::GetPanelType() {
 
 content::WebContents*
 ExtensionSidePanelCoordinator::GetHostWebContentsForTesting() const {
-  DCHECK(host_);
+  CHECK(host_, base::NotFatalUntil::M162);
   return host_->host_contents();
 }
 
@@ -228,13 +228,13 @@ void ExtensionSidePanelCoordinator::OnViewDestroyed() {
 
 void ExtensionSidePanelCoordinator::OnExtensionHostDestroyed(
     ExtensionHost* host) {
-  DCHECK_EQ(host_.get(), host);
+  CHECK_EQ(host_.get(), host, base::NotFatalUntil::M162);
   scoped_host_observation_.Reset();
 }
 
 void ExtensionSidePanelCoordinator::OnExtensionHostDidStopFirstLoad(
     const ExtensionHost* host) {
-  DCHECK_EQ(host_.get(), host);
+  CHECK_EQ(host_.get(), host, base::NotFatalUntil::M162);
   if (is_panel_active_) {
     OnOpened();
   }
@@ -243,7 +243,7 @@ void ExtensionSidePanelCoordinator::OnExtensionHostDidStopFirstLoad(
 void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
   // The extension icon should be initialized in the constructor, so this should
   // not be null.
-  DCHECK(extension_icon_);
+  CHECK(extension_icon_, base::NotFatalUntil::M162);
 
   if (delegate_) {
     delegate_->OnEntryRegistered();
@@ -274,7 +274,7 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
 
 SidePanelNativeView ExtensionSidePanelCoordinator::CreateView(
     SidePanelEntryScope& scope) {
-  DCHECK(!host_);
+  CHECK(!host_, base::NotFatalUntil::M162);
   if (delegate_) {
     host_ = delegate_->CreateHost(side_panel_url_);
   }
@@ -380,7 +380,7 @@ void ExtensionSidePanelCoordinator::OnClosed() {
 
 void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
     ExtensionHost* host) {
-  DCHECK_EQ(host, host_.get());
+  CHECK_EQ(host, host_.get(), base::NotFatalUntil::M162);
   if (delegate_) {
     delegate_->CloseSidePanel(GetEntry());
   }
@@ -389,10 +389,10 @@ void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(
 void ExtensionSidePanelCoordinator::NavigateIfNecessary() {
   // Sanity check that this is called when the view exists for this extension's
   // SidePanelEntry.
-  DCHECK(host_);
+  CHECK(host_, base::NotFatalUntil::M162);
 
   auto* host_contents = host_->host_contents();
-  DCHECK(host_contents);
+  CHECK(host_contents, base::NotFatalUntil::M162);
   if (side_panel_url_ != host_contents->GetLastCommittedURL()) {
     // Since the navigation happens automatically when the URL is changed from
     // an API call, this counts as a top level navigation.

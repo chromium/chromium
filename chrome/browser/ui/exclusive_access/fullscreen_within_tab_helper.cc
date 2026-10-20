@@ -13,7 +13,7 @@ FullscreenWithinTabHelper::~FullscreenWithinTabHelper() = default;
 // static
 void FullscreenWithinTabHelper::RemoveForWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
   web_contents->RemoveUserData(UserDataKey());
 }
 

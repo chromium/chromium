@@ -41,7 +41,7 @@ ash::ShelfAction ShowAndActivateOrMinimize(ui::BaseWindow* app_window,
 ash::ShelfAction ActivateOrAdvanceToNextAppWindow(
     AppWindowBase* window_to_show,
     const AppWindowShelfItemController::WindowList& windows) {
-  DCHECK(window_to_show);
+  CHECK(window_to_show, base::NotFatalUntil::M162);
 
   auto i = std::ranges::find(windows, window_to_show);
   if (i != windows.end()) {
@@ -107,7 +107,7 @@ AppWindowBase* AppWindowShelfItemController::GetAppMenuWindow(
 }
 
 void AppWindowShelfItemController::RemoveWindow(AppWindowBase* app_window) {
-  DCHECK(app_window);
+  CHECK(app_window, base::NotFatalUntil::M162);
   aura::Window* window = app_window->GetNativeWindow();
   if (window && observed_windows_.IsObservingSource(window)) {
     observed_windows_.RemoveObservation(window);
@@ -353,7 +353,7 @@ void AppWindowShelfItemController::ExecuteCommand(bool from_context_menu,
                                                   int64_t command_id,
                                                   int32_t event_flags,
                                                   int64_t display_id) {
-  DCHECK(!from_context_menu);
+  CHECK(!from_context_menu, base::NotFatalUntil::M162);
 
   if (AppWindowBase* window = GetAppMenuWindow(command_id)) {
     ShowAndActivateOrMinimize(window, /*allow_minimize=*/windows_.size() == 1);

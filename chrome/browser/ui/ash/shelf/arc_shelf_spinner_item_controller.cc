@@ -49,7 +49,7 @@ ArcShelfSpinnerItemController::~ArcShelfSpinnerItemController() {
 
 void ArcShelfSpinnerItemController::SetHost(
     const base::WeakPtr<ShelfSpinnerController>& controller) {
-  DCHECK(!observed_profile_);
+  CHECK(!observed_profile_, base::NotFatalUntil::M162);
   observed_profile_ = controller->OwnerProfile();
   ArcAppListPrefs::Get(observed_profile_)->AddObserver(this);
 

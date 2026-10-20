@@ -36,7 +36,7 @@ AppServiceInstanceRegistryHelper::AppServiceInstanceRegistryHelper(
           controller->owner()->profile())),
       shelf_controller_helper_(std::make_unique<ShelfControllerHelper>(
           controller->owner()->profile())) {
-  DCHECK(controller_);
+  CHECK(controller_, base::NotFatalUntil::M162);
 }
 
 AppServiceInstanceRegistryHelper::~AppServiceInstanceRegistryHelper() = default;
@@ -580,7 +580,8 @@ void AppServiceInstanceRegistryHelper::RemoveTabWindow(
   aura::Window* top_level_window = it->second;
 
   auto browser_it = browser_window_to_tab_windows_.find(top_level_window);
-  DCHECK(browser_it != browser_window_to_tab_windows_.end());
+  CHECK(browser_it != browser_window_to_tab_windows_.end(),
+        base::NotFatalUntil::M162);
   browser_it->second.erase(window);
   if (browser_it->second.empty()) {
     browser_window_to_tab_windows_.erase(browser_it);

@@ -69,7 +69,7 @@ FindBar* FindBarController::GetOrCreateFindBar() {
 }
 
 FindBarController::~FindBarController() {
-  DCHECK(!web_contents());
+  CHECK(!web_contents(), base::NotFatalUntil::M162);
 }
 
 void FindBarController::Show(bool find_next, bool forward_direction) {
@@ -165,7 +165,8 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
         find_in_page::FindTabHelper::FromWebContents(web_contents());
     if (find_tab_helper) {
       find_tab_helper->set_selected_range(find_bar->GetSelectedRange());
-      DCHECK(find_tab_observation_.IsObservingSource(find_tab_helper));
+      CHECK(find_tab_observation_.IsObservingSource(find_tab_helper),
+            base::NotFatalUntil::M162);
       find_tab_observation_.Reset();
     }
   }

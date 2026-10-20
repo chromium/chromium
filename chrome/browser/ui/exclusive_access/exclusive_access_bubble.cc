@@ -11,8 +11,8 @@ ExclusiveAccessBubble::ExclusiveAccessBubble(
                     kShowTime,
                     base::BindRepeating(&ExclusiveAccessBubble::Hide,
                                         base::Unretained(this))) {
-  DCHECK(params.has_download ||
-         params.type != EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE);
+  CHECK(params.has_download || params.type != EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
+        base::NotFatalUntil::M162);
 }
 
 ExclusiveAccessBubble::~ExclusiveAccessBubble() = default;

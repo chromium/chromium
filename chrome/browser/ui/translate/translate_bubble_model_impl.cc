@@ -20,8 +20,8 @@ TranslateBubbleModelImpl::TranslateBubbleModelImpl(
       translate_executed_(false) {
   ViewState view_state = TranslateStepToViewState(step);
   // The initial view type must not be 'Advanced'.
-  DCHECK_NE(VIEW_STATE_SOURCE_LANGUAGE, view_state);
-  DCHECK_NE(VIEW_STATE_TARGET_LANGUAGE, view_state);
+  CHECK_NE(VIEW_STATE_SOURCE_LANGUAGE, view_state, base::NotFatalUntil::M162);
+  CHECK_NE(VIEW_STATE_TARGET_LANGUAGE, view_state, base::NotFatalUntil::M162);
   current_view_state_ = view_state;
 
   if (GetViewState() != TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE) {

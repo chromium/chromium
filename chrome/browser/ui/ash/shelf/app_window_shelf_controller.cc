@@ -54,7 +54,7 @@ void AppWindowShelfController::ShelfItemDelegateChanged(
     const ash::ShelfID& id,
     ash::ShelfItemDelegate* old_delegate,
     ash::ShelfItemDelegate* delegate) {
-  DCHECK(old_delegate);
+  CHECK(old_delegate, base::NotFatalUntil::M162);
 
   // Notify the shelf controller that its delegate might be destroyed and
   // cache needs to be updated. See crbug.com/40542371

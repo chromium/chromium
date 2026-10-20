@@ -315,13 +315,13 @@ class BrowserFocusTest : public InteractiveBrowserTest {
 
   views::FocusManager* GetFocusManager() {
     BrowserWindow* browser_window = BrowserWindow::FromBrowser(browser());
-    DCHECK(browser_window);
+    CHECK(browser_window, base::NotFatalUntil::M162);
     gfx::NativeWindow window = browser_window->GetNativeWindow();
-    DCHECK(window);
+    CHECK(window, base::NotFatalUntil::M162);
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
-    DCHECK(widget);
+    CHECK(widget, base::NotFatalUntil::M162);
     views::FocusManager* focus_manager = widget->GetFocusManager();
-    DCHECK(focus_manager);
+    CHECK(focus_manager, base::NotFatalUntil::M162);
     return focus_manager;
   }
 

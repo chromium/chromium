@@ -23,7 +23,7 @@ void SafetyHubService::StopTimer() {
 }
 
 void SafetyHubService::StartRepeatedUpdates() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   UpdateAsync();
   update_timer_.Start(FROM_HERE, GetRepeatedUpdateInterval(),
                       base::BindRepeating(&SafetyHubService::UpdateAsync,
@@ -31,7 +31,7 @@ void SafetyHubService::StartRepeatedUpdates() {
 }
 
 void SafetyHubService::UpdateAsync() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (pending_updates_++) {
     return;
   }
@@ -46,7 +46,7 @@ void SafetyHubService::UpdateAsyncInternal() {
 
 void SafetyHubService::OnUpdateFinished(
     std::unique_ptr<SafetyHubResult> result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   latest_result_ = UpdateOnUIThread(std::move(result));
   NotifyObservers(latest_result_.get());
   if (--pending_updates_) {

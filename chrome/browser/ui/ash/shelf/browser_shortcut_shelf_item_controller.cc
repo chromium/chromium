@@ -368,7 +368,7 @@ void BrowserShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
                                                         int64_t command_id,
                                                         int32_t event_flags,
                                                         int64_t display_id) {
-  DCHECK(!from_context_menu);
+  CHECK(!from_context_menu, base::NotFatalUntil::M162);
 
   // Check that the index is valid and the browser has not been closed.
   if (command_id < static_cast<int64_t>(app_menu_items_.size()) &&
@@ -445,7 +445,7 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
       }
     }
   }
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M162);
   ShowAndActivateBrowser(/*move_to_current_desktop=*/false, browser);
   return ash::SHELF_ACTION_WINDOW_ACTIVATED;
 }

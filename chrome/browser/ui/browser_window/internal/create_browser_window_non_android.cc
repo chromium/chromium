@@ -62,7 +62,7 @@ BrowserWindowCreateParams BrowserWindowCreateParams::CreateForApp(
     const gfx::Rect& window_bounds,
     Profile* profile,
     bool user_gesture) {
-  DCHECK(!app_name.empty());
+  CHECK(!app_name.empty(), base::NotFatalUntil::M162);
   BrowserWindowCreateParams params(
       BrowserWindowInterface::TYPE_APP, profile, user_gesture);
   params.app_name = app_name;
@@ -78,7 +78,7 @@ BrowserWindowCreateParams BrowserWindowCreateParams::CreateForAppPopup(
     const gfx::Rect& window_bounds,
     Profile* profile,
     bool user_gesture) {
-  DCHECK(!app_name.empty());
+  CHECK(!app_name.empty(), base::NotFatalUntil::M162);
   BrowserWindowCreateParams params(
       BrowserWindowInterface::TYPE_APP_POPUP, profile, user_gesture);
   params.app_name = app_name;

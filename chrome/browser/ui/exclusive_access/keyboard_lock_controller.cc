@@ -102,8 +102,8 @@ void KeyboardLockController::HandleUserReleasedEscapeEarly() {
 }
 
 bool KeyboardLockController::RequiresPressAndHoldEscToExit() const {
-  DCHECK_EQ(keyboard_lock_state_ == KeyboardLockState::kUnlocked,
-            exclusive_access_tab() == nullptr);
+  CHECK_EQ(keyboard_lock_state_ == KeyboardLockState::kUnlocked,
+           exclusive_access_tab() == nullptr, base::NotFatalUntil::M162);
   return keyboard_lock_state_ == KeyboardLockState::kLockedWithEsc;
 }
 
@@ -120,14 +120,15 @@ void KeyboardLockController::NotifyTabExclusiveAccessLost() {
 }
 
 bool KeyboardLockController::IsKeyboardLockActive() const {
-  DCHECK_EQ(keyboard_lock_state_ == KeyboardLockState::kUnlocked,
-            exclusive_access_tab() == nullptr);
+  CHECK_EQ(keyboard_lock_state_ == KeyboardLockState::kUnlocked,
+           exclusive_access_tab() == nullptr, base::NotFatalUntil::M162);
   return keyboard_lock_state_ != KeyboardLockState::kUnlocked;
 }
 
 void KeyboardLockController::RequestKeyboardLock(WebContents* web_contents,
                                                  bool esc_key_locked) {
-  DCHECK(!exclusive_access_tab() || exclusive_access_tab() == web_contents);
+  CHECK(!exclusive_access_tab() || exclusive_access_tab() == web_contents,
+        base::NotFatalUntil::M162);
   if (!base::FeatureList::IsEnabled(
           permissions::features::kKeyboardLockPrompt)) {
     LockKeyboard(web_contents->GetWeakPtr(), esc_key_locked);
@@ -151,7 +152,7 @@ bool KeyboardLockController::HandleKeyEvent(
     return false;
   }
 
-  DCHECK_EQ(ui::VKEY_ESCAPE, event.windows_key_code);
+  CHECK_EQ(ui::VKEY_ESCAPE, event.windows_key_code, base::NotFatalUntil::M162);
   // This method handles the press and hold gesture used for exiting fullscreen.
   // If we don't have a feature which requires press and hold, or there isn't an
   // active keyboard lock request which requires press and hold, then we just

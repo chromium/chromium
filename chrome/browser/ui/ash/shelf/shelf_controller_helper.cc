@@ -124,7 +124,7 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
         ArcAppListPrefs::Get(profile)->GetApp(
             arc::ArcAppShelfId::FromString(app_id).app_id());
-    DCHECK(app_info.get());
+    CHECK(app_info.get(), base::NotFatalUntil::M162);
     return base::UTF8ToUTF16(app_info->name);
   }
 
@@ -254,7 +254,7 @@ bool ShelfControllerHelper::IsAppDefaultInstalled(Profile* profile,
 }
 
 std::string ShelfControllerHelper::GetAppID(content::WebContents* tab) {
-  DCHECK(tab);
+  CHECK(tab, base::NotFatalUntil::M162);
   return apps::GetInstanceAppIdForWebContents(tab).value_or(std::string());
 }
 
@@ -449,7 +449,7 @@ bool ShelfControllerHelper::IsValidIDForArcApp(
     }
     const arc::ArcSessionManager* arc_session_manager =
         arc::ArcSessionManager::Get();
-    DCHECK(arc_session_manager);
+    CHECK(arc_session_manager, base::NotFatalUntil::M162);
     if (!arc_session_manager->IsAllowed()) {
       return false;
     }

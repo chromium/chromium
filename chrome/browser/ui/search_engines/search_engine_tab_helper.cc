@@ -120,7 +120,7 @@ SearchEngineTabHelper::SearchEngineTabHelper(tabs::TabInterface& tab,
                                              WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
   favicon_driver_observation_.Observe(
@@ -248,7 +248,7 @@ void SearchEngineTabHelper::GenerateKeywordIfNecessary(
   data.SetShortName(keyword);
   data.SetKeyword(keyword);
   data.SetURL(url.spec());
-  DCHECK(controller.GetLastCommittedEntry());
+  CHECK(controller.GetLastCommittedEntry(), base::NotFatalUntil::M162);
   const GURL& current_favicon =
       controller.GetLastCommittedEntry()->GetFavicon().url;
   // If the favicon url isn't valid, it means there really isn't a favicon, or

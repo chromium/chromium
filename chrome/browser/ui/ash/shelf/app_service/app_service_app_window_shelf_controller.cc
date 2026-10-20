@@ -126,7 +126,7 @@ AppServiceAppWindowShelfController::ControllerForWindow(aura::Window* window) {
   }
 
   AppWindowBase* const app_window = it->second.get();
-  DCHECK(app_window);
+  CHECK(app_window, base::NotFatalUntil::M162);
   return app_window->controller();
 }
 
@@ -241,7 +241,7 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
 
 void AppServiceAppWindowShelfController::OnWindowDestroying(
     aura::Window* window) {
-  DCHECK(observed_windows_.IsObservingSource(window));
+  CHECK(observed_windows_.IsObservingSource(window), base::NotFatalUntil::M162);
   observed_windows_.RemoveObservation(window);
 
   if (arc_tracker_) {
@@ -687,7 +687,7 @@ void AppServiceAppWindowShelfController::UserHasAppOnActiveDesktop(
     aura::Window* window,
     const ash::ShelfID& shelf_id,
     content::BrowserContext* browser_context) {
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M162);
   // If the window was created for the active user, register it to show an item
   // on the shelf.
   if (proxy_->InstanceRegistry().Exists(window)) {

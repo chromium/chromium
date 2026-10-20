@@ -105,7 +105,8 @@ class TabSharingInfoBarDelegate::ShareTabInsteadButton
   ~ShareTabInsteadButton() override = default;
 
   void Click(infobars::InfoBar* infobar) override {
-    DCHECK(ui_);  // Not verified in ctor to keep tests simple.
+    CHECK(ui_, base::NotFatalUntil::M162);  // Not verified in ctor to keep
+                                            // tests simple.
     ui_->StartSharing(infobar);
   }
 

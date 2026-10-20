@@ -72,9 +72,9 @@ std::unique_ptr<ShelfContextMenu> ShelfContextMenu::Create(
     ChromeShelfController* controller,
     const ash::ShelfItem* item,
     int64_t display_id) {
-  DCHECK(controller);
-  DCHECK(item);
-  DCHECK(!item->id.IsNull());
+  CHECK(controller, base::NotFatalUntil::M162);
+  CHECK(item, base::NotFatalUntil::M162);
+  CHECK(!item->id.IsNull(), base::NotFatalUntil::M162);
 
   if (apps::AppServiceProxyFactory::GetForProfile(controller->profile())
           ->PromiseAppRegistryCache()
@@ -109,7 +109,7 @@ ShelfContextMenu::ShelfContextMenu(ChromeShelfController* controller,
     : controller_(controller),
       item_(item ? *item : ash::ShelfItem()),
       display_id_(display_id) {
-  DCHECK_NE(display_id, display::kInvalidDisplayId);
+  CHECK_NE(display_id, display::kInvalidDisplayId, base::NotFatalUntil::M162);
 }
 
 ShelfContextMenu::~ShelfContextMenu() = default;
@@ -124,7 +124,7 @@ std::unique_ptr<ui::SimpleMenuModel> ShelfContextMenu::GetBaseMenuModel() {
 }
 
 bool ShelfContextMenu::IsCommandIdChecked(int command_id) const {
-  DCHECK(command_id < ash::COMMAND_ID_COUNT);
+  CHECK(command_id < ash::COMMAND_ID_COUNT, base::NotFatalUntil::M162);
   return false;
 }
 
@@ -149,7 +149,7 @@ bool ShelfContextMenu::IsCommandIdEnabled(int command_id) const {
                           /*with_next=*/command_id == ash::SWAP_WITH_NEXT);
   }
 
-  DCHECK(command_id < ash::COMMAND_ID_COUNT);
+  CHECK(command_id < ash::COMMAND_ID_COUNT, base::NotFatalUntil::M162);
   return true;
 }
 
@@ -175,7 +175,7 @@ void ShelfContextMenu::ExecuteCommand(int command_id, int event_flags) {
       if (item_.type == ash::TYPE_DIALOG) {
         ash::ShelfItemDelegate* item_delegate =
             model->GetShelfItemDelegate(item_.id);
-        DCHECK(item_delegate);
+        CHECK(item_delegate, base::NotFatalUntil::M162);
         item_delegate->Close();
       } else {
         // TODO(simonhong): Use ShelfItemDelegate::Close().
@@ -279,7 +279,7 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
 
 void ShelfContextMenu::AddPinMenu(ui::SimpleMenuModel* menu_model) {
   // Expect a valid ShelfID to add pin/unpin menu item.
-  DCHECK(!item_.id.IsNull());
+  CHECK(!item_.id.IsNull(), base::NotFatalUntil::M162);
   int menu_pin_string_id;
   switch (GetPinnableForAppID(item_.id.app_id, controller_->profile())) {
     case AppListControllerDelegate::PIN_EDITABLE:
