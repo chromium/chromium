@@ -13,7 +13,6 @@ include_rules = [
   "+chrome/browser/app_mode",
   "+chrome/browser/ash/floating_workspace",
   "+chrome/browser/ash/login/demo_mode",
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/policy/off_hours",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
@@ -21,7 +20,6 @@ include_rules = [
   "+chrome/browser/lifetime",
   "+chrome/browser/policy/profile_policy_connector.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash/assistant",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/dialogs/browser_dialogs.h",
@@ -32,6 +30,8 @@ include_rules = [
 specific_include_rules = {
   # Only tests need these //chrome dependencies.
   ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
+    "+chrome/browser/ash/login/users",
     "+chrome/browser/policy/networking",
+    "+chrome/browser/ui/ash/assistant",
   ],
 }

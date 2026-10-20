@@ -4,7 +4,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/camera_mic",
   "+chrome/browser/ash/extensions",
-  "+chrome/browser/ash/login/users",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/picture_in_picture",
   "+chrome/browser/profiles/profile_manager.h",
@@ -18,6 +17,7 @@ include_rules = [
 specific_include_rules = {
   ".*_browsertest\\.cc": [
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
+    "+chrome/browser/ash/login/users",
     "+chrome/browser/profiles/profile.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
     "+chrome/test",
