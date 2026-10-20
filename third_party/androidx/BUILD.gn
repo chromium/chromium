@@ -531,6 +531,7 @@ if (!limit_android_deps) {
       ":androidx_core_core_java",
       ":androidx_customview_customview_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 

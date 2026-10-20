@@ -362,7 +362,7 @@
     {
         "name": "coordinatorlayout",
         "group": "androidx.coordinatorlayout",
-        "version": "1.3.0"
+        "version": "1.4.0-SNAPSHOT"
     },
     {
         "name": "core",
