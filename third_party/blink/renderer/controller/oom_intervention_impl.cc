@@ -121,7 +121,9 @@ void OomInterventionImpl::Check(MemoryUsage usage) {
 
   if (oom_detected) {
     base::debug::SetCrashKeyString(GetStateCrashKey(), "during");
+    MemoryUsageMonitorInstance().RemoveObserver(this);
 
+    auto weak_this = weak_factory_.GetWeakPtr();
     if (navigate_ads_enabled_ || purge_v8_memory_enabled_) {
       // Copy Page::OrdinaryPages() to avoid UAF. Synchronous JS
       // execution during iteration can create new pages, which causes rehashing
@@ -134,10 +136,18 @@ void OomInterventionImpl::Check(MemoryUsage usage) {
           auto* local_frame = DynamicTo<LocalFrame>(frame);
           if (!local_frame)
             continue;
-          if (navigate_ads_enabled_)
+          if (navigate_ads_enabled_) {
             NavigateLocalAdsFrames(local_frame);
-          if (purge_v8_memory_enabled_)
+            if (!weak_this) {
+              return;
+            }
+          }
+          if (purge_v8_memory_enabled_) {
             local_frame->ForciblyPurgeV8Memory();
+            if (!weak_this) {
+              return;
+            }
+          }
         }
       }
     }
@@ -149,7 +159,6 @@ void OomInterventionImpl::Check(MemoryUsage usage) {
     }
 
     host_->OnHighMemoryUsage();
-    MemoryUsageMonitorInstance().RemoveObserver(this);
     // Send memory pressure notification to trigger GC.
     task_runner_->PostTask(FROM_HERE, BindOnce(&TriggerGC));
     // Notify V8GCForContextDispose that page navigation gc is needed when
