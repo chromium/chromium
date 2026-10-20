@@ -492,9 +492,13 @@ INSTANTIATE_TEST_SUITE_P(
         ConfigTestParams({kEmptyPropID, kEmptyPropID}),
         // Microsoft is a supported IdP, but host syncing is Okta-only.
         ConfigTestParams({kMicrosoftSsoExtensionId, kMicrosoftSsoTeamId}),
+        // Ping is a supported IdP, but host syncing is Okta-only.
+        ConfigTestParams({kPingSsoExtensionId, kPingSsoTeamId}),
         // IDs from different IdPs must not be combined.
         ConfigTestParams({kOktaSsoExtensionId, kMicrosoftSsoTeamId}),
-        ConfigTestParams({kMicrosoftSsoExtensionId, kOktaSsoTeamId})));
+        ConfigTestParams({kMicrosoftSsoExtensionId, kOktaSsoTeamId}),
+        ConfigTestParams({kOktaSsoExtensionId, kPingSsoTeamId}),
+        ConfigTestParams({kPingSsoExtensionId, kOktaSsoTeamId})));
 
 using Config = ExtensibleEnterpriseSSOPrefsHandler::Config;
 
@@ -720,6 +724,29 @@ INSTANTIATE_TEST_SUITE_P(
                 {
                     .extension_id = StringToScopedPropList(kOktaSsoExtensionId),
                     .team_id = StringToScopedPropList(kMicrosoftSsoTeamId),
+                    .hosts = HostsToScopedPropList({kExampleHost}),
+                    .urls = ScopedPropList(),
+                },
+            .expected_config = std::nullopt,
+        },
+        // Ping is a supported IdP, but host syncing is Okta-only.
+        ParseConfigTestParams{
+            .name = "PingIdp",
+            .raw_config =
+                {
+                    .extension_id = StringToScopedPropList(kPingSsoExtensionId),
+                    .team_id = StringToScopedPropList(kPingSsoTeamId),
+                    .hosts = HostsToScopedPropList({kExampleHost}),
+                    .urls = UrlsToScopedPropList({kHttpsUrl}),
+                },
+            .expected_config = std::nullopt,
+        },
+        ParseConfigTestParams{
+            .name = "MismatchedOktaAndPingIdps",
+            .raw_config =
+                {
+                    .extension_id = StringToScopedPropList(kOktaSsoExtensionId),
+                    .team_id = StringToScopedPropList(kPingSsoTeamId),
                     .hosts = HostsToScopedPropList({kExampleHost}),
                     .urls = ScopedPropList(),
                 },

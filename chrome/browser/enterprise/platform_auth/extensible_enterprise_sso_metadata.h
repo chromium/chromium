@@ -19,6 +19,10 @@ extern const char kOktaIdentityProvider[];
 extern const char kOktaSsoExtensionId[];
 extern const char kOktaSsoTeamId[];
 
+extern const char kPingIdentityProvider[];
+extern const char kPingSsoExtensionId[];
+extern const char kPingSsoTeamId[];
+
 // This struct abstracts metadata about Apple's Extensible Enterprise SSO
 // extensions.
 struct SsoExtensionMetadata {

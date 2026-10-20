@@ -5,8 +5,7 @@
     ],
     "policy_pref_mapping_tests": [
       {
-        "policies": {
-        },
+        "policies": {},
         "prefs": {
           "extensible_enterprise_sso.enabled": {
             "location": "local_state",
@@ -14,7 +13,11 @@
           },
           "extensible_enterprise_sso.enabled_idps": {
             "location": "local_state",
-            "default_value": ["microsoft", "okta"]
+            "default_value": [
+              "microsoft",
+              "okta",
+              "ping"
+            ]
           }
         }
       },
@@ -29,13 +32,19 @@
           },
           "extensible_enterprise_sso.enabled_idps": {
             "location": "local_state",
-            "value": ["microsoft", "okta"]
+            "value": [
+              "microsoft",
+              "okta",
+              "ping"
+            ]
           }
         }
       },
       {
         "policies": {
-          "ExtensibleEnterpriseSSOBlocklist": ["all"]
+          "ExtensibleEnterpriseSSOBlocklist": [
+            "all"
+          ]
         },
         "prefs": {
           "extensible_enterprise_sso.enabled": {
@@ -50,7 +59,9 @@
       },
       {
         "policies": {
-          "ExtensibleEnterpriseSSOBlocklist": ["microsoft"]
+          "ExtensibleEnterpriseSSOBlocklist": [
+            "microsoft"
+          ]
         },
         "prefs": {
           "extensible_enterprise_sso.enabled": {
@@ -59,13 +70,18 @@
           },
           "extensible_enterprise_sso.enabled_idps": {
             "location": "local_state",
-            "value": ["okta"]
+            "value": [
+              "okta",
+              "ping"
+            ]
           }
         }
       },
       {
         "policies": {
-          "ExtensibleEnterpriseSSOBlocklist": ["okta"]
+          "ExtensibleEnterpriseSSOBlocklist": [
+            "okta"
+          ]
         },
         "prefs": {
           "extensible_enterprise_sso.enabled": {
@@ -74,13 +90,40 @@
           },
           "extensible_enterprise_sso.enabled_idps": {
             "location": "local_state",
-            "value": ["microsoft"]
+            "value": [
+              "microsoft",
+              "ping"
+            ]
           }
         }
       },
       {
         "policies": {
-          "ExtensibleEnterpriseSSOBlocklist": ["microsoft", "okta"]
+          "ExtensibleEnterpriseSSOBlocklist": [
+            "ping"
+          ]
+        },
+        "prefs": {
+          "extensible_enterprise_sso.enabled": {
+            "location": "local_state",
+            "value": 1
+          },
+          "extensible_enterprise_sso.enabled_idps": {
+            "location": "local_state",
+            "value": [
+              "microsoft",
+              "okta"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensibleEnterpriseSSOBlocklist": [
+            "microsoft",
+            "okta",
+            "ping"
+          ]
         },
         "prefs": {
           "extensible_enterprise_sso.enabled": {

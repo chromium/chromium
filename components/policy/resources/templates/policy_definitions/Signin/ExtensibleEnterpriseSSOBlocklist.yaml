@@ -15,7 +15,7 @@ desc: |-
 
   <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> does not support Single Sign-on using <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME">Extensible Enterprise SSO</ph> in Incognito or Guest modes.
 
-  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> only supports Single Sign-on using <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME">Extensible Enterprise SSO</ph> for the following identity providers: Microsoft, Okta.
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> only supports Single Sign-on using <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME">Extensible Enterprise SSO</ph> for the following identity providers: Microsoft, Okta, Ping.
 
   This feature is available starting in <ph name="MAC_OS_NAME">macOS</ph> 10.15.
 
@@ -37,6 +37,7 @@ schema:
     - all
     - microsoft
     - okta
+    - ping
     type: string
   type: array
 items:
@@ -51,6 +52,11 @@ items:
   value: okta
   supported_on:
     - chrome.mac:146-
+- caption: Ping® cloud identity provider
+  name: ping
+  value: ping
+  supported_on:
+    - chrome.mac:161-
 example_value:
 - all
 tags: []
