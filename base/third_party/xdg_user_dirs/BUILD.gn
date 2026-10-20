@@ -5,7 +5,7 @@
 static_library("xdg_user_dirs") {
   visibility = [ "//base/*" ]
   sources = [
+    "src/xdg-user-dir-lookup.h",
     "src/xdg_user_dir_lookup.cc",
-    "xdg_user_dir_lookup.h",
   ]
 }

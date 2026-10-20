@@ -21,7 +21,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
-#include "base/third_party/xdg_user_dirs/xdg_user_dir_lookup.h"
+#include "base/third_party/xdg_user_dirs/src/xdg-user-dir-lookup.h"
 #include "base/threading/scoped_blocking_call.h"
 
 namespace {

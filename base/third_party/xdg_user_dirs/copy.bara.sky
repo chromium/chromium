@@ -1,14 +1,15 @@
 load("//crowbar", "crowbar_workflow")
 
 crowbar_workflow(
-    origin_files = glob(["xdg-user-dir-lookup.c"]),
+    origin_files = glob([
+        "src/xdg-user-dir-lookup.c",
+        "src/xdg-user-dir-lookup.h",
+    ]),
     transformations = [
-        # Chromium builds the file as C++: xdg_user_dir_lookup.h declares
+        # Upstream keeps the files in its own src/ directory.
+        core.move("src/src", "src"),
+        # Chromium builds the file as C++: xdg-user-dir-lookup.h declares
         # xdg_user_dir_lookup() without extern "C".
         core.move("src/xdg-user-dir-lookup.c", "src/xdg_user_dir_lookup.cc"),
-        patch.apply(patches = [
-            "patches/0001-export-xdg_user_dir_lookup.patch",
-            "patches/0002-include-xdg_user_dir_lookup-header.patch",
-        ]),
     ],
 )

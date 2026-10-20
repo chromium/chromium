@@ -1,9 +1,9 @@
 upstream {
-  commit: "c5fd5852751a20ced25536730f17a616eaa31dd5"
+  version: "v0.20"
   artifacts {
     git {
       repository: "https://gitlab.freedesktop.org/xdg/xdg-user-dirs"
-      commit: "c5fd5852751a20ced25536730f17a616eaa31dd5"
+      commit: "cd05b6d29da1abdb3cd253ef496ae7fd1593e4bb"
     }
   }
 }
@@ -12,4 +12,11 @@ stages {
     patch { copybara {} }
   }
   publish { git {} }
+}
+latest {
+  semver {}
+  git {
+    repository: "https://gitlab.freedesktop.org/xdg/xdg-user-dirs"
+    tags {}
+  }
 }
