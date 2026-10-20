@@ -4,11 +4,12 @@
 
 #include "base/test/mock_log.h"
 
+#include "base/no_destructor.h"
+
 namespace base::test {
 
 // static
 MockLog* MockLog::g_instance_ = nullptr;
-Lock MockLog::g_lock;
 
 MockLog::MockLog() : is_capturing_logs_(false) {}
 
@@ -19,7 +20,7 @@ MockLog::~MockLog() {
 }
 
 void MockLog::StartCapturingLogs() {
-  AutoLock scoped_lock(g_lock);
+  AutoLock scoped_lock(GetLock());
 
   // We don't use CHECK(), which can generate a new LOG message, and
   // thus can confuse MockLog objects or other registered
@@ -34,7 +35,7 @@ void MockLog::StartCapturingLogs() {
 }
 
 void MockLog::StopCapturingLogs() {
-  AutoLock scoped_lock(g_lock);
+  AutoLock scoped_lock(GetLock());
 
   // We don't use CHECK(), which can generate a new LOG message, and
   // thus can confuse MockLog objects or other registered
@@ -48,6 +49,12 @@ void MockLog::StopCapturingLogs() {
 }
 
 // static
+Lock& MockLog::GetLock() {
+  static NoDestructor<Lock> lock;
+  return *lock;
+}
+
+// static
 bool MockLog::LogMessageHandler(int severity,
                                 const char* file,
                                 int line,
@@ -57,7 +64,7 @@ bool MockLog::LogMessageHandler(int severity,
   // (https://github.com/google/googlemock/blob/master/googlemock/docs/CookBook.md#using-google-mock-and-threads)
   // but we also need to make sure that Start/StopCapturingLogs are synchronized
   // with LogMessageHandler.
-  AutoLock scoped_lock(g_lock);
+  AutoLock scoped_lock(GetLock());
 
   return g_instance_->Log(severity, file, line, message_start, str);
 }

@@ -4,7 +4,9 @@
 
 #include "base/test/scoped_run_loop_timeout.h"
 
+#include <memory>
 #include <optional>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -20,8 +22,7 @@ namespace {
 
 bool g_add_gtest_failure_on_timeout = false;
 
-std::unique_ptr<ScopedRunLoopTimeout::TimeoutCallback>
-    g_handle_timeout_for_testing = nullptr;
+ScopedRunLoopTimeout::TimeoutCallback* g_handle_timeout_for_testing = nullptr;
 
 std::string TimeoutMessage(const RepeatingCallback<std::string()>& get_log,
                            const Location& timeout_enabled_from_here) {
@@ -133,7 +134,8 @@ ScopedRunLoopTimeout::GetTimeoutForCurrentThread() {
 // static
 void ScopedRunLoopTimeout::SetTimeoutCallbackForTesting(
     std::unique_ptr<ScopedRunLoopTimeout::TimeoutCallback> cb) {
-  g_handle_timeout_for_testing = std::move(cb);
+  delete g_handle_timeout_for_testing;
+  g_handle_timeout_for_testing = cb.release();
 }
 
 ScopedDisableRunLoopTimeout::ScopedDisableRunLoopTimeout()

@@ -78,7 +78,7 @@ class MockLog {
   static MockLog* g_instance_;
 
   // Lock protecting access to g_instance_.
-  static Lock g_lock;
+  static Lock& GetLock();
 
   // Static function which is set as the logging message handler.
   // Called once for each message.

@@ -13,6 +13,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/path_utils.h"
 #endif
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/chrome_track_event.descriptor.h"
 #include "base/test/perfetto_sql_stdlib.h"
@@ -27,6 +28,12 @@
 namespace base::test {
 
 namespace {
+
+constexpr char kChromeSqlPackageName[] = "chrome";
+// A command-line switch to save the trace test trace processor generated to
+// make debugging complex traces.
+constexpr char kSaveTraceSwitch[] = "ttp-save-trace";
+
 // Emitting the chrome_track_event.descriptor into the trace allows the trace
 // processor to parse the arguments during ingestion of the trace events.
 // This function emits the descriptor generated from
@@ -46,11 +53,6 @@ void EmitChromeTrackEventDescriptor() {
   });
 }
 
-std::string kChromeSqlPackageName = "chrome";
-// A command-line switch to save the trace test trace processor generated to
-// make debugging complex traces.
-constexpr char kSaveTraceSwitch[] = "ttp-save-trace";
-
 // Returns a vector of pairs of strings consisting of
 // {include_key, sql_file_contents}. For example, the include key for
 // `chrome/scroll_jank/utils.sql` is `chrome.scroll_jank.utils`.
@@ -63,7 +65,7 @@ TestTraceProcessorImpl::PerfettoSQLPackage GetChromeStdlib() {
     if (include_key.ends_with(".sql")) {
       include_key.resize(include_key.size() - 4);
     }
-    stdlib.emplace_back(kChromeSqlPackageName + "." + include_key,
+    stdlib.emplace_back(base::StrCat({kChromeSqlPackageName, ".", include_key}),
                         std::string(file_to_sql.sql_view()));
   }
   return stdlib;
