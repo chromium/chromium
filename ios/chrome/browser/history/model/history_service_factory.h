@@ -5,30 +5,22 @@
 #ifndef IOS_CHROME_BROWSER_HISTORY_MODEL_HISTORY_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_HISTORY_MODEL_HISTORY_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-namespace history {
-class HistoryService;
-}
+#import "components/history/core/browser/history_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 // Singleton that owns all HistoryServices and associates them with
 // ProfileIOS.
-class HistoryServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class HistoryServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<HistoryServiceFactory,
+                                                history::HistoryService> {
  public:
-  static history::HistoryService* GetForProfile(ProfileIOS* profile);
-  static HistoryServiceFactory* GetInstance();
+  explicit HistoryServiceFactory(PassKey key);
 
   // Returns the default factory, useful in tests where it's null by default.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<HistoryServiceFactory>;
-
-  HistoryServiceFactory();
-  ~HistoryServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

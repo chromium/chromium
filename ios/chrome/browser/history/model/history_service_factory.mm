@@ -63,33 +63,20 @@ std::unique_ptr<KeyedService> BuildHistoryService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-history::HistoryService* HistoryServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<history::HistoryService>(
-      profile, /*create=*/true);
-}
-
-// static
-HistoryServiceFactory* HistoryServiceFactory::GetInstance() {
-  static base::NoDestructor<HistoryServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 HistoryServiceFactory::TestingFactory
 HistoryServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildHistoryService);
 }
 
-HistoryServiceFactory::HistoryServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("HistoryService",
-                                    ProfileSelection::kRedirectedInIncognito,
-                                    TestingCreation::kNoServiceForTests) {
+HistoryServiceFactory::HistoryServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "HistoryService",
+          ProfileSelection::kRedirectedInIncognito,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(BookmarkModelFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
-
-HistoryServiceFactory::~HistoryServiceFactory() = default;
 
 std::unique_ptr<KeyedService> HistoryServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
