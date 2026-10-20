@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/privacy/universal_opt_out_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/ios/ios_util.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "components/prefs/pref_service.h"
 #import "components/universal_optout/prefs.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
@@ -23,6 +25,7 @@
 #import "ios/chrome/browser/universal_optout/model/constants.h"
 #import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
 #import "ios/chrome/browser/web_extension/model/fake_extension_service.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -65,6 +68,16 @@ class UniversalOptOutTableViewControllerTest
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
+
+// Tests that the view controller's title matches the expected localized string.
+TEST_F(UniversalOptOutTableViewControllerTest, TestTitle) {
+  CreateController();
+  CheckController();
+
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_TITLE),
+      controller().title);
+}
 
 // Tests that toggling the switch properly updates the preference.
 TEST_F(UniversalOptOutTableViewControllerTest, TestToggleSwitchUpdatesPref) {
@@ -198,10 +211,27 @@ TEST_F(UniversalOptOutTableViewControllerTest, TestFooterURLAndLinkTap) {
   EXPECT_OCMOCK_VERIFY(mockSceneHandler);
 }
 
+// Tests that the footer text contains the extension note when not running on
+// iOS 27 or later, and does not contain it when running on iOS 27 or later.
+TEST_F(UniversalOptOutTableViewControllerTest, TestFooterTextExtensionNote) {
+  CreateController();
+  CheckController();
+
+  TableViewLinkHeaderFooterItem* footerItem =
+      base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
+          [controller().tableViewModel footerForSectionIndex:0]);
+  ASSERT_TRUE(footerItem != nil);
+
+  const bool has_note = [footerItem.text
+      containsString:l10n_util::GetNSString(
+                         IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_NOTE)];
+  EXPECT_EQ(!base::ios::IsRunningOnIOS27OrLater(), has_note);
+}
+
 // Tests that when ExtensionService reports a load error, the error section
-// is added with the localized error message and "Learn more" button, the
-// footer is attached to the error section, and tapping "Learn more" opens
-// the error URL in a new tab.
+// is added above the setting with the localized error message and "Learn more"
+// button, the footer is attached to the switch section, and tapping "Learn
+// more" opens the error URL in a new tab.
 TEST_F(UniversalOptOutTableViewControllerTest,
        TestErrorSectionWhenExtensionHasLoadError) {
   fake_extension_service()->SetHasLoadError(true);
@@ -210,12 +240,12 @@ TEST_F(UniversalOptOutTableViewControllerTest,
   CheckController();
 
   EXPECT_EQ(2, NumberOfSections());
-  EXPECT_EQ(1, NumberOfItemsInSection(0));
-  EXPECT_EQ(2, NumberOfItemsInSection(1));
+  EXPECT_EQ(2, NumberOfItemsInSection(0));
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
 
   TableViewDetailIconItem* messageItem =
       base::apple::ObjCCastStrict<TableViewDetailIconItem>(
-          GetTableViewItem(1, 0));
+          GetTableViewItem(0, 0));
   ASSERT_TRUE(messageItem != nil);
 
   int expectedMessageId =
@@ -227,9 +257,12 @@ TEST_F(UniversalOptOutTableViewControllerTest,
               messageItem.accessibilityIdentifier);
   EXPECT_EQ(UITableViewCellSelectionStyleNone, messageItem.selectionStyle);
   EXPECT_EQ(UIStackViewAlignmentTop, messageItem.verticalAlignment);
+  EXPECT_NSEQ([UIColor colorNamed:kYellow500Color], messageItem.iconTintColor);
+  EXPECT_NSEQ(SymbolWithPointSize(SymbolErrorCircleFill, 24.0),
+              messageItem.iconImage);
 
   TableViewTextItem* learnMoreItem =
-      base::apple::ObjCCastStrict<TableViewTextItem>(GetTableViewItem(1, 1));
+      base::apple::ObjCCastStrict<TableViewTextItem>(GetTableViewItem(0, 1));
   ASSERT_TRUE(learnMoreItem != nil);
   EXPECT_NSEQ(l10n_util::GetNSString(
                   IDS_IOS_OPTIONS_ENABLE_UNIVERSAL_OPT_OUT_ERROR_LEARN_MORE),
@@ -240,7 +273,12 @@ TEST_F(UniversalOptOutTableViewControllerTest,
   EXPECT_EQ(UIAccessibilityTraitButton,
             learnMoreItem.accessibilityTraits & UIAccessibilityTraitButton);
 
-  // Verify that the footer is on section 1 (the error section), not section 0.
+  // Verify that the switch is in section 1.
+  TableViewSwitchItem* switchItem =
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(GetTableViewItem(1, 0));
+  ASSERT_TRUE(switchItem != nil);
+
+  // Verify that the footer is on section 1 (the switch section), not section 0.
   EXPECT_EQ(nil, [controller().tableViewModel footerForSectionIndex:0]);
   TableViewLinkHeaderFooterItem* footerItem =
       base::apple::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
@@ -256,10 +294,10 @@ TEST_F(UniversalOptOutTableViewControllerTest,
   // Verify highlighting: only the "Learn more" row is highlightable.
   EXPECT_FALSE([optOutController tableView:optOutController.tableView
              shouldHighlightRowAtIndexPath:[NSIndexPath indexPathForRow:0
-                                                              inSection:1]]);
+                                                              inSection:0]]);
   EXPECT_TRUE([optOutController tableView:optOutController.tableView
             shouldHighlightRowAtIndexPath:[NSIndexPath indexPathForRow:1
-                                                             inSection:1]]);
+                                                             inSection:0]]);
 
   // Verify selecting the "Learn more" row opens the error URL.
   id mockSceneHandler = OCMProtocolMock(@protocol(SceneCommands));
@@ -273,7 +311,7 @@ TEST_F(UniversalOptOutTableViewControllerTest,
       }]]);
 
   [optOutController tableView:optOutController.tableView
-      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:1]];
+      didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
 
   EXPECT_OCMOCK_VERIFY(mockSceneHandler);
 }
@@ -289,19 +327,32 @@ TEST_F(UniversalOptOutTableViewControllerTest, TestDynamicLoadErrorChanges) {
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_TRUE([controller().tableViewModel footerForSectionIndex:0] != nil);
 
+  TableViewSwitchItem* switchItemInitial =
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(GetTableViewItem(0, 0));
+  ASSERT_TRUE(switchItemInitial != nil);
+
   // Transition to load error.
   fake_extension_service()->SetHasLoadError(true);
 
   EXPECT_EQ(2, NumberOfSections());
-  EXPECT_EQ(1, NumberOfItemsInSection(0));
-  EXPECT_EQ(2, NumberOfItemsInSection(1));
+  EXPECT_EQ(2, NumberOfItemsInSection(0));
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
   TableViewDetailIconItem* messageItem =
       base::apple::ObjCCastStrict<TableViewDetailIconItem>(
-          GetTableViewItem(1, 0));
+          GetTableViewItem(0, 0));
   ASSERT_TRUE(messageItem != nil);
+  EXPECT_NSEQ([UIColor colorNamed:kYellow500Color], messageItem.iconTintColor);
+  EXPECT_NSEQ(SymbolWithPointSize(SymbolErrorCircleFill, 24.0),
+              messageItem.iconImage);
+
   TableViewTextItem* learnMoreItem =
-      base::apple::ObjCCastStrict<TableViewTextItem>(GetTableViewItem(1, 1));
+      base::apple::ObjCCastStrict<TableViewTextItem>(GetTableViewItem(0, 1));
   ASSERT_TRUE(learnMoreItem != nil);
+
+  TableViewSwitchItem* switchItemWithError =
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(GetTableViewItem(1, 0));
+  ASSERT_TRUE(switchItemWithError != nil);
+
   EXPECT_EQ(nil, [controller().tableViewModel footerForSectionIndex:0]);
   EXPECT_TRUE([controller().tableViewModel footerForSectionIndex:1] != nil);
 
@@ -311,6 +362,10 @@ TEST_F(UniversalOptOutTableViewControllerTest, TestDynamicLoadErrorChanges) {
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_TRUE([controller().tableViewModel footerForSectionIndex:0] != nil);
+
+  TableViewSwitchItem* switchItemAfterReset =
+      base::apple::ObjCCastStrict<TableViewSwitchItem>(GetTableViewItem(0, 0));
+  ASSERT_TRUE(switchItemAfterReset != nil);
 }
 
 }  // namespace
