@@ -23,16 +23,16 @@ namespace {
 // (document-score, posting-of-all-matching-terms).
 using ScoreWithPosting = std::pair<double, Posting>;
 
-// Calculates TF-IDF scores for a term
-std::vector<TfidfResult> CalculateTfidf(const std::u16string& term,
-                                        const DocLength& doc_length,
-                                        const Dictionary& dictionary) {
+// Calculates TF-IDF scores for a term.
+std::vector<TfidfResult> CalculateTfidf(const PostingList& postings,
+                                        const DocLength& doc_length) {
   std::vector<TfidfResult> results;
+  results.reserve(postings.size());
   // We don't apply weights to idf because the effect is likely small.
   const float idf =
-      1.0 + log((1.0 + doc_length.size()) / (1.0 + dictionary.at(term).size()));
+      1.0 + log((1.0 + doc_length.size()) / (1.0 + postings.size()));
 
-  for (const auto& item : dictionary.at(term)) {
+  for (const auto& item : postings) {
     // If a term has a very low content weight in a doc, its effective number of
     // occurrences in the doc should be lower. Strictly speaking, the effective
     // length of the doc should be smaller too. However, for performance
@@ -57,17 +57,17 @@ TfidfCache BuildTfidf(uint32_t num_docs_from_last_update,
                       const DocLength& doc_length,
                       const Dictionary& dictionary,
                       const TermSet& terms_to_be_updated,
-                      const TfidfCache& tfidf_cache) {
+                      TfidfCache new_cache) {
   // TODO(crbug.com/40152719): consider moving the helper functions inside the
   // class so that we can use SequenceChecker.
-  TfidfCache new_cache(tfidf_cache);
   // If number of documents doesn't change from the last time index was built,
   // we only need to update terms in |terms_to_be_updated|. Otherwise we need
   // to rebuild the index.
   if (num_docs_from_last_update == doc_length.size()) {
     for (const auto& term : terms_to_be_updated) {
-      if (dictionary.find(term) != dictionary.end()) {
-        new_cache[term] = CalculateTfidf(term, doc_length, dictionary);
+      auto it = dictionary.find(term);
+      if (it != dictionary.end()) {
+        new_cache[term] = CalculateTfidf(it->second, doc_length);
       } else {
         new_cache.erase(term);
       }
@@ -75,8 +75,7 @@ TfidfCache BuildTfidf(uint32_t num_docs_from_last_update,
   } else {
     new_cache.clear();
     for (const auto& item : dictionary) {
-      new_cache[item.first] =
-          CalculateTfidf(item.first, doc_length, dictionary);
+      new_cache[item.first] = CalculateTfidf(item.second, doc_length);
     }
   }
   return new_cache;
@@ -115,14 +114,13 @@ bool RemoveDocumentIfExist(const std::string& document_id,
 // Given list of documents to update and document state variables, returns new
 // document state variables and number of deleted documents.
 std::pair<DocumentStateVariables, uint32_t> UpdateDocumentStateVariables(
-    DocumentToUpdate&& documents_to_update,
-    const DocLength& doc_length,
-    Dictionary&& dictionary,
-    TermSet&& terms_to_be_updated) {
-  DocLength new_doc_length(doc_length);
+    DocumentToUpdate documents_to_update,
+    DocLength new_doc_length,
+    Dictionary dictionary,
+    TermSet terms_to_be_updated) {
   uint32_t num_deleted = 0u;
   for (const auto& document : documents_to_update) {
-    const std::string document_id(document.first);
+    const std::string& document_id = document.first;
     bool is_deleted = RemoveDocumentIfExist(document_id, &new_doc_length,
                                             &dictionary, &terms_to_be_updated);
 
@@ -131,9 +129,10 @@ std::pair<DocumentStateVariables, uint32_t> UpdateDocumentStateVariables(
       // If document content is not empty, it is being updated but not
       // deleted.
       is_deleted = false;
+      auto& doc_len = new_doc_length[document_id];
       for (const auto& token : document.second) {
         dictionary[token.content][document_id] = token.positions;
-        new_doc_length[document_id] += token.positions.size();
+        doc_len += token.positions.size();
         terms_to_be_updated.insert(token.content);
       }
     }
@@ -297,7 +296,7 @@ void InvertedIndex::BuildInvertedIndex(base::OnceCallback<void()> callback) {
       FROM_HERE,
       base::BindOnce(&BuildTfidf, num_docs_from_last_update_, doc_length_,
                      dictionary_, std::move(terms_to_be_updated_),
-                     tfidf_cache_),
+                     std::move(tfidf_cache_)),
       base::BindOnce(&InvertedIndex::OnBuildTfidfComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

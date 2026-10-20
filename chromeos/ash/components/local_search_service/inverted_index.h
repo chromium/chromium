@@ -96,11 +96,16 @@ class InvertedIndex {
 
   // Gets TF-IDF scores for a term. This function returns the TF-IDF score from
   // the cache.
-  // Note: client of this function should call BuildInvertedIndex before using
-  // this function to have up-to-date score.
+  // Note: client of this function should call BuildInvertedIndex (and wait for
+  // its completion callback) before using this function to have up-to-date
+  // score. While BuildInvertedIndex is in progress, `tfidf_cache_` is moved to
+  // the background task and is unavailable on the main sequence.
   std::vector<TfidfResult> GetTfidf(const std::u16string& term) const;
 
-  // Builds the inverted index.
+  // Builds the inverted index asynchronously on the background task runner.
+  // Note: `tfidf_cache_` is moved to the background task while the build is in
+  // progress and restored when the build completes (before `callback` runs), so
+  // `tfidf_cache_` is empty and unavailable for queries during the build.
   void BuildInvertedIndex(base::OnceCallback<void()> callback);
 
   // Clears all the data from the inverted index.
