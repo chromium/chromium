@@ -274,7 +274,7 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
         account_settings::kAccountSettingContextPhotos.name);
     EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kEligible);
-    EXPECT_FALSE(service().IsEligibleForEncryption());
+    EXPECT_TRUE(service().IsEligibleForEncryption());
   }
   {
     // Only Photos enabled.
@@ -580,57 +580,6 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
   identity_test_env_.ReloadAccountsFromDisk();
 
   EXPECT_TRUE(service().IsInitialized());
-  EXPECT_TRUE(service().IsEligibleForEncryption());
-}
-
-TEST_F(PersonalContextEligibilityServiceImplTest,
-       EncryptionEligibilityRequiresPhotosSetting) {
-  MockPersonalContextEligibilityServiceObserver observer;
-  base::ScopedObservation<PersonalContextEligibilityService,
-                          PersonalContextEligibilityService::Observer>
-      scoped_observation(&observer);
-  scoped_observation.Observe(&service());
-
-  ASSERT_TRUE(service().IsInitialized());
-  ASSERT_EQ(service().GetEligibilityState(),
-            PersonalContextEligibilityState::kEligible);
-  ASSERT_TRUE(service().IsEligibleForEncryption());
-
-  // Disable Photos while keeping Workspace enabled. General eligibility stays
-  // `kEligible`, while encryption eligibility becomes `false`.
-  ON_CALL(mock_account_settings_service_,
-          GetBoolean(AccountSettingWithName(
-              account_settings::kAccountSettingContextWorkspace.name)))
-      .WillByDefault(Return(true));
-  ON_CALL(mock_account_settings_service_,
-          GetBoolean(AccountSettingWithName(
-              account_settings::kAccountSettingContextPhotos.name)))
-      .WillByDefault(Return(false));
-
-  EXPECT_CALL(observer, OnEligibilityStateChanged).Times(0);
-  EXPECT_CALL(observer, OnEncryptionEligibilityChanged(false));
-
-  service().OnAccountSettingDataUpdated(
-      account_settings::kAccountSettingContextPhotos.name);
-
-  EXPECT_EQ(service().GetEligibilityState(),
-            PersonalContextEligibilityState::kEligible);
-  EXPECT_FALSE(service().IsEligibleForEncryption());
-
-  // Re-enabling Photos restores encryption eligibility.
-  ON_CALL(mock_account_settings_service_,
-          GetBoolean(AccountSettingWithName(
-              account_settings::kAccountSettingContextPhotos.name)))
-      .WillByDefault(Return(true));
-
-  EXPECT_CALL(observer, OnEligibilityStateChanged).Times(0);
-  EXPECT_CALL(observer, OnEncryptionEligibilityChanged(true));
-
-  service().OnAccountSettingDataUpdated(
-      account_settings::kAccountSettingContextPhotos.name);
-
-  EXPECT_EQ(service().GetEligibilityState(),
-            PersonalContextEligibilityState::kEligible);
   EXPECT_TRUE(service().IsEligibleForEncryption());
 }
 
