@@ -135,6 +135,15 @@ class SandboxDirectoryDatabaseTest : public testing::Test {
             .ok());
   }
 
+  // Moves the database entry for |file_id| to |new_key|.
+  void ReplaceFileEntryKey(FileId file_id, const std::string& new_key) {
+    std::string old_key = base::NumberToString(file_id);
+    std::string value;
+    ASSERT_TRUE(db()->db_->Get(leveldb::ReadOptions(), old_key, &value).ok());
+    ASSERT_TRUE(db()->db_->Put(leveldb::WriteOptions(), new_key, value).ok());
+    ASSERT_TRUE(db()->db_->Delete(leveldb::WriteOptions(), old_key).ok());
+  }
+
  protected:
   // Common temp base for nondestructive uses.
   base::ScopedTempDir base_;
@@ -542,6 +551,23 @@ TEST_F(SandboxDirectoryDatabaseTest, TestConsistencyCheck_FileLost) {
   EXPECT_TRUE(db()->IsFileSystemConsistent());
   ASSERT_TRUE(base::DeleteFile(path().Append(kBackingFileName)));
   EXPECT_TRUE(db()->IsFileSystemConsistent());
+}
+
+TEST_F(SandboxDirectoryDatabaseTest,
+       TestConsistencyCheck_FileLostRemoveFailure) {
+  const base::FilePath::CharType kBackingFileName[] = FPL("hoge");
+  FileId file_id;
+  CreateFile(0, FPL("foo"), kBackingFileName, &file_id);
+
+  EXPECT_TRUE(db()->IsFileSystemConsistent());
+  ASSERT_TRUE(base::DeleteFile(path().Append(kBackingFileName)));
+
+  // Replace the canonical key with a non-canonical one so that ScanDatabase()
+  // visits the entry and attempts RemoveFileInfo(), which fails and closes the
+  // database via HandleError().
+  ReplaceFileEntryKey(file_id, "0" + base::NumberToString(file_id));
+
+  EXPECT_FALSE(db()->IsFileSystemConsistent());
 }
 
 TEST_F(SandboxDirectoryDatabaseTest, TestConsistencyCheck_OrphanFile) {
