@@ -1524,4 +1524,39 @@ suite('ReadonlyOmnibox', function() {
     assertEquals('example.com', dataTransfer.getData('text/plain'));
     assertEquals('https://example.com/', dataTransfer.getData('text/uri-list'));
   });
+
+  test('Dropping into the omnibox works after dragging out', async () => {
+    const input = getTextInput();
+    input.focus();
+    input.value = 'hello world';
+    input.setSelectionRange(0, input.value.length);
+    omnibox.adjustedCopyResult = {
+      adjustedText: 'hello world',
+      adjustedUrl: null,
+      pageTitle: null,
+    };
+    await microtasksFinished();
+
+    omnibox.dispatchEvent(new DragEvent('dragstart', {
+      bubbles: true,
+      cancelable: true,
+      dataTransfer: new DataTransfer(),
+    }));
+    omnibox.dispatchEvent(new DragEvent('dragend', {bubbles: true}));
+    await microtasksFinished();
+
+    // Once the drag out ended, the omnibox no longer treats drags as its own,
+    // so it forwards text dropped into it from outside to the browser.
+    uiHandler.reset();
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/plain', 'dropped text');
+    omnibox.dispatchEvent(
+        new DragEvent('drop', {bubbles: true, cancelable: true, dataTransfer}));
+    await microtasksFinished();
+
+    assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+    const args = uiHandler.getArgs('onOmniboxAction');
+    assertTrue(!!args[0].dropText);
+    assertEquals('dropped text', args[0].dropText.text);
+  });
 });
