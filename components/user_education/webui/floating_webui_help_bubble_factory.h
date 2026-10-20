@@ -14,9 +14,17 @@ namespace user_education {
 
 // Help bubble factory that anchors a floating Views help bubble to a WebUI.
 //
-// This factory is designed for help bubbles attached to non-tab WebUI; prefer
-// `HelpBubbleFactoryWebUI` for help bubbles in WebUI that are displayed in tabs
-// (that factory shows the help bubble in the WebUI itself).
+// This factory is designed for help bubbles attached to non-tab WebUI (such as
+// the WebUI toolbar or side panels); prefer `HelpBubbleFactoryWebUI` for help
+// bubbles in WebUI that are displayed in tabs (that factory shows an embedded
+// help bubble inside the WebUI DOM itself).
+//
+// Unlike `HelpBubbleFactoryWebUI`, which locks its anchor's visibility so that
+// backgrounding a browser tab does not close the embedded bubble, floating help
+// bubbles created by this factory do NOT lock `TrackedElementWebUI` visibility:
+// if the hosting `WebView` / `WebContents` is hidden (e.g. when the toolbar is
+// hidden in fullscreen mode), the anchor element reports hidden and the
+// floating Views bubble closes.
 class FloatingWebUIHelpBubbleFactory : public HelpBubbleFactoryViews {
  public:
   explicit FloatingWebUIHelpBubbleFactory(const HelpBubbleDelegate* delegate);

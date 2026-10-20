@@ -25,7 +25,15 @@ class TrackedElementWebUI;
 
 // While at least one of these is alive, the element will be considered
 // "effectively visible" even if the WebContents is hidden, as long as it is
-// "raw visible" (i.e. present in the WebUI).
+// "raw visible" (i.e. present in the WebUI DOM).
+//
+// This is used for embedded WebUI help bubbles (`HelpBubbleWebUI`, typically
+// in main browser tab WebUIs) so that backgrounding a tab (which hides its
+// WebContents) does not mark the anchor element as hidden and prematurely
+// close the embedded help bubble or abort an active tutorial. It should NOT be
+// used for floating Views help bubbles anchored to non-tab WebUI surfaces
+// (like the WebUI toolbar or side panels), where hiding the WebContents means
+// the UI surface itself was hidden and the anchor element must report hidden.
 class TrackedElementVisibilityLock {
  public:
   explicit TrackedElementVisibilityLock(
@@ -87,7 +95,10 @@ class TrackedElementWebUI : public ui::TrackedElement {
   // other end to apply a highlight.
   scoped_refptr<HighlightHandle> GetOrMakeHighlightHandle();
 
-  // Returns a new visibility lock.
+  // Returns a new visibility lock that keeps this element effectively visible
+  // when its hosting WebContents is hidden (as long as the element remains
+  // visible in the WebUI DOM). See `TrackedElementVisibilityLock` for when
+  // this should and should not be used.
   std::unique_ptr<TrackedElementVisibilityLock> LockVisible();
 
   // Returns the bounds of the element in local WebContents DIP coordinates.

@@ -126,10 +126,18 @@ struct HelpBubbleHandlerBase::ElementData {
 
   bool has_webui_help_bubble() const { return static_cast<bool>(params); }
 
+  // State for embedded WebUI help bubbles (`HelpBubbleWebUI`), which are
+  // rendered inside the WebUI DOM (typically in main tab contents via
+  // `HelpBubbleFactoryWebUI`).
+  //
+  // Embedded bubbles hold a `TrackedElementVisibilityLock` (`visibility_lock`)
+  // so that hiding the hosting `WebContents` (e.g. when the user switches to
+  // another browser tab) does not mark the anchor element as hidden and
+  // prematurely close the bubble or abort an active tutorial. The bubble will
+  // still close if the anchor DOM element itself becomes hidden in the page.
   std::unique_ptr<HelpBubbleParams> params;
   raw_ptr<HelpBubbleWebUI> help_bubble = nullptr;
   std::unique_ptr<ui::TrackedElementVisibilityLock> visibility_lock;
-  base::CallbackListSubscription external_bubble_subscription;
   base::CallbackListSubscription anchor_hidden_subscription;
 
   // This is set to true if we are closing the help bubble as the result of a
@@ -137,6 +145,17 @@ struct HelpBubbleHandlerBase::ElementData {
   // guard to prevent a loop where we receive a message that the bubble is
   // closing and then tell the WebUI to close the bubble in response.
   bool closing = false;
+
+  // Subscription for floating Views help bubbles (`HelpBubbleViews`), which
+  // are separate native widgets anchored to non-tab WebUI surfaces (such as
+  // the WebUI toolbar or side panels via `FloatingWebUIHelpBubbleFactory`).
+  //
+  // Unlike embedded WebUI help bubbles, floating help bubbles do NOT lock
+  // the anchor element's visibility: if the hosting `WebContents` / `WebView`
+  // is hidden (e.g. when the toolbar hides in fullscreen mode or a side panel
+  // closes), the anchor element must become hidden so that the floating
+  // widget closes instead of remaining orphaned on screen.
+  base::CallbackListSubscription external_bubble_subscription;
 };
 
 HelpBubbleHandlerBase::HelpBubbleHandlerBase(
@@ -234,6 +253,10 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
   }
   data.params = std::make_unique<HelpBubbleParams>(std::move(params));
   if (tracked_element_handler_) {
+    // Embedded WebUI help bubbles live inside the page DOM (typically in a
+    // browser tab). Lock the anchor element's visibility so that hiding the
+    // WebContents (e.g. when switching tabs) does not mark the anchor as
+    // hidden and close the bubble or abort an active tutorial.
     data.visibility_lock = element->LockVisible();
   }
   data.anchor_hidden_subscription =
@@ -435,9 +458,13 @@ void HelpBubbleHandlerBase::OnFloatingHelpBubbleCreated(
   }
   auto& data = it->second[element->GetSecondaryIdentifier()];
   DCHECK(!data.external_bubble_subscription);
-  if (tracked_element_handler_) {
-    data.visibility_lock = element->LockVisible();
-  }
+  // Note: Unlike `CreateHelpBubble` (which creates an embedded DOM help bubble
+  // in a tab and locks `element` visibility across tab switches), floating
+  // help bubbles are separate Views widgets anchored to non-tab WebUI (such as
+  // the WebUI toolbar or side panels). Do NOT call `element->LockVisible()`
+  // here: if the hosting `WebView` / `WebContents` becomes hidden (e.g. when
+  // the toolbar is hidden in fullscreen mode), `element` must report hidden so
+  // the floating Views widget closes.
   data.external_bubble_subscription = help_bubble->AddOnClosingCallback(
       base::BindOnce(&HelpBubbleHandlerBase::OnFloatingHelpBubbleClosed,
                      weak_ptr_factory_.GetWeakPtr(), anchor_id,
@@ -456,7 +483,6 @@ void HelpBubbleHandlerBase::OnFloatingHelpBubbleClosed(
   auto* const data = base::FindOrNull(it->second, secondary_id);
   if (data) {
     data->external_bubble_subscription = base::CallbackListSubscription();
-    data->visibility_lock.reset();
     GetClient()->ExternalHelpBubbleUpdated(MakeId(anchor_id, secondary_id),
                                            false);
   }

@@ -10,8 +10,10 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/test/test_help_bubble.h"
@@ -963,6 +965,122 @@ TEST_F(HelpBubbleHandlerTest,
   EXPECT_CALL_IN_SCOPE(
       element_hidden, Run,
       help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed));
+}
+
+// Verifies that unlike embedded WebUI help bubbles (`CreateHelpBubble`),
+// floating help bubbles (`OnFloatingHelpBubbleCreated`, used for non-tab WebUI
+// such as the WebUI toolbar or side panels) do NOT lock the anchor element's
+// visibility when the hosting WebContents becomes hidden.
+TEST_F(HelpBubbleHandlerTest,
+       FloatingHelpBubbleDoesNotPreventHideWhenVisibilityChanges) {
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, element_hidden);
+
+  tracked_element_handler()->TrackedElementVisibilityChanged(
+      GetId(kHelpBubbleHandlerTestElementIdentifier, kSecondaryId1), true,
+      kElementBounds);
+  auto* const element =
+      ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+          kHelpBubbleHandlerTestElementIdentifier, test_handler_->context());
+  ASSERT_NE(nullptr, element);
+
+  HelpBubbleParams params;
+  params.body_text = u"Help bubble body.";
+  std::unique_ptr<HelpBubble> help_bubble =
+      std::make_unique<test::TestHelpBubble>(element, std::move(params));
+
+  EXPECT_CALL(test_handler_->mock(),
+              ExternalHelpBubbleUpdated(
+                  MatchesTrackedElementIdentifier(
+                      kHelpBubbleHandlerTestElementIdentifier, kSecondaryId1),
+                  true));
+  test_handler_->OnFloatingHelpBubbleCreated(
+      element->AsA<ui::TrackedElementWebUI>(), help_bubble.get());
+
+  // Simulate HelpBubbleViews::OnElementHidden closing the floating bubble when
+  // the anchor element reports hidden.
+  const auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+          element->identifier(), element->context(),
+          base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+            element_hidden.Get().Run(el);
+            help_bubble->Close(HelpBubble::CloseReason::kAnchorHidden);
+          }));
+
+  // Hiding the WebContents should immediately hide the anchor element and close
+  // the floating help bubble.
+  EXPECT_CALL(test_handler_->mock(),
+              ExternalHelpBubbleUpdated(
+                  MatchesTrackedElementIdentifier(
+                      kHelpBubbleHandlerTestElementIdentifier, kSecondaryId1),
+                  false));
+  EXPECT_CALL_IN_SCOPE(element_hidden, Run(element),
+                       tracked_element_handler()->OnVisibilityChanged(
+                           content::Visibility::HIDDEN));
+  EXPECT_FALSE(help_bubble->is_open());
+}
+
+// Regression test for crbug.com/543464750: releasing a
+// `TrackedElementVisibilityLock` from inside a `HelpBubble` closing callback
+// (`AddOnClosingCallback`) while its WebContents is hidden must defer notifying
+// `ElementTracker` via `PostTask`. Otherwise, element-hidden callbacks (e.g.
+// `TutorialService` or `InteractionSequence` aborting and resetting the
+// `HelpBubble`) would destroy the `HelpBubble` synchronously while
+// `HelpBubble::BeginClose()` is still iterating over `on_closing_callbacks_`,
+// triggering a `CHECK(!iterating_)` crash in `~CallbackListBase()`.
+TEST_F(
+    HelpBubbleHandlerTest,
+    CloseWebUIHelpBubbleWhileWebContentsHiddenDoesNotCrashWhenCallbackDestroysBubble) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  tracked_element_handler()->TrackedElementVisibilityChanged(
+      GetId(kHelpBubbleHandlerTestElementIdentifier, kSecondaryId1), true,
+      kElementBounds);
+  auto* const element =
+      ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+          kHelpBubbleHandlerTestElementIdentifier, test_handler_->context());
+  ASSERT_NE(nullptr, element);
+  auto* const webui_element = element->AsA<ui::TrackedElementWebUI>();
+  ASSERT_NE(nullptr, webui_element);
+
+  auto visibility_lock = webui_element->LockVisible();
+
+  HelpBubbleParams params;
+  params.body_text = u"Help bubble body.";
+  std::unique_ptr<HelpBubble> help_bubble =
+      std::make_unique<test::TestHelpBubble>(element, std::move(params));
+
+  // Release the visibility lock from inside `on_closing_callbacks_` (which runs
+  // during `HelpBubble::BeginClose()`).
+  const auto closing_subscription =
+      help_bubble->AddOnClosingCallback(base::BindLambdaForTesting(
+          [&](const HelpBubble*, HelpBubble::CloseReason) {
+            visibility_lock.reset();
+          }));
+
+  // Hide WebContents. Because `visibility_lock` is held on `webui_element`, the
+  // element remains effectively visible until the lock is released.
+  tracked_element_handler()->OnVisibilityChanged(content::Visibility::HIDDEN);
+  EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
+      kHelpBubbleHandlerTestElementIdentifier, test_handler_->context()));
+
+  // Simulate TutorialService / InteractionSequence behavior: when the element
+  // hidden notification fires, destroy `help_bubble`.
+  base::RunLoop run_loop;
+  const auto hidden_subscription =
+      ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+          element->identifier(), element->context(),
+          base::BindLambdaForTesting([&](ui::TrackedElement*) {
+            help_bubble.reset();
+            run_loop.Quit();
+          }));
+
+  help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
+
+  // The visibility lock release is posted to the task runner; running tasks
+  // should fire the hidden callback and destroy `help_bubble` cleanly after
+  // `HelpBubble::BeginClose()` has finished iterating `on_closing_callbacks_`.
+  run_loop.Run();
+  EXPECT_EQ(nullptr, help_bubble);
 }
 
 }  // namespace user_education

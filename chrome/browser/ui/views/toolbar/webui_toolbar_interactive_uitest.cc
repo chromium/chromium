@@ -1175,9 +1175,11 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
   EXPECT_EQ(observer.num_committed_navigations(), 2u);
 }
 
-// Test that closing a WebUI help bubble does not cause a CHECK(!iterating_)
-// crash when element hidden callbacks (such as sequence abort or tutorial
-// reset) destroy the help bubble during visibility lock cleanup.
+// Test that hiding the toolbar WebContents (e.g. during browser close or when
+// the toolbar is hidden) while a floating WebUI help bubble is showing
+// immediately hides the anchor element, closing the bubble and running
+// element-hidden callbacks (such as sequence abort or tutorial reset) that
+// destroy the help bubble.
 IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
                        CloseBrowserWithHelpBubbleShowing) {
   if (!IsWebUIReloadButtonEnabled()) {
@@ -1205,36 +1207,20 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarViewsInteractiveUiTest,
           element, std::move(params));
   ASSERT_NE(nullptr, help_bubble);
 
-  // Hide WebContents. Because visibility_lock is held by HelpBubbleHandlerBase,
-  // effective_visibility remains true until visibility_lock is released.
-  auto* webui_element = element->AsA<ui::TrackedElementWebUI>();
-  webui_element->handler()->OnVisibilityChanged(content::Visibility::HIDDEN);
-
   // Simulate TutorialService / InteractionSequence behavior: when element
-  // hidden notification fires (triggered when visibility_lock is released while
-  // WebContents is hidden), destroy the help_bubble.
-  base::RunLoop run_loop;
+  // hidden notification fires, destroy the help_bubble.
   auto subscription =
       ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
           kReloadButtonElementId, element->context(),
-          base::BindLambdaForTesting([&](ui::TrackedElement*) {
-            help_bubble.reset();
-            run_loop.Quit();
-          }));
+          base::BindLambdaForTesting(
+              [&](ui::TrackedElement*) { help_bubble.reset(); }));
 
-  // Close the help bubble. Without the PostTask fix in
-  // TrackedElementVisibilityLock, resetting visibility_lock inside
-  // OnFloatingHelpBubbleClosed synchronously fires
-  // ElementTracker::NotifyElementHidden (since WebContents is hidden), which
-  // invokes the callback above to destroy help_bubble while its
-  // on_closing_callbacks_ list is iterating, causing a CHECK(!iterating_)
-  // crash.
-  help_bubble->Close(
-      user_education::HelpBubble::CloseReason::kProgrammaticallyClosed);
-
-  // Wait for the deferred visibility lock destruction task to run and trigger
-  // the hidden callback.
-  run_loop.Run();
+  // Hide WebContents. Because floating help bubbles do not lock visibility on
+  // `TrackedElementWebUI`, hiding the toolbar's WebContents immediately fires
+  // `ElementTracker::NotifyElementHidden`, closing the bubble and invoking the
+  // callback above to destroy `help_bubble` without crashing.
+  auto* webui_element = element->AsA<ui::TrackedElementWebUI>();
+  webui_element->handler()->OnVisibilityChanged(content::Visibility::HIDDEN);
 
   EXPECT_EQ(nullptr, help_bubble);
 }
