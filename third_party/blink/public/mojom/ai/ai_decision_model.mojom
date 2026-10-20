@@ -49,6 +49,13 @@ struct AIDecisionModelQuestion {
   array<AIDecisionModelOption> options;
 };
 
+// **Dev Trial Only**: The backend used to evaluate decisions.
+// TODO(crbug.com/565849508): Remove after DevTrial backend evaluation.
+enum AIDecisionModelBackend {
+  kEmbeddingGemmaV1,
+  kLanguageModel,
+};
+
 // Options for creating an AIDecisionModel session.
 // Sent from an untrusted renderer to the browser process (`AIManager`). Both
 // the renderer and browser validate that `questions` has [1..16] entries for
@@ -56,6 +63,10 @@ struct AIDecisionModelQuestion {
 // `ScoreOptions` steps), with unique non-empty question IDs and valid per-type
 // `options`, rejecting schemas that violate these bounds.
 struct AIDecisionModelCreateOptions {
+  // **Dev Trial Only**: Temporary option for developers to evaluate backends
+  // side by side; not slated for the final API shape.
+  // TODO(crbug.com/565849508): Remove after DevTrial backend evaluation.
+  AIDecisionModelBackend? backend;
   string? context;
   array<AILanguageCode>? expected_input_languages;
   array<AIDecisionModelQuestion> questions;

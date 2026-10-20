@@ -2046,7 +2046,10 @@ void AIManager::CanCreateDecisionModel(
     return;
   }
 
-  if (GetDecisionModelBackend() == DecisionModelBackend::kLanguageModel) {
+  const DecisionModelBackend backend =
+      options->backend.value_or(GetDecisionModelBackend());
+
+  if (backend == DecisionModelBackend::kLanguageModel) {
     if (!AreLanguageModelDecisionModelFeaturesEnabled()) {
       std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                   kUnavailableFeatureNotEnabled);
@@ -2062,7 +2065,7 @@ void AIManager::CanCreateDecisionModel(
     return;
   }
 
-  CHECK_EQ(GetDecisionModelBackend(), DecisionModelBackend::kEmbeddingGemmaV1);
+  CHECK_EQ(backend, DecisionModelBackend::kEmbeddingGemmaV1);
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
   if (!service_launcher->AllowedToLaunch()) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
@@ -2098,12 +2101,14 @@ void AIManager::CreateDecisionModel(
     receivers_.ReportBadMessage("Policy or user setting disabled");
     return;
   }
+  const DecisionModelBackend backend =
+      options->backend.value_or(GetDecisionModelBackend());
   auto schema = CheckDecisionModelOptions(options, /*require_questions=*/true);
   if (!schema.has_value()) {
     return;
   }
 
-  if (GetDecisionModelBackend() == DecisionModelBackend::kLanguageModel) {
+  if (backend == DecisionModelBackend::kLanguageModel) {
     // Blink only creates after `CanCreateDecisionModel()` reports the API as
     // available, which it never does without these.
     if (!AreLanguageModelDecisionModelFeaturesEnabled()) {
@@ -2115,7 +2120,7 @@ void AIManager::CreateDecisionModel(
     return;
   }
 
-  CHECK_EQ(GetDecisionModelBackend(), DecisionModelBackend::kEmbeddingGemmaV1);
+  CHECK_EQ(backend, DecisionModelBackend::kEmbeddingGemmaV1);
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
   if (!service_launcher->AllowedToLaunch()) {
     on_device_ai::SendClientRemoteError(

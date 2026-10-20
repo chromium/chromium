@@ -4,14 +4,18 @@
 
 #include "third_party/blink/renderer/modules/ai/decision_model.h"
 
+#include "base/notreached.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_decision_model.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-test-utils.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_decision_model_backend.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decision_model_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decision_model_decide_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decision_model_decision.h"
@@ -25,6 +29,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 namespace {
@@ -371,6 +376,88 @@ TEST_F(DecisionModelTest, DecideKeepsModelAliveAcrossGC) {
 
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_FALSE(weak_model);
+}
+
+namespace {
+
+class MockAIManager : public mojom::blink::AIManagerInterceptorForTesting {
+ public:
+  MockAIManager() = default;
+  ~MockAIManager() override = default;
+
+  mojom::blink::AIManager* GetForwardingInterface() override { NOTREACHED(); }
+
+  void Bind(mojo::ScopedMessagePipeHandle handle) {
+    receiver_.reset();
+    receiver_.Bind(
+        mojo::PendingReceiver<mojom::blink::AIManager>(std::move(handle)));
+  }
+
+  void CanCreateDecisionModel(
+      mojom::blink::AIDecisionModelCreateOptionsPtr options,
+      CanCreateDecisionModelCallback callback) override {
+    last_can_create_options_ = std::move(options);
+    std::move(callback).Run(
+        mojom::blink::ModelAvailabilityCheckResult::kAvailable);
+  }
+
+  void CreateDecisionModel(
+      mojo::PendingRemote<mojom::blink::AIManagerCreateDecisionModelClient>
+          client,
+      mojom::blink::AIDecisionModelCreateOptionsPtr options,
+      mojo::PendingRemote<on_device_model::mojom::blink::DownloadObserver>
+          monitor) override {
+    last_create_options_ = std::move(options);
+    mojo::PendingRemote<mojom::blink::AIDecisionModel> pending_remote;
+    mock_decision_model_ = std::make_unique<MockAIDecisionModel>(
+        pending_remote.InitWithNewPipeAndPassReceiver());
+    mojo::Remote<mojom::blink::AIManagerCreateDecisionModelClient>(
+        std::move(client))
+        ->OnSessionCreated(std::move(pending_remote));
+  }
+
+  mojom::blink::AIDecisionModelCreateOptionsPtr last_can_create_options_;
+  mojom::blink::AIDecisionModelCreateOptionsPtr last_create_options_;
+  std::unique_ptr<MockAIDecisionModel> mock_decision_model_;
+  mojo::Receiver<mojom::blink::AIManager> receiver_{this};
+};
+
+}  // namespace
+
+TEST_F(DecisionModelTest, BackendOptionPassedToMojo) {
+  V8TestingScope scope;
+  MockAIManager mock_ai_manager;
+  scope.GetExecutionContext()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::AIManager::Name_,
+      blink::BindRepeating(&MockAIManager::Bind,
+                           blink::Unretained(&mock_ai_manager)));
+
+  auto* q = DecisionModelQuestion::Create();
+  q->setId("urgent");
+  q->setPrompt("Is it urgent?");
+  q->setType(V8DecisionModelQuestionType::Enum::kBoolean);
+
+  for (auto backend : {V8DecisionModelBackend::Enum::kEmbeddingGemmaV1,
+                       V8DecisionModelBackend::Enum::kLanguageModel}) {
+    DummyExceptionStateForTesting exception_state;
+    auto* options = DecisionModelCreateOptions::Create();
+    options->setQuestions({q});
+    options->setDevTrialBackend(backend);
+    auto promise =
+        DecisionModel::create(scope.GetScriptState(), options, exception_state);
+    ScriptPromiseTester tester(scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    ASSERT_TRUE(mock_ai_manager.last_create_options_);
+    ASSERT_TRUE(mock_ai_manager.last_create_options_->backend.has_value());
+    EXPECT_EQ(mock_ai_manager.last_create_options_->backend.value(),
+              backend == V8DecisionModelBackend::Enum::kEmbeddingGemmaV1
+                  ? mojom::blink::AIDecisionModelBackend::kEmbeddingGemmaV1
+                  : mojom::blink::AIDecisionModelBackend::kLanguageModel);
+  }
+
+  scope.GetExecutionContext()->GetBrowserInterfaceBroker().SetBinderForTesting(
+      mojom::blink::AIManager::Name_, {});
 }
 
 }  // namespace blink

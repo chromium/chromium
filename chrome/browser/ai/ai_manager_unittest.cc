@@ -167,6 +167,7 @@ class AIManagerTest : public AITestUtils::AITestBase {
   }
 
   void TearDown() override {
+    ai_manager_.reset();
     AISemanticEmbedderServiceLauncher::SetForTesting(nullptr);
     launcher_.reset();
 #if !BUILDFLAG(IS_ANDROID)
@@ -707,6 +708,69 @@ TEST_F(AIManagerTest, CreateDecisionModelForwardsQuotaErrorInfo) {
   // The prompt plus at least one token of input.
   EXPECT_EQ(client.quota_error_info()->requested, kPromptSize + 1);
   EXPECT_LT(client.quota_error_info()->quota, kPromptSize);
+}
+
+TEST_F(AIManagerTest, CreateDecisionModelWithExplicitBackendOption) {
+  base::test::ScopedFeatureList feature_list;
+  // Enable Decisions API and requirements for both backends.
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kAIDecisionModelAPI, {}},
+       {on_device_model::features::kOnDeviceModelForceCpuBackend, {}},
+       {optimization_guide::kOptimizationGuideManifestBroker, {}}},
+      {});
+
+  auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
+  service_launcher->RecordSuccessfulUse();
+  service_launcher->controller()->MaybeUpdateModelInfo(
+      optimization_guide::ModelInfo{
+          .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
+          .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
+          .version = 1,
+          .model_metadata = optimization_guide::AnyWrapProto(
+              optimization_guide::proto::PassageEmbeddingsModelMetadata()),
+      });
+
+  // Verify availability can be checked per backend.
+  {
+    auto options = blink::mojom::AIDecisionModelCreateOptions::New();
+    options->backend = AIManager::DecisionModelBackend::kLanguageModel;
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateDecisionModel(std::move(options),
+                                        future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+  }
+  {
+    auto options = blink::mojom::AIDecisionModelCreateOptions::New();
+    options->backend = AIManager::DecisionModelBackend::kEmbeddingGemmaV1;
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateDecisionModel(std::move(options),
+                                        future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  }
+
+  // Create both backends side by side on a single AIManager instance.
+  TestCreateDecisionModelClient lm_client;
+  auto lm_options = MakeBooleanDecisionModelOptions();
+  lm_options->backend = AIManager::DecisionModelBackend::kLanguageModel;
+  GetAIManagerRemote()->CreateDecisionModel(
+      lm_client.BindNewPipeAndPassRemote(), std::move(lm_options),
+      mojo::NullRemote());
+  auto lm_created = lm_client.result().Take();
+  ASSERT_TRUE(lm_created.has_value());
+  mojo::Remote<blink::mojom::AIDecisionModel> lm_decision_model(
+      std::move(lm_created.value()));
+
+  TestCreateDecisionModelClient eg_client;
+  auto eg_options = MakeBooleanDecisionModelOptions();
+  eg_options->backend = AIManager::DecisionModelBackend::kEmbeddingGemmaV1;
+  GetAIManagerRemote()->CreateDecisionModel(
+      eg_client.BindNewPipeAndPassRemote(), std::move(eg_options),
+      mojo::NullRemote());
+  GetAIManagerRemote().FlushForTesting();
+
+  EXPECT_EQ(GetAIManagerContextBoundObjectSetSize(), 2u);
 }
 #else
 TEST_F(AIManagerTest, CanCreateDecisionModelUnavailableOnAndroid) {

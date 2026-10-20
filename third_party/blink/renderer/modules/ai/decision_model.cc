@@ -11,6 +11,8 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_decision_model_backend.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decision_model_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decision_model_decide_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decision_model_decision.h"
@@ -185,6 +187,17 @@ bool HasUnsupportedExpectedInputs(
   return false;
 }
 
+mojom::blink::AIDecisionModelBackend ToMojoDecisionModelBackend(
+    V8DecisionModelBackend backend) {
+  switch (backend.AsEnum()) {
+    case V8DecisionModelBackend::Enum::kEmbeddingGemmaV1:
+      return mojom::blink::AIDecisionModelBackend::kEmbeddingGemmaV1;
+    case V8DecisionModelBackend::Enum::kLanguageModel:
+      return mojom::blink::AIDecisionModelBackend::kLanguageModel;
+  }
+  NOTREACHED();
+}
+
 mojom::blink::AIDecisionModelQuestionType ToMojoQuestionType(
     V8DecisionModelQuestionType question_type) {
   switch (question_type.AsEnum()) {
@@ -205,6 +218,10 @@ mojom::blink::AIDecisionModelCreateOptionsPtr CreateOptionsToMojo(
   auto mojo_options = mojom::blink::AIDecisionModelCreateOptions::New();
   if (!options) {
     return mojo_options;
+  }
+  if (options->hasDevTrialBackend()) {
+    mojo_options->backend =
+        ToMojoDecisionModelBackend(options->devTrialBackend());
   }
   mojo_options->preference = ToMojoPerformancePreference(options->preference());
   if (options->hasContext()) {

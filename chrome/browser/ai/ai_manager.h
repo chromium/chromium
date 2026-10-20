@@ -62,10 +62,7 @@ class AIManager : public base::SupportsUserData::Data,
                   public content::RenderWidgetHostObserver {
  public:
 #if !BUILDFLAG(IS_ANDROID)
-  enum class DecisionModelBackend {
-    kEmbeddingGemmaV1,
-    kLanguageModel,
-  };
+  using DecisionModelBackend = blink::mojom::AIDecisionModelBackend;
 #endif
 
   using AILanguageModelOrCreationError =

@@ -28,9 +28,21 @@ dictionary DecisionModelQuestion {
   sequence<DecisionModelOption> options;
 };
 
+// **Dev Trial Only**: Backend used by an AIDecisionModel session during
+// DevTrial (`blink.mojom.AIDecisionModelBackend`).
+// TODO(crbug.com/565849508): Remove after DevTrial backend evaluation.
+enum DecisionModelBackend {
+  "embedding-gemma-v1",
+  "language-model"
+};
+
 // Core schema options shared by DecisionModel.availability() and
 // DecisionModel.create() (`blink.mojom.AIDecisionModelCreateOptions`).
 dictionary DecisionModelCreateCoreOptions {
+  // **Dev Trial Only**: Temporary option for developers to evaluate backends
+  // side by side; not slated for the final API shape.
+  // TODO(crbug.com/565849508): Remove after DevTrial backend evaluation.
+  DecisionModelBackend devTrialBackend;
   DOMString context;
   sequence<LanguageModelExpected> expectedInputs;
   sequence<DecisionModelQuestion> questions;
