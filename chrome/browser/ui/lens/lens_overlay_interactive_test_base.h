@@ -7,11 +7,13 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/ui/lens/test_lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/contextual_search/internal/composebox_query_controller.h"
 #include "ui/gfx/geometry/point.h"
 
 class PrefService;
@@ -114,6 +116,8 @@ class LensOverlayInteractiveTestBase : public InteractiveFeaturePromoTest {
  protected:
   base::test::ScopedFeatureList feature_list_;
   ui::UserDataFactory::ScopedOverride lens_search_controller_override_;
+  base::AutoReset<bool> ignore_non_official_api_keys_{
+      ComposeboxQueryController::SetIgnoreNonOfficialApiKeysForTesting()};
 };
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_INTERACTIVE_TEST_BASE_H_

@@ -10,6 +10,7 @@ source_set("internal") {
     "//chrome/browser/android",
     "//chrome/browser/ui/lens:*",
     "//chrome/test:*",
+    "//chrome/test/base:chrome_test_suite",
     "//components/contextual_search/internal/ios:*",
   ]
 
@@ -34,6 +35,7 @@ source_set("internal") {
     "//components/signin/public/identity_manager",
     "//components/variations",
     "//components/version_info:channel",
+    "//google_apis",
     "//google_apis/common",
     "//net",
     "//net/traffic_annotation",

@@ -703,6 +703,7 @@ source_set("chrome_test_suite") {
     "//chrome/browser/signin",
     "//chrome/common",
     "//components/content_settings/core/common",
+    "//components/contextual_search/internal",
     "//components/signin/public/identity_manager:test_support",
     "//media",
     "//testing/gtest",

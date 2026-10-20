@@ -18,6 +18,7 @@
 #include "base/ios/scoped_critical_action.h"
 #endif
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -74,7 +75,7 @@ using InteractionRequestBodyProtoCreatedCallback =
 
 namespace contextual_search {
 class ComposeboxQueryControllerTest;
-}
+}  // namespace contextual_search
 
 // TODO(crbug.com/449970296): Rename this class.
 class ComposeboxQueryController
@@ -233,6 +234,10 @@ class ComposeboxQueryController
       GetAuthHeadersCallback callback) {
     get_auth_headers_callback_ = std::move(callback);
   }
+
+  // Allows tests to bypass the official Google Chrome API key check.
+  static base::AutoReset<bool> SetIgnoreNonOfficialApiKeysForTesting(
+      bool ignore = true);
 
  protected:
   // Struct containing information about an individual network request.
@@ -397,6 +402,11 @@ class ComposeboxQueryController
   // Resets the request cluster info state. Protected to allow tests to
   // override.
   virtual void ResetRequestClusterInfoState();
+
+  // Returns whether the official Google Chrome API key is used, or if the
+  // check is bypassed for testing. Official API keys are required to make
+  // requests to the Lens Frontend server. Protected to allow tests to override.
+  virtual bool IsGoogleChromeApiKeyUsed() const;
 
   // Sends an interaction request. Protected to allow tests
   // to override.

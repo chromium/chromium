@@ -9718,4 +9718,48 @@ TEST_F(ComposeboxQueryControllerTest,
       1);
 }
 
+TEST_F(ComposeboxQueryControllerTest,
+       NonGoogleChromeApiKey_SkipsClusterInfoAndFailsUploads) {
+  controller().set_is_google_chrome_api_key_used(false);
+
+  // Act: Attempt to initialize and trigger cluster info fetch.
+  controller().InitializeIfNeeded();
+  controller().TriggerFetchClusterInfo();
+
+  // Assert: No cluster info request should be sent and state remains kOff.
+  EXPECT_EQ(controller().num_cluster_info_fetch_requests_sent(), 0);
+  EXPECT_EQ(controller().query_controller_state(), QueryControllerState::kOff);
+
+  // Act: Attempt to upload a PDF file.
+  const base::UnguessableToken pdf_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(pdf_token, /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: The file upload fails immediately without sending any network
+  // requests.
+  WaitForFileUpload(
+      pdf_token, lens::MimeType::kPdf,
+      /*expected_status=*/ContextUploadStatus::kUploadFailed,
+      /*expected_error_type=*/ContextUploadErrorType::kServerError,
+      /*expect_suggest_signals_ready=*/false,
+      /*expect_upload_started=*/false);
+  EXPECT_EQ(controller().num_cluster_info_fetch_requests_sent(), 0);
+  EXPECT_EQ(controller().num_file_upload_requests_sent(), 0);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+
+  // Act: Attempt to upload a modality chip.
+  const base::UnguessableToken chip_token = base::UnguessableToken::Create();
+  lens::ModalityChipProps modality_chip_props;
+  StartModalityChipUploadFlow(chip_token, modality_chip_props);
+
+  // Assert: The modality chip also fails immediately instead of hanging in
+  // kProcessing.
+  WaitForFileUpload(
+      chip_token, lens::MimeType::kUnknown,
+      /*expected_status=*/ContextUploadStatus::kUploadFailed,
+      /*expected_error_type=*/ContextUploadErrorType::kServerError,
+      /*expect_suggest_signals_ready=*/false,
+      /*expect_upload_started=*/false);
+  EXPECT_FALSE(controller().is_any_context_uploading());
+}
+
 }  // namespace contextual_search

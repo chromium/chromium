@@ -785,6 +785,8 @@ class ContextualTasksLensInteractionBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_;
   ui::UserDataFactory::ScopedOverride lens_search_controller_override_;
+  base::AutoReset<bool> ignore_non_official_api_keys_{
+      ComposeboxQueryController::SetIgnoreNonOfficialApiKeysForTesting()};
 };
 
 class ContextualTasksLensInteractionSeparateViewportRequestIdsBrowserTest

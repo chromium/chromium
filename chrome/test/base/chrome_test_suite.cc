@@ -25,6 +25,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/contextual_search/internal/composebox_query_controller.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/test_launcher.h"
 #include "extensions/common/constants.h"
@@ -113,6 +114,8 @@ void ChromeTestSuite::Initialize() {
   // Chrome API keys. Ignore this requirement to get a better test coverage.
   ignore_non_official_keys_reset_ =
       signin::SetIgnoreNonOfficialApiKeysForTesting();
+  ignore_non_official_composebox_keys_reset_ =
+      ComposeboxQueryController::SetIgnoreNonOfficialApiKeysForTesting();
 
 #if BUILDFLAG(IS_MAC)
   // Look in the framework bundle for resources.

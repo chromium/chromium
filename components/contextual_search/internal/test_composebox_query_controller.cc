@@ -177,4 +177,8 @@ void TestComposeboxQueryController::ResetRequestClusterInfoState() {
   ComposeboxQueryController::ResetRequestClusterInfoState();
 }
 
+bool TestComposeboxQueryController::IsGoogleChromeApiKeyUsed() const {
+  return is_google_chrome_api_key_used_;
+}
+
 }  // namespace contextual_search

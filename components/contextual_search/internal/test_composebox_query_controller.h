@@ -123,6 +123,10 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
     enable_cluster_info_ttl_ = enable_cluster_info_ttl;
   }
 
+  void set_is_google_chrome_api_key_used(bool is_google_chrome_api_key_used) {
+    is_google_chrome_api_key_used_ = is_google_chrome_api_key_used;
+  }
+
   void set_on_query_controller_state_changed_callback(
       base::RepeatingCallback<void(QueryControllerState state)> callback) {
     on_query_controller_state_changed_callback_ = std::move(callback);
@@ -232,6 +236,8 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
 
   void ResetRequestClusterInfoState() override;
 
+  bool IsGoogleChromeApiKeyUsed() const override;
+
   // The fake response to return for cluster info requests.
   lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response_;
 
@@ -266,6 +272,9 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
   // Set to false by default to prevent flakiness in tests that expect the
   // cluster info to be available.
   bool enable_cluster_info_ttl_;
+
+  // Whether official Google Chrome API keys are simulated as being used.
+  bool is_google_chrome_api_key_used_ = true;
 
   // The last url for which a fetch request was sent by the query controller.
   GURL last_sent_fetch_url_;

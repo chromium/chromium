@@ -14,6 +14,7 @@
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -90,6 +91,8 @@ constexpr char kBase64Value[] = "base64";
 // TODO(crbug.com/432348301): Move away from hardcoded entrypoint and lns
 // surface values.
 constexpr char kLnsSurfaceParameterValue[] = "42";
+
+bool g_ignore_non_official_api_keys_for_testing = false;
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("ntp_composebox_query_controller", R"(
@@ -1266,6 +1269,13 @@ void ComposeboxQueryController::StartFileUploadFlow(
       UpdateContextUploadStatus(
           file_token, contextual_search::ContextUploadStatus::kUploadSuccessful,
           std::nullopt);
+    } else if (!IsGoogleChromeApiKeyUsed()) {
+      UpdateContextUploadStatus(
+          file_token, contextual_search::ContextUploadStatus::kProcessing,
+          std::nullopt);
+      UpdateContextUploadStatus(
+          file_token, contextual_search::ContextUploadStatus::kUploadFailed,
+          contextual_search::ContextUploadErrorType::kServerError);
     } else {
       UpdateContextUploadStatus(
           file_token, contextual_search::ContextUploadStatus::kProcessing,
@@ -1484,6 +1494,13 @@ void ComposeboxQueryController::StartFileUploadFlow(
   UpdateContextUploadStatus(file_token,
                             contextual_search::ContextUploadStatus::kProcessing,
                             std::nullopt);
+
+  if (!IsGoogleChromeApiKeyUsed()) {
+    UpdateContextUploadStatus(
+        file_token, contextual_search::ContextUploadStatus::kUploadFailed,
+        contextual_search::ContextUploadErrorType::kServerError);
+    return;
+  }
 
   if (query_controller_state_ == QueryControllerState::kClusterInfoInvalid) {
     // If we've exhausted retries or are still in the backoff period, fail the
@@ -1901,6 +1918,18 @@ void ComposeboxQueryController::ResetRequestClusterInfoState() {
   FetchClusterInfo();
 }
 
+// static
+base::AutoReset<bool>
+ComposeboxQueryController::SetIgnoreNonOfficialApiKeysForTesting(bool ignore) {
+  return base::AutoReset<bool>(&g_ignore_non_official_api_keys_for_testing,
+                               ignore);
+}
+
+bool ComposeboxQueryController::IsGoogleChromeApiKeyUsed() const {
+  return google_apis::IsGoogleChromeAPIKeyUsed() ||
+         g_ignore_non_official_api_keys_for_testing;
+}
+
 void ComposeboxQueryController::SendInteractionRequest(
     std::unique_ptr<lens::LensOverlayRequestId> request_id,
     std::string query_text,
@@ -1979,6 +2008,11 @@ void ComposeboxQueryController::SendInteractionRequest(
 }
 
 void ComposeboxQueryController::FetchClusterInfo() {
+  if (!IsGoogleChromeApiKeyUsed()) {
+    // Leave `query_controller_state_` as `kOff` and `cluster_info_` as
+    // `std::nullopt` when official Google Chrome API keys are not used.
+    return;
+  }
   if (is_backgrounded_) {
     base::UmaHistogramEnumeration("Lens.Composebox.ClusterInfo.Status",
                                   ClusterInfoStatus::kBackgrounded);

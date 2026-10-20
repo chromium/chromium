@@ -36,6 +36,8 @@ class ChromeTestSuite : public content::ContentTestSuiteBase {
   base::FilePath browser_dir_;
 
   std::optional<base::AutoReset<bool>> ignore_non_official_keys_reset_;
+  std::optional<base::AutoReset<bool>>
+      ignore_non_official_composebox_keys_reset_;
 
 #if BUILDFLAG(IS_ANDROID)
   // InstanceID can make network requests which will time out and make tests
