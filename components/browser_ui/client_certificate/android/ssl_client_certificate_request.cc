@@ -283,6 +283,8 @@ void SSLClientCertPendingRequests::PumpRequests() {
     pending_requests_.pop();
 
     ClientCertRequest* raw_next = next.get();
+    // Java never completes the request synchronously (the completion callback
+    // is always posted), so `raw_next` is still valid if this returns true.
     if (StartClientCertificateRequest(std::move(next), web_contents())) {
       active_request_ = raw_next;
       dialog_policy_.IncrementCount();

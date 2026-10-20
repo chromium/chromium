@@ -165,19 +165,18 @@ public class SSLClientCertificateRequest {
             }
             mAliasCalled = true;
 
-            // This is called by KeyChainActivity in a background thread. Post task to
-            // handle the certificate selection on the UI thread.
-            PostTask.runOrPostTask(
+            // This is usually called by KeyChainActivity in a background thread, but may also be
+            // called synchronously on the UI thread from within selectClientCertificate() (see
+            // maybeShowCertSelection()). Always post a task to handle the certificate selection on
+            // the UI thread, so that native never sees the request complete before
+            // selectClientCertificate() has returned.
+            PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     () -> {
                         if (alias == null) {
                             // No certificate was selected.
-                            PostTask.runOrPostTask(
-                                    TaskTraits.UI_DEFAULT,
-                                    () ->
-                                            SSLClientCertificateRequestJni.get()
-                                                    .onSystemRequestCompletion(
-                                                            mNativePtr, null, null));
+                            SSLClientCertificateRequestJni.get()
+                                    .onSystemRequestCompletion(mNativePtr, null, null);
                         } else {
                             new CertAsyncTaskKeyChain(mContext, mNativePtr, alias)
                                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -271,7 +270,7 @@ public class SSLClientCertificateRequest {
      * @param hostName The server host name is available (empty otherwise).
      * @param port The server port if available (0 otherwise).
      * @return true on success. Note that nativeOnSystemRequestComplete will be called iff this
-     *     method returns true.
+     *     method returns true, and is never called before this method returns.
      */
     @CalledByNative
     private static boolean selectClientCertificate(
