@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/plural_string_provider.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -45,16 +47,22 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/ai_mode_button_service.h"
+#include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -228,6 +236,7 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::kAskGCurrentTabChip.Get() &&
                          omnibox::AreContextualTasksEligible(profile_));
   source->AddBoolean("composeboxShowLensIcon", omnibox::kAskGLensIcon.Get());
+  source->AddBoolean("askGLensIconIphEnabled", omnibox::kAskGLensIconIph.Get());
   source->AddBoolean("askGComposeboxLensChipEnabled",
                      omnibox::kAskGComposeboxLensChip.Get());
   source->AddBoolean("askGBlockAutoTabZeroStateSuggestions",
@@ -312,6 +321,18 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile_, std::make_unique<FaviconSource>(
                     profile_, chrome::FaviconUrlFormat::kFavicon2));
+
+  // Allow the WebUI to report the Lens icon so it can anchor an IPH.
+  ui::TrackedElementHandlerDocumentSingleton::Register(
+      this, {kOmniboxPopupLensIconElementId});
+  if (omnibox::kAskGLensIconIph.Get()) {
+    lens_icon_shown_subscription_ =
+        ui::ElementTracker::GetElementTracker()
+            ->AddElementShownInAnyContextCallback(
+                kOmniboxPopupLensIconElementId,
+                base::BindRepeating(&OmniboxPopupUI::OnLensIconShown,
+                                    base::Unretained(this)));
+  }
 }
 
 OmniboxPopupUI::~OmniboxPopupUI() = default;
@@ -463,6 +484,38 @@ void OmniboxPopupUI::CreatePageHandler(
   // handler is where PEPC mojo call lives.
   if (presenter_delegate_) {
     composebox_handler_->set_delegate(presenter_delegate_);
+  }
+}
+
+void OmniboxPopupUI::BindInterface(
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+        receiver) {
+  help_bubble_handler_factory_receiver_.reset();
+  help_bubble_handler_factory_receiver_.Bind(std::move(receiver));
+}
+
+void OmniboxPopupUI::CreateHelpBubbleHandler(
+    mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
+  help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
+      std::move(handler), std::move(client),
+      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
+          web_ui()->GetRenderFrameHost()));
+}
+
+void OmniboxPopupUI::OnLensIconShown(ui::TrackedElement* element) {
+  // Every omnibox popup (one per window) reports this identifier, so ignore
+  // other popups' icons.
+  auto* const webui_element = element->AsA<ui::TrackedElementWebUI>();
+  if (!webui_element ||
+      webui_element->handler()->web_contents() != web_ui()->GetWebContents()) {
+    return;
+  }
+  if (auto* const user_education =
+          BrowserUserEducationInterface::MaybeGetForWebUiContents(
+              web_ui()->GetWebContents())) {
+    user_education->MaybeShowFeaturePromo(
+        feature_engagement::kIPHOmniboxAskGLensIconFeature);
   }
 }
 

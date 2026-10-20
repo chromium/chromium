@@ -367,7 +367,7 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
       ReadingListUI, NewTabPageUI, CustomizeChromeUI, PasswordManagerUI,
       HistoryUI, lens::LensOverlayUntrustedUI, lens::LensSidePanelUntrustedUI,
       ContextualTasksUI, contextual_tasks::ContextualTasksUIPostRearchitecture,
-      OmniboxEverywhereUI
+      OmniboxEverywhereUI, OmniboxPopupUI
 #if !BUILDFLAG(IS_CHROMEOS)
       ,
       ProfilePickerUI

@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_omnibox_client.h"
@@ -43,6 +44,7 @@
 #include "chrome/grit/new_tab_page_resources.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/pref_names.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/navigation_metrics/navigation_metrics.h"
@@ -314,6 +316,17 @@ void WebuiOmniboxHandler::QueryAutocomplete(
 }
 
 void WebuiOmniboxHandler::OpenLensSearch() {
+  // Every popup Lens entrypoint, including the Lens icon (click or keyboard),
+  // ends up here. Opening Lens counts as using the IPH's promoted feature.
+  if (omnibox::kAskGLensIconIph.Get()) {
+    if (auto* const user_education =
+            BrowserUserEducationInterface::MaybeGetForWebUiContents(
+                web_contents_.get())) {
+      user_education->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHOmniboxAskGLensIconFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    }
+  }
   edit_model()->OpenLensSearch();
 }
 

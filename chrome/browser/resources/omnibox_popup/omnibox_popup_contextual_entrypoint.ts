@@ -6,8 +6,10 @@ import '//resources/cr_components/composebox/composebox_lens_search.js';
 import '//resources/cr_components/composebox/current_tab_chip.js';
 import './omnibox_popup_contextual_entrypoint_button.js';
 
+import {getLoadTimeBoolean} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxLensSearchElement} from '//resources/cr_components/composebox/composebox_lens_search.js';
 import type {CurrentTabChipElement} from '//resources/cr_components/composebox/current_tab_chip.js';
+import {HelpBubbleMixinLit} from '//resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -23,7 +25,15 @@ import {getCss} from './omnibox_popup_contextual_entrypoint.css.js';
 import {getHtml} from './omnibox_popup_contextual_entrypoint.html.js';
 import type {OmniboxPopupContextualEntrypointButtonElement} from './omnibox_popup_contextual_entrypoint_button.js';
 
-export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
+// Name of the native `ui::ElementIdentifier` that anchors the AskG Lens icon
+// IPH.
+const LENS_ICON_ELEMENT_ID = 'kOmniboxPopupLensIconElementId';
+
+const OmniboxPopupContextualEntrypointElementBase =
+    HelpBubbleMixinLit(CrLitElement);
+
+export class OmniboxPopupContextualEntrypointElement extends
+    OmniboxPopupContextualEntrypointElementBase {
   static get is() {
     return 'omnibox-popup-contextual-entrypoint';
   }
@@ -92,6 +102,8 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
       loadTimeData.getBoolean('composeboxShowCurrentTabChip');
   private contextButtonHasBackground_: boolean =
       loadTimeData.getBoolean('contextButtonHasBackground');
+  private isLensIconIphEnabled_: boolean =
+      getLoadTimeBoolean('askGLensIconIphEnabled', false);
 
   private browserProxy_: BrowserProxy;
   private searchboxBrowserProxy_: SearchboxBrowserProxy;
@@ -159,10 +171,15 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
         this.inputState = state;
       }
     });
+
+    if (this.isLensIconIphEnabled_) {
+      document.addEventListener('visibilitychange', this.onVisibilityChange_);
+    }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    document.removeEventListener('visibilitychange', this.onVisibilityChange_);
     for (const listenerId of this.popupListenerIds_) {
       this.browserProxy_.callbackRouter.removeListener(listenerId);
     }
@@ -197,6 +214,41 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
           this.isLensIconEligible && !this.isLensChipShown_;
       this.applyContextButtonBackground_ =
           this.contextButtonHasBackground_ && !this.isLensChipShown_;
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('showContextEntrypoint_') ||
+        changedPrivateProperties.has('isLensIconShown_')) {
+      this.updateLensIconIphAnchor_();
+    }
+  }
+
+  // The popup's page is hidden, not destroyed, when the popup closes, so the
+  // Lens icon stays in the DOM.
+  private onVisibilityChange_ = () => {
+    this.updateLensIconIphAnchor_();
+  };
+
+  // Registers the Lens icon as the IPH anchor only while it is rendered and the
+  // popup is visible. Unregistering reports the anchor as hidden, which closes
+  // the IPH without counting as a dismissal.
+  private updateLensIconIphAnchor_() {
+    if (!this.isLensIconIphEnabled_) {
+      return;
+    }
+    const lensIcon = document.visibilityState === 'visible' ?
+        this.getLensSearchIconElement() :
+        null;
+    if (lensIcon) {
+      this.registerHelpBubble(
+          LENS_ICON_ELEMENT_ID, lensIcon.getIconButtonElement() ?? lensIcon);
+    } else {
+      this.unregisterHelpBubble(LENS_ICON_ELEMENT_ID);
     }
   }
 

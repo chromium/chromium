@@ -352,6 +352,11 @@ extern const base::FeatureParam<bool> kAskGShowChip;
 // Note that this parameter is created for a follow-up iteration of the current
 // Ask G LE. This may be moved to another base param in the future.
 extern const base::FeatureParam<bool> kAskGSuggestionSidePanelDescription;
+// Whether to show an in-product help bubble on the Lens icon (see
+// `kAskGLensIcon`) in the omnibox popup.
+// Note that this parameter is created for a follow-up iteration of the current
+// Ask G LE. This may be moved to another base param in the future.
+extern const base::FeatureParam<bool> kAskGLensIconIph;
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {

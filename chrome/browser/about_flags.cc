@@ -1158,11 +1158,11 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGComposeboxPlaceholder", "true"},
         {"Omnibox_AskGBypassPrivacyNotice", "true"}};
 // This arm showcases the follow-up work for arm 1 (side panel + Lens icon). The
-// new param Omnibox_AskGSuggestionSidePanelDescription is not used in the
-// current LE state. It will either be added to the current LE or used in a
-// follow-up iteration.
+// new params Omnibox_AskGSuggestionSidePanelDescription and
+// Omnibox_AskGLensIconIph are not used in the current LE state. They will
+// either be added to the current LE or used in a follow-up iteration.
 const FeatureEntry::FeatureParam
-    kWebUiOmniboxAskGAboutThisPageCobrowseSidePanelDescription[] = {
+    kWebUiOmniboxAskGAboutThisPageCobrowseSidePanelDescAndIph[] = {
         {"Omnibox_AskGCoBrowse", "true"},
         {"Omnibox_AskGCoBrowseWithVisualSelection", "false"},
         {"Omnibox_AskGComposeBox", "false"},
@@ -1178,7 +1178,8 @@ const FeatureEntry::FeatureParam
         {"Omnibox_AskGShowFirstDescription", "false"},
         {"Omnibox_AskGComposeboxPlaceholder", "false"},
         {"Omnibox_AskGBypassPrivacyNotice", "true"},
-        {"Omnibox_AskGSuggestionSidePanelDescription", "true"}};
+        {"Omnibox_AskGSuggestionSidePanelDescription", "true"},
+        {"Omnibox_AskGLensIconIph", "true"}};
 
 const FeatureEntry::FeatureVariation
     kWebUiOmniboxAskGAboutThisPageVariations[] = {
@@ -1194,8 +1195,8 @@ const FeatureEntry::FeatureVariation
         {"Ask G - Omnibox Chip Composebox and Lens entrypoint",
          kWebUiOmniboxAskGAboutThisPageOmniboxChipComposeboxAndLensEntrypoint,
          nullptr},
-        {"Ask G - Cobrowse and Lens entrypoint + side panel description",
-         kWebUiOmniboxAskGAboutThisPageCobrowseSidePanelDescription, nullptr}};
+        {"Ask G - Cobrowse and Lens entrypoint + side panel description + IPH",
+         kWebUiOmniboxAskGAboutThisPageCobrowseSidePanelDescAndIph, nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {

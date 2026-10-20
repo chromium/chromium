@@ -67,6 +67,14 @@ export class ComposeboxLensSearchElement extends I18nMixinLit
     return this.i18n('lensSearchHint');
   }
 
+  /**
+   * Returns the icon button, or null outside icon mode. Unlike the host's, its
+   * bounds exclude the leading margin, so it suits anchoring a help bubble.
+   */
+  getIconButtonElement(): HTMLElement|null {
+    return this.shadowRoot.querySelector<HTMLElement>('#lensIcon');
+  }
+
   protected onLensSearchClick_(e: Event) {
     e.stopPropagation();
     this.fire('lens-search-click');

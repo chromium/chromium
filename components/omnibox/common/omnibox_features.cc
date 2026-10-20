@@ -792,6 +792,8 @@ const base::FeatureParam<bool> kAskGShowChip{
 const base::FeatureParam<bool> kAskGSuggestionSidePanelDescription{
     &kWebUIOmniboxAskGAboutThisPage,
     "Omnibox_AskGSuggestionSidePanelDescription", false};
+const base::FeatureParam<bool> kAskGLensIconIph{
+    &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGLensIconIph", false};
 
 // Note: no new flags beyond this point.
 
