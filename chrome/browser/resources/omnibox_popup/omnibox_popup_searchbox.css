@@ -30,7 +30,9 @@
 
   border-radius: var(--cr-searchbox-border-radius);
   display: block;
+  font-family: var(--omnibox-primary-font-family);
   font-size: var(--cr-searchbox-font-size);
+  font-weight: var(--omnibox-primary-font-weight);
   margin-top: 0;
   margin-inline: auto;
   height: var(--cr-searchbox-height);
@@ -151,6 +153,7 @@ cr-searchbox-input::part(searchbox-input),
 cr-searchbox-input::part(mirror) {
   align-self: center;
   box-sizing: border-box;
+  font-weight: inherit;
   height: var(--cr-searchbox-input-height);
   padding-bottom: 2px;
   padding-inline: 0;
@@ -336,8 +339,9 @@ omnibox-popup-contextual-entrypoint {
   cursor: default;
   background-color: var(--color-sys-tonal-container);
   color: var(--color-sys-on-tonal-container);
-  font-size: 13px;
-  font-weight: 500;
+  font-family: var(--omnibox-primary-body-3-emphasis-font-family);
+  font-size: var(--omnibox-primary-body-3-emphasis-font-size);
+  font-weight: var(--omnibox-primary-body-3-emphasis-font-weight);
   padding-inline-end: 13px;
   padding-inline-start: 8px;
 }
