@@ -70,13 +70,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="ECDSA"/>
 </enum>
 
-<enum name="TPMType">
-  <int value="0" label="None"/>
-  <int value="1" label="HW"/>
-  <int value="2" label="Virtual"/>
-  <int value="3" label="Both"/>
-</enum>
-
 <!-- LINT.IfChange(UnexportableKeyServiceResult) -->
 
 <enum name="UnexportableKeyServiceResult">

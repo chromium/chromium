@@ -26,11 +26,6 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin();
 std::unique_ptr<UnexportableKeyProvider>
 GetMicrosoftSoftwareUnexportableKeyProviderWin();
 
-// Returns a `VirtualUnexportableKeyProvider` that is backed by the Windows
-// Credential Guard.
-std::unique_ptr<VirtualUnexportableKeyProvider>
-GetVirtualUnexportableKeyProviderWin();
-
 }  // namespace crypto
 
 #endif  // CRYPTO_UNEXPORTABLE_KEY_WIN_H_
