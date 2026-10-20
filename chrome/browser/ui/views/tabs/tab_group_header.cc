@@ -434,7 +434,13 @@ gfx::Rect TabGroupHeader::GetAnchorBoundsInScreen() const {
   // unified with tabs so that bounds do not need to be calculated differently
   // between tabs and headers. As of writing this, hover cards to not cut into
   // the tab outline but without this change TabGroupEditorBubbleView does.
-  return View::GetAnchorBoundsInScreen();
+  gfx::Rect bounds = View::GetAnchorBoundsInScreen();
+  if (title_chip_) {
+    const gfx::Rect title_chip_bounds = title_chip_->GetAnchorBoundsInScreen();
+    bounds.set_x(title_chip_bounds.x());
+    bounds.set_width(title_chip_bounds.width());
+  }
+  return bounds;
 }
 
 bool TabGroupHeader::NeedsToShowThumbnail() const {

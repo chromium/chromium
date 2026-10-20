@@ -577,3 +577,28 @@ TEST_F(TabGroupViewsTest, FocusOrderInFocusMode) {
       &dummy_focus_traversable, &dummy_focus_traversable_view);
   EXPECT_EQ(unfocus_button, prev_from_chip);
 }
+
+TEST_F(TabGroupViewsTest, AnchorBoundsInFocusMode) {
+  SetGroupTitle(u"Focused Group");
+  TabGroupHeader* header = group_views_->header();
+  TabGroupUnfocusButton* unfocus_button = header->unfocus_chip_for_testing();
+  views::View* chip = header->title_chip_for_testing();
+  ASSERT_NE(nullptr, unfocus_button);
+  ASSERT_NE(nullptr, chip);
+
+  header->SetBounds(10, 0, 200, 34);
+  tab_strip_controller_->SetFocusedGroup(id_);
+  group_views_->OnGroupVisualsChanged();
+  group_views_->UpdateBounds();
+  ASSERT_TRUE(unfocus_button->GetVisible());
+
+  const gfx::Rect anchor_bounds = header->GetAnchorBoundsInScreen();
+  const gfx::Rect chip_screen_bounds = chip->GetBoundsInScreen();
+  const gfx::Rect header_screen_bounds = header->GetBoundsInScreen();
+
+  EXPECT_EQ(anchor_bounds.x(), chip_screen_bounds.x());
+  EXPECT_EQ(anchor_bounds.width(), chip_screen_bounds.width());
+  EXPECT_GT(anchor_bounds.x(), unfocus_button->GetBoundsInScreen().right());
+  EXPECT_EQ(anchor_bounds.y(), header_screen_bounds.y());
+  EXPECT_EQ(anchor_bounds.height(), header_screen_bounds.height());
+}
