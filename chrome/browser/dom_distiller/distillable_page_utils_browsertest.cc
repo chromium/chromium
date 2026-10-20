@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -273,18 +274,15 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
       Optional(AllOf(Not(IsDistillable()), IsLast(), Not(IsMobileFriendly()))));
 }
 
-// TODO(crbug.com/40921719): Flaky on Linux MSAN.
-#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_ObserverNotCalledAfterRemoval \
-  DISABLED_ObserverNotCalledAfterRemoval
-#else
-#define MAYBE_ObserverNotCalledAfterRemoval ObserverNotCalledAfterRemoval
-#endif
 IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
-                       MAYBE_ObserverNotCalledAfterRemoval) {
+                       ObserverNotCalledAfterRemoval) {
   RemoveObserver(web_contents_, &holder_);
   EXPECT_CALL(holder_, OnResult(_)).Times(0);
   NavigateAndWait(kSimpleArticlePath, kWaitNoExpectedCall);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    std::optional<DistillabilityResult> result = GetLatestResult(web_contents_);
+    return result.has_value() && result->is_last;
+  }));
   EXPECT_THAT(
       GetLatestResult(web_contents_),
       Optional(AllOf(IsDistillable(), IsLast(), Not(IsMobileFriendly()))));
