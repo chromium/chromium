@@ -858,7 +858,14 @@ void WebrtcTransport::OnLocalDescriptionSet(bool success,
     return;
   }
 
+  // AddPendingCandidatesIfPossible() calls Close() if adding a queued ICE
+  // candidate fails, which notifies `event_handler_` of the error and may
+  // synchronously destroy `this`.
+  base::WeakPtr<WebrtcTransport> self = weak_factory_.GetWeakPtr();
   AddPendingCandidatesIfPossible();
+  if (!self) {
+    return;
+  }
 
   // The sender "encodings" parameters are initialized after the local
   // description is set. At this point, it is possible to set parameters such as
