@@ -13,7 +13,6 @@
 #import "components/commerce/core/pref_names.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/keyed_service/core/keyed_service.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
@@ -79,8 +78,7 @@ class ShopCardMediatorTest : public PlatformTest {
                ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return std::make_unique<ImpressionLimitService>(
                   pref_service,
-                  ios::HistoryServiceFactory::GetForProfile(
-                      profile, ServiceAccessType::EXPLICIT_ACCESS),
+                  ios::HistoryServiceFactory::GetForProfile(profile),
                   bookmark_model,
                   commerce::ShoppingServiceFactory::GetForProfile(profile));
             },

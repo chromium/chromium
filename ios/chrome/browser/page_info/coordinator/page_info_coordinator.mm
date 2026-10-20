@@ -13,7 +13,6 @@
 #import "components/feature_engagement/public/feature_list.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/history/core/browser/history_service.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/page_info/core/page_info_action.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -121,8 +120,7 @@
   // mode and the page is neither offline nor a chrome page.
   if (!isIncognito && !_siteSecurityDescription.isEmpty) {
     history::HistoryService* historyService =
-        ios::HistoryServiceFactory::GetForProfile(
-            self.profile, ServiceAccessType::EXPLICIT_ACCESS);
+        ios::HistoryServiceFactory::GetForProfile(self.profile);
 
     const GURL& siteURL =
         webState->GetNavigationManager()->GetVisibleItem()->GetURL();

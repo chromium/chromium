@@ -32,7 +32,6 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/crash/core/common/crash_keys.h"
 #import "components/history/core/browser/history_service.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/language/core/browser/locale_util.h"
 #import "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
 #import "components/metrics/cpu_metrics_provider.h"
@@ -526,8 +525,7 @@ void IOSChromeMetricsServiceClient::RegisterForNotifications() {
 bool IOSChromeMetricsServiceClient::RegisterForProfileEvents(
     ProfileIOS* profile) {
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(profile);
   syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile);
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   if (!history_service || !sync || !browser_list) {

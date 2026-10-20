@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/content_suggestions/impression_limits/model/impression_limit_service_factory.h"
 
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
@@ -25,9 +24,7 @@ std::unique_ptr<KeyedService>
 ImpressionLimitServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   return std::make_unique<ImpressionLimitService>(
-      profile->GetPrefs(),
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      profile->GetPrefs(), ios::HistoryServiceFactory::GetForProfile(profile),
       ios::BookmarkModelFactory::GetForProfile(profile),
       commerce::ShoppingServiceFactory::GetForProfile(profile));
 }

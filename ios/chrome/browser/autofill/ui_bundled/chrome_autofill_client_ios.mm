@@ -46,7 +46,6 @@
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/password_manager/core/browser/form_parsing/form_data_parser.h"
@@ -146,9 +145,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
           IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile())),
       form_data_importer_(std::make_unique<FormDataImporter>(
           this,
-          ios::HistoryServiceFactory::GetForProfile(
-              profile_,
-              ServiceAccessType::EXPLICIT_ACCESS))),
+          ios::HistoryServiceFactory::GetForProfile(profile_))),
       infobar_manager_(infobar_manager),
       log_router_(AutofillLogRouterFactory::GetForProfile(profile_)),
       ablation_study_(GetApplicationContext()->GetLocalState()),
@@ -382,8 +379,7 @@ AtMemoryManager* ChromeAutofillClientIOS::GetAtMemoryManager() {
   }
   if (!at_memory_manager_) {
     at_memory_manager_ = std::make_unique<AtMemoryManager>(
-        this, ios::HistoryServiceFactory::GetForProfile(
-                  profile_, ServiceAccessType::EXPLICIT_ACCESS));
+        this, ios::HistoryServiceFactory::GetForProfile(profile_));
   }
   return at_memory_manager_.get();
 }

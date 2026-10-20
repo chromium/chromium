@@ -11,7 +11,6 @@
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/browser/history_types.h"
 #import "components/history/core/common/pref_names.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/translate/core/common/language_detection_details.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_content_record_task_id.h"
@@ -362,6 +361,5 @@ history::HistoryService* HistoryTabHelper::GetHistoryService() {
     return nullptr;
   }
 
-  return ios::HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS);
+  return ios::HistoryServiceFactory::GetForProfile(profile);
 }

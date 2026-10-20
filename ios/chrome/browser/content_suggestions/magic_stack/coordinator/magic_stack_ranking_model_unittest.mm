@@ -22,7 +22,6 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/pref_names.h"
@@ -318,8 +317,7 @@ class MagicStackRankingModelTest : public PlatformTest {
         optimizationGuideService:nil
                  shoppingService:nil];
     history::HistoryService* history_service =
-        ios::HistoryServiceFactory::GetForProfile(
-            GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
+        ios::HistoryServiceFactory::GetForProfile(GetProfile());
     favicon::LargeIconService* large_icon_service =
         IOSChromeLargeIconServiceFactory::GetForProfile(GetProfile());
     LargeIconCache* cache =

@@ -12,7 +12,6 @@
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/browser/history_types.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remove_mask.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
@@ -100,8 +99,7 @@ int GetBrowsingHistoryEntryCount(NSError** error) {
   // Call the history service.
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(profile);
 
   __block bool history_service_callback_called = false;
   __block int count = -1;

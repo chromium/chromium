@@ -13,7 +13,6 @@
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
@@ -121,8 +120,7 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
   params->profile_id = profile->GetProfileName();
-  params->history_service = ios::HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS);
+  params->history_service = ios::HistoryServiceFactory::GetForProfile(profile);
   params->task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   params->storage_dir =

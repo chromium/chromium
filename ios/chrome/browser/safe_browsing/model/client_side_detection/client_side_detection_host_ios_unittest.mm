@@ -19,7 +19,6 @@
 #import "base/test/simple_test_tick_clock.h"
 #import "base/test/test_future.h"
 #import "base/values.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/safe_browsing/core/browser/db/test_database_manager.h"
@@ -354,8 +353,7 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
         VerdictCacheManagerFactory::GetForProfile(profile_.get()),
         intelligent_scan_delegate, profile_->GetPrefs(),
         IdentityManagerFactory::GetForProfile(profile_.get()),
-        ios::HistoryServiceFactory::GetForProfile(
-            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS));
+        ios::HistoryServiceFactory::GetForProfile(profile_.get()));
   }
 
   void set_last_request_type(ClientSideDetectionHostIOS* host,

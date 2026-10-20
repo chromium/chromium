@@ -9,7 +9,6 @@
 #import "base/memory/weak_ptr.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
@@ -165,6 +164,5 @@ SafeBrowsingClientImpl::CreateClientSideDetectionHost(
       VerdictCacheManagerFactory::GetForProfile(profile),
       intelligent_scan_delegate, profile->GetPrefs(),
       IdentityManagerFactory::GetForProfile(profile),
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS));
+      ios::HistoryServiceFactory::GetForProfile(profile));
 }

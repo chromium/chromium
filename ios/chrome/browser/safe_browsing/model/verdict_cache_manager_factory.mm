@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/safe_browsing/model/verdict_cache_manager_factory.h"
 
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/safe_browsing/core/browser/sync/safe_browsing_sync_observer_impl.h"
 #import "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #import "components/sync/service/sync_service.h"
@@ -25,8 +24,7 @@ VerdictCacheManagerFactory::VerdictCacheManagerFactory(PassKey key)
 std::unique_ptr<KeyedService>
 VerdictCacheManagerFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<safe_browsing::VerdictCacheManager>(
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      ios::HistoryServiceFactory::GetForProfile(profile),
       ios::HostContentSettingsMapFactory::GetForProfile(profile),
       profile->GetPrefs(),
       std::make_unique<safe_browsing::SafeBrowsingSyncObserverImpl>(

@@ -57,8 +57,7 @@ IOSContextualTasksServiceFactory::BuildServiceInstanceFor(
       ios::FaviconServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 

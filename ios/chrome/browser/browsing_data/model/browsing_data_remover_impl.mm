@@ -517,8 +517,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
     history::HistoryService* history_service =
-        ios::HistoryServiceFactory::GetForProfile(
-            profile_, ServiceAccessType::EXPLICIT_ACCESS);
+        ios::HistoryServiceFactory::GetForProfile(profile_);
 
     if (history_service) {
       base::RecordAction(base::UserMetricsAction("ClearBrowsingData_History"));

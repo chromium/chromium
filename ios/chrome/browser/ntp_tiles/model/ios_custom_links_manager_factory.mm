@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ntp_tiles/model/ios_custom_links_manager_factory.h"
 
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/ntp_tiles/custom_links_manager_impl.h"
 #import "components/ntp_tiles/features.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -14,8 +13,7 @@
 std::unique_ptr<ntp_tiles::CustomLinksManager>
 IOSCustomLinksManagerFactory::NewForProfile(ProfileIOS* profile) {
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(profile);
   bool enable_ai_mode_tile =
       IsAimEnabledInNtp() && ntp_tiles::GetAimButtonRefactorArm() ==
                                  ntp_tiles::AimButtonRefactorArm::kAimAsMvt;

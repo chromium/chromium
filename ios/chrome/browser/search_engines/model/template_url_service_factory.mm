@@ -52,8 +52,7 @@ std::unique_ptr<KeyedService> BuildTemplateURLService(ProfileIOS* profile) {
       ios::WebDataServiceFactory::GetKeywordWebDataForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       std::make_unique<ios::TemplateURLServiceClientImpl>(
-          ios::HistoryServiceFactory::GetForProfile(
-              profile, ServiceAccessType::EXPLICIT_ACCESS)),
+          ios::HistoryServiceFactory::GetForProfile(profile)),
       GetDefaultSearchProviderChangedCallback());
 }
 

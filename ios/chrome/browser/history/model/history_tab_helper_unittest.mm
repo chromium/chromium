@@ -13,7 +13,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/browser/history_types.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -48,8 +47,7 @@ class HistoryTabHelperTest : public PlatformTest {
   // returns the response.  Spins the runloop until a response is received.
   void QueryURLAndVisits(const GURL& url) {
     history::HistoryService* service =
-        ios::HistoryServiceFactory::GetForProfile(
-            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
+        ios::HistoryServiceFactory::GetForProfile(profile_.get());
 
     base::RunLoop loop;
     service->QueryURLAndVisits(
@@ -67,8 +65,7 @@ class HistoryTabHelperTest : public PlatformTest {
   // Adds an entry for the given `url` to the history database.
   void AddVisitForURL(const GURL& url) {
     history::HistoryService* service =
-        ios::HistoryServiceFactory::GetForProfile(
-            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
+        ios::HistoryServiceFactory::GetForProfile(profile_.get());
     service->AddPage(
         url, base::Time::Now(), 0, 0, GURL(), history::RedirectList(),
         ui::PAGE_TRANSITION_MANUAL_SUBFRAME, history::SOURCE_BROWSED,

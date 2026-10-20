@@ -49,8 +49,7 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
       ios::WebDataServiceFactory::GetAutofillWebDataForAccount(
           profile, ServiceAccessType::EXPLICIT_ACCESS);
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(profile);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
   AutofillImageFetcherBase* autofill_image_fetcher =

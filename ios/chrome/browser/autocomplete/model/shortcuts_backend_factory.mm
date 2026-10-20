@@ -6,7 +6,6 @@
 
 #import <memory>
 
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/omnibox/browser/shortcuts_constants.h"
 #import "components/prefs/pref_service.h"
@@ -24,8 +23,7 @@ scoped_refptr<ShortcutsBackend> CreateShortcutsBackend(ProfileIOS* profile,
   scoped_refptr<ShortcutsBackend> shortcuts_backend(new ShortcutsBackend(
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       std::make_unique<ios::UIThreadSearchTermsData>(),
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      ios::HistoryServiceFactory::GetForProfile(profile),
       profile->GetStatePath().Append(kShortcutsDatabaseName), suppress_db));
   return shortcuts_backend->Init() ? shortcuts_backend : nullptr;
 }

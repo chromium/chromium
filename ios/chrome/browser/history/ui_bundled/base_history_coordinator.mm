@@ -5,7 +5,6 @@
 #import "base/check.h"
 #import "base/ios/ios_util.h"
 #import "components/history/core/browser/browsing_history_service.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -73,8 +72,7 @@
       DeviceInfoSyncServiceFactory::GetForProfile(self.profile);
   _browsingHistoryService = std::make_unique<history::BrowsingHistoryService>(
       _browsingHistoryDriver.get(),
-      ios::HistoryServiceFactory::GetForProfile(
-          self.profile, ServiceAccessType::EXPLICIT_ACCESS),
+      ios::HistoryServiceFactory::GetForProfile(self.profile),
       ios::WebHistoryServiceFactory::GetForProfile(self.profile),
       SyncServiceFactory::GetForProfile(self.profile),
       device_info_service ? device_info_service->GetDeviceInfoTracker()

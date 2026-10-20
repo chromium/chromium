@@ -43,8 +43,7 @@ IOSAutofillEntityDataManagerFactory::BuildServiceInstanceFor(
   return std::make_unique<autofill::EntityDataManager>(
       profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile), std::move(local_storage),
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      ios::HistoryServiceFactory::GetForProfile(profile),
       IOSAutofillAiPersonalContextAccessManagerFactory::GetForProfile(profile),
       autofill::StrikeDatabaseFactory::GetForProfile(profile),
       autofill::GeoIpCountryCode(autofill::GetCountryCodeFromVariations()));

@@ -130,8 +130,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
       profile, ServiceAccessType::IMPLICIT_ACCESS));
   builder.SetGoogleGroupsManager(
       GoogleGroupsManagerFactory::GetForProfile(profile));
-  builder.SetHistoryService(ios::HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS));
+  builder.SetHistoryService(ios::HistoryServiceFactory::GetForProfile(profile));
   builder.SetIdentityManager(IdentityManagerFactory::GetForProfile(profile));
   builder.SetDataTypeStoreService(
       DataTypeStoreServiceFactory::GetForProfile(profile));

@@ -9,7 +9,6 @@
 #import "base/time/default_clock.h"
 #import "build/build_config.h"
 #import "components/history/metrics/domain_diversity_reporter.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -30,8 +29,7 @@ DomainDiversityReporterFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   CHECK(!profile->IsOffTheRecord());
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(profile);
 
   // Only build DomainDiversityReporter service with a valid `history_service`.
   if (!history_service) {

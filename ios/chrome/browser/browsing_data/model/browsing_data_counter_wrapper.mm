@@ -40,8 +40,7 @@ CreateCounterForProfileAndPref(ProfileIOS* profile,
                                std::string_view pref_name) {
   if (pref_name == browsing_data::prefs::kDeleteBrowsingHistory) {
     return std::make_unique<browsing_data::HistoryCounter>(
-        ios::HistoryServiceFactory::GetForProfile(
-            profile, ServiceAccessType::EXPLICIT_ACCESS),
+        ios::HistoryServiceFactory::GetForProfile(profile),
         ios::WebHistoryServiceFactory::GetForProfile(profile),
         SyncServiceFactory::GetForProfile(profile));
   }

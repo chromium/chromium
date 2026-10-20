@@ -11,7 +11,6 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/test/history_service_test_util.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/ntp_tile.h"
@@ -120,8 +119,7 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
     profile_ = std::move(test_profile_builder).Build();
 
     history::HistoryService* history_service =
-        ios::HistoryServiceFactory::GetForProfile(
-            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
+        ios::HistoryServiceFactory::GetForProfile(profile_.get());
     favicon::LargeIconService* large_icon_service =
         IOSChromeLargeIconServiceFactory::GetForProfile(profile_.get());
     LargeIconCache* cache =
@@ -262,8 +260,7 @@ TEST_F(MostVisitedTilesMediatorTest, TestPinSiteInProductHelpCondition) {
   // Setup the URL and history service.
   GURL kUrl("https://www.chromium.org/");
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfile(
-          profile_.get(), ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(profile_.get());
 
   // Fake two recent visits, and one for more than a week ago, in chronological
   // order.

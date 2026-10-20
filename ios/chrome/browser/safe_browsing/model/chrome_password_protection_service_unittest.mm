@@ -13,7 +13,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/mock_callback.h"
 #import "base/values.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_reuse_detector.h"
@@ -166,8 +165,7 @@ class ChromePasswordProtectionServiceTest : public PlatformTest {
 
     service_ = std::make_unique<FakeChromePasswordProtectionService>(
         safe_browsing_service_.get(), profile_.get(),
-        ios::HistoryServiceFactory::GetForProfile(
-            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS),
+        ios::HistoryServiceFactory::GetForProfile(profile_.get()),
         SafeBrowsingMetricsCollectorFactory::GetForProfile(profile_.get()),
         mock_add_callback_.Get(), mock_remove_callback_.Get());
 

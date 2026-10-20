@@ -21,7 +21,6 @@
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/feed/feed_feature_list.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/pref_names.h"
@@ -1009,8 +1008,7 @@ using ntp_tiles::AimButtonRefactorArm;
     std::unique_ptr<ntp_tiles::MostVisitedSites> mostVisitedFactory =
         IOSMostVisitedSitesFactory::NewForBrowserState(profile);
     history::HistoryService* historyService =
-        ios::HistoryServiceFactory::GetForProfile(
-            profile, ServiceAccessType::EXPLICIT_ACCESS);
+        ios::HistoryServiceFactory::GetForProfile(profile);
     feature_engagement::Tracker* engagementTracker =
         feature_engagement::TrackerFactory::GetForProfile(profile);
     ChromeAccountManagerService* accountManagerService =

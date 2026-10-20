@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service_factory.h"
 
-#import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -42,7 +41,6 @@ ChromePasswordProtectionServiceFactory::BuildServiceInstanceFor(
   }
   return std::make_unique<ChromePasswordProtectionService>(
       safe_browsing_service, profile,
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      ios::HistoryServiceFactory::GetForProfile(profile),
       SafeBrowsingMetricsCollectorFactory::GetForProfile(profile));
 }

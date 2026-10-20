@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/top_sites_impl.h"
-#include "components/keyed_service/core/service_access_type.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
 #include "ios/chrome/browser/history/model/history_utils.h"
@@ -30,8 +29,7 @@ TopSitesFactory::TopSitesFactory(PassKey key)
 scoped_refptr<RefcountedKeyedService> TopSitesFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(profile);
   auto top_sites = base::MakeRefCounted<history::TopSitesImpl>(
       profile->GetPrefs(), history_service,
       ios::TemplateURLServiceFactory::GetForProfile(profile),

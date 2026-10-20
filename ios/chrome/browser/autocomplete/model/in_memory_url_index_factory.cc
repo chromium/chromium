@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "components/keyed_service/core/service_access_type.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
@@ -26,8 +25,7 @@ std::unique_ptr<KeyedService> BuildInMemoryURLIndex(ProfileIOS* profile) {
 
   std::unique_ptr<InMemoryURLIndex> in_memory_url_index(new InMemoryURLIndex(
       ios::BookmarkModelFactory::GetForProfile(profile),
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
+      ios::HistoryServiceFactory::GetForProfile(profile),
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       profile->GetStatePath(), allowed_schemes));
   in_memory_url_index->Init();

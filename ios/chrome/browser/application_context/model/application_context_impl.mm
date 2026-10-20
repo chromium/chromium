@@ -35,7 +35,6 @@
 #import "components/gcm_driver/gcm_desktop_utils.h"
 #import "components/gcm_driver/gcm_driver.h"
 #import "components/history/core/browser/history_service.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/metrics_features.h"
 #import "components/metrics/metrics_service.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
@@ -751,8 +750,7 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
 
         case AppState::kBackgroundFromActive:
           if (history::HistoryService* history_service =
-                  ios::HistoryServiceFactory::GetForProfile(
-                      profile, ServiceAccessType::EXPLICIT_ACCESS)) {
+                  ios::HistoryServiceFactory::GetForProfile(profile)) {
             history_service->HandleBackgrounding();
           }
           break;

@@ -13,7 +13,6 @@
 #import "components/browsing_data/core/pref_names.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/history/core/browser/history_service.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url.h"
@@ -84,8 +83,7 @@ class QuickDeleteMediatorTest : public PlatformTest {
     system_identity_manager->AddIdentity(fake_identity_);
 
     scene_state_ = [[SceneState alloc] init];
-    history_service_ = ios::HistoryServiceFactory::GetForProfile(
-        profile_, ServiceAccessType::EXPLICIT_ACCESS);
+    history_service_ = ios::HistoryServiceFactory::GetForProfile(profile_);
 
     // Reset prefs related to quick delete so tests start with the same state
     // every time.

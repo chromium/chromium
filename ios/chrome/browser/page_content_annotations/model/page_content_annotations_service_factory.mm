@@ -10,7 +10,6 @@
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
 #import "components/application_locale_storage/application_locale_storage.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/page_content_annotations/core/page_content_annotations_features.h"
 #import "components/page_content_annotations/core/page_content_annotations_service.h"
 #import "components/variations/service/variations_service_utils.h"
@@ -41,8 +40,7 @@ std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
   OptimizationGuideService* optimization_guide_keyed_service =
       OptimizationGuideServiceFactory::GetForProfile(profile);
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(profile);
   if (!optimization_guide_keyed_service || !history_service) {
     return nullptr;
   }

@@ -9,7 +9,6 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/browser/top_sites.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/language/core/browser/pref_names.h"
 #import "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #import "components/omnibox/browser/autocomplete_classifier.h"
@@ -104,8 +103,7 @@ AutocompleteProviderClientImpl::GetAutocompleteClassifier() {
 }
 
 history::HistoryService* AutocompleteProviderClientImpl::GetHistoryService() {
-  return ios::HistoryServiceFactory::GetForProfile(
-      profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  return ios::HistoryServiceFactory::GetForProfile(profile_);
 }
 
 scoped_refptr<history::TopSites> AutocompleteProviderClientImpl::GetTopSites() {

@@ -15,8 +15,7 @@ namespace {
 std::unique_ptr<KeyedService> BuildFaviconService(ProfileIOS* profile) {
   return std::make_unique<favicon::FaviconServiceImpl>(
       std::make_unique<FaviconClientImpl>(),
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS));
+      ios::HistoryServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace

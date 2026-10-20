@@ -8,8 +8,6 @@
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-enum class ServiceAccessType;
-
 namespace history {
 class HistoryService;
 }
@@ -19,8 +17,7 @@ namespace ios {
 // ProfileIOS.
 class HistoryServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static history::HistoryService* GetForProfile(ProfileIOS* profile,
-                                                ServiceAccessType access_type);
+  static history::HistoryService* GetForProfile(ProfileIOS* profile);
   static HistoryServiceFactory* GetInstance();
 
   // Returns the default factory, useful in tests where it's null by default.

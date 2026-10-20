@@ -6,7 +6,6 @@
 
 #import "base/run_loop.h"
 #import "components/history/core/browser/history_service.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/segmentation_platform/embedder/model_provider_factory_impl.h"
 #import "components/segmentation_platform/internal/database/ukm_database.h"
 #import "components/segmentation_platform/internal/execution/mock_model_provider.h"
@@ -118,8 +117,7 @@ void UkmDataManagerTestUtils::SetupForProfile(ProfileIOS* profile) {
                                                   ukm_database_client_.get());
   CHECK_EQ(ukm_database_client_.get(),
            &UkmDatabaseClientHolder::GetClientInstance(profile));
-  history_service_ = ios::HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::EXPLICIT_ACCESS);
+  history_service_ = ios::HistoryServiceFactory::GetForProfile(profile);
   // Create the platform to kick off initialization.
   segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
       profile);

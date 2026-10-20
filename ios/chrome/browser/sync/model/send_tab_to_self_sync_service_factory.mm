@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -23,8 +22,7 @@ std::unique_ptr<KeyedService> BuildSendTabToSelfService(ProfileIOS* profile) {
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(profile);
 
   syncer::DeviceInfoTracker* device_info_tracker =
       DeviceInfoSyncServiceFactory::GetForProfile(profile)

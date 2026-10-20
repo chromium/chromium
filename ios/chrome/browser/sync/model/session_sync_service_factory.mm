@@ -11,7 +11,6 @@
 #import "base/time/time.h"
 #import "components/dom_distiller/core/url_constants.h"
 #import "components/history/core/browser/history_service.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/sync/model/data_type_store_service.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_device_info/device_info.h"
@@ -162,8 +161,7 @@ SessionSyncServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
       ::GetChannel(),
       std::make_unique<SyncSessionsClientImpl>(
           profile->GetPrefs(), BrowserListFactory::GetForProfile(profile),
-          ios::HistoryServiceFactory::GetForProfile(
-              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          ios::HistoryServiceFactory::GetForProfile(profile),
           DeviceInfoSyncServiceFactory::GetForProfile(profile),
           DataTypeStoreServiceFactory::GetForProfile(profile),
           ios::sync_start_util::GetFlareForSyncableService(profile)));

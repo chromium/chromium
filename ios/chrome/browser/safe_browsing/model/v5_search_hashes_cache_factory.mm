@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/safe_browsing/model/v5_search_hashes_cache_factory.h"
 
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -20,6 +19,5 @@ V5SearchHashesCacheFactory::V5SearchHashesCacheFactory(PassKey key)
 std::unique_ptr<KeyedService>
 V5SearchHashesCacheFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<safe_browsing::V5SearchHashesCache>(
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS));
+      ios::HistoryServiceFactory::GetForProfile(profile));
 }

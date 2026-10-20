@@ -19,7 +19,6 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -102,8 +101,7 @@ class ImpressionLimitServiceTest : public PlatformTest {
                ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return std::make_unique<ImpressionLimitService>(
                   pref_service,
-                  ios::HistoryServiceFactory::GetForProfile(
-                      profile, ServiceAccessType::EXPLICIT_ACCESS),
+                  ios::HistoryServiceFactory::GetForProfile(profile),
                   bookmark_model,
                   commerce::ShoppingServiceFactory::GetForProfile(profile));
             },

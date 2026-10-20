@@ -79,8 +79,7 @@ bool BookmarkClientImpl::SupportsTypedCountForUrls() {
 void BookmarkClientImpl::GetTypedCountForUrls(
     UrlTypedCountMap* url_typed_count_map) {
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfile(
-          profile_, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(profile_);
   history::URLDatabase* url_db =
       history_service ? history_service->InMemoryDatabase() : nullptr;
   for (auto& url_typed_count_pair : *url_typed_count_map) {

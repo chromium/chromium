@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/visited_url_ranking/model/visited_url_ranking_service_factory.h"
 
 #import "components/history_clusters/core/config.h"
-#import "components/keyed_service/core/service_access_type.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"
 #import "components/visited_url_ranking/internal/session_url_visit_data_fetcher.h"
@@ -56,8 +55,7 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
             session_sync_service));
   }
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(profile);
   if (history_service) {
     syncer::DeviceInfoSyncService* device_info_sync_service =
         DeviceInfoSyncServiceFactory::GetForProfile(profile);
