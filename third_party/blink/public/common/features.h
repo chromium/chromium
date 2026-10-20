@@ -130,6 +130,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidSystemFontPrewarming);
 
 // Opens PDFs in iframe in standalone tabs on Android.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidHandlePdfInIframe);
+
+// Enables keyboard-triggered web context menus (Shift+F10 and Context Menu key)
+// on Android.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidKeyboardContextMenu);
 #endif
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

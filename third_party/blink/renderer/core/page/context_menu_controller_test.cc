@@ -1104,6 +1104,83 @@ TEST_F(ContextMenuControllerTest,
 }
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(ContextMenuControllerTest, AndroidKeyboardContextMenuKeyDown) {
+  GetDocument()->documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      "<a href=\"http://example.test/link1\" id=\"link1\">Link 1</a>"
+      "<a href=\"http://example.test/link2\" id=\"link2\">Link 2</a>");
+
+  Document* document = GetDocument();
+  Element* link1 = document->getElementById(AtomicString("link1"));
+  Element* link2 = document->getElementById(AtomicString("link2"));
+
+  // When kAndroidKeyboardContextMenu is disabled, kKeyDown for VKEY_APPS and
+  // Shift+F10 should not open the context menu.
+  {
+    base::test::ScopedFeatureList disabled_feature_list;
+    disabled_feature_list.InitAndDisableFeature(
+        features::kAndroidKeyboardContextMenu);
+
+    link1->Focus();
+    document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+    WebKeyboardEvent menu_key_event(
+        WebInputEvent::Type::kKeyDown, WebInputEvent::kNoModifiers,
+        WebInputEvent::GetStaticTimeStampForTests());
+    menu_key_event.windows_key_code = ui::VKEY_APPS;
+    EXPECT_EQ(WebInputEventResult::kNotHandled,
+              GetWebView()->MainFrameWidget()->HandleInputEvent(
+                  WebCoalescedInputEvent(menu_key_event, ui::LatencyInfo())));
+    EXPECT_TRUE(GetWebFrameClient().GetContextMenuData().link_url.is_empty());
+
+    WebKeyboardEvent shift_f10_event(
+        WebInputEvent::Type::kKeyDown, WebInputEvent::kShiftKey,
+        WebInputEvent::GetStaticTimeStampForTests());
+    shift_f10_event.windows_key_code = ui::VKEY_F10;
+    EXPECT_EQ(WebInputEventResult::kNotHandled,
+              GetWebView()->MainFrameWidget()->HandleInputEvent(
+                  WebCoalescedInputEvent(shift_f10_event, ui::LatencyInfo())));
+    EXPECT_TRUE(GetWebFrameClient().GetContextMenuData().link_url.is_empty());
+  }
+
+  // When kAndroidKeyboardContextMenu is enabled, kKeyDown for VKEY_APPS and
+  // Shift+F10 should open a keyboard-sourced context menu.
+  {
+    base::test::ScopedFeatureList enabled_feature_list;
+    enabled_feature_list.InitAndEnableFeature(
+        features::kAndroidKeyboardContextMenu);
+
+    link1->Focus();
+    document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+    WebKeyboardEvent menu_key_event(
+        WebInputEvent::Type::kKeyDown, WebInputEvent::kNoModifiers,
+        WebInputEvent::GetStaticTimeStampForTests());
+    menu_key_event.windows_key_code = ui::VKEY_APPS;
+    EXPECT_EQ(WebInputEventResult::kHandledSystem,
+              GetWebView()->MainFrameWidget()->HandleInputEvent(
+                  WebCoalescedInputEvent(menu_key_event, ui::LatencyInfo())));
+    ContextMenuData data1 = GetWebFrameClient().GetContextMenuData();
+    EXPECT_EQ(GURL("http://example.test/link1"), data1.link_url);
+    EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard, data1.source_type);
+
+    link2->Focus();
+    document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+    WebKeyboardEvent shift_f10_event(
+        WebInputEvent::Type::kKeyDown, WebInputEvent::kShiftKey,
+        WebInputEvent::GetStaticTimeStampForTests());
+    shift_f10_event.windows_key_code = ui::VKEY_F10;
+    EXPECT_EQ(WebInputEventResult::kHandledSystem,
+              GetWebView()->MainFrameWidget()->HandleInputEvent(
+                  WebCoalescedInputEvent(shift_f10_event, ui::LatencyInfo())));
+    ContextMenuData data2 = GetWebFrameClient().GetContextMenuData();
+    EXPECT_EQ(GURL("http://example.test/link2"), data2.link_url);
+    EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard, data2.source_type);
+  }
+}
+#endif
+
 TEST_F(ContextMenuControllerTest, ContextMenuImageHitTestSVGImageElement) {
   RegisterMockedImageURLLoad("http://test.png");
   Document* document = GetDocument();

@@ -20,6 +20,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "ui/base/ime/text_input_flags.h"
@@ -285,13 +286,20 @@ bool SelectionPopupController::ShowSelectionMenu(
   const bool from_mouse =
       params.source_type == ui::mojom::MenuSourceType::kMouse;
 
+  const bool from_keyboard =
+      params.source_type == ui::mojom::MenuSourceType::kKeyboard &&
+      base::FeatureList::IsEnabled(
+          blink::features::kAndroidKeyboardContextMenu);
+
   const bool from_selection_adjustment =
       params.source_type == ui::mojom::MenuSourceType::kAdjustSelection ||
       params.source_type == ui::mojom::MenuSourceType::kAdjustSelectionReset;
 
   // If source_type is not in the list then return.
-  if (!from_touch && !from_mouse && !from_selection_adjustment)
+  if (!from_touch && !from_mouse && !from_keyboard &&
+      !from_selection_adjustment) {
     return false;
+  }
 
   // Don't show paste pop-up for non-editable textarea.
   if (!params.is_editable && params.selection_text.empty()) {

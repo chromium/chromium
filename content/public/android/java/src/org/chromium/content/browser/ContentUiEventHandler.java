@@ -20,11 +20,13 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserData;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.ViewEventSink.InternalAccessDelegate;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContents.UserDataFactory;
@@ -161,22 +163,27 @@ public class ContentUiEventHandler implements UserData {
     }
 
     /**
-     * Check whether a key should be propagated to the embedder or not.
-     * We need to send almost every key to Blink. However:
-     * 1. We don't want to block the device on the renderer for
-     * some keys like menu, home, call.
-     * 2. There are no WebKit equivalents for some of these keys
-     * (see app/keyboard_codes_win.h)
-     * Note that these are not the same set as KeyEvent.isSystemKey:
-     * for instance, AKEYCODE_MEDIA_* will be dispatched to webkit*.
-     * 3. KEYCODE_SYSRQ is the keycode received when Print screen is pressed
-     * on a hardware keyboard. Do not propagate this to allow Android Platform
-     * to take a screenshot.
+     * Check whether a key should be propagated to the embedder or not. We need to send almost every
+     * key to Blink. However:
+     *
+     * <p>1. We don't want to block the device on the renderer for some keys like home, call
+     * (KEYCODE_MENU is propagated when {@link BlinkFeatures#ANDROID_KEYBOARD_CONTEXT_MENU} is
+     * enabled).
+     *
+     * <p>2. There are no WebKit equivalents for some of these keys (see app/keyboard_codes_win.h)
+     * Note that these are not the same set as KeyEvent.isSystemKey: for instance, AKEYCODE_MEDIA_*
+     * will be dispatched to webkit*.
+     *
+     * <p>3. KEYCODE_SYSRQ is the keycode received when Print screen is pressed on a hardware
+     * keyboard. Do not propagate this to allow Android Platform to take a screenshot.
      */
-    private static boolean shouldPropagateKeyEvent(KeyEvent event) {
+    @VisibleForTesting
+    static boolean shouldPropagateKeyEvent(KeyEvent event) {
         int keyCode = event.getKeyCode();
-        if (keyCode == KeyEvent.KEYCODE_MENU
-                || keyCode == KeyEvent.KEYCODE_HOME
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            return ContentFeatureMap.isEnabled(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU);
+        }
+        if (keyCode == KeyEvent.KEYCODE_HOME
                 || keyCode == KeyEvent.KEYCODE_BACK
                 || keyCode == KeyEvent.KEYCODE_CALL
                 || keyCode == KeyEvent.KEYCODE_ENDCALL

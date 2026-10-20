@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
@@ -13,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.view.InputDevice;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 import org.junit.After;
@@ -28,6 +31,9 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImplJni;
 import org.chromium.content_public.browser.NavigationController;
@@ -109,6 +115,20 @@ public class ContentUiEventHandlerTest {
                 mMotionEventCaptor.getAllValues().get(0), trackpadLeftClickEvent);
         MotionEventTestUtils.assertEquals(
                 mMotionEventCaptor.getAllValues().get(1), trackpadRightClickEvent);
+    }
+
+    @Test
+    @EnableFeatures(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)
+    public void testShouldPropagateKeyEvent_KeycodeMenuEnabled() {
+        KeyEvent menuEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU);
+        assertTrue(ContentUiEventHandler.shouldPropagateKeyEvent(menuEvent));
+    }
+
+    @Test
+    @DisableFeatures(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)
+    public void testShouldPropagateKeyEvent_KeycodeMenuDisabled() {
+        KeyEvent menuEvent = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU);
+        assertFalse(ContentUiEventHandler.shouldPropagateKeyEvent(menuEvent));
     }
 
     private static MotionEvent getTrackpadLeftClickEvent() {

@@ -1106,15 +1106,19 @@ WebInputEventResult WebFrameWidgetImpl::HandleKeyEvent(
     return result;
   }
 
-  const WebInputEvent::Type kContextMenuKeyTriggeringEventType =
-#if BUILDFLAG(IS_WIN)
-      WebInputEvent::Type::kKeyUp;
-#else
-      WebInputEvent::Type::kRawKeyDown;
+  bool is_key_down = event.GetType() == WebInputEvent::Type::kRawKeyDown;
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kAndroidKeyboardContextMenu)) {
+    is_key_down =
+        is_key_down || event.GetType() == WebInputEvent::Type::kKeyDown;
+  }
 #endif
-
-  const WebInputEvent::Type kShiftF10TriggeringEventType =
-      WebInputEvent::Type::kRawKeyDown;
+#if BUILDFLAG(IS_WIN)
+  bool is_context_menu_key_triggering_event =
+      event.GetType() == WebInputEvent::Type::kKeyUp;
+#else
+  bool is_context_menu_key_triggering_event = is_key_down;
+#endif
 
   bool is_unmodified_menu_key =
       !(event.GetModifiers() & WebInputEvent::kInputModifiers) &&
@@ -1127,9 +1131,8 @@ WebInputEventResult WebFrameWidgetImpl::HandleKeyEvent(
                       event.windows_key_code == VKEY_F10;
 #endif
 
-  if ((is_unmodified_menu_key &&
-       event.GetType() == kContextMenuKeyTriggeringEventType) ||
-      (is_shift_f10 && event.GetType() == kShiftF10TriggeringEventType)) {
+  if ((is_unmodified_menu_key && is_context_menu_key_triggering_event) ||
+      (is_shift_f10 && is_key_down)) {
     View()->SendContextMenuEvent();
     return WebInputEventResult::kHandledSystem;
   }

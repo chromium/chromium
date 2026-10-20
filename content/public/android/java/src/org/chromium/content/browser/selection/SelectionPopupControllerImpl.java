@@ -53,6 +53,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -537,14 +538,19 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     /**
-     * Returns true if a dropdown menu should be used based on the current state (i.e. mouse was
-     * used to invoke text selection menu).
+     * Returns true if a dropdown menu should be used based on the current state (i.e. mouse or
+     * keyboard was used to invoke text selection menu).
      */
     private boolean shouldUseDropdownMenu() {
         ensureView();
+        boolean isMouseOrKeyboardSource =
+                mMenuSourceType == MenuSourceType.MOUSE
+                        || (mMenuSourceType == MenuSourceType.KEYBOARD
+                                && ContentFeatureMap.isEnabled(
+                                        BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU));
         return mView != null
                 && mDropdownMenuDelegate != null
-                && mMenuSourceType == MenuSourceType.MOUSE
+                && isMouseOrKeyboardSource
                 && isWindowOnTablet();
     }
 

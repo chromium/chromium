@@ -67,6 +67,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.GestureListenerManagerImpl;
 import org.chromium.content.browser.PopupController;
@@ -794,6 +795,47 @@ public class SelectionPopupControllerTest {
         Mockito.verify(dropdownMenuDelegate, times(1))
                 .show(any(), any(), any(), any(), any(), anyInt(), anyInt());
         Mockito.verify(spyController, never()).showActionModeOrClearOnFailure();
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Features.EnableFeatures(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)
+    public void testShowDropdownMenuWhenMenuSourceIsKeyboard() {
+        setDropdownMenuFeatureEnabled(true);
+        SelectionPopupControllerImpl spyController = Mockito.spy(mController);
+        SelectionDropdownMenuDelegate dropdownMenuDelegate =
+                Mockito.spy(new TestSelectionDropdownMenuDelegate());
+        spyController.setDropdownMenuDelegate(dropdownMenuDelegate);
+        showSelectionMenu(
+                spyController,
+                AMPHITHEATRE_FULL,
+                /* selectionStartOffset= */ 0,
+                MenuSourceType.KEYBOARD);
+        Mockito.verify(spyController, times(1)).createAndShowDropdownMenu();
+        Mockito.verify(spyController, times(1)).destroyActionModeAndKeepSelection();
+        Mockito.verify(dropdownMenuDelegate, times(1)).dismiss();
+        Mockito.verify(dropdownMenuDelegate, times(1))
+                .show(any(), any(), any(), any(), any(), anyInt(), anyInt());
+        Mockito.verify(spyController, never()).showActionModeOrClearOnFailure();
+    }
+
+    @Test
+    @Feature({"TextInput"})
+    @Features.DisableFeatures(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)
+    public void testShowActionModeWhenMenuSourceIsKeyboardAndFeatureDisabled() {
+        setDropdownMenuFeatureEnabled(true);
+        SelectionPopupControllerImpl spyController = Mockito.spy(mController);
+        SelectionDropdownMenuDelegate dropdownMenuDelegate =
+                Mockito.spy(new TestSelectionDropdownMenuDelegate());
+        spyController.setDropdownMenuDelegate(dropdownMenuDelegate);
+        showSelectionMenu(
+                spyController,
+                AMPHITHEATRE_FULL,
+                /* selectionStartOffset= */ 0,
+                MenuSourceType.KEYBOARD);
+        Mockito.verify(spyController, times(1)).showActionModeOrClearOnFailure();
+        Mockito.verify(dropdownMenuDelegate, times(1)).dismiss();
+        Mockito.verify(spyController, never()).createAndShowDropdownMenu();
     }
 
     @Test

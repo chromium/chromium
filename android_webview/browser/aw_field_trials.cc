@@ -408,6 +408,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // unconditionally retain caches in the face of memory pressure signals.
   aw_feature_overrides.DisableFeature(
       net::features::kIgnoreQuicCryptoConfigMemoryPressure);
+
+  // DISABLED_INCOMPATIBLE: WebView does not support the browser-style keyboard
+  // context menu or dropdown selection menu.
+  aw_feature_overrides.DisableFeature(
+      blink::features::kAndroidKeyboardContextMenu);
 }
 
 void AwFieldTrials::EnableRuntimeMutableFeatures(
