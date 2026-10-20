@@ -17,6 +17,7 @@
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/certificate_store.h"
@@ -76,7 +77,17 @@ CertificateProvisioningServiceFactory::
 
 bool CertificateProvisioningServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return true;
+  // The service is needed early only to start provisioning for managed
+  // profiles. Creating it with the context forces the default
+  // StoragePartition and the LevelDB certificate store to be initialized
+  // during profile creation, which is on the startup critical path, so defer
+  // it until startup is complete (scheduled in ProfileImpl::DoFinalInit).
+  // Consumers (e.g. the client cert store) still create it on demand if they
+  // run first.
+  return !(
+      base::FeatureList::IsEnabled(
+          ::features::kLazyKeyedServiceInstantiation) &&
+      ::features::kLazyKeyedServiceInstantiationCertificateProvisioning.Get());
 }
 
 bool CertificateProvisioningServiceFactory::ServiceIsNULLWhileTesting() const {

@@ -62,6 +62,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_manager_utils.h"
+#include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
 #endif
@@ -980,6 +981,27 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
               extensions::AutofillPrivateEventRouterFactory::GetForProfile(
                   profile.get());
 #endif
+            },
+            GetWeakPtr()));
+  }
+
+  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
+      features::kLazyKeyedServiceInstantiationCertificateProvisioning.Get() &&
+      IsRegularProfile()) {
+    // CertificateProvisioningService only needs to start background cert
+    // provisioning for managed profiles, while creating it synchronously during
+    // profile init forces the default StoragePartition and LevelDB
+    // CertificateStore onto the startup critical path.
+    AfterStartupTaskUtils::PostTask(
+        FROM_HERE,
+        content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}),
+        base::BindOnce(
+            [](base::WeakPtr<Profile> profile) {
+              if (!profile || profile->ShutdownStarted()) {
+                return;
+              }
+              client_certificates::CertificateProvisioningServiceFactory::
+                  GetForProfile(profile.get());
             },
             GetWeakPtr()));
   }

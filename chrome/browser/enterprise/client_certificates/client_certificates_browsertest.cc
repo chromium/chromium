@@ -3,17 +3,21 @@
 // found in the LICENSE file.
 
 #include "base/json/json_writer.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/browser/enterprise/test/test_constants.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/platform_browser_test.h"
@@ -22,10 +26,12 @@
 #include "components/enterprise/client_certificates/core/client_identity.h"
 #include "components/enterprise/client_certificates/core/features.h"
 #include "components/enterprise/client_certificates/core/scoped_ssl_key_converter.h"
+#include "components/keyed_service/core/keyed_service_base_factory.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/cert/x509_certificate.h"
@@ -53,6 +59,8 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
                                      public testing::WithParamInterface<bool> {
  protected:
   ClientCertificateBrowserTest() : scoped_key_converter_(true) {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kLazyKeyedServiceInstantiation);
     management_mixin_ = ManagementContextMixin::Create(
         &mixin_host_, this,
         {
@@ -92,6 +100,21 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
                                     test_dm_server_->GetServiceURL().spec());
 
     MixinBasedPlatformBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void PreRunTestOnMainThread() override {
+    // At this point ProfileImpl and its ServiceIsCreatedWithBrowserContext()
+    // services have been created, while
+    // InProcessBrowserTest::PreRunTestOnMainThread() has not yet marked startup
+    // as complete via AfterStartupTaskUtils.
+    Profile* profile = ProfileManager::GetLastUsedProfileIfLoaded();
+    ASSERT_TRUE(profile);
+    const KeyedServiceBaseFactory* factory =
+        CertificateProvisioningServiceFactory::GetInstance();
+    was_profile_service_created_before_startup_complete_ =
+        factory->IsServiceCreated(profile);
+
+    MixinBasedPlatformBrowserTest::PreRunTestOnMainThread();
   }
 
   void SetUpOnMainThread() override {
@@ -210,6 +233,7 @@ class ClientCertificateBrowserTest : public MixinBasedPlatformBrowserTest,
 
   bool is_profile_scenario() const { return GetParam(); }
 
+  bool was_profile_service_created_before_startup_complete_ = true;
   std::optional<CapturedRequest> captured_request_;
 
  private:
@@ -259,6 +283,29 @@ IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest, UseIdentityInMtls) {
 
   ASSERT_TRUE(captured_request_);
   VerifyClientCert(captured_request_->client_certificate);
+}
+
+// The profile-scoped provisioning service is not needed during startup, so it
+// is created once browser startup is complete rather than with the profile.
+IN_PROC_BROWSER_TEST_P(ClientCertificateBrowserTest,
+                       ProfileServiceIsCreatedAfterStartup) {
+  EXPECT_FALSE(was_profile_service_created_before_startup_complete_);
+
+  // Tasks posted through AfterStartupTaskUtils at BEST_EFFORT priority run in
+  // order, so by the time this one runs the profile's post-startup
+  // KeyedServices have been created.
+  base::RunLoop run_loop;
+  AfterStartupTaskUtils::PostTask(
+      FROM_HERE,
+      content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}),
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // IsServiceCreated() is public on KeyedServiceBaseFactory but protected on
+  // the templated subclasses, so go through the base pointer.
+  const KeyedServiceBaseFactory* factory =
+      CertificateProvisioningServiceFactory::GetInstance();
+  EXPECT_TRUE(factory->IsServiceCreated(GetProfile()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

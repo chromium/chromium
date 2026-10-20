@@ -1417,6 +1417,14 @@ BASE_FEATURE_PARAM(bool,
                    &kLazyKeyedServiceInstantiation,
                    true);
 
+// When enabled, the enterprise CertificateProvisioningService is created once
+// browser startup is complete (or on first use) rather than eagerly during
+// BrowserContext creation.
+BASE_FEATURE_PARAM(bool,
+                   kLazyKeyedServiceInstantiationCertificateProvisioning,
+                   &kLazyKeyedServiceInstantiation,
+                   true);
+
 // When enabled, extension keyed services are instantiated lazily.
 BASE_FEATURE_PARAM(bool,
                    kLazyKeyedServiceInstantiationExtensions,
