@@ -25,7 +25,6 @@
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/storage_partition_config.h"
-#include "ui/base/models/tree_model.h"
 #include "url/origin.h"
 
 namespace web_app {

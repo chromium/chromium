@@ -13,7 +13,6 @@
 
 namespace ui {
 
-class ImageModel;
 class TreeModel;
 
 // TreeModelNode --------------------------------------------------------------
@@ -87,15 +86,6 @@ class COMPONENT_EXPORT(UI_BASE) TreeModel {
   // Sets the title of |node|.
   // This is only invoked if the node is editable and the user edits a node.
   virtual void SetTitle(TreeModelNode* node, const std::u16string& title);
-
-  // Returns the set of icons for the nodes in the tree. You only need override
-  // this if you don't want to use the default folder icons.
-  virtual void GetIcons(std::vector<ui::ImageModel>* icons) {}
-
-  // Returns the index of the icon to use for |node|. Return nullopt to use the
-  // default icon. The index is relative to the list of icons returned from
-  // GetIcons.
-  virtual std::optional<size_t> GetIconIndex(TreeModelNode* node);
 
  protected:
   virtual ~TreeModel() {}

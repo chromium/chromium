@@ -468,9 +468,6 @@ class VIEWS_EXPORT TreeView : public View,
   // Default folder icon.
   ui::ImageModel folder_icon_;
 
-  // Icons from the model.
-  std::vector<ui::ImageModel> icons_;
-
   // The root node.
   InternalNode root_;
 

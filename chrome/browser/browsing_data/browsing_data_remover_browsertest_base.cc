@@ -50,7 +50,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/re2/src/re2/re2.h"
-#include "ui/base/models/tree_model.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_browsertest_utils.h"
