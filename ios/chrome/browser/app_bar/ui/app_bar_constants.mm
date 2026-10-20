@@ -9,12 +9,15 @@
 
 namespace {
 const CGFloat kAppBarHeightDefault = 77;
-const CGFloat kAppBarHeightLandscapeDefault = 69;
+const CGFloat kAppBarHeightLandscapeDefault = 68;
 }  // namespace
 
 const CGFloat kAppBarHeightFullscreen = 62;
 
 CGFloat AppBarHeightPortrait() {
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    return kAppBarHeightLandscapeDefault;
+  }
   return kAppBarHeightDefault;
 }
 

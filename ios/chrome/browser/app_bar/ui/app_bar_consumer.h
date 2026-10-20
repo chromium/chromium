@@ -14,6 +14,8 @@ typedef NS_ENUM(NSUInteger, AppBarButtonType) {
   AppBarButtonTypeAssistant,
   AppBarButtonTypeNewTab,
   AppBarButtonTypeTabGrid,
+  AppBarButtonTypeBack,
+  AppBarButtonTypeForward,
 };
 
 // Consumer of the app bar.
