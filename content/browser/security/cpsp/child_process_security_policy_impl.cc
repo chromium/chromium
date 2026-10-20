@@ -1968,6 +1968,11 @@ bool ChildProcessSecurityPolicyImpl::CanCommitSchemeInAnyProcess_Cpp(
 
 bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
                                                   const GURL& url) {
+  return CanCommitURL(ChildProcessId::FromUnsafeValue(child_id), url);
+}
+
+bool ChildProcessSecurityPolicyImpl::CanCommitURL(ChildProcessId child_id,
+                                                  const GURL& url) {
   if (!url.is_valid()) {
     LogCanCommitUrlFailureReason("invalid_url");
     return false;  // Can't commit invalid URLs.
@@ -2026,10 +2031,8 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
   // compute its expected process lock. We still verify in the
   // state->CanCommitURL call below that the process has actually been granted
   // access to this URL, rather than just returning true for it.
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   if (url != GURL(kUnreachableWebDataURL) &&
-      !CanAccessMaybeOpaqueOrigin(ChildProcessId::FromUnsafeValue(child_id),
-                                  url,
+      !CanAccessMaybeOpaqueOrigin(child_id, url,
                                   false /* url_is_precursor_of_opaque_origin */,
                                   AccessType::kCanCommitNewOrigin)) {
     LogCanCommitUrlFailureReason("cannot_access_origin");
@@ -2049,8 +2052,7 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
       return true;
     }
 
-    auto* state = process_states_.GetProcessStateForQuery(
-        ChildProcessId::FromUnsafeValue(child_id));
+    auto* state = process_states_.GetProcessStateForQuery(child_id);
     if (!state) {
       LogCanCommitUrlFailureReason("no_security_state_found");
       return false;

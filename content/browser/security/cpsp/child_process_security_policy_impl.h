@@ -319,6 +319,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // requests that might lead to cross-process navigations or external protocol
   // handlers. Used primarily as a helper for CanCommitOriginAndUrl and thus not
   // exposed publicly.
+  bool CanCommitURL(ChildProcessId child_id, const GURL& url);
+  // TODO(crbug.com/379869738): Remove this method when usages are ported.
   bool CanCommitURL(int child_id, const GURL& url);
 
   // This function will check whether |origin| requires process isolation
