@@ -376,7 +376,6 @@ int64_t NextLinearStepAboveUnits(int64_t units,
         [weakSelf handleSystemExpiration];
       } else {
         DLOG(WARNING) << "BGTask expirationHandler invoked off main thread.";
-        base::debug::DumpWithoutCrashing();
         dispatch_async(dispatch_get_main_queue(), ^{
           [weakSelf handleSystemExpiration];
         });
