@@ -88,14 +88,25 @@ gpu::SharedImageUsageSet GetShmSharedImageUsage(SharedImageUsageSet usage) {
   return new_usage;
 }
 
-// This might need further tweaking in order to be able to choose appropriate
-// backing. Note that the backing usually doesnt know at this point if the
-// access stream will be used for read or write.
-SharedImageUsageSet GetUsageFromAccessStream(SharedImageAccessStream stream) {
+// Returns the SharedImageUsageSet used to query SharedImageFactory when
+// dynamically allocating a backing for `stream` and `params`. Note that the
+// backing usually doesn't know at this point whether the access stream will be
+// used for read or write, so both read and write usages are included.
+SharedImageUsageSet GetUsageFromAccessStream(SharedImageAccessStream stream,
+                                             const AccessParams& params) {
   switch (stream) {
     case SharedImageAccessStream::kGL:
       return SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
     case SharedImageAccessStream::kSkia:
+      // When the accessing context uses GL (e.g., Ganesh over GL), request
+      // GLES2 usages so SharedImageFactory selects a GL-compatible backing
+      // (such as GLTextureImageBacking or EGLImageBacking) rather than
+      // WrappedSkImageBacking, and so GL factories do not reject the request
+      // on RASTER/DISPLAY usage checks when the factory's main GrContextType is
+      // non-GL.
+      if (params.context_state && params.context_state->IsUsingGL()) {
+        return SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+      }
       return SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
              SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE;
     case SharedImageAccessStream::kDawn:
@@ -2042,7 +2053,7 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
             ? GetSinglePlaneRGBAFormatForChannelFormat(
                   format().channel_format())
             : format();
-    SharedImageUsageSet usage = GetUsageFromAccessStream(stream);
+    SharedImageUsageSet usage = GetUsageFromAccessStream(stream, params);
     std::unique_ptr<SharedImageBacking> new_backing;
     shared_image_factory_->Execute([&](SharedImageFactory* factory) {
       SharedImageBackingFactory* gpu_backing_factory =
