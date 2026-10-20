@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Image Create"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom:IconType) -->
+<!-- LINT.ThenChange(//components/omnibox/browser/suggest_template_info.mojom:IconType) -->
 
 <enum name="BooleanFromHTTPCache">
   <int value="0" label="Downloaded from network"/>

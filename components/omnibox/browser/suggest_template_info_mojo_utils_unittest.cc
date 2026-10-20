@@ -126,6 +126,25 @@ TEST(SuggestTemplateInfoMojoUtilsTest, PopulatesImageFromMatch) {
   }
 }
 
+TEST(SuggestTemplateInfoMojoUtilsTest, PopulatesTypeIconFromSuggestTemplate) {
+  // Matches without a SuggestTemplateInfo have no type icon.
+  {
+    AutocompleteMatch match;
+    EXPECT_EQ(CreateSuggestTemplateInfo(match)->type_icon,
+              mojom::IconType::kIconTypeUnspecified);
+  }
+  // The type icon from the server is forwarded.
+  {
+    AutocompleteMatch match;
+    omnibox::SuggestTemplateInfo suggest_template;
+    suggest_template.set_type_icon(
+        omnibox::SuggestTemplateInfo::SEARCH_LOOP_WITH_SPARKLE);
+    match.suggest_template = suggest_template;
+    EXPECT_EQ(CreateSuggestTemplateInfo(match)->type_icon,
+              mojom::IconType::kSearchLoopWithSparkle);
+  }
+}
+
 TEST(SuggestTemplateInfoMojoUtilsTest, PopulatesTextFromMatch) {
   AutocompleteMatch match;
   match.contents = u"example.com";

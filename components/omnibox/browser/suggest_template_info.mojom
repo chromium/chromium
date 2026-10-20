@@ -64,6 +64,34 @@ enum SuggestStyle {
 };
 // LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:StandardSuggestStyle)
 
+// The icon of a suggestion. Maps to SuggestTemplateInfo.IconType in
+// //third_party/omnibox_proto/suggest_template_info.proto. The values must
+// match, so that the proto values can be cast directly. They are also recorded
+// by the NTP action chips histograms.
+// LINT.IfChange(IconType)
+enum IconType {
+  kIconTypeUnspecified = 0,
+  kHistory = 1,
+  kSearchLoop = 2,
+  kSearchLoopWithSparkle = 3,
+  kTrending = 4,
+  kSubArrowRight = 5,
+  kGlobeWithSearchLoop = 6,
+  kBanana = 7,
+  kFavicon = 8,
+  kNotesSpark = 9,
+  kDraftSpark = 10,
+  kLightbulb = 11,
+  kAttachFile = 12,
+  kSchool = 13,
+  kInkPen = 14,
+  kTab = 15,
+  kPhotoSpark = 16,
+  kBolt = 17,
+  kImageCreate = 18,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ActionChipIconType)
+
 // Where to display the secondary text relative to the primary text.
 // Maps to SuggestTemplateInfo.SecondaryTextPlacement in
 // //third_party/omnibox_proto/suggest_template_info.proto.
@@ -108,4 +136,7 @@ struct SuggestTemplateInfo {
   Image? image;
   // The style of the suggestion, as provided by the server.
   SuggestStyle style = SuggestStyle.kUnspecified;
+  // The icon to display in front of the primary text.
+  // TODO(crbug.com/573635047): Use this in the searchbox WebUI too.
+  IconType type_icon = IconType.kIconTypeUnspecified;
 };

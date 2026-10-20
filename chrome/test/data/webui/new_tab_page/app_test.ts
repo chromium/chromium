@@ -25,6 +25,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNear, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -3080,41 +3081,41 @@ suite('NewTabPageAppTest', () => {
         actionChipsPageRemote.onActionChipsChanged([
           {
             suggestion: 'tab-suggestion',
-            suggestTemplateInfo: {
+            suggestTemplateInfo: createSuggestTemplateInfo({
               typeIcon: IconType.kFavicon,
-              primaryText: {text: 'TabContext', a11yText: null},
-              secondaryText: {text: 'tab-subtitle', a11yText: null},
-              fuseboxAction: createFuseboxAction({
-                preselectedTool: ToolMode.kUnspecified,
-                preselectedModel: ModelMode.kUnspecified,
-              }),
-            },
+              primaryText: 'TabContext',
+              secondaryText: 'tab-subtitle',
+            }),
+            fuseboxAction: createFuseboxAction({
+              preselectedTool: ToolMode.kUnspecified,
+              preselectedModel: ModelMode.kUnspecified,
+            }),
             tab: fakeTab,
           },
           {
             suggestion: 'image-suggestion',
-            suggestTemplateInfo: {
+            suggestTemplateInfo: createSuggestTemplateInfo({
               typeIcon: IconType.kBanana,
-              primaryText: {text: 'Nano Banana', a11yText: null},
-              secondaryText: {text: 'image-subtitle', a11yText: null},
-              fuseboxAction: createFuseboxAction({
-                preselectedTool: ToolMode.kImageGen,
-                preselectedModel: ModelMode.kUnspecified,
-              }),
-            },
+              primaryText: 'Nano Banana',
+              secondaryText: 'image-subtitle',
+            }),
+            fuseboxAction: createFuseboxAction({
+              preselectedTool: ToolMode.kImageGen,
+              preselectedModel: ModelMode.kUnspecified,
+            }),
             tab: null,
           },
           {
             suggestion: 'ds-suggestion',
-            suggestTemplateInfo: {
+            suggestTemplateInfo: createSuggestTemplateInfo({
               typeIcon: IconType.kGlobeWithSearchLoop,
-              primaryText: {text: 'DeepSearch', a11yText: null},
-              secondaryText: {text: 'ds-subtitle', a11yText: null},
-              fuseboxAction: createFuseboxAction({
-                preselectedTool: ToolMode.kDeepSearch,
-                preselectedModel: ModelMode.kUnspecified,
-              }),
-            },
+              primaryText: 'DeepSearch',
+              secondaryText: 'ds-subtitle',
+            }),
+            fuseboxAction: createFuseboxAction({
+              preselectedTool: ToolMode.kDeepSearch,
+              preselectedModel: ModelMode.kUnspecified,
+            }),
             tab: null,
           },
         ]);
@@ -3481,15 +3482,15 @@ suite('NewTabPageAppTest', () => {
         async () => {
           actionChipsPageRemote.onActionChipsChanged([{
             suggestion: 'test suggestion',
-            suggestTemplateInfo: {
+            suggestTemplateInfo: createSuggestTemplateInfo({
               typeIcon: IconType.kSubArrowRight,
-              primaryText: {text: 'Model test', a11yText: null},
-              secondaryText: {text: 'subtitle', a11yText: null},
-              fuseboxAction: createFuseboxAction({
-                preselectedTool: ToolMode.kUnspecified,
-                preselectedModel: ModelMode.kGeminiPro,
-              }),
-            },
+              primaryText: 'Model test',
+              secondaryText: 'subtitle',
+            }),
+            fuseboxAction: createFuseboxAction({
+              preselectedTool: ToolMode.kUnspecified,
+              preselectedModel: ModelMode.kGeminiPro,
+            }),
             tab: null,
           }]);
           await microtasksFinished();

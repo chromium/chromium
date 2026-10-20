@@ -13,6 +13,7 @@ mojom("mojo_bindings") {
   public_deps = [
     "//components/omnibox/browser:fusebox_action_mojo_bindings",
     "//components/omnibox/browser:mojo_bindings",
+    "//components/omnibox/browser:suggest_template_info_mojo_bindings",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]

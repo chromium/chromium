@@ -14,7 +14,7 @@
 
 import type {Action, AutocompleteMatch, AutocompleteResult, InputKeywordModel, MatchKeywordModel, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {KeywordType, PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {ColorType, SecondaryTextPlacement, SuggestStyle} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {ColorType, IconType, SecondaryTextPlacement, SuggestStyle} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import type {FormattedString, FormattedStringFragment, SuggestTemplateInfo} from '//resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 
 export function createAutocompleteMatch(
@@ -62,6 +62,7 @@ export function createSuggestTemplateInfo(
     secondaryTextPlacement: SecondaryTextPlacement.kUnspecified,
     image: null,
     style: SuggestStyle.kUnspecified,
+    typeIcon: IconType.kIconTypeUnspecified,
   };
 
   return Object.assign(base, modifiers);
