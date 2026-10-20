@@ -1431,6 +1431,12 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
       // Important to note that DCHECKED_BRP implies BACKUP_REF_PTR_SUPPORT and
       // thus `ref_count` is always set above.
       PA_DCHECK(new_ref_count == ref_count);
+
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+      // By definition, slots that can store the raw size do not smuggle
+      // the requested size.
+      PA_DCHECK(!ref_count->IsSmuggledSizeAvailable());
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
     }
 #endif  // PARTITION_ALLOC_HAS_DCHECKED_BRP
 
@@ -1442,12 +1448,6 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
           static_cast<unsigned char*>(object) + GetSlotUsableSize(slot_span)));
     }
 #endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
-
-#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
-    // By definition, slots that can store the raw size do not smuggle
-    // the requested size.
-    PA_DCHECK(!ref_count->IsSmuggledSizeAvailable());
-#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
 
   }
 #if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
