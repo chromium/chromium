@@ -80,6 +80,7 @@
                                     isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
+    _active = YES;
     _searchEngineSupportsSearchByImage = NO;
     _searchEngineSupportsLens = NO;
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
@@ -155,6 +156,16 @@
 }
 
 #pragma mark - Setters
+
+- (void)setActive:(BOOL)active {
+  if (_active == active) {
+    return;
+  }
+  _active = active;
+  if (IsLocationBarPerformanceImprovementsEnabled() && _active) {
+    [self updatePlaceholderType];
+  }
+}
 
 - (void)setConsumer:(id<LocationBarConsumer>)consumer {
   _consumer = consumer;
@@ -240,6 +251,9 @@
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
+  if (IsLocationBarPerformanceImprovementsEnabled() && !self.active) {
+    return;
+  }
   if (status.active_web_state_change()) {
     [self.consumer defocusOmnibox];
   }
@@ -375,6 +389,9 @@
 
 /// Updates the placeholder.
 - (void)updatePlaceholderType {
+  if (IsLocationBarPerformanceImprovementsEnabled() && !self.active) {
+    return;
+  }
   if ([self isCurrentPageNTP]) {
     if ([self shouldShowPlusButton]) {
       [self.consumer

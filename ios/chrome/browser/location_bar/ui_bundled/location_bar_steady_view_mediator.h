@@ -38,6 +38,9 @@ class Tracker;
 // Feature engagement tracker.
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
 
+// Whether the location bar is currently active. Defaults to YES.
+@property(nonatomic, assign) BOOL active;
+
 // Stops observing all objects.
 - (void)disconnect;
 

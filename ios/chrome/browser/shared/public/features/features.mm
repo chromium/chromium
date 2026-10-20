@@ -1255,3 +1255,10 @@ bool IsFiveButtonAppBarLayoutEnabled() {
   }
   return base::FeatureList::IsEnabled(kFiveButtonAppBarLayout);
 }
+
+BASE_FEATURE(kLocationBarPerformanceImprovements,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsLocationBarPerformanceImprovementsEnabled() {
+  return base::FeatureList::IsEnabled(kLocationBarPerformanceImprovements);
+}

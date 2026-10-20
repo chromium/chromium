@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -142,5 +143,55 @@ TEST_F(LocationBarMediatorTest, SetPlaceholderServiceUpdatesConsumer) {
       [mock_consumer setPlaceholderDefaultSearchEngineIcon:[OCMArg isNotNil]]);
 
   mediator_.placeholderService = placeholder_service_.get();
+  EXPECT_OCMOCK_VERIFY(mock_consumer);
+}
+
+// Tests that `locationUpdated` skips updating the consumer when the mediator is
+// inactive and `kLocationBarPerformanceImprovements` is enabled, and syncs the
+// placeholder type when becoming active.
+TEST_F(LocationBarMediatorTest,
+       SkipsLocationUpdatedWhenInactiveFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLocationBarPerformanceImprovements);
+
+  id mock_consumer = OCMProtocolMock(@protocol(LocationBarConsumer));
+  [mediator_ setConsumer:mock_consumer];
+
+  mediator_.active = NO;
+
+  OCMReject(
+      [mock_consumer setPlaceholderType:LocationBarPlaceholderType::kNone]);
+  [mediator_ locationUpdated];
+  EXPECT_OCMOCK_VERIFY(mock_consumer);
+
+  id inactive_consumer = OCMProtocolMock(@protocol(LocationBarConsumer));
+  OCMReject(
+      [inactive_consumer setPlaceholderType:LocationBarPlaceholderType::kNone]);
+  [mediator_ setConsumer:inactive_consumer];
+  EXPECT_OCMOCK_VERIFY(inactive_consumer);
+
+  id active_mock_consumer = OCMProtocolMock(@protocol(LocationBarConsumer));
+  [mediator_ setConsumer:active_mock_consumer];
+  OCMExpect([active_mock_consumer
+      setPlaceholderType:LocationBarPlaceholderType::kNone]);
+  mediator_.active = YES;
+  EXPECT_OCMOCK_VERIFY(active_mock_consumer);
+}
+
+// Tests that `locationUpdated` still updates the consumer when the mediator is
+// inactive if `kLocationBarPerformanceImprovements` is disabled.
+TEST_F(LocationBarMediatorTest,
+       LocationUpdatedUpdatesConsumerWhenInactiveFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kLocationBarPerformanceImprovements);
+
+  id mock_consumer = OCMProtocolMock(@protocol(LocationBarConsumer));
+  [mediator_ setConsumer:mock_consumer];
+
+  mediator_.active = NO;
+
+  OCMExpect(
+      [mock_consumer setPlaceholderType:LocationBarPlaceholderType::kNone]);
+  [mediator_ locationUpdated];
   EXPECT_OCMOCK_VERIFY(mock_consumer);
 }

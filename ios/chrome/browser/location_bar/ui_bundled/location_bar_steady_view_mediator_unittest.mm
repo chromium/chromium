@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view_mediator.h"
 
 #import "base/functional/callback_helpers.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/omnibox/browser/test_location_bar_model.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/test/fake_location_bar_steady_view_consumer.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -193,6 +195,55 @@ TEST_F(LocationBarSteadyViewMediatorTest,
   EXPECT_EQ(0U, consumer_.locationText.length);
   EXPECT_EQ(0U, consumer_.statusText.length);
   EXPECT_TRUE(consumer_.icon);
+}
+
+// Tests that consumer updates are skipped while the mediator is inactive and
+// synced when becoming active when `kLocationBarPerformanceImprovements` is
+// enabled.
+TEST_F(LocationBarSteadyViewMediatorTest,
+       SkipsConsumerUpdatesWhenInactiveFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kLocationBarPerformanceImprovements);
+
+  mediator_.active = NO;
+
+  const GURL kUrl("https://chromium.test");
+  model_.set_url_for_display(u"chromium.test");
+  auto passed_web_state = std::make_unique<web::FakeWebState>();
+  passed_web_state->SetCurrentURL(kUrl);
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(passed_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
+
+  // Consumer should not have been updated while inactive.
+  EXPECT_EQ(0U, consumer_.locationText.length);
+  EXPECT_FALSE(consumer_.locationShareable);
+
+  // Activating the mediator should immediately sync the consumer.
+  mediator_.active = YES;
+  EXPECT_NSEQ(@"chromium.test", consumer_.locationText);
+  EXPECT_TRUE(consumer_.locationShareable);
+}
+
+// Tests that consumer updates still occur when the mediator is inactive if
+// `kLocationBarPerformanceImprovements` is disabled.
+TEST_F(LocationBarSteadyViewMediatorTest,
+       UpdatesConsumerWhenInactiveFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kLocationBarPerformanceImprovements);
+
+  mediator_.active = NO;
+
+  const GURL kUrl("https://chromium.test");
+  model_.set_url_for_display(u"chromium.test");
+  auto passed_web_state = std::make_unique<web::FakeWebState>();
+  passed_web_state->SetCurrentURL(kUrl);
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(passed_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
+
+  EXPECT_NSEQ(@"chromium.test", consumer_.locationText);
+  EXPECT_TRUE(consumer_.locationShareable);
 }
 
 // TODO(crbug.com/41475379): Add more tests to this suite.

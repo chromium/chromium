@@ -1028,4 +1028,10 @@ BASE_DECLARE_FEATURE(kFiveButtonAppBarLayout);
 // Returns true if the FiveButtonAppBarLayout feature is enabled.
 bool IsFiveButtonAppBarLayoutEnabled();
 
+// Enables the `kLocationBarPerformanceImprovements` feature.
+BASE_DECLARE_FEATURE(kLocationBarPerformanceImprovements);
+
+// Returns true if the `kLocationBarPerformanceImprovements` feature is enabled.
+bool IsLocationBarPerformanceImprovementsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

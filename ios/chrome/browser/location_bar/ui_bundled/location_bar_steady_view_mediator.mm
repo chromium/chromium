@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
@@ -55,6 +56,7 @@
   DCHECK(locationBarModel);
   self = [super init];
   if (self) {
+    _active = YES;
     _locationBarModel = locationBarModel;
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
@@ -86,6 +88,18 @@
 
 #pragma mark - Setters
 
+- (void)setActive:(BOOL)active {
+  if (_active == active) {
+    return;
+  }
+  _active = active;
+  if (IsLocationBarPerformanceImprovementsEnabled() && _active &&
+      self.webStateList) {
+    [self notifyConsumerOfChangedLocation];
+    [self notifyConsumerOfChangedSecurityIcon];
+  }
+}
+
 - (void)setConsumer:(id<LocationBarSteadyViewConsumer>)consumer {
   _consumer = consumer;
   if (self.webStateList) {
@@ -114,6 +128,9 @@
     return;
   }
   _webContentAreaShowingOverlay = webContentAreaShowingOverlay;
+  if (IsLocationBarPerformanceImprovementsEnabled() && !_active) {
+    return;
+  }
   [self.consumer updateLocationShareable:[self isSharingEnabled]];
 }
 
@@ -170,6 +187,9 @@
     didFinishNavigation:(web::NavigationContext*)navigation {
   [self notifyConsumerOfChangedLocation];
   [self notifyConsumerOfChangedSecurityIcon];
+  if (IsLocationBarPerformanceImprovementsEnabled() && !_active) {
+    return;
+  }
   __weak __typeof(self) weakSelf = self;
 
   self.tracker->AddOnInitializedCallback(base::BindRepeating(^(bool success) {
@@ -245,6 +265,9 @@
 }
 
 - (void)notifyConsumerOfChangedLocation {
+  if (IsLocationBarPerformanceImprovementsEnabled() && !_active) {
+    return;
+  }
   [self.consumer updateLocationText:[self currentLocationString]
                            clipTail:[self locationShouldClipTail]];
   BOOL isNTP = IsVisibleURLNewTabPage(self.currentWebState);
@@ -255,6 +278,9 @@
 }
 
 - (void)notifyConsumerOfChangedSecurityIcon {
+  if (IsLocationBarPerformanceImprovementsEnabled() && !_active) {
+    return;
+  }
   [self.consumer updateLocationIcon:[self currentLocationIcon]
                  securityStatusText:[self securityStatusText]];
 }

@@ -2972,6 +2972,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kFiveButtonAppBarLayoutName,
      flag_descriptions::kFiveButtonAppBarLayoutDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kFiveButtonAppBarLayout)},
+    {"location-bar-performance-improvements",
+     flag_descriptions::kLocationBarPerformanceImprovementsName,
+     flag_descriptions::kLocationBarPerformanceImprovementsDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLocationBarPerformanceImprovements)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
