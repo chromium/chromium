@@ -1,7 +1,2 @@
-monorail: {
-  component: "UI>Browser>Actor"
-}
-team_email: "chrome-actor@google.com"
-buganizer_public: {
-  component_id: 2127911
-}
+mixins: "//components/actor/COMMON_METADATA"
+

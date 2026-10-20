@@ -1,7 +1,10 @@
-monorail: {
-  component: "UI>Browser>Actor"
+mixins: "//components/actor/COMMON_METADATA"
+agentic_review: {
+  capability_groups: {
+    path_expression: "chrome/browser/actor/tools/.*\\.(cc|h)"
+    review_capability_skills: [
+      "agents/skills/actor-tool-registration/SKILL.md"
+    ]
+  }
 }
-team_email: "chrome-actor@google.com"
-buganizer_public: {
-  component_id: 2127911
-}
+
