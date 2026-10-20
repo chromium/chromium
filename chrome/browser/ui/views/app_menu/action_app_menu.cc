@@ -38,6 +38,8 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/strings/grit/ax_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -45,6 +47,7 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -265,6 +268,25 @@ void ActionAppMenu::RunMenu(views::Widget* parent,
                           /*native_view_for_gestures=*/gfx::NativeView(),
                           /*corners=*/std::nullopt,
                           "Chrome.AppMenu.MenuHostInitToNextFramePresented");
+
+  auto* screen = display::Screen::Get();
+  CHECK(screen);
+  int screen_height =
+      screen->GetDisplayNearestPoint(anchor_screen_bounds.origin())
+          .bounds()
+          .height();
+
+  int menu_height = 0;
+  if (IsShowing()) {
+    auto* const scroll_view_container =
+        root_->GetSubmenu()->GetScrollViewContainer();
+    if (scroll_view_container) {
+      menu_height = scroll_view_container->GetPreferredSize({}).height();
+    } else {
+      menu_height = root_->GetSubmenu()->GetPreferredSize({}).height();
+    }
+    metrics_.RecordMenuHeightPercentage(menu_height, screen_height);
+  }
 }
 
 void ActionAppMenu::UpdateMenuItem(actions::BaseAction* action,

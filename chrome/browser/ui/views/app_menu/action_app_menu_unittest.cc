@@ -100,6 +100,8 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/text_utils.h"
@@ -118,6 +120,7 @@
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/separator.h"
@@ -4476,8 +4479,58 @@ TEST_F(ActionAppMenuTest, AllMenuItemsHandledInMetrics) {
     ActionAppMenuMetrics metrics;
     metrics.LogMenuAction(action);
   }
-
   menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, MenuHeightPercentageMetric) {
+  base::HistogramTester histogram_tester;
+
+  ActionAppMenu menu(&mock_window_interface_, base::DoNothing());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  ASSERT_TRUE(root->GetSubmenu());
+  ASSERT_TRUE(root->GetSubmenu()->GetScrollViewContainer());
+
+  const int menu_height = root->GetSubmenu()
+                              ->GetScrollViewContainer()
+                              ->GetPreferredSize({})
+                              .height();
+  const int screen_height =
+      display::Screen::Get()
+          ->GetDisplayNearestPoint(button_->button_controller()
+                                       ->button()
+                                       ->GetAnchorBoundsInScreen()
+                                       .origin())
+          .bounds()
+          .height();
+  ASSERT_GT(screen_height, 0);
+  const int expected_percentage = menu_height * 100 / screen_height;
+
+  histogram_tester.ExpectUniqueSample("WrenchMenu.MenuHeightPercentage",
+                                      expected_percentage, 1);
+  menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuTest, ActionAppMenuMetricsRecordMenuHeightPercentage) {
+  base::HistogramTester histogram_tester;
+  ActionAppMenuMetrics metrics;
+
+  metrics.RecordMenuHeightPercentage(500, 1000);
+  histogram_tester.ExpectUniqueSample("WrenchMenu.MenuHeightPercentage", 50, 1);
+
+  metrics.RecordMenuHeightPercentage(800, 1000);
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuHeightPercentage", 80, 1);
+  histogram_tester.ExpectTotalCount("WrenchMenu.MenuHeightPercentage", 2);
+
+  // Values <= 0 for either height should not be logged.
+  metrics.RecordMenuHeightPercentage(0, 1000);
+  metrics.RecordMenuHeightPercentage(-50, 1000);
+  metrics.RecordMenuHeightPercentage(500, 0);
+  metrics.RecordMenuHeightPercentage(500, -100);
+  histogram_tester.ExpectTotalCount("WrenchMenu.MenuHeightPercentage", 2);
 }
 
 }  // namespace

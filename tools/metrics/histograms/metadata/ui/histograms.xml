@@ -1486,6 +1486,16 @@ features through Chrome Labs. -->
   <summary>Number of times that each menu item is clicked.</summary>
 </histogram>
 
+<histogram name="WrenchMenu.MenuHeightPercentage" units="%"
+    expires_after="2027-10-16">
+  <owner>emshack@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The percentage of the device screen height occupied by the app menu's
+    preferred height when the menu is opened.
+  </summary>
+</histogram>
+
 <histogram name="WrenchMenu.TimeToAction{Action}" units="ms"
     expires_after="2027-03-14">
   <owner>ainslie@chromium.org</owner>
