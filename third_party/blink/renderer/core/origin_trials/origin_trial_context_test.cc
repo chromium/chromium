@@ -638,6 +638,32 @@ TEST_F(OriginTrialContextDevtoolsTest, DependentFeatureNotEnabled) {
       {{OriginTrialTokenStatus::kSuccess, /* token_parsable */ true}});
 }
 
+TEST_F(OriginTrialContextDevtoolsTest,
+       RTCDiagnosticLoggingTrialNotAllowedWhenBaseFeatureDisabled) {
+  // The browser process rejects RTCLoggingDispatcher messages (and kills the
+  // renderer) when the RTCDiagnosticLogging base::Feature is disabled, so the
+  // origin trial must not be able to expose the API in that case.
+  static constexpr char kTrialName[] = "RTCDiagnosticLogging";
+
+  UpdateSecurityOrigin(kFrobulateEnabledOrigin);
+
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndDisableFeature(blink::features::kRTCDiagnosticLogging);
+
+  AddTokenWithResponse(kTrialName, OriginTrialTokenStatus::kSuccess);
+
+  EXPECT_FALSE(IsFeatureEnabled(
+      mojom::blink::OriginTrialFeature::kRTCDiagnosticLogging));
+  EXPECT_FALSE(IsFeatureEnabled(
+      mojom::blink::OriginTrialFeature::kRTCLegacyDiagnosticLogging));
+  HashMap<String, OriginTrialResult> origin_trial_results =
+      GetOriginTrialResultsForDevtools();
+  EXPECT_EQ(origin_trial_results.size(), 1u);
+  ExpectTrialResultContains(
+      origin_trial_results, kTrialName, OriginTrialStatus::kTrialNotAllowed,
+      {{OriginTrialTokenStatus::kSuccess, /* token_parsable */ true}});
+}
+
 TEST_F(OriginTrialContextDevtoolsTest, TrialNameNotRecognized) {
   UpdateSecurityOrigin(kFrobulateEnabledOrigin);
 
