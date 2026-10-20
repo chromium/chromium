@@ -50,6 +50,7 @@
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
@@ -330,6 +331,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 }
 
 // Tests FRE with UMA default value and with sign-in.
+TAG_SMOKE_TEST(FirstRunWithoutSearchEngineChoiceTestCase,
+               testWithUMACheckedAndSignin);
 - (void)testWithUMACheckedAndSignin {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];

@@ -20,6 +20,7 @@
 #import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/net/url_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "ios/web/common/features.h"
 #import "net/http/http_response_headers.h"
 #import "net/test/embedded_test_server/default_handlers.h"
@@ -99,6 +100,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 }
 
 // Tests that page successfully loads.
+TAG_SMOKE_TEST(BrowsingTestCase, testLoad);
 - (void)testLoad {
   const GURL URL = self.testServer->GetURL("/echo");
   [ChromeEarlGrey loadURL:URL];
@@ -120,6 +122,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 }
 
 // Tests that page successfully reloads.
+TAG_SMOKE_TEST(BrowsingTestCase, testReload);
 - (void)testReload {
   GURL URL = self.testServer->GetURL(kReloadTestUrl);
   [ChromeEarlGrey loadURL:URL];
@@ -264,6 +267,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 
 // Tests that a link with a JavaScript-based navigation changes the page and
 // that the back button works as expected afterwards.
+TAG_SMOKE_TEST(BrowsingTestCase, testBrowsingJavaScriptBasedNavigation);
 - (void)testBrowsingJavaScriptBasedNavigation {
   std::map<GURL, std::string> responses;
   const GURL URL = self.testServer->GetURL("/origin");

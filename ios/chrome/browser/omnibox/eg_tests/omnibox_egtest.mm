@@ -36,6 +36,7 @@
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -473,6 +474,7 @@ void FocusFakebox() {
 }
 
 // Tapping on steady view starts editing.
+TAG_SMOKE_TEST(LocationBarSteadyStateTestCase, testTapSwitchesToEditing);
 - (void)testTapSwitchesToEditing {
   [self openPage1];
 
@@ -771,6 +773,7 @@ void FocusFakebox() {
 // Tests that tapping on steady view on webpage and starting typing a query
 // would clear the page url and have instead the typed query in the omnibox text
 // field.
+TAG_SMOKE_TEST(LocationBarPreEditStateTestCase, testTypingOnPreEditState);
 - (void)testTypingOnPreEditState {
   // Load a web page.
   [ChromeEarlGrey loadURL:_URL];

@@ -36,6 +36,7 @@
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -164,6 +165,7 @@ id<GREYMatcher> identityDiscMatcher() {
 
 // Tests that the identity disc particle can be selected, and lead to opening
 // the account menu.
+TAG_SMOKE_TEST(AccountMenuTestCase, testViewAccountMenu);
 - (void)testViewAccountMenu {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Select the identity disc particle.
@@ -296,6 +298,7 @@ id<GREYMatcher> identityDiscMatcher() {
 
 // Tests that the sign out button actually signs out and the account menu view
 // is closed, from a personal account.
+TAG_SMOKE_TEST(AccountMenuTestCase, testSignOut);
 - (void)testSignOut {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [self selectIdentityDisc];

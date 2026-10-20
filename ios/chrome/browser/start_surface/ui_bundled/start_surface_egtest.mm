@@ -24,6 +24,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -102,6 +103,7 @@ NSNumber* const kZeroSecondsThreshold = @0;
 
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile.
+TAG_SMOKE_TEST(StartSurfaceTestCase, testColdStartOpenStartSurface);
 - (void)testColdStartOpenStartSurface {
   [self loadFirstTabURL];
 

@@ -17,6 +17,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -91,6 +92,7 @@ void WaitForEmpyOmnibox() {
 }
 
 // Verifies opening a new tab from the tools menu.
+TAG_SMOKE_TEST(LegacyToolbarTestCase, testNewTabFromMenu);
 - (void)testNewTabFromMenu {
   [ChromeEarlGrey waitForMainTabCount:1];
 
@@ -303,6 +305,7 @@ void WaitForEmpyOmnibox() {
 }
 
 // Verifies that the clear text button clears any text in the omnibox.
+TAG_SMOKE_TEST(LegacyToolbarTestCase, testOmniboxClearTextButton);
 - (void)testOmniboxClearTextButton {
   const GURL URL = self.testServer->GetURL("/echo");
 

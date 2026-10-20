@@ -41,6 +41,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/element_selector.h"
 #import "net/base/apple/url_conversions.h"
@@ -571,6 +572,7 @@ void CheckAndAcceptSystemDialog(base::TimeDelta timeout) {
 
 // Tests that selecting "Copy Link" from the context menu properly copies the
 // link in the pasteboard.
+TAG_SMOKE_TEST(ContextMenuTestCase, testCopyLink);
 - (void)testCopyLink {
   [self setUpHistogramTester];
   [ChromeEarlGrey clearPasteboard];

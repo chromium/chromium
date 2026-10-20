@@ -26,6 +26,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -174,6 +175,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that tapping the switch to open tab button, switch to the open tab,
 // doesn't close the tab.
+TAG_SMOKE_TEST(OmniboxPopupTestCase, testSwitchToOpenTab);
 - (void)testSwitchToOpenTab {
   // Open the first page.
   GURL firstPageURL = self.testServer->GetURL(kPage1URL);

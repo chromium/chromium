@@ -44,6 +44,7 @@
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/reload_type.h"
@@ -1123,6 +1124,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
 }
 
 // Tests the Delete context menu action for a reading list entry.
+TAG_SMOKE_TEST(ReadingListTestCase, testContextMenuDelete);
 - (void)testContextMenuDelete {
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   [self addURLToTestReadingList:distillablePageURL];

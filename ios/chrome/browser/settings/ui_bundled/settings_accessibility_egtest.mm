@@ -16,6 +16,7 @@
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
+#import "ios/testing/test_tag_registry.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContentSettingsButton;
@@ -124,6 +125,7 @@ id<GREYMatcher> BandwidthSettingsButton() {
 
 // Verifies that the Settings screen can be swiped down to dismiss, and clean up
 // is performed allowing a new presentation.
+TAG_SMOKE_TEST(SettingsAccessibilityTestCase, testSettingsSwipeDownDismiss);
 - (void)testSettingsSwipeDownDismiss {
   [ChromeEarlGreyUI openSettingsMenu];
 

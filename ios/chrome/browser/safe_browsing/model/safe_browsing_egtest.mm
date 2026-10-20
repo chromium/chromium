@@ -39,6 +39,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -519,6 +520,7 @@ void EnableEnterpriseUrlFilteringPrefs() {
 
 // Tests that a phishing page is blocked, and the "Back to safety" button on
 // the warning page works as expected.
+TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
 - (void)testPhishingPage {
   [ChromeEarlGrey loadURL:_safeURL1];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];

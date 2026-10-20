@@ -35,6 +35,7 @@
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -631,6 +632,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 // row when browsing history is selected as a data type to be deleted. It also
 // tests that the history entries get deleted when the deletion of browsing data
 // is selected.
+TAG_SMOKE_TEST(QuickDeleteTestCase, testBrowsingHistoryForDeletion);
 - (void)testBrowsingHistoryForDeletion {
   // Add entry to the history service.
   [ChromeEarlGrey addHistoryServiceTypedURL:kMockURL];

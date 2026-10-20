@@ -137,6 +137,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_groups_constant",
     "//ios/chrome/browser/tab_switcher/ui_bundled/test:utils",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing:test_tag_registry",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
     "//ui/base",

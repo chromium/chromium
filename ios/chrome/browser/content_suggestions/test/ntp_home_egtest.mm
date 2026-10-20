@@ -66,6 +66,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -890,6 +891,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 // Tests that tapping the fake omnibox focuses the real omnibox.
+TAG_SMOKE_TEST(NTPHomeTestCase, testTapFakeOmnibox);
 - (void)testTapFakeOmnibox {
   // Setup the server.
   self.testServer->RegisterRequestHandler(
@@ -1164,6 +1166,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 }
 
 // Test to ensure that NTP for incognito mode works properly.
+TAG_SMOKE_TEST(NTPHomeTestCase, testIncognitoMode);
 - (void)testIncognitoMode {
   // Checks that default NTP is not incognito.
   [self

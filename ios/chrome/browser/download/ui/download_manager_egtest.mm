@@ -24,6 +24,7 @@
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/embedded_test_server_handlers.h"
+#import "ios/testing/test_tag_registry.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -157,6 +158,7 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
 // Tests successful download up to the point where "Open in..." button is
 // presented. EarlGrey does not allow testing "Open in..." dialog, because it
 // is run in a separate process.
+TAG_SMOKE_TEST(DownloadManagerTestCase, testSuccessfulDownload);
 - (void)testSuccessfulDownload {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];

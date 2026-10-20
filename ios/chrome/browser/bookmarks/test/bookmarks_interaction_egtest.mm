@@ -19,6 +19,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/base/net_errors.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -58,6 +59,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Verifies that adding a bookmark and removing a bookmark via the UI properly
 // updates the BookmarkModel.
+TAG_SMOKE_TEST(BookmarksInteractionTestCase, testAddRemoveBookmark);
 - (void)testAddRemoveBookmark {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 

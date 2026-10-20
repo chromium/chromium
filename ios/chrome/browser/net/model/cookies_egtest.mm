@@ -14,6 +14,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "url/gurl.h"
@@ -161,6 +162,7 @@ std::string IncognitoCookiePath() {
 }
 
 // Tests that a cookie set in normal tab is not available in an incognito tab.
+TAG_SMOKE_TEST(CookiesTestCase, testSwitchToIncognito);
 - (void)testSwitchToIncognito {
   // Sets cookie in normal tab.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(CookiePath())];

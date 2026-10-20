@@ -18,6 +18,7 @@
 #import "ios/net/url_test_util.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "ios/web/common/features.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -189,6 +190,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
 // Tests that only the selected web state is loaded Restore-after-Crash.  This
 // is only possible in EG2.
+TAG_SMOKE_TEST(RestoreWithCacheTestCase, testRestoreOneWebstateOnlyAfterCrash);
 - (void)testRestoreOneWebstateOnlyAfterCrash {
   // Visit the background page.
   int visitCounter = 0;
@@ -357,6 +359,9 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 @end
 
 @implementation RestoreWithSynthesizedTestCase
+
+TAG_SMOKE_TEST(RestoreWithSynthesizedTestCase,
+               testRestoreOneWebstateOnlyAfterCrash);
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];

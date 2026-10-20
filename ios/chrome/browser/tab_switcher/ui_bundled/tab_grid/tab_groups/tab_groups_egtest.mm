@@ -31,6 +31,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -351,6 +352,7 @@ void TapTabGroupTitle() {
 }
 
 // Tests that creates a tab group and opens the grouped tab.
+TAG_SMOKE_TEST(TabGroupsTestCase, testCompleteTabGroupCreation);
 - (void)testCompleteTabGroupCreation {
   [ChromeEarlGreyUI openTabGrid];
 

@@ -56,6 +56,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
+#import "ios/testing/test_tag_registry.h"
 #import "ios/third_party/earl_grey2/src/CommonLib/Matcher/GREYLayoutConstraint.h"  // nogncheck
 #import "ios/web/public/test/element_selector.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -781,6 +782,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Tests the add password flow from the toolbar button.
+TAG_SMOKE_TEST(PasswordManagerAddTestCase, testAddNewPasswordCredential);
 - (void)testAddNewPasswordCredential {
   OpenPasswordManager();
 

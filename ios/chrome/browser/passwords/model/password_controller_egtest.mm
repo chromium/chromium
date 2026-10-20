@@ -45,6 +45,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -343,6 +344,7 @@ void LoginOnUff() {
 #pragma mark - Tests
 
 // Tests that save password prompt is shown on new login.
+TAG_SMOKE_TEST(PasswordControllerEGTest, testSavePromptAppearsOnFormSubmission);
 - (void)testSavePromptAppearsOnFormSubmission {
   [self loadLoginPage];
 

@@ -21,6 +21,7 @@
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
+#import "ios/testing/test_tag_registry.h"
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -297,6 +298,7 @@ void TapSuppressDialogsButton() {
 #pragma mark - Tests
 
 // Tests that an alert is shown, and that the completion block is called.
+TAG_SMOKE_TEST(JavaScriptDialogTestCase, testShowJavaScriptAlert);
 - (void)testShowJavaScriptAlert {
   // Load the alert test page and tap on the link.
   const GURL kURL = self.testServer->GetURL(kAlertURLPath);

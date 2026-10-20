@@ -43,6 +43,7 @@
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -343,6 +344,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 }
 
 // Tests entering and leaving the tab grid.
+TAG_SMOKE_TEST(TabGridTestCase, testEnteringAndLeavingTabGrid);
 - (void)testEnteringAndLeavingTabGrid {
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
@@ -387,6 +389,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 }
 
 // Tests that closing the cell shows no tabs, and displays the empty state.
+TAG_SMOKE_TEST(TabGridTestCase, testClosingFirstCell);
 - (void)testClosingFirstCell {
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -401,6 +404,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that tapping Close All shows no tabs and displays the empty state,
 // and ensures that it doesn't affect the other tab grid.
+TAG_SMOKE_TEST(TabGridTestCase, testCloseAll);
 - (void)testCloseAll {
   // Also add a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];

@@ -35,6 +35,7 @@
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -181,6 +182,7 @@ void ClearRelevantData() {
 }
 
 // Tests that a bookmark added on the client is uploaded to the Sync server.
+TAG_SMOKE_TEST(SyncFakeServerTestCase, testSyncUploadBookmark);
 - (void)testSyncUploadBookmark {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -197,6 +199,7 @@ void ClearRelevantData() {
 
 // Tests that a bookmark injected in the FakeServer is synced down to the
 // client.
+TAG_SMOKE_TEST(SyncFakeServerTestCase, testSyncDownloadBookmark);
 - (void)testSyncDownloadBookmark {
   [BookmarkEarlGrey verifyBookmarksWithTitle:@"hoo"
                                expectedCount:0

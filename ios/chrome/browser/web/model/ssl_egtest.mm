@@ -9,6 +9,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/embedded_test_server_handlers.h"
+#import "ios/testing/test_tag_registry.h"
 #import "ios/web/common/features.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -55,6 +56,7 @@
 
 // Tests loading a bad ssl page and tapping "Back to safety". The bad ssl page
 // is loaded from the NTP to prevent https://crbug.com/1067250 from regressing.
+TAG_SMOKE_TEST(SSLTestCase, testBackToSafetyFromBadSSL);
 - (void)testBackToSafetyFromBadSSL {
   // Tap on the "Back to safety" link and verify that we go to the NTP.
   [ChromeEarlGrey tapWebStateElementWithID:@"primary-button"];

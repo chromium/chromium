@@ -42,6 +42,7 @@
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -212,6 +213,7 @@ id<GREYMatcher> NavigationBarAddButton() {
 #pragma mark - Tests
 
 // Tests the "Open in New Tab" action of the Most Visited context menu.
+TAG_SMOKE_TEST(ContentSuggestionsTestCase, testMostVisitedNewTab);
 - (void)testMostVisitedNewTab {
   [self setupMostVisitedTileLongPress];
   const GURL pageURL = self.testServer->GetURL(kPageURL);

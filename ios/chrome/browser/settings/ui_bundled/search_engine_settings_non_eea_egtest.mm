@@ -19,6 +19,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -31,6 +32,7 @@
 
 // Tests that when changing the default search engine, the URL used for the
 // search is updated.
+TAG_SMOKE_TEST(SearchEngineSettingsNonEEATestCase, testChangeSearchEngine);
 - (void)testChangeSearchEngine {
   [self startHTTPServer];
   [self addURLRewriter];

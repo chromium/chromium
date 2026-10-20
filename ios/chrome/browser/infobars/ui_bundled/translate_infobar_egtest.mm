@@ -37,6 +37,7 @@
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/base/url_util.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -592,6 +593,7 @@ class TestResponseProvider {
 
 // Tests that the page can be translated and that translation can be reverted
 // using the banner and modal.
+TAG_SMOKE_TEST(TranslateInfobarTestCase, testInfobarTranslateRevert);
 - (void)testInfobarTranslateRevert {
   // Load a page with French text.
   GURL URL = self.testServer->GetURL(kFrenchPagePath);

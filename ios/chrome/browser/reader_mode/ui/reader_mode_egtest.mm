@@ -38,6 +38,7 @@
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
@@ -384,6 +385,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
 #pragma mark - Tests
 
 // Tests that Reader Mode is shown / hidden for a distillable page.
+TAG_SMOKE_TEST(ReaderModeTestCase, testToggleReaderModeForDistillablePage);
 - (void)testToggleReaderModeForDistillablePage {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/article.html")];
 

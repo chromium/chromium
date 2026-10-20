@@ -22,6 +22,7 @@
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
+#import "ios/testing/test_tag_registry.h"
 #import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -458,6 +459,7 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 
 // Tests that pressing the button on a POST-based form changes the page and that
 // the back button works as expected afterwards.
+TAG_SMOKE_TEST(FormsTestCase, testGoBackButtonAfterFormSubmission);
 - (void)testGoBackButtonAfterFormSubmission {
   [self setUpFormTestSimpleHttpServer];
   GURL destinationURL = [self destinationUrl];

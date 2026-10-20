@@ -564,6 +564,7 @@ source_set("eg2_tests") {
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/net:test_support",
     "//ios/testing:embedded_test_server_support",
+    "//ios/testing:test_tag_registry",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/common:features",
     "//ios/web/public/test:element_selector",

@@ -27,6 +27,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/base/apple/url_conversions.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
@@ -139,6 +140,7 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
 }
 
 // Tests that the history panel displays navigation history.
+TAG_SMOKE_TEST(HistoryUITestCase, testDisplayHistory);
 - (void)testDisplayHistory {
   [self addTestURLsToHistory];
   [ChromeCoordinatorAppInterface startHistoryCoordinator];

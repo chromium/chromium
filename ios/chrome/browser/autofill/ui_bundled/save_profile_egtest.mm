@@ -39,6 +39,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -444,6 +445,7 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 #pragma mark - Tests
 
 // Ensures that the profile is updated after submitting the form.
+TAG_SMOKE_TEST(SaveProfileEGTest, testUserData_LocalUpdate);
 - (void)testUserData_LocalUpdate {
   // Save a profile.
   [self fillFormAndSaveProfile];
