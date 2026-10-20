@@ -92,12 +92,21 @@ class ContextualTasksEphemeralButtonController
   base::CallbackListSubscription RegisterShouldUpdateButtonPosition(
       ShouldUpdateButtonPositionCallbackList::CallbackType callback);
 
+  enum class RemovalReason {
+    kContextMenu,
+    kAutoDismissed,
+    kTaskDisassociated,
+  };
+
   bool ShouldShowEphemeralButton();
   bool IsPanelOpen() const {
     return is_contextual_tasks_panel_open_ &&
            !is_hiding_contextual_tasks_panel_;
   }
   void RemoveEphemeralButtonForCurrentTask();
+  std::optional<RemovalReason> removal_reason() const {
+    return removal_reason_;
+  }
   bool HasAutoDismissTimerForTesting(SessionID tab_id) const;
   void SetTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -124,6 +133,7 @@ class ContextualTasksEphemeralButtonController
 
   bool is_contextual_tasks_panel_open_ = false;
   bool is_hiding_contextual_tasks_panel_ = false;
+  std::optional<RemovalReason> removal_reason_;
   raw_ptr<AimEligibilityService> aim_eligibility_service_;
 
   // Tabs associated to a task whose side panel was shown or dismissed. All

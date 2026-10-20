@@ -341,6 +341,34 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualTasks.EphemeralToolbarButton.ShownDuration{EndReason}"
+    units="ms" expires_after="2027-04-15">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Measures the time elapsed from when the ephemeral (unpinned) contextual
+    tasks toolbar button became visible until it was clicked or removed.
+    {EndReason}
+  </summary>
+  <token key="EndReason">
+    <variant name=""
+        summary="Recorded for all click and removal events combined."/>
+    <variant name=".AutoDismissed"
+        summary="Recorded when the button is automatically dismissed after
+                 its auto-dismiss timeout expires."/>
+    <variant name=".Clicked"
+        summary="Recorded when the user clicks the button to open the side
+                 panel."/>
+    <variant name=".RemovedByContextMenu"
+        summary="Recorded when the user removes the button for the current
+                 task via its context menu."/>
+    <variant name=".TaskDisassociated"
+        summary="Recorded when the active tab is disassociated from its task
+                 or the task is removed."/>
+  </token>
+</histogram>
+
+<histogram
     name="ContextualTasks.EphemeralToolbarButton.UserAction.RemoveByContextMenu"
     enum="Boolean" expires_after="2027-04-15">
   <owner>dianaou@chromium.org</owner>

@@ -530,6 +530,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
             "ContextualTasks.EphemeralToolbarButton.UserAction."
             "RemoveByContextMenu",
             true, 1);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration", 1);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration."
+            "RemovedByContextMenu",
+            1);
       }),
       // Switching away and back keeps the ephemeral button removed.
       SelectTab(kTabStripElementId, 1), SelectTab(kTabStripElementId, 0),
@@ -610,6 +616,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
                        HideButtonWhenNotAssociatedToTask) {
+  base::HistogramTester histogram_tester;
+
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
@@ -619,7 +627,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
       RemoveTaskFromTab(0),
-      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId));
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration", 1);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration."
+            "TaskDisassociated",
+            1);
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
@@ -806,6 +821,10 @@ IN_PROC_BROWSER_TEST_F(
         histogram_tester.ExpectUniqueSample(
             "ContextualTasks.EphemeralToolbarButton.UserAction.OpenSidePanel",
             true, 1);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration", 1);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration.Clicked", 1);
         EXPECT_EQ(0, user_action_tester.GetActionCount(
                          "ContextualTasks.PermanentToolbarButton.UserAction."
                          "OpenSidePanel"));
@@ -1078,6 +1097,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
         histogram_tester.ExpectUniqueSample(
             "ContextualTasks.EphemeralToolbarButton.UserAction.OpenSidePanel",
             true, 1);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration", 1);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration.Clicked", 1);
         EXPECT_EQ(0, user_action_tester.GetActionCount(
                          "ContextualTasks.PermanentToolbarButton.UserAction."
                          "OpenSidePanel"));
@@ -1169,6 +1192,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
         histogram_tester.ExpectUniqueSample(
             "ContextualTasks.PermanentToolbarButton.UserAction.OpenSidePanel",
             true, 1);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration", 0);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration.Clicked", 0);
         EXPECT_EQ(0, user_action_tester.GetActionCount(
                          "ContextualTasks.EphemeralToolbarButton.UserAction."
                          "OpenSidePanel"));
@@ -1750,6 +1777,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonAutoDismissInteractiveTest,
                          "AutoDismissed"));
         histogram_tester.ExpectUniqueSample(
             "ContextualTasks.EphemeralToolbarButton.AutoDismissed", 120, 1);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration", 1);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration."
+            "AutoDismissed",
+            1);
       }),
       Check([this]() {
         content::WebContents* const web_contents =

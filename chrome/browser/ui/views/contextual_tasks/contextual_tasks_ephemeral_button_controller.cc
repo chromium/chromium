@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -126,6 +127,10 @@ void ContextualTasksEphemeralButtonController::OnTaskUpdated(
 void ContextualTasksEphemeralButtonController::OnTaskRemoved(
     const base::Uuid& task_id,
     contextual_tasks::ContextualTasksService::TriggerSource source) {
+  std::optional<base::AutoReset<std::optional<RemovalReason>>> reset_reason;
+  if (!removal_reason_.has_value()) {
+    reset_reason.emplace(&removal_reason_, RemovalReason::kTaskDisassociated);
+  }
   MaybeNotifyVisibilityShouldChange();
 }
 
@@ -154,6 +159,10 @@ void ContextualTasksEphemeralButtonController::OnTaskDisassociatedFromTab(
     SessionID tab_id) {
   std::erase(ephemeral_button_eligible_tabs_, tab_id);
   ephemeral_button_auto_dismiss_timers_.erase(tab_id);
+  std::optional<base::AutoReset<std::optional<RemovalReason>>> reset_reason;
+  if (!removal_reason_.has_value()) {
+    reset_reason.emplace(&removal_reason_, RemovalReason::kTaskDisassociated);
+  }
   MaybeNotifyVisibilityShouldChange();
 }
 
@@ -327,6 +336,9 @@ void ContextualTasksEphemeralButtonController::
     return;
   }
 
+  base::AutoReset<std::optional<RemovalReason>> reset_reason(
+      &removal_reason_, RemovalReason::kContextMenu);
+
   std::optional<SessionID> current_tab_session_id = GetCurrentTabSessionId();
   if (current_tab_session_id.has_value()) {
     DismissEphemeralButtonForTab(current_tab_session_id.value());
@@ -369,6 +381,8 @@ void ContextualTasksEphemeralButtonController::OnAutoDismissTimerFired(
   base::UmaHistogramSparse(
       "ContextualTasks.EphemeralToolbarButton.AutoDismissed",
       GetAutoDismissDuration().InMinutes());
+  base::AutoReset<std::optional<RemovalReason>> reset_reason(
+      &removal_reason_, RemovalReason::kAutoDismissed);
   DismissEphemeralButtonForTab(tab_id);
 }
 

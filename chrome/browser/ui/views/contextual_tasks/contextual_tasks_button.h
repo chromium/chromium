@@ -7,11 +7,13 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -86,6 +88,7 @@ class ContextualTasksButton
   void OnEligibilityChange(bool is_eligible);
   void MaybeUpdateVisibility();
   void UpdateHighlight();
+  void RecordShownDuration(std::string_view end_reason);
   void MaybeShowFeaturePromo();
   void UpdateDropShadow(bool force_paint = false, float initial_opacity = 1.0f);
   void UpdateDropShadowLayerBounds();
@@ -104,6 +107,9 @@ class ContextualTasksButton
   // Since the contextual tasks button is not a standard shape, it requires a
   // LayerOwner to paint the custom drop shadow.
   std::unique_ptr<ui::LayerOwner> drop_shadow_painted_layer_;
+
+  // Timestamp when the ephemeral button most recently became visible.
+  base::TimeTicks shown_time_ticks_;
 
   base::ScopedObservation<
       contextual_tasks::ContextualTasksPanelController,
