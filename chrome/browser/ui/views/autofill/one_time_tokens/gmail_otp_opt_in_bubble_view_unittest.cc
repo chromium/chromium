@@ -151,6 +151,8 @@ TEST_F(GmailOtpOptInBubbleViewTest, FormatsDescriptionAndOpensSettingsLink) {
 
   views::StyledLabel* styled_label = bubble()->GetDescriptionLabelForTesting();
   ASSERT_NE(styled_label, nullptr);
+  EXPECT_EQ(styled_label->GetProperty(views::kElementIdentifierKey),
+            GmailOtpOptInBubbleView::kDescriptionLabelId);
   const std::u16string link_text =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK);
   EXPECT_EQ(

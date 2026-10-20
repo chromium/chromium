@@ -560,12 +560,23 @@ if (!is_android && !is_chromeos_device) {
         "address_bubbles_controller_interactive_uitest.cc",
         "delete_address_profile_dialog_controller_impl_interactive_uitest.cc",
         "edit_address_profile_dialog_controller_impl_interactive_uitest.cc",
+        "one_time_tokens/gmail_otp_opt_in_bubble_interactive_uitest.cc",
       ]
       deps += [
+        "//chrome/browser/ui:browser_element_identifiers",
+        "//chrome/browser/ui:chrome_pages",
+        "//chrome/browser/ui/tabs:tab_enums",
+        "//chrome/browser/ui/tabs:tab_strip",
         "//chrome/browser/ui/views/autofill:address_editor_view",
         "//chrome/browser/ui/views/autofill:edit_address_profile_view",
         "//chrome/browser/ui/views/autofill:save_address_profile_view",
         "//chrome/browser/ui/views/autofill:update_address_profile_view",
+        "//chrome/browser/ui/views/autofill/one_time_tokens",
+        "//chrome/browser/ui/views/frame:browser_view_header",
+        "//chrome/browser/ui/views/location_bar",
+        "//components/strings",
+        "//components/tabs:public",
+        "//ui/strings",
       ]
     }
   }

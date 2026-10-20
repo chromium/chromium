@@ -33,6 +33,7 @@ class GmailOtpOptInBubbleView : public AutofillLocationBarBubble {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTurnOnButtonId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNoThanksButtonId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCloseButtonId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDescriptionLabelId);
 
   GmailOtpOptInBubbleView(views::BubbleAnchor anchor,
                           content::WebContents* web_contents,

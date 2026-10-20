@@ -76,6 +76,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GmailOtpOptInBubbleView, kTurnOnButtonId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GmailOtpOptInBubbleView,
                                       kNoThanksButtonId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GmailOtpOptInBubbleView, kCloseButtonId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(GmailOtpOptInBubbleView,
+                                      kDescriptionLabelId);
 
 GmailOtpOptInBubbleView::GmailOtpOptInBubbleView(
     views::BubbleAnchor anchor,
@@ -115,6 +117,7 @@ GmailOtpOptInBubbleView::GmailOtpOptInBubbleView(
 
   description_label_ = AddChildView(
       views::Builder<views::StyledLabel>()
+          .SetProperty(views::kElementIdentifierKey, kDescriptionLabelId)
           .SetText(description_text)
           .SetDefaultTextStyle(views::style::STYLE_BODY_4)
           .SetDefaultEnabledColorId(ui::kColorSysOnSurfaceSubtle)
