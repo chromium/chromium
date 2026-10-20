@@ -36,6 +36,7 @@ class MockDataProvider : public GlicInstanceCoordinatorMetrics::DataProvider {
               (size_t),
               (override));
   MOCK_METHOD(std::vector<GlicInstanceImpl*>, GetInstances, (), (override));
+  MOCK_METHOD(Profile*, GetProfile, (), (const, override));
 };
 
 class GlicInstanceCoordinatorMetricsTest : public testing::Test {
@@ -76,7 +77,15 @@ TEST_F(GlicInstanceCoordinatorMetricsTest,
       .WillRepeatedly(testing::Return(0));
   metrics_->OnInstanceVisibilityChanged();
   histogram_tester_.ExpectTotalCount("Glic.ConcurrentVisibility.Duration", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Consumer.ConcurrentVisibility.Duration", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Enterprise.ConcurrentVisibility.Duration", 0);
   histogram_tester_.ExpectTotalCount("Glic.ConcurrentVisibility.PeakCount", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Consumer.ConcurrentVisibility.PeakCount", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.Enterprise.ConcurrentVisibility.PeakCount", 0);
 }
 
 TEST_F(GlicInstanceCoordinatorMetricsTest, NoConcurrentVisibility_OneInstance) {
@@ -106,8 +115,12 @@ TEST_F(GlicInstanceCoordinatorMetricsTest, ConcurrentVisibility_TwoInstances) {
 
   histogram_tester_.ExpectUniqueTimeSample("Glic.ConcurrentVisibility.Duration",
                                            base::Seconds(10), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Consumer.ConcurrentVisibility.Duration", base::Seconds(10), 1);
   histogram_tester_.ExpectUniqueSample("Glic.ConcurrentVisibility.PeakCount", 2,
                                        1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.ConcurrentVisibility.PeakCount", 2, 1);
 }
 
 TEST_F(GlicInstanceCoordinatorMetricsTest, ConcurrentVisibility_PeakCount) {
@@ -137,6 +150,8 @@ TEST_F(GlicInstanceCoordinatorMetricsTest, ConcurrentVisibility_PeakCount) {
 
   histogram_tester_.ExpectUniqueSample("Glic.ConcurrentVisibility.PeakCount", 3,
                                        1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.ConcurrentVisibility.PeakCount", 3, 1);
 }
 
 TEST_F(GlicInstanceCoordinatorMetricsTest,
@@ -155,8 +170,12 @@ TEST_F(GlicInstanceCoordinatorMetricsTest,
 
   histogram_tester_.ExpectUniqueTimeSample("Glic.ConcurrentVisibility.Duration",
                                            base::Seconds(5), 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.Consumer.ConcurrentVisibility.Duration", base::Seconds(5), 1);
   histogram_tester_.ExpectUniqueSample("Glic.ConcurrentVisibility.PeakCount", 2,
                                        1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.ConcurrentVisibility.PeakCount", 2, 1);
 }
 
 TEST_F(GlicInstanceCoordinatorMetricsTest, SwitchConversation_New) {
@@ -173,6 +192,9 @@ TEST_F(GlicInstanceCoordinatorMetricsTest, SwitchConversation_New) {
       std::nullopt, instanceNew->conversation_id(), instance1.get());
   histogram_tester_.ExpectUniqueSample(
       "Glic.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kStartNewConversation, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Interaction.SwitchConversationTarget",
       GlicSwitchConversationTarget::kStartNewConversation, 1);
 }
 
@@ -193,6 +215,9 @@ TEST_F(GlicInstanceCoordinatorMetricsTest, SwitchConversation_Existing) {
   histogram_tester_.ExpectUniqueSample(
       "Glic.Interaction.SwitchConversationTarget",
       GlicSwitchConversationTarget::kSwitchedToExistingInstance, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kSwitchedToExistingInstance, 1);
 }
 
 TEST_F(GlicInstanceCoordinatorMetricsTest,
@@ -208,6 +233,9 @@ TEST_F(GlicInstanceCoordinatorMetricsTest,
                                            instance1.get());
   histogram_tester_.ExpectUniqueSample(
       "Glic.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kSwitchedToNewInstance, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Interaction.SwitchConversationTarget",
       GlicSwitchConversationTarget::kSwitchedToNewInstance, 1);
 }
 
@@ -226,6 +254,9 @@ TEST_F(GlicInstanceCoordinatorMetricsTest, SwitchConversation_Resume) {
   histogram_tester_.ExpectBucketCount(
       "Glic.Interaction.SwitchConversationTarget",
       GlicSwitchConversationTarget::kStartNewConversation, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Consumer.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kStartNewConversation, 1);
 
   // 3. User is now on "New". Activation changed (simulated by making New more
   // recent).
@@ -235,6 +266,9 @@ TEST_F(GlicInstanceCoordinatorMetricsTest, SwitchConversation_Resume) {
                                            instanceNew.get());
   histogram_tester_.ExpectBucketCount(
       "Glic.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kSwitchedToLastActive, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Consumer.Interaction.SwitchConversationTarget",
       GlicSwitchConversationTarget::kSwitchedToLastActive, 1);
 }
 
@@ -255,6 +289,9 @@ TEST_F(GlicInstanceCoordinatorMetricsTest, SwitchConversation_NewToOther) {
   histogram_tester_.ExpectUniqueSample(
       "Glic.Interaction.SwitchConversationTarget",
       GlicSwitchConversationTarget::kSwitchedToExistingInstance, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kSwitchedToExistingInstance, 1);
 }
 
 TEST_F(GlicInstanceCoordinatorMetricsTest,
@@ -271,6 +308,9 @@ TEST_F(GlicInstanceCoordinatorMetricsTest,
                                            instance2.get());
   histogram_tester_.ExpectUniqueSample(
       "Glic.Interaction.SwitchConversationTarget",
+      GlicSwitchConversationTarget::kSwitchedToLastActive, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.Interaction.SwitchConversationTarget",
       GlicSwitchConversationTarget::kSwitchedToLastActive, 1);
 }
 

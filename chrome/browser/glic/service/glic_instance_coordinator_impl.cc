@@ -1,7 +1,6 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 
 #include <algorithm>
@@ -16,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/utils.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -39,6 +37,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
@@ -1127,8 +1126,12 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
   }
 
   if (last_active_instance_) {
-    base::UmaHistogramCustomTimes(
-        "Glic.Instance.TimeSinceLastInstanceActiveOnOpen",
+    // Resolved per call: this coordinator is built during GlicKeyedService
+    // construction, when GetGlicProviderSpec() still returns the Consumer
+    // fallback (b/574535435).
+    GlicMetricReporter metric_reporter(profile_);
+    metric_reporter.RecordCustomTimes(
+        "Instance.TimeSinceLastInstanceActiveOnOpen",
         last_active_instance_->GetTimeSinceLastActive(), base::Seconds(1),
         base::Hours(24), 50);
   }
@@ -1259,8 +1262,9 @@ GlicInstanceImpl*
 GlicInstanceCoordinatorImpl::GetOrCreateInstanceImplForFloaty() {
   auto* floaty_instance = GetInstanceWithFloaty();
   if (!floaty_instance && last_active_instance_) {
-    base::UmaHistogramCustomTimes(
-        "Glic.Instance.TimeSinceLastInstanceActiveOnOpen",
+    GlicMetricReporter metric_reporter(profile_);
+    metric_reporter.RecordCustomTimes(
+        "Instance.TimeSinceLastInstanceActiveOnOpen",
         last_active_instance_->GetTimeSinceLastActive(), base::Seconds(1),
         base::Hours(24), 50);
   }
@@ -1776,6 +1780,10 @@ std::string GlicInstanceCoordinatorImpl::DescribeForTesting() {
     ss << inst.second->DescribeForTesting();  // IN-TEST
   }
   return ss.str();
+}
+
+Profile* GlicInstanceCoordinatorImpl::GetProfile() const {
+  return profile_;
 }
 
 }  // namespace glic

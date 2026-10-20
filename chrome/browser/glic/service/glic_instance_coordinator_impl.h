@@ -111,6 +111,7 @@ class GlicInstanceCoordinatorImpl
   // conversation. Used by the web client to get recent conversations.
   std::vector<glic::mojom::ConversationInfoPtr> GetRecentlyActiveConversations(
       size_t limit) override;
+  Profile* GetProfile() const override;
   void ContextAccessIndicatorChanged(GlicInstanceImpl& instance,
                                      bool enabled) override;
   bool IsInvoking(const GlicInstanceImpl* instance) const override;

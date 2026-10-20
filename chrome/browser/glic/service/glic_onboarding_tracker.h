@@ -45,6 +45,7 @@ class GlicOnboardingTracker {
                         ukm::SourceId source_id);
 
   GlicOnboardingStatus onboarding_status_;
+  raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<GlicEnabling> enabling_;
   base::CallbackListSubscription consent_subscription_;

@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -223,6 +224,7 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
   CHECK(message.has_glic_experimental_triggering());
 
   glic::ScopedIncomingMessageResultLogger result_logger(
+      glic::GlicMetricReporter(profile_),
       glic::ScopedIncomingMessageResultLogger::Channel::kSharingMessage);
 
   // If no `context_id` is present in the request, we generate one that

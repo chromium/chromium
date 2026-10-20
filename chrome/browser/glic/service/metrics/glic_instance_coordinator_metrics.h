@@ -14,6 +14,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 
+class Profile;
+
 namespace content {
 class WebContents;
 }
@@ -23,6 +25,7 @@ namespace glic {
 class Host;
 class GlicInstance;
 class GlicInstanceImpl;
+class GlicMetricReporter;
 
 // LINT.IfChange(GlicSwitchConversationTarget)
 enum class GlicSwitchConversationTarget {
@@ -54,6 +57,7 @@ class GlicInstanceCoordinatorMetrics {
     virtual std::vector<glic::mojom::ConversationInfoPtr>
     GetRecentlyActiveConversations(size_t limit) = 0;
     virtual std::vector<GlicInstanceImpl*> GetInstances() = 0;
+    virtual Profile* GetProfile() const = 0;
   };
 
   explicit GlicInstanceCoordinatorMetrics(DataProvider* data_provider);
@@ -94,6 +98,7 @@ class GlicInstanceCoordinatorMetrics {
   void RecordCountActuatingOnTaskCreation();
 
  private:
+  GlicMetricReporter GetMetricReporter() const;
   // Helper to calculate currently visible instances using
 
   // data_provider_->GetInstances()

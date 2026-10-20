@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_converters.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/transport_session.h"
@@ -51,7 +52,9 @@ void GlicExperimentalTriggeringTransportHandler::OnMessage(
     return;
   }
 
+  GlicMetricReporter reporter(profile_);
   ScopedIncomingMessageResultLogger result_logger(
+      reporter,
       ScopedIncomingMessageResultLogger::Channel::kBrowserActuatorTransport);
 
   std::string context_id = triggering.context_id();

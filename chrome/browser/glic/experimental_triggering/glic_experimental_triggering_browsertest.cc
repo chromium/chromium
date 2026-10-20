@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,6 +58,7 @@ IN_PROC_BROWSER_TEST_F(
   coordinator.OnRequest(
       "test_context", request,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(GetProfile()),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       base::DoNothing(), nullptr);
 

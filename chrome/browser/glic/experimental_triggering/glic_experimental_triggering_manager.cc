@@ -1,7 +1,6 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 
 #include <utility>
@@ -10,7 +9,6 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/thread_pool.h"
@@ -21,9 +19,12 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/gcm_driver/crypto/rfc8291_util.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "crypto/keypair.h"
 #include "crypto/secure_util.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -96,8 +97,8 @@ void GlicExperimentalTriggeringManager::SubmitConfirmationResponse(
     return;
   }
   client_->SubmitExperimentalTriggeringConfirmationResponse(
-      response, mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                            false));
+      response,
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false));
 }
 
 void GlicExperimentalTriggeringManager::CaptureAndUploadEncryptedScreenshot(
@@ -137,15 +138,18 @@ void GlicExperimentalTriggeringManager::CaptureAndUploadEncryptedScreenshot(
   glic::mojom::TabContextOptions options;
   options.viewport_screenshot = true;
 
+  GlicMetricReporter reporter(
+      Profile::FromBrowserContext(tab->GetContents()->GetBrowserContext()));
   sharing_manager_->GetContextForActorFromTab(
       tab->GetHandle(), options,
       base::BindOnce(
           &GlicExperimentalTriggeringManager::OnPageContextFetchedForEncryption,
-          weak_ptr_factory_.GetWeakPtr(), public_key, auth_secret,
+          weak_ptr_factory_.GetWeakPtr(), reporter, public_key, auth_secret,
           std::move(callback)));
 }
 
 void GlicExperimentalTriggeringManager::OnPageContextFetchedForEncryption(
+    GlicMetricReporter reporter,
     std::vector<uint8_t> public_key,
     std::vector<uint8_t> auth_secret,
     base::OnceCallback<
@@ -179,12 +183,13 @@ void GlicExperimentalTriggeringManager::OnPageContextFetchedForEncryption(
                      std::move(jpeg_data), std::move(public_key),
                      std::move(auth_secret)),
       base::BindOnce(&GlicExperimentalTriggeringManager::OnScreenshotEncrypted,
-                     weak_ptr_factory_.GetWeakPtr(), width_pixels,
+                     weak_ptr_factory_.GetWeakPtr(), reporter, width_pixels,
                      height_pixels, std::move(mime_type),
                      std::move(origin_annotations), std::move(callback)));
 }
 
 void GlicExperimentalTriggeringManager::OnScreenshotEncrypted(
+    GlicMetricReporter reporter,
     uint32_t width_pixels,
     uint32_t height_pixels,
     std::string mime_type,
@@ -217,14 +222,15 @@ void GlicExperimentalTriggeringManager::OnScreenshotEncrypted(
       std::move(screenshot_ptr),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(
-              [](base::OnceCallback<void(
+              [](GlicMetricReporter reporter,
+                 base::OnceCallback<void(
                      base::expected<std::string, ScreenshotResult::Status>)>
                      callback,
                  const std::optional<std::string>& file_token) {
                 bool success = file_token && !file_token->empty() &&
                                file_token->size() <= kMaxFileTokenBytes;
-                base::UmaHistogramBoolean(
-                    "Glic.Actor.EncryptedScreenshotUploadSuccess", success);
+                reporter.RecordBoolean("Actor.EncryptedScreenshotUploadSuccess",
+                                       success);
                 if (!success) {
                   if (!file_token) {
                     DLOG(WARNING)
@@ -248,7 +254,7 @@ void GlicExperimentalTriggeringManager::OnScreenshotEncrypted(
                 }
                 std::move(callback).Run(base::ok(*file_token));
               },
-              std::move(callback)),
+              reporter, std::move(callback)),
           std::nullopt));
 }
 

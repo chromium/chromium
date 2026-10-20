@@ -9,12 +9,13 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/memory_coordinator/utils.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -36,6 +37,13 @@ GlicInstanceCoordinatorMetrics::GlicInstanceCoordinatorMetrics(
 
 GlicInstanceCoordinatorMetrics::~GlicInstanceCoordinatorMetrics() {
   EndConcurrentVisibility();
+}
+
+GlicMetricReporter GlicInstanceCoordinatorMetrics::GetMetricReporter() const {
+  // Resolved per call: this class is built during GlicKeyedService
+  // construction, when GetGlicProviderSpec() still returns the Consumer
+  // fallback (b/574535435).
+  return GlicMetricReporter(data_provider_->GetProfile());
 }
 
 void GlicInstanceCoordinatorMetrics::StartPeriodicMemoryMetricsRecording() {
@@ -81,14 +89,14 @@ void GlicInstanceCoordinatorMetrics::RecordSwitchConversationTarget(
   } else {
     target = GlicSwitchConversationTarget::kSwitchedToNewInstance;
   }
-  base::UmaHistogramEnumeration("Glic.Interaction.SwitchConversationTarget",
-                                target);
+  GetMetricReporter().RecordEnumeration("Interaction.SwitchConversationTarget",
+                                        target);
 }
 
 void GlicInstanceCoordinatorMetrics::RecordActivateTabCandidateTabCount(
     size_t count) {
-  base::UmaHistogramCounts100(
-      "Glic.ActivateTabWithConversation.CandidateTabCount", count);
+  GetMetricReporter().RecordCounts100(
+      "ActivateTabWithConversation.CandidateTabCount", count);
 }
 
 void GlicInstanceCoordinatorMetrics::OnReleaseMemory(
@@ -158,18 +166,18 @@ void GlicInstanceCoordinatorMetrics::RecordMemoryFootprint(
   int avg_total_mb = BytesToMB(absolute_total_bytes / instance_count);
   int total_mb = BytesToMB(absolute_total_bytes);
 
-  base::UmaHistogramMemoryLargeMB(
-      base::StrCat({"Glic.Instance.AvgWebUIPrivateMemoryFootprint", suffix}),
+  GlicMetricReporter metric_reporter = GetMetricReporter();
+  metric_reporter.RecordMemoryLargeMB(
+      base::StrCat({"Instance.AvgWebUIPrivateMemoryFootprint", suffix}),
       avg_webui_mb);
-  base::UmaHistogramMemoryLargeMB(
-      base::StrCat({"Glic.Instance.AvgClientPrivateMemoryFootprint", suffix}),
+  metric_reporter.RecordMemoryLargeMB(
+      base::StrCat({"Instance.AvgClientPrivateMemoryFootprint", suffix}),
       avg_client_mb);
-  base::UmaHistogramMemoryLargeMB(
-      base::StrCat({"Glic.Instance.AvgTotalPrivateMemoryFootprint", suffix}),
+  metric_reporter.RecordMemoryLargeMB(
+      base::StrCat({"Instance.AvgTotalPrivateMemoryFootprint", suffix}),
       avg_total_mb);
-  base::UmaHistogramMemoryLargeMB(
-      base::StrCat({"Glic.Instance.TotalPrivateMemoryFootprint", suffix}),
-      total_mb);
+  metric_reporter.RecordMemoryLargeMB(
+      base::StrCat({"Instance.TotalPrivateMemoryFootprint", suffix}), total_mb);
 }
 
 int GlicInstanceCoordinatorMetrics::GetVisibleInstanceCount() const {
@@ -181,9 +189,10 @@ void GlicInstanceCoordinatorMetrics::EndConcurrentVisibility() {
     // We were in a concurrent visibility period, but now we are not. End it.
     base::TimeDelta duration =
         base::TimeTicks::Now() - concurrent_visibility_start_time_.value();
-    base::UmaHistogramLongTimes("Glic.ConcurrentVisibility.Duration", duration);
-    base::UmaHistogramExactLinear("Glic.ConcurrentVisibility.PeakCount",
-                                  concurrent_visibility_peak_count_, 10);
+    GlicMetricReporter metric_reporter = GetMetricReporter();
+    metric_reporter.RecordLongTimes("ConcurrentVisibility.Duration", duration);
+    metric_reporter.RecordExactLinear("ConcurrentVisibility.PeakCount",
+                                      concurrent_visibility_peak_count_, 10);
 
     // Reset state.
     concurrent_visibility_start_time_.reset();
@@ -211,7 +220,8 @@ GlicInstanceCoordinatorMetrics::GetMostRecentlyActiveConversationId(
 
 void GlicInstanceCoordinatorMetrics::RecordCountOnCreation() {
   size_t count = data_provider_->GetInstances().size();
-  base::UmaHistogramExactLinear("Glic.Instances.Count.OnCreation", count, 10);
+  GetMetricReporter().RecordExactLinear("Instances.Count.OnCreation", count,
+                                        10);
 }
 
 void GlicInstanceCoordinatorMetrics::RecordCountAwakeOnContentsCreated() {
@@ -224,8 +234,8 @@ void GlicInstanceCoordinatorMetrics::RecordCountAwakeOnContentsCreated() {
   // The current instance is about to become unhibernated by this container
   // creation.
   unhibernated_count++;
-  base::UmaHistogramExactLinear("Glic.Instances.CountAwake.OnContentsCreated",
-                                unhibernated_count, 10);
+  GetMetricReporter().RecordExactLinear(
+      "Instances.CountAwake.OnContentsCreated", unhibernated_count, 10);
 }
 
 void GlicInstanceCoordinatorMetrics::RecordCountActuatingOnTaskCreation() {
@@ -235,8 +245,8 @@ void GlicInstanceCoordinatorMetrics::RecordCountActuatingOnTaskCreation() {
       actuating_count++;
     }
   }
-  base::UmaHistogramExactLinear("Glic.Instances.CountActuating.OnTaskCreation",
-                                actuating_count, 10);
+  GetMetricReporter().RecordExactLinear(
+      "Instances.CountActuating.OnTaskCreation", actuating_count, 10);
 }
 
 }  // namespace glic

@@ -9,10 +9,10 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
 
 namespace glic {
@@ -35,19 +35,21 @@ std::string_view ChannelVariant(
 
 std::string IncomingMessageResultHistogramName(
     ScopedIncomingMessageResultLogger::Channel channel) {
-  return base::StrCat({"Glic.ExperimentalTriggering.IncomingMessageResult.",
+  return base::StrCat({"ExperimentalTriggering.IncomingMessageResult.",
                        ChannelVariant(channel)});
 }
 
 }  // namespace
 
 ScopedIncomingMessageResultLogger::ScopedIncomingMessageResultLogger(
+    GlicMetricReporter reporter,
     Channel channel)
-    : channel_(channel) {}
+    : metric_reporter_(reporter), channel_(channel) {}
 
 ScopedIncomingMessageResultLogger::ScopedIncomingMessageResultLogger(
     ScopedIncomingMessageResultLogger&& other) noexcept
-    : channel_(other.channel_),
+    : metric_reporter_(other.metric_reporter_),
+      channel_(other.channel_),
       result_(std::move(other.result_)),
       disarmed_(std::exchange(other.disarmed_, true)) {}
 
@@ -55,6 +57,7 @@ ScopedIncomingMessageResultLogger& ScopedIncomingMessageResultLogger::operator=(
     ScopedIncomingMessageResultLogger&& other) noexcept {
   if (this != &other) {
     LogAndDisarm();
+    metric_reporter_ = other.metric_reporter_;
     channel_ = other.channel_;
     result_ = std::move(other.result_);
     disarmed_ = std::exchange(other.disarmed_, true);
@@ -77,7 +80,7 @@ void ScopedIncomingMessageResultLogger::LogAndDisarm() {
   // exactly one sample per incoming message and instrumentation gaps are
   // visible in released builds instead of silently undercounting.
   CHECK(result_.has_value(), base::NotFatalUntil::M161);
-  base::UmaHistogramEnumeration(
+  metric_reporter_.RecordEnumeration(
       IncomingMessageResultHistogramName(channel_),
       result_.value_or(
           GlicExperimentalTriggeringIncomingMessageResult::kResultNotSet));
@@ -90,6 +93,7 @@ void ScopedIncomingMessageResultLogger::set_result(
 }
 
 void MaybeRecordInitialSharingMessageDeliveryLatency(
+    const GlicMetricReporter& reporter,
     const components_sharing_message::GlicExperimentalTriggering& triggering) {
   if (!triggering.has_request()) {
     return;
@@ -118,9 +122,9 @@ void MaybeRecordInitialSharingMessageDeliveryLatency(
   if (latency.is_negative()) {
     latency = base::TimeDelta();
   }
-  base::UmaHistogramCustomTimes(
-      "Glic.ExperimentalTriggering.FirstFCMMessageLatency", latency,
-      base::Milliseconds(100), base::Days(10), 100);
+  reporter.RecordCustomTimes("ExperimentalTriggering.FirstFCMMessageLatency",
+                             latency, base::Milliseconds(100), base::Days(10),
+                             100);
 }
 
 }  // namespace glic

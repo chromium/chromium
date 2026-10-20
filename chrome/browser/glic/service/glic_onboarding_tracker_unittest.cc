@@ -94,6 +94,10 @@ TEST_F(GlicOnboardingTrackerTest, StateTransitions_StandardFlow) {
       profile_->GetPrefs()->GetTime(prefs::kGlicLastInvokedTime).is_null());
   histogram_tester.ExpectUniqueSample("Glic.Onboarding.Invoked.Status",
                                       OnboardingStatus::kNoInteraction, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Consumer.Onboarding.Invoked.Status",
+                                      OnboardingStatus::kNoInteraction, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.Onboarding.Invoked.Status",
+                                    0);
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 0);
 
   profile_->GetPrefs()->SetInteger(
@@ -218,6 +222,10 @@ TEST_F(GlicOnboardingTrackerTest,
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.Completed"), 0);
   histogram_tester.ExpectUniqueSample("Glic.Onboarding.Invoked.Status",
                                       OnboardingStatus::kPromptAndOptIn, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Consumer.Onboarding.Invoked.Status",
+                                      OnboardingStatus::kPromptAndOptIn, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.Onboarding.Invoked.Status",
+                                    0);
   EXPECT_FALSE(
       profile_->GetPrefs()->GetTime(prefs::kGlicLastInvokedTime).is_null());
 

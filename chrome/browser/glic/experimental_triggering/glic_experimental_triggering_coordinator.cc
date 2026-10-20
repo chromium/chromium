@@ -17,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -42,6 +41,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -309,13 +309,15 @@ class ExperimentalTriggeringUpdatesHandler
     : public mojom::ExperimentalTriggeringUpdatesHandler {
  public:
   ExperimentalTriggeringUpdatesHandler(
+      Profile* profile,
       const std::string& context_id,
       InvokeWithAutoSubmitPasskey passkey,
       base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator)
       : context_id_(context_id),
         passkey_(std::move(passkey)),
         coordinator_(std::move(coordinator)),
-        receiver_(this) {}
+        receiver_(this),
+        metric_reporter_(profile) {}
 
   ~ExperimentalTriggeringUpdatesHandler() override {
     RemovePendingTask();
@@ -492,8 +494,8 @@ class ExperimentalTriggeringUpdatesHandler
         }
         if (!first_response_received_ && is_actuation_started_) {
           first_response_received_ = true;
-          base::UmaHistogramMediumTimes(
-              "Glic.ExperimentalTriggering.Latency.ToFirstResponse",
+          metric_reporter_.RecordMediumTimes(
+              "ExperimentalTriggering.Latency.ToFirstResponse",
               base::TimeTicks::Now() - turn_start_time_);
         }
         switch (update->type) {
@@ -546,8 +548,8 @@ class ExperimentalTriggeringUpdatesHandler
  private:
   bool HandleUnavailableExperimentalTriggering(GlicKeyedService* glic_service) {
     auto state = glic_service->enabling().GetExperimentalTriggeringState();
-    base::UmaHistogramEnumeration(
-        "Glic.ExperimentalTriggering.StateOnActuationRequest", state);
+    metric_reporter_.RecordEnumeration(
+        "ExperimentalTriggering.StateOnActuationRequest", state);
 
     if (state == syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady) {
       return false;
@@ -613,8 +615,8 @@ class ExperimentalTriggeringUpdatesHandler
     RecordOutcome(outcome);
     if (outcome == GlicExperimentalTriggeringExecutionOutcome::kSuccess &&
         is_actuation_started_) {
-      base::UmaHistogramLongTimes(
-          "Glic.ExperimentalTriggering.Latency.ToTerminalCompletion",
+      metric_reporter_.RecordLongTimes(
+          "ExperimentalTriggering.Latency.ToTerminalCompletion",
           base::TimeTicks::Now() - task_start_time_);
     }
     SendTaskUpdateMessage(state, data_type, std::move(data),
@@ -627,8 +629,8 @@ class ExperimentalTriggeringUpdatesHandler
     }
     panel_opened_ = true;
     if (is_actuation_started_) {
-      base::UmaHistogramMediumTimes(
-          "Glic.ExperimentalTriggering.Latency.ToSidePanelOpened",
+      metric_reporter_.RecordMediumTimes(
+          "ExperimentalTriggering.Latency.ToSidePanelOpened",
           base::TimeTicks::Now() - task_start_time_);
     }
   }
@@ -639,8 +641,8 @@ class ExperimentalTriggeringUpdatesHandler
     }
     client_connected_ = true;
     if (is_actuation_started_) {
-      base::UmaHistogramMediumTimes(
-          "Glic.ExperimentalTriggering.Latency.ToClientConnected",
+      metric_reporter_.RecordMediumTimes(
+          "ExperimentalTriggering.Latency.ToClientConnected",
           base::TimeTicks::Now() - task_start_time_);
     }
     SubscribeForTriggeringUpdates(std::move(instance));
@@ -706,13 +708,13 @@ class ExperimentalTriggeringUpdatesHandler
       return;
     }
     outcome_recorded_ = true;
-    base::UmaHistogramEnumeration(
-        "Glic.ExperimentalTriggering.ExecutionOutcome", outcome);
+    metric_reporter_.RecordEnumeration(
+        "ExperimentalTriggering.ExecutionOutcome", outcome);
     if (is_actuation_started_) {
-      base::UmaHistogramBoolean("Glic.ExperimentalTriggering.SidePanelOpened",
-                                panel_opened_);
-      base::UmaHistogramBoolean("Glic.ExperimentalTriggering.ClientConnected",
-                                client_connected_);
+      metric_reporter_.RecordBoolean("ExperimentalTriggering.SidePanelOpened",
+                                     panel_opened_);
+      metric_reporter_.RecordBoolean("ExperimentalTriggering.ClientConnected",
+                                     client_connected_);
     }
   }
 
@@ -1526,6 +1528,8 @@ class ExperimentalTriggeringUpdatesHandler
   base::TimeTicks task_start_time_;
   base::TimeTicks turn_start_time_;
 
+  GlicMetricReporter metric_reporter_;
+
   base::WeakPtrFactory<ExperimentalTriggeringUpdatesHandler> weak_ptr_factory_{
       this};
 };
@@ -1582,7 +1586,8 @@ GlicExperimentalTriggeringCoordinator::OnProtoMessage(
       actor_service, "GlicExperimentalTriggering", context_id, proto);
 
   if (!HasUpdatesHandler(context_id)) {
-    MaybeRecordInitialSharingMessageDeliveryLatency(proto);
+    GlicMetricReporter reporter(profile_);
+    MaybeRecordInitialSharingMessageDeliveryLatency(reporter, proto);
   }
 
   auto request_metadata = ProtoToTaskMetadata(proto);
@@ -1645,7 +1650,7 @@ GlicExperimentalTriggeringCoordinator::OnRequest(
         context_id_to_updates_handler_map_
             .emplace(context_id,
                      std::make_unique<ExperimentalTriggeringUpdatesHandler>(
-                         context_id,
+                         profile_, context_id,
                          InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
                          weak_ptr_factory_.GetWeakPtr()))
             .first->second.get();

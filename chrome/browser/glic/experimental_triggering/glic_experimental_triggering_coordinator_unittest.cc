@@ -273,6 +273,7 @@ class GlicExperimentalTriggeringCoordinatorTest : public testing::Test {
     return coordinator_->OnRequest(
         kTestContextId, request,
         ScopedIncomingMessageResultLogger(
+            GlicMetricReporter(profile_),
             ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
         base::DoNothing(), nullptr);
   }
@@ -373,6 +374,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   auto response = coordinator_->OnRequest(
       kTestContextId, request,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       update_future.GetRepeatingCallback(), nullptr);
 
@@ -637,6 +639,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   auto response1 = coordinator_->OnRequest(
       "context_1", request1,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       future1.GetRepeatingCallback(), nullptr);
   EXPECT_FALSE(response1.has_value());
@@ -644,6 +647,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   auto response2 = coordinator_->OnRequest(
       "context_2", request2,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       future2.GetRepeatingCallback(), nullptr);
   EXPECT_FALSE(response2.has_value());
@@ -698,6 +702,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   auto response1 = coordinator_->OnRequest(
       "context_1", request1,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       future1.GetRepeatingCallback(), nullptr);
   EXPECT_FALSE(response1.has_value());
@@ -705,6 +710,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   auto response2 = coordinator_->OnRequest(
       "context_2", request2,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       future2.GetRepeatingCallback(), nullptr);
   EXPECT_FALSE(response2.has_value());
@@ -735,7 +741,8 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   base::HistogramTester histogram_tester;
   auto response = coordinator_->OnProtoMessage(
       kTestContextId, proto,
-      ScopedIncomingMessageResultLogger(ScopedIncomingMessageResultLogger::
+      ScopedIncomingMessageResultLogger(GlicMetricReporter(profile_),
+                                        ScopedIncomingMessageResultLogger::
                                             Channel::kBrowserActuatorTransport),
       base::DoNothing(), nullptr);
 
@@ -767,7 +774,8 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   base::HistogramTester histogram_tester;
   auto response = coordinator_->OnProtoMessage(
       kTestContextId, proto,
-      ScopedIncomingMessageResultLogger(ScopedIncomingMessageResultLogger::
+      ScopedIncomingMessageResultLogger(GlicMetricReporter(profile_),
+                                        ScopedIncomingMessageResultLogger::
                                             Channel::kBrowserActuatorTransport),
       base::DoNothing(), nullptr);
 
@@ -795,7 +803,8 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   base::HistogramTester histogram_tester;
   auto response = coordinator_->OnProtoMessage(
       kTestContextId, proto,
-      ScopedIncomingMessageResultLogger(ScopedIncomingMessageResultLogger::
+      ScopedIncomingMessageResultLogger(GlicMetricReporter(profile_),
+                                        ScopedIncomingMessageResultLogger::
                                             Channel::kBrowserActuatorTransport),
       base::DoNothing(), nullptr);
 
@@ -973,6 +982,14 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
       GlicExperimentalTriggeringIncomingMessageResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
+      "SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.ExperimentalTriggering.IncomingMessageResult."
+      "SharingMessage",
+      0);
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
@@ -1013,6 +1030,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   auto response = coordinator_->OnRequest(
       kTestContextId, CreateScreenshotRequest(/*request_token=*/{}),
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       update_future.GetRepeatingCallback(), nullptr);
 
@@ -1027,6 +1045,12 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
 
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::
+          kUnexpectedRequestPayload,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
+      "SharingMessage",
       GlicExperimentalTriggeringIncomingMessageResult::
           kUnexpectedRequestPayload,
       1);
@@ -1068,6 +1092,7 @@ TEST_P(GlicExperimentalTriggeringCoordinatorScreenshotCaptureTest,
   auto response = coordinator_->OnRequest(
       kTestContextId, CreateScreenshotRequest(expected_token),
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       update_future.GetRepeatingCallback(), nullptr);
 
@@ -1136,6 +1161,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   auto response = coordinator_->OnRequest(
       kTestContextId, CreateConfirmationRequest(/*confirmation_response=*/{}),
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       update_future.GetRepeatingCallback(), nullptr);
 
@@ -1151,6 +1177,12 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
 
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::
+          kUnexpectedRequestPayload,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
+      "SharingMessage",
       GlicExperimentalTriggeringIncomingMessageResult::
           kUnexpectedRequestPayload,
       1);
@@ -1184,6 +1216,7 @@ TEST_P(GlicExperimentalTriggeringCoordinatorConfirmationTest,
   auto response = coordinator_->OnRequest(
       kTestContextId, CreateConfirmationRequest(expected_payload),
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       update_future.GetRepeatingCallback(), nullptr);
 
@@ -1234,6 +1267,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   coordinator_->OnProtoMessage(
       kTestContextId, proto,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       base::DoNothing(), nullptr);
 
@@ -1255,6 +1289,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   coordinator_->OnProtoMessage(
       kTestContextId, proto,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       base::DoNothing(), nullptr);
 
@@ -1279,6 +1314,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorTest,
   coordinator_->OnProtoMessage(
       kTestContextId, proto,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       base::DoNothing(), nullptr);
 
@@ -1303,6 +1339,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   coordinator_->OnProtoMessage(
       kTestContextId, proto,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       base::DoNothing(), nullptr);
   histogram_tester.ExpectTotalCount(
@@ -1321,6 +1358,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   coordinator_->OnProtoMessage(
       kTestContextId, proto2,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       base::DoNothing(), nullptr);
   histogram_tester.ExpectTotalCount(
@@ -1366,6 +1404,9 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
 
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
       GlicExperimentalTriggeringExecutionOutcome::kSuccess, 1);
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.SidePanelOpened", true, 1);
@@ -1572,6 +1613,9 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
       "Glic.ExperimentalTriggering.ExecutionOutcome",
       GlicExperimentalTriggeringExecutionOutcome::kTimeoutWaitingForClient, 1);
   histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kTimeoutWaitingForClient, 1);
+  histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.SidePanelOpened", false, 1);
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.ClientConnected", false, 1);
@@ -1615,6 +1659,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
       GlicExperimentalTriggeringExecutionOutcome::kTimeoutWaitingForActuation,
       1);
   histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kTimeoutWaitingForActuation,
+      1);
+  histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.SidePanelOpened", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.ClientConnected", true, 1);
@@ -1650,6 +1698,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
       "Glic.ExperimentalTriggering.ExecutionOutcome",
       GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorInvokeInProgress,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorInvokeInProgress,
+      1);
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
@@ -1681,6 +1733,9 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.ExecutionOutcome",
       GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorTabClosed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorTabClosed, 1);
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
@@ -1711,6 +1766,9 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
 
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorOther, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
       GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorOther, 1);
 }
 
@@ -1803,6 +1861,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   auto response = coordinator_->OnRequest(
       kTestContextId, continue_request,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       update_future.GetRepeatingCallback(), nullptr);
   ASSERT_TRUE(response.has_value());
@@ -1873,6 +1932,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
     auto response = coordinator_->OnRequest(
         kTestContextId, request,
         ScopedIncomingMessageResultLogger(
+            GlicMetricReporter(profile_),
             ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
         update_future.GetRepeatingCallback(), nullptr);
     ASSERT_TRUE(response.has_value());
@@ -1890,6 +1950,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
 
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorInvokeInProgress,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
       GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorInvokeInProgress,
       1);
 }
@@ -1913,6 +1977,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
 
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kUpdatesRegistrationFailed,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
       GlicExperimentalTriggeringExecutionOutcome::kUpdatesRegistrationFailed,
       1);
 }
@@ -1939,6 +2007,9 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.ExecutionOutcome",
       GlicExperimentalTriggeringExecutionOutcome::kTerminalFailed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kTerminalFailed, 1);
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
@@ -1962,6 +2033,9 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
 
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kTerminalStopped, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
       GlicExperimentalTriggeringExecutionOutcome::kTerminalStopped, 1);
 }
 
@@ -1988,6 +2062,11 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
       GlicExperimentalTriggeringExecutionOutcome::
           kClientDisconnectedBeforeResponse,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::
+          kClientDisconnectedBeforeResponse,
+      1);
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
@@ -2009,6 +2088,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
       "Glic.ExperimentalTriggering.ExecutionOutcome",
       GlicExperimentalTriggeringExecutionOutcome::kDestroyedBeforeCompletion,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kDestroyedBeforeCompletion,
+      1);
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
@@ -2025,6 +2108,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
             "Script tool execution is not enabled.");
   histogram_tester_.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kScriptToolsDisabled, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
+      "SharingMessage",
       GlicExperimentalTriggeringIncomingMessageResult::kScriptToolsDisabled, 1);
 }
 
@@ -2047,6 +2134,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
             "ExecuteActions contained non-ScriptTool actions.");
   histogram_tester_.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kNonScriptToolAction, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
+      "SharingMessage",
       GlicExperimentalTriggeringIncomingMessageResult::kNonScriptToolAction, 1);
 }
 
@@ -2073,6 +2164,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorCannotActOnWebTest,
       syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable, 1);
   histogram_tester_.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kUserNotOptedIn, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
+      "SharingMessage",
       GlicExperimentalTriggeringIncomingMessageResult::kUserNotOptedIn, 1);
 }
 
@@ -2111,6 +2206,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   histogram_tester_.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
       GlicExperimentalTriggeringIncomingMessageResult::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
+      "SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kSuccess, 1);
   EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
 
   ExperimentalTriggeringRequest stop_request;
@@ -2147,6 +2246,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
             "Another task is already executing for this context.");
   histogram_tester_.ExpectBucketCount(
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kTaskAlreadyRunning, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
+      "SharingMessage",
       GlicExperimentalTriggeringIncomingMessageResult::kTaskAlreadyRunning, 1);
   // Rejecting the second request must not tear down the first execution.
   EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
@@ -2195,6 +2298,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   histogram_tester_.ExpectBucketCount(
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
       GlicExperimentalTriggeringIncomingMessageResult::kTaskAlreadyRunning, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
+      "SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kTaskAlreadyRunning, 1);
   // The in-flight execution and its handler must survive the rejection.
   EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
 
@@ -2220,6 +2327,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   coordinator_->OnRequest(
       kTestContextId, request,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       update_future.GetRepeatingCallback(), &mock_tab_);
 
@@ -2249,6 +2357,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   coordinator_->OnRequest(
       kTestContextId, request,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       update_future.GetRepeatingCallback(), &mock_tab_);
 
@@ -2267,6 +2376,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   histogram_tester_.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
       GlicExperimentalTriggeringIncomingMessageResult::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
+      "SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kSuccess, 1);
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
@@ -2279,6 +2392,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
             "Target tab for document identifier could not be found.");
   histogram_tester_.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kTabNotFound, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
+      "SharingMessage",
       GlicExperimentalTriggeringIncomingMessageResult::kTabNotFound, 1);
   EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
 }
@@ -2296,6 +2413,10 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
             "Target tab for document identifier could not be found.");
   histogram_tester_.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kTabNotFound, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Consumer.ExperimentalTriggering.IncomingMessageResult."
+      "SharingMessage",
       GlicExperimentalTriggeringIncomingMessageResult::kTabNotFound, 1);
   EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
 }
@@ -2325,6 +2446,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   coordinator_->OnRequest(
       kTestContextId, request,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       update_future.GetRepeatingCallback(), &mock_tab_);
 
@@ -2380,6 +2502,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   auto response = coordinator_->OnRequest(
       kTestContextId, request,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       update_future.GetRepeatingCallback(), &mock_tab_);
   ASSERT_TRUE(response.has_value());
@@ -2393,6 +2516,7 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   auto response2 = coordinator_->OnRequest(
       "context_2", request,
       ScopedIncomingMessageResultLogger(
+          GlicMetricReporter(profile_),
           ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
       update_future2.GetRepeatingCallback(), &mock_tab_);
   ASSERT_TRUE(response2.has_value());
