@@ -13,7 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
-#include "chrome/common/extensions/api/vpn_provider.h"
+#include "chromeos/ash/experiences/extensions/common/api/vpn_provider.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace extensions {

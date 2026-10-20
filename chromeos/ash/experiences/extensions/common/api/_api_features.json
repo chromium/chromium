@@ -161,6 +161,10 @@
       "chrome://os-settings/*"
     ]
   }],
+  "vpnProvider": {
+    "dependencies": ["permission:vpnProvider"],
+    "contexts": ["privileged_extension"]
+  },
   "wmDesksPrivate": {
     "dependencies": ["permission:wmDesksPrivate"],
     "contexts": ["privileged_extension"]

@@ -129,7 +129,6 @@ if (enable_extensions) {
       "smart_card_provider_private.idl",
       "system_log.idl",
       "terminal_private.json",
-      "vpn_provider.idl",
       "wallpaper.json",
     ]
 

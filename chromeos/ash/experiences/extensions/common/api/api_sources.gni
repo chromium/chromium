@@ -20,6 +20,7 @@ chromeos_schema_sources_ = [
   "login_screen_ui.webidl",
   "speech_recognition_private.idl",
   "users_private.idl",
+  "vpn_provider.idl",
   "wm_desks_private.idl",
 ]
 

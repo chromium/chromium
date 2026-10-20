@@ -2893,6 +2893,7 @@ source_set("browser_tests") {
       "//chromeos/ash/components/system",
       "//chromeos/ash/experiences/arc:arc_test_support",
       "//chromeos/ash/experiences/arc:notification_test_support",
+      "//chromeos/ash/experiences/extensions/common/api",
       "//chromeos/components/kiosk:test_support",
       "//chromeos/constants",
       "//chromeos/dbus/constants",

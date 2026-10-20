@@ -846,11 +846,6 @@
       "A9A9FC0228ADF541F0334F22BEFB8F9C245B21D7"   // http://crbug.com/839189
     ]
   },
-  "vpnProvider": {
-    "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "platforms": ["chromeos"]
-  },
   "webview": {
     "channel": "stable",
     "extension_types": ["platform_app"],

@@ -28,6 +28,7 @@ function_registration("api_registration") {
     "login_screen_ui",
     "speech_recognition_private",
     "users_private",
+    "vpn_provider",
     "wm_desks_private",
   ]
 
@@ -41,6 +42,7 @@ function_registration("api_registration") {
     "//chrome/browser/ash/extensions/users_private/users_private_api.h",
     "//chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h",
     "//chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h",
+    "//chrome/browser/chromeos/extensions/vpn_provider/vpn_provider_api.h",
     "//chrome/browser/chromeos/extensions/wm/wm_desks_private_api.h",
     "//chrome/browser/extensions/api/certificate_provider/certificate_provider_api.h",
   ]
@@ -53,6 +55,7 @@ function_registration("api_registration") {
     "//chrome/browser/ash/extensions/login_screen_ui",
     "//chrome/browser/ash/extensions/speech",
     "//chrome/browser/ash/extensions/users_private",
+    "//chrome/browser/chromeos/extensions/vpn_provider",
     "//chrome/browser/chromeos/extensions/wm",
   ]
 }

@@ -941,10 +941,6 @@
     "dependencies": ["permission:virtualKeyboard"],
     "contexts": ["privileged_extension"]
   },
-  "vpnProvider": {
-    "dependencies": ["permission:vpnProvider"],
-    "contexts": ["privileged_extension"]
-  },
   "webRequest": {
     "dependencies": ["permission:webRequest"],
     "contexts": ["privileged_extension"]

@@ -129,6 +129,11 @@
       "0D209B5E4401BB8E7873B5AB5B1346A1CB067015"
     ]
   },
+  "vpnProvider": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"],
+    "platforms": ["chromeos"]
+  },
   "wmDesksPrivate": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"],

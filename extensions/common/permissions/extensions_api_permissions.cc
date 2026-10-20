@@ -169,9 +169,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kVideoCapture, "videoCapture",
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kVirtualKeyboard, "virtualKeyboard"},
-    {APIPermissionID::kVpnProvider, "vpnProvider",
-     APIPermissionInfo::kFlagCannotBeOptional |
-         APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kWebRequest, "webRequest"},
     {APIPermissionID::kWebRequestAuthProvider, "webRequestAuthProvider"},
     {APIPermissionID::kWebRequestBlocking, "webRequestBlocking"},
