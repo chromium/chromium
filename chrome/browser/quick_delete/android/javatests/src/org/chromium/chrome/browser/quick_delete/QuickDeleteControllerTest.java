@@ -31,11 +31,11 @@ import org.mockito.stubbing.Answer;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ConditionalState;
 import org.chromium.base.test.transit.TransitAsserts;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -44,16 +44,17 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
@@ -70,10 +71,6 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289665
-@DisableFeatures({
-    ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
-})
 public class QuickDeleteControllerTest {
     private static final long FIFTEEN_MINUTES_IN_MS = TimeUnit.MINUTES.toMillis(15);
 
@@ -279,10 +276,16 @@ public class QuickDeleteControllerTest {
         histogramWatcher.assertExpected();
         TransitAsserts.assertFinalDestination(clearBrowsingDataSettings);
 
-        // Return to a PageStation for InitialStateRule to reset properly.
-        clearBrowsingDataSettings
-                .pressBackTo()
-                .arriveAt(WebPageStation.newBuilder().withTabAlreadySelected(secondTab).build());
+        // Return to a PageStation for InitialStateRule to reset properly. When settings are shown
+        // in a tab, back at the task root is handled by the system and does not close the settings
+        // tab, so close it programmatically instead.
+        TripBuilder exitSettings =
+                SettingsInTab.shouldOpenSettingsInTab()
+                        ? ChromeTriggers.closeCurrentTabProgrammaticallyTo(
+                                clearBrowsingDataSettings, mCtaTestRule.getActivity())
+                        : clearBrowsingDataSettings.pressBackTo();
+        exitSettings.arriveAt(
+                WebPageStation.newBuilder().withTabAlreadySelected(secondTab).build());
     }
 
     @Test
