@@ -303,6 +303,7 @@ histograms_and_variants_xml_files = [
   "//tools/metrics/histograms/metadata/skia/histograms.xml",
   "//tools/metrics/histograms/metadata/skills/histograms.xml",
   "//tools/metrics/histograms/metadata/smart_card/histograms.xml",
+  "//tools/metrics/histograms/metadata/smart_selection/histograms.xml",
   "//tools/metrics/histograms/metadata/sql/histograms.xml",
   "//tools/metrics/histograms/metadata/stability/histograms.xml",
   "//tools/metrics/histograms/metadata/startup/histograms.xml",

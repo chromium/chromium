@@ -1,0 +1,109 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of SmartSelection
+histograms along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="SmartSelection.Suggestions.Latency.{Stage}" units="ms"
+    expires_after="2027-04-14">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    Records the duration of {Stage} during a Smart Selection Suggestions server
+    request. Uses a custom 1 ms to 20 s range (50 buckets) to preserve 1 ms
+    resolution for fast sub-stages while covering the 20 s default request
+    timeout. Recorded when a valid SmartSelectionSuggestionsResponse is received
+    (and, for server-side stages, when the corresponding latency field is
+    populated in the response).
+  </summary>
+  <token key="Stage">
+    <variant name="ClientMesRpc"
+        summary="the client-observed round-trip MES ExecuteModel RPC"/>
+    <variant name="ClientPrep"
+        summary="client-side request preparation and screenshot encoding"/>
+    <variant name="EndToEnd"
+        summary="the end-to-end request from RequestSuggestions to response
+                 receipt"/>
+    <variant name="MesImagePrep"
+        summary="MES server-side image decoding, cropping/marking, and
+                 encoding"/>
+    <variant name="MesOtherOverhead"
+        summary="MES server-side overhead outside image preprocessing and
+                 model execution"/>
+    <variant name="MesOverhead"
+        summary="total MES server-side overhead outside model execution"/>
+    <variant name="MesTotal" summary="total MES server-side request handling"/>
+    <variant name="ModelContentProc"
+        summary="multimodal content processing and tokenization in the model
+                 backend"/>
+    <variant name="ModelDecode"
+        summary="output token decoding on the model server"/>
+    <variant name="ModelOther"
+        summary="model execution time not accounted for by content
+                 processing, prefill queue wait, prefill, and decode"/>
+    <variant name="ModelPrefill" summary="prompt prefill on the model server"/>
+    <variant name="ModelPrefillQueueWait"
+        summary="queue wait before prefill starts on the model server"/>
+    <variant name="ModelRun"
+        summary="the backend GenerateContent RPC from MES to the model
+                 service"/>
+    <variant name="Transmission"
+        summary="network transmission and client/edge RPC overhead
+                 (ClientMesRpc minus MesTotal)"/>
+  </token>
+</histogram>
+
+<histogram name="SmartSelection.Suggestions.Request.ApcSize" units="KB"
+    expires_after="2027-04-14">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    The serialized size (in KB) of the AnnotatedPageContent proto sent in a
+    Smart Selection Suggestions server request. Recorded when a valid
+    SmartSelectionSuggestionsResponse is received.
+  </summary>
+</histogram>
+
+<histogram name="SmartSelection.Suggestions.Request.ImageSize" units="KB"
+    expires_after="2027-04-14">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    The encoded byte size (in KB) of the screenshot sent in a Smart Selection
+    Suggestions server request. Recorded when a valid
+    SmartSelectionSuggestionsResponse is received.
+  </summary>
+</histogram>
+
+<histogram name="SmartSelection.Suggestions.Response.SuggestionCount"
+    units="suggestions" expires_after="2027-04-14">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    The number of valid suggestions extracted from a
+    SmartSelectionSuggestionsResponse. Recorded when a valid response is
+    received from the server.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

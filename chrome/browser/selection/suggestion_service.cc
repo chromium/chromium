@@ -5,9 +5,11 @@
 #include "chrome/browser/selection/suggestion_service.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iterator>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -20,6 +22,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -158,6 +162,19 @@ std::vector<std::unique_ptr<Suggestion>> ExtractSuggestionsFromResponse(
   return suggestions;
 }
 
+void RecordLatencyHistogram(std::string_view stage, base::TimeDelta duration) {
+  // Uses a custom 1 ms to 20 s range because
+  // - UmaHistogramTimes() caps at 10 s, which is below the server timeout;
+  // - UmaHistogramMediumTimes() starts at 10 ms, which is above the typical
+  //   latency for the fast sub-stages.
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"SmartSelection.Suggestions.Latency.", stage}),
+      std::max(base::TimeDelta(), duration),
+      /*min=*/base::Milliseconds(1),
+      /*max=*/base::Seconds(20),
+      /*buckets=*/50);
+}
+
 void LogLatencyMetrics(base::TimeTicks request_start_time,
                        base::TimeTicks mes_request_start_time,
                        size_t image_bytes,
@@ -170,6 +187,7 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
     base::TimeDelta client_mes_rpc;
     base::TimeDelta client_prep;
     base::TimeDelta transmission;
+    base::TimeDelta mes_total;
     base::TimeDelta mes_overhead;
     base::TimeDelta mes_image_prep;
     base::TimeDelta mes_other_overhead;
@@ -184,13 +202,13 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
       .client_mes_rpc = now - mes_request_start_time,
       .client_prep = mes_request_start_time - request_start_time,
   };
+
   if (metrics.has_mes_total_ms()) {
-    const base::TimeDelta mes_total =
-        base::Milliseconds(metrics.mes_total_ms());
-    durations.transmission = durations.client_mes_rpc - mes_total;
+    durations.mes_total = base::Milliseconds(metrics.mes_total_ms());
+    durations.transmission = durations.client_mes_rpc - durations.mes_total;
     if (metrics.has_model_execution_ms()) {
       durations.model_run = base::Milliseconds(metrics.model_execution_ms());
-      durations.mes_overhead = mes_total - durations.model_run;
+      durations.mes_overhead = durations.mes_total - durations.model_run;
       if (metrics.has_mes_image_preprocessing_ms()) {
         durations.mes_image_prep =
             base::Milliseconds(metrics.mes_image_preprocessing_ms());
@@ -214,7 +232,44 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
       }
     }
   }
-  // TODO(crbug.com/571693803): Add UKM and UMA metrics.
+
+  RecordLatencyHistogram("EndToEnd", durations.end_to_end);
+  RecordLatencyHistogram("ClientPrep", durations.client_prep);
+  RecordLatencyHistogram("ClientMesRpc", durations.client_mes_rpc);
+  base::UmaHistogramCounts10000("SmartSelection.Suggestions.Request.ImageSize",
+                                image_bytes / 1000);
+  base::UmaHistogramCounts10000("SmartSelection.Suggestions.Request.ApcSize",
+                                apc_bytes / 1000);
+  base::UmaHistogramExactLinear(
+      "SmartSelection.Suggestions.Response.SuggestionCount", num_suggestions,
+      /*exclusive_max=*/10);
+
+  if (metrics.has_mes_total_ms()) {
+    RecordLatencyHistogram("MesTotal", durations.mes_total);
+    RecordLatencyHistogram("Transmission", durations.transmission);
+    if (metrics.has_model_execution_ms()) {
+      RecordLatencyHistogram("ModelRun", durations.model_run);
+      RecordLatencyHistogram("MesOverhead", durations.mes_overhead);
+      if (metrics.has_mes_image_preprocessing_ms()) {
+        RecordLatencyHistogram("MesImagePrep", durations.mes_image_prep);
+        RecordLatencyHistogram("MesOtherOverhead",
+                               durations.mes_other_overhead);
+      }
+      if (metrics.has_model_content_processing_ms() &&
+          metrics.has_model_queue_wait_ms() && metrics.has_model_prefill_ms() &&
+          metrics.has_model_decode_ms()) {
+        RecordLatencyHistogram("ModelContentProc",
+                               durations.model_content_proc);
+        RecordLatencyHistogram("ModelPrefillQueueWait",
+                               durations.model_queue_wait);
+        RecordLatencyHistogram("ModelPrefill", durations.model_prefill);
+        RecordLatencyHistogram("ModelDecode", durations.model_decode);
+        RecordLatencyHistogram("ModelOther", durations.model_other);
+      }
+    }
+  }
+
+  // TODO(crbug.com/571693803): Add UKM metrics.
   VLOG(1) << "Suggestion latency: end-to-end: " << durations.end_to_end
           << " (client prep: " << durations.client_prep
           << ", transmission: " << durations.transmission
