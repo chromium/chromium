@@ -1479,7 +1479,7 @@ TEST(ActionChipGeneratorTest, ParsesAimActionCorrectly) {
       fusebox_action::mojom::SearchboxOverride::kComposebox);
 }
 
-TEST(ActionChipGeneratorTest, NewEndpointMissingSecondaryTextIsEmpty) {
+TEST(ActionChipGeneratorTest, NewEndpointMissingSecondaryTextIsNull) {
   EnvironmentFixture env;
   GeneratorFixture generator_fixture;
 
@@ -1517,11 +1517,55 @@ TEST(ActionChipGeneratorTest, NewEndpointMissingSecondaryTextIsEmpty) {
   generator_fixture.GenerateActionChips(std::nullopt, run_loop, actual);
   run_loop.Run();
 
-  // The missing secondary text becomes an empty string.
+  // The missing secondary text stays null.
   ASSERT_EQ(actual.size(), 1u);
   ASSERT_TRUE(actual[0]->suggest_template_info);
-  ASSERT_TRUE(actual[0]->suggest_template_info->secondary_text);
-  EXPECT_EQ(actual[0]->suggest_template_info->secondary_text->text, u"");
+  EXPECT_FALSE(actual[0]->suggest_template_info->secondary_text);
+}
+
+TEST(ActionChipGeneratorTest, NewEndpointEmptySecondaryTextIsNull) {
+  EnvironmentFixture env;
+  GeneratorFixture generator_fixture;
+
+  EXPECT_CALL(
+      generator_fixture.mock_service(),
+      GetActionChipSuggestions(Eq(std::nullopt), Eq(std::nullopt), _, _, _, _))
+      .WillOnce(WithArg<5>(
+          [&](base::OnceCallback<void(RemoteSuggestionsServiceSimple::
+                                          ActionChipSuggestionsResult&&)>
+                  callback) {
+            SearchSuggestionParser::SuggestResult suggestion =
+                CreateSuggestion({.match_contents = "Deep Search"});
+            suggestion.set_suggestion_group_id(
+                omnibox::GROUP_AI_MODE_DEEP_SEARCH_ACTION);
+            // The template has a secondary text with no text and no a11y text.
+            omnibox::SuggestTemplateInfo suggest_template_info;
+            suggest_template_info.set_type_icon(
+                omnibox::SuggestTemplateInfo::GLOBE_WITH_SEARCH_LOOP);
+            suggest_template_info.mutable_primary_text()->set_text(
+                "Deep Search");
+            suggest_template_info.mutable_secondary_text()->set_text("");
+            suggestion.SetSuggestTemplateInfo(suggest_template_info);
+            SearchSuggestionParser::SuggestResults results;
+            results.push_back(std::move(suggestion));
+            std::move(callback).Run(std::move(results));
+            return nullptr;
+          }));
+
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpNextFeatures,
+      {{ntp_features::kNtpNextShowStaticTextParam.name, "false"}});
+
+  base::RunLoop run_loop;
+  std::vector<ActionChipPtr> actual;
+  generator_fixture.GenerateActionChips(std::nullopt, run_loop, actual);
+  run_loop.Run();
+
+  // The empty secondary text is dropped.
+  ASSERT_EQ(actual.size(), 1u);
+  ASSERT_TRUE(actual[0]->suggest_template_info);
+  EXPECT_FALSE(actual[0]->suggest_template_info->secondary_text);
 }
 
 TEST(ActionChipsGeneratorTest, SteadyStateFallbackChipsHavePreferredInventory) {

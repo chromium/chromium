@@ -161,7 +161,9 @@ void SyncProtoToMojo<omnibox::SuggestTemplateInfo, SuggestTemplateInfoPtr>(
   if (a.has_primary_text()) {
     AssignMojoField(a.primary_text(), b->primary_text);
   }
-  if (a.has_secondary_text()) {
+  // A secondary text with no text and no a11y text stays null.
+  if (a.has_secondary_text() && (!a.secondary_text().text().empty() ||
+                                 !a.secondary_text().a11y_text().empty())) {
     AssignMojoField(a.secondary_text(), b->secondary_text);
   }
   if (a.has_fusebox_action()) {
@@ -170,7 +172,8 @@ void SyncProtoToMojo<omnibox::SuggestTemplateInfo, SuggestTemplateInfoPtr>(
   }
 }
 
-// Creates a SuggestTemplateInfoPtr with the given icon and unstyled text.
+// Creates a SuggestTemplateInfoPtr with the given icon and unstyled text. The
+// secondary text is null if `secondary_text` is empty.
 SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
     IconType type_icon,
     std::u16string primary_text,
@@ -179,8 +182,10 @@ SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
   suggest_template_info->type_icon = type_icon;
   suggest_template_info->primary_text = FormattedString::New();
   suggest_template_info->primary_text->text = std::move(primary_text);
-  suggest_template_info->secondary_text = FormattedString::New();
-  suggest_template_info->secondary_text->text = std::move(secondary_text);
+  if (!secondary_text.empty()) {
+    suggest_template_info->secondary_text = FormattedString::New();
+    suggest_template_info->secondary_text->text = std::move(secondary_text);
+  }
   return suggest_template_info;
 }
 
@@ -206,8 +211,8 @@ SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
     return nullptr;
   }
 
-  // Start from empty text, which the Mojo struct requires even if the proto
-  // has none.
+  // Start from an empty primary text, which the Mojo struct requires even if
+  // the proto has none.
   SuggestTemplateInfoPtr mojom_suggest_template_info =
       CreateSuggestTemplateInfo(IconType::kIconTypeUnspecified,
                                 /*primary_text=*/std::u16string());

@@ -310,12 +310,12 @@ export class ActionChipsElement extends CrLitElement {
     }
     const url = new URL(chip.tab.url);
     const domain = url.hostname.replace(/^www\./, '');
-    return `${chip.suggestTemplateInfo.secondaryText.text} - ${domain}`;
+    return `${chip.suggestTemplateInfo.secondaryText?.text ?? ''} - ${domain}`;
   }
 
 
   protected getChipSubtitle_(chip: ActionChip): string {
-    return chip.suggestTemplateInfo.secondaryText.text;
+    return chip.suggestTemplateInfo.secondaryText?.text ?? '';
   }
 
   protected getChipTitle_(chip: ActionChip): string {
@@ -323,7 +323,7 @@ export class ActionChipsElement extends CrLitElement {
     const secondaryText = chip.suggestTemplateInfo.secondaryText;
 
     const primary = primaryText.a11yText || primaryText.text;
-    const secondary = secondaryText.a11yText || secondaryText.text;
+    const secondary = secondaryText?.a11yText || secondaryText?.text || '';
 
     if (primary && secondary) {
       return `${primary} ${secondary}`;

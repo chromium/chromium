@@ -131,7 +131,7 @@ export function createClipboardEvent(name: string): ClipboardEvent {
 export interface SuggestTemplateInfoModifiers extends
     Omit<Partial<SuggestTemplateInfo>, 'primaryText'|'secondaryText'> {
   primaryText?: string|FormattedString;
-  secondaryText?: string|FormattedString;
+  secondaryText?: string|FormattedString|null;
 }
 
 /**
@@ -140,11 +140,12 @@ export interface SuggestTemplateInfoModifiers extends
  */
 export function createSuggestTemplateInfo(
     modifiers: SuggestTemplateInfoModifiers = {}): SuggestTemplateInfo {
-  const {primaryText = '', secondaryText = '', ...otherModifiers} = modifiers;
+  const {primaryText = '', secondaryText = null, ...otherModifiers} = modifiers;
   return createSuggestTemplateInfoBase({
     ...otherModifiers,
     primaryText: toFormattedString(primaryText),
-    secondaryText: toFormattedString(secondaryText),
+    secondaryText: secondaryText === null ? null :
+                                            toFormattedString(secondaryText),
   });
 }
 

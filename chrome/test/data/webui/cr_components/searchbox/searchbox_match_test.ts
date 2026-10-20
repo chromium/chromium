@@ -541,4 +541,16 @@ suite('CrComponentsRealboxMatchTest', () => {
         'hidden', getComputedStyle(matchEl.$.secondaryText).visibility);
     assertEquals('hidden', getComputedStyle(matchEl.$.separator).visibility);
   });
+
+  test('RendersNullSecondaryTextAsEmpty', async () => {
+    const match = createAutocompleteMatch();
+    match.suggestTemplate.primaryText = createFormattedString('Content');
+    match.suggestTemplate.secondaryText = null;
+    matchEl.match = match;
+    await microtasksFinished();
+
+    const secondaryTextEl = matchEl.shadowRoot.querySelector('#secondaryText');
+    assertTrue(!!secondaryTextEl);
+    assertEquals('', secondaryTextEl.textContent);
+  });
 });

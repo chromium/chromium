@@ -57,7 +57,7 @@ export function createSuggestTemplateInfo(
     modifiers: Partial<SuggestTemplateInfo> = {}): SuggestTemplateInfo {
   const base: SuggestTemplateInfo = {
     primaryText: createFormattedString(),
-    secondaryText: createFormattedString(),
+    secondaryText: null,
     secondaryTextPlacement: SecondaryTextPlacement.kUnspecified,
     image: null,
     style: SuggestStyle.kUnspecified,

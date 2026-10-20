@@ -22,7 +22,7 @@ export function getHtml(this: ComposeboxMatchElement) {
         this.match.suggestTemplate.primaryText.text}</span>
     ${this.secondaryTextPlacement === 'below-primary-text' ? html`
       <span id="secondaryText" part="match-secondary-text">
-        ${this.match.suggestTemplate.secondaryText.text}
+        ${this.match.suggestTemplate.secondaryText?.text ?? ''}
       </span>
     ` : ''}
   </div>

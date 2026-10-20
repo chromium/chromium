@@ -315,7 +315,7 @@ export class SearchboxDropdownElement extends CrLitElement {
     const other = new Set<string>();
     if (this.hideDuplicateDescriptions_) {
       for (const match of this.result?.matches ?? []) {
-        const description = match.suggestTemplate.secondaryText.text;
+        const description = match.suggestTemplate.secondaryText?.text;
         if (description) {
           (match.isContextualSuggestion ? contextual : other).add(description);
         }
@@ -337,7 +337,7 @@ export class SearchboxDropdownElement extends CrLitElement {
    */
   protected hasDuplicateDescription_(match: AutocompleteMatch): boolean {
     return this.duplicateDescriptions_.has(
-        match.suggestTemplate.secondaryText.text);
+        match.suggestTemplate.secondaryText?.text ?? '');
   }
 
   /**

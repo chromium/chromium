@@ -33,7 +33,7 @@ export function createAutocompleteMatch(
     keywordModel: null,
     suggestTemplate: {
       primaryText: {text: '', fragments: [], a11yText: null},
-      secondaryText: {text: '', fragments: [], a11yText: null},
+      secondaryText: null,
       secondaryTextPlacement: SecondaryTextPlacement.kUnspecified,
       image: null,
       style: SuggestStyle.kUnspecified,

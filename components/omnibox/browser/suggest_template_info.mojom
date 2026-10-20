@@ -129,7 +129,8 @@ struct SuggestTemplateInfo {
   // The primary text of the suggestion and its styling.
   FormattedString primary_text;
   // The secondary text of the suggestion (e.g. a subtitle) and its styling.
-  FormattedString secondary_text;
+  // Null if the suggestion has no secondary text.
+  FormattedString? secondary_text;
   // Where to display the secondary text relative to the primary text.
   SecondaryTextPlacement secondary_text_placement =
       SecondaryTextPlacement.kUnspecified;

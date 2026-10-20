@@ -212,6 +212,28 @@ TEST(SuggestTemplateInfoMojoUtilsTest, PopulatesTextFromMatch) {
   }
 }
 
+TEST(SuggestTemplateInfoMojoUtilsTest, LeavesEmptySecondaryTextNull) {
+  // A match without a description has no secondary text.
+  {
+    AutocompleteMatch match;
+    match.contents = u"example.com";
+    mojom::SuggestTemplateInfoPtr suggest_template =
+        CreateSuggestTemplateInfo(match);
+    EXPECT_EQ(suggest_template->primary_text->text, u"example.com");
+    EXPECT_FALSE(suggest_template->secondary_text);
+  }
+  // With `swap_contents_and_description`, the secondary text is the contents.
+  {
+    AutocompleteMatch match;
+    match.description = u"Example Title";
+    match.swap_contents_and_description = true;
+    mojom::SuggestTemplateInfoPtr suggest_template =
+        CreateSuggestTemplateInfo(match);
+    EXPECT_EQ(suggest_template->primary_text->text, u"Example Title");
+    EXPECT_FALSE(suggest_template->secondary_text);
+  }
+}
+
 TEST(SuggestTemplateInfoMojoUtilsTest, ConvertsClassificationsToFragments) {
   AutocompleteMatch match;
   match.contents = u"0123456789";

@@ -986,6 +986,7 @@ suite('NewTabPageActionChipsTest', () => {
               suggestTemplateInfo: {
                 typeIcon: IconType.kFavicon,
                 primaryText: 'Example Tab',
+                secondaryText: null,
               },
               fuseboxAction: {
                 preselectedTool: ToolMode.kUnspecified,

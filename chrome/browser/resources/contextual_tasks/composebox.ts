@@ -60,7 +60,6 @@ function createGhostMatch(): AutocompleteMatch {
              '//resources/cr_components/searchbox/icons/search_spark_old.svg'),
   });
   match.suggestTemplate.primaryText.text = '\u200b';
-  match.suggestTemplate.secondaryText.text = '\u200b';
   return match;
 }
 export interface ContextualTasksComposeboxElement {

@@ -136,8 +136,12 @@ mojom::SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
       swap ? match.contents_class : match.description_class;
   suggest_template->primary_text = CreateFormattedString(
       swap ? match.description : match.contents, primary_text_class);
-  suggest_template->secondary_text = CreateFormattedString(
-      swap ? match.contents : match.description, secondary_text_class);
+  const std::u16string& secondary_text =
+      swap ? match.contents : match.description;
+  if (!secondary_text.empty()) {
+    suggest_template->secondary_text =
+        CreateFormattedString(secondary_text, secondary_text_class);
+  }
   suggest_template->secondary_text_placement = GetSecondaryTextPlacement(match);
   suggest_template->image = GetImage(match);
   if (match.suggest_template && match.suggest_template->has_style()) {

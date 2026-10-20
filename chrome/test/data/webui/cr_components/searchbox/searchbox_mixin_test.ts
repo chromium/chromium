@@ -223,7 +223,7 @@ function createCalculatorMatch(modifiers: Partial<AutocompleteMatch> = {}):
 function verifyMatch(match: AutocompleteMatch, matchEl: SearchboxMatchElement) {
   assertEquals('option', matchEl.getAttribute('role'));
   const primaryText = match.suggestTemplate.primaryText.text;
-  const secondaryText = match.suggestTemplate.secondaryText.text;
+  const secondaryText = match.suggestTemplate.secondaryText?.text ?? '';
   const separatorText =
       secondaryText ? loadTimeData.getString('searchboxSeparator') : '';
   const text = matchEl.$.primaryText.textContent +

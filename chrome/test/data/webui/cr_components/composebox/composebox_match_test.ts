@@ -84,6 +84,20 @@ suite('ComposeboxMatch', () => {
     assertEquals(64, container.offsetHeight);
   });
 
+  test('renders no secondary text when the match has none', async () => {
+    matchElement.match = createAutocompleteMatch({
+      suggestTemplate: createSuggestTemplateInfo({
+        primaryText: 'test contents',
+        secondaryText: null,
+        secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
+      }),
+    });
+    await microtasksFinished();
+
+    assertEquals('test contents', getTextContent(matchElement, '#primaryText'));
+    assertEquals('', getTextContent(matchElement, '#secondaryText'));
+  });
+
   test('does not apply two-row styling to rich image matches', async () => {
     // SearchboxHandler places the secondary text below the primary text for
     // every match that has an image, which is also what makes a match

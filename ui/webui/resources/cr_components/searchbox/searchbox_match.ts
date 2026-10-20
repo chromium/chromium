@@ -403,12 +403,12 @@ export class SearchboxMatchElement extends CrLitElement {
   }
 
   private computeSecondaryTextHtml_(): TrustedHTML {
-    if (!this.match) {
+    const secondaryText = this.match?.suggestTemplate.secondaryText;
+    if (!secondaryText) {
       return window.trustedTypes!.emptyHTML;
     }
     return this.sanitizeInnerHtml_(
-        this.renderFormattedString_(this.match.suggestTemplate.secondaryText)
-            .innerHTML);
+        this.renderFormattedString_(secondaryText).innerHTML);
   }
 
   private computeHasAction_() {
@@ -542,7 +542,7 @@ export class SearchboxMatchElement extends CrLitElement {
   }
 
   private getMatchSecondaryText_(): string {
-    return this.match ? this.match.suggestTemplate.secondaryText.text : '';
+    return this.match?.suggestTemplate.secondaryText?.text ?? '';
   }
 
   protected getFocusIndicatorCssClass_(): string {
