@@ -9,10 +9,11 @@ import type {SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js'
 import {createAutocompleteMatch, createFormattedString, createMatchKeywordModelForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import {KeywordActivationMethod, KeywordType, SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {ColorType} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createSuggestTemplateInfo} from './searchbox_test_utils.js';
+import {createFormattedStringFragment, createSuggestTemplateInfo} from './searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 suite('CrComponentsRealboxMatchTest', () => {
@@ -265,15 +266,17 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertTrue(!!matchEl.shadowRoot.querySelector('#remove.selected'));
   });
 
-  test('PrimaryAndSecondaryTextWithClassifications', async () => {
+  test('PrimaryAndSecondaryTextWithFragments', async () => {
     const match = createAutocompleteMatch();
-    match.suggestTemplate.primaryText = createFormattedString('test content');
-    match.suggestTemplate.primaryTextClass =
-        [{offset: 0, style: 0}, {offset: 5, style: 2}];
+    match.suggestTemplate.primaryText = createFormattedString('test content', [
+      createFormattedStringFragment({startIndex: 0}),
+      createFormattedStringFragment({startIndex: 5, isBolded: true}),
+    ]);
     match.suggestTemplate.secondaryText =
-        createFormattedString('test description');
-    match.suggestTemplate.secondaryTextClass =
-        [{offset: 0, style: 0}, {offset: 5, style: 2}];
+        createFormattedString('test description', [
+          createFormattedStringFragment({startIndex: 0}),
+          createFormattedStringFragment({startIndex: 5, isBolded: true}),
+        ]);
     matchEl.match = match;
     await microtasksFinished();
 
@@ -291,10 +294,11 @@ suite('CrComponentsRealboxMatchTest', () => {
         secondaryTextEl.innerHTML);
   });
 
-  test('ClassificationsNotStartingAtZeroIndex', async () => {
+  test('FragmentsNotStartingAtZeroIndex', async () => {
     const match = createAutocompleteMatch();
-    match.suggestTemplate.primaryText = createFormattedString('prefix content');
-    match.suggestTemplate.primaryTextClass = [{offset: 7, style: 2}];
+    match.suggestTemplate.primaryText = createFormattedString(
+        'prefix content',
+        [createFormattedStringFragment({startIndex: 7, isBolded: true})]);
     matchEl.match = match;
     await microtasksFinished();
 
@@ -306,15 +310,48 @@ suite('CrComponentsRealboxMatchTest', () => {
         primaryTextEl.innerHTML);
   });
 
+  test('FragmentColorsMapToCssClasses', async () => {
+    const match = createAutocompleteMatch();
+    match.suggestTemplate.primaryText = createFormattedString('abcdef', [
+      createFormattedStringFragment(
+          {startIndex: 0, color: ColorType.kOnSurfaceDefault}),
+      createFormattedStringFragment(
+          {startIndex: 1, color: ColorType.kOnSurfaceDeemphasis}),
+      createFormattedStringFragment({
+        startIndex: 2,
+        color: ColorType.kOnSurfaceDeemphasis,
+        isBolded: true,
+      }),
+      createFormattedStringFragment({
+        startIndex: 3,
+        color: ColorType.kPrimary,
+        isBolded: true,
+      }),
+      createFormattedStringFragment({startIndex: 4, color: ColorType.kUnknown}),
+      // Colors without a CSS class yet are rendered with the default color.
+      createFormattedStringFragment(
+          {startIndex: 5, color: ColorType.kOnSurfacePositive}),
+    ]);
+    matchEl.match = match;
+    await microtasksFinished();
+
+    const primaryTextEl = matchEl.shadowRoot.querySelector('#primaryText');
+    assertTrue(!!primaryTextEl);
+    assertEquals(
+        '<span>a</span><span class="dim">b</span>' +
+            '<span class="dim match">c</span><span class="match url">d</span>' +
+            '<span>e</span><span>f</span>',
+        primaryTextEl.innerHTML);
+  });
 
   test('EscapesPrimaryAndSecondaryText', async () => {
     const match = createAutocompleteMatch();
-    match.suggestTemplate.primaryText =
-        createFormattedString('<script>alert("xss")</script>Safe Content');
-    match.suggestTemplate.primaryTextClass = [{offset: 0, style: 0}];
-    match.suggestTemplate.secondaryText =
-        createFormattedString('<img src=x onerror=alert(1)>Safe Description');
-    match.suggestTemplate.secondaryTextClass = [{offset: 0, style: 0}];
+    match.suggestTemplate.primaryText = createFormattedString(
+        '<script>alert("xss")</script>Safe Content',
+        [createFormattedStringFragment()]);
+    match.suggestTemplate.secondaryText = createFormattedString(
+        '<img src=x onerror=alert(1)>Safe Description',
+        [createFormattedStringFragment()]);
     matchEl.match = match;
     await microtasksFinished();
 
@@ -444,14 +481,20 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
   });
 
-  test('SecondaryTextWithClassifications', async () => {
+  test('SecondaryTextWithFragments', async () => {
     matchEl.match = createAutocompleteMatch({
       suggestTemplate: createSuggestTemplateInfo({
-        secondaryText: 'MIA Basketball',
-        secondaryTextClass: [
-          {offset: 0, style: 2 | 4},  // MATCH | DIM
-          {offset: 4, style: 4},      // DIM
-        ],
+        secondaryText: createFormattedString(
+            'MIA Basketball',
+            [
+              createFormattedStringFragment({
+                startIndex: 0,
+                color: ColorType.kOnSurfaceDeemphasis,
+                isBolded: true,
+              }),
+              createFormattedStringFragment(
+                  {startIndex: 4, color: ColorType.kOnSurfaceDeemphasis}),
+            ]),
       }),
     });
     await microtasksFinished();
