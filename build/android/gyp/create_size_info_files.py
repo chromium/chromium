@@ -148,12 +148,8 @@ def main(args):
     parser.add_argument(
         '--jar-info-path', required=True, help='Output .jar.info file'
     )
-    parser.add_argument(
-        '--pak-info-path', required=True, help='Output .pak.info file'
-    )
-    parser.add_argument(
-        '--res-info-path', required=True, help='Output .res.info file'
-    )
+    parser.add_argument('--pak-info-path', help='Output .pak.info file')
+    parser.add_argument('--res-info-path', help='Output .res.info file')
     parser.add_argument(
         '--jar-files',
         required=True,
@@ -162,21 +158,21 @@ def main(args):
     )
     parser.add_argument(
         '--assets',
-        required=True,
         action='append',
+        default=[],
         help='GN-list of files to add as assets in the form '
         '"srcPath:zipPath", where ":zipPath" is optional.',
     )
     parser.add_argument(
         '--uncompressed-assets',
-        required=True,
         action='append',
+        default=[],
         help='Same as --assets, except disables compression.',
     )
     parser.add_argument(
         '--in-res-info-path',
-        required=True,
         action='append',
+        default=[],
         help='Paths to .ap_.info files',
     )
 
@@ -196,8 +192,10 @@ def main(args):
 
     # Just create the info files every time. See https://crbug.com/1045024
     _MergeJarInfoFiles(options.jar_info_path, jar_inputs)
-    _MergePakInfoFiles(options.pak_info_path, pak_inputs)
-    _MergeResInfoFiles(options.res_info_path, res_inputs)
+    if options.pak_info_path:
+        _MergePakInfoFiles(options.pak_info_path, pak_inputs)
+    if options.res_info_path:
+        _MergeResInfoFiles(options.res_info_path, res_inputs)
 
     all_inputs = jar_inputs + pak_inputs + res_inputs
     action_helpers.write_depfile(
