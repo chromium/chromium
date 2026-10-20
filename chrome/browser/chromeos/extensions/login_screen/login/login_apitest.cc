@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"

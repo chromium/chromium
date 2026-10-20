@@ -50,7 +50,6 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -81,7 +80,7 @@ KioskChromeAppManager::Overrides* g_test_overrides = nullptr;
 
 base::FilePath GetCrxCacheDir() {
   base::FilePath user_data_dir;
-  CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
+  CHECK(base::PathService::Get(ash::DIR_USER_DATA, &user_data_dir));
   return user_data_dir.AppendASCII(kCrxCacheDir);
 }
 

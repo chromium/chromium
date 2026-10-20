@@ -43,7 +43,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/browser/web_applications/web_app_tab_helper.h",
-  "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_switches.h",
 ]
 
@@ -53,12 +52,14 @@ specific_include_rules = {
     "+chrome/browser/ash/browser_delegate",
     "+chrome/browser/devtools",
     "+chrome/browser/ui/browser_window/public",
+    "+chrome/common/chrome_paths.h",
   ],
   ".*(fake|test|mixin)(_.*)?\\.(cc|h)": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
     "+chrome/browser/extensions/extension_service_test_base.h",
     "+chrome/browser/web_applications/test",
+    "+chrome/common/chrome_paths.h",
     "+chrome/test/base",
   ],
   "kiosk_app_level_logs_manager_wrapper\\.cc": [

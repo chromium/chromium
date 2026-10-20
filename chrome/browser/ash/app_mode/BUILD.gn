@@ -191,7 +191,6 @@ static_library("app_mode") {
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/web_applications:launch_utils",
     "//chrome/common:chrome_features",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/cryptohome:public",

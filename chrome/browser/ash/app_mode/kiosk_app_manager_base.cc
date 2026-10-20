@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_paths.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 
@@ -61,7 +61,7 @@ KioskAppManagerBase::App::~App() = default;
 
 base::FilePath KioskAppManagerBase::GetKioskAppIconCacheDir() {
   base::FilePath user_data_dir;
-  bool has_dir = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  bool has_dir = base::PathService::Get(ash::DIR_USER_DATA, &user_data_dir);
   CHECK(has_dir, base::NotFatalUntil::M160);
   return user_data_dir.AppendASCII(kIconCacheDir);
 }
