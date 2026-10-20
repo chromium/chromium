@@ -75,7 +75,7 @@ import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivity;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -92,6 +92,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.chrome.test.util.SettingsTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -124,8 +125,6 @@ import java.io.IOException;
 @DisableFeatures({
     SigninFeatures.SIGNIN_LEVEL_UP_BUTTON,
     ChromeFeatureList.ANDROID_BOTTOM_BAR,
-    ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP, // crbug.com/556881398
     ChromeFeatureList.USE_WEB_UI_NTP_ANDROID // crbug.com/555414915
 })
 @DisableLeakChecks("crbug.com/527131198")
@@ -338,12 +337,11 @@ public class IdentityDiscControllerTest {
                                 R.string.accessibility_toolbar_btn_signed_out_identity_disc)));
 
         // Clicking the signed-out avatar should lead to the settings screen.
-        Activity settingsActivity =
-                ActivityTestUtils.waitForActivity(
-                        InstrumentationRegistry.getInstrumentation(),
-                        SettingsActivity.class,
-                        () -> onView(withId(R.id.optional_toolbar_button)).perform(click()));
-        ApplicationTestUtils.finishActivity(settingsActivity);
+        Activity settingsHost =
+                SettingsTestUtils.waitForSettingsFragment(
+                        () -> onView(withId(R.id.optional_toolbar_button)).perform(click()),
+                        MainSettings.class);
+        SettingsTestUtils.closeSettings(settingsHost);
     }
 
     @Test
