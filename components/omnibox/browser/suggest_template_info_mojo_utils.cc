@@ -6,7 +6,6 @@
 
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/containers/to_vector.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -16,16 +15,6 @@
 namespace suggest_template_info {
 
 namespace {
-
-// Converts `classifications` to their Mojo representation.
-std::vector<mojom::ACMatchClassificationPtr> CreateClassifications(
-    const ACMatchClassifications& classifications) {
-  return base::ToVector(classifications,
-                        [](const ACMatchClassification& classification) {
-                          return mojom::ACMatchClassification::New(
-                              classification.offset, classification.style);
-                        });
-}
 
 // Returns the color for text with the classification `style`. If both URL and
 // DIM are set, URL wins. Other styles get kUnknown and keep the line's default
@@ -117,12 +106,8 @@ mojom::SuggestTemplateInfoPtr CreateSuggestTemplateInfo(
       swap ? match.contents_class : match.description_class;
   suggest_template->primary_text = CreateFormattedString(
       swap ? match.description : match.contents, primary_text_class);
-  suggest_template->primary_text_class =
-      CreateClassifications(primary_text_class);
   suggest_template->secondary_text = CreateFormattedString(
       swap ? match.contents : match.description, secondary_text_class);
-  suggest_template->secondary_text_class =
-      CreateClassifications(secondary_text_class);
   suggest_template->secondary_text_placement = GetSecondaryTextPlacement(match);
   suggest_template->image = GetImage(match);
   if (match.suggest_template && match.suggest_template->has_style()) {
