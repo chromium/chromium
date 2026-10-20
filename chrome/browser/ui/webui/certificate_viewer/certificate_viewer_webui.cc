@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -55,6 +56,25 @@ CertificateViewerDialog::MockShowCallback& GetMockCallbackInstance() {
   static base::NoDestructor<CertificateViewerDialog::MockShowCallback> instance;
   return *instance;
 }
+
+// LINT.IfChange(CertificateViewerEntrypointSuffix)
+std::string_view EntrypointToHistogramSuffix(
+    CertificateViewerEntrypoint entrypoint) {
+  switch (entrypoint) {
+    case CertificateViewerEntrypoint::kPageInfo:
+      return "PageInfo";
+    case CertificateViewerEntrypoint::kSslInterstitial:
+      return "SslInterstitial";
+    case CertificateViewerEntrypoint::kDevTools:
+      return "DevTools";
+    case CertificateViewerEntrypoint::kCertificateManager:
+      return "CertificateManager";
+    case CertificateViewerEntrypoint::kClientCertSelector:
+      return "ClientCertSelector";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:CertificateViewerEntrypointSuffix)
 
 // TODO(crbug.com/40928765): find a good place to put this shared code.
 bool MaskFromIPAndPrefixLength(const net::IPAddress& ip,
@@ -420,9 +440,9 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
     return nullptr;
   }
 
-  CertificateViewerDialog* dialog_ptr =
-      new CertificateViewerDialog(std::move(certs), std::move(cert_metadata),
-                                  std::move(modifications_callback));
+  CertificateViewerDialog* dialog_ptr = new CertificateViewerDialog(
+      entrypoint, std::move(certs), std::move(cert_metadata),
+      std::move(modifications_callback));
 
   auto dialog = base::WrapUnique(dialog_ptr);
 
@@ -435,6 +455,9 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
   // zoom setting.
   content::WebContents* dialog_web_contents =
       dialog_ptr->delegate_->GetWebContents();
+  // Since loading chrome://view-cert happens asynchronously, starting the
+  // observation here suffices to observe the completion of the initial load.
+  dialog_ptr->Observe(dialog_web_contents);
   const GURL dialog_url = dialog_ptr->GetDialogContentURL();
   content::HostZoomMap::Get(dialog_web_contents->GetSiteInstance())
       ->SetZoomLevelForHostAndScheme(dialog_url.GetScheme(),
@@ -447,11 +470,13 @@ gfx::NativeWindow CertificateViewerDialog::GetNativeWebContentsModalDialog() {
 }
 
 CertificateViewerDialog::CertificateViewerDialog(
+    CertificateViewerEntrypoint entrypoint,
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> in_certs,
     std::optional<
         chrome_browser_server_certificate_database::CertificateMetadata>
         cert_metadata,
-    CertMetadataModificationsCallback modifications_callback) {
+    CertMetadataModificationsCallback modifications_callback)
+    : entrypoint_(entrypoint) {
   CHECK(!in_certs.empty());
   if (cert_metadata) {
     CHECK(in_certs.size() == 1);
@@ -465,6 +490,10 @@ CertificateViewerDialog::CertificateViewerDialog(
   constexpr gfx::Size kDefaultSize{544, 628};
   set_can_close(true);
   set_delete_on_close(false);
+  // Unretained is safe because the callback is owned and run by this dialog.
+  RegisterOnDialogClosedCallback(
+      base::BindOnce(&CertificateViewerDialog::OnDialogClosedCallback,
+                     base::Unretained(this)));
   set_dialog_args(
       DialogArgsForCertList(certs, cert_metadata, modifications_callback));
   set_dialog_modal_type(ui::mojom::ModalType::kNone);
@@ -480,6 +509,54 @@ CertificateViewerDialog::CertificateViewerDialog(
 }
 
 CertificateViewerDialog::~CertificateViewerDialog() = default;
+
+void CertificateViewerDialog::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  // Reloading an already-loaded dialog should not affect visible timing.
+  if (loaded_) {
+    return;
+  }
+  loaded_ = true;
+  if (web_contents()->GetVisibility() != content::Visibility::HIDDEN) {
+    StartVisibleTimer();
+  }
+}
+
+void CertificateViewerDialog::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (!loaded_) {
+    return;
+  }
+  // OCCLUDED counts as visible, matching WebContentsModalDialogManager, which
+  // keeps the dialog shown when its tab is occluded.
+  if (visibility == content::Visibility::HIDDEN) {
+    StopVisibleTimer();
+  } else {
+    StartVisibleTimer();
+  }
+}
+
+void CertificateViewerDialog::StartVisibleTimer() {
+  if (!visible_timer_) {
+    visible_timer_.emplace();
+  }
+}
+
+void CertificateViewerDialog::StopVisibleTimer() {
+  if (visible_timer_) {
+    visible_duration_ += visible_timer_->Elapsed();
+  }
+  visible_timer_.reset();
+}
+
+void CertificateViewerDialog::OnDialogClosedCallback(const std::string&) {
+  if (loaded_) {
+    StopVisibleTimer();
+    base::UmaHistogramLongTimes(
+        base::StrCat({"Net.CertificateViewer.TimeShown.",
+                      EntrypointToHistogramSuffix(entrypoint_)}),
+        visible_duration_);
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // CertificateViewerDialogHandler

@@ -30,6 +30,20 @@ chromium-metrics-reviews@google.com.
   <variant name="Http." summary="Collected from the HTTP Cache instance."/>
 </variants>
 
+<!-- LINT.IfChange(CertificateViewerEntrypointSuffix) -->
+
+<variants name="CertificateViewerEntrypoint">
+  <variant name="CertificateManager" summary="the Certificate Manager"/>
+  <variant name="ClientCertSelector"
+      summary="the client certificate selector (not on Windows or macOS)"/>
+  <variant name="DevTools" summary="the DevTools Security panel"/>
+  <variant name="PageInfo" summary="the Page Info bubble"/>
+  <variant name="SslInterstitial"
+      summary="an SSL certificate error interstitial"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.cc:CertificateViewerEntrypointSuffix) -->
+
 <!-- LINT.IfChange(PrewarmOutcome) -->
 
 <variants name="DeviceBoundSessionPrewarmOutcome">
@@ -1620,6 +1634,22 @@ chromium-metrics-reviews@google.com.
     On Windows and macOS, viewing a certificate from the client certificate
     selector opens the native OS viewer instead and is not recorded here.
   </summary>
+</histogram>
+
+<histogram name="Net.CertificateViewer.TimeShown.{Entrypoint}" units="ms"
+    expires_after="2027-10-15">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@chromium.org</owner>
+  <summary>
+    Records the total time the certificate viewer dialog (chrome://view-cert)
+    was shown, when it was opened from {Entrypoint}. Timing starts when the
+    dialog's page finishes its initial load, so it excludes WebUI load time.
+    Time while the dialog is hidden (e.g. because its tab is in the background)
+    is not counted; time while it is shown but occluded is counted. Recorded
+    when the dialog is closed by any means. Not recorded if the dialog is closed
+    before its page finishes loading.
+  </summary>
+  <token key="Entrypoint" variants="CertificateViewerEntrypoint"/>
 </histogram>
 
 <histogram name="Net.CertVerifier.CTRequirementStatus"
