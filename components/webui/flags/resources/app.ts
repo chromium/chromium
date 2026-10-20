@@ -42,6 +42,7 @@ import {ImportExportFileProxyImpl} from './import_export_file_proxy.js';
  */
 // LINT.IfChange(FLAG_REDIRECTS)
 const FLAG_REDIRECTS: Record<string, string> = {
+  '#on-device-model-speculative-decoding': '#built-in-ai-mtp',
   '#prompt-api-for-gemini-nano': '#prompt-api',
   '#prompt-api-for-gemini-nano-multimodal-input':
       '#prompt-api-multimodal-input',

@@ -5323,15 +5323,14 @@ inline constexpr char kGemma4ForBuiltInAIDescription[] =
     "the Gemma 4 model.";
 
 inline constexpr char kOnDeviceModelSpeculativeDecodingName[] =
-    "Speculative Decoding for Built-in AI";
+    "Multi-Token Prediction (MTP) for Built-in AI";
 inline constexpr char kOnDeviceModelSpeculativeDecodingDescription[] =
-    "Enables speculative decoding performance enhancements for Built-in AI "
-    "APIs. Also enables requisite Gemma 4 and Sampling Mode features. "
-    "Summarizer API sessions automatically use greedy sampling with "
-    "speculative decoding by default. Prompt API sessions use speculative "
-    "decoding when greedy sampling options are specified (such as "
-    "samplingMode: \"most-predictable\"); default and non-greedy sessions "
-    "run with standard decoding.";
+    "Enables Multi-Token Prediction (MTP) speculative decoding for Built-in "
+    "AI APIs. Also enables requisite Gemma 4 and Sampling Mode features. "
+    "Summarizer API sessions automatically use greedy sampling with MTP by "
+    "default. Prompt API sessions use MTP when greedy sampling options are "
+    "specified (such as samplingMode: \"most-predictable\"); default and "
+    "non-greedy sessions run with standard decoding.";
 
 inline constexpr char kPromptAPIMultimodalInputName[] =
     "Prompt API Multimodal Input";

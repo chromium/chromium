@@ -10727,7 +10727,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          page_content_annotations::features::kOnDeviceCategoryClassifier)},
 
-    {"on-device-model-speculative-decoding",
+    {"built-in-ai-mtp",
      flag_descriptions::kOnDeviceModelSpeculativeDecodingName,
      flag_descriptions::kOnDeviceModelSpeculativeDecodingDescription,
      kOsDesktop, MULTI_VALUE_TYPE(kSpeculativeDecodingChoices)},

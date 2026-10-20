@@ -1716,6 +1716,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "built-in-ai-mtp",
+    "owners": ["//services/on_device_model/OWNERS", "builtin-ai-team@google.com"],
+    "expiry_milestone": 167
+  },
+  {
     "name": "bundled-security-settings",
     "owners": [
       "awado@google.com",
@@ -7945,11 +7950,6 @@
     "name": "on-device-category-classifier",
     "owners": [ "sophiechang@chromium.org", "wittman@chromium.org" ],
     "expiry_milestone": 162
-  },
-  {
-    "name": "on-device-model-speculative-decoding",
-    "owners": ["//services/on_device_model/OWNERS", "builtin-ai-team@google.com"],
-    "expiry_milestone": 160
   },
   {
     "name": "on-startup-settings-ui",
