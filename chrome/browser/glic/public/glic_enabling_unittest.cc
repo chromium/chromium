@@ -148,6 +148,12 @@ class GlicEnablingTest : public testing::Test {
       GTEST_SKIP() << "Glic requires Android S+";
     }
 #endif
+    // IsSystemRequirementMet() caches its answer in a function-local static,
+    // so it is settled by whichever test in the process asks first and does
+    // not see the feature state set up below. Pin it rather than depending on
+    // the order tests happen to run in.
+    GlicEnabling::SetSystemRequirementMetForTesting(true);
+
     // Note: We're not creating GlobalFeatures in this unit test because
     // GlicBackgroundModeManager fails to be constructed without additional
     // setup.
@@ -175,6 +181,7 @@ class GlicEnablingTest : public testing::Test {
   }
 
   void TearDown() override {
+    GlicEnabling::SetSystemRequirementMetForTesting(std::nullopt);
     scoped_feature_list_.Reset();
     FlushMessageLoop();
     testing::Test::TearDown();
@@ -638,6 +645,12 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
       GTEST_SKIP() << "Glic requires Android S+";
     }
 #endif
+    // IsSystemRequirementMet() caches its answer in a function-local static,
+    // so it is settled by whichever test in the process asks first and does
+    // not see the feature state set up above. Pin it rather than depending on
+    // the order tests happen to run in.
+    GlicEnabling::SetSystemRequirementMetForTesting(true);
+
     raw_ptr<TestingProfileManager> testing_profile_manager =
         TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
             /*profile_manager=*/true);
@@ -664,6 +677,7 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
   }
 
   void TearDown() override {
+    GlicEnabling::SetSystemRequirementMetForTesting(std::nullopt);
     if (IsSkipped()) {
       return;
     }
