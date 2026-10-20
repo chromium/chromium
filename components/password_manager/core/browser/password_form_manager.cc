@@ -977,6 +977,11 @@ void PasswordFormManager::OnFetchCompleted() {
     CreatePendingCredentials();
   }
 
+  if (should_schedule_save_for_later_) {
+    should_schedule_save_for_later_ = false;
+    Save();
+  }
+
   if (allow_filling_upon_fetching_) {
     if (IsHttpAuth()) {
       // No server prediction for http auth, so no need to wait.
@@ -989,11 +994,8 @@ void PasswordFormManager::OnFetchCompleted() {
       DelayFillForServerSidePredictions();
     }
   }
-
-  if (should_schedule_save_for_later_) {
-    should_schedule_save_for_later_ = false;
-    Save();
-  }
+  // DO NOT ADD CODE HERE: `FillNow()` above can synchronously destroy `this`
+  // `PasswordFormManager`, which would lead to a use-after-free.
 }
 
 void PasswordFormManager::OnWaitCompleted() {

@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/containers/lru_cache.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -72,6 +73,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webauthn/android/cred_man_support.h"
@@ -258,9 +260,13 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (),
               (const, override));
   MOCK_METHOD(bool, IsActorTaskActive, (), (override));
+  MOCK_METHOD(void, OnPasswordFilled, (PasswordManagerDriver*), (override));
   MOCK_METHOD(void,
-              OnPasswordFilled,
-              (PasswordManagerDriver*),
+              PasswordWasAutofilled,
+              (base::span<const StoredCredential>,
+               const url::Origin&,
+               base::span<const StoredCredential>,
+               bool),
               (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
@@ -5027,6 +5033,18 @@ TEST_P(PasswordFormManagerTest,
   CreateFormManagerWithoutFetcher(observed_form_);
 }
 
+TEST_P(PasswordFormManagerTest, FillNowDestroysManagerFromOnFetchCompleted) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  CreateFormManager(observed_form_);
+
+  EXPECT_CALL(client_, PasswordWasAutofilled).WillOnce([this]() {
+    form_manager_.reset();
+  });
+
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+  EXPECT_FALSE(form_manager_);
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PasswordFormManagerTest, testing::Bool());
 
 class MockPasswordSaveManager : public PasswordSaveManager {
@@ -5208,6 +5226,31 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   EXPECT_CALL(client_, UpdateFormManagers());
   fetcher_->NotifyFetchCompleted();
   EXPECT_THAT(*form_manager_->GetSubmittedForm(), FormHasUniqueKey(saved_form));
+}
+
+TEST_F(PasswordFormManagerTestWithMockedSaver,
+       SaveStartedAfterFormFetcherIsReadyAndFillNowDestroysManager) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  FormData submitted_form = observed_form_;
+  std::u16string new_username = saved_match_.username_value + u"1";
+  std::u16string new_password = saved_match_.password_value.value() + u"1";
+  test_api(submitted_form).field(kUsernameFieldIndex).set_value(new_username);
+  test_api(submitted_form).field(kPasswordFieldIndex).set_value(new_password);
+  EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
+                                               possible_usernames_));
+
+  fetcher_->Fetch();
+  form_manager_->Save();
+
+  EXPECT_CALL(*mock_password_save_manager(),
+              Save(Pointee(DeepEqualsWithoutUnserializedData(observed_form_)),
+                   FormHasPassword(new_password)));
+  EXPECT_CALL(client_, UpdateFormManagers());
+  EXPECT_CALL(client_, PasswordWasAutofilled).WillOnce([this]() {
+    ResetFormManager();
+  });
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+  EXPECT_FALSE(form_manager_);
 }
 
 TEST_F(PasswordFormManagerTestWithMockedSaver, UpdateUsernameEmptyStore) {

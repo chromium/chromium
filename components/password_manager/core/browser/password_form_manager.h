@@ -433,7 +433,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void DelayFillForServerSidePredictions();
 
   // Sends fill data to the renderer immediately regardless of whether server
-  // predictions are available.
+  // predictions are available. Note that this method can cause `this` to be
+  // destroyed, so no logic should be executed after calling `FillNow()`.
   void FillNow();
 
   // Checks if `best_candidate` has better signal than the username
