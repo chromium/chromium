@@ -90,11 +90,11 @@
 <button id="reset">Reset</button>
 
 <script>
-function assert_focusable(actual, { target = null, pseudoElement = null, shadowHost = null } = {}) {
+function assert_focusable(actual, { target = null, pseudoElement = null, shadowHostChain = [] } = {}) {
   assert_not_equals(actual, null);
   assert_equals(actual.target, target, "target");
   assert_equals(actual.pseudoElement, pseudoElement, "pseudoElement");
-  assert_equals(actual.shadowHost, shadowHost, "shadowHost");
+  assert_array_equals(actual.shadowHostChain, shadowHostChain, "shadowHostChain");
 }
 
 // `document.activeElement.blur()` does not blur a focused pseudo-element, since
@@ -252,7 +252,7 @@ test((t) => {
 
   const innerMarker = innerItem.pseudo("::scroll-marker");
   new Focusable(innerMarker).focus();
-  assert_focusable(document.activeFocusable, { shadowHost });
+  assert_focusable(document.activeFocusable, { shadowHostChain: [shadowHost] });
   assert_equals(document.activeElement, shadowHost);
   assert_focusable(sr.activeFocusable, { target: innerItem, pseudoElement: innerMarker });
   assert_equals(sr.activeElement, innerScroller);
@@ -271,7 +271,7 @@ test((t) => {
   innerScroller.appendChild(innerItem);
   documentFocusable.focus();
   assert_focusable(sr.activeFocusable, { target: innerItem, pseudoElement: innerMarker });
-  assert_focusable(documentFocusable, { shadowHost });
+  assert_focusable(documentFocusable, { shadowHostChain: [shadowHost] });
 }, "activeFocusable does not leak pseudoElement across shadow boundary");
 
 test((t) => {

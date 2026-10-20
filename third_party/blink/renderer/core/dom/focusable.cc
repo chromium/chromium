@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/core/dom/focusable.h"
 
+#include <utility>
+
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focusable_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csspseudoelement_element.h"
@@ -23,68 +26,63 @@ namespace blink {
 
 namespace {
 
-// Retargets `element` against `caller_scope`, like `TreeScope::Retarget()`,
-// except that shadow trees in `shadow_roots` are treated as exposed instead of
-// retargeting to their shadow host. `element` must be in the same document as
-// `caller_scope`.
-Element& RetargetWithShadowRoots(Element& element,
-                                 const TreeScope& caller_scope,
-                                 const Focusable::ShadowRootSet* shadow_roots) {
+// Returns all shadow hosts that contain `element` (or the originating element
+// of a pseudo-element) in a shadow tree that is not exposed to `caller_scope`,
+// i.e. `element` is inside the shadow host's shadow tree, or slotted into it,
+// ordered from outermost to innermost.
+HeapVector<Member<Element>> FullShadowHostChain(Element& element,
+                                                const TreeScope& caller_scope) {
   DCHECK_EQ(&element.GetDocument(), &caller_scope.GetDocument());
-  Element* retargeted = &element;
-  for (const TreeScope* scope = &element.GetTreeScope();
-       !scope->IsInclusiveAncestorOf(caller_scope);
-       scope = scope->ParentTreeScope()) {
-    auto& shadow_root = To<ShadowRoot>(scope->RootNode());
-    if (!shadow_roots || !shadow_roots->Contains(&shadow_root)) {
-      retargeted = &shadow_root.host();
-    }
-  }
-  return *retargeted;
-}
-
-// Returns the outermost shadow host that contains `element` (or the originating
-// element of a pseudo-element) in a shadow tree that is not exposed to
-// `caller_scope`, i.e. `element` is inside the shadow host's shadow tree, or
-// slotted into it, unless that shadow tree is one of `shadow_roots`. Returns
-// nullptr if `element` is exposed to `caller_scope`.
-Element* ContainingOpaqueShadowHost(
-    Element& element,
-    const TreeScope& caller_scope,
-    const Focusable::ShadowRootSet* shadow_roots) {
   Element* current = &element;
   if (auto* pseudo_element = DynamicTo<PseudoElement>(current)) {
     current = &pseudo_element->UltimateOriginatingElement();
   }
   // Walk up the flat tree, so that this finds the shadow trees that `element`
-  // is slotted into as well (via the slots it's assigned to), and retarget the
-  // ancestors against `caller_scope`. The outermost ancestor that is not
-  // exposed to `caller_scope` is retargeted to the outermost shadow host.
-  Element* shadow_host = nullptr;
-  for (; current; current = FlatTreeTraversal::ParentElement(*current)) {
+  // is slotted into as well (via the slots it's assigned to). Whenever a
+  // ShadowRoot boundary is reached (or when `current` is not in the flat tree,
+  // e.g. if it isn't assigned to a slot, so `FlatTreeTraversal::ParentElement`
+  // returns nullptr while `current` is still inside a shadow tree), record its
+  // shadow host and continue from the host.
+  HeapVector<Member<Element>> shadow_host_chain;
+  while (current) {
+    if (!IsA<ShadowRoot>(current->parentNode())) {
+      if (Element* parent = FlatTreeTraversal::ParentElement(*current)) {
+        current = parent;
+        continue;
+      }
+    }
+    ShadowRoot* shadow_root = current->ContainingShadowRoot();
+    if (!shadow_root) {
+      break;
+    }
     // User-Agent shadow trees (e.g. of <details>) shouldn't hide anything
     // slotted into them. Built-in controls with focusable elements in their
     // User-Agent shadow tree are exposed as the control itself instead (see
     // `CreateFromElement()`).
-    if (current->IsInUserAgentShadowRoot()) {
-      continue;
+    if (!shadow_root->IsUserAgent() &&
+        !shadow_root->IsInclusiveAncestorOf(caller_scope)) {
+      shadow_host_chain.push_back(&shadow_root->host());
     }
-    Element* retargeted =
-        &RetargetWithShadowRoots(*current, caller_scope, shadow_roots);
-    if (retargeted != current) {
-      shadow_host = retargeted;
-      // The flat tree ancestors of `current` up to `shadow_host` are all inside
-      // its shadow tree too, so they would be retargeted to it as well. Skip
-      // straight to it. This is also needed if `current` isn't in the flat tree
-      // (e.g. if it isn't assigned to a slot), since walking up from it would
-      // stop right away, missing any shadow tree `shadow_host` is slotted into.
-      current = shadow_host;
+    current = &shadow_root->host();
+  }
+  shadow_host_chain.Reverse();
+  return shadow_host_chain;
+}
+
+// Returns the outermost shadow host that contains `element` in a shadow tree
+// that is not exposed to `caller_scope` and is not one of
+// `exposed_shadow_roots`, or nullptr if all containing shadow trees are
+// exposed.
+Element* ContainingOpaqueShadowHost(
+    Element& element,
+    const TreeScope& caller_scope,
+    const Focusable::ShadowRootSet& exposed_shadow_roots) {
+  for (Element* host : FullShadowHostChain(element, caller_scope)) {
+    if (!exposed_shadow_roots.Contains(host->GetShadowRoot())) {
+      return host;
     }
   }
-  // Since `caller_scope` is never inside a User-Agent shadow tree, nothing
-  // inside one is ever exposed as the shadow host.
-  DCHECK(!shadow_host || !shadow_host->IsInUserAgentShadowRoot());
-  return shadow_host;
+  return nullptr;
 }
 
 Focusable::ShadowRootSet ToShadowRootSet(
@@ -105,14 +103,13 @@ Focusable* Focusable::Create(const V8UnionCSSPseudoElementOrElement* target,
   auto* focusable =
       target->IsCSSPseudoElement()
           ? MakeGarbageCollected<Focusable>(base::PassKey<Focusable>(),
-                                            /*shadow_host=*/nullptr,
                                             *target->GetAsCSSPseudoElement())
           : MakeGarbageCollected<Focusable>(base::PassKey<Focusable>(),
-                                            /*shadow_host=*/nullptr,
                                             *target->GetAsElement());
-  // `target` itself is exposed, so the shadow roots only matter for
+  // `target` itself is exposed, so `exposedShadowRoots` only matters for
   // `nextFocusable()` and `previousFocusable()`.
-  focusable->shadow_roots_ = ToShadowRootSet(options->shadowRoots());
+  focusable->exposed_shadow_roots_ =
+      ToShadowRootSet(options->exposedShadowRoots());
   return focusable;
 }
 
@@ -122,23 +119,9 @@ Focusable* Focusable::Create(Focusable* other,
   CHECK(other);
   auto* focusable =
       MakeGarbageCollected<Focusable>(base::PassKey<Focusable>(), *other);
-  focusable->shadow_roots_ = ToShadowRootSet(options->shadowRoots());
-  focusable->opaque_shadow_host_ = focusable->shadow_host_;
-  // Expose the focusable item if `shadow_roots_` covers all the shadow trees
-  // that hid it, provided the element is still in the same document and shadow
-  // tree as when `other` was created.
-  Element* target_element = focusable->TargetElement();
-  if (focusable->shadow_host_ && target_element &&
-      target_element->isConnected()) {
-    const TreeScope& caller_scope = focusable->shadow_host_->GetTreeScope();
-    if (&target_element->GetDocument() == &caller_scope.GetDocument() &&
-        ContainingOpaqueShadowHost(*target_element, caller_scope,
-                                   /*shadow_roots=*/nullptr) ==
-            focusable->shadow_host_) {
-      focusable->opaque_shadow_host_ = ContainingOpaqueShadowHost(
-          *target_element, caller_scope, &focusable->shadow_roots_);
-    }
-  }
+  focusable->exposed_shadow_roots_ =
+      ToShadowRootSet(options->exposedShadowRoots());
+  focusable->UpdateShadowHostChain();
   return focusable;
 }
 
@@ -149,9 +132,10 @@ Focusable* Focusable::CreateFromElement(Element& element,
 }
 
 // static
-Focusable* Focusable::CreateFromElement(Element& element,
-                                        const TreeScope& caller_scope,
-                                        const ShadowRootSet& shadow_roots) {
+Focusable* Focusable::CreateFromElement(
+    Element& element,
+    const TreeScope& caller_scope,
+    const ShadowRootSet& exposed_shadow_roots) {
   auto* pseudo_element = DynamicTo<PseudoElement>(&element);
   Element* originating_element =
       pseudo_element ? &pseudo_element->UltimateOriginatingElement() : &element;
@@ -161,8 +145,8 @@ Focusable* Focusable::CreateFromElement(Element& element,
   // internal User-Agent shadow root with focusable inner sub-elements (such as
   // DateTimeFieldElement). Unwrap any UA shadow roots up to their host element
   // so that built-in controls are reported as regular `target` elements rather
-  // than acting like author shadow hosts with `shadowHost` set and `target`
-  // null.
+  // than acting like author shadow hosts with a non-empty `shadowHostChain`
+  // and `target` null.
   while (ShadowRoot* shadow_root =
              originating_element->ContainingShadowRoot()) {
     if (!shadow_root->IsUserAgent()) {
@@ -171,22 +155,6 @@ Focusable* Focusable::CreateFromElement(Element& element,
     originating_element = originating_element->OwnerShadowHost();
     pseudo_element = nullptr;
   }
-
-  // If the focusable item is inside a shadow tree whose inner nodes are not
-  // exposed to `caller_scope`, the outermost such shadow host in
-  // `caller_scope` is exposed as `shadowHost` (just like
-  // `DocumentOrShadowRoot.activeElement`). Unlike `activeElement`, the same
-  // goes for a light DOM element that is slotted into such a shadow tree (see
-  // `shadow_host_`).
-  Element* shadow_host = ContainingOpaqueShadowHost(
-      *originating_element, caller_scope, /*shadow_roots=*/nullptr);
-  // `target` and `pseudoElement` are exposed alongside `shadowHost` if all
-  // the shadow trees that hide the focusable item are in `shadow_roots`.
-  Element* opaque_shadow_host =
-      shadow_host && !shadow_roots.empty()
-          ? ContainingOpaqueShadowHost(*originating_element, caller_scope,
-                                       &shadow_roots)
-          : shadow_host;
 
   Focusable* focusable = nullptr;
 
@@ -198,8 +166,8 @@ Focusable* Focusable::CreateFromElement(Element& element,
   if (pseudo_element) {
     if (CSSPseudoElement* css_pseudo_element =
             CSSPseudoElement::From(pseudo_element)) {
-      focusable = MakeGarbageCollected<Focusable>(
-          base::PassKey<Focusable>(), shadow_host, *css_pseudo_element);
+      focusable = MakeGarbageCollected<Focusable>(base::PassKey<Focusable>(),
+                                                  *css_pseudo_element);
     }
   }
   if (!focusable) {
@@ -209,10 +177,12 @@ Focusable* Focusable::CreateFromElement(Element& element,
     Element& focusable_element =
         pseudo_element ? *pseudo_element : *originating_element;
     focusable = MakeGarbageCollected<Focusable>(base::PassKey<Focusable>(),
-                                                shadow_host, focusable_element);
+                                                focusable_element);
   }
-  focusable->opaque_shadow_host_ = opaque_shadow_host;
-  focusable->shadow_roots_ = shadow_roots;
+  focusable->full_shadow_host_chain_ =
+      FullShadowHostChain(*originating_element, caller_scope);
+  focusable->exposed_shadow_roots_ = exposed_shadow_roots;
+  focusable->UpdateShadowHostChain();
   return focusable;
 }
 
@@ -224,22 +194,23 @@ Focusable* Focusable::FindAdjacentFocusable(Element& start,
 }
 
 // static
-Focusable* Focusable::FindAdjacentFocusable(Element& start,
-                                            const TreeScope& caller_scope,
-                                            mojom::blink::FocusType type,
-                                            const ShadowRootSet& shadow_roots) {
+Focusable* Focusable::FindAdjacentFocusable(
+    Element& start,
+    const TreeScope& caller_scope,
+    mojom::blink::FocusType type,
+    const ShadowRootSet& exposed_shadow_roots) {
   Page* page = start.GetDocument().GetPage();
   if (!page) {
     return nullptr;
   }
   // A shadow host whose shadow tree is not exposed to `caller_scope` (and is
-  // not one of `shadow_roots`) is a single entry in the sequential focus order:
-  // everything that is focusable inside its shadow tree, or slotted into it, is
-  // exposed as that shadow host once. So if `start` is part of such an entry,
-  // the rest of it is skipped, rather than returning the same shadow host
-  // again.
+  // not one of `exposed_shadow_roots`) is a single entry in the sequential
+  // focus order: everything that is focusable inside its shadow tree, or
+  // slotted into it, is exposed as that shadow host once. So if `start` is
+  // part of such an entry, the rest of it is skipped, rather than returning
+  // the same shadow host again.
   Element* start_shadow_host =
-      ContainingOpaqueShadowHost(start, caller_scope, &shadow_roots);
+      ContainingOpaqueShadowHost(start, caller_scope, exposed_shadow_roots);
   Element* current = &start;
   while (true) {
     Element* found =
@@ -249,7 +220,7 @@ Focusable* Focusable::FindAdjacentFocusable(Element& start,
       return nullptr;
     }
     Focusable* focusable =
-        CreateFromElement(*found, caller_scope, shadow_roots);
+        CreateFromElement(*found, caller_scope, exposed_shadow_roots);
     if (!start_shadow_host ||
         focusable->opaque_shadow_host_ != start_shadow_host) {
       return focusable;
@@ -258,37 +229,45 @@ Focusable* Focusable::FindAdjacentFocusable(Element& start,
   }
 }
 
-Focusable::Focusable(base::PassKey<Focusable>,
-                     Element* shadow_host,
-                     Element& element)
-    : shadow_host_(shadow_host),
-      opaque_shadow_host_(shadow_host),
+Focusable::Focusable(base::PassKey<Focusable>, Element& element)
+    : shadow_host_chain_(MakeGarbageCollected<FrozenArray<Element>>()),
       element_(&element) {
   if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
     originating_element_ = &pseudo_element->UltimateOriginatingElement();
   }
 }
 
-Focusable::Focusable(base::PassKey<Focusable>,
-                     Element* shadow_host,
-                     CSSPseudoElement& pseudo_element)
-    : shadow_host_(shadow_host),
-      opaque_shadow_host_(shadow_host),
+Focusable::Focusable(base::PassKey<Focusable>, CSSPseudoElement& pseudo_element)
+    : shadow_host_chain_(MakeGarbageCollected<FrozenArray<Element>>()),
       pseudo_element_(&pseudo_element) {}
 
 Focusable::Focusable(base::PassKey<Focusable>, const Focusable& other)
-    : shadow_host_(other.shadow_host_),
+    : full_shadow_host_chain_(other.full_shadow_host_chain_),
+      shadow_host_chain_(other.shadow_host_chain_),
       opaque_shadow_host_(other.opaque_shadow_host_),
-      shadow_roots_(other.shadow_roots_),
+      exposed_shadow_roots_(other.exposed_shadow_roots_),
       element_(other.element_),
       pseudo_element_(other.pseudo_element_),
       originating_element_(other.originating_element_) {}
 
-Element* Focusable::target() const {
-  return opaque_shadow_host_ ? nullptr : TargetElement();
+void Focusable::UpdateShadowHostChain() {
+  opaque_shadow_host_ = nullptr;
+  HeapVector<Member<Element>> shadow_host_chain;
+  for (const Member<Element>& host : full_shadow_host_chain_) {
+    shadow_host_chain.push_back(host);
+    if (!exposed_shadow_roots_.Contains(host->GetShadowRoot())) {
+      opaque_shadow_host_ = host.Get();
+      break;
+    }
+  }
+  shadow_host_chain_ =
+      MakeGarbageCollected<FrozenArray<Element>>(std::move(shadow_host_chain));
 }
 
-Element* Focusable::TargetElement() const {
+Element* Focusable::target() const {
+  if (opaque_shadow_host_) {
+    return nullptr;
+  }
   if (pseudo_element_) {
     return pseudo_element_->element();
   }
@@ -320,8 +299,8 @@ Element* Focusable::ResolveFocusTarget() const {
 }
 
 const TreeScope* Focusable::CallerTreeScope() const {
-  if (shadow_host_) {
-    return &shadow_host_->GetTreeScope();
+  if (!full_shadow_host_chain_.empty()) {
+    return &full_shadow_host_chain_.front()->GetTreeScope();
   }
   if (Element* target_element = target()) {
     return &target_element->GetTreeScope();
@@ -344,7 +323,7 @@ Focusable* Focusable::FindAdjacentFocusable(
   if (!current || !scope || &current->GetDocument() != &scope->GetDocument()) {
     return nullptr;
   }
-  return FindAdjacentFocusable(*current, *scope, type, shadow_roots_);
+  return FindAdjacentFocusable(*current, *scope, type, exposed_shadow_roots_);
 }
 
 Focusable* Focusable::nextFocusable() const {
@@ -356,9 +335,10 @@ Focusable* Focusable::previousFocusable() const {
 }
 
 void Focusable::Trace(Visitor* visitor) const {
-  visitor->Trace(shadow_host_);
+  visitor->Trace(full_shadow_host_chain_);
+  visitor->Trace(shadow_host_chain_);
   visitor->Trace(opaque_shadow_host_);
-  visitor->Trace(shadow_roots_);
+  visitor->Trace(exposed_shadow_roots_);
   visitor->Trace(element_);
   visitor->Trace(pseudo_element_);
   visitor->Trace(originating_element_);

@@ -4,7 +4,7 @@
 
 dictionary FocusableOptions {
     [RuntimeEnabled=SequentialFocusPrimitivesShadowRoots]
-    sequence<ShadowRoot> shadowRoots = [];
+    sequence<ShadowRoot> exposedShadowRoots = [];
 };
 
 [
@@ -17,7 +17,7 @@ interface Focusable {
     [RuntimeEnabled=SequentialFocusPrimitivesShadowRoots]
     constructor(Focusable focusable, optional FocusableOptions options = {});
 
-    readonly attribute Element? shadowHost;
+    readonly attribute FrozenArray<Element> shadowHostChain;
     readonly attribute Element? target;
     readonly attribute CSSPseudoElement? pseudoElement;
 

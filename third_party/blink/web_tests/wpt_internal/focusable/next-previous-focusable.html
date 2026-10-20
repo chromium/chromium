@@ -41,11 +41,11 @@
 </div>
 
 <script>
-function assert_focusable(actual, { target = null, pseudoElement = null, shadowHost = null } = {}) {
+function assert_focusable(actual, { target = null, pseudoElement = null, shadowHostChain = [] } = {}) {
   assert_not_equals(actual, null);
   assert_equals(actual.target, target, "target");
   assert_equals(actual.pseudoElement, pseudoElement, "pseudoElement");
-  assert_equals(actual.shadowHost, shadowHost, "shadowHost");
+  assert_array_equals(actual.shadowHostChain, shadowHostChain, "shadowHostChain");
 }
 
 function collectAllFocusables() {
@@ -108,12 +108,12 @@ test((t) => {
   // The shadow host is a single entry (for its shadow tree and the light DOM
   // slotted into it), without changing active focus.
   const f1 = shBefore.nextFocusable();
-  assert_focusable(f1, { shadowHost: shHost });
+  assert_focusable(f1, { shadowHostChain: [shHost] });
   assert_equals(document.activeFocusable, null);
   assert_focusable(f1.nextFocusable(), { target: shAfter });
 
   const b1 = shAfter.previousFocusable();
-  assert_focusable(b1, { shadowHost: shHost });
+  assert_focusable(b1, { shadowHostChain: [shHost] });
   assert_focusable(b1.previousFocusable(), { target: shBefore });
 
   // focus() focuses the first (or last) focusable element inside the host.

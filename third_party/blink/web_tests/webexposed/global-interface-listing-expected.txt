@@ -3102,7 +3102,7 @@ interface FocusEvent : UIEvent
 interface Focusable
     attribute @@toStringTag
     getter pseudoElement
-    getter shadowHost
+    getter shadowHostChain
     getter target
     method constructor
     method focus

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
@@ -18,6 +19,8 @@ class CSSPseudoElement;
 class Element;
 class FocusableOptions;
 class FocusOptions;
+template <typename IDLType>
+class FrozenArray;
 class ShadowRoot;
 class TreeScope;
 class V8UnionCSSPseudoElementOrElement;
@@ -43,13 +46,13 @@ class CORE_EXPORT Focusable final : public ScriptWrappable {
                                           mojom::blink::FocusType type);
 
   // See the member comments below.
-  Focusable(base::PassKey<Focusable>, Element* shadow_host, Element& element);
-  Focusable(base::PassKey<Focusable>,
-            Element* shadow_host,
-            CSSPseudoElement& pseudo_element);
+  Focusable(base::PassKey<Focusable>, Element& element);
+  Focusable(base::PassKey<Focusable>, CSSPseudoElement& pseudo_element);
   Focusable(base::PassKey<Focusable>, const Focusable& other);
 
-  Element* shadowHost() const { return shadow_host_.Get(); }
+  const FrozenArray<Element>& shadowHostChain() const {
+    return *shadow_host_chain_;
+  }
   Element* target() const;
   CSSPseudoElement* pseudoElement() const {
     // `pseudo_element_` (like `element_`) is still set when it's hidden, since
@@ -67,35 +70,34 @@ class CORE_EXPORT Focusable final : public ScriptWrappable {
  private:
   // Static so that both the public static helpers above (which have no
   // `Focusable` instance and pass an empty `ShadowRootSet`) and the member
-  // `FindAdjacentFocusable()` (which passes `shadow_roots_`) can share the
-  // implementation.
-  static Focusable* CreateFromElement(Element& element,
-                                      const TreeScope& caller_scope,
-                                      const ShadowRootSet& shadow_roots);
-  static Focusable* FindAdjacentFocusable(Element& start,
-                                          const TreeScope& caller_scope,
-                                          mojom::blink::FocusType type,
-                                          const ShadowRootSet& shadow_roots);
+  // `FindAdjacentFocusable()` (which passes `exposed_shadow_roots_`) can share
+  // the implementation.
+  static Focusable* CreateFromElement(
+      Element& element,
+      const TreeScope& caller_scope,
+      const ShadowRootSet& exposed_shadow_roots);
+  static Focusable* FindAdjacentFocusable(
+      Element& start,
+      const TreeScope& caller_scope,
+      mojom::blink::FocusType type,
+      const ShadowRootSet& exposed_shadow_roots);
 
   Focusable* FindAdjacentFocusable(mojom::blink::FocusType type) const;
+  void UpdateShadowHostChain();
   Element* ResolveFocusTarget() const;
   const TreeScope* CallerTreeScope() const;
-  // The element that `target` is derived from, even if it's hidden: the
-  // focusable element, or the ultimate originating element of the focusable
-  // pseudo-element.
-  Element* TargetElement() const;
 
-  // Set if the focusable item is inside a shadow tree whose inner nodes are not
-  // exposed to the caller's TreeScope (i.e. the DocumentOrShadowRoot whose
-  // `activeFocusable` created this Focusable), or slotted into one. It is the
-  // outermost shadow host that is exposed, i.e. what
-  // `DocumentOrShadowRoot.activeElement` returns for focus inside its shadow
-  // tree. This doesn't depend on `shadow_roots_`.
+  // All shadow hosts that contain the focusable item in a shadow tree whose
+  // inner nodes are not exposed to the caller's TreeScope (i.e. the
+  // DocumentOrShadowRoot whose `activeFocusable` created this Focusable), or
+  // slotted into one, ordered from outermost to innermost. This doesn't depend
+  // on `exposed_shadow_roots_`.
   //
-  // Note that `activeElement` does return a focused light DOM element that is
-  // slotted into such a shadow tree, since it's in the caller's TreeScope. It's
-  // still not exposed here, though, since the shadow tree determines where it
-  // is in the sequential focus order.
+  // Note that `DocumentOrShadowRoot.activeElement` does return a focused light
+  // DOM element that is slotted into such a shadow tree, since it's in the
+  // caller's TreeScope. It's still not exposed here, though (unless the shadow
+  // root is in `exposed_shadow_roots_`), since the shadow tree determines where
+  // it is in the sequential focus order.
   //
   // `element_` or `pseudo_element_` is still set in that case, since `focus()`
   // focuses the focusable item itself, not the shadow host. Focusing the shadow
@@ -109,17 +111,25 @@ class CORE_EXPORT Focusable final : public ScriptWrappable {
   // e.g. an element removed from a closed shadow tree is adopted into the
   // document's TreeScope, so retargeting it against the document would expose
   // the element itself.
-  Member<Element> shadow_host_;
+  HeapVector<Member<Element>> full_shadow_host_chain_;
 
-  // Like `shadow_host_`, but ignoring shadow roots in `shadow_roots_`: this is
-  // the outermost shadow host whose shadow root is NOT in `shadow_roots_`, and
-  // therefore still hides the focusable item from the caller.
+  // The prefix of `full_shadow_host_chain_` exposed as `shadowHostChain`:
+  // outermost first, ending with either the last shadow host (when all of their
+  // shadow roots are in `exposed_shadow_roots_`) or `opaque_shadow_host_` (the
+  // first shadow host whose shadow root is not in `exposed_shadow_roots_`).
+  // Never null: this is an empty array when `full_shadow_host_chain_` is empty.
+  Member<FrozenArray<Element>> shadow_host_chain_;
+
+  // The outermost shadow host in `full_shadow_host_chain_` whose shadow root is
+  // NOT in `exposed_shadow_roots_`, and therefore still hides the focusable
+  // item from the caller.
   // - When null, all shadow trees containing the focusable item are exposed, so
   //   `target` / `pseudoElement` returns the focusable item.
   // - When non-null, `target` and `pseudoElement` return null, and
   //   `nextFocusable()` / `previousFocusable()` treat everything inside this
   //   host as a single focus stop.
-  // Without `shadow_roots_`, this is the same as `shadow_host_`.
+  // Without `exposed_shadow_roots_`, this is `full_shadow_host_chain_.front()`
+  // (or null if `full_shadow_host_chain_` is empty).
   //
   // For example, given:
   //
@@ -134,25 +144,28 @@ class CORE_EXPORT Focusable final : public ScriptWrappable {
   //     </template>
   //   </div>
   //
-  // From the document, `shadow_host_` is always #host for both buttons, while
-  // `opaque_shadow_host_` depends on `shadow_roots_`:
-  // - If `shadow_roots_` is empty (or has only root2), then it's #host for
+  // From the document, `full_shadow_host_chain_` is [#host] for #a and
+  // [#host, #nested-host] for #b, while `shadow_host_chain_` and
+  // `opaque_shadow_host_` depend on `exposed_shadow_roots_`:
+  // - If `exposed_shadow_roots_` is empty (or has only root2), then
+  //   `shadow_host_chain_` is [#host] and `opaque_shadow_host_` is #host for
   //   both #a and #b (`target` is null).
-  // - If `shadow_roots_` has only root1, then it's null for #a (`target` is #a)
-  //   and #nested-host for #b (`target` is null, and `nextFocusable()` from #b
-  //   skips anything else inside #nested-host).
-  // - If `shadow_roots_` has both root1 and root2, then it's null for both #a
-  //   and #b (`target` is #a or #b).
-  //
-  // TODO(crbug.com/565786176): When `shadow_roots_` has only root1, #b produces
-  // `{shadowHost: #host, target: null}` without exposing #nested-host.
-  // `shadowHost` might need to become an array of exposed shadow hosts instead.
+  // - If `exposed_shadow_roots_` has only root1, then for #a
+  //   `shadow_host_chain_` is [#host] and `opaque_shadow_host_` is null
+  //   (`target` is #a), while for #b `shadow_host_chain_` is
+  //   [#host, #nested-host] and `opaque_shadow_host_` is #nested-host (`target`
+  //   is null, and `nextFocusable()` from #b skips anything else inside
+  //   #nested-host).
+  // - If `exposed_shadow_roots_` has both root1 and root2, then
+  //   `opaque_shadow_host_` is null for both #a (`shadow_host_chain_` is
+  //   [#host], `target` is #a) and #b (`shadow_host_chain_` is
+  //   [#host, #nested-host], `target` is #b).
   Member<Element> opaque_shadow_host_;
 
   // The shadow roots whose shadow trees the caller opted into exposing via
-  // `new Focusable(..., {shadowRoots})`. Focusables returned by
+  // `new Focusable(..., {exposedShadowRoots})`. Focusables returned by
   // `nextFocusable()` and `previousFocusable()` keep this set.
-  ShadowRootSet shadow_roots_;
+  ShadowRootSet exposed_shadow_roots_;
 
   // The focusable item, i.e. what `focus()` focuses, which `target` and
   // `pseudoElement` are derived from. Exactly one of these is set:

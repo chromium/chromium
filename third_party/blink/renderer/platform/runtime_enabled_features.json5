@@ -5996,8 +5996,8 @@
       status: "test",
     },
     {
-      // Adds the `shadowRoots` option to the Focusable constructors (and the
-      // constructor that takes a Focusable), which exposes focusable items
+      // Adds the `exposedShadowRoots` option to the Focusable constructors (and
+      // the constructor that takes a Focusable), which exposes focusable items
       // inside those shadow trees.
       // https://crbug.com/565786176
       name: "SequentialFocusPrimitivesShadowRoots",

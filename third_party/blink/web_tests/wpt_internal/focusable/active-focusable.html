@@ -9,11 +9,11 @@
 <iframe id="frame" srcdoc="<input id='inner-input'>"></iframe>
 
 <script>
-function assert_focusable(actual, { target = null, pseudoElement = null, shadowHost = null } = {}) {
+function assert_focusable(actual, { target = null, pseudoElement = null, shadowHostChain = [] } = {}) {
   assert_not_equals(actual, null);
   assert_equals(actual.target, target, "target");
   assert_equals(actual.pseudoElement, pseudoElement, "pseudoElement");
-  assert_equals(actual.shadowHost, shadowHost, "shadowHost");
+  assert_array_equals(actual.shadowHostChain, shadowHostChain, "shadowHostChain");
 }
 
 test((t) => {
@@ -50,6 +50,17 @@ test(() => {
   assert_throws_js(TypeError, () => new Focusable(document));
   assert_throws_js(TypeError, () => new Focusable("::before"));
 }, "Focusable constructor");
+
+test(() => {
+  const btn = document.getElementById("btn");
+  const focusable = new Focusable(btn);
+  const shadowHostChain = focusable.shadowHostChain;
+  assert_true(Array.isArray(shadowHostChain), "shadowHostChain is an array");
+  assert_equals(shadowHostChain.length, 0, "shadowHostChain is empty");
+  assert_true(Object.isFrozen(shadowHostChain), "shadowHostChain is frozen");
+  assert_equals(focusable.shadowHostChain, shadowHostChain,
+                "shadowHostChain returns the same array each time");
+}, "shadowHostChain is an empty frozen array when there are no shadow hosts");
 
 promise_test(async (t) => {
   const frame = document.getElementById("frame");
