@@ -74,8 +74,18 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
       return "--location-bar-page-info-icon-dangerous-leading-padding";
     case kLocationBarPageInfoIconDangerousTrailingPadding:
       return "--location-bar-page-info-icon-dangerous-trailing-padding";
+    case kLocationBarLeadingDecorationEdgePadding:
+      return "--location-bar-leading-decoration-edge-padding";
+    case kLocationBarLeadingDecorationInnerPadding:
+      return "--location-bar-leading-decoration-inner-padding";
+    case kLocationBarInputIconIndent:
+      return "--location-bar-input-icon-indent";
+    case kLocationBarInputTextIndent:
+      return "--location-bar-input-text-indent";
     case kLocationBarTrailingDecorationEdgePadding:
       return "--location-bar-trailing-decoration-edge-padding";
+    case kLocationBarTrailingDecorationAimEdgePadding:
+      return "--location-bar-trailing-decoration-aim-edge-padding";
     case kLocationBarTrailingDecorationInnerPadding:
       return "--location-bar-trailing-decoration-inner-padding";
     case kLocationBarIconSize:
