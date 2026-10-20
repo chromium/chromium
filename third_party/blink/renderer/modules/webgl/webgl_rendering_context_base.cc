@@ -4608,7 +4608,8 @@ WebGLShaderPrecisionFormat* WebGLRenderingContextBase::getShaderPrecisionFormat(
 String WebGLRenderingContextBase::getShaderSource(WebGLShader* shader) {
   if (!ValidateWebGLProgramOrShader("getShaderSource", shader))
     return String();
-  return EnsureNotNull(shader->Source());
+  // A null String would become JS null, which WebGL reserves for errors.
+  return shader->Source().IsNull() ? g_empty_string : shader->Source();
 }
 
 std::optional<Vector<String>>
@@ -9206,12 +9207,6 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
   } else {
     CompleteXrCompatiblePromiseIfPending(DOMExceptionCode::kAbortError);
   }
-}
-
-String WebGLRenderingContextBase::EnsureNotNull(const String& text) const {
-  if (text.IsNull())
-    return g_empty_string;
-  return text;
 }
 
 WebGLRenderingContextBase::LRUCanvasNon2DResourceProviderCache::

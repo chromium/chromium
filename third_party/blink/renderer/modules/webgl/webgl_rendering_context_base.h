@@ -1847,8 +1847,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
                          ConsoleDisplayPreference = kDisplayInConsole);
   void EmitGLWarning(const char* function, const char* reason);
 
-  String EnsureNotNull(const String&) const;
-
   // Enable or disable the depth and stencil test based on the user's
   // setting and whether the current FBO has a depth and stencil
   // buffer.
