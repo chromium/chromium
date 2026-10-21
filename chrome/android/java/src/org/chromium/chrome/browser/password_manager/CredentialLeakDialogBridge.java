@@ -9,7 +9,10 @@ import android.app.Activity;
 import androidx.annotation.DrawableRes;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -28,12 +31,18 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 /** JNI call glue between the native password manager CredentialLeak class and Java objects. */
 @NullMarked
 public class CredentialLeakDialogBridge {
-    private long mNativeCredentialLeakDialogViewAndroid;
+    @JniType("::CredentialLeakDialogViewAndroid")
+    interface NativeCredentialLeakDialogViewAndroid extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeCredentialLeakDialogViewAndroid>
+            mNativeCredentialLeakDialogViewAndroid;
     private final PasswordManagerDialogCoordinator mCredentialLeakDialog;
     private final WindowAndroid mWindowAndroid;
 
     private CredentialLeakDialogBridge(
-            WindowAndroid windowAndroid, long nativeCredentialLeakDialogViewAndroid) {
+            WindowAndroid windowAndroid,
+            JniRawPtr<NativeCredentialLeakDialogViewAndroid>
+                    nativeCredentialLeakDialogViewAndroid) {
         mNativeCredentialLeakDialogViewAndroid = nativeCredentialLeakDialogViewAndroid;
         mWindowAndroid = windowAndroid;
 
@@ -53,7 +62,8 @@ public class CredentialLeakDialogBridge {
 
     @CalledByNative
     public static CredentialLeakDialogBridge create(
-            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid, long nativeDialog) {
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
+            JniRawPtr<NativeCredentialLeakDialogViewAndroid> nativeDialog) {
         return new CredentialLeakDialogBridge(windowAndroid, nativeDialog);
     }
 
@@ -100,12 +110,15 @@ public class CredentialLeakDialogBridge {
 
     @CalledByNative
     private void destroy() {
-        mNativeCredentialLeakDialogViewAndroid = 0;
+        if (mNativeCredentialLeakDialogViewAndroid != null) {
+            mNativeCredentialLeakDialogViewAndroid.release();
+            mNativeCredentialLeakDialogViewAndroid = null;
+        }
         mCredentialLeakDialog.dismissDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
     }
 
     private void onClick(@DialogDismissalCause int dismissalCause) {
-        if (mNativeCredentialLeakDialogViewAndroid == 0) return;
+        if (mNativeCredentialLeakDialogViewAndroid == null) return;
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 CredentialLeakDialogBridgeJni.get()
@@ -137,10 +150,10 @@ public class CredentialLeakDialogBridge {
 
     @NativeMethods
     interface Natives {
-        void accepted(long nativeCredentialLeakDialogViewAndroid);
+        void accepted(JniPtr<NativeCredentialLeakDialogViewAndroid> self);
 
-        void cancelled(long nativeCredentialLeakDialogViewAndroid);
+        void cancelled(JniPtr<NativeCredentialLeakDialogViewAndroid> self);
 
-        void closed(long nativeCredentialLeakDialogViewAndroid);
+        void closed(JniPtr<NativeCredentialLeakDialogViewAndroid> self);
     }
 }

@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "chrome/browser/password_manager/android/credential_leak_controller_android.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after headers that provide symbols used by @JniType.
@@ -28,7 +29,7 @@ CredentialLeakDialogViewAndroid::~CredentialLeakDialogViewAndroid() {
 void CredentialLeakDialogViewAndroid::Show(ui::WindowAndroid* window_android) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_object_.Reset(Java_CredentialLeakDialogBridge_create(
-      env, window_android, reinterpret_cast<intptr_t>(this)));
+      env, window_android, jni_zero::MakeRaw(this)));
 
   Java_CredentialLeakDialogBridge_showDialog(
       env, java_object_, controller_->GetTitle(), controller_->GetDescription(),
