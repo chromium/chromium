@@ -93,20 +93,17 @@ class RollProtobufError(Exception):
     """Raised when a git, filesystem, or metadata operation cannot proceed."""
 
 
-def IsTopLevelChromiumPatchOrNote(relative_path: str) -> bool:
-    """Returns True for top-level patches/*.patch and patches/*.md files.
+def IsChromiumOwnedFile(relative_path: str) -> bool:
+    """Returns True for Chromium-owned files and top-level patches/*.{patch,md}.
 
     Upstream keeps its own Bazel patches in subdirectories such as
     patches/protobuf_v25/, so a path with a second '/' is upstream's.
     """
     directory, _, filename = relative_path.partition('/')
-    return (directory == 'patches' and '/' not in filename
-            and filename.endswith(('.patch', '.md')))
-
-
-def IsChromiumOwnedFile(relative_path: str) -> bool:
-    return (relative_path in CHROMIUM_OWNED_FILES
-            or IsTopLevelChromiumPatchOrNote(relative_path))
+    return relative_path in CHROMIUM_OWNED_FILES or (directory == 'patches'
+                                                     and '/' not in filename
+                                                     and filename.endswith(
+                                                         ('.patch', '.md')))
 
 
 def IsIntentionallyDeletedUpstreamFile(relative_path: str) -> bool:
@@ -114,20 +111,17 @@ def IsIntentionallyDeletedUpstreamFile(relative_path: str) -> bool:
             or relative_path in DELETED_WELL_KNOWN_TYPE_GENERATED_FILES)
 
 
-def ReadReadmeRevision(readme_text: str) -> str:
-    match = re.search(r'^Revision:\s*(\S+)\s*$', readme_text, re.MULTILINE)
-    if match is None:
-        raise RollProtobufError(
-            f'Could not find a "Revision:" line in {_README_FILENAME}.')
-    return match.group(1)
-
-
-def ReadReadmeRevisionFromDirectory(protobuf_directory: str) -> str:
+def ReadReadmeRevision(protobuf_directory: str) -> str:
     readme_path = os.path.join(protobuf_directory, _README_FILENAME)
     if not os.path.isfile(readme_path):
         raise RollProtobufError(f'Missing {_README_FILENAME} at {readme_path}.')
     with open(readme_path, encoding='utf-8') as readme_file:
-        return ReadReadmeRevision(readme_file.read())
+        match = re.search(r'^Revision:\s*(\S+)\s*$', readme_file.read(),
+                          re.MULTILINE)
+    if match is None:
+        raise RollProtobufError(
+            f'Could not find a "Revision:" line in {_README_FILENAME}.')
+    return match.group(1)
 
 
 def _IsolatedGitEnvironment() -> dict[str, str]:
@@ -225,16 +219,6 @@ def ResolveDefaultCacheDirectory(
                         'chromium-protobuf-roll', 'upstream-protobuf')
 
 
-def _FetchRevisionIntoCache(cache_directory: str, upstream_url: str,
-                            revision: str) -> None:
-    _RunGit(_GitCommandForRepository(cache_directory, [
-        'fetch', '--tags', '--force', upstream_url,
-        f'+{revision}:{_REQUESTED_REVISION_REF}'
-    ]),
-            failure_message=(f'Failed to fetch revision {revision} from '
-                             f'{upstream_url} into {cache_directory}'))
-
-
 def EnsureUpstreamCommitCached(
         revision: str,
         upstream_repository_path: str | None = None,
@@ -272,7 +256,12 @@ def EnsureUpstreamCommitCached(
     if re.fullmatch(r'[0-9a-f]{40}', revision):
         commit = _ResolveCommitHash(cache, revision)
     if commit is None:
-        _FetchRevisionIntoCache(cache, upstream_url, revision)
+        _RunGit(_GitCommandForRepository(cache, [
+            'fetch', '--tags', '--force', upstream_url,
+            f'+{revision}:{_REQUESTED_REVISION_REF}'
+        ]),
+                failure_message=(f'Failed to fetch revision {revision} from '
+                                 f'{upstream_url} into {cache}'))
         commit = _ResolveCommitHash(cache, _REQUESTED_REVISION_REF)
     if commit is None:
         raise RollProtobufError(
@@ -280,18 +269,22 @@ def EnsureUpstreamCommitCached(
     return cache, commit
 
 
-def _StreamGitArchiveToDirectory(
-        git_archive_command: Sequence[str],
-        destination_directory: str) -> tuple[int, str, Exception | None]:
-    """Extracts `git archive` output; returns (exit code, stderr, error).
+def ExtractUpstreamArchive(repository_path: str, commit_revision: str,
+                           destination_directory: str) -> None:
+    """Extracts the tree of commit_revision into destination_directory.
 
     stderr goes to a temporary file, not a pipe: trace output
     (GIT_TRACE_PACK_ACCESS=1) can fill a pipe and deadlock while tarfile
     drains stdout. tarfile's 'data' filter rejects unsafe paths and links.
+    When extraction fails, git usually dies of SIGPIPE (-13, or 141 behind a
+    shell shim), so the extraction error is reported together with git's
+    stderr instead of keying on the exit code.
     """
+    command = _GitCommandForRepository(
+        repository_path, ['archive', '--format=tar', commit_revision])
     extraction_error = None
     with tempfile.TemporaryFile() as stderr_file:
-        with subprocess.Popen(git_archive_command,
+        with subprocess.Popen(command,
                               env=_IsolatedGitEnvironment(),
                               stdout=subprocess.PIPE,
                               stderr=stderr_file) as archive_process:
@@ -304,22 +297,9 @@ def _StreamGitArchiveToDirectory(
             finally:
                 archive_process.stdout.close()
         stderr_file.seek(0)
-        stderr = stderr_file.read().decode('utf-8', errors='replace').strip()
-    return archive_process.returncode, stderr, extraction_error
-
-
-def ExtractUpstreamArchive(repository_path: str, commit_revision: str,
-                           destination_directory: str) -> None:
-    """Extracts the tree of commit_revision into destination_directory.
-
-    When extraction fails, git usually dies of SIGPIPE (-13, or 141 behind a
-    shell shim), so the extraction error is reported together with git's
-    stderr instead of keying on the exit code.
-    """
-    return_code, git_error, extraction_error = _StreamGitArchiveToDirectory(
-        _GitCommandForRepository(repository_path,
-                                 ['archive', '--format=tar', commit_revision]),
-        destination_directory)
+        git_error = stderr_file.read().decode('utf-8',
+                                              errors='replace').strip()
+    return_code = archive_process.returncode
     if extraction_error is not None:
         git_suffix = (f' (git archive failed: {git_error})'
                       if return_code != 0 and git_error else '')
@@ -501,7 +481,7 @@ def CheckTreeMatchesPatchedUpstream(
     compared). The other arguments are as for EnsureUpstreamCommitCached.
     """
     protobuf_directory = os.path.abspath(protobuf_directory)
-    revision = ReadReadmeRevisionFromDirectory(protobuf_directory)
+    revision = ReadReadmeRevision(protobuf_directory)
     repository_path, commit = EnsureUpstreamCommitCached(
         revision, upstream_repository_path, cache_directory, build_directory,
         upstream_url)

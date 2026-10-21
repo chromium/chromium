@@ -152,15 +152,20 @@ class RollProtobufTest(unittest.TestCase):
                 'that README.chromium roll step 2 restores with git checkout.'),
         )
 
-    def testReadReadmeRevisionExtractsCommitHashFromReadmeText(self):
-        readme_text = (
-            'Name: Protocol Buffers\n'
-            'Version: 36.0\n'
-            'Revision: 3f17acbf7ffbda81db8be17505554c726e558bb2\n'
-            'Security Critical: yes\n'
-        )
+    def testReadReadmeRevisionExtractsCommitHashFromReadmeFile(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            _WriteFilesToDirectory(
+                temporary_directory,
+                {
+                    'README.chromium':
+                    ('Name: Protocol Buffers\n'
+                     'Version: 36.0\n'
+                     'Revision: 3f17acbf7ffbda81db8be17505554c726e558bb2\n'
+                     'Security Critical: yes\n'),
+                },
+            )
 
-        revision = roll_protobuf.ReadReadmeRevision(readme_text)
+            revision = roll_protobuf.ReadReadmeRevision(temporary_directory)
 
         self.assertEqual(
             '3f17acbf7ffbda81db8be17505554c726e558bb2',
@@ -171,57 +176,27 @@ class RollProtobufTest(unittest.TestCase):
         )
 
     def testReadReadmeRevisionRaisesErrorWhenRevisionLineIsMissing(self):
-        readme_text = 'Name: Protocol Buffers\nVersion: 36.0\n'
-
-        with self.assertRaises(
-                roll_protobuf.RollProtobufError,
-                msg=(
-                    'Expected ReadReadmeRevision to raise RollProtobufError '
-                    'when README.chromium lacks a Revision: line.')):
-            roll_protobuf.ReadReadmeRevision(readme_text)
-
-    def testIsTopLevelChromiumPatchOrNoteIncludesDirectPatchAndMarkdownFiles(
-            self):
-        classification_by_path = {
-            path: roll_protobuf.IsTopLevelChromiumPatchOrNote(path)
-            for path in (
-                'patches/0004-fix-shared-library-exports.patch',
-                'patches/0044-trim-protoc-main.md',
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            _WriteFilesToDirectory(
+                temporary_directory,
+                {'README.chromium': 'Name: Protocol Buffers\nVersion: 36.0\n'},
             )
-        }
 
-        self.assertEqual(
-            {
-                'patches/0004-fix-shared-library-exports.patch': True,
-                'patches/0044-trim-protoc-main.md': True,
-            },
-            classification_by_path,
-            msg=(
-                'Expected top-level patches/*.patch and patches/*.md files to '
-                'be recognized as Chromium-owned patch inventory files.'),
-        )
+            with self.assertRaises(
+                    roll_protobuf.RollProtobufError,
+                    msg=('Expected ReadReadmeRevision to raise '
+                         'RollProtobufError when README.chromium lacks a '
+                         'Revision: line.')):
+                roll_protobuf.ReadReadmeRevision(temporary_directory)
 
-    def testIsTopLevelChromiumPatchOrNoteExcludesUpstreamSubdirectories(self):
-        classification_by_path = {
-            path: roll_protobuf.IsTopLevelChromiumPatchOrNote(path)
-            for path in (
-                'patches/protobuf_v25/0001-bazel.patch',
-                'patches/protobuf_v25/README.md',
-                'src/google/protobuf/message.h',
-            )
-        }
-
-        self.assertEqual(
-            {
-                'patches/protobuf_v25/0001-bazel.patch': False,
-                'patches/protobuf_v25/README.md': False,
-                'src/google/protobuf/message.h': False,
-            },
-            classification_by_path,
-            msg=(
-                'Expected upstream patches/protobuf_vNN/ subdirectories and '
-                'non-patch paths to be excluded from Chromium patch files.'),
-        )
+    def testReadReadmeRevisionRaisesErrorWhenReadmeFileIsMissing(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            with self.assertRaises(
+                    roll_protobuf.RollProtobufError,
+                    msg=(
+                        'Expected ReadReadmeRevision to raise '
+                        'RollProtobufError when README.chromium is missing.')):
+                roll_protobuf.ReadReadmeRevision(temporary_directory)
 
     def testResolveDefaultCacheDirectoryUsesXdgCacheHomeWhenSet(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -505,21 +480,18 @@ class RollProtobufTest(unittest.TestCase):
                 check=True,
             )
 
-            with mock.patch.object(
-                    roll_protobuf, '_FetchRevisionIntoCache') as mock_fetch:
-                roll_protobuf.EnsureUpstreamCommitCached(
-                    revision=commit_hash,
-                    cache_directory=cache_directory,
-                    upstream_url='/nonexistent/remote',
-                )
+            _, resolved_commit = roll_protobuf.EnsureUpstreamCommitCached(
+                revision=commit_hash,
+                cache_directory=cache_directory,
+                upstream_url='/nonexistent/remote',
+            )
 
         self.assertEqual(
-            0,
-            mock_fetch.call_count,
-            msg=(
-                'Expected EnsureUpstreamCommitCached not to run git fetch '
-                'when a 40-character commit SHA is already present in '
-                'cache_directory.'),
+            commit_hash,
+            resolved_commit,
+            msg=('Expected EnsureUpstreamCommitCached not to run git fetch '
+                 'when a 40-character commit SHA is already present in '
+                 'cache_directory.'),
         )
 
     def testEnsureUpstreamCommitCachedRaisesErrorWhenFetchFails(self):
@@ -609,26 +581,50 @@ class RollProtobufTest(unittest.TestCase):
 
     def testExtractUpstreamArchiveRaisesWhenGitArchiveExitsNonZeroAfterStream(
             self):
-        with (
-            mock.patch.object(
-                roll_protobuf,
-                '_StreamGitArchiveToDirectory',
-                return_value=(1, 'fatal: corrupt pack', None),
-            ),
-            self.assertRaisesRegex(
-                roll_protobuf.RollProtobufError,
-                r'git archive failed.*fatal: corrupt pack',
-                msg=(
-                    'Expected ExtractUpstreamArchive to raise '
-                    'RollProtobufError with git stderr when git archive '
-                    'exits non-zero after tarfile finishes reading.'),
-            ),
-        ):
-            roll_protobuf.ExtractUpstreamArchive(
-                repository_path='/tmp/upstream',
-                commit_revision='deadbeef',
-                destination_directory='/tmp/destination',
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory = os.path.join(temporary_directory, 'upstream')
+            destination_directory = os.path.join(temporary_directory,
+                                                 'destination')
+            os.makedirs(destination_directory, exist_ok=True)
+            commit_hash = _InitializeGitRepositoryWithFiles(
+                upstream_directory,
+                {'src/google/protobuf/arena.h': '// arena\n'},
             )
+            real_command_builder = roll_protobuf._GitCommandForRepository
+
+            def BuildFailingAfterStreamGitCommand(
+                    repository_path: str,
+                    git_arguments: list[str]) -> list[str]:
+                return [
+                    sys.executable,
+                    '-c',
+                    ('import subprocess, sys; '
+                     'subprocess.run(sys.argv[1:], check=True); '
+                     'sys.stderr.write("fatal: corrupt pack\\n"); '
+                     'sys.exit(1)'),
+                    *real_command_builder(repository_path, git_arguments),
+                ]
+
+            with (
+                    mock.patch.object(
+                        roll_protobuf,
+                        '_GitCommandForRepository',
+                        BuildFailingAfterStreamGitCommand,
+                    ),
+                    self.assertRaisesRegex(
+                        roll_protobuf.RollProtobufError,
+                        r'git archive failed.*fatal: corrupt pack',
+                        msg=
+                        ('Expected ExtractUpstreamArchive to raise '
+                         'RollProtobufError with git stderr when git archive '
+                         'exits non-zero after tarfile finishes reading.'),
+                    ),
+            ):
+                roll_protobuf.ExtractUpstreamArchive(
+                    repository_path=upstream_directory,
+                    commit_revision=commit_hash,
+                    destination_directory=destination_directory,
+                )
 
     @_SkipOnWindows('os.symlink and SIGPIPE require POSIX.')
     def testExtractUpstreamArchiveReportsTarFilterErrorBeforeGitSigpipe(self):
@@ -1914,7 +1910,9 @@ class RollProtobufTest(unittest.TestCase):
                 'BUILD.gn',
                 'roll_protobuf.py',
                 'patches/0004-fix-shared-library-exports.patch',
+                'patches/0044-trim-protoc-main.md',
                 'patches/protobuf_v25/0001-bazel.patch',
+                'patches/protobuf_v25/README.md',
                 'src/google/protobuf/arena.h',
             )
         }
@@ -1924,14 +1922,15 @@ class RollProtobufTest(unittest.TestCase):
                 'BUILD.gn': True,
                 'roll_protobuf.py': True,
                 'patches/0004-fix-shared-library-exports.patch': True,
+                'patches/0044-trim-protoc-main.md': True,
                 'patches/protobuf_v25/0001-bazel.patch': False,
+                'patches/protobuf_v25/README.md': False,
                 'src/google/protobuf/arena.h': False,
             },
             classification_by_path,
-            msg=(
-                'Expected IsChromiumOwnedFile to recognize '
-                'CHROMIUM_OWNED_FILES and top-level patches while excluding '
-                'upstream files.'),
+            msg=('Expected IsChromiumOwnedFile to recognize '
+                 'CHROMIUM_OWNED_FILES and top-level patches while excluding '
+                 'upstream files.'),
         )
 
     def testIsIntentionallyDeletedUpstreamFileClassifiesRemovedPaths(self):
@@ -1958,41 +1957,6 @@ class RollProtobufTest(unittest.TestCase):
                 'removed directories and non-bootstrap .pb.h/.pb.cc files '
                 'while keeping bootstrap-generated descriptor.pb.cc.'),
         )
-
-    def testReadReadmeRevisionFromDirectoryReadsRevisionFromReadmeFile(self):
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            _WriteFilesToDirectory(
-                temporary_directory,
-                {
-                    'README.chromium': (
-                        'Name: Protocol Buffers\n'
-                        'Revision: 3f17acbf7ffbda81db8be17505554c726e558bb2\n'
-                    ),
-                },
-            )
-
-            revision = roll_protobuf.ReadReadmeRevisionFromDirectory(
-                temporary_directory)
-
-        self.assertEqual(
-            '3f17acbf7ffbda81db8be17505554c726e558bb2',
-            revision,
-            msg=(
-                'Expected ReadReadmeRevisionFromDirectory to read '
-                'README.chromium from the given directory and return the '
-                'Revision: commit hash.'),
-        )
-
-    def testReadReadmeRevisionFromDirectoryRaisesErrorWhenReadmeFileIsMissing(
-            self):
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            with self.assertRaises(
-                    roll_protobuf.RollProtobufError,
-                    msg=(
-                        'Expected ReadReadmeRevisionFromDirectory to raise '
-                        'RollProtobufError when README.chromium is missing.')):
-                roll_protobuf.ReadReadmeRevisionFromDirectory(
-                    temporary_directory)
 
 
 if __name__ == '__main__':
