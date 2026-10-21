@@ -12,7 +12,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -129,8 +128,7 @@ void TooltipIcon::SetDrawAsHovered(bool hovered) {
   SetImage(ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled() ? vector_icons::kInfoIcon
                                         : vector_icons::kInfoOutlineOldIcon,
-      GetColorProvider()->GetColor(hovered ? ui::kColorHelpIconActive
-                                           : ui::kColorHelpIconInactive),
+      hovered ? ui::kColorHelpIconActive : ui::kColorHelpIconInactive,
       tooltip_icon_size_));
 }
 
