@@ -1762,15 +1762,6 @@
       "expiry_milestone": 140
   },
   {
-    "name": "ca-display-link-in-browser",
-    "owners": [
-      "magchen@google.com",
-      "chrome-gpu@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-
-  {
     "name": "camera-and-microphone-elements",
     "owners": [ "ravjit@chromium.org", "tungnh@chromium.org" ],
     "expiry_milestone": 160

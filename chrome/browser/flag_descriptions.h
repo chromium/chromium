@@ -361,12 +361,6 @@ inline constexpr char kByDateHistoryInSidePanelName[] =
 inline constexpr char kByDateHistoryInSidePanelDescription[] =
     "If enabled, shows the 'By Date' History in Side Panel";
 
-inline constexpr char kCADisplayLinkInBrowserName[] =
-    "Enable CADisplayLink in the browser process";
-inline constexpr char kCADisplayLinkInBrowserDescription[] =
-    "Enable CADisplayLink in the browser process to sync Chrome's rendering "
-    "with the display refresh rate.";
-
 inline constexpr char kBlockingFocusWithoutUserActivationName[] =
     "Blocking Focus Without User Activation";
 inline constexpr char kBlockingFocusWithoutUserActivationDescription[] =
