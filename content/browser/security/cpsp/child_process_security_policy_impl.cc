@@ -819,9 +819,7 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
     DCHECK(!url.SchemeIsBlob() && !url.SchemeIsFileSystem())
         << "inner_url extraction should be done already.";
     // Having permission to a scheme implies permission to all of its URLs.
-    auto scheme_judgment = scheme_map_.find(url.GetScheme());
-    if (scheme_judgment != scheme_map_.end() &&
-        scheme_judgment->second == CommitRequestPolicy::kCommitAndRequest) {
+    if (CanCommitScheme(url.GetScheme())) {
       return true;
     }
 
@@ -843,8 +841,7 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
     DCHECK(!url.SchemeIsBlob() && !url.SchemeIsFileSystem())
         << "inner_url extraction should be done already.";
     // Having permission to a scheme implies permission to all of its URLs.
-    auto scheme_judgment = scheme_map_.find(url.GetScheme());
-    if (scheme_judgment != scheme_map_.end()) {
+    if (CanRequestScheme(url.GetScheme())) {
       return true;
     }
 
@@ -1047,6 +1044,19 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
     // Anything already in |origin_map_| must have at least request permissions
     // already.
     return origin_map_.contains(origin);
+  }
+
+  bool CanCommitScheme(const std::string& scheme) const {
+    auto it = scheme_map_.find(scheme);
+    if (it == scheme_map_.end()) {
+      return false;
+    }
+    return it->second == CommitRequestPolicy::kCommitAndRequest;
+  }
+
+  bool CanRequestScheme(const std::string& scheme) const {
+    // Anything in |scheme_map_| must have at least request permissions.
+    return scheme_map_.contains(scheme);
   }
 
   using SchemeMap = absl::flat_hash_map<std::string, CommitRequestPolicy>;
