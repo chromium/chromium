@@ -60,21 +60,29 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "fullscreen_signin_screen_coordinator_unittest.mm" ]
+  sources = [
+    "fullscreen_signin_screen_coordinator_unittest.mm",
+    "fullscreen_signin_screen_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base",
     "//base/test:test_support",
+    "//components/signin/core/browser:test_support",
+    "//components/signin/public/base",
     "//components/sync:test_support",
+    "//google_apis",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/authentication/fullscreen_signin_screen/ui",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/metrics/model:profile_metrics_service_factory",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",

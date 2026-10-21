@@ -7,11 +7,15 @@
 #import <algorithm>
 #import <optional>
 
+#import "base/cancelable_callback.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_reporting_choice_service.h"
 #import "components/prefs/pref_service.h"
@@ -101,6 +105,14 @@ enum class SigninScreenState {
   // Observer for auth service status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authServiceObserverBridge;
+
+  // Cancelable callback and timeout timer for the FRE preferred account
+  // request.
+  base::CancelableOnceCallback<void(
+      std::optional<
+          signin::AccountPreviewDataService::AccountPreviewPreference>)>
+      _preferredAccountCallback;
+  base::OneShotTimer _preferredAccountTimer;
 }
 
 - (instancetype)
@@ -193,12 +205,16 @@ enum class SigninScreenState {
   CHECK(!_authenticationService);
   CHECK(!_identityManager);
   CHECK(!_accountPreviewDataService);
+  CHECK(!_preferredAccountTimer.IsRunning());
   CHECK(!self.localPrefService);
   CHECK(!self.prefService);
   CHECK(!self.syncService);
 }
 
 - (void)disconnect {
+  if (_preferredAccountTimer.IsRunning()) {
+    [self stopWaitingForPreferredAccount];
+  }
   _consumer = nil;
   _delegate = nil;
   _authServiceObserverBridge.reset();
@@ -215,6 +231,8 @@ enum class SigninScreenState {
 - (void)startSignInWithAuthenticationFlow:
     (AuthenticationFlow*)authenticationFlow {
   CHECK(!self.signinInProgress);
+  // The UI is disabled while waiting for the preferred account.
+  CHECK(!_preferredAccountTimer.IsRunning());
   self.signinInProgress = YES;
   [self userAttemptedToSignin];
   RecordMetricsReportingDefaultState();
@@ -252,9 +270,7 @@ enum class SigninScreenState {
   if (self.UMALinkWasTapped) {
     base::RecordAction(base::UserMetricsAction("MobileFreUMALinkTapped"));
   }
-  BOOL isFirstRun = _screenState == SigninScreenState::kFirstRunAsFirstScreen ||
-                    _screenState == SigninScreenState::kFirstRunAsOtherScreen;
-  if (isFirstRun) {
+  if ([self isFirstRun]) {
     first_run::FirstRunStage firstRunStage =
         signIn ? first_run::kWelcomeAndSigninScreenCompletionWithSignIn
                : first_run::kWelcomeAndSigninScreenCompletionWithoutSignIn;
@@ -334,7 +350,11 @@ enum class SigninScreenState {
     _consumer.currentPrimaryIdentityEmail = signedInIdentity.userEmail;
     [self updateConsumerIdentity];
   } else if (signinForcedOrAvailable) {
-    self.selectedIdentity = [self calculateSelectedIdentity];
+    if ([self isFirstRun]) {
+      [self setUpSelectedIdentityForFRE];
+    } else {
+      self.selectedIdentity = [self calculateSelectedIdentity];
+    }
   }
 }
 
@@ -387,29 +407,92 @@ enum class SigninScreenState {
 
 #pragma mark - Private
 
-// For non-fre flow selected identity is either:
-// - The preferred account if one exists, or
-// - The default identity on the device.
-// For fre flow it's always the default identity on the device for now. This
-// will change in M158.
+// Synchronously returns the preferred account if one exists and is enabled for
+// the current screen, or the default identity on the device.
 - (id<SystemIdentity>)calculateSelectedIdentity {
-  if (_screenState == SigninScreenState::kOther && _accountPreviewDataService &&
-      base::FeatureList::IsEnabled(
-          switches::kEnableAccountPreviewPreferredAccount)) {
-    // Only use preferred account for non-fre flow.
-    if (std::optional<
-            signin::AccountPreviewDataService::AccountPreviewPreference>
-            preference =
-                _accountPreviewDataService->GetPreferredAccountForSignin()) {
-      id<SystemIdentity> identity =
-          _accountManagerService->GetIdentityWithGaiaID(preference->gaia_id);
-      if (identity) {
-        return identity;
-      }
+  id<SystemIdentity> defaultIdentity = signin::GetDefaultIdentityOnDevice(
+      _identityManager, _accountManagerService);
+  // The feature is checked only when there is an account on the device.
+  if (defaultIdentity && _accountPreviewDataService &&
+      ((_screenState == SigninScreenState::kOther &&
+        base::FeatureList::IsEnabled(
+            switches::kEnableAccountPreviewPreferredAccount)) ||
+       ([self isFirstRun] &&
+        base::FeatureList::IsEnabled(
+            switches::kEnableAccountPreviewPreferredAccountFRE)))) {
+    if (id<SystemIdentity> identity =
+            [self identityForPreference:_accountPreviewDataService
+                                            ->GetPreferredAccountForSignin()]) {
+      return identity;
     }
   }
-  return signin::GetDefaultIdentityOnDevice(_identityManager,
-                                            _accountManagerService);
+  return defaultIdentity;
+}
+
+// Sets up `selectedIdentity` in the FRE, starting with the default identity on
+// the device and requesting the preferred account if enabled.
+- (void)setUpSelectedIdentityForFRE {
+  CHECK([self isFirstRun]);
+  CHECK(_preferredAccountCallback.IsCancelled());
+  CHECK(!_preferredAccountTimer.IsRunning());
+  self.selectedIdentity = signin::GetDefaultIdentityOnDevice(
+      _identityManager, _accountManagerService);
+  // The feature is checked only when there is an account on the device.
+  if (!self.selectedIdentity || !_accountPreviewDataService ||
+      !base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewPreferredAccountFRE)) {
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  _preferredAccountCallback.Reset(base::BindOnce(^(
+      std::optional<signin::AccountPreviewDataService::AccountPreviewPreference>
+          preference) {
+    [weakSelf onPreferredAccountForFRERetrieved:preference];
+  }));
+  // TODO(crbug.com/571469358): Replace blocking UI interaction with a loading
+  // spinner while waiting for the preferred account.
+  [self.consumer setUIEnabled:NO];
+  _preferredAccountTimer.Start(
+      FROM_HERE, switches::kAccountPreviewPreferredAccountFREFetchTimeout.Get(),
+      base::BindOnce(^{
+        [weakSelf stopWaitingForPreferredAccount];
+      }));
+  _accountPreviewDataService->GetPreferredAccountForFRESignin(
+      _preferredAccountCallback.callback());
+}
+
+// Handles the result of the FRE preferred account request, selecting the
+// identity of `preference` if it is on the device and stopping the wait state.
+- (void)onPreferredAccountForFRERetrieved:
+    (const std::optional<
+        signin::AccountPreviewDataService::AccountPreviewPreference>&)
+        preference {
+  if (id<SystemIdentity> identity = [self identityForPreference:preference]) {
+    self.selectedIdentity = identity;
+  }
+  [self stopWaitingForPreferredAccount];
+}
+
+// Returns the identity matching `preference` if present on the device.
+- (id<SystemIdentity>)identityForPreference:
+    (const std::optional<
+        signin::AccountPreviewDataService::AccountPreviewPreference>&)
+        preference {
+  CHECK(_accountManagerService);
+  if (!preference) {
+    return nil;
+  }
+  return _accountManagerService->GetIdentityOnDeviceWithGaiaID(
+      preference->gaia_id);
+}
+
+// Cancels any pending preferred account callback and stops the timeout timer.
+- (void)stopWaitingForPreferredAccount {
+  _preferredAccountCallback.Cancel();
+  _preferredAccountTimer.Stop();
+  // TODO(crbug.com/571469358): Replace blocking UI interaction with a loading
+  // spinner while waiting for the preferred account.
+  [self.consumer setUIEnabled:YES];
 }
 
 - (bool)selectedIdentityIsValid {
@@ -471,11 +554,20 @@ enum class SigninScreenState {
   return NO;
 }
 
+// Returns YES if the screen is shown in the First Run Experience.
+- (BOOL)isFirstRun {
+  return _screenState == SigninScreenState::kFirstRunAsFirstScreen ||
+         _screenState == SigninScreenState::kFirstRunAsOtherScreen;
+}
+
 #pragma mark -  IdentityManagerObserving
 
 - (void)accountsOnDeviceDidChange {
   if (![self selectedIdentityIsValid]) {
     self.selectedIdentity = [self calculateSelectedIdentity];
+    if (!self.selectedIdentity && _preferredAccountTimer.IsRunning()) {
+      [self stopWaitingForPreferredAccount];
+    }
   }
 }
 

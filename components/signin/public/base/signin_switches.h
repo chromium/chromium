@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
@@ -386,6 +387,11 @@ BASE_DECLARE_FEATURE(kEnableAccountPreviewPreferredAccountFollowup);
 // Experience (FRE).
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewPreferredAccountFRE);
+// Maximum duration the FRE waits for an ongoing preferred account computation
+// to update the selected account.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kAccountPreviewPreferredAccountFREFetchTimeout);
 #endif
 
 // Controls whether storing and exposing the preferred account when offering

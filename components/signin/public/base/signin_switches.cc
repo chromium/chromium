@@ -433,6 +433,10 @@ BASE_FEATURE(kEnableAccountPreviewPreferredAccountFollowup,
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kEnableAccountPreviewPreferredAccountFRE,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kAccountPreviewPreferredAccountFREFetchTimeout,
+                   &kEnableAccountPreviewPreferredAccountFRE,
+                   base::Seconds(1));
 #endif
 
 // Controls whether storing and exposing the preferred account for switching is
