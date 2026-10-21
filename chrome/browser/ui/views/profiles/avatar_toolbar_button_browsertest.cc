@@ -3702,13 +3702,12 @@ class AvatarToolbarButtonSignInBenefitsIphBrowserTest
           /*enabled_features=*/{},
           /*disabled_features=*/{
               syncer::kReplaceSyncPromosWithSignInPromos,
-              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+              feature_engagement::kIPHSignInBenefitsNewSigninFeature});
     } else {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
-          /*disabled_features=*/{});
+          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+          /*disabled_features=*/{
+              feature_engagement::kIPHSignInBenefitsNewSigninFeature});
     }
   }
 
@@ -3730,6 +3729,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
   Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
 
   PrefService* prefs = browser()->GetProfile()->GetPrefs();
+  prefs->ClearPref(prefs::kPrimaryAccountSetAfterSigninMigration);
   ASSERT_FALSE(
       prefs->GetBoolean(prefs::kPrimaryAccountSetAfterSigninMigration));
 }
@@ -3769,6 +3769,7 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsIphBrowserTest,
   Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
 
   PrefService* prefs = browser()->GetProfile()->GetPrefs();
+  prefs->ClearPref(prefs::kPrimaryAccountSetAfterSigninMigration);
   ASSERT_FALSE(
       prefs->GetBoolean(prefs::kPrimaryAccountSetAfterSigninMigration));
 
@@ -3793,21 +3794,11 @@ class AvatarToolbarButtonSignInBenefitsNewSigninIphBrowserTest
   AvatarToolbarButtonSignInBenefitsNewSigninIphBrowserTest()
       : InteractiveFeaturePromoTestMixin(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHSignInBenefitsNewSigninFeature})) {
-    if (content::IsPreTest()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{
-              syncer::kReplaceSyncPromosWithSignInPromos,
-              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
-           feature_engagement::kIPHSignInBenefitsNewSigninFeature},
-          /*disabled_features=*/{
-              syncer::kReplaceSyncPromosWithSignInPromos,
-              feature_engagement::kIPHSignInBenefitsFeature});
-    }
+    feature_list_.InitWithFeatureStates(
+        {{syncer::kReplaceSyncPromosWithSignInPromos, false},
+         {feature_engagement::kIPHSignInBenefitsFeature, false},
+         {feature_engagement::kIPHSignInBenefitsNewSigninFeature,
+          !content::IsPreTest()}});
   }
 
   bool WillShowPromo() {
@@ -3825,6 +3816,8 @@ class AvatarToolbarButtonSignInBenefitsNewSigninIphBrowserTest
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsNewSigninIphBrowserTest,
                        PRE_ShownForUsersSignedInBeforeMigration) {
   Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+  browser()->GetProfile()->GetPrefs()->ClearPref(
+      prefs::kPrimaryAccountSetAfterSigninMigration);
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonSignInBenefitsNewSigninIphBrowserTest,
@@ -3865,30 +3858,30 @@ class AvatarToolbarButtonSignInBenefitsNewSigninIphParameterizedTest
     std::vector<base::test::FeatureRef> enabled;
     std::vector<base::test::FeatureRef> disabled;
 
-    const std::vector<base::test::FeatureRef> kDisabledMigrationFeatures = {
+    const std::vector<base::test::FeatureRef> kDisabledPromoFeatures = {
         syncer::kReplaceSyncPromosWithSignInPromos,
-        syncer::kReplaceSyncPromosWithSigninPromosNewSignin};
+        feature_engagement::kIPHSignInBenefitsFeature,
+        feature_engagement::kIPHSignInBenefitsNewSigninFeature};
 
     if (is_pre_pre) {
       // Disable all features to avoid any startup promos while signing in.
-      disabled = kDisabledMigrationFeatures;
+      disabled = kDisabledPromoFeatures;
     } else if (is_pre) {
       if (ShouldShowLegacyIphInPre()) {
         enabled = {syncer::kReplaceSyncPromosWithSignInPromos,
                    feature_engagement::kIPHSignInBenefitsFeature};
-        disabled = {syncer::kReplaceSyncPromosWithSigninPromosNewSignin};
+        disabled = {feature_engagement::kIPHSignInBenefitsNewSigninFeature};
       } else {
         // The PRE_ test should have the same feature config as the PRE_PRE_
         // when the legacy IPH should not be shown, because we conceptually want
         // this step to do nothing in this case. It will behave just as if
         // Chrome was restarted without configuration change.
-        disabled = kDisabledMigrationFeatures;
+        disabled = kDisabledPromoFeatures;
       }
     } else {
       // Main test: enable new features and disable old ones to test suppression
       // check.
-      enabled = {syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
-                 feature_engagement::kIPHSignInBenefitsNewSigninFeature};
+      enabled = {feature_engagement::kIPHSignInBenefitsNewSigninFeature};
       disabled = {syncer::kReplaceSyncPromosWithSignInPromos,
                   feature_engagement::kIPHSignInBenefitsFeature};
     }
@@ -3918,6 +3911,8 @@ IN_PROC_BROWSER_TEST_P(
     AvatarToolbarButtonSignInBenefitsNewSigninIphParameterizedTest,
     PRE_PRE_NotShownIfLegacyWasShown) {
   Signin(/*email=*/u"test@gmail.com", /*name=*/u"Account");
+  browser()->GetProfile()->GetPrefs()->ClearPref(
+      prefs::kPrimaryAccountSetAfterSigninMigration);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -4190,14 +4185,12 @@ class AvatarToolbarButtonAsyncPromoRaceRegressionTest
   AvatarToolbarButtonAsyncPromoRaceRegressionTest() {
     if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
-           features::kInitialWebUI, features::kWebUIAvatarButton},
+          {syncer::kReplaceSyncPromosWithSignInPromos, features::kInitialWebUI,
+           features::kWebUIAvatarButton},
           {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
+          {syncer::kReplaceSyncPromosWithSignInPromos},
           {features::kWebUIAvatarButton});
     }
   }
