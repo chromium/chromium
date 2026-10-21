@@ -1934,6 +1934,8 @@ std::string PermissionUmaUtil::GetPromptDispositionString(
       return "LocationBarLeftQuietChip";
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
       return "LocationBarLeftQuietAbusiveChip";
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP:
+      return "LocationBarLeftChip";
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE:
       return "LocationBarLeftChipAutoBubble";
     case PermissionPromptDisposition::LOCATION_BAR_RIGHT_ANIMATED_ICON:

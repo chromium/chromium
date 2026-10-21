@@ -133,7 +133,8 @@ PermissionPromptChipModel::PermissionPromptChipModel(
     chip_theme_ = PermissionChipTheme::kLowVisibility;
   } else {
     prompt_style_ = PermissionPromptStyle::kChip;
-    should_bubble_start_open_ = true;
+    should_bubble_start_open_ =
+        ShouldLoudChipBubbleStartOpen(delegate_->Requests());
     should_display_blocked_icon_ = false;
     should_expand_ = true;
 
@@ -158,6 +159,15 @@ PermissionPromptChipModel::PermissionPromptChipModel(
 }
 
 PermissionPromptChipModel::~PermissionPromptChipModel() = default;
+
+// static
+bool PermissionPromptChipModel::ShouldLoudChipBubbleStartOpen(
+    const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
+        requests) {
+  return std::ranges::any_of(requests, [](const auto& request) {
+    return request->ShouldBubbleStartOpen();
+  });
+}
 
 void PermissionPromptChipModel::UpdateAutoCollapsePromptChipState(
     bool is_collapsed) {

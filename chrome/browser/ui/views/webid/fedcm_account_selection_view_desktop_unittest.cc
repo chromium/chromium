@@ -3338,6 +3338,36 @@ TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
 }
 
 TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       SignUpAccountsStartWithOnlyChip) {
+  accounts_ = CreateAccounts(
+      {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignUp}},
+      idp_data_);
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+
+  // Only the chip is shown, and the bubble opens when the user clicks it.
+  ambient_signin::AmbientLoginPermissionRequest* request =
+      WaitForAmbientBubble();
+  ASSERT_TRUE(request);
+  EXPECT_FALSE(request->ShouldBubbleStartOpen());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
+       BubbleStartsOpenIfAnyAccountSignsIn) {
+  accounts_ = CreateAccounts(
+      {{kAccountId1, LoginState::kSignUp}, {kAccountId2, LoginState::kSignIn}},
+      idp_data_);
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_);
+
+  // The bubble opens along with the chip.
+  ambient_signin::AmbientLoginPermissionRequest* request =
+      WaitForAmbientBubble();
+  ASSERT_TRUE(request);
+  EXPECT_TRUE(request->ShouldBubbleStartOpen());
+}
+
+TEST_F(FedCmAccountSelectionViewAmbientBubbleTest,
        AcceptingAmbientBubbleSelectsChosenAccount) {
   accounts_ = CreateAccounts(
       {{kAccountId1, LoginState::kSignIn}, {kAccountId2, LoginState::kSignIn}},

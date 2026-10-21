@@ -496,6 +496,10 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
   DCHECK_NE(0, message_id);
   return l10n_util::GetStringUTF16(message_id);
 }
+
+bool PermissionRequest::ShouldBubbleStartOpen() const {
+  return true;
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 std::optional<std::u16string> PermissionRequest::GetAllowAlwaysText() const {

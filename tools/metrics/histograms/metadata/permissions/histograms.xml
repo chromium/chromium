@@ -329,6 +329,7 @@ chromium-metrics-reviews@google.com.
   <variant name="AnchoredBubble"/>
   <variant name="CustomModalDialog"/>
   <variant name="ElementAnchoredBubble"/>
+  <variant name="LocationBarLeftChip"/>
   <variant name="LocationBarLeftChipAutoBubble"/>
   <variant name="LocationBarLeftQuietAbusiveChip"/>
   <variant name="LocationBarLeftQuietChip"/>
@@ -344,7 +345,7 @@ chromium-metrics-reviews@google.com.
   <variant name="NotApplicable"/>
 </variants>
 
-<!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:PermissionPromptDisposition) -->
+<!-- LINT.ThenChange(//components/permissions/permission_uma_constants.h:PermissionPromptDisposition) -->
 
 <variants name="RelevanceOutputPredictionModels">
   <variant name="AIv4"/>
@@ -1793,6 +1794,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Disposition" variants="PromptDisposition"/>
   <token key="PermissionType">
+    <variant name="AmbientLogin"/>
     <variant name="AR"/>
     <variant name="AudioAndVideoCapture"/>
     <variant name="AudioCapture"/>
@@ -1836,11 +1838,13 @@ chromium-metrics-reviews@google.com.
     available on Desktop.
   </summary>
   <token key="Disposition">
+    <variant name="LocationBarLeftChip"/>
     <variant name="LocationBarLeftChipAutoBubble"/>
     <variant name="LocationBarLeftQuietAbusiveChip"/>
     <variant name="LocationBarLeftQuietChip"/>
   </token>
   <token key="PermissionType">
+    <variant name="AmbientLogin"/>
     <variant name="AR"/>
     <variant name="AudioAndVideoCapture"/>
     <variant name="AudioCapture"/>

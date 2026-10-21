@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_PROMPT_CHIP_MODEL_H_
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_PROMPT_CHIP_MODEL_H_
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/check.h"
 #include "base/memory/raw_ref.h"
@@ -27,6 +29,13 @@ class PermissionPromptChipModel {
   PermissionPromptChipModel(const PermissionPromptChipModel&) = delete;
   PermissionPromptChipModel& operator=(const PermissionPromptChipModel&) =
       delete;
+
+  // Returns whether a loud chip for `requests` opens its bubble along with the
+  // chip. The requests share one bubble, which opens automatically unless all
+  // of them start with only the chip.
+  static bool ShouldLoudChipBubbleStartOpen(
+      const std::vector<std::unique_ptr<permissions::PermissionRequest>>&
+          requests);
 
   // The delegate representing the permission request.
   const base::WeakPtr<permissions::PermissionPrompt::Delegate>& GetDelegate()

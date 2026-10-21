@@ -1753,6 +1753,14 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
   // TODO(crbug.com/567563304): Use the RP's frame as the requesting frame when
   // FedCM is invoked from an iframe.
   const GURL origin = main_frame->GetLastCommittedOrigin().GetURL();
+  // If all accounts would sign up rather than sign in, only the chip is shown,
+  // and the bubble opens when the user clicks it.
+  const bool bubble_starts_open = std::ranges::any_of(
+      accounts, [](const IdentityRequestAccountPtr& account) {
+        return account->idp_claimed_login_state.value_or(
+                   account->browser_trusted_login_state) ==
+               Account::LoginState::kSignIn;
+      });
   auto request =
       std::make_unique<ambient_signin::AmbientLoginPermissionRequest>(
           origin, origin,
@@ -1764,7 +1772,8 @@ bool FedCmAccountSelectionView::ShowAmbientBubble(
               ambient_bubble_weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(
               &FedCmAccountSelectionView::OnAmbientBubbleDecided,
-              ambient_bubble_weak_ptr_factory_.GetWeakPtr()));
+              ambient_bubble_weak_ptr_factory_.GetWeakPtr()),
+          bubble_starts_open);
 
   // Set before adding the request, since the decided callback runs
   // synchronously if the request is rejected right away.

@@ -236,8 +236,7 @@ enum class PermissionPromptDisposition {
 
   // Only used on desktop, a chip on the left-hand side of the location bar that
   // shows a bubble when clicked.
-  // DEPRECATED: This disposition is no longer existent.
-  // LOCATION_BAR_LEFT_CHIP = 6,
+  LOCATION_BAR_LEFT_CHIP = 6,
 
   // There was no UI being shown. This is usually because the user closed an
   // inactive tab that had a pending permission request.
@@ -628,6 +627,7 @@ inline constexpr auto kLoudPromptDispositions =
         PermissionPromptDisposition::CUSTOM_MODAL_DIALOG,
         PermissionPromptDisposition::MODAL_DIALOG,
         PermissionPromptDisposition::MAC_OS_PROMPT,
+        PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP,
         PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE,
         PermissionPromptDisposition::MESSAGE_UI_LOUD,
     });
@@ -636,11 +636,10 @@ inline constexpr auto kLoudPromptDispositions =
 // We want to assign every new prompt disposition either to quiet or loud
 // prompts set. Left out:
 //  - NOT_APPLICABLE (0 anyways)
-//  - LOCATION_BAR_LEFT_CHIP (deprecated)
 //  - NONE_VISIBLE
 static_assert(kLoudPromptDispositions.size() +
                   kQuietPromptDispositions.size() ==
-              static_cast<size_t>(PermissionPromptDisposition::kMaxValue) - 2);
+              static_cast<size_t>(PermissionPromptDisposition::kMaxValue) - 1);
 
 }  // namespace permissions
 

@@ -27,7 +27,8 @@ AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
     PasskeyOrPasswordSelectedCallback credential_selected_callback,
     std::vector<FederatedCredential> federated_credentials,
     FederatedCredentialSelectedCallback federated_selected_callback,
-    PermissionDecidedCallback permission_decided_callback)
+    PermissionDecidedCallback permission_decided_callback,
+    bool bubble_starts_open)
     : permissions::PermissionRequest(
           std::make_unique<permissions::PermissionRequestData>(
               permissions::RequestType::kAmbientLogin,
@@ -46,7 +47,8 @@ AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
       federated_credentials_(std::move(federated_credentials)),
       federated_selected_callback_(std::move(federated_selected_callback)),
       caller_permission_decided_callback_(
-          std::move(permission_decided_callback)) {}
+          std::move(permission_decided_callback)),
+      bubble_starts_open_(bubble_starts_open) {}
 
 AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
     const GURL& requesting_origin,
@@ -152,6 +154,10 @@ std::u16string AmbientLoginPermissionRequest::GetMessageTextFragment() const {
   // unit tests until custom UI is hooked up.
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN);
+}
+
+bool AmbientLoginPermissionRequest::ShouldBubbleStartOpen() const {
+  return bubble_starts_open_;
 }
 
 }  // namespace ambient_signin

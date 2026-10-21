@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_util.h"
@@ -82,8 +83,11 @@ PermissionPromptChip::GetPromptDisposition() const {
                      LOCATION_BAR_LEFT_QUIET_CHIP;
   }
 
-  return permissions::PermissionPromptDisposition::
-      LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE;
+  return PermissionPromptChipModel::ShouldLoudChipBubbleStartOpen(
+             delegate()->Requests())
+             ? permissions::PermissionPromptDisposition::
+                   LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
+             : permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP;
 }
 
 std::optional<gfx::Rect> PermissionPromptChip::GetViewBoundsInScreen() const {

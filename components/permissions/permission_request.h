@@ -152,6 +152,12 @@ class PermissionRequest {
   // Returns prompt text appropriate for displaying under the dialog title
   // "[domain] wants to:".
   virtual std::u16string GetMessageTextFragment() const;
+
+  // Returns whether the prompt bubble opens automatically when the request is
+  // shown with a chip in the location bar. Otherwise, only the chip is shown,
+  // and the user can click it to open the bubble. Quiet chips never open their
+  // bubble automatically.
+  virtual bool ShouldBubbleStartOpen() const;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Returns the text to be used in the "allow always" button of the

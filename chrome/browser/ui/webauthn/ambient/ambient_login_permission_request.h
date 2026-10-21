@@ -69,7 +69,9 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
       base::OnceCallback<void(size_t index)>;
 
   // Constructor supporting both WebAuthn/password credentials and FedCM
-  // federated credentials.
+  // federated credentials. `bubble_starts_open` is whether the bubble opens
+  // automatically along with the chip. Otherwise, only the chip is shown, and
+  // the bubble opens when the user clicks it.
   AmbientLoginPermissionRequest(
       const GURL& requesting_origin,
       const GURL& embedding_origin,
@@ -77,8 +79,8 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
       PasskeyOrPasswordSelectedCallback credential_selected_callback,
       std::vector<FederatedCredential> federated_credentials,
       FederatedCredentialSelectedCallback federated_selected_callback,
-      PermissionDecidedCallback permission_decided_callback =
-          base::DoNothing());
+      PermissionDecidedCallback permission_decided_callback = base::DoNothing(),
+      bool bubble_starts_open = true);
 
   // Convenience constructor for passkey/password-only requests.
   AmbientLoginPermissionRequest(
@@ -115,6 +117,7 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   permissions::IconId GetBlockedIconForChip() const override;
   bool ShouldKeepChipOnBubbleClose() const override;
   std::u16string GetMessageTextFragment() const override;
+  bool ShouldBubbleStartOpen() const override;
 
  private:
   void OnPermissionDecided(
@@ -128,6 +131,7 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   PermissionDecidedCallback caller_permission_decided_callback_;
   std::optional<size_t> selected_credential_index_;
   std::optional<size_t> selected_federated_index_;
+  const bool bubble_starts_open_;
 };
 
 }  // namespace ambient_signin
