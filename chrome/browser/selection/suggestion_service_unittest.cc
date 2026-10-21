@@ -36,6 +36,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -363,6 +364,68 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
   service().UnregisterTool(&gemini_tool);
 }
 
+// Tests that screenshots are encoded as JPEG when
+// `kSmartSelectionServerJpegQuality` is in [0, 100].
+TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithJpegScreenshot) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSmartSelectionServerSuggestions,
+      {{kSmartSelectionServerJpegQuality.name, "85"}});
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  optimization_guide::proto::SmartSelectionSuggestionsResponse response;
+  optimization_guide::proto::SmartSelectionSuggestion* s1 =
+      response.add_suggestions();
+  s1->set_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  s1->set_label("Jpeg Action");
+
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kSmartSelectionSuggestions,
+                           _, _, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            const auto& request =
+                static_cast<const optimization_guide::proto::
+                                SmartSelectionSuggestionsRequest&>(
+                    request_metadata);
+            ASSERT_EQ(request.areas_of_interest().size(), 1);
+            const optimization_guide::proto::AreaOfInterest& proto_aoi =
+                request.areas_of_interest(0);
+            EXPECT_FALSE(proto_aoi.image_bytes().empty());
+            EXPECT_EQ(proto_aoi.mime_type(), "image/jpeg");
+            SkBitmap decoded = gfx::JPEGCodec::Decode(
+                base::as_byte_span(proto_aoi.image_bytes()));
+            EXPECT_FALSE(decoded.isNull());
+            EXPECT_EQ(decoded.width(), 50);
+            EXPECT_EQ(decoded.height(), 50);
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    base::ok(optimization_guide::AnyWrapProto(response)),
+                    /*execution_info=*/nullptr),
+                /*log_entry=*/nullptr);
+          });
+
+  AreaOfInterest aoi;
+  aoi.screenshot.allocN32Pixels(50, 50);
+  aoi.screenshot.eraseColor(SK_ColorRED);
+  aoi.bounds = gfx::Rect(10, 20, 30, 40);
+
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  service().RequestSuggestions(aoi, future.GetCallback());
+  EXPECT_THAT(future.Take(), ElementsAre(SuggestionWithLabel(u"Jpeg Action")));
+
+  service().UnregisterTool(&gemini_tool);
+}
+
 // Tests that `annotated_page_content` is omitted when
 // `kSmartSelectionServerAppendApc` is false.
 TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithoutApc) {
@@ -454,6 +517,7 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithCroppedScreenshot) {
             ASSERT_EQ(request.areas_of_interest().size(), 1);
             const optimization_guide::proto::AreaOfInterest& proto_aoi =
                 request.areas_of_interest(0);
+            EXPECT_EQ(proto_aoi.mime_type(), "image/png");
             SkBitmap decoded = gfx::PNGCodec::Decode(
                 base::as_byte_span(proto_aoi.image_bytes()));
             // Selection (10, 20, 30, 40) outset by 15 is (-5, 5, 60, 70),

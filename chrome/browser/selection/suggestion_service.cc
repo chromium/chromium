@@ -39,6 +39,7 @@
 #include "components/variations/service/google_groups_manager.h"
 #include "components/version_info/version_info.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -177,8 +178,8 @@ void RecordLatencyHistogram(std::string_view stage, base::TimeDelta duration) {
 
 void LogLatencyMetrics(base::TimeTicks request_start_time,
                        base::TimeTicks mes_request_start_time,
-                       size_t image_bytes,
-                       size_t apc_bytes,
+                       size_t num_image_bytes,
+                       size_t num_apc_bytes,
                        const proto::SmartSelectionLatencyMetrics& metrics,
                        size_t num_suggestions) {
   const base::TimeTicks now = base::TimeTicks::Now();
@@ -237,9 +238,9 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
   RecordLatencyHistogram("ClientPrep", durations.client_prep);
   RecordLatencyHistogram("ClientMesRpc", durations.client_mes_rpc);
   base::UmaHistogramCounts10000("SmartSelection.Suggestions.Request.ImageSize",
-                                image_bytes / 1000);
+                                num_image_bytes / 1000);
   base::UmaHistogramCounts10000("SmartSelection.Suggestions.Request.ApcSize",
-                                apc_bytes / 1000);
+                                num_apc_bytes / 1000);
   base::UmaHistogramExactLinear(
       "SmartSelection.Suggestions.Response.SuggestionCount", num_suggestions,
       /*exclusive_max=*/10);
@@ -273,8 +274,8 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
   VLOG(1) << "Suggestion latency: end-to-end: " << durations.end_to_end
           << " (client prep: " << durations.client_prep
           << ", transmission: " << durations.transmission
-          << " [image: " << std::roundf(image_bytes / 1000.0)
-          << " KB, apc: " << std::roundf(apc_bytes / 1000.0) << " KB]"
+          << " [image: " << std::roundf(num_image_bytes / 1000.0)
+          << " KB, apc: " << std::roundf(num_apc_bytes / 1000.0) << " KB]"
           << ", MES overhead: " << durations.mes_overhead
           << " [image prep: " << durations.mes_image_prep
           << ", other: " << durations.mes_other_overhead << "]"
@@ -290,6 +291,11 @@ void LogLatencyMetrics(base::TimeTicks request_start_time,
 }  // namespace
 
 DEFINE_USER_DATA(SuggestionService);
+
+struct SuggestionService::EncodedImage {
+  std::vector<uint8_t> bytes;
+  std::string mime_type;
+};
 
 // static
 SuggestionService* SuggestionService::From(tabs::TabInterface* tab) {
@@ -354,14 +360,11 @@ void SuggestionService::RequestSuggestions(AreaOfInterest processed_area,
   auto [request, screenshot] =
       BuildServerSuggestionsRequest(processed_area, tools_);
 
-  // TODO(crbug.com/561489586): Investigate alternative image encoding and
-  // compression mechanisms.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&gfx::PNGCodec::EncodeBGRASkBitmap, std::move(screenshot),
-                     /*discard_transparency=*/false),
+      base::BindOnce(&EncodeScreenshot, std::move(screenshot)),
       base::BindOnce(&SuggestionService::SendServerSuggestionsRequest,
                      weak_factory_.GetWeakPtr(), std::move(processed_area),
                      std::move(callback), request_start_time,
@@ -375,28 +378,45 @@ bool SuggestionService::IsFeatureGroupEnabled(
              : base::FeatureList::IsEnabled(feature);
 }
 
+// static
+std::optional<SuggestionService::EncodedImage>
+SuggestionService::EncodeScreenshot(const SkBitmap& screenshot) {
+  if (const int jpeg_quality = kSmartSelectionServerJpegQuality.Get();
+      0 <= jpeg_quality && jpeg_quality <= 100) {
+    return gfx::JPEGCodec::Encode(screenshot, jpeg_quality)
+        .transform([](std::vector<uint8_t> bytes) {
+          return EncodedImage{std::move(bytes), "image/jpeg"};
+        });
+  }
+  return gfx::PNGCodec::EncodeBGRASkBitmap(screenshot,
+                                           /*discard_transparency=*/false)
+      .transform([](std::vector<uint8_t> bytes) {
+        return EncodedImage{std::move(bytes), "image/png"};
+      });
+}
+
 void SuggestionService::SendServerSuggestionsRequest(
     AreaOfInterest processed_area,
     SuggestionsCallback callback,
     base::TimeTicks request_start_time,
     proto::SmartSelectionSuggestionsRequest request,
-    std::optional<std::vector<uint8_t>> png_bytes) {
-  if (png_bytes.has_value()) {
+    std::optional<EncodedImage> image) {
+  if (image.has_value()) {
     CHECK_EQ(request.areas_of_interest_size(), 1);
     proto::AreaOfInterest& proto_aoi = *request.mutable_areas_of_interest(0);
-    proto_aoi.set_image_bytes(base::as_string_view(*png_bytes));
-    proto_aoi.set_mime_type("image/png");
+    proto_aoi.set_image_bytes(base::as_string_view(image->bytes));
+    proto_aoi.set_mime_type(image->mime_type);
   }
 
-  const size_t image_bytes =
+  const size_t num_image_bytes =
       request.areas_of_interest().empty()
           ? 0
           : request.areas_of_interest(0).image_bytes().size();
-  const size_t apc_bytes = request.areas_of_interest().empty()
-                               ? 0
-                               : request.areas_of_interest(0)
-                                     .annotated_page_content()
-                                     .ByteSizeLong();
+  const size_t num_apc_bytes = request.areas_of_interest().empty()
+                                   ? 0
+                                   : request.areas_of_interest(0)
+                                         .annotated_page_content()
+                                         .ByteSizeLong();
 
   // TODO(crbug.com/561489586): Consider adding logging.
   remote_model_executor_->ExecuteModel(
@@ -406,7 +426,7 @@ void SuggestionService::SendServerSuggestionsRequest(
                      weak_factory_.GetWeakPtr(), std::move(processed_area),
                      std::move(callback), request_start_time,
                      /*mes_request_start_time=*/base::TimeTicks::Now(),
-                     image_bytes, apc_bytes));
+                     num_image_bytes, num_apc_bytes));
 }
 
 void SuggestionService::OnServerSuggestions(
@@ -414,8 +434,8 @@ void SuggestionService::OnServerSuggestions(
     SuggestionsCallback callback,
     base::TimeTicks request_start_time,
     base::TimeTicks mes_request_start_time,
-    size_t image_bytes,
-    size_t apc_bytes,
+    size_t num_image_bytes,
+    size_t num_apc_bytes,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   std::optional<proto::SmartSelectionSuggestionsResponse> response;
@@ -429,8 +449,9 @@ void SuggestionService::OnServerSuggestions(
   }
   std::vector<std::unique_ptr<Suggestion>> suggestions =
       ExtractSuggestionsFromResponse(processed_area, *response, tools_);
-  LogLatencyMetrics(request_start_time, mes_request_start_time, image_bytes,
-                    apc_bytes, response->latency_metrics(), suggestions.size());
+  LogLatencyMetrics(request_start_time, mes_request_start_time, num_image_bytes,
+                    num_apc_bytes, response->latency_metrics(),
+                    suggestions.size());
   std::move(callback).Run(std::move(suggestions));
 }
 

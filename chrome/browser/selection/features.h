@@ -23,6 +23,10 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSmartSelectionServerTimeout);
 // the selected area expanded by a padding of this width in pixels.
 BASE_DECLARE_FEATURE_PARAM(int, kSmartSelectionServerCropPadding);
 
+// If in the range [0, 100], encodes the screenshot as JPEG with the given
+// compression quality. Otherwise encodes the screenshot as PNG.
+BASE_DECLARE_FEATURE_PARAM(int, kSmartSelectionServerJpegQuality);
+
 // Whether to include the AnnotatedPageContent in the request sent to the Model
 // Execution Service.
 BASE_DECLARE_FEATURE_PARAM(bool, kSmartSelectionServerAppendApc);
