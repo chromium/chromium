@@ -228,11 +228,12 @@ class BookmarkDataTypeProcessor : public syncer::DataTypeProcessor,
   raw_ptr<favicon::FaviconService, AcrossTasksDanglingUntriaged>
       favicon_service_ = nullptr;
 
-  // The callback used to schedule the persistence of bookmark model as well as
-  // the metadata to a file during which latest metadata should also be pulled
-  // via EncodeSyncMetadata. Processor should invoke it upon changes in the
-  // metadata that don't imply changes in the model itself. Persisting updates
-  // that imply model changes is the model's responsibility.
+  // The callback used to schedule the persistence of `BookmarkModel` as well
+  // as the metadata to a file, during which the latest metadata is pulled
+  // asynchronously via `EncodeSyncMetadata()`. The processor should invoke it
+  // upon changes in the metadata that do not imply changes in the model
+  // itself. Persisting updates that imply model changes is the model's
+  // responsibility.
   base::RepeatingClosure schedule_save_closure_;
 
   // Reference to the CommitQueue.

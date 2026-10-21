@@ -84,6 +84,8 @@ void SyncedBookmarkTrackerEntity::RecordAcceptedRemoteUpdate(
   if (update.entity.specifics.bookmark().has_unique_position()) {
     unique_position = update.entity.specifics.bookmark().unique_position();
   }
+  // Bookmark Sync does not yet trim and cache unknown `BookmarkSpecifics`
+  // fields in `ProcessorEntityMetadata`.
   metadata_.RecordAcceptedRemoteUpdate(
       update, /*trimmed_specifics=*/sync_pb::EntitySpecifics(),
       std::move(unique_position));
