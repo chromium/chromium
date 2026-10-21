@@ -16,6 +16,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "components/variations/hashing.h"
 
 namespace variations {
@@ -41,77 +42,36 @@ class GroupMapAccessor {
   GroupMapAccessor(const GroupMapAccessor&) = delete;
   GroupMapAccessor& operator=(const GroupMapAccessor&) = delete;
 
-  // Validates the specified mapping. A `group_identifier` is allowed to only
-  // have one `key`, except in the case of `GOOGLE_APP`. A `GOOGLE_APP` key may
-  // coexist with another provided they have the same `id` value.
-  bool ValidateID(IDCollectionKey key,
-                  ActiveGroupId group_identifier,
-                  VariationID id) {
-    static_assert(ID_COLLECTION_COUNT == 6,
-                  "If you add a new collection key, add handling code here!");
-    for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
-      IDCollectionKey other_key = static_cast<IDCollectionKey>(i);
-      if (key == other_key) {
-        continue;
-      }
-
-      VariationID other_id = GetID(other_key, group_identifier);
-      if (other_id == EMPTY_ID) {
-        continue;
-      }
-
-      // In the case of a GOOGLE_APP key, another entry is allowed provided that
-      // the IDs match.
-      if (key == GOOGLE_APP || other_key == GOOGLE_APP) {
-        if (other_id != id) {
-          return false;
-        }
-        continue;
-      }
-
-      // `group_identifier` may not be registered under multiple non-GOOGLE_APP
-      // IDCollectionKey values.
-      return false;
-    }
-    return true;
-  }
-
   void AssociateID(IDCollectionKey key,
                    ActiveGroupId group_identifier,
                    VariationID id,
                    TimeWindow time_window) {
-    if (!ValidateID(key, group_identifier, id)) {
-      // In the case of a validation failure, omit the association and instead
-      // report the issue via a crash dump, to notify us of a problem with the
-      // server-side configs.
-      SCOPED_CRASH_KEY_NUMBER("InvalidVariationsID", "id", id);
-      base::debug::DumpWithoutCrashing();
-      return;
+    {
+      base::AutoLock scoped_lock(lock_);
+      if (ValidateIDLocked(key, group_identifier, id)) {
+        GroupToIDMap* group_to_id_map = GetGroupToIDMapLocked(key);
+        (*group_to_id_map)[group_identifier] = {id, time_window};
+        return;
+      }
     }
 
-    base::AutoLock scoped_lock(lock_);
-
-    GroupToIDMap* group_to_id_map = GetGroupToIDMap(key);
-    (*group_to_id_map)[group_identifier] = {id, time_window};
+    // In the case of a validation failure, omit the association and instead
+    // report the issue via a crash dump, to notify us of a problem with the
+    // server-side configs.
+    SCOPED_CRASH_KEY_NUMBER("InvalidVariationsID", "id", id);
+    base::debug::DumpWithoutCrashing();
   }
 
   VariationID GetID(IDCollectionKey key,
                     ActiveGroupId group_identifier,
                     std::optional<base::Time> current_time = std::nullopt) {
     base::AutoLock scoped_lock(lock_);
-    GroupToIDMap* group_to_id_map = GetGroupToIDMap(key);
-    GroupToIDMap::const_iterator it = group_to_id_map->find(group_identifier);
-    if (it == group_to_id_map->end() ||
-        (current_time.has_value() &&
-         !it->second.time_window.Contains(*current_time))) {
-      return EMPTY_ID;
-    }
-    return it->second.id;
+    return GetIDLocked(key, group_identifier, current_time);
   }
 
   bool HasIDForTrial(IDCollectionKey key, uint32_t trial_name_hash) {
     base::AutoLock scoped_lock(lock_);
-    GroupToIDMap* group_to_id_map = GetGroupToIDMap(key);
+    GroupToIDMap* group_to_id_map = GetGroupToIDMapLocked(key);
     for (const auto& [active_group_id, entry] : *group_to_id_map) {
       if (active_group_id.name == trial_name_hash) {
         return true;
@@ -124,7 +84,7 @@ class GroupMapAccessor {
     base::AutoLock scoped_lock(lock_);
 
     for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
-      GroupToIDMap* map = GetGroupToIDMap(static_cast<IDCollectionKey>(i));
+      GroupToIDMap* map = GetGroupToIDMapLocked(static_cast<IDCollectionKey>(i));
       DCHECK(map);
       map->clear();
     }
@@ -155,8 +115,60 @@ class GroupMapAccessor {
  private:
   friend struct base::DefaultSingletonTraits<GroupMapAccessor>;
 
+  // Validates the specified mapping. A `group_identifier` is allowed to only
+  // have one `key`, except in the case of `GOOGLE_APP`. A `GOOGLE_APP` key may
+  // coexist with another provided they have the same `id` value.
+  bool ValidateIDLocked(IDCollectionKey key,
+                        ActiveGroupId group_identifier,
+                        VariationID id) EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    static_assert(ID_COLLECTION_COUNT == 6,
+                  "If you add a new collection key, add handling code here!");
+    for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
+      IDCollectionKey other_key = static_cast<IDCollectionKey>(i);
+      if (key == other_key) {
+        continue;
+      }
+
+      VariationID other_id = GetIDLocked(other_key, group_identifier);
+      if (other_id == EMPTY_ID) {
+        continue;
+      }
+
+      // In the case of a GOOGLE_APP key, another entry is allowed provided that
+      // the IDs match.
+      if (key == GOOGLE_APP || other_key == GOOGLE_APP) {
+        if (other_id != id) {
+          return false;
+        }
+        continue;
+      }
+
+      // `group_identifier` may not be registered under multiple non-GOOGLE_APP
+      // IDCollectionKey values.
+      return false;
+    }
+    return true;
+  }
+
+  VariationID GetIDLocked(IDCollectionKey key,
+                          ActiveGroupId group_identifier,
+                          std::optional<base::Time> current_time = std::nullopt)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    GroupToIDMap* group_to_id_map = GetGroupToIDMapLocked(key);
+    GroupToIDMap::const_iterator it = group_to_id_map->find(group_identifier);
+    if (it == group_to_id_map->end() ||
+        (current_time.has_value() &&
+         !it->second.time_window.Contains(*current_time))) {
+      return EMPTY_ID;
+    }
+    return it->second.id;
+  }
+
   // Retrieves the GroupToIDMap for `key`.
-  GroupToIDMap* GetGroupToIDMap(IDCollectionKey key) {
+  GroupToIDMap* GetGroupToIDMapLocked(IDCollectionKey key)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    CHECK_GE(static_cast<int>(key), 0);
+    CHECK_LT(static_cast<size_t>(key), group_to_id_maps_.size());
     return &group_to_id_maps_[key];
   }
 
@@ -164,7 +176,7 @@ class GroupMapAccessor {
   ~GroupMapAccessor() = default;
 
   mutable base::Lock lock_;
-  std::vector<GroupToIDMap> group_to_id_maps_;
+  std::vector<GroupToIDMap> group_to_id_maps_ GUARDED_BY(lock_);
 };
 
 }  // namespace
