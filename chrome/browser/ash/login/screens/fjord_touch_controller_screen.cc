@@ -21,6 +21,7 @@ FjordTouchControllerScreen::FjordTouchControllerScreen(
 FjordTouchControllerScreen::~FjordTouchControllerScreen() = default;
 
 void FjordTouchControllerScreen::ShowImpl() {
+  UpdateNextButtonState();
   view_->Show();
 }
 
@@ -33,7 +34,29 @@ bool FjordTouchControllerScreen::ExitScreen() {
   return true;
 }
 
+bool FjordTouchControllerScreen::OnTouchControllerSetupFinished() {
+  if (is_hidden()) {
+    return false;
+  }
+
+  touch_controller_setup_finished_ = true;
+  UpdateNextButtonState();
+  return true;
+}
+
+void FjordTouchControllerScreen::UpdateNextButtonState() {
+  // Remote/frontend is missing during some tests.
+  if (GetRemote()->is_bound()) {
+    (*GetRemote())->SetNextButtonEnabled(touch_controller_setup_finished_);
+  }
+}
+
 void FjordTouchControllerScreen::OnSetupComplete() {
+  // The next button should only be clickable after the touch controller setup
+  // is finished.
+  if (!touch_controller_setup_finished_) {
+    return;
+  }
   ExitScreen();
 }
 

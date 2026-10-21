@@ -78,7 +78,7 @@ void FjordOobeServiceProvider::ExitTouchControllerScreen(
   bool is_success = false;
   WizardController* wizard_controller = WizardController::default_controller();
   if (wizard_controller) {
-    is_success = wizard_controller->ExitFjordTouchControllerScreen();
+    is_success = wizard_controller->OnFjordTouchControllerSetupFinished();
   }
 
   std::unique_ptr<dbus::Response> response =

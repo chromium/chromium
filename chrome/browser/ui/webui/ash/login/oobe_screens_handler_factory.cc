@@ -103,11 +103,13 @@ void OobeScreensHandlerFactory::EstablishFjordStationSetupScreenPipe(
 
 void OobeScreensHandlerFactory::EstablishFjordTouchControllerScreenPipe(
     mojo::PendingReceiver<
-        screens_common::mojom::FjordTouchControllerPageHandler> receiver) {
+        screens_common::mojom::FjordTouchControllerPageHandler> receiver,
+    EstablishFjordTouchControllerScreenPipeCallback callback) {
   FjordTouchControllerScreen* touch_controller =
       CHECK_DEREF(WizardController::default_controller())
           .GetScreen<FjordTouchControllerScreen>();
   touch_controller->BindPageHandlerReceiver(std::move(receiver));
+  touch_controller->PassPagePendingReceiverWithCallback(std::move(callback));
 }
 
 void OobeScreensHandlerFactory::EstablishFjordImageSelectionScreenPipe(

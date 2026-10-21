@@ -18,6 +18,8 @@ void FjordTouchControllerScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("fjordTouchControllerNextButton",
                IDS_FJORD_TOUCH_CONTROLLER_NEXT_BUTTON_TEXT);
+  builder->Add("fjordTouchControllerNextButtonTooltip",
+               IDS_FJORD_TOUCH_CONTROLLER_NEXT_BUTTON_TOOLTIP);
 }
 
 void FjordTouchControllerScreenHandler::Show() {

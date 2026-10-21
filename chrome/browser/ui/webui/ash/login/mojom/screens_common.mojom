@@ -68,6 +68,14 @@ interface FjordTouchControllerPageHandler {
   OnSetupComplete();
 };
 
+// Interface for the FjordTouchControllerScreen. Lives in the render process.
+// Implemented in Typescript and used by the page handler to update the UI.
+interface FjordTouchControllerPage {
+  // Invoked to enable or disable the next button. The next button is enabled
+  // once the touch controller signals that its setup is finished.
+  SetNextButtonEnabled(bool enabled);
+};
+
 // Interface for the FjordImageSelectionScreen. Lives in the browser process.
 // A renderer uses this to invoke methods that are implemented in
 // the browser process.

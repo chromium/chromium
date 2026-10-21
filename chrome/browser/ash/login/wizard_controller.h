@@ -289,8 +289,9 @@ class WizardController : public OobeUI::Observer {
   // Show Cryptohome recovery screen.
   void ShowCryptohomeRecoveryScreen(std::unique_ptr<UserContext> user_context);
 
-  // Exits Fjord touch controller screen if it's showing.
-  bool ExitFjordTouchControllerScreen();
+  // Notifies the Fjord touch controller screen that the touch controller setup
+  // is finished, which enables its next button.
+  bool OnFjordTouchControllerSetupFinished();
 
   // Shows the Fjord OOBE state if the next state is valid.
   bool ShowNextFjordOobeScreen(

@@ -52,8 +52,8 @@ class OobeScreensHandlerFactory
 
   void EstablishFjordTouchControllerScreenPipe(
       mojo::PendingReceiver<
-          screens_common::mojom::FjordTouchControllerPageHandler> receiver)
-      override;
+          screens_common::mojom::FjordTouchControllerPageHandler> receiver,
+      EstablishFjordTouchControllerScreenPipeCallback callback) override;
 
   void EstablishFjordImageSelectionScreenPipe(
       mojo::PendingReceiver<

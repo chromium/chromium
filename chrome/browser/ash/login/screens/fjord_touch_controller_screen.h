@@ -21,7 +21,8 @@ class FjordTouchControllerScreen
     : public BaseScreen,
       public screens_common::mojom::FjordTouchControllerPageHandler,
       public OobeMojoBinder<
-          screens_common::mojom::FjordTouchControllerPageHandler> {
+          screens_common::mojom::FjordTouchControllerPageHandler,
+          screens_common::mojom::FjordTouchControllerPage> {
  public:
   using TView = FjordTouchControllerScreenView;
 
@@ -34,6 +35,11 @@ class FjordTouchControllerScreen
 
   bool ExitScreen();
 
+  // Called when the touch controller signals that its setup is finished.
+  // Enables the next button so that the user can continue to the next screen.
+  // Returns false if the screen is not showing.
+  bool OnTouchControllerSetupFinished();
+
   void set_exit_callback_for_testing(base::RepeatingClosure exit_callback) {
     exit_callback_ = exit_callback;
   }
@@ -45,6 +51,12 @@ class FjordTouchControllerScreen
 
   // screens_common::mojom::FjordTouchControllerPageHandler
   void OnSetupComplete() override;
+
+  // Updates the enabled state of the next button in the UI.
+  void UpdateNextButtonState();
+
+  // Whether the touch controller has signaled that its setup is finished.
+  bool touch_controller_setup_finished_ = false;
 
   base::RepeatingClosure exit_callback_;
 

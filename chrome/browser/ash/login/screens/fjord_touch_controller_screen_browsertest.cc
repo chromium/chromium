@@ -22,6 +22,8 @@ constexpr char kFjordTouchControllerElementId[] = "fjord-touch-controller";
 
 const test::UIPath kFjordTouchControllerDialog = {
     kFjordTouchControllerElementId};
+const test::UIPath kNextButton = {kFjordTouchControllerElementId,
+                                  "primaryButton"};
 
 class FjordTouchControllerScreenBrowserTest : public OobeBaseTest {
  public:
@@ -67,6 +69,31 @@ IN_PROC_BROWSER_TEST_F(FjordTouchControllerScreenBrowserTest,
   EXPECT_TRUE(WizardController::default_controller()
                   ->GetScreen<FjordTouchControllerScreen>()
                   ->ExitScreen());
+  WaitForScreenExit();
+}
+
+IN_PROC_BROWSER_TEST_F(FjordTouchControllerScreenBrowserTest,
+                       NextButtonEnabledAfterSetupFinished) {
+  ShowFjordTouchControllerScreen();
+  OobeScreenWaiter(FjordTouchControllerScreenView::kScreenId).Wait();
+
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, kFjordTouchControllerDialog)
+      ->Wait();
+
+  // The next button is disabled until the touch controller setup is finished.
+  test::OobeJS().ExpectDisabledPath(kNextButton);
+
+  EXPECT_TRUE(WizardController::default_controller()
+                  ->OnFjordTouchControllerSetupFinished());
+  test::OobeJS().CreateEnabledWaiter(true, kNextButton)->Wait();
+
+  // The screen should not exit until the user clicks the next button.
+  EXPECT_EQ(
+      WizardController::default_controller()->current_screen()->screen_id(),
+      FjordTouchControllerScreenView::kScreenId);
+
+  test::OobeJS().TapOnPath(kNextButton);
   WaitForScreenExit();
 }
 

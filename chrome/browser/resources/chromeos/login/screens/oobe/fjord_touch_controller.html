@@ -6,17 +6,29 @@
     width: 100%;
   }
 
-  oobe-text-button {
+  #nextButtonContainer {
     float: inline-end;
     padding-inline-end: var(--oobe-adaptive-dialog-buttons-horizontal-padding);
+    position: relative;
   }
 </style>
 
 <webview id="oobeFrame" src="http://codec.localhost:27702/oobe/tc-setup">
 </webview>
 
-<oobe-text-button on-click="onDoneButtonClicked"
-    text-key="fjordTouchControllerNextButton"
-    inverse
-    id="primaryButton">
-</oobe-text-button>
+<!-- The disabled button does not receive pointer events, so the tooltip is
+     attached to this container instead. -->
+<div id="nextButtonContainer">
+  <oobe-text-button on-click="onDoneButtonClicked"
+      text-key="fjordTouchControllerNextButton"
+      inverse
+      disabled="[[isNextButtonDisabled]]"
+      id="primaryButton">
+  </oobe-text-button>
+  <template is="dom-if" if="[[isNextButtonDisabled]]" restamp>
+    <paper-tooltip id="nextButtonTooltip" for="nextButtonContainer"
+        position="top" animation-delay="0" fit-to-visible-bounds>
+      [[i18nDynamic(locale, 'fjordTouchControllerNextButtonTooltip')]]
+    </paper-tooltip>
+  </template>
+</div>

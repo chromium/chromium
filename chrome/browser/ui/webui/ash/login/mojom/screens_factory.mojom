@@ -39,10 +39,13 @@ interface ScreensFactory {
       handler);
 
   // Esablish a FjordTouchControllerScreen pipe for handling the communication
-  // for the FjordTouchControllerPageHandler component.
+  // for the FjordTouchControllerPageHandler and the FjordTouchControllerPage
+  // component.
   EstablishFjordTouchControllerScreenPipe(
     pending_receiver<ash.screens_common.mojom.FjordTouchControllerPageHandler>
-      handler);
+      handler)
+      => (pending_receiver<ash.screens_common.mojom.FjordTouchControllerPage>
+          pending);
 
   // Establish a FjordImageSelectionScreen pipe for handling the communication
   // for the FjordImageSelectionPageHandler component.

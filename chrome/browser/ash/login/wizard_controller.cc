@@ -3240,7 +3240,7 @@ void WizardController::OnFjordImageDownloadCompleted(
   }
 }
 
-bool WizardController::ExitFjordTouchControllerScreen() {
+bool WizardController::OnFjordTouchControllerSetupFinished() {
   // Return true if Station setup screen or FW update screen is showing because
   // this means the TC setup screen was shown before this. This ensures that if
   // the TC goes offline and online again, it can know if the TC setup screen
@@ -3252,7 +3252,8 @@ bool WizardController::ExitFjordTouchControllerScreen() {
     return true;
   }
 
-  return GetScreen<FjordTouchControllerScreen>()->ExitScreen();
+  return GetScreen<FjordTouchControllerScreen>()
+      ->OnTouchControllerSetupFinished();
 }
 
 bool WizardController::ShowNextFjordOobeScreen(
