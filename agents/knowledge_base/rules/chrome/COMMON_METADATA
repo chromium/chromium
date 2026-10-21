@@ -1,0 +1,23 @@
+agentic_review {
+  capability_groups {
+    path_expression: "chrome/.*"
+    rules: "agents/knowledge_base/rules/chrome/add-mocha-unit-tests-for-webui-components.md"
+    rules: "agents/knowledge_base/rules/chrome/delete-flag-metadata-when-removing-flags.md"
+    rules: "agents/knowledge_base/rules/chrome/download-interrupted-string-status-vs-description-naming.md"
+    rules: "agents/knowledge_base/rules/chrome/gate-tab-strip-layout-changes-on-immersive-mode.md"
+    rules: "agents/knowledge_base/rules/chrome/group-command-ids-by-functional-section.md"
+    rules: "agents/knowledge_base/rules/chrome/match-target-platforms-in-webui-paks.md"
+    rules: "agents/knowledge_base/rules/chrome/no-browser-window-host-calls-in-app-shims.md"
+    rules: "agents/knowledge_base/rules/chrome/no-legacy-idc-command-ids-for-new-actions.md"
+    rules: "agents/knowledge_base/rules/chrome/refer-to-updater-as-googleupdater-or-chromes-updater.md"
+    rules: "agents/knowledge_base/rules/chrome/reuse-updater-platform-utilities-in-enterprise-companion.md"
+    rules: "agents/knowledge_base/rules/chrome/test-preference-registration-and-propagation.md"
+    rules: "agents/knowledge_base/rules/chrome/update-ui-strings-across-all-surfaces.md"
+    rules: "agents/knowledge_base/rules/chrome/use-dot-separator-in-profile-version-filenames.md"
+  }
+  capability_groups {
+    path_expression: "chrome/.*"
+    content_patterns: "\\b(?:sysctl\\w*|IsVirtualMachine|setgroups|initgroups|CFBundleDocumentTypes)\\b"
+    rules: "agents/knowledge_base/rules/chrome/include-uttypeicons-for-imported-type-declarations.md"
+  }
+}
