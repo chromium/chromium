@@ -135,7 +135,8 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
           coep_reporting_observer,
       CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
           dip_reporting_observer,
-      bool is_cross_origin_isolated);
+      bool is_cross_origin_isolated,
+      const network::PermissionsPolicyFeaturesBitset& permissions_policy);
 
   void DispatchPendingConnections();
   void ConnectToChannel(int connection_request_id,

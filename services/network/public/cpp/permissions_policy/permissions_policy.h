@@ -219,6 +219,12 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
       const network::ParsedPermissionsPolicy& parsed_policy,
       const url::Origin& origin);
 
+  // Creates a PermissionsPolicy from an explicit set of inherited policies.
+  static std::unique_ptr<PermissionsPolicy> CreateFromInheritedPolicy(
+      const network::PermissionsPolicyFeaturesBitset& inherited_policies,
+      const network::ParsedPermissionsPolicy& header_policy,
+      const url::Origin& origin);
+
   // Returns the inherited policy of the given feature.
   static bool InheritedValueForFeature(
       const url::Origin& origin,

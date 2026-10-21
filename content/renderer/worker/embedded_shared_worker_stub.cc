@@ -141,7 +141,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
       std::move(web_worker_fetch_context), std::move(host), this, ukm_source_id,
       require_cross_site_request_for_cookies,
       std::move(coep_reporting_observer), std::move(dip_reporting_observer),
-      cross_origin_isolated);
+      cross_origin_isolated, info->permissions_policy);
 
   // If the host drops its connection, then self-destruct.
   receiver_.set_disconnect_handler(base::BindOnce(

@@ -222,6 +222,16 @@ std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromParsedPolicy(
 }
 
 // static
+std::unique_ptr<PermissionsPolicy> PermissionsPolicy::CreateFromInheritedPolicy(
+    const network::PermissionsPolicyFeaturesBitset& inherited_policies,
+    const network::ParsedPermissionsPolicy& header_policy,
+    const url::Origin& origin) {
+  return base::WrapUnique(new PermissionsPolicy(
+      origin, CreateAllowlistsAndReportingEndpoints(header_policy),
+      inherited_policies, network::GetPermissionsPolicyFeatureList(origin)));
+}
+
+// static
 bool PermissionsPolicy::IsHeaderlessUrl(const GURL& url) {
   return url.IsAboutSrcdoc() || url.IsAboutBlank() ||
          url.SchemeIs(url::kDataScheme) || url.SchemeIsBlob();

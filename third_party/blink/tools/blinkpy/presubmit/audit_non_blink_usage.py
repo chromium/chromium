@@ -3058,6 +3058,7 @@ _CONFIG = [
             'network::PermissionsPolicyFeatureDefault',
             'network::PermissionsPolicyFeatureList',
             'network::PermissionsPolicyFeatureState',
+            'network::PermissionsPolicyFeaturesBitset',
         ],
     },
     {
