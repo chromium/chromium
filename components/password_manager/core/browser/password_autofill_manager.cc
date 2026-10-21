@@ -845,11 +845,12 @@ void PasswordAutofillManager::FillSuggestion(
           .IsValidAndroidFacetURI();
   metrics_util::LogFilledPasswordFromAndroidApp(is_android_credential);
   // Emit UMA if grouped affiliation match was available for the user.
-  if (fill_data_->preferred_login.is_grouped_affiliation ||
-      std::ranges::find_if(fill_data_->additional_logins,
-                           [](const autofill::PasswordAndMetadata& login) {
-                             return login.is_grouped_affiliation;
-                           }) != fill_data_->additional_logins.end()) {
+  if (fill_data_ &&
+      (fill_data_->preferred_login.is_grouped_affiliation ||
+       std::ranges::find_if(fill_data_->additional_logins,
+                            [](const autofill::PasswordAndMetadata& login) {
+                              return login.is_grouped_affiliation;
+                            }) != fill_data_->additional_logins.end())) {
     metrics_util::LogFillSuggestionGroupedMatchAccepted(
         password_and_metadata.is_grouped_affiliation);
   }

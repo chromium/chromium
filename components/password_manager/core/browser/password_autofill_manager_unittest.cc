@@ -2434,6 +2434,36 @@ TEST_F(PasswordAutofillManagerTest, ShowCrossDomainConfirmationPopup) {
       SuggestionPosition{.multi_index = {0}});
 }
 
+TEST_F(PasswordAutofillManagerTest,
+       CrossDomainConfirmationPopupAcceptedAfterDeleteFillData) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+  autofill::PasswordFormFillData cross_domain_fill_data =
+      CreateTestFormFillData();
+  cross_domain_fill_data.preferred_login.is_grouped_affiliation = true;
+  password_autofill_manager_->OnAddPasswordFillData(cross_domain_fill_data);
+
+  base::OnceClosure confirmation_callback;
+  EXPECT_CALL(client, ShowCrossDomainConfirmationPopup)
+      .WillOnce(testing::WithArg<5>([&](base::OnceClosure callback) {
+        confirmation_callback = std::move(callback);
+        return nullptr;
+      }));
+
+  password_autofill_manager_->DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          autofill::SuggestionType::kPasswordEntry,
+          cross_domain_fill_data.preferred_login.username_value),
+      SuggestionPosition{.multi_index = {0}});
+
+  password_autofill_manager_->DeleteFillData();
+
+  EXPECT_CALL(*client.mock_driver(),
+              FillSuggestion(test_username_, test_password_, _));
+  std::move(confirmation_callback).Run();
+}
+
 TEST_F(PasswordAutofillManagerTest, EmitUMAIfAtLeastOneGroupedCredential) {
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
