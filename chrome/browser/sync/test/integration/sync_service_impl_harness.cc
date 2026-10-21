@@ -8,6 +8,7 @@
 #include <sstream>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -475,6 +476,7 @@ bool SyncServiceImplHarness::EnableHistorySyncNoWaitForCompletion() {
     LOG(ERROR) << "EnableHistorySync(): service() is null.";
     return false;
   }
+  CHECK(!service()->GetAccountInfo().IsEmpty());
   service()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, true);
   // Tabs and history are bundled together in the same toggle.
@@ -495,6 +497,7 @@ bool SyncServiceImplHarness::EnableSelectableType(
     LOG(ERROR) << "EnableSelectableType(): service() is null.";
     return false;
   }
+  CHECK(!service()->GetAccountInfo().IsEmpty());
 
   syncer::UserSelectableTypeSet selected_types =
       service()->GetUserSettings()->GetSelectedTypes();
@@ -527,6 +530,7 @@ bool SyncServiceImplHarness::DisableSelectableType(
     LOG(ERROR) << "DisableSelectableType(): service() is null.";
     return false;
   }
+  CHECK(!service()->GetAccountInfo().IsEmpty());
 
   syncer::UserSelectableTypeSet selected_types =
       service()->GetUserSettings()->GetSelectedTypes();
@@ -566,6 +570,7 @@ bool SyncServiceImplHarness::EnableSelectableOsType(
     LOG(ERROR) << "EnableSelectableOsType(): service() is null.";
     return false;
   }
+  CHECK(!service()->GetAccountInfo().IsEmpty());
 
   syncer::UserSelectableOsTypeSet selected_os_types =
       service()->GetUserSettings()->GetSelectedOsTypes();
@@ -595,6 +600,7 @@ bool SyncServiceImplHarness::EnableAllSelectableTypes() {
     LOG(ERROR) << "EnableAllSelectableTypes(): service() is null.";
     return false;
   }
+  CHECK(!service()->GetAccountInfo().IsEmpty());
 
   service()->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/true, {});
 
@@ -615,6 +621,7 @@ bool SyncServiceImplHarness::DisableAllSelectableTypes() {
     LOG(ERROR) << "DisableAllSelectableTypes(): service() is null.";
     return false;
   }
+  CHECK(!service()->GetAccountInfo().IsEmpty());
 
   service()->GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, syncer::UserSelectableTypeSet());
@@ -632,6 +639,7 @@ bool SyncServiceImplHarness::DisableAllSelectableOsTypes() {
     LOG(ERROR) << "DisableAllSelectableOsTypes(): service() is null.";
     return false;
   }
+  CHECK(!service()->GetAccountInfo().IsEmpty());
 
   service()->GetUserSettings()->SetSelectedOsTypes(
       /*sync_everything=*/false, syncer::UserSelectableOsTypeSet());

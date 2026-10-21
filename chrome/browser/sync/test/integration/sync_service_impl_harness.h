@@ -183,29 +183,29 @@ class SyncServiceImplHarness {
   const std::string& profile_debug_name() const { return profile_debug_name_; }
 
   // Enables the history-related sync types. This includes
-  // UserSelectableType::kHistory and UserSelectableType::kTabs. The user must
-  // already be signed in, or this will have no effect. Returns true on success.
+  // `UserSelectableType::kHistory` and `UserSelectableType::kTabs`. The user
+  // must already be signed in. Returns true on success.
   [[nodiscard]] bool EnableHistorySyncNoWaitForCompletion();
 
   // Enables/disables a particular selectable type. The user must already be
-  // signed in, or this has no effect.
+  // signed in.
   [[nodiscard]] bool EnableSelectableType(syncer::UserSelectableType type);
   [[nodiscard]] bool DisableSelectableType(syncer::UserSelectableType type);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Enables a particular selectable OS type. The user must already be signed
-  // in, or this has no effect.
+  // in.
   [[nodiscard]] bool EnableSelectableOsType(syncer::UserSelectableOsType type);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Enables/disables all available selectable types. The user must already be
-  // signed in, or this has no effect.
+  // signed in.
   [[nodiscard]] bool EnableAllSelectableTypes();
   [[nodiscard]] bool DisableAllSelectableTypes();
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Disables all available selectable OS types. The user must already be signed
-  // in, or this has no effect.
+  // in.
   [[nodiscard]] bool DisableAllSelectableOsTypes();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
