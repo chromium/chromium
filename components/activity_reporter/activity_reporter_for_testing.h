@@ -12,6 +12,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/version_info/channel.h"
 
+class PrefService;
+
 namespace update_client {
 class UpdateClient;
 }  // namespace update_client
@@ -21,6 +23,7 @@ namespace activity_reporter {
 class ActivityReporter;
 
 std::unique_ptr<ActivityReporter> CreateActivityReporterForTesting(
+    base::RepeatingCallback<PrefService*()> pref_service_provider,
     scoped_refptr<update_client::UpdateClient> update_client,
     base::RepeatingCallback<version_info::Channel()> channel_provider,
     base::RepeatingCallback<std::string()> brand_provider,

@@ -5,12 +5,15 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -18,11 +21,15 @@
 #include "components/activity_reporter/activity_reporter.h"
 #include "components/activity_reporter/activity_reporter_for_testing.h"
 #include "components/activity_reporter/constants.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/prefs/testing_pref_store.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/network.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/update_client.h"
+#include "components/update_client/update_client_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,6 +38,11 @@ namespace activity_reporter {
 namespace {
 
 using ::testing::_;
+
+// Stands in for the prefs that the real update client writes during an update
+// check; the mock writes nothing, so tests dirty this pref to have something
+// to commit.
+constexpr char kTestPref[] = "test_pref";
 
 class MockUpdateClient : public update_client::UpdateClient {
  public:
@@ -97,12 +109,44 @@ std::unique_ptr<ActivityReporter> CreateReporterForPrefs(
 
 class ActivityReporterImplTest : public testing::Test {
  protected:
+  ActivityReporterImplTest() {
+    pref_service_.registry()->RegisterIntegerPref(kTestPref, 0);
+  }
+
+  // Dirties `kTestPref` (with a new value each call, so the pref store has a
+  // pending write again even after a previous commit), calls `ReportActive`,
+  // and returns the completion callback that the reporter passed to
+  // `CheckForUpdate`.
+  update_client::Callback ReportActiveWithPendingWrite() {
+    pref_service_.SetInteger(kTestPref,
+                             pref_service_.GetInteger(kTestPref) + 1);
+    EXPECT_FALSE(pref_service_.user_prefs_store()->committed());
+
+    update_client::Callback completion_callback;
+    EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _))
+        .WillOnce([&](const std::string&,
+                      update_client::UpdateClient::CrxDataCallback,
+                      update_client::UpdateClient::CrxStateChangeCallback, bool,
+                      update_client::Callback callback) {
+          completion_callback = std::move(callback);
+        });
+    activity_reporter_->ReportActive();
+    EXPECT_TRUE(completion_callback);
+    return completion_callback;
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingPrefServiceSimple pref_service_;
+  // What the reporter's pref service provider returns. Tests may clear it to
+  // simulate the pref service going away before an update check completes.
+  raw_ptr<PrefService> provided_pref_service_ = &pref_service_;
   scoped_refptr<MockUpdateClient> mock_update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
   std::unique_ptr<ActivityReporter> activity_reporter_ =
       CreateActivityReporterForTesting(
+          base::BindLambdaForTesting(
+              [this]() -> PrefService* { return provided_pref_service_; }),
           mock_update_client_,
           base::BindRepeating([] { return version_info::Channel::UNKNOWN; }),
           base::BindRepeating([] { return std::string("TEST"); }),
@@ -160,6 +204,43 @@ TEST_F(ActivityReporterImplTest, ReportActive_ComponentData) {
                          }));
           });
   activity_reporter_->ReportActive();
+}
+
+TEST_F(ActivityReporterImplTest, ReportActiveCommitsPendingWrite) {
+  update_client::Callback completion_callback = ReportActiveWithPendingWrite();
+
+  // The commit must wait for the update check to complete.
+  EXPECT_FALSE(pref_service_.user_prefs_store()->committed());
+  std::move(completion_callback).Run(update_client::Error::NONE);
+  EXPECT_TRUE(pref_service_.user_prefs_store()->committed());
+}
+
+TEST_F(ActivityReporterImplTest, ReportActiveCommitsPendingWriteOnError) {
+  update_client::Callback completion_callback = ReportActiveWithPendingWrite();
+
+  // Prefs written by a failed update check are committed as well.
+  std::move(completion_callback).Run(update_client::Error::UPDATE_CHECK_ERROR);
+  EXPECT_TRUE(pref_service_.user_prefs_store()->committed());
+}
+
+TEST_F(ActivityReporterImplTest, ReportActiveNoCommitAfterDestruction) {
+  update_client::Callback completion_callback = ReportActiveWithPendingWrite();
+
+  // The completion callback may run after the reporter is gone, e.g. during
+  // shutdown. It must not touch the pref service then.
+  activity_reporter_.reset();
+  std::move(completion_callback).Run(update_client::Error::NONE);
+  EXPECT_FALSE(pref_service_.user_prefs_store()->committed());
+}
+
+TEST_F(ActivityReporterImplTest, ReportActiveNoCommitWithoutPrefService) {
+  update_client::Callback completion_callback = ReportActiveWithPendingWrite();
+
+  // The pref service provider may return null by the time the update check
+  // completes. The reporter must then skip the commit rather than crash.
+  provided_pref_service_ = nullptr;
+  std::move(completion_callback).Run(update_client::Error::NONE);
+  EXPECT_FALSE(pref_service_.user_prefs_store()->committed());
 }
 
 TEST_F(ActivityReporterImplTest, InitialDateLastActiveStateUnknown) {
