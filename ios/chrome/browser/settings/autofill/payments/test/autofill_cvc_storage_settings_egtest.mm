@@ -78,6 +78,18 @@ id<GREYMatcher> DeleteConfirmationButton() {
       performAction:grey_tap()];
 }
 
+// Taps the delete CVCs button and waits for the confirmation dialog to be
+// presented. Waiting is required because any interaction performed before the
+// dialog is on screen (e.g. tapping outside of it) would hit the underlying
+// UI instead, which on iPad dismisses the whole Settings form sheet.
+- (void)openDeleteConfirmation {
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAutofillDeleteSecurityCodesButtonId)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:DeleteConfirmationButton()];
+}
+
 // Tests that the CVC storage switch is on when the pref is set to on.
 - (void)testSwitchIsOnWhenPrefIsOn {
   [AutofillAppInterface setPaymentCvcStorageEnabled:YES];
@@ -212,19 +224,24 @@ id<GREYMatcher> DeleteConfirmationButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the delete button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAutofillDeleteSecurityCodesButtonId)]
-      performAction:grey_tap()];
+  [self openDeleteConfirmation];
 
   EXPECT_EQ(1,
             userActionTester.GetActionCount("BulkCvcDeletionHyperlinkClicked"));
 
-  // Tap outside the action sheet to dismiss it.
+  // Tap outside the action sheet to dismiss it. The dialog is guaranteed to be
+  // presented at this point, so the tap only dismisses the dialog.
   [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
       performAction:grey_tapAtPoint(CGPointMake(1, 1))];
 
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:DeleteConfirmationButton()];
+
+  // Verify that only the dialog was dismissed and the CVC storage settings are
+  // still displayed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAutofillDeleteSecurityCodesButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   EXPECT_EQ(1,
             userActionTester.GetActionCount("BulkCvcDeletionHyperlinkClicked"));
@@ -233,9 +250,7 @@ id<GREYMatcher> DeleteConfirmationButton() {
                    "BulkCvcDeletionConfirmationDialogCancelled"));
 
   // Tap the delete button again.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAutofillDeleteSecurityCodesButtonId)]
-      performAction:grey_tap()];
+  [self openDeleteConfirmation];
 
   EXPECT_EQ(1,
             userActionTester.GetActionCount("BulkCvcDeletionHyperlinkClicked"));
