@@ -31,9 +31,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -114,6 +116,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.transit.TrafficControl;
+import org.chromium.base.test.transit.ViewElementMatchesCondition;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -153,10 +157,13 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.TabSwitcherTabCardFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
@@ -1372,6 +1379,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @RequiresRestart("Finishes the activity which can have cascading effects.")
+    @Restriction(DeviceFormFactor.PHONE)
     @DisabledTest(message = "https://crbug.com/40147345")
     public void testDialogInitialShowFromStrip() throws Exception {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1386,11 +1394,11 @@ public class TabGridDialogTest {
         // Restart the activity and open the dialog from strip to check the initial setup of dialog.
         finishActivity(cta);
         mActivityTestRule.restartMainActivityFromLauncher();
-        CriteriaHelper.pollUiThread(
-                mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
-        openDialogFromStripAndVerify(mActivityTestRule.getActivity(), 2, null);
+        final ChromeTabbedActivity restartedCta = mActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(restartedCta.getTabModelSelector()::isTabStateInitialized);
+        openDialogFromStripAndVerify(restartedCta, 2, null);
         closeNthTabInDialog(0);
-        verifyShowingDialog(cta, 1, null);
+        verifyShowingDialog(restartedCta, 1, null);
     }
 
     @Test
@@ -1517,12 +1525,13 @@ public class TabGridDialogTest {
 
         clickScrimToExitDialog(cta);
         waitForDialogHidingAnimationInTabSwitcher(cta);
-        View dialogView = cta.findViewById(R.id.dialog_parent_view);
         waitForThumbnailsToFetch(getRecyclerView(cta));
         // Take the GTS first snapshot, which should have the second color (blue) shown.
         mRenderTestRule.render(getRecyclerView(cta), "GTS_tab_group_color_initial");
 
         openDialogFromTabSwitcherAndVerify(cta, 2, null);
+        // The dialog view is only attached while the dialog is showing.
+        View dialogView = cta.findViewById(R.id.dialog_parent_view);
         waitForThumbnailsToFetch(
                 (RecyclerView) dialogView.findViewById(R.id.tab_list_recycler_view));
         // Take the dialog first snapshot, which should have the second color (blue) shown.
@@ -1671,20 +1680,36 @@ public class TabGridDialogTest {
         waitForDialogHidingAnimationInTabSwitcher(cta);
         assertEquals("Expand tab group with 1 tab, color Grey.", firstItem.getContentDescription());
 
-        // Programmatically ungroup.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Tab tab = tabModel.getTabAt(0);
-                    tabModel.getTabUngrouper()
-                            .ungroupTabs(
-                                    List.of(tab), /* trailing= */ true, /* allowDialog= */ false);
-                });
-        assertEquals(null, firstItem.getContentDescription());
+        // Programmatically ungroup. The group card at position 0 is rebound asynchronously as a
+        // single tab card.
+        RegularTabSwitcherStation tabSwitcher =
+                TrafficControl.hopOnAt(cta, RegularTabSwitcherStation.from(selector));
+        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(0));
+        String tabTitle = ChromeTabUtils.getTitleOnUiThread(tab);
+        TabSwitcherTabCardFacility card =
+                tabSwitcher
+                        .runOnUiThreadTo(
+                                () ->
+                                        tabModel.getTabUngrouper()
+                                                .ungroupTabs(
+                                                        List.of(tab),
+                                                        /* trailing= */ true,
+                                                        /* allowDialog= */ false))
+                        .enterFacility(
+                                new TabSwitcherTabCardFacility(
+                                        /* cardIndex= */ 0, tab.getId(), tabTitle));
 
-        // TabSwitcher Group card Close button content description should restore when the group
-        // becomes a single tab.
-        actionButtonTargetString = "Close New tab tab";
-        assertEquals(actionButtonTargetString, actionButton.getContentDescription());
+        // Single tab cards have no group description, and the Close button content description
+        // should restore. These are bound separately from the title, so wait for them too.
+        card.noopTo()
+                .waitFor(
+                        new ViewElementMatchesCondition(
+                                card.cardViewElement,
+                                withContentDescription(
+                                        anyOf(nullValue(String.class), equalTo("")))),
+                        new ViewElementMatchesCondition(
+                                card.closeButtonElement,
+                                withContentDescription("Close " + tabTitle + " tab")));
     }
 
     @Test
