@@ -13,6 +13,8 @@
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/interaction/element_events.h"
@@ -123,6 +125,22 @@ gfx::Rect TrackedElementWebUI::GetBoundsInWebContents() const {
   if (result.height() < 1) {
     result.set_height(1);
   }
+
+  if (visible()) {
+    content::RenderFrameHost* const rfh = handler_->render_frame_host();
+    if (rfh && rfh->GetParentOrOuterDocument()) {
+      // Out-of-process subframes (OOPIFs) report element bounds relative to
+      // their own RenderWidgetHostView origin. Offset by the subframe view's
+      // position relative to the WebContents container.
+      content::RenderWidgetHostView* const rfh_view = rfh->GetView();
+      content::WebContents* const contents = handler_->web_contents();
+      if (rfh_view && contents) {
+        result.Offset(rfh_view->GetViewBounds().OffsetFromOrigin() -
+                      contents->GetContainerBounds().OffsetFromOrigin());
+      }
+    }
+  }
+
   return result;
 }
 

@@ -21,6 +21,7 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/test_renderer_host.h"
@@ -964,6 +965,67 @@ TEST_F(TrackedElementHandlerTest, DocumentSingletonAsync) {
   TrackedElementHandlerDocumentSingleton::GetOrCreateAsync(
       main_rfh(), future2.GetCallback());
   EXPECT_EQ(handler.get(), future2.Get().get());
+}
+
+// Tests for RenderFrameHost association and subframe handling.
+TEST_F(TrackedElementHandlerTest, MainFrameHandler) {
+  mojo::Remote<tracked_element::mojom::TrackedElementHandler> remote;
+  auto test_handler = std::make_unique<TrackedElementHandler>(
+      web_contents(), remote.BindNewPipeAndPassReceiver(),
+      ui::ElementContext::CreateFakeContextForTesting(web_contents()),
+      std::vector<ui::ElementIdentifier>{kTestElementIdentifier1}, main_rfh());
+  EXPECT_EQ(main_rfh(), test_handler->render_frame_host());
+
+  remote->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
+  remote.FlushForTesting();
+
+  auto* const element =
+      ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+          kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+  auto* const webui_element = element->AsA<TrackedElementWebUI>();
+  ASSERT_TRUE(webui_element);
+  EXPECT_EQ(gfx::ToRoundedRect(kElementBounds),
+            webui_element->GetBoundsInWebContents());
+  gfx::Rect expected_screen_bounds = webui_element->GetBoundsInWebContents();
+  expected_screen_bounds.Offset(
+      web_contents()->GetContainerBounds().OffsetFromOrigin());
+  EXPECT_EQ(expected_screen_bounds, webui_element->GetScreenBounds());
+}
+
+TEST_F(TrackedElementHandlerTest, SubframeHandler) {
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+
+  content::RenderFrameHost* const subframe_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  ASSERT_TRUE(subframe_rfh);
+
+  mojo::Remote<tracked_element::mojom::TrackedElementHandler> remote;
+  auto test_handler = std::make_unique<TrackedElementHandler>(
+      web_contents(), remote.BindNewPipeAndPassReceiver(),
+      ui::ElementContext::CreateFakeContextForTesting(web_contents()),
+      std::vector<ui::ElementIdentifier>{kTestElementIdentifier1},
+      subframe_rfh);
+  EXPECT_EQ(subframe_rfh, test_handler->render_frame_host());
+
+  remote->TrackedElementVisibilityChanged(
+      MakeId(kTestElementIdentifier1, kTestSecondaryId1), true, kElementBounds);
+  remote.FlushForTesting();
+
+  auto* const element =
+      ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+          kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+  auto* const webui_element = element->AsA<TrackedElementWebUI>();
+  ASSERT_TRUE(webui_element);
+
+  // In test harnesses, if subframe_rfh has no view or default view, bounds
+  // will calculate safely without crashing.
+  const gfx::Rect bounds = webui_element->GetBoundsInWebContents();
+  EXPECT_FALSE(bounds.IsEmpty());
+  EXPECT_EQ(bounds.size(), gfx::ToRoundedRect(kElementBounds).size());
 }
 
 // TODO(crbug.com/40243115): add tests for element screen bounds. This requires

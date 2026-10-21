@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -74,6 +75,29 @@ TrackedElementHandler::TrackedElementHandler(content::WebContents* web_contents,
   }
 }
 
+TrackedElementHandler::TrackedElementHandler(
+    content::WebContents* web_contents,
+    mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+        receiver,
+    ui::ElementContext context,
+    const std::vector<ui::ElementIdentifier>& identifiers,
+    content::RenderFrameHost* render_frame_host)
+    : context_(context),
+      receiver_(this, std::move(receiver)),
+      rfh_id_(render_frame_host ? render_frame_host->GetGlobalId()
+                                : content::GlobalRenderFrameHostId()) {
+  ui::ElementHighlighter::GetElementHighlighter()
+      ->MaybeRegisterBackend<ElementHighlighterWebUI>();
+
+  if (web_contents) {
+    Observe(web_contents);
+    is_web_contents_visible_ =
+        web_contents->GetVisibility() == content::Visibility::VISIBLE;
+  }
+
+  RegisterIdentifiers(identifiers);
+}
+
 TrackedElementHandler::~TrackedElementHandler() = default;
 
 void TrackedElementHandler::BindInterface(
@@ -116,6 +140,10 @@ void TrackedElementHandler::SetHighlightState(
             element.identifier().GetName(), element.GetSecondaryIdentifier()),
         highlight);
   }
+}
+
+content::RenderFrameHost* TrackedElementHandler::render_frame_host() const {
+  return content::RenderFrameHost::FromID(rfh_id_);
 }
 
 void TrackedElementHandler::FlushManagerRemoteForTesting() {
