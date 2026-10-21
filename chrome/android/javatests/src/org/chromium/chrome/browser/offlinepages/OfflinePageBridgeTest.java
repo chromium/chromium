@@ -21,6 +21,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -38,6 +39,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.offlinepages.DeletePageResult;
 import org.chromium.components.offlinepages.SavePageResult;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.NetworkChangeNotifier;
 
 import java.util.ArrayList;
@@ -62,6 +64,7 @@ public class OfflinePageBridgeTest {
 
     private static final String TEST_PAGE = "/chrome/test/data/android/about.html";
     private static final int TIMEOUT_MS = 5000;
+    private static final AtomicInteger sTitleCounter = new AtomicInteger();
     private static final ClientId TEST_CLIENT_ID =
             new ClientId(OfflinePageBridge.DOWNLOAD_NAMESPACE, "1234");
 
@@ -359,6 +362,7 @@ public class OfflinePageBridgeTest {
         final OfflinePageOrigin origin =
                 new OfflinePageOrigin("abc.xyz", new String[] {"deadbeef"});
         mActivityTestRule.loadUrl(mTestUrl);
+        makeTitleUnique();
         final String originString = origin.encodeAsJsonString();
         final Semaphore semaphore = new Semaphore(0);
         ThreadUtils.runOnUiThreadBlocking(
@@ -397,6 +401,7 @@ public class OfflinePageBridgeTest {
         final OfflinePageOrigin origin =
                 new OfflinePageOrigin("abc.xyz", new String[] {"deadbeef"});
         mActivityTestRule.loadUrl(mTestUrl);
+        makeTitleUnique();
         final String originString = origin.encodeAsJsonString();
         final Semaphore semaphore = new Semaphore(0);
         ThreadUtils.runOnUiThreadBlocking(
@@ -467,6 +472,24 @@ public class OfflinePageBridgeTest {
                 -1, extraHeaders.indexOf("id=" + Long.toString(offlinePage.getOfflineId())));
     }
 
+    /**
+     * Gives the current page a unique title. Saved pages are published to the Downloads
+     * collection under their title, so a fixed title collides with leftovers from earlier runs
+     * on reused devices and the save fails with FILE_MOVE_FAILED (b/575823388).
+     */
+    private void makeTitleUnique() {
+        final String title = "About-" + System.nanoTime() + "-" + sTitleCounter.incrementAndGet();
+        try {
+            JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                    mActivityTestRule.getWebContents(), "document.title = '" + title + "';");
+        } catch (TimeoutException e) {
+            throw new AssertionError("Timed out setting the page title.", e);
+        }
+        CriteriaHelper.pollUiThread(
+                () -> title.equals(mActivityTestRule.getWebContents().getTitle()),
+                "Page title was not updated.");
+    }
+
     // Returns offline ID.
     private long savePage(final int expectedResult, final String expectedUrl)
             throws InterruptedException {
@@ -477,6 +500,7 @@ public class OfflinePageBridgeTest {
     private long savePage(
             final int expectedResult, final String expectedUrl, final ClientId clientId)
             throws InterruptedException {
+        makeTitleUnique();
         final Semaphore semaphore = new Semaphore(0);
         final AtomicLong result = new AtomicLong(-1);
         ThreadUtils.runOnUiThreadBlocking(
