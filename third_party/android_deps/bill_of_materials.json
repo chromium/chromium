@@ -1357,7 +1357,7 @@
     {
         "name": "extensions-xr",
         "group": "com.android.extensions.xr",
-        "version": "1.4.0"
+        "version": "1.5.0-alpha01"
     },
     {
         "name": "layoutlib-api",
