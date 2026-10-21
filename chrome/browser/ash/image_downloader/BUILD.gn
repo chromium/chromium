@@ -14,9 +14,9 @@ static_library("image_downloader") {
 
   deps = [
     "//chrome/browser/bitmap_fetcher",
-    "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/browser_context_helper",
     "//components/account_id",
+    "//content/public/browser",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom:url_loader_base_shared_cpp_sources",

@@ -14,7 +14,6 @@ include_rules = [
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/enterprise/data_controls",
-  "+chrome/browser/profiles/profile.h",
   "+chrome/common",
   "+chrome/grit",
 ]

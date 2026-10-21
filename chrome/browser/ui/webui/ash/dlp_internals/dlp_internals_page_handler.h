@@ -1,11 +1,10 @@
-// Copyright 2023 The Chromium Authors.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_DLP_INTERNALS_DLP_INTERNALS_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_DLP_INTERNALS_DLP_INTERNALS_PAGE_HANDLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
@@ -15,8 +14,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-class Profile;
-
 namespace policy {
 
 // Concrete implementation of dlp_internals::mojom::PageHandler.
@@ -24,9 +21,8 @@ class DlpInternalsPageHandler
     : public dlp_internals::mojom::PageHandler,
       public data_controls::DlpReportingManager::Observer {
  public:
-  DlpInternalsPageHandler(
-      mojo::PendingReceiver<dlp_internals::mojom::PageHandler> receiver,
-      Profile* profile);
+  explicit DlpInternalsPageHandler(
+      mojo::PendingReceiver<dlp_internals::mojom::PageHandler> receiver);
 
   DlpInternalsPageHandler(const DlpInternalsPageHandler&) = delete;
   DlpInternalsPageHandler& operator=(const DlpInternalsPageHandler&) = delete;
@@ -59,8 +55,6 @@ class DlpInternalsPageHandler
   base::ScopedObservation<data_controls::DlpReportingManager,
                           data_controls::DlpReportingManager::Observer>
       reporting_observation_{this};
-
-  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<DlpInternalsPageHandler> weak_ptr_factory_{this};
 };

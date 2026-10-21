@@ -7,9 +7,10 @@
 #include "ash/constants/url_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/dlp_internals_resources.h"
 #include "chrome/grit/dlp_internals_resources_map.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_util.h"
@@ -18,11 +19,12 @@ namespace policy {
 
 DlpInternalsUI::DlpInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
-  Profile* profile = Profile::FromWebUI(web_ui);
+  content::BrowserContext* const browser_context =
+      web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile, ash::kChromeUIDlpInternalsHost);
+      browser_context, ash::kChromeUIDlpInternalsHost);
 
-  source->AddBoolean("isOtr", profile->IsOffTheRecord());
+  source->AddBoolean("isOtr", browser_context->IsOffTheRecord());
   DlpRulesManager* rules_manager =
       DlpRulesManagerFactory::GetForPrimaryProfile();
   source->AddBoolean("doRulesManagerExist", rules_manager != nullptr);
@@ -43,8 +45,8 @@ DlpInternalsUI::~DlpInternalsUI() = default;
 
 void DlpInternalsUI::BindInterface(
     mojo::PendingReceiver<dlp_internals::mojom::PageHandler> receiver) {
-  page_handler_ = std::make_unique<DlpInternalsPageHandler>(
-      std::move(receiver), Profile::FromWebUI(web_ui()));
+  page_handler_ =
+      std::make_unique<DlpInternalsPageHandler>(std::move(receiver));
 }
 
 }  // namespace policy

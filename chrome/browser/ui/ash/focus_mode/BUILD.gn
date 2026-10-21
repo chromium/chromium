@@ -24,8 +24,6 @@ static_library("focus_mode") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/attestation",
-    "//chrome/browser/ash/profiles",
-    "//chrome/browser/profiles",
     "//chromeos/ash/components/attestation",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome:public",
@@ -35,6 +33,7 @@ static_library("focus_mode") {
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/signin:identity_manager_provider",
     "//components/signin/public/identity_manager",
+    "//content/public/browser",
     "//google_apis/common",
     "//net/traffic_annotation",
   ]

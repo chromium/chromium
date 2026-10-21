@@ -14,12 +14,11 @@
 #include "base/task/thread_pool.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/focus_mode/signature_builder.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -51,11 +50,11 @@ std::unique_ptr<google_apis::RequestSender> CreateRequestSenderForYouTubeMusic(
     const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) {
   signin::IdentityManager* identity_manager =
       ash::IdentityManagerProvider::Get().Find(account_id);
-  Profile& profile = CHECK_DEREF(Profile::FromBrowserContext(
+  content::BrowserContext& browser_context = CHECK_DEREF(
       ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          account_id)));
+          account_id));
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      profile.GetURLLoaderFactory();
+      browser_context.GetURLLoaderFactory();
 
   std::unique_ptr<google_apis::AuthService> auth_service =
       std::make_unique<google_apis::AuthService>(

@@ -20,7 +20,6 @@ static_library("dlp_internals") {
     "//base",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/enterprise/data_controls",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/dlp_internals:resources",
     "//chrome/common",
     "//chromeos/dbus/dlp",

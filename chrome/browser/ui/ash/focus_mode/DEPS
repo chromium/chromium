@@ -7,15 +7,16 @@ include_rules = [
   # directory to #include its own files.
   "+chrome/browser/ui/ash/focus_mode",
 
+  # Other ash directories in //chrome.
+  "+chrome/browser/ash/attestation",
+
   # Existing dependencies within //chrome. There is an active effort to
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/profiles",
-
+  #
   # Dependency for locale on the browser process.
   "+chrome/browser/browser_process.h",
 
-  "+chrome/browser/ash/attestation",
   "+third_party/boringssl/src/pki/pem.h",
 ]
 
@@ -27,6 +28,7 @@ specific_include_rules = {
   ],
   "focus_mode_browsertest\\.cc": [
     "+chrome/browser/ash/accessibility",
+    "+chrome/browser/profiles/profile_manager.h",
     "+chrome/browser/ui/ash/web_view",
   ],
   "focus_mode_policy_browsertest\\.cc": [
