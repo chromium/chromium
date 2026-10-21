@@ -143,10 +143,9 @@ class TreeNode : public TreeModelNode {
                : std::nullopt;
   }
 
-  // Sets the title of the node.
-  virtual void SetTitle(const std::u16string& title) { title_ = title; }
-
   // TreeModelNode:
+  void SetTitle(const std::u16string& title) override { title_ = title; }
+
   const std::u16string& GetTitle() const override { return title_; }
 
   const std::u16string& GetAccessibleTitle() const override {
@@ -284,20 +283,6 @@ class TreeNodeModel : public TreeModel {
     return Remove(parent, parent->GetIndexOf(node).value());
   }
 
-  void NotifyObserverTreeNodeAdded(NodeType* parent, size_t index) {
-    observer_list_.Notify(&TreeModelObserver::TreeNodeAdded, this, parent,
-                          index);
-  }
-
-  void NotifyObserverTreeNodeRemoved(NodeType* parent, size_t index) {
-    observer_list_.Notify(&TreeModelObserver::TreeNodeRemoved, this, parent,
-                          index);
-  }
-
-  void NotifyObserverTreeNodeChanged(TreeModelNode* node) {
-    observer_list_.Notify(&TreeModelObserver::TreeNodeChanged, this, node);
-  }
-
   // TreeModel:
 
   // C++ allows one to override a base class' virtual function with one that
@@ -333,24 +318,7 @@ class TreeNodeModel : public TreeModel {
     return AsNode(node)->parent();
   }
 
-  void AddObserver(TreeModelObserver* observer) override {
-    observer_list_.AddObserver(observer);
-  }
-
-  void RemoveObserver(TreeModelObserver* observer) override {
-    observer_list_.RemoveObserver(observer);
-  }
-
-  void SetTitle(TreeModelNode* node, const std::u16string& title) override {
-    DCHECK(node);
-    AsNode(node)->SetTitle(title);
-    NotifyObserverTreeNodeChanged(node);
-  }
-
  private:
-  // The observers.
-  base::ObserverList<TreeModelObserver>::Unchecked observer_list_;
-
   // The root.
   std::unique_ptr<NodeType> root_;
 };
