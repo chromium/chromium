@@ -16,6 +16,7 @@ import android.view.textservice.TextServicesManager;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,9 +59,11 @@ public class SpellCheckerSessionBridgeTest {
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         SpellCheckerSessionBridge.HISTOGRAM_REQUEST, true);
-        SpellCheckerSessionBridge bridge = SpellCheckerSessionBridge.create(1234L, true, true);
+        SpellCheckerSessionBridge bridge =
+                SpellCheckerSessionBridge.create(JniRawPtr.createForTesting(1234L), true, true);
         bridge.requestTextCheck("hello world", new SpellingMarker[0]);
         watcher.assertExpected();
+        bridge.disconnect();
     }
 
     @Test
@@ -92,8 +95,10 @@ public class SpellCheckerSessionBridgeTest {
                 new SentenceSuggestionsInfo(
                         new SuggestionsInfo[] {grammarInfo}, new int[] {6}, new int[] {8});
 
-        SpellCheckerSessionBridge bridge = SpellCheckerSessionBridge.create(1234L, true, true);
+        SpellCheckerSessionBridge bridge =
+                SpellCheckerSessionBridge.create(JniRawPtr.createForTesting(1234L), true, true);
         bridge.onGetSentenceSuggestions(new SentenceSuggestionsInfo[] {info1, info2});
         watcher.assertExpected();
+        bridge.disconnect();
     }
 }

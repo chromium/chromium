@@ -20,7 +20,10 @@ import android.view.textservice.TextServicesManager;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -33,6 +36,9 @@ import java.util.ArrayList;
 /** JNI interface for native SpellCheckerSessionBridge to use Android's spellchecker. */
 @NullMarked
 public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
+    @JniType("::SpellCheckerSessionBridge")
+    interface NativeSpellCheckerSessionBridge extends JniTypeToken {}
+
     /* package */ static final String HISTOGRAM_COUNT_SPELLING =
             "SpellCheck.Android.Count.Spelling";
     /* package */ static final String HISTOGRAM_COUNT_GRAMMAR = "SpellCheck.Android.Count.Grammar";
@@ -46,7 +52,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
     private static final int UNDERLINE_LENGTH_MAX_BUCKET = 1000;
     private static final int UNDERLINE_LENGTH_BUCKET_COUNT = 50;
 
-    private long mNativeSpellCheckerSessionBridge;
+    private @Nullable JniRawPtr<NativeSpellCheckerSessionBridge> mNativeSpellCheckerSessionBridge;
     private final boolean mAllowGrammarChecks;
     private final boolean mAllowHideSuggestionMenuAttribute;
     private final @Nullable SpellCheckerSession mSpellCheckerSession;
@@ -60,7 +66,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
      *     processed.
      */
     private SpellCheckerSessionBridge(
-            long nativeSpellCheckerSessionBridge,
+            JniRawPtr<NativeSpellCheckerSessionBridge> nativeSpellCheckerSessionBridge,
             boolean allowGrammarChecks,
             boolean allowHideSuggestionMenuAttribute) {
         mNativeSpellCheckerSessionBridge = nativeSpellCheckerSessionBridge;
@@ -93,7 +99,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
     @CalledByNative
     @VisibleForTesting
     protected static @Nullable SpellCheckerSessionBridge create(
-            long nativeSpellCheckerSessionBridge,
+            JniRawPtr<NativeSpellCheckerSessionBridge> nativeSpellCheckerSessionBridge,
             boolean allowGrammarChecks,
             boolean allowHideSuggestionMenuAttribute) {
         SpellCheckerSessionBridge bridge =
@@ -102,6 +108,8 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
                         allowGrammarChecks,
                         allowHideSuggestionMenuAttribute);
         if (bridge.mSpellCheckerSession == null) {
+            nativeSpellCheckerSessionBridge.release();
+            bridge.mNativeSpellCheckerSessionBridge = null;
             return null;
         }
         return bridge;
@@ -109,8 +117,11 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
 
     /** Reset the native bridge pointer, called when the native counterpart is destroyed. */
     @CalledByNative
-    private void disconnect() {
-        mNativeSpellCheckerSessionBridge = 0;
+    void disconnect() {
+        if (mNativeSpellCheckerSessionBridge != null) {
+            mNativeSpellCheckerSessionBridge.release();
+            mNativeSpellCheckerSessionBridge = null;
+        }
         assumeNonNull(mSpellCheckerSession);
         mSpellCheckerSession.cancel();
         mSpellCheckerSession.close();
@@ -171,7 +182,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
      */
     @Override
     public void onGetSentenceSuggestions(SentenceSuggestionsInfo[] results) {
-        if (mNativeSpellCheckerSessionBridge == 0) {
+        if (mNativeSpellCheckerSessionBridge == null) {
             return;
         }
 
@@ -306,7 +317,7 @@ public class SpellCheckerSessionBridge implements SpellCheckerSessionListener {
     @NativeMethods
     interface Natives {
         void processSpellCheckResults(
-                long nativeSpellCheckerSessionBridge,
+                JniPtr<NativeSpellCheckerSessionBridge> self,
                 int[] offsets,
                 int[] lengths,
                 String[][] suggestions,

@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/spellcheck/browser/android/jni_headers/SpellCheckerSessionBridge_jni.h"
@@ -65,7 +66,7 @@ void SpellCheckerSessionBridge::RequestTextCheck(
   // input methods have enough information to render an alternative menu.
   if (java_object_.is_null()) {
     java_object_.Reset(Java_SpellCheckerSessionBridge_create(
-        base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+        base::android::AttachCurrentThread(), jni_zero::MakeRaw(this),
         base::FeatureList::IsEnabled(spellcheck::kAndroidGrammarCheck),
         /* allowHideSuggestionMenuAttribute= */
         base::FeatureList::IsEnabled(
