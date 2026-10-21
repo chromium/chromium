@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -716,6 +717,12 @@ bool DisplayLockContext::MarkForLayoutIfNeeded() {
       // different time / opportunity to restore the offset.
       layout_object->SetChildNeedsLayout();
       child_layout_was_blocked_ = false;
+      if (RuntimeEnabledFeatures::MarkAncestorsOnDisplayLockUnlockEnabled()) {
+        // |SetChildNeedsLayout()| skips the ancestors when this object was
+        // already child-dirty, but dirty-bit propagation from the locked
+        // subtree stopped here, so they are clean.
+        layout_object->MarkContainerChainForLayout();
+      }
     } else {
       // Since the dirty layout propagation stops at the locked element, we need
       // to mark its ancestors as dirty here so that it will be traversed to on

@@ -4300,6 +4300,10 @@
       status: "stable",
     },
     {
+      name: "MarkAncestorsOnDisplayLockUnlock",
+      status: "stable",
+    },
+    {
       name: "MaskDeserializationTimeForCrossOriginMessages",
       status: "stable",
     },

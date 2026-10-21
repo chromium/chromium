@@ -210,6 +210,56 @@ class DisplayLockContextTest : public testing::Test {
   frame_test_helpers::WebViewHelper web_view_helper_;
 };
 
+TEST_F(DisplayLockContextTest, UnlockWithBlockedChildLayoutMarksAncestors) {
+  SetHtmlInnerHTML(
+      "<div id='outer'><div id='lock'><div id='inner'>x</div></div></div>");
+  auto* element = GetDocument().getElementById(AtomicString("lock"));
+  LockElement(*element, false);
+  auto* context = element->GetDisplayLockContext();
+  ASSERT_TRUE(context);
+  ASSERT_TRUE(context->IsLocked());
+  auto* holder = element->GetLayoutObject();
+  ASSERT_TRUE(holder);
+
+  auto* inner = GetDocument().getElementById(AtomicString("inner"));
+  inner->GetLayoutObject()->SetNeedsLayout("test");
+  auto* outer = GetDocument().getElementById(AtomicString("outer"));
+  EXPECT_TRUE(inner->GetLayoutObject()->NeedsLayout());
+  EXPECT_TRUE(holder->ChildNeedsFullLayout());
+  EXPECT_FALSE(outer->GetLayoutObject()->NeedsLayout());
+  context->NotifyChildLayoutWasBlocked();
+
+  UnlockImmediate(context);
+
+  EXPECT_TRUE(outer->GetLayoutObject()->ChildNeedsFullLayout());
+}
+
+TEST_F(DisplayLockContextTest,
+       UnlockWithBlockedChildLayoutMarksAncestorsDisabled) {
+  ScopedMarkAncestorsOnDisplayLockUnlockForTest scoped_feature(false);
+  SetHtmlInnerHTML(
+      "<div id='outer'><div id='lock'><div id='inner'>x</div></div></div>");
+  auto* element = GetDocument().getElementById(AtomicString("lock"));
+  LockElement(*element, false);
+  auto* context = element->GetDisplayLockContext();
+  ASSERT_TRUE(context);
+  ASSERT_TRUE(context->IsLocked());
+  auto* holder = element->GetLayoutObject();
+  ASSERT_TRUE(holder);
+
+  auto* inner = GetDocument().getElementById(AtomicString("inner"));
+  inner->GetLayoutObject()->SetNeedsLayout("test");
+  auto* outer = GetDocument().getElementById(AtomicString("outer"));
+  EXPECT_TRUE(inner->GetLayoutObject()->NeedsLayout());
+  EXPECT_TRUE(holder->ChildNeedsFullLayout());
+  EXPECT_FALSE(outer->GetLayoutObject()->NeedsLayout());
+  context->NotifyChildLayoutWasBlocked();
+
+  UnlockImmediate(context);
+
+  EXPECT_FALSE(outer->GetLayoutObject()->ChildNeedsFullLayout());
+}
+
 TEST_F(DisplayLockContextTest, LockAfterAppendStyleDirtyBits) {
   SetHtmlInnerHTML(R"HTML(
     <style>
