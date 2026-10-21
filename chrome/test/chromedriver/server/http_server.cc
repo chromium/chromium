@@ -4,13 +4,17 @@
 
 #include "chrome/test/chromedriver/server/http_server.h"
 
+#include <string_view>
+
 #include "base/compiler_specific.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_interfaces.h"
 #include "net/base/sys_addrinfo.h"
+#include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
@@ -21,6 +25,36 @@ namespace {
 // no need to support messages that are too large.
 const int kBufferSize = 256 * 1024 * 1024;  // 256 MB
 const char kAnyHostPattern[] = "*";
+
+bool HasExplicitScheme(std::string_view allowed_origin) {
+  return allowed_origin.find("://") != std::string_view::npos;
+}
+
+GURL ParseAllowedOriginUrl(std::string_view allowed_origin) {
+  if (HasExplicitScheme(allowed_origin)) {
+    return GURL(allowed_origin);
+  }
+  // Prepend default scheme so GURL parses host:port instead of treating host as
+  // scheme.
+  return GURL(base::StrCat({"http://", allowed_origin}));
+}
+
+std::string ExtractAllowedHostAndPort(std::string_view allowed_origin) {
+  return net::GetHostAndOptionalPort(ParseAllowedOriginUrl(allowed_origin));
+}
+
+bool HasLocalAllowedOrigin(const std::vector<std::string>& allowed_origins) {
+  for (const std::string& allowed_origin : allowed_origins) {
+    // Skip wildcard to avoid constructing an invalid GURL.
+    if (allowed_origin == kAnyHostPattern) {
+      continue;
+    }
+    if (net::IsLocalhost(ParseAllowedOriginUrl(allowed_origin))) {
+      return true;
+    }
+  }
+  return false;
+}
 
 int ListenOnIPv4(net::ServerSocket* socket, uint16_t port, bool allow_remote) {
   std::string binding_ip = net::IPAddress::IPv4Localhost().ToString();
@@ -81,17 +115,17 @@ bool HostIsSafeToServe(GURL host_url,
                        const std::vector<net::IPAddress>& whitelisted_ips,
                        const std::vector<std::string>& allowed_origins) {
   auto host = host_url.GetHost();
+  std::string host_and_port = net::GetHostAndOptionalPort(host_url);
   // Check if the origin is in the allowed origins.
   for (const std::string& allowed_origin : allowed_origins) {
     if (allowed_origin == kAnyHostPattern) {
       // Allow any host origin in case of `allowed-origins` contains `*`.
       return true;
     }
-    GURL allowed_origin_url(allowed_origin);
-    std::string_view allowed_host = allowed_origin_url.has_scheme()
-                                        ? allowed_origin_url.host()
-                                        : allowed_origin;
-    if (allowed_host == host) {
+    std::string allowed_host_and_port =
+        ExtractAllowedHostAndPort(allowed_origin);
+    if (!allowed_host_and_port.empty() &&
+        allowed_host_and_port == host_and_port) {
       // Allow host from `allowed-origins`.
       return true;
     }
@@ -169,19 +203,36 @@ bool RequestIsSafeToServe(const net::HttpServerRequestInfo& info,
                  << host_header_value;
       return false;
     }
-  } else {
-    if (is_origin_set && !is_origin_local) {
+  }
+
+  if (is_origin_set &&
+      (!is_origin_local || HasLocalAllowedOrigin(allowed_origins))) {
+    if (origin_header_value == "null" || origin_url.host().empty()) {
+      if (!std::ranges::contains(allowed_origins, kAnyHostPattern)) {
+        LOG(ERROR) << "Rejecting request with unauthorized origin: "
+                   << origin_header_value;
+        return false;
+      }
+    } else {
+      std::string origin_host_and_port =
+          net::GetHostAndOptionalPort(origin_url);
       bool origin_is_allowed = false;
       for (const std::string& allowed_origin : allowed_origins) {
         if (allowed_origin == kAnyHostPattern) {
           origin_is_allowed = true;
           break;
         }
-        GURL allowed_origin_url(allowed_origin);
-        std::string_view allowed_host = allowed_origin_url.has_scheme()
-                                            ? allowed_origin_url.host()
-                                            : allowed_origin;
-        if (allowed_host == origin_url.host()) {
+        GURL allowed_origin_url = ParseAllowedOriginUrl(allowed_origin);
+        // Enforce scheme match when allowed_origin explicitly specifies a
+        // scheme.
+        if (HasExplicitScheme(allowed_origin) &&
+            allowed_origin_url.scheme() != origin_url.scheme()) {
+          continue;
+        }
+        std::string allowed_host_and_port =
+            net::GetHostAndOptionalPort(allowed_origin_url);
+        if (!allowed_host_and_port.empty() &&
+            allowed_host_and_port == origin_host_and_port) {
           origin_is_allowed = true;
           break;
         }
@@ -193,11 +244,11 @@ bool RequestIsSafeToServe(const net::HttpServerRequestInfo& info,
         return false;
       }
     }
+  }
 
-    if (is_host_set && !is_host_local) {
-      return HostIsSafeToServe(host_url, host_header_value, whitelisted_ips,
-                               allowed_origins);
-    }
+  if (allow_remote && is_host_set && !is_host_local) {
+    return HostIsSafeToServe(host_url, host_header_value, whitelisted_ips,
+                             allowed_origins);
   }
 
   return true;

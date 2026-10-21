@@ -128,11 +128,17 @@ TEST(HttpServerTest, RequestIsSafeToServe_AllowRemote_OriginValidation) {
   // 4. allowed_origins contains URL-style origin, whitelisted_ips is empty.
   {
     std::vector<net::IPAddress> whitelisted_ips;
-    std::vector<std::string> allowed_origins = {"http://ci.example.com"};
+    std::vector<std::string> allowed_origins = {"http://ci.example.com:8080"};
 
     // Allowlisted origin -> Allowed.
-    request.headers["origin"] = "http://ci.example.com";
+    request.headers["origin"] = "http://ci.example.com:8080";
     EXPECT_TRUE(internal::RequestIsSafeToServe(
+        request, /*allow_remote=*/true, whitelisted_ips, allowed_origins));
+
+    // Same host and port, but different scheme (https instead of http) ->
+    // Rejected.
+    request.headers["origin"] = "https://ci.example.com:8080";
+    EXPECT_FALSE(internal::RequestIsSafeToServe(
         request, /*allow_remote=*/true, whitelisted_ips, allowed_origins));
 
     // Non-allowlisted origin -> Rejected.
@@ -151,6 +157,68 @@ TEST(HttpServerTest, RequestIsSafeToServe_AllowRemote_OriginValidation) {
     EXPECT_TRUE(internal::RequestIsSafeToServe(
         request, /*allow_remote=*/true, whitelisted_ips, allowed_origins));
   }
+
+  // 6. allowed_origins contains scheme-less host:port (e.g. localhost:3000 or
+  // ci.example.com:8080), whitelisted_ips is empty.
+  // Reproduces https://crbug.com/533044174.
+  {
+    std::vector<net::IPAddress> whitelisted_ips;
+    std::vector<std::string> allowed_origins = {"localhost:3000",
+                                                "ci.example.com:8080"};
+
+    // Non-allowlisted origin -> Rejected.
+    request.headers["origin"] = "http://evil.com";
+    EXPECT_FALSE(internal::RequestIsSafeToServe(
+        request, /*allow_remote=*/true, whitelisted_ips, allowed_origins));
+
+    // Null origin -> Rejected.
+    request.headers["origin"] = "null";
+    EXPECT_FALSE(internal::RequestIsSafeToServe(
+        request, /*allow_remote=*/true, whitelisted_ips, allowed_origins));
+
+    // Allowlisted local origin -> Allowed.
+    request.headers["origin"] = "http://localhost:3000";
+    EXPECT_TRUE(internal::RequestIsSafeToServe(
+        request, /*allow_remote=*/true, whitelisted_ips, allowed_origins));
+
+    // Local origin with mismatched port -> Rejected.
+    request.headers["origin"] = "http://localhost:8000";
+    EXPECT_FALSE(internal::RequestIsSafeToServe(
+        request, /*allow_remote=*/true, whitelisted_ips, allowed_origins));
+
+    // Allowlisted remote origin -> Allowed.
+    request.headers["origin"] = "http://ci.example.com:8080";
+    EXPECT_TRUE(internal::RequestIsSafeToServe(
+        request, /*allow_remote=*/true, whitelisted_ips, allowed_origins));
+
+    // Remote origin with mismatched port -> Rejected.
+    request.headers["origin"] = "http://ci.example.com";
+    EXPECT_FALSE(internal::RequestIsSafeToServe(
+        request, /*allow_remote=*/true, whitelisted_ips, allowed_origins));
+  }
+
+  // 7. allowed_origins contains port-less remote host and port-specific local
+  // origin (--allowed-origins=ci.example.com,localhost:8080).
+  {
+    std::vector<net::IPAddress> whitelisted_ips;
+    std::vector<std::string> allowed_origins = {"ci.example.com",
+                                                "localhost:8080"};
+
+    // Allowlisted remote origin -> Allowed.
+    request.headers["origin"] = "http://ci.example.com";
+    EXPECT_TRUE(internal::RequestIsSafeToServe(
+        request, /*allow_remote=*/true, whitelisted_ips, allowed_origins));
+
+    // Allowlisted local origin -> Allowed.
+    request.headers["origin"] = "http://localhost:8080";
+    EXPECT_TRUE(internal::RequestIsSafeToServe(
+        request, /*allow_remote=*/true, whitelisted_ips, allowed_origins));
+
+    // Local origin on non-allowlisted port 3000 -> Rejected.
+    request.headers["origin"] = "http://localhost:3000";
+    EXPECT_FALSE(internal::RequestIsSafeToServe(
+        request, /*allow_remote=*/true, whitelisted_ips, allowed_origins));
+  }
 }
 
 TEST(HttpServerTest, HostIsSafeToServe_HostValidation) {
@@ -167,6 +235,17 @@ TEST(HttpServerTest, HostIsSafeToServe_HostValidation) {
   EXPECT_TRUE(internal::HostIsSafeToServe(GURL("http://ci.example.com"),
                                           "ci.example.com", whitelisted_ips,
                                           allowed_origins_url));
+
+  // Host in allowed_origins (scheme-less host:port format) -> Allowed.
+  std::vector<std::string> allowed_origins_port = {"ci.example.com:8080"};
+  EXPECT_TRUE(internal::HostIsSafeToServe(GURL("http://ci.example.com:8080"),
+                                          "ci.example.com:8080",
+                                          whitelisted_ips,
+                                          allowed_origins_port));
+  // Host matching allowed_origins host but with port mismatch -> Rejected.
+  EXPECT_FALSE(internal::HostIsSafeToServe(GURL("http://ci.example.com"),
+                                           "ci.example.com", whitelisted_ips,
+                                           allowed_origins_port));
 
   // Unsafe remote host -> Rejected.
   EXPECT_FALSE(internal::HostIsSafeToServe(GURL("http://evil.com"), "evil.com",

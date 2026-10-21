@@ -9033,6 +9033,51 @@ class ChromeDriverLogTest(CustomChromeDriverInstanceTest):
       self.assertNotIn('bosco', f.read())
 
 
+class ChromeDriverAllowedOriginsTest(CustomChromeDriverInstanceTest):
+  """Tests ChromeDriver --allowed-origins CSRF protection."""
+
+  def testSchemelessHostPortOriginNullRejection(self):
+    """Test `--allowed-origins` with scheme-less host:port."""
+    server_instance = self.CreateChromeDriverServer(
+        _CHROMEDRIVER_BINARY,
+        additional_args=['allowed-origins=localhost:3000,ci.example.com:8080',
+                         'allowed-ips='])
+    server_url = server_instance.GetUrl()
+
+    # 1. Unauthorized origin -> HTTP 403 Forbidden
+    req = urllib.request.Request(server_url + '/status',
+                                 headers={'Origin': 'http://evil.com'})
+    with self.assertRaises(urllib.error.HTTPError) as ctx:
+      urllib.request.urlopen(req)
+    self.assertEqual(403, ctx.exception.code)
+
+    # 2. Null origin -> HTTP 403 Forbidden
+    req = urllib.request.Request(server_url + '/status',
+                                 headers={'Origin': 'null'})
+    with self.assertRaises(urllib.error.HTTPError) as ctx:
+      urllib.request.urlopen(req)
+    self.assertEqual(403, ctx.exception.code)
+
+    # 3. Localhost origin -> HTTP 200 OK
+    req = urllib.request.Request(server_url + '/status',
+                                 headers={'Origin': 'http://localhost:3000'})
+    response = urllib.request.urlopen(req)
+    self.assertEqual(200, response.getcode())
+
+    # 4. Allowlisted remote origin -> HTTP 200 OK
+    req = urllib.request.Request(server_url + '/status',
+                                 headers={'Origin': 'http://ci.example.com:8080'})
+    response = urllib.request.urlopen(req)
+    self.assertEqual(200, response.getcode())
+
+    # 5. Mismatched port -> HTTP 403 Forbidden
+    req = urllib.request.Request(server_url + '/status',
+                                 headers={'Origin': 'http://localhost:9999'})
+    with self.assertRaises(urllib.error.HTTPError) as ctx:
+      urllib.request.urlopen(req)
+    self.assertEqual(403, ctx.exception.code)
+
+
 class ChromeLoggingCapabilityTest(ChromeDriverBaseTest):
   """Tests chromedriver tracing support and Inspector event collection."""
 
