@@ -221,7 +221,7 @@ export function getHtml(this: SettingsContactInfoPageElement) {
             </div>
           </div>
         </cr-collapse>
-        <div class="vertical-list">
+        <div id="emailList" class="vertical-list">
           ${this.emailVerificationAddresses_.map((item, index) => html`
             <div class="list-item">
               <site-favicon

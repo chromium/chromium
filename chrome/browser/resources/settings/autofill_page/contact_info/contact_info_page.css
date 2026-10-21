@@ -28,6 +28,12 @@
   padding-inline-start: var(--cr-section-indent-padding);
 }
 
+/* Align the trailing "More actions" button with the toggle above it, so that
+ * its hover/ripple area does not touch the edge of the card. */
+#emailList {
+  padding-inline-end: var(--cr-section-padding);
+}
+
 #autofillEmailVerificationToggle .separator {
   margin-inline-end: 4px;
   margin-inline-start: 0;
