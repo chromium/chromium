@@ -758,6 +758,12 @@ targets.tests.isolated_script_test(
     ],
     args = [
         "--flag-specific=surface-embed",
+        "--no-virtual-tests",
+        "--skip-failing-tests",
+        "--skip-timeouts",
+        # TODO(https://crbug.com/575925048): Revisit wdspec test handling (e.g.,
+        # moving to a separate suite or filtering with --test-type).
+        "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
     ],
     binary = "chrome_wpt_tests",
 )

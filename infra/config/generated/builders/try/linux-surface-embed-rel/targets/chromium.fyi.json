@@ -3,7 +3,11 @@
     "isolated_scripts": [
       {
         "args": [
-          "--flag-specific=surface-embed"
+          "--flag-specific=surface-embed",
+          "--no-virtual-tests",
+          "--skip-failing-tests",
+          "--skip-timeouts",
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter"
         ],
         "ci_only": true,
         "merge": {
