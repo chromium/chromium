@@ -15,8 +15,8 @@ namespace user_education {
 
 namespace {
 
-const NtpPromoIdentifier kPromoId = "test_promo";
-const NtpPromoIdentifier kShowFirstPromoId = "show_first_promo";
+constexpr char kPromoId[] = "test_promo";
+constexpr char kShowFirstPromoId[] = "show_first_promo";
 constexpr char kIconName[] = "test_icon_name";
 constexpr int kBodyTextStringId = 123;
 constexpr int kActionButtonTextStringId = 456;

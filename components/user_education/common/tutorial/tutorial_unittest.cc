@@ -50,9 +50,9 @@ const char kTestElementName1[] = "ELEMENT_NAME_1";
 constexpr auto kTestContext1 =
     ui::ElementContext::CreateFakeContextForTesting(1);
 
-const TutorialIdentifier kTestTutorial1{"kTestTutorial1"};
-const TutorialIdentifier kTestTutorial2{"kTestTutorial2"};
-const TutorialIdentifier kTestTutorial3{"kTestTutorial3"};
+constexpr char kTestTutorial1[] = "kTestTutorial1";
+constexpr char kTestTutorial2[] = "kTestTutorial2";
+constexpr char kTestTutorial3[] = "kTestTutorial3";
 
 const char kHistogramName1[] = "histogram 1";
 const char kHistogramName2[] = "histogram 2";

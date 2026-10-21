@@ -17,8 +17,6 @@ namespace test_data {
 const int kIndex = 3;
 const int kUniqueID = 50;
 const int kReferrerPolicy = 0;
-const std::u16string kTitle = u"title";
-const std::string kEncodedPageState = "page state";
 const ui::PageTransition kTransitionType =
     ui::PageTransitionFromInt(
         ui::PAGE_TRANSITION_AUTO_SUBFRAME |
@@ -31,10 +29,6 @@ const base::Time kTimestamp = base::Time::UnixEpoch() + base::Milliseconds(100);
 const int kHttpStatusCode = 404;
 const SerializedNavigationEntry::PasswordState kPasswordState =
     SerializedNavigationEntry::HAS_PASSWORD_FIELD;
-const std::string kExtendedInfoKey1 = "key 1";
-const std::string kExtendedInfoKey2 = "key 2";
-const std::string kExtendedInfoValue1 = "value 1";
-const std::string kExtendedInfoValue2 = "value 2";
 const int64_t kTaskId = 2;
 const int64_t kParentTaskId = 1;
 const int64_t kRootTaskId = 0;
