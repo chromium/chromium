@@ -52,6 +52,14 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
     static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
             new ReadableObjectPropertyKey<>();
 
+    /** The callback to run when the button that saves a card to the server is clicked. */
+    static final ReadableObjectPropertyKey<Runnable> ON_ACCEPT_BUTTON_CLICK_ACTION =
+            new ReadableObjectPropertyKey<>();
+
+    /** The callback to run when the button that declines the card save is clicked. */
+    static final ReadableObjectPropertyKey<Runnable> ON_CANCEL_BUTTON_CLICK_ACTION =
+            new ReadableObjectPropertyKey<>();
+
     /** Indicates whether the bottom sheet is in a loading state. */
     static final WritableBooleanPropertyKey SHOW_LOADING_STATE = new WritableBooleanPropertyKey();
 
@@ -74,6 +82,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
         LEGAL_MESSAGE,
         ACCEPT_BUTTON_LABEL,
         CANCEL_BUTTON_LABEL,
+        ON_ACCEPT_BUTTON_CLICK_ACTION,
+        ON_CANCEL_BUTTON_CLICK_ACTION,
         SHOW_LOADING_STATE,
         LOADING_DESCRIPTION,
         GOOGLE_PAY_PILL_LOGO,

@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 import android.app.Activity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
@@ -225,6 +226,29 @@ public class AutofillSaveCardBottomSheetViewBinderUnitTest {
         assertEquals(R.id.autofill_save_card_cancel_button, mView.mCancelButton.getId());
         verifyPropertyBoundToTextView(
                 mView.mCancelButton, AutofillSaveCardBottomSheetProperties.CANCEL_BUTTON_LABEL);
+    }
+
+    @Test
+    public void testAcceptButtonAction() {
+        runButtonActionTest(
+                mView.mAcceptButton,
+                AutofillSaveCardBottomSheetProperties.ON_ACCEPT_BUTTON_CLICK_ACTION);
+    }
+
+    @Test
+    public void testCancelButtonAction() {
+        runButtonActionTest(
+                mView.mCancelButton,
+                AutofillSaveCardBottomSheetProperties.ON_CANCEL_BUTTON_CLICK_ACTION);
+    }
+
+    private void runButtonActionTest(Button button, ReadableObjectPropertyKey<Runnable> property) {
+        CallbackHelper helper = new CallbackHelper();
+        bind(mModelBuilder.with(property, helper::notifyCalled));
+        assertEquals(0, helper.getCallCount());
+
+        button.performClick();
+        assertEquals(1, helper.getCallCount());
     }
 
     @Test

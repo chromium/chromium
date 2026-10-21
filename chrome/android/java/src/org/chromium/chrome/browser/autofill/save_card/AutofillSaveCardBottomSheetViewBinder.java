@@ -84,6 +84,18 @@ import org.chromium.ui.modelutil.PropertyModel;
             setMaybeEmptyText(
                     view.mCancelButton,
                     model.get(AutofillSaveCardBottomSheetProperties.CANCEL_BUTTON_LABEL));
+        } else if (AutofillSaveCardBottomSheetProperties.ON_ACCEPT_BUTTON_CLICK_ACTION
+                == propertyKey) {
+            Runnable action =
+                    model.get(AutofillSaveCardBottomSheetProperties.ON_ACCEPT_BUTTON_CLICK_ACTION);
+            assert action != null;
+            view.mAcceptButton.setOnClickListener(_ -> action.run());
+        } else if (AutofillSaveCardBottomSheetProperties.ON_CANCEL_BUTTON_CLICK_ACTION
+                == propertyKey) {
+            Runnable action =
+                    model.get(AutofillSaveCardBottomSheetProperties.ON_CANCEL_BUTTON_CLICK_ACTION);
+            assert action != null;
+            view.mCancelButton.setOnClickListener(_ -> action.run());
         } else if (AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE == propertyKey) {
             if (model.get(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE)) {
                 view.mAcceptButton.setVisibility(View.GONE);

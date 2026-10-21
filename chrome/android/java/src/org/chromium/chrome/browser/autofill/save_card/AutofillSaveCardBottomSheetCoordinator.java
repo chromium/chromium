@@ -114,6 +114,12 @@ public class AutofillSaveCardBottomSheetCoordinator {
                         .with(
                                 AutofillSaveCardBottomSheetProperties.CANCEL_BUTTON_LABEL,
                                 uiInfo.getCancelText())
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.ON_ACCEPT_BUTTON_CLICK_ACTION,
+                                this::onAcceptButtonClick)
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.ON_CANCEL_BUTTON_CLICK_ACTION,
+                                this::onCancelButtonClick)
                         .with(AutofillSaveCardBottomSheetProperties.SHOW_LOADING_STATE, false)
                         .with(
                                 AutofillSaveCardBottomSheetProperties.LOADING_DESCRIPTION,
@@ -146,9 +152,14 @@ public class AutofillSaveCardBottomSheetCoordinator {
                         delegate,
                         uiInfo.isForUpload(),
                         skipLoadingForFixFlow);
+    }
 
-        mView.mAcceptButton.setOnClickListener(_ -> mMediator.onAccepted());
-        mView.mCancelButton.setOnClickListener(_ -> mMediator.onCanceled());
+    private void onAcceptButtonClick() {
+        mMediator.onAccepted();
+    }
+
+    private void onCancelButtonClick() {
+        mMediator.onCanceled();
     }
 
     /**
