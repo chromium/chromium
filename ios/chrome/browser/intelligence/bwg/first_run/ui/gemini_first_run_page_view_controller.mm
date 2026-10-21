@@ -14,6 +14,7 @@
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
 
@@ -101,8 +102,14 @@ const CGFloat kInsetAdjustment = 20;
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
         [weakSelf updateContentHeightConstraint];
+        [weakSelf configureCornerRadius];
       }
                       completion:nil];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  [self configureCornerRadius];
 }
 
 // Re-calculates and updates the sheet's content height constraint after the
@@ -395,8 +402,7 @@ const CGFloat kInsetAdjustment = 20;
     // Apply adjustment when needed. `super.addsContentViewBottomInset` adds
     // insets which lead to an overly generous spacing between the content and
     // the buttons stack for non-scrollable iPhone layouts.
-    if (context.containerTraitCollection.userInterfaceIdiom !=
-        UIUserInterfaceIdiomPad) {
+    if (!IsRegularXRegularSizeClass(context.containerTraitCollection)) {
       height -= kInsetAdjustment;
     }
     CGFloat minDetentValue = kMinDetentRatio * context.maximumDetentValue;
