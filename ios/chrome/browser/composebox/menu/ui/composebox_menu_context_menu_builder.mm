@@ -296,7 +296,10 @@ struct MenuItemAvailability {
     case ComposeboxMenuItemType::kAttachmentCamera:
       return SymbolWithPointSize(SymbolSystemCamera, kSymbolActionPointSize);
     case ComposeboxMenuItemType::kAttachmentGallery:
-      return SymbolWithPointSize(SymbolPhoto, kSymbolActionPointSize);
+      return IsPlusButtonMenuStringUpdatesEnabled()
+                 ? SymbolWithPointSize(SymbolPhotoBadgePlus,
+                                       kSymbolActionPointSize)
+                 : SymbolWithPointSize(SymbolPhoto, kSymbolActionPointSize);
     case ComposeboxMenuItemType::kAttachmentFiles:
       return SymbolWithPointSize(SymbolDoc, kSymbolActionPointSize);
     case ComposeboxMenuItemType::kAttachmentDrive: {

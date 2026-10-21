@@ -405,10 +405,15 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
                type:ComposeboxMenuItemType::kAttachmentCamera
            disabled:[_inputState isAttachmentDisabled:
                                      ComposeboxAttachmentOption::kCamera]];
+
+  UIImage* galleryImage =
+      IsPlusButtonMenuStringUpdatesEnabled()
+          ? SymbolWithPointSize(SymbolPhotoBadgePlus, kSymbolActionPointSize)
+          : SymbolWithPointSize(SymbolPhotoOnRectangleAngled,
+                                kSymbolActionPointSize);
   ComposeboxMenuItem* galleryItem = [[ComposeboxMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_GALLERY_ACTION)
-              image:SymbolWithPointSize(SymbolPhotoOnRectangleAngled,
-                                        kSymbolActionPointSize)
+              image:galleryImage
                type:ComposeboxMenuItemType::kAttachmentGallery
            disabled:[_inputState isAttachmentDisabled:
                                      ComposeboxAttachmentOption::kGallery]];
