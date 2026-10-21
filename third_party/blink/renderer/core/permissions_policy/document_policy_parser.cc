@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 
 #include "net/http/structured_headers.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy_enum_values.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
@@ -41,15 +42,17 @@ std::optional<PolicyValue> ItemToPolicyValue(
       }
     }
     case mojom::blink::PolicyValueType::kDecDouble:
-      switch (item.Type()) {
-        case net::structured_headers::Item::ItemType::kIntegerType:
-          return PolicyValue::CreateDecDouble(
-              static_cast<double>(item.GetInteger()));
-        case net::structured_headers::Item::ItemType::kDecimalType:
-          return PolicyValue::CreateDecDouble(item.GetDecimal());
-        default:
-          return std::nullopt;
-      }
+      return item.Visit(absl::Overload{
+          [](int64_t value) -> std::optional<PolicyValue> {
+            return PolicyValue::CreateDecDouble(static_cast<double>(value));
+          },
+          [](double value) -> std::optional<PolicyValue> {
+            return PolicyValue::CreateDecDouble(value);
+          },
+          [](const auto&) -> std::optional<PolicyValue> {
+            return std::nullopt;
+          },
+      });
     case mojom::blink::PolicyValueType::kEnum: {
       const std::string* token = item.GetIfToken();
       if (!token) {
