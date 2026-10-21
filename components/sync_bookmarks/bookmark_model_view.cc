@@ -254,8 +254,6 @@ void BookmarkModelViewUsingAccountNodes::RemoveAllSyncableNodes() {
 void BookmarkModelViewUsingAccountNodes::
     MaybeRemoveUnderlyingModelDuplicatesUponInitialSync() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  BeginExtensiveChanges();
-
   const base::Time deduplication_start_time = base::Time::Now();
 
   InitialAccountBookmarkDeduplicator initial_account_bookmark_deduplicator(
@@ -270,8 +268,6 @@ void BookmarkModelViewUsingAccountNodes::
                                 /*min=*/base::Milliseconds(1),
                                 /*max=*/base::Seconds(60),
                                 /*buckets=*/50);
-
-  EndExtensiveChanges();
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 

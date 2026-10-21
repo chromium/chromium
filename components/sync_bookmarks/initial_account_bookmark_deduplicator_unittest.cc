@@ -8,8 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "base/scoped_observation.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_model_observer.h"
+#include "components/bookmarks/test/mock_bookmark_model_observer.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/sync_bookmarks/test_node_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,10 +23,16 @@ namespace sync_bookmarks {
 
 namespace {
 
+using bookmarks::BookmarkModel;
+using bookmarks::BookmarkModelObserver;
+using bookmarks::MockBookmarkModelObserver;
 using sync_bookmarks::test::FolderBuilder;
 using sync_bookmarks::test::UrlBuilder;
+using testing::_;
 using testing::ElementsAre;
+using testing::InSequence;
 using testing::IsEmpty;
+using testing::NiceMock;
 using testing::SizeIs;
 
 class InitialAccountBookmarkDeduplicatorTest : public testing::Test {
@@ -735,6 +744,63 @@ TEST_F(InitialAccountBookmarkDeduplicatorTest,
   EXPECT_FALSE(
       bookmark_deduplicator_->DoesAccountSubgraphContainLocalSubgraphForTest(
           local_node, account_node));
+}
+
+// Verifies that `Deduplicate()` wraps duplicate node removals in an extensive
+// changes scope on `BookmarkModel` so `BookmarkUndoService` suspends undo
+// tracking while duplicates are removed.
+TEST_F(InitialAccountBookmarkDeduplicatorTest,
+       ShouldWrapDuplicateRemovalInExtensiveChanges) {
+  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
+  const GURL url("http://example.com");
+  const std::u16string title = u"Title";
+
+  AddLocalNodes({UrlBuilder(title, url).SetUuid(uuid)});
+  AddAccountNodes({UrlBuilder(title, url).SetUuid(uuid)});
+
+  NiceMock<MockBookmarkModelObserver> observer;
+  base::ScopedObservation<BookmarkModel, BookmarkModelObserver> observation(
+      &observer);
+  observation.Observe(bookmark_model_.get());
+
+  // `IsDoingExtensiveChanges()` must be true when `BookmarkNodeRemoved()` is
+  // notified so `BookmarkUndoService` ignores the removal.
+  {
+    InSequence seq;
+    EXPECT_CALL(observer, ExtensiveBookmarkChangesBeginning());
+    EXPECT_CALL(observer, BookmarkNodeRemoved(_, _, _, _, _)).WillOnce([&]() {
+      EXPECT_TRUE(bookmark_model_->IsDoingExtensiveChanges());
+    });
+    EXPECT_CALL(observer, ExtensiveBookmarkChangesEnded());
+  }
+
+  EXPECT_FALSE(bookmark_model_->IsDoingExtensiveChanges());
+  bookmark_deduplicator_->Deduplicate();
+  EXPECT_FALSE(bookmark_model_->IsDoingExtensiveChanges());
+}
+
+// Verifies that `Deduplicate()` balances `BeginExtensiveChanges()` and
+// `EndExtensiveChanges()` even when no duplicate bookmarks exist.
+TEST_F(InitialAccountBookmarkDeduplicatorTest,
+       ShouldBalanceExtensiveChangesWhenNoDuplicatesExist) {
+  AddLocalNodes({UrlBuilder(u"Local", GURL("http://local.com"))});
+  AddAccountNodes({UrlBuilder(u"Account", GURL("http://account.com"))});
+
+  NiceMock<MockBookmarkModelObserver> observer;
+  base::ScopedObservation<BookmarkModel, BookmarkModelObserver> observation(
+      &observer);
+  observation.Observe(bookmark_model_.get());
+
+  {
+    InSequence seq;
+    EXPECT_CALL(observer, ExtensiveBookmarkChangesBeginning());
+    EXPECT_CALL(observer, BookmarkNodeRemoved(_, _, _, _, _)).Times(0);
+    EXPECT_CALL(observer, ExtensiveBookmarkChangesEnded());
+  }
+
+  EXPECT_FALSE(bookmark_model_->IsDoingExtensiveChanges());
+  bookmark_deduplicator_->Deduplicate();
+  EXPECT_FALSE(bookmark_model_->IsDoingExtensiveChanges());
 }
 
 }  // namespace

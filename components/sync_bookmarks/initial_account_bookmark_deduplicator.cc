@@ -44,6 +44,11 @@ InitialAccountBookmarkDeduplicator::~InitialAccountBookmarkDeduplicator() =
     default;
 
 void InitialAccountBookmarkDeduplicator::Deduplicate() {
+  // Suspend `BookmarkUndoService` undo tracking and notify UI observers of
+  // `BookmarkModel` that significant changes are about to happen so updates
+  // may be batched.
+  bookmark_model_->BeginExtensiveChanges();
+
   for (const auto& [local_permanent_node, account_permanent_node] :
        GetLocalAndAccountPermanentNodePairs(bookmark_model_)) {
     std::vector<size_t> indices_to_remove;
@@ -63,6 +68,8 @@ void InitialAccountBookmarkDeduplicator::Deduplicate() {
                      base::flat_set<size_t>(base::sorted_unique,
                                             std::move(indices_to_remove)));
   }
+
+  bookmark_model_->EndExtensiveChanges();
 }
 
 bool InitialAccountBookmarkDeduplicator::
