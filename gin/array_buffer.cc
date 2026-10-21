@@ -207,8 +207,9 @@ class ArrayBufferSharedMemoryMapper : public base::SharedMemoryMapper {
         0, mapping_size, permissions, v8_handle, offset);
     if (!mapping)
       return std::nullopt;
-
-    return UNSAFE_TODO(base::span(reinterpret_cast<uint8_t*>(mapping), size));
+    // SAFETY: AllocateSharedPages() mapped `mapping_size` >= `size` bytes.
+    return UNSAFE_BUFFERS(
+        base::span(reinterpret_cast<uint8_t*>(mapping), size));
   }
 
   void Unmap(base::span<uint8_t> mapping) override {
