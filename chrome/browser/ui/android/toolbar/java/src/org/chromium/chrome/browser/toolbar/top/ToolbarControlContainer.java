@@ -434,17 +434,15 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         mTabStripTopPadding = topPadding;
         // When ToolbarSnapshotRefactor is enabled, the tab strip height offset is applied to
         // mToolbarContainer's topMargin (in updateToolbarContainerTopMargin()) rather than
-        // mToolbarView's topMargin. Keeping mToolbarView's topMargin at 0 avoids applying the
-        // offset twice on native pages (e.g. NTP) where onBrowserControlsOffsetUpdate() is not
-        // dispatched to reset mToolbarView's topMargin after a tab strip height transition.
-        // TODO(crbug.com/557679152): Revisit once TopControlsStacker / BrowserControlsManager
-        // guarantees a resting-position offset update for non-animated transitions on native pages
-        // (NTP).
-        mutateToolbarLayoutParams().topMargin =
+        // mToolbarView's topMargin. Because both mToolbarView and mToolbarHairline are children of
+        // mToolbarContainer (which is also offset by getVerticalTabsTopMargin()), neither should
+        // include getVerticalTabsTopMargin() in its own topMargin.
+        int toolbarViewTopMargin =
                 ChromeFeatureList.sToolbarSnapshotRefactor.isEnabled() ? 0 : tabStripHeight;
+        mutateToolbarLayoutParams().topMargin = toolbarViewTopMargin;
+        mutateHairlineLayoutParams().topMargin = toolbarViewTopMargin + mToolbarLayoutHeight;
 
         int toolbarAndTabStripHeight = tabStripHeight + getToolbarHeight();
-        mutateHairlineLayoutParams().topMargin = toolbarAndTabStripHeight;
         if (!applyScrimOverlay) {
             setMinimumHeight(toolbarAndTabStripHeight + getToolbarHairlineHeight());
         }
@@ -1524,13 +1522,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
         // Only notify TopControlsStacker when the Vertical Tabs top margin (which contributes to
         // getToolbarHeight()) changes, rather than on horizontal tabStripHeight changes (which are
-        // already managed by TabStripTopControlLayer). Triggering a layer update on tabStripHeight
-        // changes during a window transition (e.g. freeform <-> split-screen) computes layer
-        // offsets before post-transition layout settles, leaving a stale 40dp gap on native pages
-        // (e.g. NTP) where onBrowserControlsOffsetUpdate() is not dispatched afterward.
-        // TODO(crbug.com/557679152): Revisit once TopControlsStacker / BrowserControlsManager
-        // guarantees a resting-position offset update for non-animated transitions on native pages
-        // (NTP).
+        // already managed by TabStripTopControlLayer).
         if (mLastVerticalTabsTopMargin != verticalTabsTopMargin) {
             mLastVerticalTabsTopMargin = verticalTabsTopMargin;
             if (mTopControlsStacker != null) {

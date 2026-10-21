@@ -265,6 +265,9 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
         //  mToolbar.getTabStripHeight().
         mSupplier.set(newHeight);
 
+        // TODO(crbug.com/557679152): Ensure transitions complete and dispatch a resting-position
+        // offset update even when targetHeight == startHeight or on native pages (e.g. NTP) where
+        // renderer-driven onBrowserControlsOffsetUpdate() callbacks do not fire.
         if (isInTransition() && mTransitionState.targetHeight != mTransitionState.startHeight) {
             mTopControlsStacker.requestLayerUpdateSync(mTransitionState.hasAnimation);
             // onBrowserControlsOffsetUpdate() can be frozen if a tab is actively loading
