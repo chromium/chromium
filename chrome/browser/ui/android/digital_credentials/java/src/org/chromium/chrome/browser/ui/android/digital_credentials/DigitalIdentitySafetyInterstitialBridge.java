@@ -7,6 +7,10 @@ package org.chromium.chrome.browser.ui.android.digital_credentials;
 import android.app.Activity;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -27,26 +31,35 @@ import org.chromium.url.Origin;
  */
 @NullMarked
 public class DigitalIdentitySafetyInterstitialBridge {
-    private long mNativeDigitalIdentitySafetyInterstitialBridgeAndroid;
+    @JniType("::DigitalIdentitySafetyInterstitialBridgeAndroid")
+    interface NativeDigitalIdentitySafetyInterstitialBridgeAndroid extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeDigitalIdentitySafetyInterstitialBridgeAndroid>
+            mNativeDigitalIdentitySafetyInterstitialBridgeAndroid;
 
     private @Nullable DigitalIdentitySafetyInterstitialController mController;
 
     private DigitalIdentitySafetyInterstitialBridge(
-            long digitalIdentitySafetyInterstitialBridgeAndroid) {
+            JniRawPtr<NativeDigitalIdentitySafetyInterstitialBridgeAndroid>
+                    digitalIdentitySafetyInterstitialBridgeAndroid) {
         mNativeDigitalIdentitySafetyInterstitialBridgeAndroid =
                 digitalIdentitySafetyInterstitialBridgeAndroid;
     }
 
     @CalledByNative
     public static DigitalIdentitySafetyInterstitialBridge create(
-            long digitalIdentitySafetyInterstitialBridgeAndroid) {
+            JniRawPtr<NativeDigitalIdentitySafetyInterstitialBridgeAndroid>
+                    digitalIdentitySafetyInterstitialBridgeAndroid) {
         return new DigitalIdentitySafetyInterstitialBridge(
                 digitalIdentitySafetyInterstitialBridgeAndroid);
     }
 
     @CalledByNative
     private void destroy() {
-        mNativeDigitalIdentitySafetyInterstitialBridgeAndroid = 0;
+        if (mNativeDigitalIdentitySafetyInterstitialBridgeAndroid != null) {
+            mNativeDigitalIdentitySafetyInterstitialBridgeAndroid.release();
+            mNativeDigitalIdentitySafetyInterstitialBridgeAndroid = null;
+        }
         mController = null;
     }
 
@@ -98,7 +111,7 @@ public class DigitalIdentitySafetyInterstitialBridge {
     public void onDone(@DigitalIdentityRequestStatusForMetrics int statusForMetrics) {
         mController = null;
 
-        if (mNativeDigitalIdentitySafetyInterstitialBridgeAndroid != 0) {
+        if (mNativeDigitalIdentitySafetyInterstitialBridgeAndroid != null) {
             DigitalIdentitySafetyInterstitialBridgeJni.get()
                     .onInterstitialDone(
                             mNativeDigitalIdentitySafetyInterstitialBridgeAndroid,
@@ -123,7 +136,7 @@ public class DigitalIdentitySafetyInterstitialBridge {
     @NativeMethods
     interface Natives {
         void onInterstitialDone(
-                long nativeDigitalIdentitySafetyInterstitialBridgeAndroid,
+                JniPtr<NativeDigitalIdentitySafetyInterstitialBridgeAndroid> self,
                 @DigitalIdentityRequestStatusForMetrics int statusForMetrics);
     }
 }

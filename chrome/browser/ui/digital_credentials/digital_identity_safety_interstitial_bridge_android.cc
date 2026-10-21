@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "content/public/browser/digital_identity_interstitial_type.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "url/origin.h"
 
@@ -21,7 +22,7 @@ DigitalIdentitySafetyInterstitialBridgeAndroid::
     : weak_ptr_factory_(this) {
   JNIEnv* env = AttachCurrentThread();
   j_bridge_ = DigitalIdentitySafetyInterstitialBridgeJni::create(
-      env, reinterpret_cast<intptr_t>(this));
+      env, jni_zero::MakeRaw(this));
 }
 
 DigitalIdentitySafetyInterstitialBridgeAndroid::
