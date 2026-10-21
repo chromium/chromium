@@ -100,7 +100,8 @@ LocalTestPolicyUserManagementProvider::
 
 policy::EnterpriseManagementAuthority
 LocalTestPolicyUserManagementProvider::FetchAuthority() {
-  if (!profile_->GetPolicyConnector()->IsUsingLocalTestPolicyProvider()) {
+  if (!profile_ || !profile_->GetPolicyConnector() ||
+      !profile_->GetPolicyConnector()->IsUsingLocalTestPolicyProvider()) {
     return policy::EnterpriseManagementAuthority::NONE;
   }
   for (const auto& [_, entry] :
@@ -124,7 +125,8 @@ LocalTestPolicyBrowserManagementProvider::
 
 policy::EnterpriseManagementAuthority
 LocalTestPolicyBrowserManagementProvider::FetchAuthority() {
-  if (!profile_->GetPolicyConnector()->IsUsingLocalTestPolicyProvider()) {
+  if (!profile_ || !profile_->GetPolicyConnector() ||
+      !profile_->GetPolicyConnector()->IsUsingLocalTestPolicyProvider()) {
     return policy::EnterpriseManagementAuthority::NONE;
   }
   for (const auto& [_, entry] :

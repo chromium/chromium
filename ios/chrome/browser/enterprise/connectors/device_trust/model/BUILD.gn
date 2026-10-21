@@ -10,12 +10,26 @@ optimize_ts("device_trust_api_ts") {
   deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
 
+source_set("connector_service_factory") {
+  sources = [
+    "device_trust_connector_service_factory_ios.h",
+    "device_trust_connector_service_factory_ios.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/enterprise/device_trust",
+    "//components/enterprise/device_trust/core:device_trust_connector_service",
+    "//components/pref_registry",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+}
+
 source_set("model") {
   sources = [
     "device_trust_challenge_tab_helper.h",
     "device_trust_challenge_tab_helper.mm",
-    "device_trust_connector_service_factory_ios.h",
-    "device_trust_connector_service_factory_ios.mm",
     "device_trust_java_script_feature.h",
     "device_trust_java_script_feature.mm",
     "device_trust_key_manager_ios.h",
@@ -25,6 +39,8 @@ source_set("model") {
     "device_trust_util.h",
     "device_trust_util.mm",
   ]
+
+  public_deps = [ ":connector_service_factory" ]
 
   deps = [
     ":device_trust_api_ts",
