@@ -6,13 +6,18 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/default_browser/default_browser_manager.h"
+#include "chrome/browser/win/direct_launch/direct_launch_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/app_launch_prefetch/app_launch_prefetch.h"
 #endif
@@ -20,6 +25,15 @@
 namespace {
 
 ChromeProcessSingleton* g_chrome_process_singleton_ = nullptr;
+
+#if BUILDFLAG(IS_WIN)
+// Subscribes `callback` to changes of the default browser.
+base::CallbackListSubscription SubscribeToDefaultBrowserChanges(
+    default_browser::DefaultBrowserChangedCallback callback) {
+  return default_browser::DefaultBrowserManager::From(g_browser_process)
+      ->RegisterDefaultBrowserChanged(std::move(callback));
+}
+#endif
 
 }  // namespace
 
@@ -46,9 +60,23 @@ ProcessSingleton::NotifyResult
 
 void ChromeProcessSingleton::StartWatching() {
   process_singleton_.StartWatching();
+#if BUILDFLAG(IS_WIN)
+  // The shell hands direct launches to the process that would otherwise have
+  // received them through `process_singleton_`, so only the singleton instance
+  // may register for them.
+  if (is_singleton_instance_) {
+    direct_launch_manager_ =
+        std::make_unique<direct_launch::DirectLaunchManager>(
+            startup_lock_.AsNotificationCallback(),
+            base::BindOnce(&SubscribeToDefaultBrowserChanges));
+  }
+#endif
 }
 
 void ChromeProcessSingleton::Cleanup() {
+#if BUILDFLAG(IS_WIN)
+  direct_launch_manager_.reset();
+#endif
   if (is_singleton_instance_) {
     process_singleton_.Cleanup();
   }

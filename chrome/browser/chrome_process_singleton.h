@@ -5,16 +5,27 @@
 #ifndef CHROME_BROWSER_CHROME_PROCESS_SINGLETON_H_
 #define CHROME_BROWSER_CHROME_PROCESS_SINGLETON_H_
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "build/build_config.h"
 #include "chrome/browser/process_singleton.h"
 #include "chrome/browser/process_singleton_startup_lock.h"
+
+#if BUILDFLAG(IS_WIN)
+namespace direct_launch {
+class DirectLaunchManager;
+}  // namespace direct_launch
+#endif
 
 // Composes a `ProcessSingleton` with a `ProcessSingletonStartupLock`.
 //
 // Notifications from `ProcessSingleton` will be queued up until `Unlock()` is
 // called. Once unlocked, notifications will be passed to the
-// `NotificationCallback` passed to `Unlock()`.
+// `NotificationCallback` passed to `Unlock()`. On Windows, the same goes for
+// the launches that the shell hands straight to the singleton instance through
+// direct launch.
 class ChromeProcessSingleton {
  public:
   explicit ChromeProcessSingleton(const base::FilePath& user_data_dir);
@@ -34,10 +45,12 @@ class ChromeProcessSingleton {
   // Start watching for notifications from other processes. After this call,
   // the notifications sent by other process can be processed. This call
   // requires the browser threads (UI / IO) to be created. Requests that occur
-  // before calling StartWatching(...) will be blocked and may timeout.
+  // before calling StartWatching(...) will be blocked and may timeout. On
+  // Windows, the singleton instance also registers for direct launch.
   void StartWatching();
 
-  // Clear any lock state during shutdown.
+  // Clear any lock state during shutdown, and withdraw any direct launch
+  // registration.
   void Cleanup();
 
   // Executes previously queued command-line invocations and allows future
@@ -84,6 +97,13 @@ class ChromeProcessSingleton {
   // The basic ProcessSingleton
   ProcessSingleton process_singleton_;
   ProcessSingleton::NotificationCallback notification_callback_;
+
+#if BUILDFLAG(IS_WIN)
+  // Hands the launches that the shell delivers through direct launch to
+  // `startup_lock_`. Only set in the singleton instance, from
+  // `StartWatching()` until `Cleanup()`.
+  std::unique_ptr<direct_launch::DirectLaunchManager> direct_launch_manager_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_CHROME_PROCESS_SINGLETON_H_
