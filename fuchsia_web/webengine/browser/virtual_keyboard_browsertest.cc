@@ -162,8 +162,7 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, ShowAndHideWithVisibility) {
   // Alphanumeric field click.
   base::RunLoop on_show_run_loop;
   EXPECT_CALL(*controller_, RequestShow(testing::_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&on_show_run_loop]() { on_show_run_loop.Quit(); }))
+      .WillOnce([&on_show_run_loop]() { on_show_run_loop.Quit(); })
       .RetiresOnSaturation();
 
   // Numeric field click.
@@ -176,15 +175,13 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, ShowAndHideWithVisibility) {
                   testing::_))
       .RetiresOnSaturation();
   EXPECT_CALL(*controller_, RequestShow(testing::_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&click_numeric_run_loop]() { click_numeric_run_loop.Quit(); }))
+      .WillOnce([&click_numeric_run_loop]() { click_numeric_run_loop.Quit(); })
       .RetiresOnSaturation();
 
   // Input blur click.
   base::RunLoop on_hide_run_loop;
   EXPECT_CALL(*controller_, RequestHide(testing::_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&on_hide_run_loop]() { on_hide_run_loop.Quit(); }))
+      .WillOnce([&on_hide_run_loop]() { on_hide_run_loop.Quit(); })
       .RetiresOnSaturation();
 
   // In some cases, Blink may signal an
@@ -249,8 +246,8 @@ IN_PROC_BROWSER_TEST_F(VirtualKeyboardTest, InputModeMappings) {
             testing::Eq(MockVirtualKeyboardController::SetTextTypeRequest{
                 {.text_type = field_type_pair.second}}),
             testing::_))
-        .WillOnce(testing::InvokeWithoutArgs(
-            [run_loop = &set_type_loops[i]]() mutable { run_loop->Quit(); }))
+        .WillOnce(
+            [run_loop = &set_type_loops[i]]() mutable { run_loop->Quit(); })
         .RetiresOnSaturation();
     previous_text_type = field_type_pair.second;
   }

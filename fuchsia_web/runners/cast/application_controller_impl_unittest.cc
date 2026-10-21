@@ -19,8 +19,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::InvokeWithoutArgs;
-
 namespace {
 
 class MockFrame final : public fuchsia::web::testing::Frame_TestBase {
@@ -110,7 +108,7 @@ TEST_F(ApplicationControllerImplTest, ConfigureInputTypes) {
               ConfigureInputTypes(fuchsia::web::InputTypes::GESTURE_TAP |
                                       fuchsia::web::InputTypes::GESTURE_DRAG,
                                   fuchsia::web::AllowInputState::DENY))
-      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
 
   EXPECT_TRUE(application_client_->SetTouchInputEnabled(true).is_ok());
   EXPECT_TRUE(application_client_->SetTouchInputEnabled(true).is_ok());
