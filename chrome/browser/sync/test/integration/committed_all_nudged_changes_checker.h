@@ -16,7 +16,8 @@ class SyncServiceImpl;
 
 // Checker to block until all nudged changes have been committed to the server.
 // It doesn't rely on self invalidations and it's safe to be used in tests which
-// turn off self notifications.
+// turn off self notifications. The sync engine must already be initialized when
+// this checker is constructed.
 class CommittedAllNudgedChangesChecker
     : public SingleClientStatusChangeChecker {
  public:
