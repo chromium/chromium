@@ -1027,7 +1027,7 @@ class StoragePartitionImpl::DataDeletionHelper {
     kPluginPrivate = 7,       // Deprecated.
     kConversions = 8,         // Deprecated.
     kAggregationService = 9,  // Deprecated.
-    kSharedStorage = 10,
+    kSharedStorage = 10,      // Deprecated.
     kGpuCache = 11,
     kPrivateAggregation = 12,  // Deprecated.
     kInterestGroups = 13,      // Deprecated

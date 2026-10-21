@@ -2041,18 +2041,6 @@ BASE_FEATURE(kSetIntervalWithoutClamp, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSetSelectionForAccessibilityHandlingInputEvent,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSharedStorageWorkletSharedBackingThreadImplementation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSharedStorageCreateWorkletCustomDataOrigin,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSharedStorageSelectURLSavedQueries,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSharedStorageAPIEnableWALForDatabase,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const char kSkipTouchEventFilterTypeParamName[] = "type";
 const char kSkipTouchEventFilterTypeParamValueDiscrete[] = "discrete";
 const char kSkipTouchEventFilterTypeParamValueAll[] = "all";

@@ -142,7 +142,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
     kTrustTokens = 12,
     // Deprecated: kConversions = 13,
     // Deprecated: kDeferredCookies = 14,
-    kSharedStorage = 15,
+    // Deprecated: kSharedStorage = 15,
     kPreflightCache = 16,
     kSharedDictionary = 17,
     kPrefetchCache = 18,

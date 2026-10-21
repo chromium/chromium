@@ -642,8 +642,6 @@ TEST_P(BrowsingDataModelSharedWorkerTest, ThirdPartyCookieTypes) {
 
   std::map<BrowsingDataModel::StorageType, BrowsingDataModel::DataKey>
       third_party_cookie_types = {
-          {BrowsingDataModel::StorageType::kSharedStorage,
-           unpartitioned_storage_key},
           {BrowsingDataModel::StorageType::kLocalStorage,
            unpartitioned_storage_key},
           {BrowsingDataModel::StorageType::kQuotaStorage,
@@ -658,8 +656,6 @@ TEST_P(BrowsingDataModelSharedWorkerTest, ThirdPartyCookieTypes) {
 
   std::map<BrowsingDataModel::StorageType, BrowsingDataModel::DataKey>
       non_third_party_cookie_types = {
-          {BrowsingDataModel::StorageType::kSharedStorage,
-           partitioned_storage_key},
           {BrowsingDataModel::StorageType::kLocalStorage,
            partitioned_storage_key},
           {BrowsingDataModel::StorageType::kQuotaStorage,

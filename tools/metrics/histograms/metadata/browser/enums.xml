@@ -466,7 +466,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="CanRequestURL"/>
   <int value="4" label="AuctionProcessManager"/>
   <int value="5" label="ServiceWorkerProcessManager"/>
-  <int value="6" label="SharedStorageRenderThreadWorkletDriver"/>
+  <int value="6" label="(obsolete) SharedStorageRenderThreadWorkletDriver"/>
   <int value="7" label="SharedWorker"/>
   <int value="8" label="NoProcessCreationExpected"/>
   <int value="9" label="Test"/>

@@ -109,10 +109,6 @@ class BrowsingDataRemover {
   // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
   static constexpr DataType DATA_TYPE_INTEREST_GROUPS = 1 << 16;
 
-  // Shared storage API
-  // (https://github.com/pythagoraskitty/shared-storage) persistent storage.
-  static constexpr DataType DATA_TYPE_SHARED_STORAGE = 1 << 17;
-
   // Similar to DATA_TYPE_INTEREST_GROUPS, but only refers to data stored
   // internally by the API, such as k-Anonymity cache and rate limiting
   // information.
@@ -157,8 +153,7 @@ class BrowsingDataRemover {
   // Data stored by APIs in The Privacy Sandbox (https://privacysandbox.com/).
   static constexpr DataType DATA_TYPE_PRIVACY_SANDBOX =
       DATA_TYPE_TRUST_TOKENS | DATA_TYPE_INTEREST_GROUPS |
-      DATA_TYPE_SHARED_STORAGE | DATA_TYPE_INTEREST_GROUPS_INTERNAL |
-      DATA_TYPE_INTEREST_GROUPS_USER_CLEAR;
+      DATA_TYPE_INTEREST_GROUPS_INTERNAL | DATA_TYPE_INTEREST_GROUPS_USER_CLEAR;
 
   // Internal data stored by APIs in the Privacy Sandbox, e.g. privacy budgeting
   // information.

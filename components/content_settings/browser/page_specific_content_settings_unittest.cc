@@ -890,7 +890,7 @@ TEST_F(PageSpecificContentSettingsTest, BrowsingDataModelStorageAccess) {
       BrowsingDataModel::StorageType::kLocalStorage, blocked_by_policy);
   content_settings->OnBrowsingDataAccessed(
       CreateUnpartitionedStorageKey(GURL("https://www.youtube.com")),
-      BrowsingDataModel::StorageType::kSharedStorage, blocked_by_policy);
+      BrowsingDataModel::StorageType::kLocalStorage, blocked_by_policy);
 
   const auto* allowed_browsing_data_model =
       content_settings->allowed_browsing_data_model();

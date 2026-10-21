@@ -49,7 +49,6 @@ class BrowsingDataModel {
   // TODO(crbug.com/40205603): Complete implementations for all browsing data.
   enum class StorageType {
     kTrustTokens = 1,  // Only issuance information considered.
-    kSharedStorage = 2,
     kLocalStorage,
     kSessionStorage,
     kQuotaStorage,

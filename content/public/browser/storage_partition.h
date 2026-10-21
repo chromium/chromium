@@ -204,9 +204,6 @@ class CONTENT_EXPORT StoragePartition {
     // Public explainer here:
     // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
     REMOVE_DATA_MASK_INTEREST_GROUPS = 1 << 12,
-    // Shared storage data as part of the Shared Storage API.
-    // Public explainer: https://github.com/pythagoraskitty/shared-storage
-    REMOVE_DATA_MASK_SHARED_STORAGE = 1 << 14,
     // Fairly obscure cache of .well-known responses for cross-origin
     // joining/leaving of interest groups used by FLEDGE.
     // Public explainer here:

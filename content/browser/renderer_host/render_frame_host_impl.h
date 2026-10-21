@@ -10,7 +10,6 @@
 
 #include <array>
 #include <cstdint>
-#include <deque>
 #include <list>
 #include <map>
 #include <memory>
@@ -3128,12 +3127,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Subframe: RenderWidgetHost is owned by this RenderFrameHost.
   RenderWidgetHostImpl* GetLocalRenderWidgetHost() const;
 
-  // Called by `SharedStorageHeaderObserver` to add operation deferral callbacks
-  // to `deferred_shared_storage_header_callbacks_` to be run by
-  // `RunDeferredSharedStorageHeaderCallbacks()` after commit.
-  void AddDeferredSharedStorageHeaderCallback(
-      base::OnceCallback<void(NavigationOrDocumentHandle*)> callback);
-
   // Find the frame that triggered the beforeunload handler to run in this
   // frame, which might be the frame itself or its ancestor.  This will
   // return the frame that is navigating, or the main frame if beforeunload was
@@ -5496,11 +5489,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Listens for changes to DeviceBoundSessions on this page.
   std::unique_ptr<DeviceBoundSessionObserver> device_bound_session_observer_;
-
-  // Deferred shared storage operations to run after navigation commit in the
-  // event of a race between navigation and subresource request(s).
-  std::deque<base::OnceCallback<void(NavigationOrDocumentHandle*)>>
-      deferred_shared_storage_header_callbacks_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Holds a reference to a pending remote WebAuthn RP ID validation while one

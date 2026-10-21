@@ -71,12 +71,6 @@ suite('InspectUITest', function() {
         '/workers/workers_ui_shared_worker.html');
   });
 
-  test('SharedStorageWorklet', async () => {
-    await testTargetListed(
-        '#shared-storage-worklets', 'populateWorkerTargets',
-        '/shared_storage/simple_module.js');
-  });
-
   test('Empty', function() {
     // Intentionally empty test, for the browser test that calls
     // assertNativeButtonDisabled directly.

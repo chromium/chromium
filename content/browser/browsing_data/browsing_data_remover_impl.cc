@@ -485,10 +485,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR;
   }
-  if (remove_mask & DATA_TYPE_SHARED_STORAGE) {
-    storage_partition_remove_mask |=
-        StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE;
-  }
   if (remove_mask & DATA_TYPE_DEVICE_BOUND_SESSIONS) {
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS;
@@ -951,8 +947,6 @@ const char* BrowsingDataRemoverImpl::GetHistogramSuffix(TracingDataType task) {
       return "NetworkErrorLogging";
     case TracingDataType::kTrustTokens:
       return "TrustTokens";
-    case TracingDataType::kSharedStorage:
-      return "SharedStorage";
     case TracingDataType::kPreflightCache:
       return "PreflightCache";
     case TracingDataType::kSharedDictionary:

@@ -506,7 +506,7 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveBrowsingData) {
   BrowsingDataModel::DataKey thirdPartyDataKey =
       blink::StorageKey::CreateFirstParty(thirdPartyUrlOrigin);
   blocked_browsing_data_model->AddBrowsingData(
-      thirdPartyDataKey, BrowsingDataModel::StorageType::kSharedStorage,
+      thirdPartyDataKey, BrowsingDataModel::StorageType::kLocalStorage,
       /*storage_size=*/0);
 
   auto delegate =

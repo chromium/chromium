@@ -137,7 +137,7 @@ TEST_F(BrowsingDataHelperTest, GetUniqueThirdPartyCookiesHostCount) {
   // Should be consolidated in first entry.
   browsing_data_model->AddBrowsingData(
       blink::StorageKey::CreateFirstParty(url::Origin::Create(google_url)),
-      BrowsingDataModel::StorageType::kSharedStorage,
+      BrowsingDataModel::StorageType::kQuotaStorage,
       /*storage_size=*/0,
       /*cookie_count=*/0);
 

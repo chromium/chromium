@@ -32,7 +32,7 @@ enum class ProcessAllocationSource : uint8_t {
   kCanRequestURL = 3,
   kAuctionProcessManager = 4,
   kServiceWorkerProcessManager = 5,
-  kSharedStorageRenderThreadWorkletDriver = 6,
+  kSharedStorageRenderThreadWorkletDriver = 6,  // Deprecated.
   kSharedWorker = 7,
   // For callsites where GetOrCreateProcess is not expected to create a new
   // process.

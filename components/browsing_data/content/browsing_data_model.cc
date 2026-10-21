@@ -107,7 +107,6 @@ GetDataOwner::GetOwningOriginOrHost<blink::StorageKey>(
   // coexist.
   switch (storage_type_) {
     case BrowsingDataModel::StorageType::kQuotaStorage:
-    case BrowsingDataModel::StorageType::kSharedStorage:
     case BrowsingDataModel::StorageType::kLocalStorage:
     case BrowsingDataModel::StorageType::kCdmStorage:
     case BrowsingDataModel::StorageType::kSharedWorker:
@@ -828,7 +827,6 @@ bool BrowsingDataModel::IsStorageTypeCookieLike(
     case BrowsingDataModel::StorageType::kTrustTokens:
     case BrowsingDataModel::StorageType::kSharedDictionary:
       return false;
-    case BrowsingDataModel::StorageType::kSharedStorage:
     case BrowsingDataModel::StorageType::kLocalStorage:
     case BrowsingDataModel::StorageType::kQuotaStorage:
     case BrowsingDataModel::StorageType::kSessionStorage:
