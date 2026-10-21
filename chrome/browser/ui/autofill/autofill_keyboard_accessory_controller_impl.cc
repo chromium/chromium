@@ -28,7 +28,6 @@
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/at_memory_suggestion_controller.h"
@@ -993,11 +992,6 @@ void AutofillKeyboardAccessoryControllerImpl::
 void AutofillKeyboardAccessoryControllerImpl::OpenSettingsForEntityType(
     int32_t entity_type) {
   if (!web_contents_) {
-    return;
-  }
-  if (!base::FeatureList::IsEnabled(
-          chrome::android::kYourSavedInfoSettingsPageAndroid)) {
-    ShowAutofillProfileSettings(web_contents_.get());
     return;
   }
   std::optional<EntityTypeName> safe_type = ToSafeEntityTypeName(entity_type);
