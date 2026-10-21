@@ -1867,17 +1867,13 @@ public class ToolbarControlContainerTest {
     @EnableFeatures(ChromeFeatureList.TOOLBAR_SNAPSHOT_REFACTOR)
     public void
             testOnHeightChanged_WithToolbarSnapshotRefactorEnabled_SetsToolbarViewTopMarginToZero() {
-        // Setup.
         initControlContainer(R.layout.toolbar_tablet);
         int toolbarLayoutHeight =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
         ((MarginLayoutParams) mToolbarView.getLayoutParams()).topMargin = 80;
-
-        // Act.
         mControlContainer.onHeightChanged(
                 /* tabStripHeight= */ 80, /* topPadding= */ 20, /* applyScrimOverlay= */ false);
 
-        // Verify.
         assertEquals(0, ((MarginLayoutParams) mToolbarView.getLayoutParams()).topMargin);
         assertEquals(
                 toolbarLayoutHeight,
@@ -1888,16 +1884,12 @@ public class ToolbarControlContainerTest {
     @DisableFeatures(ChromeFeatureList.TOOLBAR_SNAPSHOT_REFACTOR)
     public void
             testOnHeightChanged_WithToolbarSnapshotRefactorDisabled_SetsToolbarViewTopMarginToTabStripHeight() {
-        // Setup.
         initControlContainer(R.layout.toolbar_tablet);
         int toolbarLayoutHeight =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
-
-        // Act.
         mControlContainer.onHeightChanged(
                 /* tabStripHeight= */ 80, /* topPadding= */ 20, /* applyScrimOverlay= */ false);
 
-        // Verify.
         assertEquals(80, ((MarginLayoutParams) mToolbarView.getLayoutParams()).topMargin);
         assertEquals(
                 80 + toolbarLayoutHeight,
@@ -1908,7 +1900,6 @@ public class ToolbarControlContainerTest {
     @DisableFeatures(ChromeFeatureList.TOOLBAR_SNAPSHOT_REFACTOR)
     public void
             testOnHeightChanged_VerticalTabsWithCaptionControlsTopOffset_ExcludesTopOffsetFromHairlineTopMargin() {
-        // Setup.
         initControlContainer(R.layout.toolbar_tablet);
         Resources res = mActivity.getResources();
         int toolbarLayoutHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
@@ -1928,11 +1919,9 @@ public class ToolbarControlContainerTest {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
         mControlContainer.onAppHeaderStateChanged(appHeaderState);
 
-        // Act.
         mControlContainer.onHeightChanged(
                 /* tabStripHeight= */ 0, /* topPadding= */ 0, /* applyScrimOverlay= */ false);
 
-        // Verify.
         assertEquals(0, ((MarginLayoutParams) mToolbarView.getLayoutParams()).topMargin);
         assertEquals(
                 toolbarLayoutHeight,
