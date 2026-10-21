@@ -5,6 +5,7 @@
 #include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator_proxy_impl.h"
@@ -112,6 +113,9 @@ void PipScreenCaptureCoordinatorImpl::OnPipInitiated(
     return;
   }
 
+  // A new session starts here. Reset in case OnPipClosed() was not called for
+  // the previous one.
+  was_excluded_from_screen_capture_ = false;
   bool was_excluded = IsExcludedFromScreenCapture();
   pip_owner_render_frame_host_id_ = pip_owner_render_frame_host_id;
   NotifyStateChanged();
@@ -147,6 +151,10 @@ void PipScreenCaptureCoordinatorImpl::OnPipClosed() {
   if (!pip_window_id_ && !pip_owner_render_frame_host_id_) {
     return;
   }
+  base::UmaHistogramBoolean(
+      "Media.DocumentPictureInPicture.ScreenCaptureExclusion",
+      was_excluded_from_screen_capture_);
+  was_excluded_from_screen_capture_ = false;
   pip_window_id_ = std::nullopt;
   pip_owner_render_frame_host_id_ = {};
   NotifyStateChanged();
@@ -220,6 +228,9 @@ void PipScreenCaptureCoordinatorImpl::NotifyStateChanged() {
 void PipScreenCaptureCoordinatorImpl::NotifyExclusionChanged(
     bool was_excluded) {
   bool is_excluded = IsExcludedFromScreenCapture();
+  if (is_excluded) {
+    was_excluded_from_screen_capture_ = true;
+  }
   if (was_excluded != is_excluded) {
     for (desktop_capture::PipScreenCaptureExclusionObserver& obs :
          exclusion_observers_) {
@@ -271,6 +282,7 @@ bool PipScreenCaptureCoordinatorImpl::IsExcludedFromScreenCapture() const {
 void PipScreenCaptureCoordinatorImpl::ResetForTesting() {
   pip_window_id_ = std::nullopt;
   pip_owner_render_frame_host_id_ = {};
+  was_excluded_from_screen_capture_ = false;
   observers_.Clear();
   exclusion_observers_.Clear();
   captures_.clear();

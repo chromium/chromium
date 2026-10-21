@@ -19,6 +19,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/windows_version.h"
@@ -213,6 +214,7 @@ class DesktopWindowTreeHostWinRemoteSessionTest
 
 TEST_P(DesktopWindowTreeHostWinRemoteSessionTest, UpdateDisplayAffinity) {
   const RemoteSessionExclusionTestParams& test_params = GetParam();
+  base::HistogramTester histogram_tester;
 
   ::base::test::ScopedFeatureList scoped_feature_list;
   if (test_params.feature_enabled) {
@@ -242,6 +244,15 @@ TEST_P(DesktopWindowTreeHostWinRemoteSessionTest, UpdateDisplayAffinity) {
   HWND hwnd = host_api.GetHWND();
   EXPECT_TRUE(::GetWindowDisplayAffinity(hwnd, &affinity));
 
+  const auto expected_bucket =
+      test_params.expect_exclusion
+          ? DesktopWindowTreeHostWin::DisplayAffinityResult::kSuccess
+          : DesktopWindowTreeHostWin::DisplayAffinityResult::
+                kSkippedRemoteSession;
+  constexpr char kHistogram[] =
+      "Media.DocumentPictureInPicture.Win.DisplayAffinityResult";
+  histogram_tester.ExpectUniqueSample(kHistogram, expected_bucket, 1);
+
   if (test_params.expect_exclusion) {
     if (base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
       EXPECT_EQ(static_cast<DWORD>(WDA_EXCLUDEFROMCAPTURE), affinity);
@@ -251,6 +262,17 @@ TEST_P(DesktopWindowTreeHostWinRemoteSessionTest, UpdateDisplayAffinity) {
   } else {
     EXPECT_EQ(static_cast<DWORD>(WDA_NONE), affinity);
   }
+
+  // Hiding and showing again is the same activation and records nothing new.
+  widget.Hide();
+  widget.Show();
+  histogram_tester.ExpectUniqueSample(kHistogram, expected_bucket, 1);
+
+  // Turning exclusion off and on again on a visible widget is a new
+  // activation.
+  widget.SetExcludeFromScreenCapture(false);
+  widget.SetExcludeFromScreenCapture(true);
+  histogram_tester.ExpectUniqueSample(kHistogram, expected_bucket, 2);
 }
 
 INSTANTIATE_TEST_SUITE_P(

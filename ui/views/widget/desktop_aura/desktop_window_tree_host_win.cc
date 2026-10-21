@@ -21,6 +21,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
@@ -1629,6 +1630,9 @@ void DesktopWindowTreeHostWin::SetExcludeFromScreenCapture(bool exclude) {
   }
 
   exclude_from_capture_ = exclude;
+  if (!exclude_from_capture_) {
+    has_recorded_capture_exclusion_metric_ = false;
+  }
 
   if (!IsVisible()) {
     return;
@@ -1729,7 +1733,9 @@ aura::Window* DesktopWindowTreeHostWin::content_window() {
 
 void DesktopWindowTreeHostWin::UpdateDisplayAffinity() {
   DWORD affinity = WDA_NONE;
-  if (exclude_from_capture_ && IsCaptureExclusionAllowed()) {
+  const bool apply_capture_exclusion =
+      exclude_from_capture_ && IsCaptureExclusionAllowed();
+  if (apply_capture_exclusion) {
     // `exclude_from_capture_` is used to exclude the window completely from
     // screen capture. On Windows 10 20H1 and newer, we use
     // WDA_EXCLUDEFROMCAPTURE which hides the window from capture while keeping
@@ -1759,7 +1765,23 @@ void DesktopWindowTreeHostWin::UpdateDisplayAffinity() {
     }
   }
 
-  SetWindowDisplayAffinity(GetHWND(), affinity);
+  const bool set_affinity_succeeded =
+      SetWindowDisplayAffinity(GetHWND(), affinity);
+
+  if (IsVisible() && exclude_from_capture_ &&
+      !has_recorded_capture_exclusion_metric_) {
+    has_recorded_capture_exclusion_metric_ = true;
+    // `exclude_from_capture_` is true here, so not applying exclusion means it
+    // was skipped because of a remote session.
+    const DisplayAffinityResult result =
+        !apply_capture_exclusion
+            ? DisplayAffinityResult::kSkippedRemoteSession
+            : (set_affinity_succeeded
+                   ? DisplayAffinityResult::kSuccess
+                   : DisplayAffinityResult::kSetWindowDisplayAffinityFailed);
+    base::UmaHistogramEnumeration(
+        "Media.DocumentPictureInPicture.Win.DisplayAffinityResult", result);
+  }
 
   // Propagate the new display affinity to any active native system menu.
   ApplyAffinityToActiveSystemMenus(affinity);
