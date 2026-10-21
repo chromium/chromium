@@ -2222,7 +2222,7 @@ CSSMathExpressionOperation::ConvertLiteralsFromPercentageToNumber() const {
   CalculationResultCategory category =
       category_ == kCalcPercent ? kCalcNumber : category_;
   return MakeGarbageCollected<CSSMathExpressionOperation>(
-      category, std::move(ops), operator_, type_);
+      category, std::move(ops), operator_, type_, clamping_);
 }
 
 namespace {
@@ -2435,7 +2435,8 @@ std::tuple<const CSSMathExpressionNode*, wtf_size_t> SubstituteForSizeKeyword(
     CSSMathExpressionOperation* new_op =
         MakeGarbageCollected<CSSMathExpressionOperation>(
             operation->Category(), std::move(dest_operands),
-            operation->OperatorType(), operation->Type());
+            operation->OperatorType(), operation->Type(),
+            operation->Clamping());
     return std::make_tuple(MaybeSimplifyIfSumOrProductNode(new_op),
                            total_substitution_count);
   }
@@ -2466,7 +2467,7 @@ const CSSMathExpressionNode* SubstituteForPercentages(
 
     return MakeGarbageCollected<CSSMathExpressionOperation>(
         operation->Category(), std::move(dest_operands),
-        operation->OperatorType(), operation->Type());
+        operation->OperatorType(), operation->Type(), operation->Clamping());
   }
 
   if (const auto* numeric_literal =
@@ -2806,11 +2807,13 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
     CalculationResultCategory category,
     Operands&& operands,
     CSSMathOperator op,
-    CSSMathType type)
+    CSSMathType type,
+    ProgressClamping clamping)
     : CSSMathExpressionNode(category),
       operands_(std::move(operands)),
       operator_(op),
-      type_(std::move(type)) {
+      type_(std::move(type)),
+      clamping_(clamping) {
   DCHECK_NE(CSSMathOperator::kDivide, op);
   if (IsComparison(operator_) || AnyOperandHasComparisons(operands_)) {
     value_feature_flags_ = kHasComparisons;
@@ -3103,7 +3106,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
         std::move(operands), op);
   }
   return CalculationExpressionOperationNode::CreateSimplified(
-      std::move(operands), op);
+      std::move(operands), op, clamping_);
 }
 
 double CSSMathExpressionOperation::DoubleValue() const {
@@ -3452,6 +3455,9 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       StringBuilder result;
       result.Append(ToString(operator_));
       result.Append('(');
+      if (clamping_ == ProgressClamping::kNoClamp) {
+        result.Append("no-clamp ");
+      }
       SerializeTopLevelNode(operands_.front(), result);
       result.Append(", ");
       SerializeTopLevelNode(operands_[1], result);
@@ -3483,7 +3489,7 @@ bool CSSMathExpressionOperation::operator==(
   }
 
   const CSSMathExpressionOperation& other = To<CSSMathExpressionOperation>(exp);
-  if (operator_ != other.operator_) {
+  if (operator_ != other.operator_ || clamping_ != other.clamping_) {
     return false;
   }
   if (operands_.size() != other.operands_.size()) {
@@ -3613,7 +3619,8 @@ const CSSMathExpressionNode* CSSMathExpressionOperation::GetNumericLiteralSide(
 // static
 double CSSMathExpressionOperation::EvaluateOperator(
     const Vector<double>& operands,
-    CSSMathOperator op) {
+    CSSMathOperator op,
+    ProgressClamping clamping) {
   // Design doc for infinity and NaN: https://bit.ly/349gXjq
 
   // Any operation with at least one NaN argument produces NaN
@@ -3746,12 +3753,8 @@ double CSSMathExpressionOperation::EvaluateOperator(
     case CSSMathOperator::kMediaProgress:
     case CSSMathOperator::kContainerProgress: {
       CHECK_EQ(operands.size(), 3u);
-      double progress_value =
-          (operands[0] - operands[1]) / (operands[2] - operands[1]);
-      if (std::isnan(progress_value)) {
-        return NAN;
-      }
-      return std::clamp(progress_value, 0., 1.);
+      return EvaluateProgressFunction(operands[0], operands[1], operands[2],
+                                      clamping);
     }
     case CSSMathOperator::kCalcSize: {
       CHECK_EQ(operands.size(), 2u);
@@ -3789,7 +3792,7 @@ const CSSMathExpressionNode& CSSMathExpressionOperation::PopulateWithTreeScope(
     populated_operands.push_back(&op->EnsureScopedValue(tree_scope));
   }
   return *MakeGarbageCollected<CSSMathExpressionOperation>(
-      Category(), std::move(populated_operands), operator_, type_);
+      Category(), std::move(populated_operands), operator_, type_, clamping_);
 }
 
 const CSSMathExpressionNode* CSSMathExpressionOperation::TransformAnchors(
@@ -3803,7 +3806,8 @@ const CSSMathExpressionNode* CSSMathExpressionOperation::TransformAnchors(
   }
   if (transformed_operands != operands_) {
     return MakeGarbageCollected<CSSMathExpressionOperation>(
-        Category(), std::move(transformed_operands), operator_, type_);
+        Category(), std::move(transformed_operands), operator_, type_,
+        clamping_);
   }
   return this;
 }
@@ -4470,6 +4474,13 @@ class CSSMathExpressionNodeParser {
     // <calc-sum>)
     CSSMathExpressionOperation::Operands nodes;
     stream.ConsumeWhitespace();
+    ProgressClamping clamping = ProgressClamping::kClamp;
+    if (function_id == CSSValueID::kProgress &&
+        RuntimeEnabledFeatures::CSSProgressNotationNoClampEnabled() &&
+        stream.Peek().Id() == CSSValueID::kNoClamp) {
+      stream.ConsumeIncludingWhitespace();
+      clamping = ProgressClamping::kNoClamp;
+    }
     if (function_id == CSSValueID::kMediaProgress) {
       if (CSSMathExpressionKeywordLiteral* node = ParseKeywordLiteral(
               stream,
@@ -4500,7 +4511,7 @@ class CSSMathExpressionNodeParser {
       }
     } else if (CSSMathExpressionNode* node =
                    ParseValueExpression(stream, state)) {
-      // <progress()> = progress(<calc-sum>, <calc-sum>, <calc-sum>)
+      // <progress()> = progress(no-clamp? <calc-sum>, <calc-sum>, <calc-sum>)
       nodes.push_back(node);
     }
     if (!ParseProgressNotationStartAndEndValues(stream, state, nodes)) {
@@ -4532,17 +4543,15 @@ class CSSMathExpressionNodeParser {
           double_values.push_back(operand->DoubleValue());
         }
       }
-      double progress_value = (double_values[0] - double_values[1]) /
-                              (double_values[2] - double_values[1]);
-      if (!std::isnan(progress_value)) {
-        progress_value = std::clamp(progress_value, 0., 1.);
-      }
+      CHECK_EQ(double_values.size(), 3u);
+      double progress_value = EvaluateProgressFunction(
+          double_values[0], double_values[1], double_values[2], clamping);
       return CSSMathExpressionNumericLiteral::Create(
           progress_value, CSSPrimitiveValue::UnitType::kNumber);
     }
     return MakeGarbageCollected<CSSMathExpressionOperation>(
         CalculationResultCategory::kCalcNumber, std::move(nodes),
-        CSSValueIDToCSSMathOperator(function_id), CSSMathType());
+        CSSValueIDToCSSMathOperator(function_id), CSSMathType(), clamping);
   }
 
   CSSMathExpressionNode* ParseCalcSize(CSSValueID function_id,
@@ -5429,7 +5438,7 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
                                : CSSMathOperator::kMediaProgress;
       return MakeGarbageCollected<CSSMathExpressionOperation>(
           CalculationResultCategory::kCalcNumber, std::move(operands), op,
-          CSSMathType());
+          CSSMathType(), operation.Clamping());
     }
     case CalculationOperator::kCalcSize: {
       CHECK_EQ(children.size(), 2u);

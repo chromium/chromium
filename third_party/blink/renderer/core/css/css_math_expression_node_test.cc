@@ -560,6 +560,9 @@ TEST(CSSMathExpressionNode, TestProgressNotation) {
       {"progress(1px, 0px, 4px)", 0.25f},
       {"progress(10deg, 0deg, 10deg)", 1.0f},
       {"progress(progress(10%, 0%, 40%) * 1px, 0.5px, 1px)", 0.f},
+      {"progress(2px, 1px, 1px)", 0.f},
+      {"progress(no-clamp 2px, 0px, 1px)", 2.f},
+      {"progress(no-clamp 1px, 1px, 1px)", 0.f},
   };
 
   for (const auto& test_case : test_cases) {
@@ -603,6 +606,26 @@ TEST(CSSMathExpressionNode, TestProgressNotationComplex) {
     // Very close to 0.0f, but not exactly 0.0f for unknown reason.
     EXPECT_NEAR(node->Evaluate(FLT_MAX, {}), test_case.output, 0.001);
   }
+}
+
+TEST(CSSMathExpressionNode, TestProgressNotationNoClampComparison) {
+  const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  CSSParserLocalContext local_context =
+      CSSParserLocalContext::CreateWithoutPropertyForTest();
+  auto parse = [&](const char* input) {
+    CSSParserTokenStream stream(input);
+    return CSSMathExpressionNode::ParseMathFunction(
+        CSSValueID::kCalc, stream, *context, local_context,
+        Flags({Flag::AllowPercent}), kCSSAnchorQueryTypesNone);
+  };
+  const CSSMathExpressionNode* clamped = parse("progress(1em, 0px, 4px)");
+  const CSSMathExpressionNode* no_clamp =
+      parse("progress(no-clamp 1em, 0px, 4px)");
+  ASSERT_TRUE(clamped);
+  ASSERT_TRUE(no_clamp);
+  EXPECT_NE(*clamped, *no_clamp);
+  EXPECT_EQ(*no_clamp, *no_clamp->Copy());
 }
 
 TEST(CSSMathExpressionNode, TestInvalidProgressNotation) {

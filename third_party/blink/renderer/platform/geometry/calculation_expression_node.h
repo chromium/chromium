@@ -8,6 +8,7 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/geometry/color_channel_keyword.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/geometry/progress_clamping.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -314,13 +315,17 @@ class PLATFORM_EXPORT CalculationExpressionOperationNode final
 
   static const CalculationExpressionNode* CreateSimplified(
       Children&& children,
-      CalculationOperator op);
+      CalculationOperator op,
+      ProgressClamping clamping = ProgressClamping::kClamp);
 
-  CalculationExpressionOperationNode(Children&& children,
-                                     CalculationOperator op);
+  CalculationExpressionOperationNode(
+      Children&& children,
+      CalculationOperator op,
+      ProgressClamping clamping = ProgressClamping::kClamp);
 
   const Children& GetChildren() const { return children_; }
   CalculationOperator GetOperator() const { return operator_; }
+  ProgressClamping Clamping() const { return clamping_; }
 
   // Implement |CalculationExpressionNode|:
   float Evaluate(float max_value, const EvaluationInput&) const final;
@@ -336,6 +341,7 @@ class PLATFORM_EXPORT CalculationExpressionOperationNode final
  private:
   Children children_;
   CalculationOperator operator_;
+  ProgressClamping clamping_;
 };
 
 template <>

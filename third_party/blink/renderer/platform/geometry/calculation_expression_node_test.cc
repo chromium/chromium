@@ -13,7 +13,8 @@ namespace {
 
 const CalculationExpressionOperationNode* BuildOperationNode(
     Vector<float> numbers,
-    CalculationOperator op) {
+    CalculationOperator op,
+    ProgressClamping clamping = ProgressClamping::kClamp) {
   CalculationExpressionOperationNode::Children operands;
   for (float number : numbers) {
     const CalculationExpressionNumberNode* operand =
@@ -21,7 +22,7 @@ const CalculationExpressionOperationNode* BuildOperationNode(
     operands.push_back(operand);
   }
   return MakeGarbageCollected<CalculationExpressionOperationNode>(
-      std::move(operands), op);
+      std::move(operands), op, clamping);
 }
 
 }  // namespace
@@ -204,9 +205,57 @@ TEST(CalculationExpressionOperationNodeTest, ProgressNotation) {
       BuildOperationNode({10.f, 5.f, 10.f}, CalculationOperator::kProgress)
           ->Evaluate(FLT_MAX, {}),
       1.f);
-  EXPECT_TRUE(std::isnan(
-      BuildOperationNode({0.f, 0.f, 0.f}, CalculationOperator::kProgress)
-          ->Evaluate(FLT_MAX, {})));
+  EXPECT_EQ(BuildOperationNode({0.f, 0.f, 0.f}, CalculationOperator::kProgress)
+                ->Evaluate(FLT_MAX, {}),
+            0.f);
+  EXPECT_EQ(BuildOperationNode({3.f, 0.f, 1.f}, CalculationOperator::kProgress,
+                               ProgressClamping::kNoClamp)
+                ->Evaluate(FLT_MAX, {}),
+            3.f);
+  EXPECT_EQ(BuildOperationNode({2.f, 1.f, 1.f}, CalculationOperator::kProgress,
+                               ProgressClamping::kNoClamp)
+                ->Evaluate(FLT_MAX, {}),
+            INFINITY);
+  EXPECT_EQ(BuildOperationNode({0.f, 1.f, 1.f}, CalculationOperator::kProgress,
+                               ProgressClamping::kNoClamp)
+                ->Evaluate(FLT_MAX, {}),
+            -INFINITY);
+  EXPECT_EQ(BuildOperationNode({0.f, INFINITY, INFINITY},
+                               CalculationOperator::kProgress,
+                               ProgressClamping::kClamp)
+                ->Evaluate(FLT_MAX, {}),
+            0.f);
+  EXPECT_EQ(BuildOperationNode({0.f, INFINITY, INFINITY},
+                               CalculationOperator::kProgress,
+                               ProgressClamping::kNoClamp)
+                ->Evaluate(FLT_MAX, {}),
+            -INFINITY);
+  EXPECT_TRUE(std::isnan(BuildOperationNode({NAN, 1.f, 1.f},
+                                            CalculationOperator::kProgress,
+                                            ProgressClamping::kClamp)
+                             ->Evaluate(FLT_MAX, {})));
+  EXPECT_TRUE(std::isnan(BuildOperationNode({NAN, 1.f, 1.f},
+                                            CalculationOperator::kProgress,
+                                            ProgressClamping::kNoClamp)
+                             ->Evaluate(FLT_MAX, {})));
+  EXPECT_TRUE(std::isnan(BuildOperationNode({1.f, NAN, NAN},
+                                            CalculationOperator::kProgress,
+                                            ProgressClamping::kClamp)
+                             ->Evaluate(FLT_MAX, {})));
+  EXPECT_TRUE(std::isnan(BuildOperationNode({1.f, NAN, NAN},
+                                            CalculationOperator::kProgress,
+                                            ProgressClamping::kNoClamp)
+                             ->Evaluate(FLT_MAX, {})));
+}
+
+TEST(CalculationExpressionOperationNodeTest, ProgressNoClampComparison) {
+  const CalculationExpressionOperationNode* clamped =
+      BuildOperationNode({3.f, 0.f, 1.f}, CalculationOperator::kProgress);
+  const CalculationExpressionOperationNode* no_clamp =
+      BuildOperationNode({3.f, 0.f, 1.f}, CalculationOperator::kProgress,
+                         ProgressClamping::kNoClamp);
+  EXPECT_NE(*clamped, *no_clamp);
+  EXPECT_EQ(no_clamp->Zoom(2)->Evaluate(FLT_MAX, {}), 3.f);
 }
 
 TEST(CalculationExpressionOperationNodeTest, ColorChannelKeywordNode) {

@@ -934,6 +934,7 @@ component("platform") {
     "geometry/physical_offset.h",
     "geometry/physical_size.cc",
     "geometry/physical_size.h",
+    "geometry/progress_clamping.h",
     "geometry/skia_geometry_utils.h",
     "geometry/stroke_data.cc",
     "geometry/stroke_data.h",

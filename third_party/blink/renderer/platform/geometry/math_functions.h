@@ -5,16 +5,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_MATH_FUNCTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_MATH_FUNCTIONS_H_
 
+#include <algorithm>
 #include <array>
 #include <cfloat>
 #include <cmath>
+#include <limits>
 #include <optional>
 #include <type_traits>
 #include <utility>
 
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
+#include "third_party/blink/renderer/platform/geometry/progress_clamping.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/sin_cos_degrees.h"
 
 namespace blink {
@@ -109,6 +113,33 @@ T TanDegrees(T degrees) {
 }
 
 }  // namespace
+
+template <typename ValueType>
+  requires std::floating_point<ValueType>
+ValueType EvaluateProgressFunction(ValueType progress,
+                                   ValueType start,
+                                   ValueType end,
+                                   ProgressClamping clamping) {
+  if (start == end &&
+      RuntimeEnabledFeatures::CSSProgressNotationNoClampEnabled()) {
+    if (std::isnan(progress)) {
+      return progress;
+    }
+    // If no-clamp is specified, return 0, -infinity, or infinity, depending on
+    // whether progress is equal to, less than, or greater than start and end.
+    // Otherwise, return 0. See: https://drafts.csswg.org/css-values-5/#progress
+    if (clamping == ProgressClamping::kNoClamp && progress != start) {
+      return progress < start ? -std::numeric_limits<ValueType>::infinity()
+                              : std::numeric_limits<ValueType>::infinity();
+    }
+    return 0;
+  }
+  ValueType result = (progress - start) / (end - start);
+  if (clamping == ProgressClamping::kNoClamp || std::isnan(result)) {
+    return result;
+  }
+  return std::clamp(result, ValueType{0}, ValueType{1});
+}
 
 template <class OperatorType, typename ValueType>
   requires std::is_enum_v<OperatorType> && std::floating_point<ValueType>

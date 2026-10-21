@@ -2039,6 +2039,9 @@
     "per-line-all",
     "consistent",
 
+    // progress()
+    "no-clamp",
+
     // media-progress()
     "media-progress",
 
