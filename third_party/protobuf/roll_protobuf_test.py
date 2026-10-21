@@ -102,6 +102,14 @@ def _CreateUpstreamAndChromiumRepositories(
     return upstream_directory, chromium_directory, commit_hash
 
 
+def _RunMain(*arguments: str) -> tuple[int, str, str]:
+    """Runs roll_protobuf.main(arguments) and returns (code, stdout, stderr)."""
+    stdout, stderr = io.StringIO(), io.StringIO()
+    with mock.patch('sys.stdout', stdout), mock.patch('sys.stderr', stderr):
+        return (roll_protobuf.main(list(arguments)), stdout.getvalue().strip(),
+                stderr.getvalue().strip())
+
+
 class RollProtobufTest(unittest.TestCase):
     """Proves upstream cache, archive extraction, and patch invariants."""
 
@@ -1262,33 +1270,7 @@ class RollProtobufTest(unittest.TestCase):
                 'chromium_only_files (+) and upstream_only_files (-).'),
         )
 
-    def testMainCheckExitsZeroWhenTreeIsClean(self):
-        upstream_directory, chromium_directory, _ = (
-            _CreateUpstreamAndChromiumRepositories(
-                self.temporary_directory,
-                upstream_files={
-                    'src/google/protobuf/arena.h': '// arena\n',
-                },
-                chromium_files={
-                    'src/google/protobuf/arena.h': '// arena\n',
-                },
-            ))
-        with mock.patch('sys.stdout', io.StringIO()):
-            exit_code = roll_protobuf.main([
-                'check',
-                '--protobuf-dir',
-                chromium_directory,
-                '--upstream-repo',
-                upstream_directory,
-            ])
-
-        self.assertEqual(
-            roll_protobuf.EXIT_CODE_SUCCESS,
-            exit_code,
-            msg='Expected main(["check", ...]) to exit 0 when tree is clean.',
-        )
-
-    def testMainCheckPrintsSummaryWhenTreeIsClean(self):
+    def testMainCheckExitsZeroAndPrintsSummaryWhenTreeIsClean(self):
         upstream_directory, chromium_directory, commit_hash = (
             _CreateUpstreamAndChromiumRepositories(
                 self.temporary_directory,
@@ -1299,58 +1281,27 @@ class RollProtobufTest(unittest.TestCase):
                     'src/google/protobuf/arena.h': '// arena\n',
                 },
             ))
-        captured_stdout = io.StringIO()
-        with mock.patch('sys.stdout', captured_stdout):
-            roll_protobuf.main([
-                'check',
-                '--protobuf-dir',
-                chromium_directory,
-                '--upstream-repo',
-                upstream_directory,
-            ])
+
+        exit_code, stdout, _ = _RunMain(
+            'check',
+            '--protobuf-dir',
+            chromium_directory,
+            '--upstream-repo',
+            upstream_directory,
+        )
 
         self.assertEqual(
             (
+                roll_protobuf.EXIT_CODE_SUCCESS,
                 f'Verified //third_party/protobuf matches upstream '
-                f'{commit_hash} plus 0 patch(es).'
+                f'{commit_hash} plus 0 patch(es).',
             ),
-            captured_stdout.getvalue().strip(),
-            msg=(
-                'Expected main(["check", ...]) to print a single '
-                'verification summary line when the tree matches.'),
+            (exit_code, stdout),
+            msg=('Expected main(["check", ...]) to exit 0 and print a single '
+                 'verification summary line when the tree matches.'),
         )
 
-    def testMainCheckExitsOneWhenPatchIsMissing(self):
-        upstream_directory, chromium_directory, _ = (
-            _CreateUpstreamAndChromiumRepositories(
-                self.temporary_directory,
-                upstream_files={
-                    'src/google/protobuf/message.h':
-                    ('int Value() { return 1; }\n'),
-                },
-                chromium_files={
-                    'src/google/protobuf/message.h':
-                    ('int Value() { return 2; }\n'),
-                },
-            ))
-        with mock.patch('sys.stdout', io.StringIO()):
-            exit_code = roll_protobuf.main([
-                'check',
-                '--protobuf-dir',
-                chromium_directory,
-                '--upstream-repo',
-                upstream_directory,
-            ])
-
-        self.assertEqual(
-            roll_protobuf.EXIT_CODE_ERROR,
-            exit_code,
-            msg=(
-                'Expected main(["check", ...]) to exit 1 when a tracked file '
-                'differs without a corresponding patch.'),
-        )
-
-    def testMainCheckListsModifiedFileWhenPatchIsMissing(self):
+    def testMainCheckExitsOneAndListsModifiedFileWhenPatchIsMissing(self):
         upstream_directory, chromium_directory, commit_hash = (
             _CreateUpstreamAndChromiumRepositories(
                 self.temporary_directory,
@@ -1363,27 +1314,26 @@ class RollProtobufTest(unittest.TestCase):
                     ('int Value() { return 2; }\n'),
                 },
             ))
-        captured_stdout = io.StringIO()
-        with mock.patch('sys.stdout', captured_stdout):
-            roll_protobuf.main([
-                'check',
-                '--protobuf-dir',
-                chromium_directory,
-                '--upstream-repo',
-                upstream_directory,
-            ])
+
+        exit_code, stdout, _ = _RunMain(
+            'check',
+            '--protobuf-dir',
+            chromium_directory,
+            '--upstream-repo',
+            upstream_directory,
+        )
 
         self.assertEqual(
             (
+                roll_protobuf.EXIT_CODE_ERROR,
                 f'//third_party/protobuf does not match upstream '
                 f'{commit_hash} plus patches/*.patch:\n\n'
                 'Modified files not explained by patches/ (1):\n'
-                '  M src/google/protobuf/message.h'
+                '  M src/google/protobuf/message.h',
             ),
-            captured_stdout.getvalue().strip(),
-            msg=(
-                'Expected main(["check", ...]) to list '
-                'M src/google/protobuf/message.h when its patch is missing.'),
+            (exit_code, stdout),
+            msg=('Expected main(["check", ...]) to exit 1 and list '
+                 'M src/google/protobuf/message.h when its patch is missing.'),
         )
 
     def testMainCheckNamesFailingPatchWhenPatchApplicationFails(self):
@@ -1410,26 +1360,21 @@ class RollProtobufTest(unittest.TestCase):
                     ('int Value() { return 1; }\n'),
                 },
             ))
-        captured_stdout = io.StringIO()
-        with mock.patch('sys.stdout', captured_stdout):
-            roll_protobuf.main([
-                'check',
-                '--protobuf-dir',
-                chromium_directory,
-                '--upstream-repo',
-                upstream_directory,
-            ])
-        first_report_line = captured_stdout.getvalue().splitlines()[0]
+
+        _, stdout, _ = _RunMain(
+            'check',
+            '--protobuf-dir',
+            chromium_directory,
+            '--upstream-repo',
+            upstream_directory,
+        )
 
         self.assertEqual(
-            (
-                f'Patch failed to apply to upstream {commit_hash}: '
-                '0099-broken.patch'
-            ),
-            first_report_line,
-            msg=(
-                'Expected main(["check", ...]) to name 0099-broken.patch '
-                'on the first report line when patch application fails.'),
+            (f'Patch failed to apply to upstream {commit_hash}: '
+             '0099-broken.patch'),
+            stdout.splitlines()[0],
+            msg=('Expected main(["check", ...]) to name 0099-broken.patch '
+                 'on the first report line when patch application fails.'),
         )
 
     def testMainCheckOutputsMachineReadableJsonWhenFlagIsSet(self):
@@ -1443,17 +1388,15 @@ class RollProtobufTest(unittest.TestCase):
                     'src/google/protobuf/arena.h': '// arena suffix\n',
                 },
             ))
-        captured_stdout = io.StringIO()
-        with mock.patch('sys.stdout', captured_stdout):
-            roll_protobuf.main([
-                'check',
-                '--protobuf-dir',
-                chromium_directory,
-                '--upstream-repo',
-                upstream_directory,
-                '--json',
-            ])
-        parsed_json = json.loads(captured_stdout.getvalue())
+
+        _, stdout, _ = _RunMain(
+            'check',
+            '--protobuf-dir',
+            chromium_directory,
+            '--upstream-repo',
+            upstream_directory,
+            '--json',
+        )
 
         self.assertEqual(
             {
@@ -1466,10 +1409,9 @@ class RollProtobufTest(unittest.TestCase):
                 'chromium_only_files': [],
                 'upstream_only_files': [],
             },
-            parsed_json,
-            msg=(
-                'Expected --json to emit the complete TreeVerificationResult '
-                'dictionary when differences are present.'),
+            json.loads(stdout),
+            msg=('Expected --json to emit the complete TreeVerificationResult '
+                 'dictionary when differences are present.'),
         )
 
     def testMainCheckIncludesJsonErrorMessageWhenRevisionIsMissingFromUpstream(
@@ -1486,96 +1428,71 @@ class RollProtobufTest(unittest.TestCase):
                     'src/google/protobuf/arena.h': '// arena\n',
                 },
             ))
-        captured_stdout = io.StringIO()
-        with mock.patch('sys.stdout', captured_stdout):
-            roll_protobuf.main([
-                'check',
-                '--protobuf-dir',
-                chromium_directory,
-                '--upstream-repo',
-                upstream_directory,
-                '--json',
-            ])
-        parsed_json = json.loads(captured_stdout.getvalue())
+
+        _, stdout, _ = _RunMain(
+            'check',
+            '--protobuf-dir',
+            chromium_directory,
+            '--upstream-repo',
+            upstream_directory,
+            '--json',
+        )
 
         self.assertEqual(
             {
-                'is_clean': False,
-                'error': (
-                    f'Revision {missing_revision} not found in '
-                    f'upstream repository {upstream_directory}.'
-                ),
+                'is_clean':
+                False,
+                'error': (f'Revision {missing_revision} not found in '
+                          f'upstream repository {upstream_directory}.'),
             },
-            parsed_json,
-            msg=(
-                'Expected main(["check", "--json"]) to include the exact '
-                'error message when Revision is absent from upstream.'),
+            json.loads(stdout),
+            msg=('Expected main(["check", "--json"]) to include the exact '
+                 'error message when Revision is absent from upstream.'),
         )
 
     def testMainCheckOutputsJsonErrorWhenReadmeCannotBeRead(self):
         expected_readme_path = os.path.join(
             os.path.abspath(self.temporary_directory), 'README.chromium')
-        captured_stdout = io.StringIO()
-        with mock.patch('sys.stdout', captured_stdout):
-            roll_protobuf.main([
-                'check',
-                '--protobuf-dir',
-                self.temporary_directory,
-                '--upstream-repo',
-                self.temporary_directory,
-                '--json',
-            ])
-        parsed_json = json.loads(captured_stdout.getvalue())
+
+        _, stdout, _ = _RunMain(
+            'check',
+            '--protobuf-dir',
+            self.temporary_directory,
+            '--upstream-repo',
+            self.temporary_directory,
+            '--json',
+        )
 
         self.assertEqual(
             {
                 'is_clean': False,
-                'error': (
-                    f'Missing README.chromium at {expected_readme_path}.'),
+                'error': f'Missing README.chromium at {expected_readme_path}.',
             },
-            parsed_json,
-            msg=(
-                'Expected main(["check", "--json"]) to catch missing '
-                'README.chromium and emit a JSON error payload.'),
+            json.loads(stdout),
+            msg=('Expected main(["check", "--json"]) to catch missing '
+                 'README.chromium and emit a JSON error payload.'),
         )
 
-    def testMainCheckExitsOneWhenReadmeIsMissing(self):
-        with mock.patch('sys.stderr', io.StringIO()):
-            exit_code = roll_protobuf.main([
-                'check',
-                '--protobuf-dir',
-                self.temporary_directory,
-                '--upstream-repo',
-                self.temporary_directory,
-            ])
-
-        self.assertEqual(
-            roll_protobuf.EXIT_CODE_ERROR,
-            exit_code,
-            msg=(
-                'Expected main(["check"]) to exit 1 when README.chromium '
-                'is missing.'),
-        )
-
-    def testMainCheckPrintsHumanErrorToStderrWhenReadmeIsMissing(self):
+    def testMainCheckExitsOneAndPrintsErrorToStderrWhenReadmeIsMissing(self):
         expected_readme_path = os.path.join(
             os.path.abspath(self.temporary_directory), 'README.chromium')
-        captured_stderr = io.StringIO()
-        with mock.patch('sys.stderr', captured_stderr):
-            roll_protobuf.main([
-                'check',
-                '--protobuf-dir',
-                self.temporary_directory,
-                '--upstream-repo',
-                self.temporary_directory,
-            ])
+
+        exit_code, _, stderr = _RunMain(
+            'check',
+            '--protobuf-dir',
+            self.temporary_directory,
+            '--upstream-repo',
+            self.temporary_directory,
+        )
 
         self.assertEqual(
-            f'Error: Missing README.chromium at {expected_readme_path}.',
-            captured_stderr.getvalue().strip(),
-            msg=(
-                'Expected main(["check"]) without --json to print Error: to '
-                'stderr when README.chromium is missing.'),
+            (
+                roll_protobuf.EXIT_CODE_ERROR,
+                f'Error: Missing README.chromium at {expected_readme_path}.',
+            ),
+            (exit_code, stderr),
+            msg=('Expected main(["check"]) without --json to exit 1 and print '
+                 'Error: to stderr when README.chromium is missing.'),
         )
 
     def testMainCheckClonesCacheUnderBuildDirectoryWhenDashCFlagIsSet(self):
@@ -1593,25 +1510,22 @@ class RollProtobufTest(unittest.TestCase):
         expected_cache_directory = os.path.join(build_directory,
                                                 '.protobuf_roll',
                                                 'upstream-protobuf')
-        with mock.patch('sys.stdout', io.StringIO()):
-            roll_protobuf.main([
-                'check',
-                '-C',
-                build_directory,
-                '--protobuf-dir',
-                chromium_directory,
-                '--upstream-url',
-                upstream_directory,
-            ])
-        has_bare_head_file = os.path.isfile(
-            os.path.join(expected_cache_directory, 'HEAD'))
+
+        _RunMain(
+            'check',
+            '-C',
+            build_directory,
+            '--protobuf-dir',
+            chromium_directory,
+            '--upstream-url',
+            upstream_directory,
+        )
 
         self.assertTrue(
-            has_bare_head_file,
-            msg=(
-                'Expected main(["check", "-C", ...]) to clone a bare git '
-                'cache containing HEAD into '
-                '<build_dir>/.protobuf_roll/upstream-protobuf.'),
+            os.path.isfile(os.path.join(expected_cache_directory, 'HEAD')),
+            msg=('Expected main(["check", "-C", ...]) to clone a bare git '
+                 'cache containing HEAD into '
+                 '<build_dir>/.protobuf_roll/upstream-protobuf.'),
         )
 
     def testCheckTreeFlagsUntrackedNonIgnoredFileInChromiumWorkingTree(self):
