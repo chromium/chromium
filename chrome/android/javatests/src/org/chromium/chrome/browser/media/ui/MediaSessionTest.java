@@ -33,6 +33,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -77,7 +78,30 @@ public class MediaSessionTest {
 
     @After
     public void tearDown() {
+        if (mActivityTestRule.getActivity() != null) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        var selector = mActivityTestRule.getActivity().getTabModelSelector();
+                        if (selector != null) {
+                            selector.commitAllTabClosures();
+                            var params =
+                                    TabClosureParams.closeAllTabs()
+                                            .uponExit(true)
+                                            .allowUndo(false)
+                                            .hideTabGroups(true)
+                                            .saveToTabRestoreService(false)
+                                            .build();
+                            selector.getModel(true)
+                                    .getTabRemover()
+                                    .closeTabs(params, /* allowDialog= */ false);
+                            selector.getModel(false)
+                                    .getTabRemover()
+                                    .closeTabs(params, /* allowDialog= */ false);
+                        }
+                    });
+        }
         MediaNotificationManager.resetForTesting();
+        ThreadUtils.runOnUiThreadBlocking(AudioBecomingNoisyReceiver::resetForTesting);
     }
 
     @Test
@@ -156,6 +180,7 @@ public class MediaSessionTest {
     @Before
     public void setUp() {
         mTestServer = mActivityTestRule.getTestServer();
+        ThreadUtils.runOnUiThreadBlocking(AudioBecomingNoisyReceiver::resetForTesting);
     }
 
     private void waitForNotificationReady() {
