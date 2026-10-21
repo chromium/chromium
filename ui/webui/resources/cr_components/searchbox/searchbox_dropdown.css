@@ -82,12 +82,6 @@ cr-searchbox-match:-webkit-any(:focus-within, [selected]) {
   z-index: 1;
 }
 
-@media (forced-colors: active) {
-  cr-searchbox-match:-webkit-any(:hover, :focus-within, [selected]) {
-    background-color: Highlight;
-  }
-}
-
 .primary-side {
   flex: 1;
   min-width: 0;

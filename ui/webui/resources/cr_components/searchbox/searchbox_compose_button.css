@@ -54,6 +54,25 @@
       var(--cr-focus-outline-color));
 }
 
+@media (forced-colors: active) {
+  :host {
+    --cr-hover-background-color: Highlight;
+  }
+
+  #composeButton {
+    background-color: ButtonFace;
+    border: 1px solid ButtonText;
+    color: ButtonText;
+  }
+
+  #composeButton:hover,
+  :host([has-virtual-focus]) #composeButton {
+    background-color: Highlight;
+    border-color: HighlightText;
+    color: HighlightText;
+  }
+}
+
 .compose-container {
   z-index: 100;
   position: relative;

@@ -81,8 +81,20 @@
 }
 
 @media (forced-colors: active) {
-  #icon {
+  :host {
+    --color-searchbox-answer-icon-background: transparent;
+    --color-searchbox-answer-icon-foreground:
+        var(--color-searchbox-search-icon-background);
+    --color-searchbox-google-g-background:
+        var(--color-searchbox-search-icon-background);
+    --color-searchbox-results-icon-container-background: transparent;
+    --color-searchbox-results-starter-pack-icon:
+        var(--color-searchbox-search-icon-background);
     --color-searchbox-search-icon-background: ButtonText;
+  }
+
+  #icon {
+    forced-color-adjust: none;
   }
 }
 

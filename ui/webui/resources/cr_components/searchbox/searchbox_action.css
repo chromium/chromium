@@ -86,3 +86,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+@media (forced-colors: active) {
+  :host {
+    --color-searchbox-results-action-chip: ButtonText;
+    --color-searchbox-results-action-chip-icon: ButtonText;
+    --color-searchbox-results-button-hover: transparent;
+    forced-color-adjust: none;
+  }
+}
