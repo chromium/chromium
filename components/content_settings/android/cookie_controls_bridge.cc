@@ -91,10 +91,6 @@ void CookieControlsBridge::OnUiClosing(JNIEnv* env) {
 
 CookieControlsBridge::~CookieControlsBridge() = default;
 
-void CookieControlsBridge::Destroy(JNIEnv* env) {
-  delete this;
-}
-
 static bool JNI_CookieControlsBridge_IsCookieControlsEnabled(
     JNIEnv* env,
     const JavaRef<jobject>& jbrowser_context_handle) {
@@ -105,15 +101,16 @@ static bool JNI_CookieControlsBridge_IsCookieControlsEnabled(
       ->ShouldBlockThirdPartyCookies();
 }
 
-static int64_t JNI_CookieControlsBridge_Init(
+static jni_zero::JniUniquePtr<CookieControlsBridge>
+JNI_CookieControlsBridge_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jweb_contents_android,
     const JavaRef<jobject>& joriginal_browser_context_handle,
     bool is_incognito_branded) {
-  return reinterpret_cast<intptr_t>(new CookieControlsBridge(
+  return jni_zero::MakeUnique<CookieControlsBridge>(
       env, obj, jweb_contents_android, joriginal_browser_context_handle,
-      is_incognito_branded));
+      is_incognito_branded);
 }
 
 }  // namespace content_settings

@@ -40,10 +40,6 @@ class CookieControlsBridge : public CookieControlsObserver {
       const base::android::JavaRef<jobject>& joriginal_browser_context_handle,
       bool is_incognito_branded);
 
-  // Destroys the CookieControlsBridge object. This needs to be called on the
-  // java side when the object is not in use anymore.
-  void Destroy(JNIEnv* env);
-
   void SetThirdPartyCookieBlockingEnabledForSite(JNIEnv* env,
                                                  bool block_cookies);
 

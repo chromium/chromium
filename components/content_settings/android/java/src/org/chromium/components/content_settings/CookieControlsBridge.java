@@ -6,6 +6,10 @@ package org.chromium.components.content_settings;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -17,7 +21,10 @@ import org.chromium.content_public.browser.WebContents;
 @JNINamespace("content_settings")
 @NullMarked
 public class CookieControlsBridge {
-    private long mNativeCookieControlsBridge;
+    @JniType("::content_settings::CookieControlsBridge")
+    public interface NativeCookieControlsBridge extends JniTypeToken {}
+
+    private @Nullable JniUniquePtr<NativeCookieControlsBridge> mNativeCookieControlsBridge;
     private final CookieControlsObserver mObserver;
 
     /**
@@ -52,7 +59,7 @@ public class CookieControlsBridge {
             WebContents webContents,
             @Nullable BrowserContextHandle originalBrowserContext,
             boolean isIncognitoBranded) {
-        if (mNativeCookieControlsBridge != 0) {
+        if (mNativeCookieControlsBridge != null) {
             CookieControlsBridgeJni.get()
                     .updateWebContents(
                             mNativeCookieControlsBridge,
@@ -63,7 +70,7 @@ public class CookieControlsBridge {
     }
 
     public void setThirdPartyCookieBlockingEnabledForSite(boolean blockCookies) {
-        if (mNativeCookieControlsBridge != 0) {
+        if (mNativeCookieControlsBridge != null) {
             CookieControlsBridgeJni.get()
                     .setThirdPartyCookieBlockingEnabledForSite(
                             mNativeCookieControlsBridge, blockCookies);
@@ -71,16 +78,16 @@ public class CookieControlsBridge {
     }
 
     public void onUiClosing() {
-        if (mNativeCookieControlsBridge != 0) {
+        if (mNativeCookieControlsBridge != null) {
             CookieControlsBridgeJni.get().onUiClosing(mNativeCookieControlsBridge);
         }
     }
 
     /** Destroys the native counterpart of this class. */
     public void destroy() {
-        if (mNativeCookieControlsBridge != 0) {
-            CookieControlsBridgeJni.get().destroy(mNativeCookieControlsBridge);
-            mNativeCookieControlsBridge = 0;
+        if (mNativeCookieControlsBridge != null) {
+            mNativeCookieControlsBridge.destroy();
+            mNativeCookieControlsBridge = null;
         }
     }
 
@@ -98,24 +105,22 @@ public class CookieControlsBridge {
 
     @NativeMethods
     public interface Natives {
-        long init(
+        JniUniquePtr<NativeCookieControlsBridge> init(
                 CookieControlsBridge self,
                 WebContents webContents,
                 @Nullable BrowserContextHandle originalContextHandle,
                 boolean isIncognitoBranded);
 
         void updateWebContents(
-                long nativeCookieControlsBridge,
+                JniPtr<NativeCookieControlsBridge> self,
                 WebContents webContents,
                 @Nullable BrowserContextHandle originalBrowserContext,
                 boolean isIncognitoBranded);
 
-        void destroy(long nativeCookieControlsBridge);
-
         void setThirdPartyCookieBlockingEnabledForSite(
-                long nativeCookieControlsBridge, boolean blockCookies);
+                JniPtr<NativeCookieControlsBridge> self, boolean blockCookies);
 
-        void onUiClosing(long nativeCookieControlsBridge);
+        void onUiClosing(JniPtr<NativeCookieControlsBridge> self);
 
         boolean isCookieControlsEnabled(BrowserContextHandle browserContextHandle);
     }
