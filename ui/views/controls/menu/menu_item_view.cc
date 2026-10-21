@@ -60,6 +60,7 @@
 #include "ui/views/controls/menu/menu_separator.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/deprecated_layout_immediately_pass_key.h"
 #include "ui/views/property_effects.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
@@ -910,7 +911,8 @@ void MenuItemView::ChildrenChanged() {
       // as UpdateSubmenuSelection() looks at bounds. This handles the case of
       // the top level window's size remaining the same, resulting in no change
       // to the submenu's size and no layout.
-      submenu_->DeprecatedLayoutImmediately();
+      submenu_->DeprecatedLayoutImmediately(
+          DeprecatedLayoutImmediatelyPassKey());
       submenu_->SchedulePaint();
       // Update the menu selection after layout.
       controller->UpdateSubmenuSelection(submenu_.get());

@@ -33,6 +33,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/deprecated_layout_immediately_pass_key.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/property_effects.h"
 #include "ui/views/style/platform_style.h"
@@ -807,7 +808,8 @@ void ScrollView::Layout(PassKey) {
   }
 
   if (views::FocusRing::Get(this)) {
-    views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
+    views::FocusRing::Get(this)->DeprecatedLayoutImmediately(
+        DeprecatedLayoutImmediatelyPassKey());
   }
 
   gfx::Rect available_rect = GetContentsBounds();
@@ -844,7 +846,8 @@ void ScrollView::Layout(PassKey) {
     // otherwise be unaware of changes to its bounds or visibility status.
     contents_viewport_->SetBoundsRect(viewport_bounds);
     if (contents_) {
-      contents_->DeprecatedLayoutImmediately();
+      contents_->DeprecatedLayoutImmediately(
+          DeprecatedLayoutImmediatelyPassKey());
     }
     return;
   }
@@ -878,7 +881,8 @@ void ScrollView::Layout(PassKey) {
   // Give |contents_| a chance to update its bounds if it depends on the
   // viewport.
   if (contents_) {
-    contents_->DeprecatedLayoutImmediately();
+    contents_->DeprecatedLayoutImmediately(
+        DeprecatedLayoutImmediatelyPassKey());
   }
 
   bool should_layout_contents = false;
@@ -948,7 +952,8 @@ void ScrollView::Layout(PassKey) {
   // Update to the real client size with the visible scrollbars.
   contents_viewport_->SetBoundsRect(viewport_bounds);
   if (should_layout_contents && contents_) {
-    contents_->DeprecatedLayoutImmediately();
+    contents_->DeprecatedLayoutImmediately(
+        DeprecatedLayoutImmediatelyPassKey());
   }
 
   // Even when |contents_| needs to scroll, it can still be narrower or wider
@@ -992,7 +997,7 @@ void ScrollView::Layout(PassKey) {
   header_viewport_->SetBounds(contents_x, contents_y, viewport_bounds.width(),
                               header_height);
   if (header_) {
-    header_->DeprecatedLayoutImmediately();
+    header_->DeprecatedLayoutImmediately(DeprecatedLayoutImmediatelyPassKey());
   }
 
   ConstrainScrollToBounds(header_viewport_, header_,

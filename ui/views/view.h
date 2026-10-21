@@ -113,6 +113,7 @@ namespace views {
 class Background;
 class Border;
 class ContextMenuController;
+class DeprecatedLayoutImmediatelyPassKey;
 class DragController;
 class FillLayout;
 class FocusManager;
@@ -861,7 +862,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // synchronously lay out a view, but this will eventually be removed; see
   // https://crbug.com/1521108. Neither of these methods should be called from
   // Layout(); see https://crbug.com/1121681.
+  //
+  // New callers are banned by PRESUBMIT. Existing callers are being migrated
+  // either to InvalidateLayout() or, where synchronous layout is truly needed,
+  // to the overload taking a DeprecatedLayoutImmediatelyPassKey. Once all
+  // callers are migrated, the no-arg overload will be removed.
   void DeprecatedLayoutImmediately();
+  void DeprecatedLayoutImmediately(DeprecatedLayoutImmediatelyPassKey);
   virtual void Layout(PassKey);
 
   bool needs_layout() const { return needs_layout_; }

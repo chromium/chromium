@@ -54,6 +54,7 @@
 #include "ui/views/controls/table/table_header.h"
 #include "ui/views/controls/table/table_utils.h"
 #include "ui/views/controls/table/table_view_observer.h"
+#include "ui/views/deprecated_layout_immediately_pass_key.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/property_effects.h"
@@ -734,7 +735,8 @@ void TableView::Layout(PassKey) {
                   gfx::Size(width, header_->GetPreferredSize({}).height())));
   }
 
-  views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
+  views::FocusRing::Get(this)->DeprecatedLayoutImmediately(
+      DeprecatedLayoutImmediatelyPassKey());
 }
 
 gfx::Size TableView::CalculatePreferredSize(

@@ -46,6 +46,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/tree/tree_view_controller.h"
+#include "ui/views/deprecated_layout_immediately_pass_key.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/widget/widget.h"
 
@@ -1134,7 +1135,7 @@ void TreeView::LayoutEditor() {
   // Scroll as necessary to ensure that the editor is visible.
   ScrollRectToVisible(outter_bounds);
   editor_->SetBoundsRect(row_bounds);
-  editor_->DeprecatedLayoutImmediately();
+  editor_->DeprecatedLayoutImmediately(DeprecatedLayoutImmediatelyPassKey());
 }
 
 void TreeView::SchedulePaintForNode(InternalNode* node) {

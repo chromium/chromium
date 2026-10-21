@@ -2479,6 +2479,20 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             treat_as_error=False,
             explanation=("Use int16_t instead of jshort", ),
             excluded_paths=[_THIRD_PARTY_EXCEPT_BLINK]),
+    BanRule(
+        pattern=r'/\bDeprecatedLayoutImmediately\(\)',
+        explanation=(
+            'views::View::DeprecatedLayoutImmediately() is deprecated and being',
+            'removed (crbug.com/1521108). Use InvalidateLayout() instead; see',
+            'docs/ui/learn/bestpractices/layout.md#don_t-invoke-layout_directly.',
+            'In tests, use InvalidateLayout() + views::test::RunScheduledLayout().',
+            'If synchronous layout is truly required, ask ui/views/OWNERS about',
+            'views::DeprecatedLayoutImmediatelyPassKey',
+            '(ui/views/deprecated_layout_immediately_pass_key.h).',
+        ),
+        treat_as_error=True,
+        excluded_paths=(r'^ui/views/view\.(h|cc)$', ),
+    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (

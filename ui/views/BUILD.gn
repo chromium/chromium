@@ -260,6 +260,7 @@ component("views") {
     "controls/views_text_services_context_menu.h",
     "controls/views_text_services_context_menu_base.h",
     "debug_utils.h",
+    "deprecated_layout_immediately_pass_key.h",
     "dialog_model_context_menu_controller.h",
     "drag_controller.h",
     "drag_utils.h",

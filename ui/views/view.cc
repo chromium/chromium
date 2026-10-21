@@ -87,6 +87,7 @@
 #include "ui/views/buildflags.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/deprecated_layout_immediately_pass_key.h"
 #include "ui/views/drag_controller.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -996,6 +997,10 @@ int View::GetMirroredXWithWidthInView(int x, int w) const {
 // Layout ----------------------------------------------------------------------
 
 void View::DeprecatedLayoutImmediately() {
+  LayoutImmediately();
+}
+
+void View::DeprecatedLayoutImmediately(DeprecatedLayoutImmediatelyPassKey) {
   LayoutImmediately();
 }
 
