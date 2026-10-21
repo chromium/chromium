@@ -115,7 +115,10 @@ chromium-metrics-reviews@google.com.
   <variant name="Test" summary="test databases"/>
 </variants>
 
-<!-- LINT.ThenChange(//components/sqlite_migration_vfs/sqlite_migration_metrics.h:SqlMigrationTarget) -->
+<!-- LINT.ThenChange(
+    //components/sqlite_migration_vfs/sqlite_migration_metrics.cc:SqlMigrationTarget,
+    //components/sqlite_migration_vfs/sqlite_migration_metrics.h:SqlMigrationTarget,
+) -->
 
 <histogram name="Sql.Database.DatabaseCloseTime.{DatabaseTag}"
     units="microseconds" expires_after="2027-04-11">

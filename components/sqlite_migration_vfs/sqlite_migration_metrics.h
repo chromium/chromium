@@ -21,7 +21,10 @@ enum class MigrationTarget {
   kTest = 0,
   kMaxValue = kTest,
 };
-// LINT.ThenChange(//components/sqlite_migration_vfs/sqlite_migration_metrics.cc:SqlMigrationTarget)
+// LINT.ThenChange(
+//     //components/sqlite_migration_vfs/sqlite_migration_metrics.cc:SqlMigrationTarget,
+//     //tools/metrics/histograms/metadata/sql/histograms.xml:SqlMigrationTarget,
+// )
 
 // Result of migrating an individual 64-page database block.
 //

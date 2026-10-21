@@ -19,7 +19,10 @@ std::string_view MigrationTargetToString(MigrationTarget target) {
   }
   NOTREACHED();
 }
-// LINT.ThenChange(//tools/metrics/histograms/metadata/sql/histograms.xml:SqlMigrationTarget)
+// LINT.ThenChange(
+//     //components/sqlite_migration_vfs/sqlite_migration_metrics.h:SqlMigrationTarget,
+//     //tools/metrics/histograms/metadata/sql/histograms.xml:SqlMigrationTarget,
+// )
 
 std::string GetStatusHistogramName(MigrationTarget target) {
   return base::StrCat(
