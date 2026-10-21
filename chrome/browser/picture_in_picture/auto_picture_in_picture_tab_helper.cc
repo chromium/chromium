@@ -721,6 +721,10 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
     return false;
   }
 
+  if (!GetPrimaryMainRoutedFrame()) {
+    return false;
+  }
+
   if (PrimaryMainFrameHasOpaqueOrigin()) {
     return false;
   }
@@ -811,14 +815,14 @@ bool AutoPictureInPictureTabHelper::WasRecentlyAudible() const {
 }
 
 bool AutoPictureInPictureTabHelper::MeetsMediaEngagementConditions() const {
-  // Skip checking media engagement when content setting is set to allow.
-  if (GetCurrentContentSetting() == CONTENT_SETTING_ALLOW) {
-    return true;
-  }
-
   std::optional<content::RenderFrameHost*> rfh = GetPrimaryMainRoutedFrame();
   if (!rfh) {
     return false;
+  }
+
+  // Skip checking media engagement when content setting is set to allow.
+  if (GetCurrentContentSetting() == CONTENT_SETTING_ALLOW) {
+    return true;
   }
 
   const url::Origin origin = rfh.value()->GetLastCommittedOrigin();
@@ -867,15 +871,15 @@ void AutoPictureInPictureTabHelper::OnUrlSafetyResult(bool has_safe_url) {
 }
 
 void AutoPictureInPictureTabHelper::ScheduleUrlSafetyCheck() {
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  CHECK(!is_in_picture_in_picture_);
-  CHECK(g_browser_process);
-  CHECK(g_browser_process->safe_browsing_service());
-
   std::optional<content::RenderFrameHost*> rfh = GetPrimaryMainRoutedFrame();
   if (!rfh) {
     return;
   }
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  CHECK(!is_in_picture_in_picture_);
+  CHECK(g_browser_process);
+  CHECK(g_browser_process->safe_browsing_service());
 
   if (!safe_browsing_checker_client_) {
     // Create the AutoPiP safe browsing checker client, which will be used for

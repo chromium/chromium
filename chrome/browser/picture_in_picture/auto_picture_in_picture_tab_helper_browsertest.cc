@@ -1361,15 +1361,11 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   // inside a remote iframe.
   SwitchToNewTabAndDontExpectAutopip();
 
-  // A remote iframe is not considered safe when Safe Browsing can verify it.
-  // Without Safe Browsing, the flag retains its fail-open default.
   auto* tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   EXPECT_FALSE(tab_helper->has_safe_url_);
-#else
-  EXPECT_TRUE(tab_helper->has_safe_url_);
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  EXPECT_FALSE(tab_helper->IsEligibleForAutoPictureInPicture(
+      /*should_record_blocking_metrics=*/false));
 
   // Verify that `MeetsMediaEngagementConditions` returns false (even though the
   // mock high engagement is set to return true), since the video element is
@@ -1543,6 +1539,54 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
 
   SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
                                         /*should_document_pip=*/false);
+}
+
+// Regression test for crbug.com/575048405.
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       DoesNotAutopip_CameraMicrophoneWithCrossOriginSubframe) {
+  LoadCameraMicrophonePage(browser(), "a.com");
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  GetUserMediaAndAccept(web_contents);
+
+  // Detach the stream from the main frame's video element while keeping the
+  // MediaStream active, so the tab is still capturing camera/microphone but the
+  // main frame has no active MediaSession player.
+  ASSERT_TRUE(ExecJs(
+      main_frame, "document.getElementById('local-view').srcObject = null;"));
+
+  const GURL subframe_url = embedded_https_test_server().GetURL(
+      "b.com", base::FilePath(FILE_PATH_LITERAL("/"))
+                   .Append(kAutoVideoPipPage)
+                   .MaybeAsASCII());
+  content::TestNavigationObserver load_observer(web_contents);
+  ASSERT_TRUE(ExecJs(
+      main_frame,
+      content::JsReplace("const iframe = document.createElement('iframe');"
+                         "iframe.src = $1;"
+                         "document.body.appendChild(iframe);",
+                         subframe_url)));
+  load_observer.Wait();
+
+  content::RenderFrameHost* sub_frame = ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(sub_frame);
+
+  ASSERT_TRUE(ExecJs(sub_frame, R"(
+      window.autopipCallbackInvoked = false;
+      navigator.mediaSession.setActionHandler('enterpictureinpicture', () => {
+        window.autopipCallbackInvoked = true;
+        video.requestPictureInPicture();
+      });
+      playVideo();
+  )"));
+  WaitForMediaSessionPlaying(web_contents);
+
+  ASSERT_EQ(sub_frame,
+            content::MediaSession::Get(web_contents)->GetRoutedFrame());
+
+  SwitchToNewTabAndDontExpectAutopip();
+  EXPECT_EQ(false, EvalJs(sub_frame, "window.autopipCallbackInvoked"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,

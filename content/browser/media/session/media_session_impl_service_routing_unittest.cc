@@ -1539,6 +1539,33 @@ TEST_F(MediaSessionImplServiceRoutingTest, CannotAddPlayerForInactiveFrame) {
   EXPECT_FALSE(GetMediaSession()->AddPlayer(observer.get(), 0));
 }
 
+// Regression test for crbug.com/575048405.
+TEST_F(MediaSessionImplServiceRoutingTest,
+       SubFrameDoesNotExposeOrRouteEnterAutoPictureInPicture) {
+  StartPlayerForFrame(sub_frame_);
+  CreateServiceForFrame(sub_frame_);
+  ASSERT_EQ(services_[sub_frame_].get(), ComputeServiceForRouting());
+
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+  services_[sub_frame_]->EnableAction(
+      MediaSessionAction::kEnterPictureInPicture);
+  services_[sub_frame_]->FlushForTesting();
+
+  std::set<MediaSessionAction> expected_actions = default_actions();
+  expected_actions.insert(MediaSessionAction::kEnterPictureInPicture);
+  expected_actions.insert(MediaSessionAction::kExitPictureInPicture);
+  EXPECT_EQ(expected_actions, observer.actions());
+  EXPECT_FALSE(observer.actions().contains(
+      MediaSessionAction::kEnterAutoPictureInPicture));
+
+  EXPECT_CALL(*GetClientForFrame(sub_frame_),
+              DidReceiveAction(MediaSessionAction::kEnterPictureInPicture, _))
+      .Times(0);
+  GetMediaSession()->EnterAutoPictureInPicture();
+  services_[sub_frame_]->FlushForTesting();
+}
+
 class MediaSessionImplServiceRoutingFencedFrameTest
     : public MediaSessionImplServiceRoutingTest {
  public:

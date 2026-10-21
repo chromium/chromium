@@ -1364,6 +1364,10 @@ void MediaSessionImpl::EnterAutoPictureInPicture() {
     MaybeEnterBrowserInitiatedAutomaticPictureInPicture();
     return;
   }
+  if (!routed_service_->GetRenderFrameHost() ||
+      !routed_service_->GetRenderFrameHost()->IsInPrimaryMainFrame()) {
+    return;
+  }
 
   DidReceiveAction(
       media_session::mojom::MediaSessionAction::kEnterPictureInPicture,
@@ -1939,11 +1943,15 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
   }
 
   // If the website has specified an action handler for 'enterpictureinpicture',
-  // then we should expose EnterAutoPictureInPicture as an available action.
+  // then we should expose EnterAutoPictureInPicture as an available action if
+  // the routed service is in the primary main frame.
   if (actions.contains(
           media_session::mojom::MediaSessionAction::kEnterPictureInPicture)) {
-    actions.insert(
-        media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture);
+    if (routed_service_ && routed_service_->GetRenderFrameHost() &&
+        routed_service_->GetRenderFrameHost()->IsInPrimaryMainFrame()) {
+      actions.insert(
+          media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture);
+    }
     actions.insert(
         media_session::mojom::MediaSessionAction::kExitPictureInPicture);
   }
