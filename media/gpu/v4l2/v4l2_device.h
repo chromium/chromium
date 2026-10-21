@@ -18,6 +18,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/small_map.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -161,7 +162,7 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Return supported profiles for decoder, including only profiles for given
   // fourcc |pixelformats|.
   VideoDecodeAccelerator::SupportedProfiles GetSupportedDecodeProfiles(
-      const std::vector<uint32_t>& pixelformats);
+      base::span<const uint32_t> pixelformats);
 
   // Return supported profiles for encoder.
   VideoEncodeAccelerator::SupportedProfiles GetSupportedEncodeProfiles();
@@ -227,7 +228,7 @@ class MEDIA_GPU_EXPORT V4L2Device
   using Devices = std::vector<std::pair<std::string, std::vector<uint32_t>>>;
 
   VideoDecodeAccelerator::SupportedProfiles EnumerateSupportedDecodeProfiles(
-      const std::vector<uint32_t>& pixelformats);
+      base::span<const uint32_t> pixelformats);
 
   VideoEncodeAccelerator::SupportedProfiles EnumerateSupportedEncodeProfiles();
 

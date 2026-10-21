@@ -10,15 +10,18 @@
 #include <algorithm>
 #include <iomanip>
 #include <iostream>
-#include <map>
 #include <sstream>
+#include <utility>
+#include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/fixed_flat_map.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include <drm_fourcc.h>
 #endif
 
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
@@ -329,8 +332,8 @@ std::optional<VideoFrameLayout> V4L2FormatToVideoFrameLayout(
 namespace {
 using v4l2_enum_type = decltype(V4L2_PIX_FMT_H264);
 // Correspondence from V4L2 codec described as a pixel format to a Control ID.
-static const std::map<v4l2_enum_type, v4l2_enum_type>
-    kV4L2CodecPixFmtToProfileCID = {
+constexpr auto kV4L2CodecPixFmtToProfileCID =
+    base::MakeFixedFlatMap<v4l2_enum_type, v4l2_enum_type>({
         {V4L2_PIX_FMT_H264, V4L2_CID_MPEG_VIDEO_H264_PROFILE},
         {V4L2_PIX_FMT_H264_SLICE, V4L2_CID_MPEG_VIDEO_H264_PROFILE},
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -345,33 +348,35 @@ static const std::map<v4l2_enum_type, v4l2_enum_type>
         {V4L2_PIX_FMT_AV1, V4L2_CID_MPEG_VIDEO_AV1_PROFILE},
         {V4L2_PIX_FMT_AV1_FRAME, V4L2_CID_MPEG_VIDEO_AV1_PROFILE},
 #endif
-};
+    });
 
 // Default VideoCodecProfiles associated to a V4L2 Codec Control ID.
-static const std::map<v4l2_enum_type, std::vector<VideoCodecProfile>>
-    kDefaultVideoCodecProfilesForProfileCID = {
-        {V4L2_CID_MPEG_VIDEO_H264_PROFILE,
-         {
-             H264PROFILE_BASELINE,
-             H264PROFILE_MAIN,
-             H264PROFILE_HIGH,
-         }},
+std::vector<VideoCodecProfile> DefaultVideoCodecProfilesForProfileCID(
+    v4l2_enum_type profile_cid) {
+  switch (profile_cid) {
+    case V4L2_CID_MPEG_VIDEO_H264_PROFILE:
+      return {H264PROFILE_BASELINE, H264PROFILE_MAIN, H264PROFILE_HIGH};
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-        {V4L2_CID_MPEG_VIDEO_HEVC_PROFILE,
-         {HEVCPROFILE_MAIN, HEVCPROFILE_MAIN10}},
+    case V4L2_CID_MPEG_VIDEO_HEVC_PROFILE:
+      return {HEVCPROFILE_MAIN, HEVCPROFILE_MAIN10};
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-        {V4L2_CID_MPEG_VIDEO_VP8_PROFILE, {VP8PROFILE_ANY}},
-        {V4L2_CID_MPEG_VIDEO_VP9_PROFILE, {VP9PROFILE_PROFILE0}},
+    case V4L2_CID_MPEG_VIDEO_VP8_PROFILE:
+      return {VP8PROFILE_ANY};
+    case V4L2_CID_MPEG_VIDEO_VP9_PROFILE:
+      return {VP9PROFILE_PROFILE0};
 #if BUILDFLAG(USE_AV1_HW_DECODER)
-        {V4L2_CID_MPEG_VIDEO_AV1_PROFILE, {AV1PROFILE_PROFILE_MAIN}},
+    case V4L2_CID_MPEG_VIDEO_AV1_PROFILE:
+      return {AV1PROFILE_PROFILE_MAIN};
 #endif
-};
+  }
+  NOTREACHED() << "Unexpected profile control ID: " << profile_cid;
+}
 
 // Correspondence from a VideoCodecProfiles to V4L2 codec described
 // as a pixel format.
-static const std::map<VideoCodecProfile,
-                      std::pair<v4l2_enum_type, v4l2_enum_type>>
-    kVideoCodecProfileToV4L2CodecPixFmt = {
+constexpr auto kVideoCodecProfileToV4L2CodecPixFmt =
+    base::MakeFixedFlatMap<VideoCodecProfile,
+                           std::pair<v4l2_enum_type, v4l2_enum_type>>({
         {H264PROFILE_BASELINE, MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_H264, SLICE)},
         {H264PROFILE_MAIN, MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_H264, SLICE)},
         {H264PROFILE_HIGH, MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_H264, SLICE)},
@@ -386,7 +391,7 @@ static const std::map<VideoCodecProfile,
         {AV1PROFILE_PROFILE_MAIN,
          MAKE_V4L2_CODEC_PAIR(V4L2_PIX_FMT_AV1, FRAME)},
 #endif
-};
+    });
 
 }  // namespace
 
@@ -462,8 +467,7 @@ std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
     DVLOGF(4) << "Driver doesn't support enumerating "
               << FourccToString(codec_as_pix_fmt)
               << " profiles, using default ones.";
-    DCHECK(kDefaultVideoCodecProfilesForProfileCID.contains(profile_cid));
-    return kDefaultVideoCodecProfilesForProfileCID.at(profile_cid);
+    return DefaultVideoCodecProfilesForProfileCID(profile_cid);
   }
 
   std::vector<VideoCodecProfile> profiles;

@@ -14,6 +14,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -25,7 +26,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace media {
 
@@ -44,8 +44,8 @@ constexpr char kMediaDevicePrefix[] = "/dev/media";
 // This map maintains a table with pairs of V4L2 request code
 // and corresponding name. New pair has to be added here
 // when new V4L2 request code has to be used.
-static const absl::flat_hash_map<int, std::string>
-    kMapFromV4L2RequestCodeToString = {
+constexpr auto kMapFromV4L2RequestCodeToString =
+    base::MakeFixedFlatMap<int, std::string_view>({
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_QUERYCAP),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_QUERYCTRL),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_ENUM_FMT),
@@ -63,17 +63,15 @@ static const absl::flat_hash_map<int, std::string>
         V4L2_REQUEST_CODE_AND_STRING(MEDIA_IOC_DEVICE_INFO),
         V4L2_REQUEST_CODE_AND_STRING(MEDIA_IOC_REQUEST_ALLOC),
         V4L2_REQUEST_CODE_AND_STRING(MEDIA_REQUEST_IOC_QUEUE),
-        V4L2_REQUEST_CODE_AND_STRING(MEDIA_REQUEST_IOC_REINIT)};
+        V4L2_REQUEST_CODE_AND_STRING(MEDIA_REQUEST_IOC_REINIT),
+    });
 
 // Finds corresponding defined V4L2 request code name
 // for a given V4L2 request code value.
 std::string V4L2RequestCodeToString(int request_code) {
-  DCHECK(kMapFromV4L2RequestCodeToString.contains(request_code));
-
-  const auto& request_code_pair =
-      kMapFromV4L2RequestCodeToString.find(request_code);
-
-  return request_code_pair->second;
+  const auto it = kMapFromV4L2RequestCodeToString.find(request_code);
+  CHECK(it != kMapFromV4L2RequestCodeToString.end());
+  return std::string(it->second);
 }
 
 // Returns buffer type name (OUTPUT or CAPTURE) given v4l2_buf_type |type|.

@@ -451,7 +451,7 @@ class V4L2BufferRefBase {
   bool QueueBuffer(scoped_refptr<FrameResource> frame);
   void* GetPlaneMapping(const size_t plane);
 
-  const scoped_refptr<FrameResource>& GetFrameResource();
+  scoped_refptr<FrameResource> GetFrameResource();
   // Checks that the number of passed FDs is adequate for the current format
   // and buffer configuration. Only useful for DMABUF buffers.
   bool CheckNumFDsForFormat(const size_t num_fds) const;
@@ -525,14 +525,11 @@ void* V4L2BufferRefBase::GetPlaneMapping(const size_t plane) {
   return queue_->buffers_[BufferId()]->GetPlaneMapping(plane);
 }
 
-const scoped_refptr<FrameResource>& V4L2BufferRefBase::GetFrameResource() {
+scoped_refptr<FrameResource> V4L2BufferRefBase::GetFrameResource() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Used so we can return a const scoped_refptr& in all cases.
-  static const scoped_refptr<FrameResource> null_frame_resource;
-
   if (!queue_) {
-    return null_frame_resource;
+    return nullptr;
   }
 
   DCHECK_LE(BufferId(), queue_->buffers_.size());

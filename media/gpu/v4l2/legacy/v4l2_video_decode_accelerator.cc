@@ -92,7 +92,7 @@ perfetto::NamedTrack GetTracingTrack(const V4L2VideoDecodeAccelerator* ptr) {
 
 }  // namespace
 
-static const std::vector<uint32_t> kSupportedInputFourCCs = {
+constexpr uint32_t kSupportedInputFourCCs[] = {
     V4L2_PIX_FMT_H264,
     V4L2_PIX_FMT_VP8,
     V4L2_PIX_FMT_VP9,

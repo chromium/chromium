@@ -497,7 +497,7 @@ std::vector<uint32_t> V4L2Device::GetSupportedImageProcessorPixelformats(
 
 VideoDecodeAccelerator::SupportedProfiles
 V4L2Device::GetSupportedDecodeProfiles(
-    const std::vector<uint32_t>& pixelformats) {
+    base::span<const uint32_t> pixelformats) {
   VideoDecodeAccelerator::SupportedProfiles supported_profiles;
 
   Type type = Type::kDecoder;
@@ -555,7 +555,7 @@ bool V4L2Device::IsJpegEncodingSupported() {
 
 VideoDecodeAccelerator::SupportedProfiles
 V4L2Device::EnumerateSupportedDecodeProfiles(
-    const std::vector<uint32_t>& pixelformats) {
+    base::span<const uint32_t> pixelformats) {
   VideoDecodeAccelerator::SupportedProfiles profiles;
 
   const auto v4l2_codecs_as_pix_fmts =
@@ -699,9 +699,9 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
   // the codec format is configured, and the VD/VDA instance is always tied
   // to a specific format, so it will never need to switch media devices.
 #if BUILDFLAG(IS_CHROMEOS)
-  static const std::string kRequestDevicePrefix = "/dev/media-dec";
+  constexpr char kRequestDevicePrefix[] = "/dev/media-dec";
 #else
-  static const std::string kRequestDevicePrefix = "/dev/media";
+  constexpr char kRequestDevicePrefix[] = "/dev/media";
 #endif
 
   // We are sandboxed, so we can't query directory contents to check which
@@ -862,17 +862,17 @@ void V4L2Device::CloseDevice() {
 
 void V4L2Device::EnumerateDevicesForType(Type type) {
 #if BUILDFLAG(IS_CHROMEOS)
-  static const std::string kDecoderDevicePattern = "/dev/video-dec";
-  static const std::string kEncoderDevicePattern = "/dev/video-enc";
-  static const std::string kImageProcessorDevicePattern = "/dev/image-proc";
-  static const std::string kJpegDecoderDevicePattern = "/dev/jpeg-dec";
-  static const std::string kJpegEncoderDevicePattern = "/dev/jpeg-enc";
+  constexpr char kDecoderDevicePattern[] = "/dev/video-dec";
+  constexpr char kEncoderDevicePattern[] = "/dev/video-enc";
+  constexpr char kImageProcessorDevicePattern[] = "/dev/image-proc";
+  constexpr char kJpegDecoderDevicePattern[] = "/dev/jpeg-dec";
+  constexpr char kJpegEncoderDevicePattern[] = "/dev/jpeg-enc";
 #else
-  static const std::string kDecoderDevicePattern = "/dev/video";
-  static const std::string kEncoderDevicePattern = "/dev/video";
-  static const std::string kImageProcessorDevicePattern = "/dev/video";
-  static const std::string kJpegDecoderDevicePattern = "/dev/video";
-  static const std::string kJpegEncoderDevicePattern = "/dev/video";
+  constexpr char kDecoderDevicePattern[] = "/dev/video";
+  constexpr char kEncoderDevicePattern[] = "/dev/video";
+  constexpr char kImageProcessorDevicePattern[] = "/dev/video";
+  constexpr char kJpegDecoderDevicePattern[] = "/dev/video";
+  constexpr char kJpegEncoderDevicePattern[] = "/dev/video";
 #endif
 
   std::string device_pattern;

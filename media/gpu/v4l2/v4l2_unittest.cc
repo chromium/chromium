@@ -36,7 +36,7 @@ namespace media {
 
 namespace {
 
-const base::FilePath kDecoderDevicePrefix("/dev/dri/");
+constexpr char kDecoderDevicePrefix[] = "/dev/dri/";
 
 #define TOSTR(enumCase) \
   case enumCase:        \
@@ -128,7 +128,7 @@ void TestStatefulDecoderAllocations(uint32_t codec_fourcc,
 
   // Determines proper device driver to use for setting up GBM.
   base::FilePath drm_path;
-  base::FileEnumerator fe(kDecoderDevicePrefix, true,
+  base::FileEnumerator fe(base::FilePath(kDecoderDevicePrefix), true,
                           base::FileEnumerator::FILES);
 
   for (base::FilePath name = fe.Next(); !name.empty(); name = fe.Next()) {
