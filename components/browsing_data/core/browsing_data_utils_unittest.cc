@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
@@ -73,15 +74,13 @@ class BrowsingDataUtilsTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests the complex output of the Autofill counter.
 TEST_F(BrowsingDataUtilsTest,
        AutofillCounterResultWithReplaceSyncPromosWithSignInPromosDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{
-          syncer::kReplaceSyncPromosWithSignInPromos,
-          syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+  feature_list.InitAndDisableFeature(
+      syncer::kReplaceSyncPromosWithSignInPromos);
 
   autofill::TestPersonalDataManager test_personal_data_manager;
   AutofillCounter counter(&test_personal_data_manager,
@@ -158,6 +157,7 @@ TEST_F(BrowsingDataUtilsTest,
     EXPECT_EQ(output, base::ASCIIToUTF16(test_case.expected_output));
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(BrowsingDataUtilsTest,
        AutofillCounterResultWithReplaceSyncPromosWithSignInPromosEnabled) {
