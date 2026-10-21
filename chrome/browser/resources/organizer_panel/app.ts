@@ -123,6 +123,14 @@ export class OrganizerPanelAppElement extends CrLitElement {
   protected onSearchChanged_(e: CustomEvent<string>) {
     this.searchQuery_ = e.detail;
   }
+
+  protected onSearchIconClicked_() {
+    this.$.searchField.getSearchInput().focus();
+  }
+
+  protected onShortcutClick_() {
+    this.$.searchField.getSearchInput().focus();
+  }
 }
 
 declare global {

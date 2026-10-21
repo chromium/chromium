@@ -7,7 +7,7 @@ import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerPanelAppElement, OrganizerPanelPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {browserProxyFactory, foreignTabsBrowserProxyFactory, ForeignTabsPageHandlerRemote, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, PageHandlerRemote, RecentTabsDelegate, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -92,7 +92,9 @@ suite('OrganizerPanelAppTest', () => {
     assertEquals('Search Tabs', searchField.getAttribute('label'));
     assertEquals('Clear search', searchField.getAttribute('clear-label'));
 
-    assertEquals('Ctrl+Shift+A', app.$.shortcut.textContent);
+    const shortcut = app.$.shortcut;
+    assertTrue(!!shortcut);
+    assertEquals('Ctrl+Shift+A', shortcut.textContent.trim());
 
     assertTrue(hasStyle(searchField.$.prompt, 'text-overflow', 'ellipsis'));
   });
@@ -108,6 +110,28 @@ suite('OrganizerPanelAppTest', () => {
     const prompt = searchField.$.prompt;
     assertTrue(prompt.clientWidth < prompt.scrollWidth);
     assertTrue(hasStyle(prompt, 'text-overflow', 'ellipsis'));
+  });
+
+  test(
+      'focuses input when magnifying glass icon is clicked while unfocused',
+      () => {
+        const searchField = app.$.searchField;
+        const searchInput = searchField.getSearchInput();
+        searchInput.blur();
+        assertNotEquals(searchInput, searchField.shadowRoot.activeElement);
+
+        searchField.$.icon.click();
+        assertEquals(searchInput, searchField.shadowRoot.activeElement);
+      });
+
+  test('focuses input when shortcut is clicked while unfocused', () => {
+    const searchField = app.$.searchField;
+    const searchInput = searchField.getSearchInput();
+    searchInput.blur();
+    assertNotEquals(searchInput, searchField.shadowRoot.activeElement);
+
+    app.$.shortcut.click();
+    assertEquals(searchInput, searchField.shadowRoot.activeElement);
   });
 
   test('renders organizer list with expected sections', () => {
