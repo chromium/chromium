@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/native_ui_types.h"
@@ -67,8 +68,8 @@ void AutoSigninFirstRunDialogAndroid::ShowDialog() {
       native_window->GetJavaObject();
   if (java_dialog) {
     dialog_jobject_.Reset(Java_AutoSigninFirstRunDialog_createAndShowDialog(
-        env, java_dialog, reinterpret_cast<intptr_t>(this), message,
-        explanation, ok_button_text, turn_off_button_text));
+        env, java_dialog, jni_zero::MakeRaw(this), message, explanation,
+        ok_button_text, turn_off_button_text));
   }
 }
 

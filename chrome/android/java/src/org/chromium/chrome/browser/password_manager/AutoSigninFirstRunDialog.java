@@ -17,7 +17,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -26,24 +29,28 @@ import org.chromium.chrome.R;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * The auto sign-in first run experience dialog is shown instead of usual auto sign-in snackbar
- * when the user first encounters the auto sign-in feature.
+ * The auto sign-in first run experience dialog is shown instead of usual auto sign-in snackbar when
+ * the user first encounters the auto sign-in feature.
  */
 @NullMarked
 public class AutoSigninFirstRunDialog
         implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
+    @JniType("::AutoSigninFirstRunDialogAndroid")
+    interface NativeAutoSigninFirstRunDialogAndroid extends JniTypeToken {}
+
     private final Context mContext;
     private final String mTitle;
     private final String mExplanation;
     private final String mOkButtonText;
     private final String mTurnOffButtonText;
-    private long mNativeAutoSigninFirstRunDialog;
+    private @Nullable JniRawPtr<NativeAutoSigninFirstRunDialogAndroid>
+            mNativeAutoSigninFirstRunDialog;
     private @Nullable AlertDialog mDialog;
     private boolean mWasDismissedByNative;
 
     private AutoSigninFirstRunDialog(
             Context context,
-            long nativeAutoSigninFirstRunDialog,
+            JniRawPtr<NativeAutoSigninFirstRunDialogAndroid> nativeAutoSigninFirstRunDialog,
             String title,
             String explanation,
             String okButtonText,
@@ -57,15 +64,18 @@ public class AutoSigninFirstRunDialog
     }
 
     @CalledByNative
-    private static @Nullable AutoSigninFirstRunDialog createAndShowDialog(
+    static @Nullable AutoSigninFirstRunDialog createAndShowDialog(
             WindowAndroid windowAndroid,
-            long nativeAutoSigninFirstRunDialog,
+            JniRawPtr<NativeAutoSigninFirstRunDialogAndroid> nativeAutoSigninFirstRunDialog,
             @JniType("std::u16string") String title,
             @JniType("std::u16string") String explanation,
             @JniType("std::u16string") String okButtonText,
             @JniType("std::u16string") String turnOffButtonText) {
         Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) return null;
+        if (activity == null) {
+            nativeAutoSigninFirstRunDialog.release();
+            return null;
+        }
 
         AutoSigninFirstRunDialog dialog =
                 new AutoSigninFirstRunDialog(
@@ -100,6 +110,7 @@ public class AutoSigninFirstRunDialog
 
     @Override
     public void onClick(DialogInterface dialog, int whichButton) {
+        assert mNativeAutoSigninFirstRunDialog != null;
         if (whichButton == DialogInterface.BUTTON_NEGATIVE) {
             AutoSigninFirstRunDialogJni.get().onTurnOffClicked(mNativeAutoSigninFirstRunDialog);
         } else if (whichButton == DialogInterface.BUTTON_POSITIVE) {
@@ -113,9 +124,10 @@ public class AutoSigninFirstRunDialog
     }
 
     private void destroy() {
-        assert mNativeAutoSigninFirstRunDialog != 0;
+        assert mNativeAutoSigninFirstRunDialog != null;
         AutoSigninFirstRunDialogJni.get().destroy(mNativeAutoSigninFirstRunDialog);
-        mNativeAutoSigninFirstRunDialog = 0;
+        mNativeAutoSigninFirstRunDialog.release();
+        mNativeAutoSigninFirstRunDialog = null;
         mDialog = null;
     }
 
@@ -129,10 +141,10 @@ public class AutoSigninFirstRunDialog
 
     @NativeMethods
     interface Natives {
-        void onTurnOffClicked(long nativeAutoSigninFirstRunDialogAndroid);
+        void onTurnOffClicked(JniPtr<NativeAutoSigninFirstRunDialogAndroid> self);
 
-        void onOkClicked(long nativeAutoSigninFirstRunDialogAndroid);
+        void onOkClicked(JniPtr<NativeAutoSigninFirstRunDialogAndroid> self);
 
-        void destroy(long nativeAutoSigninFirstRunDialogAndroid);
+        void destroy(JniPtr<NativeAutoSigninFirstRunDialogAndroid> self);
     }
 }
