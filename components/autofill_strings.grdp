@@ -1999,12 +1999,12 @@ You can remove this suggestion from Chrome. Your original source won't be delete
   </message>
   <if expr="is_macosx">
     <message name="IDS_AT_MEMORY_PROMO_TITLE" desc="Title of the AtMemory promo bubble on macOS.">
-      Press ⌘ twice anywhere on the web to find and fill more info
+      Autofill works in more places — press ⌘ twice to find and fill info
     </message>
   </if>
   <if expr="not is_macosx">
     <message name="IDS_AT_MEMORY_PROMO_TITLE" desc="Title of the AtMemory promo bubble.">
-      Press Ctrl twice anywhere on the web to find and fill more info
+      Autofill works in more places — press Ctrl twice to find and fill info
     </message>
   </if>
   <message name="IDS_AT_MEMORY_PROMO_DESCRIPTION" desc="Body text of the AtMemory promo bubble detailing the new autofill capabilities and data sources.">
