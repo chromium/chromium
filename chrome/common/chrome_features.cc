@@ -1104,6 +1104,13 @@ const base::FeatureParam<std::string> kHappinessTrackingSurveysHostedUrl{
     &kHappinessTrackingSurveysConfiguration, "custom-url",
     "https://www.google.com/chrome/hats/index_m129.html"};
 
+// When enabled, Desktop HaTS surveys automatically include the Chrome channel
+// and version as Product Specific Data, matching the behavior on Android.
+// TODO(crbug.com/575956151): Remove this kill switch once the change has
+// reached Stable.
+BASE_FEATURE(kHappinessTrackingSurveysDefaultProductSpecificData,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables the Happiness Tracking System for COEP issues in Chrome
 // DevTools on Desktop.
 BASE_FEATURE(kHaTSDesktopDevToolsIssuesCOEP, base::FEATURE_DISABLED_BY_DEFAULT);

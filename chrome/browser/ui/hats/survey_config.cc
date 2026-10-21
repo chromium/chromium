@@ -1047,4 +1047,8 @@ void GetActiveSurveyConfigs(SurveyConfigs& survey_configs_by_triggers_) {
   }
 }
 
+std::vector<SurveyConfig> GetAllSurveyConfigsForTesting() {
+  return GetAllSurveyConfigs();
+}
+
 }  // namespace hats

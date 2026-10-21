@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -13,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -28,6 +31,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -35,6 +39,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -105,7 +110,38 @@ bool DoesCooldownApply(PrefService* prefs) {
   return elapsed_time_since_started < kMinimumTimeBetweenAnySurveyStarts;
 }
 
+// Returns the channel name in the same format as HaTS on Android (see
+// HatsNextSurveyController#getChromeChannelString), so that survey responses
+// can be filtered consistently across platforms. Android reports builds without
+// a channel (`Channel::DEFAULT`, which is the same as `Channel::UNKNOWN`) as
+// "Local".
+std::string_view GetChromeChannelPsdValue() {
+  switch (chrome::GetChannel()) {
+    case version_info::Channel::STABLE:
+      return "Stable";
+    case version_info::Channel::BETA:
+      return "Beta";
+    case version_info::Channel::DEV:
+      return "Dev";
+    case version_info::Channel::CANARY:
+      return "Canary";
+    case version_info::Channel::UNKNOWN:
+      return "Local";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
+
+// static
+SurveyStringData HatsServiceDesktop::AddDefaultProductSpecificData(
+    SurveyStringData product_specific_string_data) {
+  product_specific_string_data.insert_or_assign(kChromeChannelPsdKey,
+                                                GetChromeChannelPsdValue());
+  product_specific_string_data.insert_or_assign(
+      kChromeVersionPsdKey, version_info::GetVersionNumber());
+  return product_specific_string_data;
+}
 
 HatsServiceDesktop::DelayedSurveyTask::DelayedSurveyTask(
     HatsServiceDesktop* hats_service,
@@ -756,7 +792,13 @@ HatsService::LaunchError HatsServiceDesktop::ShowSurvey(
       survey_configs_by_triggers_[trigger].hats_histogram_name,
       survey_configs_by_triggers_[trigger].hats_survey_ukm_id,
       std::move(success_callback), std::move(failure_callback),
-      product_specific_bits_data, product_specific_string_data);
+      product_specific_bits_data,
+      // The defaults are added after the field checks above, so that survey
+      // configs don't need to declare them.
+      base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysDefaultProductSpecificData)
+          ? AddDefaultProductSpecificData(product_specific_string_data)
+          : product_specific_string_data);
   hats_next_dialog_exists_ = true;
   return LaunchError::kNone;
 }

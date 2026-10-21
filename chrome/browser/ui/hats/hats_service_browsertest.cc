@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
@@ -45,6 +46,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 
 namespace {
@@ -182,6 +185,37 @@ class HatsServiceProbabilityOne : public HatsServiceBrowserTestBase {
   }
 };
 
+class HatsServiceDefaultProductSpecificDataDisabled
+    : public HatsServiceProbabilityOne {
+ protected:
+  HatsServiceDefaultProductSpecificDataDisabled() {
+    feature_list_.InitAndDisableFeature(
+        features::kHappinessTrackingSurveysDefaultProductSpecificData);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Launches the Settings survey and returns the Product Specific Data that the
+// resulting HaTS Next dialog sends to the HaTS wrapper website.
+base::DictValue LaunchSurveyAndGetProductSpecificData(
+    HatsServiceDesktop* hats_service) {
+  content::WebContentsAddedObserver web_contents_added_observer;
+  hats_service->LaunchSurvey(kHatsSurveyTriggerSettings);
+
+  const GURL survey_url =
+      web_contents_added_observer.GetWebContents()->GetVisibleURL();
+  std::string product_specific_data_json;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(survey_url, "product_specific_data",
+                                         &product_specific_data_json))
+      << survey_url;
+  std::optional<base::DictValue> product_specific_data =
+      base::JSONReader::ReadDict(product_specific_data_json,
+                                 base::JSON_PARSE_RFC);
+  EXPECT_TRUE(product_specific_data.has_value()) << product_specific_data_json;
+  return std::move(product_specific_data).value_or(base::DictValue());
+}
 
 }  // namespace
 
@@ -758,4 +792,36 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
       HatsService::LaunchError::kSurveyInProgress);
 
   EXPECT_TRUE(failure_called.Wait());
+}
+
+// Check that the Chrome channel and version are sent to the HaTS wrapper
+// website as Product Specific Data by default.
+IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
+                       AddsDefaultProductSpecificData) {
+  SetMetricsConsent(true);
+
+  base::DictValue product_specific_data =
+      LaunchSurveyAndGetProductSpecificData(GetHatsService());
+
+  EXPECT_TRUE(HatsNextDialogCreated());
+  EXPECT_TRUE(product_specific_data.FindString(
+      HatsServiceDesktop::kChromeChannelPsdKey));
+  const std::string* version = product_specific_data.FindString(
+      HatsServiceDesktop::kChromeVersionPsdKey);
+  ASSERT_TRUE(version);
+  EXPECT_EQ(*version, version_info::GetVersionNumber());
+}
+
+IN_PROC_BROWSER_TEST_F(HatsServiceDefaultProductSpecificDataDisabled,
+                       DoesNotAddDefaultProductSpecificData) {
+  SetMetricsConsent(true);
+
+  base::DictValue product_specific_data =
+      LaunchSurveyAndGetProductSpecificData(GetHatsService());
+
+  EXPECT_TRUE(HatsNextDialogCreated());
+  EXPECT_FALSE(
+      product_specific_data.contains(HatsServiceDesktop::kChromeChannelPsdKey));
+  EXPECT_FALSE(
+      product_specific_data.contains(HatsServiceDesktop::kChromeVersionPsdKey));
 }

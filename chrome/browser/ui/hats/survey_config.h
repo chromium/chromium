@@ -345,6 +345,9 @@ using SurveyConfigs = base::flat_map<std::string, SurveyConfig>;
 // |survey_configs_by_triggers_|.
 void GetActiveSurveyConfigs(SurveyConfigs& survey_configs_by_triggers_);
 
+// Returns all survey configs, including those whose feature is disabled.
+std::vector<SurveyConfig> GetAllSurveyConfigsForTesting();
+
 }  // namespace hats
 
 #endif  // CHROME_BROWSER_UI_HATS_SURVEY_CONFIG_H_

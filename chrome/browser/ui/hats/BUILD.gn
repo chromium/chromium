@@ -142,6 +142,7 @@ if (!is_android) {
     testonly = true
     sources = [
       "hats_helper_unittest.cc",
+      "hats_service_desktop_unittest.cc",
       "survey_config_unittest.cc",
       "trust_safety_sentiment_service_factory_unittest.cc",
     ]
@@ -162,7 +163,10 @@ if (!is_android) {
       "//components/content_settings/core/test:test_support",
       "//components/signin/public/base",
       "//components/unified_consent",
+      "//components/version_info",
       "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
     ]
   }
 
@@ -217,6 +221,7 @@ if (!is_android) {
       "//content/public/browser",
       "//content/public/common",
       "//content/test:test_support",
+      "//net",
       "//net:test_support",
     ]
 
