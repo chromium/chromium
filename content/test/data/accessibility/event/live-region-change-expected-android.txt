@@ -5,5 +5,5 @@ TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUB
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [After] class_name=android.widget.TextView
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [After] class_name=android.widget.TextView
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [After] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=TEXT] on [After] class_name=android.widget.TextView
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [After] class_name=android.widget.TextView
+TYPE_WINDOW_CONTENT_CHANGED [contentTypes=TEXT] on [After] class_name=android.widget.TextView
