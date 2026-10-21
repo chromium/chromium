@@ -8,7 +8,10 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -24,6 +27,9 @@ import org.chromium.url.GURL;
  */
 @NullMarked
 public class NtpSyncedThemeBridge {
+    @JniType("::NtpSyncedThemeBridge")
+    interface NativeNtpSyncedThemeBridge extends JniTypeToken {}
+
     /** Observer interface for synced theme updates. */
     public interface Observer {
         /**
@@ -55,7 +61,7 @@ public class NtpSyncedThemeBridge {
     }
 
     private final Observer mObserver;
-    private long mNativeNtpSyncedThemeBridge;
+    private @Nullable JniUniquePtr<NativeNtpSyncedThemeBridge> mNativeNtpSyncedThemeBridge;
 
     /**
      * Constructs a new NtpSyncedThemeBridge with an Observer.
@@ -73,15 +79,15 @@ public class NtpSyncedThemeBridge {
 
     /** Cleans up the C++ side of this class. */
     public void destroy() {
-        if (mNativeNtpSyncedThemeBridge != 0) {
-            NtpSyncedThemeBridgeJni.get().destroy(mNativeNtpSyncedThemeBridge);
-            mNativeNtpSyncedThemeBridge = 0;
+        if (mNativeNtpSyncedThemeBridge != null) {
+            mNativeNtpSyncedThemeBridge.destroy();
+            mNativeNtpSyncedThemeBridge = null;
         }
     }
 
     /** Fetches the next image for a theme collection with daily refresh enabled. */
     public void fetchNextThemeCollectionImage() {
-        if (mNativeNtpSyncedThemeBridge == 0) return;
+        if (mNativeNtpSyncedThemeBridge == null) return;
 
         NtpSyncedThemeBridgeJni.get().fetchNextThemeCollectionImage(mNativeNtpSyncedThemeBridge);
     }
@@ -92,21 +98,21 @@ public class NtpSyncedThemeBridge {
      * @param colorId The ID of the Chrome color.
      */
     public void setChromeColor(int colorId) {
-        if (mNativeNtpSyncedThemeBridge == 0) return;
+        if (mNativeNtpSyncedThemeBridge == null) return;
 
         NtpSyncedThemeBridgeJni.get().setChromeColor(mNativeNtpSyncedThemeBridge, colorId);
     }
 
     /** Resets the New Tab Page theme to default and notifies the sync bridge. */
     public void resetCustomBackgroundInfo() {
-        if (mNativeNtpSyncedThemeBridge == 0) return;
+        if (mNativeNtpSyncedThemeBridge == null) return;
 
         NtpSyncedThemeBridgeJni.get().resetCustomBackgroundInfo(mNativeNtpSyncedThemeBridge);
     }
 
     /** Sets the user-uploaded background image and marks it local to the device. */
     public void selectLocalBackgroundImage() {
-        if (mNativeNtpSyncedThemeBridge == 0) return;
+        if (mNativeNtpSyncedThemeBridge == null) return;
 
         NtpSyncedThemeBridgeJni.get().selectLocalBackgroundImage(mNativeNtpSyncedThemeBridge);
     }
@@ -131,7 +137,7 @@ public class NtpSyncedThemeBridge {
             GURL attributionActionUrl,
             @Nullable @ColorInt Integer primaryColor,
             boolean isDailyRefresh) {
-        if (mNativeNtpSyncedThemeBridge == 0) return;
+        if (mNativeNtpSyncedThemeBridge == null) return;
 
         int color = primaryColor != null ? primaryColor : 0;
         NtpSyncedThemeBridgeJni.get()
@@ -148,7 +154,7 @@ public class NtpSyncedThemeBridge {
 
     /** Exposes whether the C++ service is actively processing a sync update. */
     public boolean isProcessingSyncUpdate() {
-        if (mNativeNtpSyncedThemeBridge == 0) return false;
+        if (mNativeNtpSyncedThemeBridge == null) return false;
         return NtpSyncedThemeBridgeJni.get().isProcessingSyncUpdate(mNativeNtpSyncedThemeBridge);
     }
 
@@ -159,7 +165,7 @@ public class NtpSyncedThemeBridge {
     @CalledByNative
     @VisibleForTesting
     void onCustomBackgroundImageUpdated() {
-        if (mNativeNtpSyncedThemeBridge == 0) {
+        if (mNativeNtpSyncedThemeBridge == null) {
             return;
         }
 
@@ -233,24 +239,23 @@ public class NtpSyncedThemeBridge {
 
     @NativeMethods
     public interface Natives {
-        long init(Profile profile, NtpSyncedThemeBridge caller);
+        JniUniquePtr<NativeNtpSyncedThemeBridge> init(Profile profile, NtpSyncedThemeBridge caller);
 
-        void destroy(long nativeNtpSyncedThemeBridge);
+        void fetchNextThemeCollectionImage(JniPtr<NativeNtpSyncedThemeBridge> self);
 
-        void fetchNextThemeCollectionImage(long nativeNtpSyncedThemeBridge);
+        @Nullable SyncedBackgroundInfo getCustomBackgroundInfo(
+                JniPtr<NativeNtpSyncedThemeBridge> self);
 
-        @Nullable SyncedBackgroundInfo getCustomBackgroundInfo(long nativeNtpSyncedThemeBridge);
+        boolean isProcessingSyncUpdate(JniPtr<NativeNtpSyncedThemeBridge> self);
 
-        boolean isProcessingSyncUpdate(long nativeNtpSyncedThemeBridge);
+        void setChromeColor(JniPtr<NativeNtpSyncedThemeBridge> self, int colorId);
 
-        void setChromeColor(long nativeNtpSyncedThemeBridge, int colorId);
+        void resetCustomBackgroundInfo(JniPtr<NativeNtpSyncedThemeBridge> self);
 
-        void resetCustomBackgroundInfo(long nativeNtpSyncedThemeBridge);
-
-        void selectLocalBackgroundImage(long nativeNtpSyncedThemeBridge);
+        void selectLocalBackgroundImage(JniPtr<NativeNtpSyncedThemeBridge> self);
 
         void updateCustomBackgroundPrefsWithColor(
-                long nativeNtpSyncedThemeBridge,
+                JniPtr<NativeNtpSyncedThemeBridge> self,
                 @JniType("GURL") GURL backgroundUrl,
                 @JniType("std::string") String collectionId,
                 @JniType("std::string") @Nullable String attributionLine1,

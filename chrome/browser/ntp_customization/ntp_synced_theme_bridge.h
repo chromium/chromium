@@ -32,8 +32,7 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
   NtpSyncedThemeBridge(const NtpSyncedThemeBridge&) = delete;
   NtpSyncedThemeBridge& operator=(const NtpSyncedThemeBridge&) = delete;
 
-  // Called by the Java counterpart to destroy this object.
-  void Destroy(JNIEnv* env);
+  ~NtpSyncedThemeBridge() override;
 
   // Fetches the next image for a theme collection with daily refresh enabled.
   void FetchNextThemeCollectionImage(JNIEnv* env);
@@ -83,7 +82,6 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
 
  protected:
   NtpSyncedThemeBridge();
-  ~NtpSyncedThemeBridge() override;
 
  private:
   raw_ptr<NtpAndroidCustomBackgroundService> ntp_custom_background_service_;
