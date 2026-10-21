@@ -84,23 +84,28 @@
 }
 
 - (void)stop {
+  self.delegate = nil;
+  [_exportCoordinator stop];
+  _exportCoordinator = nil;
   id<SafariDataImportUIHandler> UIHandler = self.UIHandler;
+  self.UIHandler = nil;
   SafariDataImportEntryPointMediator* mediator = _mediator;
+  _mediator = nil;
   ProceduralBlock dismissCompletionHandler = ^{
     [mediator disconnect];
     [UIHandler safariDataImportDidDismiss];
   };
-  if (_navigationController.presentingViewController) {
-    [_navigationController.presentingViewController
+  UINavigationController* navigationController = _navigationController;
+  _navigationController = nil;
+  _viewController = nil;
+  if (navigationController.presentingViewController) {
+    [navigationController.presentingViewController
         dismissViewControllerAnimated:YES
                            completion:dismissCompletionHandler];
   } else {
+    // This call can destroy `self`, so nothing should be added after it.
     dismissCompletionHandler();
   }
-  _viewController = nil;
-  _navigationController = nil;
-  [_exportCoordinator stop];
-  self.delegate = nil;
 }
 
 #pragma mark - ConfirmationAlertActionHandler

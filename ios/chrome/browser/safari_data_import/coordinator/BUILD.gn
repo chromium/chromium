@@ -128,17 +128,27 @@ source_set("promo") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "safari_data_import_entry_point_mediator_unittest.mm" ]
+  sources = [
+    "safari_data_import_entry_point_mediator_unittest.mm",
+    "safari_data_import_main_coordinator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base",
+    "//base/test:test_support",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:test_support",
+    "//ios/chrome/browser/safari_data_import/public",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

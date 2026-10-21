@@ -48,12 +48,13 @@
 
 - (void)stop {
   self.delegate = nil;
+  [_importCoordinator stop];
+  _importCoordinator = nil;
   _navigationController.delegate = nil;
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:nil];
   _navigationController = nil;
-  [_importCoordinator stop];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
