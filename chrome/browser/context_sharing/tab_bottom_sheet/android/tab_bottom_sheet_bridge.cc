@@ -10,6 +10,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // JNI headers must be included after standard headers to ensure types like
@@ -33,28 +34,6 @@ ManagerInitializedCallbackList& GetManagerInitializedCallbackList() {
 std::optional<bool> g_is_manager_ready_for_testing;
 }  // namespace
 
-void JNI_TabBottomSheetNativeInterface_OnClosed(
-    JNIEnv* env,
-    int64_t native_tab_bottom_sheet_bridge) {
-  reinterpret_cast<TabBottomSheetBridge*>(native_tab_bottom_sheet_bridge)
-      ->OnClosed(env);
-}
-
-void JNI_TabBottomSheetNativeInterface_OnSuppressed(
-    JNIEnv* env,
-    int64_t native_tab_bottom_sheet_bridge) {
-  reinterpret_cast<TabBottomSheetBridge*>(native_tab_bottom_sheet_bridge)
-      ->OnSuppressed(env);
-}
-
-void JNI_TabBottomSheetNativeInterface_OnOpened(
-    JNIEnv* env,
-    int64_t native_tab_bottom_sheet_bridge,
-    bool is_expanded) {
-  reinterpret_cast<TabBottomSheetBridge*>(native_tab_bottom_sheet_bridge)
-      ->OnOpened(env, is_expanded);
-}
-
 void JNI_TabBottomSheetNativeInterface_OnManagerInitialized(
     JNIEnv* env,
     ui::WindowAndroid* window_android) {
@@ -66,7 +45,7 @@ TabBottomSheetBridge::TabBottomSheetBridge(Observer* observer,
     : observer_(observer), tab_(*tab) {
   JNIEnv* env = AttachCurrentThread();
   java_bridge_.Reset(Java_TabBottomSheetNativeInterface_Constructor(
-      env, reinterpret_cast<intptr_t>(this), GetTabAndroid()->GetJavaObject()));
+      env, jni_zero::MakeRaw(this), GetTabAndroid()->GetJavaObject()));
 }
 
 TabBottomSheetBridge::~TabBottomSheetBridge() {
