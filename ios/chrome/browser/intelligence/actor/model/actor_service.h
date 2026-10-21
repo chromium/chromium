@@ -12,6 +12,7 @@
 #import <string_view>
 #import <vector>
 
+#import "base/callback_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
@@ -34,6 +35,7 @@ class WebState;
 
 namespace actor {
 
+class ActorEnterprisePolicyCheckerIOS;
 class ActorTask;
 class ActorTaskBackgroundWorker;
 class ActorToolRequest;
@@ -175,6 +177,12 @@ class ActorService : public KeyedService {
   // Journal used for logging task tools, state transitions, and results.
   std::unique_ptr<AggregatedJournal> journal_;
 
+  // Enterprise policy checker for this profile.
+  std::unique_ptr<ActorEnterprisePolicyCheckerIOS> policy_checker_;
+
+  // Subscription for enterprise policy changes to the actuation capability.
+  base::CallbackListSubscription can_act_on_web_subscription_;
+
   // Map of active tasks, keyed by their task ID.
   std::map<ActorTaskId, std::unique_ptr<ActorTask>> active_tasks_;
 
@@ -211,6 +219,9 @@ class ActorService : public KeyedService {
   void AddControlledWebStates(
       ActorTask* task,
       const std::vector<std::unique_ptr<ActorToolRequest>>& actions);
+
+  // Stops all active tasks when enterprise policy disables web actuation.
+  void OnCanActOnWebChanged(bool can_act_on_web);
 
   // Returns the WebState associated with the given `web_state_id`, or nullptr
   // if it cannot be found.

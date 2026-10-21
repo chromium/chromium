@@ -19,6 +19,7 @@
 #import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_enterprise_policy_checker_ios.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task_background_worker.h"
 #import "ios/chrome/browser/intelligence/actor/model/posted_observer_list.h"
@@ -94,9 +95,14 @@ ActorService::ActorService(ProfileIOS* profile)
     : profile_(profile),
       tool_factory_(std::make_unique<ActorToolFactory>(profile)),
       journal_(std::make_unique<AggregatedJournal>()),
+      policy_checker_(std::make_unique<ActorEnterprisePolicyCheckerIOS>(
+          profile ? profile->GetPrefs() : nullptr)),
       lifecycle_observers_([[PostedObserverList alloc]
           initWithProtocol:@protocol(ActorTaskLifecycleObserver)]) {
   CHECK(tool_factory_);
+  can_act_on_web_subscription_ =
+      policy_checker_->AddCanActOnWebChangedCallback(base::BindRepeating(
+          &ActorService::OnCanActOnWebChanged, weak_ptr_factory_.GetWeakPtr()));
 }
 
 ActorService::~ActorService() {
@@ -105,12 +111,14 @@ ActorService::~ActorService() {
 
 void ActorService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  can_act_on_web_subscription_ = {};
   // Pending lifecycle notifications are dropped, so that observers are never
   // called back after `Shutdown()`.
   [lifecycle_observers_ removeAllObservers];
   // TODO(crbug.com/568342921): Gracefully cleanup tasks.
   task_observers_.clear();
   active_tasks_.clear();
+  policy_checker_.reset();
 }
 
 ActorTaskId ActorService::CreateTask(const std::string& title,
@@ -118,12 +126,21 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
                                      bool allow_incognito_web_states) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(IsActorEnabled());
+  if (policy_checker_ && !policy_checker_->CanActOnWeb()) {
+    journal_->Log(GURL(), ActorTaskId(), "ActorService::CreateTask",
+                  JournalDetailsBuilder()
+                      .AddError("Blocked by enterprise policy")
+                      .Build());
+    // TODO(crbug.com/567036075): Signal task creation failure to callers and
+    // handle tasks not created properly at the caller level.
+    return ActorTaskId();
+  }
 
   const ActorTaskId task_id = next_task_id_.GenerateNextId();
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
   auto task = std::make_unique<ActorTask>(
       task_id, title, source_info, allow_incognito_web_states, journal_.get(),
-      tool_factory_.get(), browser_list);
+      tool_factory_.get(), browser_list, policy_checker_.get());
 
   for (id<ActorTaskUpdatesObserver> observer : task_observers_) {
     if (observer) {
@@ -157,6 +174,17 @@ void ActorService::PerformActions(
     PerformActionsResult actions_result;
     actions_result.action_results =
         MakeActionResults(mojom::ActionResultCode::kTaskWentAway);
+    PostPerformActionsReply(std::move(callback), std::move(actions_result));
+    return;
+  }
+
+  if (policy_checker_ && !policy_checker_->CanActOnWeb()) {
+    constexpr mojom::ActionResultCode kRejectionCode =
+        mojom::ActionResultCode::kActionsBlockedByEnterprisePolicy;
+    LogActRejection(*journal_, task_id, "ActorService::PerformActions",
+                    kRejectionCode);
+    PerformActionsResult actions_result;
+    actions_result.action_results = MakeActionResults(kRejectionCode);
     PostPerformActionsReply(std::move(callback), std::move(actions_result));
     return;
   }
@@ -582,4 +610,14 @@ web::WebState* ActorService::GetWebState(web::WebStateID web_state_id,
       browser_and_index.tab_index);
 }
 
+void ActorService::OnCanActOnWebChanged(bool can_act_on_web) {
+  if (can_act_on_web) {
+    return;
+  }
+
+  while (!active_tasks_.empty()) {
+    StopTask(active_tasks_.begin()->first,
+             ActorTaskStoppedReason::kBrowserFailure);
+  }
+}
 }  // namespace actor

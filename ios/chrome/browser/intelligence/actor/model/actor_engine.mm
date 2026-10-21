@@ -9,6 +9,7 @@
 #import "base/strings/stringprintf.h"
 #import "components/actor/core/safety_list_manager.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
+#import "components/origin_gating/core/decision_source.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
 #import "components/origin_gating/core/origin_gating_configuration.h"
 #import "components/origin_gating/core/origin_gating_registration.h"
@@ -136,6 +137,8 @@ ActorEngine::ActorEngine(ExecutionUpdatesDelegate* execution_updates_delegate,
     : state_(State::kInit),
       execution_updates_delegate_(execution_updates_delegate),
       owner_task_(owner_task),
+      origin_gating_delegate_(owner_task ? owner_task->policy_checker()
+                                         : nullptr),
       tool_controller_(
           std::make_unique<ToolController>(/*tool_delegate=*/this)) {
   CHECK(execution_updates_delegate_);
@@ -266,6 +269,11 @@ ActorEngine::CreateOriginGatingConfig() {
   return origin_gating::OriginGatingConfiguration(
       /*predicates=*/
       {
+          origin_gating::PredicateConfiguration(
+              /*predicate=*/origin_gating::DecisionSource::kEnterprisePolicy,
+              /*events=*/
+              {origin_gating::GateableEvent::kNavigationResponse,
+               origin_gating::GateableEvent::kPageAction}),
           origin_gating::PredicateConfiguration(
               /*predicate=*/origin_gating::CustomPredicate(
                   base::BindRepeating(&EvaluateSafetyListPredicate),

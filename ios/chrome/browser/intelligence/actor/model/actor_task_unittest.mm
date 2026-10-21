@@ -294,7 +294,8 @@ class ActorTaskTest : public PlatformTest {
     task_ = std::make_unique<ActorTask>(
         ActorTaskId(1), "Test Task", TestSource(),
         /*allow_incognito_web_states=*/false, journal_.get(),
-        tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()));
+        tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()),
+        /*policy_checker=*/nullptr);
   }
 
   void TearDown() override {
@@ -1139,7 +1140,8 @@ TEST_F(ActorTaskTest, KeepRenderProcessAliveFollowsControlState) {
   auto scoped_task = std::make_unique<ActorTask>(
       ActorTaskId(42), "Scoped Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
-      BrowserListFactory::GetForProfile(profile_.get()));
+      BrowserListFactory::GetForProfile(profile_.get()),
+      /*policy_checker=*/nullptr);
   scoped_task->Act({}, "update", base::DoNothing());
   scoped_task->AddControlledWebState(web_state3.get());
   EXPECT_TRUE(web_state3->keep_render_process_alive());
@@ -1332,7 +1334,8 @@ TEST_F(ActorTaskBackgroundingTest, DestructorFinalizesBackgroundTask) {
   auto task = std::make_unique<ActorTask>(
       ActorTaskId(1), "Test Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
-      BrowserListFactory::GetForProfile(profile_.get()));
+      BrowserListFactory::GetForProfile(profile_.get()),
+      /*policy_checker=*/nullptr);
   task->background_worker()->SetContext(context);
   EXPECT_FALSE(context.completed);
 
@@ -1475,7 +1478,8 @@ TEST_F(ActorTaskTest,
   auto task = std::make_unique<ActorTask>(
       ActorTaskId(1), "Test Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
-      BrowserListFactory::GetForProfile(profile_.get()));
+      BrowserListFactory::GetForProfile(profile_.get()),
+      /*policy_checker=*/nullptr);
 
   auto web_state = std::make_unique<web::FakeWebState>();
   task->AddControlledWebState(web_state.get());

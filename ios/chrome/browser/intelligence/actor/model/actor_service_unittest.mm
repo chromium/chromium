@@ -25,7 +25,9 @@
 #import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/background_task/features.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_enterprise_policy_checker_ios.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task_background_worker.h"
@@ -41,6 +43,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -138,6 +141,8 @@ namespace actor {
 
 namespace {
 
+constexpr int kPolicyDisabled = 1;
+
 // Returns the provenance attributed to tasks created by these tests.
 TaskSourceInfo TestSource() {
   return TaskSourceInfo(TaskSourceInfo::Client::kTest, /*id=*/std::nullopt);
@@ -174,7 +179,8 @@ class MockActorTask : public ActorTask {
                   allow_incognito_web_states,
                   journal,
                   tool_factory,
-                  browser_list),
+                  browser_list,
+                  /*policy_checker=*/nullptr),
         stop_called_(stop_called) {}
 
   void Stop(ActorTaskStoppedReason stop_reason) override {
@@ -1481,6 +1487,60 @@ TEST_F(ActorServiceTest, InterruptTaskHandlesReentrantStopTask) {
 
   EXPECT_TRUE(delegate.requestConfirmationCalled);
   EXPECT_FALSE(HasTask(service, task_id));
+}
+
+// Test that `CreateTask()` returns a null ID and creates no task when web
+// actuation is disabled by enterprise policy.
+TEST_F(ActorServiceTest, Create_BlockedByEnterprisePolicy) {
+  profile_->GetPrefs()->SetInteger(prefs::kGeminiActOnWebSettings,
+                                   kPolicyDisabled);
+
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id = CreateTask(service);
+  EXPECT_TRUE(task_id.is_null());
+  EXPECT_EQ(std::nullopt, service->GetActiveTaskState());
+}
+
+// Test that disabling web actuation via enterprise policy stops all active
+// tasks.
+TEST_F(ActorServiceTest, CanActOnWebChanged_StopsActiveTasksWhenDisabled) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id = CreateTask(service);
+  ASSERT_FALSE(task_id.is_null());
+  ASSERT_TRUE(HasTask(service, task_id));
+
+  profile_->GetPrefs()->SetInteger(prefs::kGeminiActOnWebSettings,
+                                   kPolicyDisabled);
+
+  EXPECT_FALSE(HasTask(service, task_id));
+}
+
+// Test that `PerformActions()` rejects with `kActionsBlockedByEnterprisePolicy`
+// when web actuation is disabled by enterprise policy.
+TEST_F(ActorServiceTest, PerformActions_RejectedWhenBlockedByEnterprisePolicy) {
+  profile_->GetPrefs()->SetInteger(prefs::kGeminiActOnWebSettings,
+                                   kPolicyDisabled);
+
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  const ActorTaskId task_id(1);
+  SwapTask(service, task_id,
+           std::make_unique<ActorTask>(
+               task_id, "Test Task", TestSource(),
+               /*allow_incognito_web_states=*/false, GetJournal(service),
+               GetToolFactory(service),
+               BrowserListFactory::GetForProfile(profile_.get()),
+               /*policy_checker=*/nullptr));
+
+  PerformActionsResult result = PerformActions(service, task_id);
+  ASSERT_EQ(1u, result.action_results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kActionsBlockedByEnterprisePolicy,
+            result.action_results[0].tool_result.code());
 }
 
 }  // namespace actor

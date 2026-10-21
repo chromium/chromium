@@ -12,6 +12,7 @@
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
+#import "base/values.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/safety_list_manager.h"
 #import "components/actor/core/task_source_info.h"
@@ -24,6 +25,8 @@
 #import "components/origin_gating/core/origin_gating_configuration.h"
 #import "components/origin_gating/core/origin_gating_registration.h"
 #import "components/origin_gating/core/origin_gating_service.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_enterprise_policy_checker_ios.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
@@ -39,6 +42,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -170,7 +174,8 @@ class ActorEngineTest : public PlatformTest {
     task_ = std::make_unique<ActorTask>(
         ActorTaskId(1), "Test Task", TestSource(),
         /*allow_incognito_web_states=*/false, journal_.get(),
-        tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()));
+        tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()),
+        /*policy_checker=*/nullptr);
     engine_ = std::make_unique<ActorEngine>(&execution_updates_delegate_,
                                             task_.get());
   }
@@ -1320,5 +1325,86 @@ TEST_F(ActorEngineOriginGatingTest, Act_PageActionMissingTabFails) {
   EXPECT_EQ(mojom::ActionResultCode::kTabWentAway,
             results[0].tool_result.code());
   EXPECT_EQ(GetState(), ActorEngine::State::kFailed);
+}
+
+// Tests that `OriginGatingChecker` blocks a URL listed in
+// `GeminiActOnWebBlockedForURLs` with `DecisionSource::kEnterprisePolicy`.
+TEST_F(ActorEngineOriginGatingTest, BlocksUrlBlockedByEnterprisePolicy) {
+  ActorEnterprisePolicyCheckerIOS policy_checker(profile_->GetPrefs());
+  profile_->GetPrefs()->SetList(
+      prefs::kGeminiActOnWebBlockedForURLs,
+      base::ListValue().Append("blocked.example.com"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return policy_checker.Evaluate(GURL("https://blocked.example.com")) ==
+           EnterprisePolicyUrlBlockReason::kExplicitlyBlocked;
+  }));
+
+  ActorTask task(
+      ActorTaskId(2), "Policy Task", TestSource(),
+      /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
+      BrowserListFactory::GetForProfile(profile_.get()), &policy_checker);
+  origin_gating::OriginGatingChecker* checker =
+      task.engine().GetOriginGatingChecker();
+  ASSERT_NE(checker, nullptr);
+
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      future;
+  checker->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL("https://safe.com"),
+          .destination = GURL("https://blocked.example.com")}),
+      future.GetCallback());
+
+  const origin_gating::GatingDecision& decision = future.Get<1>();
+  EXPECT_FALSE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution,
+            origin_gating::DecisionSource::kEnterprisePolicy);
+}
+
+// Tests that `DecisionSource::kEnterprisePolicy` runs before `kSafetyList` so
+// an enterprise allowlisted URL overrides a safety list block.
+TEST_F(ActorEngineOriginGatingTest,
+       EnterprisePolicyAllowlistOverridesSafetyListBlock) {
+  const std::string mock_rules_json = R"json({
+    "navigation_blocked": [
+      {"from": "https://safe.com", "to": "https://internal.example.com"}
+    ]
+  })json";
+  actor::SetSafetyListsForTesting(actor::SafetyListManager::GetInstance(),
+                                  mock_rules_json);
+
+  ActorEnterprisePolicyCheckerIOS policy_checker(profile_->GetPrefs());
+  profile_->GetPrefs()->SetList(
+      prefs::kGeminiActOnWebAllowedForURLs,
+      base::ListValue().Append("internal.example.com"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return policy_checker.Evaluate(GURL("https://internal.example.com")) ==
+           EnterprisePolicyUrlBlockReason::kExplicitlyAllowed;
+  }));
+
+  ActorTask task(
+      ActorTaskId(2), "Policy Task", TestSource(),
+      /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
+      BrowserListFactory::GetForProfile(profile_.get()), &policy_checker);
+  origin_gating::OriginGatingChecker* checker =
+      task.engine().GetOriginGatingChecker();
+  ASSERT_NE(checker, nullptr);
+
+  base::test::TestFuture<std::unique_ptr<origin_gating::GatingDecisionContext>,
+                         origin_gating::GatingDecision>
+      future;
+  checker->ComputeGatingDecision(
+      std::make_unique<origin_gating::GatingDecisionContext>(),
+      origin_gating::GateableEvent(origin_gating::NavigationResponseEvent{
+          .source = GURL("https://safe.com"),
+          .destination = GURL("https://internal.example.com")}),
+      future.GetCallback());
+
+  const origin_gating::GatingDecision& decision = future.Get<1>();
+  EXPECT_TRUE(decision.is_allowed);
+  EXPECT_EQ(decision.attribution,
+            origin_gating::DecisionSource::kEnterprisePolicy);
 }
 }  // namespace actor

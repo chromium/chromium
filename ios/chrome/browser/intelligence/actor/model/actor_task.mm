@@ -139,14 +139,16 @@ ActorTask::ActorTask(ActorTaskId task_id,
                      bool allow_incognito_web_states,
                      AggregatedJournal* journal,
                      ActorToolFactory* tool_factory,
-                     BrowserList* browser_list)
+                     BrowserList* browser_list,
+                     const ActorEnterprisePolicyCheckerIOS* policy_checker)
     : task_id_(task_id),
       browser_list_(browser_list),
       title_(title),
       source_info_(source_info),
       allow_incognito_web_states_(allow_incognito_web_states),
       journal_(journal),
-      tool_factory_(tool_factory) {
+      tool_factory_(tool_factory),
+      policy_checker_(policy_checker) {
   CHECK(journal);
   CHECK(tool_factory);
   CHECK(browser_list);
