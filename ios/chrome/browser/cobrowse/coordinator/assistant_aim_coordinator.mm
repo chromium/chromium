@@ -214,14 +214,6 @@ class AssistantAIMUIStateProvider
 
   [self dismissSnackbars];
 
-  BOOL showInMinimizedState =
-      shouldStartInMinimized ||
-      base::FeatureList::IsEnabled(kAssistantAimMinimizedState);
-  AssistantContainerDetent targetDetent =
-      showInMinimizedState ? AssistantContainerDetent::kMinimized
-                           : AssistantContainerDetent::kMedium;
-  _currentDetent = targetDetent;
-
   // This must be called AFTER the view controller and its children (like the
   // input plate) are fully set up. This is because the initial layout and
   // percentage updates need to be applied to the fully constructed content.
@@ -229,6 +221,14 @@ class AssistantAIMUIStateProvider
   // the content, leading to wrong UI.
   [_containerHandler showAssistantContainerWithContent:_viewController
                                               delegate:self];
+
+  BOOL showInMinimizedState =
+      shouldStartInMinimized ||
+      base::FeatureList::IsEnabled(kAssistantAimMinimizedState);
+  AssistantContainerDetent targetDetent =
+      showInMinimizedState ? AssistantContainerDetent::kMinimized
+                           : [self defaultExpandedDetent];
+  _currentDetent = targetDetent;
 
   [_containerHandler
       animateAssistantContainerToDetent:targetDetent
@@ -297,6 +297,9 @@ class AssistantAIMUIStateProvider
       AssistantContainerDetent targetDetent = _currentDetent;
       [_containerHandler showAssistantContainerWithContent:_viewController
                                                   delegate:self];
+      if (targetDetent == AssistantContainerDetent::kMedium) {
+        targetDetent = [self defaultExpandedDetent];
+      }
       // Restore `_currentDetent` in case `showAssistantContainerWithContent:`
       // triggered intermediate layout passes that incorrectly reset it.
       _currentDetent = targetDetent;
@@ -395,6 +398,13 @@ class AssistantAIMUIStateProvider
                                          AssistantContainerDetent::kMinimized,
                                          AssistantContainerDetent::kLarge,
     }];
+    if (_currentDetent == AssistantContainerDetent::kMedium) {
+      _currentDetent = AssistantContainerDetent::kLarge;
+      [_containerHandler
+          animateAssistantContainerToDetent:AssistantContainerDetent::kLarge
+                                   duration:0
+                                      curve:UIViewAnimationCurveEaseInOut];
+    }
     return;
   }
   [_containerHandler
@@ -406,6 +416,15 @@ class AssistantAIMUIStateProvider
 }
 
 #pragma mark - Private
+
+// Returns the default expanded detent for `_viewController`'s current trait
+// collection. `AssistantContainerDetent::kMedium` is not available in iPhone
+// landscape.
+- (AssistantContainerDetent)defaultExpandedDetent {
+  return IsIPhoneLandscapeLayout(_viewController.traitCollection)
+             ? AssistantContainerDetent::kLarge
+             : AssistantContainerDetent::kMedium;
+}
 
 // Creates the WebState displayed in the sheet, with its tab helpers attached.
 - (std::unique_ptr<web::WebState>)createWebState {

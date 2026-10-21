@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_coordinator.h"
 
 #import <memory>
+#import <optional>
+#import <vector>
 
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
@@ -42,6 +44,59 @@
 
 @interface AssistantAIMCoordinator (Testing)
 - (std::unique_ptr<web::WebState>)createWebState;
+@end
+
+// Fake command handler for testing `AssistantContainerCommands` methods,
+// including `setAssistantContainerDetents:` which takes a `std::vector` by
+// value that `OCMock` cannot unbox.
+@interface FakeAssistantContainerCommands
+    : NSObject <AssistantContainerCommands>
+@property(nonatomic, assign) std::vector<AssistantContainerDetent> detents;
+@property(nonatomic, assign) std::optional<AssistantContainerDetent>
+    lastAnimatedDetent;
+@end
+
+@implementation FakeAssistantContainerCommands
+
+- (void)showAssistantContainerWithContent:(UIViewController*)viewController
+                                 delegate:
+                                     (id<AssistantContainerDelegate>)delegate {
+}
+
+- (void)dismissAssistantContainerAnimated:(BOOL)animated
+                               completion:(ProceduralBlock)completion {
+}
+
+- (void)setAssistantContainerDetents:
+    (std::vector<AssistantContainerDetent>)detents {
+  _detents = std::move(detents);
+}
+
+- (void)setAssistantContainerLargestUndimmedDetent:
+    (AssistantContainerDetent)detent {
+}
+
+- (void)animateAssistantContainerToDetent:(AssistantContainerDetent)detent {
+  _lastAnimatedDetent = detent;
+}
+
+- (void)animateAssistantContainerToDetent:(AssistantContainerDetent)detent
+                                 duration:(NSTimeInterval)duration
+                                    curve:(UIViewAnimationCurve)curve {
+  _lastAnimatedDetent = detent;
+}
+
+- (void)setAssistantContainerMinimizedDetentHeight:(NSInteger)height {
+}
+
+- (void)setAssistantContainerMediumDetentHeight:
+    (std::optional<NSInteger>)height {
+}
+
+- (void)setAssistantContainerGrabberHidden:(BOOL)hidden
+                                  animated:(BOOL)animated {
+}
+
 @end
 
 namespace {
@@ -239,4 +294,70 @@ TEST_F(AssistantAIMCoordinatorTest, CaptivePortalLoginPageOpensInNewTab) {
                                           ->GetPendingItem();
   ASSERT_TRUE(pending_item);
   EXPECT_EQ(landing_url, pending_item->GetURL());
+}
+
+// Tests that transitioning traits to iPhone landscape removes the medium detent
+// and expands the container from `kMedium` to `kLarge`.
+TEST_F(AssistantAIMCoordinatorTest,
+       DidChangeTraits_IPhoneLandscapeAnimatesMediumToLarge) {
+  FakeAssistantContainerCommands* fake_container_handler =
+      [[FakeAssistantContainerCommands alloc] init];
+  [coordinator_ setValue:fake_container_handler forKey:@"containerHandler"];
+
+  id mock_view_controller = OCMClassMock([AssistantAIMViewController class]);
+  UITraitCollection* landscape_traits = [UITraitCollection
+      traitCollectionWithTraits:^(id<UIMutableTraits> traits) {
+        traits.userInterfaceIdiom = UIUserInterfaceIdiomPhone;
+        traits.verticalSizeClass = UIUserInterfaceSizeClassCompact;
+      }];
+  OCMStub([mock_view_controller traitCollection]).andReturn(landscape_traits);
+  [coordinator_ setValue:mock_view_controller forKey:@"viewController"];
+
+  [static_cast<id<AssistantContainerDelegate>>(coordinator_)
+      assistantContainer:nil
+         didChangeDetent:AssistantContainerDetent::kMedium];
+
+  [static_cast<id<AssistantAIMViewControllerDelegate>>(coordinator_)
+      assistantAIMViewControllerDidChangeTraits:mock_view_controller];
+
+  std::vector<AssistantContainerDetent> expected_detents = {
+      AssistantContainerDetent::kMinimized,
+      AssistantContainerDetent::kLarge,
+  };
+  EXPECT_EQ(expected_detents, fake_container_handler.detents);
+  ASSERT_TRUE(fake_container_handler.lastAnimatedDetent.has_value());
+  EXPECT_EQ(AssistantContainerDetent::kLarge,
+            fake_container_handler.lastAnimatedDetent.value());
+
+  [mock_view_controller stopMocking];
+}
+
+// Tests that showing the assistant in iPhone landscape when the previous detent
+// was `kMedium` animates to `kLarge` instead of `kMedium`.
+TEST_F(AssistantAIMCoordinatorTest,
+       SetVisible_IPhoneLandscapeUsesLargeInsteadOfMedium) {
+  FakeAssistantContainerCommands* fake_container_handler =
+      [[FakeAssistantContainerCommands alloc] init];
+  [coordinator_ setValue:fake_container_handler forKey:@"containerHandler"];
+
+  id mock_view_controller = OCMClassMock([AssistantAIMViewController class]);
+  UITraitCollection* landscape_traits = [UITraitCollection
+      traitCollectionWithTraits:^(id<UIMutableTraits> traits) {
+        traits.userInterfaceIdiom = UIUserInterfaceIdiomPhone;
+        traits.verticalSizeClass = UIUserInterfaceSizeClassCompact;
+      }];
+  OCMStub([mock_view_controller traitCollection]).andReturn(landscape_traits);
+  [coordinator_ setValue:mock_view_controller forKey:@"viewController"];
+
+  [static_cast<id<AssistantContainerDelegate>>(coordinator_)
+      assistantContainer:nil
+         didChangeDetent:AssistantContainerDetent::kMedium];
+
+  [coordinator_ setVisible:YES inMinimizedState:NO];
+
+  ASSERT_TRUE(fake_container_handler.lastAnimatedDetent.has_value());
+  EXPECT_EQ(AssistantContainerDetent::kLarge,
+            fake_container_handler.lastAnimatedDetent.value());
+
+  [mock_view_controller stopMocking];
 }
