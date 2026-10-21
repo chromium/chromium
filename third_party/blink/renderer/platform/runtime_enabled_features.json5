@@ -3853,6 +3853,15 @@
       status: "stable",
     },
     {
+      // Srcset images also re-select the best candidate on viewport/zoom
+      // changes when the src attribute was the selected (implicit 1x)
+      // candidate.
+      // https://crbug.com/560379372
+      name: "ImageSrcsetReselectionForSrcCandidate",
+      depends_on: ["ImageSrcsetReselection"],
+      status: "stable",
+    },
+    {
       name: "ImplicitRootScroller",
       public: true,
       settable_from_internals: true,

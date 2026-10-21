@@ -303,6 +303,13 @@ void HTMLImageElement::SetBestFitURLAndDPRFromImageCandidate(
       intrinsic_sizing_viewport_dependent = true;
     }
     UseCounter::Count(GetDocument(), WebFeature::kSrcsetXDescriptor);
+  } else if (RuntimeEnabledFeatures::
+                 ImageSrcsetReselectionForSrcCandidateEnabled() &&
+             !FastGetAttribute(html_names::kSrcsetAttr).empty()) {
+    // The src attribute won as the implicit 1x candidate among the srcset
+    // candidates. A device pixel ratio change (e.g. page zoom) can make one of
+    // the srcset candidates a better fit, so keep listening for changes.
+    intrinsic_sizing_viewport_dependent = true;
   }
 
   if (auto* layout_image = DynamicTo<LayoutImage>(GetLayoutObject())) {

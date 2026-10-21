@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>Test that srcset images re-select when zoom changes and the src attribute was the selected candidate</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<img id="testImg">
+
+<script>
+// Verifies that an image whose src attribute is initially selected as the
+// implicit 1x candidate re-selects a higher density srcset candidate when the
+// page zoom level changes.
+async_test(function(t) {
+    const img = document.getElementById('testImg');
+    img.src = 'resources/blue-100-px-square.png';
+    img.srcset = 'resources/green-400-px-square.png 2x';
+
+    img.onload = t.step_func(function firstLoad() {
+        // At 1x DPR with no zoom, the src attribute should be selected.
+        assert_true(img.currentSrc.indexOf('blue-100-px-square.png') !== -1,
+            'Should initially load the src image');
+
+        img.onload = t.step_func(function secondLoad() {
+            // After zooming to 2x, the 2x srcset candidate should be selected.
+            assert_true(img.currentSrc.indexOf('green-400-px-square.png') !== -1,
+                'Should switch to the 2x srcset image after zoom');
+            t.done();
+        });
+
+        // Zoom in until effective DPR reaches 2x.
+        assert_true(!!window.testRunner, 'This test requires testRunner');
+        while (!matchMedia('screen and (min-resolution: 2dppx)').matches) {
+            testRunner.zoomPageIn();
+        }
+    });
+});
+</script>
