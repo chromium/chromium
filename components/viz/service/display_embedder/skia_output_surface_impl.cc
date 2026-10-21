@@ -793,16 +793,6 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
     current_paint_.emplace(characterization, mailbox, skip_draw_for_tests_);
   }
 
-  // We are going to overwrite the render pass when it is not for overlay, so we
-  // need to reset the image_context and a new promise image will be created
-  // when MakePromiseSkImageFromRenderPass() is called.
-  if (!is_overlay) {
-    auto it = render_pass_image_cache_.find(id);
-    if (it != render_pass_image_cache_.end()) {
-      it->second->clear_image();
-    }
-  }
-
   return current_paint_->canvas();
 }
 
@@ -902,12 +892,13 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
   if (!image_context) {
     image_context =
         std::make_unique<ImageContextImpl>(mailbox, size, format, color_space);
-  }
-  if (!image_context->has_image()) {
     MakePromiseSkImageSinglePlane(image_context.get(), mipmap, false);
     if (!image_context->has_image()) {
+      image_context.reset();
       return nullptr;
     }
+  } else {
+    CHECK(image_context->mailbox() == mailbox);
   }
   images_in_current_paint_.push_back(image_context.get());
   return image_context->image();
@@ -925,7 +916,6 @@ void SkiaOutputSurfaceImpl::RemoveRenderPassResource(
     // If the render pass was only used for a copy request, there won't be a
     // matching entry in |render_pass_image_cache_|.
     if (it != render_pass_image_cache_.end()) {
-      it->second->clear_image();
       image_contexts.push_back(std::move(it->second));
       render_pass_image_cache_.erase(it);
     }

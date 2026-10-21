@@ -51,10 +51,9 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     virtual void OnContextLost();
 
     //
-    // Thread safety is guaranteed by these invariants: (a) only the compositor
-    // thread modifies ImageContext, (b) ImageContext is not modified after
-    // |image| is set, and (c) GPU thread only reads ImageContext after |image|
-    // is set.
+    // Thread safety is guaranteed by these invariants: (a) only the viz thread
+    // modifies ImageContext, (b) ImageContext is not modified after |image| is
+    // set, and (c) GPU thread only reads ImageContext after |image| is set.
     //
     const gpu::Mailbox& mailbox() const { return mailbox_; }
     uint32_t texture_target() const { return texture_target_; }
@@ -83,11 +82,6 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
 
     bool has_image() { return !!image_; }
     sk_sp<SkImage> image() { return image_; }
-    void SetImage(sk_sp<SkImage> image,
-                  std::vector<GrBackendFormat> backend_formats);
-    void SetImage(sk_sp<SkImage> image,
-                  std::vector<skgpu::graphite::TextureInfo> texture_infos);
-    void clear_image() { image_.reset(); }
     const std::vector<GrBackendFormat>& backend_formats() {
       return backend_formats_;
     }
@@ -95,10 +89,22 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
       return texture_infos_;
     }
 
+    // SkImage and texture info MUST not be modified after they are initially
+    // set on the viz thread.
+    void SetImage(sk_sp<SkImage> image,
+                  std::vector<GrBackendFormat> backend_formats);
+    void SetImage(sk_sp<SkImage> image,
+                  std::vector<skgpu::graphite::TextureInfo> texture_infos);
+
+   protected:
+    // Resetting the image is only safe to do when ImageContext is no longer
+    // held on the viz thread, eg. during the destructor.
+    void clear_image() { image_.reset(); }
+
    private:
-    gpu::Mailbox mailbox_;
+    const gpu::Mailbox mailbox_;
     std::vector<gpu::SyncToken> sync_tokens_;
-    uint32_t texture_target_;
+    const uint32_t texture_target_;
 
     const gfx::Size size_;
     const SharedImageFormat format_;
@@ -113,7 +119,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     // android video.
     std::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
 
-    // The promise image which is used on display thread.
+    // The promise image which is used on the GPU thread.
     sk_sp<SkImage> image_;
     std::vector<GrBackendFormat> backend_formats_;
     std::vector<skgpu::graphite::TextureInfo> texture_infos_;
