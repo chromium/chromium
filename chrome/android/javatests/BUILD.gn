@@ -1679,6 +1679,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.tasks") {
     "//chrome/browser/glic:public_java",
     "//chrome/browser/hub/internal:java",
     "//chrome/browser/ui/vertical_tabs:java",
+    "//components/omnibox/common:features_java",
     "//components/tabs/public/android:java",
     "//ui/accessibility:ui_accessibility_test_support_java",
   ]

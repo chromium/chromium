@@ -30,6 +30,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 
 import org.chromium.base.test.transit.Facility;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
@@ -181,9 +182,18 @@ public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
                     declareView(
                             viewSpec(BaseSuggestionView.class, matchersArray), unscopedOption());
         }
+
+        /**
+         * Presses Enter in the search box, which opens the top suggestion. Callers pick the
+         * destination station.
+         */
+        protected TripBuilder pressEnterTo() {
+            noopTo().waitFor(new UrlBarHasFocusCondition(urlBarElement.value()));
+            return urlBarElement.performViewActionTo(ViewActions.pressKey(KeyEvent.KEYCODE_ENTER));
+        }
     }
 
-    /** A suggestion representing an individual tab (open tab or history navigation). */
+    /** A suggestion that opens a page: an open tab, a recently closed tab, or a history result. */
     public class TabSuggestionFacility extends BaseSuggestionFacility {
         public TabSuggestionFacility(
                 @Nullable Integer index, @Nullable String title, @Nullable String urlSubstring) {
@@ -201,15 +211,19 @@ public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
         }
 
         /**
-         * Presses Enter while the suggestion is focused to select the tab and arrive at a
-         * WebPageStation.
+         * Presses Enter to open the top suggestion, expected to be this one, selecting an existing
+         * tab and arriving at a WebPageStation.
          */
         public WebPageStation pressEnterToSelectTab() {
-            UrlBar urlBar = urlBarElement.value();
-            noopTo().waitFor(new UrlBarHasFocusCondition(urlBar));
-            return urlBarElement
-                    .performViewActionTo(ViewActions.pressKey(KeyEvent.KEYCODE_ENTER))
-                    .arriveAt(buildSelectedTabStation());
+            return pressEnterTo().arriveAt(buildSelectedTabStation());
+        }
+
+        /**
+         * Presses Enter to open the top suggestion, expected to be this one, in a new tab and
+         * arrive at a WebPageStation.
+         */
+        public WebPageStation pressEnterToOpenNewTab() {
+            return pressEnterTo().arriveAt(buildNewTabStation());
         }
 
         private WebPageStation buildSelectedTabStation() {
@@ -261,15 +275,11 @@ public class TabSearchOverlayFacility<HostStationT extends CtaPageStation>
         }
 
         /**
-         * Presses Enter while the suggestion is focused to switch to the group and arrive at a
-         * WebPageStation.
+         * Presses Enter to open the top suggestion, expected to be this tab group, switching to the
+         * group and arriving at a WebPageStation.
          */
         public WebPageStation pressEnterToSelectTabGroup() {
-            UrlBar urlBar = urlBarElement.value();
-            noopTo().waitFor(new UrlBarHasFocusCondition(urlBar));
-            return urlBarElement
-                    .performViewActionTo(ViewActions.pressKey(KeyEvent.KEYCODE_ENTER))
-                    .arriveAt(buildTabGroupStation());
+            return pressEnterTo().arriveAt(buildTabGroupStation());
         }
 
         private WebPageStation buildTabGroupStation() {
