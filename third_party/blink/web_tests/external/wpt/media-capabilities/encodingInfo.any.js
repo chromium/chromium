@@ -333,3 +333,18 @@ promise_test(t => {
     }
   }));
 }, "Test that encodingInfo rejects if transferFunction is specified for type record");
+
+promise_test(t => {
+  return promise_rejects_js(
+      t, TypeError, navigator.mediaCapabilities.encodingInfo({
+        type: 'record',
+        video: {
+          contentType: 'video/webm; codecs="vp09.00.10.08"',
+          width: 800,
+          height: 600,
+          bitrate: 3000,
+          framerate: 24,
+          hdrMetadataType: 'smpteSt2086',
+        }
+      }));
+}, 'Test that encodingInfo rejects if hdrMetadataType is specified for type record');

@@ -525,11 +525,11 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
 
   const auto config_type = GetTypeString();
 
-  // None of the content types below are supported for WebRtc.
+  // HDR and color space fields are invalid (reject with TypeError) for WebRtc.
   const std::string_view type_supported =
-      GetParam() != kWebRtc ? kSupported : kUnsupported;
+      GetParam() != kWebRtc ? kSupported : kError;
   const std::string_view prop_type_supported =
-      GetParam() != kWebRtc ? kPropSupported : kUnsupported;
+      GetParam() != kWebRtc ? kPropSupported : kError;
 
   EXPECT_TRUE(
       NavigateToURL(shell(), content::GetFileUrlWithQuery(file_path, "")));
@@ -538,8 +538,8 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
     for (auto transfer_function : {kSrgb, kPq, kHlg, kInvalid}) {
       // All valid color gamuts and transfer functions without HDR metadata
       // should be supported.
-      auto is_invalid =
-          color_gamut == kInvalid || transfer_function == kInvalid;
+      auto is_invalid = GetParam() == kWebRtc || color_gamut == kInvalid ||
+                        transfer_function == kInvalid;
       EXPECT_EQ(is_invalid ? kError : type_supported,
                 CanDecodeVideoWithHdrMetadata(config_type,
                                               "'video/webm; codecs=\"vp8\"'",

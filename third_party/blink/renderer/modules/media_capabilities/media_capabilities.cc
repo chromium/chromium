@@ -278,6 +278,14 @@ bool IsValidVideoConfiguration(const VideoConfiguration* configuration,
   if (!IsValidFrameRate(configuration->framerate()))
     return false;
 
+  // hdrMetadataType, colorGamut, and transferFunction are only valid for
+  // non-WebRTC decode configurations ('file' and 'media-source').
+  if ((!is_decode || is_webrtc) &&
+      (configuration->hasHdrMetadataType() || configuration->hasColorGamut() ||
+       configuration->hasTransferFunction())) {
+    return false;
+  }
+
   // scalabilityMode only valid for WebRTC encode configuration.
   if ((!is_webrtc || is_decode) && configuration->hasScalabilityMode())
     return false;
