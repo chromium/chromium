@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Removing the primary image passes its map to the next image</title>
+<link rel="help" href="https://crbug.com/500774800">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div role="group"><img id="first" usemap="#map"></div>
+<div role="group"><img id="second" usemap="#map"></div>
+<map name="map">
+  <area href="#" alt="Area">
+</map>
+
+<script>
+test(() => {
+  accessibilityController.rootElement;
+  assert_equals(accessibilityController.accessibleElementById('first').childrenCount, 1);
+  assert_equals(accessibilityController.accessibleElementById('second').childrenCount, 0);
+
+  first.remove();
+
+  assert_equals(accessibilityController.accessibleElementById('second').childrenCount, 1);
+}, 'Removing the primary image passes its map to the next image');
+</script>

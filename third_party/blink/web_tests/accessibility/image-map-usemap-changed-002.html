@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Removing usemap and the map's first area passes the map to the next image</title>
+<link rel="help" href="https://crbug.com/500774800">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div role="group"><img id="img0" usemap="#map"></div>
+<div role="group"><img id="img1" usemap="#map"></div>
+<map name="map">
+  <area id="area0" href="#" alt="First">
+  <area id="area1" href="#" alt="Second">
+</map>
+
+<script>
+test(() => {
+  accessibilityController.rootElement;
+  assert_equals(accessibilityController.accessibleElementById('img0').childrenCount, 2);
+
+  // Removing the first <area> leaves a detached AXObject first in #img0's
+  // cached children.
+  area0.remove();
+  img0.removeAttribute('usemap');
+
+  assert_equals(accessibilityController.accessibleElementById('img0').childrenCount, 0);
+  assert_equals(accessibilityController.accessibleElementById('img1').childrenCount, 1);
+}, 'Removing usemap and the map\'s first area passes the map to the next image');
+</script>

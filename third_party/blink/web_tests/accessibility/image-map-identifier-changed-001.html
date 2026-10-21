@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Changing a map's id to match another image moves its area without crashing</title>
+<link rel="help" href="https://crbug.com/500774800">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<img id="img0" usemap="#first">
+<img id="img1" usemap="#second">
+<map id="first">
+  <area id="area" href="#" alt="Area">
+</map>
+
+<script>
+test(() => {
+  accessibilityController.rootElement;
+  assert_equals(accessibilityController.accessibleElementById('img0').childrenCount, 1);
+
+  area.alt = 'Updated';
+  first.id = 'second';
+
+  assert_equals(accessibilityController.accessibleElementById('img0').childrenCount, 0);
+  assert_equals(accessibilityController.accessibleElementById('img1').childrenCount, 1);
+}, 'Changing a map\'s id to match another image moves its area without crashing');
+</script>

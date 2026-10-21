@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Adding usemap to an earlier image moves the map without crashing</title>
+<link rel="help" href="https://crbug.com/500774800">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<img id="img0">
+<img id="img1" usemap="#map">
+<map name="map">
+  <area id="area" href="#" alt="Area">
+</map>
+
+<script>
+test(() => {
+  accessibilityController.rootElement;
+  assert_equals(accessibilityController.accessibleElementById('img1').childrenCount, 1);
+
+  area.alt = 'Updated';
+  img0.useMap = '#map';
+
+  assert_equals(accessibilityController.accessibleElementById('img0').childrenCount, 1);
+  assert_equals(accessibilityController.accessibleElementById('img1').childrenCount, 0);
+}, 'Adding usemap to an earlier image moves the map without crashing');
+</script>

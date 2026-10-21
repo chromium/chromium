@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>A map child with aria-owns moves with its map to an earlier image</title>
+<link rel="help" href="https://crbug.com/500774800">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div role="group"><img id="earlier"></div>
+<div role="group"><img id="later" usemap="#map"></div>
+<div id="owned" role="group"></div>
+<map name="map">
+  <span>Caption <span id="owner" role="group" aria-owns="owned"></span></span>
+  <area href="#" alt="Area">
+</map>
+
+<script>
+test(() => {
+  accessibilityController.rootElement;
+  assert_equals(accessibilityController.accessibleElementById('owner').childrenCount, 1);
+
+  // Rebuilding #earlier must happen before aria-owns relations are processed
+  // so #owner's new AXObject re-establishes ownership of #owned.
+  earlier.useMap = '#map';
+
+  assert_equals(accessibilityController.accessibleElementById('later').childrenCount, 0);
+  assert_equals(accessibilityController.accessibleElementById('owner').childrenCount, 1);
+}, 'A map child with aria-owns moves with its map to an earlier image');
+</script>

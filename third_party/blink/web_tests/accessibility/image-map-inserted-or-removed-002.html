@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>A hidden usemap image inserted before the map's image takes and returns its areas</title>
+<link rel="help" href="https://crbug.com/500774800">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="hiddenHost" style="display:none"></div>
+<img id="img" usemap="#map">
+<map name="map">
+  <area id="area" href="#" alt="Area">
+</map>
+
+<script>
+test(() => {
+  accessibilityController.rootElement;
+  assert_equals(accessibilityController.accessibleElementById('img').childrenCount, 1);
+
+  // HTMLMapElement::ImageElement() matches display:none images too.
+  area.alt = 'Updated';
+  hiddenHost.innerHTML = '<img id="clone" usemap="#map">';
+
+  assert_equals(accessibilityController.accessibleElementById('img').childrenCount, 0);
+
+  clone.removeAttribute('usemap');
+  assert_equals(accessibilityController.accessibleElementById('img').childrenCount, 1);
+}, 'A hidden usemap image inserted before the map\'s image takes and returns its areas');
+</script>

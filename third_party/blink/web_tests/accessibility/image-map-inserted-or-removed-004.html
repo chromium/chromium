@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>An earlier image whose usemap matches a second map's id takes that map from its image</title>
+<link rel="help" href="https://crbug.com/500774800">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<map name="m"><area href="#" alt="First"></map>
+<map name="foo" id="m"><area id="area" href="#" alt="Second"></map>
+<img id="x" usemap="#foo">
+
+<script>
+test(() => {
+  accessibilityController.rootElement;
+  assert_equals(accessibilityController.accessibleElementById('x').childrenCount, 1);
+
+  // #y uses the first map, but the second map's ImageElement() also matches #y
+  // via id="m", so #x loses the second map.
+  area.alt = 'Updated';
+  const y = document.createElement('img');
+  y.useMap = '#m';
+  document.body.insertBefore(y, x);
+
+  assert_equals(accessibilityController.accessibleElementById('x').childrenCount, 0);
+}, 'An earlier image whose usemap matches a second map\'s id takes that map from its image');
+</script>

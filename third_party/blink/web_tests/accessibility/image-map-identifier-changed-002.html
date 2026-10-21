@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Changing an earlier map's name to match an image's usemap switches the image to it</title>
+<link rel="help" href="https://crbug.com/500774800">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<img id="img" usemap="#shared">
+<map id="earlierMap">
+  <area id="earlierArea" href="#" alt="Earlier">
+</map>
+<map name="shared">
+  <area id="laterArea" href="#" alt="Later">
+</map>
+
+<script>
+test(() => {
+  accessibilityController.rootElement;
+  assert_equals(accessibilityController.accessibleElementById('img').childrenCount, 1);
+
+  laterArea.alt = 'Updated';
+  earlierMap.name = 'shared';
+
+  const axImg = accessibilityController.accessibleElementById('img');
+  assert_equals(axImg.childrenCount, 1);
+  assert_equals(axImg.childAtIndex(0).name, 'Earlier');
+}, 'Changing an earlier map\'s name to match an image\'s usemap switches the image to it');
+</script>

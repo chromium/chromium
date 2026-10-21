@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Relations processed while an image takes a map do not see its children under the previous image</title>
+<link rel="help" href="https://crbug.com/500774800">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div role="group" aria-owns="earlier"></div>
+<div role="group"><img id="earlier"></div>
+<div role="group"><img id="later" usemap="#map"></div>
+<div id="owned" role="group"></div>
+<map name="map">
+  <span id="caption">Caption <span role="group" aria-owns="owned caption"></span></span>
+  <area href="#" alt="Area">
+</map>
+
+<script>
+test(() => {
+  accessibilityController.rootElement;
+  assert_greater_than(accessibilityController.accessibleElementById('later').childrenCount, 0);
+
+  // Removing #owned queues an aria-owns update on its owner inside #caption.
+  // #later must detach #caption before queued updates inspect its parent.
+  owned.remove();
+  earlier.useMap = '#map';
+
+  assert_equals(accessibilityController.accessibleElementById('later').childrenCount, 0);
+  assert_greater_than(accessibilityController.accessibleElementById('earlier').childrenCount, 0);
+}, 'Relations processed while an image takes a map do not see its children under the previous image');
+</script>
