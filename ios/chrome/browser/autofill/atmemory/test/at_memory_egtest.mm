@@ -228,8 +228,6 @@ void DismissSettings() {
   [super setUp];
   SetUpHTTPSServer(_HTTPSServer);
   SetUpAtMemoryEligibleUser();
-  [ChromeEarlGrey openNewTab];
-  [ChromeEarlGrey closeTabAtIndex:0];
   LoadVehicleFormPage(&_HTTPSServer.value());
   OpenAtMemoryForVehicleMakeField();
 }

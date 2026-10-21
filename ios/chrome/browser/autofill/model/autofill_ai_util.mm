@@ -131,7 +131,7 @@ bool IsAutofillAtMemoryEnabled() {
 }
 
 bool IsAutofillAtMemorySearchUIEnabled(const AutofillClient* client) {
-  if (!client) {
+  if (!client || !IsAutofillAtMemoryEnabled()) {
     return false;
   }
 

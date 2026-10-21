@@ -206,12 +206,6 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
                   weak_ptr_factory_.GetWeakPtr()));
     }
   }
-
-  if (autofill::IsAutofillAtMemorySearchUIEnabled(this)) {
-    at_memory_manager_ = std::make_unique<AtMemoryManager>(
-        this, ios::HistoryServiceFactory::GetForProfile(
-                  profile_, ServiceAccessType::EXPLICIT_ACCESS));
-  }
 }
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
@@ -381,7 +375,15 @@ ChromeAutofillClientIOS::GetRemoteModelExecutor() {
   return OptimizationGuideServiceFactory::GetForProfile(profile_);
 }
 
-autofill::AtMemoryManager* ChromeAutofillClientIOS::GetAtMemoryManager() {
+AtMemoryManager* ChromeAutofillClientIOS::GetAtMemoryManager() {
+  if (!IsAutofillAtMemorySearchUIEnabled(this)) {
+    return nullptr;
+  }
+  if (!at_memory_manager_) {
+    at_memory_manager_ = std::make_unique<AtMemoryManager>(
+        this, ios::HistoryServiceFactory::GetForProfile(
+                  profile_, ServiceAccessType::EXPLICIT_ACCESS));
+  }
   return at_memory_manager_.get();
 }
 
