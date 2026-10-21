@@ -4,6 +4,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 
 #include <algorithm>
+#include <optional>
 #include <set>
 
 #include "base/barrier_closure.h"
@@ -18,6 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
+#include "base/uuid.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
@@ -242,6 +244,9 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
       recontextualizer_(std::make_unique<contextual_tasks::QueryContextualizer>(
           contextual_tasks_service_,
           desktop_delegate_.get())) {
+  if (contextual_tasks_service_) {
+    contextual_tasks_service_observation_.Observe(contextual_tasks_service_);
+  }
   // Set the callback for getting suggest inputs from the session.
   // The session is owned by WebUI controller and accessed via callback.
   // It is safe to use Unretained because omnibox client is owned by `this`.
@@ -589,6 +594,92 @@ std::vector<int32_t> ContextualTasksComposeboxHandler::GetSelectedTabIds()
     tab_ids.push_back(tab_id);
   }
   return tab_ids;
+}
+
+void ContextualTasksComposeboxHandler::OnWillBeDestroyed() {
+  contextual_tasks_service_observation_.Reset();
+  contextual_tasks_service_ = nullptr;
+}
+
+void ContextualTasksComposeboxHandler::OnTaskDisassociatedFromTab(
+    const base::Uuid& task_id,
+    SessionID tab_id) {
+  if (!web_ui_interface_ || web_ui_interface_->GetTaskId() != task_id) {
+    return;
+  }
+
+  std::optional<int32_t> tab_handle_id;
+  if (BrowserWindowInterface* browser = web_ui_interface_->GetBrowser()) {
+    if (TabListInterface* tab_list = TabListInterface::From(browser)) {
+      for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+        if (tab && tab->GetContents() &&
+            sessions::SessionTabHelper::IdForTab(tab->GetContents()) ==
+                tab_id) {
+          tab_handle_id = tab->GetHandle().raw_value();
+          break;
+        }
+      }
+    }
+  }
+
+  if (tab_handle_id.has_value()) {
+    if (auto* auto_suggestion_manager =
+            web_ui_interface_->GetAutoSuggestionManager();
+        auto_suggestion_manager &&
+        auto_suggestion_manager->GetCurrentSuggestion() &&
+        auto_suggestion_manager->GetCurrentSuggestion()->tab_id ==
+            *tab_handle_id) {
+      auto_suggestion_manager->SetCurrentSuggestion(nullptr);
+      UpdateSuggestedTabContext(nullptr);
+    }
+  }
+
+  OnTabDisassociated(tab_id, tab_handle_id);
+}
+
+void ContextualTasksComposeboxHandler::OnTabDisassociated(
+    SessionID tab_session_id,
+    std::optional<int32_t> tab_handle_id) {
+  std::set<base::UnguessableToken> tokens_to_delete;
+  if (tab_handle_id.has_value()) {
+    for (const auto& [token, tab_id] : delayed_tabs_) {
+      if (tab_id == *tab_handle_id) {
+        tokens_to_delete.insert(token);
+      }
+    }
+    for (const auto& [token, tab_id] : selected_tabs) {
+      if (tab_id == *tab_handle_id) {
+        tokens_to_delete.insert(token);
+      }
+    }
+  }
+  auto* session_handle = GetContextualSessionHandle();
+  const bool had_submitted_tabs =
+      session_handle && !session_handle->GetSubmittedContextFileInfos().empty();
+  if (session_handle && tab_session_id.is_valid()) {
+    base::UnguessableToken token =
+        session_handle->GetTokenForTab(tab_session_id);
+    if (!token.is_empty()) {
+      tokens_to_delete.insert(token);
+    }
+  }
+
+  for (const auto& token : tokens_to_delete) {
+    DeleteContextFromBrowser(token, /*from_automatic_chip=*/false);
+  }
+
+  if (had_submitted_tabs &&
+      base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    CacheSubmittedTabsFromSessionHandle();
+    if (session_handle &&
+        session_handle->GetSubmittedContextFileInfos().empty()) {
+      SetAimThreadRestoredTabs({});
+    }
+  }
+
+  if (SearchboxHandler::page_) {
+    SearchboxHandler::page_->OnTabStripChanged();
+  }
 }
 
 void ContextualTasksComposeboxHandler::InitializeInputStateModel() {

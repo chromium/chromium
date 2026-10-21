@@ -1287,9 +1287,13 @@ std::optional<int32_t> ContextualSearchSessionHandle::DeleteTabContext(
       current_token = attached_tab->context_token;
     }
   }
+  if (!tab_id.has_value() && session_id.has_value()) {
+    tab_id = session_id->id();
+  }
 
   auto delete_token = [this](const base::UnguessableToken& token_to_delete) {
     if (!DeleteFile(token_to_delete)) {
+      std::erase(submitted_context_tokens_, token_to_delete);
       RemoveUploadedContextToken(token_to_delete);
     }
   };
@@ -1301,6 +1305,12 @@ std::optional<int32_t> ContextualSearchSessionHandle::DeleteTabContext(
       (std::ranges::contains(uploaded_context_tokens_, current_token) ||
        std::ranges::contains(submitted_context_tokens_, current_token))) {
     delete_token(current_token);
+  }
+  if (tab_id.has_value() &&
+      std::erase_if(tab_context_.restored, [&](const TabInfo& tab) {
+        return tab.tab_id == tab_id;
+      }) > 0) {
+    NotifyTabContextSubscribers();
   }
   return tab_id;
 }

@@ -3472,4 +3472,38 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_TRUE(handle_->GetTabContextState().attached.empty());
 }
 
+TEST_F(ContextualSearchSessionHandleTest,
+       DeleteTabContext_RemovesSubmittedAndRestoredTabWithoutDeselection) {
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _))
+      .Times(testing::AnyNumber());
+  const SessionID session_id = SessionID::FromSerializedValue(10);
+  const base::UnguessableToken token = handle_->CreateContextToken();
+  FileInfo info;
+  info.file_token = token;
+  info.tab_session_id = session_id;
+  info.tab_url = GURL("https://example.com/10");
+  lens::LensOverlayRequestId request_id;
+  request_id.set_uuid(123);
+  info.request_id = request_id;
+  EXPECT_CALL(*mock_controller_ptr_, GetFileInfo(token))
+      .WillRepeatedly(testing::Return(&info));
+
+  handle_->StartTabContextUploadFlow(token, MakeTabInputData(10), std::nullopt);
+  handle_->MarkQuerySubmitted({}, std::nullopt);
+
+  TabInfo restored_tab;
+  restored_tab.tab_id = 10;
+  restored_tab.url = GURL("https://example.com/10");
+  restored_tab.title = "Tab 10";
+  handle_->SetRestoredTabs({restored_tab});
+
+  EXPECT_EQ(token, handle_->GetTokenForTab(session_id));
+  EXPECT_EQ(10, handle_->DeleteTabContext(token));
+
+  EXPECT_TRUE(handle_->GetSubmittedContextTokens().empty());
+  EXPECT_TRUE(handle_->GetTabContextState().attached.empty());
+  EXPECT_TRUE(handle_->GetTabContextState().restored.empty());
+  EXPECT_TRUE(handle_->GetTokenForTab(session_id).is_empty());
+}
+
 }  // namespace contextual_search
