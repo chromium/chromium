@@ -100,6 +100,29 @@ RestartMode RecordShutdownInfoPrefs();
 void ShutdownPostThreadsStop(RestartMode restart_mode);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Ordered browser shutdown phases on ChromeOS, used for the
+// `cros-shutdown-phase` crash key and `Shutdown.ChromeOS.PhaseDuration.*`
+// histograms.
+enum class ShutdownPhase {
+  kNotStarted = 0,
+  kClosingBrowsers = 1,
+  kAshPreShell = 2,
+  kAshShell = 3,
+  kBrowserProcess = 4,
+  kAshPostProfile = 5,
+  kStoppingThreads = 6,
+  kPostDestroyThreads = 7,
+  kDone = 8,
+};
+
+// Records the duration of the previous shutdown phase (if any) and updates
+// the `cros-shutdown-phase` crash key to `phase`.
+void SetShutdownPhase(ShutdownPhase phase);
+
+ShutdownPhase GetShutdownPhaseForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // There are various situations where the browser process should continue to
 // run after the last browser window has closed - the Mac always continues
 // running until the user explicitly quits, and on Windows/Linux the application

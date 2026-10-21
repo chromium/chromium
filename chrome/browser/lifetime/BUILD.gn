@@ -244,8 +244,10 @@ if (!is_android) {
         ":lifetime",
         "//base",
         "//chrome/test:test_support",
+        "//components/crash/core/common:crash_key",
         "//content/test:test_support",
         "//testing/gtest",
+        "//third_party/abseil-cpp:absl",
       ]
     }
 

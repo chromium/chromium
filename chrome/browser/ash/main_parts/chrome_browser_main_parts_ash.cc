@@ -190,6 +190,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/memory/oom_kills_monitor.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
@@ -1662,6 +1663,9 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
 // shutdown calls and test |pre_profile_init_called_| if necessary. See
 // crbug.com/40511182 for details.
 void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
+  browser_shutdown::SetShutdownPhase(
+      browser_shutdown::ShutdownPhase::kAshPreShell);
+
   video_conference_manager_client_.reset();
 
   arc_container_app_killer_.reset();
@@ -1844,7 +1848,12 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   memory::OOMKillsMonitor::GetInstance().Shutdown();
 
   // NOTE: Closes ash and destroys `Shell`.
+  browser_shutdown::SetShutdownPhase(
+      browser_shutdown::ShutdownPhase::kAshShell);
   ChromeBrowserMainPartsLinux::PostMainMessageLoopRun();
+
+  browser_shutdown::SetShutdownPhase(
+      browser_shutdown::ShutdownPhase::kAshPostProfile);
 
   ash_web_ui_config_manager_.reset();
 
@@ -1922,9 +1931,15 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // after calling |PostMainMessageLoopRun()| and before calling
   // |PostDestroyThreads()|.
   mojo_service_manager_closer_.RunAndReset();
+
+  browser_shutdown::SetShutdownPhase(
+      browser_shutdown::ShutdownPhase::kStoppingThreads);
 }
 
 void ChromeBrowserMainPartsAsh::PostDestroyThreads() {
+  browser_shutdown::SetShutdownPhase(
+      browser_shutdown::ShutdownPhase::kPostDestroyThreads);
+
   network_change_manager_client_.reset();
   session_termination_manager_.reset();
 
@@ -1961,6 +1976,8 @@ void ChromeBrowserMainPartsAsh::PostDestroyThreads() {
   InstallAttributes::Shutdown();
   DeviceSettingsService::Shutdown();
   attestation::AttestationFeatures::Shutdown();
+
+  browser_shutdown::SetShutdownPhase(browser_shutdown::ShutdownPhase::kDone);
 }
 
 }  //  namespace ash

@@ -4636,6 +4636,33 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="Shutdown.ChromeOS.PhaseDuration.{Phase}" units="ms"
+    expires_after="2027-04-20">
+  <owner>achuith@chromium.org</owner>
+  <owner>cros-sw-perf@google.com</owner>
+  <summary>
+    Wall-clock time spent in the {Phase} phase of browser process teardown on
+    ChromeOS. Recorded as each phase completes into persistent histograms, so
+    phases completed before a session_manager 3-second SIGABRT timeout are
+    reported by the next session.
+  </summary>
+  <token key="Phase">
+    <variant name="AshPostProfile"
+        summary="Ash post-profile teardown after ProfileManager destruction"/>
+    <variant name="AshPreShell"
+        summary="Ash main parts teardown before Shell and profile destruction"/>
+    <variant name="AshShell" summary="Ash extra parts and ash::Shell teardown"/>
+    <variant name="BrowserProcess"
+        summary="BrowserProcessImpl::StartTearDown including ProfileManager"/>
+    <variant name="ClosingBrowsers"
+        summary="OnShutdownStarting until main message loop exit"/>
+    <variant name="PostDestroyThreads"
+        summary="PostDestroyThreads including D-Bus and ~BrowserProcessImpl"/>
+    <variant name="StoppingThreads"
+        summary="content thread, network service, and ThreadPool shutdown"/>
+  </token>
+</histogram>
+
 <histogram name="Shutdown.EndSession.Time2" units="ms"
     expires_after="2027-03-21">
   <owner>etienneb@chromium.org</owner>

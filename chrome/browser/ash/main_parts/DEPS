@@ -84,6 +84,9 @@ specific_include_rules = {
     # For fake SIGTERM handler implementation.
     "+chrome/browser/lifetime/application_lifetime.h",
 
+    # For ChromeOS shutdown phase tracking.
+    "+chrome/browser/lifetime/browser_shutdown.h",
+
     # To bridge Chrome's termination notification to Ash system.
     "+chrome/browser/lifetime/termination_notification.h",
   ]
