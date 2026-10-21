@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="TrustedVault.JavascriptSetClientEncryptionKeysForSecurityDomain"
-    enum="SecurityDomainId" expires_after="2026-07-31">
+    enum="SecurityDomainId" expires_after="2027-10-20">
   <owner>mastiz@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -128,17 +128,20 @@ chromium-metrics-reviews@google.com.
     chrome.setClientEncryptionKeys() on the renderer side (one sample per
     security domain; multiple domains can be passed in one API call). Every
     unrecognized security domain name is recorded as &quot;invalid&quot;.
+    Warning: this histogram was expired from 2026-07-31 to 2026-10-20; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="TrustedVault.JavascriptSetClientEncryptionKeysValidArgs"
-    enum="BooleanValid" expires_after="2026-07-31">
+    enum="BooleanValid" expires_after="2027-10-20">
   <owner>mastiz@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
     For each invocation of the Javascript API chrome.setClientEncryptionKeys(),
     records whether the passed arguments could be successfully parsed (one
-    sample per invocation).
+    sample per invocation). Warning: this histogram was expired from 2026-07-31
+    to 2026-10-20; data may be missing.
   </summary>
 </histogram>
 
