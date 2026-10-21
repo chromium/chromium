@@ -866,10 +866,18 @@ void ExtensionService::RenderProcessHostDestroyed(
 }
 
 void ExtensionService::OnBlocklistUpdated() {
+  ExtensionIdSet ids;
+  for (const auto& extension : registry_->GenerateInstalledExtensionsSet()) {
+    // Component extensions (built-in kComponent and allowlisted Web Store
+    // kExternalComponent) are not expected to be blocklisted. Skipping them
+    // avoids a Safe Browsing database lookup when no others are installed.
+    if (!Manifest::IsComponentLocation(extension->location())) {
+      ids.insert(extension->id());
+    }
+  }
   blocklist_->GetBlocklistedIDs(
-      registry_->GenerateInstalledExtensionsSet().GetIDs(),
-      base::BindOnce(&ExtensionService::ManageBlocklist,
-                     AsExtensionServiceWeakPtr()));
+      ids, base::BindOnce(&ExtensionService::ManageBlocklist,
+                          AsExtensionServiceWeakPtr()));
 }
 
 void ExtensionService::OnCWSInfoChanged() {
