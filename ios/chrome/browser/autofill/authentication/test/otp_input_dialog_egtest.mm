@@ -60,7 +60,7 @@ id<GREYMatcher> OtpInputDialogPendingButton() {
 // Matcher for the "Cancel" button.
 id<GREYMatcher> CancelButton() {
   return grey_allOf(
-      chrome_test_util::CancelButton(),
+      chrome_test_util::CancelButton(), grey_userInteractionEnabled(),
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
