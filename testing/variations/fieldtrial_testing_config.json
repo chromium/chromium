@@ -6207,6 +6207,21 @@
             ]
         }
     ],
+    "DeviceBoundSessionsMtlsDogfood": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableMtlsTokenBinding"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeviceBoundSessionsRetryTransientRefreshErrors": [
         {
             "platforms": [
