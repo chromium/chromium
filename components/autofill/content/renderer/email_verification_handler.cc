@@ -81,7 +81,11 @@ void EmailVerificationHandler::GetNonceForEmailVerification(
   blink::WebFormControlElement token_element =
       FindTokenFieldForEmailField(email_field_id);
   if (token_element) {
-    std::move(callback).Run(token_element.GetAttribute("nonce").Utf8());
+    // Read the element's internal cryptographic nonce rather than the `nonce`
+    // content attribute, which is cleared upon insertion into a document with
+    // a header-delivered Content-Security-Policy. See
+    // https://html.spec.whatwg.org/multipage/urls-and-fetching.html#nonce-attributes
+    std::move(callback).Run(token_element.Nonce().Utf8());
   } else {
     std::move(callback).Run(std::nullopt);
   }

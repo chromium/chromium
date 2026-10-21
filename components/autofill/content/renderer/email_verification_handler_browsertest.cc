@@ -232,6 +232,38 @@ TEST_F(EmailVerificationHandlerTest, GetNonceForEmailVerification) {
   EXPECT_EQ(future2.Get(), std::nullopt);
 }
 
+// Tests that GetNonceForEmailVerification returns the token field's nonce even
+// if the `nonce` content attribute has been cleared, as Blink does when the
+// element is inserted into a document with a header-delivered
+// Content-Security-Policy (see `Element::HideNonce()`). `LoadHTML()` cannot
+// deliver response headers, so the test clears the attribute directly, which
+// mirrors what `Element::HideNonce()` does.
+TEST_F(EmailVerificationHandlerTest,
+       GetNonceForEmailVerificationWithHiddenNonceAttribute) {
+  EXPECT_CALL(autofill_driver(), FormsSeen);
+  LoadHTML(R"(<body>
+    <form id="form">
+      <input type="email" id="email" value="a@example.com">
+      <input type="hidden" id="verification"
+             autocomplete="email-verification-token" nonce="test_nonce_123">
+    </form>
+  </body>)");
+  WaitForFormsSeen();
+
+  blink::WebFormControlElement email_element =
+      GetFormControlElementById("email");
+  blink::WebFormControlElement verification_element =
+      GetFormControlElementById("verification");
+
+  verification_element.SetAttribute("nonce", "");
+  ASSERT_EQ(verification_element.GetAttribute("nonce").Utf8(), "");
+
+  base::test::TestFuture<const std::optional<std::string>&> future;
+  autofill_agent().GetNonceForEmailVerification(
+      form_util::GetFieldRendererId(email_element), future.GetCallback());
+  EXPECT_EQ(future.Get(), "test_nonce_123");
+}
+
 // Tests that the verification token is injected into an input field using the
 // boolean `hidden` attribute instead of type="hidden".
 TEST_F(EmailVerificationHandlerTest,
