@@ -44,6 +44,21 @@
   padding: 24px 12px 20px 12px;
 }
 
+#logo {
+  align-items: center;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+#iconsContainer {
+  display: flex;
+  flex-direction: column;
+}
+
 cr-icon-button {
   --cr-icon-button-icon-size: 24px;
   --cr-icon-button-size: 40px;

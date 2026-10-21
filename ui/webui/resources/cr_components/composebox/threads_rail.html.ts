@@ -9,13 +9,23 @@ export function getHtml(this: ThreadsRailElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   <div id="rail">
-    <!-- Note: The icon is the same as the one used for AI Mode, but exposed to
-         non-branded chrome builds as well. -->
-    <cr-icon-button id="showHistoryButton"
-        iron-icon="composebox:notes-spark"
-        @click="${this.onShowHistoryClick_}"
-        title="${this.i18n('aimThreadsHistoryLabel')}">
-    </cr-icon-button>
+    <div id="logo"></div>
+    <div id="iconsContainer">
+      <!-- TODO(crbug.com/570552031): Replace placeholders with
+           server-driven icons once AimEligibility icon config is wired up. -->
+      <cr-icon-button id="showHistoryButton"
+          iron-icon="composebox:notes-spark"
+          @click="${this.onShowHistoryClick_}"
+          title="${this.i18n('aimThreadsHistoryLabel')}">
+      </cr-icon-button>
+      <cr-icon-button id="newSearchButton"
+          iron-icon="composebox:notes-spark"
+          title="${this.i18n('aimThreadsNewSearchLabel')}">
+      </cr-icon-button>
+      <cr-icon-button id="tasksButton"
+          iron-icon="composebox:notes-spark">
+      </cr-icon-button>
+    </div>
   </div>
   <!--_html_template_end_-->`;
   // clang-format on;

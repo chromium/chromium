@@ -13,6 +13,7 @@ import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {installMock} from '../test_support.js';
 
 const AIM_THREADS_HISTORY_LABEL = 'AI Mode history';
+const AIM_THREADS_NEW_SEARCH_LABEL = 'Start new AI Mode search';
 const DESKTOP_CHROME_NTP_THREADS_SOURCE = 'chrome.crn.rb';
 const DESKTOP_CHROME_NTP_THREADS_ENTRY_POINT = 129;
 const AIM_DISPLAY_MODE = 50;
@@ -32,6 +33,7 @@ suite('NewTabPageThreadsRailTest', () => {
     metrics = fakeMetricsPrivate();
     loadTimeData.overrideValues({
       aimThreadsHistoryLabel: AIM_THREADS_HISTORY_LABEL,
+      aimThreadsNewSearchLabel: AIM_THREADS_NEW_SEARCH_LABEL,
       threadsUrl: AIM_THREADS_URL,
     });
     threadsRailElement = document.createElement('cr-threads-rail');
@@ -43,14 +45,30 @@ suite('NewTabPageThreadsRailTest', () => {
     document.body.removeChild(threadsRailElement);
   });
 
+  test('renders logo and icon buttons with correct tooltips', () => {
+    const logo =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#logo');
+    assertTrue(!!logo);
 
-  test('history button has correct tooltip', () => {
     const historyButton =
         threadsRailElement.shadowRoot.querySelector<HTMLElement>(
             '#showHistoryButton');
     assertTrue(!!historyButton);
     assertEquals(
         loadTimeData.getString('aimThreadsHistoryLabel'), historyButton.title);
+
+    const newSearchButton =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '#newSearchButton');
+    assertTrue(!!newSearchButton);
+    assertEquals(
+        loadTimeData.getString('aimThreadsNewSearchLabel'),
+        newSearchButton.title);
+
+    const tasksButton =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            '#tasksButton');
+    assertTrue(!!tasksButton);
   });
 
   test('navigates and records metric on show history button click', () => {
