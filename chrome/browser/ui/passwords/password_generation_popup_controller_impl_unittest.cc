@@ -408,8 +408,8 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
   // In the nudge password experiment suggestion is previewed on show.
   controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
   EXPECT_CALL(driver(), PreviewGenerationSuggestion);
-  controller->Show(
-      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
+  EXPECT_TRUE(controller->Show(
+      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration));
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest, ShowDropsFullscreen) {
@@ -428,8 +428,8 @@ TEST_F(PasswordGenerationPopupControllerImplTest, ShowDropsFullscreen) {
   web_contents()->SetDelegate(&delegate);
 
   controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
-  controller->Show(
-      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
+  EXPECT_TRUE(controller->Show(
+      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration));
 
   EXPECT_TRUE(exit_fullscreen_called);
   web_contents()->SetDelegate(nullptr);
@@ -453,11 +453,55 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
   web_contents()->SetDelegate(&delegate);
 
   controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
-  controller->Show(
-      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration);
+  EXPECT_FALSE(controller->Show(
+      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration));
 
   EXPECT_FALSE(controller);
   web_contents()->SetDelegate(nullptr);
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       DriverDestroyedWhileExitingFullscreenHidesPopup) {
+  std::unique_ptr<MockPasswordManagerDriver> custom_driver = CreateDriver();
+  ON_CALL(*custom_driver, GetPasswordGenerationHelper)
+      .WillByDefault(Return(driver().GetPasswordGenerationHelper()));
+
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data().bounds, ui_data(),
+          custom_driver->AsWeakPtr(),
+          /*observer=*/nullptr, web_contents(), main_rfh());
+
+  controller->SetViewForTesting(popup_view());
+
+  DropFullscreenDelegate delegate(
+      base::BindLambdaForTesting([&]() { custom_driver.reset(); }));
+  web_contents()->SetDelegate(&delegate);
+
+  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
+  EXPECT_FALSE(controller->Show(
+      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration));
+
+  EXPECT_FALSE(controller);
+  web_contents()->SetDelegate(nullptr);
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest,
+       DestroyedDuringButtonSelectionUpdatedDoesNotCrash) {
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      CreateControllerWithView();
+  EXPECT_CALL(*popup_view(), ButtonSelectionUpdated()).WillOnce([&]() {
+    if (controller) {
+      static_cast<PasswordGenerationPopupController*>(controller.get())
+          ->Hide(autofill::SuggestionHidingReason::kViewDestroyed);
+    }
+  });
+
+  controller->GeneratePasswordValue(PasswordGenerationType::kAutomatic);
+  EXPECT_FALSE(controller->Show(
+      PasswordGenerationPopupController::GenerationUIState::kOfferGeneration,
+      /*is_manually_triggered=*/true));
+  EXPECT_FALSE(controller);
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest,

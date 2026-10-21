@@ -2287,24 +2287,39 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
 
   gfx::RectF element_bounds_in_screen_space =
       GetBoundsInScreenSpace(element_bounds_in_top_frame_space);
-  password_manager_.SetGenerationElementAndTypeForForm(
-      driver, ui_data.form_data.renderer_id(), ui_data.generation_element_id,
-      type);
+
+  base::WeakPtr<ChromePasswordManagerClient> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+  base::WeakPtr<password_manager::PasswordManagerDriver> weak_driver =
+      driver->AsWeakPtr();
+  const autofill::FormRendererId form_renderer_id =
+      ui_data.form_data.renderer_id();
+  const autofill::FieldRendererId generation_element_id =
+      ui_data.generation_element_id;
 
   popup_controller_ = PasswordGenerationPopupControllerImpl::GetOrCreate(
-      popup_controller_, element_bounds_in_screen_space, ui_data,
-      driver->AsWeakPtr(), observer_, web_contents(),
-      driver->render_frame_host());
+      popup_controller_, element_bounds_in_screen_space, ui_data, weak_driver,
+      observer_, web_contents(), driver->render_frame_host());
 
   popup_controller_->GeneratePasswordValue(type);
-  popup_controller_->Show(PasswordGenerationPopupController::kOfferGeneration,
-                          is_manually_triggered);
+  const bool popup_shown = popup_controller_->Show(
+      PasswordGenerationPopupController::kOfferGeneration,
+      is_manually_triggered);
+  if (!weak_this || !weak_driver) {
+    return;
+  }
+  if (!popup_shown) {
+    weak_driver->SetSuggestionAvailability(
+        generation_element_id,
+        autofill::mojom::AutofillSuggestionAvailability::kNoSuggestions);
+    return;
+  }
 
-  driver->SetSuggestionAvailability(
-      ui_data.generation_element_id,
-      popup_controller_ && popup_controller_->IsVisible()
-          ? autofill::mojom::AutofillSuggestionAvailability::kAutofillAvailable
-          : autofill::mojom::AutofillSuggestionAvailability::kNoSuggestions);
+  password_manager_.SetGenerationElementAndTypeForForm(
+      weak_driver.get(), form_renderer_id, generation_element_id, type);
+  weak_driver->SetSuggestionAvailability(
+      generation_element_id,
+      autofill::mojom::AutofillSuggestionAvailability::kAutofillAvailable);
 }
 
 void ChromePasswordManagerClient::MaybeShowSavePasswordPrimingPromo(

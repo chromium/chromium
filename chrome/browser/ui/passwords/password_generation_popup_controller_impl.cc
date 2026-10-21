@@ -298,11 +298,17 @@ void PasswordGenerationPopupControllerImpl::GeneratePasswordValue(
   }
 }
 
-void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state,
+bool PasswordGenerationPopupControllerImpl::Show(GenerationUIState state,
                                                  bool is_manually_triggered) {
   CHECK(!current_generated_password_.empty());
+  if (!driver_) {
+    HideImpl();
+    return false;
+  }
+
   state_ = state;
   selected_element_ = PasswordGenerationPopupElement::kNone;
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> weak_this = GetWeakPtr();
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::
@@ -310,22 +316,20 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state,
     content::WebContents* web_contents = GetWebContents();
     if (!web_contents || autofill::IsPointerLocked(web_contents)) {
       HideImpl();
-      return;
+      return false;
     }
 
     // Block tab fullscreen to prevent UI spoofing. The block will be released
     // when `this` is destroyed.
     if (!fullscreen_blocker_) {
-      base::WeakPtr<PasswordGenerationPopupControllerImpl> weak_this =
-          GetWeakPtr();
       std::optional<base::ScopedClosureRunner> fullscreen_blocker =
           web_contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
       if (!weak_this) {
-        return;
+        return false;
       }
-      if (!fullscreen_blocker) {
+      if (!fullscreen_blocker || !driver_) {
         HideImpl();
-        return;
+        return false;
       }
       fullscreen_blocker_ = std::move(*fullscreen_blocker);
     }
@@ -337,7 +341,7 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state,
     // Treat popup as being hidden if creation fails.
     if (!view_) {
       HideImpl();
-      return;
+      return false;
     }
     key_press_handler_manager_->RegisterKeyPressHandler(base::BindRepeating(
         [](base::WeakPtr<PasswordGenerationPopupControllerImpl> weak_this,
@@ -347,14 +351,22 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state,
         GetWeakPtr()));
     if (!view_->Show()) {
       // The instance is deleted after this point.
-      return;
+      return false;
     }
   } else {
     view_->UpdateState();
     if (!view_->UpdateBoundsAndRedrawPopup()) {
       // The instance is deleted after this point.
-      return;
+      return false;
     }
+  }
+
+  if (!weak_this) {
+    return false;
+  }
+  if (!driver_) {
+    HideImpl();
+    return false;
   }
 
   // Preview password on show in generation state.
@@ -366,12 +378,20 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state,
     // arrow keys first.
     if (is_manually_triggered) {
       SelectElement(PasswordGenerationPopupElement::kAcceptButton);
+      if (!weak_this) {
+        return false;
+      }
+      if (!driver_) {
+        HideImpl();
+        return false;
+      }
     }
   }
 
   if (observer_) {
     observer_->OnPopupShown(state_);
   }
+  return true;
 }
 
 void PasswordGenerationPopupControllerImpl::UpdateGeneratedPassword(
