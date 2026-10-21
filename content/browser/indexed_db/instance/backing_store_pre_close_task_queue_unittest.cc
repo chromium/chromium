@@ -31,7 +31,7 @@ using PreCloseTask = BackingStorePreCloseTaskQueue::PreCloseTask;
 
 namespace {
 constexpr base::TimeDelta kTestMaxRunTime = base::Seconds(30);
-const std::u16string kDBName = u"TestDBName";
+constexpr char16_t kDBName[] = u"TestDBName";
 constexpr int64_t kDBVersion = 2;
 constexpr int64_t kDBMaxObjectStoreId = 29;
 
