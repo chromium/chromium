@@ -5,3 +5,4 @@
 mesa_llvm_dev_dir = "//third_party/dawn/third_party/llvm-dev/"
 mesa_src_dir = "//third_party/dawn/third_party/mesa/"
 mesa_meson_dir = "//third_party/dawn/third_party/meson/"
+mesa_zstd_dir = "//third_party/dawn/third_party/zstd"
