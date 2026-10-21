@@ -2480,9 +2480,9 @@ void BrowserAccessibilityAndroid::GetSuggestions(
       base::span<const int32_t> marker_types =
           node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
       if (!marker_types.empty()) {
-        base::span<const int> marker_starts = node->GetIntListAttribute(
+        base::span<const int32_t> marker_starts = node->GetIntListAttribute(
             ax::mojom::IntListAttribute::kMarkerStarts);
-        base::span<const int> marker_ends =
+        base::span<const int32_t> marker_ends =
             node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
 
         for (size_t i = 0; i < marker_types.size(); ++i) {
