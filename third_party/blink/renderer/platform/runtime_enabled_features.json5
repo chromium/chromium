@@ -4728,7 +4728,7 @@
     },
     {
       name: "OfflineAudioContextIncrementalRendering",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "OffscreenCanvasGetContextAttributes",
