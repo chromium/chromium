@@ -140,6 +140,9 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   content::WebContents* web_contents() { return web_contents_; }
   Profile* profile() { return profile_; }
   content::DevToolsAgentHost* agent_host() { return agent_host_.get(); }
+  bool IsTrustedLocalFrontend() const {
+    return frontend_host_ != nullptr && is_local_frontend_;
+  }
 
   // Takes ownership over the |delegate|.
   void SetDelegate(Delegate* delegate);
@@ -474,6 +477,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   static bool GetFeatureStateForDevTools(const base::Feature& feature,
                                          std::string enabled_by_flags,
                                          std::string disabled_by_flags);
+  static bool HasUntrustedOpenerChain(content::WebContents* web_contents);
 
   static DevToolsUIBindingsList& GetDevToolsUIBindings();
 
@@ -529,7 +533,6 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   base::UnguessableToken session_id_for_logging_;
   bool is_local_frontend_ = false;
-  bool has_committed_non_local_frontend_ = false;
   bool has_previous_frontend_host_ = false;
   base::WeakPtrFactory<DevToolsUIBindings> weak_factory_{this};
 };

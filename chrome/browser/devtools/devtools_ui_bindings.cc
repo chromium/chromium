@@ -892,11 +892,8 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
 #endif
   can_access_aida_ = IsAnyAidaPoweredFeatureEnabled();
   is_local_frontend_ =
-      previous_bindings
-          ? previous_bindings->is_local_frontend_
-          : IsLocalDevToolsFrontendURL(web_contents_->GetLastCommittedURL());
-  has_committed_non_local_frontend_ =
-      previous_bindings && previous_bindings->has_committed_non_local_frontend_;
+      (!previous_bindings || previous_bindings->is_local_frontend_) &&
+      !HasUntrustedOpenerChain(web_contents_);
   has_previous_frontend_host_ =
       previous_bindings && (previous_bindings->frontend_host_ ||
                             previous_bindings->has_previous_frontend_host_);
@@ -3273,15 +3270,13 @@ void DevToolsUIBindings::ReadyToCommitNavigation(
     }
     if (frontend_host_) {
       if (!IsLocalDevToolsFrontendURL(navigation_handle->GetURL())) {
-        has_committed_non_local_frontend_ = true;
+        is_local_frontend_ = false;
       }
-      is_local_frontend_ =
-          !has_committed_non_local_frontend_ &&
-          IsLocalDevToolsFrontendURL(navigation_handle->GetURL());
       return;
     }
-    // If the window was opened by another window, ensure every live opener in
-    // the original opener chain is a *local* (trusted) DevTools frontend with
+    // If the window was opened by another window, `is_local_frontend_` is
+    // already cleared in the constructor unless every live opener in the
+    // original opener chain is a *local* (trusted) DevTools frontend with
     // active frontend bindings. A remote frontend must not be able to obtain
     // a frontend host for a popup that would be classified as local (e.g.
     // devtools://devtools/blank), because the opener can script the popup
@@ -3291,30 +3286,19 @@ void DevToolsUIBindings::ReadyToCommitNavigation(
     // the popup navigated), only allow renderer-initiated navigations when the
     // window already had active DevTools frontend bindings before a
     // RenderDocument swap, and never upgrade `is_local_frontend_` once the
-    // WebContents has loaded a non-local frontend.
-    if (web_contents_->HasLiveOriginalOpenerChain()) {
-      for (content::WebContents* opener_wc =
-               web_contents_->GetFirstWebContentsInLiveOriginalOpenerChain();
-           opener_wc;
-           opener_wc =
-               opener_wc->GetFirstWebContentsInLiveOriginalOpenerChain()) {
-        DevToolsUIBindings* opener_bindings =
-            DevToolsUIBindings::ForWebContents(opener_wc);
-        if (!opener_bindings || !opener_bindings->frontend_host_ ||
-            !opener_bindings->is_local_frontend_) {
-          return;
-        }
-      }
-    } else if (navigation_handle->IsRendererInitiated() &&
-               !has_previous_frontend_host_) {
+    // WebContents has loaded a non-local frontend or had an untrusted opener.
+    if (!has_previous_frontend_host_ &&
+        (!is_local_frontend_ ||
+         (!web_contents_->HasLiveOriginalOpenerChain() &&
+          (navigation_handle->IsRendererInitiated() ||
+           navigation_handle->GetInitiatorFrameToken().has_value() ||
+           navigation_handle->GetInitiatorOrigin().has_value())))) {
+      is_local_frontend_ = false;
       return;
     }
     if (!IsLocalDevToolsFrontendURL(navigation_handle->GetURL())) {
-      has_committed_non_local_frontend_ = true;
+      is_local_frontend_ = false;
     }
-    is_local_frontend_ =
-        !has_committed_non_local_frontend_ &&
-        IsLocalDevToolsFrontendURL(navigation_handle->GetURL());
     frontend_host_ = content::DevToolsFrontendHost::Create(
         navigation_handle->GetRenderFrameHost(),
         base::BindRepeating(
@@ -3347,11 +3331,8 @@ void DevToolsUIBindings::DocumentOnLoadCompletedInPrimaryMainFrame() {
 void DevToolsUIBindings::PrimaryPageChanged() {
   frontend_loaded_ = false;
   if (!IsLocalDevToolsFrontendURL(web_contents_->GetLastCommittedURL())) {
-    has_committed_non_local_frontend_ = true;
+    is_local_frontend_ = false;
   }
-  is_local_frontend_ =
-      !has_committed_non_local_frontend_ &&
-      IsLocalDevToolsFrontendURL(web_contents_->GetLastCommittedURL());
   if (!is_local_frontend_) {
     extensions_api_.clear();
     SetDevicesUpdatesEnabled(false);
@@ -3372,6 +3353,26 @@ void DevToolsUIBindings::FrontendLoaded() {
                      base::Value(initial_target_id_));
   }
   AddDevToolsExtensionsToClient();
+}
+
+// static
+bool DevToolsUIBindings::HasUntrustedOpenerChain(
+    content::WebContents* web_contents) {
+  if (!web_contents->HasLiveOriginalOpenerChain()) {
+    return false;
+  }
+  for (content::WebContents* opener_wc =
+           web_contents->GetFirstWebContentsInLiveOriginalOpenerChain();
+       opener_wc;
+       opener_wc =
+           opener_wc->GetFirstWebContentsInLiveOriginalOpenerChain()) {
+    DevToolsUIBindings* opener_bindings =
+        DevToolsUIBindings::ForWebContents(opener_wc);
+    if (!opener_bindings || !opener_bindings->IsTrustedLocalFrontend()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 DevToolsUIBindings::DevToolsUIBindingsList&

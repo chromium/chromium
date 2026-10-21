@@ -839,6 +839,82 @@ TEST_F(DevToolsUIBindingsNavigationTest,
   EXPECT_FALSE(popup_bindings->has_frontend_host_for_testing());
 }
 
+TEST_F(DevToolsUIBindingsNavigationTest,
+       RemoteOpenerPopupRemainsRejectedAfterOpenerClosed) {
+  std::unique_ptr<content::WebContents> opener_contents =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  const GURL kRemoteUrl(
+      "devtools://devtools/remote/serve_rev/@12345/inspector.html");
+  content::WebContentsTester::For(opener_contents.get())
+      ->NavigateAndCommit(kRemoteUrl);
+  auto opener_bindings =
+      std::make_unique<DevToolsUIBindings>(opener_contents.get());
+  content::MockNavigationHandle opener_handle(
+      kRemoteUrl, opener_contents->GetPrimaryMainFrame());
+  opener_handle.set_is_in_primary_main_frame(true);
+  opener_handle.set_is_renderer_initiated(false);
+  opener_bindings->ReadyToCommitNavigationForTesting(&opener_handle);
+  ASSERT_TRUE(opener_bindings->has_frontend_host_for_testing());
+  EXPECT_FALSE(opener_bindings->IsTrustedLocalFrontend());
+
+  content::WebContents* popup_contents = CreateWebContents();
+  content::WebContentsTester::For(popup_contents)
+      ->SetOpener(opener_contents.get());
+  content::WebContentsTester::For(popup_contents)
+      ->SetOriginalOpener(opener_contents.get());
+
+  const GURL kBlankUrl("devtools://devtools/blank");
+  auto first_popup_bindings =
+      std::make_unique<DevToolsUIBindings>(popup_contents);
+  content::MockNavigationHandle first_handle(
+      kBlankUrl, popup_contents->GetPrimaryMainFrame());
+  first_handle.set_is_in_primary_main_frame(true);
+  first_handle.set_is_renderer_initiated(true);
+  first_popup_bindings->ReadyToCommitNavigationForTesting(&first_handle);
+  EXPECT_FALSE(first_popup_bindings->has_frontend_host_for_testing());
+  EXPECT_FALSE(first_popup_bindings->IsTrustedLocalFrontend());
+
+  // Close the remote opener so the live original opener chain becomes empty.
+  opener_bindings.reset();
+  opener_contents.reset();
+  ASSERT_FALSE(popup_contents->HasLiveOriginalOpenerChain());
+
+  // Recreate DevToolsUIBindings on a second navigation to devtools://blank.
+  // Even if `is_renderer_initiated` were false, the sticky untrusted-opener
+  // taint must prevent creating a frontend host.
+  auto second_popup_bindings =
+      std::make_unique<DevToolsUIBindings>(popup_contents);
+  first_popup_bindings.reset();
+  content::MockNavigationHandle second_handle(
+      kBlankUrl, popup_contents->GetPrimaryMainFrame());
+  second_handle.set_is_in_primary_main_frame(true);
+  second_handle.set_is_renderer_initiated(false);
+  second_popup_bindings->ReadyToCommitNavigationForTesting(&second_handle);
+
+  EXPECT_FALSE(second_popup_bindings->has_frontend_host_for_testing());
+  EXPECT_FALSE(second_popup_bindings->IsTrustedLocalFrontend());
+}
+
+TEST_F(DevToolsUIBindingsNavigationTest,
+       NavigationWithInitiatorOriginWithoutOpenerRejected) {
+  content::WebContents* web_contents = CreateWebContents();
+  EXPECT_FALSE(web_contents->HasLiveOriginalOpenerChain());
+
+  auto bindings = std::make_unique<DevToolsUIBindings>(web_contents);
+
+  content::MockNavigationHandle handle(GURL("devtools://devtools/blank"),
+                                       web_contents->GetPrimaryMainFrame());
+  handle.set_is_in_primary_main_frame(true);
+  handle.set_is_renderer_initiated(false);
+  handle.set_initiator_origin(
+      url::Origin::Create(GURL("devtools://devtools/blank")));
+
+  bindings->ReadyToCommitNavigationForTesting(&handle);
+
+  EXPECT_FALSE(bindings->has_frontend_host_for_testing());
+  EXPECT_FALSE(bindings->IsTrustedLocalFrontend());
+}
+
 class DevToolsUIBindingsSyncInfoTest : public testing::Test {
  public:
   void SetUp() override {

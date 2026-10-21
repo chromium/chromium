@@ -82,3 +82,9 @@ DevToolsUI::DevToolsUI(content::WebUI* web_ui)
 }
 
 DevToolsUI::~DevToolsUI() = default;
+
+content::WebUIController::TrustPolicy DevToolsUI::GetTrustPolicy() {
+  return bindings_.IsTrustedLocalFrontend()
+             ? content::WebUIController::TrustPolicy::kTrusted
+             : content::WebUIController::TrustPolicy::kUntrusted;
+}

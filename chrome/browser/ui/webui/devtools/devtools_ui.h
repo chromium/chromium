@@ -21,6 +21,9 @@ class DevToolsUI : public content::WebUIController {
 
   ~DevToolsUI() override;
 
+  // content::WebUIController:
+  TrustPolicy GetTrustPolicy() override;
+
  private:
   DevToolsUIBindings bindings_;
 };
