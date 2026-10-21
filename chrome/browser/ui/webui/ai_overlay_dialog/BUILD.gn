@@ -101,6 +101,8 @@ source_set("impl") {
   ]
   if (!is_android) {
     sources += [
+      "page_context_monitor_views.cc",
+      "page_context_monitor_views.h",
       "tools/tools_views.cc",
       "tools/tools_views.h",
     ]
@@ -119,6 +121,8 @@ source_set("impl") {
     ]
   } else {
     sources += [
+      "page_context_monitor_android.cc",
+      "page_context_monitor_android.h",
       "tools/tools_android.cc",
       "tools/tools_android.h",
     ]

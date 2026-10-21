@@ -132,7 +132,7 @@ class AiOverlayToolsBrowserTest : public InProcessBrowserTest {
     page_handler_ = std::make_unique<AiOverlayDialogPageHandler>(
         std::move(handler_receiver), fake_page_.BindAndGetRemote(), browser());
     page_context_monitor_ =
-        std::make_unique<PageContextMonitor>(*browser(), *page_handler_);
+        PageContextMonitor::Create(*browser(), *page_handler_);
 
     mojo::PendingRemote<ai_overlay_dialog::mojom::AiOverlayTools> remote;
     tools_ = AiOverlayTools::Create(remote.InitWithNewPipeAndPassReceiver(),

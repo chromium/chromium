@@ -204,8 +204,7 @@ void AiOverlayDialogUntrustedUI::CreatePageHandler(
   page_handler_ = std::make_unique<AiOverlayDialogPageHandler>(
       std::move(receiver), std::move(remote), bwi, this);
 
-  page_context_monitor_ =
-      std::make_unique<PageContextMonitor>(*bwi, *page_handler_);
+  page_context_monitor_ = PageContextMonitor::Create(*bwi, *page_handler_);
 
   tools_ = AiOverlayTools::Create(std::move(tools), bwi,
                                   page_context_monitor_.get());
