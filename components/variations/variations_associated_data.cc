@@ -4,17 +4,15 @@
 
 #include "components/variations/variations_associated_data.h"
 
+#include <array>
 #include <map>
 #include <utility>
-#include <vector>
 
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/field_trial_param_associator.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/strings/string_split.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "components/variations/hashing.h"
@@ -35,8 +33,8 @@ class GroupMapAccessor {
 
   // Retrieve the singleton.
   static GroupMapAccessor* GetInstance() {
-    return base::Singleton<GroupMapAccessor,
-                           base::LeakySingletonTraits<GroupMapAccessor>>::get();
+    static base::NoDestructor<GroupMapAccessor> instance;
+    return instance.get();
   }
 
   GroupMapAccessor(const GroupMapAccessor&) = delete;
@@ -113,7 +111,7 @@ class GroupMapAccessor {
   }
 
  private:
-  friend struct base::DefaultSingletonTraits<GroupMapAccessor>;
+  friend class base::NoDestructor<GroupMapAccessor>;
 
   // Validates the specified mapping. A `group_identifier` is allowed to only
   // have one `key`, except in the case of `GOOGLE_APP`. A `GOOGLE_APP` key may
@@ -172,11 +170,12 @@ class GroupMapAccessor {
     return &group_to_id_maps_[key];
   }
 
-  GroupMapAccessor() { group_to_id_maps_.resize(ID_COLLECTION_COUNT); }
+  GroupMapAccessor() = default;
   ~GroupMapAccessor() = default;
 
   mutable base::Lock lock_;
-  std::vector<GroupToIDMap> group_to_id_maps_ GUARDED_BY(lock_);
+  std::array<GroupToIDMap, ID_COLLECTION_COUNT> group_to_id_maps_
+      GUARDED_BY(lock_);
 };
 
 }  // namespace
