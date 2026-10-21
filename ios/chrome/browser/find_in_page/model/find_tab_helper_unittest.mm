@@ -87,6 +87,7 @@ TEST_F(FindTabHelperTest, DismissWhenInactiveDoesNotRecordUKM) {
   NavigateToPage();
   ASSERT_FALSE(find_tab_helper()->IsFindUIActive());
 
+  web_state_.WasHidden();
   find_tab_helper()->DismissFindNavigator();
   find_tab_helper()->StopFinding();
 
@@ -103,9 +104,10 @@ TEST_F(FindTabHelperTest, DismissAndStopWhenActiveRecordUKM) {
   find_tab_helper()->SetFindUIActive(true);
   ASSERT_TRUE(find_tab_helper()->IsFindUIActive());
 
-  // Dismissing the navigator (e.g. on tab switch) records UKM while keeping
-  // IsFindUIActive() true so the UI can be restored when returning to the tab.
-  find_tab_helper()->DismissFindNavigator();
+  // Hiding the WebState (e.g. on tab switch) dismisses the navigator and
+  // records UKM while keeping IsFindUIActive() true so the UI can be restored
+  // when returning to the tab.
+  web_state_.WasHidden();
   EXPECT_TRUE(find_tab_helper()->IsFindUIActive());
 
   auto entries =
