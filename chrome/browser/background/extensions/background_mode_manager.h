@@ -149,6 +149,8 @@ class BackgroundModeManager : public BrowserCollectionObserver,
                            ProfileAttributesStorageObserver);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest, DeleteBackgroundProfile);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
+                           ProfileDestructionKeepsLaunchOnStartupRegistration);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
                            ForceInstalledExtensionsKeepAlive);
   FRIEND_TEST_ALL_PREFIXES(
       BackgroundModeManagerTest,

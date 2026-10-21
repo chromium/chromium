@@ -737,6 +737,30 @@ TEST_F(BackgroundModeManagerTest, DeleteBackgroundProfile) {
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
 }
 
+// Destroying a profile (e.g. during shutdown) should not remove the
+// launch-on-startup registration, since its background apps are still
+// installed. Only deleting the profile should (see DeleteBackgroundProfile).
+TEST_F(BackgroundModeManagerTest,
+       ProfileDestructionKeepsLaunchOnStartupRegistration) {
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.RegisterProfile(profile_);
+
+  ExpectStartupRegistration(/*launch_enabled=*/true);
+
+  manager.OnBackgroundClientInstalled(u"name");
+  manager.SetBackgroundClientCountForProfile(profile_, 1);
+  manager.OnApplicationListChanged(profile_);
+  VerifyAndClearStartupRegistrationExpectations();
+
+  // Mimic BackgroundModeData::OnProfileWillBeDestroyed().
+  ExpectStartupRegistration(/*launch_enabled=*/false, /*count=*/0);
+
+  manager.SetBackgroundClientCountForProfile(profile_, 0);
+  EXPECT_TRUE(manager.UnregisterProfile(profile_));
+  VerifyAndClearStartupRegistrationExpectations();
+}
+
 TEST_F(BackgroundModeManagerTest, DisableBackgroundModeUnderTestFlag) {
   command_line_->AppendSwitch(switches::kKeepAliveForTest);
   AdvancedTestBackgroundModeManager manager(
@@ -1051,6 +1075,27 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
 
   manager_->context_menu_ = nullptr;
   manager_->status_icon_ = nullptr;
+}
+
+// The launch-on-startup state should be committed once extensions are ready,
+// even when there are no background apps.
+TEST_F(BackgroundModeManagerWithExtensionsTest,
+       StartupRegistrationCommittedWhenExtensionsReady) {
+  ExpectStartupRegistration(/*launch_enabled=*/false);
+
+  static_cast<extensions::TestExtensionSystem*>(
+      extensions::ExtensionSystem::Get(profile_))
+      ->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
+                               base::FilePath(), false);
+  extensions::ExtensionSystem* system =
+      extensions::ExtensionSystem::Get(profile_);
+  system->extension_service()->Init();
+  // BackgroundModeManager::OnExtensionsReady() was posted to ready() first, so
+  // it runs before this quit closure.
+  base::RunLoop run_loop;
+  system->ready().Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  VerifyAndClearStartupRegistrationExpectations();
 }
 
 TEST_F(BackgroundModeManagerTest, TransientBackgroundApp) {

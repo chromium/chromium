@@ -399,9 +399,6 @@ bool BackgroundModeManager::UnregisterProfile(Profile* profile) {
   background_mode_data_.erase(it);
   // If there are no background mode profiles any longer, then turn off
   // background mode.
-#if BUILDFLAG(IS_WIN)
-  startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
-#endif
   if (!ShouldBeInBackgroundMode()) {
     EndBackgroundMode();
   }
@@ -468,6 +465,15 @@ void BackgroundModeManager::OnExtensionsReady(Profile* profile) {
   // Extensions are loaded, so we don't need to manually keep the browser
   // process alive any more when running in no-startup-window mode.
   ReleaseStartupKeepAlive();
+
+#if BUILDFLAG(IS_WIN)
+  // The BackgroundApplicationListModel for `profile` has processed the initial
+  // set of extensions by now, so the launch-on-startup state is known. Check in
+  // with StartupLaunchManager so it does not wait for its fallback timer when
+  // there are no background apps (in which case OnApplicationListChanged() is
+  // never called).
+  startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
+#endif
 
   auto* extension_service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
@@ -546,6 +552,12 @@ void BackgroundModeManager::OnProfileWillBeRemoved(
     return;
   }
   UnregisterProfile(profile);
+#if BUILDFLAG(IS_WIN)
+  // Only update the launch-on-startup registration when a profile is deleted.
+  // Profiles that are merely destroyed (e.g. during shutdown) still have their
+  // background apps installed.
+  startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
+#endif
 }
 
 void BackgroundModeManager::OnProfileNameChanged(
