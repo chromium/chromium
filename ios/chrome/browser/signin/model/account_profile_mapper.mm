@@ -8,6 +8,7 @@
 
 #import "base/auto_reset.h"
 #import "base/check_is_test.h"
+#import "base/containers/map_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
@@ -972,16 +973,18 @@ void AccountProfileMapper::SetChangeProfileCommandsHandler(
 void AccountProfileMapper::AddObserver(AccountProfileMapper::Observer* observer,
                                        std::string_view profile_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observer_lists_per_profile_name_[std::string(profile_name)].AddObserver(
-      observer);
+  base::GetOrCreate(observer_lists_per_profile_name_, profile_name)
+      .AddObserver(observer);
 }
 
 void AccountProfileMapper::RemoveObserver(
     AccountProfileMapper::Observer* observer,
     std::string_view profile_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observer_lists_per_profile_name_[std::string(profile_name)].RemoveObserver(
-      observer);
+  if (auto* observers =
+          base::FindOrNull(observer_lists_per_profile_name_, profile_name)) {
+    observers->RemoveObserver(observer);
+  }
 }
 
 bool AccountProfileMapper::IsSigninSupported() {

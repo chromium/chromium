@@ -1871,17 +1871,13 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   // kLastUsedProfile was sometimes not correctly updated).
   localState->SetString(prefs::kLastUsedProfile, profileName);
 
-  auto iterator = _profileControllers.find(profileName);
-  if (iterator == _profileControllers.end()) {
+  auto [iterator, inserted] = _profileControllers.try_emplace(profileName, nil);
+  if (inserted) {
     ProfileController* controller =
         [[ProfileController alloc] initWithAppState:self.appState
                                     metricsMediator:_metricsMediator];
     [controller.state addObserver:self];
-
-    auto insertion_result =
-        _profileControllers.insert(std::make_pair(profileName, controller));
-    DCHECK(insertion_result.second);
-    iterator = insertion_result.first;
+    iterator->second = controller;
 
     // Start loading the profile.
     [controller loadProfileNamed:profileName usingManager:manager];
