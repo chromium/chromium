@@ -16,7 +16,8 @@ export function getHtml(this: OrganizerListElement) {
     ` : ''}
     <organizer-list-section .delegate="${delegate}"
         .searchQuery="${this.searchQuery}"
-        @hidden-changed="${this.onSectionHiddenChanged_}">
+        @hidden-changed="${this.onSectionHiddenChanged_}"
+        @expanded-changed="${this.onSectionExpandedChanged_}">
     </organizer-list-section>
   `)}
 </div>
