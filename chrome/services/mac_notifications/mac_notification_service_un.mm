@@ -126,6 +126,14 @@ bool IsAttachmentError(NSError* _Nullable error) {
 
 namespace mac_notifications {
 
+struct MacNotificationServiceUN::PendingDelivery {
+  std::string notification_id;
+  bool replace_content = false;
+  UNMutableNotificationContent* __strong content;
+  base::ScopedTempFile icon_file;
+  bool is_retry_without_attachment = false;
+};
+
 // static
 constexpr base::TimeDelta MacNotificationServiceUN::kSynchronizationInterval;
 
@@ -216,9 +224,10 @@ void MacNotificationServiceUN::DisplayNotification(
   // sure if it is still visible or not. Otherwise attempting to just replace
   // the contents of the notifications might incorrectly not cause the
   // notification to be delivered.
-  if (!notification->renotify &&
-      delivered_notifications_.find(notification_id) !=
-          delivered_notifications_.end()) {
+  auto existing = delivered_notifications_.find(notification_id);
+  if (!notification->renotify && existing != delivered_notifications_.end()) {
+    // Cleared when `DoDisplayNotification` overwrites this entry.
+    existing->second.is_being_replaced = true;
     SynchronizeNotifications(
         base::BindOnce(&MacNotificationServiceUN::DoDisplayNotification,
                        base::Unretained(this), std::move(notification)));
@@ -250,8 +259,10 @@ void MacNotificationServiceUN::DoDisplayNotification(
   // Keep track of delivered notifications to detect when they get closed.
   bool is_new_notification = false;
   std::tie(std::ignore, is_new_notification) =
-      delivered_notifications_.insert_or_assign(notification_id,
-                                                notification->meta.Clone());
+      delivered_notifications_.insert_or_assign(
+          notification_id,
+          DeliveredNotification{.meta = notification->meta.Clone(),
+                                .pending_content = content});
 
   NotificationCategoryManager::Buttons buttons;
   for (const auto& button : notification->buttons)
@@ -314,67 +325,87 @@ void MacNotificationServiceUN::DoDisplayNotification(
       (replaceContentForRequestWithIdentifier:
                            replacementContent:completionHandler:)];
   bool replace_content = should_replace && can_replace && !is_new_notification;
-  using CompletionCallback = base::OnceCallback<void(NSError* _Nullable)>;
-  using DeliverNotificationCallback = base::RepeatingCallback<void(
-      UNMutableNotificationContent*, CompletionCallback)>;
-  DeliverNotificationCallback deliver_notification = base::BindRepeating(
-      [](bool replace_content, NSString* notification_id_ns,
-         UNUserNotificationCenter* notification_center,
-         UNMutableNotificationContent* notification_content,
-         CompletionCallback completion) {
-        auto completion_block = base::CallbackToBlock(
-            base::BindPostTaskToCurrentDefault(std::move(completion)));
-        if (replace_content) {
-          // If the notification has been delivered before, it will get updated
-          // in the notification center. We should only call this if the
-          // notification is currently displayed, as this method will not
-          // deliver a notification that isn't already delivered.
-          [notification_center
-              replaceContentForRequestWithIdentifier:notification_id_ns
-                                  replacementContent:notification_content
-                                   completionHandler:completion_block];
-        } else {
-          UNNotificationRequest* request =
-              [UNNotificationRequest requestWithIdentifier:notification_id_ns
-                                                   content:notification_content
-                                                   trigger:nil];
-          [notification_center addNotificationRequest:request
-                                withCompletionHandler:completion_block];
-        }
-      },
-      replace_content, notification_id_ns, notification_center_);
+  DeliverNotificationContent({.notification_id = std::move(notification_id),
+                              .replace_content = replace_content,
+                              .content = content,
+                              .icon_file = std::move(icon_file)});
+}
 
-  deliver_notification.Run(
-      content,
-      base::BindOnce(
-          [](base::WeakPtr<MacNotificationServiceUN> service,
-             const std::string& notification_id,
-             DeliverNotificationCallback deliver_notification,
-             UNMutableNotificationContent* content,
-             base::ScopedTempFile icon_file, NSError* _Nullable error) {
-            mac_notifications::LogUNNotificationAddRequestResult(error);
-            icon_file.Reset();
-            if (!service) {
-              return;
-            }
-            DCHECK_CALLED_ON_VALID_SEQUENCE(service->sequence_checker_);
-            if (!service->delivered_notifications_.contains(notification_id)) {
-              return;
-            }
-            if (IsAttachmentError(error) && content.attachments.count > 0) {
-              UNMutableNotificationContent* retry_content =
-                  [content mutableCopy];
-              [retry_content setAttachments:@[]];
-              std::move(deliver_notification)
-                  .Run(retry_content,
-                       base::BindOnce([](NSError* _Nullable retry_error) {
-                         mac_notifications::LogUNNotificationAddRequestResult(
-                             retry_error, /*is_retry_without_attachment=*/true);
-                       }));
-            }
-          },
-          weak_factory_.GetWeakPtr(), std::move(notification_id),
-          deliver_notification, content, std::move(icon_file)));
+void MacNotificationServiceUN::DeliverNotificationContent(
+    PendingDelivery delivery) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NSString* notification_id_ns =
+      base::SysUTF8ToNSString(delivery.notification_id);
+  UNMutableNotificationContent* content = delivery.content;
+  bool replace_content = delivery.replace_content;
+  auto completion_block =
+      base::CallbackToBlock(base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&MacNotificationServiceUN::OnNotificationDelivered,
+                         weak_factory_.GetWeakPtr(), std::move(delivery))));
+  if (replace_content) {
+    // If the notification has been delivered before, it will get updated in the
+    // notification center. We should only call this if the notification is
+    // currently displayed, as this method will not deliver a notification that
+    // isn't already delivered.
+    [notification_center_
+        replaceContentForRequestWithIdentifier:notification_id_ns
+                            replacementContent:content
+                             completionHandler:completion_block];
+  } else {
+    UNNotificationRequest* request =
+        [UNNotificationRequest requestWithIdentifier:notification_id_ns
+                                             content:content
+                                             trigger:nil];
+    [notification_center_ addNotificationRequest:request
+                           withCompletionHandler:completion_block];
+  }
+}
+
+void MacNotificationServiceUN::OnNotificationDelivered(PendingDelivery delivery,
+                                                       NSError* error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mac_notifications::LogUNNotificationAddRequestResult(
+      error, delivery.is_retry_without_attachment);
+  // Delete the temporary icon file now that UNUserNotificationCenter has
+  // finished reading (or failing to attach) it.
+  delivery.icon_file.Reset();
+
+  // If the notification was closed or overwritten by a newer
+  // `DisplayNotification` call with the same ID while this delivery request was
+  // in flight, ignore this completion so a stale failure doesn't retry, clear
+  // `pending_content`, or erase the newer notification's tracking entry and
+  // category.
+  auto it = delivered_notifications_.find(delivery.notification_id);
+  if (it == delivered_notifications_.end() ||
+      it->second.pending_content != delivery.content) {
+    return;
+  }
+
+  // If `UNUserNotificationCenter` rejected the icon attachment, retry once
+  // without attachments so the notification text is still delivered.
+  if (!delivery.is_retry_without_attachment && IsAttachmentError(error) &&
+      delivery.content.attachments.count > 0) {
+    delivery.content = [delivery.content mutableCopy];
+    [delivery.content setAttachments:@[]];
+    delivery.is_retry_without_attachment = true;
+    it->second.pending_content = delivery.content;
+    DeliverNotificationContent(std::move(delivery));
+    return;
+  }
+
+  it->second.pending_content = nil;
+
+  // A failed `addNotificationRequest:` (including a `renotify = true`
+  // replacement, where `SynchronizeNotifications()` was skipped and the browser
+  // has already overwritten the NotificationDatabase row) means the new
+  // notification was not delivered, and when `addNotificationRequest:` fails
+  // due to revoked OS permissions macOS has also cleared any older delivered
+  // notifications. Stop tracking it so `SynchronizeNotifications()` does not
+  // report a phantom user close. A failed in-place `replace_content` leaves the
+  // existing notification on screen.
+  if (error && !delivery.replace_content) {
+    OnNotificationsClosed({delivery.notification_id});
+  }
 }
 
 void MacNotificationServiceUN::GetDisplayedNotifications(
@@ -631,7 +662,8 @@ void MacNotificationServiceUN::DoInitializeDeliveredNotifications(
     auto meta = mac_notifications::GetMacNotificationMetadata(
         notification.request.content.userInfo);
     std::string notification_id = DeriveMacNotificationId(meta->id);
-    delivered_notifications_[notification_id] = std::move(meta);
+    delivered_notifications_[notification_id] =
+        DeliveredNotification{std::move(meta)};
   }
 
   category_manager_.InitializeExistingCategories(std::move(notifications),
@@ -673,8 +705,7 @@ void MacNotificationServiceUN::DoSynchronizeNotifications(
     std::vector<mojom::NotificationIdentifierPtr> notifications) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(is_synchronizing_notifications_);
-  base::flat_map<std::string, mojom::NotificationMetadataPtr>
-      remaining_notifications;
+  base::flat_map<std::string, DeliveredNotification> remaining_notifications;
 
   for (const auto& identifier : notifications) {
     std::string notification_id = DeriveMacNotificationId(identifier);
@@ -690,10 +721,17 @@ void MacNotificationServiceUN::DoSynchronizeNotifications(
   delivered_notifications_ = std::move(remaining_notifications);
   std::vector<std::string> closed_notification_ids;
 
-  for (auto& entry : closed_notifications) {
-    closed_notification_ids.push_back(entry.first);
+  for (auto& [notification_id, notification] : closed_notifications) {
+    if (notification.pending_content) {
+      delivered_notifications_[notification_id] = std::move(notification);
+      continue;
+    }
+    closed_notification_ids.push_back(notification_id);
+    if (notification.is_being_replaced) {
+      continue;
+    }
     auto action_info = mojom::NotificationActionInfo::New(
-        std::move(entry.second), NotificationOperation::kClose,
+        std::move(notification.meta), NotificationOperation::kClose,
         kNotificationInvalidButtonIndex,
         /*reply=*/std::nullopt);
     action_handler_->OnNotificationAction(std::move(action_info));

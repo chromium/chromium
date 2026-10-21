@@ -5,9 +5,9 @@
 #ifndef CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_UN_H_
 #define CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_UN_H_
 
-#include <vector>
-
 #import <UserNotifications/UserNotifications.h>
+
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
@@ -71,7 +71,31 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   bool DidRecentlyHandleClickAction() const;
 
  private:
+  // Holds state for an in-flight notification delivery request (including its
+  // temporary icon file and attachment-retry state) across asynchronous
+  // `UNUserNotificationCenter` completion callbacks.
+  struct PendingDelivery;
+
+  struct DeliveredNotification {
+    mojom::NotificationMetadataPtr meta;
+    // Non-nil while `addNotificationRequest:` or
+    // `replaceContentForRequestWithIdentifier:` (including any attachment-free
+    // retry) is in flight for this notification. Used both to prevent a
+    // concurrent `SynchronizeNotifications()` from treating an in-flight
+    // notification as closed, and to ignore stale completion callbacks if the
+    // same notification ID is re-displayed while an earlier delivery is still
+    // in flight.
+    UNMutableNotificationContent* __strong pending_content;
+    // Set when a `renotify = false` replacement is waiting for
+    // `SynchronizeNotifications` to finish before `DoDisplayNotification` runs,
+    // so `DoSynchronizeNotifications` removes a missing previous entry without
+    // emitting a `kClose` action.
+    bool is_being_replaced = false;
+  };
+
   void DoDisplayNotification(mojom::NotificationPtr notification);
+  void DeliverNotificationContent(PendingDelivery delivery);
+  void OnNotificationDelivered(PendingDelivery delivery, NSError* error);
 
   void ReportRequestPermissionResult(mojom::RequestPermissionResult result);
   void DoRequestPermission();
@@ -124,8 +148,8 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   NotificationCategoryManager category_manager_;
 
   // Keeps track of delivered notifications to detect closed notifications.
-  base::flat_map<std::string, mojom::NotificationMetadataPtr>
-      delivered_notifications_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::flat_map<std::string, DeliveredNotification> delivered_notifications_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   base::RepeatingTimer synchronize_displayed_notifications_timer_;
   bool is_synchronizing_notifications_ = false;
   std::vector<base::OnceClosure> synchronize_notifications_done_callbacks_
