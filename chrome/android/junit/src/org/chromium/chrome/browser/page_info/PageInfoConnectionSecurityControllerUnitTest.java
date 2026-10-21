@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +30,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.components.page_info.ConnectionSecurityView;
 import org.chromium.components.page_info.PageInfoConnectionSecurityController;
+import org.chromium.components.page_info.PageInfoConnectionSecurityController.NativeConnectionSecurityControllerAndroid;
 import org.chromium.components.page_info.PageInfoConnectionSecurityControllerJni;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoMainController;
@@ -45,6 +47,8 @@ public class PageInfoConnectionSecurityControllerUnitTest {
     @Mock private PageInfoControllerDelegate mDelegate;
     @Mock private PageInfoConnectionSecurityController.Natives mNativeMock;
 
+    @Mock private JniUniquePtr<NativeConnectionSecurityControllerAndroid> mNativePtr;
+
     private Context mContext;
     private ConnectionSecurityView mView;
     private PageInfoRowView mRowView;
@@ -57,7 +61,7 @@ public class PageInfoConnectionSecurityControllerUnitTest {
         mView = new ConnectionSecurityView(mContext, null);
         mRowView = new PageInfoRowView(mContext, null);
         PageInfoConnectionSecurityControllerJni.setInstanceForTesting(mNativeMock);
-        when(mNativeMock.init(any(), any())).thenReturn(1L);
+        when(mNativeMock.init(any(), any())).thenReturn(mNativePtr);
 
         mController =
                 new PageInfoConnectionSecurityController(

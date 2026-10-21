@@ -35,8 +35,6 @@ class ConnectionSecurityControllerAndroid : public PageInfoUI {
       const ConnectionSecurityControllerAndroid&) = delete;
   ~ConnectionSecurityControllerAndroid() override;
 
-  void Destroy(JNIEnv* env);
-
   // PageInfoUI implementation
   void SetIdentityInfo(const IdentityInfo& identity_info) override;
 

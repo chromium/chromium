@@ -17,6 +17,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "page_info_client.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType()
 #include "components/page_info/android/jni_headers/PageInfoConnectionSecurityController_jni.h"
@@ -28,14 +29,15 @@ using base::android::ScopedJavaLocalRef;
 using net::x509_util::CryptoBufferAsStringPiece;
 
 // static
-static int64_t JNI_PageInfoConnectionSecurityController_Init(
+static jni_zero::JniUniquePtr<ConnectionSecurityControllerAndroid>
+JNI_PageInfoConnectionSecurityController_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& java_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
-  return reinterpret_cast<intptr_t>(
-      new ConnectionSecurityControllerAndroid(env, obj, web_contents));
+  return jni_zero::MakeUnique<ConnectionSecurityControllerAndroid>(
+      env, obj, web_contents);
 }
 
 ConnectionSecurityControllerAndroid::ConnectionSecurityControllerAndroid(
@@ -60,10 +62,6 @@ ConnectionSecurityControllerAndroid::ConnectionSecurityControllerAndroid(
 
 ConnectionSecurityControllerAndroid::~ConnectionSecurityControllerAndroid() =
     default;
-
-void ConnectionSecurityControllerAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void ConnectionSecurityControllerAndroid::LoadIdentityInfo(JNIEnv* env) {
   // InitializeUiState will call PageInfoUI::SetIdentityInfo, which is
