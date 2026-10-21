@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
+#import "ios/chrome/browser/composebox/ui/composebox_model_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_util.h"
@@ -48,9 +49,27 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-#import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+// Returns the local fallback icon for the given `model`, used when the server
+// doesn't provide one.
+UIImage* FallbackIconForModel(omnibox::ModelMode model) {
+  switch (model) {
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO:
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_LATEST:
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI:
+      return SymbolWithPointSize(SymbolClock, kSymbolActionPointSize);
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE:
+      return SymbolWithPointSize(SymbolArrowTrianglehead2ClockwiseRotate90,
+                                 kSymbolActionPointSize);
+    case omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR:
+    case omnibox::ModelMode::MODEL_MODE_UNSPECIFIED:
+      return SymbolWithPointSize(SymbolAcute, kSymbolActionPointSize);
+    default:
+      return SymbolWithPointSize(SymbolBolt, kSymbolActionPointSize);
+  }
+}
 
 // Records an unknown server-side `model_mode` to UMA.
 void ReportUnknownModelMode(omnibox::ModelMode model_mode) {
@@ -725,6 +744,7 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
 
   state.allowedModels = allowedModels;
   state.disabledModels = disabledModels;
+  state.modelItems = [self modelItems];
 
   return state;
 }
@@ -1119,6 +1139,10 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
 
 // Whether the given `model` is allowed.
 - (BOOL)isModelAllowed:(omnibox::ModelMode)model {
+  if ([ComposeboxUIInputState allToolsEnabled]) {
+    return YES;
+  }
+
   // `MODEL_MODE_UNSPECIFIED` represents having no explicit model selection
   // (e.g. when resetting on return to regular search) and is always allowed,
   // even though it is not part of `_inputState->allowed_models`.
@@ -1146,6 +1170,10 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
 
 // Whether the given `model` is disabled.
 - (BOOL)isModelDisabled:(omnibox::ModelMode)model {
+  if ([ComposeboxUIInputState allToolsEnabled]) {
+    return NO;
+  }
+
   // Models are only available from server state.
   if (!ShowComposeboxAdditionalAdvancedTools() ||
       !EnableComposeboxServerSideState()) {
@@ -1157,6 +1185,47 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
   }
 
   return std::ranges::contains(_inputState->disabled_models, model);
+}
+
+// Returns the items to display in the model picker, in server order. Models
+// without a label are excluded; selected and disabled models are kept.
+- (NSArray<ComposeboxModelItem*>*)modelItems {
+  if (!_inputState.has_value()) {
+    return @[];
+  }
+  omnibox::ModelMode activeModel = self.activeModel;
+
+  NSMutableArray<ComposeboxModelItem*>* items = [NSMutableArray array];
+  for (const omnibox::ModelConfig& config : _inputState->model_configs) {
+    omnibox::ModelMode model = config.model();
+    if (![self isModelAllowed:model]) {
+      continue;
+    }
+    if (config.menu_label().empty()) {
+      continue;
+    }
+    NSString* title = base::SysUTF8ToNSString(config.menu_label());
+    ComposeboxModelItem* item = [[ComposeboxModelItem alloc]
+        initWithModelMode:model
+                    title:title
+                     icon:[self iconForModelConfig:config]
+                 selected:model == activeModel
+                 disabled:[self isModelDisabled:model]];
+    [items addObject:item];
+  }
+  return items;
+}
+
+// Returns the menu icon for the given `config`: the server icon if available,
+// otherwise the local fallback.
+- (UIImage*)iconForModelConfig:(const omnibox::ModelConfig&)config {
+  if (config.has_icon() && config.icon().has_icon_id()) {
+    if (UIImage* icon = ImageForIconResourceId(config.icon().icon_id(),
+                                               kSymbolActionPointSize)) {
+      return icon;
+    }
+  }
+  return FallbackIconForModel(config.model());
 }
 
 #pragma mark - InputState Helpers

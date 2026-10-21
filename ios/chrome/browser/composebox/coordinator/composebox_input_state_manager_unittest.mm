@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_collection.h"
+#import "ios/chrome/browser/composebox/ui/composebox_model_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -850,6 +851,88 @@ TEST_F(ComposeboxInputStateManagerTest,
 
   EXPECT_TRUE([state isToolAvailable:ComposeboxMode::kImageGeneration]);
   EXPECT_TRUE([state isModelAvailable:ComposeboxModelOption::kThinking]);
+}
+
+// Tests that the model items contain the allowed models in server order and
+// that the active model is selected.
+TEST_F(ComposeboxInputStateManagerTest, ComputeUIInputState_ModelItems) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kComposeboxAdditionalAdvancedTools);
+
+  omnibox::SearchboxConfig config;
+  for (omnibox::ModelMode model :
+       {omnibox::ModelMode::MODEL_MODE_GEMINI_PRO,
+        omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE,
+        omnibox::ModelMode::MODEL_MODE_UNSPECIFIED}) {
+    omnibox::ModelConfig* model_config = config.add_model_configs();
+    model_config->set_model(model);
+    model_config->set_menu_label("Model");
+    model_config->mutable_rule()->set_allow_all_input_types(true);
+    config.mutable_rule_set()->add_allowed_models(model);
+  }
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
+
+  mode_holder_.mode = ComposeboxMode::kAIM;
+  [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
+        explicitUserAction:YES];
+
+  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
+                                                       attachedWebStateIDs:{}];
+
+  ASSERT_EQ(state.modelItems.count, 3u);
+  ComposeboxModelItem* proItem = state.modelItems[0];
+  EXPECT_EQ(proItem.modelMode, omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_TRUE(proItem.selected);
+  EXPECT_NSEQ(proItem.title, @"Model");
+  EXPECT_NE(proItem.icon, nil);
+  ComposeboxModelItem* autoItem = state.modelItems[1];
+  EXPECT_EQ(autoItem.modelMode,
+            omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE);
+  EXPECT_FALSE(autoItem.selected);
+  EXPECT_FALSE(autoItem.disabled);
+  ComposeboxModelItem* unspecifiedItem = state.modelItems[2];
+  EXPECT_EQ(unspecifiedItem.modelMode,
+            omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
+  EXPECT_FALSE(unspecifiedItem.selected);
+  EXPECT_FALSE(unspecifiedItem.disabled);
+  EXPECT_NE(unspecifiedItem.icon, nil);
+}
+
+// Tests that models without a server label are not displayed, and that models
+// unknown to the client are displayed with their server label.
+TEST_F(ComposeboxInputStateManagerTest,
+       ComputeUIInputState_ModelItemsRequireLabel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kComposeboxAdditionalAdvancedTools);
+
+  const omnibox::ModelMode kUnknownModel =
+      static_cast<omnibox::ModelMode>(9999);
+  omnibox::SearchboxConfig config;
+  config.add_model_configs()->set_model(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_LATEST);
+  omnibox::ModelConfig* unknown_config = config.add_model_configs();
+  unknown_config->set_model(kUnknownModel);
+  unknown_config->set_menu_label("New model");
+  for (const omnibox::ModelConfig& model_config : config.model_configs()) {
+    config.mutable_rule_set()->add_allowed_models(model_config.model());
+  }
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
+
+  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
+                                                       attachedWebStateIDs:{}];
+
+  ASSERT_EQ(state.modelItems.count, 1u);
+  EXPECT_EQ(state.modelItems[0].modelMode, kUnknownModel);
+  EXPECT_NSEQ(state.modelItems[0].title, @"New model");
+  EXPECT_NE(state.modelItems[0].icon, nil);
 }
 
 // Tests that `computeUIInputStateWithFavicon:attachedWebStateIDs:` parses
