@@ -1319,7 +1319,10 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectGalleryURL) {
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectGuestGalleryURL) {
   content::ScopedWebUIConfigRegistration registration(
-      std::make_unique<MediaAppGuestUIConfig>());
+      std::make_unique<MediaAppGuestUIConfig>(
+          TestingBrowserProcess::GetGlobal()
+              ->GetFeatures()
+              ->application_locale_storage()));
   TestChromeContentBrowserClient test_content_browser_client;
   const GURL gallery_url(ash::kChromeUIMediaAppGuestURL);
   GURL dest_url = gallery_url;

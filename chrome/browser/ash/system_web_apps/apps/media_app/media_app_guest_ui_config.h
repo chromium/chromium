@@ -9,10 +9,13 @@
 
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_service.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/webui_config.h"
+
+class ApplicationLocaleStorage;
 
 namespace content {
 class WebUIDataSource;
@@ -24,10 +27,13 @@ class WebUI;
 // //chrome functions to //chromeos.
 class ChromeMediaAppGuestUIDelegate : public ash::MediaAppGuestUIDelegate {
  public:
-  ChromeMediaAppGuestUIDelegate();
+  // `application_locale_storage` must not be null and must outlive `this`.
+  explicit ChromeMediaAppGuestUIDelegate(
+      const ApplicationLocaleStorage* application_locale_storage);
   ChromeMediaAppGuestUIDelegate(const ChromeMediaAppGuestUIDelegate&) = delete;
   ChromeMediaAppGuestUIDelegate& operator=(
       const ChromeMediaAppGuestUIDelegate&) = delete;
+  ~ChromeMediaAppGuestUIDelegate() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -51,12 +57,17 @@ class ChromeMediaAppGuestUIDelegate : public ash::MediaAppGuestUIDelegate {
       mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
       const std::string& file_name,
       aura::Window* window) override;
+
+ private:
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 };
 
 // A webui config for the chrome-untrusted:// part of media-app.
 class MediaAppGuestUIConfig : public content::WebUIConfig {
  public:
-  MediaAppGuestUIConfig();
+  // `application_locale_storage` must not be null and must outlive `this`.
+  explicit MediaAppGuestUIConfig(
+      const ApplicationLocaleStorage* application_locale_storage);
   MediaAppGuestUIConfig(const MediaAppGuestUIConfig& other) = delete;
   MediaAppGuestUIConfig& operator=(const MediaAppGuestUIConfig&) = delete;
   ~MediaAppGuestUIConfig() override;
@@ -64,6 +75,9 @@ class MediaAppGuestUIConfig : public content::WebUIConfig {
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,
       const GURL& url) override;
+
+ private:
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_MEDIA_APP_MEDIA_APP_GUEST_UI_CONFIG_H_

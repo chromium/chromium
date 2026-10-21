@@ -12,6 +12,8 @@
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
+#include "base/memory/raw_ref.h"
 #include "base/version.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_service_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -28,6 +30,7 @@
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
@@ -86,7 +89,11 @@ bool IsLensInGalleryEnabled(const AccountId& account_id,
 
 }  // namespace
 
-ChromeMediaAppGuestUIDelegate::ChromeMediaAppGuestUIDelegate() = default;
+ChromeMediaAppGuestUIDelegate::ChromeMediaAppGuestUIDelegate(
+    const ApplicationLocaleStorage* application_locale_storage)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
+
+ChromeMediaAppGuestUIDelegate::~ChromeMediaAppGuestUIDelegate() = default;
 
 void ChromeMediaAppGuestUIDelegate::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
@@ -108,7 +115,8 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
         photos_integration_supported = PhotosIntegrationSupported(update);
       });
 
-  source->AddString("appLocale", g_browser_process->GetApplicationLocale());
+  source->AddString("appLocale",
+                    application_locale_storage_->GetTag().tag_string());
 
   source->AddBoolean("mantisExpandBackground",
                      base::FeatureList::IsEnabled(
@@ -206,15 +214,18 @@ void ChromeMediaAppGuestUIDelegate::CreateAndBindMahiUntrustedService(
   }
 }
 
-MediaAppGuestUIConfig::MediaAppGuestUIConfig()
+MediaAppGuestUIConfig::MediaAppGuestUIConfig(
+    const ApplicationLocaleStorage* application_locale_storage)
     : WebUIConfig(content::kChromeUIUntrustedScheme,
-                  ash::kChromeUIMediaAppHost) {}
+                  ash::kChromeUIMediaAppHost),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {}
 
 MediaAppGuestUIConfig::~MediaAppGuestUIConfig() = default;
 
 std::unique_ptr<content::WebUIController>
 MediaAppGuestUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                              const GURL& url) {
-  auto delegate = std::make_unique<ChromeMediaAppGuestUIDelegate>();
+  auto delegate = std::make_unique<ChromeMediaAppGuestUIDelegate>(
+      &application_locale_storage_.get());
   return std::make_unique<ash::MediaAppGuestUI>(web_ui, std::move(delegate));
 }

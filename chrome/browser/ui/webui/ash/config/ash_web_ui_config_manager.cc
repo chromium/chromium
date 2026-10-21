@@ -572,7 +572,8 @@ void AshWebUIConfigManager::RegisterUntrustedWebUIConfigs() {
   AddUntrustedWebUIConfig(std::make_unique<TerminalUIConfig>());
   AddUntrustedWebUIConfig(
       std::make_unique<eche_app::UntrustedEcheAppUIConfig>());
-  AddUntrustedWebUIConfig(std::make_unique<MediaAppGuestUIConfig>());
+  AddUntrustedWebUIConfig(std::make_unique<MediaAppGuestUIConfig>(
+      &application_locale_storage_.get()));
   AddUntrustedWebUIConfig(std::make_unique<HelpAppUntrustedUIConfig>(
       &application_locale_storage_.get()));
   AddUntrustedWebUIConfig(std::make_unique<CameraAppUntrustedUIConfig>());
