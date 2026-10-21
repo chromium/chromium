@@ -87,7 +87,6 @@ class ReadingListModelImpl : public ReadingListModel {
   void SetEntryDistilledInfoIfExists(const GURL& url,
                                      const base::FilePath& distilled_path,
                                      const GURL& distilled_url,
-                                     int64_t distilation_size,
                                      base::Time distilation_time) override;
   void AddObserver(ReadingListModelObserver* observer) override;
   void RemoveObserver(ReadingListModelObserver* observer) override;

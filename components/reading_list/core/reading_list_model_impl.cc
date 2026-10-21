@@ -479,7 +479,6 @@ void ReadingListModelImpl::SetEntryDistilledInfoIfExists(
     const GURL& url,
     const base::FilePath& distilled_path,
     const GURL& distilled_url,
-    int64_t distillation_size,
     base::Time distillation_date) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
@@ -496,8 +495,7 @@ void ReadingListModelImpl::SetEntryDistilledInfoIfExists(
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListWillUpdateEntry(this, url);
   }
-  entry.SetDistilledInfo(distilled_path, distilled_url, distillation_size,
-                         distillation_date);
+  entry.SetDistilledInfo(distilled_path, distilled_url, distillation_date);
 
   std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
       storage_layer_->EnsureBatchCreated();

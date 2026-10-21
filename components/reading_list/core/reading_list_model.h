@@ -155,14 +155,12 @@ class ReadingListModel : public KeyedService {
   // Sets the Distilled info for the entry |url|. This method sets the
   // DistillationState of the entry to PROCESSED and sets the |distilled_path|
   // (path of the file on disk), the |distilled_url| (url of the page that
-  // was distilled, the |distillation_size| (the size of the offline data) and
-  // the |distillation_date| (date of distillation in microseconds since Jan 1st
-  // 1970.
+  // was distilled), and the |distillation_date| (date of distillation in
+  // microseconds since Jan 1st 1970).
   virtual void SetEntryDistilledInfoIfExists(
       const GURL& url,
       const base::FilePath& distilled_path,
       const GURL& distilled_url,
-      int64_t distilation_size,
       base::Time distilation_time) = 0;
 
   // Observer registration methods. The model will remove all observers upon

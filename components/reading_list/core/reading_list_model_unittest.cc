@@ -523,10 +523,9 @@ TEST_F(ReadingListModelTest, SyncMergeEntry) {
                             /*creation_time=*/std::nullopt);
   const base::FilePath distilled_path(FILE_PATH_LITERAL("distilled/page.html"));
   const GURL distilled_url("http://example.com/distilled");
-  int64_t size = 50;
   int64_t time = 100;
   model_->SetEntryDistilledInfoIfExists(url, distilled_path, distilled_url,
-                                        size, base::Time::FromTimeT(time));
+                                        base::Time::FromTimeT(time));
   scoped_refptr<const ReadingListEntry> local_entry =
       model_->GetEntryByURL(url);
   int64_t local_update_time = local_entry->UpdateTime();
@@ -561,7 +560,6 @@ TEST_F(ReadingListModelTest, SyncMergeEntry) {
   EXPECT_EQ(merged_entry->DistilledPath(),
             base::FilePath(FILE_PATH_LITERAL("distilled/page.html")));
   EXPECT_EQ(merged_entry->UpdateTime(), sync_update_time);
-  EXPECT_EQ(size, merged_entry->DistillationSize());
   EXPECT_EQ(time * base::Time::kMicrosecondsPerSecond,
             merged_entry->DistillationTime());
 }
@@ -858,15 +856,13 @@ TEST_F(ReadingListModelTest, UpdateDistilledInfo) {
 
   const base::FilePath distilled_path(FILE_PATH_LITERAL("distilled/page.html"));
   const GURL distilled_url("http://example.com/distilled");
-  int64_t size = 50;
   int64_t time = 100;
   model_->SetEntryDistilledInfoIfExists(url, distilled_path, distilled_url,
-                                        size, base::Time::FromTimeT(time));
+                                        base::Time::FromTimeT(time));
 
   EXPECT_EQ(ReadingListEntry::PROCESSED, entry.DistilledState());
   EXPECT_EQ(distilled_path, entry.DistilledPath());
   EXPECT_EQ(distilled_url, entry.DistilledURL());
-  EXPECT_EQ(size, entry.DistillationSize());
   EXPECT_EQ(time * base::Time::kMicrosecondsPerSecond,
             entry.DistillationTime());
 }
@@ -928,15 +924,13 @@ TEST_F(ReadingListModelTest, UpdateReadDistilledInfo) {
 
   const base::FilePath distilled_path(FILE_PATH_LITERAL("distilled/page.html"));
   const GURL distilled_url("http://example.com/distilled");
-  int64_t size = 50;
   int64_t time = 100;
   model_->SetEntryDistilledInfoIfExists(url, distilled_path, distilled_url,
-                                        size, base::Time::FromTimeT(time));
+                                        base::Time::FromTimeT(time));
 
   EXPECT_EQ(ReadingListEntry::PROCESSED, entry->DistilledState());
   EXPECT_EQ(distilled_path, entry->DistilledPath());
   EXPECT_EQ(distilled_url, entry->DistilledURL());
-  EXPECT_EQ(size, entry->DistillationSize());
   EXPECT_EQ(time * base::Time::kMicrosecondsPerSecond,
             entry->DistillationTime());
 }

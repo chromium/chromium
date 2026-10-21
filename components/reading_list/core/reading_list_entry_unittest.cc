@@ -166,13 +166,11 @@ TEST(ReadingListEntry, DistilledInfo) {
 
   const base::FilePath distilled_path(FILE_PATH_LITERAL("distilled/page.html"));
   const GURL distilled_url("http://example.com/distilled");
-  int64_t size = 50;
   int64_t time = 100;
-  e->SetDistilledInfo(distilled_path, distilled_url, size,
+  e->SetDistilledInfo(distilled_path, distilled_url,
                       base::Time::FromTimeT(time));
   EXPECT_EQ(distilled_path, e->DistilledPath());
   EXPECT_EQ(distilled_url, e->DistilledURL());
-  EXPECT_EQ(size, e->DistillationSize());
   EXPECT_EQ(e->DistillationTime(), time * base::Time::kMicrosecondsPerSecond);
 }
 
@@ -187,7 +185,7 @@ TEST(ReadingListEntry, DistilledState) {
 
   const base::FilePath distilled_path(FILE_PATH_LITERAL("distilled/page.html"));
   const GURL distilled_url("http://example.com/distilled");
-  e->SetDistilledInfo(distilled_path, distilled_url, 50,
+  e->SetDistilledInfo(distilled_path, distilled_url,
                       base::Time::FromTimeT(100));
   EXPECT_EQ(ReadingListEntry::PROCESSED, e->DistilledState());
 }
@@ -289,7 +287,7 @@ TEST(ReadingListEntry, ResetTimeUntilNextTry) {
   // Action.
   const base::FilePath distilled_path(FILE_PATH_LITERAL("distilled/page.html"));
   const GURL distilled_url("http://example.com/distilled");
-  e->SetDistilledInfo(distilled_path, distilled_url, 50,
+  e->SetDistilledInfo(distilled_path, distilled_url,
                       base::Time::FromTimeT(100));
 
   // Test.
@@ -405,8 +403,7 @@ TEST(ReadingListEntry, AsReadingListLocal) {
 
   const base::FilePath distilled_path(FILE_PATH_LITERAL("distilled/page.html"));
   const GURL distilled_url("http://example.com/distilled");
-  int64_t size = 50;
-  entry->SetDistilledInfo(distilled_path, distilled_url, size,
+  entry->SetDistilledInfo(distilled_path, distilled_url,
                           base::Time::FromTimeT(100));
 
   entry->SetRead(true, base::Time::FromTimeT(20));
@@ -425,7 +422,6 @@ TEST(ReadingListEntry, AsReadingListLocal) {
   EXPECT_EQ(distilled_pb_entry->failed_download_counter(), 0);
   EXPECT_EQ(distilled_pb_entry->distillation_time_us(),
             entry->DistillationTime());
-  EXPECT_EQ(distilled_pb_entry->distillation_size(), entry->DistillationSize());
 }
 
 // Tests that the reading list entry is correctly parsed from
@@ -449,7 +445,6 @@ TEST(ReadingListEntry, FromReadingListLocal) {
   pb_entry->set_distillation_state(reading_list::ReadingListLocal::WAITING);
   pb_entry->set_failed_download_counter(2);
   pb_entry->set_distillation_time_us(now);
-  pb_entry->set_distillation_size(50);
 
   scoped_refptr<ReadingListEntry> waiting_entry(
       ReadingListEntry::FromReadingListLocal(*pb_entry,
@@ -461,7 +456,6 @@ TEST(ReadingListEntry, FromReadingListLocal) {
   EXPECT_EQ(waiting_entry->FailedDownloadCounter(), 2);
   EXPECT_EQ(waiting_entry->DistilledState(), ReadingListEntry::WAITING);
   EXPECT_EQ(waiting_entry->DistilledPath(), base::FilePath());
-  EXPECT_EQ(waiting_entry->DistillationSize(), 50);
   EXPECT_EQ(waiting_entry->DistillationTime(), now);
   // Allow twice the jitter as test is not instantaneous.
   double fuzzing = 2 * ReadingListEntry::kBackoffPolicy.jitter_factor;

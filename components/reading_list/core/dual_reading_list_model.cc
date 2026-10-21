@@ -436,7 +436,6 @@ void DualReadingListModel::SetEntryDistilledInfoIfExists(
     const GURL& url,
     const base::FilePath& distilled_path,
     const GURL& distilled_url,
-    int64_t distilation_size,
     base::Time distilation_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
@@ -463,9 +462,9 @@ void DualReadingListModel::SetEntryDistilledInfoIfExists(
     base::AutoReset<bool> auto_reset_suppress_observer_notifications(
         &suppress_observer_notifications_, true);
     local_or_syncable_model_->SetEntryDistilledInfoIfExists(
-        url, distilled_path, distilled_url, distilation_size, distilation_time);
+        url, distilled_path, distilled_url, distilation_time);
     account_model_->SetEntryDistilledInfoIfExists(
-        url, distilled_path, distilled_url, distilation_size, distilation_time);
+        url, distilled_path, distilled_url, distilation_time);
   }
 
   if (notify_observers) {

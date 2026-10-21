@@ -74,7 +74,6 @@ ReadingListEntry::ReadingListEntry(const GURL& url,
                        GURL(),
                        0,
                        0,
-                       0,
                        std::move(backoff)) {}
 
 ReadingListEntry::ReadingListEntry(
@@ -90,7 +89,6 @@ ReadingListEntry::ReadingListEntry(
     const base::FilePath& distilled_path,
     const GURL& distilled_url,
     int64_t distillation_time,
-    int64_t distillation_size,
     int failed_download_counter,
     std::unique_ptr<net::BackoffEntry> backoff)
     : url_(url),
@@ -105,8 +103,7 @@ ReadingListEntry::ReadingListEntry(
       first_read_time_us_(first_read_time),
       update_time_us_(update_time),
       update_title_time_us_(update_title_time),
-      distillation_time_us_(distillation_time),
-      distillation_size_(distillation_size) {
+      distillation_time_us_(distillation_time) {
   if (backoff) {
     backoff_ = std::move(backoff);
   } else {
@@ -149,10 +146,6 @@ int64_t ReadingListEntry::DistillationTime() const {
   return distillation_time_us_;
 }
 
-int64_t ReadingListEntry::DistillationSize() const {
-  return distillation_size_;
-}
-
 base::TimeDelta ReadingListEntry::TimeUntilNextTry() const {
   return backoff_->GetTimeUntilRelease();
 }
@@ -177,7 +170,6 @@ scoped_refptr<ReadingListEntry> ReadingListEntry::Clone() const {
   DCHECK(entry_copy->distilled_path_ == distilled_path_);
   DCHECK(entry_copy->distilled_url_ == distilled_url_);
   DCHECK(entry_copy->distillation_time_us_ == distillation_time_us_);
-  DCHECK(entry_copy->distillation_size_ == distillation_size_);
   DCHECK(entry_copy->failed_download_counter_ == failed_download_counter_);
   return entry_copy;
 }
@@ -242,7 +234,6 @@ void ReadingListEntry::SetEstimatedReadTime(
 
 void ReadingListEntry::SetDistilledInfo(const base::FilePath& path,
                                         const GURL& distilled_url,
-                                        int64_t distilation_size,
                                         const base::Time& distilation_time) {
   DCHECK(!path.empty());
   DCHECK(distilled_url.is_valid());
@@ -250,7 +241,6 @@ void ReadingListEntry::SetDistilledInfo(const base::FilePath& path,
   distilled_state_ = PROCESSED;
   distilled_url_ = distilled_url;
   distillation_time_us_ = TimeToUS(distilation_time);
-  distillation_size_ = distilation_size;
   backoff_->Reset();
   failed_download_counter_ = 0;
 }
@@ -271,7 +261,6 @@ void ReadingListEntry::SetDistilledState(DistillationState distilled_state) {
   distilled_state_ = distilled_state;
   distilled_path_ = base::FilePath();
   distilled_url_ = GURL();
-  distillation_size_ = 0;
   distillation_time_us_ = 0;
 }
 
@@ -394,11 +383,6 @@ scoped_refptr<ReadingListEntry> ReadingListEntry::FromReadingListLocal(
     distillation_time_us = pb_entry.distillation_time_us();
   }
 
-  int64_t distillation_size = 0;
-  if (pb_entry.has_distillation_size()) {
-    distillation_size = pb_entry.distillation_size();
-  }
-
   int64_t failed_download_counter = 0;
   if (pb_entry.has_failed_download_counter()) {
     failed_download_counter = pb_entry.failed_download_counter();
@@ -421,7 +405,7 @@ scoped_refptr<ReadingListEntry> ReadingListEntry::FromReadingListLocal(
       url, title, estimated_read_time, state, creation_time_us,
       first_read_time_us, update_time_us, update_title_time_us,
       distillation_state, distilled_path, distilled_url, distillation_time_us,
-      distillation_size, failed_download_counter, std::move(backoff)));
+      failed_download_counter, std::move(backoff)));
 }
 
 // static
@@ -482,7 +466,7 @@ scoped_refptr<ReadingListEntry> ReadingListEntry::FromReadingListValidSpecifics(
   return base::WrapRefCounted<ReadingListEntry>(new ReadingListEntry(
       GURL(pb_entry.url()), title, estimated_read_time, state, creation_time_us,
       first_read_time_us, update_time_us, update_title_time_us, WAITING,
-      base::FilePath(), GURL(), 0, 0, 0, nullptr));
+      base::FilePath(), GURL(), 0, 0, nullptr));
 }
 
 void ReadingListEntry::MergeWithEntry(const ReadingListEntry& other) {
@@ -600,9 +584,6 @@ ReadingListEntry::AsReadingListLocal(const base::Time& now) const {
   }
   if (DistillationTime()) {
     pb_entry->set_distillation_time_us(DistillationTime());
-  }
-  if (DistillationSize()) {
-    pb_entry->set_distillation_size(DistillationSize());
   }
 
   pb_entry->set_failed_download_counter(failed_download_counter_);

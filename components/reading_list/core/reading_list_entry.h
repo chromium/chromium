@@ -101,9 +101,6 @@ class ReadingListEntry : public base::RefCounted<ReadingListEntry> {
   // The time distillation was done. The value is in microseconds since Jan 1st
   // 1970. Returns 0 if the entry was not distilled.
   int64_t DistillationTime() const;
-  // The size of the stored page in bytes.
-  // TODO(crbug.com/40894644): Remove after M115
-  int64_t DistillationSize() const;
   // The time before the next try. This is automatically increased when the
   // state is set to WILL_RETRY or ERROR from a non-error state.
   base::TimeDelta TimeUntilNextTry() const;
@@ -180,12 +177,11 @@ class ReadingListEntry : public base::RefCounted<ReadingListEntry> {
 
   // Sets |title_| to |title|. Sets |update_title_time_us_| to |now|.
   void SetTitle(const std::string& title, const base::Time& now);
-  // Sets the distilled info (offline path, online URL, size and date of the
-  // stored files) about distilled page, switch the state to PROCESSED and reset
-  // the time until the next try.
+  // Sets the distilled info (offline path, online URL, and date of the stored
+  // files) about distilled page, switch the state to PROCESSED and reset the
+  // time until the next try.
   void SetDistilledInfo(const base::FilePath& path,
                         const GURL& distilled_url,
-                        int64_t distilation_size,
                         const base::Time& distilation_time);
   // Sets the state to one of PROCESSING, WILL_RETRY or ERROR.
   void SetDistilledState(DistillationState distilled_state);
@@ -212,7 +208,6 @@ class ReadingListEntry : public base::RefCounted<ReadingListEntry> {
                    const base::FilePath& distilled_path,
                    const GURL& distilled_url,
                    int64_t distillation_time,
-                   int64_t distillation_size,
                    int failed_download_counter,
                    std::unique_ptr<net::BackoffEntry> backoff);
 
@@ -237,8 +232,6 @@ class ReadingListEntry : public base::RefCounted<ReadingListEntry> {
   int64_t update_time_us_;
   int64_t update_title_time_us_;
   int64_t distillation_time_us_;
-  // TODO(crbug.com/40894644): Remove after M115
-  int64_t distillation_size_;
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_ENTRY_H_
