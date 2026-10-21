@@ -300,6 +300,7 @@
 #include "components/translate/content/android/translate_message.h"
 #include "ui/android/ui_android_features.h"
 #include "ui/base/device_form_factor.h"
+#include "ui/webui/buildflags.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/device_api/managed_configuration_api.h"
@@ -9852,10 +9853,12 @@ const FeatureEntry kFeatureEntries[] = {
                                     "WebUIOmniboxPopupDebugVariations")},
 
 #if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_BOOKMARKS)
     {"use-webui-bookmarks-android",
      flag_descriptions::kUseWebUiBookmarksAndroidName,
      flag_descriptions::kUseWebUiBookmarksAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kUseWebUiBookmarksAndroid)},
+#endif
 
     {"use-webui-ntp-3p-dse", flag_descriptions::kUseWebUiNtp3PDSEName,
      flag_descriptions::kUseWebUiNtp3PDSEDescription, kOsAndroid,
