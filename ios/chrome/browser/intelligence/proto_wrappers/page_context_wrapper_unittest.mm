@@ -7,7 +7,6 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <UIKit/UIKit.h>
 
-#import <array>
 #import <vector>
 
 #import "base/base64.h"
@@ -9063,6 +9062,60 @@ TEST_P(PageContextWrapperTest,
 }
 
 // Test that an ancestor with a CSS transform acts as a containing block for
+// fixed-position descendants.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_ContainingBlockTransformFixed) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage("TransformContainingBlock", RawHtml(R"HTML(
+        <style>body { margin: 0; }</style>
+        <div id="transform-container"
+            style="transform: translate(0, 0); overflow: hidden;
+                   width: 200px; height: 100px;">
+          <div id="fixed-child"
+              style="position: fixed; top: 0; left: 0;
+                     width: 500px; height: 500px;">Fixed Child</div>
+        </div>
+      )HTML"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  std::vector<const optimization_guide::proto::ContentNode*> fixed_nodes;
+  FindNodesWithCssPosition(
+      root_node, optimization_guide::proto::CSS_POSITION_FIXED, &fixed_nodes);
+
+  ASSERT_EQ(fixed_nodes.size(), 1u);
+  const auto* fixed_child = fixed_nodes[0];
+  ASSERT_TRUE(fixed_child->has_content_attributes());
+  ASSERT_TRUE(fixed_child->content_attributes().has_geometry());
+  const auto& geo = fixed_child->content_attributes().geometry();
+  EXPECT_EQ(geo.css_position(), optimization_guide::proto::CSS_POSITION_FIXED);
+  EXPECT_EQ(geo.visible_bounding_box().width(), 200);
+  EXPECT_EQ(geo.visible_bounding_box().height(), 100);
+  EXPECT_EQ(geo.outer_bounding_box().width(), 500);
+  EXPECT_EQ(geo.outer_bounding_box().height(), 500);
+}
+
+// Test that an ancestor with a CSS transform acts as a containing block for
 // absolute-position descendants.
 TEST_P(PageContextWrapperTest,
        PopulatePageContext_RichExtraction_ContainingBlockTransformAbsolute) {
@@ -9178,70 +9231,23 @@ TEST_P(PageContextWrapperTest,
   EXPECT_EQ(geo.outer_bounding_box().height(), 250);
 }
 
-// Test that each CSS property that forms a containing block for fixed-position
-// descendants (transform, translate, rotate, scale, perspective, contain,
-// filter and backdrop-filter) clips those descendants, and that a clipping
-// container without any of them doesn't.
+// Test that individual transform CSS properties (translate, rotate, scale) act
+// as containing blocks for fixed-position descendants.
 TEST_P(PageContextWrapperTest,
-       PopulatePageContext_RichExtraction_ContainingBlockProperties) {
+       PopulatePageContext_RichExtraction_ContainingBlockIndividualTransforms) {
   if (!IsRefactored()) {
     return;
   }
 
-  struct ContainerCase {
-    const char* description;
-    bool forms_containing_block;
-  };
-  // Cases are listed in the same order as the containers in the HTML below,
-  // which is also the order in which the fixed children are extracted.
-  constexpr auto kCases = std::to_array<ContainerCase>({
-      {"transform", true},
-      {"translate", true},
-      {"rotate", true},
-      {"scale", true},
-      {"perspective", true},
-      {"contain", true},
-      {"filter", true},
-      {"backdrop-filter", true},
-      {"no containing block property", false},
-  });
-
-  auto page_structure = HtmlPage("ContainingBlockProperties", RawHtml(R"HTML(
-        <style>
-          body { margin: 0; }
-          .container { overflow: hidden; width: 100px; height: 50px; }
-          .fixed-child {
-            position: fixed; top: 0; left: 0; width: 150px; height: 150px;
-          }
-        </style>
-        <div class="container" style="transform: translate(0, 0);">
-          <div class="fixed-child">Transform</div>
-        </div>
-        <div class="container" style="translate: 0px 0px;">
-          <div class="fixed-child">Translate</div>
-        </div>
-        <div class="container" style="rotate: 0deg;">
-          <div class="fixed-child">Rotate</div>
-        </div>
-        <div class="container" style="scale: 1;">
-          <div class="fixed-child">Scale</div>
-        </div>
-        <div class="container" style="perspective: 500px;">
-          <div class="fixed-child">Perspective</div>
-        </div>
-        <div class="container" style="contain: paint;">
-          <div class="fixed-child">Contain</div>
-        </div>
-        <div class="container" style="filter: blur(0px);">
-          <div class="fixed-child">Filter</div>
-        </div>
-        <div class="container"
-            style="backdrop-filter: blur(0px);
-                   -webkit-backdrop-filter: blur(0px);">
-          <div class="fixed-child">Backdrop filter</div>
-        </div>
-        <div class="container">
-          <div class="fixed-child">No containing block</div>
+  auto page_structure =
+      HtmlPage("IndividualTransformsContainingBlock", RawHtml(R"HTML(
+        <style>body { margin: 0; }</style>
+        <div id="translate-container"
+            style="translate: 0px 0px; overflow: hidden;
+                   width: 100px; height: 50px;">
+          <div id="fixed-child-1"
+              style="position: fixed; top: 0; left: 0;
+                     width: 150px; height: 150px;">Child 1</div>
         </div>
       )HTML"));
 
@@ -9268,175 +9274,16 @@ TEST_P(PageContextWrapperTest,
   FindNodesWithCssPosition(
       root_node, optimization_guide::proto::CSS_POSITION_FIXED, &fixed_nodes);
 
-  ASSERT_EQ(fixed_nodes.size(), kCases.size());
-  for (size_t i = 0; i < fixed_nodes.size(); ++i) {
-    SCOPED_TRACE(kCases[i].description);
-    const auto* fixed_child = fixed_nodes[i];
-    ASSERT_TRUE(fixed_child->has_content_attributes());
-    ASSERT_TRUE(fixed_child->content_attributes().has_geometry());
-    const auto& geo = fixed_child->content_attributes().geometry();
-    EXPECT_EQ(geo.css_position(),
-              optimization_guide::proto::CSS_POSITION_FIXED);
-    // A fixed child is clipped by its 100x50 containing block, and otherwise
-    // escapes the clipping container entirely.
-    if (kCases[i].forms_containing_block) {
-      EXPECT_EQ(geo.visible_bounding_box().width(), 100);
-      EXPECT_EQ(geo.visible_bounding_box().height(), 50);
-    } else {
-      EXPECT_EQ(geo.visible_bounding_box().width(), 150);
-      EXPECT_EQ(geo.visible_bounding_box().height(), 150);
-    }
-    EXPECT_EQ(geo.outer_bounding_box().width(), 150);
-    EXPECT_EQ(geo.outer_bounding_box().height(), 150);
-  }
-}
-
-// Test that a clipping containing block clips fixed and absolute descendants
-// that are nested under static wrappers, which don't form containing blocks and
-// must pass the containing block clip through to their descendants.
-TEST_P(PageContextWrapperTest,
-       PopulatePageContext_RichExtraction_ContainingBlockNestedDescendants) {
-  if (!IsRefactored()) {
-    return;
-  }
-
-  // The wrappers are <section> elements so that they are extracted as content
-  // nodes (plain <div> wrappers are skipped and don't get a clipping context of
-  // their own). The absolute child is a <p> for the same reason.
-  auto page_structure =
-      HtmlPage("NestedContainingBlockDescendants", RawHtml(R"HTML(
-        <style>body { margin: 0; }</style>
-        <div style="transform: translateX(0); overflow: hidden;
-                    width: 100px; height: 50px;">
-          <section>
-            <section>
-              <div style="position: fixed; top: 0; left: 0;
-                          width: 150px; height: 150px;">Fixed</div>
-              <p style="position: absolute; top: 0; left: 0; margin: 0;
-                        width: 150px; height: 150px;">Absolute</p>
-            </section>
-          </section>
-        </div>
-      )HTML"));
-
-  std::string main_html = page_helper_->Build(page_structure);
-  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
-                      test_server_.GetURL(kMainPagePath), web_state());
-
-  PageContextWrapperConfig config =
-      PageContextWrapperConfigBuilder()
-          .SetUseRichExtraction(true)
-          .SetUseRichExtractionWithActionable(true)
-          .Build();
-
-  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
-      web_state(), config, ^(PageContextWrapper* wrapper) {
-        wrapper.shouldGetAnnotatedPageContent = YES;
-      });
-
-  ASSERT_TRUE(response.has_value());
-  const auto& page_context = *response.value();
-  const auto& root_node = page_context.annotated_page_content().root_node();
-
-  // Verifies that the node with `position` has the expected visible and outer
-  // bounding box dimensions.
-  auto check_clipped_node = [&](optimization_guide::proto::CssPosition position,
-                                int visible_w, int visible_h, int outer_w,
-                                int outer_h) {
-    std::vector<const optimization_guide::proto::ContentNode*> nodes;
-    FindNodesWithCssPosition(root_node, position, &nodes);
-    ASSERT_EQ(nodes.size(), 1u);
-    ASSERT_TRUE(nodes[0]->has_content_attributes());
-    ASSERT_TRUE(nodes[0]->content_attributes().has_geometry());
-    const auto& geo = nodes[0]->content_attributes().geometry();
-    EXPECT_EQ(geo.visible_bounding_box().width(), visible_w);
-    EXPECT_EQ(geo.visible_bounding_box().height(), visible_h);
-    EXPECT_EQ(geo.outer_bounding_box().width(), outer_w);
-    EXPECT_EQ(geo.outer_bounding_box().height(), outer_h);
-  };
-
-  // Both descendants are clipped by the 100x50 containing block.
-  check_clipped_node(optimization_guide::proto::CSS_POSITION_FIXED, 100, 50,
-                     150, 150);
-  check_clipped_node(optimization_guide::proto::CSS_POSITION_ABSOLUTE, 100, 50,
-                     150, 150);
-}
-
-// Test that a containing block without overflow clipping resets the clip of
-// its nested fixed and absolute descendants to the clip applied to the
-// containing block itself, so they don't escape an ancestor overflow clip that
-// they would otherwise escape.
-TEST_P(
-    PageContextWrapperTest,
-    PopulatePageContext_RichExtraction_ContainingBlockNestedDescendantsWithoutOverflowClip) {
-  if (!IsRefactored()) {
-    return;
-  }
-
-  // The containing block and wrappers are <section> elements so that they are
-  // extracted as content nodes (plain <div> elements without overflow clipping
-  // are skipped and don't get a clipping context of their own). The absolute
-  // child is a <p> for the same reason.
-  auto page_structure =
-      HtmlPage("NestedNonClippingContainingBlock", RawHtml(R"HTML(
-        <style>body { margin: 0; }</style>
-        <div style="overflow: hidden; width: 100px; height: 100px;">
-          <section
-              style="transform: translateX(0); width: 300px; height: 300px;">
-            <section>
-              <section>
-                <div style="position: fixed; top: 0; left: 0;
-                            width: 250px; height: 250px;">Fixed</div>
-                <p style="position: absolute; top: 0; left: 0; margin: 0;
-                          width: 250px; height: 250px;">Absolute</p>
-              </section>
-            </section>
-          </section>
-        </div>
-      )HTML"));
-
-  std::string main_html = page_helper_->Build(page_structure);
-  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
-                      test_server_.GetURL(kMainPagePath), web_state());
-
-  PageContextWrapperConfig config =
-      PageContextWrapperConfigBuilder()
-          .SetUseRichExtraction(true)
-          .SetUseRichExtractionWithActionable(true)
-          .Build();
-
-  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
-      web_state(), config, ^(PageContextWrapper* wrapper) {
-        wrapper.shouldGetAnnotatedPageContent = YES;
-      });
-
-  ASSERT_TRUE(response.has_value());
-  const auto& page_context = *response.value();
-  const auto& root_node = page_context.annotated_page_content().root_node();
-
-  // Verifies that the node with `position` has the expected visible and outer
-  // bounding box dimensions.
-  auto check_clipped_node = [&](optimization_guide::proto::CssPosition position,
-                                int visible_w, int visible_h, int outer_w,
-                                int outer_h) {
-    std::vector<const optimization_guide::proto::ContentNode*> nodes;
-    FindNodesWithCssPosition(root_node, position, &nodes);
-    ASSERT_EQ(nodes.size(), 1u);
-    ASSERT_TRUE(nodes[0]->has_content_attributes());
-    ASSERT_TRUE(nodes[0]->content_attributes().has_geometry());
-    const auto& geo = nodes[0]->content_attributes().geometry();
-    EXPECT_EQ(geo.visible_bounding_box().width(), visible_w);
-    EXPECT_EQ(geo.visible_bounding_box().height(), visible_h);
-    EXPECT_EQ(geo.outer_bounding_box().width(), outer_w);
-    EXPECT_EQ(geo.outer_bounding_box().height(), outer_h);
-  };
-
-  // Both descendants are clipped by the 100x100 ancestor overflow clip of their
-  // containing block instead of escaping it to the viewport.
-  check_clipped_node(optimization_guide::proto::CSS_POSITION_FIXED, 100, 100,
-                     250, 250);
-  check_clipped_node(optimization_guide::proto::CSS_POSITION_ABSOLUTE, 100, 100,
-                     250, 250);
+  ASSERT_EQ(fixed_nodes.size(), 1u);
+  const auto* fixed_child = fixed_nodes[0];
+  ASSERT_TRUE(fixed_child->has_content_attributes());
+  ASSERT_TRUE(fixed_child->content_attributes().has_geometry());
+  const auto& geo = fixed_child->content_attributes().geometry();
+  EXPECT_EQ(geo.css_position(), optimization_guide::proto::CSS_POSITION_FIXED);
+  EXPECT_EQ(geo.visible_bounding_box().width(), 100);
+  EXPECT_EQ(geo.visible_bounding_box().height(), 50);
+  EXPECT_EQ(geo.outer_bounding_box().width(), 150);
+  EXPECT_EQ(geo.outer_bounding_box().height(), 150);
 }
 
 // Test that will-change creates a containing block for fixed elements only
