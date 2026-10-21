@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/core/layout/layout_tree_as_text.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
-#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
+#include "third_party/blink/renderer/core/paint/fragment_data.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
@@ -5846,14 +5846,11 @@ TEST_P(PaintPropertyTreeBuilderTest, FragmentPaintOffsetUnderOverflowScroll) {
             PaintPropertiesForElement("container")->PaintOffsetTranslation());
 
   const auto* content = GetLayoutObjectByElementId("content");
-  FragmentDataIterator iterator(*content);
-  const auto* first_fragment = iterator.GetFragmentData();
-  ASSERT_TRUE(iterator.Advance());
-  const auto* second_fragment = iterator.GetFragmentData();
-  ASSERT_NE(nullptr, second_fragment);
+  const FragmentDataList& fragments = content->FragmentList();
+  ASSERT_GE(fragments.size(), 2u);
 
-  EXPECT_EQ(PhysicalOffset(), first_fragment->PaintOffset());
-  EXPECT_EQ(PhysicalOffset(390, 0), second_fragment->PaintOffset());
+  EXPECT_EQ(PhysicalOffset(), fragments.at(0).PaintOffset());
+  EXPECT_EQ(PhysicalOffset(390, 0), fragments.at(1).PaintOffset());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, SVGRootWithMask) {

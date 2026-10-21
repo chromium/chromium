@@ -45,7 +45,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/link_highlight.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
+#include "third_party/blink/renderer/core/paint/fragment_data.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -346,12 +346,8 @@ TEST_P(LinkHighlightImplTest, MultiColumn) {
   EXPECT_EQ(effect.GetCompositorElementId(), highlight->ElementIdForTesting());
   EXPECT_TRUE(effect.HasActiveOpacityAnimation());
 
-  FragmentDataIterator iterator1(*touch_node->GetLayoutObject());
-  const auto* first_fragment = iterator1.GetFragmentData();
-  iterator1.Advance();
-  const auto* second_fragment = iterator1.GetFragmentData();
-  ASSERT_TRUE(second_fragment);
-  EXPECT_FALSE(iterator1.Advance());
+  const auto* first_fragment = &touch_node->GetLayoutObject()->FirstFragment();
+  ASSERT_EQ(2u, touch_node->GetLayoutObject()->FragmentList().size());
 
   auto check_layer = [&](const cc::PictureLayer* layer) {
     ASSERT_TRUE(layer);
@@ -377,14 +373,7 @@ TEST_P(LinkHighlightImplTest, MultiColumn) {
   multicol->setAttribute(html_names::kStyleAttr, AtomicString("height: 25px"));
   UpdateAllLifecyclePhases();
   ASSERT_EQ(first_fragment, &touch_node->GetLayoutObject()->FirstFragment());
-  FragmentDataIterator iterator2(*touch_node->GetLayoutObject());
-  iterator2.Advance();
-  second_fragment = iterator2.GetFragmentData();
-  ASSERT_TRUE(second_fragment);
-  iterator2.Advance();
-  const auto* third_fragment = iterator2.GetFragmentData();
-  ASSERT_TRUE(third_fragment);
-  EXPECT_FALSE(iterator2.Advance());
+  ASSERT_EQ(3u, touch_node->GetLayoutObject()->FragmentList().size());
 
   EXPECT_EQ(layer_count_before_highlight + 3, LayerCount());
   EXPECT_EQ(3u, highlight->FragmentCountForTesting());
@@ -396,8 +385,7 @@ TEST_P(LinkHighlightImplTest, MultiColumn) {
   multicol->setAttribute(html_names::kStyleAttr, AtomicString("height: 100px"));
   UpdateAllLifecyclePhases();
   ASSERT_EQ(first_fragment, &touch_node->GetLayoutObject()->FirstFragment());
-  FragmentDataIterator iterator3(*touch_node->GetLayoutObject());
-  EXPECT_FALSE(iterator3.Advance());
+  EXPECT_EQ(1u, touch_node->GetLayoutObject()->FragmentList().size());
 
   EXPECT_EQ(layer_count_before_highlight + 1, LayerCount());
   EXPECT_EQ(1u, highlight->FragmentCountForTesting());

@@ -89,7 +89,7 @@
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
-#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
+#include "third_party/blink/renderer/core/paint/fragment_data.h"
 #include "third_party/blink/renderer/core/paint/hit_testing_transform_state.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -1441,28 +1441,25 @@ PaintLayer* PaintLayer::HitTestLayer(
     DCHECK(!Preserves3D());
     // We need transform state for the first time, or to offset the container
     // state, so create it here.
-    FragmentDataIterator iterator(layout_object);
-    const FragmentData* local_fragment_for_transform_state =
-        iterator.GetFragmentData();
+    const FragmentData* local_fragment_for_transform_state = nullptr;
     const FragmentData* container_fragment_for_transform_state;
     if (container_fragment_data) {
       container_fragment_for_transform_state = container_fragment_data;
       const auto& container_transform =
           container_fragment_data->ContentsProperties().Transform();
-      while (!iterator.IsDone()) {
+      for (const FragmentData& fragment : layout_object.FragmentList()) {
         // Find the first local fragment that is a descendant of
         // container_fragment.
         if (container_transform.IsAncestorOf(
-                local_fragment_for_transform_state->LocalBorderBoxProperties()
-                    .Transform())) {
+                fragment.LocalBorderBoxProperties().Transform())) {
+          local_fragment_for_transform_state = &fragment;
           break;
         }
-        iterator.Advance();
-        local_fragment_for_transform_state = iterator.GetFragmentData();
       }
       if (!local_fragment_for_transform_state)
         return nullptr;
     } else {
+      local_fragment_for_transform_state = &layout_object.FirstFragment();
       container_fragment_for_transform_state =
           &container_layout_object.FirstFragment();
     }

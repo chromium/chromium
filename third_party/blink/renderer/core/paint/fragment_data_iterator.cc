@@ -13,7 +13,7 @@ namespace blink {
 
 AccompaniedFragmentIterator::AccompaniedFragmentIterator(
     const LayoutObject& object)
-    : FragmentDataIteratorBase(object.FragmentList()) {
+    : fragment_list_(object.FragmentList()) {
   if (const auto* box = DynamicTo<LayoutBox>(&object)) {
     layout_box_ = box;
     return;
@@ -52,9 +52,8 @@ bool AccompaniedFragmentIterator::Advance() {
   wtf_size_t previous_idx = idx_;
 #endif
 
-  FragmentDataIteratorBase::Advance();
-
-  if (IsDone()) {
+  if (++idx_ >= fragment_list_.size()) {
+    idx_ = kNotFound;
 #if DCHECK_IS_ON()
     // We're done, since there are no more FragmentData entries. Assert that
     // this agrees with the NG side of things.

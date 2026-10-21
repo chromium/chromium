@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
+#include "third_party/blink/renderer/core/paint/fragment_data.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -505,10 +505,10 @@ TEST_F(PaintLayerClipperTest, Fragmentation) {
   ClipRect background_rect, foreground_rect;
 
   PaintLayer* target_paint_layer = GetPaintLayerByElementId("target");
-  FragmentDataIterator iterator(target_paint_layer->GetLayoutObject());
-  ASSERT_TRUE(iterator.Advance());
-  const FragmentData* second_fragment = iterator.GetFragmentData();
-  EXPECT_FALSE(iterator.Advance());
+  const FragmentDataList& fragments =
+      target_paint_layer->GetLayoutObject().FragmentList();
+  ASSERT_EQ(2u, fragments.size());
+  const FragmentData* second_fragment = &fragments.at(1);
 
   target_paint_layer->Clipper().CalculateRects(
       context, target_paint_layer->GetLayoutObject().FirstFragment(),
