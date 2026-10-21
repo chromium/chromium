@@ -302,12 +302,14 @@ class ManualFillingMediator
     }
 
     boolean isFillingViewShown(View view) {
+        // Check `isSoftKeyboardShowing` last to avoid querying WindowInsets when no filling view
+        // is active.
         return isInitialized()
-                && !isSoftKeyboardShowing(view)
                 && (mKeyboardAccessory.hasActiveTab()
                         || (is(WAITING_TO_REPLACE)
                                 || is(REPLACING_KEYBOARD)
-                                || is(FLOATING_SHEET)));
+                                || is(FLOATING_SHEET)))
+                && !isSoftKeyboardShowing(view);
     }
 
     NonNullObservableSupplier<Integer> getBottomInsetSupplier() {
