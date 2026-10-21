@@ -315,9 +315,8 @@ TEST(RuleParserTest, ParseUrlRuleWithRegexp) {
 }
 
 TEST(RuleParserTest, ParseStyleRules) {
-  static const std::string kCssSelector = "div.blocked_class";
-  static const std::string kTestDomain = "example.com";
-  static const std::string kTestSubDomain = "however.example.com";
+  const std::string kCssSelector = "div.blocked_class";
+  const std::string kTestDomain = "example.com";
 
   StyleRule expected_rule;
   expected_rule.selector = kCssSelector;

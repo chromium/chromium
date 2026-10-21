@@ -18,7 +18,7 @@ namespace ui_devtools {
 using ::testing::_;
 
 namespace {
-const std::string kWidgetName = "A test widget";
+constexpr char kWidgetName[] = "A test widget";
 }
 
 class MockWidgetElementDelegate : public MockUIElementDelegate {

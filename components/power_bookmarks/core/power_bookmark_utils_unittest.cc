@@ -16,10 +16,10 @@ namespace {
 
 using testing::UnorderedElementsAre;
 
-const std::string kLeadImageUrl = "image.png";
+constexpr char kLeadImageUrl[] = "image.png";
 
-const char16_t kExampleTitle[] = u"Title";
-const std::string kExampleUrl = "https://example.com";
+constexpr char16_t kExampleTitle[] = u"Title";
+constexpr char kExampleUrl[] = "https://example.com";
 
 class PowerBookmarkUtilsTest : public testing::Test {
  protected:

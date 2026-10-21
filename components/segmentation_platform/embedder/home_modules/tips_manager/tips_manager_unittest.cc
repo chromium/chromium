@@ -22,7 +22,7 @@ namespace segmentation_platform {
 namespace {
 
 // Tips signal name used to simulate unused signal data in tests.
-const std::string kTestSignalName = "test_signal";
+constexpr char kTestSignalName[] = "test_signal";
 
 // Populates the provided `pref_service` with data representing unused signals.
 // This is used to simulate a scenario where the pref service contains

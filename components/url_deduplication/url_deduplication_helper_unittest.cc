@@ -42,7 +42,7 @@ class URLDeduplicationHelperTest : public ::testing::Test {
   std::unique_ptr<URLDeduplicationHelper> helper_;
 };
 
-const std::string kSamplePageTitle = "Sample page title";
+constexpr char kSamplePageTitle[] = "Sample page title";
 
 TEST_F(URLDeduplicationHelperTest, StripURL) {
   GURL full_url = GURL(
