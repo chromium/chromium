@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "base/debug/debugger.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
@@ -26,6 +27,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/process/process.h"
 #include "base/sequence_checker.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -386,7 +388,16 @@ int LaunchTestsInternal(TestLauncherDelegate* launcher_delegate,
     // child processes don't have a TestSuite, and must initialize this
     // explicitly before ContentMain.
     TestTimeouts::Initialize();
-    return ContentMain(std::move(params));
+    int exit_code = ContentMain(std::move(params));
+#if !EXPENSIVE_TEST_LOGIC_IS_ON() && !defined(LEAK_SANITIZER) && \
+    !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER) && \
+    !defined(MEMORY_SANITIZER)
+    fflush(stdout);
+    fflush(stderr);
+    base::Process::TerminateCurrentProcessImmediately(exit_code);
+#else
+    return exit_code;
+#endif
   }
 #endif
 
@@ -420,7 +431,22 @@ int LaunchTestsInternal(TestLauncherDelegate* launcher_delegate,
       }
     }
 #endif  // !BUILDFLAG(IS_ANDROID)
-    return launcher_delegate->RunTestSuite(argc, argv);
+    int exit_code = launcher_delegate->RunTestSuite(argc, argv);
+#if !BUILDFLAG(IS_ANDROID) && !EXPENSIVE_TEST_LOGIC_IS_ON() && \
+    !defined(LEAK_SANITIZER) && !defined(ADDRESS_SANITIZER) && \
+    !defined(THREAD_SANITIZER) && !defined(MEMORY_SANITIZER)
+    if (command_line->HasSwitch(switches::kSingleProcessTests) &&
+        !command_line->HasSwitch(base::kGTestListTestsFlag) &&
+        !command_line->HasSwitch(base::kGTestHelpFlag)) {
+      if (tmp_dir.IsValid()) {
+        std::ignore = tmp_dir.Delete();
+      }
+      fflush(stdout);
+      fflush(stderr);
+      base::Process::TerminateCurrentProcessImmediately(exit_code);
+    }
+#endif
+    return exit_code;
   }
 
   // ICU must be initialized before any attempts to format times, e.g. for logs.
