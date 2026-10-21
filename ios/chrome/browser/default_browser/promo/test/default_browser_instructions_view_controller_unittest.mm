@@ -5,14 +5,17 @@
 #import "ios/chrome/browser/default_browser/promo/ui/default_browser_instructions_view_controller.h"
 
 #import "ios/chrome/browser/default_browser/promo/public/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
+#import "ios/chrome/common/ui/instruction_view/instruction_view.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 
 using DefaultBrowserInstructionsViewControllerTest = PlatformTest;
 
@@ -29,19 +32,24 @@ UIView* GetDarkAnimationSubview(UIView* view) {
 }
 
 bool HasTitle(UIView* view) {
-  return chrome_test_util::FindViewById(
-             view, kConfirmationAlertTitleAccessibilityIdentifier) != nil;
+  return chrome_test_util::FindLabelWithText(
+             view, l10n_util::GetNSString(
+                       IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT)) != nil;
 }
 
 bool HasSubTitle(UIView* view) {
-  return chrome_test_util::FindViewById(
-             view, kConfirmationAlertSubtitleAccessibilityIdentifier) != nil;
+  NSString* subtitle =
+      (IsDefaultAppsDestinationAvailable() &&
+       IsUseDefaultAppsDestinationForPromosEnabled())
+          ? l10n_util::GetNSString(
+                IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_APPS_SUBTITLE_TEXT)
+          : l10n_util::GetNSString(
+                IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SUBTITLE_TEXT);
+  return chrome_test_util::FindLabelWithText(view, subtitle) != nil;
 }
 
 bool HasInstructionSteps(UIView* view) {
-  return chrome_test_util::FindViewById(
-             view, kConfirmationAlertUnderTitleViewAccessibilityIdentifier) !=
-         nil;
+  return chrome_test_util::FindViewByClass<InstructionView>(view) != nil;
 }
 
 bool HasPrimaryActionButton(UIView* view) {

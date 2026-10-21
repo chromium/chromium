@@ -10,12 +10,12 @@
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 
 // Controller for the UI that shows the user how to set Chrome as the default
 // browser and provides a button to take the user to the Settings app.
 @interface DefaultBrowserSettingsTableViewController
-    : SettingsRootTableViewController <ConfirmationAlertActionHandler,
+    : SettingsRootTableViewController <ButtonStackActionDelegate,
                                        SettingsControllerProtocol>
 
 // The feature that triggered this view controller.

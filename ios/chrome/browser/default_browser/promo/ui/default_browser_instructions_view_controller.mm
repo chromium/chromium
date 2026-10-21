@@ -7,8 +7,12 @@
 #import "base/i18n/rtl.h"
 #import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_configuration.h"
 #import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_utils.h"
+#import "ios/chrome/browser/shared/ui/brick_configurations/animation_brick_configuration.h"
+#import "ios/chrome/browser/shared/ui/brick_configurations/title_brick_configuration.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -36,10 +40,6 @@ NSString* const kDefaultBrowserAnimationIpad =
     @"default_browser_animation_ipad";
 NSString* const kDefaultBrowserAnimationRtlIpad =
     @"default_browser_animation_rtl_ipad";
-NSString* const kDefaultBrowserAnimationDarkmodeIpad =
-    @"default_browser_animation_darkmode_ipad";
-NSString* const kDefaultBrowserAnimationRtlDarkmodeIpad =
-    @"default_browser_animation_rtl_darkmode_ipad";
 
 // Keys in the lottie assets.
 NSString* const kBrowserAppKeypath = @"IDS_BROWSER_APP";
@@ -47,6 +47,64 @@ NSString* const kDefaultBrowserAppKeypath = @"IDS_DEFAULT_BROWSER_APP";
 NSString* const kChromeKeypath = @"IDS_CHROME";
 NSString* const kChromeSecondaryKeypath = @"IDS_CHROME_SECONDARY";
 NSString* const kSettingsKeypath = @"IDS_IOS_SETTINGS";
+
+// Returns the animation name.
+NSString* AnimationAssetName(BOOL useDefaultAppsDestination) {
+  if (IsDefaultBrowserPromoIpadInstructions() &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return base::i18n::IsRTL() ? kDefaultBrowserAnimationRtlIpad
+                               : kDefaultBrowserAnimationIpad;
+  }
+
+  if (useDefaultAppsDestination) {
+    return base::i18n::IsRTL() ? kDefaultBrowserDefaultAppsAnimationRtl
+                               : kDefaultBrowserDefaultAppsAnimation;
+  }
+
+  return base::i18n::IsRTL() ? kDefaultBrowserAnimationRtl
+                             : kDefaultBrowserAnimation;
+}
+
+// Returns the animation name in dark mode.
+NSString* AnimationAssetNameDarkmode(BOOL useDefaultAppsDestination) {
+  if (IsDefaultBrowserPromoIpadInstructions() &&
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    // No separate dark mode asset for iPad when using dynamic colors.
+    return nil;
+  }
+
+  if (useDefaultAppsDestination) {
+    return base::i18n::IsRTL() ? kDefaultBrowserDefaultAppsAnimationRtlDarkmode
+                               : kDefaultBrowserDefaultAppsAnimationDarkmode;
+  }
+
+  return base::i18n::IsRTL() ? kDefaultBrowserAnimationRtlDarkmode
+                             : kDefaultBrowserAnimationDarkmode;
+}
+
+// Returns whether the animation supports dynamic colors.
+BOOL AreColorsDynamic() {
+  return IsDefaultBrowserPromoIpadInstructions() &&
+         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+}
+
+// Returns the color provider for the animation.
+NSDictionary<NSString*, UIColor*>* ColorProvider() {
+  return @{
+    kSeparatorColor : [UIColor colorNamed:kSeparatorColor],
+    kBlueColor : [UIColor colorNamed:kBlueColor],
+    kGrey200Color : [UIColor colorNamed:kGrey200Color],
+    kBackgroundColor : [UIColor colorNamed:kBackgroundColor],
+    kGroupedPrimaryBackgroundColor :
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor],
+    kGroupedSecondaryBackgroundColor :
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor],
+    kChromeKeypath : [UIColor colorNamed:kTextPrimaryColor],
+    kChromeSecondaryKeypath : [UIColor colorNamed:kTextSecondaryColor],
+    kDefaultBrowserAppKeypath : [UIColor colorNamed:kTextPrimaryColor],
+    kSettingsKeypath : [UIColor colorNamed:kTextPrimaryColor],
+  };
+}
 
 }  // namespace
 
@@ -56,41 +114,48 @@ NSString* const kDefaultBrowserInstructionsViewAnimationViewId =
 NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
     @"DefaultBrowserInstructionsViewDarkAnimationViewId";
 
-@implementation DefaultBrowserInstructionsViewController {
-  BOOL _hasDismissButton;
-  BOOL _hasRemindMeLater;
-  BOOL _useDefaultAppsDestination;
-  BOOL _hasSteps;
-  NSString* _titleText;
-}
+@implementation DefaultBrowserInstructionsViewController
 
 - (instancetype)initWithDismissButton:(BOOL)hasDismissButton
                      hasRemindMeLater:(BOOL)hasRemindMeLater
             useDefaultAppsDestination:(BOOL)useDefaultAppsDestination
                              hasSteps:(BOOL)hasSteps
                             titleText:(NSString*)titleText {
-  if ((self = [super init])) {
-    _hasDismissButton = hasDismissButton;
-    _hasRemindMeLater = hasRemindMeLater;
-    _useDefaultAppsDestination = useDefaultAppsDestination;
-    _useDefaultAppsDestination |= IsDefaultAppsDestinationAvailable() &&
-                                  IsUseDefaultAppsDestinationForPromosEnabled();
-    _hasSteps = hasSteps;
-    _titleText = titleText;
+  useDefaultAppsDestination |= IsDefaultAppsDestinationAvailable() &&
+                               IsUseDefaultAppsDestinationForPromosEnabled();
+
+  ButtonStackConfiguration* buttonStackConfiguration =
+      [[ButtonStackConfiguration alloc] init];
+  buttonStackConfiguration.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
+  if (hasDismissButton) {
+    buttonStackConfiguration.secondaryActionString = l10n_util::GetNSString(
+        IDS_IOS_DEFAULT_BROWSER_PROMO_SECONDARY_BUTTON_TEXT);
   }
-  return self;
-}
+  if (hasRemindMeLater) {
+    buttonStackConfiguration.tertiaryActionString = l10n_util::GetNSString(
+        IDS_IOS_DEFAULT_BROWSER_PROMO_TERTIARY_BUTTON_TEXT);
+  }
 
-#pragma mark - UIViewController
-
-- (void)viewDidLoad {
-  self.animationName = [self animationAssetName];
-  if ([self areColorsDynamic]) {
-    self.useLegacyDarkMode = NO;
+  AnimationBrickConfiguration* animationConfiguration =
+      [[AnimationBrickConfiguration alloc] init];
+  animationConfiguration.animationName =
+      AnimationAssetName(useDefaultAppsDestination);
+  animationConfiguration.accessibilityID =
+      kDefaultBrowserInstructionsViewAnimationViewId;
+  animationConfiguration.darkAccessibilityID =
+      kDefaultBrowserInstructionsViewDarkAnimationViewId;
+  if (AreColorsDynamic()) {
+    animationConfiguration.useLegacyDarkMode = NO;
+    animationConfiguration.lightModeColorProvider = ColorProvider();
+    animationConfiguration.darkModeColorProvider = ColorProvider();
   } else {
-    self.animationNameDarkMode = [self animationAssetNameDarkmode];
+    animationConfiguration.darkAnimationName =
+        AnimationAssetNameDarkmode(useDefaultAppsDestination);
   }
-  self.animationTextProvider = @{
+  animationConfiguration.animationBackgroundColor =
+      [UIColor colorNamed:kGrey100Color];
+  animationConfiguration.animationTextProvider = @{
     kBrowserAppKeypath :
         l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_BROWSER_APP),
     kDefaultBrowserAppKeypath : l10n_util::GetNSString(
@@ -101,22 +166,27 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
     kSettingsKeypath : l10n_util::GetNSString(IDS_IOS_SETTINGS_TITLE)
   };
 
-  // Title.
-  self.titleString =
-      _titleText ? _titleText
-                 : l10n_util::GetNSString(
-                       IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT);
+  TitleBrickConfiguration* titleConfiguration =
+      [[TitleBrickConfiguration alloc] init];
+  titleConfiguration.title =
+      titleText ? titleText
+                : l10n_util::GetNSString(
+                      IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_TITLE_TEXT);
+  titleConfiguration.titleStyle = UIFontTextStyleTitle2;
 
-  // Subtitle or instruction steps.
-  if (_hasSteps) {
+  UIView* instructionView;
+
+  if (hasSteps) {
     NSMutableArray* defaultBrowserSteps = [[NSMutableArray alloc] init];
-    if (_useDefaultAppsDestination) {
+    if (useDefaultAppsDestination) {
       [defaultBrowserSteps
-          addObject:l10n_util::GetNSString(
-                        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_FIRST_STEP)];
+          addObject:
+              l10n_util::GetNSString(
+                  IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_FIRST_STEP)];
       [defaultBrowserSteps
-          addObject:l10n_util::GetNSString(
-                        IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_SECOND_STEP)];
+          addObject:
+              l10n_util::GetNSString(
+                  IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_DEFAULT_APPS_SECOND_STEP)];
     } else {
       [defaultBrowserSteps
           addObject:l10n_util::GetNSString(
@@ -129,121 +199,25 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
         addObject:l10n_util::GetNSString(
                       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)];
 
-    UIView* instructionView =
+    instructionView =
         [[InstructionView alloc] initWithList:defaultBrowserSteps];
     instructionView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.underTitleView = instructionView;
   } else {
-    self.subtitleString =
-        _useDefaultAppsDestination
+    titleConfiguration.subtitle =
+        useDefaultAppsDestination
             ? l10n_util::GetNSString(
                   IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_APPS_SUBTITLE_TEXT)
             : l10n_util::GetNSString(
                   IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SUBTITLE_TEXT);
   }
 
-  // Buttons.
-  self.primaryActionString = l10n_util::GetNSString(
-      IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
-  if (_hasDismissButton) {
-    self.secondaryActionString = l10n_util::GetNSString(
-        IDS_IOS_DEFAULT_BROWSER_PROMO_SECONDARY_BUTTON_TEXT);
-  }
-  if (_hasRemindMeLater) {
-    self.tertiaryActionString = l10n_util::GetNSString(
-        IDS_IOS_DEFAULT_BROWSER_PROMO_TERTIARY_BUTTON_TEXT);
-  }
+  AnimatedPromoConfiguration* config = [[AnimatedPromoConfiguration alloc]
+      initWithAnimationBrickConfiguration:animationConfiguration
+                 buttonStackConfiguration:buttonStackConfiguration
+                  titleBrickConfiguration:titleConfiguration
+                           underTitleView:instructionView];
 
-  [super viewDidLoad];
-
-  self.view.backgroundColor = [UIColor colorNamed:kGrey100Color];
-
-  self.animationViewWrapper.animationView.accessibilityIdentifier =
-      kDefaultBrowserInstructionsViewAnimationViewId;
-  self.animationViewWrapperDarkMode.animationView.accessibilityIdentifier =
-      kDefaultBrowserInstructionsViewDarkAnimationViewId;
-
-  if ([self areColorsDynamic]) {
-    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                       withAction:@selector(configureAnimationColors)];
-    [self configureAnimationColors];
-  }
-}
-
-#pragma mark - Private
-
-- (NSString*)animationAssetName {
-  if (IsDefaultBrowserPromoIpadInstructions() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    return base::i18n::IsRTL() ? kDefaultBrowserAnimationRtlIpad
-                               : kDefaultBrowserAnimationIpad;
-  }
-
-  if (_useDefaultAppsDestination) {
-    return base::i18n::IsRTL() ? kDefaultBrowserDefaultAppsAnimationRtl
-                               : kDefaultBrowserDefaultAppsAnimation;
-  }
-
-  return base::i18n::IsRTL() ? kDefaultBrowserAnimationRtl
-                             : kDefaultBrowserAnimation;
-}
-
-- (NSString*)animationAssetNameDarkmode {
-  if (IsDefaultBrowserPromoIpadInstructions() &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    // No separate dark mode asset for iPad when using dynamic colors.
-    return nil;
-  }
-
-  if (_useDefaultAppsDestination) {
-    return base::i18n::IsRTL() ? kDefaultBrowserDefaultAppsAnimationRtlDarkmode
-                               : kDefaultBrowserDefaultAppsAnimationDarkmode;
-  }
-
-  return base::i18n::IsRTL() ? kDefaultBrowserAnimationRtlDarkmode
-                             : kDefaultBrowserAnimationDarkmode;
-}
-
-// Configures the animation with semantic and custom colors.
-- (void)configureAnimationColors {
-  // Custom dynamic colors for kDefaultBrowserAnimationIpad.
-  if ([[self animationAssetName]
-          isEqualToString:kDefaultBrowserAnimationIpad] ||
-      [[self animationAssetName]
-          isEqualToString:kDefaultBrowserAnimationRtlIpad]) {
-    // Configure shape layers.
-    ConfigureAnimationSemanticColor(self.animationViewWrapper, kSeparatorColor,
-                                    kSeparatorColor);
-    ConfigureAnimationSemanticColor(self.animationViewWrapper, kBlueColor,
-                                    kBlueColor);
-    ConfigureAnimationSemanticColor(self.animationViewWrapper, kGrey200Color,
-                                    kGrey200Color);
-    ConfigureAnimationSemanticColor(self.animationViewWrapper, kBackgroundColor,
-                                    kBackgroundColor);
-    ConfigureAnimationSemanticColor(self.animationViewWrapper,
-                                    kGroupedPrimaryBackgroundColor,
-                                    kGroupedPrimaryBackgroundColor);
-    ConfigureAnimationSemanticColor(self.animationViewWrapper,
-                                    kGroupedSecondaryBackgroundColor,
-                                    kGroupedSecondaryBackgroundColor);
-    // Configure text layers.
-    ConfigureAnimationSemanticColor(self.animationViewWrapper, kChromeKeypath,
-                                    kTextPrimaryColor);
-    ConfigureAnimationSemanticColor(self.animationViewWrapper,
-                                    kChromeSecondaryKeypath,
-                                    kTextSecondaryColor);
-    ConfigureAnimationSemanticColor(self.animationViewWrapper,
-                                    kDefaultBrowserAppKeypath,
-                                    kTextPrimaryColor);
-    ConfigureAnimationSemanticColor(self.animationViewWrapper, kSettingsKeypath,
-                                    kTextPrimaryColor);
-  }
-}
-
-// Returns whether the animation supports dynamic colors.
-- (BOOL)areColorsDynamic {
-  return IsDefaultBrowserPromoIpadInstructions() &&
-         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+  return [super initWithConfiguration:config];
 }
 
 @end

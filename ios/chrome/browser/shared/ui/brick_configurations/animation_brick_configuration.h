@@ -16,6 +16,12 @@
 // The name of the animation resource to be used in dark mode.
 @property(nonatomic, copy) NSString* darkAnimationName;
 
+// (Optional) The accessibility identifier for the light mode animation view.
+@property(nonatomic, copy) NSString* accessibilityID;
+
+// (Optional) The accessibility identifier for the dark mode animation view.
+@property(nonatomic, copy) NSString* darkAccessibilityID;
+
 // A dictionary that allows localization of text within the animations.
 @property(nonatomic, copy)
     NSDictionary<NSString*, NSString*>* animationTextProvider;

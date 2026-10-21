@@ -39,12 +39,15 @@ id<LottieAnimation> CreateAnimation(NSString* animationAssetName) {
     _config = config;
 
     _wrapper = CreateAnimation(config.animationName);
+    _wrapper.animationView.accessibilityIdentifier = config.accessibilityID;
     [_wrapper setDictionaryTextProvider:config.animationTextProvider];
     [self configureAndLayoutAnimationViewForWrapper:_wrapper];
 
     if (config.useLegacyDarkMode) {
       CHECK(config.darkAnimationName);
       _darkWrapper = CreateAnimation(config.darkAnimationName);
+      _darkWrapper.animationView.accessibilityIdentifier =
+          config.darkAccessibilityID;
       [_darkWrapper setDictionaryTextProvider:config.animationTextProvider];
       [self configureAndLayoutAnimationViewForWrapper:_darkWrapper];
     }

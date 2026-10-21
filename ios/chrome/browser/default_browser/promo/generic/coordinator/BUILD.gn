@@ -29,7 +29,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/button_stack",
   ]
   frameworks = [ "UIKit.framework" ]
 }
