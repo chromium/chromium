@@ -575,6 +575,33 @@ suite('TopicsFeedback', () => {
     assertEquals(TopicRating.kLiked, card.feedback!.rating);
   });
 
+  test('deletes the feedback on topics that are no longer shown', async () => {
+    const liked = (id: string): TopicFeedback => ({
+      ...createEmptyTopicFeedback(toTopicItem(createTopic({id}))),
+      rating: TopicRating.kLiked,
+    });
+    await createView([liked('old-topic'), liked('topic-1')]);
+
+    assertDeepEquals(['old-topic'], handler.getArgs('deleteTopicFeedback'));
+    assertEquals(TopicRating.kLiked, card.feedback!.rating);
+  });
+
+  test('keeps the feedback when there are no topics', async () => {
+    handler.setResultFor('getTopics', Promise.resolve({topics: []}));
+    handler.setResultFor('getTopicFeedbacks', Promise.resolve({
+      feedbacks: [{
+        ...createEmptyTopicFeedback(toTopicItem(createTopic())),
+        rating: TopicRating.kLiked,
+      }],
+    }));
+    view = document.createElement('topics-view');
+    document.body.appendChild(view);
+    await microtasksFinished();
+
+    assertTrue(!!view.shadowRoot.querySelector('#emptyState'));
+    assertEquals(0, handler.getCallCount('deleteTopicFeedback'));
+  });
+
   test('thumbs up saves a liked rating with a snapshot', async () => {
     await createView();
     await click('#thumbsUp');

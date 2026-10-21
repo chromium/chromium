@@ -91,9 +91,9 @@ export class TopicsViewElement extends CrLitElement {
         browserProxyFactory.getInstance().handler.getTopics(),
         this.fetchFeedbacks_(),
       ]);
-      this.feedbacks_ =
-          new Map(feedbacks.map(feedback => [feedback.id, feedback]));
       this.topics = topics.map(toTopicItem);
+      this.feedbacks_ = new Map(this.deleteFeedbacksOfOldTopics_(feedbacks).map(
+          feedback => [feedback.id, feedback]));
       this.loadState_ = 'loaded';
     } catch (e) {
       console.error('Failed to fetch topics:', e);
@@ -115,6 +115,26 @@ export class TopicsViewElement extends CrLitElement {
       console.error('Failed to fetch topic feedback:', e);
       return [];
     }
+  }
+
+  // Deletes the feedback on topics that are no longer shown, e.g. after the
+  // daily rebuild, and returns the rest. Keeps it all if there are no topics.
+  private deleteFeedbacksOfOldTopics_(feedbacks: TopicFeedback[]):
+      TopicFeedback[] {
+    if (this.topics.length === 0) {
+      return feedbacks;
+    }
+    const topicIds = new Set(this.topics.map(topic => topic.id));
+    const handler = browserProxyFactory.getInstance().handler;
+    const kept: TopicFeedback[] = [];
+    for (const feedback of feedbacks) {
+      if (topicIds.has(feedback.id)) {
+        kept.push(feedback);
+      } else {
+        handler.deleteTopicFeedback(feedback.id);
+      }
+    }
+    return kept;
   }
 
   // Unlike the initial load, keeps the current ratings if reloading fails.
