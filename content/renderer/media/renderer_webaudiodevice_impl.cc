@@ -551,12 +551,15 @@ RendererWebAudioDeviceImpl::MaybeCreateSinkAndGetStatus() {
     CreateAudioRendererSink();
   }
 
-  media::OutputDeviceInfo device_info = GetSinkOutputDeviceInfo();
-  media::OutputDeviceStatus status = device_info.device_status();
+  media::OutputDeviceStatus status = GetSinkOutputDeviceInfo().device_status();
 
-  if (!is_sink_initialized_) {
-    HandleDeviceStatus(std::move(device_info));
-  } else if (status != media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
+  if (status == media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
+    if (!is_sink_initialized_) {
+      // AudioDestination caches FramesPerBuffer() at construction. We must
+      // not recompute the params via HandleDeviceStatus(), so we just init.
+      InitializeSink();
+    }
+  } else {
     Stop();
   }
 

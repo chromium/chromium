@@ -8,9 +8,12 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -42,6 +45,7 @@ class MockAudioRendererSink : public media::AudioRendererSink {
   void Initialize(const media::AudioParameters& params,
                   media::AudioRendererSink::RenderCallback* callback) override {
     callback_ = callback;
+    initialize_params_.push_back(params);
   }
   MOCK_METHOD(void, Start, (), (override));
   MOCK_METHOD(void, Stop, (), (override));
@@ -59,6 +63,7 @@ class MockAudioRendererSink : public media::AudioRendererSink {
 
   raw_ptr<media::AudioRendererSink::RenderCallback, DanglingUntriaged>
       callback_ = nullptr;
+  std::vector<media::AudioParameters> initialize_params_;
 
  private:
   ~MockAudioRendererSink() override = default;
@@ -79,6 +84,128 @@ media::OutputDeviceInfo GetHealthyDevice() {
 media::OutputDeviceInfo GetErrorDevice() {
   return media::OutputDeviceInfo(
       media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+}
+
+constexpr int kDeviceSampleRate = 48000;
+constexpr int kDeviceBufferSize = 512;
+constexpr int kAlternateDeviceBufferSize = 480;
+
+enum class FirstDeviceQuery { kHealthy, kTimedOut, kNotAuthorized, kInvalid };
+enum class SecondDeviceQuery { kOk, kOkAlternateBuffer, kTimedOut };
+
+media::AudioParameters GetDeviceParams(int frames_per_buffer) {
+  return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                media::ChannelLayoutConfig::Stereo(),
+                                kDeviceSampleRate, frames_per_buffer);
+}
+
+media::OutputDeviceInfo GetDeviceInfo(FirstDeviceQuery query) {
+  switch (query) {
+    case FirstDeviceQuery::kHealthy:
+      return media::OutputDeviceInfo(std::string(),
+                                     media::OUTPUT_DEVICE_STATUS_OK,
+                                     GetDeviceParams(kDeviceBufferSize));
+    case FirstDeviceQuery::kTimedOut:
+      return media::OutputDeviceInfo(
+          std::string(), media::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT,
+          media::AudioParameters::UnavailableDeviceParams());
+    case FirstDeviceQuery::kNotAuthorized:
+      // AudioOutputDevice reports UnavailableDeviceParams() for any non-OK
+      // status.
+      return media::OutputDeviceInfo(
+          std::string(), media::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED,
+          media::AudioParameters::UnavailableDeviceParams());
+    case FirstDeviceQuery::kInvalid:
+      return media::OutputDeviceInfo(std::string(),
+                                     media::OUTPUT_DEVICE_STATUS_OK,
+                                     media::AudioParameters());
+  }
+  NOTREACHED();
+}
+
+media::OutputDeviceInfo GetDeviceInfo(SecondDeviceQuery query) {
+  switch (query) {
+    case SecondDeviceQuery::kOk:
+      return media::OutputDeviceInfo(std::string(),
+                                     media::OUTPUT_DEVICE_STATUS_OK,
+                                     GetDeviceParams(kDeviceBufferSize));
+    case SecondDeviceQuery::kOkAlternateBuffer:
+      return media::OutputDeviceInfo(
+          std::string(), media::OUTPUT_DEVICE_STATUS_OK,
+          GetDeviceParams(kAlternateDeviceBufferSize));
+    case SecondDeviceQuery::kTimedOut:
+      return media::OutputDeviceInfo(
+          std::string(), media::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT,
+          media::AudioParameters::UnavailableDeviceParams());
+  }
+  NOTREACHED();
+}
+
+struct InitTestParam {
+  using TupleT =
+      std::tuple<FirstDeviceQuery,
+                 SecondDeviceQuery,
+                 std::optional<float>,
+                 blink::WebAudioLatencyHint::AudioContextLatencyCategory,
+                 bool>;
+
+  explicit InitTestParam(const TupleT& t)
+      : first_query(std::get<0>(t)),
+        second_query(std::get<1>(t)),
+        context_sample_rate(std::get<2>(t)),
+        latency_category(std::get<3>(t)),
+        remove_resampler(std::get<4>(t)) {}
+
+  FirstDeviceQuery first_query;
+  SecondDeviceQuery second_query;
+  std::optional<float> context_sample_rate;
+  blink::WebAudioLatencyHint::AudioContextLatencyCategory latency_category;
+  bool remove_resampler;
+};
+
+std::string GetInitTestParamName(
+    const testing::TestParamInfo<InitTestParam>& info) {
+  const InitTestParam& param = info.param;
+  std::string first;
+  switch (param.first_query) {
+    case FirstDeviceQuery::kHealthy:
+      first = "Healthy";
+      break;
+    case FirstDeviceQuery::kTimedOut:
+      first = "TimedOut";
+      break;
+    case FirstDeviceQuery::kNotAuthorized:
+      first = "NotAuthorized";
+      break;
+    case FirstDeviceQuery::kInvalid:
+      first = "InvalidParams";
+      break;
+  }
+  std::string second;
+  switch (param.second_query) {
+    case SecondDeviceQuery::kOk:
+      second = base::StringPrintf("ThenOk%d", kDeviceBufferSize);
+      break;
+    case SecondDeviceQuery::kOkAlternateBuffer:
+      second = base::StringPrintf("ThenOk%d", kAlternateDeviceBufferSize);
+      break;
+    case SecondDeviceQuery::kTimedOut:
+      second = "ThenTimedOut";
+      break;
+  }
+  const std::string context_rate =
+      param.context_sample_rate
+          ? base::StringPrintf("ContextRate%d",
+                               static_cast<int>(*param.context_sample_rate))
+          : "NoContextRate";
+  const char* latency =
+      param.latency_category == blink::WebAudioLatencyHint::kCategoryInteractive
+          ? "Interactive"
+          : "Balanced";
+  const char* resampler =
+      param.remove_resampler ? "RemoveResamplerOn" : "RemoveResamplerOff";
+  return base::StrCat(
+      {first, "_", second, "_", context_rate, "_", latency, "_", resampler});
 }
 
 class RendererWebAudioDeviceImplUnderTest : public RendererWebAudioDeviceImpl {
@@ -180,10 +307,50 @@ class RendererWebAudioDeviceImplTest
 
   void TearDown() override { webaudio_device_.reset(); }
 
+  struct InitStep {
+    const char* name;
+    int frames_per_buffer;
+    double sample_rate;
+  };
+
+  void RunInitSequence(
+      const blink::WebAudioSinkDescriptor& sink_descriptor,
+      blink::WebAudioLatencyHint::AudioContextLatencyCategory latency) {
+    webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
+        sink_descriptor, media::ChannelLayoutConfig::Mono(),
+        blink::WebAudioLatencyHint(latency), context_sample_rate_, this,
+        base::BindRepeating(
+            &RendererWebAudioDeviceImplTest::CreateMockSilentSink,
+            // Guaranteed to be valid because `this` owns `webaudio_device_` and
+            // so will outlive it.
+            base::Unretained(this)));
+    construction_frames_per_buffer_ = webaudio_device_->FramesPerBuffer();
+    construction_sample_rate_ = webaudio_device_->SampleRate();
+
+    auto record_step = [this](const char* name) {
+      init_steps_.push_back({name, webaudio_device_->FramesPerBuffer(),
+                             webaudio_device_->SampleRate()});
+    };
+    webaudio_device_->MaybeCreateSinkAndGetStatus();
+    record_step("MaybeCreateSinkAndGetStatus");
+    webaudio_device_->Start();
+    record_step("Start");
+    webaudio_device_->Stop();
+    record_step("Stop");
+    webaudio_device_->Start();
+    record_step("Restart");
+    webaudio_device_->Stop();
+    record_step("FinalStop");
+  }
+
   std::unique_ptr<RendererWebAudioDeviceImpl> webaudio_device_;
+  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<MockAudioRendererSink> mock_audio_renderer_sink_;
   std::optional<float> context_sample_rate_;
+  int construction_frames_per_buffer_ = 0;
+  double construction_sample_rate_ = 0;
+  std::vector<InitStep> init_steps_;
 };
 
 class RendererWebAudioDeviceImplBufferSizeTest : public ::testing::Test {
@@ -600,6 +767,39 @@ TEST_F(RendererWebAudioDeviceImplTest,
 }
 
 TEST_F(RendererWebAudioDeviceImplTest,
+       SilentSink_InitSequenceNeverQueriesOutputDevice) {
+  EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo).Times(0);
+
+  RunInitSequence(blink::WebAudioSinkDescriptor(kFrameToken),
+                  blink::WebAudioLatencyHint::kCategoryInteractive);
+}
+
+TEST_F(RendererWebAudioDeviceImplTest,
+       SilentSink_ParamsFixedAfterConstruction) {
+  RunInitSequence(blink::WebAudioSinkDescriptor(kFrameToken),
+                  blink::WebAudioLatencyHint::kCategoryInteractive);
+
+  for (const InitStep& step : init_steps_) {
+    SCOPED_TRACE(step.name);
+    EXPECT_EQ(step.frames_per_buffer, construction_frames_per_buffer_);
+    EXPECT_EQ(step.sample_rate, construction_sample_rate_);
+  }
+}
+
+TEST_F(RendererWebAudioDeviceImplTest,
+       SilentSink_SinkInitializedWithConstructionParams) {
+  RunInitSequence(blink::WebAudioSinkDescriptor(kFrameToken),
+                  blink::WebAudioLatencyHint::kCategoryInteractive);
+
+  ASSERT_FALSE(mock_audio_renderer_sink_->initialize_params_.empty());
+  for (const media::AudioParameters& params :
+       mock_audio_renderer_sink_->initialize_params_) {
+    EXPECT_EQ(params.frames_per_buffer(), construction_frames_per_buffer_);
+    EXPECT_EQ(params.sample_rate(), construction_sample_rate_);
+  }
+}
+
+TEST_F(RendererWebAudioDeviceImplTest,
        CreateSinkAndGetDeviceStatus_SilentSink) {
   {
     InSequence s;
@@ -749,9 +949,6 @@ class RendererWebAudioDeviceImplLatencyAndSampleRateTest
  protected:
   blink::WebAudioLatencyHint test_latency_hint_{
       blink::WebAudioLatencyHint::kCategoryInteractive};
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(RendererWebAudioDeviceImplLatencyAndSampleRateTest,
@@ -789,5 +986,67 @@ INSTANTIATE_TEST_SUITE_P(
                         blink::WebAudioLatencyHint::kCategoryExact),
         // User provided sample rate; 0 means no sample rate provided.
         testing::Values(0, 16000, 44100, 48000, 96000)));
+
+class RendererWebAudioDeviceImplInitTest
+    : public RendererWebAudioDeviceImplTest,
+      public testing::WithParamInterface<InitTestParam> {
+ protected:
+  void SetUp() override {
+    const InitTestParam& param = GetParam();
+    feature_list_.InitWithFeatureState(
+        features::kWebAudioRemoveAudioDestinationResampler,
+        param.remove_resampler);
+    context_sample_rate_ = param.context_sample_rate;
+    EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
+        .WillOnce(testing::Return(GetDeviceInfo(param.first_query)))
+        .WillRepeatedly(testing::Return(GetDeviceInfo(param.second_query)));
+  }
+
+  void RunAudibleInitSequence() {
+    RunInitSequence(blink::WebAudioSinkDescriptor(
+                        blink::WebString::FromUtf8(std::string()), kFrameToken),
+                    GetParam().latency_category);
+  }
+};
+
+TEST_P(RendererWebAudioDeviceImplInitTest, ParamsFixedAfterConstruction) {
+  RunAudibleInitSequence();
+
+  for (const InitStep& step : init_steps_) {
+    SCOPED_TRACE(step.name);
+    EXPECT_EQ(step.frames_per_buffer, construction_frames_per_buffer_);
+    EXPECT_EQ(step.sample_rate, construction_sample_rate_);
+  }
+}
+
+TEST_P(RendererWebAudioDeviceImplInitTest,
+       SinkInitializedWithConstructionParams) {
+  RunAudibleInitSequence();
+
+  ASSERT_FALSE(mock_audio_renderer_sink_->initialize_params_.empty());
+  for (const media::AudioParameters& params :
+       mock_audio_renderer_sink_->initialize_params_) {
+    EXPECT_EQ(params.frames_per_buffer(), construction_frames_per_buffer_);
+    EXPECT_EQ(params.sample_rate(), construction_sample_rate_);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RendererWebAudioDeviceImplInitTest,
+    testing::ConvertGenerator<InitTestParam::TupleT>(testing::Combine(
+        testing::Values(FirstDeviceQuery::kHealthy,
+                        FirstDeviceQuery::kTimedOut,
+                        FirstDeviceQuery::kNotAuthorized,
+                        FirstDeviceQuery::kInvalid),
+        testing::Values(SecondDeviceQuery::kOkAlternateBuffer,
+                        SecondDeviceQuery::kOk,
+                        SecondDeviceQuery::kTimedOut),
+        testing::Values(std::optional<float>(),
+                        std::optional<float>(kDeviceSampleRate)),
+        testing::Values(blink::WebAudioLatencyHint::kCategoryInteractive,
+                        blink::WebAudioLatencyHint::kCategoryBalanced),
+        testing::Bool())),
+    GetInitTestParamName);
 
 }  // namespace content
