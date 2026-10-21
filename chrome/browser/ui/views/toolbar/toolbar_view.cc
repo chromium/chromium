@@ -465,6 +465,7 @@ void ToolbarView::Init() {
     auto* vts_controller =
         tabs::VerticalTabStripStateController::From(browser_);
     if ((!vts_controller || !vts_controller->ShouldDisplayVerticalTabs()) &&
+        !contextual_tasks::IsContextualTasksPinningV2Enabled() &&
         !(contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
               .Get() &&
           button->IsSidePanelRightAligned())) {
@@ -1821,9 +1822,10 @@ void ToolbarView::PositionContextualTasksButton() {
   }
   auto* button =
       static_cast<ContextualTasksButton*>(contextual_tasks_button_.get());
-  if (contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
-          .Get() &&
-      button->IsSidePanelRightAligned()) {
+  if (contextual_tasks::IsContextualTasksPinningV2Enabled() ||
+      (contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
+           .Get() &&
+       button->IsSidePanelRightAligned())) {
     const bool is_glic_left_of_profile =
         features::kGlicToolbarButtonLocationParam.Get() ==
             features::GlicToolbarButtonLocation::kLeftOfProfileChip ||

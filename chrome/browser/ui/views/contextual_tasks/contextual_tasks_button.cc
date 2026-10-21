@@ -661,9 +661,10 @@ ContextualTasksButton::Shape ContextualTasksButton::GetShape() const {
     return Shape::kCircle;
   }
 
-  if (contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
-          .Get() &&
-      IsSidePanelRightAligned()) {
+  if (contextual_tasks::IsContextualTasksPinningV2Enabled() ||
+      (contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
+           .Get() &&
+       IsSidePanelRightAligned())) {
     return Shape::kCircle;
   }
 
@@ -713,6 +714,7 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
   CHECK(controller);
 
   const bool matches_dock =
+      contextual_tasks::IsContextualTasksPinningV2Enabled() ||
       (contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
            .Get() &&
        IsSidePanelRightAligned()) ||

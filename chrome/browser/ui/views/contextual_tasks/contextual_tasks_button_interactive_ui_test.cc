@@ -1166,7 +1166,63 @@ class ContextualTasksEphemeralButtonPinningV2InteractiveTest
         {contextual_tasks::kContextualTasksPinningV2, {}});
     return enabled_features;
   }
+
+  auto SetContextualTasksRightAligned(bool right_aligned) {
+    return Do([this, right_aligned]() {
+      ScopedDictPrefUpdate(browser()->GetProfile()->GetPrefs(),
+                           prefs::kSidePanelAlignmentOverrides)
+          ->Set("kContextualTasks", right_aligned);
+      browser()->GetProfile()->GetPrefs()->SetBoolean(
+          prefs::kSidePanelHorizontalAlignment, right_aligned);
+    });
+  }
+
+  auto CheckButtonIsInRightDock() {
+    return CheckView(kContextualTasksEphemeralToolbarButtonElementId,
+                     [this](ContextualTasksButton* button) {
+                       if (button->GetShape() !=
+                           ContextualTasksButton::Shape::kCircle) {
+                         return false;
+                       }
+                       BrowserView* browser_view =
+                           BrowserView::GetBrowserViewForBrowser(browser());
+                       ToolbarView* toolbar = browser_view->toolbar();
+                       views::View* anchor = nullptr;
+                       if (toolbar->GetGlicButton() &&
+                           toolbar->GetGlicButton()->GetVisible()) {
+                         anchor = toolbar->GetGlicButton();
+                       } else if (toolbar->avatar_toolbar_button()) {
+                         anchor = toolbar->avatar_toolbar_button();
+                       }
+                       if (anchor) {
+                         auto button_idx = toolbar->GetIndexOf(button);
+                         auto anchor_idx = toolbar->GetIndexOf(anchor);
+                         return button_idx.has_value() &&
+                                anchor_idx.has_value() &&
+                                *button_idx == *anchor_idx - 1;
+                       }
+                       return true;
+                     });
+  }
 };
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksEphemeralButtonPinningV2InteractiveTest,
+    AlwaysShowsAsCircleButtonInRightDockRegardlessOfSidePanelAlignment) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), SetContextualTasksRightAligned(false),
+      InstrumentTab(kFirstTab), AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      SimulateOpeningContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckButtonIsInRightDock(),
+      SetContextualTasksRightAligned(true),
+      EnsurePresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CheckButtonIsInRightDock());
+}
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
                        ButtonShowsAndHighlightsWhileSidePanelIsOpen) {
