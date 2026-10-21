@@ -18,6 +18,7 @@ export type {RecentlyClosedItem} from './delegates/recent_tabs_delegate.js';
 export {TabGroupsDelegate} from './delegates/tab_groups_delegate.js';
 export type {BrowserProxy as ForeignTabsBrowserProxy} from './foreign_tabs.mojom-webui.js';
 export {browserProxyFactory as foreignTabsBrowserProxyFactory, ForeignTabsPageHandlerRemote} from './foreign_tabs.mojom-webui.js';
+export {KeyArrowNavigationService} from './keyboard_arrow_navigation_service.js';
 export {OrganizerListElement} from './organizer_list.js';
 export {INITIAL_ITEM_COUNT, OrganizerListSectionElement} from './organizer_list_section.js';
 export type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';

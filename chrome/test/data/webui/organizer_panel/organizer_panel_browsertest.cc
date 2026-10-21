@@ -51,6 +51,12 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, ForeignTabsDelegate) {
   RunTest("organizer_panel/foreign_tabs_delegate_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, KeyArrowNavigationService) {
+  set_test_loader_host(chrome::kChromeUIOrganizerPanelHost);
+  RunTest("organizer_panel/keyboard_arrow_navigation_service_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, OpenTabsDelegate) {
   set_test_loader_host(chrome::kChromeUIOrganizerPanelHost);
   RunTest("organizer_panel/open_tabs_delegate_test.js", "mocha.run()");
