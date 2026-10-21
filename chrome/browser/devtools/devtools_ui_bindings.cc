@@ -134,6 +134,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/theme_service.h"
@@ -258,6 +259,15 @@ void DefaultBindingsDelegate::OpenInNewTab(const std::string& url) {
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
           ui::PAGE_TRANSITION_LINK);
+  // The URL typically originates from content that is controlled by the
+  // inspected target, which is not a local WebContents here (e.g. a remote
+  // page or a Node.js process). There is nothing to attribute the navigation
+  // to, but it must not look like a navigation typed into the omnibox either,
+  // or the request would carry SameSite=Strict cookies and `Sec-Fetch-Site:
+  // none`. An opaque initiator origin is never same-site with the destination,
+  // so the navigation is treated as cross-site. See
+  // DevToolsWindow::OpenInNewTab() and https://crbug.com/554558674.
+  params.initiator_origin = url::Origin();
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
   // Check if the browser is still alive, as it might have been closed in the
