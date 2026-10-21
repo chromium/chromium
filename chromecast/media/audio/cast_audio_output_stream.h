@@ -109,8 +109,6 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
     kPendingClose,
   };
 
-  void FinishClose();
-
   double volume_;
   AudioOutputState audio_thread_state_;
   CastAudioManagerHelper* const audio_manager_;
@@ -123,8 +121,6 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
   std::unique_ptr<CmaAudioOutputStream> cma_wrapper_;
 
   THREAD_CHECKER(audio_thread_checker_);
-  base::WeakPtr<CastAudioOutputStream> audio_weak_this_;
-  base::WeakPtrFactory<CastAudioOutputStream> audio_weak_factory_;
 };
 
 }  // namespace media

@@ -56,13 +56,11 @@ CastAudioOutputStream::CastAudioOutputStream(
       device_id_(IsValidDeviceId(device_id_or_group_id)
                      ? device_id_or_group_id
                      : ::media::AudioDeviceDescription::kDefaultDeviceId),
-      group_id_(GetGroupId(device_id_or_group_id)),
-      audio_weak_factory_(this) {
+      group_id_(GetGroupId(device_id_or_group_id)) {
   DCHECK(audio_manager_);
   DETACH_FROM_THREAD(audio_thread_checker_);
   DVLOG(1) << __func__ << " " << this << " created from group_id=" << group_id_
            << " with audio_params=" << audio_params_.AsHumanReadableString();
-  audio_weak_this_ = audio_weak_factory_.GetWeakPtr();
 }
 
 CastAudioOutputStream::~CastAudioOutputStream() {
@@ -108,22 +106,21 @@ void CastAudioOutputStream::Close() {
   DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
   DVLOG(1) << this << ": " << __func__;
 
-  audio_thread_state_ = AudioOutputState::kPendingClose;
-  base::OnceClosure finish_callback = BindToCurrentThread(
-      base::BindOnce(&CastAudioOutputStream::FinishClose, audio_weak_this_));
+  audio_thread_state_ = AudioOutputState::kClosed;
 
   if (cma_wrapper_) {
     // Synchronously set running to false to guarantee that
     // AudioSourceCallback::OnMoreData() will not be called anymore.
     cma_wrapper_->SetRunning(false);
-    POST_TO_CMA_WRAPPER(Close, std::move(finish_callback));
-  } else {
-    std::move(finish_callback).Run();
-  }
-}
 
-void CastAudioOutputStream::FinishClose() {
-  DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
+    audio_manager_->media_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](std::unique_ptr<CmaAudioOutputStream> cma_wrapper) {
+                         cma_wrapper->Close(base::DoNothing());
+                       },
+                       std::move(cma_wrapper_)));
+  }
+
   // Signal to the manager that we're closed and can be removed.
   // This should be the last call during the close process as it deletes "this".
   audio_manager_->audio_manager()->ReleaseOutputStream(this);

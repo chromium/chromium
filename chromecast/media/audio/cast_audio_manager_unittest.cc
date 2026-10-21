@@ -141,6 +141,7 @@ class CastAudioManagerTest : public testing::Test {
     EXPECT_CALL(*mock_cma_backend_, CreateAudioDecoder())
         .WillOnce(Return(mock_audio_decoder_.get()));
     EXPECT_CALL(*mock_cma_backend_, Initialize()).WillOnce(Return(true));
+    EXPECT_CALL(*mock_cma_backend_, Start(_)).WillRepeatedly(Return(true));
 
     EXPECT_CALL(*mock_backend_factory_, CreateBackend(_))
         .WillOnce([this](const MediaPipelineDeviceParams&) {
@@ -253,7 +254,7 @@ TEST_F(CastAudioManagerTest, CanMakeDTSStream) {
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO))
 #endif  // BUILDFLAG(IS_ANDROID)
 
-TEST_F(CastAudioManagerTest, DISABLED_CanMakeStreamProxy) {
+TEST_F(CastAudioManagerTest, CanMakeStreamProxy) {
   SetUpBackendAndDecoder();
   ::media::AudioOutputStream* stream =
       audio_manager_->MakeAudioOutputStreamProxy(kDefaultAudioParams, "");
@@ -261,9 +262,6 @@ TEST_F(CastAudioManagerTest, DISABLED_CanMakeStreamProxy) {
   EXPECT_TRUE(stream->Open());
   RunThreadsUntilIdle();
 
-  if (mock_cma_backend_) {
-    EXPECT_CALL(*mock_cma_backend_, Start(_)).WillOnce(Return(true));
-  }
   EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
       .WillRepeatedly(OnMoreData);
   EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
@@ -274,11 +272,7 @@ TEST_F(CastAudioManagerTest, DISABLED_CanMakeStreamProxy) {
 
   stream->Close();
   RunThreadsUntilIdle();
-  // TODO(steinbock) Figure out why stream is not unregistering itself from
-  // audio_manager_
 }
-
-
 
 TEST_F(CastAudioManagerTest, CanMakeCommunicationsStream) {
   CreateAudioManagerForTesting();
