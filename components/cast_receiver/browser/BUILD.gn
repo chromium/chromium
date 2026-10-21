@@ -86,6 +86,7 @@ if (enable_cast_receiver) {
       "//net",
       "//third_party/abseil-cpp:absl",
       "//ui/base",
+      "//ui/display",
       "//ui/events/devices",
       "//url",
     ]
@@ -133,6 +134,7 @@ source_set("unit_tests") {
       "//components/cast_streaming/common:conversions",
       "//content/public/browser",
       "//content/test:test_support",
+      "//ui/display:test_support",
       "//ui/events/devices",
       "//ui/events/devices:test_support",
     ]

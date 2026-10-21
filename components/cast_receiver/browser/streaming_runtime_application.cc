@@ -5,6 +5,7 @@
 #include "components/cast_receiver/browser/streaming_runtime_application.h"
 
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
@@ -16,6 +17,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -38,6 +41,52 @@ constexpr char kStreamingPageUrlTemplate[] =
     "window.addEventListener('touchend',p,{passive:false});"
     "window.addEventListener('touchcancel',p,{passive:false});"
     "</script></body></html>";
+
+DisplayInfo::DisplayOrientation GetDisplayOrientation(
+    display::Display::Rotation rotation) {
+  switch (rotation) {
+    case display::Display::ROTATE_90:
+      return DisplayInfo::DEGREES_90;
+    case display::Display::ROTATE_180:
+      return DisplayInfo::DEGREES_180;
+    case display::Display::ROTATE_270:
+      return DisplayInfo::DEGREES_270;
+    case display::Display::ROTATE_0:
+      return DisplayInfo::DEGREES_0;
+  }
+  return DisplayInfo::DEGREES_0;
+}
+
+DisplayInfo GetDisplayInfo(content::WebContents* web_contents) {
+  display::Display display;
+  if (display::Screen* screen = display::Screen::Get()) {
+    display = screen->GetDisplayNearestView(web_contents->GetNativeView());
+  }
+  const float scale = display.device_scale_factor() > 0.0f
+                          ? display.device_scale_factor()
+                          : 1.0f;
+
+  const gfx::Size pixel_size = display.GetSizeInPixel();
+  int width = pixel_size.width();
+  int height = pixel_size.height();
+  if (width <= 0 || height <= 0) {
+    const gfx::Rect bounds = web_contents->GetContainerBounds();
+    width = base::ClampRound(bounds.width() * scale);
+    height = base::ClampRound(bounds.height() * scale);
+  }
+  if (width <= 0 || height <= 0) {
+    width = 1920;
+    height = 1080;
+  }
+
+  DisplayInfo display_info;
+  display_info.set_width_px(width);
+  display_info.set_height_px(height);
+  display_info.set_orientation(GetDisplayOrientation(display.rotation()));
+  display_info.set_dpi(base::ClampRound(160.0f * scale));
+  display_info.set_resizable(false);
+  return display_info;
+}
 
 }  // namespace
 
@@ -82,30 +131,18 @@ void StreamingRuntimeApplication::Launch(StatusCallback callback) {
   message_port_service->ConnectToPortAsync(kCastTransportBindingName,
                                            std::move(client_port));
 
-  // If extended input is supported, wrap server_port in StreamingReceiverChannel
-  // to intercept Exo bootstrap and input messages on cast_transport.
+  // If extended input is supported, wrap server_port in
+  // StreamingReceiverChannel to intercept Exo bootstrap and input messages on
+  // cast_transport.
   if (config().is_extended_input_supported) {
     LOG(INFO) << "Extended input is supported, setting up input channels.";
 
     content::WebContents* web_contents =
         embedder_application().GetWebContents();
     CHECK(web_contents);
-    gfx::Rect bounds = web_contents->GetContainerBounds();
-    int width = bounds.width();
-    int height = bounds.height();
-    if (width <= 0 || height <= 0) {
-      width = 1920;
-      height = 1080;
-    }
-    DisplayInfo display_info;
-    display_info.set_width_px(width);
-    display_info.set_height_px(height);
-    display_info.set_orientation(DisplayInfo::DEGREES_0);
-    display_info.set_dpi(160);
-    display_info.set_resizable(false);
 
     auto exo_channel = std::make_unique<StreamingReceiverChannel>(
-        std::move(server_port), std::move(display_info),
+        std::move(server_port), GetDisplayInfo(web_contents),
         base::BindOnce(&StreamingRuntimeApplication::OnBootstrapComplete,
                        weak_factory_.GetWeakPtr()));
     streaming_receiver_channel_ = exo_channel->GetWeakPtr();
