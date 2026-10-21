@@ -1942,7 +1942,11 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 // Sets minimum height for the NTP collection view, allowing it to scroll enough
 // to focus the omnibox.
 - (void)setMinimumHeight {
-  CGFloat minimumNTPHeight = [self minimumNTPHeight] - [self heightAboveFeed];
+  // When `heightAboveFeed` exceeds `minimumNTPHeight` (e.g. in landscape),
+  // clamp to 0 so `contentSize.height` does not become negative and lock
+  // scrolling before reaching the bottom of the NTP.
+  CGFloat minimumNTPHeight =
+      std::max<CGFloat>(0, [self minimumNTPHeight] - [self heightAboveFeed]);
   self.collectionView.contentSize =
       CGSizeMake(self.collectionView.frame.size.width, minimumNTPHeight);
 }
