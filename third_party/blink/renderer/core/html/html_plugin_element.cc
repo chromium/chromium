@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -949,8 +950,9 @@ const ComputedStyle* HTMLPlugInElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   const ComputedStyle* style =
       OriginalStyleForLayoutObject(style_recalc_context);
-  if (IsImageType() && !GetLayoutObject() && style &&
-      LayoutObjectIsNeeded(*style)) {
+  // Don't attempt a load if this computed style is for EnsureComputedStyle().
+  if (!style_recalc_context.is_ensuring_style && IsImageType() &&
+      !GetLayoutObject() && style && LayoutObjectIsNeeded(*style)) {
     if (!image_loader_) {
       image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
     }
