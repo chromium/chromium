@@ -945,6 +945,33 @@ suite('TopicFeedbackExportDialog', () => {
             .every(checkbox => checkbox.disabled && !checkbox.checked));
   });
 
+  test('keeps the site list off the privacy section when short', async () => {
+    const domains: TopicsFeedbackExportPreview['domains'] = [];
+    for (let i = 0; i < 30; i++) {
+      domains.push({
+        domain: `site${i}.example.com`,
+        visitCount: 1,
+        defaultExcluded: false,
+        urls: [],
+      });
+    }
+    handler.setResultFor(
+        'getTopicsFeedbackExportPreview',
+        Promise.resolve({preview: {...createPreview(), domains}}));
+    await openDialog();
+    const crDialog = dialog.$.dialog;
+    const wrapper =
+        crDialog.shadowRoot.querySelector<HTMLElement>('#content-wrapper')!;
+    wrapper.style.maxHeight = '400px';
+
+    const list = query('#domainList')!.getBoundingClientRect();
+    const privacy = query('#privacySection')!.getBoundingClientRect();
+    assertEquals(136, Math.round(list.height));
+    assertTrue(list.bottom <= privacy.top);
+    const container = crDialog.shadowRoot.querySelector('#container')!;
+    assertTrue(container.scrollHeight > container.clientHeight);
+  });
+
   // Thumbs-up feedback on the first `count` of the 4 topics.
   function likeTopics(count: number): TopicFeedback[] {
     return [1, 2, 3, 4].slice(0, count).map(i => {

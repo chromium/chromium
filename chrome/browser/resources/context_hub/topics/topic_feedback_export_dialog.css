@@ -77,13 +77,12 @@ section {
   padding-block: 12px;
 }
 
-section + section {
+section ~ section {
   border-top: 1px solid var(--cr-separator-color);
 }
 
 #redactionSection {
-  flex-shrink: 1;
-  min-height: 0;
+  padding-block-end: 8px;
 }
 
 h2 {
@@ -175,7 +174,7 @@ h2 {
   flex-shrink: 1;
   gap: 2px;
   list-style: none;
-  margin: 0;
+  margin: 0 0 12px;
   min-height: 136px;
   overflow-y: auto;
   padding: 0;
