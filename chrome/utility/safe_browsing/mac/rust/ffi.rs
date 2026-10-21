@@ -16,7 +16,7 @@ use std::io::{self, Read, Seek, SeekFrom};
 
 use dmg_parser::hfs::HfsIterator;
 use dmg_parser::udif::UdifParser;
-use dmg_parser::{share_stream, ReadSeek, SharedStream};
+use dmg_parser::{ReadSeek, SharedStream};
 
 #[cxx::bridge(namespace = "safe_browsing::dmg::rust_ffi")]
 mod ffi {
@@ -203,7 +203,7 @@ pub struct RustUdifParser {
 /// outlives the returned `RustUdifParser` and any `RustReadStream` obtained
 /// from `partition_read_stream()`.
 unsafe fn new_udif_parser(stream: *mut ffi::ReadStream) -> Box<RustUdifParser> {
-    Box::new(RustUdifParser { stream: share_stream(CppStreamReader { stream }), parsed: None })
+    Box::new(RustUdifParser { stream: SharedStream::new(CppStreamReader { stream }), parsed: None })
 }
 
 impl RustUdifParser {
@@ -256,7 +256,10 @@ pub struct RustHfsIterator {
 /// outlives the returned `RustHfsIterator` and any `RustReadStream` obtained
 /// from `read_stream()`.
 unsafe fn new_hfs_iterator(stream: *mut ffi::ReadStream) -> Box<RustHfsIterator> {
-    Box::new(RustHfsIterator { stream: share_stream(CppStreamReader { stream }), opened: None })
+    Box::new(RustHfsIterator {
+        stream: SharedStream::new(CppStreamReader { stream }),
+        opened: None,
+    })
 }
 
 impl RustHfsIterator {

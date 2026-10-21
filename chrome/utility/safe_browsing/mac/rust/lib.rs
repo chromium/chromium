@@ -9,7 +9,7 @@
 //! the separate `dmg_ffi_bridge` crate (`ffi.rs`).
 
 use std::cell::RefCell;
-use std::io::{Read, Seek};
+use std::io::{self, Read, Seek, SeekFrom};
 use std::rc::Rc;
 
 pub mod hfs;
@@ -27,9 +27,49 @@ impl<T: Read + Seek> ReadSeek for T {}
 /// calls before every `Read`, allowing multiple virtual streams (such as the
 /// HFS+ catalog file and an extracted file's data fork) to share a single
 /// underlying reader without lifetime coupling.
-pub type SharedStream = Rc<RefCell<dyn ReadSeek>>;
+#[derive(Clone)]
+pub struct SharedStream {
+    inner: Rc<RefCell<dyn ReadSeek>>,
+}
 
-/// Wraps an owned [`ReadSeek`] stream into a [`SharedStream`].
-pub fn share_stream<R: ReadSeek + 'static>(reader: R) -> SharedStream {
-    Rc::new(RefCell::new(reader))
+impl SharedStream {
+    /// Wraps an owned [`ReadSeek`] stream into a [`SharedStream`].
+    pub fn new<R: ReadSeek + 'static>(reader: R) -> Self {
+        Self { inner: Rc::new(RefCell::new(reader)) }
+    }
+
+    /// Seeks to `offset` from the start of the stream and reads up to
+    /// `buf.len()` bytes into `buf`.
+    pub fn read_at(&self, offset: u64, buf: &mut [u8]) -> io::Result<usize> {
+        // `borrow_mut` cannot panic here because borrows of `self.inner` never
+        // escape across calls. Therefore, the only way for a panic to occur is
+        // via reentrancy, which would also indicate a reference cycle.
+        let mut stream = self.inner.borrow_mut();
+        stream.seek(SeekFrom::Start(offset))?;
+        stream.read(buf)
+    }
+
+    /// Seeks to `offset` from the start of the stream and reads exactly
+    /// `buf.len()` bytes into `buf`.
+    pub fn read_exact_at(&self, offset: u64, buf: &mut [u8]) -> io::Result<()> {
+        // `borrow_mut` cannot panic here because borrows of `self.inner` never
+        // escape across calls. Therefore, the only way for a panic to occur is
+        // via reentrancy, which would also indicate a reference cycle.
+        let mut stream = self.inner.borrow_mut();
+        stream.seek(SeekFrom::Start(offset))?;
+        stream.read_exact(buf)
+    }
+
+    /// Seeks to `offset` relative to the end of the stream, reads exactly
+    /// `buf.len()` bytes into `buf`, and returns the starting byte offset from
+    /// the beginning of the stream.
+    pub fn read_exact_from_end(&self, offset: i64, buf: &mut [u8]) -> io::Result<u64> {
+        // `borrow_mut` cannot panic here because borrows of `self.inner` never
+        // escape across calls. Therefore, the only way for a panic to occur is
+        // via reentrancy, which would also indicate a reference cycle.
+        let mut stream = self.inner.borrow_mut();
+        let start = stream.seek(SeekFrom::End(offset))?;
+        stream.read_exact(buf)?;
+        Ok(start)
+    }
 }
