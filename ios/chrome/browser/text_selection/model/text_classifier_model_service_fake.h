@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_TEXT_SELECTION_MODEL_TEXT_CLASSIFIER_MODEL_SERVICE_FAKE_H_
 #define IOS_CHROME_BROWSER_TEXT_SELECTION_MODEL_TEXT_CLASSIFIER_MODEL_SERVICE_FAKE_H_
 
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#include "ios/chrome/browser/shared/model/profile/test/testing_factories.h"
 #include "ios/chrome/browser/text_selection/model/text_classifier_model_service.h"
 
 class OptimizationGuideService;
@@ -13,7 +13,7 @@ class OptimizationGuideService;
 // Fake implementation of TextClassifierModelService that can be used by tests.
 class TextClassifierModelServiceFake : public TextClassifierModelService {
  public:
-  using TestingFactory = ProfileKeyedServiceFactoryIOS::TestingFactory;
+  using TestingFactory = KeyedServiceTestingFactoryIOS;
 
   static TestingFactory GetTestingFactory();
   ~TextClassifierModelServiceFake() override;

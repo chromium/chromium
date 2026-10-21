@@ -12,7 +12,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "ios/chrome/browser/sessions/model/session_restoration_observer.h"
 #include "ios/chrome/browser/sessions/model/session_restoration_service.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#include "ios/chrome/browser/shared/model/profile/test/testing_factories.h"
 
 // A test implementation of SessionRestorationService.
 //
@@ -21,7 +21,7 @@
 class TestSessionRestorationService : public SessionRestorationService {
  public:
   // Factory for the KeyedService infrastructure.
-  using TestingFactory = ProfileKeyedServiceFactoryIOS::TestingFactory;
+  using TestingFactory = KeyedServiceTestingFactoryIOS;
 
   TestSessionRestorationService();
   ~TestSessionRestorationService() override;

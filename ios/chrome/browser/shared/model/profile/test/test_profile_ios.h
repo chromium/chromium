@@ -17,8 +17,7 @@
 #include "ios/chrome/browser/net/model/net_types.h"
 #include "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-#include "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
+#include "ios/chrome/browser/shared/model/profile/test/testing_factories.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace sync_preferences {
@@ -30,30 +29,30 @@ namespace policy {
 class UserCloudPolicyManager;
 }
 
+class ProfileKeyedServiceFactoryIOS;
+class RefcountedProfileKeyedServiceFactoryIOS;
+
 // This class is the implementation of ProfileIOS used for testing.
 class TestProfileIOS final : public ProfileIOS {
  public:
   // Wrapper over std::variant to help type deduction when calling
   // AddTestingFactories(). See example call in the method's comment.
   struct TestingFactory {
-    TestingFactory(
-        ProfileKeyedServiceFactoryIOS* service_factory,
-        ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory);
+    TestingFactory(ProfileKeyedServiceFactoryIOS* service_factory,
+                   KeyedServiceTestingFactoryIOS testing_factory);
 
     TestingFactory(RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-                   RefcountedProfileKeyedServiceFactoryIOS::TestingFactory
-                       testing_factory);
+                   RefcountedKeyedServiceTestingFactoryIOS testing_factory);
 
     TestingFactory(TestingFactory&&);
     TestingFactory& operator=(TestingFactory&&);
 
     ~TestingFactory();
 
-    std::variant<
-        std::pair<ProfileKeyedServiceFactoryIOS*,
-                  ProfileKeyedServiceFactoryIOS::TestingFactory>,
-        std::pair<RefcountedProfileKeyedServiceFactoryIOS*,
-                  RefcountedProfileKeyedServiceFactoryIOS::TestingFactory>>
+    std::variant<std::pair<ProfileKeyedServiceFactoryIOS*,
+                           KeyedServiceTestingFactoryIOS>,
+                 std::pair<RefcountedProfileKeyedServiceFactoryIOS*,
+                           RefcountedKeyedServiceTestingFactoryIOS>>
         service_factory_and_testing_factory;
   };
 
@@ -156,13 +155,11 @@ class TestProfileIOS final : public ProfileIOS {
 
     // Adds a testing factory to the TestProfileIOS. These testing factories
     // are installed before the Profile's KeyedServices are created.
-    Builder& AddTestingFactory(
-        ProfileKeyedServiceFactoryIOS* service_factory,
-        ProfileKeyedServiceFactoryIOS::TestingFactory testing_factory);
+    Builder& AddTestingFactory(ProfileKeyedServiceFactoryIOS* service_factory,
+                               KeyedServiceTestingFactoryIOS testing_factory);
     Builder& AddTestingFactory(
         RefcountedProfileKeyedServiceFactoryIOS* service_factory,
-        RefcountedProfileKeyedServiceFactoryIOS::TestingFactory
-            testing_factory);
+        RefcountedKeyedServiceTestingFactoryIOS testing_factory);
 
     // Adds multiple testing factories to TestProfileIOS. These testing
     // factories are installed before the Profile's KeyedServices are created.

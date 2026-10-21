@@ -231,7 +231,7 @@ source_set("test_support") {
     "//ios/chrome/browser/sessions/model/proto",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/profile/test:testing_factories",
     "//ios/web/public",
     "//ios/web/public/session/proto",
     "//third_party/protobuf:protobuf_lite",
@@ -248,7 +248,7 @@ source_set("fake") {
     "//base",
     "//components/sessions",
     "//components/split_tabs",
-    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/profile/test:testing_factories",
   ]
 }
 

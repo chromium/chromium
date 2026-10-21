@@ -37,8 +37,7 @@ std::unique_ptr<KeyedService> BuildReadingListModelWithFakeStorage(
 
 }  // namespace
 
-ProfileKeyedServiceFactoryIOS::TestingFactory
-ReadingListModelTestingFactoryWithFakeStorage(
+KeyedServiceTestingFactoryIOS ReadingListModelTestingFactoryWithFakeStorage(
     std::vector<scoped_refptr<ReadingListEntry>> initial_entries) {
   return base::BindOnce(&BuildReadingListModelWithFakeStorage,
                         std::move(initial_entries));

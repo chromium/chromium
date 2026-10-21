@@ -71,6 +71,7 @@ source_set("profile_keyed_service_factory") {
   deps = [
     ":profile",
     "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/profile/test:testing_factories",
     "//ios/web/public",
   ]
 }

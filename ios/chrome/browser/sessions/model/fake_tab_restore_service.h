@@ -10,14 +10,14 @@
 #include "base/functional/callback_forward.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/split_tabs/split_tab_id.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#include "ios/chrome/browser/shared/model/profile/test/testing_factories.h"
 
 // A Fake restore service that just store and returns tabs.
 class FakeTabRestoreService : public sessions::TabRestoreService {
  public:
   // Type of the factory returned by GetTestingFactory(). Can be registered
   // with TestProfileIOS::Builder::AddTestingFactory().
-  using TestingFactory = ProfileKeyedServiceFactoryIOS::TestingFactory;
+  using TestingFactory = KeyedServiceTestingFactoryIOS;
 
   explicit FakeTabRestoreService();
   ~FakeTabRestoreService() override;
