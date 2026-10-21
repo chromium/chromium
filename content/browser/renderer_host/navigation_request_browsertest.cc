@@ -1078,6 +1078,80 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelStart) {
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), start_url);
 }
 
+// Regression test for https://crbug.com/40931338 and
+// https://crbug.com/40894544. When a NavigationThrottle cancels a navigation,
+// the NavigationRequest moves to the CANCELING state but might not get deleted
+// synchronously. If `RenderFrameHostManager::DiscardSpeculativeRFHIfUnused()`
+// gets called during that time (e.g. because another navigation's
+// NavigationClient got disconnected), it calls `GetAssociatedRFHType()` on the
+// CANCELING NavigationRequest, which should not crash.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       DiscardSpeculativeRFHIfUnusedWhileCanceling) {
+  GURL start_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), start_url));
+
+  // Navigate cross-site so that a speculative RenderFrameHost is used. Pause
+  // the navigation when the response is received. Note that the
+  // TestNavigationManager must be created before the throttle installer, so
+  // that its throttle runs (and defers) first.
+  //
+  // In practice, the crash happens when a navigation is canceled during
+  // WILL_START_REQUEST, as OnStartChecksComplete() posts a task to fail the
+  // navigation, leaving it in CANCELING in the meantime. However, with
+  // `kDeferSpeculativeRFHCreation`, the speculative RenderFrameHost might not
+  // exist yet at WILL_START_REQUEST. So instead, cancel the navigation during
+  // WILL_PROCESS_RESPONSE (where the speculative RenderFrameHost always exists)
+  // and use `set_complete_callback_for_testing()` to keep the navigation in
+  // CANCELING (normally it'd move to WILL_FAIL_REQUEST synchronously).
+  // TODO(https://crbug.com/556520606): Test the WILL_START_REQUEST case
+  // directly once `kDeferSpeculativeRFHCreation` is removed.
+  GURL cross_site_url(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  TestNavigationManager manager(shell()->web_contents(), cross_site_url);
+  auto installer = TestNavigationThrottleInstaller::CreateForMethod(
+      shell()->web_contents(),
+      TestNavigationThrottleInstaller::WILL_PROCESS_RESPONSE,
+      NavigationThrottle::CANCEL);
+  shell()->LoadURL(cross_site_url);
+  ASSERT_TRUE(manager.WaitForResponse());
+
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+  NavigationRequest* request = root->navigation_request();
+  ASSERT_TRUE(request);
+  RenderFrameHostManager* render_manager = root->render_manager();
+  RenderFrameHostImpl* speculative_rfh =
+      render_manager->speculative_frame_host();
+  ASSERT_TRUE(speculative_rfh);
+  EXPECT_FALSE(speculative_rfh->HasPendingCommitNavigation());
+
+  // Stop the NavigationRequest right after it moved to the CANCELING state
+  // (before it gets failed / deleted).
+  bool reached_canceling = false;
+  request->set_complete_callback_for_testing(base::BindLambdaForTesting(
+      [&](NavigationThrottle::ThrottleCheckResult result) {
+        EXPECT_EQ(NavigationThrottle::CANCEL, result.action());
+        reached_canceling = true;
+        return true;
+      }));
+  manager.ResumeNavigation();
+  ASSERT_TRUE(reached_canceling);
+  ASSERT_EQ(request, root->navigation_request());
+  EXPECT_EQ(NavigationRequest::CANCELING, request->state());
+
+  // This used to crash in `NavigationRequest::GetAssociatedRFHType()`. The
+  // speculative RenderFrameHost is still associated with the CANCELING
+  // navigation, so it should not be discarded.
+  render_manager->DiscardSpeculativeRFHIfUnused(
+      NavigationDiscardReason::kInternalCancellation);
+  EXPECT_EQ(speculative_rfh, render_manager->speculative_frame_host());
+
+  // Clean up the stuck navigation. This also discards the speculative
+  // RenderFrameHost, as nothing uses it anymore.
+  root->ResetNavigationRequest(NavigationDiscardReason::kInternalCancellation);
+  EXPECT_FALSE(root->navigation_request());
+  EXPECT_FALSE(render_manager->speculative_frame_host());
+  EXPECT_EQ(start_url, shell()->web_contents()->GetLastCommittedURL());
+}
+
 // Ensure that a NavigationThrottle can cancel the navigation when a navigation
 // is redirected.
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelRedirect) {
