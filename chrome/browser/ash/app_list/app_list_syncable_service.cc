@@ -1659,8 +1659,9 @@ void AppListSyncableService::SendSyncChange(
     // This can occur if an initial item is created before its folder item.
     // A sync item should already exist for the folder, so we do not want to
     // send an ADD event, since that would trigger a CHECK in the sync code.
-    CHECK(sync_item->item_type == sync_pb::AppListSpecifics::TYPE_FOLDER,
-          base::NotFatalUntil::M160);
+    // TODO(crbug.com/572957259): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(sync_item->item_type == sync_pb::AppListSpecifics::TYPE_FOLDER);
     DVLOG(2) << this << " - SendSyncChange: ADD before initial data processed: "
              << sync_item->ToString();
     return;
