@@ -87,8 +87,6 @@ BASE_FEATURE(kApiProxyOverrideRulesPrivate, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kApiRuntimeGetPlatformInfoNaClArch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kApiRuntimeGetDocumentId, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebRequestSecurityInfo, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebRequestPerContextEventDispatch,

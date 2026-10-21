@@ -55,9 +55,6 @@ class RuntimeHooksDelegate : public APIBindingHooksDelegate {
   APIBindingHooks::RequestResult HandleGetURL(
       ScriptContext* script_context,
       const APISignature::V8ParseResult& parse_result);
-  APIBindingHooks::RequestResult HandleGetDocumentId(
-      ScriptContext* script_context,
-      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleSendMessage(
       ScriptContext* script_context,
       const APISignature::V8ParseResult& parse_result);

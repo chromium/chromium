@@ -44,7 +44,8 @@ class DocumentTokenBrowserTest : public ContentBrowserTest {
   }
 
   blink::DocumentToken GetBrowserSideToken(ToRenderFrameHost adapter) {
-    return adapter.render_frame_host()->GetDocumentToken();
+    return static_cast<RenderFrameHostImpl*>(adapter.render_frame_host())
+        ->GetDocumentToken();
   }
 
   // Verifies that the browser-side `DocumentToken` and the renderer-side

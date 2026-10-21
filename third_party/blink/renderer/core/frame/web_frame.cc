@@ -12,10 +12,8 @@
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/web/web_element.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/dom/increment_load_event_delay_count.h"
-#include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/opened_frame_tracker.h"
@@ -141,14 +139,6 @@ WebFrame* WebFrame::FromFrameOwnerElement(const WebNode& web_node) {
 
   if (auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node))
     return FromCoreFrame(frame_owner->ContentFrame());
-  return nullptr;
-}
-
-WebFrame* WebFrame::FromWindow(v8::Isolate* isolate,
-                               v8::Local<v8::Value> value) {
-  if (DOMWindow* window = V8Window::ToWrappable(isolate, value)) {
-    return FromCoreFrame(window->GetFrame());
-  }
   return nullptr;
 }
 

@@ -120,9 +120,6 @@ BASE_DECLARE_FEATURE(kApiProxyOverrideRulesPrivate);
 // runtime.getPlatformInfo() API.
 BASE_DECLARE_FEATURE(kApiRuntimeGetPlatformInfoNaClArch);
 
-// Controls the availability of the runtime.getDocumentId() API.
-BASE_DECLARE_FEATURE(kApiRuntimeGetDocumentId);
-
 // Controls the availability of runtime.sendNativeMessage and
 // runtime.connectNative on Desktop Android.
 BASE_DECLARE_FEATURE(kApiDesktopAndroidNativeMessaging);
