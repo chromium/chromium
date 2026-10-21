@@ -11,6 +11,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
@@ -41,7 +42,8 @@
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/window_properties.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/image/image_skia.h"
@@ -143,11 +145,10 @@ AppServiceAppWindowArcTracker::~AppServiceAppWindowArcTracker() {
 
 void AppServiceAppWindowArcTracker::ActiveUserChanged(
     const std::string& user_email) {
-  const std::string& primary_user_email = user_manager::UserManager::Get()
-                                              ->GetPrimaryUser()
-                                              ->GetAccountId()
-                                              .GetUserEmail();
-  if (user_email == primary_user_email) {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  if (user_email == primary_session->account_id().GetUserEmail()) {
     // Make sure that we created items for all apps, not only which have a
     // window.
     for (const auto& info : task_id_to_arc_app_window_info_) {
@@ -177,9 +178,11 @@ void AppServiceAppWindowArcTracker::HandleWindowVisibilityChanged(
 
   // Attach window to multi-user manager now to let it manage visibility state
   // of the ARC window correctly.
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
   ash::Shell::Get()->multi_user_window_manager()->SetWindowOwner(
-      window,
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
+      window, primary_session->account_id());
 }
 
 void AppServiceAppWindowArcTracker::HandleWindowActivatedChanged(

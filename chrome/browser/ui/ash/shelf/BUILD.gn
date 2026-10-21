@@ -263,6 +263,7 @@ source_set("unit_tests") {
     "//components/exo",
     "//components/keep_alive_registry",
     "//components/prefs",
+    "//components/session_manager/test:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//components/webapps/common",

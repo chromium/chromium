@@ -9,6 +9,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/flat_tree.h"
 #include "base/time/time.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_item_controller.h"
@@ -29,11 +29,13 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chromeos/ash/components/borealis/borealis_util.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/exo/permission.h"
 #include "components/exo/shell_surface_util.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -101,11 +103,14 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
   // Currently Crostini can only be used from the primary profile. In the
   // future, this may be replaced by some way of matching the container that
   // runs this app with the user that owns it.
-  const AccountId& primary_account_id =
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  const AccountId& primary_account_id = primary_session->account_id();
 
-  Profile* primary_account_profile =
-      ash::ProfileHelper::Get()->GetProfileByAccountId(primary_account_id);
+  Profile* primary_account_profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_account_id));
 
   // Windows without an application id set will get filtered out here.
   const std::string& crostini_shelf_app_id = guest_os::GetGuestOsShelfAppId(
@@ -230,9 +235,12 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
   // Currently Crostini can only be used from the primary profile. In the
   // future, this may be replaced by some way of matching the container that
   // runs this app with the user that owns it.
-  Profile* primary_account_profile =
-      ash::ProfileHelper::Get()->GetProfileByAccountId(
-          user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  Profile* primary_account_profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
   std::string shelf_app_id = guest_os::GetGuestOsShelfAppId(
       primary_account_profile, exo::GetShellApplicationId(window),
       exo::GetShellStartupId(window));

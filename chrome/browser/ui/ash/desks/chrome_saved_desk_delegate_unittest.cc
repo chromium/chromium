@@ -5,28 +5,30 @@
 #include "chrome/browser/ui/ash/desks/chrome_saved_desk_delegate.h"
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/account_id/account_id.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/wm/core/window_properties.h"
@@ -40,8 +42,7 @@ constexpr char kTestProfileEmail[] = "test@test.com";
 
 class ChromeSavedDeskDelegateTest : public testing::Test {
  public:
-  ChromeSavedDeskDelegateTest()
-      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
+  ChromeSavedDeskDelegateTest() = default;
 
   ChromeSavedDeskDelegateTest(const ChromeSavedDeskDelegateTest&) = delete;
   ChromeSavedDeskDelegateTest& operator=(const ChromeSavedDeskDelegateTest&) =
@@ -50,39 +51,34 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
   ~ChromeSavedDeskDelegateTest() override = default;
 
   void SetUp() override {
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
 
     browser_controller_.emplace();
 
-    // Create a test user and profile so the `ChromeSavedDeskDelegate` does not
-    // return empty result simply because of missing user profile.
-    auto account_id = AccountId::FromUserEmail(kTestProfileEmail);
-    const auto* user = GetFakeUserManager()->AddUser(account_id);
-
-    ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName(kTestProfileEmail);
-    profile_builder.SetPath(profile_dir_.GetPath());
-    profile_ = profile_builder.Build();
-
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        user, profile_.get());
+    // Log in a test user so the `ChromeSavedDeskDelegate` does not return
+    // empty result simply because of missing user profile.
+    const auto account_id =
+        AccountId::FromUserEmailGaiaId(kTestProfileEmail, GaiaId("1234567890"));
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
+    profile_ = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            account_id));
+    ASSERT_TRUE(profile_);
 
     chrome_saved_desk_delegate_ = std::make_unique<ChromeSavedDeskDelegate>();
   }
 
   void TearDown() override {
     chrome_saved_desk_delegate_.reset();
-    profile_.reset();
+    profile_ = nullptr;
     browser_controller_.reset();
-    profile_manager_.reset();
-  }
-
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
+    user_session_test_environment_.reset();
   }
 
   ChromeSavedDeskDelegate* chrome_saved_desk_delegate() {
@@ -97,19 +93,18 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
     return save_handler;
   }
 
-  TestingProfile* profile() { return profile_.get(); }
+  Profile* profile() { return profile_; }
 
  private:
   // Browser profiles need to be created on UI thread.
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
 
-  base::ScopedTempDir profile_dir_;
-  std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::optional<ash::BrowserControllerImpl> browser_controller_;
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ChromeSavedDeskDelegate> chrome_saved_desk_delegate_;
-  user_manager::ScopedUserManager user_manager_enabler_;
 };
 
 TEST_F(ChromeSavedDeskDelegateTest, NullWindowReturnsEmptyAppLaunchData) {
