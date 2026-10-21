@@ -801,6 +801,9 @@ void GlicNoWebviewContentsManager::NotifyWebContentsChanged() {
 }
 
 void GlicNoWebviewContentsManager::ApplySizeToGuest() {
+  if (!guest_contents()) {
+    return;
+  }
   gfx::Size target_size;
   if (host_) {
     target_size = host_->instance().GetPanelSize();
@@ -822,8 +825,7 @@ void GlicNoWebviewContentsManager::ApplySizeToGuest() {
     // side panel, floaty, and Android surfaces.
     target_size = gfx::Size(384, 675);
   }
-  if (target_size.IsEmpty() || !guest_contents() ||
-      !guest_contents()->GetRenderWidgetHostView()) {
+  if (target_size.IsEmpty()) {
     return;
   }
 #if BUILDFLAG(IS_ANDROID)
@@ -834,7 +836,18 @@ void GlicNoWebviewContentsManager::ApplySizeToGuest() {
     native_view->OnPhysicalBackingSizeChanged(size_px);
   }
 #else
-  guest_contents()->GetRenderWidgetHostView()->SetSize(target_size);
+  // Resize the WebContentsView container bounds (and any active
+  // RenderWidgetHostView). Sizing the WebContentsView before
+  // `LoadURLWithParams()` ensures `WebContentsImpl::GetSizeForMainFrame()`
+  // returns `target_size` when creating both the initial RenderWidgetHostView
+  // and any speculative RenderWidgetHostView (e.g. for
+  // Cross-Origin-Opener-Policy or RenderDocument swaps), so the renderer never
+  // observes a 0x0 viewport.
+  guest_contents()->Resize(gfx::Rect(target_size));
+  if (content::RenderWidgetHostView* rwhv =
+          guest_contents()->GetRenderWidgetHostView()) {
+    rwhv->SetSize(target_size);
+  }
 #endif
   // While the overlay is shown, the guest is not attached to a view, so mark it
   // visible to let it load and render at full priority.
@@ -848,7 +861,6 @@ void GlicNoWebviewContentsManager::ShowGuestDirectly(GuestState state) {
   ClearTransientErrorState();
   if (!overlay_manager_.error_type().has_value()) {
     guest_state_.Set(state);
-    ApplySizeToGuest();
   }
   UpdateDisplayState();
   if (error_callback_ && ShouldReloadOnShow()) {
@@ -969,7 +981,6 @@ void GlicNoWebviewContentsManager::OnGuestNavigated(
         ClearTransientErrorState();
         guest_state_.Set(GuestState::kLoading);
         if (!overlay_manager_.error_type().has_value()) {
-          ApplySizeToGuest();
           StartGuestBootstrap();
         }
         UpdateDisplayState();

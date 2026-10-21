@@ -31,6 +31,8 @@
 class Profile;
 
 namespace content {
+class RenderFrameHost;
+class RenderWidgetHostView;
 class WebContents;
 }  // namespace content
 
@@ -317,7 +319,16 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   // sign-in required or disabled by admin).
   void ClearTransientErrorState();
 
-  // Applies the cached viewport size from the overlay/host to the guest view.
+  // Applies the target viewport size (from the host panel, cached overlay
+  // size, or default warming size) to the guest WebContentsView (and any active
+  // RenderWidgetHostView).
+  //
+  // Sizing the WebContentsView container bounds (`WebContents::Resize()` /
+  // `ViewAndroid::OnSizeChanged()`) before `LoadURLWithParams()` in
+  // `LoadGuest()` ensures `WebContentsImpl::GetSizeForMainFrame()` returns the
+  // target size when creating both the initial `RenderWidgetHostView` and any
+  // speculative `RenderWidgetHostView` (e.g. for `Cross-Origin-Opener-Policy`
+  // or `RenderDocument` swaps), even before a `RenderWidgetHostView` exists.
   void ApplySizeToGuest();
 
   // Displays the guest WebContents directly for guest pages that bypass the

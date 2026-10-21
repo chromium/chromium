@@ -1468,6 +1468,43 @@ class GlicNoWebviewGuestInitialSizeBrowserTest
   GlicNoWebviewGuestInitialSizeBrowserTest() {
     initial_size_feature_list_.InitAndEnableFeature(
         features::kGlicGuestInitialSize);
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
+        [](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (!request.relative_url.starts_with(
+                  "/glic/browser_tests/viewport_tracking_client.html")) {
+            return nullptr;
+          }
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/html");
+          // Serve with `Cross-Origin-Opener-Policy: same-origin` (matching
+          // production gemini.google.com/glic) so `OnResponseStarted` forces a
+          // cross-BrowsingInstance speculative `RenderFrameHost` swap.
+          response->AddCustomHeader("Cross-Origin-Opener-Policy",
+                                    "same-origin");
+          response->set_content(R"html(<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    window.__glicViewportHistory = [];
+    const recordViewport = (phase) => {
+      window.__glicViewportHistory.push(
+          `${phase}:${window.innerWidth}x${window.innerHeight}`);
+    };
+    recordViewport('script-start');
+    window.addEventListener('resize', () => recordViewport('resize'));
+    new ResizeObserver(() => recordViewport('resize-observer'))
+        .observe(document.documentElement);
+  </script>
+  <script type="module" src="./minimal_client.js"></script>
+</head>
+<body></body>
+</html>)html");
+          return response;
+        }));
+    SetGlicPagePath("/glic/browser_tests/viewport_tracking_client.html");
   }
 
  private:
@@ -1489,6 +1526,54 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewGuestInitialSizeBrowserTest,
   // that's specified.
   EXPECT_GT(actual_size.width(), 0);
   EXPECT_GT(actual_size.height(), 0);
+
+  EXPECT_EQ(true, content::EvalJs(warmed_contents->guest_contents.get(),
+                                  "window.innerWidth > 0 && "
+                                  "window.innerHeight > 0"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewGuestInitialSizeBrowserTest,
+                       PreservesNonEmptySizeWhenOpeningSidePanel) {
+  auto& warming_pool = coordinator().GetWebContentsWarmingPoolForTesting();
+  warming_pool.MaybeStartWarming(GlicWarmingTrigger::kStartup);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* container = warming_pool.GetWarmedContainerForTesting();
+    return container && container->web_client_manager()
+                            .has_pending_web_client_receiver_for_testing();
+  }));
+  auto warmed_contents = warming_pool.GetWarmedWebContents();
+  ASSERT_TRUE(warmed_contents.has_value());
+  ASSERT_TRUE(warmed_contents->guest_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(warmed_contents->guest_contents.get()));
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !instance->GetPanelSize().IsEmpty(); }));
+
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(manager->guest_contents());
+  ASSERT_TRUE(manager->guest_contents()->GetRenderWidgetHostView());
+  auto actual_size = manager->guest_contents()
+                         ->GetRenderWidgetHostView()
+                         ->GetVisibleViewportSize();
+  EXPECT_GT(actual_size.width(), 0);
+  EXPECT_GT(actual_size.height(), 0);
+
+  // Confirm that the guest renderer never observed a 0x0 viewport at any point
+  // during warmup, client initialization, resize events, or panel open.
+  std::string viewport_history =
+      content::EvalJs(
+          manager->guest_contents(),
+          "(window.__glicViewportHistory || []).concat(["
+          "  'post-open:' + window.innerWidth + 'x' + window.innerHeight"
+          "]).join(', ')")
+          .ExtractString();
+  EXPECT_THAT(viewport_history, testing::Not(testing::HasSubstr(":0x")))
+      << "Guest observed zero width in viewport history: " << viewport_history;
+  EXPECT_THAT(viewport_history, testing::Not(testing::HasSubstr("x0")))
+      << "Guest observed zero height in viewport history: " << viewport_history;
 }
 
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
