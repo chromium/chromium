@@ -183,6 +183,12 @@
       <message desc="The title of the options page for the long description extension." name="IDS_LONGDESC_OPTIONS">
         Options
       </message>
+      <message desc="Heading of the deprecation banner shown on the options page for the Long Descriptions extension." name="IDS_LONGDESC_DEPRECATION_TITLE">
+        Long Descriptions is being deprecated on November 20, 2026.
+      </message>
+      <message desc="Body text of the deprecation banner shown on the options page for the Long Descriptions extension, explaining that screen readers and Chrome natively support accessible descriptions and ARIA standards." name="IDS_LONGDESC_DEPRECATION_MESSAGE">
+        Modern screen readers and Google Chrome now support accessible element descriptions and ARIA standards natively.
+      </message>
 
       <!-- High Contrast extension -->
 

@@ -1,6 +1,31 @@
 <!doctype html>
 <html>
+<head>
+  <style>
+    .deprecation-banner {
+      background-color: #fef7e0;
+      border: 1px solid #f9ab00;
+      border-radius: 4px;
+      color: #202124;
+      margin-bottom: 16px;
+      padding: 12px 16px;
+    }
+    .deprecation-banner p {
+      margin: 0;
+    }
+    .deprecation-banner p + p {
+      margin-top: 8px;
+    }
+    .deprecation-banner-title {
+      font-weight: bold;
+    }
+  </style>
+</head>
 <body>
+  <div class="deprecation-banner" role="region" aria-labelledby="deprecation-title">
+    <p id="deprecation-title" class="deprecation-banner-title" i18n-content="longdesc_deprecation_title"></p>
+    <p i18n-content="longdesc_deprecation_message"></p>
+  </div>
   <h1 i18n-content="longdesc_options"></h1>
   <br>
   <label>

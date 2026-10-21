@@ -1,6 +1,6 @@
 {
   "name": "__MSG_LONGDESC_APPNAME__",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "__MSG_LONGDESC_APPDESC__",
   "background": {
     "service_worker": "background.js"
