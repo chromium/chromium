@@ -1901,6 +1901,73 @@ TEST_P(ChildProcessSecurityPolicyTest, SandboxedProcessEnforcements) {
                                   AccessType::kHostsOrigin));
 }
 
+// Verify that kCanCommitNewOrigin checks, which obtain the process's
+// BrowserContext from its RenderProcessHost, fail if the RenderProcessHost is
+// gone.
+TEST_P(ChildProcessSecurityPolicyTest,
+       CanCommitNewOriginRequiresRenderProcessHost) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  using AccessType = ChildProcessSecurityPolicyImpl::AccessType;
+
+  TestBrowserContext browser_context;
+  // The process below is locked to https://foo.com if needed. With full site
+  // isolation (e.g., on desktop), this gives it a site lock, so the
+  // kCanCommitNewOrigin check that succeeds goes through the Jail check. With
+  // partial site isolation (e.g., on Android), foo.com doesn't require a
+  // dedicated process, so the process gets a lock that allows any site, and
+  // that check goes through the Citadel check instead. The check that fails
+  // doesn't depend on the lock, since the RenderProcessHost check happens
+  // before the Jail and Citadel checks.
+  const GURL foo_url("https://foo.com");
+  const url::Origin foo_origin = url::Origin::Create(foo_url);
+
+  // A process with a live RenderProcessHost can commit.
+  auto process = std::make_unique<MockRenderProcessHost>(&browser_context);
+  LockProcessIfNeeded(process->GetID(), &browser_context, foo_url);
+  const int renderer_id = process->GetDeprecatedID();
+  EXPECT_TRUE(p->CanAccessOrigin(renderer_id, foo_origin,
+                                 AccessType::kCanCommitNewOrigin));
+
+  // Without a RenderProcessHost, there's no way to obtain the process's
+  // BrowserContext, so kCanCommitNewOrigin checks should fail. (To test this,
+  // use a Handle to keep the process's ProcessState alive after its
+  // RenderProcessHost is destroyed.)
+  auto handle = p->CreateHandle(process->GetID());
+  process.reset();
+  EXPECT_FALSE(p->CanAccessOrigin(renderer_id, foo_origin,
+                                  AccessType::kCanCommitNewOrigin));
+}
+
+// Verify that kCanCommitNewOrigin checks fail once the process's BrowserContext
+// has started shutting down.
+TEST_P(ChildProcessSecurityPolicyTest,
+       CanCommitNewOriginFailsAfterBrowserContextShutdownStarted) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  using AccessType = ChildProcessSecurityPolicyImpl::AccessType;
+
+  TestBrowserContext browser_context;
+  // As in CanCommitNewOriginRequiresRenderProcessHost, the process is locked
+  // to https://foo.com if needed, which results in a site lock with full site
+  // isolation and a lock that allows any site with partial site isolation.
+  const GURL foo_url("https://foo.com");
+  const url::Origin foo_origin = url::Origin::Create(foo_url);
+
+  MockRenderProcessHost process(&browser_context);
+  LockProcessIfNeeded(process.GetID(), &browser_context, foo_url);
+  const int renderer_id = process.GetDeprecatedID();
+  EXPECT_TRUE(p->CanAccessOrigin(renderer_id, foo_origin,
+                                 AccessType::kCanCommitNewOrigin));
+
+  // Once the BrowserContext starts shutting down, kCanCommitNewOrigin checks
+  // should fail, since some of the state they depend on (e.g., isolated
+  // origins) has already been cleared for that BrowserContext.
+  browser_context.NotifyWillBeDestroyed();
+  EXPECT_FALSE(p->CanAccessOrigin(renderer_id, foo_origin,
+                                  AccessType::kCanCommitNewOrigin));
+}
+
 TEST_P(ChildProcessSecurityPolicyTest, PdfProcessEnforcements) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
@@ -2072,15 +2139,17 @@ TEST_P(ChildProcessSecurityPolicyTest, OriginGranting) {
   auto handle = p->CreateHandle(process->GetID());
   process.reset();
 
-  // Queries should still succeed while the Handle exists.
+  // Queries should still succeed while the Handle exists, except for commit
+  // checks, which need the RenderProcessHost to obtain the process's
+  // BrowserContext.
   EXPECT_TRUE(p->CanRequestURL(renderer_id, url_foo1));
   EXPECT_TRUE(p->CanRequestURL(renderer_id, url_foo1));
   EXPECT_FALSE(p->CanRequestURL(renderer_id, url_bar));
   EXPECT_TRUE(p->CanRedirectToURL(url_foo1));
   EXPECT_TRUE(p->CanRedirectToURL(url_foo2));
   EXPECT_TRUE(p->CanRedirectToURL(url_bar));
-  EXPECT_TRUE(p->CanCommitURL(renderer_id, url_foo1));
-  EXPECT_TRUE(p->CanCommitURL(renderer_id, url_foo2));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_foo1));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_foo2));
   EXPECT_FALSE(p->CanCommitURL(renderer_id, url_bar));
 
   // Queries should no longer succeed after the Handle is invalidated.
@@ -2116,71 +2185,74 @@ TEST_P(ChildProcessSecurityPolicyTest, SchemeGranting) {
   EXPECT_FALSE(p->CanRequestURL(kRendererID, url_foo1));
   EXPECT_FALSE(p->CanCommitURL(kRendererID, url_foo1));
 
-  p->AddForTesting(kRendererProcess, browser_context());
-  LockProcessIfNeeded(kRendererProcess, browser_context(), url_foo1);
+  auto process = std::make_unique<MockRenderProcessHost>(browser_context());
+  const int renderer_id = process->GetDeprecatedID();
+  LockProcessIfNeeded(process->GetID(), browser_context(), url_foo1);
 
-  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_foo1));
-  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_foo2));
-  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_bar));
-  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_foo1));
-  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_foo2));
-  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
+  EXPECT_FALSE(p->CanRequestURL(renderer_id, url_foo1));
+  EXPECT_FALSE(p->CanRequestURL(renderer_id, url_foo2));
+  EXPECT_FALSE(p->CanRequestURL(renderer_id, url_bar));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_foo1));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_foo2));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_bar));
 
-  p->GrantRequestScheme(kRendererID, "testscheme");
+  p->GrantRequestScheme(renderer_id, "testscheme");
 
-  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_foo1));
-  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_foo2));
-  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_bar));
-  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_foo1));
-  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_foo2));
-  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
+  EXPECT_TRUE(p->CanRequestURL(renderer_id, url_foo1));
+  EXPECT_TRUE(p->CanRequestURL(renderer_id, url_foo2));
+  EXPECT_FALSE(p->CanRequestURL(renderer_id, url_bar));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_foo1));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_foo2));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_bar));
 
-  p->GrantCommitScheme(kRendererID, "testscheme");
+  p->GrantCommitScheme(renderer_id, "testscheme");
 
-  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_foo1));
-  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_foo2));
-  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_bar));
-  EXPECT_TRUE(p->CanCommitURL(kRendererID, url_foo1));
-  EXPECT_TRUE(p->CanCommitURL(kRendererID, url_foo2));
-  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
+  EXPECT_TRUE(p->CanRequestURL(renderer_id, url_foo1));
+  EXPECT_TRUE(p->CanRequestURL(renderer_id, url_foo2));
+  EXPECT_FALSE(p->CanRequestURL(renderer_id, url_bar));
+  EXPECT_TRUE(p->CanCommitURL(renderer_id, url_foo1));
+  EXPECT_TRUE(p->CanCommitURL(renderer_id, url_foo2));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_bar));
 
   // Make sure this doesn't overwrite the earlier commit grants.
-  p->GrantRequestScheme(kRendererID, "testscheme");
+  p->GrantRequestScheme(renderer_id, "testscheme");
 
-  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_foo1));
-  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_foo2));
-  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_bar));
-  EXPECT_TRUE(p->CanCommitURL(kRendererID, url_foo1));
-  EXPECT_TRUE(p->CanCommitURL(kRendererID, url_foo2));
-  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
+  EXPECT_TRUE(p->CanRequestURL(renderer_id, url_foo1));
+  EXPECT_TRUE(p->CanRequestURL(renderer_id, url_foo2));
+  EXPECT_FALSE(p->CanRequestURL(renderer_id, url_bar));
+  EXPECT_TRUE(p->CanCommitURL(renderer_id, url_foo1));
+  EXPECT_TRUE(p->CanCommitURL(renderer_id, url_foo2));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_bar));
 
   // Create a handle that extends the lifetime of the ProcessState beyond the
   // RenderProcessHost's lifetime.
-  auto handle = p->CreateHandle(kRendererProcess);
-  p->Remove(kRendererProcess);
+  auto handle = p->CreateHandle(process->GetID());
+  process.reset();
 
-  // Queries should still succeed while the Handle exists.
-  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_foo1));
-  EXPECT_TRUE(p->CanRequestURL(kRendererID, url_foo2));
-  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_bar));
-  EXPECT_TRUE(p->CanCommitURL(kRendererID, url_foo1));
-  EXPECT_TRUE(p->CanCommitURL(kRendererID, url_foo2));
-  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
+  // Queries should still succeed while the Handle exists, except for commit
+  // checks, which need the RenderProcessHost to obtain the process's
+  // BrowserContext.
+  EXPECT_TRUE(p->CanRequestURL(renderer_id, url_foo1));
+  EXPECT_TRUE(p->CanRequestURL(renderer_id, url_foo2));
+  EXPECT_FALSE(p->CanRequestURL(renderer_id, url_bar));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_foo1));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_foo2));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_bar));
 
   // Grants after Remove should be ignored even while a Handle exists.
-  p->GrantRequestScheme(kRendererID, "otherscheme");
-  p->GrantCommitScheme(kRendererID, "otherscheme");
-  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_bar));
-  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
+  p->GrantRequestScheme(renderer_id, "otherscheme");
+  p->GrantCommitScheme(renderer_id, "otherscheme");
+  EXPECT_FALSE(p->CanRequestURL(renderer_id, url_bar));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_bar));
 
   // Queries should no longer succeed after the Handle is invalidated.
   handle = ChildProcessSecurityPolicyImpl::Handle();
-  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_foo1));
-  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_foo2));
-  EXPECT_FALSE(p->CanRequestURL(kRendererID, url_bar));
-  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_foo1));
-  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_foo2));
-  EXPECT_FALSE(p->CanCommitURL(kRendererID, url_bar));
+  EXPECT_FALSE(p->CanRequestURL(renderer_id, url_foo1));
+  EXPECT_FALSE(p->CanRequestURL(renderer_id, url_foo2));
+  EXPECT_FALSE(p->CanRequestURL(renderer_id, url_bar));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_foo1));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_foo2));
+  EXPECT_FALSE(p->CanCommitURL(renderer_id, url_bar));
 }
 
 // Verifies ChildProcessSecurityPolicyImpl::AddFutureIsolatedOrigins method.

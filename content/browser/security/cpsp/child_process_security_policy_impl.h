@@ -674,13 +674,13 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   bool CanSendMidiSysExMessage(ChildProcessId child_id);
   bool CanSendMidiSysExMessage_Cpp(ChildProcessId child_id);
 
-  // Remove all isolated origins associated with |browser_context| and clear any
-  // pointers that may reference |browser_context|.  This is
-  // typically used when |browser_context| is being destroyed and assumes that
-  // no processes are running or will run for that profile; this makes the
-  // isolated origin removal safe.  Note that |browser_context| cannot be null;
-  // i.e., isolated origins that apply globally to all profiles cannot
-  // currently be removed, since that is not safe to do at runtime.
+  // Remove all isolated origins and other state associated with
+  // |browser_context|.  This is typically used when |browser_context| is being
+  // destroyed and assumes that no processes are running or will run for that
+  // profile; this makes the isolated origin removal safe.  Note that
+  // |browser_context| cannot be null; i.e., isolated origins that apply
+  // globally to all profiles cannot currently be removed, since that is not
+  // safe to do at runtime.
   void RemoveStateForBrowserContext(const BrowserContext& browser_context);
 
   // Check whether |origin| requires origin-wide process isolation within
@@ -876,8 +876,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
     // Registers a new ProcessState for `child_id`. Crashes if this ID has
     // already been registered.
-    void CreateStateForProcess(ChildProcessId child_id,
-                               BrowserContext* browser_context);
+    void CreateStateForProcess(ChildProcessId child_id);
 
     // Gets the ProcessState object associated with `child_id`, for callers
     // that want to query but not modify the state. See
@@ -920,9 +919,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // Helper function for CPSPI::RemoveAllStateForBrowsingInstance.
     void RemoveStateForBrowsingInstance(
         const BrowsingInstanceId browsing_instance_id);
-
-    // Helper function for CPSPI::RemoveStateForBrowserContext.
-    void ClearBrowserContextIfMatches(const BrowserContext& browser_context);
 
     // When the RenderProcessHost with `child_id` is deleted, this function
     // transitions the ProcessState to `pending_remove_state_`, which continues
@@ -1213,6 +1209,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // might require origin isolation only for certain BrowsingInstances), so all
   // BrowsingInstances hosting in the process must be consulted.
   //
+  // `browser_context` is used for computing the expected ProcessLock. It
+  // corresponds to the BrowserContext of RenderProcessHost for `child_id`.
+  //
   // This function returns true only if both Jail and Citadel checks pass. On
   // failure, it also populates `out_failure_reason` with debugging information
   // about the cause of the failure, as well as `out_expected_process_lock` with
@@ -1222,6 +1221,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // `lock_`, and it is only valid to use for AccessType::kCanCommitNewOrigin.
   bool PerformJailAndCitadelChecks(ChildProcessId child_id,
                                    const ProcessState& process_state,
+                                   BrowserContext& browser_context,
                                    const GURL& url,
                                    bool url_is_precursor_of_opaque_origin,
                                    ProcessLock& out_expected_process_lock,

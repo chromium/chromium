@@ -606,11 +606,10 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
   using BrowsingInstanceDefaultIsolationStatesMap =
       absl::flat_hash_map<BrowsingInstanceId, OriginAgentClusterIsolationState>;
 
-  explicit ProcessState(BrowserContext* browser_context)
+  ProcessState()
       : has_web_ui_bindings_(false),
         can_send_midi_(false),
-        can_send_midi_sysex_(false),
-        browser_context_(browser_context) {
+        can_send_midi_sysex_(false) {
     if (!base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)) {
       can_send_midi_ = true;
     }
@@ -1015,17 +1014,6 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
     return can_send_midi_sysex_;
   }
 
-  BrowserContext* browser_context() const {
-    CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-    return browser_context_;
-  }
-
-  void ClearBrowserContextIfMatches(const BrowserContext* browser_context) {
-    if (browser_context == browser_context_) {
-      browser_context_ = nullptr;
-    }
-  }
-
  private:
   enum class CommitRequestPolicy {
     kRequestOnly,
@@ -1144,8 +1132,6 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
 
   // The set of isolated filesystems the child process is permitted to access.
   FileSystemMap filesystem_permissions_;
-
-  raw_ptr<BrowserContext> browser_context_;
 };
 
 ChildProcessSecurityPolicyImpl::ProcessStateMaps::ProcessStateMaps() = default;
@@ -1284,6 +1270,8 @@ ChildProcessSecurityPolicyImpl* ChildProcessSecurityPolicyImpl::GetInstance() {
 
 void ChildProcessSecurityPolicyImpl::Add(ChildProcessId child_id,
                                          BrowserContext* browser_context) {
+  // TODO(crbug.com/482216433): Remove the `browser_context` parameter (and
+  // this CHECK), since ProcessState no longer stores the BrowserContext.
   CHECK(browser_context, base::NotFatalUntil::M159);
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(child_id, base::NotFatalUntil::M159);
@@ -1304,17 +1292,16 @@ void ChildProcessSecurityPolicyImpl::Add(ChildProcessId child_id,
   // ProcessState lifetime management is moved over to Rust.
 
   base::AutoLock lock(lock_);
-  process_states_.CreateStateForProcess(child_id, browser_context);
+  process_states_.CreateStateForProcess(child_id);
 }
 
 void ChildProcessSecurityPolicyImpl::ProcessStateMaps::CreateStateForProcess(
-    ChildProcessId child_id,
-    BrowserContext* browser_context) {
+    ChildProcessId child_id) {
   if (process_state_.contains(child_id)) {
     NOTREACHED() << "Add child process at most once.";
   }
 
-  process_state_[child_id] = std::make_unique<ProcessState>(browser_context);
+  process_state_[child_id] = std::make_unique<ProcessState>();
   CHECK(AddProcessReference(child_id, /*duplicating_handle=*/false));
 }
 
@@ -2605,6 +2592,7 @@ bool ChildProcessSecurityPolicyImpl::IsAccessAllowedForPdfProcess(
 bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
     ChildProcessId child_id,
     const ProcessState& process_state,
+    BrowserContext& browser_context,
     const GURL& url,
     bool url_is_precursor_of_opaque_origin,
     ProcessLock& out_expected_process_lock,
@@ -2615,9 +2603,8 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
 
   ProcessLock actual_process_lock = process_state.process_lock();
 
-  BrowserContext* browser_context = process_state.browser_context();
-  // The caller ensures that the `browser_context` is valid.
-  CHECK(browser_context);
+  // Note that the caller obtains `browser_context` from the live
+  // RenderProcessHost for `child_id`, which guarantees that it is valid.
 
   // Loop over all BrowsingInstanceIDs in the ProcessState, and return true if
   // any of them would return true, otherwise return false. This allows the
@@ -2697,7 +2684,7 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
     // StoragePartition, but this is enforced by other means (e.g., resource
     // access APIs can't name an alternate StoragePartition).
     IsolationContext isolation_context(
-        browsing_instance_id, browser_context, actual_process_lock.is_guest(),
+        browsing_instance_id, &browser_context, actual_process_lock.is_guest(),
         actual_process_lock.is_fenced(), default_isolation_state);
 
     // NOTE: If we're on the IO thread, the call to ProcessLock::Create() below
@@ -2818,17 +2805,14 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
       // Citadel-style enforcement - an unlocked process should not be able to
       // access data from origins that require a lock.
 
-      RenderProcessHost* process = RenderProcessHostImpl::FromID(child_id);
-      if (process) {  // |process| can be null in unittests
-        // Unlocked process can be legitimately used when navigating from an
-        // unused process (about:blank, NTP on Android) to an isolated origin.
-        // See also https://crbug.com/945399.  Returning |true| below will allow
-        // such navigations to succeed (i.e. pass CanCommitOriginAndUrl checks).
-        // We don't expect unused processes to be used outside of navigations
-        // (e.g. when checking CanAccessDataForOrigin for localStorage, etc.).
-        if (actual_process_lock.is_unused()) {
-          return true;
-        }
+      // Unlocked process can be legitimately used when navigating from an
+      // unused process (about:blank, NTP on Android) to an isolated origin.
+      // See also https://crbug.com/945399.  Returning |true| below will allow
+      // such navigations to succeed (i.e. pass CanCommitOriginAndUrl checks).
+      // We don't expect unused processes to be used outside of navigations
+      // (e.g. when checking CanAccessDataForOrigin for localStorage, etc.).
+      if (actual_process_lock.is_unused()) {
+        return true;
       }
 
       // See the ProcessLock::Create() call above regarding why we pass kNone
@@ -2951,22 +2935,37 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
           }
           failure_reason = "no_matching_committed_origin";
           break;
-        case AccessType::kCanCommitNewOrigin:
+        case AccessType::kCanCommitNewOrigin: {
           // If we couldn't use committed origin enforcements (i.e., for
           // kCanCommitNewOrigin checks), Jail and Citadel checks are the source
           // of truth. If they don't pass, collect crash keys below before
           // returning false. Unlike committed origin enforcements, these checks
-          // require BrowserContext to still exist in the ProcessState, and can
-          // only run on the UI thread.
-          if (!process_state->browser_context()) {
+          // require the process's BrowserContext, and can only run on the UI
+          // thread. ProcessState doesn't track the BrowserContext, so obtain
+          // it from the process's RenderProcessHost, which is guaranteed to
+          // exist whenever a new origin may legitimately commit in the
+          // process.
+          RenderProcessHost* process = RenderProcessHost::FromID(child_id);
+          BrowserContext* browser_context =
+              process ? process->GetBrowserContext() : nullptr;
+          if (!process) {
+            failure_reason = "no_render_process_host";
+          } else if (!browser_context) {
             failure_reason = "no_browser_context";
+          } else if (browser_context->ShutdownStarted()) {
+            // Don't allow new origins to commit in processes whose
+            // BrowserContext is shutting down, since some of the state needed
+            // for the checks below (e.g., isolated origins) has already been
+            // removed in RemoveStateForBrowserContext().
+            failure_reason = "browser_context_shutdown_started";
           } else if (PerformJailAndCitadelChecks(
-                         child_id, *process_state, url,
+                         child_id, *process_state, *browser_context, url,
                          url_is_precursor_of_opaque_origin,
                          expected_process_lock, failure_reason)) {
             return true;
           }
           break;
+        }
       }
     }
   }
@@ -3336,11 +3335,6 @@ void ChildProcessSecurityPolicyImpl::RemoveStateForBrowserContext(
   RemoveIsolatedOriginsForBrowserContext(browser_context.UniqueToken());
 
   RemoveOriginAgentClusterRequestsForBrowserContext(browser_context);
-
-  {
-    base::AutoLock lock(lock_);
-    process_states_.ClearBrowserContextIfMatches(browser_context);
-  }
 }
 
 void ChildProcessSecurityPolicyImpl::RemoveIsolatedOriginsForBrowserContext(
@@ -3384,17 +3378,6 @@ void ChildProcessSecurityPolicyImpl::
         const BrowserContext& browser_context) {
   base::AutoLock origin_agent_cluster_lock(origin_agent_cluster_lock_);
   origin_agent_cluster_opt_ins_and_outs_.erase(browser_context.UniqueToken());
-}
-
-void ChildProcessSecurityPolicyImpl::ProcessStateMaps::
-    ClearBrowserContextIfMatches(const BrowserContext& browser_context) {
-  for (auto& pair : process_state_) {
-    pair.second->ClearBrowserContextIfMatches(&browser_context);
-  }
-
-  for (auto& pair : pending_remove_state_) {
-    pair.second->ClearBrowserContextIfMatches(&browser_context);
-  }
 }
 
 bool ChildProcessSecurityPolicyImpl::IsIsolatedOrigin(
@@ -4347,10 +4330,6 @@ std::string ChildProcessSecurityPolicyImpl::GetKilledProcessOriginLock(
     const ProcessState* process_state) {
   if (!process_state) {
     return "(child id not found)";
-  }
-
-  if (!process_state->browser_context()) {
-    return "(empty and null context)";
   }
 
   return process_state->process_lock().ToString();
