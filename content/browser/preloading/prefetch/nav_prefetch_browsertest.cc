@@ -1421,10 +1421,13 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest_CancelUnrelatedPrefetchEnabled,
   GURL url_cancelled =
       embedded_test_server()->GetURL("/title1.html?cancelled=1");
 
-  auto& rfhi = render_frame_host_impl();
-
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+
+  // Lifetime: Available until cross-document navigation happens, especially
+  // BFCache disabled case.
+  auto& rfhi = render_frame_host_impl();
+  const blink::DocumentToken document_token = rfhi.GetDocumentToken();
 
   StartPrefetch(url_cancelled);
 
@@ -1435,7 +1438,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest_CancelUnrelatedPrefetchEnabled,
   ASSERT_TRUE(nav_observer.last_navigation_succeeded());
 
   // The navigation cancelled A.
-  PrefetchKey key(rfhi.GetDocumentToken(), url_cancelled);
+  PrefetchKey key(document_token, url_cancelled);
   const auto* prefetch_container =
       prefetch_service().GetPrefetchContainerForTesting(key);
   ASSERT_FALSE(prefetch_container);
@@ -1638,10 +1641,13 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest_CancelUnrelatedPrefetchEnabled,
   GURL url_redirect_to =
       embedded_test_server()->GetURL("/title1.html?cancelled=1");
 
-  auto& rfhi = render_frame_host_impl();
-
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+
+  // Lifetime: Available until cross-document navigation happens, especially
+  // BFCache disabled case.
+  auto& rfhi = render_frame_host_impl();
+  const blink::DocumentToken document_token = rfhi.GetDocumentToken();
 
   {
     StartPrefetch(url_redirect_to);
@@ -1661,7 +1667,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest_CancelUnrelatedPrefetchEnabled,
   ASSERT_TRUE(nav_observer.last_navigation_succeeded());
 
   // The navigation cancelled A.
-  PrefetchKey key(rfhi.GetDocumentToken(), url_redirect_to);
+  PrefetchKey key(document_token, url_redirect_to);
   const auto* prefetch_container =
       prefetch_service().GetPrefetchContainerForTesting(key);
   ASSERT_FALSE(prefetch_container);
@@ -1748,10 +1754,13 @@ IN_PROC_BROWSER_TEST_F(
   GURL url_cancelled =
       embedded_test_server()->GetURL("/title1.html?cancelled=1");
 
-  auto& rfhi = render_frame_host_impl();
-
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+
+  // Lifetime: Available until cross-document navigation happens, especially
+  // BFCache disabled case.
+  auto& rfhi = render_frame_host_impl();
+  const blink::DocumentToken document_token = rfhi.GetDocumentToken();
 
   StartPrefetch(url_cancelled);
 
@@ -1763,7 +1772,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // The navigation cancelled the prefetch because they share the same
   // initiator.
-  PrefetchKey key(rfhi.GetDocumentToken(), url_cancelled);
+  PrefetchKey key(document_token, url_cancelled);
   const auto* prefetch_container =
       prefetch_service().GetPrefetchContainerForTesting(key);
   ASSERT_FALSE(prefetch_container);
