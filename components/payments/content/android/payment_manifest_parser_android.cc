@@ -17,6 +17,7 @@
 #include "components/payments/content/developer_console_logger.h"
 #include "components/payments/core/error_logger.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -120,12 +121,8 @@ PaymentManifestParserAndroid::ParseWebAppManifest(
   return jmanifest;
 }
 
-void PaymentManifestParserAndroid::DestroyPaymentManifestParserAndroid(
-    JNIEnv* env) {
-  delete this;
-}
-
-static int64_t JNI_PaymentManifestParser_CreatePaymentManifestParserAndroid(
+static jni_zero::JniUniquePtr<PaymentManifestParserAndroid>
+JNI_PaymentManifestParser_CreatePaymentManifestParserAndroid(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
@@ -133,8 +130,7 @@ static int64_t JNI_PaymentManifestParser_CreatePaymentManifestParserAndroid(
   auto log = web_contents
                  ? std::make_unique<DeveloperConsoleLogger>(web_contents)
                  : std::make_unique<ErrorLogger>();
-  return reinterpret_cast<int64_t>(
-      new PaymentManifestParserAndroid(std::move(log)));
+  return jni_zero::MakeUnique<PaymentManifestParserAndroid>(std::move(log));
 }
 
 }  // namespace payments

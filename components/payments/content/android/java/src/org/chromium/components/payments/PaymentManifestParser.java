@@ -6,6 +6,10 @@ package org.chromium.components.payments;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -18,6 +22,9 @@ import org.chromium.url.GURL;
 @JNINamespace("payments")
 @NullMarked
 public class PaymentManifestParser {
+    @JniType("::payments::PaymentManifestParserAndroid")
+    interface NativePaymentManifestParserAndroid extends JniTypeToken {}
+
     /** Container for the result of parsing a payment method manifest. */
     public static class PaymentMethodManifest {
         public final GURL[] webAppManifestUris;
@@ -30,17 +37,19 @@ public class PaymentManifestParser {
     }
 
     /** Owned native host of the utility process that parses manifest contents. */
-    private long mNativePaymentManifestParserAndroid;
+    private @Nullable JniUniquePtr<NativePaymentManifestParserAndroid>
+            mNativePaymentManifestParserAndroid;
 
     /**
-     * Init the native side of this class.
-     * Must be called before parsePaymentMethodManifest or parseWebAppManifest can be called.
+     * Init the native side of this class. Must be called before parsePaymentMethodManifest or
+     * parseWebAppManifest can be called.
+     *
      * @param webContents The web contents in whose developer console parsing errors and warnings
-     *                    will be printed.
+     *     will be printed.
      */
     public void createNative(WebContents webContents) {
         ThreadUtils.assertOnUiThread();
-        assert mNativePaymentManifestParserAndroid == 0;
+        assert mNativePaymentManifestParserAndroid == null;
         mNativePaymentManifestParserAndroid =
                 PaymentManifestParserJni.get().createPaymentManifestParserAndroid(webContents);
     }
@@ -48,16 +57,17 @@ public class PaymentManifestParser {
     /** Releases the resources held by the native side. */
     public void destroyNative() {
         ThreadUtils.assertOnUiThread();
-        assert mNativePaymentManifestParserAndroid != 0;
-        PaymentManifestParserJni.get()
-                .destroyPaymentManifestParserAndroid(mNativePaymentManifestParserAndroid);
-        mNativePaymentManifestParserAndroid = 0;
+        assert mNativePaymentManifestParserAndroid != null;
+        mNativePaymentManifestParserAndroid.destroy();
+        mNativePaymentManifestParserAndroid = null;
     }
 
-    /** @return Whether the native side is initialized. */
+    /**
+     * @return Whether the native side is initialized.
+     */
     public boolean isNativeInitialized() {
         ThreadUtils.assertOnUiThread();
-        return mNativePaymentManifestParserAndroid != 0;
+        return mNativePaymentManifestParserAndroid != null;
     }
 
     /**
@@ -71,7 +81,7 @@ public class PaymentManifestParser {
     public @Nullable PaymentMethodManifest parsePaymentMethodManifest(
             GURL manifestUrl, String content) {
         ThreadUtils.assertOnUiThread();
-        assert mNativePaymentManifestParserAndroid != 0;
+        assert mNativePaymentManifestParserAndroid != null;
         return PaymentManifestParserJni.get()
                 .parsePaymentMethodManifest(
                         mNativePaymentManifestParserAndroid, manifestUrl, content);
@@ -85,7 +95,7 @@ public class PaymentManifestParser {
      */
     public WebAppManifestSection @Nullable [] parseWebAppManifest(String content) {
         ThreadUtils.assertOnUiThread();
-        assert mNativePaymentManifestParserAndroid != 0;
+        assert mNativePaymentManifestParserAndroid != null;
         return PaymentManifestParserJni.get()
                 .parseWebAppManifest(mNativePaymentManifestParserAndroid, content);
     }
@@ -136,14 +146,13 @@ public class PaymentManifestParser {
 
     @NativeMethods
     interface Natives {
-        long createPaymentManifestParserAndroid(WebContents webContents);
-
-        void destroyPaymentManifestParserAndroid(long nativePaymentManifestParserAndroid);
+        JniUniquePtr<NativePaymentManifestParserAndroid> createPaymentManifestParserAndroid(
+                WebContents webContents);
 
         @Nullable PaymentMethodManifest parsePaymentMethodManifest(
-                long nativePaymentManifestParserAndroid, GURL manifestUrl, String content);
+                JniPtr<NativePaymentManifestParserAndroid> self, GURL manifestUrl, String content);
 
         WebAppManifestSection @Nullable [] parseWebAppManifest(
-                long nativePaymentManifestParserAndroid, String content);
+                JniPtr<NativePaymentManifestParserAndroid> self, String content);
     }
 }

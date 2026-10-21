@@ -37,8 +37,6 @@ class PaymentManifestParserAndroid {
       JNIEnv* env,
       const base::android::JavaRef<jstring>& jcontent);
 
-  void DestroyPaymentManifestParserAndroid(JNIEnv* env);
-
  private:
   PaymentManifestParser parser_;
 };
