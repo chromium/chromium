@@ -25,7 +25,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/speech-dispatcher/speechd_types.h"
+#include "third_party/speech-dispatcher/src/speechd_types.h"
 
 namespace content {
 namespace {

@@ -185,7 +185,7 @@ third_party/libvpx/source/config/vpx_version.h
 third_party/opus/src/src/opus_private.h
 third_party/opus/src/tests/test_opus_common.h
 third_party/snappy/linux/config.h
-third_party/speech-dispatcher/libspeechd.h
+third_party/speech-dispatcher/src/libspeechd.h
 third_party/sqlite/sqlite3.h
 third_party/wayland/include/config.h
 third_party/wayland/include/src/wayland-version.h

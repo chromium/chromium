@@ -9,7 +9,7 @@
 
 #include <string_view>
 
-#include "third_party/speech-dispatcher/libspeechd.h"
+#include "third_party/speech-dispatcher/src/libspeechd.h"
 
 #define SPEECHD_TEST_EXPORT __attribute__((visibility("default")))
 

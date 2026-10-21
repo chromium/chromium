@@ -10,7 +10,7 @@ generate_library_loader("speech-dispatcher") {
   output_h = "libspeechd.h"
   output_cc = "libspeechd.cc"
   header = "<libspeechd.h>"
-  bundled_header = "\"third_party/speech-dispatcher/libspeechd.h\""
+  bundled_header = "\"third_party/speech-dispatcher/src/libspeechd.h\""
 
   functions = [
     "spd_open",
