@@ -255,6 +255,7 @@ cr-composebox-submit::part(submit) {
 
 :host([energy-effect-animation-enabled]) {
   --border-animation-delay: 150ms;
+  --composebox-shadow-animation: none;
 }
 
 :host-context([energy-effect-enabled_]) search-animated-glow {

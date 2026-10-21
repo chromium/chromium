@@ -239,8 +239,9 @@ search-animated-glow {
 
 :host([energy-effect-animation-enabled][animation-state='expanding']) #composebox {
   will-change: opacity;
-  animation: zero-state-composebox-fade-in 50ms
-      var(--emphasized-accelerate-curve) both;
+  animation:
+    zero-state-composebox-fade-in 50ms var(--emphasized-accelerate-curve) both,
+    var(--composebox-shadow-animation, animateShadow var(--box-shadow-animation-duration) both);
 }
 
 @keyframes zero-state-composebox-fade-in {
@@ -260,9 +261,8 @@ search-animated-glow {
   box-shadow: var(--box-shadow-energy-effect);
 }
 
-:host([energy-effect-animation-enabled][animation-state='expanding']:not([entrypoint-name='Realbox'])) #composebox,
-:host([energy-effect-animation-enabled][animation-state='submitting']:not([entrypoint-name='Realbox'])) #composebox {
-  animation: animateShadow var(--box-shadow-animation-duration) both;
+:host([energy-effect-animation-enabled][animation-state='submitting']) #composebox {
+  animation: var(--composebox-shadow-animation, animateShadow var(--box-shadow-animation-duration) both);
 }
 
 :host([energy-effect-animation-enabled][animation-state='dragging']) #composebox {
