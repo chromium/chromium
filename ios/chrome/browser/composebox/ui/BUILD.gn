@@ -100,11 +100,14 @@ source_set("ui_util") {
 
 source_set("state") {
   sources = [
+    "composebox_model_item.h",
+    "composebox_model_item.mm",
     "composebox_ui_config.h",
     "composebox_ui_config.mm",
     "composebox_ui_input_state.h",
     "composebox_ui_input_state.mm",
   ]
+  public_deps = [ "//third_party/omnibox_proto" ]
   deps = [
     ":ui_util",
     "//base",

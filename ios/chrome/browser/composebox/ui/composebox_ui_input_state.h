@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 
 @class ComposeboxMenuSharedTab;
+@class ComposeboxModelItem;
 @class ComposeboxUIConfig;
 
 // State object containing all UI input state for the composebox.
@@ -46,6 +47,10 @@
 /// The set of models that should be disabled in the picker.
 @property(nonatomic, assign) std::unordered_set<ComposeboxModelOption>
     disabledModels;
+
+/// The model items to display in the picker, in server order. Models without a
+/// label are excluded.
+@property(nonatomic, copy) NSArray<ComposeboxModelItem*>* modelItems;
 
 /// The composebox UI config (strings, headers, and icons).
 @property(nonatomic, strong) ComposeboxUIConfig* uiConfig;
