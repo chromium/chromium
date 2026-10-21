@@ -890,7 +890,7 @@ constexpr std::initializer_list<std::string_view> kDisabledFlakyTests = {
 // If navigation capturing behavior changes, the test expectations would need to
 // be updated. This can be done manually (by editing the json file directly), or
 // it can be done automatically by using the flag
-// --rebaseline-link-capturing-test.
+// --rebaseline-nav-capturing-test.
 //
 // By default only tests that aren't listed as disabled in the json file are
 // executed. To also run tests marked as disabled, include the --run-all-tests
@@ -900,7 +900,7 @@ constexpr std::initializer_list<std::string_view> kDisabledFlakyTests = {
 // Example usage:
 // out/Default/browser_tests \
 // --gtest_filter=*NavCaptureParameterizedBrowserTest.* \
-// --rebaseline-link-capturing-test --run-all-tests --test-launcher-jobs=40
+// --rebaseline-nav-capturing-test --run-all-tests --test-launcher-jobs=40
 class NavCaptureParameterizedBrowserTest
     : public WebAppBrowserTestBase,
       public testing::WithParamInterface<NavigationCaptureTestParam> {
@@ -1564,7 +1564,7 @@ class NavCaptureParameterizedBrowserTest
   bool ShouldRebaseline() {
     const base::CommandLine& command_line =
         *base::CommandLine::ForCurrentProcess();
-    return command_line.HasSwitch("rebaseline-link-capturing-test");
+    return command_line.HasSwitch("rebaseline-nav-capturing-test");
   }
 
   bool ShouldRunDisabledTests() {
@@ -1606,7 +1606,7 @@ class NavCaptureParameterizedBrowserTest
 
   // This test verifies that there are no left-over expectations for tests that
   // no longer exist in code but still exist in the expectations json file.
-  // Additionally if this test is run with the --rebaseline-link-capturing-test
+  // Additionally if this test is run with the --rebaseline-nav-capturing-test
   // flag any left-over expectations will be cleaned up.
   // If this test is run with the --log-disabled-tests flag, the test will log
   // the names of all the tests in the expectations file that are currently
@@ -1682,7 +1682,7 @@ class NavCaptureParameterizedBrowserTest
       }
     } else {
       EXPECT_THAT(tests_to_remove, testing::ElementsAre())
-          << "Run this test with --rebaseline-link-capturing-test to clean "
+          << "Run this test with --rebaseline-nav-capturing-test to clean "
              "this up.";
     }
   }
@@ -1983,7 +1983,7 @@ class NavCaptureParameterizedBrowserTest
       ASSERT_TRUE(file_read_success_)
           << "Failed to read test baselines from "
           << GetExpectationsFile(file_config).value()
-          << ", try running with --rebaseline-link-capturing-test to create "
+          << ", try running with --rebaseline-nav-capturing-test to create "
              "it.";
     }
     if (!file_read_success_) {
