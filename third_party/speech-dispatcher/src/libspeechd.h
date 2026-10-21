@@ -85,6 +85,7 @@ typedef struct {
 
 	/* PRIVATE */
 	int socket;
+	void *stream;
 	SPDConnectionMode mode;
 	char *buf;
 	size_t buf_start;
@@ -108,6 +109,8 @@ SPDConnection *spd_open2(const char *client_name, const char *connection_name,
 			 const char *user_name, SPDConnectionMode mode,
 			 const SPDConnectionAddress * address, int autospawn,
 			 char **error_result);
+
+int spd_fd(SPDConnection * connection);
 
 int spd_get_client_id(SPDConnection * connection);
 

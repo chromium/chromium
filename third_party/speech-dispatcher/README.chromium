@@ -1,7 +1,6 @@
 Name: Speech Dispatcher
 URL: https://github.com/brailcom/speechd
-Version: N/A
-Revision: b35065742929bded706dfbe71495a2b69b1d2a39
+Version: 0.12.1
 Update Mechanism: Manual
 License: LGPL-2.1
 License File: src/COPYING.LGPL
