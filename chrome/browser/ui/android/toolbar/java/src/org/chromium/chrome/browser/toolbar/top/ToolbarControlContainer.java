@@ -28,7 +28,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
@@ -52,7 +51,6 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -666,7 +664,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             FullscreenManager fullscreenManager,
             ToolbarDataProvider toolbarDataProvider,
-            BrowserControlsStateProvider browserControlsStateProvider,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             TopControlsStacker topControlsStacker) {
         mToolbar = toolbar;
@@ -691,7 +688,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 fullscreenManager,
                 () -> mMidVisibilityToggle,
                 toolbarDataProvider,
-                browserControlsStateProvider,
                 topControlsStacker);
 
         mToolbarView = toolbarView;
@@ -804,7 +800,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 FullscreenManager fullscreenManager,
                 BooleanSupplier isMidVisibilityToggle,
                 ToolbarDataProvider toolbarDataProvider,
-                BrowserControlsStateProvider browserControlsStateProvider,
                 TopControlsStacker topControlsStacker) {
             mIsMidVisibilityToggle = isMidVisibilityToggle;
             ToolbarViewResourceAdapter adapter =
@@ -819,7 +814,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     layoutStateProviderSupplier,
                     fullscreenManager,
                     toolbarDataProvider,
-                    browserControlsStateProvider,
                     topControlsStacker);
         }
 
@@ -879,7 +873,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 mBrowserStateBrowserControlsVisibilityDelegate;
 
         private BooleanSupplier mControlContainerIsVisibleSupplier;
-        private @Nullable BrowserControlsStateProvider mBrowserControlsStateProvider;
         private @Nullable LayoutStateProvider mLayoutStateProvider;
         private FullscreenManager mFullscreenManager;
         private TopControlsStacker mTopControlsStacker;
@@ -887,41 +880,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         private int mControlsToken = TokenHolder.INVALID_TOKEN;
 
         private boolean mNeedCaptureAfterPageLoad;
-        private boolean mIsDestroyed;
-        private boolean mHiddenCapturePending;
-        private boolean mHiddenCaptureRegistered;
-
-        // Stays registered while controls are fully hidden so we capture across
-        // multi-frame state propagation (e.g. toolbar body updates on frame N,
-        // hairline tint catches up on frame N+1). Posts so the capture runs after
-        // the traversal completes with the pixels that actually painted.
-        private final ViewTreeObserver.OnPreDrawListener mHiddenCaptureOnPreDraw =
-                this::onHiddenCapturePreDraw;
-
-        private boolean onHiddenCapturePreDraw() {
-            if (!shouldCaptureWhileHidden()) {
-                deregisterHiddenCaptureListener();
-                return true;
-            }
-            if (mHiddenCapturePending) return true;
-            mHiddenCapturePending = true;
-            mToolbarContainer.post(
-                    () -> {
-                        mHiddenCapturePending = false;
-                        if (shouldCaptureWhileHidden()) {
-                            triggerBitmapCapture();
-                        }
-                    });
-            return true;
-        }
-
-        private void deregisterHiddenCaptureListener() {
-            if (!mHiddenCaptureRegistered) return;
-            mToolbarContainer
-                    .getViewTreeObserver()
-                    .removeOnPreDrawListener(mHiddenCaptureOnPreDraw);
-            mHiddenCaptureRegistered = false;
-        }
 
         private ToolbarDataProvider mToolbarDataProvider;
 
@@ -960,7 +918,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
                 FullscreenManager fullscreenManager,
                 ToolbarDataProvider toolbarDataProvider,
-                BrowserControlsStateProvider browserControlsStateProvider,
                 TopControlsStacker topControlsStacker) {
             assert mToolbar == null;
             mToolbar = toolbar;
@@ -979,27 +936,11 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             mBrowserStateBrowserControlsVisibilityDelegate =
                     browserStateBrowserControlsVisibilityDelegate;
             mControlContainerIsVisibleSupplier = controlContainerIsVisibleSupplier;
-            mBrowserControlsStateProvider = browserControlsStateProvider;
             layoutStateProviderSupplier.onAvailable(
                     (layoutStateProvider) -> mLayoutStateProvider = layoutStateProvider);
             mFullscreenManager = fullscreenManager;
             mToolbarDataProvider = toolbarDataProvider;
             mMostRecentlyCapturedUrl = "";
-        }
-
-        @Override
-        public void invalidate(@Nullable Rect dirtyRect) {
-            super.invalidate(dirtyRect);
-            // When controls are fully hidden and the view is invalidated (e.g. URL
-            // changed during a navigation, or theme changes affecting toolbar colors),
-            // register a pre-draw listener so we capture a fresh
-            // bitmap once the frame paints.
-            if (shouldCaptureWhileHidden() && !mHiddenCaptureRegistered) {
-                mHiddenCaptureRegistered = true;
-                mToolbarContainer
-                        .getViewTreeObserver()
-                        .addOnPreDrawListener(mHiddenCaptureOnPreDraw);
-            }
         }
 
         private boolean isCapturingDisabled() {
@@ -1016,19 +957,22 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             super.triggerBitmapCapture();
         }
 
-        private boolean shouldCaptureWhileHidden() {
-            return ChromeFeatureList.sToolbarCaptureFixForSPAs.isEnabled()
-                    && !mIsDestroyed
-                    && mBrowserControlsStateProvider != null
-                    && mBrowserControlsStateProvider.getTopControlHiddenRatio() >= 1f;
-        }
-
         @Override
         public boolean isDirty() {
+            return isDirty(super.isDirty(), /* allowInMotion= */ false);
+        }
+
+        /**
+         * @param viewIsDirty Whether the superclass reports that the view is dirty.
+         * @param allowInMotion Whether to skip the in-motion block, for a capture taken as motion
+         *     starts, before the controls have moved.
+         * @see #isDirty()
+         */
+        private boolean isDirty(boolean viewIsDirty, boolean allowInMotion) {
             if (isCapturingDisabled()) {
                 return false;
             }
-            if (!super.isDirty()) {
+            if (!viewIsDirty) {
                 CaptureReadinessResult.logCaptureReasonFromResult(
                         CaptureReadinessResult.notReady(
                                 TopToolbarBlockCaptureReason.VIEW_NOT_DIRTY));
@@ -1071,7 +1015,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 // browser controls state check. This logic only needs to guard against a
                 // capture when the controls were partially or fully scrolled off, in the middle
                 // of motion, before the view became dirty.
-                if (mCompositorInMotionSupplier != null) {
+                if (!allowInMotion && mCompositorInMotionSupplier != null) {
                     if (mCompositorInMotionSupplier.get()) {
                         CaptureReadinessResult.logCaptureReasonFromResult(
                                 CaptureReadinessResult.notReady(
@@ -1197,9 +1141,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
 
         public void destroy() {
-            mIsDestroyed = true;
-            deregisterHiddenCaptureListener();
-            mHiddenCapturePending = false;
             if (mConstraintsObserver != null) {
                 mConstraintsObserver.destroy();
             }
@@ -1232,16 +1173,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     mControlsToken = TokenHolder.INVALID_TOKEN;
                 }
             } else if (Boolean.TRUE.equals(compositorInMotion) && super.isDirty()) {
-                // For SPAs, the toolbar will stay fully hidden if navigating to another page in the
-                // same origin. But since the toolbar is hidden, we won't capture, which results in
-                // the toolbar animating back into view every time on the first scroll after a
-                // navigation in the SPA. This is a bad user experience. If ToolbarCaptureFixForSPAs
-                // is enabled, we won't animate the controls back into view for this case.
-                boolean controlsPartiallyVisible =
-                        ChromeFeatureList.sToolbarCaptureFixForSPAs.isEnabled()
-                                && mBrowserControlsStateProvider != null
-                                && mBrowserControlsStateProvider.getTopControlHiddenRatio() < 1f;
-                if (controlsPartiallyVisible || mControlContainerIsVisibleSupplier.getAsBoolean()) {
+                if (mControlContainerIsVisibleSupplier.getAsBoolean()) {
                     CaptureReadinessResult captureReadinessResult =
                             mToolbar.isReadyForTextureCapture();
                     CaptureReadinessResult.logCaptureReasonFromResult(captureReadinessResult);
@@ -1265,6 +1197,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                                 CaptureReadinessResult.notReady(
                                         TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION));
                     }
+                } else if (ChromeFeatureList.sToolbarCaptureFixForSPAs.isEnabled()
+                        && isDirty(super.isDirty(), /* allowInMotion= */ true)) {
+                    // The controls are scrolled partially or fully off, so the compositor shows
+                    // the capture, and locking would snap them back into view. Captures are
+                    // blocked for the rest of the motion, so refresh it now, e.g. after a
+                    // same-document navigation changed the URL while the controls were hidden.
+                    triggerBitmapCapture();
                 }
             }
         }
