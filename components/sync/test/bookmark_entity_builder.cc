@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
@@ -112,6 +114,7 @@ BookmarkEntityBuilder& BookmarkEntityBuilder::SetGeneration(
 BookmarkEntityBuilder& BookmarkEntityBuilder::SetFavicon(
     const gfx::Image& favicon,
     const GURL& icon_url) {
+  CHECK_EQ(favicon.IsEmpty(), icon_url.is_empty());
   favicon_ = favicon;
   icon_url_ = icon_url;
   return *this;
@@ -210,7 +213,7 @@ void BookmarkEntityBuilder::FillWithFaviconIfNeeded(
     sync_pb::BookmarkSpecifics* bookmark_specifics) const {
   DCHECK(bookmark_specifics);
   // Both `favicon_` and `icon_url_` must be provided or empty simultaneously.
-  DCHECK(favicon_.IsEmpty() == icon_url_.is_empty());
+  CHECK_EQ(favicon_.IsEmpty(), icon_url_.is_empty());
   if (favicon_.IsEmpty()) {
     return;
   }

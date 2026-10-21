@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -205,6 +206,7 @@ int GetPasswordCount(int index, PasswordForm::Store store) {
 }
 
 PasswordForm CreateTestPasswordForm(int index, PasswordForm::Store store) {
+  CHECK_NE(store, PasswordForm::Store::kNotSet);
   PasswordForm form;
   form.signon_realm = kFakeSignonRealm;
   form.url = GURL(base::StringPrintf(kIndexedFakeOrigin, index));
