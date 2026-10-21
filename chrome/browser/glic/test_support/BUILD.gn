@@ -14,6 +14,8 @@ source_set("test_support") {
     "fake_web_contents_manager.h",
     "glic_api_test.cc",
     "glic_api_test.h",
+    "glic_api_test_passkeys.cc",
+    "glic_api_test_passkeys.h",
     "glic_browser_test.h",
     "glic_drag_and_drop_test_base.cc",
     "glic_drag_and_drop_test_base.h",

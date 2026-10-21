@@ -57,6 +57,7 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
+#include "chrome/browser/glic/test_support/glic_api_test_passkeys.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
@@ -303,13 +304,6 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
 
  private:
   base::test::ScopedFeatureList test_param_features_;
-};
-
-class GlicApiTestPasskeys {
- public:
-  static InvokeWithAutoSubmitPasskey GetPassKey() {
-    return InvokeWithAutoSubmitPasskeyProvider::GetPassKey();
-  }
 };
 
 std::unique_ptr<net::test_server::HttpResponse> SorryPageRequestHandler(
