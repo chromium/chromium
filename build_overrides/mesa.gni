@@ -2,5 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+mesa_llvm_dev_dir = "//third_party/dawn/third_party/llvm-dev/"
 mesa_src_dir = "//third_party/dawn/third_party/mesa/"
 mesa_meson_dir = "//third_party/dawn/third_party/meson/"
