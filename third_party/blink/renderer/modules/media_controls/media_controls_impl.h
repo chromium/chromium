@@ -367,6 +367,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   void OnSeeked();
   void OnTextTracksAddedOrRemoved();
   void OnTextTracksChanged();
+  void OnAudioOrVideoTracksChanged();
   void OnError();
   void OnLoadedMetadata();
   void OnEnteredFullscreen();

@@ -9,7 +9,9 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/html/track/audio_track_list.h"
 #include "third_party/blink/renderer/core/html/track/text_track_list.h"
+#include "third_party/blink/renderer/core/html/track/video_track_list.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/modules/remoteplayback/availability_callback_wrapper.h"
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback.h"
@@ -97,6 +99,24 @@ void MediaControlsMediaEventListener::Attach() {
   text_tracks->addEventListener(event_type_names::kRemovetrack, this,
                                 /*use_capture=*/false);
 
+  if (RuntimeEnabledFeatures::AudioVideoTracksEnabled()) {
+    AudioTrackList& audio_tracks = GetMediaElement().audioTracks();
+    audio_tracks.addEventListener(event_type_names::kAddtrack, this,
+                                  /*use_capture=*/false);
+    audio_tracks.addEventListener(event_type_names::kChange, this,
+                                  /*use_capture=*/false);
+    audio_tracks.addEventListener(event_type_names::kRemovetrack, this,
+                                  /*use_capture=*/false);
+
+    VideoTrackList& video_tracks = GetMediaElement().videoTracks();
+    video_tracks.addEventListener(event_type_names::kAddtrack, this,
+                                  /*use_capture=*/false);
+    video_tracks.addEventListener(event_type_names::kChange, this,
+                                  /*use_capture=*/false);
+    video_tracks.addEventListener(event_type_names::kRemovetrack, this,
+                                  /*use_capture=*/false);
+  }
+
   // Keypress events.
   if (media_controls_->ButtonPanelElement()) {
     media_controls_->ButtonPanelElement()->addEventListener(
@@ -136,6 +156,24 @@ void MediaControlsMediaEventListener::Detach() {
                                    /*use_capture=*/false);
   text_tracks->removeEventListener(event_type_names::kRemovetrack, this,
                                    /*use_capture=*/false);
+
+  if (RuntimeEnabledFeatures::AudioVideoTracksEnabled()) {
+    AudioTrackList& audio_tracks = GetMediaElement().audioTracks();
+    audio_tracks.removeEventListener(event_type_names::kAddtrack, this,
+                                     /*use_capture=*/false);
+    audio_tracks.removeEventListener(event_type_names::kChange, this,
+                                     /*use_capture=*/false);
+    audio_tracks.removeEventListener(event_type_names::kRemovetrack, this,
+                                     /*use_capture=*/false);
+
+    VideoTrackList& video_tracks = GetMediaElement().videoTracks();
+    video_tracks.removeEventListener(event_type_names::kAddtrack, this,
+                                     /*use_capture=*/false);
+    video_tracks.removeEventListener(event_type_names::kChange, this,
+                                     /*use_capture=*/false);
+    video_tracks.removeEventListener(event_type_names::kRemovetrack, this,
+                                     /*use_capture=*/false);
+  }
 
   if (media_controls_->ButtonPanelElement()) {
     media_controls_->ButtonPanelElement()->removeEventListener(
@@ -247,15 +285,23 @@ void MediaControlsMediaEventListener::Invoke(
     return;
   }
 
-  // TextTracks events.
+  // TextTracks / AudioTracks / VideoTracks events.
   if (event->type() == event_type_names::kAddtrack ||
-      event->type() == event_type_names::kRemovetrack) {
-    media_controls_->OnTextTracksAddedOrRemoved();
-    return;
-  }
-  if (event->type() == event_type_names::kChange) {
-    media_controls_->OnTextTracksChanged();
-    return;
+      event->type() == event_type_names::kRemovetrack ||
+      event->type() == event_type_names::kChange) {
+    if (event->currentTarget() == GetMediaElement().textTracks()) {
+      if (event->type() == event_type_names::kChange) {
+        media_controls_->OnTextTracksChanged();
+      } else {
+        media_controls_->OnTextTracksAddedOrRemoved();
+      }
+      return;
+    }
+    if (event->currentTarget() == &GetMediaElement().audioTracks() ||
+        event->currentTarget() == &GetMediaElement().videoTracks()) {
+      media_controls_->OnAudioOrVideoTracksChanged();
+      return;
+    }
   }
 
   // Keypress events.

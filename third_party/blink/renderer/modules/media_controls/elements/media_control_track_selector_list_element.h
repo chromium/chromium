@@ -36,6 +36,8 @@ class MediaControlTrackSelectorListElement final
   // MediaControlElementBase interface.
   void SetIsWanted(bool) final;
 
+  void RefreshTrackList();
+
   // GarbageCollectedMixin interface.
   void Trace(Visitor* visitor) const final;
 

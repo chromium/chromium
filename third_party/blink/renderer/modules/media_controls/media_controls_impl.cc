@@ -2093,6 +2093,28 @@ void MediaControlsImpl::OnTextTracksChanged() {
   toggle_closed_captions_button_->UpdateDisplayType();
 }
 
+void MediaControlsImpl::OnAudioOrVideoTracksChanged() {
+  const bool show_video_button = ShouldShowTrackSelectionButton(
+      WebMediaPlayer::TrackType::kVideoTrack, MediaElement());
+  video_track_selector_button_->SetIsWanted(show_video_button);
+  if (show_video_button) {
+    video_track_selector_list_->RefreshTrackList();
+  } else {
+    video_track_selector_list_->SetIsWanted(false);
+  }
+
+  const bool show_audio_button = ShouldShowTrackSelectionButton(
+      WebMediaPlayer::TrackType::kAudioTrack, MediaElement());
+  audio_track_selector_button_->SetIsWanted(show_audio_button);
+  if (show_audio_button) {
+    audio_track_selector_list_->RefreshTrackList();
+  } else {
+    audio_track_selector_list_->SetIsWanted(false);
+  }
+
+  BatchedControlUpdate batch(this);
+}
+
 void MediaControlsImpl::OnError() {
   // TODO(mlamouri): we should only change the aspects of the control that need
   // to be changed.

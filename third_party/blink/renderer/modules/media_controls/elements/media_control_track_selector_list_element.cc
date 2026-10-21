@@ -67,10 +67,12 @@ std::vector<String> GetPreferenceList(const TrackListBase<TrackType>& tracks,
                                       Rest... rest) {
   std::vector<String> extracted =
       GetPreferenceList<TrackType>(tracks, locale, pref);
-  auto new_end = std::unique(extracted.begin(), extracted.end());
-  auto new_length = std::distance(extracted.begin(), new_end);
-  if (new_length >= 0 && static_cast<size_t>(new_length) == tracks.length()) {
-    return extracted;
+  if (extracted.size() == tracks.length()) {
+    auto new_end = std::unique(extracted.begin(), extracted.end());
+    auto new_length = std::distance(extracted.begin(), new_end);
+    if (new_length >= 0 && static_cast<size_t>(new_length) == tracks.length()) {
+      return extracted;
+    }
   }
   return GetPreferenceList(tracks, locale, fallback, rest...);
 }
@@ -103,13 +105,19 @@ MediaControlTrackSelectorListElement::MediaControlTrackSelectorListElement(
 
 void MediaControlTrackSelectorListElement::SetIsWanted(bool wanted) {
   if (wanted) {
-    RemoveChildren();
     RepopulateTrackList();
   }
   if (!wanted && !GetMediaControls().OverflowMenuIsWanted()) {
     GetMediaControls().CloseOverflowMenu();
   }
   MediaControlPopupMenuElement::SetIsWanted(wanted);
+}
+
+void MediaControlTrackSelectorListElement::RefreshTrackList() {
+  if (!IsWanted()) {
+    return;
+  }
+  RepopulateTrackList();
 }
 
 void MediaControlTrackSelectorListElement::Trace(Visitor* visitor) const {
@@ -147,6 +155,9 @@ void MediaControlTrackSelectorListElement::DefaultEventHandler(Event& event) {
 }
 
 void MediaControlTrackSelectorListElement::RepopulateTrackList() {
+  // In order to repopulate, we must first de-populate
+  RemoveChildren();
+
   auto* header_item = MakeGarbageCollected<HTMLLabelElement>(GetDocument());
   header_item->SetShadowPseudoId(
       AtomicString("-internal-media-controls-track-selection-list-header"));
