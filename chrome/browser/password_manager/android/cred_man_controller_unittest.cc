@@ -207,8 +207,6 @@ class CredManControllerReauthTest : public base::test::WithFeatureOverride,
 
   void SetUp() override {
     CredManControllerTest::SetUp();
-    skip_chrome_reauth_feature_.InitAndDisableFeature(
-        features::kSkipChromeReauthForCredMan);
     ON_CALL(*password_client(), IsReauthBeforeFillingRequired)
         .WillByDefault(Return(true));
     ON_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
@@ -216,12 +214,11 @@ class CredManControllerReauthTest : public base::test::WithFeatureOverride,
   }
 
   bool is_refactor_enabled() const { return IsParamFeatureEnabled(); }
-
- private:
-  base::test::ScopedFeatureList skip_chrome_reauth_feature_;
 };
 
 TEST_P(CredManControllerReauthTest, FillsPasswordIfReauthSuccessful) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSkipChromeReauthForCredMan);
   const std::u16string kUsername = u"test_user";
   const std::u16string kPassword = u"38kAy5Er1Sp0r38";
 
@@ -245,6 +242,8 @@ TEST_P(CredManControllerReauthTest, FillsPasswordIfReauthSuccessful) {
 }
 
 TEST_P(CredManControllerReauthTest, DoesNotFillIfReauthFailed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSkipChromeReauthForCredMan);
   const std::u16string kUsername = u"test_user";
   const std::u16string kPassword = u"38kAy5Er1Sp0r38";
 
@@ -263,6 +262,72 @@ TEST_P(CredManControllerReauthTest, DoesNotFillIfReauthFailed) {
   EXPECT_CALL(*device_authenticator(), AuthenticateWithMessage)
       .WillOnce(base::test::RunOnceCallback<1>(/*auth_succeeded=*/false));
   EXPECT_CALL(last_filler(), FillUsernameAndPassword).Times(0);
+  web_authn_cred_man_delegate()->FillUsernameAndPassword(kUsername, kPassword);
+}
+
+TEST_P(CredManControllerReauthTest, FillsPasswordIfReauthNotRequired) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSkipChromeReauthForCredMan);
+  const std::u16string kUsername = u"test_user";
+  const std::u16string kPassword = u"38kAy5Er1Sp0r38";
+
+  std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
+
+  base::MockCallback<base::RepeatingCallback<void(bool)>>
+      mock_full_assertion_request;
+  web_authn_cred_man_delegate()->OnCredManConditionalRequestPending(
+      /*has_results=*/true, mock_full_assertion_request.Get());
+
+  ASSERT_TRUE(controller().Show(
+      web_authn_cred_man_delegate(), std::move(filler),
+      /*frame_driver=*/nullptr,
+      /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
+
+  ON_CALL(*password_client(), IsReauthBeforeFillingRequired)
+      .WillByDefault(Return(false));
+  ON_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
+      .WillByDefault(Return(false));
+  // The refactor uses the new reauth check instead of the legacy one.
+  EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
+  EXPECT_CALL(*device_authenticator(), AuthenticateWithMessage).Times(0);
+  EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword, _));
+
+  web_authn_cred_man_delegate()->FillUsernameAndPassword(kUsername, kPassword);
+}
+
+TEST_P(CredManControllerReauthTest, ReauthsOnAutomotive) {
+  if (!base::android::device_info::is_automotive()) {
+    GTEST_SKIP() << "This test should only run on automotive.";
+  }
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSkipChromeReauthForCredMan);
+  const std::u16string kUsername = u"test_user";
+  const std::u16string kPassword = u"38kAy5Er1Sp0r38";
+
+  std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
+
+  base::MockCallback<base::RepeatingCallback<void(bool)>>
+      mock_full_assertion_request;
+  web_authn_cred_man_delegate()->OnCredManConditionalRequestPending(
+      /*has_results=*/true, mock_full_assertion_request.Get());
+
+  ASSERT_TRUE(controller().Show(
+      web_authn_cred_man_delegate(), std::move(filler),
+      /*frame_driver=*/nullptr,
+      /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
+
+  // The refactor uses the new reauth check instead of the legacy one.
+  EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequired)
+      .Times(is_refactor_enabled() ? 1 : 0);
+  EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
+      .Times(is_refactor_enabled() ? 0 : 1);
+  EXPECT_CALL(*device_authenticator(), AuthenticateWithMessage)
+      .WillOnce(base::test::RunOnceCallback<1>(/*auth_succeeded=*/true));
+  EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword, _));
+
   web_authn_cred_man_delegate()->FillUsernameAndPassword(kUsername, kPassword);
 }
 
@@ -287,62 +352,6 @@ TEST_F(CredManControllerTest, SkipsChromeReauthWhenCredManAuthenticates) {
       /*frame_driver=*/nullptr,
       /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
 
-  EXPECT_CALL(*device_authenticator(), AuthenticateWithMessage).Times(0);
-  EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword, _));
-
-  web_authn_cred_man_delegate()->FillUsernameAndPassword(kUsername, kPassword);
-}
-
-TEST_F(CredManControllerTest, ReauthsOnAutomotive) {
-  if (!base::android::device_info::is_automotive()) {
-    GTEST_SKIP() << "This test should only run on automotive.";
-  }
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kSkipChromeReauthForCredMan);
-  const std::u16string kUsername = u"test_user";
-  const std::u16string kPassword = u"38kAy5Er1Sp0r38";
-
-  std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
-
-  base::MockCallback<base::RepeatingCallback<void(bool)>>
-      mock_full_assertion_request;
-  web_authn_cred_man_delegate()->OnCredManConditionalRequestPending(
-      /*has_results=*/true, mock_full_assertion_request.Get());
-
-  ASSERT_TRUE(controller().Show(
-      web_authn_cred_man_delegate(), std::move(filler),
-      /*frame_driver=*/nullptr,
-      /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
-
-  EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*device_authenticator(), AuthenticateWithMessage)
-      .WillOnce(base::test::RunOnceCallback<1>(/*auth_succeeded=*/true));
-  EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword, _));
-
-  web_authn_cred_man_delegate()->FillUsernameAndPassword(kUsername, kPassword);
-}
-
-TEST_F(CredManControllerTest, FillsPasswordIfLegacyReauthNotRequired) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSkipChromeReauthForCredMan);
-  const std::u16string kUsername = u"test_user";
-  const std::u16string kPassword = u"38kAy5Er1Sp0r38";
-
-  std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
-
-  base::MockCallback<base::RepeatingCallback<void(bool)>>
-      mock_full_assertion_request;
-  web_authn_cred_man_delegate()->OnCredManConditionalRequestPending(
-      /*has_results=*/true, mock_full_assertion_request.Get());
-
-  ASSERT_TRUE(controller().Show(
-      web_authn_cred_man_delegate(), std::move(filler),
-      /*frame_driver=*/nullptr,
-      /*is_webauthn_form=*/true, CredManController::PasskeyDelayCallback()));
-
-  EXPECT_CALL(*password_client(), IsReauthBeforeFillingRequiredLegacy)
-      .WillOnce(Return(false));
   EXPECT_CALL(*device_authenticator(), AuthenticateWithMessage).Times(0);
   EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword, _));
 
