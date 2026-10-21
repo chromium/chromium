@@ -28,6 +28,8 @@ The bot provides analysis using:
 
 - **What:** Checks that [normalized apk size] increases by no more than 16kb on
   arm32, and 64kb on high-end arm64.
+  - arm32 measures Chrome + WebView, while arm64 measures only Chrome (to save
+    on build time).
 - **Why:** To ensure that larger-than-average size changes are understood and
   intentional.
 

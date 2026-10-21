@@ -82,10 +82,17 @@ template("_assert_static_initializers") {
 # Variables:
 #   library_target: GN label of the shared library target to check (without
 #     toolchain).
-#   toolchain_64: (optional) Toolchain label to use for the 64-bit library
-#     instead of the default toolchain.
+#   check_64bit: (optional) Whether to check the 64-bit library. Default: true.
 template("check_static_initializers") {
   assert(has_static_initializer_checks)
+
+  # Read invoker.check_64bit first so that it is never flagged as unused.
+  _check_64bit = (!defined(invoker.check_64bit) || invoker.check_64bit) &&
+                 _verify_64bit_static_initializers
+  if (!_verify_32bit_static_initializers && !_check_64bit) {
+    # E.g. check_64bit=false on a 64-bit-only config.
+    not_needed(invoker, [ "library_target" ])
+  }
 
   group(target_name) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
@@ -93,7 +100,7 @@ template("check_static_initializers") {
     if (_verify_32bit_static_initializers) {
       deps += [ ":${target_name}__32" ]
     }
-    if (_verify_64bit_static_initializers) {
+    if (_check_64bit) {
       deps += [ ":${target_name}__64" ]
     }
   }
@@ -109,14 +116,10 @@ template("check_static_initializers") {
       expected_count = expected_static_initializer_32bit_count
     }
   }
-  if (_verify_64bit_static_initializers) {
+  if (_check_64bit) {
     _assert_static_initializers("${target_name}__64") {
       forward_variables_from(invoker, [ "testonly" ])
-      if (defined(invoker.toolchain_64)) {
-        library_target = "${invoker.library_target}(${invoker.toolchain_64})"
-      } else {
-        library_target = invoker.library_target
-      }
+      library_target = invoker.library_target
       expected_count = expected_static_initializer_64bit_count
     }
   }

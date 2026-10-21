@@ -239,9 +239,10 @@ if (_is_default_toolchain) {
   if (has_static_initializer_checks) {
     check_static_initializers("check_webview_static_initializers") {
       library_target = ":libwebviewchromium"
-      if (use_webview_pgo_profile) {
-        toolchain_64 = webview_toolchain
-      }
+
+      # 64-bit WebView is not built by android-binary-size (to save build
+      # time), so check only 32-bit.
+      check_64bit = false
     }
   }
 
