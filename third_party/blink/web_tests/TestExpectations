@@ -8705,3 +8705,7 @@ crbug.com/551670645 [ Win11 ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.htt
 
 # Gardener 2026-10-19
 crbug.com/570886829 [ Mac ] external/wpt/css/css-contain/contain-size-flexbox-002.html [ Failure Pass ]
+
+# Gardener 2026-10-21
+crbug.com/568614666 [ Linux ] fast/events/middleClickAutoscroll-nested-divs.html [ Failure Pass Timeout ]
+
