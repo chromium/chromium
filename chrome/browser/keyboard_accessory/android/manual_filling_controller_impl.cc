@@ -29,6 +29,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 
 using autofill::AccessoryAction;
@@ -142,6 +143,10 @@ void ManualFillingControllerImpl::NotifyFocusedInputChanged(
   }
   last_focused_field_id_ = {frame_token, focused_field_id};
   last_focused_field_type_ = focused_field_type;
+
+  if (GetWebContents().GetVisibility() != content::Visibility::VISIBLE) {
+    return;
+  }
 
   // Ensure warnings and filling state is updated according to focused field.
   if (payment_method_controller_) {
@@ -403,6 +408,9 @@ bool ManualFillingControllerImpl::ShouldShowAccessoryForLastFocusedFieldType()
 
 void ManualFillingControllerImpl::UpdateVisibility() {
   TRACE_EVENT0("passwords", "ManualFillingControllerImpl::UpdateVisibility");
+  if (GetWebContents().GetVisibility() != content::Visibility::VISIBLE) {
+    return;
+  }
   if (ShouldShowAccessoryForLastFocusedFieldType()) {
     for (const FillingSource& source : available_sources_) {
       if (source == FillingSource::AUTOFILL) {
@@ -461,7 +469,8 @@ void ManualFillingControllerImpl::OnSourceAvailabilityChanged(
   bool show_filling_source = sheet.has_value() && is_source_available;
   // TODO(crbug.com/40165275): Remove once all sheets pull this information
   // instead of waiting to get it pushed.
-  if (sheet.has_value()) {
+  if (sheet.has_value() &&
+      GetWebContents().GetVisibility() == content::Visibility::VISIBLE) {
     // Suppress forwarding fallback sheet data for contenteditable and textarea
     // elements so only the AtMemory sheet is made available to the view.
     if (!IsUnstructuredFieldType(last_focused_field_type_) ||

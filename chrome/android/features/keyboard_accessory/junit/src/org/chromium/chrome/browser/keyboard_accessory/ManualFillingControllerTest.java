@@ -419,6 +419,7 @@ public class ManualFillingControllerTest {
                 ObservableSuppliers.createNonNull(mCompositorViewHolder);
         mActivity.mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mLastMockWebContents = mock(MockWebContents.class);
+        when(mLastMockWebContents.getVisibility()).thenReturn(Visibility.VISIBLE);
         mActivity.mCurrentWebContentsSupplier = () -> mLastMockWebContents;
 
         ProfileJni.setInstanceForTesting(mProfileJniMock);
@@ -2359,6 +2360,7 @@ public class ManualFillingControllerTest {
         when(tab.getId()).thenReturn(id);
         when(tab.getUserDataHost()).thenReturn(mUserDataHost);
         mLastMockWebContents = mock(MockWebContents.class);
+        when(mLastMockWebContents.getVisibility()).thenReturn(Visibility.VISIBLE);
         when(tab.getWebContents()).thenReturn(mLastMockWebContents);
         mCache.getStateFor(tab)
                 .getWebContentsObserverForTesting()
@@ -2667,5 +2669,37 @@ public class ManualFillingControllerTest {
 
         verify(mockHandle1).dismiss(DialogDismissalCause.UNKNOWN);
         assertThat(mMediator.getConfirmationDialogDismissHandlerForTesting(), is(mockHandle2));
+    }
+
+    @Test
+    public void testHiddenWebContentsDoesNotOverwriteActiveTabSheetData() {
+        SheetProviderHelper activeTabHelper = new SheetProviderHelper();
+        SheetProviderHelper hiddenTabHelper = new SheetProviderHelper();
+
+        addBrowserTab(mMediator, 1111, null);
+        mController.registerSheetDataProvider(
+                mLastMockWebContents,
+                AccessoryTabType.PASSWORDS,
+                activeTabHelper.getSheetDataProvider());
+        getStateForBrowserTab()
+                .getSheetDataProvider(AccessoryTabType.PASSWORDS)
+                .addSyncObserverAndPostIfNonNull(activeTabHelper::record);
+        activeTabHelper.providePasswordSheet("ActiveTabPassword");
+        assertThat(activeTabHelper.getFirstRecordedPassword(), is("ActiveTabPassword"));
+
+        // Simulate a background WebContents that is already Visibility.HIDDEN when its
+        // ManualFillingState is first created (e.g. after Activity recreation).
+        WebContents hiddenWebContents = mock(MockWebContents.class);
+        when(hiddenWebContents.getVisibility()).thenReturn(Visibility.HIDDEN);
+        mController.registerSheetDataProvider(
+                hiddenWebContents,
+                AccessoryTabType.PASSWORDS,
+                hiddenTabHelper.getSheetDataProvider());
+        mCache.getStateFor(hiddenWebContents)
+                .getSheetDataProvider(AccessoryTabType.PASSWORDS)
+                .addSyncObserverAndPostIfNonNull(hiddenTabHelper::record);
+
+        hiddenTabHelper.providePasswordSheet("HiddenTabPassword");
+        assertThat(hiddenTabHelper.getRecordedSheetData(), is(nullValue()));
     }
 }

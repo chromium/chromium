@@ -78,6 +78,7 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    web_contents()->WasShown();
 
     EXPECT_CALL(mock_pwd_controller_, RegisterFillingSourceObserver)
         .WillOnce(SaveArg<0>(&pwd_source_observer_));
@@ -723,6 +724,22 @@ TEST_F(ManualFillingControllerTest,
   mf_controller->OnFillingTriggered(
       AccessoryTabType::PASSWORDS,
       autofill::AccessorySheetField::Builder().Build());
+}
+
+TEST_F(ManualFillingControllerTest, DoesNotUpdateViewWhenWebContentsIsHidden) {
+  web_contents()->WasHidden();
+
+  EXPECT_CALL(mock_payment_method_controller_, GetSheetData)
+      .WillRepeatedly(Return(populate_sheet(AccessoryTabType::CREDIT_CARDS)));
+  EXPECT_CALL(*view(), OnItemsAvailable).Times(0);
+  EXPECT_CALL(*view(), Show).Times(0);
+  EXPECT_CALL(*view(), Hide).Times(0);
+  EXPECT_CALL(*view(), SwapSheetWithKeyboard).Times(0);
+  EXPECT_CALL(*view(), CloseAccessorySheet).Times(0);
+
+  NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
+  controller()->NotifyFocusedInputChanged(
+      kFocusedFieldId, FocusedFieldType::kFillableNonSearchField);
 }
 
 }  // namespace

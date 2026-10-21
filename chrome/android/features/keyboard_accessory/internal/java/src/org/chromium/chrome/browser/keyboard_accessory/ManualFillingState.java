@@ -65,7 +65,7 @@ class ManualFillingState {
             return;
         }
         mWebContents = webContents;
-        mWebContentsShowing = true;
+        mWebContentsShowing = webContents.getVisibility() == Visibility.VISIBLE;
         mWebContentsObserver = new Observer(mWebContents);
     }
 
