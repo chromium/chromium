@@ -349,7 +349,7 @@ bool PersonalContextEligibilityServiceImpl::ComputeEligibilityForEncryption()
     return false;
   }
 
-  return account_settings_service_ && is_photos_enabled_;
+  return true;
 }
 
 void PersonalContextEligibilityServiceImpl::UpdateEligibilityState() {
