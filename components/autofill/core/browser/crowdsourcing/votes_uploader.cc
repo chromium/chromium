@@ -19,7 +19,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -55,7 +54,6 @@
 #include "components/autofill/core/browser/studies/hats_surveys_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -250,10 +248,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
         return OneTimeToken::IsPotentialOtp(field->value());
       });
 
-  if (vote_data.empty() &&
-      (!has_potential_otp_field ||
-       !base::FeatureList::IsEnabled(
-           features::kAutofillSmsOtpCrowdsourcingFetchFromGmscore))) {
+  if (vote_data.empty() && !has_potential_otp_field) {
     return false;
   }
 
@@ -276,9 +271,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   std::set<FieldGlobalId> fields_that_match_state =
       PreProcessStateMatchingTypes(profiles, *form, client_->GetAppLocale());
 
-  if (sms_otp_service && vote_data.otps.empty() && has_potential_otp_field &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillSmsOtpCrowdsourcingFetchFromGmscore)) {
+  if (sms_otp_service && vote_data.otps.empty() && has_potential_otp_field) {
     // This is the 80 percentile latency of the otp success retrieval flow. The
     // longer the timeout, the more risk we have of losing votes because the
     // tab might be closed before we submit the votes.

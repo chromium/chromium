@@ -49,8 +49,6 @@ class AutofillVotesUploaderTest : public testing::Test,
   void SetUp() override {
     InitAutofillClient();
     AddTestProfile();
-    feature_list_.InitWithFeatures(
-        {features::kAutofillSmsOtpCrowdsourcingFetchFromGmscore}, {});
 
     autofill_client().set_sms_otp_service(
         std::make_unique<one_time_tokens::FakeSmsOtpService>());
@@ -136,7 +134,6 @@ class AutofillVotesUploaderTest : public testing::Test,
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test basic vote upload process for form submission.
