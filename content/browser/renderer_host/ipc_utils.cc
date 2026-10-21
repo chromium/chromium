@@ -478,6 +478,16 @@ bool VerifyCreateNewWindowParams(const RenderFrameHostImpl& current_rfh,
     return false;
   }
 
+  // Verify `referrer`.
+  if (params.referrer && !params.referrer->url.is_empty()) {
+    if (!policy->HostsOrigin(process->GetID().GetUnsafeValue(),
+                             url::Origin::Create(params.referrer->url))) {
+      bad_message::ReceivedBadMessage(
+          process, bad_message::RFH_CREATE_NEW_WINDOW_INVALID_REFERRER);
+      return false;
+    }
+  }
+
   return true;
 }
 
