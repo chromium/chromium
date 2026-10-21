@@ -127,13 +127,8 @@ class RollProtobufTest(unittest.TestCase):
             tempfile.TemporaryDirectory())
 
     def testBootstrapGeneratedFilesMatchPresubmitInventory(self):
-        self.assertEqual(
-            PRESUBMIT._BOOTSTRAP_GENERATED_FILES,
-            roll_protobuf.BOOTSTRAP_GENERATED_FILES,
-            msg=(
-                'Expected PRESUBMIT.py and roll_protobuf.py to agree on '
-                'which files gen_extra_chromium_files.py generates.'),
-        )
+        self.assertEqual(PRESUBMIT._BOOTSTRAP_GENERATED_FILES,
+                         roll_protobuf.BOOTSTRAP_GENERATED_FILES)
 
     def testChromiumOwnedFilesMatchReadmeRollStepTwo(self):
         readme_path = os.path.join(_PROTOBUF_DIRECTORY, 'README.chromium')
@@ -153,13 +148,7 @@ class RollProtobufTest(unittest.TestCase):
             if token != '\\'
         )
 
-        self.assertEqual(
-            roll_protobuf.CHROMIUM_OWNED_FILES,
-            restored_files,
-            msg=(
-                'Expected CHROMIUM_OWNED_FILES to list the exact files '
-                'that README.chromium roll step 2 restores with git checkout.'),
-        )
+        self.assertEqual(roll_protobuf.CHROMIUM_OWNED_FILES, restored_files)
 
     def testReadReadmeRevisionExtractsCommitHashFromReadmeFile(self):
         _WriteFilesToDirectory(
@@ -175,13 +164,7 @@ class RollProtobufTest(unittest.TestCase):
 
         revision = roll_protobuf.ReadReadmeRevision(self.temporary_directory)
 
-        self.assertEqual(
-            '3f17acbf7ffbda81db8be17505554c726e558bb2',
-            revision,
-            msg=(
-                'Expected ReadReadmeRevision to extract the 40-character '
-                'commit hash from the Revision: metadata line.'),
-        )
+        self.assertEqual('3f17acbf7ffbda81db8be17505554c726e558bb2', revision)
 
     def testReadReadmeRevisionRaisesErrorWhenRevisionLineIsMissing(self):
         _WriteFilesToDirectory(
@@ -189,18 +172,11 @@ class RollProtobufTest(unittest.TestCase):
             {'README.chromium': 'Name: Protocol Buffers\nVersion: 36.0\n'},
         )
 
-        with self.assertRaises(
-                roll_protobuf.RollProtobufError,
-                msg=('Expected ReadReadmeRevision to raise '
-                     'RollProtobufError when README.chromium lacks a '
-                     'Revision: line.')):
+        with self.assertRaises(roll_protobuf.RollProtobufError):
             roll_protobuf.ReadReadmeRevision(self.temporary_directory)
 
     def testReadReadmeRevisionRaisesErrorWhenReadmeFileIsMissing(self):
-        with self.assertRaises(
-                roll_protobuf.RollProtobufError,
-                msg=('Expected ReadReadmeRevision to raise '
-                     'RollProtobufError when README.chromium is missing.')):
+        with self.assertRaises(roll_protobuf.RollProtobufError):
             roll_protobuf.ReadReadmeRevision(self.temporary_directory)
 
     def testResolveDefaultCacheDirectoryUsesXdgCacheHomeWhenSet(self):
@@ -214,13 +190,7 @@ class RollProtobufTest(unittest.TestCase):
                 xdg_cache_directory,
                 'chromium-protobuf-roll',
                 'upstream-protobuf',
-            ),
-            resolved_path,
-            msg=(
-                'Expected ResolveDefaultCacheDirectory to place the upstream '
-                'cache under $XDG_CACHE_HOME/chromium-protobuf-roll when '
-                'XDG_CACHE_HOME is set.'),
-        )
+            ), resolved_path)
 
     def testResolveDefaultCacheDirectoryFallsBackToHomeDotCacheWhenXdgUnset(
             self):
@@ -232,13 +202,7 @@ class RollProtobufTest(unittest.TestCase):
                 os.path.abspath(os.path.expanduser('~/.cache')),
                 'chromium-protobuf-roll',
                 'upstream-protobuf',
-            ),
-            resolved_path,
-            msg=(
-                'Expected ResolveDefaultCacheDirectory to fall back to '
-                '~/.cache/chromium-protobuf-roll/upstream-protobuf when '
-                'XDG_CACHE_HOME is unset.'),
-        )
+            ), resolved_path)
 
     def testResolveDefaultCacheDirectoryUsesBuildDirectoryWhenProvided(self):
         build_directory = os.path.join(self.temporary_directory, 'out_linux',
@@ -254,13 +218,7 @@ class RollProtobufTest(unittest.TestCase):
                 build_directory,
                 '.protobuf_roll',
                 'upstream-protobuf',
-            ),
-            resolved_path,
-            msg=(
-                'Expected ResolveDefaultCacheDirectory to store the upstream '
-                'cache under <build_directory>/.protobuf_roll when '
-                'build_directory is supplied.'),
-        )
+            ), resolved_path)
 
     def testEnsureUpstreamCommitCachedResolvesBareRepositoryUnderSafeConfig(
             self):
@@ -291,14 +249,7 @@ class RollProtobufTest(unittest.TestCase):
                 upstream_repository_path=bare_directory,
             ))
 
-        self.assertEqual(
-            commit_hash,
-            resolved_commit,
-            msg=(
-                'Expected EnsureUpstreamCommitCached to resolve a commit in a '
-                'bare repository via --git-dir without tripping '
-                'safe.bareRepository=explicit.'),
-        )
+        self.assertEqual(commit_hash, resolved_commit)
 
     def testEnsureUpstreamCommitCachedClonesMissingCacheRepositoryOnDemand(
             self):
@@ -316,13 +267,7 @@ class RollProtobufTest(unittest.TestCase):
             upstream_url=upstream_directory,
         )
 
-        self.assertEqual(
-            commit_hash,
-            resolved_commit,
-            msg=(
-                'Expected EnsureUpstreamCommitCached to create and bare-clone '
-                'cache_directory on demand when it does not exist yet.'),
-        )
+        self.assertEqual(commit_hash, resolved_commit)
 
     def testEnsureUpstreamCommitCachedFetchesCommitMissingFromExistingCache(
             self):
@@ -355,13 +300,7 @@ class RollProtobufTest(unittest.TestCase):
             upstream_url=upstream_directory,
         )
 
-        self.assertEqual(
-            second_commit_hash,
-            resolved_commit,
-            msg=(
-                'Expected EnsureUpstreamCommitCached to fetch a missing '
-                'commit into an existing bare cache on demand.'),
-        )
+        self.assertEqual(second_commit_hash, resolved_commit)
 
     def testEnsureUpstreamCommitCachedRefreshesMovingBranchReference(self):
         upstream_directory = os.path.join(self.temporary_directory, 'upstream')
@@ -395,14 +334,7 @@ class RollProtobufTest(unittest.TestCase):
             upstream_url=upstream_directory,
         )
 
-        self.assertEqual(
-            second_commit_hash,
-            resolved_commit,
-            msg=(
-                'Expected EnsureUpstreamCommitCached to re-fetch a moving '
-                'branch reference into the bare cache rather than returning '
-                'a stale cached branch tip.'),
-        )
+        self.assertEqual(second_commit_hash, resolved_commit)
 
     def testEnsureUpstreamCommitCachedIgnoresInheritedGitDirEnvironmentVariable(
             self):
@@ -427,20 +359,10 @@ class RollProtobufTest(unittest.TestCase):
                 upstream_repository_path=upstream_directory,
             )
 
-        self.assertEqual(
-            upstream_commit,
-            resolved_commit,
-            msg=(
-                'Expected EnsureUpstreamCommitCached to strip inherited '
-                'GIT_DIR so git -C resolves the target repository HEAD.'),
-        )
+        self.assertEqual(upstream_commit, resolved_commit)
 
     def testEnsureUpstreamCommitCachedRaisesErrorForNonGitUpstreamPath(self):
-        with self.assertRaises(
-                roll_protobuf.RollProtobufError,
-                msg=('Expected EnsureUpstreamCommitCached to raise '
-                     'RollProtobufError when upstream_repository_path is '
-                     'not a git repository.')):
+        with self.assertRaises(roll_protobuf.RollProtobufError):
             roll_protobuf.EnsureUpstreamCommitCached(
                 revision='HEAD',
                 upstream_repository_path=self.temporary_directory,
@@ -454,12 +376,8 @@ class RollProtobufTest(unittest.TestCase):
             {'src/google/protobuf/arena.h': '// v1\n'},
         )
 
-        with self.assertRaisesRegex(
-                roll_protobuf.RollProtobufError,
-                'not found in upstream repository',
-                msg=('Expected EnsureUpstreamCommitCached to raise '
-                     'RollProtobufError when revision is missing from '
-                     'upstream_repository_path.')):
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    'not found in upstream repository'):
             roll_protobuf.EnsureUpstreamCommitCached(
                 revision='0000000000000000000000000000000000000000',
                 upstream_repository_path=upstream_directory,
@@ -487,13 +405,7 @@ class RollProtobufTest(unittest.TestCase):
             upstream_url='/nonexistent/remote',
         )
 
-        self.assertEqual(
-            commit_hash,
-            resolved_commit,
-            msg=('Expected EnsureUpstreamCommitCached not to run git fetch '
-                 'when a 40-character commit SHA is already present in '
-                 'cache_directory.'),
-        )
+        self.assertEqual(commit_hash, resolved_commit)
 
     def testEnsureUpstreamCommitCachedRaisesErrorWhenFetchFails(self):
         upstream_directory = os.path.join(self.temporary_directory, 'upstream')
@@ -516,11 +428,8 @@ class RollProtobufTest(unittest.TestCase):
         # repository because LUCI's infra/tools/git wrapper matches
         # "fatal: couldn't find remote ref" in DefaultGitRetryRegexp and
         # retries 12 times (~12 minutes) before returning non-zero.
-        with self.assertRaisesRegex(
-                roll_protobuf.RollProtobufError,
-                'Failed to fetch revision',
-                msg=('Expected EnsureUpstreamCommitCached to raise '
-                     'RollProtobufError when git fetch fails.')):
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    'Failed to fetch revision'):
             roll_protobuf.EnsureUpstreamCommitCached(
                 revision='v33.5',
                 cache_directory=cache_directory,
@@ -547,13 +456,7 @@ class RollProtobufTest(unittest.TestCase):
         with open(extracted_header_path, 'r', encoding='utf-8') as header:
             extracted_content = header.read()
 
-        self.assertEqual(
-            '// arena v1\n',
-            extracted_content,
-            msg=(
-                'Expected ExtractUpstreamArchive to extract the tracked file '
-                'contents from commit_revision into destination_directory.'),
-        )
+        self.assertEqual('// arena v1\n', extracted_content)
 
     def testExtractUpstreamArchivePreservesGitArchiveStderrForUnknownRevision(
             self):
@@ -566,11 +469,8 @@ class RollProtobufTest(unittest.TestCase):
             {'src/google/protobuf/arena.h': '// arena\n'},
         )
 
-        with self.assertRaisesRegex(
-                roll_protobuf.RollProtobufError,
-                r'git archive failed.*fatal:',
-                msg=('Expected ExtractUpstreamArchive to preserve git '
-                     'archive stderr when commit_revision is invalid.')):
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'git archive failed.*fatal:'):
             roll_protobuf.ExtractUpstreamArchive(
                 repository_path=upstream_directory,
                 commit_revision='0000000000000000000000000000000000000000',
@@ -609,11 +509,7 @@ class RollProtobufTest(unittest.TestCase):
                 ),
                 self.assertRaisesRegex(
                     roll_protobuf.RollProtobufError,
-                    r'git archive failed.*fatal: corrupt pack',
-                    msg=('Expected ExtractUpstreamArchive to raise '
-                         'RollProtobufError with git stderr when git archive '
-                         'exits non-zero after tarfile finishes reading.'),
-                ),
+                    r'git archive failed.*fatal: corrupt pack'),
         ):
             roll_protobuf.ExtractUpstreamArchive(
                 repository_path=upstream_directory,
@@ -642,12 +538,8 @@ class RollProtobufTest(unittest.TestCase):
                        ['commit', '--quiet', '-m', 'Add symlink'])
         commit_hash = _RunGitCommand(upstream_directory, ['rev-parse', 'HEAD'])
 
-        with self.assertRaisesRegex(
-                roll_protobuf.RollProtobufError,
-                'absolute path',
-                msg=('Expected ExtractUpstreamArchive to report the '
-                     'tarfile filter error rather than a subsequent '
-                     'git archive SIGPIPE exit code.')):
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    'absolute path'):
             roll_protobuf.ExtractUpstreamArchive(
                 repository_path=upstream_directory,
                 commit_revision=commit_hash,
@@ -691,13 +583,7 @@ class RollProtobufTest(unittest.TestCase):
                 'arena.h',
             ))
 
-        self.assertTrue(
-            extracted_arena_exists,
-            msg=(
-                'Expected ExtractUpstreamArchive to stream stderr to a '
-                'temporary file so verbose git trace output exceeding the '
-                'OS pipe buffer does not block extraction.'),
-        )
+        self.assertTrue(extracted_arena_exists)
 
     @_SkipOnWindows('POSIX sh SIGPIPE exit status 141 is Unix-only.')
     def testExtractUpstreamArchiveReportsOsErrorWhenGitWrapperExits141(self):
@@ -725,13 +611,8 @@ class RollProtobufTest(unittest.TestCase):
         with (
                 mock.patch.object(roll_protobuf, '_GitCommandForRepository',
                                   BuildShellWrappedGitCommand),
-                self.assertRaisesRegex(
-                    roll_protobuf.RollProtobufError,
-                    'Not a directory',
-                    msg=('Expected ExtractUpstreamArchive to report the '
-                         'underlying OSError when extraction into a regular '
-                         'file fails and a shell wrapper exits with 141.'),
-                ),
+                self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                       'Not a directory'),
         ):
             roll_protobuf.ExtractUpstreamArchive(
                 repository_path=upstream_directory,
@@ -774,14 +655,7 @@ class RollProtobufTest(unittest.TestCase):
         with open(port_source_path, 'r', encoding='utf-8') as port_file:
             updated_content = port_file.read()
 
-        self.assertEqual(
-            'line 1\nline 3\n',
-            updated_content,
-            msg=(
-                'Expected zero-context unified diffs (like '
-                '0072-remove-version-stamp.patch) to apply cleanly via '
-                'git apply --unidiff-zero.'),
-        )
+        self.assertEqual('line 1\nline 3\n', updated_content)
 
     def testApplyPatchFileModifiesSubdirectoryInsideEnclosingGitRepository(
             self):
@@ -820,14 +694,7 @@ class RollProtobufTest(unittest.TestCase):
         with open(message_header_path, 'r', encoding='utf-8') as header:
             updated_content = header.read()
 
-        self.assertEqual(
-            'int Value() { return 2; }\n',
-            updated_content,
-            msg=(
-                'Expected ApplyPatchFile to isolate git apply from the '
-                'enclosing git repository via GIT_CEILING_DIRECTORIES and '
-                'modify the file inside the target subdirectory.'),
-        )
+        self.assertEqual('int Value() { return 2; }\n', updated_content)
 
     def testApplyPatchFileReturnsGitDiagnosticWhenPatchDoesNotApply(self):
         target_directory = os.path.join(self.temporary_directory, 'target')
@@ -855,13 +722,8 @@ class RollProtobufTest(unittest.TestCase):
             target_directory=target_directory,
         )
 
-        self.assertIn(
-            'patch does not apply',
-            '' if patch_error is None else patch_error,
-            msg=(
-                'Expected ApplyPatchFile to return git apply diagnostic '
-                'output when the patch context does not match the target.'),
-        )
+        self.assertIn('patch does not apply',
+                      '' if patch_error is None else patch_error)
 
     def testCheckTreePassesWhenUpstreamPlusPatchesMatchesChromiumTree(self):
         patch_content = (
@@ -900,13 +762,8 @@ class RollProtobufTest(unittest.TestCase):
         self.assertEqual(
             roll_protobuf.TreeVerificationResult(
                 upstream_revision=commit_hash,
-                applied_patches=('0001-update-value.patch',),
-            ),
-            verification_result,
-            msg=(
-                'Expected CheckTreeMatchesPatchedUpstream to return a clean '
-                'result when upstream + patches reproduces the Chromium tree.'),
-        )
+                applied_patches=('0001-update-value.patch', ),
+            ), verification_result)
 
     def testCheckTreeDetectsSourceModificationWhenPatchFileIsMissing(self):
         # Simulate https://crrev.com/c/8422202: message.h was updated in the
@@ -930,14 +787,8 @@ class RollProtobufTest(unittest.TestCase):
             upstream_repository_path=upstream_directory,
         )
 
-        self.assertEqual(
-            ('src/google/protobuf/message.h',),
-            verification_result.modified_files,
-            msg=(
-                'Expected a source modification in '
-                'src/google/protobuf/message.h without a matching patch in '
-                'patches/ to be flagged.'),
-        )
+        self.assertEqual(('src/google/protobuf/message.h', ),
+                         verification_result.modified_files)
 
     def testCheckTreeDetectsUnpatchedDirectEditAlongsideAppliedPatch(self):
         patch_content = (
@@ -973,13 +824,8 @@ class RollProtobufTest(unittest.TestCase):
             upstream_repository_path=upstream_directory,
         )
 
-        self.assertEqual(
-            ('src/google/protobuf/port.cc',),
-            verification_result.modified_files,
-            msg=(
-                'Expected an unpatched edit in src/google/protobuf/port.cc to '
-                'be flagged while patched message.h is accepted.'),
-        )
+        self.assertEqual(('src/google/protobuf/port.cc', ),
+                         verification_result.modified_files)
 
     def testCheckTreeDetectsUnexpectedExtraChromiumFile(self):
         upstream_directory, chromium_directory, _ = (
@@ -999,13 +845,8 @@ class RollProtobufTest(unittest.TestCase):
             upstream_repository_path=upstream_directory,
         )
 
-        self.assertEqual(
-            ('src/google/protobuf/stray_local_file.cc',),
-            verification_result.chromium_only_files,
-            msg=(
-                'Expected a non-exception file present only in Chromium to be '
-                'reported in chromium_only_files.'),
-        )
+        self.assertEqual(('src/google/protobuf/stray_local_file.cc', ),
+                         verification_result.chromium_only_files)
 
     def testCheckTreeDetectsMissingUpstreamFileNotInExceptionList(self):
         upstream_directory, chromium_directory, _ = (
@@ -1025,14 +866,8 @@ class RollProtobufTest(unittest.TestCase):
             upstream_repository_path=upstream_directory,
         )
 
-        self.assertEqual(
-            ('src/google/protobuf/extension_set.h',),
-            verification_result.upstream_only_files,
-            msg=(
-                'Expected an upstream file missing from //third_party/protobuf '
-                'and not in the exception list to be reported in '
-                'upstream_only_files.'),
-        )
+        self.assertEqual(('src/google/protobuf/extension_set.h', ),
+                         verification_result.upstream_only_files)
 
     def testCheckTreeReportsFailingPatchWhenPatchDoesNotApplyToUpstream(self):
         conflicting_patch = (
@@ -1064,13 +899,8 @@ class RollProtobufTest(unittest.TestCase):
             upstream_repository_path=upstream_directory,
         )
 
-        self.assertEqual(
-            '0015-broken-context.patch',
-            verification_result.failing_patch,
-            msg=(
-                'Expected CheckTreeMatchesPatchedUpstream to record the exact '
-                'filename of the patch that failed to apply.'),
-        )
+        self.assertEqual('0015-broken-context.patch',
+                         verification_result.failing_patch)
 
     def testCheckTreeIgnoresChromiumOwnedAndBootstrapGeneratedFiles(self):
         upstream_directory, chromium_directory, _ = (
@@ -1144,12 +974,7 @@ class RollProtobufTest(unittest.TestCase):
             upstream_repository_path=upstream_directory,
         )
 
-        self.assertTrue(
-            verification_result.IsClean(),
-            msg=(
-                'Expected Chromium-owned files and bootstrap files regenerated '
-                'by gen_extra_chromium_files.py to be ignored during check.'),
-        )
+        self.assertTrue(verification_result.IsClean())
 
     def testCheckTreeIgnoresCompatibilityAndWellKnownTypeGeneratedFiles(self):
         upstream_directory, chromium_directory, _ = (
@@ -1173,12 +998,7 @@ class RollProtobufTest(unittest.TestCase):
             upstream_repository_path=upstream_directory,
         )
 
-        self.assertTrue(
-            verification_result.IsClean(),
-            msg=(
-                'Expected compatibility/ and pre-generated Well-Known Type '
-                '.pb.{h,cc} files deleted during rolls to be ignored.'),
-        )
+        self.assertTrue(verification_result.IsClean())
 
     def testCheckTreeIgnoresUpstreamFilesMatchedByGitignore(self):
         upstream_directory, chromium_directory, _ = (
@@ -1208,12 +1028,7 @@ class RollProtobufTest(unittest.TestCase):
             upstream_repository_path=upstream_directory,
         )
 
-        self.assertTrue(
-            verification_result.IsClean(),
-            msg=(
-                'Expected upstream files excluded by .gitignore during '
-                'git add to be filtered out via git check-ignore.'),
-        )
+        self.assertTrue(verification_result.IsClean())
 
     def testCheckTreeRaisesErrorWhenProtobufDirectoryIsOutsideGitWorkTree(self):
         upstream_directory = os.path.join(self.temporary_directory, 'upstream')
@@ -1233,11 +1048,7 @@ class RollProtobufTest(unittest.TestCase):
         with mock.patch.dict(
                 os.environ,
             {'GIT_CEILING_DIRECTORIES': self.temporary_directory}):
-            with self.assertRaises(
-                    roll_protobuf.RollProtobufError,
-                    msg=('Expected CheckTreeMatchesPatchedUpstream to '
-                         'raise RollProtobufError when protobuf_directory '
-                         'is not inside a git work tree.')):
+            with self.assertRaises(roll_protobuf.RollProtobufError):
                 roll_protobuf.CheckTreeMatchesPatchedUpstream(
                     protobuf_directory=non_git_directory,
                     upstream_repository_path=upstream_directory,
@@ -1256,19 +1067,12 @@ class RollProtobufTest(unittest.TestCase):
             verification_result)
 
         self.assertEqual(
-            (
-                '//third_party/protobuf does not match upstream abc1234 plus '
-                'patches/*.patch:\n\n'
-                'Chromium-only files not in known exceptions (1):\n'
-                '  + src/google/protobuf/stray.cc\n\n'
-                'Upstream files missing from //third_party/protobuf (1):\n'
-                '  - src/google/protobuf/missing.cc'
-            ),
-            report_text,
-            msg=(
-                'Expected FormatTreeVerificationReport to list both '
-                'chromium_only_files (+) and upstream_only_files (-).'),
-        )
+            ('//third_party/protobuf does not match upstream abc1234 plus '
+             'patches/*.patch:\n\n'
+             'Chromium-only files not in known exceptions (1):\n'
+             '  + src/google/protobuf/stray.cc\n\n'
+             'Upstream files missing from //third_party/protobuf (1):\n'
+             '  - src/google/protobuf/missing.cc'), report_text)
 
     def testMainCheckExitsZeroAndPrintsSummaryWhenTreeIsClean(self):
         upstream_directory, chromium_directory, commit_hash = (
@@ -1290,16 +1094,11 @@ class RollProtobufTest(unittest.TestCase):
             upstream_directory,
         )
 
-        self.assertEqual(
-            (
-                roll_protobuf.EXIT_CODE_SUCCESS,
-                f'Verified //third_party/protobuf matches upstream '
-                f'{commit_hash} plus 0 patch(es).',
-            ),
-            (exit_code, stdout),
-            msg=('Expected main(["check", ...]) to exit 0 and print a single '
-                 'verification summary line when the tree matches.'),
-        )
+        self.assertEqual((
+            roll_protobuf.EXIT_CODE_SUCCESS,
+            f'Verified //third_party/protobuf matches upstream '
+            f'{commit_hash} plus 0 patch(es).',
+        ), (exit_code, stdout))
 
     def testMainCheckExitsOneAndListsModifiedFileWhenPatchIsMissing(self):
         upstream_directory, chromium_directory, commit_hash = (
@@ -1323,18 +1122,13 @@ class RollProtobufTest(unittest.TestCase):
             upstream_directory,
         )
 
-        self.assertEqual(
-            (
-                roll_protobuf.EXIT_CODE_ERROR,
-                f'//third_party/protobuf does not match upstream '
-                f'{commit_hash} plus patches/*.patch:\n\n'
-                'Modified files not explained by patches/ (1):\n'
-                '  M src/google/protobuf/message.h',
-            ),
-            (exit_code, stdout),
-            msg=('Expected main(["check", ...]) to exit 1 and list '
-                 'M src/google/protobuf/message.h when its patch is missing.'),
-        )
+        self.assertEqual((
+            roll_protobuf.EXIT_CODE_ERROR,
+            f'//third_party/protobuf does not match upstream '
+            f'{commit_hash} plus patches/*.patch:\n\n'
+            'Modified files not explained by patches/ (1):\n'
+            '  M src/google/protobuf/message.h',
+        ), (exit_code, stdout))
 
     def testMainCheckNamesFailingPatchWhenPatchApplicationFails(self):
         conflicting_patch = (
@@ -1369,13 +1163,9 @@ class RollProtobufTest(unittest.TestCase):
             upstream_directory,
         )
 
-        self.assertEqual(
-            (f'Patch failed to apply to upstream {commit_hash}: '
-             '0099-broken.patch'),
-            stdout.splitlines()[0],
-            msg=('Expected main(["check", ...]) to name 0099-broken.patch '
-                 'on the first report line when patch application fails.'),
-        )
+        self.assertEqual((f'Patch failed to apply to upstream {commit_hash}: '
+                          '0099-broken.patch'),
+                         stdout.splitlines()[0])
 
     def testMainCheckOutputsMachineReadableJsonWhenFlagIsSet(self):
         upstream_directory, chromium_directory, commit_hash = (
@@ -1408,11 +1198,7 @@ class RollProtobufTest(unittest.TestCase):
                 'modified_files': ['src/google/protobuf/arena.h'],
                 'chromium_only_files': [],
                 'upstream_only_files': [],
-            },
-            json.loads(stdout),
-            msg=('Expected --json to emit the complete TreeVerificationResult '
-                 'dictionary when differences are present.'),
-        )
+            }, json.loads(stdout))
 
     def testMainCheckIncludesJsonErrorMessageWhenRevisionIsMissingFromUpstream(
             self):
@@ -1444,11 +1230,7 @@ class RollProtobufTest(unittest.TestCase):
                 False,
                 'error': (f'Revision {missing_revision} not found in '
                           f'upstream repository {upstream_directory}.'),
-            },
-            json.loads(stdout),
-            msg=('Expected main(["check", "--json"]) to include the exact '
-                 'error message when Revision is absent from upstream.'),
-        )
+            }, json.loads(stdout))
 
     def testMainCheckOutputsJsonErrorWhenReadmeCannotBeRead(self):
         expected_readme_path = os.path.join(
@@ -1467,11 +1249,7 @@ class RollProtobufTest(unittest.TestCase):
             {
                 'is_clean': False,
                 'error': f'Missing README.chromium at {expected_readme_path}.',
-            },
-            json.loads(stdout),
-            msg=('Expected main(["check", "--json"]) to catch missing '
-                 'README.chromium and emit a JSON error payload.'),
-        )
+            }, json.loads(stdout))
 
     def testMainCheckExitsOneAndPrintsErrorToStderrWhenReadmeIsMissing(self):
         expected_readme_path = os.path.join(
@@ -1485,15 +1263,10 @@ class RollProtobufTest(unittest.TestCase):
             self.temporary_directory,
         )
 
-        self.assertEqual(
-            (
-                roll_protobuf.EXIT_CODE_ERROR,
-                f'Error: Missing README.chromium at {expected_readme_path}.',
-            ),
-            (exit_code, stderr),
-            msg=('Expected main(["check"]) without --json to exit 1 and print '
-                 'Error: to stderr when README.chromium is missing.'),
-        )
+        self.assertEqual((
+            roll_protobuf.EXIT_CODE_ERROR,
+            f'Error: Missing README.chromium at {expected_readme_path}.',
+        ), (exit_code, stderr))
 
     def testMainCheckClonesCacheUnderBuildDirectoryWhenDashCFlagIsSet(self):
         build_directory = os.path.join(self.temporary_directory, 'out_release')
@@ -1522,11 +1295,7 @@ class RollProtobufTest(unittest.TestCase):
         )
 
         self.assertTrue(
-            os.path.isfile(os.path.join(expected_cache_directory, 'HEAD')),
-            msg=('Expected main(["check", "-C", ...]) to clone a bare git '
-                 'cache containing HEAD into '
-                 '<build_dir>/.protobuf_roll/upstream-protobuf.'),
-        )
+            os.path.isfile(os.path.join(expected_cache_directory, 'HEAD')))
 
     def testCheckTreeFlagsUntrackedNonIgnoredFileInChromiumWorkingTree(self):
         upstream_directory, chromium_directory, _ = (
@@ -1551,14 +1320,8 @@ class RollProtobufTest(unittest.TestCase):
             upstream_repository_path=upstream_directory,
         )
 
-        self.assertEqual(
-            ('src/google/protobuf/untracked_scratch.h',),
-            verification_result.chromium_only_files,
-            msg=(
-                'Expected CheckTreeMatchesPatchedUpstream to flag untracked '
-                'non-ignored files in the Chromium working tree as '
-                'chromium_only_files.'),
-        )
+        self.assertEqual(('src/google/protobuf/untracked_scratch.h', ),
+                         verification_result.chromium_only_files)
 
     def testCheckTreeDoesNotMaskMissingUpstreamFileMatchedByUserExcludesFile(
             self):
@@ -1590,14 +1353,8 @@ class RollProtobufTest(unittest.TestCase):
                     upstream_repository_path=upstream_directory,
                 ))
 
-        self.assertEqual(
-            ('src/google/protobuf/user_ignored.h',),
-            verification_result.upstream_only_files,
-            msg=(
-                'Expected CheckTreeMatchesPatchedUpstream to ignore a user '
-                'core.excludesFile so missing upstream files are still '
-                'detected.'),
-        )
+        self.assertEqual(('src/google/protobuf/user_ignored.h', ),
+                         verification_result.upstream_only_files)
 
     def testCheckTreeDoesNotSkipUntrackedChromiumFileMatchedByUserExcludesFile(
             self):
@@ -1634,14 +1391,8 @@ class RollProtobufTest(unittest.TestCase):
                     upstream_repository_path=upstream_directory,
                 ))
 
-        self.assertEqual(
-            ('src/google/protobuf/user_excluded.h',),
-            verification_result.chromium_only_files,
-            msg=(
-                'Expected _ListChromiumProtobufFiles to neutralize '
-                'core.excludesFile so untracked local files matched by '
-                'a user global gitignore are still flagged.'),
-        )
+        self.assertEqual(('src/google/protobuf/user_excluded.h', ),
+                         verification_result.chromium_only_files)
 
     def testCheckTreeDetectsDeletedTrackedFileMatchingGitignore(self):
         upstream_directory, chromium_directory, _ = (
@@ -1666,14 +1417,8 @@ class RollProtobufTest(unittest.TestCase):
             upstream_repository_path=upstream_directory,
         )
 
-        self.assertEqual(
-            ('src/solaris/libstdc++.la',),
-            verification_result.upstream_only_files,
-            msg=(
-                'Expected CheckTreeMatchesPatchedUpstream to report a '
-                'deleted tracked upstream file even when its filename '
-                'matches a pattern in .gitignore.'),
-        )
+        self.assertEqual(('src/solaris/libstdc++.la', ),
+                         verification_result.upstream_only_files)
 
     def testCheckTreeRaisesErrorWhenProtobufDirectoryIsGitIgnored(self):
         upstream_directory, chromium_directory, commit_hash = (
@@ -1699,10 +1444,7 @@ class RollProtobufTest(unittest.TestCase):
 
         with self.assertRaisesRegex(
                 roll_protobuf.RollProtobufError,
-                r'git ls-files returned no README\.chromium',
-                msg=('Expected CheckTreeMatchesPatchedUpstream to raise '
-                     'RollProtobufError when protobuf_directory is '
-                     'git-ignored instead of silently passing.')):
+                r'git ls-files returned no README\.chromium'):
             roll_protobuf.CheckTreeMatchesPatchedUpstream(
                 protobuf_directory=ignored_protobuf_directory,
                 upstream_repository_path=upstream_directory,
@@ -1728,13 +1470,7 @@ class RollProtobufTest(unittest.TestCase):
         listed_files = roll_protobuf._ListRegularFilesInDirectory(
             self.temporary_directory)
 
-        self.assertEqual(
-            {'src/google/protobuf/arena.h'},
-            listed_files,
-            msg=(
-                'Expected _ListRegularFilesInDirectory to exclude .git/, '
-                '__pycache__/, .pyc files, and symlinks.'),
-        )
+        self.assertEqual({'src/google/protobuf/arena.h'}, listed_files)
 
     def testListTopLevelPatchPathsReturnsPatchesInReplayOrder(self):
         _WriteFilesToDirectory(
@@ -1750,31 +1486,19 @@ class RollProtobufTest(unittest.TestCase):
         patch_paths = roll_protobuf.ListTopLevelPatchPaths(
             self.temporary_directory)
 
-        self.assertEqual(
-            [
-                os.path.join(self.temporary_directory, 'patches',
-                             '0009-first.patch'),
-                os.path.join(self.temporary_directory, 'patches',
-                             '0010-second.patch'),
-            ],
-            patch_paths,
-            msg=('Expected ListTopLevelPatchPaths to return top-level .patch '
-                 'files in lexicographic replay order while skipping .md '
-                 'notes and upstream subdirectories.'),
-        )
+        self.assertEqual([
+            os.path.join(self.temporary_directory, 'patches',
+                         '0009-first.patch'),
+            os.path.join(self.temporary_directory, 'patches',
+                         '0010-second.patch'),
+        ], patch_paths)
 
     def testListTopLevelPatchPathsReturnsEmptyListWhenPatchesDirectoryIsMissing(
             self):
         patch_paths = roll_protobuf.ListTopLevelPatchPaths(
             self.temporary_directory)
 
-        self.assertEqual(
-            [],
-            patch_paths,
-            msg=(
-                'Expected ListTopLevelPatchPaths to return an empty list '
-                'when the patches/ directory does not exist.'),
-        )
+        self.assertEqual([], patch_paths)
 
     def testIsChromiumOwnedFileClassifiesTrackedChromiumAndUpstreamPaths(self):
         classification_by_path = {
@@ -1799,12 +1523,7 @@ class RollProtobufTest(unittest.TestCase):
                 'patches/protobuf_v25/0001-bazel.patch': False,
                 'patches/protobuf_v25/README.md': False,
                 'src/google/protobuf/arena.h': False,
-            },
-            classification_by_path,
-            msg=('Expected IsChromiumOwnedFile to recognize '
-                 'CHROMIUM_OWNED_FILES and top-level patches while excluding '
-                 'upstream files.'),
-        )
+            }, classification_by_path)
 
     def testIsIntentionallyDeletedUpstreamFileClassifiesRemovedPaths(self):
         classification_by_path = {
@@ -1823,13 +1542,7 @@ class RollProtobufTest(unittest.TestCase):
                 'src/google/protobuf/any.pb.cc': True,
                 'src/google/protobuf/descriptor.pb.cc': False,
                 'src/google/protobuf/arena.h': False,
-            },
-            classification_by_path,
-            msg=(
-                'Expected IsIntentionallyDeletedUpstreamFile to match '
-                'removed directories and non-bootstrap .pb.h/.pb.cc files '
-                'while keeping bootstrap-generated descriptor.pb.cc.'),
-        )
+            }, classification_by_path)
 
 
 if __name__ == '__main__':
