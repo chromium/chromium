@@ -37,7 +37,6 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_first_run_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
@@ -245,29 +244,25 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactories(
         {TestProfileIOS::TestingFactory{
-             static_cast<ProfileKeyedServiceFactoryIOS*>(
-                 autofill::PersonalDataManagerFactory::GetInstance()),
+             autofill::PersonalDataManagerFactory::GetInstance(),
              base::BindOnce(
                  [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
                    std::unique_ptr<autofill::TestPersonalDataManager> service =
                        std::make_unique<autofill::TestPersonalDataManager>();
                    service->SetPrefService(profile->GetPrefs());
-                   return std::unique_ptr<KeyedService>(service.release());
+                   return service;
                  })},
          TestProfileIOS::TestingFactory{
-             static_cast<ProfileKeyedServiceFactoryIOS*>(
-                 IOSPersonalContextFirstRunServiceFactory::GetInstance()),
+             IOSPersonalContextFirstRunServiceFactory::GetInstance(),
              base::BindOnce([](ProfileIOS* profile)
                                 -> std::unique_ptr<KeyedService> {
                return std::make_unique<FakePersonalContextFirstRunService>();
              })},
          TestProfileIOS::TestingFactory{
-             static_cast<ProfileKeyedServiceFactoryIOS*>(
-                 ios::HistoryServiceFactory::GetInstance()),
+             ios::HistoryServiceFactory::GetInstance(),
              ios::HistoryServiceFactory::GetDefaultFactory()},
          TestProfileIOS::TestingFactory{
-             static_cast<ProfileKeyedServiceFactoryIOS*>(
-                 ios::WebDataServiceFactory::GetInstance()),
+             ios::WebDataServiceFactory::GetInstance(),
              ios::WebDataServiceFactory::GetDefaultFactory()}});
     profile_ = std::move(builder).Build();
 
