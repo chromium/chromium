@@ -361,11 +361,11 @@ TEST_F(AccountMenuCoordinatorTest, testDegradedRecoverability) {
   AssertOpenAndStop();
 }
 
-// Tests that `openMDMErrorDialogWithSystemIdentity:completion:` has no effects
-// on the mediator and view controller.
+// Tests that `openMDMErrorDialogWithSystemIdentity:` notifies the mediator once
+// the MDM dialog flow finishes.
 TEST_F(AccountMenuCoordinatorTest, testMDMError) {
-  [coordinator_ openMDMErrorDialogWithSystemIdentity:kPrimaryIdentity
-                                          completion:nil];
+  OCMExpect([mediator_ accountMenuIsUsable]);
+  [coordinator_ openMDMErrorDialogWithSystemIdentity:kPrimaryIdentity];
   AssertOpenAndStop();
 }
 

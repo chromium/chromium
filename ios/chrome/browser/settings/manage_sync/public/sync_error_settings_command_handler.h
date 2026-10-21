@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_MANAGE_SYNC_PUBLIC_SYNC_ERROR_SETTINGS_COMMAND_HANDLER_H_
 #define IOS_CHROME_BROWSER_SETTINGS_MANAGE_SYNC_PUBLIC_SYNC_ERROR_SETTINGS_COMMAND_HANDLER_H_
 
-#import "base/ios/block_types.h"
+#import <Foundation/Foundation.h>
 
 @protocol SystemIdentity;
 
@@ -15,8 +15,7 @@
 
 // Opens MDM error dialog. This method should be called when there is a MDM
 // error.
-- (void)openMDMErrorDialogWithSystemIdentity:(id<SystemIdentity>)identity
-                                  completion:(ProceduralBlock)completion;
+- (void)openMDMErrorDialogWithSystemIdentity:(id<SystemIdentity>)identity;
 
 // Opens the reauth dialog. This method should be called only when the primary
 // account is available.

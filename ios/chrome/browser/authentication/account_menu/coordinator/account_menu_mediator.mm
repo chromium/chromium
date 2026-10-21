@@ -392,12 +392,8 @@
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_ErrorButton_MDM"));
         self.userInteractionsBlocked = YES;
-        __weak __typeof(self) weakSelf = self;
         [self.syncErrorSettingsCommandHandler
-            openMDMErrorDialogWithSystemIdentity:_primaryIdentityBeforeSignin
-                                      completion:^{
-                                        [weakSelf accountMenuIsUsable];
-                                      }];
+            openMDMErrorDialogWithSystemIdentity:_primaryIdentityBeforeSignin];
       }
       break;
     }
@@ -405,12 +401,8 @@
       base::RecordAction(
           base::UserMetricsAction("Signin_AccountMenu_ErrorButton_MDM"));
       self.userInteractionsBlocked = YES;
-      __weak __typeof(self) weakSelf = self;
       [self.syncErrorSettingsCommandHandler
-          openMDMErrorDialogWithSystemIdentity:_primaryIdentityBeforeSignin
-                                    completion:^{
-                                      [weakSelf accountMenuIsUsable];
-                                    }];
+          openMDMErrorDialogWithSystemIdentity:_primaryIdentityBeforeSignin];
       break;
     }
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:

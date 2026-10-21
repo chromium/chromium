@@ -1162,8 +1162,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case PrimaryAccountMdmErrorItemType: {
       id<SystemIdentity> identity =
           _authenticationService->GetPrimaryIdentity();
-      [self.syncErrorHandler openMDMErrorDialogWithSystemIdentity:identity
-                                                       completion:nil];
+      [self.syncErrorHandler openMDMErrorDialogWithSystemIdentity:identity];
       break;
     }
     case PrimaryAccountReauthErrorItemType: {
