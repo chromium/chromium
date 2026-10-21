@@ -916,6 +916,25 @@ using segmentation_platform::TipIdentifier;
   [self.delegate presentCustomizationButtonBubble];
 }
 
+- (void)didToggleTipsNotificationsSwitch:(BOOL)enabled {
+  base::UmaHistogramEnumeration(kTipsMagicStackModuleTappedTypeHistogram,
+                                TipIdentifier::kTipsNotifications);
+  [self.NTPActionsDelegate tipsOpened];
+  segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
+      segmentation_platform::SegmentationPlatformServiceFactory::
+          GetHomeCardRegistryForProfile(self.profile);
+  CHECK(registry);
+  registry->NotifyCardInteracted(
+      segmentation_platform::kTipsNotificationsEphemeralModule);
+  if (enabled) {
+    [self enableNotifications:ContentSuggestionsModuleType::kTips
+               viaContextMenu:NO];
+  } else {
+    [self disableNotifications:ContentSuggestionsModuleType::kTips
+                viaContextMenu:NO];
+  }
+}
+
 #pragma mark - MagicStackCollectionViewAudience
 
 - (void)didTapMagicStackEditButton {

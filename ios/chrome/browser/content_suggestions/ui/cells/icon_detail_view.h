@@ -12,10 +12,15 @@
 
 // A protocol for handling `IconDetailView` taps. `-didTapIconDetailView:view`
 // will be called when an `IconDetailView` is tapped.
-@protocol IconDetailViewTapDelegate
+@protocol IconDetailViewTapDelegate <NSObject>
 
 // Indicates that the user has tapped the given `view`.
 - (void)didTapIconDetailView:(IconDetailView*)view;
+
+@optional
+
+// Indicates that the user toggled the switch in `view` to `isOn`.
+- (void)didToggleSwitchInIconDetailView:(IconDetailView*)view isOn:(BOOL)isOn;
 
 @end
 

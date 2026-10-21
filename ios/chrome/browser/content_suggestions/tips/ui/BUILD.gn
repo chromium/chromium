@@ -28,6 +28,7 @@ source_set("ui") {
   deps = [
     "//base",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//components/segmentation_platform/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/magic_stack/ui:magic_stack_module_content_view_delegate",
     "//ios/chrome/browser/content_suggestions/magic_stack/ui:public",

@@ -9,6 +9,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
+#import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_audience.h"
 #import "ios/chrome/browser/content_suggestions/ui/cells/icon_view_configuration.h"
@@ -286,9 +287,14 @@ std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
 
 - (NSArray<UIColor*>*)symbolColorPalette {
   switch (self.identifier) {
+    case TipIdentifier::kTipsNotifications:
+      if (segmentation_platform::features::
+              IsMagicStackTipsV2IosActionableEnabled()) {
+        return @[ [UIColor colorNamed:kBlue600Color] ];
+      }
+      return @[ [UIColor whiteColor] ];
     case TipIdentifier::kAddressBarPosition:
     case TipIdentifier::kEnhancedSafeBrowsing:
-    case TipIdentifier::kTipsNotifications:
     case TipIdentifier::kNTPCustomization:
       return @[ [UIColor whiteColor] ];
     case TipIdentifier::kSavePasswords:
@@ -318,6 +324,10 @@ std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
     case TipIdentifier::kEnhancedSafeBrowsing:
       return [UIColor colorNamed:kBlue500Color];
     case TipIdentifier::kTipsNotifications:
+      if (segmentation_platform::features::
+              IsMagicStackTipsV2IosActionableEnabled()) {
+        return nil;
+      }
       return [UIColor colorNamed:kPink500Color];
     case TipIdentifier::kNTPCustomization:
       return [UIColor colorNamed:kPurple500Color];
@@ -374,6 +384,12 @@ std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
   }
 }
 
+- (BOOL)showSwitch {
+  return self.identifier == TipIdentifier::kTipsNotifications &&
+         segmentation_platform::features::
+             IsMagicStackTipsV2IosActionableEnabled();
+}
+
 #pragma mark - IconDetailViewTapDelegate
 
 - (void)didTapIconDetailView:(IconDetailView*)view {
@@ -385,6 +401,10 @@ std::optional<Symbol> GetBadgeSymbolConfigForTip(TipIdentifier tip,
   CHECK_NE(tip, TipIdentifier::kUnknown);
 
   [self.audience didSelectTip:tip];
+}
+
+- (void)didToggleSwitchInIconDetailView:(IconDetailView*)view isOn:(BOOL)isOn {
+  [self.audience didToggleTipsNotificationsSwitch:isOn];
 }
 
 #pragma mark - Private

@@ -249,6 +249,11 @@ using segmentation_platform::TipIdentifier;
   _backgroundCustomizationService->StoreCurrentTheme();
 }
 
+- (void)didToggleTipsNotificationsSwitch:(BOOL)enabled {
+  [self.delegate logMagicStackEngagementForType:self.activeConfig.type];
+  [self.presentationAudience didToggleTipsNotificationsSwitch:enabled];
+}
+
 #pragma mark - Private
 
 // Fetches the product image for the most recently subscribed product from

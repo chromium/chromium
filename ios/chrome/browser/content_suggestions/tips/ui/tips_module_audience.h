@@ -22,6 +22,9 @@ enum class TipIdentifier;
 // Called when a theme at `index` is selected in the actionable NTP Theme tip.
 - (void)didSelectNTPThemeAtIndex:(NSInteger)index;
 
+// Called when the switch is toggled in the actionable Tips Notifications tip.
+- (void)didToggleTipsNotificationsSwitch:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_TIPS_UI_TIPS_MODULE_AUDIENCE_H_

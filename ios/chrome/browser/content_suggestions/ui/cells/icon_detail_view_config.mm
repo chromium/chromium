@@ -43,6 +43,7 @@
   viewConfig.symbolBackgroundColor = self.symbolBackgroundColor;
   viewConfig.iconWidth = self.iconWidth;
   viewConfig.showCheckmark = self.showCheckmark;
+  viewConfig.showSwitch = self.showSwitch;
   viewConfig.ntpBackgroundColorPalette = self.ntpBackgroundColorPalette;
   viewConfig.badgeSymbol = self.badgeSymbol;
   viewConfig.badgeColorPalette = [self.badgeColorPalette copy];

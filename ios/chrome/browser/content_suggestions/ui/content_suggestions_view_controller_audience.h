@@ -50,6 +50,10 @@ enum class TipIdentifier;
 // the actionable NTP Theme tip.
 - (void)didSaveNTPThemeBackgroundPhoto;
 
+// Indicates that the user has toggled the switch in the actionable Tips
+// Notifications tip.
+- (void)didToggleTipsNotificationsSwitch:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_AUDIENCE_H_
