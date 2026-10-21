@@ -55,7 +55,15 @@ suite('NewTabPageThreadsRailTest', () => {
             '#showHistoryButton');
     assertTrue(!!historyButton);
     assertEquals(
-        loadTimeData.getString('aimThreadsHistoryLabel'), historyButton.title);
+        loadTimeData.getString('aimThreadsHistoryLabel'),
+        historyButton.getAttribute('aria-label'));
+    const historyTooltip =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            'cr-tooltip[for="showHistoryButton"]');
+    assertTrue(!!historyTooltip);
+    assertEquals(
+        loadTimeData.getString('aimThreadsHistoryLabel'),
+        historyTooltip.textContent.trim());
 
     const newSearchButton =
         threadsRailElement.shadowRoot.querySelector<HTMLElement>(
@@ -63,7 +71,14 @@ suite('NewTabPageThreadsRailTest', () => {
     assertTrue(!!newSearchButton);
     assertEquals(
         loadTimeData.getString('aimThreadsNewSearchLabel'),
-        newSearchButton.title);
+        newSearchButton.getAttribute('aria-label'));
+    const newSearchTooltip =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>(
+            'cr-tooltip[for="newSearchButton"]');
+    assertTrue(!!newSearchTooltip);
+    assertEquals(
+        loadTimeData.getString('aimThreadsNewSearchLabel'),
+        newSearchTooltip.textContent.trim());
 
     const tasksButton =
         threadsRailElement.shadowRoot.querySelector<HTMLElement>(

@@ -71,3 +71,24 @@ cr-icon-button {
   justify-content: center;
   margin: 0;
 }
+
+cr-tooltip {
+  --paper-tooltip-duration-in: 150ms;
+  --paper-tooltip-duration-out: 150ms;
+  --paper-tooltip-opacity: 1;
+}
+
+cr-tooltip::part(tooltip) {
+  align-items: center;
+  border-radius: 4px;
+  box-shadow: var(--cr-elevation-2);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 400;
+  gap: 8px;
+  justify-content: center;
+  line-height: 16px;
+  min-width: 0;
+  padding: 2px 6px;
+  white-space: nowrap;
+}

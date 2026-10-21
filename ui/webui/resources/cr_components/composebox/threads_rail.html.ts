@@ -16,12 +16,20 @@ export function getHtml(this: ThreadsRailElement) {
       <cr-icon-button id="showHistoryButton"
           iron-icon="composebox:notes-spark"
           @click="${this.onShowHistoryClick_}"
-          title="${this.i18n('aimThreadsHistoryLabel')}">
+          aria-label="${this.i18n('aimThreadsHistoryLabel')}">
       </cr-icon-button>
+      <cr-tooltip for="showHistoryButton" position="right" offset="16"
+          animation-delay="0" hide-delay="0">
+        ${this.i18n('aimThreadsHistoryLabel')}
+      </cr-tooltip>
       <cr-icon-button id="newSearchButton"
           iron-icon="composebox:notes-spark"
-          title="${this.i18n('aimThreadsNewSearchLabel')}">
+          aria-label="${this.i18n('aimThreadsNewSearchLabel')}">
       </cr-icon-button>
+      <cr-tooltip for="newSearchButton" position="right" offset="16"
+          animation-delay="0" hide-delay="0">
+        ${this.i18n('aimThreadsNewSearchLabel')}
+      </cr-tooltip>
       <cr-icon-button id="tasksButton"
           iron-icon="composebox:notes-spark">
       </cr-icon-button>
