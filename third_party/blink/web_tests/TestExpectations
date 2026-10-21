@@ -3975,15 +3975,6 @@ crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-001.svg [
 crbug.com/535451658 http/tests/devtools/console-xhr-logging-async.js [ Failure Pass ]
 crbug.com/535451658 http/tests/devtools/console-xhr-logging.js [ Failure Pass ]
 
-
-# See also crbug.com/920100 (sheriff 2019-01-09).
-crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/external-stylesheet.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/inline-style.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/inline-style-with-differentorigin-base-tag.tentative.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/internal-stylesheet.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/presentation-attribute.html [ Failure Timeout ]
-crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/processing-instruction.html [ Failure Timeout ]
-
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-complex-001.svg [ Failure ]
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-bicubic-001.svg [ Failure ]
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-005.svg [ Failure ]
