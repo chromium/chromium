@@ -2,6 +2,7 @@ include_rules = [
     "+ash/resources/vector_icons",
     "+components/cross_device/logging",
     "+third_party/nearby",
+    "+ui/message_center/message_center.h",
 ]
 specific_include_rules = {
   "nearby_connections_manager_impl.cc": [
@@ -9,6 +10,9 @@ specific_include_rules = {
   ],
   "nearby_connections_manager_impl_unittest.cc": [
     "+components/cross_device/nearby/nearby_features.h",
+  ],
+  "nearby_notification_manager_unittest.cc": [
+    "+ui/message_center/test/message_center_waiter.h",
   ],
   "nearby_sharing_service_impl_unittest.cc": [
     "+chrome/services/sharing/nearby/decoder/advertisement_decoder.h",

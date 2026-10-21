@@ -15,7 +15,6 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/nearby_sharing/power_client_chromeos.h"
 #include "chrome/browser/nearby_sharing/wifi_network_configuration/wifi_network_configuration_handler.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -98,7 +97,6 @@ NearbySharingServiceFactory::NearbySharingServiceFactory()
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ash::nearby::NearbyProcessManagerFactory::GetInstance());
-  DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }
 
 NearbySharingServiceFactory::~NearbySharingServiceFactory() = default;
@@ -121,9 +119,6 @@ NearbySharingServiceFactory::BuildServiceInstanceForBrowserContext(
   ash::nearby::NearbyProcessManager* process_manager =
       ash::nearby::NearbyProcessManagerFactory::GetForProfile(profile);
 
-  NotificationDisplayService* notification_display_service =
-      NotificationDisplayServiceFactory::GetForProfile(profile);
-
   auto nearby_connections_manager =
       std::make_unique<NearbyConnectionsManagerImpl>(process_manager,
                                                      kServiceId);
@@ -132,8 +127,7 @@ NearbySharingServiceFactory::BuildServiceInstanceForBrowserContext(
       << __func__ << ": creating NearbySharingService for primary profile";
 
   return std::make_unique<NearbySharingServiceImpl>(
-      *user, profile, notification_display_service,
-      std::move(nearby_connections_manager), process_manager,
+      *user, profile, std::move(nearby_connections_manager), process_manager,
       std::make_unique<PowerClientChromeos>(),
       std::make_unique<WifiNetworkConfigurationHandler>());
 }

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -39,8 +40,6 @@
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
 #include "chrome/browser/ui/ash/session/test_session_controller.h"
@@ -54,6 +53,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -68,6 +69,9 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/test/message_center_waiter.h"
 #include "ui/strings/grit/ui_strings.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -79,6 +83,9 @@ using testing::Return;
 
 namespace {
 
+constexpr char kNearbyNotifierId[] = "nearby";
+constexpr char kNearbyTransferResultNotificationIdPrefix[] =
+    "chrome://nearby_share/result/";
 const uint64_t kWifiCredentialsId = 111;
 const char kTextBody[] = "text body";
 const char kTextUrl[] = "https://google.com";
@@ -164,12 +171,13 @@ class NearbyNotificationManagerTest : public testing::Test {
   ~NearbyNotificationManagerTest() override = default;
 
   void SetUp() override {
+    message_center::MessageCenter::Initialize();
     NearbySharingServiceFactory::
         SetIsNearbyShareSupportedForBrowserContextForTesting(true);
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    notification_tester_ =
-        std::make_unique<NotificationDisplayServiceTester>(&profile_);
+    user_ = fake_user_manager_->AddUser(user_manager::StubAccountId());
+    fake_user_manager_->LoginUser(user_manager::StubAccountId());
     nearby_service_ = CreateAndUseMockNearbySharingService(&profile_);
     manager_ = CreateManager();
 
@@ -177,11 +185,6 @@ class NearbyNotificationManagerTest : public testing::Test {
         std::make_unique<MockSettingsOpener>();
     settings_opener_ = settings_opener.get();
     manager_->SetSettingsOpenerForTesting(std::move(settings_opener));
-
-    EXPECT_CALL(*nearby_service_, GetNotificationDelegate(testing::_))
-        .WillRepeatedly([&](const std::string& notification_id) {
-          return manager_->GetNotificationDelegate(notification_id);
-        });
 
     DownloadCoreServiceFactory::GetForBrowserContext(&profile_)
         ->SetDownloadManagerDelegateForTesting(
@@ -197,21 +200,36 @@ class NearbyNotificationManagerTest : public testing::Test {
     DownloadCoreServiceFactory::GetForBrowserContext(&profile_)
         ->SetDownloadManagerDelegateForTesting(nullptr);
     ui::Clipboard::DestroyClipboardForCurrentThread();
+    message_center::MessageCenter::Shutdown();
   }
 
   NearbyNotificationManager* manager() { return manager_.get(); }
 
+  // Returns the Nearby Share notifications.
   std::vector<message_center::Notification> GetDisplayedNotifications() {
-    return notification_tester_->GetDisplayedNotificationsForType(
-        NotificationHandler::Type::NEARBY_SHARE);
+    std::vector<message_center::Notification> notifications;
+    for (const message_center::Notification* notification :
+         message_center::MessageCenter::Get()->GetNotifications()) {
+      if (notification->notifier_id().id == kNearbyNotifierId) {
+        notifications.push_back(*notification);
+      }
+    }
+    return notifications;
+  }
+
+  // Returns the MessageCenter ID of the transfer result notification for
+  // |share_target|.
+  std::string GetTransferResultNotificationId(
+      const ShareTarget& share_target) const {
+    return ash::CreateUserScopedNotificationId(
+        base::StrCat({kNearbyTransferResultNotificationIdPrefix,
+                      share_target.id.ToString()}),
+        user_->username_hash());
   }
 
   std::unique_ptr<NearbyNotificationManager> CreateManager() {
-    NotificationDisplayService* notification_display_service =
-        NotificationDisplayServiceFactory::GetForProfile(&profile_);
     return std::make_unique<NearbyNotificationManager>(
-        notification_display_service, nearby_service_, &pref_service_,
-        &profile_);
+        nearby_service_, &pref_service_, &profile_, *user_);
   }
 
   ShareTarget CreateIncomingShareTarget(int text_attachments,
@@ -264,8 +282,10 @@ class NearbyNotificationManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingPrefServiceSimple pref_service_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
+  raw_ptr<const user_manager::User> user_ = nullptr;
   TestingProfile profile_;
-  std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   raw_ptr<MockNearbySharingService> nearby_service_;
   std::unique_ptr<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<NearbyNotificationManager> manager_;
@@ -755,9 +775,8 @@ TEST_P(NearbyNotificationManagerAttachmentsTest, ShowFailure) {
     EXPECT_EQ(expected_title, notification.title());
     EXPECT_EQ(expected_message, notification.message());
 
-    notification_tester_->RemoveNotification(
-        NotificationHandler::Type::NEARBY_SHARE, notifications[0].id(),
-        /*by_user=*/true);
+    message_center::MessageCenter::Get()->RemoveNotification(
+        notifications[0].id(), /*by_user=*/true);
   }
 }
 
@@ -1399,9 +1418,8 @@ TEST_F(NearbyNotificationManagerTest, ProgressNotification_Cancel) {
   // Expect call to Cancel on button click.
   EXPECT_CALL(*nearby_service_,
               Cancel(MatchesTarget(share_target), testing::_));
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(), /*action_index=*/0,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notifications[0].id(), /*button_index=*/0);
 
   // Notification should be closed on button click.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
@@ -1421,12 +1439,12 @@ TEST_F(NearbyNotificationManagerTest, ProgressNotification_Close) {
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
 
-  // Expect call to Cancel on notification close.
+  // Expect call to Cancel on notification close. The notification is pinned,
+  // so MessageCenter only closes it for a removal that is not by the user.
   EXPECT_CALL(*nearby_service_,
               Cancel(MatchesTarget(share_target), testing::_));
-  notification_tester_->RemoveNotification(
-      NotificationHandler::Type::NEARBY_SHARE, notifications[0].id(),
-      /*by_user=*/true);
+  message_center::MessageCenter::Get()->RemoveNotification(
+      notifications[0].id(), /*by_user=*/false);
 
   // Notification should be closed.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
@@ -1478,9 +1496,8 @@ TEST_F(NearbyNotificationManagerTest, ConnectionRequest_Accept) {
   // Expect call to Accept on button click.
   EXPECT_CALL(*nearby_service_,
               Accept(MatchesTarget(share_target), testing::_));
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(), /*action_index=*/0,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notifications[0].id(), /*button_index=*/0);
 
   // Notification should still be present as it will soon be replaced.
   EXPECT_EQ(1u, GetDisplayedNotifications().size());
@@ -1508,9 +1525,8 @@ TEST_F(NearbyNotificationManagerTest, ConnectionRequest_Reject_Local) {
   // Expect call to Reject on button click.
   EXPECT_CALL(*nearby_service_,
               Reject(MatchesTarget(share_target), testing::_));
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(), /*action_index=*/1,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notifications[0].id(), /*button_index=*/1);
 
   // Notification should be closed on button click.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
@@ -1538,9 +1554,8 @@ TEST_F(NearbyNotificationManagerTest, ProgressNotification_Reject_Remote) {
   // Expect call to Reject on button click.
   EXPECT_CALL(*nearby_service_,
               Reject(MatchesTarget(share_target), testing::_));
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(), /*action_index=*/0,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notifications[0].id(), /*button_index=*/0);
 
   // Notification should be closed on button click.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
@@ -1563,9 +1578,8 @@ TEST_F(NearbyNotificationManagerTest, ConnectionRequest_Close) {
   // Expect call to Reject on notification close.
   EXPECT_CALL(*nearby_service_,
               Reject(MatchesTarget(share_target), testing::_));
-  notification_tester_->RemoveNotification(
-      NotificationHandler::Type::NEARBY_SHARE, notifications[0].id(),
-      /*by_user=*/true);
+  message_center::MessageCenter::Get()->RemoveNotification(
+      notifications[0].id(), /*by_user=*/true);
 
   // Notification should be closed.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
@@ -1577,10 +1591,8 @@ TEST_F(NearbyNotificationManagerTest, NearbyDeviceTryingToShare_Click) {
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
   EXPECT_CALL(*settings_opener_, ShowSettingsPage(_, _));
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(),
-                                      /*action_index=*/0,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notifications[0].id(), /*button_index=*/0);
 
   // Notification should be closed.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
@@ -1594,9 +1606,8 @@ TEST_F(NearbyNotificationManagerTest,
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
 
-  notification_tester_->RemoveNotification(
-      NotificationHandler::Type::NEARBY_SHARE, notifications[0].id(),
-      /*by_user=*/true);
+  message_center::MessageCenter::Get()->RemoveNotification(
+      notifications[0].id(), /*by_user=*/true);
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
 
   // Second notification should be blocked if shown before the timeout passed.
@@ -1618,10 +1629,8 @@ TEST_F(NearbyNotificationManagerTest,
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
 
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(),
-                                      /*action_index=*/1,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notifications[0].id(), /*button_index=*/1);
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
 
   // Second notification should be blocked if shown before the timeout passed.
@@ -1649,13 +1658,12 @@ TEST_F(NearbyNotificationManagerTest,
   ShareTarget share_target = CreateIncomingShareTarget(
       /*text_attachments=*/0, /*url_attachments=*/0, /*image_attachments=*/1,
       /*other_file_attachments=*/0, /*wifi_credentials_attachments=*/false);
+  message_center::MessageCenterWaiter waiter(
+      GetTransferResultNotificationId(share_target));
   manager()->ShowSuccess(share_target);
 
   // Image decoding happens asynchronously so wait for the notification to show.
-  base::RunLoop display_run_loop;
-  notification_tester_->SetNotificationAddedClosure(
-      display_run_loop.QuitClosure());
-  display_run_loop.Run();
+  waiter.WaitUntilAdded();
 
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
@@ -1671,10 +1679,8 @@ TEST_F(NearbyNotificationManagerTest,
                 IDS_NEARBY_NOTIFICATION_ACTION_COPY_TO_CLIPBOARD),
             notification.buttons()[1].title);
 
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notification.id(),
-                                      /*action_index=*/0,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notification.id(), /*button_index=*/0);
 
   run_loop.Run();
 
@@ -1696,13 +1702,12 @@ TEST_F(NearbyNotificationManagerTest,
   ShareTarget share_target = CreateIncomingShareTarget(
       /*text_attachments=*/0, /*url_attachments=*/0, /*image_attachments=*/1,
       /*other_file_attachments=*/0, /*wifi_credentials_attachments=*/false);
+  message_center::MessageCenterWaiter waiter(
+      GetTransferResultNotificationId(share_target));
   manager()->ShowSuccess(share_target);
 
   // Image decoding happens asynchronously so wait for the notification to show.
-  base::RunLoop display_run_loop;
-  notification_tester_->SetNotificationAddedClosure(
-      display_run_loop.QuitClosure());
-  display_run_loop.Run();
+  waiter.WaitUntilAdded();
 
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
@@ -1718,10 +1723,8 @@ TEST_F(NearbyNotificationManagerTest,
                 IDS_NEARBY_NOTIFICATION_ACTION_COPY_TO_CLIPBOARD),
             notification.buttons()[1].title);
 
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notification.id(),
-                                      /*action_index=*/1,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notification.id(), /*button_index=*/1);
 
   run_loop.Run();
 
@@ -1760,10 +1763,8 @@ TEST_F(NearbyNotificationManagerTest,
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_FOLDER),
       notification.buttons()[0].title);
 
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notification.id(),
-                                      /*action_index=*/0,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notification.id(), /*button_index=*/0);
 
   run_loop.Run();
 
@@ -1795,10 +1796,8 @@ TEST_F(NearbyNotificationManagerTest, SuccessNotificationClicked_TextReceived) {
                 IDS_NEARBY_NOTIFICATION_ACTION_COPY_TO_CLIPBOARD),
             notification.buttons()[0].title);
 
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notification.id(),
-                                      /*action_index=*/0,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notification.id(), /*button_index=*/0);
 
   run_loop.Run();
   EXPECT_EQ(kTextBody, GetClipboardText());
@@ -1835,10 +1834,8 @@ TEST_F(NearbyNotificationManagerTest,
             notification.buttons()[1].title);
 
   EXPECT_CALL(*nearby_service_, OpenURL(testing::_)).Times(1);
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notification.id(),
-                                      /*action_index=*/0,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notification.id(), /*button_index=*/0);
 
   run_loop.Run();
 
@@ -1873,10 +1870,8 @@ TEST_F(NearbyNotificationManagerTest,
                 IDS_NEARBY_NOTIFICATION_ACTION_COPY_TO_CLIPBOARD),
             notification.buttons()[1].title);
 
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notification.id(),
-                                      /*action_index=*/1,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notification.id(), /*button_index=*/1);
 
   run_loop.Run();
 
@@ -1912,10 +1907,8 @@ TEST_F(NearbyNotificationManagerTest,
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_FOLDER),
       notification.buttons()[0].title);
 
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notification.id(),
-                                      /*action_index=*/0,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notification.id(), /*button_index=*/0);
 
   run_loop.Run();
 
@@ -1948,10 +1941,8 @@ TEST_F(NearbyNotificationManagerTest,
       l10n_util::GetStringUTF16(IDS_NEARBY_NOTIFICATION_ACTION_OPEN_FOLDER),
       notification.buttons()[0].title);
 
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notification.id(),
-                                      /*action_index=*/0,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notification.id(), /*button_index=*/0);
 
   run_loop.Run();
 
@@ -1984,10 +1975,8 @@ TEST_F(NearbyNotificationManagerTest,
                 IDS_NEARBY_NOTIFICATION_ACTION_OPEN_NETWORK_LIST),
             notification.buttons()[0].title);
 
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notification.id(),
-                                      /*action_index=*/0,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notification.id(), /*button_index=*/0);
 
   run_loop.Run();
 
@@ -2005,7 +1994,7 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
     constexpr char kEmail[] = "test@test";
 
     const AccountId account_id(AccountId::FromUserEmail(kEmail));
-    user_manager_->AddUser(account_id);
+    user_ = user_manager_->AddUser(account_id);
     user_manager_->LoginUser(account_id, /*set_profile_created_flag=*/false);
 
     profile_ = profile_manager_->CreateTestingProfile(kEmail);
@@ -2021,10 +2010,18 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    message_center::MessageCenter::Initialize();
     manager_ = std::make_unique<NearbyNotificationManager>(
-        NotificationDisplayServiceFactory::GetForProfile(profile_),
         CreateAndUseMockNearbySharingService(profile_), profile_->GetPrefs(),
-        profile_);
+        profile_, *user_);
+  }
+
+  void TearDown() override {
+    // Shut down MessageCenter before destroying the manager, as production
+    // does: ash::Shell destroys MessageCenter, and with it the notification
+    // delegates that point to the manager, before profile teardown.
+    message_center::MessageCenter::Shutdown();
+    manager_.reset();
   }
 
   NearbyNotificationManager* manager() { return manager_.get(); }
@@ -2044,6 +2041,7 @@ class NearbyFilesHoldingSpaceTest : public testing::Test {
   std::unique_ptr<ash::HoldingSpaceController> holding_space_controller_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;
+  raw_ptr<const user_manager::User> user_ = nullptr;
 };
 
 TEST_F(NearbyFilesHoldingSpaceTest, ShowSuccess_Files) {
@@ -2255,10 +2253,8 @@ TEST_F(NearbyNotificationManagerTest,
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
   EXPECT_CALL(*settings_opener_, ShowSettingsPage(_, _));
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(),
-                                      /*action_index=*/std::optional<int>(),
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotification(
+      notifications[0].id());
 
   // Notification should be closed.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
@@ -2274,10 +2270,8 @@ TEST_F(NearbyNotificationManagerTest, ShowVisibilityReminder_Settings_Clicked) {
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
   EXPECT_CALL(*settings_opener_, ShowSettingsPage(_, _));
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(),
-                                      /*action_index=*/0,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notifications[0].id(), /*button_index=*/0);
 
   // Notification should be closed.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
@@ -2292,10 +2286,8 @@ TEST_F(NearbyNotificationManagerTest, ShowVisibilityReminder_Dismiss_Clicked) {
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
-  notification_tester_->SimulateClick(NotificationHandler::Type::NEARBY_SHARE,
-                                      notifications[0].id(),
-                                      /*action_index=*/1,
-                                      /*reply=*/std::nullopt);
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      notifications[0].id(), /*button_index=*/1);
 
   // Notification should be closed.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());
@@ -2311,8 +2303,8 @@ TEST_F(NearbyNotificationManagerTest,
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications();
   ASSERT_EQ(1u, notifications.size());
-  notification_tester_->RemoveNotification(
-      NotificationHandler::Type::NEARBY_SHARE, notifications[0].id(), true);
+  message_center::MessageCenter::Get()->RemoveNotification(
+      notifications[0].id(), /*by_user=*/true);
 
   // Notification should be closed.
   EXPECT_EQ(0u, GetDisplayedNotifications().size());

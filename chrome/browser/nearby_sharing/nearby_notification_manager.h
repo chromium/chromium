@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/nearby_notification_delegate.h"
@@ -19,10 +20,17 @@
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
 #include "chrome/browser/nearby_sharing/transfer_update_callback.h"
 
-class NotificationDisplayService;
 class PrefService;
 class Profile;
 class SkBitmap;
+
+namespace message_center {
+class Notification;
+}
+
+namespace user_manager {
+class User;
+}
 
 // Manages notifications shown for Nearby Share. Only a single notification will
 // be shown as simultaneous connections are not supported. All methods should be
@@ -65,11 +73,11 @@ class NearbyNotificationManager : public TransferUpdateCallback,
                                   const std::string& sub_page);
   };
 
-  NearbyNotificationManager(
-      NotificationDisplayService* notification_display_service,
-      NearbySharingService* nearby_service,
-      PrefService* pref_service,
-      Profile* profile);
+  // |user| must be the user of |profile|.
+  NearbyNotificationManager(NearbySharingService* nearby_service,
+                            PrefService* pref_service,
+                            Profile* profile,
+                            const user_manager::User& user);
   ~NearbyNotificationManager() override;
 
   // TransferUpdateCallback:
@@ -170,15 +178,40 @@ class NearbyNotificationManager : public TransferUpdateCallback,
       std::unique_ptr<SettingsOpener> settings_opener);
 
  private:
+  class ForwardingNotificationDelegate;
+
+  // Creates a default Nearby Share notification with empty content, scoped to
+  // the user of |profile_|.
+  message_center::Notification CreateNearbyNotification(
+      const std::string& notification_id);
+
+  // Shows |notification|, or updates the one shown with the same ID.
+  void DisplayNotification(message_center::Notification notification);
+
+  // Removes the notification with |notification_id|, if it is shown.
+  void RemoveNotification(const std::string& notification_id);
+
+  // Handles a click on the notification with |notification_id|, or on its
+  // button |action_index|: runs the notification's NearbyNotificationDelegate,
+  // or removes the notification if it has none.
+  void OnNotificationClicked(const std::string& notification_id,
+                             const std::optional<int>& action_index);
+
+  // Handles the closing of the notification with |notification_id|: runs the
+  // notification's NearbyNotificationDelegate, if it has one.
+  void OnNotificationClosed(const std::string& notification_id);
+
+  // Opens the Nearby Share page of the OS settings.
+  void OnNotificationSettingsClicked();
+
   void ShowIncomingSuccess(const ShareTarget& share_target,
                            ReceivedContentType type,
                            const SkBitmap& image);
 
-  raw_ptr<NotificationDisplayService, DanglingUntriaged>
-      notification_display_service_;
   raw_ptr<NearbySharingService> nearby_service_;
   raw_ptr<PrefService> pref_service_;
-  raw_ptr<Profile> profile_;
+  const raw_ref<Profile> profile_;
+  const raw_ref<const user_manager::User> user_;
   std::unique_ptr<SettingsOpener> settings_opener_;
 
   // Maps notification ids to notification delegates.

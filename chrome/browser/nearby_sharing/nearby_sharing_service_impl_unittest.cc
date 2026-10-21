@@ -4,6 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <string>
@@ -47,8 +48,6 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/power_client.h"
 #include "chrome/browser/nearby_sharing/wifi_network_configuration/fake_wifi_network_configuration_handler.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/ui/ash/session/test_session_controller.h"
 #include "chrome/services/sharing/nearby/decoder/advertisement_decoder.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
@@ -78,6 +77,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 #include "third_party/nearby/sharing/proto/wire_format.pb.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 using ::testing::_;
 using testing::AtLeast;
@@ -322,6 +323,8 @@ constexpr sharing::mojom::WifiCredentialsMetadata::SecurityType
 
 constexpr int64_t kFreeDiskSpace = 10000;
 
+constexpr char kNearbyNotifierId[] = "nearby";
+
 const char kFourDigitToken[] = "1953";
 
 constexpr int kFilePayloadId = 111;
@@ -525,6 +528,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   ~NearbySharingServiceImplTestBase() override = default;
 
   void SetUp() override {
+    message_center::MessageCenter::Initialize();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
@@ -596,6 +600,11 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   }
 
   void TearDown() override {
+    // Shut down MessageCenter before the service, as production does:
+    // ash::Shell destroys MessageCenter, and with it the notification
+    // delegates that point to the service's NearbyNotificationManager,
+    // before profile teardown.
+    message_center::MessageCenter::Shutdown();
     ShutdownAndResetService();
 
     if (profile_) {
@@ -645,17 +654,13 @@ class NearbySharingServiceImplTestBase : public testing::Test {
                                              profile_->GetPrefs());
 
     fake_nearby_connections_manager_ = new FakeNearbyConnectionsManager();
-    notification_tester_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile_);
-    NotificationDisplayService* notification_display_service =
-        NotificationDisplayServiceFactory::GetForProfile(profile_);
     auto power_client = std::make_unique<FakePowerClient>();
     power_client_ = power_client.get();
     auto wifi_network_handler =
         std::make_unique<FakeWifiNetworkConfigurationHandler>();
     wifi_network_handler_ = wifi_network_handler.get();
     auto service = std::make_unique<NearbySharingServiceImpl>(
-        *user, profile_, notification_display_service,
+        *user, profile_,
         base::WrapUnique(fake_nearby_connections_manager_.get()),
         &mock_nearby_process_manager_, std::move(power_client),
         std::move(wifi_network_handler));
@@ -1611,7 +1616,6 @@ class NearbySharingServiceImplTestBase : public testing::Test {
       local_device_data_manager_factory_;
   FakeNearbyShareContactManager::Factory contact_manager_factory_;
   FakeNearbyShareCertificateManager::Factory certificate_manager_factory_;
-  std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
   NiceMock<ash::nearby::MockNearbyProcessManager> mock_nearby_process_manager_;
   std::unique_ptr<TestSessionController> session_controller_;
   std::unique_ptr<NearbySharingServiceImpl> service_;
@@ -5323,12 +5327,13 @@ TEST_P(NearbySharingServiceImplTest, VisibilityReminderTimerIsTriggered) {
   service_->set_visibility_reminder_timer_delay_for_testing(kTestDelay);
   SetVisibility(nearby_share::mojom::Visibility::kAllContacts);
   task_environment_.FastForwardBy(kTestDelay);
-  std::vector<message_center::Notification> notifications =
-      notification_tester_->GetDisplayedNotificationsForType(
-          NotificationHandler::Type::NEARBY_SHARE);
 
   // Visibility reminder notification should display after 3 Minutes.
-  EXPECT_EQ(1u, notifications.size());
+  EXPECT_EQ(1, std::ranges::count_if(
+                   message_center::MessageCenter::Get()->GetNotifications(),
+                   [](const message_center::Notification* notification) {
+                     return notification->notifier_id().id == kNearbyNotifierId;
+                   }));
 }
 
 TEST_P(NearbySharingServiceImplTest, CreateShareTarget) {

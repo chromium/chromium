@@ -63,7 +63,6 @@ class NearbyShareContactManager;
 class NearbyShareCertificateManager;
 class NearbyShareClientFactory;
 class NearbyShareLocalDeviceDataManager;
-class NotificationDisplayService;
 class PrefService;
 class Profile;
 
@@ -95,7 +94,6 @@ class NearbySharingServiceImpl
   NearbySharingServiceImpl(
       user_manager::User& user,
       Profile* profile,
-      NotificationDisplayService* notification_display_service,
       std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
       ash::nearby::NearbyProcessManager* process_manager,
       std::unique_ptr<PowerClient> power_client,

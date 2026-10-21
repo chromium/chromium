@@ -242,6 +242,7 @@ source_set("impl") {
     "//ui/base/clipboard",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/gfx",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/strings",
     "//ui/views",
@@ -339,7 +340,6 @@ source_set("unit_tests") {
       "//chrome/browser/nearby_sharing/contacts:test_support",
       "//chrome/browser/nearby_sharing/local_device_data:test_support",
       "//chrome/browser/nearby_sharing/proto:tachyon_proto",
-      "//chrome/browser/notifications",
       "//chrome/browser/ui/ash/holding_space",
       "//chrome/browser/ui/ash/holding_space:test_support",
       "//chrome/browser/ui/ash/session:test_support",
@@ -396,6 +396,9 @@ source_set("unit_tests") {
       "//ui/gfx:gfx_skia",
       "//ui/gfx:test_support",
       "//ui/gfx/codec",
+      "//ui/message_center",
+      "//ui/message_center:test_support",
+      "//ui/message_center/public/cpp",
     ]
     if (is_internal_chrome_branded) {
       deps += [ "//chrome/browser/nearby_sharing/internal/icons:vector_icons" ]

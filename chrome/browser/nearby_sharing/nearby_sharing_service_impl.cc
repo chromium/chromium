@@ -308,7 +308,6 @@ NearbyShareEncryptedMetadataKey AdvertisementToKey(
 NearbySharingServiceImpl::NearbySharingServiceImpl(
     user_manager::User& user,
     Profile* profile,
-    NotificationDisplayService* notification_display_service,
     std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
     ash::nearby::NearbyProcessManager* process_manager,
     std::unique_ptr<PowerClient> power_client,
@@ -391,8 +390,8 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
 
   GetBluetoothAdapter();
 
-  nearby_notification_manager_ = std::make_unique<NearbyNotificationManager>(
-      notification_display_service, this, prefs_, profile_);
+  nearby_notification_manager_ =
+      std::make_unique<NearbyNotificationManager>(this, prefs_, profile_, user);
 
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 
