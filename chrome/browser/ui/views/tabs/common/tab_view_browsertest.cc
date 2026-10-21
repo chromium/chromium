@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
@@ -60,6 +61,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/mock_activation_controller.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -137,6 +139,18 @@ class TabViewTest : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
         std::make_unique<views::test::MockActivationController>();
 #endif
     VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+#if BUILDFLAG(IS_MAC)
+    // MockActivationController bypasses NativeWidgetMacNSWindowHost, preventing
+    // InProcessBrowserTest's ScopedFakeFullKeyboardAccess from propagating to
+    // FocusManager.
+    BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetFocusManager()
+        ->SetKeyboardAccessible(true);
+#endif
   }
 
   void TearDownOnMainThread() override {
@@ -1166,6 +1180,31 @@ IN_PROC_BROWSER_TEST_F(TabViewTest,
   EXPECT_TRUE(tab_view_2->HasFocus());
 }
 
+IN_PROC_BROWSER_TEST_F(TabViewTest,
+                       KeyboardExtendTabSelection_PreservesPaneFocus) {
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(0);
+
+  TabStripRegionView* region_view =
+      BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view();
+  views::View* tab_view_0 = GetTabView(0);
+  views::View* tab_view_1 = GetTabView(1);
+  ASSERT_TRUE(tab_view_0);
+  ASSERT_TRUE(tab_view_1);
+
+  region_view->RequestFocus();
+  ASSERT_TRUE(tab_view_0->HasFocus());
+  ASSERT_TRUE(region_view->pane_has_focus());
+
+  ui::KeyEvent shift_down(ui::EventType::kKeyPressed, ui::VKEY_DOWN,
+                          ui::EF_SHIFT_DOWN);
+  EXPECT_TRUE(tab_view_0->OnKeyPressed(shift_down));
+  EXPECT_TRUE(tab_strip_model()->IsTabSelected(0));
+  EXPECT_TRUE(tab_strip_model()->IsTabSelected(1));
+  EXPECT_TRUE(tab_view_1->HasFocus());
+  EXPECT_TRUE(region_view->pane_has_focus());
+}
+
 class HorizontalTabViewTest : public TabViewTest {
  public:
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
@@ -1177,7 +1216,7 @@ class HorizontalTabViewTest : public TabViewTest {
   }
 
   void SetUpOnMainThread() override {
-    VerticalTabsBrowserTestMixin<InProcessBrowserTest>::SetUpOnMainThread();
+    TabViewTest::SetUpOnMainThread();
     ExitVerticalTabsMode();
     ResetTabHoverStates();
   }

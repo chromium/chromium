@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_frame_service.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
@@ -50,7 +51,9 @@
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -175,6 +178,18 @@ void TabStripCollectionController::ShiftTabNext(
 void TabStripCollectionController::ShiftTabPrevious(
     const tabs::TabInterface* tab_interface) {
   ShiftTabRelative(tab_interface, -1);
+}
+
+void TabStripCollectionController::ExtendSelectionNext(
+    const tabs::TabInterface* tab_interface,
+    const TabStripUserGestureDetails& gesture_detail) {
+  ExtendSelectionRelative(tab_interface, /*leading=*/false, gesture_detail);
+}
+
+void TabStripCollectionController::ExtendSelectionPrevious(
+    const tabs::TabInterface* tab_interface,
+    const TabStripUserGestureDetails& gesture_detail) {
+  ExtendSelectionRelative(tab_interface, /*leading=*/true, gesture_detail);
 }
 
 void TabStripCollectionController::ShiftGroupUp(
@@ -789,6 +804,51 @@ void TabStripCollectionController::ShiftTabRelative(
   browser_view_->GetViewAccessibility().AnnounceText(
       l10n_util::GetStringUTF16((offset > 0) ? IDS_TAB_AX_ANNOUNCE_MOVED_DOWN
                                              : IDS_TAB_AX_ANNOUNCE_MOVED_UP));
+}
+
+void TabStripCollectionController::ExtendSelectionRelative(
+    const tabs::TabInterface* tab_interface,
+    bool leading,
+    const TabStripUserGestureDetails& gesture_detail) {
+  CHECK(tab_interface);
+  const TabCollectionNode* adjacent_node =
+      GetAdjacentTab(tab_interface, leading);
+  if (!adjacent_node) {
+    return;
+  }
+
+  TabView* adjacent_tab_view =
+      views::AsViewClass<TabView>(adjacent_node->view());
+  CHECK(adjacent_tab_view);
+
+  const TabCollectionNode* start_node =
+      root_node_->GetNodeForHandle(tab_interface->GetHandle());
+  CHECK(start_node);
+  views::View* start_view = start_node->view();
+  CHECK(start_view);
+  views::FocusManager* focus_manager = browser_view_->GetFocusManager();
+  CHECK(focus_manager);
+  TabStripRegionView* tab_strip_view = browser_view_->tab_strip_view();
+  CHECK(tab_strip_view);
+  const bool had_focus = start_view->Contains(focus_manager->GetFocusedView());
+  const bool had_pane_focus = had_focus && tab_strip_view->pane_has_focus();
+  if (!tab_interface->IsSelected()) {
+    SelectTab(tab_interface, gesture_detail);
+  }
+  ExtendSelectionTo(adjacent_tab_view->GetTabInterface());
+  base::RecordAction(
+      base::UserMetricsAction("TabMultiSelect_ExtendSelectionTo"));
+
+  if (!had_focus) {
+    return;
+  }
+  if (had_pane_focus) {
+    tab_strip_view->SetPaneFocus(adjacent_tab_view);
+  } else {
+    focus_manager->SetFocusedViewWithReason(
+        adjacent_tab_view,
+        views::FocusManager::FocusChangeReason::kFocusTraversal);
+  }
 }
 
 void TabStripCollectionController::ShiftGroupRelative(

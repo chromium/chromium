@@ -67,6 +67,11 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
 
   void ShiftTabNext(const tabs::TabInterface* tab_interface);
   void ShiftTabPrevious(const tabs::TabInterface* tab_interface);
+  void ExtendSelectionNext(const tabs::TabInterface* tab_interface,
+                           const TabStripUserGestureDetails& gesture_detail);
+  void ExtendSelectionPrevious(
+      const tabs::TabInterface* tab_interface,
+      const TabStripUserGestureDetails& gesture_detail);
   void ShiftGroupUp(const tab_groups::TabGroupId& group);
   void ShiftGroupDown(const tab_groups::TabGroupId& group);
   void MoveTabFirst(const tabs::TabInterface* tab_interface);
@@ -173,6 +178,10 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   void ExpandCollapsedGroupsInSelectionRange(int target_index);
 
   void ShiftTabRelative(const tabs::TabInterface* tab_interface, int offset);
+  void ExtendSelectionRelative(
+      const tabs::TabInterface* tab_interface,
+      bool leading,
+      const TabStripUserGestureDetails& gesture_detail);
   void ShiftGroupRelative(const tab_groups::TabGroupId& group, int offset);
 
   void AnnounceTabAddedToGroup(tab_groups::TabGroupId group_id);

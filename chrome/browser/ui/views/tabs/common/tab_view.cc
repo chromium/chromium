@@ -554,28 +554,15 @@ bool TabView::OnKeyPressed(const ui::KeyEvent& event) {
   if (std::optional<event_utils::ExtendSelectionDirection> direction =
           event_utils::GetExtendSelectionCommandForKeyboardEvent(
               event, layout_orientation)) {
-    const bool leading =
-        *direction == event_utils::ExtendSelectionDirection::kPrevious;
-    const TabCollectionNode* adjacent_node =
-        collection_node_->GetController()->GetAdjacentTab(GetTabInterface(),
-                                                          leading);
-    if (adjacent_node) {
-      if (TabView* adjacent_tab_view =
-              views::AsViewClass<TabView>(adjacent_node->view())) {
-        if (!selected_) {
-          collection_node_->GetController()->SelectTab(GetTabInterface(),
-                                                       GetGestureDetail(event));
-        }
-        collection_node_->GetController()->ExtendSelectionTo(
-            adjacent_tab_view->GetTabInterface());
-        base::RecordAction(
-            base::UserMetricsAction("TabMultiSelect_ExtendSelectionTo"));
-        if (views::FocusManager* focus_manager = GetFocusManager()) {
-          focus_manager->SetFocusedViewWithReason(
-              adjacent_tab_view,
-              views::FocusManager::FocusChangeReason::kFocusTraversal);
-        }
-      }
+    switch (*direction) {
+      case event_utils::ExtendSelectionDirection::kPrevious:
+        collection_node_->GetController()->ExtendSelectionPrevious(
+            GetTabInterface(), GetGestureDetail(event));
+        break;
+      case event_utils::ExtendSelectionDirection::kNext:
+        collection_node_->GetController()->ExtendSelectionNext(
+            GetTabInterface(), GetGestureDetail(event));
+        break;
     }
     return true;
   }
