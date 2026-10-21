@@ -16,11 +16,8 @@ include_rules = [
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/extensions/api/braille_display_private",
   "+chrome/browser/extensions/component_loader.h",
-  "+chrome/browser/extensions/error_console",
   "+chrome/browser/extensions/extension_apitest.h",
-  "+chrome/browser/extensions/extension_browser_test_util.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/speech",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/aura/accessibility",
   "+chrome/browser/ui/singleton_tabs.h",
@@ -39,6 +36,7 @@ specific_include_rules = {
   ".*_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
+    "+chrome/browser/extensions/error_console",
     "+chrome/browser/global_features.h",
     "+chrome/browser/ui/browser_commands.h",
     "+chrome/browser/ui/browser_window.h",
@@ -59,5 +57,12 @@ specific_include_rules = {
   ],
   "sticky_keys_browsertest\\.cc": [
     "+chrome/common/pref_names.h",
+  ],
+  "accessibility_test_utils\\.h": [
+    "+chrome/browser/extensions/error_console",
+    "+chrome/browser/extensions/extension_browser_test_util.h",
+  ],
+  "(accessibility_manager_browsertest\\.cc|dictation_test_utils\\.h|spoken_feedback_integration_test\\.cc)": [
+    "+chrome/browser/speech",
   ],
 }
