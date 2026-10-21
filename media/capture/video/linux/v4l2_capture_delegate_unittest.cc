@@ -37,10 +37,6 @@
 using base::test::RunClosure;
 using ::testing::_;
 
-#if BUILDFLAG(IS_LINUX)
-using testing::InvokeWithoutArgs;
-#endif  // BUILDFLAG(IS_LINUX)
-
 namespace media {
 
 namespace {
@@ -460,12 +456,12 @@ TEST_P(V4l2CaptureDelegateGPUMemoryBufferTest, CameraCaptureOneCopy) {
 
   base::RunLoop wait_loop;
   EXPECT_CALL(*client_ptr, OnIncomingCapturedBufferExt)
-      .WillRepeatedly(InvokeWithoutArgs([&wait_loop, this]() {
+      .WillRepeatedly([&wait_loop, this]() {
         this->received_frame_count_++;
         if (this->received_frame_count_ == kFrameToReceive) {
           wait_loop.Quit();
         }
-      }));
+      });
 
   VideoCaptureParams arbitrary_params;
   arbitrary_params.requested_format.frame_size = gfx::Size(1280, 720);

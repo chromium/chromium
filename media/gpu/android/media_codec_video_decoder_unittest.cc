@@ -41,7 +41,6 @@
 
 using base::test::RunCallback;
 using testing::_;
-using testing::InvokeWithoutArgs;
 using testing::NiceMock;
 using testing::NotNull;
 using testing::Return;
@@ -493,11 +492,10 @@ TEST_P(MediaCodecVideoDecoderTest, AfterInitCompletesTheCodecIsPolled) {
   // Run a RunLoop until the first time the codec is polled for an available
   // input buffer.
   base::RunLoop loop;
-  EXPECT_CALL(*codec, DequeueInputBuffer(_, _))
-      .WillOnce(InvokeWithoutArgs([&loop]() {
-        loop.Quit();
-        return MediaCodecResult::Codes::kTryAgainLater;
-      }));
+  EXPECT_CALL(*codec, DequeueInputBuffer(_, _)).WillOnce([&loop]() {
+    loop.Quit();
+    return MediaCodecResult::Codes::kTryAgainLater;
+  });
   loop.Run();
 }
 

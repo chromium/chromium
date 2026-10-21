@@ -184,13 +184,13 @@ TEST_F(LogEventDispatcherTest, DispatchBatchOfEvents) {
   };
   EXPECT_CALL(subscriber(),
               OnReceiveFrameEvent(testing::Ref(frame_events->at(0))))
-      .WillOnce(testing::InvokeWithoutArgs(event_closure));
+      .WillOnce(event_closure);
   EXPECT_CALL(subscriber(),
               OnReceiveFrameEvent(testing::Ref(frame_events->at(1))))
-      .WillOnce(testing::InvokeWithoutArgs(event_closure));
+      .WillOnce(event_closure);
   EXPECT_CALL(subscriber(),
               OnReceivePacketEvent(testing::Ref(packet_events->at(0))))
-      .WillOnce(testing::InvokeWithoutArgs(event_closure));
+      .WillOnce(event_closure);
 
   dispatcher().DispatchBatchOfEvents(std::move(frame_events),
                                      std::move(packet_events));
@@ -217,13 +217,13 @@ TEST_F(LogEventDispatcherTest, DispatchBatchOfEventsOnAnotherThread) {
   };
   EXPECT_CALL(subscriber(),
               OnReceiveFrameEvent(testing::Ref(frame_events->at(0))))
-      .WillOnce(testing::InvokeWithoutArgs(event_closure));
+      .WillOnce(event_closure);
   EXPECT_CALL(subscriber(),
               OnReceiveFrameEvent(testing::Ref(frame_events->at(1))))
-      .WillOnce(testing::InvokeWithoutArgs(event_closure));
+      .WillOnce(event_closure);
   EXPECT_CALL(subscriber(),
               OnReceivePacketEvent(testing::Ref(packet_events->at(0))))
-      .WillOnce(testing::InvokeWithoutArgs(event_closure));
+      .WillOnce(event_closure);
 
   auto task_runner = CreateTaskRunner();
   task_runner->PostTask(

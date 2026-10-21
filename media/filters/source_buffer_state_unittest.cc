@@ -26,7 +26,6 @@ namespace media {
 using base::test::RunClosure;
 using testing::_;
 using testing::DoAll;
-using testing::InvokeWithoutArgs;
 using testing::Return;
 using testing::SaveArg;
 
@@ -129,12 +128,10 @@ class SourceBufferStateTest : public ::testing::Test {
         .WillOnce(Return(true));
     EXPECT_CALL(*mock_stream_parser_,
                 Parse(StreamParser::kMaxPendingBytesPerParse))
-        .WillOnce(
-            DoAll(InvokeWithoutArgs([&] {
-                    new_configs_result = new_config_cb_.Run(std::move(tracks));
-                  }),
-                  /* Indicate successful parse with no uninspected data. */
-                  Return(StreamParser::ParseStatus::kSuccess)));
+        .WillOnce(DoAll(
+            [&] { new_configs_result = new_config_cb_.Run(std::move(tracks)); },
+            /* Indicate successful parse with no uninspected data. */
+            Return(StreamParser::ParseStatus::kSuccess)));
 
     EXPECT_TRUE(sbs->AppendToParseBuffer(stream_data));
     EXPECT_EQ(StreamParser::ParseStatus::kSuccess,
@@ -421,14 +418,13 @@ TEST_F(SourceBufferStateTest, MarkEndOfStreamAllowsNewConfigs) {
   // Verify that MarkEndOfStream triggers the end-of-stream action on
   // the stream parser, and that during this call, new configs can be
   // emitted.
-  EXPECT_CALL(*mock_stream_parser_, MarkEndOfStream())
-      .WillOnce(InvokeWithoutArgs([&] {
-        std::unique_ptr<MediaTracks> tracks(new MediaTracks());
-        AddVideoTrack(tracks, VideoCodec::kVP8, 1);
-        EXPECT_FOUND_CODEC_NAME(Video, "vp8");
-        EXPECT_CALL(*this, MediaTracksUpdatedMock(_));
-        EXPECT_TRUE(new_config_cb_.Run(std::move(tracks)));
-      }));
+  EXPECT_CALL(*mock_stream_parser_, MarkEndOfStream()).WillOnce([&] {
+    std::unique_ptr<MediaTracks> tracks(new MediaTracks());
+    AddVideoTrack(tracks, VideoCodec::kVP8, 1);
+    EXPECT_FOUND_CODEC_NAME(Video, "vp8");
+    EXPECT_CALL(*this, MediaTracksUpdatedMock(_));
+    EXPECT_TRUE(new_config_cb_.Run(std::move(tracks)));
+  });
 
   sbs->MarkEndOfStream();
 }

@@ -41,7 +41,6 @@ using testing::A;
 using testing::AtLeast;
 using testing::AtMost;
 using testing::Invoke;
-using testing::InvokeWithoutArgs;
 
 namespace media {
 
@@ -839,7 +838,7 @@ TEST_F(CameraDeviceDelegateTest, FailToOpenDevice) {
   };
   EXPECT_CALL(*mock_client, OnError(_, _, _))
       .Times(AtLeast(1))
-      .WillRepeatedly(InvokeWithoutArgs(stop_on_error));
+      .WillRepeatedly(stop_on_error);
 
   // Hold the |device_ops_receiver| to make the behavior of CameraDeviceDelegate
   // deterministic. Otherwise the connection error handler would race with the

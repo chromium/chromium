@@ -17,7 +17,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::InvokeWithoutArgs;
 
 namespace media {
 
@@ -116,13 +115,13 @@ TEST_F(VideoCaptureDeviceFactoryV4L2Test,
   base::RunLoop wait_loop;
   static const int kFrameToReceive = 3;
   EXPECT_CALL(*client_ptr, OnIncomingCapturedData)
-      .WillRepeatedly(InvokeWithoutArgs([&wait_loop]() {
+      .WillRepeatedly([&wait_loop]() {
         static int received_frame_count = 0;
         received_frame_count++;
         if (received_frame_count == kFrameToReceive) {
           wait_loop.Quit();
         }
-      }));
+      });
 
   device->AllocateAndStart(arbitrary_params, std::move(client));
   wait_loop.Run();

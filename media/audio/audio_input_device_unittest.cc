@@ -25,7 +25,6 @@ using base::SyncSocket;
 using testing::_;
 using testing::DoAll;
 using testing::Invoke;
-using testing::InvokeWithoutArgs;
 
 namespace media {
 
@@ -128,13 +127,13 @@ class AudioInputDeviceTest
     device_->Initialize(params, &capture_callback_.value());
 
     EXPECT_CALL(*input_ipc, CreateStream(_, _, _, _))
-        .WillOnce(InvokeWithoutArgs([&]() {
+        .WillOnce([&]() {
           auto duplicated_shared_memory_region = shared_memory_.Duplicate();
           CHECK(duplicated_shared_memory_region.IsValid());
           static_cast<AudioInputIPCDelegate*>(device_.get())
               ->OnStreamCreated(std::move(duplicated_shared_memory_region),
                                 renderer_socket_.Take(), false);
-        }));
+        });
     EXPECT_CALL(*input_ipc, RecordStream());
     EXPECT_CALL(*capture_callback_, OnCaptureStarted());
     EXPECT_CALL(*input_ipc, CloseStream());

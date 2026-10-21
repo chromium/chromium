@@ -23,7 +23,6 @@ using testing::_;
 using testing::A;
 using testing::AtLeast;
 using testing::AtMost;
-using testing::InvokeWithoutArgs;
 
 namespace media {
 
@@ -296,8 +295,7 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest, SuccessRotationIsNotZero) {
                     size, viz::MultiPlaneFormat::kNV12);
             return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
           });
-  EXPECT_CALL(client, OnIncomingCapturedBufferExt)
-      .WillRepeatedly(InvokeWithoutArgs([]() {}));
+  EXPECT_CALL(client, OnIncomingCapturedBufferExt).WillRepeatedly([]() {});
 
   int status = v4l2_gpu_helper_->OnIncomingCapturedData(
       &client, sample, capture_format, gfx::ColorSpace(), kRotation,
@@ -326,8 +324,7 @@ TEST_P(V4l2CaptureDelegateGpuHelperTest, SuccessConvertWithCaptureParam) {
                     size, viz::MultiPlaneFormat::kNV12);
             return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
           });
-  EXPECT_CALL(client, OnIncomingCapturedBufferExt)
-      .WillRepeatedly(InvokeWithoutArgs([]() {}));
+  EXPECT_CALL(client, OnIncomingCapturedBufferExt).WillRepeatedly([]() {});
 
   int status = v4l2_gpu_helper_->OnIncomingCapturedData(
       &client, sample, capture_format, gfx::ColorSpace(), kRotation,

@@ -536,10 +536,9 @@ TEST_F(MojoRendererTest, ErrorDuringFlush) {
   EXPECT_CALL(renderer_client_, OnError(HasStatusCode(PIPELINE_ERROR_DECODE)))
       .Times(1);
   EXPECT_CALL(*mock_renderer_, OnFlush(_))
-      .WillOnce(DoAll(InvokeWithoutArgs([&]() {
-                        remote_renderer_client_->OnError(PIPELINE_ERROR_DECODE);
-                      }),
-                      RunOnceClosure<0>()));
+      .WillOnce(DoAll(
+          [&]() { remote_renderer_client_->OnError(PIPELINE_ERROR_DECODE); },
+          RunOnceClosure<0>()));
   Flush();
 }
 

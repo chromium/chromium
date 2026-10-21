@@ -1077,7 +1077,7 @@ TEST_P(VideoDecodePerfHistoryParamTest, GetPerfInfo_NoStatsPowerEfficiency) {
 
   base::RunLoop run_loop;
   EXPECT_CALL(*this, MockGetPerfInfoCB(kIsSmooth, expected_power_efficient))
-      .WillOnce(testing::InvokeWithoutArgs([&]() { run_loop.Quit(); }));
+      .WillOnce([&]() { run_loop.Quit(); });
 
   perf_history_->GetPerfInfo(
       MakeFeaturesPtr(kUnknownProfile, kSize, kFrameRate, params.key_system,

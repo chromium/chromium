@@ -697,8 +697,9 @@ TEST_F(MediaVideoEncoderWrapperTest, DropsFrameOnSizeChangeDuringEstimation) {
 
   bool trigger_dropped = false;
   base::MockCallback<VideoEncoder::FrameEncodedCallback> callback_trigger;
-  EXPECT_CALL(callback_trigger, Run(testing::IsNull()))
-      .WillOnce(testing::InvokeWithoutArgs([&]() { trigger_dropped = true; }));
+  EXPECT_CALL(callback_trigger, Run(testing::IsNull())).WillOnce([&]() {
+    trigger_dropped = true;
+  });
 
   EXPECT_TRUE(encoder_->EncodeVideoFrame(video_frame_trigger,
                                          frame_info_trigger.reference_time,

@@ -22,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::InvokeWithoutArgs;
 
 namespace media {
 
@@ -183,7 +182,7 @@ TEST_F(FileVideoCaptureDeviceTest, TakePhoto) {
       base::BindPostTaskToCurrentDefault(run_loop.QuitClosure());
   EXPECT_CALL(image_capture_client_, OnCorrectPhotoTaken())
       .Times(1)
-      .WillOnce(InvokeWithoutArgs([quit_closure]() { quit_closure.Run(); }));
+      .WillOnce([quit_closure]() { quit_closure.Run(); });
   device_->TakePhoto(std::move(scoped_callback));
   run_loop.Run();
 }
