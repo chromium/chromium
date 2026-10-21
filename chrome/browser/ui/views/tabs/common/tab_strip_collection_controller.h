@@ -170,6 +170,8 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   void RecordMetricsOnTabSelectionChange(
       std::optional<tab_groups::TabGroupId> group);
 
+  void ExpandCollapsedGroupsInSelectionRange(int target_index);
+
   void ShiftTabRelative(const tabs::TabInterface* tab_interface, int offset);
   void ShiftGroupRelative(const tab_groups::TabGroupId& group, int offset);
 

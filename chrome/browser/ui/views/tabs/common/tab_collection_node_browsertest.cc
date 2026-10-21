@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
@@ -722,6 +724,31 @@ IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return pinned_view->drag_axes() == DraggedTabsContainer::DragAxes::kBoth;
   }));
+}
+
+IN_PROC_BROWSER_TEST_P(TabCollectionNodeBrowserTest,
+                       MoveSelectedTabsPastCollapsedGroupKeepsGroupCollapsed) {
+  AppendTab();
+  AppendTab();
+  AppendTab();
+  // Tabs 0 and 1 are ungrouped; Tabs 2 and 3 are in a collapsed group.
+  const tab_groups::TabGroupId group_id =
+      GetTabStripModel()->AddToNewGroup({2, 3});
+  const TabGroup* group =
+      GetTabStripModel()->group_model()->GetTabGroup(group_id);
+  ASSERT_NE(group, nullptr);
+  root_node()->GetController()->ToggleTabGroupCollapsedState(
+      group, ToggleTabGroupCollapsedStateOrigin::kMouse);
+  ASSERT_TRUE(root_node()->GetController()->IsGroupCollapsed(group_id));
+
+  // Select both ungrouped tabs [0, 1] and move them past the collapsed group.
+  GetTabStripModel()->ActivateTabAt(0);
+  GetTabStripModel()->ExtendSelectionTo(1);
+  ASSERT_TRUE(GetTabStripModel()->IsTabSelected(0));
+  ASSERT_TRUE(GetTabStripModel()->IsTabSelected(1));
+
+  GetTabStripModel()->MoveSelectedTabsTo(2, /*group=*/std::nullopt);
+  EXPECT_TRUE(root_node()->GetController()->IsGroupCollapsed(group_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(

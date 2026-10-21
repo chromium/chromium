@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 
+#include <algorithm>
 #include <variant>
 
 #include "base/check_deref.h"
@@ -332,6 +333,7 @@ void TabStripCollectionController::AddSelectionFromAnchorTo(
     return;
   }
 
+  ExpandCollapsedGroupsInSelectionRange(tab_index.value());
   model_->AddSelectionFromAnchorTo(tab_index.value());
 }
 
@@ -342,6 +344,7 @@ void TabStripCollectionController::ExtendSelectionTo(
     return;
   }
 
+  ExpandCollapsedGroupsInSelectionRange(tab_index.value());
   model_->ExtendSelectionTo(tab_index.value());
 }
 
@@ -680,6 +683,28 @@ void TabStripCollectionController::RecordMetricsOnTabSelectionChange(
   if (saved_group && saved_group->collaboration_id()) {
     base::RecordAction(
         base::UserMetricsAction("TabGroups.Shared.SwitchGroupedTab"));
+  }
+}
+
+void TabStripCollectionController::ExpandCollapsedGroupsInSelectionRange(
+    int target_index) {
+  if (!model_->SupportsTabGroups()) {
+    return;
+  }
+
+  const std::optional<size_t> anchor = GetSelectionModel().anchor();
+  const int anchor_index =
+      anchor.has_value() ? static_cast<int>(anchor.value()) : target_index;
+  const int start_index = std::min(anchor_index, target_index);
+  const int end_index = std::max(anchor_index, target_index);
+  for (int i = start_index; i <= end_index; ++i) {
+    const std::optional<tab_groups::TabGroupId> group_id =
+        model_->GetTabGroupForTab(i);
+    if (group_id.has_value() && IsGroupCollapsed(group_id.value())) {
+      ToggleTabGroupCollapsedState(
+          model_->group_model()->GetTabGroup(group_id.value()),
+          ToggleTabGroupCollapsedStateOrigin::kTabsSelected);
+    }
   }
 }
 

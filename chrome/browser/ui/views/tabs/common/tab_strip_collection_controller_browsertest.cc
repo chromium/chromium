@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 
+#include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -156,6 +157,55 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
   // Verify freezing votes are released.
   EXPECT_FALSE(tab_view0->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
   EXPECT_FALSE(tab_view1->HasFreezingVote(FreezingVoteReason::kCollapsedGroup));
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
+                       ExtendSelectionToExpandsCollapsedGroup) {
+  base::UserActionTester user_action_tester;
+  AppendTab();
+  AppendTab();
+  AppendTab();
+
+  TabStripModel* model = browser()->GetTabStripModel();
+  // [Tab 0 (ungrouped), Group {Tab 1, Tab 2}, Tab 3 (ungrouped)]
+  const tab_groups::TabGroupId group_id = model->AddToNewGroup({1, 2});
+  const TabGroup* group = model->group_model()->GetTabGroup(group_id);
+  ASSERT_NE(group, nullptr);
+
+  model->ActivateTabAt(0);
+  vertical_tab_strip_controller()->ToggleTabGroupCollapsedState(
+      group, ToggleTabGroupCollapsedStateOrigin::kMouse);
+  ASSERT_TRUE(vertical_tab_strip_controller()->IsGroupCollapsed(group_id));
+
+  vertical_tab_strip_controller()->ExtendSelectionTo(model->GetTabAtIndex(3));
+  EXPECT_FALSE(vertical_tab_strip_controller()->IsGroupCollapsed(group_id));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "TabGroups_TabGroupHeader_Expanded"));
+}
+
+IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
+                       AddSelectionFromAnchorToExpandsCollapsedGroup) {
+  base::UserActionTester user_action_tester;
+  AppendTab();
+  AppendTab();
+  AppendTab();
+
+  TabStripModel* model = browser()->GetTabStripModel();
+  // [Tab 0 (ungrouped), Group {Tab 1, Tab 2}, Tab 3 (ungrouped)]
+  const tab_groups::TabGroupId group_id = model->AddToNewGroup({1, 2});
+  const TabGroup* group = model->group_model()->GetTabGroup(group_id);
+  ASSERT_NE(group, nullptr);
+
+  model->ActivateTabAt(0);
+  vertical_tab_strip_controller()->ToggleTabGroupCollapsedState(
+      group, ToggleTabGroupCollapsedStateOrigin::kMouse);
+  ASSERT_TRUE(vertical_tab_strip_controller()->IsGroupCollapsed(group_id));
+
+  vertical_tab_strip_controller()->AddSelectionFromAnchorTo(
+      model->GetTabAtIndex(3));
+  EXPECT_FALSE(vertical_tab_strip_controller()->IsGroupCollapsed(group_id));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "TabGroups_TabGroupHeader_Expanded"));
 }
 
 IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest, ShiftTabNext) {
@@ -552,8 +602,9 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerBrowserTest,
   EXPECT_EQ(tab_model->GetTabAtIndex(2), tab0);
   EXPECT_EQ(tab_model->GetTabAtIndex(3), tab3);
 
-  // Verify that tab 0 is not in any group.
+  // Verify that tab 0 is not in any group and the group remains collapsed.
   EXPECT_FALSE(tab0->GetGroup().has_value());
+  EXPECT_TRUE(vertical_tab_strip_controller()->IsGroupCollapsed(group_id));
 }
 
 class TabStripControllerFocusingVisibilityBrowserTest
