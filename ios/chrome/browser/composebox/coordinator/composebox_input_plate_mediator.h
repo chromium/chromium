@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/omnibox/ui/text_field_view_containing.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/public/web_state_id.h"
+#import "third_party/omnibox_proto/model_mode.pb.h"
 
 @class AssistantAIMMetricsRecorder;
 @protocol BrowserCoordinatorCommands;
@@ -149,6 +150,11 @@ class ContextualSearchSessionHandle;
 
 // Applies the focus parameters to initialize the session state.
 - (void)applyFocusParams:(ComposeboxFocusParams*)params;
+
+// Sets the `model` to use in queries, specifying whether the choice was caused
+// by an `explicitUserAction` (e.g. picked from the menu).
+- (void)setModel:(omnibox::ModelMode)model
+    explicitUserAction:(BOOL)explicitUserAction;
 
 // Processes the picked Google Drive file metadata and triggers contextual
 // session upload.

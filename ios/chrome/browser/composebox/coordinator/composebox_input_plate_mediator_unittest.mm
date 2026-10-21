@@ -49,7 +49,6 @@
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_plate_controls.h"
-#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_consumer.h"
@@ -922,7 +921,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, AwaitingSignalsSetOnFocus) {
       initWithEntrypoint:ComposeboxEntrypoint::kOther
                    query:nil
                 toolMode:ComposeboxMode::kRegularSearch
-               modelMode:ComposeboxModelOption::kNone
+               modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:selection];
 
   [mediator_ applyFocusParams:params];
@@ -949,7 +948,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, AwaitingSignalsClearedOnItemRemoval) {
       initWithEntrypoint:ComposeboxEntrypoint::kOther
                    query:nil
                 toolMode:ComposeboxMode::kRegularSearch
-               modelMode:ComposeboxModelOption::kNone
+               modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:selection];
 
   [mediator_ applyFocusParams:params];
@@ -986,7 +985,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, AwaitingSignalsClearedOnItemError) {
       initWithEntrypoint:ComposeboxEntrypoint::kOther
                    query:nil
                 toolMode:ComposeboxMode::kRegularSearch
-               modelMode:ComposeboxModelOption::kNone
+               modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:selection];
 
   [mediator_ applyFocusParams:params];
@@ -1024,7 +1023,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
       initWithEntrypoint:ComposeboxEntrypoint::kOther
                    query:nil
                 toolMode:ComposeboxMode::kRegularSearch
-               modelMode:ComposeboxModelOption::kNone
+               modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:selection];
 
   [mediator_ applyFocusParams:params];
@@ -1064,7 +1063,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, LogsOmniboxMetricOnNTP) {
       initWithEntrypoint:ComposeboxEntrypoint::kOther
                    query:nil
                 toolMode:ComposeboxMode::kRegularSearch
-               modelMode:ComposeboxModelOption::kNone
+               modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:nil];
   [mediator_ applyFocusParams:params];
 
@@ -1100,7 +1099,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, LogsOmniboxMetricOnStartSurface) {
       initWithEntrypoint:ComposeboxEntrypoint::kOther
                    query:nil
                 toolMode:ComposeboxMode::kRegularSearch
-               modelMode:ComposeboxModelOption::kNone
+               modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:nil];
   [mediator_ applyFocusParams:params];
 

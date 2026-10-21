@@ -688,13 +688,18 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 
   _modeHolder.mode = params.toolMode;
 
-  if (params.modelMode != ComposeboxModelOption::kNone) {
-    [self setModelOption:params.modelMode explicitUserAction:YES];
+  if (params.modelMode != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
+    [self setModel:params.modelMode explicitUserAction:YES];
   }
 
   if (params.attachmentList) {
     [self updateAttachments:params.attachmentList];
   }
+}
+
+- (void)setModel:(omnibox::ModelMode)model
+    explicitUserAction:(BOOL)explicitUserAction {
+  [_stateManager setActiveModel:model explicitUserAction:explicitUserAction];
 }
 
 - (std::set<web::WebStateID>)allAttachedWebStateIDs {
@@ -1073,12 +1078,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                 }
                               });
                             }];
-}
-
-- (void)setModelOption:(ComposeboxModelOption)modelOption
-    explicitUserAction:(BOOL)explicitUserAction {
-  [_stateManager setActiveModel:modelOption
-             explicitUserAction:explicitUserAction];
 }
 
 - (void)setOmniboxFocused:(bool)focused {

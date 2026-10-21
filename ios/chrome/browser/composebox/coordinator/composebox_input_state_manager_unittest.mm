@@ -798,7 +798,7 @@ TEST_F(ComposeboxInputStateManagerTest,
   }
 
   mode_holder_.mode = ComposeboxMode::kAIM;
-  [manager_ setActiveModel:ComposeboxModelOption::kThinking
+  [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
 
   ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
@@ -1124,7 +1124,7 @@ TEST_F(ComposeboxInputStateManagerTest, SetActiveModel_NotifiesDelegate) {
       [[FakeComposeboxInputStateManagerDelegate alloc] init];
   manager_.delegate = delegate;
 
-  [manager_ setActiveModel:ComposeboxModelOption::kThinking
+  [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
 
   EXPECT_TRUE(delegate.didUpdateUIStateCalled);
@@ -1151,7 +1151,7 @@ TEST_F(ComposeboxInputStateManagerTest, SetActiveModel_SwitchesToAIM) {
 
   mode_holder_.mode = ComposeboxMode::kRegularSearch;
 
-  [manager_ setActiveModel:ComposeboxModelOption::kThinking
+  [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
 
   EXPECT_EQ(mode_holder_.mode, ComposeboxMode::kAIM);
@@ -1177,7 +1177,7 @@ TEST_F(ComposeboxInputStateManagerTest, SetActiveModel_FallbackToDefault) {
 
   mode_holder_.mode = ComposeboxMode::kAIM;
 
-  [manager_ setActiveModel:ComposeboxModelOption::kThinking
+  [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
 
   EXPECT_EQ(manager_.activeModel, ComposeboxModelOption::kRegular);
@@ -1317,7 +1317,7 @@ TEST_F(ComposeboxInputStateManagerTest,
   }
 
   mode_holder_.mode = ComposeboxMode::kAIM;
-  [manager_ setActiveModel:ComposeboxModelOption::kThinking
+  [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
   EXPECT_EQ(manager_.activeModel, ComposeboxModelOption::kThinking);
 
@@ -1358,7 +1358,7 @@ TEST_F(ComposeboxInputStateManagerTest,
   }
 
   mode_holder_.mode = ComposeboxMode::kAIM;
-  [manager_ setActiveModel:ComposeboxModelOption::kThinking
+  [manager_ setActiveModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO
         explicitUserAction:YES];
   EXPECT_EQ(manager_.activeModel, ComposeboxModelOption::kThinking);
 

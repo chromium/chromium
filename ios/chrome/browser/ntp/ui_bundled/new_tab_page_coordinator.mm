@@ -2560,7 +2560,7 @@ using ntp_tiles::AimButtonRefactorArm;
       initWithEntrypoint:ComposeboxEntrypoint::kNTPAttachImageButton
                    query:nil
                 toolMode:ComposeboxMode::kAIM
-               modelMode:ComposeboxModelOption::kNone
+               modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:attachments];
 
   ShowComposebox(self.browser, params);
@@ -2689,7 +2689,7 @@ using ntp_tiles::AimButtonRefactorArm;
       initWithEntrypoint:ComposeboxEntrypoint::kNTPImageGenerationButton
                    query:nil
                 toolMode:ComposeboxMode::kImageGeneration
-               modelMode:ComposeboxModelOption::kNone
+               modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
           attachmentList:nil];
   ShowComposebox(self.browser, params);
 }

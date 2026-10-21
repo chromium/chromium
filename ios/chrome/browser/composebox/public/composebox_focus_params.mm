@@ -11,7 +11,7 @@
 - (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint
                              query:(NSString*)query
                           toolMode:(ComposeboxMode)toolMode
-                         modelMode:(ComposeboxModelOption)modelMode
+                         modelMode:(omnibox::ModelMode)modelMode
                     attachmentList:
                         (ComposeboxAttachmentSelection*)attachmentList {
   self = [super init];
@@ -38,7 +38,7 @@
   return [self initWithEntrypoint:entrypoint
                             query:nil
                          toolMode:ComposeboxMode::kRegularSearch
-                        modelMode:ComposeboxModelOption::kNone
+                        modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
                    attachmentList:nil];
 }
 

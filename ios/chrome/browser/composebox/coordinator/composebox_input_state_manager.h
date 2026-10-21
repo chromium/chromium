@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
+#import "third_party/omnibox_proto/model_mode.pb.h"
 #import "third_party/omnibox_proto/searchbox_config.pb.h"
 #import "third_party/omnibox_proto/tool_mode.pb.h"
 
@@ -136,7 +137,7 @@ class WebStateID;
 
 // Sets the active model if eligible. If explicitUserAction is YES, records
 // metrics.
-- (void)setActiveModel:(ComposeboxModelOption)modelOption
+- (void)setActiveModel:(omnibox::ModelMode)model
     explicitUserAction:(BOOL)explicitUserAction;
 
 // Retrieves additional query parameters for the current state.

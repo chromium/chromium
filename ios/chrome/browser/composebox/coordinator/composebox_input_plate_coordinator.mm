@@ -37,7 +37,6 @@
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
-#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/composebox_theme.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_attachment_diff.h"
@@ -942,9 +941,9 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 }
 
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
-                      didTapModel:(ComposeboxModelOption)modelMode {
-  [_mediator setModelOption:modelMode explicitUserAction:YES];
-  [_metricsRecorder recordModelSelected:modelMode];
+                      didTapModel:(omnibox::ModelMode)model {
+  [_mediator setModel:model explicitUserAction:YES];
+  [_metricsRecorder recordModelSelected:model];
 }
 
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator

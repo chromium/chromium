@@ -70,6 +70,7 @@ source_set("input_plate") {
   public_deps = [
     ":availability",
     ":mode_holder",
+    "//third_party/omnibox_proto",
   ]
   deps = [
     ":aim_deps",
@@ -297,6 +298,7 @@ source_set("input_state_manager") {
     "composebox_input_state_manager.h",
     "composebox_input_state_manager.mm",
   ]
+  public_deps = [ "//third_party/omnibox_proto" ]
   deps = [
     ":intelligence_deps",
     "//base",
@@ -333,7 +335,6 @@ source_set("input_state_manager") {
     "//ios/chrome/common:string_conversions",
     "//ios/web/public",
     "//services/network/public/cpp",
-    "//third_party/omnibox_proto",
   ]
 }
 

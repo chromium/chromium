@@ -53,5 +53,8 @@ source_set("coordinator") {
     "//ios/web/public",
     "//ui/base",
   ]
-  public_deps = [ "//ios/chrome/browser/composebox/public:entrypoint" ]
+  public_deps = [
+    "//ios/chrome/browser/composebox/public:entrypoint",
+    "//third_party/omnibox_proto",
+  ]
 }

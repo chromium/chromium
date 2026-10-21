@@ -423,10 +423,9 @@ std::string GetStringForPickerAttachmentType(
   }
 }
 
-- (void)recordModelSelected:(ComposeboxModelOption)model {
+- (void)recordModelSelected:(omnibox::ModelMode)model {
   if (_contextualSearchMetricsRecorder) {
-    _contextualSearchMetricsRecorder->RecordModelSelected(
-        ModelModeFromComposeboxModelOption(model));
+    _contextualSearchMetricsRecorder->RecordModelSelected(model);
   }
 }
 

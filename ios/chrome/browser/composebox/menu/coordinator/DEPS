@@ -4,5 +4,6 @@ include_rules = [
   "+ios/chrome/browser/aim/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/tab_switcher/ui_bundled",
+  "+third_party/omnibox_proto/model_mode.pb.h",
   "+third_party/omnibox_proto/searchbox_config.pb.h",
 ]

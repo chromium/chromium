@@ -11,7 +11,10 @@ source_set("metrics") {
     "composebox_metrics_recorder.h",
     "composebox_metrics_recorder.mm",
   ]
-  public_deps = [ ":metrics_constants" ]
+  public_deps = [
+    ":metrics_constants",
+    "//third_party/omnibox_proto",
+  ]
   deps = [
     "//base",
     "//base:i18n",

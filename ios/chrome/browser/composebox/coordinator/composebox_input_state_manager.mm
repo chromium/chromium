@@ -429,8 +429,18 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
       .value_or([self defaultModel]);
 }
 
-- (void)setActiveModel:(ComposeboxModelOption)modelOption
+- (void)setActiveModel:(omnibox::ModelMode)model
     explicitUserAction:(BOOL)explicitUserAction {
+  ComposeboxModelOption modelOption =
+      model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
+          ? ModelOptionForModelMode(model).value_or(
+                ComposeboxModelOption::kNone)
+          : ComposeboxModelOption::kNone;
+  [self setActiveModelOption:modelOption explicitUserAction:explicitUserAction];
+}
+
+- (void)setActiveModelOption:(ComposeboxModelOption)modelOption
+          explicitUserAction:(BOOL)explicitUserAction {
   if (!_inputStateModel) {
     return;
   }
@@ -812,11 +822,12 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
 - (void)updateModelOnModeChange {
   if ([_modeHolder isRegularSearch]) {
     // Reset model to kNone when switching to regular search.
-    [self setActiveModel:ComposeboxModelOption::kNone explicitUserAction:NO];
+    [self setActiveModelOption:ComposeboxModelOption::kNone
+            explicitUserAction:NO];
     return;
   } else if (_activeModel == ComposeboxModelOption::kNone) {
     // In AI tools, set the default model when none is selected.
-    [self setActiveModel:[self defaultModel] explicitUserAction:NO];
+    [self setActiveModelOption:[self defaultModel] explicitUserAction:NO];
   }
 }
 
@@ -1026,7 +1037,7 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
     [self setActiveModelInInputState:_activeModel explicitUserAction:NO];
   } else {
     // Local is not valid, reset to default.
-    [self setActiveModel:[self defaultModel] explicitUserAction:NO];
+    [self setActiveModelOption:[self defaultModel] explicitUserAction:NO];
   }
 }
 

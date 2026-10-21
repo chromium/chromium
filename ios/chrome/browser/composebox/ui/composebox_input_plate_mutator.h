@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
 
 @class ComposeboxInputItem;
-enum class ComposeboxModelOption;
 class GURL;
 
 namespace omnibox {
@@ -61,11 +60,6 @@ class WebStateID;
 
 /// Processes the given `text`.
 - (void)processText:(NSString*)text;
-
-/// Sets the model option to use in queries, specifying whether the choice was
-/// caused by an explicitly user action (e.g.; picked from the menu).
-- (void)setModelOption:(ComposeboxModelOption)modelOption
-    explicitUserAction:(BOOL)explicitUserAction;
 
 /// Whether the omnibox is focused.
 - (void)setOmniboxFocused:(bool)focused;

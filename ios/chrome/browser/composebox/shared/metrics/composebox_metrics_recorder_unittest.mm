@@ -305,7 +305,7 @@ TEST_F(ComposeboxMetricsRecorderTest, ToolSelected) {
 }
 
 TEST_F(ComposeboxMetricsRecorderTest, ModelSelected) {
-  [recorder_ recordModelSelected:ComposeboxModelOption::kThinking];
+  [recorder_ recordModelSelected:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO];
   histogram_tester_.ExpectBucketCount(
       "ContextualSearch.Models.Selected.Unknown",
       static_cast<int>(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO), 1);

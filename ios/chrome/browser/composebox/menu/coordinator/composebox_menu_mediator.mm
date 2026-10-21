@@ -191,16 +191,20 @@
                                  didTapTool:ComposeboxMode::kCanvas];
       break;
     case ComposeboxMenuItemType::kModelRegular:
-      [self.delegate composeboxMenuMediator:self
-                                didTapModel:ComposeboxModelOption::kRegular];
+      [self.delegate
+          composeboxMenuMediator:self
+                     didTapModel:omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR];
       break;
     case ComposeboxMenuItemType::kModelAuto:
-      [self.delegate composeboxMenuMediator:self
-                                didTapModel:ComposeboxModelOption::kAuto];
+      [self.delegate
+          composeboxMenuMediator:self
+                     didTapModel:omnibox::ModelMode::
+                                     MODEL_MODE_GEMINI_PRO_AUTOROUTE];
       break;
     case ComposeboxMenuItemType::kModelThinking:
-      [self.delegate composeboxMenuMediator:self
-                                didTapModel:ComposeboxModelOption::kThinking];
+      [self.delegate
+          composeboxMenuMediator:self
+                     didTapModel:omnibox::ModelMode::MODEL_MODE_GEMINI_PRO];
       break;
     case ComposeboxMenuItemType::kCurrentTab: {
       [self processCurrentTab];
@@ -209,15 +213,18 @@
     case ComposeboxMenuItemType::kModelThinkingNoGenUI:
       [self.delegate
           composeboxMenuMediator:self
-                     didTapModel:ComposeboxModelOption::kThinkingNoGenUI];
+                     didTapModel:omnibox::ModelMode::
+                                     MODEL_MODE_GEMINI_PRO_NO_GEN_UI];
       break;
     case ComposeboxMenuItemType::kModelFlash:
       [self.delegate composeboxMenuMediator:self
-                                didTapModel:ComposeboxModelOption::kFlash];
+                                didTapModel:omnibox::ModelMode::
+                                                MODEL_MODE_GEMINI_FLASH_LATEST];
       break;
     case ComposeboxMenuItemType::kModelProLatest:
       [self.delegate composeboxMenuMediator:self
-                                didTapModel:ComposeboxModelOption::kProLatest];
+                                didTapModel:omnibox::ModelMode::
+                                                MODEL_MODE_GEMINI_PRO_LATEST];
       break;
     case ComposeboxMenuItemType::kAttachmentSharedTabs:
       [self.delegate composeboxMenuMediatorDidRequestSharedTabs:self];

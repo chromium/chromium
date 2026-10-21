@@ -261,7 +261,7 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
         initWithEntrypoint:_entrypoint
                      query:nil
                   toolMode:toolMode
-                 modelMode:ComposeboxModelOption::kNone
+                 modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
             attachmentList:nil];
 
     [self dismissUIWithCompletion:^{
@@ -277,24 +277,23 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
 }
 
 - (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
-                   didTapModel:(ComposeboxModelOption)modelMode {
+                   didTapModel:(omnibox::ModelMode)model {
   _successfulActionPerformed = YES;
 
   __weak __typeof(self) weakSelf = self;
   if (_isStandaloneMenu) {
-    [_metricsRecorder recordModelSelected:modelMode];
+    [_metricsRecorder recordModelSelected:model];
     ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
         initWithEntrypoint:_entrypoint
                      query:nil
                   toolMode:ComposeboxMode::kRegularSearch
-                 modelMode:modelMode
+                 modelMode:model
             attachmentList:nil];
     [self dismissUIWithCompletion:^{
       [weakSelf showComposeboxWithParams:focusParams];
     }];
   } else {
-    [self.inputPlateDelegate composeboxMenuCoordinator:self
-                                           didTapModel:modelMode];
+    [self.inputPlateDelegate composeboxMenuCoordinator:self didTapModel:model];
     [self dismissUIWithCompletion:^{
       [weakSelf requestMenuDismissal];
     }];
@@ -310,7 +309,7 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
         initWithEntrypoint:_entrypoint
                      query:nil
                   toolMode:ComposeboxMode::kRegularSearch
-                 modelMode:ComposeboxModelOption::kNone
+                 modelMode:omnibox::ModelMode::MODEL_MODE_UNSPECIFIED
             attachmentList:attachments];
     [self dismissUIWithCompletion:^{
       [weakSelf showComposeboxWithParams:focusParams];

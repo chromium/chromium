@@ -9,8 +9,8 @@
 
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
-#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "third_party/omnibox_proto/model_mode.pb.h"
 
 namespace base {
 class UnguessableToken;
@@ -37,9 +37,9 @@ class UnguessableToken;
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
                        didTapTool:(ComposeboxMode)toolMode;
 
-// Called when the user taps a model option in embedded mode.
+// Called when the user taps a model in embedded mode.
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
-                      didTapModel:(ComposeboxModelOption)modelMode;
+                      didTapModel:(omnibox::ModelMode)model;
 
 // Called when the user picks or removes attachments in embedded mode.
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator

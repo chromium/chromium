@@ -11,10 +11,10 @@
 
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
-#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/web/public/web_state_id.h"
+#import "third_party/omnibox_proto/model_mode.pb.h"
 
 @class AssistantAIMMetricsRecorder;
 @class ComposeboxAttachmentSelection;
@@ -31,8 +31,8 @@
 // The initial tool mode.
 @property(nonatomic, readonly) ComposeboxMode toolMode;
 
-// The initial model mode.
-@property(nonatomic, readonly) ComposeboxModelOption modelMode;
+// The initial model mode, or `MODEL_MODE_UNSPECIFIED` to use the default model.
+@property(nonatomic, readonly) omnibox::ModelMode modelMode;
 
 // The initial attachments to preload.
 @property(nonatomic, readonly) ComposeboxAttachmentSelection* attachmentList;
@@ -55,14 +55,13 @@
 @property(nonatomic, strong)
     AssistantAIMMetricsRecorder* assistantMetricsRecorder;
 
-/// The initial model option to force the composebox into.
-@property(nonatomic, assign) ComposeboxModelOption initialModelOption;
-
-/// Initializes a new instance with the given entrypoint.
+// Initializes a new instance with the given `entrypoint`, `query`, `toolMode`,
+// `modelMode` (or `MODEL_MODE_UNSPECIFIED` to use the default model), and
+// `attachmentList`.
 - (instancetype)initWithEntrypoint:(ComposeboxEntrypoint)entrypoint
                              query:(NSString*)query
                           toolMode:(ComposeboxMode)toolMode
-                         modelMode:(ComposeboxModelOption)modelMode
+                         modelMode:(omnibox::ModelMode)modelMode
                     attachmentList:
                         (ComposeboxAttachmentSelection*)attachmentList
     NS_DESIGNATED_INITIALIZER;

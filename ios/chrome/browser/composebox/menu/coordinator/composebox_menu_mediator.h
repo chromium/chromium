@@ -11,10 +11,10 @@
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
-#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_drive_result.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/web/public/web_state_id.h"
+#import "third_party/omnibox_proto/model_mode.pb.h"
 
 struct ComposeboxTabSelection;
 class WebStateList;
@@ -32,9 +32,9 @@ class WebStateList;
 - (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
                     didTapTool:(ComposeboxMode)toolMode;
 
-// Called when a model option is tapped.
+// Called when a model is tapped.
 - (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
-                   didTapModel:(ComposeboxModelOption)modelMode;
+                   didTapModel:(omnibox::ModelMode)model;
 
 // Called when the picked attachments are updated.
 - (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
