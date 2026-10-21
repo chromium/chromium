@@ -13,7 +13,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::InvokeWithoutArgs;
 
 namespace video_capture {
 
@@ -83,18 +82,18 @@ TEST_F(GpuMemoryBufferVirtualDeviceMojoAdapterTest,
   int buffer_received_count = 0;
   EXPECT_CALL(*mock_video_frame_handler_1_,
               DoOnNewBuffer(kArbitraryBufferId1, _))
-      .WillOnce(InvokeWithoutArgs([&wait_loop, &buffer_received_count]() {
+      .WillOnce([&wait_loop, &buffer_received_count]() {
         buffer_received_count++;
         if (buffer_received_count == 2)
           wait_loop.Quit();
-      }));
+      });
   EXPECT_CALL(*mock_video_frame_handler_1_,
               DoOnNewBuffer(kArbitraryBufferId2, _))
-      .WillOnce(InvokeWithoutArgs([&wait_loop, &buffer_received_count]() {
+      .WillOnce([&wait_loop, &buffer_received_count]() {
         buffer_received_count++;
         if (buffer_received_count == 2)
           wait_loop.Quit();
-      }));
+      });
   Receiver1Connects();
   wait_loop.Run();
 }
@@ -116,7 +115,7 @@ TEST_F(GpuMemoryBufferVirtualDeviceMojoAdapterTest,
   base::RunLoop wait_loop;
   EXPECT_CALL(*mock_video_frame_handler_2_,
               DoOnNewBuffer(kArbitraryBufferId2, _))
-      .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
+      .WillOnce([&wait_loop]() { wait_loop.Quit(); });
   Receiver2Connects();
   wait_loop.Run();
 }

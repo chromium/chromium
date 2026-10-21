@@ -20,7 +20,6 @@
 
 using testing::_;
 using testing::AtLeast;
-using testing::InvokeWithoutArgs;
 
 namespace video_capture {
 
@@ -36,12 +35,12 @@ TEST_F(FakeVideoCaptureDeviceTest, FrameCallbacksArriveFromI420Device) {
       handler_remote.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(video_frame_handler, DoOnNewBuffer(_, _)).Times(AtLeast(1));
   EXPECT_CALL(video_frame_handler, DoOnFrameReadyInBuffer(_, _, _))
-      .WillRepeatedly(InvokeWithoutArgs([&wait_loop, &num_frames_arrived]() {
+      .WillRepeatedly([&wait_loop, &num_frames_arrived]() {
         num_frames_arrived += 1;
         if (num_frames_arrived >= kNumFramesToWaitFor) {
           wait_loop.Quit();
         }
-      }));
+      });
 
   mojo::Remote<video_capture::mojom::PushVideoStreamSubscription> subscription;
 
@@ -75,12 +74,12 @@ TEST_F(FakeVideoCaptureDeviceTest, FrameCallbacksArriveFromMjpegDevice) {
       handler_remote.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(video_frame_handler, DoOnNewBuffer(_, _)).Times(AtLeast(1));
   EXPECT_CALL(video_frame_handler, DoOnFrameReadyInBuffer(_, _, _))
-      .WillRepeatedly(InvokeWithoutArgs([&wait_loop, &num_frames_arrived]() {
+      .WillRepeatedly([&wait_loop, &num_frames_arrived]() {
         num_frames_arrived += 1;
         if (num_frames_arrived >= kNumFramesToWaitFor) {
           wait_loop.Quit();
         }
-      }));
+      });
   EXPECT_CALL(video_frame_handler, OnStartedUsingGpuDecode()).Times(0);
 
   mojo::Remote<video_capture::mojom::PushVideoStreamSubscription> subscription;
@@ -117,14 +116,13 @@ TEST_F(FakeVideoCaptureDeviceTest, BuffersGetReused) {
   MockVideoFrameHandler video_frame_handler(
       handler_remote.InitWithNewPipeAndPassReceiver());
   EXPECT_CALL(video_frame_handler, DoOnNewBuffer(_, _))
-      .WillRepeatedly(InvokeWithoutArgs(
-          [&num_buffers_created]() { num_buffers_created++; }));
+      .WillRepeatedly([&num_buffers_created]() { num_buffers_created++; });
   EXPECT_CALL(video_frame_handler, DoOnFrameReadyInBuffer(_, _, _))
-      .WillRepeatedly(InvokeWithoutArgs([&wait_loop, &num_frames_arrived]() {
+      .WillRepeatedly([&wait_loop, &num_frames_arrived]() {
         if (++num_frames_arrived >= kNumFramesToWaitFor) {
           wait_loop.Quit();
         }
-      }));
+      });
 
   mojo::Remote<video_capture::mojom::PushVideoStreamSubscription> subscription;
 
@@ -163,12 +161,11 @@ TEST_F(FakeVideoCaptureDeviceTest, BuffersGetRetiredWhenDeviceIsStopped) {
         known_buffer_ids.push_back(buffer_id);
       });
   EXPECT_CALL(video_frame_handler, DoOnFrameReadyInBuffer(_, _, _))
-      .WillRepeatedly(
-          InvokeWithoutArgs([&wait_for_frames_loop, &num_frames_arrived]() {
-            if (++num_frames_arrived >= kNumFramesToWaitFor) {
-              wait_for_frames_loop.Quit();
-            }
-          }));
+      .WillRepeatedly([&wait_for_frames_loop, &num_frames_arrived]() {
+        if (++num_frames_arrived >= kNumFramesToWaitFor) {
+          wait_for_frames_loop.Quit();
+        }
+      });
 
   mojo::Remote<video_capture::mojom::PushVideoStreamSubscription> subscription;
 

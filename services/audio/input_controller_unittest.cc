@@ -55,7 +55,6 @@ using ::testing::AtLeast;
 using ::testing::Contains;
 using ::testing::Exactly;
 using ::testing::HasSubstr;
-using ::testing::InvokeWithoutArgs;
 using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Return;
@@ -333,7 +332,7 @@ TEST_F(SystemTimeInputControllerTest, CreateRecordAndClose) {
     EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _)).Times(Exactly(9));
     EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _))
         .Times(AtLeast(1))
-        .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
+        .WillOnce([&]() { loop.Quit(); });
   }
   controller_->Record();
   loop.Run();
@@ -955,7 +954,7 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
     EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _)).Times(Exactly(9));
     EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _))
         .Times(AtLeast(1))
-        .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
+        .WillOnce([&]() { loop.Quit(); });
   }
   controller_->Record();
 
@@ -1085,7 +1084,7 @@ TEST_P(ParameterizedInputControllerUmaDelayTest, CreateRecordAndClose) {
     EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _)).Times(Exactly(9));
     EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _))
         .Times(AtLeast(1))
-        .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
+        .WillOnce([&]() { loop.Quit(); });
   }
   controller_->Record();
 
@@ -1221,7 +1220,7 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
   base::RunLoop loop;
   EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _))
       .Times(AtLeast(1))
-      .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
+      .WillOnce([&]() { loop.Quit(); });
 
   controller_->Record();
   loop.Run();
@@ -1245,7 +1244,7 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
   base::RunLoop loop;
   EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _))
       .Times(AtLeast(1))
-      .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
+      .WillOnce([&]() { loop.Quit(); });
 
   controller_->Record();
   loop.Run();
@@ -1301,7 +1300,7 @@ TEST_F(
   // fails.
   base::RunLoop loop;
   EXPECT_CALL(event_handler_, OnError(InputController::STREAM_ERROR))
-      .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
+      .WillOnce([&]() { loop.Quit(); });
 
   // Initialize controller; pipeline starts in pass-through warmup.
   CreateAudioController();

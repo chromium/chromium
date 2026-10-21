@@ -18,7 +18,6 @@
 using ::base::test::RunOnceClosure;
 using ::testing::_;
 using ::testing::AnyNumber;
-using ::testing::InvokeWithoutArgs;
 
 namespace video_capture {
 
@@ -82,13 +81,13 @@ TEST_F(
   base::RunLoop frame_arrived_at_video_frame_handler_1;
   base::RunLoop frame_arrived_at_video_frame_handler_2;
   EXPECT_CALL(*mock_video_frame_handler_1_, DoOnFrameReadyInBuffer(_, _, _))
-      .WillOnce(InvokeWithoutArgs([&frame_arrived_at_video_frame_handler_1]() {
+      .WillOnce([&frame_arrived_at_video_frame_handler_1]() {
         frame_arrived_at_video_frame_handler_1.Quit();
-      }));
+      });
   EXPECT_CALL(*mock_video_frame_handler_2_, DoOnFrameReadyInBuffer(_, _, _))
-      .WillOnce(InvokeWithoutArgs([&frame_arrived_at_video_frame_handler_2]() {
+      .WillOnce([&frame_arrived_at_video_frame_handler_2]() {
         frame_arrived_at_video_frame_handler_2.Quit();
-      }));
+      });
   mock_video_frame_handler_1_->HoldAccessPermissions();
   mock_video_frame_handler_2_->HoldAccessPermissions();
 
@@ -105,15 +104,13 @@ TEST_F(
   base::RunLoop buffer_retired_arrived_at_video_frame_handler_1;
   base::RunLoop buffer_retired_arrived_at_video_frame_handler_2;
   EXPECT_CALL(*mock_video_frame_handler_1_, DoOnBufferRetired(_))
-      .WillOnce(InvokeWithoutArgs(
-          [&buffer_retired_arrived_at_video_frame_handler_1]() {
-            buffer_retired_arrived_at_video_frame_handler_1.Quit();
-          }));
+      .WillOnce([&buffer_retired_arrived_at_video_frame_handler_1]() {
+        buffer_retired_arrived_at_video_frame_handler_1.Quit();
+      });
   EXPECT_CALL(*mock_video_frame_handler_2_, DoOnBufferRetired(_))
-      .WillOnce(InvokeWithoutArgs(
-          [&buffer_retired_arrived_at_video_frame_handler_2]() {
-            buffer_retired_arrived_at_video_frame_handler_2.Quit();
-          }));
+      .WillOnce([&buffer_retired_arrived_at_video_frame_handler_2]() {
+        buffer_retired_arrived_at_video_frame_handler_2.Quit();
+      });
 
   // Retiring the buffer results in both receivers getting the retired event.
   broadcaster_.OnBufferRetired(kArbitraryBufferId);

@@ -26,7 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::InvokeWithoutArgs;
 using testing::Mock;
 using testing::SaveArg;
 
@@ -66,8 +65,9 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
     base::MockCallback<mojom::VideoSourceProvider::GetSourceInfosCallback>
         source_infos_receiver;
     base::RunLoop wait_loop;
-    EXPECT_CALL(source_infos_receiver, Run)
-        .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
+    EXPECT_CALL(source_infos_receiver, Run).WillOnce([&wait_loop]() {
+      wait_loop.Quit();
+    });
     source_provider_->GetSourceInfos(source_infos_receiver.Get());
     // We must wait for the response to GetDeviceInfos before calling
     // CreateDevice.
@@ -230,11 +230,11 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
     base::RunLoop wait_loop_1;
     EXPECT_CALL(mock_video_frame_handler_1_,
                 DoOnFrameReadyInBuffer(_, kArbitraryFrameFeedbackId, _))
-        .WillOnce(InvokeWithoutArgs([&wait_loop_1]() { wait_loop_1.Quit(); }));
+        .WillOnce([&wait_loop_1]() { wait_loop_1.Quit(); });
     base::RunLoop wait_loop_2;
     EXPECT_CALL(mock_video_frame_handler_2_,
                 DoOnFrameReadyInBuffer(_, kArbitraryFrameFeedbackId, _))
-        .WillOnce(InvokeWithoutArgs([&wait_loop_2]() { wait_loop_2.Quit(); }));
+        .WillOnce([&wait_loop_2]() { wait_loop_2.Quit(); });
     mock_device_.SendStubFrame(requestable_settings_.requested_format,
                                kArbitraryRotation, kArbitraryFrameFeedbackId);
     wait_loop_1.Run();
@@ -251,7 +251,7 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
     base::RunLoop wait_loop;
     EXPECT_CALL(mock_video_frame_handler_1_,
                 DoOnFrameReadyInBuffer(_, kArbitraryFrameFeedbackId, _))
-        .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
+        .WillOnce([&wait_loop]() { wait_loop.Quit(); });
     EXPECT_CALL(mock_video_frame_handler_2_, DoOnFrameReadyInBuffer(_, _, _))
         .Times(0);
     mock_device_.SendStubFrame(requestable_settings_.requested_format,
@@ -271,7 +271,7 @@ class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
         .Times(0);
     EXPECT_CALL(mock_video_frame_handler_2_,
                 DoOnFrameReadyInBuffer(_, kArbitraryFrameFeedbackId, _))
-        .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
+        .WillOnce([&wait_loop]() { wait_loop.Quit(); });
     mock_device_.SendStubFrame(requestable_settings_.requested_format,
                                kArbitraryRotation, kArbitraryFrameFeedbackId);
     wait_loop.Run();
@@ -412,8 +412,9 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
   Mock::VerifyAndClearExpectations(&mock_device_);
 
   base::RunLoop wait_loop;
-  EXPECT_CALL(mock_device_, DoStopAndDeAllocate())
-      .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
+  EXPECT_CALL(mock_device_, DoStopAndDeAllocate()).WillOnce([&wait_loop]() {
+    wait_loop.Quit();
+  });
   subscription_2_.reset();
   wait_loop.Run();
 
@@ -441,7 +442,7 @@ TEST_F(MockVideoCaptureDeviceSharedAccessTest,
   base::RunLoop wait_loop;
   EXPECT_CALL(mock_device_, DoStopAndDeAllocate())
       .After(source_remote_1_reset_expectation)
-      .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
+      .WillOnce([&wait_loop]() { wait_loop.Quit(); });
   source_remote_2_.reset();
   wait_loop.Run();
 

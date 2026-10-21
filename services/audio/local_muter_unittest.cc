@@ -18,7 +18,6 @@
 
 using base::UnguessableToken;
 
-using testing::InvokeWithoutArgs;
 using testing::Mock;
 using testing::StrictMock;
 
@@ -95,9 +94,7 @@ TEST(LocalMuter, UnmutesWhenLastBindingIsLost) {
   // live build.
   auto muter = std::make_unique<LocalMuter>(&coordinator, group_id);
   base::MockCallback<base::RepeatingClosure> callback;
-  EXPECT_CALL(callback, Run()).WillOnce(InvokeWithoutArgs([&muter]() {
-    muter.reset();
-  }));
+  EXPECT_CALL(callback, Run()).WillOnce([&muter]() { muter.reset(); });
   muter->SetAllBindingsLostCallback(callback.Get());
 
   // Create two bindings to the muter.

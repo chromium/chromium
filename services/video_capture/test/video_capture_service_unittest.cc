@@ -20,7 +20,6 @@
 
 using testing::_;
 using testing::Exactly;
-using testing::InvokeWithoutArgs;
 
 namespace video_capture {
 using GetSourceInfosResult =
@@ -45,7 +44,7 @@ TEST_F(VideoCaptureServiceTest, GetSourceInfosCallbackArrives) {
   base::RunLoop wait_loop;
   EXPECT_CALL(device_info_receiver_, Run)
       .Times(Exactly(1))
-      .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
+      .WillOnce([&wait_loop]() { wait_loop.Quit(); });
 
   video_source_provider_->GetSourceInfos(device_info_receiver_.Get());
   wait_loop.Run();

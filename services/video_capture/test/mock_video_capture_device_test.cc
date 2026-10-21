@@ -12,7 +12,6 @@
 #include "media/capture/video/video_capture_system_impl.h"
 
 using testing::_;
-using testing::InvokeWithoutArgs;
 
 namespace video_capture {
 
@@ -45,8 +44,9 @@ void MockVideoCaptureDeviceTest::SetUp() {
 
   // Obtain the mock device from the factory
   base::RunLoop wait_loop;
-  EXPECT_CALL(device_infos_receiver_, Run(_))
-      .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
+  EXPECT_CALL(device_infos_receiver_, Run(_)).WillOnce([&wait_loop]() {
+    wait_loop.Quit();
+  });
   mock_device_factory_adapter_->GetDeviceInfos(device_infos_receiver_.Get());
   // We must wait for the response to GetDeviceInfos before calling
   // CreateDevice.
