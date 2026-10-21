@@ -753,6 +753,7 @@
 // - external/xnnpack+/src/qs8-packw/gen/qs8-packw-x4c8-gemm-gio-scalar.c
 // - external/xnnpack+/src/qs8-packw/gen/qs8-packw-x4c8-gemm-goi-scalar.c
 // - external/xnnpack+/src/qs8-packw/gen/qs8-packw-x64c4-gemm-goi-avx256vnni-prfm.c
+// - external/xnnpack+/src/qs8-packw/gen/qs8-packw-x64c4-gemm-goi-scalar.c
 // - external/xnnpack+/src/qs8-packw/gen/qs8-packw-x8c4-gemm-gio-scalar.c
 // - external/xnnpack+/src/qs8-packw/gen/qs8-packw-x8c8-gemm-gio-scalar.c
 // - external/xnnpack+/src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-avx2-madd.c
@@ -792,13 +793,13 @@
 // - external/xnnpack+/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-7x8c8-minmax-fp32-avx256skx-madd-prfm.c
 // - external/xnnpack+/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-7x8c8-minmax-fp32-avx256vnni-prfm.c
 // - external/xnnpack+/src/qs8-qc4w-gemm/gen/qs8-qc4w-gemm-8x16c8-minmax-fp32-asm-amd64-avx512vnni.S
-// - external/xnnpack+/src/qs8-qc4w-packw/gen/qs8-qc4uw-packw-x16c8-gemm-goi-scalar.c
+// - external/xnnpack+/src/qs8-qc4w-packw/gen/qs8-qc4uw-packw-x16c8-gemm-goi-sse2.c
 // - external/xnnpack+/src/qs8-qc4w-packw/gen/qs8-qc4uw-packw-x4c8-gemm-goi-sse2.c
 // - external/xnnpack+/src/qs8-qc4w-packw/gen/qs8-qc4uw-packw-x8c8-gemm-goi-sse2.c
 // - external/xnnpack+/src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-avx256vnni.c
 // - external/xnnpack+/src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x8c8-gemm-goi-avx256vnni.c
 // - external/xnnpack+/src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x8c8-gemm-goi-avxvnni.c
-// - external/xnnpack+/src/qs8-qc4w-packw/gen/qs8-to-qu8-qc4uw-packw-x16c8-gemm-goi-scalar.c
+// - external/xnnpack+/src/qs8-qc4w-packw/gen/qs8-to-qu8-qc4uw-packw-x16c8-gemm-goi-sse2.c
 // - external/xnnpack+/src/qs8-qc4w-packw/gen/qs8-to-qu8-qc4uw-packw-x4c8-gemm-goi-sse2.c
 // - external/xnnpack+/src/qs8-qc4w-packw/gen/qs8-to-qu8-qc4uw-packw-x8c8-gemm-goi-sse2.c
 // - external/xnnpack+/src/qs8-qc4w-packw/gen/qs8-to-qu8-qc4w-packw-x16c8-gemm-goi-avx256vnni.c
@@ -1139,10 +1140,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-   35, 226, 236, 120,  53,   8, 187, 134,
-   99, 214, 214, 133, 144, 204, 142, 114,
-  214,  39, 117,  91, 144, 108,  42, 251,
-  203, 170, 132, 133,  85,  18, 123,  22
+  127, 168, 108, 178, 225, 216, 125,   1,
+   24, 212, 122,   8, 189,  34, 213, 152,
+   41, 134, 233, 164, 208,  97, 101,  78,
+  167,  60,  94, 149, 112, 149, 241, 215
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
