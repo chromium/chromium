@@ -36,6 +36,7 @@ include_rules = [
   "+components/page_load_metrics/browser",
   "+components/page_load_metrics/google/browser",
   "+components/payments/content/android/payment_feature_map.h",
+  "+components/payments/core/features.h",
   "+components/performance_manager/embedder",
   "+components/performance_manager/public",
   "+components/permissions",

@@ -336,6 +336,7 @@ source_set("browser") {
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/google/browser",
     "//components/payments/content/android",
+    "//components/payments/core",
     "//components/performance_manager",
     "//components/permissions",
     "//components/policy:generated",
