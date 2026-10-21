@@ -5741,21 +5741,21 @@ TEST_P(PrefetchServiceLimitsTest, NonImmediatePrefetchEvictedAtLimit) {
   PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh())
       ->SetPrefetchDestructionCallback(mock_destruction_callback.Get());
 
-  auto prefetch_1 =
-      CompletePrefetch(url_1, blink::mojom::SpeculationEagerness::kModerate);
+  auto prefetch_1 = CompletePrefetch(
+      url_1, blink::mojom::SpeculationEagerness::kConservative);
   ASSERT_TRUE(prefetch_1);
   EXPECT_EQ(prefetch_1.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
 
-  auto prefetch_2 =
-      CompletePrefetch(url_2, blink::mojom::SpeculationEagerness::kModerate);
+  auto prefetch_2 = CompletePrefetch(
+      url_2, blink::mojom::SpeculationEagerness::kConservative);
   ASSERT_TRUE(prefetch_2);
   EXPECT_EQ(prefetch_2.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
   ASSERT_TRUE(prefetch_1);
 
-  auto prefetch_3 =
-      CompletePrefetch(url_3, blink::mojom::SpeculationEagerness::kModerate);
+  auto prefetch_3 = CompletePrefetch(
+      url_3, blink::mojom::SpeculationEagerness::kConservative);
   ASSERT_TRUE(prefetch_3);
   EXPECT_EQ(prefetch_3.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
@@ -5764,8 +5764,8 @@ TEST_P(PrefetchServiceLimitsTest, NonImmediatePrefetchEvictedAtLimit) {
   ASSERT_FALSE(prefetch_1);
   ASSERT_TRUE(prefetch_2);
 
-  auto prefetch_4 =
-      CompletePrefetch(url_4, blink::mojom::SpeculationEagerness::kModerate);
+  auto prefetch_4 = CompletePrefetch(
+      url_4, blink::mojom::SpeculationEagerness::kConservative);
   ASSERT_TRUE(prefetch_4);
   EXPECT_EQ(prefetch_4.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
@@ -5794,7 +5794,7 @@ TEST_P(PrefetchServiceLimitsTest, NonImmediatePrefetchEvictedAtLimit) {
              /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
-             blink::mojom::SpeculationEagerness::kModerate),
+             blink::mojom::SpeculationEagerness::kConservative),
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
              PreloadingEligibility::kEligible,
@@ -5805,7 +5805,7 @@ TEST_P(PrefetchServiceLimitsTest, NonImmediatePrefetchEvictedAtLimit) {
              /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
-             blink::mojom::SpeculationEagerness::kModerate),
+             blink::mojom::SpeculationEagerness::kConservative),
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
              PreloadingEligibility::kEligible,
@@ -5815,7 +5815,7 @@ TEST_P(PrefetchServiceLimitsTest, NonImmediatePrefetchEvictedAtLimit) {
              /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
-             blink::mojom::SpeculationEagerness::kModerate),
+             blink::mojom::SpeculationEagerness::kConservative),
          attempt_entry_builder()->BuildEntry(
              source_id, PreloadingType::kPrefetch,
              PreloadingEligibility::kEligible,
@@ -5825,7 +5825,7 @@ TEST_P(PrefetchServiceLimitsTest, NonImmediatePrefetchEvictedAtLimit) {
              /*accurate=*/true,
              /*ready_time=*/
              base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
-             blink::mojom::SpeculationEagerness::kModerate)};
+             blink::mojom::SpeculationEagerness::kConservative)};
     EXPECT_THAT(actual_attempts,
                 testing::UnorderedElementsAreArray(expected_attempts))
         << test::ActualVsExpectedUkmEntriesToString(actual_attempts,

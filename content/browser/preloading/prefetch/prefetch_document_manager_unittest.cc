@@ -406,8 +406,10 @@ TEST_F(PrefetchDocumentManagerTest, CanPrefetchNowLimits_Default) {
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
 
-  // Create 2 completed non-immediate prefetches to reach the default limit.
-  for (int i = 0; i < 2; ++i) {
+  // Create completed non-immediate prefetches to reach the default limit.
+  const size_t default_limit =
+      features::kMaxNumberOfModeratePrefetchesPerPage.Get();
+  for (size_t i = 0; i < default_limit; ++i) {
     auto candidate = blink::mojom::SpeculationCandidate::New();
     candidate->tags = {std::nullopt};
     candidate->action = blink::mojom::SpeculationAction::kPrefetch;
@@ -421,14 +423,19 @@ TEST_F(PrefetchDocumentManagerTest, CanPrefetchNowLimits_Default) {
     prefetch_document_manager->ProcessCandidates(candidates);
 
     auto& prefetch = GetPrefetches().back();
+    auto [can_prefetch, to_evict] =
+        prefetch_document_manager->CanPrefetchNow(prefetch.get());
+    EXPECT_TRUE(can_prefetch);
+    EXPECT_FALSE(to_evict);
+
     MakeServableStreamingURLLoaderForTest(
         prefetch.get(), SuccessfulPrefetchResponseHeadForTesting(),
         "test body");
   }
 
-  ASSERT_EQ(GetPrefetches().size(), 2u);
+  ASSERT_EQ(GetPrefetches().size(), default_limit);
 
-  // Now we are at the default limit (2).
+  // Now we are at the default limit.
   // A new regular candidate should trigger eviction.
   {
     auto candidate = blink::mojom::SpeculationCandidate::New();
