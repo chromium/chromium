@@ -5177,12 +5177,20 @@
                     "name": "PinningEphemeral_20260915",
                     "params": {
                         "ContextualTasksEntryPoint": "toolbar-ephemeral-branded",
+                        "ContextualTasksEphemeralButtonAutoDismissTimeMinutes": "120",
+                        "ContextualTasksUnifyPinButtonLogo": "super-g",
+                        "EnableCircularEphemeralButtonNextToBatterySaver": "true",
                         "overflow-items": "all-without-new-thread"
                     },
                     "enable_features": [
                         "ContextualTasksEnableSpatialModelToolbarLayout",
                         "ContextualTasksEphemeralBrandedEntryPoint",
+                        "ContextualTasksEphemeralButtonAutoDismiss",
+                        "ContextualTasksEphemeralButtonContextMenu",
+                        "ContextualTasksPinningV2",
+                        "ContextualTasksUnifyPinButtonLogos",
                         "EnableContextualTasksPinButtonInToolbar",
+                        "EnableContextualTasksPinButtonOnSrp",
                         "EphemeralPinningVisibleWhenPermanentlyPinned"
                     ],
                     "disable_features": [

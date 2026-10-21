@@ -573,6 +573,7 @@ suite('TopToolbarTest', () => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       loadTimeData.overrideValues({
         enablePinButton: true,
+        enablePinButtonOnSrp: false,
         isAiPage: true,
         isAimEligible: true,
         pinTooltip: 'Pin side panel',

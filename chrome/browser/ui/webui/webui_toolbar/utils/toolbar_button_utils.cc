@@ -316,9 +316,15 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
                            : kTabSearchTabStripOldIcon));
       return toolbar_ui_api::mojom::PinnedToolbarAction::kTabSearch;
     case kActionSidePanelShowContextualTasks:
-      CHECK_EQ(icon, &(features::IsRoundedIconsEnabled()
-                           ? omnibox::kSearchSparkIcon
-                           : omnibox::kSearchSparkOldIcon));
+      CHECK(icon == &(features::IsRoundedIconsEnabled()
+                          ? omnibox::kSearchSparkIcon
+                          : omnibox::kSearchSparkOldIcon) ||
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            item->GetImage().IsImage()
+#else
+            icon == &vector_icons::kGoogleColorIcon
+#endif
+      );
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kSidePanelShowContextualTasks;
     case kActionSidePanelShowLens:
