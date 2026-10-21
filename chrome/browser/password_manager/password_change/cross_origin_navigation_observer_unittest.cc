@@ -227,3 +227,93 @@ TEST_F(CrossOriginNavigationObserverTest, NavigationToInvalidUrl) {
 
   NavigateAndCommit(GURL("about:blank"));
 }
+
+TEST_F(CrossOriginNavigationObserverTest,
+       NavigationInSameIpOriginDoesNotTriggerCallback) {
+  NavigateAndCommit(GURL("http://10.0.0.1:8080/.well-known/change-password"));
+  base::MockRepeatingClosure on_navigated_to_different_origin;
+  base::RunLoop run_loop;
+  auto barrier = base::BarrierClosure(2, run_loop.QuitClosure());
+
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce([&](auto callback) {
+        std::move(callback).Run(std::vector<std::string>());
+        barrier.Run();
+      });
+  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
+      .WillOnce([&](auto uri, auto callback) {
+        std::move(callback).Run(affiliations::AffiliatedFacets(), true);
+        barrier.Run();
+      });
+  EXPECT_CALL(on_navigated_to_different_origin, Run).Times(0);
+
+  CrossOriginNavigationObserver observer(
+      web_contents(), web_contents()->GetURL(), &affiliation_service(),
+      on_navigated_to_different_origin.Get());
+  run_loop.Run();
+
+  NavigateAndCommit(GURL("http://10.0.0.1:8080/settings/"));
+  NavigateAndCommit(GURL("http://10.0.0.1:8080/settings/password"));
+}
+
+struct NonEtldCrossOriginNavigationTestCase {
+  std::string test_name;
+  std::string initial_url;
+  std::string target_url;
+};
+
+class CrossOriginNavigationObserverNonEtldTest
+    : public CrossOriginNavigationObserverTest,
+      public testing::WithParamInterface<NonEtldCrossOriginNavigationTestCase> {
+};
+
+TEST_P(CrossOriginNavigationObserverNonEtldTest,
+       NavigationToDifferentOriginTriggersCallback) {
+  NavigateAndCommit(GURL(GetParam().initial_url));
+  base::MockRepeatingClosure on_navigated_to_different_origin;
+  base::RunLoop run_loop;
+  auto barrier = base::BarrierClosure(2, run_loop.QuitClosure());
+
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce([&](auto callback) {
+        std::move(callback).Run(std::vector<std::string>());
+        barrier.Run();
+      });
+  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
+      .WillOnce([&](auto uri, auto callback) {
+        std::move(callback).Run(affiliations::AffiliatedFacets(), true);
+        barrier.Run();
+      });
+  EXPECT_CALL(on_navigated_to_different_origin, Run);
+
+  CrossOriginNavigationObserver observer(
+      web_contents(), web_contents()->GetURL(), &affiliation_service(),
+      on_navigated_to_different_origin.Get());
+  run_loop.Run();
+
+  NavigateAndCommit(GURL(GetParam().target_url));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CrossOriginNavigationObserverNonEtldTest,
+    testing::Values(
+        NonEtldCrossOriginNavigationTestCase{
+            .test_name = "DifferentIpPort",
+            .initial_url = "http://10.0.0.1:8080/.well-known/change-password",
+            .target_url = "http://10.0.0.1:9999/settings/"},
+        NonEtldCrossOriginNavigationTestCase{
+            .test_name = "DifferentIpScheme",
+            .initial_url = "http://10.0.0.1:8080/.well-known/change-password",
+            .target_url = "https://10.0.0.1:8080/settings/"},
+        NonEtldCrossOriginNavigationTestCase{
+            .test_name = "DifferentIpv6Port",
+            .initial_url =
+                "http://[2001:db8::1]:8080/.well-known/change-password",
+            .target_url = "http://[2001:db8::1]:9999/settings/"},
+        NonEtldCrossOriginNavigationTestCase{
+            .test_name = "DifferentSingleLabelPort",
+            .initial_url = "http://corp-sso/.well-known/change-password",
+            .target_url = "http://corp-sso:9999/settings/"}),
+    [](const testing::TestParamInfo<NonEtldCrossOriginNavigationTestCase>&
+           info) { return info.param.test_name; });

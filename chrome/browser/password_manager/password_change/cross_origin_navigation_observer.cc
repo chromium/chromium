@@ -38,12 +38,17 @@ CrossOriginNavigationObserver::CrossOriginNavigationObserver(
     affiliations::AffiliationService* affiliation_service,
     base::OnceClosure on_cross_origin_navigation_detected)
     : web_contents_(web_contents),
-      initial_host_(initial_url.host()),
+      initial_origin_(url::Origin::Create(initial_url)),
       on_cross_origin_navigation_detected_(
           std::move(on_cross_origin_navigation_detected)) {
+  // Populate the initial domain immediately so synchronous calls to
+  // `IsSameOrAffiliatedDomain()` work before the asynchronous
+  // `AffiliationService` callbacks complete.
   std::string main_domain =
       affiliations::GetExtendedTopLevelDomain(initial_url, {});
-  affiliated_domains_.insert(main_domain);
+  if (!main_domain.empty()) {
+    affiliated_domains_.insert(main_domain);
+  }
 
   base::RepeatingClosure barrier = base::BarrierClosure(
       2, base::BindOnce(&CrossOriginNavigationObserver::OnReady,
@@ -82,10 +87,10 @@ bool CrossOriginNavigationObserver::IsSameOrAffiliatedDomain(
     const GURL& url) const {
   std::string domain =
       affiliations::GetExtendedTopLevelDomain(url, psl_extension_list_);
-  // An empty domain should not match anything, unless it's the exact same host
-  // as the initial URL (e.g. IP addresses where eTLD+1 is empty).
+  // An empty domain should not match anything, unless it's the exact same
+  // origin as the initial URL (e.g. IP addresses where eTLD+1 is empty).
   if (domain.empty()) {
-    return url.host() == initial_host_;
+    return initial_origin_.IsSameOriginWith(url);
   }
   return affiliated_domains_.contains(domain);
 }
@@ -99,7 +104,9 @@ void CrossOriginNavigationObserver::OnPSLExtensionsReceived(
 
   std::string main_domain =
       affiliations::GetExtendedTopLevelDomain(initial_url, psl_extension_list_);
-  affiliated_domains_.insert(main_domain);
+  if (!main_domain.empty()) {
+    affiliated_domains_.insert(main_domain);
+  }
 }
 
 void CrossOriginNavigationObserver::OnAffiliationsReceived(
