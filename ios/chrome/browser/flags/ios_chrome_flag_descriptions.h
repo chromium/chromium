@@ -105,6 +105,11 @@ inline constexpr char kAppBarAssistantCustomizationDescription[] =
     "When enabled, long pressing the AppBar assistant button shows a menu to "
     "choose which entry point the button shows.";
 
+inline constexpr char kAppBarDisableLongPressName[] =
+    "Disable App Bar long press";
+inline constexpr char kAppBarDisableLongPressDescription[] =
+    "When enabled, disables long-press context menus on the App Bar buttons.";
+
 inline constexpr char kAppBarStaticSymbolWhenHiddenName[] =
     "App Bar static symbol when hidden";
 inline constexpr char kAppBarStaticSymbolWhenHiddenDescription[] =

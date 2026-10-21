@@ -1269,6 +1269,12 @@ bool IsAppBarStaticSymbolWhenHiddenEnabled() {
   return base::FeatureList::IsEnabled(kAppBarStaticSymbolWhenHidden);
 }
 
+BASE_FEATURE(kAppBarDisableLongPress, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAppBarDisableLongPressEnabled() {
+  return base::FeatureList::IsEnabled(kAppBarDisableLongPress);
+}
+
 BASE_FEATURE(kClearRootViewControllerAfterSceneDisconnect,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

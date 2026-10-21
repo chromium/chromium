@@ -1043,6 +1043,12 @@ BASE_DECLARE_FEATURE(kAppBarStaticSymbolWhenHidden);
 // Returns true if the AppBarStaticSymbolWhenHidden feature is enabled.
 bool IsAppBarStaticSymbolWhenHiddenEnabled();
 
+// Disables long-press context menus on the App Bar buttons.
+BASE_DECLARE_FEATURE(kAppBarDisableLongPress);
+
+// Returns true if the AppBarDisableLongPress feature is enabled.
+bool IsAppBarDisableLongPressEnabled();
+
 // Feature flag (acting as kill switch) to clear window rootViewController after
 // disconnecting scene state to avoid UIKit focus system exceptions.
 BASE_DECLARE_FEATURE(kClearRootViewControllerAfterSceneDisconnect);
