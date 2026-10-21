@@ -95,7 +95,7 @@ bool VADoRawLog(char** buf, int* size, const char* format, va_list ap) {
   if (*size < 0) return false;
   int n = vsnprintf(*buf, static_cast<size_t>(*size), format, ap);
   bool result = true;
-  if (n < 0 || n > *size) {
+  if (n < 0 || n >= *size) {
     result = false;
     if (static_cast<size_t>(*size) > sizeof(kTruncated)) {
       n = *size - static_cast<int>(sizeof(kTruncated));
@@ -125,7 +125,7 @@ bool DoRawLog(char** buf, int* size, const char* format, ...) {
   va_start(ap, format);
   int n = vsnprintf(*buf, static_cast<size_t>(*size), format, ap);
   va_end(ap);
-  if (n < 0 || n > *size) return false;
+  if (n < 0 || n >= *size) return false;
   *size -= n;
   *buf += n;
   return true;

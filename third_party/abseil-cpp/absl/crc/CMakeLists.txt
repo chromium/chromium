@@ -122,6 +122,8 @@ absl_cc_test(
     absl::string_view
     absl::strings
     GTest::gtest_main
+  SHARD_COUNT
+    3
 )
 
 absl_cc_test(

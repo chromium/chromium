@@ -1026,7 +1026,7 @@ struct NonTriviallyCopyableUDT {
       default;
   ~NonTriviallyCopyableUDT() { s_num_instance--; }
 
-  static uint64_t s_num_instance;
+  static uint64_t s_num_instance [[maybe_unused]];
   char c;
 };
 

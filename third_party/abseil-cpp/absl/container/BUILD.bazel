@@ -845,6 +845,7 @@ cc_test(
     srcs = ["internal/raw_hash_set_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkstatic = 1,
+    shard_count = 4,
     tags = NOTEST_TAGS_MOBILE + [
         "no_test_chromiumos_arm",
         "no_test_chromiumos_armv7",

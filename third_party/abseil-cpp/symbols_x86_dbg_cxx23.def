@@ -2158,6 +2158,7 @@ EXPORTS
     ??0PrefixCrc@CrcCordState@crc_internal@absl@@QAE@XZ
     ??0ProtoField@log_internal@absl@@QAE@XZ
     ??0Randen@random_internal@absl@@QAE@XZ
+    ??0RawHashSetLayout@container_internal@absl@@AAE@Uuninitialized_tag_t@12@@Z
     ??0RawHashSetLayout@container_internal@absl@@QAE@III_NI@Z
     ??0ReaderMutexLock@absl@@QAE@AAVMutex@1@@Z
     ??0ReentranceGuard@container_internal@absl@@QAE@AAVCommonFields@12@@Z
@@ -2562,7 +2563,6 @@ EXPORTS
     ??8strings_internal@absl@@YA_NABV?$SplitIterator@V?$Splitter@VByChar@absl@@UAllowEmpty@2@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@strings_internal@absl@@@01@0@Z
     ??9CharIterator@Cord@absl@@QBE_NABV012@@Z
     ??9ChunkIterator@Cord@absl@@QBE_NABV012@@Z
-    ??9GraphId@synchronization_internal@absl@@QBE_NABU012@@Z
     ??9__Cr@std@@YA_NABU__deque_range@?$deque@UPrefixCrc@CrcCordState@crc_internal@absl@@V?$allocator@UPrefixCrc@CrcCordState@crc_internal@absl@@@__Cr@std@@@01@0@Z
     ??9__Cr@std@@YA_NABV?$__map_iterator@V?$__tree_iterator@U?$__value_type@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$map@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$vector@PBVCommandLineFlag@absl@@V?$allocator@PBVCommandLineFlag@absl@@@__Cr@std@@@23@U?$less@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@V?$allocator@U?$pair@$$CBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$vector@PBVCommandLineFlag@absl@@V?$allocator@PBVCommandLineFlag@absl@@@__Cr@std@@@23@@__Cr@std@@@23@@23@@__Cr@std@@PAV?$__tree_node@U?$__value_type@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$map@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$vector@PBVCommandLineFlag@absl@@V?$allocator@PBVCommandLineFlag@absl@@@__Cr@std@@@23@U?$less@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@V?$allocator@U?$pair@$$CBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$vector@PBVCommandLineFlag@absl@@V?$allocator@PBVCommandLineFlag@absl@@@__Cr@std@@@23@@__Cr@std@@@23@@23@@__Cr@std@@PAX@23@H@__Cr@std@@@01@0@Z
     ??9__Cr@std@@YA_NABV?$__map_iterator@V?$__tree_iterator@U?$__value_type@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$vector@PBVCommandLineFlag@absl@@V?$allocator@PBVCommandLineFlag@absl@@@__Cr@std@@@23@@__Cr@std@@PAV?$__tree_node@U?$__value_type@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$vector@PBVCommandLineFlag@absl@@V?$allocator@PBVCommandLineFlag@absl@@@__Cr@std@@@23@@__Cr@std@@PAX@23@H@__Cr@std@@@01@0@Z
@@ -2829,7 +2829,6 @@ EXPORTS
     ??R?$ConvertToContainer@V?$vector@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@V?$allocator@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@23@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@23@$0A@@?$Splitter@VByChar@absl@@UAllowEmpty@2@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@strings_internal@absl@@QBE?AV?$vector@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@V?$allocator@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@23@@__Cr@std@@ABV123@@Z
     ??R?$FunctionRef@$$A6AII@Z@absl@@QBEII@Z
     ??R?$FunctionRef@$$A6AXPAUCordRep@cord_internal@absl@@II@Z@absl@@QBEXPAUCordRep@cord_internal@1@II@Z
-    ??R?$FunctionRef@$$A6AXPAXPBX@Z@absl@@QBEXPAXPBX@Z
     ??R?$FunctionRef@$$A6AXPBW4ctrl_t@container_internal@absl@@PAX@Z@absl@@QBEXPBW4ctrl_t@container_internal@1@PAX@Z
     ??R?$FunctionRef@$$A6AXV?$Span@I@absl@@@Z@absl@@QBEXV?$Span@I@1@@Z
     ??R?$FunctionRef@$$A6AXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z@absl@@QBEXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
@@ -2925,6 +2924,7 @@ EXPORTS
     ??_5uint128@absl@@QAEAAV01@V01@@Z
     ??_6uint128@absl@@QAEAAV01@V01@@Z
     ??_DOStringStream@strings_internal@absl@@QAEXXZ
+    ??_EClock@absl@@UAEPAXI@Z
     ??_ECordzHandle@cord_internal@absl@@MAEPAXI@Z
     ?AbsDuration@absl@@YA?AVDuration@1@V21@@Z
     ?AbslFormatFlush@detect_specialization@log_internal@absl@@YAXPAVStringifySink@123@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
@@ -3013,6 +3013,7 @@ EXPORTS
     ?AlwaysTrue@Condition@absl@@CA_NPBV12@@Z
     ?AnnotateConstruct@NonEmptyInlinedStorage@?$FixedArray@D$0PPPPPPPP@V?$allocator@D@__Cr@std@@@absl@@QAEXI@Z
     ?AnnotateDestruct@NonEmptyInlinedStorage@?$FixedArray@D$0PPPPPPPP@V?$allocator@D@__Cr@std@@@absl@@QAEXI@Z
+    ?AnnotateForBugDetectionOnMoveImpl@CommonFields@container_internal@absl@@AAEXAAV123@ABUPolicyFunctions@23@@Z
     ?Append@Cord@absl@@QAEX$$QAV12@@Z
     ?Append@Cord@absl@@QAEXABV12@@Z
     ?Append@Cord@absl@@QAEXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
@@ -3168,7 +3169,7 @@ EXPORTS
     ?ConvertOne@ParsedFormatConsumer@ParsedFormatBase@str_format_internal@absl@@QAE_NABUUnboundConversion@34@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?ConvertSpecialToEmptyAndFullToDeleted@GroupSse2Impl@container_internal@absl@@QBEXPAW4ctrl_t@23@@Z
     ?Copy@CordRepBtree@cord_internal@absl@@ABEPAV123@XZ
-    ?Copy@container_internal@absl@@YAXAAVCommonFields@12@ABUPolicyFunctions@12@ABV312@V?$FunctionRef@$$A6AXPAXPBX@Z@2@@Z
+    ?Copy@container_internal@absl@@YAXAAVCommonFields@12@ABUPolicyFunctions@12@ABV312@P6AXPAX3PBX@Z@Z
     ?Copy@flags_internal@absl@@YAXP6APAXW4FlagOp@12@PBXPAX2@Z12@Z
     ?CopyBeginTo@CordRepBtree@cord_internal@absl@@ABEPAV123@II@Z
     ?CopyConstruct@flags_internal@absl@@YAXP6APAXW4FlagOp@12@PBXPAX2@Z12@Z
@@ -3190,6 +3191,7 @@ EXPORTS
     ?Create@CordRepBtree@cord_internal@absl@@SAPAV123@PAUCordRep@23@@Z
     ?Create@CordRepFlat@cord_internal@absl@@SAPAU123@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@I@Z
     ?CreateDestroyed@HashtableCapacity@container_internal@absl@@SA?AV123@XZ
+    ?CreateForSmallNonSooGrowth@RawHashSetLayout@container_internal@absl@@SA?AV123@III_N@Z
     ?CreateReentrance@HashtableCapacity@container_internal@absl@@SA?AV123@XZ
     ?CreateSlow@CordRepBtree@cord_internal@absl@@CAPAV123@PAUCordRep@23@@Z
     ?CreateStatusAndConditionallyLog@StatusBuilder@absl@@CA?AVStatus@2@VSourceLocation@2@V?$unique_ptr@URep@StatusBuilder@absl@@U?$default_delete@URep@StatusBuilder@absl@@@__Cr@std@@@__Cr@std@@@Z
@@ -6051,7 +6053,7 @@ EXPORTS
     ?timestamp@LogEntry@absl@@QBE?AVTime@2@XZ
     ?total_written@BufferRawSink@str_format_internal@absl@@QBEIXZ
     ?transfer@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@container_internal@absl@@$$V@container_internal@absl@@AAEXPAT?$map_slot_type@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@23@0@Z
-    ?transfer_unprobed_elements_to_next_capacity_fn@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@container_internal@absl@@$$V@container_internal@absl@@CAXAAVCommonFields@23@PBW4ctrl_t@23@PAX2P6AX2EII@Z@Z
+    ?transfer_unprobed_elements_to_next_capacity_fn@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@container_internal@absl@@$$V@container_internal@absl@@CAXAAVCommonFields@23@PBW4ctrl_t@23@PAX2IP6AX2II@Z@Z
     ?tree@InlineRep@Cord@absl@@QBEPAUCordRep@cord_internal@3@XZ
     ?tree@Rep@InlineData@cord_internal@absl@@QBEPAUCordRep@34@XZ
     ?try_lock@Mutex@absl@@QAE_NXZ

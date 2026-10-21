@@ -382,6 +382,7 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     flaky = 1,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    shard_count = 4,
     deps = [
         ":kernel_timeout_internal",
         ":synchronization",

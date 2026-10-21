@@ -49,7 +49,7 @@ absl_cc_library(
 absl_cc_library(
   NAME
     btree_test_common
-  hdrs
+  HDRS
     "btree_test.h"
   COPTS
     ${ABSL_TEST_COPTS}
@@ -87,6 +87,8 @@ absl_cc_test(
     absl::test_allocator
     absl::test_instance_tracker
     GTest::gmock_main
+  SHARD_COUNT
+    10
 )
 
 absl_cc_test(
@@ -106,6 +108,8 @@ absl_cc_test(
     absl::flags
     absl::raw_logging_internal
     GTest::gmock_main
+  SHARD_COUNT
+    10
 )
 
 # Internal-only target, do not depend on directly.
@@ -871,6 +875,8 @@ absl_cc_test(
     absl::test_instance_tracker
     absl::type_traits
     GTest::gmock_main
+  SHARD_COUNT
+    4
 )
 
 # Internal-only target, do not depend on directly.

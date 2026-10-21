@@ -38,6 +38,12 @@ fi
 # Use Bazel Vendor mode to reduce reliance on external dependencies.
 if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -f "${KOKORO_GFILE_DIR}/distdir/abseil-cpp_vendor.tar.gz" ]]; then
   tar -xf "${KOKORO_GFILE_DIR}/distdir/abseil-cpp_vendor.tar.gz" -C "${HOME}/"
+  # Pin all vendored repositories so Bazel uses them without checking their
+  # marker files, which were generated on Linux and have OS-specific hashes.
+  for marker in "${HOME}/abseil-cpp_vendor"/@*.marker; do
+    repo="$(basename "${marker}" .marker)"
+    echo "pin('@${repo}')" >> "${HOME}/abseil-cpp_vendor/VENDOR.bazel"
+  done
   BAZEL_EXTRA_ARGS="--vendor_dir=${HOME}/abseil-cpp_vendor ${BAZEL_EXTRA_ARGS:-}"
 fi
 

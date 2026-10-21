@@ -511,6 +511,7 @@ cc_library(
     visibility = ["//absl:__subpackages__"],
     deps = [
         ":config",
+        ":core_headers",
         ":pretty_function",
         "//absl/memory",
         "//absl/meta:type_traits",
@@ -562,6 +563,7 @@ cc_test(
     srcs = ["spinlock_test_common.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
+    shard_count = 4,
     tags = [
         "no_test_wasm",
     ],

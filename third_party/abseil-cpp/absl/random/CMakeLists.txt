@@ -272,6 +272,8 @@ absl_cc_test(
     absl::random_random
     GTest::gmock
     GTest::gtest_main
+  SHARD_COUNT
+    4
 )
 
 absl_cc_test(
@@ -295,6 +297,8 @@ absl_cc_test(
     absl::strings
     GTest::gmock
     GTest::gtest_main
+  SHARD_COUNT
+    4
 )
 
 absl_cc_test(
@@ -398,6 +402,8 @@ absl_cc_test(
     absl::strings
     GTest::gmock
     GTest::gtest_main
+  SHARD_COUNT
+    4
 )
 
 absl_cc_test(

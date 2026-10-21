@@ -714,6 +714,8 @@ absl_cc_test(
     absl::string_view
     absl::strings
     GTest::gmock_main
+  SHARD_COUNT
+    4
 )
 
 absl_cc_test(
@@ -1196,6 +1198,8 @@ absl_cc_test(
     absl::string_view
     absl::strings
     GTest::gmock_main
+  SHARD_COUNT
+    4
 )
 
 absl_cc_test(
@@ -1233,6 +1237,8 @@ absl_cc_test(
     absl::string_view
     absl::strings
     GTest::gmock_main
+  SHARD_COUNT
+    4
 )
 
 absl_cc_test(

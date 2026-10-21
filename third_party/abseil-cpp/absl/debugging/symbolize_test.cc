@@ -421,7 +421,7 @@ TEST(Symbolize, SetSymbolDecorator) {
 // to optimize away the .data section if no variables live in the
 // section. This variable should get placed in the .data section, and
 // the test below checks for the existence of a .data section.
-static int in_data_section = 1;
+static int in_data_section [[maybe_unused]] = 1;
 
 TEST(Symbolize, ForEachSection) {
   int fd;

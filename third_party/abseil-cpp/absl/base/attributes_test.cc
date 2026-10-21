@@ -54,4 +54,22 @@ TEST(Attributes, MSVCBug) {
   Agg good1 [[maybe_unused]] = {ImplicitlyConstructible("hello")};
 }
 
+TEST(Attributes, UnsafeBuffers) {
+  int buffer[10] = {0};
+  int offset = 1;
+
+  // Expression example
+  int* p1 = ABSL_UNSAFE_BUFFERS(buffer + offset);
+  EXPECT_EQ(p1, &buffer[1]);
+
+  // Single-line statement example
+  int* p2 = buffer;
+  ABSL_UNSAFE_BUFFERS(p2 += offset;)
+  EXPECT_EQ(p2, &buffer[1]);
+
+  // Multi-line statement example
+  ABSL_UNSAFE_BUFFERS(int* p3 = buffer + offset; p3[0] = 1;)
+  EXPECT_EQ(buffer[1], 1);
+}
+
 }  // namespace

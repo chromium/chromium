@@ -598,6 +598,7 @@ cc_test(
     timeout = "long",
     srcs = ["internal/cord_rep_btree_test.cc"],
     copts = ABSL_TEST_COPTS,
+    shard_count = 4,
     visibility = ["//visibility:private"],
     deps = [
         ":cord_internal",
@@ -710,10 +711,10 @@ cc_library(
         ":cordz_info",
         ":cordz_update_scope",
         ":cordz_update_tracker",
-        ":internal",
         ":resize_and_overwrite",
         ":string_view",
         ":strings",
+        "//absl/algorithm:container",
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:endian",
@@ -1039,6 +1040,7 @@ cc_test(
     timeout = "long",
     srcs = ["cord_test.cc"],
     copts = ABSL_TEST_COPTS,
+    shard_count = 4,
     visibility = ["//visibility:private"],
     deps = [
         ":cord",
@@ -1565,6 +1567,7 @@ cc_test(
     timeout = "long",
     srcs = ["internal/str_format/convert_test.cc"],
     copts = ABSL_TEST_COPTS,
+    shard_count = 4,
     visibility = ["//visibility:private"],
     deps = [
         ":str_format",

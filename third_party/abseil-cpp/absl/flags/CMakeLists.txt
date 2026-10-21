@@ -455,6 +455,8 @@ absl_cc_test(
     absl::flags_internal
     absl::time
     GTest::gmock_main
+  SHARD_COUNT
+    31
 )
 
 absl_cc_test(

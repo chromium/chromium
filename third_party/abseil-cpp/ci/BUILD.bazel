@@ -1,0 +1,84 @@
+# Copyright 2026 The Abseil Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+package(default_visibility = ["//visibility:private"])
+
+platform(
+    name = "rbe",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+    exec_properties = {
+        "OSArch": "amd64",
+        "cache-silo-key": "n2-highcpu-2-2026-10-14",
+        "container-image": "docker://gcr.io/google.com/absl-177019/oss-linux-latest@sha256:9f7f104e4857e3528e8bf5f14968183f5a0e786ca9ef63601eae4e4136f011d6",
+        "dockerRunAsRoot": "true",
+    },
+)
+
+platform(
+    name = "rbe-floor",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+    exec_properties = {
+        "OSArch": "amd64",
+        "cache-silo-key": "n2-highcpu-2-2026-10-14",
+        "container-image": "docker://gcr.io/google.com/absl-177019/oss-linux-floor@sha256:60898eb3b0dbcf85cd60e346f103fbf3169d966d391dcb2362b243d528b1183b",
+        "dockerRunAsRoot": "true",
+    },
+)
+
+platform(
+    name = "rbe-arm",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:aarch64",
+    ],
+    exec_properties = {
+        "OSArch": "arm64",
+        "cache-silo-key": "t2a-standard-4-2026-10-14",
+        "container-image": "docker://gcr.io/google.com/absl-177019/oss-linux-latest@sha256:9f7f104e4857e3528e8bf5f14968183f5a0e786ca9ef63601eae4e4136f011d6",
+        "dockerRunAsRoot": "true",
+    },
+)
+
+platform(
+    name = "linux_gcc",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+        "@bazel_tools//tools/cpp:gcc",
+    ],
+)
+
+platform(
+    name = "linux_clang",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+        "@bazel_tools//tools/cpp:clang",
+    ],
+)
+
+platform(
+    name = "linux_arm_clang",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:aarch64",
+        "@bazel_tools//tools/cpp:clang",
+    ],
+)

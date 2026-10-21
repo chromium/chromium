@@ -416,6 +416,7 @@ EXPORTS
     ??_0Duration@absl@@QAEAAV01@N@Z
     ??_0Duration@absl@@QAEAAV01@_J@Z
     ??_1Duration@absl@@QAEAAV01@V01@@Z
+    ??_EClock@absl@@UAEPAXI@Z
     ??_ECordzHandle@cord_internal@absl@@MAEPAXI@Z
     ?AbslFormatFlush@detect_specialization@log_internal@absl@@YAXPAVStringifySink@123@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?AbslInternalSetErrorCode@absl@@YAXAAVStatusBuilder@1@W4StatusCode@1@@Z
@@ -470,6 +471,7 @@ EXPORTS
     ?Alloc@LowLevelAlloc@base_internal@absl@@SAPAXI@Z
     ?AllocWithArena@LowLevelAlloc@base_internal@absl@@SAPAXIPAUArena@123@@Z
     ?AlwaysTrue@Condition@absl@@CA_NPBV12@@Z
+    ?AnnotateForBugDetectionOnMoveImpl@CommonFields@container_internal@absl@@AAEXAAV123@ABUPolicyFunctions@23@@Z
     ?Append@Cord@absl@@QAEX$$QAV12@@Z
     ?Append@Cord@absl@@QAEXABV12@@Z
     ?Append@CordRepBtree@cord_internal@absl@@SAPAV123@PAV123@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@I@Z
@@ -572,7 +574,7 @@ EXPORTS
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NNABVFormatConversionSpecImpl@12@PAVFormatSinkImpl@12@@Z
     ?ConvertFloatImpl@str_format_internal@absl@@YA_NOABVFormatConversionSpecImpl@12@PAVFormatSinkImpl@12@@Z
     ?ConvertOne@ParsedFormatConsumer@ParsedFormatBase@str_format_internal@absl@@QAE_NABUUnboundConversion@34@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
-    ?Copy@container_internal@absl@@YAXAAVCommonFields@12@ABUPolicyFunctions@12@ABV312@V?$FunctionRef@$$A6AXPAXPBX@Z@2@@Z
+    ?Copy@container_internal@absl@@YAXAAVCommonFields@12@ABUPolicyFunctions@12@ABV312@P6AXPAX3PBX@Z@Z
     ?CopyCordToSpan@absl@@YAIABVCord@1@V?$Span@D@1@@Z
     ?CopyCordToString@absl@@YAXABVCord@1@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ?CopyPrefix@CordRepBtree@cord_internal@absl@@AAE?AUCopyResult@123@I_N@Z
@@ -580,6 +582,7 @@ EXPORTS
     ?CopyToArraySlowPath@Cord@absl@@ABEXPAD@Z
     ?Crash@Helper@internal_statusor@absl@@SAXABVStatus@3@@Z
     ?Crc32c@CRC@crc_internal@absl@@SAPAV123@XZ
+    ?CreateForSmallNonSooGrowth@RawHashSetLayout@container_internal@absl@@SA?AV123@III_N@Z
     ?CreateSlow@CordRepBtree@cord_internal@absl@@CAPAV123@PAUCordRep@23@@Z
     ?CreateStatusAndConditionallyLog@StatusBuilder@absl@@CA?AVStatus@2@VSourceLocation@2@V?$unique_ptr@URep@StatusBuilder@absl@@U?$default_delete@URep@StatusBuilder@absl@@@__Cr@std@@@__Cr@std@@@Z
     ?CreateThreadIdentity@synchronization_internal@absl@@YAPAUThreadIdentity@base_internal@2@XZ
@@ -1457,7 +1460,7 @@ EXPORTS
     ?size@?$BigUnsigned@$0FE@@strings_internal@absl@@QBEHXZ
     ?status@BadStatusOrAccess@absl@@QBEABVStatus@2@XZ
     ?stream@OstreamView@LogMessage@log_internal@absl@@QAEAAV?$basic_ostream@DU?$char_traits@D@__Cr@std@@@__Cr@std@@XZ
-    ?transfer_unprobed_elements_to_next_capacity_fn@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@container_internal@absl@@$$V@container_internal@absl@@CAXAAVCommonFields@23@PBW4ctrl_t@23@PAX2P6AX2EII@Z@Z
+    ?transfer_unprobed_elements_to_next_capacity_fn@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@container_internal@absl@@$$V@container_internal@absl@@CAXAAVCommonFields@23@PBW4ctrl_t@23@PAX2IP6AX2II@Z@Z
     ?try_lock@Mutex@absl@@QAE_NXZ
     ?try_lock_shared@Mutex@absl@@QAE_NXZ
     ?unlock@Mutex@absl@@QAEXXZ
