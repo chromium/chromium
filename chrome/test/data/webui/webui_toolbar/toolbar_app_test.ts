@@ -1231,8 +1231,7 @@ suite('ToolbarAppTest', () => {
       locationBar.querySelector('selected-keyword')!.shadowRoot.querySelector(
           '#text-wrap')!,
       locationBar.querySelector('content-settings-icons')!.shadowRoot
-          .querySelector('content-setting-icon')!.shadowRoot.querySelector(
-              '#label')!,
+          .querySelector('content-setting-icon')!.$.label,
       locationBar.querySelector('page-action-icons')!.shadowRoot
           .querySelector('page-action-icon')!.shadowRoot.querySelector('#text')!
       ,

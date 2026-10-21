@@ -543,8 +543,6 @@ suite('CrComponentsRealboxMatchTest', () => {
     matchEl.match = match;
     await microtasksFinished();
 
-    const secondaryTextEl = matchEl.shadowRoot.querySelector('#secondaryText');
-    assertTrue(!!secondaryTextEl);
-    assertEquals('', secondaryTextEl.textContent);
+    assertEquals('', matchEl.$.secondaryText.textContent);
   });
 });

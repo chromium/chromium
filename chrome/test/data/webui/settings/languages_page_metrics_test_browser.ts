@@ -79,11 +79,9 @@ suite('LanguagesPageMetricsBrowser', function() {
     languageHelper.enableLanguage('sw');
     await microtasksFinished();
     // Testing the 'Change Chrome Language' button with 'sw'
-    const languagesSection =
-        languagesPage.shadowRoot.querySelector('#languagesSection');
-    assertTrue(!!languagesSection);
-    const menuButton = languagesSection.querySelector<HTMLElement>(
-        '.list-item cr-icon-button#more-sw');
+    const menuButton =
+        languagesPage.$.languagesSection.querySelector<HTMLElement>(
+            '.list-item cr-icon-button#more-sw');
     assertTrue(!!menuButton);
     menuButton.click();
     await microtasksFinished();

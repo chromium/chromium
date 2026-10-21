@@ -1279,6 +1279,83 @@ class EslintTsTest(unittest.TestCase):
         e in str(context.exception), f'Found unexpected error: {e}'
       )
 
+  def testWebUiEslintPlugin_LitUseDollarSign(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test(["with_webui_plugin_lit_use_dollar_sign_violations.ts"])
+
+    _EXPECTED_STRING = "@webui-eslint/lit-use-dollar-sign"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _EXPECTED_ERROR = "Use %(elementExpr)s.$.%(id)s instead of %(queryExpr)s"
+
+    errors = [
+      _EXPECTED_ERROR
+      % {
+        'elementExpr': 'this',
+        'id': 'myButton',
+        'queryExpr': "this.shadowRoot.querySelector('#myButton')",
+      },
+      _EXPECTED_ERROR
+      % {
+        'elementExpr': 'this',
+        'id': 'myButton',
+        'queryExpr': "this.shadowRoot?.querySelector('#myButton')",
+      },
+      _EXPECTED_ERROR
+      % {
+        'elementExpr': 'childElement',
+        'id': 'myButton',
+        'queryExpr': "childElement.shadowRoot.querySelector('#myButton')",
+      },
+      _EXPECTED_ERROR
+      % {
+        'elementExpr': 'childElement',
+        'id': 'myButton',
+        'queryExpr': "childElement.shadowRoot?.querySelector<HTMLElement>('#myButton')",
+      },
+    ]
+    for e in errors:
+      self.assertTrue(
+        e in str(context.exception), f"Didn't find expected error: {e}"
+      )
+
+    non_errors = [
+      _EXPECTED_ERROR
+      % {
+        'elementExpr': 'this',
+        'id': 'unknownButton',
+        'queryExpr': "this.shadowRoot.querySelector('#unknownButton')",
+      },
+      _EXPECTED_ERROR
+      % {
+        'elementExpr': 'childElement',
+        'id': 'unknownButton',
+        'queryExpr': "childElement.shadowRoot.querySelector('#unknownButton')",
+      },
+      _EXPECTED_ERROR
+      % {
+        'elementExpr': 'childElement',
+        'id': 'myButton',
+        'queryExpr': "childElement.querySelector('#myButton')",
+      },
+      _EXPECTED_ERROR
+      % {
+        'elementExpr': 'nonLitElement',
+        'id': 'myButton',
+        'queryExpr': "nonLitElement.shadowRoot!.querySelector('#myButton')",
+      },
+      _EXPECTED_ERROR
+      % {
+        'elementExpr': 'anyElement',
+        'id': 'myButton',
+        'queryExpr': "anyElement.shadowRoot.querySelector('#myButton')",
+      },
+    ]
+    for e in non_errors:
+      self.assertFalse(
+        e in str(context.exception), f'Found unexpected error: {e}'
+      )
+
 
 if __name__ == "__main__":
   unittest.main()

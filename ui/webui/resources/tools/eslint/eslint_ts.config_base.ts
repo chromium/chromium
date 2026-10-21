@@ -45,6 +45,7 @@ export const defaultConfig = [
       '@webui-eslint/lit-element-invalid-interface': 'error',
       '@webui-eslint/lit-element-structure': 'error',
       '@webui-eslint/lit-property-accessor': 'error',
+      '@webui-eslint/lit-use-dollar-sign': 'error',
       '@webui-eslint/lit-use-fire-helper': 'error',
       '@webui-eslint/no-assert-equals-boolean': 'error',
       '@webui-eslint/no-mixed-type-and-value-imports': 'error',
