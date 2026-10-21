@@ -135,21 +135,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
                                "Safe Browsing Setting After Trigger",
                                "Client Channel", "Time On Page"});
   survey_configs.emplace_back(
-      &features::kHappinessTrackingSurveysForSecurityPage,
-      kHatsSurveyTriggerSettingsSecurityV2,
-      /*presupplied_trigger_id=*/
-      features::kHappinessTrackingSurveysForSecurityPageTriggerId.Get(),
-      std::vector<std::string>{},
-      std::vector<std::string>{
-          "Security page user actions",
-          "Safe browsing setting when security page opened",
-          "Security settings bundle setting when security "
-          "page opened",
-          "Safe browsing setting when security page closed",
-          "Security settings bundle setting when security "
-          "page closed",
-          "Client channel", "Time on page (bucketed seconds)"});
-  survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
       kHatsSurveyTriggerPrivacyGuide);
 

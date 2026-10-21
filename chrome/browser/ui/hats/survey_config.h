@@ -122,8 +122,6 @@ inline constexpr char kHatsSurveyTriggerSEHijacking[] =
 inline constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
 inline constexpr char kHatsSurveyTriggerSettingsSecurity[] =
     "settings-security";
-inline constexpr char kHatsSurveyTriggerSettingsSecurityV2[] =
-    "settings-security-v2";
 inline constexpr char kHatsSurveyTriggerTrustSafetyPrivacySettings[] =
     "ts-privacy-settings";
 inline constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
