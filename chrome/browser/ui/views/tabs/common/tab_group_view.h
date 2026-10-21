@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/view.h"
 
 class TabCollectionNode;
@@ -28,7 +29,7 @@ class TabGroupDataObserver;
 
 // The view class for the tab group container. It hosts the group header,
 // underline and all the tabs within the group, and serves as the drag target
-// for tab dragging. Layout is managed by TabGroupViewLayout.
+// for tab dragging.
 class TabGroupView : public TabCollectionZOrderManager,
                      public TabGroupHeaderView::Delegate,
                      public DraggedTabsContainer,
@@ -42,6 +43,19 @@ class TabGroupView : public TabCollectionZOrderManager,
   TabGroupView(const TabGroupView&) = delete;
   TabGroupView& operator=(const TabGroupView&) = delete;
   ~TabGroupView() override;
+
+  class LayoutManager : public views::LayoutManagerBase {
+   public:
+    virtual int GetCrossoverWidth() const;
+
+   protected:
+    // views::LayoutManagerBase:
+    void OnInstalled(views::View* host) override;
+
+    // Casts host_view() to a TabGroupView const ref, using static_cast. Avoids
+    // views::AsViewClass as it incurs overhead when checking metadata.
+    const class TabGroupView& TabGroupView() const;
+  };
 
   // views::View:
   void AddedToWidget() override;
@@ -106,7 +120,8 @@ class TabGroupView : public TabCollectionZOrderManager,
   int GetCrossoverWidth() const;
 
  private:
-  friend class TabGroupViewLayout;
+  friend class TabGroupViewVerticalLayout;
+  friend class TabGroupViewHorizontalLayout;
 
   // DraggedTabsContainer:
   views::ScrollView* GetScrollViewForContainer() const override;

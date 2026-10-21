@@ -19,7 +19,8 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_line_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
-#include "chrome/browser/ui/views/tabs/common/tab_group_view_layout.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_view_horizontal_layout.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_view_vertical_layout.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
@@ -56,6 +57,14 @@ const TabGroup* GetTabGroupFromNode(TabCollectionNode* node) {
       ->GetTabGroup();
 }
 
+std::unique_ptr<TabGroupView::LayoutManager> CreateTabGroupViewLayout(
+    TabStripOrientation orientation) {
+  if (orientation == TabStripOrientation::kVertical) {
+    return std::make_unique<TabGroupViewVerticalLayout>();
+  }
+  return std::make_unique<TabGroupViewHorizontalLayout>();
+}
+
 }  // namespace
 
 TabGroupView::TabGroupView(TabCollectionNode* collection_node)
@@ -87,7 +96,7 @@ TabGroupView::TabGroupView(TabCollectionNode* collection_node)
       group_line_(AddChildView(std::make_unique<TabGroupLineView>(*this))),
       layout_manager_(*SetLayoutManager(std::make_unique<
                                         TabCollectionAnimatingLayoutManager>(
-          std::make_unique<TabGroupViewLayout>(orientation_),
+          CreateTabGroupViewLayout(orientation_),
           *this,
           collection_node->GetController()->animation_coordinator(),
           orientation_ == TabStripOrientation::kHorizontal
@@ -128,6 +137,18 @@ TabGroupView::TabGroupView(TabCollectionNode* collection_node)
 }
 
 TabGroupView::~TabGroupView() = default;
+
+int TabGroupView::LayoutManager::GetCrossoverWidth() const {
+  return TabGroupView().GetMinimumSize().width();
+}
+
+void TabGroupView::LayoutManager::OnInstalled(views::View* host) {
+  CHECK(IsViewClass<class TabGroupView>(host));
+}
+
+const TabGroupView& TabGroupView::LayoutManager::TabGroupView() const {
+  return static_cast<const class TabGroupView&>(*host_view());
+}
 
 void TabGroupView::AddedToWidget() {
   paint_as_active_subscription_ =
@@ -244,12 +265,9 @@ bool TabGroupView::ShouldSnapToTarget(const views::View& child_view) const {
 }
 
 int TabGroupView::GetCrossoverWidth() const {
-  if (orientation_ == TabStripOrientation::kHorizontal) {
-    return static_cast<TabGroupViewLayout*>(
-               layout_manager_->target_layout_manager())
-        ->CalculateHorizontalCrossoverWidth(this);
-  }
-  return GetMinimumSize().width();
+  return static_cast<const TabGroupView::LayoutManager*>(
+             layout_manager_->target_layout_manager())
+      ->GetCrossoverWidth();
 }
 
 void TabGroupView::OnAnimationEnded() {
