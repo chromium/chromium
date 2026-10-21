@@ -65,9 +65,6 @@ BASE_DECLARE_FEATURE(kApproximateGeolocationPermission);
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kLeftHandSideSensorActivityIndicators);
 
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-BASE_DECLARE_FEATURE(kStorageAccessAPIRelatedWebsiteSets);
-
 }  // namespace features
 }  // namespace content_settings
 

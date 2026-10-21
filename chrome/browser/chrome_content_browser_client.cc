@@ -8902,12 +8902,6 @@ bool ChromeContentBrowserClient::ShouldDisableOriginAgentClusterDefault(
               ->GetBoolean(prefs::kOriginAgentClusterDefaultEnabled);
 }
 
-bool ChromeContentBrowserClient::WillProvidePublicFirstPartySets() {
-  return !is_minimal_mode_ &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kDisableComponentUpdate);
-}
-
 content::mojom::AlternativeErrorPageOverrideInfoPtr
 ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
     content::NavigationHandle& navigation_handle,
@@ -9463,10 +9457,6 @@ bool ChromeContentBrowserClient::
     return pref->GetValue()->GetBool();
   }
   return true;
-}
-
-void ChromeContentBrowserClient::SetIsMinimalMode(bool minimal) {
-  is_minimal_mode_ = minimal;
 }
 
 bool ChromeContentBrowserClient::

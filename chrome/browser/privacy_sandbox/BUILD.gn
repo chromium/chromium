@@ -17,7 +17,6 @@ source_set("headers") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/first_party_sets",
     "//chrome/browser/profiles:profile",
     "//components/content_settings/core/browser",
     "//components/keyed_service/core",
@@ -142,7 +141,6 @@ source_set("service_impl_unittest") {
     "//base/test:test_support",
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
-    "//chrome/browser/first_party_sets",
     "//chrome/browser/signin",
     "//chrome/test:test_support",
     "//components/content_settings/core/browser",

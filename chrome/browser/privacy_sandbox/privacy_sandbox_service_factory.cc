@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -65,8 +64,6 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
               .Build()) {
   DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(CookieSettingsFactory::GetInstance());
-  DependsOn(
-      first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -76,7 +73,5 @@ PrivacySandboxServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<PrivacySandboxServiceImpl>(
       PrivacySandboxSettingsFactory::GetForProfile(profile),
       CookieSettingsFactory::GetForProfile(profile), profile->GetPrefs(),
-      GetProfileType(profile),
-      first_party_sets::FirstPartySetsPolicyServiceFactory::
-          GetForBrowserContext(context));
+      GetProfileType(profile));
 }

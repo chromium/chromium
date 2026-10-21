@@ -2926,20 +2926,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Whether a navigation in |render_frame_host| should preconnect early.
   virtual bool ShouldPreconnectNavigation(RenderFrameHost* render_frame_host);
 
-  // Returns true if First-Party Sets is enabled. The value of this method
-  // should not change in a single browser session.
-  virtual bool IsFirstPartySetsEnabled();
-
-  // Returns true iff the embedder will provide a list of First-Party Sets via
-  // content::FirstPartySetsHandler::SetPublicFirstPartySets during startup, at
-  // some point. If `IsFirstPartySetsEnabled()` returns false, this method will
-  // still be called, but its return value will be ignored.
-  //
-  // If this method returns false but `IsFirstPartySetsEnabled()` returns true
-  // (e.g. in tests), an empty list will be used instead of waiting for the
-  // embedder to call content::FirstPartySetsHandler::SetPublicFirstPartySets.
-  virtual bool WillProvidePublicFirstPartySets();
-
   // This returns a dictionary that an embedder can use to pass data from the
   // browser to the renderer for error pages.
   // The |error_code| is the network error as specified in
@@ -3141,10 +3127,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // cross-site navigations that create a new BrowsingContextGroup.
   virtual bool IsClearWindowNameForNewBrowsingContextGroupAllowed(
       content::BrowserContext* browser_context);
-
-  // Set whether the browser is running in minimal mode (where most subsystems
-  // are left uninitialized).
-  virtual void SetIsMinimalMode(bool minimal) {}
 
   // Returns whether, when using SubCaptureTargets (cropTo, restrictTo),
   // the sub-capture target tokens should be associated with the *outermost*

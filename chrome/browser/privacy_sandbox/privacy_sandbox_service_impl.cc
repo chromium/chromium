@@ -14,7 +14,6 @@
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/schemeful_site.h"
-#include "net/first_party_sets/first_party_set_entry.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profiles_state.h"
@@ -58,14 +57,11 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
     PrefService* pref_service,
-    profile_metrics::BrowserProfileType profile_type,
-    first_party_sets::FirstPartySetsPolicyService*
-        first_party_sets_policy_service)
+    profile_metrics::BrowserProfileType profile_type)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       cookie_settings_(cookie_settings),
       pref_service_(pref_service),
-      profile_type_(profile_type),
-      first_party_sets_policy_service_(first_party_sets_policy_service) {
+      profile_type_(profile_type) {
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
@@ -85,7 +81,6 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
 PrivacySandboxServiceImpl::~PrivacySandboxServiceImpl() = default;
 
 void PrivacySandboxServiceImpl::Shutdown() {
-  first_party_sets_policy_service_ = nullptr;
   pref_service_ = nullptr;
   cookie_settings_ = nullptr;
   privacy_sandbox_settings_ = nullptr;
@@ -109,20 +104,7 @@ bool PrivacySandboxServiceImpl::IsRelatedWebsiteSetsDataAccessManaged() const {
 std::optional<net::SchemefulSite>
 PrivacySandboxServiceImpl::GetRelatedWebsiteSetOwner(
     const GURL& site_url) const {
-  // If RWS is not affecting cookie access, then there are effectively no
-  // related website sets.
-  if (!cookie_settings_->ShouldBlockThirdPartyCookies() ||
-      cookie_settings_->GetDefaultCookieSetting() == CONTENT_SETTING_BLOCK) {
-    return std::nullopt;
-  }
-
-  std::optional<net::FirstPartySetEntry> site_entry =
-      first_party_sets_policy_service_->FindEntry(net::SchemefulSite(site_url));
-  if (!site_entry.has_value()) {
-    return std::nullopt;
-  }
-
-  return site_entry->primary();
+  return std::nullopt;
 }
 
 std::optional<std::u16string>
@@ -139,7 +121,7 @@ PrivacySandboxServiceImpl::GetRelatedWebsiteSetOwnerForDisplay(
 
 bool PrivacySandboxServiceImpl::IsPartOfManagedRelatedWebsiteSet(
     const net::SchemefulSite& site) const {
-  return first_party_sets_policy_service_->IsSiteInManagedSet(site);
+  return false;
 }
 
 

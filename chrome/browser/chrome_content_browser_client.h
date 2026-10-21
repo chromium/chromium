@@ -1056,7 +1056,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OnWebContentsCreated(content::WebContents* web_contents) override;
 
   bool IsFindInPageDisabledForOrigin(const url::Origin& origin) override;
-  bool WillProvidePublicFirstPartySets() override;
 
   bool ShouldPreconnectNavigation(
       content::RenderFrameHost* render_frame_host) override;
@@ -1142,8 +1141,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   bool IsClearWindowNameForNewBrowsingContextGroupAllowed(
       content::BrowserContext* browser_context) override;
-
-  void SetIsMinimalMode(bool minimal) override;
 
   bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const override;
 
@@ -1464,10 +1461,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<FetchKeepAliveProcessManager>
       fetch_keepalive_process_manager_;
 #endif
-
-  // Tracks whether the browser was started in "minimal" mode (as opposed to
-  // full browser mode), where most subsystems are not initialized.
-  bool is_minimal_mode_ = false;
 
   std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;
 

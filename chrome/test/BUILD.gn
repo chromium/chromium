@@ -2579,7 +2579,6 @@ test("unit_tests") {
     "//chrome/browser/favicon:unit_tests",
     "//chrome/browser/feedback:unit_tests",
     "//chrome/browser/file_system_access:unit_tests",
-    "//chrome/browser/first_party_sets:unit_tests",
     "//chrome/browser/gcm:unit_tests",
     "//chrome/browser/glic:unit_tests",
     "//chrome/browser/google:unit_tests",

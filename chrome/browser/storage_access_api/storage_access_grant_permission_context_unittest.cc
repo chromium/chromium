@@ -18,7 +18,6 @@
 #include "base/version.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "chrome/browser/webid/federated_identity_permission_context.h"
 #include "chrome/browser/webid/federated_identity_permission_context_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -55,8 +54,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/base/schemeful_site.h"
-#include "net/first_party_sets/first_party_set_entry.h"
-#include "net/first_party_sets/global_first_party_sets.h"
 #include "net/storage_access_api/status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -67,8 +64,6 @@ namespace {
 
 using testing::_;
 using testing::AllOf;
-using testing::Contains;
-using testing::Each;
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::Field;
@@ -101,20 +96,6 @@ MATCHER_P2(DwaEntryMatches, outcome, requester, "") {
                   testing::UnorderedElementsAre(testing::Pair(
                       kDwaMetricsHash, static_cast<int64_t>(outcome))))),
       arg, result_listener);
-}
-
-MATCHER_P(DecidedByRelatedWebsiteSets, inner, "") {
-  return testing::ExplainMatchResult(
-      inner, arg.metadata.decided_by_related_website_sets(), result_listener);
-}
-
-MATCHER_P(IsExpired, inner, "") {
-  return testing::ExplainMatchResult(inner, arg.IsExpired(), result_listener);
-}
-
-MATCHER_P(ExpirationIs, inner, "") {
-  return testing::ExplainMatchResult(inner, arg.metadata.expiration(),
-                                     result_listener);
 }
 
 GURL GetTopLevelURL() {
@@ -323,7 +304,6 @@ class StorageAccessGrantPermissionContextTest
       mock_permission_prompt_factory_;
   permissions::PermissionRequestID::RequestLocalId::Generator
       request_id_generator_;
-  first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
 };
 
 TEST_F(StorageAccessGrantPermissionContextTest, InsecureOriginsDisallowed) {
@@ -886,159 +866,6 @@ TEST_F(StorageAccessGrantPermissionContextTest, ExplicitGrantAccept) {
   EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
                   ContentSettingsType::STORAGE_ACCESS),
               UnorderedElementsAre(Pair(GetRequesterSite(), true)));
-}
-
-class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
-    : public StorageAccessGrantPermissionContextTest {
- public:
-  StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest() = default;
-
-  void SetUp() override {
-    StorageAccessGrantPermissionContextTest::SetUp();
-    additional_features_.InitAndEnableFeature(
-        content_settings::features::kStorageAccessAPIRelatedWebsiteSets);
-
-    // Enable Related Website Sets (formerly First Party Sets).
-    profile()->GetPrefs()->SetBoolean(
-        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
-    // Create a FPS with https://requester.example.com as the member and
-    // https://embedder.com as the primary.
-    first_party_sets_handler_.SetGlobalSets(
-        net::GlobalFirstPartySets::CreateForTesting(
-            base::Version("1.2.3"),
-            /*entries=*/
-            {{net::SchemefulSite(GetTopLevelURL()),
-              {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
-                                       net::SiteType::kPrimary)}},
-             {net::SchemefulSite(GetRequesterURL()),
-              {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
-                                       net::SiteType::kAssociated)}}},
-            /*aliases=*/{}));
-  }
-
- private:
-  base::test::ScopedFeatureList additional_features_;
-  first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
-};
-
-TEST_F(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
-       ImplicitGrant_AutograntedWithinFPS) {
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-  DCHECK(settings_map);
-
-  // Overriding the clock to test expiry time.
-  base::SimpleTestClock test_clock;
-  test_clock.SetNow(base::Time::Now());
-  settings_map->SetClockForTesting(&test_clock);
-
-  // Check no `SessionModel::DURABLE` setting with
-  // `decided_by_related_website_sets` exists yet.
-  ASSERT_THAT(settings_map->GetSettingsForOneType(
-                  ContentSettingsType::STORAGE_ACCESS,
-                  content_settings::mojom::SessionModel::DURABLE),
-              Each(DecidedByRelatedWebsiteSets(false)));
-
-  EXPECT_EQ(DecidePermission(MakePermissionRequestData(/*user_gesture=*/true))
-                .Get()
-                .status,
-            PermissionStatus::GRANTED);
-
-  histogram_tester().ExpectUniqueSample(kGrantIsImplicitHistogram,
-                                        /*sample=*/true, 1);
-
-  EXPECT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
-              ElementsAre(Pointee(
-                  DwaEntryMatches(RequestOutcome::kGrantedByFirstPartySet,
-                                  net::SchemefulSite(GetRequesterURL())))));
-
-  DCHECK(settings_map);
-  // Check the `SessionModel::DURABLE` setting with
-  // `decided_by_related_website_sets` granted by FPS and its expiry.
-  EXPECT_THAT(
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::STORAGE_ACCESS,
-          content_settings::mojom::SessionModel::DURABLE),
-      Contains(AllOf(
-          DecidedByRelatedWebsiteSets(true), IsExpired(false),
-          ExpirationIs(
-              test_clock.Now() +
-              permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime))));
-
-  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
-                  ContentSettingsType::STORAGE_ACCESS),
-              IsEmpty());
-}
-
-class
-    StorageAccessGrantPermissionContextAPIWithFirstPartySetsFeatureDisabledTest
-    : public StorageAccessGrantPermissionContextTest {
- public:
-  StorageAccessGrantPermissionContextAPIWithFirstPartySetsFeatureDisabledTest() =
-      default;
-
-  void SetUp() override {
-    StorageAccessGrantPermissionContextTest::SetUp();
-    StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(
-        kImplicitGrantLimit);
-    additional_features_.InitAndDisableFeature(
-        content_settings::features::kStorageAccessAPIRelatedWebsiteSets);
-
-    // Enable Related Website Sets (formerly First Party Sets).
-    profile()->GetPrefs()->SetBoolean(
-        prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
-    // Create a FPS with https://requester.example.com as the member and
-    // https://embedder.com as the primary.
-    first_party_sets_handler_.SetGlobalSets(
-        net::GlobalFirstPartySets::CreateForTesting(
-            base::Version("1.2.3"),
-            /*entries=*/
-            {{net::SchemefulSite(GetTopLevelURL()),
-              {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
-                                       net::SiteType::kPrimary)}},
-             {net::SchemefulSite(GetRequesterURL()),
-              {net::FirstPartySetEntry(net::SchemefulSite(GetTopLevelURL()),
-                                       net::SiteType::kAssociated)}}},
-            /*aliases=*/{}));
-  }
-
- private:
-  base::test::ScopedFeatureList additional_features_;
-  first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
-};
-
-TEST_F(
-    StorageAccessGrantPermissionContextAPIWithFirstPartySetsFeatureDisabledTest,
-    ImplicitGrant_NotAutograntedWithinFPS) {
-  HostContentSettingsMap* settings_map =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-  DCHECK(settings_map);
-
-  // Check no `SessionModel::DURABLE` setting with
-  // `decided_by_related_website_sets` exists yet.
-  ASSERT_THAT(settings_map->GetSettingsForOneType(
-                  ContentSettingsType::STORAGE_ACCESS,
-                  content_settings::mojom::SessionModel::DURABLE),
-              Each(DecidedByRelatedWebsiteSets(false)));
-
-  EXPECT_EQ(DecidePermission(MakePermissionRequestData(/*user_gesture=*/true))
-                .Get()
-                .status,
-            PermissionStatus::GRANTED);
-
-  histogram_tester().ExpectUniqueSample(kGrantIsImplicitHistogram,
-                                        /*sample=*/true, 1);
-
-  EXPECT_THAT(metrics::dwa::DwaRecorder::Get()->GetEntriesForTesting(),
-              ElementsAre(Pointee(
-                  DwaEntryMatches(RequestOutcome::kGrantedByAllowance,
-                                  net::SchemefulSite(GetRequesterURL())))));
-
-  // Check that the setting was NOT decided by RWS.
-  EXPECT_THAT(settings_map->GetSettingsForOneType(
-                  ContentSettingsType::STORAGE_ACCESS,
-                  content_settings::mojom::SessionModel::USER_SESSION),
-              Contains(DecidedByRelatedWebsiteSets(false)));
 }
 
 TEST_F(StorageAccessGrantPermissionContextTest, RepeatedDismissalsNotExposed) {

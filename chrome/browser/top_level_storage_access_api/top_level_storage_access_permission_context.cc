@@ -6,20 +6,16 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_prompt_decision.h"
@@ -31,8 +27,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/schemeful_site.h"
-#include "net/first_party_sets/first_party_set_entry.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -72,15 +66,6 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
     std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
-  if (!base::FeatureList::IsEnabled(
-          content_settings::features::kStorageAccessAPIRelatedWebsiteSets)) {
-    RecordOutcomeSample(
-        TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
-    std::move(callback).Run(content::PermissionResult(
-        blink::mojom::PermissionStatus::DENIED,
-        content::PermissionStatusSource::UNSPECIFIED));
-    return;
-  }
 
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
       request_data->id.global_render_frame_host_id());
@@ -129,51 +114,6 @@ void TopLevelStorageAccessPermissionContext::DecidePermission(
     return;
   }
 
-  first_party_sets::FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
-      browser_context())
-      ->ComputeFirstPartySetMetadata(
-          requesting_site, &embedding_site,
-          base::BindOnce(&TopLevelStorageAccessPermissionContext::
-                             CheckForAutoGrantOrAutoDenial,
-                         weak_factory_.GetWeakPtr(), std::move(request_data),
-                         std::move(callback)));
-}
-
-void TopLevelStorageAccessPermissionContext::CheckForAutoGrantOrAutoDenial(
-    std::unique_ptr<permissions::PermissionRequestData> request_data,
-    permissions::BrowserPermissionCallback callback,
-    net::FirstPartySetMetadata metadata) {
-  if (metadata.AreSitesInSameFirstPartySet()) {
-    // Service domains are not allowed to request storage access on behalf
-    // of other domains, even in the same First-Party Set.
-    if (metadata.top_frame_entry()->site_type() == net::SiteType::kService) {
-      NotifyPermissionSetInternal(
-          *request_data, std::move(callback),
-          /*persist=*/false, PermissionDecision::kDeny,
-          TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites);
-      return;
-    }
-    // Determine if user specifically denied cookie access in this context.
-    HostContentSettingsMap* settings_map =
-        HostContentSettingsMapFactory::GetForProfile(browser_context());
-    ContentSetting cookie_setting = settings_map->GetContentSetting(
-        request_data->requesting_origin, request_data->embedding_origin,
-        ContentSettingsType::COOKIES);
-    if (cookie_setting == CONTENT_SETTING_BLOCK) {
-      NotifyPermissionSetInternal(
-          *request_data, std::move(callback),
-          /*persist=*/false, PermissionDecision::kDeny,
-          TopLevelStorageAccessRequestOutcome::kDeniedByCookieSettings);
-      return;
-    }
-    // Since the sites are in the same First-Party Set, risk of abuse due to
-    // allowing access is considered to be low.
-    NotifyPermissionSetInternal(
-        *request_data, std::move(callback),
-        /*persist=*/true, PermissionDecision::kAllow,
-        TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet);
-    return;
-  }
   NotifyPermissionSetInternal(
       *request_data, std::move(callback),
       /*persist=*/false, PermissionDecision::kDeny,

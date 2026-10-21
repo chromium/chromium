@@ -11,7 +11,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -29,9 +28,7 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       PrefService* pref_service,
-      profile_metrics::BrowserProfileType profile_type,
-      first_party_sets::FirstPartySetsPolicyService*
-          first_party_sets_policy_service);
+      profile_metrics::BrowserProfileType profile_type);
 
   ~PrivacySandboxServiceImpl() override;
 
@@ -91,8 +88,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService> pref_service_;
   profile_metrics::BrowserProfileType profile_type_;
-  raw_ptr<first_party_sets::FirstPartySetsPolicyService>
-      first_party_sets_policy_service_;
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_IMPL_H_

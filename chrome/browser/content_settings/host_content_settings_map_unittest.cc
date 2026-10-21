@@ -3255,13 +3255,8 @@ TEST_F(HostContentSettingsMapTest, RecordDefaultSensorsSetting) {
 TEST_F(HostContentSettingsMapTest, DeleteStorageAccessRwsGrantsOnStartup) {
   TestingProfile profile;
 
-  // 1. Enable the feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      content_settings::features::kStorageAccessAPIRelatedWebsiteSets);
-
   // Create map and inject grant.
-  scoped_refptr<HostContentSettingsMap> map_with_feature_enabled =
+  scoped_refptr<HostContentSettingsMap> initial_map =
       base::MakeRefCounted<HostContentSettingsMap>(
           profile.GetPrefs(), /*is_off_the_record=*/false,
           /*store_last_modified=*/false, /*restore_session=*/false,
@@ -3273,35 +3268,30 @@ TEST_F(HostContentSettingsMapTest, DeleteStorageAccessRwsGrantsOnStartup) {
   content_settings::ContentSettingConstraints constraints;
   constraints.set_decided_by_related_website_sets(true);
 
-  map_with_feature_enabled->SetContentSettingDefaultScope(
+  initial_map->SetContentSettingDefaultScope(
       requesting_url, embedding_url, ContentSettingsType::STORAGE_ACCESS,
       CONTENT_SETTING_ALLOW, constraints);
 
   // Verify it is there.
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, map_with_feature_enabled->GetContentSetting(
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, initial_map->GetContentSetting(
                                        requesting_url, embedding_url,
                                        ContentSettingsType::STORAGE_ACCESS));
 
-  // Shutdown map_with_feature_enabled to make sure it is not used anymore.
-  map_with_feature_enabled->ShutdownOnUIThread();
-  map_with_feature_enabled.reset();
-
-  // 2. Disable the feature.
-  feature_list.Reset();
-  feature_list.InitAndDisableFeature(
-      content_settings::features::kStorageAccessAPIRelatedWebsiteSets);
+  // Shutdown initial_map to make sure it is not used anymore.
+  initial_map->ShutdownOnUIThread();
+  initial_map.reset();
 
   // Create a new map with the same prefs.
-  scoped_refptr<HostContentSettingsMap> map_after_feature_disabled =
+  scoped_refptr<HostContentSettingsMap> map_on_startup =
       base::MakeRefCounted<HostContentSettingsMap>(
           profile.GetPrefs(), /*is_off_the_record=*/false,
           /*store_last_modified=*/false, /*restore_session=*/false,
           /*should_record_metrics=*/false);
 
   // Verify the grant is gone (deleted on startup).
-  EXPECT_EQ(CONTENT_SETTING_ASK, map_after_feature_disabled->GetContentSetting(
+  EXPECT_EQ(CONTENT_SETTING_ASK, map_on_startup->GetContentSetting(
                                      requesting_url, embedding_url,
                                      ContentSettingsType::STORAGE_ACCESS));
 
-  map_after_feature_disabled->ShutdownOnUIThread();
+  map_on_startup->ShutdownOnUIThread();
 }

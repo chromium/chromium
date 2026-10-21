@@ -5,11 +5,9 @@
 #ifndef CHROME_BROWSER_TOP_LEVEL_STORAGE_ACCESS_API_TOP_LEVEL_STORAGE_ACCESS_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_TOP_LEVEL_STORAGE_ACCESS_API_TOP_LEVEL_STORAGE_ACCESS_PERMISSION_CONTEXT_H_
 
-#include "base/memory/weak_ptr.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/permission_context_base.h"
 #include "components/permissions/permission_request_data.h"
-#include "net/first_party_sets/first_party_set_metadata.h"
 
 class GURL;
 
@@ -102,16 +100,6 @@ class TopLevelStorageAccessPermissionContext
       bool persist,
       PermissionDecision decision,
       TopLevelStorageAccessRequestOutcome outcome);
-
-  // Checks First-Party Sets metadata to determine whether the request should be
-  // auto-rejected or auto-denied.
-  void CheckForAutoGrantOrAutoDenial(
-      std::unique_ptr<permissions::PermissionRequestData> request_data,
-      permissions::BrowserPermissionCallback callback,
-      net::FirstPartySetMetadata metadata);
-
-  base::WeakPtrFactory<TopLevelStorageAccessPermissionContext> weak_factory_{
-      this};
 };
 
 #endif  // CHROME_BROWSER_TOP_LEVEL_STORAGE_ACCESS_API_TOP_LEVEL_STORAGE_ACCESS_PERMISSION_CONTEXT_H_

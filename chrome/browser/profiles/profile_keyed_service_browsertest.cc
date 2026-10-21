@@ -816,7 +816,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "FederatedIdentityAutoReauthnPermissionContext",
     "FeedbackPrivateAPI",
     "FileSystemAccessPermissionContext",
-    "FirstPartySetsPolicyService",
     "FontPrefChangeNotifier",
     "FontSettingsAPI",
 #if !BUILDFLAG(IS_CHROMEOS)

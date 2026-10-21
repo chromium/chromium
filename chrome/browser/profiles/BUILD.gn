@@ -790,7 +790,6 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/feature_engagement",
     "//chrome/browser/feedback",
     "//chrome/browser/file_system_access",
-    "//chrome/browser/first_party_sets",
     "//chrome/browser/glic",
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/glic/suggestions",

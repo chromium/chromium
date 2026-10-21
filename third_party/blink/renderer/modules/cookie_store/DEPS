@@ -4,7 +4,6 @@ specific_include_rules = {
     "+base/test",
     "+net/base",
     "+net/cookies",
-    "+net/first_party_sets",
     "+services/network",
     "+url/origin.h",
   ],

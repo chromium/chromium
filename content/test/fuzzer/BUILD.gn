@@ -277,56 +277,6 @@ fuzzer_test("browser_accessibility_fuzzer") {
   }
 }
 
-if (use_fuzzing_engine) {
-  source_set("first_party_set_parser_fuzzer_support") {
-    public_deps = [
-      "//base",
-      "//base/test:test_support",
-      "//content/browser",
-      "//content/public/browser:browser_sources",
-      "//content/test:test_support",
-      "//net",
-      "//net:net_fuzzer_test_support",
-    ]
-    testonly = true
-  }
-}
-
-fuzzer_test("first_party_set_parser_json_fuzzer") {
-  sources = [
-    "../../browser/first_party_sets/test/first_party_set_parser_json_fuzzer.cc",
-  ]
-  deps = [
-    ":first_party_set_parser_fuzzer_support",
-    "//testing/libfuzzer/proto:json_proto",
-    "//testing/libfuzzer/proto:json_proto_converter",
-    "//third_party/libprotobuf-mutator",
-  ]
-
-  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
-  is_fuzztest_compatible = false
-}
-
-if (use_fuzzing_engine_with_lpm) {
-  fuzzer_test("first_party_set_parser_value_fuzzer") {
-    sources = [ "../../browser/first_party_sets/test/first_party_set_parser_value_fuzzer.cc" ]
-    deps = [
-      ":first_party_set_parser_fuzzer_support",
-      ":related_website_sets_proto",
-      ":related_website_sets_proto_fuzzable",
-      "//third_party/libprotobuf-mutator",
-    ]
-
-    # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
-    is_fuzztest_compatible = false
-  }
-
-  fuzzable_proto_library("related_website_sets_proto") {
-    sources =
-        [ "../../browser/first_party_sets/test/related_website_sets.proto" ]
-  }
-}
-
 content_mojolpm_fuzzer_test("media_stream_dispatcher_host_mojolpm_fuzzer") {
   sources = [ "media_stream_dispatcher_host_mojolpm_fuzzer.cc" ]
 

@@ -59,7 +59,6 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -331,7 +330,7 @@ HostContentSettingsMap::HostContentSettingsMap(PrefService* prefs,
     DeleteNearlyExpiredSettingsAndMaybeScheduleNextRun(info->type());
   }
 
-  DeleteStorageAccessRwsGrantsIfFeatureDisabled();
+  DeleteStorageAccessRwsGrants();
 }
 
 // static
@@ -1430,12 +1429,8 @@ void HostContentSettingsMap::EnsureSettingsUpToDate(
   }
 }
 
-void HostContentSettingsMap::DeleteStorageAccessRwsGrantsIfFeatureDisabled() {
+void HostContentSettingsMap::DeleteStorageAccessRwsGrants() {
   if (is_off_the_record_) {
-    return;
-  }
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kStorageAccessAPIRelatedWebsiteSets)) {
     return;
   }
   ClearSettingsForOneTypeWithPredicate(

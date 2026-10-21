@@ -529,7 +529,7 @@ class HostContentSettingsMap : public content_settings::Observer,
   void MigrateSingleSettingPrecedingPermissionDelegationActivation(
       const content_settings::WebsiteSettingsInfo* info);
 
-  void DeleteStorageAccessRwsGrantsIfFeatureDisabled();
+  void DeleteStorageAccessRwsGrants();
 
   // Verifies that this secondary pattern is allowed.
   bool IsSecondaryPatternAllowed(
