@@ -1356,7 +1356,7 @@ IN_PROC_BROWSER_TEST_F(SettingsComposePageTest, ComposePage) {
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, ZoomLevels) {
-  RunTest("settings/zoom_levels_test.js", "mocha.run()");
+  RunTest("settings/zoom_levels_test.js", "runMochaSuite('ZoomLevels')");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

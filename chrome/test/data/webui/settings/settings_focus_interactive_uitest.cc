@@ -79,6 +79,10 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, Menu) {
   RunTest("settings/settings_menu_interactive_ui_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsFocusTest, ZoomLevels) {
+  RunTest("settings/zoom_levels_test.js", "runMochaSuite('ZoomLevelsFocus')");
+}
+
 class SettingsGlicSubpageFocusTest : public SettingsFocusTest {
  public:
   SettingsGlicSubpageFocusTest() = default;

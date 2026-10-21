@@ -715,6 +715,7 @@ build_webui("build") {
     "site_settings/settings_category_default_radio_group.css",
     "site_settings/site_settings_shared.css",
     "site_settings/site_settings_shared_lit.css",
+    "site_settings/zoom_levels.css",
     "system_page/system_page.css",
   ]
 

@@ -4,72 +4,62 @@
 
 /**
  * @fileoverview
- * 'zoom-levels' is the polymer element for showing the sites that are zoomed in
+ * 'zoom-levels' is the element for showing the sites that are zoomed in
  * or out.
  */
 
-import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../settings_page/settings_subpage.js';
-import '../settings_shared.css.js';
 import '../site_favicon.js';
 
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
 import type {ZoomLevelEntry} from './site_settings_browser_proxy.js';
-import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {getTemplate} from './zoom_levels.html.js';
+import {SiteSettingsMixinLit} from './site_settings_mixin_lit.js';
+import {getCss} from './zoom_levels.css.js';
+import {getHtml} from './zoom_levels.html.js';
 
 export interface ZoomLevelsElement {
   $: {
     empty: HTMLElement,
-    listContainer: HTMLElement,
-    list: IronListElement,
+    list: HTMLElement,
   };
 }
 
-const ZoomLevelsElementBase = SettingsViewMixin(ListPropertyUpdateMixin(
-    SiteSettingsMixin(WebUiListenerMixin(PolymerElement))));
+const ZoomLevelsElementBase = SettingsViewMixinLit(
+    SiteSettingsMixinLit(WebUiListenerMixinLit(CrLitElement)));
 
 export class ZoomLevelsElement extends ZoomLevelsElementBase {
   static get is() {
     return 'zoom-levels';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * Array of sites that are zoomed in or out.
        */
-      sites_: {
-        type: Array,
-        value: () => [],
-      },
-
-      showNoSites_: {
-        type: Boolean,
-        value: false,
-      },
+      sites_: {type: Array},
     };
   }
 
-  declare private sites_: ZoomLevelEntry[];
-  declare private showNoSites_: boolean;
+  protected accessor sites_: ZoomLevelEntry[] = [];
 
-  override ready() {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
 
     this.addWebUiListener(
         'onZoomLevelsChanged',
@@ -77,26 +67,55 @@ export class ZoomLevelsElement extends ZoomLevelsElementBase {
     this.browserProxy.fetchZoomLevels();
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    // Restore focus to the last element if the previous last element was
+    // deleted while it was focused.
+    if (changedPrivateProperties.has('sites_')) {
+      const previousSites =
+          changedPrivateProperties.get('sites_') as ZoomLevelEntry[] |
+          undefined;
+      if (previousSites && this.sites_.length < previousSites.length) {
+        const focused =
+            this.shadowRoot.querySelector('.list-item:focus-within');
+        if (!focused) {
+          const toFocus = this.shadowRoot.querySelector<HTMLElement>(
+              '.list-item:last-of-type cr-icon-button');
+          toFocus?.focus();
+        }
+      }
+    }
+  }
+
   /**
    * A handler for when zoom levels change.
    * @param sites The up to date list of sites and their zoom levels.
    */
   private onZoomLevelsChanged_(sites: ZoomLevelEntry[]) {
-    this.updateList('sites_', item => item.hostOrSpec, sites);
-    this.showNoSites_ = this.sites_.length === 0;
+    this.sites_ = sites;
+  }
+
+  protected shouldShowNoSites_(): boolean {
+    return this.sites_.length === 0;
   }
 
   /**
    * A handler for when a zoom level for a site is deleted.
    */
-  private removeZoomLevel_(event: DomRepeatEvent<ZoomLevelEntry>) {
-    const site = this.sites_[event.model.index];
+  protected onRemoveZoomLevelClick_(e: MouseEvent) {
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    const site = this.sites_[index];
+    assert(site);
     this.browserProxy.removeZoomLevel(site.hostOrSpec);
   }
 
-  // SettingsViewMixin implementation.
+  // SettingsViewMixinLit implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 
