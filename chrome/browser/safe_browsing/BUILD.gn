@@ -1335,6 +1335,8 @@ source_set("browser_tests") {
         "//components/optimization_guide/core:model_execution_test_support",
         "//components/safe_browsing/content/browser:client_side_detection",
         "//components/safe_browsing/content/browser:client_side_detection_service",
+        "//components/safe_browsing/content/common:file_type_policies_test_support",
+        "//components/safe_browsing/content/common/proto:download_file_types_proto",
         "//components/safe_browsing/content/renderer/phishing_classifier",
         "//components/safe_browsing/core/common/phishing_classifier",
       ]
