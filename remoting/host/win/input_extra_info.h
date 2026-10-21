@@ -9,6 +9,8 @@
 
 #include <cstdint>
 
+#include "base/time/time.h"
+
 namespace remoting {
 
 // A unique signature stamped into INPUT.mi.dwExtraInfo and INPUT.ki.dwExtraInfo
@@ -23,19 +25,63 @@ namespace remoting {
 // 32-bit ULONG. Defining this signature as uint32_t reflects this constraint.
 inline constexpr uint32_t kCrdInputExtraInfo = 0x43524430;  // 'CRD0'
 
-// Returns true if the RAWINPUT event represents software-injected input.
-// TODO(crbug.com/570142789): Checking kCrdInputExtraInfo on events with a null
-// device handle causes synthesized mouse events from InjectTouchInput() (Direct
-// Touch mode) and keystrokes re-injected by third-party IMEs via SendInput() to
-// be misclassified as local input. Treat all software-injected mouse and
-// keyboard events (hDevice == nullptr) as remote input until a more robust
-// mechanism is implemented.
+// Windows synthesizes compatibility mouse events (RIM_TYPEMOUSE with
+// hDevice == nullptr) for both physical touchscreens/pens and
+// InjectTouchInput(). These events carry the MI_WP_SIGNATURE (0xFF515700) in
+// their upper 24 bits, with the lower 8 bits holding touch/pen flags or IDs.
+inline constexpr uint32_t kTouchOrPenSignatureMask = 0xFFFFFF00;
+inline constexpr uint32_t kTouchOrPenSignature = 0xFF515700;
+
+// Duration after the last remote touch point ends during which synthesized
+// touch-to-mouse RAWINPUT events are still attributed to CRD remote touch
+// injection.
+inline constexpr base::TimeDelta kRemoteTouchTailWindow =
+    base::Milliseconds(150);
+
+// Returns true if |extra_info| carries the Windows touch/pen-to-mouse
+// promotion signature (MI_WP_SIGNATURE).
+inline bool IsTouchOrPenMouseInput(uint32_t extra_info) {
+  return (extra_info & kTouchOrPenSignatureMask) == kTouchOrPenSignature;
+}
+
+// Records whether TouchInjectorWin currently has active remote touch points
+// or just ended active touch points. Safe for concurrent access across the
+// input and UI threads.
+void RecordRemoteTouchInjectionActivity(bool has_active_touches);
+
+// Immediately clears any active remote touch injection state or tail window.
+void ClearRemoteTouchInjectionActivity();
+
+// Returns true if TouchInjectorWin currently has active remote touch points
+// in contact or injected a remote touch event within the recent tail window.
+bool IsRemoteTouchInjectionActive();
+
+// Returns true if the RAWINPUT event represents input injected by CRD.
+// TODO(crbug.com/570142789): Checking kCrdInputExtraInfo on non-touch events
+// with a null device handle causes keystrokes re-injected by third-party IMEs
+// via SendInput() to be misclassified as local input. Treat non-touch
+// software-injected mouse and keyboard events (hDevice == nullptr) as remote
+// input until a more robust mechanism is implemented.
+// Touch/pen-promoted mouse events (MI_WP_SIGNATURE) have hDevice == nullptr for
+// both physical touchscreens and InjectTouchInput(), so they are attributed to
+// CRD if and only if TouchInjectorWin is currently active or within its tail
+// window.
 inline bool IsCrdInjectedInput(const RAWINPUT& event) {
   if (event.header.hDevice != nullptr) {
     return false;
   }
-  return event.header.dwType == RIM_TYPEMOUSE ||
-         event.header.dwType == RIM_TYPEKEYBOARD;
+  if (event.header.dwType == RIM_TYPEMOUSE) {
+    uint32_t extra_info =
+        static_cast<uint32_t>(event.data.mouse.ulExtraInformation);
+    if (IsTouchOrPenMouseInput(extra_info)) {
+      return IsRemoteTouchInjectionActive();
+    }
+    return true;
+  }
+  if (event.header.dwType == RIM_TYPEKEYBOARD) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace remoting

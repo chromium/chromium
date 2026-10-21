@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "remoting/host/win/input_extra_info.h"
 #include "remoting/proto/event.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -158,7 +159,11 @@ DWORD TouchInjectorWinDelegate::InjectTouchInput(
 
 TouchInjectorWin::TouchInjectorWin() = default;
 
-TouchInjectorWin::~TouchInjectorWin() = default;
+TouchInjectorWin::~TouchInjectorWin() {
+  if (!touches_in_contact_.empty()) {
+    RecordRemoteTouchInjectionActivity(false);
+  }
+}
 
 // Note that TouchInjectorWinDelegate::Create() is not called in this method
 // so that a mock delegate can be injected in tests and set expectations on the
@@ -189,7 +194,11 @@ bool TouchInjectorWin::Init() {
 
 void TouchInjectorWin::Deinitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool had_touches = !touches_in_contact_.empty();
   touches_in_contact_.clear();
+  if (had_touches) {
+    RecordRemoteTouchInjectionActivity(false);
+  }
   // Same reason as TouchInjectorWin::Init(). For injecting mock delegates for
   // tests, a new delegate is created here.
   delegate_ = TouchInjectorWinDelegate::Create();
@@ -235,6 +244,7 @@ void TouchInjectorWin::AddNewTouchPoints(const TouchEvent& event) {
   // Must inject already touching points as move events.
   AppendMapValuesToVector(&touches_in_contact_, &touches);
 
+  std::vector<uint32_t> added_ids;
   for (const TouchEventPoint& touch_point : event.touch_points()) {
     POINTER_TOUCH_INFO pointer_touch_info = {};
     pointer_touch_info.pointerInfo.pointerFlags =
@@ -245,10 +255,22 @@ void TouchInjectorWin::AddNewTouchPoints(const TouchEvent& event) {
     // All points in the map should be a move point.
     pointer_touch_info.pointerInfo.pointerFlags =
         POINTER_FLAG_INRANGE | POINTER_FLAG_INCONTACT | POINTER_FLAG_UPDATE;
+    if (!touches_in_contact_.contains(touch_point.id())) {
+      added_ids.push_back(touch_point.id());
+    }
     touches_in_contact_[touch_point.id()] = pointer_touch_info;
   }
 
   if (!InjectTouchInput(touches)) {
+    for (uint32_t id : added_ids) {
+      touches_in_contact_.erase(id);
+    }
+    if (touches_in_contact_.empty()) {
+      ClearRemoteTouchInjectionActivity();
+    } else {
+      RecordRemoteTouchInjectionActivity(/*has_active_touches=*/true);
+    }
+    UpdateKeepAliveTimer();
     PLOG(ERROR) << "Failed to inject a touch start event.";
   }
 }
@@ -290,6 +312,7 @@ void TouchInjectorWin::EndTouchPoints(const TouchEvent& event) {
 
   AppendMapValuesToVector(&touches_in_contact_, &touches);
   if (!InjectTouchInput(touches)) {
+    UpdateKeepAliveTimer();
     PLOG(ERROR) << "Failed to inject a touch end event.";
   }
 }
@@ -311,6 +334,7 @@ void TouchInjectorWin::CancelTouchPoints(const TouchEvent& event) {
 
   AppendMapValuesToVector(&touches_in_contact_, &touches);
   if (!InjectTouchInput(touches)) {
+    UpdateKeepAliveTimer();
     PLOG(ERROR) << "Failed to inject a touch cancel event.";
   }
 }
@@ -318,6 +342,7 @@ void TouchInjectorWin::CancelTouchPoints(const TouchEvent& event) {
 bool TouchInjectorWin::InjectTouchInput(
     const std::vector<POINTER_TOUCH_INFO>& touches) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RecordRemoteTouchInjectionActivity(!touches_in_contact_.empty());
   if (delegate_->InjectTouchInput(touches.size(), touches.data()) == 0) {
     return false;
   }

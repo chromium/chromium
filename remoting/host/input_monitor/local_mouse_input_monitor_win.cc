@@ -81,7 +81,7 @@ void MouseRawInputHandler::OnInputEvent(const RAWINPUT& event) {
   NotifyMouseMove(FROM_HERE, new_position);
 }
 
-// Note that this class does not detect touch input and so is named accordingly.
+// Monitors local mouse and touch-promoted pointer input via Raw Input.
 class ScopedMouseInputMonitorWin : public LocalPointerInputMonitor,
                                    public RawInputHandler::Observer {
  public:

@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "remoting/host/win/input_extra_info.h"
 #include "remoting/proto/event.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -97,6 +98,12 @@ class TouchInjectorWinDelegateMock : public TouchInjectorWinDelegate {
 
 class TouchInjectorWinTest : public testing::Test {
  protected:
+  void SetUp() override { ClearRemoteTouchInjectionActivity(); }
+  void TearDown() override {
+    injector_.Deinitialize();
+    ClearRemoteTouchInjectionActivity();
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TouchInjectorWin injector_;
@@ -620,6 +627,181 @@ TEST_F(TouchInjectorWinTest,
   touch_end.add_touch_points()->set_id(0u);
   touch_end.add_touch_points()->set_id(1u);
   injector_.InjectTouchEvent(touch_end);
+}
+
+TEST_F(TouchInjectorWinTest,
+       TouchInjectorWinRecordsActiveTouchStateDuringStartMoveKeepAliveAndEnd) {
+  std::unique_ptr<TouchInjectorWinDelegateMock> delegate_mock(
+      new ::testing::StrictMock<TouchInjectorWinDelegateMock>());
+
+  InSequence s;
+  EXPECT_CALL(*delegate_mock, InitializeTouchInjection(_, _))
+      .WillOnce(Return(1));
+
+  IdFlagMap id_to_flags;
+  id_to_flags[0u] = kStartFlag;
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+      .WillOnce(Return(1));
+
+  id_to_flags[0u] = kMoveFlag;
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+      .Times(2)
+      .WillRepeatedly(Return(1));
+
+  id_to_flags[0u] = kEndFlag;
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+      .WillOnce(Return(1));
+
+  injector_.SetInjectorDelegateForTest(std::move(delegate_mock));
+  EXPECT_TRUE(injector_.Init());
+  EXPECT_FALSE(IsRemoteTouchInjectionActive());
+
+  // 1. Start touch point -> remote touch injection becomes active.
+  TouchEvent touch_start;
+  touch_start.set_event_type(TouchEvent::TOUCH_POINT_START);
+  touch_start.add_touch_points()->set_id(0u);
+  injector_.InjectTouchEvent(touch_start);
+  EXPECT_TRUE(IsRemoteTouchInjectionActive());
+
+  // 2. Move touch point -> remains active.
+  TouchEvent touch_move;
+  touch_move.set_event_type(TouchEvent::TOUCH_POINT_MOVE);
+  touch_move.add_touch_points()->set_id(0u);
+  injector_.InjectTouchEvent(touch_move);
+  EXPECT_TRUE(IsRemoteTouchInjectionActive());
+
+  // 3. Keep-alive timer fires -> remains active.
+  task_environment_.FastForwardBy(TouchInjectorWin::kKeepAliveInterval);
+  EXPECT_TRUE(IsRemoteTouchInjectionActive());
+
+  // 4. End touch point -> enters tail window, still active within 150ms.
+  TouchEvent touch_end;
+  touch_end.set_event_type(TouchEvent::TOUCH_POINT_END);
+  touch_end.add_touch_points()->set_id(0u);
+  injector_.InjectTouchEvent(touch_end);
+  EXPECT_TRUE(IsRemoteTouchInjectionActive());
+
+  task_environment_.FastForwardBy(kRemoteTouchTailWindow -
+                                  base::Milliseconds(1));
+  EXPECT_TRUE(IsRemoteTouchInjectionActive());
+
+  // 5. After tail window expires -> returns to idle.
+  task_environment_.FastForwardBy(base::Milliseconds(2));
+  EXPECT_FALSE(IsRemoteTouchInjectionActive());
+}
+
+TEST_F(TouchInjectorWinTest,
+       TouchInjectorWinInitFailureOrInjectFailureDoesNotMarkRemoteTouchActive) {
+  // Part 1: Init failure leaves remote touch inactive.
+  {
+    std::unique_ptr<TouchInjectorWinDelegateMock> failed_init_delegate(
+        new ::testing::StrictMock<TouchInjectorWinDelegateMock>());
+    EXPECT_CALL(*failed_init_delegate, InitializeTouchInjection(_, _))
+        .WillOnce(Return(0));
+    injector_.SetInjectorDelegateForTest(std::move(failed_init_delegate));
+    EXPECT_FALSE(injector_.Init());
+
+    TouchEvent touch_start;
+    touch_start.set_event_type(TouchEvent::TOUCH_POINT_START);
+    touch_start.add_touch_points()->set_id(0u);
+    injector_.InjectTouchEvent(touch_start);
+    EXPECT_FALSE(IsRemoteTouchInjectionActive());
+  }
+
+  // Part 2: InjectTouchInput failure (returns 0) rolls back added touch points
+  // and does not mark remote touch injection active.
+  {
+    std::unique_ptr<TouchInjectorWinDelegateMock> failed_inject_delegate(
+        new ::testing::StrictMock<TouchInjectorWinDelegateMock>());
+    InSequence s;
+    EXPECT_CALL(*failed_inject_delegate, InitializeTouchInjection(_, _))
+        .WillOnce(Return(1));
+    EXPECT_CALL(*failed_inject_delegate, InjectTouchInput(1, _))
+        .WillOnce(Return(0));
+
+    injector_.SetInjectorDelegateForTest(std::move(failed_inject_delegate));
+    EXPECT_TRUE(injector_.Init());
+
+    TouchEvent touch_start;
+    touch_start.set_event_type(TouchEvent::TOUCH_POINT_START);
+    touch_start.add_touch_points()->set_id(0u);
+    injector_.InjectTouchEvent(touch_start);
+    EXPECT_FALSE(IsRemoteTouchInjectionActive());
+  }
+
+  // Part 3: If a touch point is already active and adding a second touch point
+  // fails, the existing active touch point keeps remote touch injection active.
+  {
+    std::unique_ptr<TouchInjectorWinDelegateMock> partial_fail_delegate(
+        new ::testing::StrictMock<TouchInjectorWinDelegateMock>());
+    InSequence s;
+    EXPECT_CALL(*partial_fail_delegate, InitializeTouchInjection(_, _))
+        .WillOnce(Return(1));
+    EXPECT_CALL(*partial_fail_delegate, InjectTouchInput(1, _))
+        .WillOnce(Return(1));
+    EXPECT_CALL(*partial_fail_delegate, InjectTouchInput(2, _))
+        .WillOnce(Return(0));
+
+    injector_.SetInjectorDelegateForTest(std::move(partial_fail_delegate));
+    EXPECT_TRUE(injector_.Init());
+
+    TouchEvent first_start;
+    first_start.set_event_type(TouchEvent::TOUCH_POINT_START);
+    first_start.add_touch_points()->set_id(0u);
+    injector_.InjectTouchEvent(first_start);
+    EXPECT_TRUE(IsRemoteTouchInjectionActive());
+
+    TouchEvent second_start;
+    second_start.set_event_type(TouchEvent::TOUCH_POINT_START);
+    second_start.add_touch_points()->set_id(1u);
+    injector_.InjectTouchEvent(second_start);
+    EXPECT_TRUE(IsRemoteTouchInjectionActive());
+
+    injector_.Deinitialize();
+    task_environment_.FastForwardBy(kRemoteTouchTailWindow +
+                                    base::Milliseconds(1));
+    EXPECT_FALSE(IsRemoteTouchInjectionActive());
+  }
+}
+
+TEST_F(TouchInjectorWinTest,
+       TouchInjectorWinDeinitializeTransitionsActiveTouchStateToTailWindow) {
+  std::unique_ptr<TouchInjectorWinDelegateMock> delegate_mock(
+      new ::testing::StrictMock<TouchInjectorWinDelegateMock>());
+
+  InSequence s;
+  EXPECT_CALL(*delegate_mock, InitializeTouchInjection(_, _))
+      .WillOnce(Return(1));
+
+  IdFlagMap id_to_flags;
+  id_to_flags[0u] = kStartFlag;
+  EXPECT_CALL(*delegate_mock,
+              InjectTouchInput(1, EqualsPointerTouchInfoFlag(id_to_flags)))
+      .WillOnce(Return(1));
+
+  injector_.SetInjectorDelegateForTest(std::move(delegate_mock));
+  EXPECT_TRUE(injector_.Init());
+
+  TouchEvent touch_start;
+  touch_start.set_event_type(TouchEvent::TOUCH_POINT_START);
+  touch_start.add_touch_points()->set_id(0u);
+  injector_.InjectTouchEvent(touch_start);
+  EXPECT_TRUE(IsRemoteTouchInjectionActive());
+
+  // Deinitializing while touches are in contact transitions to the 150ms tail
+  // window rather than dropping trailing synthesized mouse events.
+  injector_.Deinitialize();
+  EXPECT_TRUE(IsRemoteTouchInjectionActive());
+
+  task_environment_.FastForwardBy(kRemoteTouchTailWindow -
+                                  base::Milliseconds(1));
+  EXPECT_TRUE(IsRemoteTouchInjectionActive());
+
+  task_environment_.FastForwardBy(base::Milliseconds(2));
+  EXPECT_FALSE(IsRemoteTouchInjectionActive());
 }
 
 }  // namespace
