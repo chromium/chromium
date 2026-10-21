@@ -39,6 +39,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -468,7 +469,7 @@ TouchToFillPaymentMethodControllerImpl::GetJavaObject() {
   if (!java_object_) {
     java_object_ = Java_TouchToFillPaymentMethodControllerBridge_create(
         base::android::AttachCurrentThread(),
-        reinterpret_cast<intptr_t>(
+        jni_zero::MakeRaw(
             static_cast<TouchToFillPaymentMethodViewController*>(this)),
         web_contents()->GetTopLevelNativeWindow()->GetJavaObject());
   }

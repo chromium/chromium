@@ -8,7 +8,10 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -27,32 +30,46 @@ import java.lang.ref.WeakReference;
 @NullMarked
 class TouchToFillPaymentMethodControllerBridge
         implements TouchToFillPaymentMethodComponent.Delegate {
-    private long mNativeTouchToFillPaymentMethodViewController;
+    @JniType("::autofill::TouchToFillPaymentMethodViewController")
+    interface NativeTouchToFillPaymentMethodViewController extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeTouchToFillPaymentMethodViewController>
+            mNativeTouchToFillPaymentMethodViewController;
     private final WeakReference<Context> mContext;
 
     private TouchToFillPaymentMethodControllerBridge(
-            long nativeTouchToFillPaymentMethodViewController, WeakReference<Context> context) {
+            JniRawPtr<NativeTouchToFillPaymentMethodViewController>
+                    nativeTouchToFillPaymentMethodViewController,
+            WeakReference<Context> context) {
         mNativeTouchToFillPaymentMethodViewController =
                 nativeTouchToFillPaymentMethodViewController;
         mContext = context;
     }
 
     @CalledByNative
-    private static @Nullable TouchToFillPaymentMethodControllerBridge create(
-            long nativeTouchToFillPaymentMethodViewController, WindowAndroid windowAndroid) {
-        if (windowAndroid == null) return null;
+    static @Nullable TouchToFillPaymentMethodControllerBridge create(
+            JniRawPtr<NativeTouchToFillPaymentMethodViewController>
+                    nativeTouchToFillPaymentMethodViewController,
+            WindowAndroid windowAndroid) {
+        if (windowAndroid == null) {
+            nativeTouchToFillPaymentMethodViewController.release();
+            return null;
+        }
         return new TouchToFillPaymentMethodControllerBridge(
                 nativeTouchToFillPaymentMethodViewController, windowAndroid.getContext());
     }
 
     @CalledByNative
-    private void onNativeDestroyed() {
-        mNativeTouchToFillPaymentMethodViewController = 0;
+    void onNativeDestroyed() {
+        if (mNativeTouchToFillPaymentMethodViewController != null) {
+            mNativeTouchToFillPaymentMethodViewController.release();
+            mNativeTouchToFillPaymentMethodViewController = null;
+        }
     }
 
     @Override
     public void onDismissed(boolean dismissedByUser, boolean shouldReshow) {
-        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+        if (mNativeTouchToFillPaymentMethodViewController != null) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
                     .onDismissed(
                             mNativeTouchToFillPaymentMethodViewController,
@@ -63,7 +80,7 @@ class TouchToFillPaymentMethodControllerBridge
 
     @Override
     public void scanCreditCard() {
-        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+        if (mNativeTouchToFillPaymentMethodViewController != null) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
                     .scanCreditCard(mNativeTouchToFillPaymentMethodViewController);
         }
@@ -71,7 +88,7 @@ class TouchToFillPaymentMethodControllerBridge
 
     @Override
     public void showPaymentMethodSettings() {
-        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+        if (mNativeTouchToFillPaymentMethodViewController != null) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
                     .showPaymentMethodSettings(mNativeTouchToFillPaymentMethodViewController);
         }
@@ -87,7 +104,7 @@ class TouchToFillPaymentMethodControllerBridge
 
     @Override
     public void creditCardSuggestionSelected(String uniqueId, boolean isVirtual) {
-        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+        if (mNativeTouchToFillPaymentMethodViewController != null) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
                     .creditCardSuggestionSelected(
                             mNativeTouchToFillPaymentMethodViewController, uniqueId, isVirtual);
@@ -96,7 +113,7 @@ class TouchToFillPaymentMethodControllerBridge
 
     @Override
     public void localIbanSuggestionSelected(String guid) {
-        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+        if (mNativeTouchToFillPaymentMethodViewController != null) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
                     .localIbanSuggestionSelected(
                             mNativeTouchToFillPaymentMethodViewController, guid);
@@ -105,7 +122,7 @@ class TouchToFillPaymentMethodControllerBridge
 
     @Override
     public void serverIbanSuggestionSelected(long instrumentId) {
-        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+        if (mNativeTouchToFillPaymentMethodViewController != null) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
                     .serverIbanSuggestionSelected(
                             mNativeTouchToFillPaymentMethodViewController, instrumentId);
@@ -114,7 +131,7 @@ class TouchToFillPaymentMethodControllerBridge
 
     @Override
     public void loyaltyCardSuggestionSelected(LoyaltyCard loyaltyCard) {
-        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+        if (mNativeTouchToFillPaymentMethodViewController != null) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
                     .loyaltyCardSuggestionSelected(
                             mNativeTouchToFillPaymentMethodViewController, loyaltyCard);
@@ -123,7 +140,7 @@ class TouchToFillPaymentMethodControllerBridge
 
     @Override
     public void bnplSuggestionSelected(@Nullable Long extractedAmount) {
-        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+        if (mNativeTouchToFillPaymentMethodViewController != null) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
                     .bnplSuggestionSelected(
                             mNativeTouchToFillPaymentMethodViewController, extractedAmount);
@@ -139,7 +156,7 @@ class TouchToFillPaymentMethodControllerBridge
 
     @Override
     public void onBnplIssuerSuggestionSelected(String issuerId) {
-        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+        if (mNativeTouchToFillPaymentMethodViewController != null) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
                     .onBnplIssuerSuggestionSelected(
                             mNativeTouchToFillPaymentMethodViewController, issuerId);
@@ -148,7 +165,7 @@ class TouchToFillPaymentMethodControllerBridge
 
     @Override
     public void onBnplTosAccepted() {
-        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+        if (mNativeTouchToFillPaymentMethodViewController != null) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
                     .onBnplTosAccepted(mNativeTouchToFillPaymentMethodViewController);
         }
@@ -156,7 +173,7 @@ class TouchToFillPaymentMethodControllerBridge
 
     @Override
     public void onUserDecisionToUseSavedCards() {
-        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+        if (mNativeTouchToFillPaymentMethodViewController != null) {
             TouchToFillPaymentMethodControllerBridgeJni.get()
                     .onUserDecisionToUseSavedCards(mNativeTouchToFillPaymentMethodViewController);
         }
@@ -165,40 +182,41 @@ class TouchToFillPaymentMethodControllerBridge
     @NativeMethods
     interface Natives {
         void onDismissed(
-                long nativeTouchToFillPaymentMethodViewController,
+                JniPtr<NativeTouchToFillPaymentMethodViewController> self,
                 boolean dismissedByUser,
                 boolean shouldReshow);
 
-        void scanCreditCard(long nativeTouchToFillPaymentMethodViewController);
+        void scanCreditCard(JniPtr<NativeTouchToFillPaymentMethodViewController> self);
 
-        void showPaymentMethodSettings(long nativeTouchToFillPaymentMethodViewController);
+        void showPaymentMethodSettings(JniPtr<NativeTouchToFillPaymentMethodViewController> self);
 
         void creditCardSuggestionSelected(
-                long nativeTouchToFillPaymentMethodViewController,
+                JniPtr<NativeTouchToFillPaymentMethodViewController> self,
                 @JniType("std::string") String uniqueId,
                 boolean isVirtual);
 
         void bnplSuggestionSelected(
-                long nativeTouchToFillPaymentMethodViewController,
+                JniPtr<NativeTouchToFillPaymentMethodViewController> self,
                 @JniType("std::optional<int64_t>") @Nullable Long extractedAmount);
 
         void localIbanSuggestionSelected(
-                long nativeTouchToFillPaymentMethodViewController,
+                JniPtr<NativeTouchToFillPaymentMethodViewController> self,
                 @JniType("std::string") String guid);
 
         void serverIbanSuggestionSelected(
-                long nativeTouchToFillPaymentMethodViewController, long instrumentId);
+                JniPtr<NativeTouchToFillPaymentMethodViewController> self, long instrumentId);
 
         void loyaltyCardSuggestionSelected(
-                long nativeTouchToFillPaymentMethodViewController,
+                JniPtr<NativeTouchToFillPaymentMethodViewController> self,
                 @JniType("LoyaltyCard") LoyaltyCard loyaltyCardNumber);
 
         void onBnplIssuerSuggestionSelected(
-                long nativeTouchToFillPaymentMethodViewController,
+                JniPtr<NativeTouchToFillPaymentMethodViewController> self,
                 @JniType("std::string") String issuerId);
 
-        void onBnplTosAccepted(long nativeTouchToFillPaymentMethodViewController);
+        void onBnplTosAccepted(JniPtr<NativeTouchToFillPaymentMethodViewController> self);
 
-        void onUserDecisionToUseSavedCards(long nativeTouchToFillPaymentMethodViewController);
+        void onUserDecisionToUseSavedCards(
+                JniPtr<NativeTouchToFillPaymentMethodViewController> self);
     }
 }
