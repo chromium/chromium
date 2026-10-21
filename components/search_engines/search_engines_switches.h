@@ -119,13 +119,6 @@ BASE_DECLARE_FEATURE(kClankDefaultSearchApi);
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kKwdbRefreshDebugging);
 
-#if BUILDFLAG(IS_ANDROID)
-// Whether the renewal of an already-imported search engine choice should result
-// in re-applying the choice, instead of skipping it as a no-op.
-COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
-BASE_DECLARE_FEATURE(kApplyDeviceChoiceRenewal);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_ANDROID)
 // Restructuring of the search settings pages.
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
