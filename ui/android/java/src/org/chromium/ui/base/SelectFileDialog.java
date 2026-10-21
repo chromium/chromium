@@ -31,7 +31,10 @@ import androidx.core.content.ContextCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContentUriUtils;
@@ -73,6 +76,9 @@ import java.util.concurrent.TimeUnit;
 @JNINamespace("ui")
 @NullMarked
 public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPickerListener {
+    @JniType("::ui::SelectFileDialogImpl")
+    interface NativeSelectFileDialogImpl extends JniTypeToken {}
+
     private static final String TAG = "SelectFileDialog";
     private static final String IMAGE_TYPE = "image";
     private static final String VIDEO_TYPE = "video";
@@ -258,7 +264,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     @SuppressLint("StaticFieldLeak")
     private static @Nullable WindowAndroid sWindowAndroidForTesting;
 
-    private long mNativeSelectFileDialog;
+    private @Nullable JniRawPtr<NativeSelectFileDialogImpl> mNativeSelectFileDialog;
     private String mIntentAction;
 
     // File types may contain both file extensions and MIME types.
@@ -346,7 +352,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     }
 
     @VisibleForTesting
-    SelectFileDialog(long nativeSelectFileDialog) {
+    SelectFileDialog(@Nullable JniRawPtr<NativeSelectFileDialogImpl> nativeSelectFileDialog) {
         mNativeSelectFileDialog = nativeSelectFileDialog;
     }
 
@@ -1532,32 +1538,35 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     }
 
     protected void onFileSelected(
-            long nativeSelectFileDialogImpl,
+            @Nullable JniRawPtr<NativeSelectFileDialogImpl> nativeSelectFileDialogImpl,
             @Nullable String filePath,
             @Nullable String displayName) {
         onFileSelectionEnded();
         recordImageCountHistograms(new String[] {filePath});
-        if (nativeSelectFileDialogImpl != 0) {
+        if (nativeSelectFileDialogImpl != null) {
             SelectFileDialogJni.get()
                     .onFileSelected(nativeSelectFileDialogImpl, filePath, displayName);
         }
     }
 
     protected void onMultipleFilesSelected(
-            long nativeSelectFileDialogImpl, String[] filePathArray, String[] displayNameArray) {
+            @Nullable JniRawPtr<NativeSelectFileDialogImpl> nativeSelectFileDialogImpl,
+            String[] filePathArray,
+            String[] displayNameArray) {
         onFileSelectionEnded();
         recordImageCountHistograms(filePathArray);
-        if (nativeSelectFileDialogImpl != 0) {
+        if (nativeSelectFileDialogImpl != null) {
             SelectFileDialogJni.get()
                     .onMultipleFilesSelected(
                             nativeSelectFileDialogImpl, filePathArray, displayNameArray);
         }
     }
 
-    protected void onFileNotSelected(long nativeSelectFileDialogImpl) {
+    protected void onFileNotSelected(
+            @Nullable JniRawPtr<NativeSelectFileDialogImpl> nativeSelectFileDialogImpl) {
         onFileSelectionEnded();
         recordImageCountHistograms(new String[] {});
-        if (nativeSelectFileDialogImpl != 0) {
+        if (nativeSelectFileDialogImpl != null) {
             SelectFileDialogJni.get().onFileNotSelected(nativeSelectFileDialogImpl);
         }
     }
@@ -1873,25 +1882,31 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     @CalledByNative
     private void nativeDestroyed() {
         onFileSelectionEnded();
-        mNativeSelectFileDialog = 0;
+        if (mNativeSelectFileDialog != null) {
+            mNativeSelectFileDialog.release();
+            mNativeSelectFileDialog = null;
+        }
     }
 
     @VisibleForTesting
     @CalledByNative
-    static SelectFileDialog create(long nativeSelectFileDialog) {
+    static SelectFileDialog create(
+            @Nullable JniRawPtr<NativeSelectFileDialogImpl> nativeSelectFileDialog) {
         return new SelectFileDialog(nativeSelectFileDialog);
     }
 
     @NativeMethods
     interface Natives {
         void onFileSelected(
-                long nativeSelectFileDialogImpl,
+                JniPtr<NativeSelectFileDialogImpl> self,
                 @Nullable String filePath,
                 @Nullable String displayName);
 
         void onMultipleFilesSelected(
-                long nativeSelectFileDialogImpl, String[] filePathArray, String[] displayNameArray);
+                JniPtr<NativeSelectFileDialogImpl> self,
+                String[] filePathArray,
+                String[] displayNameArray);
 
-        void onFileNotSelected(long nativeSelectFileDialogImpl);
+        void onFileNotSelected(JniPtr<NativeSelectFileDialogImpl> self);
     }
 }
