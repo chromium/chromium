@@ -479,7 +479,9 @@ void ReadAnythingAppController::ProcessModelUpdates() {
 
   // TODO(accessibility): it isn't clear this handles the pending updates path
   // correctly within the model.
-  if (model_.requires_post_process_selection()) {
+  if (model_.requires_post_process_selection() &&
+      !pdf_draw_debouncer_->IsRunning() &&
+      !(IsPdf() && model_.screen2x_distiller_running())) {
     PostProcessSelection();
   }
 
@@ -943,7 +945,9 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     // distilled. We must call this before PostProcessSelection() below because
     // that call checks if the current selection is inside the currently
     // displayed nodes. Thus, we have to calculate the display nodes first.
-    model_.ComputeDisplayNodeIdsForDistilledTree();
+    if (!pdf_draw_debouncer_->IsRunning()) {
+      model_.ComputeDisplayNodeIdsForDistilledTree();
+    }
 
     distillations_completed_++;
   }
@@ -955,7 +959,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   model_.AllowChildTreeForActiveTree(model_.content_node_ids().empty());
 
   // Draw the selection in the side panel (if one exists in the main panel).
-  if (!PostProcessSelection()) {
+  if (!pdf_draw_debouncer_->IsRunning() && !PostProcessSelection()) {
     // If a draw did not occur, make sure to draw. This will happen if there is
     // no main content selection when the tree is distilled. Sometimes in Gmail,
     // The above call to ComputeDisplayNodeIdsForDistilledTree still produces
@@ -1033,12 +1037,26 @@ void ReadAnythingAppController::OnPdfDebounceFinished() {
     return;
   }
 
-  if (model_.is_empty()) {
-    DrawEmptyState();
-  } else {
-    Draw(/*recompute_display_nodes=*/false);
-    if (model_.unprocessed_selections_from_reading_mode() == 0) {
-      DrawSelection();
+  // OnAXTreeDistilled() defers this work while the debouncer runs. Compute
+  // display nodes first since PostProcessSelection() checks against them.
+  if (!model_.content_node_ids().empty()) {
+    model_.ComputeDisplayNodeIdsForDistilledTree();
+  }
+
+  // The debouncer starts when the PDF becomes the active tree, so it can fire
+  // before any updates for that tree arrive. PostProcessSelection() requires
+  // the active tree to exist.
+  if (!model_.ContainsActiveTree() || !PostProcessSelection()) {
+    if (model_.is_empty()) {
+      DrawEmptyState();
+    } else {
+      bool should_recompute_display_nodes =
+          !model_.content_node_ids().empty() &&
+          model_.GetCurrentlyVisibleNodes()->empty();
+      Draw(should_recompute_display_nodes);
+      if (model_.unprocessed_selections_from_reading_mode() == 0) {
+        DrawSelection();
+      }
     }
   }
 

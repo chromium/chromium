@@ -4025,6 +4025,7 @@ TEST_F(
   page_handler_.FlushForTesting();
   EXPECT_TRUE(model().pending_updates_for_testing().empty());
   EXPECT_TRUE(model().screen2x_distiller_running());
+  EXPECT_TRUE(model().selection_node_ids().empty());
 
   // Complete the second distillation and debounce to verify the selection from
   // the queued update is applied.
@@ -4146,6 +4147,29 @@ TEST_F(ReadAnythingAppControllerTest,
       .Times(1);
   task_environment_.FastForwardBy(base::Milliseconds(500));
   page_handler_.FlushForTesting();
+}
+
+TEST_F(
+    ReadAnythingAppControllerTest,
+    OnAXTreeDistilled_PdfDebouncerRunning_DefersDisplayNodeComputationUntilDebounceFinishes) {
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  SendUpdateWithNodes({test::TextNode(/*id=*/2, u"First page."),
+                       test::TextNode(/*id=*/3, u"Second page.")});
+
+  // Set up a PDF and start the debouncer.
+  controller().OnActiveAXTreeIDChanged(tree_id_, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  ASSERT_TRUE(IsPdfDrawDebouncerRunning());
+
+  // Display nodes aren't computed while the debouncer is running.
+  OnAXTreeDistilled(tree_id_, {2, 3});
+  EXPECT_TRUE(model().display_node_ids().empty());
+
+  // Display nodes are computed once the debouncer finishes.
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  EXPECT_TRUE(model().display_node_ids().contains(2));
+  EXPECT_TRUE(model().display_node_ids().contains(3));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
