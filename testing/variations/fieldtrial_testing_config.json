@@ -16352,6 +16352,25 @@
             ]
         }
     ],
+    "SiteTokenProviderTeamfood": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Teamfood",
+                    "enable_features": [
+                        "SiteTokenProviderEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkiaGraphite": [
         {
             "platforms": [
