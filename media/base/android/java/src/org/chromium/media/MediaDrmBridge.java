@@ -438,9 +438,10 @@ public class MediaDrmBridge {
                 }
             }
             return MediaDrm.isCryptoSchemeSupported(cryptoScheme, containerMimeType);
-        } catch (IllegalArgumentException e) {
-            // A few devices have broken DRM HAL configs and throw an exception here regardless of
-            // the arguments; just assume this means the scheme is not supported.
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            // A few devices have broken DRM HAL configs or throw MediaDrmResetException /
+            // MediaDrmStateException when the DRM HAL service resets; assume the scheme is not
+            // supported.
             Log.e(TAG, "Exception in isCryptoSchemeSupported", e);
             return false;
         }
