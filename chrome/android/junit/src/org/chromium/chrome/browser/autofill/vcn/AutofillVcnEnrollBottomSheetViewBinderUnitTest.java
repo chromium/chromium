@@ -423,6 +423,29 @@ public final class AutofillVcnEnrollBottomSheetViewBinderUnitTest implements Lin
     }
 
     @Test
+    public void testAcceptButtonAction() {
+        runButtonActionTest(
+                mView.mAcceptButton,
+                AutofillVcnEnrollBottomSheetProperties.ON_ACCEPT_BUTTON_CLICK_ACTION);
+    }
+
+    @Test
+    public void testCancelButtonAction() {
+        runButtonActionTest(
+                mView.mCancelButton,
+                AutofillVcnEnrollBottomSheetProperties.ON_CANCEL_BUTTON_CLICK_ACTION);
+    }
+
+    private void runButtonActionTest(Button button, ReadableObjectPropertyKey<Runnable> property) {
+        CallbackHelper helper = new CallbackHelper();
+        bind(mModelBuilder.with(property, helper::notifyCalled));
+        assertEquals(0, helper.getCallCount());
+
+        button.performClick();
+        assertEquals(1, helper.getCallCount());
+    }
+
+    @Test
     public void testShowLoadingState() {
         LoadingViewObserver observer = new LoadingViewObserver();
         mView.mLoadingView.addObserver(observer);

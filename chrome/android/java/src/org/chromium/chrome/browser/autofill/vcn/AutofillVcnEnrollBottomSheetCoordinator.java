@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill.vcn;
 
 import android.content.Context;
-import android.view.View;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -79,6 +78,14 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
                                                         issuerIcon.mIconResource,
                                                         /* cardIconSize= */ ImageSize.LARGE,
                                                         /* showCustomIcon= */ true))
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties
+                                        .ON_ACCEPT_BUTTON_CLICK_ACTION,
+                                () -> onAccept(delegate))
+                        .with(
+                                AutofillVcnEnrollBottomSheetProperties
+                                        .ON_CANCEL_BUTTON_CLICK_ACTION,
+                                () -> onCancel(delegate))
                         .build();
         mView = new AutofillVcnEnrollBottomSheetView(context);
         PropertyModelChangeProcessor.create(
@@ -96,17 +103,18 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
                                 layoutStateProvider, tabModelSelectorSupplier),
                         uiController,
                         mModel);
+    }
 
-        mView.mAcceptButton.setOnClickListener(
-                (View button) -> {
-                    delegate.onAccept();
-                    mMediator.onAccept();
-                });
-        mView.mCancelButton.setOnClickListener(
-                (View button) -> {
-                    delegate.onCancel();
-                    mMediator.onCancel();
-                });
+    private void onAccept(Delegate delegate) {
+        // TODO(crbug.com/575904703): Merge the two callbacks in the mediator.
+        delegate.onAccept();
+        mMediator.onAccept();
+    }
+
+    private void onCancel(Delegate delegate) {
+        // TODO(crbug.com/575904703): Merge the two callbacks in the mediator.
+        delegate.onCancel();
+        mMediator.onCancel();
     }
 
     /**

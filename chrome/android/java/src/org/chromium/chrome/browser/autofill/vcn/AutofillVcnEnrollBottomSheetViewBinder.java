@@ -98,6 +98,21 @@ import java.util.function.Function;
         } else if (AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL == propertyKey) {
             view.mCancelButton.setText(
                     model.get(AutofillVcnEnrollBottomSheetProperties.CANCEL_BUTTON_LABEL));
+
+        } else if (AutofillVcnEnrollBottomSheetProperties.ON_ACCEPT_BUTTON_CLICK_ACTION
+                == propertyKey) {
+            Runnable action =
+                    model.get(AutofillVcnEnrollBottomSheetProperties.ON_ACCEPT_BUTTON_CLICK_ACTION);
+            assert action != null;
+            view.mAcceptButton.setOnClickListener(_ -> action.run());
+
+        } else if (AutofillVcnEnrollBottomSheetProperties.ON_CANCEL_BUTTON_CLICK_ACTION
+                == propertyKey) {
+            Runnable action =
+                    model.get(AutofillVcnEnrollBottomSheetProperties.ON_CANCEL_BUTTON_CLICK_ACTION);
+            assert action != null;
+            view.mCancelButton.setOnClickListener(_ -> action.run());
+
         } else if (AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE == propertyKey) {
             if (model.get(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE)) {
                 view.mAcceptButton.setVisibility(View.GONE);

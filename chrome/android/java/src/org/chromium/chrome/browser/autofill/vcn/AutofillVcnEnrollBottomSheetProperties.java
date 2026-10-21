@@ -189,6 +189,14 @@ import java.util.function.Function;
     static final ReadableObjectPropertyKey<String> CANCEL_BUTTON_LABEL =
             new ReadableObjectPropertyKey<>();
 
+    /** The callback to run when the button that enrolls a virtual card is clicked. */
+    static final ReadableObjectPropertyKey<Runnable> ON_ACCEPT_BUTTON_CLICK_ACTION =
+            new ReadableObjectPropertyKey<>();
+
+    /** The callback to run when the button that cancels enrollment is clicked. */
+    static final ReadableObjectPropertyKey<Runnable> ON_CANCEL_BUTTON_CLICK_ACTION =
+            new ReadableObjectPropertyKey<>();
+
     /** Indicates whether the bottom sheet is in a loading state. */
     static final WritableBooleanPropertyKey SHOW_LOADING_STATE = new WritableBooleanPropertyKey();
 
@@ -203,6 +211,8 @@ import java.util.function.Function;
         ISSUER_LEGAL_MESSAGES,
         ACCEPT_BUTTON_LABEL,
         CANCEL_BUTTON_LABEL,
+        ON_ACCEPT_BUTTON_CLICK_ACTION,
+        ON_CANCEL_BUTTON_CLICK_ACTION,
         SHOW_LOADING_STATE
     };
 
