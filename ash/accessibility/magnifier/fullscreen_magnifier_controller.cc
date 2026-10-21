@@ -574,10 +574,19 @@ bool FullscreenMagnifierController::RedrawDIP(
     if (display_identification_highlight)
       undo_transform_windows.push_back(display_identification_highlight);
 
+    aura::Window* overlay_container =
+        root_window_->GetChildById(kShellWindowId_OverlayContainer);
     // Do not magnify overlay if calibration tool is running too.
     if (Shell::Get()->cros_display_config()->IsCalibrating()) {
-      undo_transform_windows.push_back(
-          root_window_->GetChildById(kShellWindowId_OverlayContainer));
+      undo_transform_windows.push_back(overlay_container);
+    } else if (overlay_container &&
+               !overlay_container->transform().IsIdentity()) {
+      ui::ScopedLayerAnimationSettings layer_settings(
+          overlay_container->layer()->GetAnimator());
+      layer_settings.SetPreemptionStrategy(strategy);
+      layer_settings.SetTweenType(tween_type);
+      layer_settings.SetTransitionDuration(duration);
+      overlay_container->SetTransform(gfx::Transform());
     }
 
     for (auto* window : undo_transform_windows) {

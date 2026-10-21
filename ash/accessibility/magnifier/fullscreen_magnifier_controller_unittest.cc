@@ -8,12 +8,15 @@
 #include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/display/cros_display_config.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -26,6 +29,8 @@
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/test/event_generator.h"
@@ -1145,6 +1150,45 @@ TEST_F(FullscreenMagnifierControllerTest, DoesNotRedrawIfViewportIsNotChanged) {
   event_generator->MoveMouseToInHost(bottom_right);
   EXPECT_EQ(GetViewport().ToString(), "722,542 78x58");
   EXPECT_EQ(0, num_cursor_moves);
+}
+
+TEST_F(FullscreenMagnifierControllerTest,
+       OverlayContainerTransformResetAfterCalibration) {
+  ui::TouchscreenDevice touchdevice(123, ui::InputDeviceType::INPUT_DEVICE_USB,
+                                    std::string("test external touch device"),
+                                    gfx::Size(1000, 1000), 1);
+  ui::DeviceDataManagerTestApi().SetTouchscreenDevices({touchdevice});
+
+  aura::Window* overlay_container =
+      GetRootWindow()->GetChildById(kShellWindowId_OverlayContainer);
+  ASSERT_TRUE(overlay_container);
+  EXPECT_TRUE(overlay_container->transform().IsIdentity());
+
+  const int64_t display_id = display::Screen::Get()->GetPrimaryDisplay().id();
+  auto* cros_display_config = Shell::Get()->cros_display_config();
+  cros_display_config->TouchCalibration(display_id,
+                                        DisplayCalibrationOperation::kStart,
+                                        std::nullopt, base::DoNothing());
+  ASSERT_TRUE(cros_display_config->IsCalibrating());
+
+  // Enable fullscreen magnifier while touch calibration is active. The overlay
+  // container should receive an inverse transform so it is not magnified.
+  auto* magnifier = GetFullscreenMagnifierController();
+  magnifier->SetEnabled(true);
+  EXPECT_FALSE(overlay_container->transform().IsIdentity());
+
+  // Complete touch calibration and trigger a redraw; the overlay container
+  // transform should be reset to identity.
+  cros_display_config->TouchCalibration(
+      display_id, DisplayCalibrationOperation::kComplete,
+      display::TouchCalibrationData(), base::DoNothing());
+  ASSERT_FALSE(cros_display_config->IsCalibrating());
+
+  magnifier->SetScale(4.0f, /*animate=*/false);
+  EXPECT_TRUE(overlay_container->transform().IsIdentity());
+
+  magnifier->SetEnabled(false);
+  EXPECT_TRUE(overlay_container->transform().IsIdentity());
 }
 
 }  // namespace ash
