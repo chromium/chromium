@@ -647,7 +647,7 @@ std::string AddSendTabToSelfEntryToFakeSyncServer(
   }
 
   std::string guid = builder.guid();
-  GetFakeServer()->InjectEntity(builder.Build(GetFakeServer()));
+  GetFakeServer()->InjectEntity(builder.Build(*GetFakeServer()));
   return guid;
 }
 

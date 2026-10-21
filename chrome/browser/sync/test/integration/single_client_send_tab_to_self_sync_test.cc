@@ -114,7 +114,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   const GURL url(kUrl);
 
   fake_server_->InjectEntity(
-      send_tab_to_self::SendTabToSelfEntityBuilder(url).SetGuid(kGuid).Build());
+      send_tab_to_self::SendTabToSelfEntityBuilder(url).SetGuid(kGuid).Build(
+          *fake_server_));
 
   ASSERT_TRUE(SetupSync());
 
@@ -136,7 +137,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
                                  .SetGuid(kGuid)
                                  .AddFormField("NAME_FIRST", kName)
                                  .AddFormField("EMAIL_ADDRESS", kEmail)
-                                 .Build(fake_server_.get()));
+                                 .Build(*fake_server_));
 
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0));
@@ -289,7 +290,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   const base::Time navigation_time(base::Time::Now());
 
   fake_server_->InjectEntity(
-      send_tab_to_self::SendTabToSelfEntityBuilder(url).SetGuid(kGuid).Build());
+      send_tab_to_self::SendTabToSelfEntityBuilder(url).SetGuid(kGuid).Build(
+          *fake_server_));
 
   ASSERT_TRUE(SetupSync());
 
@@ -421,7 +423,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
   fake_server_->InjectEntity(send_tab_to_self::SendTabToSelfEntityBuilder(url)
                                  .SetGuid(kGuid)
                                  .SetTextFragment(kTextStart)
-                                 .Build(fake_server_.get()));
+                                 .Build(*fake_server_));
 
   send_tab_to_self::SendTabToSelfSyncService* service =
       SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0));

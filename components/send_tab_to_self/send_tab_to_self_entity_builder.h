@@ -24,8 +24,8 @@ class FakeServer;
 namespace send_tab_to_self {
 
 // Builder for constructing Send Tab to Self entities for `FakeServer` in tests.
-// Encapsulates GUID generation, page context packaging, and optional Nigori
-// encryption.
+// Encapsulates GUID generation, page context packaging, and Nigori encryption
+// of `PageContext` fields.
 class SendTabToSelfEntityBuilder {
  public:
   static constexpr std::string_view kDefaultTitle = "Default Title";
@@ -82,10 +82,13 @@ class SendTabToSelfEntityBuilder {
   SendTabToSelfEntityBuilder& SetTextFragment(std::string_view text_fragment);
 
   // Builds the `syncer::LoopbackServerEntity` representing this Send Tab to
-  // Self entry. Automatically performs Nigori encryption on `PageContext` if
-  // keystore keys are present on `fake_server`.
+  // Self entry. If `PageContext` fields (`AddFormField()` or
+  // `SetTextFragment()`) are populated, `fake_server` must have Nigori
+  // keystore keys so that `PageContext` is encrypted into
+  // `encrypted_page_context` (since `DataTypeWorker` strips unencrypted
+  // `page_context` fields from incoming remote entities on the wire).
   std::unique_ptr<syncer::LoopbackServerEntity> Build(
-      fake_server::FakeServer* fake_server = nullptr) const;
+      const fake_server::FakeServer& fake_server) const;
 
   const GURL& url() const { return url_; }
   const std::string& title() const { return title_; }

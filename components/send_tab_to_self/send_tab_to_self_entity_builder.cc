@@ -30,16 +30,20 @@ namespace {
 constexpr char kClientEntityNonUniqueName[] = "non_unique_name";
 
 // Populates `form_fields` and `text_fragment` data into the `PageContext`
-// of `specifics`, and performs Nigori encryption if `fake_server` is
-// provided and has keystore keys.
+// of `specifics`, and encrypts it into `encrypted_page_context` using the
+// Nigori keystore keys from `fake_server`.
 void PopulatePageContext(
     const std::vector<SendTabToSelfEntityBuilder::FormField>& form_fields,
     const std::string& text_fragment,
-    fake_server::FakeServer* fake_server,
+    const fake_server::FakeServer& fake_server,
     sync_pb::SendTabToSelfSpecifics* specifics) {
   if (form_fields.empty() && text_fragment.empty()) {
     return;
   }
+
+  const std::vector<std::vector<uint8_t>>& keystore_keys =
+      fake_server.GetKeystoreKeys();
+  CHECK(!keystore_keys.empty());
 
   PageContext context;
   for (const auto& field_data : form_fields) {
@@ -60,26 +64,13 @@ void PopulatePageContext(
     }
   }
 
-  *specifics->mutable_page_context() = PageContextToProto(context);
-
-  if (!fake_server) {
-    return;
-  }
-
-  const std::vector<std::vector<uint8_t>>& keystore_keys =
-      fake_server->GetKeystoreKeys();
-  if (keystore_keys.empty()) {
-    return;
-  }
-
   std::string key_base64 = base::Base64Encode(keystore_keys.back());
   std::unique_ptr<syncer::CryptographerImpl> cryptographer =
       syncer::CryptographerImpl::FromSingleKeyForTesting(  // IN-TEST
           key_base64, syncer::KeyDerivationParams::CreateForPbkdf2());
   CHECK(cryptographer);
-  CHECK(cryptographer->Encrypt(specifics->page_context(),
+  CHECK(cryptographer->Encrypt(PageContextToProto(context),
                                specifics->mutable_encrypted_page_context()));
-  specifics->clear_page_context();
 }
 
 }  // namespace
@@ -158,7 +149,7 @@ SendTabToSelfEntityBuilder& SendTabToSelfEntityBuilder::SetTextFragment(
 }
 
 std::unique_ptr<syncer::LoopbackServerEntity> SendTabToSelfEntityBuilder::Build(
-    fake_server::FakeServer* fake_server) const {
+    const fake_server::FakeServer& fake_server) const {
   base::Time shared_time =
       shared_time_.is_null() ? base::Time::Now() : shared_time_;
   int64_t shared_time_usec =
