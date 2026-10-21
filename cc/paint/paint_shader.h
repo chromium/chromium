@@ -45,7 +45,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
     kShaderCount
   };
 
-  using RecordShaderId = uint32_t;
+  using RecordShaderId = uint64_t;
   static const RecordShaderId kInvalidRecordShaderId;
 
   // Scaling behavior dictates how a PaintRecord shader will behave. Use

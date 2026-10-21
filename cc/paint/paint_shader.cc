@@ -28,7 +28,7 @@
 
 namespace cc {
 namespace {
-base::AtomicSequenceNumber g_next_shader_id;
+base::AtomicSequenceNumberT<uint64_t> g_next_shader_id;
 
 sk_sp<SkPicture> ToSkPicture(const PaintRecord& record,
                              const SkRect& bounds,
