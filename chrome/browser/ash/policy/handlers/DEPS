@@ -32,7 +32,6 @@ include_rules = [
   "+chrome/browser/ash/system",
   "+chrome/browser/ash/tpm",
   "+chrome/browser/extensions/policy_handlers.h",
-  "+chrome/browser/extensions/updater",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
@@ -47,6 +46,7 @@ include_rules = [
 specific_include_rules = {
   # Only tests need these //chrome dependencies.
   ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
+    "+chrome/browser/extensions/updater",
     "+chrome/browser/site_isolation",
     "+chrome/browser/tracing",
   ],

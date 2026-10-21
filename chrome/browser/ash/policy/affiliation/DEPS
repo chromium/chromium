@@ -16,8 +16,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/core",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/profiles",
   "+chrome/common/chrome_paths.h",
   "+chrome/test/base",
 ]
@@ -26,5 +24,9 @@ specific_include_rules = {
   # Only tests need these //chrome dependencies.
   ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
     "+chrome/browser/net",
+    "+chrome/browser/profiles",
+  ],
+  "affiliation_test_helper\\.cc": [
+    "+chrome/browser/browser_process.h",
   ],
 }

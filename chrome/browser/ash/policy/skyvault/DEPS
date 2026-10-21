@@ -21,7 +21,6 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/extensions/login_screen/login/cleanup",
   "+chrome/browser/chromeos/upload_office_to_cloud",
-  "+chrome/browser/download/download_dir_util.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h",
@@ -35,6 +34,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/download/download_dir_util.h",
     "+chrome/browser/policy/policy_test_utils.h",
     "+chrome/browser/policy/profile_policy_connector.h",
   ],
