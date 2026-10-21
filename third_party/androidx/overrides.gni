@@ -44,9 +44,9 @@ template("define_override_androidx_targets") {
       ":androidx_lifecycle_lifecycle_viewmodel_ktx_java",
       ":androidx_savedstate_savedstate_ktx_java",
       ":core_overrides_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 
@@ -74,8 +74,8 @@ template("define_override_androidx_targets") {
       ":androidx_lifecycle_lifecycle_runtime_android_java",
       ":androidx_tracing_tracing_android_java",
       ":androidx_versionedparcelable_versionedparcelable_java",
+      "//third_party/android_deps:kotlin_stdlib_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
-      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
 

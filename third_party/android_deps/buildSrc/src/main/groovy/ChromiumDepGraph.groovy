@@ -192,6 +192,8 @@ class ChromiumDepGraph {
             org_hamcrest_hamcrest: new PropertyOverride(
                     licenseUrl: 'https://raw.githubusercontent.com/hamcrest/JavaHamcrest/master/LICENSE',
                     licenseName: 'BSD'),
+            org_jetbrains_kotlin_kotlin_stdlib: new PropertyOverride(
+                    cpePrefix: 'cpe:/a:jetbrains:kotlin'),
             org_jsoup_jsoup: new PropertyOverride(
                     cpePrefix: 'cpe:/a:jsoup:jsoup:1.14.3',
                     licenseUrl: 'https://raw.githubusercontent.com/jhy/jsoup/master/LICENSE',
@@ -262,19 +264,6 @@ class ChromiumDepGraph {
             org_robolectric_utils_reflector: new PropertyOverride(
                     licenseName: 'Apache-2.0, MIT',
                     licenseUrl: 'https://raw.githubusercontent.com/robolectric/robolectric/master/LICENSE'),
-            // Prevent version changing ~weekly. https://crbug.com/1257197
-            org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm: new PropertyOverride(
-                    resolveVersion: '1.8.1'),
-            org_jetbrains_kotlinx_kotlinx_coroutines_android: new PropertyOverride(
-                    resolveVersion: '1.8.1'),
-            org_jetbrains_kotlinx_kotlinx_coroutines_guava: new PropertyOverride(
-                    resolveVersion: '1.8.1'),
-            org_jetbrains_kotlinx_kotlinx_serialization_core_jvm: new PropertyOverride(
-                    resolveVersion: '1.7.3'),
-            org_jetbrains_kotlinx_kotlinx_serialization_json: new PropertyOverride(
-                    resolveVersion: '1.7.3'),
-            org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm: new PropertyOverride(
-                    resolveVersion: '1.7.3'),
             io_reactivex_rxjava3_rxjava: new PropertyOverride(
                     exclude: true),  // An unnecessary dep of androidx.xr.runtime.
             org_jetbrains_kotlinx_kotlinx_coroutines_reactive: new PropertyOverride(

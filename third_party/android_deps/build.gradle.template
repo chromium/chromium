@@ -26,7 +26,6 @@ dependencies {
     testCompileLatest 'org.robolectric:robolectric:+'
 
     supportsAndroidCompileLatest 'com.google.guava:guava:+'
-    compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-guava:+'
 
     // Libraries from Google:
     compileLatest 'com.google.protobuf:protobuf-javalite:+'
@@ -99,15 +98,17 @@ dependencies {
     supportsAndroidCompileLatest 'org.checkerframework:checker-qual:+'
     supportsAndroidCompileLatest 'org.checkerframework:checker-util:+'
     supportsAndroidCompileLatest 'org.codehaus.mojo:animal-sniffer-annotations:+'
+    supportsAndroidCompileLatest 'org.reactivestreams:reactive-streams:+'
+
+    // Kotlin Deps
+    compileLatest 'org.jetbrains.kotlin:kotlin-parcelize-runtime:+'
+    compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-android:+'
+    supportsAndroidCompileLatest 'org.jetbrains.kotlin:kotlin-stdlib:+'
     supportsAndroidCompileLatest 'org.jetbrains.kotlinx:atomicfu-jvm:+'
     supportsAndroidCompileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:+'
-    supportsAndroidCompileLatest 'org.reactivestreams:reactive-streams:+'
-    compileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-android:+'
-
-    // Needed by androidx and by doubledown targets. Pinned; version must
-    // match the resolveVersion overrides in ChromiumDepGraph.groovy.
-    compileLatest 'org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.3'
-    compileLatest 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3'
+    supportsAndroidCompileLatest 'org.jetbrains.kotlinx:kotlinx-coroutines-guava:+'
+    supportsAndroidCompileLatest 'org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:+'
+    supportsAndroidCompileLatest 'org.jetbrains.kotlinx:kotlinx-serialization-json:+'
 
     // Pinned; migrated from //third_party/android_deps (crbug.com/562517138).
     androidTestCompileLatest 'com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:4.0.0'
@@ -124,18 +125,6 @@ dependencies {
     // (see byte-buddy-agent / byte-buddy-android), otherwise gradle resolves
     // to the higher of the two anyway.
     androidTestCompileLatest 'net.bytebuddy:byte-buddy:1.17.6'
-
-    // Needed by androidx and by doubledown targets.
-    compileLatest 'org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22'
-
-    // Used by resource shrinking.
-    // buildCompileNoDepsLatest targets do not bring in any of their
-    // dependencies, this list of targets is carefully curated for the use of
-    // the resources shrinker. If these are needed for something other than the
-    // resources shrinker, use buildCompileLatest instead.
-    buildCompileNoDepsLatest 'com.android.tools:sdk-common:30.2.0-beta01'
-    buildCompileNoDepsLatest 'com.android.tools:common:30.2.0-beta01'
-    buildCompileNoDepsLatest 'com.android.tools.layoutlib:layoutlib-api:30.2.0-beta01'
 }
 
 task setUpRepository(type: BuildConfigGenerator) {

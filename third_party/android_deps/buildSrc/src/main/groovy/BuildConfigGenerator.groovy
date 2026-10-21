@@ -76,11 +76,10 @@ class BuildConfigGenerator extends DefaultTask {
             org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
             org_hamcrest_hamcrest_integration: '//third_party/hamcrest:hamcrest_integration_java',
             org_hamcrest_hamcrest_library: '//third_party/hamcrest:hamcrest_library_java',
-            org_jetbrains_annotations: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
-            org_jetbrains_kotlin_kotlin_stdlib_jdk7: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
-            org_jetbrains_kotlin_kotlin_stdlib_jdk8: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
-            org_jetbrains_kotlin_kotlin_stdlib_common: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
-            org_jetbrains_kotlin_kotlin_stdlib: '//third_party/kotlin_stdlib:kotlin_stdlib_java',
+            // These are empty as of Kotlin 1.8 (contents moved into kotlin-stdlib).
+            org_jetbrains_kotlin_kotlin_stdlib_common: '//third_party/android_deps:kotlin_stdlib_java',
+            org_jetbrains_kotlin_kotlin_stdlib_jdk7: '//third_party/android_deps:kotlin_stdlib_java',
+            org_jetbrains_kotlin_kotlin_stdlib_jdk8: '//third_party/android_deps:kotlin_stdlib_java',
     ]
 
     // Some libraries have such long names they'll create a path that exceeds the 200 char path limit, which is
@@ -103,6 +102,8 @@ class BuildConfigGenerator extends DefaultTask {
             com_google_guava_guava: '//third_party/android_deps:guava_java',
             com_google_protobuf_protobuf_javalite: '//third_party/android_deps:protobuf_lite_runtime_java',
             net_bytebuddy_byte_buddy: '//third_party/byte_buddy:byte_buddy_android_java',
+            org_jetbrains_annotations: '//third_party/android_deps:kotlin_stdlib_java',
+            org_jetbrains_kotlin_kotlin_stdlib: '//third_party/android_deps:kotlin_stdlib_java',
             // Logic for google_play_services_package added below.
     ]
 
@@ -549,6 +550,10 @@ No modifications.
 
             if (targetName.contains('guava') && gnTarget == '//third_party/android_deps:guava_java') {
                 // Prevent circular dep caused by having listenablefuture aliased to guava_android.
+                return
+            }
+            if (gnTarget == ALIASED_LIBS.get(dependency.id)) {
+                // Prevent circular deps between libraries that share an alias (e.g. kotlin_stdlib_java).
                 return
             }
             // Target aliases can cause dupes.

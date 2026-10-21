@@ -12,6 +12,19 @@ template("define_override_android_deps_targets") {
                "target_name",
              ])
 
+  # Not guarded by limit_android_deps because "buildCompile" androidx targets
+  # depend on it. The generated kotlin-stdlib targets are likewise not guarded
+  # because they are reachable from androidx's buildCompile targets
+  # (window-sidecar -> annotation-jvm -> kotlin-stdlib).
+  java_group("kotlin_stdlib_java") {
+    preferred_dep = true
+
+    # TODO(agrieve): Point this at the generated
+    #     :org_jetbrains_kotlin_kotlin_stdlib_java target once it exists, and
+    #     turn //third_party/kotlin_stdlib into an alias of this target.
+    deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+  }
+
   if (!limit_android_deps) {
     java_group("espresso_java") {
       preferred_dep = true

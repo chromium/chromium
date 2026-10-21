@@ -33,8 +33,8 @@ android_library("java") {
     "//chrome/browser/util:java",
     "//components/cached_flags:java",
     "//components/saved_tab_groups/public:java",
+    "//third_party/android_deps:kotlin_stdlib_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     "//ui/android:ui_java",
   ]
 }

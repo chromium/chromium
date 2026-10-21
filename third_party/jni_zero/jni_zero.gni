@@ -681,7 +681,7 @@ template("generate_jni_impl") {
         ]
         if (_kt_proxy_sources != []) {
           sources = _kt_proxy_sources
-          deps += [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
+          deps += [ "//third_party/android_deps:kotlin_stdlib_java" ]
 
           # kotlinc gets java.* from the Android SDK (it runs with -no-jdk).
           requires_android = true

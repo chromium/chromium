@@ -31,7 +31,7 @@ android_library("java") {
     "//chrome/browser/util:java",
     "//components/cached_flags:java",
     "//content/public/android:content_full_java",
-    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    "//third_party/android_deps:kotlin_stdlib_java",
     "//ui/android:ui_java",
   ]
 }

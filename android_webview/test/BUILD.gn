@@ -285,6 +285,7 @@ android_library("webview_compose_javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:kotlin_stdlib_java",
     "//third_party/androidx:androidx_activity_activity_compose_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_compose_foundation_foundation_java",
@@ -297,7 +298,6 @@ android_library("webview_compose_javatests") {
     "//third_party/androidx:androidx_test_rules_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
-    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
   ]
 }
 
@@ -372,6 +372,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:kotlin_stdlib_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -393,7 +394,6 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/jni_zero:jni_zero_java",
-    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     "//third_party/metrics_proto:metrics_proto_java",
     "//ui/accessibility:ax_base_java",
     "//ui/accessibility:ui_accessibility_test_support_java",

@@ -58,8 +58,8 @@ android_library("test_java") {
   deps = [
     ":stubs_java",
     ":test_jni_java",
+    "//third_party/android_deps:kotlin_stdlib_java",
     "//third_party/jni_zero:jni_zero_java",
-    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
   ]
 }
 
