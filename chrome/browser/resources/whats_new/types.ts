@@ -43,6 +43,8 @@ export enum EventType {
   CTA_CLICK = 'cta_click',
   NEXT_BUTTON_CLICK = 'next_button_click',
   TIME_ON_PAGE_HEARTBEAT_MS = 'time_on_page_heartbeat_ms',
+  // Not a metric: asks Chrome to open its native QR code bubble.
+  NATIVE_MOBILE_QR_OPEN = 'native_mobile_qr_open',
 }
 
 export enum SectionType {
@@ -255,6 +257,15 @@ type MetricData = PageLoadedMetric|ModuleImpressionMetric|ExploreMoreOpenMetric|
     ExpandMediaMetric|CloseExpandedMediaMetric|CtaClickMetric|
     NextButtonClickMetric|TimeOnPageHeartbeatMetric;
 
+// Sent by the embedded page instead of expanding its inline QR code when the
+// URL has `use-native-mobile-qr=true`, to ask Chrome to open its native "Sign
+// in to Chrome on your phone" QR code bubble.
+interface NativeMobileQrOpen {
+  event: EventType.NATIVE_MOBILE_QR_OPEN;
+  // Location of the button ('main nav' or 'mobile nav'); unused.
+  module_name?: string;
+}
+
 export interface EventData {
-  data: BrowserCommand|MetricData;
+  data: BrowserCommand|MetricData|NativeMobileQrOpen;
 }

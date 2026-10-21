@@ -39,6 +39,7 @@ export class TestWhatsNewPageHandler extends TestBrowserProxy implements
       'recordExpandMediaToggled',
       'recordCtaClick',
       'recordNextButtonClick',
+      'openCrossDeviceSigninQrBubble',
     ]);
 
     this.url_ = url;
@@ -135,5 +136,9 @@ export class TestWhatsNewPageHandler extends TestBrowserProxy implements
 
   recordNextButtonClick() {
     this.methodCalled('recordNextButtonClick');
+  }
+
+  openCrossDeviceSigninQrBubble() {
+    this.methodCalled('openCrossDeviceSigninQrBubble');
   }
 }

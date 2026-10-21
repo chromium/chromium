@@ -150,6 +150,13 @@ inline constexpr char kCrossDeviceSigninFromDesktopName[] =
 inline constexpr char kCrossDeviceSigninFromDesktopDescription[] =
     "Enables entry points to sign in on a mobile phone using provided QR code.";
 
+inline constexpr char kCrossDeviceSigninFromDesktopFollowupName[] =
+    "Cross-Device Sign-in From Desktop Follow-up";
+inline constexpr char kCrossDeviceSigninFromDesktopFollowupDescription[] =
+    "Enables follow-up entry points (e.g. the What's New page) to sign in on a "
+    "mobile phone using provided QR code. Requires "
+    "#cross-device-signin-from-desktop.";
+
 inline constexpr char kCrossDeviceSigninName[] = "Cross-Device Sign-in";
 inline constexpr char kCrossDeviceSigninDescription[] =
     "Guards the logic to start sign-in from a given QR Code.";

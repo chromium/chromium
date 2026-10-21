@@ -149,6 +149,7 @@ int GetBubbleSubtitleResourceId(CrossDeviceSigninPromoEntryPoint entry_point) {
   switch (entry_point) {
     case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
     case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
+    case CrossDeviceSigninPromoEntryPoint::kWhatsNewPage:
       return IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE;
     case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
       return IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_BODY_QR;

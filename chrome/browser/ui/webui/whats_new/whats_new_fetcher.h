@@ -33,10 +33,13 @@ GURL GetServerURL(const whats_new::WhatsNewRegistry& whats_new_registry,
                   bool is_staging = false);
 
 // Gets the server side URL for the What's New page including all
-// query parameters necessary to render the page.
+// query parameters necessary to render the page. If `use_native_mobile_qr` is
+// true, the page is told that Chrome shows its own native QR code bubble to
+// sign in on the phone, so the page hides its inline QR code.
 GURL GetServerURLForRender(
     const whats_new::WhatsNewRegistry& whats_new_registry,
-    bool is_staging = false);
+    bool is_staging = false,
+    bool use_native_mobile_qr = false);
 
 // Starts fetching the What's New page and will open the page in |browser| if
 // it exists.

@@ -41,7 +41,12 @@ using signin_ui_util::MockSigninUiDelegate;
 
 class CrossDeviceSigninPromoManagerTest : public testing::Test {
  public:
-  CrossDeviceSigninPromoManagerTest() = default;
+  CrossDeviceSigninPromoManagerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {switches::kCrossDeviceSigninFromDesktop,
+         switches::kCrossDeviceSigninFromDesktopFollowup},
+        {});
+  }
   ~CrossDeviceSigninPromoManagerTest() override = default;
 
   void SetUp() override {
@@ -121,8 +126,7 @@ class CrossDeviceSigninPromoManagerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kCrossDeviceSigninFromDesktop};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(CrossDeviceSigninPromoManagerTest, ShouldShowPromoFeatureFlagDisabled) {
@@ -418,6 +422,95 @@ TEST_F(CrossDeviceSigninPromoManagerTest,
 }
 
 TEST_F(CrossDeviceSigninPromoManagerTest,
+       WhatsNewPromoIgnoresCapsAndDataTypes) {
+  base::HistogramTester histogram_tester;
+  // Signed in with only this device. Exhaust the History page promo budget
+  // first and then disable History sync to verify What's New is unaffected by
+  // either.
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  AddDevice("local_device_guid", /*is_local=*/true);
+  SetHistoryAndTabsSyncingPreference(true);
+
+  for (int i = 0; i < 5; ++i) {
+    OnCrossDeviceSigninPromoShown(
+        CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile());
+  }
+  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kHistoryPage, profile()));
+
+  SetHistoryAndTabsSyncingPreference(false);
+
+  for (int i = 0; i < 10; ++i) {
+    EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
+        CrossDeviceSigninPromoEntryPoint::kWhatsNewPage, profile()));
+  }
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.WhatsNewPage",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 10);
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest, WhatsNewPromoRequiresSignIn) {
+  base::HistogramTester histogram_tester;
+  AddDevice("local_device_guid", /*is_local=*/true);
+
+  EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kWhatsNewPage, profile()));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.WhatsNewPage",
+      CrossDeviceSigninPromoShouldShowResult::kNotSignedIn, 1);
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest, WhatsNewPromoIgnoresMobileDevice) {
+  base::HistogramTester histogram_tester;
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  AddDevice("local_device_guid", /*is_local=*/true);
+  AddDevice("phone_guid", /*is_local=*/false,
+            syncer::DeviceInfo::OsType::kAndroid);
+
+  // The What's New page always shows a QR code, so signed-in users get the
+  // account-bound one even if they already have a phone.
+  EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kWhatsNewPage, profile()));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.CrossDeviceSigninPromo.ShouldShowResult.WhatsNewPage",
+      CrossDeviceSigninPromoShouldShowResult::kCanShow, 1);
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest, WhatsNewPromoRespectsFeatureFlag) {
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "user@gmail.com", signin::ConsentLevel::kSignin);
+  AddDevice("local_device_guid", /*is_local=*/true);
+
+  // Shown with the default feature state of this fixture.
+  EXPECT_TRUE(ShouldStartShowingCrossDeviceSigninPromo(
+      CrossDeviceSigninPromoEntryPoint::kWhatsNewPage, profile()));
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(switches::kCrossDeviceSigninFromDesktop);
+    EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+        CrossDeviceSigninPromoEntryPoint::kWhatsNewPage, profile()));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        switches::kCrossDeviceSigninFromDesktopFollowup);
+    EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+        CrossDeviceSigninPromoEntryPoint::kWhatsNewPage, profile()));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        switches::kCrossDeviceSigninFromDesktopFollowup,
+        {{"whats_new", "false"}});
+    EXPECT_FALSE(ShouldStartShowingCrossDeviceSigninPromo(
+        CrossDeviceSigninPromoEntryPoint::kWhatsNewPage, profile()));
+  }
+}
+
+TEST_F(CrossDeviceSigninPromoManagerTest,
        OpenSigninToPhoneQrCodeBubble_NoAccountOrWindowDropsBubble) {
   base::HistogramTester histogram_tester;
 
@@ -512,6 +605,32 @@ TEST_F(CrossDeviceSigninPromoManagerTest,
   EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "android-campaign",
                                          &campaign_val));
   EXPECT_EQ(campaign_val, "XDeviceHistoryPage");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "email", &email_val));
+  EXPECT_EQ(email_val, "user+test@gmail.com");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "entry_point_id",
+                                         &entry_point_id_val));
+  EXPECT_EQ(entry_point_id_val, "1");
+
+  // Test WhatsNewPage entry point.
+  EXPECT_CALL(mock_delegate,
+              ShowCrossDeviceSigninQrBubble(
+                  &browser_window, testing::_, testing::_,
+                  CrossDeviceSigninPromoEntryPoint::kWhatsNewPage))
+      .WillOnce(testing::SaveArg<1>(&captured_url));
+
+  OpenSigninToPhoneQrCodeBubble(&browser_window,
+                                CrossDeviceSigninPromoEntryPoint::kWhatsNewPage,
+                                base::DoNothing());
+  histogram_tester.ExpectBucketCount(
+      "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble",
+      CrossDeviceSigninPromoEntryPoint::kWhatsNewPage, 1);
+
+  EXPECT_TRUE(
+      net::GetValueForKeyInQuery(captured_url, "ios-campaign", &campaign_val));
+  EXPECT_EQ(campaign_val, "XDeviceWhatsNew");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "android-campaign",
+                                         &campaign_val));
+  EXPECT_EQ(campaign_val, "XDeviceWhatsNew");
   EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "email", &email_val));
   EXPECT_EQ(email_val, "user+test@gmail.com");
   EXPECT_TRUE(net::GetValueForKeyInQuery(captured_url, "entry_point_id",

@@ -2643,6 +2643,11 @@
     "expiry_milestone": 156
   },
   {
+    "name": "cross-device-signin-from-desktop-followup",
+    "owners": [ "pmeuleman@chromium.org", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 156
+  },
+  {
     "name": "cross-device-task-handoff",
     "owners": [ "zheliooo@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 160

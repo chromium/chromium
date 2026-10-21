@@ -2776,6 +2776,7 @@ shown properly on the user-facing crash UI.
   <int value="0" label="ProfileMenu"/>
   <int value="1" label="HistoryPage"/>
   <int value="2" label="SendTabToSelf"/>
+  <int value="3" label="WhatsNewPage"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/signin/cross_device_signin_promo_manager.h:CrossDeviceSigninPromoEntryPoint) -->
@@ -12833,6 +12834,8 @@ from previous Chrome versions.
   <int value="-660160292" label="enable-apps-show-on-first-paint"/>
   <int value="-659763527" label="AccessCodeCastTabSwitchingUI:disabled"/>
   <int value="-659583494" label="AndroidTabSearchRecentTabs:enabled"/>
+  <int value="-658807577"
+      label="CrossDeviceSigninFromDesktopFollowup:disabled"/>
   <int value="-658543308" label="AndroidTabDeclutterArchiveTabGroups:enabled"/>
   <int value="-658319177" label="VaapiAV1Decoder:disabled"/>
   <int value="-657824773"
@@ -17059,6 +17062,7 @@ from previous Chrome versions.
   <int value="631136125" label="EnableDefaultAppsMigration:enabled"/>
   <int value="631315985" label="SyncSessionOnVisibilityChanged:disabled"/>
   <int value="631636867" label="OneStepAimAccess:enabled"/>
+  <int value="631793159" label="CrossDeviceSigninFromDesktopFollowup:enabled"/>
   <int value="632276726" label="ReadAnythingOmniboxChip:enabled"/>
   <int value="632324382"
       label="ExperimentalAccessibilityDictationListening:disabled"/>

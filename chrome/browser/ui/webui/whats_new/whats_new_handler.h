@@ -7,7 +7,10 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new.mojom.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -18,7 +21,8 @@
 class Profile;
 
 // Page handler for chrome://whats-new.
-class WhatsNewHandler : public whats_new::mojom::PageHandler {
+class WhatsNewHandler : public whats_new::mojom::PageHandler,
+                        public signin::IdentityManager::Observer {
  public:
   WhatsNewHandler(mojo::PendingReceiver<whats_new::mojom::PageHandler> receiver,
                   Profile* profile,
@@ -33,6 +37,14 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
   // whats_new::mojom::PageHandler
   void GetServerUrl(bool is_staging, GetServerUrlCallback callback) override;
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest, GetServerUrl);
+  FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest,
+                           GetServerUrlWithCrossDeviceSigninPromo);
+  FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest,
+                           ReloadsOnSignoutWithCrossDeviceSigninPromo);
+  FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest,
+                           NoReloadOnSignoutWithoutCrossDeviceSigninPromo);
+  FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest,
+                           OpenCrossDeviceSigninQrBubbleIgnoredWhenNotEligible);
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest, HistogramsAreEmitted);
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest, SurveyIsTriggered);
   FRIEND_TEST_ALL_PREFIXES(WhatsNewHandlerTest, SurveyIsTriggeredWithOverride);
@@ -78,17 +90,35 @@ class WhatsNewHandler : public whats_new::mojom::PageHandler {
                                 bool expanded) override;
   void RecordCtaClick() override;
   void RecordNextButtonClick() override;
+  void OpenCrossDeviceSigninQrBubble() override;
+
+  // signin::IdentityManager::Observer
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // Makes a request to show a HaTS survey.
   void TryShowHatsSurveyWithTimeout();
 
-  raw_ptr<Profile> profile_;
+  const raw_ref<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   base::Time navigation_start_time_;
 
   // Reference to the WhatsNewRegistry global singleton. This is
   // required to outlive the WhatsNewHandler instance.
   const raw_ref<const whats_new::WhatsNewRegistry> whats_new_registry_;
+
+  // Whether the page was told to rely on the native cross-device sign-in QR
+  // bubble instead of its inline QR code. Computed once when the page requests
+  // its server URL.
+  bool should_show_cross_device_signin_promo_ = false;
+
+  // Observes sign-out while the page relies on the native QR bubble, so that
+  // the page can be reloaded to show its inline QR code again.
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // These are located at the end of the list of member variables to ensure the
   // WebUI page is disconnected before other members are destroyed.

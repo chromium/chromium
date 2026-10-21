@@ -707,7 +707,10 @@ chromium-metrics-reviews@google.com.
   <owner>frizzle-team@google.com</owner>
   <summary>
     Records when the user expands or collapses the QR code section of the What's
-    New page.
+    New page. Not recorded when Chrome tells the page to use its native QR code
+    bubble instead (use-native-mobile-qr); see
+    Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble with the What's New page
+    entry point.
   </summary>
 </histogram>
 

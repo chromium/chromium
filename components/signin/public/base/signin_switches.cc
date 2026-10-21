@@ -269,6 +269,11 @@ const base::FeatureParam<std::string> kCrossDeviceSigninFromDesktopUrl{
     "https://www.google.com/chrome/go-mobile?entry_point_id=1&email=$1"};
 const base::FeatureParam<bool> kCrossDeviceSigninFromDesktopNewBadge{
     &kCrossDeviceSigninFromDesktop, "show_new_badge", true};
+
+BASE_FEATURE(kCrossDeviceSigninFromDesktopFollowup,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kCrossDeviceSigninFromDesktopWhatsNew{
+    &kCrossDeviceSigninFromDesktopFollowup, "whats_new", true};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

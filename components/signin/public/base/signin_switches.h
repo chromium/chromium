@@ -255,6 +255,15 @@ extern const base::FeatureParam<std::string> kCrossDeviceSigninFromDesktopUrl;
 // Param to control if the "New" badge should be shown.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<bool> kCrossDeviceSigninFromDesktopNewBadge;
+
+// Feature flag to enable follow-up entry points for the cross-device sign-in
+// promo.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kCrossDeviceSigninFromDesktopFollowup);
+// Param to control if the cross-device sign-in QR code bubble is enabled from
+// the What's New page.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<bool> kCrossDeviceSigninFromDesktopWhatsNew;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

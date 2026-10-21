@@ -18,7 +18,8 @@ enum class CrossDeviceSigninPromoEntryPoint {
   kProfileMenu = 0,
   kHistoryPage = 1,
   kSendTabToSelf = 2,
-  kMaxValue = kSendTabToSelf,
+  kWhatsNewPage = 3,
+  kMaxValue = kWhatsNewPage,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:CrossDeviceSigninPromoEntryPoint)
 
@@ -69,7 +70,7 @@ void OnCrossDeviceSigninPromoDismissed(
 //
 // At most one bubble may be open per profile across all browser windows. If one
 // is already open, calls from permanent entry points (`kProfileMenu`,
-// `kSendTabToSelf`) close the existing bubble and reopen it in
+// `kSendTabToSelf`, `kWhatsNewPage`) close the existing bubble and reopen it in
 // `browser_window`, while calls from promo entry points do nothing.
 //
 // Must be called on the UI thread.

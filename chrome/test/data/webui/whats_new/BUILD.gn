@@ -27,6 +27,7 @@ build_webui_tests("build") {
     "test_with_metrics_scroll_depth.ts",
     "test_with_metrics_time_on_page.ts",
     "test_with_metrics_time_on_page_heartbeat.ts",
+    "test_with_native_mobile_qr_open.ts",
     "whats_new_app_test.ts",
   ]
 
@@ -48,6 +49,7 @@ build_webui_tests("build") {
     "test_with_metrics_scroll_depth.html",
     "test_with_metrics_time_on_page.html",
     "test_with_metrics_time_on_page_heartbeat.html",
+    "test_with_native_mobile_qr_open.html",
   ]
 
   ts_path_mappings =

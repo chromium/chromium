@@ -140,6 +140,39 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
+                       GetServerURLForRenderWithNativeMobileQr) {
+  std::string expected = base::StringPrintf(
+      "https://www.google.com/chrome/whats-new/"
+      "?version=%d&use-native-mobile-qr=true&internal=true",
+      CHROME_VERSION_MAJOR);
+
+  EXPECT_EQ(expected,
+            whats_new::GetServerURLForRender(*GetRegistry(),
+                                             /*is_staging=*/false,
+                                             /*use_native_mobile_qr=*/true)
+                .possibly_invalid_spec());
+}
+
+IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
+                       GetServerURLForRenderWithOneEnabledAndNativeMobileQr) {
+  whats_new::WhatsNewRegistry* registry = GetRegistry();
+  registry->RegisterModule(whats_new::WhatsNewModule(kTestModuleEnabled, ""));
+
+  // `use-native-mobile-qr` is a dedicated parameter and does not alter
+  // `enabled`.
+  std::string expected = base::StringPrintf(
+      "https://www.google.com/chrome/whats-new/"
+      "?version=%d&enabled=%s&use-native-mobile-qr=true&internal=true",
+      CHROME_VERSION_MAJOR, kTestModuleEnabled.name);
+
+  EXPECT_EQ(expected,
+            whats_new::GetServerURLForRender(*GetRegistry(),
+                                             /*is_staging=*/false,
+                                             /*use_native_mobile_qr=*/true)
+                .possibly_invalid_spec());
+}
+
+IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
                        GetServerURLForRenderWithMultipleEnabled) {
   whats_new::WhatsNewRegistry* registry = GetRegistry();
   registry->RegisterModule(whats_new::WhatsNewModule(kTestModuleEnabled, ""));

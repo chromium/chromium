@@ -12059,6 +12059,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kCrossDeviceSigninFromDesktop,
                                     kCrossDeviceSigninFromDesktopVariations,
                                     "CrossDeviceSigninFromDesktop")},
+    {"cross-device-signin-from-desktop-followup",
+     flag_descriptions::kCrossDeviceSigninFromDesktopFollowupName,
+     flag_descriptions::kCrossDeviceSigninFromDesktopFollowupDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kCrossDeviceSigninFromDesktopFollowup)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

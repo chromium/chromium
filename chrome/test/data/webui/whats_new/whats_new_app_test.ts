@@ -305,9 +305,25 @@ suite('WhatsNewAppTest', function() {
 
     let expanded = await handler.whenCalled('recordQrCodeToggled');
     assertEquals(true, expanded);
+
     handler.resetResolver('recordQrCodeToggled');
     expanded = await handler.whenCalled('recordQrCodeToggled');
     assertEquals(false, expanded);
+    // The inline QR code toggle never opens the native QR code bubble.
+    assertEquals(0, handler.getCallCount('openCrossDeviceSigninQrBubble'));
+  });
+
+  test('with native_mobile_qr_open from embedded page', async () => {
+    handler.setGetServerUrlResponse(
+        getUrlForFixture('test_with_native_mobile_qr_open'));
+    window.history.replaceState({}, '', '/');
+    const whatsNewApp = document.createElement('whats-new-app');
+    document.body.appendChild(whatsNewApp);
+
+    await handler.whenCalled('openCrossDeviceSigninQrBubble');
+    assertEquals(1, handler.getCallCount('openCrossDeviceSigninQrBubble'));
+    // Not recorded as an inline QR code expansion.
+    assertEquals(0, handler.getCallCount('recordQrCodeToggled'));
   });
 
   test('with expand_media_toggled metrics from embedded page', async () => {

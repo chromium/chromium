@@ -44,6 +44,11 @@ const char kChromeWhatsNewStagingURL[] =
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
 
+// Query parameter telling the What's New page that Chrome shows its own native
+// "Sign in to Chrome on your phone" QR code bubble, so the page should hide its
+// inline QR code.
+constexpr char kUseNativeMobileQrParam[] = "use-native-mobile-qr";
+
 GURL AddVersionParameter(const WhatsNewRegistry& whats_new_registry,
                          const GURL& base_url) {
   return net::AppendQueryParameter(
@@ -61,7 +66,8 @@ GURL GetServerURL(const WhatsNewRegistry& whats_new_registry, bool is_staging) {
 }
 
 GURL GetServerURLForRender(const WhatsNewRegistry& whats_new_registry,
-                           bool is_staging) {
+                           bool is_staging,
+                           bool use_native_mobile_qr) {
   GURL url = GetServerURL(whats_new_registry, is_staging);
   const auto active_features = whats_new_registry.GetActiveFeatureNames();
   if (!active_features.empty()) {
@@ -79,6 +85,10 @@ GURL GetServerURLForRender(const WhatsNewRegistry& whats_new_registry,
   if (!customizations.empty()) {
     url = net::AppendQueryParameter(url, "customization",
                                     base::JoinString(customizations, ","));
+  }
+
+  if (use_native_mobile_qr) {
+    url = net::AppendQueryParameter(url, kUseNativeMobileQrParam, "true");
   }
 
   return net::AppendQueryParameter(url, "internal", "true");

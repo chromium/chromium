@@ -15,10 +15,13 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/cross_device_signin_promo_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_fetcher.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_interaction_data.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
@@ -26,15 +29,15 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
-
-namespace {
-
-}  // namespace
 
 WhatsNewHandler::WhatsNewHandler(
     mojo::PendingReceiver<whats_new::mojom::PageHandler> receiver,
@@ -42,7 +45,7 @@ WhatsNewHandler::WhatsNewHandler(
     content::WebContents* web_contents,
     const base::Time& navigation_start_time,
     const whats_new::WhatsNewRegistry* whats_new_registry)
-    : profile_(profile),
+    : profile_(CHECK_DEREF(profile)),
       web_contents_(web_contents),
       navigation_start_time_(navigation_start_time),
       whats_new_registry_(CHECK_DEREF(whats_new_registry)),
@@ -240,20 +243,66 @@ void WhatsNewHandler::RecordNextButtonClick() {
       base::UserMetricsAction("UserEducation.WhatsNew.NextButtonClick"));
 }
 
+void WhatsNewHandler::OpenCrossDeviceSigninQrBubble() {
+  // The page may request the bubble even if Chrome did not ask it to rely on
+  // the native bubble (e.g. older versions of the remote page), so this is a
+  // valid state and not a bad message.
+  if (!should_show_cross_device_signin_promo_) {
+    return;
+  }
+  // Null if this WebUI is not currently hosted in a browser window;
+  // `OpenSigninToPhoneQrCodeBubble()` handles that by dropping the bubble.
+  ::OpenSigninToPhoneQrCodeBubble(
+      webui::GetBrowserWindowInterface(web_contents_),
+      CrossDeviceSigninPromoEntryPoint::kWhatsNewPage, base::DoNothing());
+}
+
 void WhatsNewHandler::GetServerUrl(bool is_staging,
                                    GetServerUrlCallback callback) {
   GURL result = GURL("");
   if (!whats_new::IsRemoteContentDisabled()) {
-    result = whats_new::GetServerURLForRender(*whats_new_registry_, is_staging);
+    should_show_cross_device_signin_promo_ =
+        ShouldStartShowingCrossDeviceSigninPromo(
+            CrossDeviceSigninPromoEntryPoint::kWhatsNewPage, &profile_.get());
+    result = whats_new::GetServerURLForRender(
+        *whats_new_registry_, is_staging,
+        /*use_native_mobile_qr=*/should_show_cross_device_signin_promo_);
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(&profile_.get());
+    if (!should_show_cross_device_signin_promo_ || !identity_manager) {
+      identity_manager_observation_.Reset();
+    } else if (!identity_manager_observation_.IsObserving()) {
+      identity_manager_observation_.Observe(identity_manager);
+    }
   }
   std::move(callback).Run(result);
 
   TryShowHatsSurveyWithTimeout();
 }
 
+void WhatsNewHandler::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    return;
+  }
+  // The page hid its inline QR code in favor of the native bubble, which can no
+  // longer be shown once signed out. Reload the page so that it is requested
+  // again without `use-native-mobile-qr` and shows its inline QR code.
+  should_show_cross_device_signin_promo_ = false;
+  identity_manager_observation_.Reset();
+  web_contents_->GetController().Reload(content::ReloadType::NORMAL,
+                                        /*check_for_repost=*/false);
+}
+
+void WhatsNewHandler::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observation_.Reset();
+}
+
 void WhatsNewHandler::TryShowHatsSurveyWithTimeout() {
   HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile_,
+      HatsServiceFactory::GetForProfile(&profile_.get(),
                                         /* create_if_necessary = */ true);
   if (!hats_service) {
     return;

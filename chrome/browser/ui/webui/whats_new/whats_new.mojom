@@ -113,4 +113,10 @@ interface PageHandler {
 
   // Record metric when the user clicks on the next button.
   RecordNextButtonClick();
+
+  // Opens the native "Sign in to Chrome on your phone" QR code bubble if the
+  // page was told to use it (`use-native-mobile-qr=true`, i.e. the user is
+  // signed in on desktop). Called when the user clicks the page's "Get Chrome
+  // for your phone" button.
+  OpenCrossDeviceSigninQrBubble();
 };

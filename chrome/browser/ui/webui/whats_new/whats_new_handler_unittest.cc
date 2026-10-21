@@ -9,6 +9,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -17,12 +18,17 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_version.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_education/webui/mock_whats_new_storage_service.h"
 #include "components/user_education/webui/whats_new_registry.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -105,6 +111,107 @@ TEST_F(WhatsNewHandlerTest, GetServerUrl) {
   });
 
   handler_->GetServerUrl(false, callback.Get());
+}
+
+TEST_F(WhatsNewHandlerTest, GetServerUrlWithCrossDeviceSigninPromo) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({switches::kCrossDeviceSigninFromDesktop,
+                             switches::kCrossDeviceSigninFromDesktopFollowup},
+                            {});
+
+  // When signed out, `use-native-mobile-qr` is not added.
+  {
+    base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
+    const GURL expected_url =
+        GURL(base::StringPrintf("https://www.google.com/chrome/whats-new/"
+                                "?version=%d&internal=true",
+                                CHROME_VERSION_MAJOR));
+    EXPECT_CALL(callback, Run(expected_url)).Times(1);
+    handler_->GetServerUrl(false, callback.Get());
+  }
+
+  // When signed in, `use-native-mobile-qr` is added.
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile_.get()), "user@gmail.com",
+      signin::ConsentLevel::kSignin);
+  {
+    base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
+    const GURL expected_url =
+        GURL(base::StringPrintf("https://www.google.com/chrome/whats-new/"
+                                "?version=%d&use-native-mobile-qr=true"
+                                "&internal=true",
+                                CHROME_VERSION_MAJOR));
+    EXPECT_CALL(callback, Run(expected_url)).Times(1);
+    handler_->GetServerUrl(false, callback.Get());
+  }
+}
+
+// The page's request to open the native QR bubble is renderer-controlled, so it
+// must be ignored, without crashing, unless the page was told to use it.
+TEST_F(WhatsNewHandlerTest,
+       OpenCrossDeviceSigninQrBubbleIgnoredWhenNotEligible) {
+  constexpr char kOpenedHistogram[] =
+      "Signin.CrossDeviceSigninPromo.OpenedQrCodeBubble";
+
+  // Feature disabled, before and after the page requested its URL.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(switches::kCrossDeviceSigninFromDesktop);
+    handler_->OpenCrossDeviceSigninQrBubble();
+    handler_->GetServerUrl(false, base::DoNothing());
+    handler_->OpenCrossDeviceSigninQrBubble();
+  }
+
+  // Features enabled but signed out.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures({switches::kCrossDeviceSigninFromDesktop,
+                               switches::kCrossDeviceSigninFromDesktopFollowup},
+                              {});
+    handler_->GetServerUrl(false, base::DoNothing());
+    ASSERT_FALSE(handler_->should_show_cross_device_signin_promo_);
+    handler_->OpenCrossDeviceSigninQrBubble();
+  }
+
+  histogram_tester_.ExpectTotalCount(kOpenedHistogram, 0);
+}
+
+TEST_F(WhatsNewHandlerTest, ReloadsOnSignoutWithCrossDeviceSigninPromo) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({switches::kCrossDeviceSigninFromDesktop,
+                             switches::kCrossDeviceSigninFromDesktopFollowup},
+                            {});
+  content::WebContentsTester::For(web_contents_)
+      ->NavigateAndCommit(GURL(chrome::kChromeUIWhatsNewURL));
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_.get());
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@gmail.com",
+                                      signin::ConsentLevel::kSignin);
+
+  // The page was told to rely on the native QR bubble.
+  handler_->GetServerUrl(false, base::DoNothing());
+  ASSERT_TRUE(handler_->should_show_cross_device_signin_promo_);
+  ASSERT_FALSE(web_contents_->GetController().GetPendingEntry());
+
+  // Signing out reloads the page so that it shows its inline QR code again.
+  signin::ClearPrimaryAccount(identity_manager);
+  EXPECT_FALSE(handler_->should_show_cross_device_signin_promo_);
+  EXPECT_TRUE(web_contents_->GetController().GetPendingEntry());
+}
+
+TEST_F(WhatsNewHandlerTest, NoReloadOnSignoutWithoutCrossDeviceSigninPromo) {
+  // `kCrossDeviceSigninFromDesktopFollowup` is disabled, so the page was not
+  // told to rely on the native QR bubble.
+  content::WebContentsTester::For(web_contents_)
+      ->NavigateAndCommit(GURL(chrome::kChromeUIWhatsNewURL));
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_.get());
+  signin::MakePrimaryAccountAvailable(identity_manager, "user@gmail.com",
+                                      signin::ConsentLevel::kSignin);
+  handler_->GetServerUrl(false, base::DoNothing());
+
+  signin::ClearPrimaryAccount(identity_manager);
+  EXPECT_FALSE(web_contents_->GetController().GetPendingEntry());
 }
 
 TEST_F(WhatsNewHandlerTest, HistogramsAreEmitted) {

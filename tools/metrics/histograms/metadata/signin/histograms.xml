@@ -110,6 +110,9 @@ chromium-metrics-reviews@google.com.
   <variant name="HistoryPage" summary="History Page entry point"/>
   <variant name="ProfileMenu" summary="Profile Menu entry point"/>
   <variant name="SendTabToSelf" summary="Send Tab to Self entry point"/>
+  <variant name="WhatsNewPage"
+      summary="What's New page &quot;Get Chrome for your phone&quot; entry
+               point"/>
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/signin/cross_device_signin_promo_manager.cc:CrossDeviceSigninPromoEntryPointVariant) -->
@@ -1949,6 +1952,9 @@ prefs when the profile is loaded.  -->
   <summary>
     Records the decision (allow to show or block reason) for showing the
     cross-device sign-in promo. Recorded for {CrossDeviceSigninPromoEntryPoint}.
+    For the What's New page, recorded once per page load when the page requests
+    its URL; that entry point skips the mobile device check, so HasMobileDevice
+    is never recorded for it.
   </summary>
   <token key="CrossDeviceSigninPromoEntryPoint"
       variants="CrossDeviceSigninPromoEntryPoint"/>

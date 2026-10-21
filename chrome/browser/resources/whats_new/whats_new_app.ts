@@ -218,6 +218,13 @@ export class WhatsNewAppElement extends CrLitElement {
       case EventType.QR_CODE_TOGGLE_OPEN:
         browserProxyFactory.getInstance().handler.recordQrCodeToggled(true);
         break;
+      case EventType.NATIVE_MOBILE_QR_OPEN:
+        // Only sent by pages that were told `use-native-mobile-qr=true`, which
+        // don't show their own QR code. The handler ignores it unless it told
+        // the page to use the native bubble.
+        browserProxyFactory.getInstance()
+            .handler.openCrossDeviceSigninQrBubble();
+        break;
       case EventType.QR_CODE_TOGGLE_CLOSE:
         browserProxyFactory.getInstance().handler.recordQrCodeToggled(false);
         break;
