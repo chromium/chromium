@@ -16,6 +16,10 @@
 #include "ui/base/ime/ash/input_method_descriptor.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace ash {
 
 typedef base::OnceCallback<void(
@@ -48,9 +52,10 @@ base::ListValue GetUILanguageList(
 
 // Must be called on UI thread. Runs GetUILanguageList(), on Blocking Pool,
 // and calls `callback` on UI thread with result.
-// If `language_switch_result` is null, assume current browser locale is already
+// If `language_switch_result` is null, assume `application_locale` is already
 // correct and has been successfully loaded.
 void ResolveUILanguageList(
+    const base::i18n::LanguageTag& application_locale,
     std::unique_ptr<locale_util::LanguageSwitchResult> language_switch_result,
     input_method::InputMethodManager& input_method_manager,
     UILanguageListResolvedCallback callback);

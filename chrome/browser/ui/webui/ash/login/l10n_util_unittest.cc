@@ -19,9 +19,11 @@
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -121,7 +123,11 @@ TEST_F(L10nUtilTest, ResolveUILanguageList) {
   base::test::TestFuture<base::ListValue, const std::string&,
                          const std::string&>
       future;
-  ResolveUILanguageList(/*language_switch_result=*/nullptr, input_manager_,
+  ResolveUILanguageList(TestingBrowserProcess::GetGlobal()
+                            ->GetFeatures()
+                            ->application_locale_storage()
+                            ->GetTag(),
+                        /*language_switch_result=*/nullptr, input_manager_,
                         future.GetCallback());
 
   auto [language_list, language_list_locale, selected_language] = future.Take();
@@ -140,6 +146,10 @@ TEST_F(L10nUtilTest, ResolveUILanguageListWithSwitchResult) {
                          const std::string&>
       future;
   ResolveUILanguageList(
+      TestingBrowserProcess::GetGlobal()
+          ->GetFeatures()
+          ->application_locale_storage()
+          ->GetTag(),
       std::make_unique<locale_util::LanguageSwitchResult>("fr", "fr", true),
       input_manager_, future.GetCallback());
 

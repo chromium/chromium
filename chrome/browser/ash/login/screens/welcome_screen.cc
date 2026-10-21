@@ -646,7 +646,7 @@ void WelcomeScreen::ScheduleResolveLanguageList(
   language_weak_ptr_factory_.InvalidateWeakPtrs();
 
   ResolveUILanguageList(
-      std::move(language_switch_result),
+      application_locale_storage_->GetTag(), std::move(language_switch_result),
       CHECK_DEREF(input_method::InputMethodManager::Get()),
       base::BindOnce(&WelcomeScreen::OnLanguageListResolved,
                      language_weak_ptr_factory_.GetWeakPtr()));

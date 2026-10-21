@@ -58,6 +58,9 @@ specific_include_rules = {
   ],
 
   # Tests.
+  "l10n_util_unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
   "network_state_informer_browsertest\\.cc": [
     "+ash/shell.h",
     "+components/proxy_config",

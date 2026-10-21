@@ -34,7 +34,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "content/public/browser/browser_thread.h"
@@ -436,6 +435,7 @@ void AdjustUILanguageList(std::string_view selected,
 }  // namespace
 
 void ResolveUILanguageList(
+    const base::i18n::LanguageTag& application_locale,
     std::unique_ptr<locale_util::LanguageSwitchResult> language_switch_result,
     input_method::InputMethodManager& input_method_manager,
     UILanguageListResolvedCallback callback) {
@@ -448,7 +448,7 @@ void ResolveUILanguageList(
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&ResolveLanguageListInThreadPool,
-                     g_browser_process->GetApplicationLocale(),
+                     std::string(application_locale.tag_string()),
                      std::move(language_switch_result),
                      base::SequencedTaskRunner::GetCurrentDefault(),
                      std::move(descriptors), std::move(callback)));
