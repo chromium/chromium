@@ -628,6 +628,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/browserservices/digitalgoods/MockTrustedWebActivityClient.java",
       "src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappGeolocationBridgeTest.java",
       "src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappPermissionManagerTest.java",
+      "src/org/chromium/chrome/browser/browserservices/permissiondelegation/InstalledWebappPermissionStoreTest.java",
       "src/org/chromium/chrome/browser/browserservices/permissiondelegation/LocationPermissionUpdaterTest.java",
       "src/org/chromium/chrome/browser/browserservices/permissiondelegation/NotificationChannelPreserverTest.java",
       "src/org/chromium/chrome/browser/browserservices/permissiondelegation/NotificationPermissionUpdaterTest.java",

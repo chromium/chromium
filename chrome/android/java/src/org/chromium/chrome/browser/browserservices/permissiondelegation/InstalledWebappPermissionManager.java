@@ -17,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.TextUtils;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.Token;
@@ -45,8 +46,8 @@ import java.util.Set;
  * their associated websites. Communicates with the {@link InstalledWebappPermissionStore} and
  * {@link InstalledWebappBridge}.
  *
- * <p>Lifecycle: This is a singleton. Thread safety: Only call methods on the UI thread as this
- * class may call into native. Native: Does not require native.
+ * <p>Lifecycle: This is a singleton. Thread safety: Only call methods on the UI thread (unless
+ * marked {@link AnyThread}) as this class may call into native. Native: Does not require native.
  */
 @NullMarked
 public class InstalledWebappPermissionManager {
@@ -136,7 +137,8 @@ public class InstalledWebappPermissionManager {
         getStore().addDelegateApp(origin, token);
     }
 
-    @UiThread
+    /** Reads {@link InstalledWebappPermissionStore} only; safe to call on any thread. */
+    @AnyThread
     public static @Nullable Set<Token> getAllDelegateApps(Origin origin) {
         return getStore().getAllDelegateApps(origin);
     }

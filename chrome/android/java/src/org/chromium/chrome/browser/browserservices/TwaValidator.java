@@ -14,7 +14,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.UiThread;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.Token;
 import androidx.browser.trusted.TrustedWebActivityService;
@@ -35,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Validates whether an installed package or a web origin is handled by a Trusted Web Activity
@@ -47,8 +50,9 @@ public class TwaValidator {
         boolean isDomainVerified(Context context, String packageName, Origin origin);
     }
 
-    private static @Nullable DomainVerificationDelegate sDomainVerificationDelegateForTesting;
-    private static @Nullable Boolean sTwaInstalledOverrideForTesting;
+    private static volatile @Nullable DomainVerificationDelegate
+            sDomainVerificationDelegateForTesting;
+    private static volatile @Nullable Boolean sTwaInstalledOverrideForTesting;
 
     private TwaValidator() {}
 
@@ -73,8 +77,21 @@ public class TwaValidator {
      * @param origin The origin to check against.
      * @return True if the package is a verified or allowlisted TWA for the origin.
      */
+    @AnyThread
     @VisibleForTesting
     static boolean isTwaForOrigin(Context context, String packageName, Origin origin) {
+        return isTwaForOrigin(
+                context,
+                packageName,
+                origin,
+                () -> InstalledWebappPermissionManager.getAllDelegateApps(origin));
+    }
+
+    private static boolean isTwaForOrigin(
+            Context context,
+            String packageName,
+            Origin origin,
+            Supplier<@Nullable Set<Token>> verifiedDelegateAppsSupplier) {
         if (TextUtils.isEmpty(packageName)) {
             return false;
         }
@@ -90,9 +107,9 @@ public class TwaValidator {
         }
 
         // 1. For TWAs that have been already launched and are in the
-        // InstalledWebappPermissionManager because they passed DAL verification, we can read those
+        // InstalledWebappPermissionManager because they passed DAL verification, we can use those
         // results.
-        Set<Token> verifiedApps = InstalledWebappPermissionManager.getAllDelegateApps(origin);
+        Set<Token> verifiedApps = verifiedDelegateAppsSupplier.get();
         if (verifiedApps != null) {
             PackageManager pm = context.getPackageManager();
             for (Token app : verifiedApps) {
@@ -106,9 +123,9 @@ public class TwaValidator {
         // via DomainVerificationManager (App Links). This allows detecting pre-installed TWAs that
         // have not yet been opened in Chrome.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (sDomainVerificationDelegateForTesting != null) {
-                if (sDomainVerificationDelegateForTesting.isDomainVerified(
-                        context, packageName, origin)) {
+            DomainVerificationDelegate delegate = sDomainVerificationDelegateForTesting;
+            if (delegate != null) {
+                if (delegate.isDomainVerified(context, packageName, origin)) {
                     return true;
                 }
             } else if (isDomainVerifiedByAndroid(context, packageName, origin)) {
@@ -128,6 +145,7 @@ public class TwaValidator {
      * @param origin The origin to check.
      * @return True if a TWA has been run for the origin.
      */
+    @UiThread
     public static boolean hasTwaBeenRunForOrigin(Origin origin) {
         return WebappRegistry.getInstance().getPermissionStore().hasOrigin(origin.toString());
     }
@@ -138,6 +156,7 @@ public class TwaValidator {
      * @param origin The origin to check.
      * @return True if there is an installed TWA for the origin.
      */
+    @AnyThread
     public static boolean isTwaInstalledForOrigin(Origin origin) {
         return isTwaInstalledForUrl(new GURL(origin.toString()));
     }
@@ -145,31 +164,58 @@ public class TwaValidator {
     /**
      * Checks whether there is an installed TWA for the given URL.
      *
-     * @param url The GURL to inspect.
+     * @param url The GURL to inspect. Must be a valid HTTP or HTTPS URL.
      * @return True if there is an installed TWA matching this URL.
+     * @throws IllegalArgumentException If {@code url} is not a valid HTTP or HTTPS URL.
      */
+    @AnyThread
     public static boolean isTwaInstalledForUrl(GURL url) {
-        if (GURL.isEmptyOrInvalid(url)) {
-            return false;
+        Origin origin = Origin.createOrThrow(url.getValidSpecOrEmpty());
+        Boolean override = sTwaInstalledOverrideForTesting;
+        if (override != null) {
+            return override;
         }
-        if (sTwaInstalledOverrideForTesting != null) {
-            return sTwaInstalledOverrideForTesting;
-        }
-        return queryFirstTwaPackage(url) != null;
+        return queryFirstTwaPackage(
+                        url,
+                        origin,
+                        memoize(() -> InstalledWebappPermissionManager.getAllDelegateApps(origin)))
+                != null;
     }
 
     /**
      * Queries for the first installed TWA package that can handle the given URL.
      *
-     * @param url The GURL to inspect.
+     * @param url The GURL to inspect. Must be a valid HTTP or HTTPS URL.
      * @return The package name of the matching TWA, or null if none found.
+     * @throws IllegalArgumentException If {@code url} is not a valid HTTP or HTTPS URL.
      */
+    @AnyThread
     public static @Nullable String queryFirstTwaPackage(GURL url) {
-        if (GURL.isEmptyOrInvalid(url)) {
-            return null;
-        }
-        Origin origin = Origin.createOrThrow(url.getSpec());
+        Origin origin = Origin.createOrThrow(url.getValidSpecOrEmpty());
+        return queryFirstTwaPackage(
+                url,
+                origin,
+                memoize(() -> InstalledWebappPermissionManager.getAllDelegateApps(origin)));
+    }
 
+    private static Supplier<@Nullable Set<Token>> memoize(Supplier<@Nullable Set<Token>> delegate) {
+        return new Supplier<@Nullable Set<Token>>() {
+            private boolean mLoaded;
+            private @Nullable Set<Token> mApps;
+
+            @Override
+            public @Nullable Set<Token> get() {
+                if (!mLoaded) {
+                    mLoaded = true;
+                    mApps = delegate.get();
+                }
+                return mApps;
+            }
+        };
+    }
+
+    private static @Nullable String queryFirstTwaPackage(
+            GURL url, Origin origin, Supplier<@Nullable Set<Token>> verifiedDelegateAppsSupplier) {
         try (TimingMetric unused =
                 TimingMetric.shortUptime("TrustedWebActivity.QueryFirstTwaPackageTime")) {
             Context context = ContextUtils.getApplicationContext();
@@ -189,7 +235,7 @@ public class TwaValidator {
                     continue;
                 }
 
-                if (isTwaForOrigin(context, packageName, origin)) {
+                if (isTwaForOrigin(context, packageName, origin, verifiedDelegateAppsSupplier)) {
                     return packageName;
                 }
             }

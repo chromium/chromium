@@ -122,7 +122,7 @@ public class WebappRegistry {
     /** Initialization-on-demand holder. This exists for thread-safe lazy initialization. */
     private static class Holder {
         // Not final for testing.
-        private static WebappRegistry sInstance = new WebappRegistry();
+        private static volatile WebappRegistry sInstance = new WebappRegistry();
     }
 
     private boolean mIsInitialized;
@@ -141,7 +141,7 @@ public class WebappRegistry {
     private final Map<String, String> mPendingManifestIdToPackageName = new HashMap<>();
 
     private final SharedPreferences mPreferences;
-    private InstalledWebappPermissionStore mPermissionStore;
+    private volatile InstalledWebappPermissionStore mPermissionStore;
 
     /**
      * Callback run when a WebappDataStorage object is registered for the first time. The storage

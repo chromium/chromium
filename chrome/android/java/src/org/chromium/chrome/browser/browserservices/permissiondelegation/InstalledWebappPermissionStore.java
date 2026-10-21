@@ -8,11 +8,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.UiThread;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.browser.trusted.Token;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSetting;
@@ -51,7 +54,7 @@ import java.util.Set;
  */
 @NullMarked
 public class InstalledWebappPermissionStore {
-    private static final String SHARED_PREFS_FILE = "twa_permission_registry";
+    @VisibleForTesting static final String SHARED_PREFS_FILE = "twa_permission_registry";
 
     private static final String KEY_ALL_ORIGINS = "origins";
 
@@ -77,8 +80,9 @@ public class InstalledWebappPermissionStore {
     }
 
     private void notifyListener() {
-        if (mListener != null) {
-            mListener.run();
+        Runnable listener = mListener;
+        if (listener != null) {
+            ThreadUtils.runOnUiThread(listener);
         }
     }
 
@@ -127,6 +131,7 @@ public class InstalledWebappPermissionStore {
         return mPreferences.getString(createPackageNameKey(origin), null);
     }
 
+    @AnyThread
     public @Nullable Set<Token> getAllDelegateApps(Origin origin) {
         Set<String> tokens = mPreferences.getStringSet(createAllDelegateAppsKey(origin), null);
         if (tokens == null) return null;
@@ -138,12 +143,24 @@ public class InstalledWebappPermissionStore {
         return result;
     }
 
+    /**
+     * Returns the number of delegate apps stored for {@code origin} without deserializing their
+     * tokens.
+     */
+    @UiThread
+    public int getDelegateAppCount(Origin origin) {
+        Set<String> tokens = mPreferences.getStringSet(createAllDelegateAppsKey(origin), null);
+        return tokens == null ? 0 : tokens.size();
+    }
+
+    @UiThread
     public void addDelegateApp(Origin origin, Token token) {
         String key = createAllDelegateAppsKey(origin);
         Set<String> allDelegateApps =
                 new HashSet<>(mPreferences.getStringSet(key, Collections.emptySet()));
-        allDelegateApps.add(byteArrayToString(token.serialize()));
+        if (!allDelegateApps.add(byteArrayToString(token.serialize()))) return;
         mPreferences.edit().putStringSet(key, allDelegateApps).apply();
+        notifyListener();
     }
 
     /** Returns whether the given origin string is registered in the store. */
@@ -207,7 +224,9 @@ public class InstalledWebappPermissionStore {
     @UiThread
     public void removeOrigin(Origin origin) {
         Set<String> origins = getStoredOrigins();
-        boolean modified = origins.remove(origin.toString());
+        boolean modified =
+                origins.remove(origin.toString())
+                        || mPreferences.contains(createAllDelegateAppsKey(origin));
 
         mPreferences
                 .edit()
@@ -333,7 +352,8 @@ public class InstalledWebappPermissionStore {
         return KEY_APP_NAME_PREFIX + origin.toString();
     }
 
-    private static String createAllDelegateAppsKey(Origin origin) {
+    @VisibleForTesting
+    static String createAllDelegateAppsKey(Origin origin) {
         return KEY_ALL_DELEGATE_APPS_PREFIX + origin.toString();
     }
 
