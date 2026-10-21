@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/signin/core/browser/cookie_settings_util.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
 
@@ -53,15 +54,11 @@ class ChromeConnectedHeaderHelper : public SigninHeaderHelper {
                                  const std::string& source,
                                  bool force_account_consistency);
 
-  bool ShouldBuildRequestHeader(
-      const GURL& url,
-      const content_settings::CookieSettings* cookie_settings);
-
   // `check_only_gaia_url` is used for a special case on ChromeOS, where the
   // check for `google.com` cookies should be omitted.
   virtual bool ShouldBuildRequestHeader(
       const GURL& url,
-      const content_settings::CookieSettings* cookie_settings,
+      const CookieSettingsCallback& cookie_settings_callback,
       bool check_only_gaia_url);
 
   // SigninHeaderHelper implementation:

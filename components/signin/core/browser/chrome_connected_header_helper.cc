@@ -77,7 +77,9 @@ std::string ChromeConnectedHeaderHelper::BuildRequestCookieIfPossible(
     const content_settings::CookieSettings* cookie_settings,
     int profile_mode_mask) {
   ChromeConnectedHeaderHelper chrome_connected_helper(account_consistency);
-  if (!chrome_connected_helper.ShouldBuildRequestHeader(url, cookie_settings)) {
+  if (!chrome_connected_helper.ShouldBuildRequestHeader(
+          url, MakeCookieSettingsCallback(cookie_settings),
+          /*check_only_gaia_url=*/false)) {
     return "";
   }
 
@@ -125,14 +127,7 @@ ManageAccountsParams ChromeConnectedHeaderHelper::BuildManageAccountsParams(
 
 bool ChromeConnectedHeaderHelper::ShouldBuildRequestHeader(
     const GURL& url,
-    const content_settings::CookieSettings* cookie_settings) {
-  return ShouldBuildRequestHeader(url, cookie_settings,
-                                  /*check_only_gaia_url=*/false);
-}
-
-bool ChromeConnectedHeaderHelper::ShouldBuildRequestHeader(
-    const GURL& url,
-    const content_settings::CookieSettings* cookie_settings,
+    const CookieSettingsCallback& cookie_settings_callback,
     bool check_only_gaia_url) {
   // Check if url is eligible for the header.
   if (!IsUrlEligibleForRequestHeader(url)) {
@@ -140,7 +135,8 @@ bool ChromeConnectedHeaderHelper::ShouldBuildRequestHeader(
   }
 
   // If signin cookies are not allowed, don't add the header.
-  return SettingsAllowSigninCookies(cookie_settings, check_only_gaia_url);
+  return SettingsAllowSigninCookies(cookie_settings_callback,
+                                    check_only_gaia_url);
 }
 
 bool ChromeConnectedHeaderHelper::IsUrlEligibleToIncludeGaiaId(

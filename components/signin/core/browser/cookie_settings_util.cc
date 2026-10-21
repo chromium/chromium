@@ -6,6 +6,8 @@
 
 #include <optional>
 
+#include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/cookie_constants.h"
@@ -16,40 +18,67 @@
 
 namespace signin {
 
+namespace {
+
+bool IsFullCookieAccessAllowed(
+    const scoped_refptr<const content_settings::CookieSettings> cookie_settings,
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
+    const url::Origin& top_frame_origin,
+    net::CookieSettingOverrides overrides) {
+  if (!cookie_settings) {
+    return false;
+  }
+  return cookie_settings->IsFullCookieAccessAllowed(
+      url, site_for_cookies, top_frame_origin, overrides,
+      /*cookie_partition_key=*/std::nullopt);
+}
+
+}  // namespace
+
+CookieSettingsCallback MakeCookieSettingsCallback(
+    const content_settings::CookieSettings* cookie_settings) {
+  // Take a ref-counted pointer to ensure lifetime of cookie_settings.
+  // nullptr will be handled by IsFullCookieAccessAllowed.
+  return base::BindRepeating(&IsFullCookieAccessAllowed,
+                             base::WrapRefCounted(cookie_settings));
+}
+
 // TODO(crbug.com/40247160): Consider whether the following checks should
 // take in CookieSettingOverrides rather than default to none.
 
 bool SettingsAllowSigninCookies(
-    const content_settings::CookieSettings* cookie_settings,
+    const CookieSettingsCallback& cookie_settings_callback,
     bool check_only_gaia_url) {
 #if BUILDFLAG(IS_IOS)
   // There is no way for users to set the cookies content setting in iOS so
   // sign-in cookies will always be allowed.
   return true;
 #else
-  if (!cookie_settings) {
-    return false;
-  }
-
   GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
-  if (!cookie_settings->IsFullCookieAccessAllowed(
+  if (!cookie_settings_callback.Run(
           gaia_url, net::SiteForCookies::FromUrl(gaia_url),
-          url::Origin::Create(gaia_url), net::CookieSettingOverrides(),
-          /*cookie_partition_key=*/std::nullopt)) {
+          url::Origin::Create(gaia_url), net::CookieSettingOverrides())) {
     return false;
   }
 
   GURL google_url = GaiaUrls::GetInstance()->secure_google_url();
   if (!check_only_gaia_url &&
-      !cookie_settings->IsFullCookieAccessAllowed(
+      !cookie_settings_callback.Run(
           google_url, net::SiteForCookies::FromUrl(google_url),
-          url::Origin::Create(google_url), net::CookieSettingOverrides(),
-          /*cookie_partition_key=*/std::nullopt)) {
+          url::Origin::Create(google_url), net::CookieSettingOverrides())) {
     return false;
   }
 
   return true;
 #endif
+}
+
+bool SettingsAllowSigninCookies(
+    const content_settings::CookieSettings* cookie_settings,
+    bool check_only_gaia_url) {
+  return SettingsAllowSigninCookies(MakeCookieSettingsCallback(cookie_settings),
+                                    check_only_gaia_url);
 }
 
 bool SettingsDeleteSigninCookiesOnExit(

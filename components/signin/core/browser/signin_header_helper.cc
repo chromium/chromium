@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/core/browser/chrome_connected_header_helper.h"
+#include "components/signin/core/browser/cookie_settings_util.h"
 #include "components/signin/core/browser/dice_response_params.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/http/http_request_headers.h"
@@ -152,7 +153,7 @@ void AppendOrRemoveMirrorRequestHeader(
     const GaiaId& gaia_id,
     Tribool is_child_account,
     AccountConsistencyMethod account_consistency,
-    const content_settings::CookieSettings* cookie_settings,
+    const CookieSettingsCallback& cookie_settings_callback,
     int profile_mode_mask,
     const std::string& source,
     bool force_account_consistency) {
@@ -182,7 +183,7 @@ void AppendOrRemoveMirrorRequestHeader(
   // is not true, then the user may experience inconsistencies due to
   // AccountReconcilor malfunction).
   if (chrome_connected_helper.ShouldBuildRequestHeader(
-          url, cookie_settings, /* check_only_gaia_url= */
+          url, cookie_settings_callback, /* check_only_gaia_url= */
           is_secondary_account_addition_disallowed)) {
     chrome_connected_header_value = chrome_connected_helper.BuildRequestHeader(
         true /* is_header_request */, url, gaia_id, is_child_account,
@@ -191,6 +192,22 @@ void AppendOrRemoveMirrorRequestHeader(
   chrome_connected_helper.AppendOrRemoveRequestHeader(
       request, redirect_url, kChromeConnectedHeader,
       chrome_connected_header_value);
+}
+
+void AppendOrRemoveMirrorRequestHeader(
+    RequestAdapter* request,
+    const GURL& redirect_url,
+    const GaiaId& gaia_id,
+    Tribool is_child_account,
+    AccountConsistencyMethod account_consistency,
+    const content_settings::CookieSettings* cookie_settings,
+    int profile_mode_mask,
+    const std::string& source,
+    bool force_account_consistency) {
+  AppendOrRemoveMirrorRequestHeader(
+      request, redirect_url, gaia_id, is_child_account, account_consistency,
+      MakeCookieSettingsCallback(cookie_settings), profile_mode_mask, source,
+      force_account_consistency);
 }
 
 ManageAccountsParams BuildManageAccountsParams(

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -298,6 +299,40 @@ TEST_F(SigninHeaderHelperTest,
           consistency_enabled_by_default_value());
 #else
   EXPECT_TRUE(cookie.empty());
+#endif
+}
+
+TEST_F(SigninHeaderHelperTest, AppendOrRemoveMirrorRequestHeaderWithCallback) {
+  net::HttpRequestHeaders original_headers;
+  RequestAdapterWrapper request_adapter(GURL("https://accounts.google.com"),
+                                        original_headers);
+
+  auto allow_all = base::BindRepeating(
+      [](const GURL&, const net::SiteForCookies&, const url::Origin&,
+         net::CookieSettingOverrides) { return true; });
+  AppendOrRemoveMirrorRequestHeader(
+      request_adapter.adapter(), GURL(), GaiaId("0123456789"),
+      /*is_child_account=*/Tribool::kUnknown, AccountConsistencyMethod::kMirror,
+      allow_all, PROFILE_MODE_DEFAULT, kTestSource, force_account_consistency_);
+  net::HttpRequestHeaders headers = request_adapter.GetFinalHeaders();
+  EXPECT_TRUE(headers.HasHeader(kChromeConnectedHeader));
+
+  net::HttpRequestHeaders original_headers2;
+  RequestAdapterWrapper request_adapter2(GURL("https://accounts.google.com"),
+                                         original_headers2);
+  auto disallow_all = base::BindRepeating(
+      [](const GURL&, const net::SiteForCookies&, const url::Origin&,
+         net::CookieSettingOverrides) { return false; });
+  AppendOrRemoveMirrorRequestHeader(
+      request_adapter2.adapter(), GURL(), GaiaId("0123456789"),
+      /*is_child_account=*/Tribool::kUnknown, AccountConsistencyMethod::kMirror,
+      disallow_all, PROFILE_MODE_DEFAULT, kTestSource,
+      force_account_consistency_);
+  net::HttpRequestHeaders headers2 = request_adapter2.GetFinalHeaders();
+#if BUILDFLAG(IS_IOS)
+  EXPECT_TRUE(headers2.HasHeader(kChromeConnectedHeader));
+#else
+  EXPECT_FALSE(headers2.HasHeader(kChromeConnectedHeader));
 #endif
 }
 

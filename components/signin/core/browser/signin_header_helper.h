@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_member.h"
+#include "components/signin/core/browser/cookie_settings_util.h"
 #include "components/signin/core/browser/dice_response_params.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -163,9 +164,19 @@ std::string BuildMirrorRequestCookieIfPossible(
 
 // Adds the mirror header to all Gaia requests from a connected profile, with
 // the exception of requests from gaia webview.
-// Removes the header in case it should not be transfered to a redirected url.
+// Removes the header in case it should not be transferred to a redirected url.
 // If |force_account_consistency| is true, the mirror header will still be added
 // in cases where |gaia_id| is empty.
+void AppendOrRemoveMirrorRequestHeader(
+    RequestAdapter* request,
+    const GURL& redirect_url,
+    const GaiaId& gaia_id,
+    Tribool is_child_account,
+    AccountConsistencyMethod account_consistency,
+    const CookieSettingsCallback& cookie_settings_callback,
+    int profile_mode_mask,
+    const std::string& source,
+    bool force_account_consistency);
 void AppendOrRemoveMirrorRequestHeader(
     RequestAdapter* request,
     const GURL& redirect_url,
