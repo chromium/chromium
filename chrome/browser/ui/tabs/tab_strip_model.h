@@ -821,8 +821,7 @@ class TabStripModel {
   // deletes any saved groups that are closing. When false, groups will close
   // normally but continue to be saved.
   void ExecuteCloseTabsCommand(
-      base::RepeatingCallback<std::vector<tabs::TabInterface*>()>
-          get_tabs_to_close,
+      base::RepeatingCallback<std::vector<tabs::TabHandle>()> get_tabs_to_close,
       bool delete_groups);
 
   // Adds the tab at `context_index` to the given tab group `group`. If
@@ -925,7 +924,7 @@ class TabStripModel {
       const content::WebContents* contents) const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, HasIndicesClosedByCommand);
+  FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, HasTabsClosedByCommand);
   // Temporary private API.
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, FindGroupIdFor);
 
@@ -1122,12 +1121,14 @@ class TabStripModel {
   std::vector<int> GetIndicesForCommand(int index) const;
 
   // Returns whether any tab would close when executing the command `id`
-  // (CommandCloseTabsToRight or CommandCloseOtherTabs) for the tab at `index`.
-  bool HasIndicesClosedByCommand(int index, ContextMenuCommand id) const;
+  // (CommandCloseTabsToRight or CommandCloseOtherTabs) for `context_tab`.
+  bool HasTabsClosedByCommand(tabs::TabHandle context_tab,
+                              ContextMenuCommand id) const;
 
-  std::vector<tabs::TabInterface*> GetTabsForCommand(int index) const;
-  std::vector<tabs::TabInterface*> GetTabsClosedByCommand(
-      int index,
+  std::vector<tabs::TabHandle> GetTabsForCommand(
+      tabs::TabHandle context_tab) const;
+  std::vector<tabs::TabHandle> GetTabsClosedByCommand(
+      tabs::TabHandle context_tab,
       ContextMenuCommand id) const;
   // Returns true if the specified WebContents is a New Tab at the end of
   // the tabstrip. We check for this because opener relationships are _not_
@@ -1164,8 +1165,7 @@ class TabStripModel {
   // bound by ExecuteCloseTabsCommand in order to properly
   // protect the stack from reentrancy.
   void ExecuteCloseTabs(
-      base::RepeatingCallback<std::vector<tabs::TabInterface*>()>
-          get_tabs_to_close,
+      base::RepeatingCallback<std::vector<tabs::TabHandle>()> get_tabs_to_close,
       uint32_t close_types);
 
   // `close_types` is a bitmask of the types in CloseTypes.

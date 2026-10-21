@@ -1835,9 +1835,12 @@ void TabStripModel::AddTab(std::unique_ptr<tabs::TabModel> tab,
 void TabStripModel::CloseSelectedTabs() {
   auto get_tabs = base::BindRepeating(
       [](const tabs::TabStripModelSelectionState* selection_model) {
-        return std::vector<tabs::TabInterface*>(
-            selection_model->selected_tabs().begin(),
-            selection_model->selected_tabs().end());
+        std::vector<tabs::TabHandle> handles;
+        handles.reserve(selection_model->selected_tabs().size());
+        for (tabs::TabInterface* tab : selection_model->selected_tabs()) {
+          handles.push_back(tab->GetHandle());
+        }
+        return handles;
       },
       &selection_model_);
 
@@ -2686,6 +2689,7 @@ bool TabStripModel::IsContextMenuCommandEnabled(
   if (!ContainsIndex(context_index)) {
     return false;
   }
+  tabs::TabHandle context_tab = GetTabAtIndex(context_index)->GetHandle();
 
   switch (command_id) {
     case CommandNewTabToRight:
@@ -2697,7 +2701,7 @@ bool TabStripModel::IsContextMenuCommandEnabled(
 
     case CommandCloseOtherTabs:
     case CommandCloseTabsToRight: {
-      return HasIndicesClosedByCommand(context_index, command_id);
+      return HasTabsClosedByCommand(context_tab, command_id);
     }
     case CommandDuplicate: {
       std::vector<int> indices = GetIndicesForCommand(context_index);
@@ -2831,6 +2835,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
   if (!ContainsIndex(context_index)) {
     return;
   }
+  tabs::TabHandle context_tab = GetTabAtIndex(context_index)->GetHandle();
   switch (command_id) {
     case CommandNewTabToRight: {
       base::UmaHistogramCounts1000(
@@ -2897,7 +2902,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
 
       ExecuteCloseTabsCommand(
           base::BindRepeating(&TabStripModel::GetTabsForCommand,
-                              base::Unretained(this), context_index),
+                              base::Unretained(this), context_tab),
           /*delete_groups=*/true);
       break;
     }
@@ -2909,8 +2914,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseOtherTabs"));
       ExecuteCloseTabsCommand(
           base::BindRepeating(&TabStripModel::GetTabsClosedByCommand,
-                              base::Unretained(this), context_index,
-                              command_id),
+                              base::Unretained(this), context_tab, command_id),
           /*delete_groups=*/false);
       break;
     }
@@ -2922,8 +2926,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseTabsToRight"));
       ExecuteCloseTabsCommand(
           base::BindRepeating(&TabStripModel::GetTabsClosedByCommand,
-                              base::Unretained(this), context_index,
-                              command_id),
+                              base::Unretained(this), context_tab, command_id),
           /*delete_groups=*/false);
       break;
     }
@@ -3211,14 +3214,17 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       // Closes all tabs except the pinned home tab.
       base::RecordAction(UserMetricsAction("TabContextMenu_CloseAllTabs"));
 
-      base::RepeatingCallback<std::vector<tabs::TabInterface*>()>
+      base::RepeatingCallback<std::vector<tabs::TabHandle>()>
           get_all_except_pinned_home_tab = base::BindRepeating(
               [](base::RepeatingCallback<tabs::TabCollection::TabIterator()>
                      begin,
                  base::RepeatingCallback<tabs::TabCollection::TabIterator()>
                      end) {
-                return std::vector<tabs::TabInterface*>(++begin.Run(),
-                                                        end.Run());
+                std::vector<tabs::TabHandle> tab_handles;
+                for (auto it = ++begin.Run(); it != end.Run(); ++it) {
+                  tab_handles.push_back((*it)->GetHandle());
+                }
+                return tab_handles;
               },
               base::BindRepeating(&TabStripModel::begin,
                                   base::Unretained(this)),
@@ -3447,20 +3453,22 @@ TabStripModel::GetGroupsDestroyedFromRemovingTabs(
 }
 
 void TabStripModel::ExecuteCloseTabs(
-    base::RepeatingCallback<std::vector<tabs::TabInterface*>()>
-        get_tabs_to_close,
+    base::RepeatingCallback<std::vector<tabs::TabHandle>()> get_tabs_to_close,
     uint32_t close_types) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
-  const std::vector<tabs::TabInterface*> tabs_to_close =
+  const std::vector<tabs::TabHandle> tab_handles_to_close =
       std::move(get_tabs_to_close).Run();
 
-  CreateHistoricalSplitIfClosing(tabs_to_close, close_types);
-
+  std::vector<tabs::TabInterface*> tabs_to_close;
   std::vector<content::WebContents*> web_contents_to_close;
-  for (tabs::TabInterface* t : tabs_to_close) {
-    web_contents_to_close.push_back(t->GetContents());
+  for (tabs::TabHandle handle : tab_handles_to_close) {
+    if (tabs::TabInterface* t = handle.Get()) {
+      tabs_to_close.push_back(t);
+      web_contents_to_close.push_back(t->GetContents());
+    }
   }
 
+  CreateHistoricalSplitIfClosing(tabs_to_close, close_types);
   CloseTabs(web_contents_to_close, close_types);
 }
 
@@ -3474,12 +3482,17 @@ void TabStripModel::MarkTabGroupsForClosing(
 }
 
 void TabStripModel::ExecuteCloseTabsCommand(
-    base::RepeatingCallback<std::vector<tabs::TabInterface*>()>
-        get_tabs_to_close,
+    base::RepeatingCallback<std::vector<tabs::TabHandle>()> get_tabs_to_close,
     bool delete_groups) {
-  std::vector<tabs::TabInterface*> tabs_to_close = get_tabs_to_close.Run();
+  std::vector<tabs::TabHandle> tab_handles_to_close = get_tabs_to_close.Run();
+  std::vector<tabs::TabInterface*> tabs_to_close;
+  for (tabs::TabHandle handle : tab_handles_to_close) {
+    if (tabs::TabInterface* t = handle.Get()) {
+      tabs_to_close.push_back(t);
+    }
+  }
   std::vector<tab_groups::TabGroupId> groups_to_delete =
-      GetGroupsDestroyedFromRemovingTabs(get_tabs_to_close.Run());
+      GetGroupsDestroyedFromRemovingTabs(tabs_to_close);
 
   MarkTabGroupsForClosing(groups_to_delete);
   // If there are groups that will be deleted by closing tabs from the context
@@ -3783,80 +3796,54 @@ std::vector<int> TabStripModel::GetIndicesForCommand(int index) const {
   return std::vector<int>(sel.begin(), sel.end());
 }
 
-std::vector<tabs::TabInterface*> TabStripModel::GetTabsForCommand(
-    int index) const {
-  if (!ContainsIndex(index)) {
+std::vector<tabs::TabHandle> TabStripModel::GetTabsForCommand(
+    tabs::TabHandle context_tab) const {
+  tabs::TabInterface* tab = context_tab.Get();
+  if (!tab || static_cast<tabs::TabModel*>(tab)->owning_model() != this) {
     return {};
   }
-  tabs::TabInterface* tab = GetTabAtIndex(index);
 
   if (!selection_model_.IsSelected(tab)) {
     std::optional<split_tabs::SplitTabId> split = tab->GetSplit();
     if (split.has_value()) {
-      return GetSplitData(split.value())->ListTabs();
+      std::vector<tabs::TabInterface*> split_tabs =
+          GetSplitData(split.value())->ListTabs();
+      std::vector<tabs::TabHandle> handles;
+      handles.reserve(split_tabs.size());
+      for (tabs::TabInterface* split_tab : split_tabs) {
+        handles.push_back(split_tab->GetHandle());
+      }
+      return handles;
     }
-    return {tab};
+    return {context_tab};
   }
 
-  return std::vector<tabs::TabInterface*>(
-      selection_model_.selected_tabs().begin(),
-      selection_model_.selected_tabs().end());
+  std::vector<tabs::TabHandle> handles;
+  handles.reserve(selection_model_.selected_tabs().size());
+  for (tabs::TabInterface* selected_tab : selection_model_.selected_tabs()) {
+    handles.push_back(selected_tab->GetHandle());
+  }
+  return handles;
 }
 
-bool TabStripModel::HasIndicesClosedByCommand(int index,
-                                              ContextMenuCommand id) const {
-  if (!ContainsIndex(index)) {
-    return false;
-  }
-  CHECK(id == CommandCloseTabsToRight || id == CommandCloseOtherTabs,
-        base::NotFatalUntil::M162);
-  bool is_selected = IsTabSelected(index);
-  int last_unclosed_tab = -1;
-  if (id == CommandCloseTabsToRight) {
-    last_unclosed_tab = is_selected ? *selection_model()
-                                           .GetListSelectionModel()
-                                           .selected_indices()
-                                           .rbegin()
-                                    : index;
-  }
-
-  // If the tab that the context menu command is invoked on is not selected and
-  // also in a split, also exclude tabs from that split from being closed. We
-  // don't have to worry about the case when a split is selected, because all
-  // indices in that split are guaranteed to be part of the selection model.
-  tabs::TabInterface* invoked_tab = GetTabAtIndex(index);
-  gfx::Range indices_to_exclude =
-      invoked_tab->IsSplit()
-          ? GetIndexRangeOfSplit(invoked_tab->GetSplit().value())
-          : gfx::Range(index, index + 1);
-
-  std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
-  for (int i = count() - 1; i > last_unclosed_tab; --i) {
-    // Skip tabs that are not part of the focused group.
-    if (focused_group.has_value() && GetTabGroupForTab(i) != focused_group) {
-      continue;
-    }
-    if (!indices_to_exclude.Contains(gfx::Range(i, i + 1)) && !IsTabPinned(i) &&
-        (!is_selected || !IsTabSelected(i))) {
-      return true;
-    }
-  }
-  return false;
+bool TabStripModel::HasTabsClosedByCommand(tabs::TabHandle context_tab,
+                                           ContextMenuCommand id) const {
+  return !GetTabsClosedByCommand(context_tab, id).empty();
 }
 
-std::vector<tabs::TabInterface*> TabStripModel::GetTabsClosedByCommand(
-    int index,
+std::vector<tabs::TabHandle> TabStripModel::GetTabsClosedByCommand(
+    tabs::TabHandle context_tab,
     ContextMenuCommand id) const {
-  if (!ContainsIndex(index)) {
+  tabs::TabInterface* invoked_tab = context_tab.Get();
+  if (!invoked_tab ||
+      static_cast<tabs::TabModel*>(invoked_tab)->owning_model() != this) {
     return {};
   }
 
   CHECK(id == CommandCloseTabsToRight || id == CommandCloseOtherTabs,
         base::NotFatalUntil::M162);
 
-  tabs::TabInterface* invoked_tab = GetTabAtIndex(index);
-
-  std::vector<tabs::TabInterface*> tabs_to_close;
+  std::vector<tabs::TabHandle> tabs_to_close;
 
   auto start_it = begin();
 
@@ -3895,7 +3882,7 @@ std::vector<tabs::TabInterface*> TabStripModel::GetTabsClosedByCommand(
       continue;
     }
 
-    tabs_to_close.push_back(tab);
+    tabs_to_close.push_back(tab->GetHandle());
   }
 
   return tabs_to_close;

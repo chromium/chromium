@@ -4208,9 +4208,10 @@ TEST_F(TabStripModelTest, TestContextMenuCloseCommands) {
   EXPECT_TRUE(tabstrip()->empty());
 }
 
-TEST_F(TabStripModelTest, HasIndicesClosedByCommand) {
+TEST_F(TabStripModelTest, HasTabsClosedByCommand) {
   const auto has = [this](int index, TabStripModel::ContextMenuCommand id) {
-    return tabstrip()->HasIndicesClosedByCommand(index, id);
+    return tabstrip()->HasTabsClosedByCommand(
+        tabstrip()->GetTabAtIndex(index)->GetHandle(), id);
   };
 
   // A single tab: neither command closes anything.
@@ -4249,6 +4250,11 @@ TEST_F(TabStripModelTest, HasIndicesClosedByCommand) {
 
   tabstrip()->CloseAllTabs();
   EXPECT_TRUE(tabstrip()->empty());
+
+  EXPECT_FALSE(tabstrip()->HasTabsClosedByCommand(
+      tabs::TabHandle::Null(), TabStripModel::CommandCloseTabsToRight));
+  EXPECT_FALSE(tabstrip()->HasTabsClosedByCommand(
+      tabs::TabHandle::Null(), TabStripModel::CommandCloseOtherTabs));
 }
 
 // Tests whether or not WebContentses are inserted in the correct position
