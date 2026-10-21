@@ -16,13 +16,17 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "build/robolectric_buildflags.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_ROBOLECTRIC)
 #include "base/android/jni_string.h"
 #include "base/system_jni/UUID_jni.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/jni_zero/jni_zero.h"
 #endif
+
+namespace absl {
+class uint128;
+}  // namespace absl
 
 namespace base {
 
