@@ -1440,7 +1440,7 @@ void ExecutionEngine::KickOffNextAction() {
   // TODO(b/467984847): ActorTask::AddTab isn't the best way to track a crashed
   // tab here. We should refactor this to be more explicit.
   if (ActorSurface* actor_surface =
-          GetNextAction().GetActorSurfaceHandle().Get();
+          GetNextAction().GetActorSurfaceForValidation().Get();
       actor_surface &&
       base::FeatureList::IsEnabled(kActorReloadCrashedTabBeforeAct)) {
     content::WebContents* contents = actor_surface->GetWebContents();
@@ -1450,8 +1450,13 @@ void ExecutionEngine::KickOffNextAction() {
           contents->GetLastCommittedURL(), task_->id(),
           "ExecutionEngine::KickOffNextAction",
           JournalDetailsBuilder().AddError("Renderer crashed").Build());
-      task_->AddActorSurface(actor_surface->GetHandle(),
-                             /*stop_task_on_detach=*/true, base::DoNothing());
+      if (GetNextAction().GetActorSurfaceHandle().is_null()) {
+        task_->ObserveActorSurfaceOnce(
+            GetNextAction().GetActorSurfaceForValidation());
+      } else {
+        task_->AddActorSurface(actor_surface->GetHandle(),
+                               /*stop_task_on_detach=*/true, base::DoNothing());
+      }
       CompleteActions(MakeResult(mojom::ActionResultCode::kRendererCrashed,
                                  /*requires_page_stabilization=*/false,
                                  "Renderer crashed."),
@@ -1573,7 +1578,10 @@ void ExecutionEngine::FailedOnTabBeforeToolCreation() {
           .Build());
   ActorSurfaceHandle actuation_actor_surface_handle =
       GetNextAction().GetActorSurfaceHandle();
-  if (!actuation_actor_surface_handle.is_null()) {
+  if (actuation_actor_surface_handle.is_null()) {
+    task_->ObserveActorSurfaceOnce(
+        GetNextAction().GetActorSurfaceForValidation());
+  } else {
     task_->AddActorSurface(actuation_actor_surface_handle,
                            /*stop_task_on_detach=*/true, base::DoNothing());
   }

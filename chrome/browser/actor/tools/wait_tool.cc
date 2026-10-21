@@ -12,7 +12,6 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor/action_result.h"
-#include "components/tabs/public/tab_interface.h"
 
 namespace actor {
 
@@ -56,11 +55,8 @@ std::unique_ptr<ObservationDelayController> WaitTool::GetObservationDelayer(
 
 void WaitTool::UpdateTaskBeforeInvoke(ActorTask& task,
                                       ToolCallback callback) const {
-  // TODO(b/567721071): Observe the surface once ActorTask tracks surfaces.
-  if (tabs::TabHandle observe_tab_handle =
-          observe_actor_surface_handle_.GetTabHandle();
-      observe_tab_handle != tabs::TabHandle::Null()) {
-    task.ObserveTabOnce(observe_tab_handle);
+  if (!observe_actor_surface_handle_.is_null()) {
+    task.ObserveActorSurfaceOnce(observe_actor_surface_handle_);
   }
 
   std::move(callback).Run(MakeOkResult());
