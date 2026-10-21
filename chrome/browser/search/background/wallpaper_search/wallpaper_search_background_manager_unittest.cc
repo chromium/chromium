@@ -258,6 +258,39 @@ TEST_F(WallpaperSearchBackgroundManagerTest,
       1);
 }
 
+// base::CreateSymbolicLink() is only available on POSIX.
+#if BUILDFLAG(IS_POSIX)
+TEST_F(WallpaperSearchBackgroundManagerTest,
+       SetLocalBackgroundImage_ReplacesSymlink) {
+  ON_CALL(mock_ntp_custom_background_service(),
+          IsCustomBackgroundDisabledByPolicy)
+      .WillByDefault(testing::Return(false));
+
+  const base::Token token = base::Token::CreateRandom();
+  const base::FilePath image_path = GetFilePathForBackground(token);
+  const base::FilePath victim_path = profile().GetPath().AppendASCII("victim");
+  ASSERT_TRUE(base::WriteFile(victim_path, "hi"));
+  ASSERT_TRUE(base::CreateSymbolicLink(victim_path, image_path));
+  ASSERT_TRUE(base::IsLink(image_path));
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(32, 32);
+  bitmap.eraseColor(SK_ColorRED);
+  wallpaper_search_background_manager().SelectLocalBackgroundImage(
+      token, bitmap, /*is_inspiration_image=*/true, base::ElapsedTimer());
+  task_environment().RunUntilIdle();
+
+  std::string victim_contents;
+  ASSERT_TRUE(base::ReadFileToString(victim_path, &victim_contents));
+  EXPECT_EQ("hi", victim_contents);
+
+  EXPECT_FALSE(base::IsLink(image_path));
+  std::string image_contents;
+  ASSERT_TRUE(base::ReadFileToString(image_path, &image_contents));
+  EXPECT_THAT(image_contents, testing::StartsWith("\x89PNG"));
+}
+#endif  // BUILDFLAG(IS_POSIX)
+
 // If the currently set wallpaper search image is set again, do not pass it
 // through to SetBackgroundToLocalResourceWithId(). Otherwise, its image file
 // could be deleted.

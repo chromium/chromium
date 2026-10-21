@@ -9,9 +9,11 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
@@ -218,10 +220,12 @@ void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
       base::ThreadPool::PostTaskAndReply(
           FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
           base::BindOnce(
-              // Resolve ambiguous base::WriteFile call with inline lambda.
               [](const base::FilePath& filename,
                  base::span<const uint8_t> data) {
-                base::WriteFile(filename, data);
+                // Atomic temp + rename so a symlink planted at this
+                // predictable name is replaced rather than followed.
+                base::ImportantFileWriter::WriteFileAtomically(
+                    filename, base::as_string_view(data));
               },
               profile_->GetPath().AppendASCII(
                   id.ToString() +
