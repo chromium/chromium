@@ -156,6 +156,10 @@ CSSTransformInterpolationType::PreInterpolationCompositeIfNeeded(
   conversion_checkers.push_back(
       MakeGarbageCollected<AlwaysInvalidateChecker>());
 
+  if (!underlying) {
+    return value;
+  }
+
   InterpolableTransformList& transform_list =
       To<InterpolableTransformList>(*value.interpolable_value);
   const InterpolableTransformList& underlying_transform_list =
