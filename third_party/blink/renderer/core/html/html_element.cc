@@ -1651,6 +1651,8 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
 
   if (auth !=
           ContextFeatureSettings::UnboundedElementAuth::kAllowedPrivileged &&
+      auth != ContextFeatureSettings::UnboundedElementAuth::
+                  kAllowedByPrivilegedMainFrame &&
       !LocalFrame::HasTransientUserActivation(frame)) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,

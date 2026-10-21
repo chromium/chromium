@@ -4967,9 +4967,9 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
         (GetWebFrame() &&
          GetContentClient()->renderer()->IsUnboundedElementAllowed(
              GetWebFrame()->GetSecurityOrigin()));
-    // Frames whose top frame is privileged may use the non-privileged
-    // (open-web) version, subject to permissions policy. The top frame may be
-    // remote, so this is based on its replicated origin. This mirrors
+    // Frames whose top frame is privileged may use the non-privileged version
+    // without user activation, subject to permissions policy. The top frame
+    // may be remote, so this is based on its replicated origin. This mirrors
     // RenderFrameHostImpl::GetUnboundedElementAuth().
     bool is_root_privileged = false;
     if (GetWebFrame() && GetWebFrame()->Top()) {
@@ -4989,7 +4989,16 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
             blink::features::kUnsafeEscapingUnboundedElementOnTheOpenWeb) ||
         is_privileged || is_root_privileged;
     if (is_unbounded_allowed) {
-      blink::WebV8Features::EnableUnboundedElement(context, is_privileged);
+      blink::WebV8Features::UnboundedElementPrivilege privilege =
+          blink::WebV8Features::UnboundedElementPrivilege::kNone;
+      if (is_privileged) {
+        privilege =
+            blink::WebV8Features::UnboundedElementPrivilege::kPrivileged;
+      } else if (is_root_privileged) {
+        privilege = blink::WebV8Features::UnboundedElementPrivilege::
+            kIframePrivilegedByEmbedder;
+      }
+      blink::WebV8Features::EnableUnboundedElement(context, privilege);
     }
   }
 

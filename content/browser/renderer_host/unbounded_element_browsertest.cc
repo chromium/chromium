@@ -2422,6 +2422,40 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(UnboundedElementWebUITest,
+                       UntrustedIframeAllowedWithoutUserActivation) {
+  GURL webui_url(
+      GetWebUIURL("web-ui/title1.html?childsrc=*&notrustedtypes=true"));
+  EXPECT_TRUE(NavigateToURL(shell(), webui_url));
+
+  GURL iframe_url(embedded_test_server()->GetURL("/title1.html"));
+  std::string setup_script = base::StringPrintf(R"(
+    const iframe = document.createElement('iframe');
+    iframe.allow = 'unbounded-element';
+    iframe.src = '%s';
+    document.body.appendChild(iframe);
+  )",
+                                                iframe_url.spec().c_str());
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), setup_script,
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  RenderFrameHost* iframe = ChildFrameAt(primary_main_frame_host(), 0);
+  ASSERT_TRUE(iframe);
+  EXPECT_FALSE(iframe->HasTransientUserActivation());
+
+  // The privileged main frame opted the untrusted iframe in via permissions
+  // policy, so user activation is not required.
+  std::string iframe_script = R"(
+    const div = document.createElement('div');
+    div.setAttribute('unbounded', '');
+    document.body.appendChild(div);
+    div.showUnboundedElement().then(() => "Success", e => e.name);
+  )";
+  EXPECT_EQ("Success",
+            EvalJs(iframe, iframe_script, EXECUTE_SCRIPT_NO_USER_GESTURE));
+}
+
+IN_PROC_BROWSER_TEST_F(UnboundedElementWebUITest,
                        UntrustedIframeDeniedWithoutPermissionsPolicy) {
   GURL webui_url(
       GetWebUIURL("web-ui/title1.html?childsrc=*&notrustedtypes=true"));

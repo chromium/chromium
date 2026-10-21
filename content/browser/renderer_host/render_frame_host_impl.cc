@@ -11299,7 +11299,9 @@ RenderFrameHostImpl::GetUnboundedElementAuth() const {
               ->GetLastCommittedOrigin()) &&
       const_cast<RenderFrameHostImpl*>(this)->IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kUnboundedElement)) {
-    return UnboundedElementAuth::kAllowedOpenWeb;
+    // The privileged main frame opted this frame in via permissions policy, so
+    // user activation is not required.
+    return UnboundedElementAuth::kAllowedByPrivilegedMainFrame;
   }
   return UnboundedElementAuth::kDenied;
 }
@@ -11386,6 +11388,7 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
     return;
   }
   if (auth != UnboundedElementAuth::kAllowedPrivileged &&
+      auth != UnboundedElementAuth::kAllowedByPrivilegedMainFrame &&
       !HasTransientUserActivation()) {
     local_frame_host_receiver_.ReportBadMessage(
         "RequestUnboundedSurface should not be called without user "

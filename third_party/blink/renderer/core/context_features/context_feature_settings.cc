@@ -59,9 +59,10 @@ bool ContextFeatureSettings::isMojoJSEnabled() const {
 // - ContextFeatureSettings::GetUnboundedElementAuth (renderer side)
 //
 // In the renderer, RenderFrameImpl::DidCreateScriptContext determines whether
-// the context is allowed to use UnboundedElement (either via open-web flag or
-// privileged WebUI/extension origin) and configures ContextFeatureSettings via
-// WebV8Features::EnableUnboundedElement(context, is_privileged).
+// the context is allowed to use UnboundedElement (either via open-web flag,
+// privileged WebUI/extension origin, or privileged main frame) and configures
+// ContextFeatureSettings via WebV8Features::EnableUnboundedElement(context,
+// privilege).
 ContextFeatureSettings::UnboundedElementAuth
 ContextFeatureSettings::GetUnboundedElementAuth(
     const ExecutionContext* context) {
@@ -73,7 +74,8 @@ ContextFeatureSettings::GetUnboundedElementAuth(
   if (!settings || !settings->enable_unbounded_element_) {
     return UnboundedElementAuth::kDenied;
   }
-  if (settings->enable_unbounded_element_privileged_) {
+  if (settings->unbounded_element_privilege_ ==
+      UnboundedElementPrivilege::kPrivileged) {
     return UnboundedElementAuth::kAllowedPrivileged;
   }
   if (RuntimeEnabledFeatures::UnsafeUnboundedElementOnTheOpenWebEnabled() ||
@@ -83,7 +85,12 @@ ContextFeatureSettings::GetUnboundedElementAuth(
   }
   if (context->IsFeatureEnabled(
           network::mojom::blink::PermissionsPolicyFeature::kUnboundedElement)) {
-    return UnboundedElementAuth::kAllowedOpenWeb;
+    // If the main frame is privileged, it opted this frame in via permissions
+    // policy, so user activation is not required.
+    return settings->unbounded_element_privilege_ ==
+                   UnboundedElementPrivilege::kIframePrivilegedByEmbedder
+               ? UnboundedElementAuth::kAllowedByPrivilegedMainFrame
+               : UnboundedElementAuth::kAllowedOpenWeb;
   }
   return UnboundedElementAuth::kDenied;
 }

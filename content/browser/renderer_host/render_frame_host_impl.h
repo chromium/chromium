@@ -2532,6 +2532,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   enum class UnboundedElementAuth {
     kDenied,
     kAllowedOpenWeb,
+    // A non-privileged subframe, allowed by permissions policy, whose outermost
+    // main frame is privileged. Unlike kAllowedOpenWeb, this does not require
+    // user activation.
+    kAllowedByPrivilegedMainFrame,
     kAllowedPrivileged,
   };
   UnboundedElementAuth GetUnboundedElementAuth() const;
