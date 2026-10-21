@@ -33,13 +33,6 @@
 
 namespace {
 
-bool IsBrowserActuatorForGlicEnabled() {
-  return base::FeatureList::IsEnabled(browser_actuator::kBrowserActuator) &&
-         base::FeatureList::IsEnabled(
-             browser_actuator::
-                 kEnableBrowserActuatorForGlicExperimentalTriggering);
-}
-
 std::set<components_sharing_message::SharingMessage::PayloadCase>
 GetBrowserActuatorPayloads() {
   std::set<components_sharing_message::SharingMessage::PayloadCase> payloads;
@@ -105,10 +98,7 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  // Route kGlicExperimentalTriggering to legacy handler if BrowserActuator is
-  // not taking over handling for it.
-  if (!IsBrowserActuatorForGlicEnabled() &&
-      base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering) &&
+  if (base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering) &&
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,
                                                          /*create=*/true)) {
     AddSharingHandler(
