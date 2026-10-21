@@ -175,6 +175,14 @@ def _determine_target_type(target_name, desc):
     if script == "//build/android/gyp/aidl.py":
         return "aidl_interface"
 
+    # In GN, `cpp_api_from_rust` expands into a `source_set` header target (plus
+    # internal `_crubit_action` and `_crubit_impl` targets) that attaches
+    # `crate_header`, `crate_namespace`, and `rust_target` metadata. Surface it
+    # as a dedicated `crubit_cpp_from_rust` target type so gn2bp can translate
+    # it into Soong's native `crubit_cpp_from_rust` module.
+    if "crate_header" in metadata:
+        return "crubit_cpp_from_rust"
+
     if script == "//build/rust/gni_impl/run_bindgen.py":
         return "rust_bindgen"
 
@@ -256,6 +264,7 @@ class GnParser:
                 "rust_executable",
                 "aidl_interface",
                 "rust_bindgen",
+                "crubit_cpp_from_rust",
             )
             assert gn_type in VALID_TYPES, (
                 f"Unable to parse target {name} with type {gn_type}."
@@ -303,6 +312,12 @@ class GnParser:
             self.build_file_path = ""
             self.crate_name = None
             self.crate_root = None
+            # Populated for `crubit_cpp_from_rust` targets from their GN
+            # metadata (`crate_header`, `crate_namespace`, `rust_target`).
+            self.crubit_rust_target = None
+            self.source_stem = None
+            self.crate_header_rel_path = None
+            self.cpp_namespace = None
 
             self.java_jar_excluded_patterns = []
             self.java_jar_included_patterns = []
@@ -703,6 +718,32 @@ class GnParser:
             # targets above), are bubbled upward without creating an equivalent
             # GN target.
             pass
+        elif target.type == 'crubit_cpp_from_rust':
+            target.crate_header_rel_path = metadata["crate_header"][0]
+            target.source_stem = target.crate_header_rel_path.split("/")[
+                -1
+            ].removesuffix(".h")
+            if "crate_namespace" in metadata and metadata["crate_namespace"]:
+                target.cpp_namespace = metadata["crate_namespace"][0]
+            # Parse the underlying Rust library target to obtain its crate_name
+            # and wire it as the `rust_library` dependency in Soong.
+            rust_target = self.parse_gn_desc(
+                gn_desc, metadata["rust_target"][0], is_test_target
+            )
+            target.crubit_rust_target = rust_target.name
+            target.crate_name = rust_target.crate_name
+            # Drop GN's internal Crubit helper subtargets (`_crubit_action`,
+            # `_crubit_impl`, `_crubit_rspgen`), as Soong's `crubit_cpp_from_rust`
+            # module invokes `cc_bindings_from_rs` and compiles the generated
+            # Rust/C++ thunks natively from the underlying `rust_library`.
+            deps = [
+                d
+                for d in deps
+                if not d.endswith(
+                    ("_crubit_action", "_crubit_impl", "_crubit_rspgen")
+                )
+            ]
+            deps.append(metadata["rust_target"][0])
         elif target.type in [
             "rust_library",
             "rust_proc_macro",
@@ -744,8 +785,14 @@ class GnParser:
         )
         target.arch[arch].include_dirs.update(desc.get('include_dirs', []))
         target.output_name = desc.get('output_name', None)
-        target.crate_name = desc.get("crate_name", None)
-        target.crate_root = desc.get("crate_root", None)
+        # Only overwrite `crate_name` and `crate_root` when present in `desc`;
+        # for `crubit_cpp_from_rust` targets (which are `source_set`s in GN and
+        # do not have `crate_name` in their own `desc`), `target.crate_name` was
+        # already populated above from the underlying Rust target.
+        if "crate_name" in desc:
+            target.crate_name = desc["crate_name"]
+        if "crate_root" in desc:
+            target.crate_root = desc["crate_root"]
         target.arch[arch].rust_flags = desc.get("rustflags", list())
         target.arch[arch].rust_flags.extend(
             self.build_script_outputs.get(
@@ -884,10 +931,16 @@ class GnParser:
                     "rust_library",
                     "rust_proc_macro",
                     "rust_bindgen",
+                    "crubit_cpp_from_rust",
                 ]:
                     arch_obj.deps.add(dep.name)
 
-                if dep.type in ['static_library', 'source_set', 'rust_library']:
+                if dep.type in [
+                    'static_library',
+                    'source_set',
+                    'rust_library',
+                    'crubit_cpp_from_rust',
+                ]:
                     # Bubble up static_libs and source_set. Necessary, since soong does not propagate
                     # static_libs up the build tree.
                     # Source sets are later translated to static_libraries, so it makes sense

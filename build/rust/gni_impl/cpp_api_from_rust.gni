@@ -337,6 +337,14 @@ template("cpp_api_from_rust") {
     # support libraries.
     public_deps = [ "//build/rust/crubit:cpp_api_from_rust_bindings_cpp_deps" ]
 
+    # Used by Cronet's gn2bp when translating this target into a Soong
+    # `crubit_cpp_from_rust` module.
+    metadata = {
+      crate_header = [ rebase_path(_h_out, root_gen_dir) ]
+      crate_namespace = [ _cpp_namespace ]
+      rust_target = [ get_label_info(_rust_target, "label_no_toolchain") ]
+    }
+
     public = [ _h_out ]
   }
 }

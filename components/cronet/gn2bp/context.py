@@ -98,6 +98,19 @@ class TranslationContext:
         self.module_prefix = f'{import_channel}_cronet_'
         self.include_dirs_denylist = [
             f'external/cronet/{import_channel}/third_party/zlib/',
+            # Chromium's Crubit targets add //third_party/rust-toolchain/lib/...
+            # to include_dirs, which does not exist in the imported Cronet tree
+            # in AOSP. In Soong, Crubit support headers are instead provided by
+            # the `crubit_support_headers` module in prebuilts/rust-toolchain.
+            f'external/cronet/{import_channel}/third_party/rust-toolchain/lib/',
+            (
+                f'external/cronet/{import_channel}/'
+                'third_party/rust-toolchain/lib/third_party/'
+            ),
+            (
+                f'external/cronet/{import_channel}/'
+                'third_party/rust-toolchain/lib/third_party/crubit/'
+            ),
         ]
         self.cc_defaults_module = f'{self.module_prefix}cc_defaults'
         self.java_framework_defaults_module = (

@@ -476,7 +476,13 @@ class Module:
 
     def has_input_files(self):
         return (
-            self.type in ["java_library", "java_import", "rust_bindgen"]
+            self.type
+            in [
+                "java_library",
+                "java_import",
+                "rust_bindgen",
+                "crubit_cpp_from_rust",
+            ]
             or (self.srcs and len(self.srcs) > 0)
             or (
                 self.target
@@ -695,6 +701,34 @@ class RustBindgenModule(Module):
         self.static_inline_library = ""
 
 
+class CrubitModule(Module):
+    """Represents a Soong `crubit_cpp_from_rust` module that generates C++
+    bindings for a Rust library (`rust_library`)."""
+
+    SUPPORTED_FIELDS = {
+        'rust_library',
+        'crate_name',
+        'namespace',
+        'stem',
+        'source_stem',
+        'rustlibs',
+        'min_sdk_version',
+    }
+
+    def __init__(
+        self, mod_type, name, gn_target, context, is_test=False, role=None
+    ):
+        super().__init__(mod_type, name, gn_target, context, is_test, role)
+        self.rust_library = None
+        self.crate_name = None
+        self.namespace = None
+        self.stem = None
+        self.source_stem = None
+        self.rustlibs = set()
+        self.min_sdk_version = None
+        self._initialize_targets(RustTarget)
+
+
 class GenruleModule(Module):
     SUPPORTED_FIELDS = {
         'srcs',
@@ -767,6 +801,8 @@ def create_module(mod_type, name, gn_target, context, is_test=False, role=None):
         return JavaModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type in ('rust_ffi_static', 'rust_binary', 'rust_proc_macro'):
         return RustModule(mod_type, name, gn_target, context, is_test, role)
+    if mod_type == 'crubit_cpp_from_rust':
+        return CrubitModule(mod_type, name, gn_target, context, is_test, role)
     if mod_type == 'rust_bindgen':
         return RustBindgenModule(
             mod_type, name, gn_target, context, is_test, role

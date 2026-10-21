@@ -28,6 +28,10 @@ DEFAULT_TESTS = [
     "//build/rust/tests/bindgen_test:bindgen_test",  # Added to make sure that rust still compiles
     '//build/rust/tests/bindgen_static_fns_test:bindgen_static_fns_test',  # Added to make sure that rust still compiles
     "//net/android:dummy_spnego_authenticator_java",  # Required for net::HttpAuthHandlerNegotiateTest::SetUp() to work, due to https://crbug.com/389069158
+    # Added to ensure Crubit C++ bindings from Rust (including direct and
+    # transitive stdlib bindings) continue to compile in Soong.
+    "//build/rust/tests/test_cpp_api_from_rust:target_depending_only_on_bindings",
+    "//build/rust/tests/test_cpp_api_from_rust:test_cpp_api_from_rust",
 ]
 
 # Usually, README.chromium lives next to the BUILD.gn. However, some cases are
