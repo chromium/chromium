@@ -58,6 +58,8 @@ class SigninInProgress;
 @property(nonatomic, weak) UIWindowScene* scene;
 
 // Connection options of `scene`, if any, from when the scene was connected.
+// TODO(crbug.com/462018636): Remove this property once `kEnableNewStartupFlow`
+// is enabled by default.
 @property(nonatomic, strong) UISceneConnectionOptions* connectionOptions;
 
 // The interface provider associated with this scene.
@@ -84,10 +86,14 @@ class SigninInProgress;
 // be open next time the scene is activated.
 // Setting the property to not nil will add the new URL contexts to the set.
 // Setting the property to nil will clear the set.
+// TODO(crbug.com/462018636): Remove this property once `kEnableNewStartupFlow`
+// is enabled by default.
 @property(nonatomic) NSSet<UIOpenURLContext*>* URLContextsToOpen;
 
 // A NSUserActivity that has been passed to
 // `UISceneDelegate scene:continueUserActivity:` and needs to be opened.
+// TODO(crbug.com/462018636): Remove this property once `kEnableNewStartupFlow`
+// is enabled by default.
 @property(nonatomic) NSUserActivity* pendingUserActivity;
 
 // YES if the UI is enabled. The browser UI objects are available when this is
