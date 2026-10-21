@@ -55,6 +55,7 @@
 #include "components/history/core/test/test_history_database.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "components/sync_device_info/fake_local_device_info_provider.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "components/version_info/channel.h"
 #include "components/visitedlink/core/visited_link.h"
@@ -1886,6 +1887,37 @@ TEST_F(HistoryServiceTest, DeferredInitNotTriggeredByEarlyCallsAndShutdown) {
   history_service_->Shutdown();
   history_service_.reset();
   run_loop.Run();
+}
+
+TEST_F(HistoryServiceTest, LocalDeviceOriginatorCacheGuid) {
+  CleanupHistoryService();
+
+  syncer::FakeLocalDeviceInfoProvider local_device_info_provider;
+  history_service_ = std::make_unique<history::HistoryService>(
+      nullptr, nullptr, /*device_info_tracker=*/nullptr,
+      &local_device_info_provider);
+  history_service_->Init(TestHistoryDatabaseParamsForPath(history_dir_));
+
+  const GURL url("https://www.example.com");
+  history_service_->AddPage(
+      url, base::Time::Now(), /*context_id=*/0, /*nav_entry_id=*/0,
+      /*referrer=*/GURL(), history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
+      history::SOURCE_BROWSED, history::VisitResponseCodeCategory::kNot404,
+      /*did_replace_entry=*/false);
+
+  const syncer::DeviceInfo* local_device_info =
+      local_device_info_provider.GetLocalDeviceInfo();
+  ASSERT_TRUE(local_device_info);
+
+  QueryOptions options;
+  options.client_ids = {local_device_info->guid()};
+
+  base::test::TestFuture<QueryResults> future;
+  history_service_->QueryHistory(u"", options, future.GetCallback(), &tracker_);
+
+  const QueryResults& results = future.Get();
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(results[0].url(), url);
 }
 
 }  // namespace history

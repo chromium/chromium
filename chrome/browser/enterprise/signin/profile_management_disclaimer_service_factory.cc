@@ -11,6 +11,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "components/signin/public/base/signin_switches.h"
 
 // static
@@ -39,6 +40,7 @@ ProfileManagementDisclaimerServiceFactory::
   // This dependency is needed through so that prefs::kSigninAllowed is
   // initialized properly in AccountConsistencyModeManager.
   DependsOn(AccountConsistencyModeManagerFactory::GetInstance());
+  DependsOn(BrowserManagerServiceFactory::GetInstance());
   DependsOn(DiceWebSigninInterceptorFactory::GetInstance());
   // This dependency is needed through `SigninPolicyFetchTracker`.
   DependsOn(policy::UserPolicySigninServiceFactory::GetInstance());
