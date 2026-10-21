@@ -174,8 +174,7 @@ void FastPairPairerImpl::StartPairing() {
                             *device_);
   std::string device_address = device_->classic_address().value();
   uint8_t pairing_flags = device_->key_based_pairing_flags().value_or(0);
-  if (ash::features::IsFastPairKeyboardsEnabled() &&
-      floss::features::IsFlossEnabled() && pairing_flags & kPrefersLEBonding) {
+  if (floss::features::IsFlossEnabled() && pairing_flags & kPrefersLEBonding) {
     device_address = device_->ble_address();
   }
   device::BluetoothDevice* bt_device = adapter_->GetDevice(device_address);
@@ -728,8 +727,7 @@ void FastPairPairerImpl::DisplayPinCode(device::BluetoothDevice* device,
 
 void FastPairPairerImpl::DisplayPasskey(device::BluetoothDevice* device,
                                         uint32_t passkey) {
-  if (ash::features::IsFastPairKeyboardsEnabled() &&
-      floss::features::IsFlossEnabled()) {
+  if (floss::features::IsFlossEnabled()) {
     std::move(display_passkey_).Run(device->GetNameForDisplay(), passkey);
   }
 }
@@ -841,8 +839,7 @@ void FastPairPairerImpl::OnPairConnected(
 
   std::string device_address = device_->classic_address().value();
   uint8_t pairing_flags = device_->key_based_pairing_flags().value_or(0);
-  if (ash::features::IsFastPairKeyboardsEnabled() &&
-      floss::features::IsFlossEnabled() && pairing_flags & kPrefersLEBonding) {
+  if (floss::features::IsFlossEnabled() && pairing_flags & kPrefersLEBonding) {
     device_address = device_->ble_address();
   }
   device::BluetoothDevice* bt_device = adapter_->GetDevice(device_address);

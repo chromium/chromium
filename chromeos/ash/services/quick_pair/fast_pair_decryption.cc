@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/decrypted_response.h"
@@ -60,8 +59,7 @@ std::optional<DecryptedResponse> ParseDecryptedResponse(
   uint8_t message_type = decrypted_response_bytes[kMessageTypeIndex];
 
   // Decrypts the Key-based Pairing Extended Response
-  if (ash::features::IsFastPairKeyboardsEnabled() &&
-      message_type == kKeybasedPairingExtendedReponseType) {
+  if (message_type == kKeybasedPairingExtendedReponseType) {
     uint8_t flags = decrypted_response_bytes[kResponse2FlagsStartIndex];
     uint8_t num_addresses =
         decrypted_response_bytes[kResponse2NumberOfAddressesStartIndex];

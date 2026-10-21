@@ -7,9 +7,7 @@
 #include <algorithm>
 #include <array>
 
-#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_encryption.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,12 +52,7 @@ TEST_F(FastPairDecryptionTest, ParseDecryptedResponse_Success) {
 }
 
 TEST_F(FastPairDecryptionTest, ParseDecryptedResponse_Failure) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairKeyboards});
-
-  std::array<uint8_t, kBlockByteSize> response_bytes = {/*message_type=*/0x02,
+  std::array<uint8_t, kBlockByteSize> response_bytes = {/*message_type=*/0x00,
                                                         /*address_bytes=*/0x02,
                                                         0x03,
                                                         0x04,
@@ -84,11 +77,6 @@ TEST_F(FastPairDecryptionTest, ParseDecryptedResponse_Failure) {
 }
 
 TEST_F(FastPairDecryptionTest, ParseDecryptedExtendedResponseOneAddr_Success) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairKeyboards},
-      /*disabled_features=*/{});
-
   std::vector<uint8_t> response_bytes;
 
   // Message type.
@@ -134,11 +122,6 @@ TEST_F(FastPairDecryptionTest, ParseDecryptedExtendedResponseOneAddr_Success) {
 }
 
 TEST_F(FastPairDecryptionTest, ParseDecryptedExtendedResponseTwoAddr_Success) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairKeyboards},
-      /*disabled_features=*/{});
-
   std::vector<uint8_t> response_bytes;
 
   // Message type.

@@ -591,9 +591,6 @@ BASE_FEATURE(kFastPairBleRotation, base::FEATURE_ENABLED_BY_DEFAULT);
 // debug devices to trigger Fast Pair notifications.
 BASE_FEATURE(kFastPairDebugMetadata, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables prototype support for Fast Pair for keyboards.
-BASE_FEATURE(kFastPairKeyboards, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The amount of minutes we should wait before allowing notifications for a
 // recently lost device.
 const base::FeatureParam<double> kFastPairDeviceLostNotificationTimeoutMinutes{
@@ -2223,10 +2220,6 @@ bool IsFastPairBleRotationEnabled() {
 
 bool IsFastPairDebugMetadataEnabled() {
   return base::FeatureList::IsEnabled(kFastPairDebugMetadata);
-}
-
-bool IsFastPairKeyboardsEnabled() {
-  return base::FeatureList::IsEnabled(kFastPairKeyboards);
 }
 
 bool IsFastPairPwaCompanionEnabled() {

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_data_encryptor.h"
@@ -302,10 +301,7 @@ TEST_F(FastPairHandshakeImplTest, Success) {
 
 TEST_F(FastPairHandshakeImplTest, SuccessWithExtendedResponse) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairKeyboards,
-                            floss::features::kFlossEnabled},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(floss::features::kFlossEnabled);
   histogram_tester().ExpectTotalCount(kHandshakeResult, 0);
   histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 0);
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 0);

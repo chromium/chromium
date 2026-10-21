@@ -414,31 +414,9 @@ TEST_F(FastPairDiscoverableScannerImplTest, MouseAllowedWhenHIDEnabled) {
 }
 
 TEST_F(FastPairDiscoverableScannerImplTest,
-       InputDeviceDisallowedWhenKeyboardsDisabled) {
+       InputDeviceAllowedWhenFlossEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairKeyboards});
-  nearby::fastpair::Device metadata;
-  nearby::fastpair::Status* status = metadata.mutable_status();
-  status->set_status_type(nearby::fastpair::StatusType::PUBLISHED);
-  metadata.set_trigger_distance(2);
-  metadata.set_device_type(nearby::fastpair::DeviceType::INPUT_DEVICE);
-  repository_->SetFakeMetadata(kValidModelId, metadata);
-
-  EXPECT_CALL(found_device_callback_, Run).Times(0);
-  device::BluetoothDevice* device = GetDevice(kValidModelId);
-  scanner_->NotifyDeviceFound(device);
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(FastPairDiscoverableScannerImplTest,
-       InputDeviceAllowedWhenKeyboardsEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairKeyboards,
-                            floss::features::kFlossEnabled},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(floss::features::kFlossEnabled);
   nearby::fastpair::Device metadata;
   nearby::fastpair::Status* status = metadata.mutable_status();
   status->set_status_type(nearby::fastpair::StatusType::PUBLISHED);

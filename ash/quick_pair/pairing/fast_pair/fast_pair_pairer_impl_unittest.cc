@@ -676,10 +676,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial_Floss) {
 
 TEST_F(FastPairPairerImplTest, PairByBLEDeviceSuccess_Initial) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kFastPairKeyboards, floss::features::kFlossEnabled},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(floss::features::kFlossEnabled);
 
   Login(user_manager::UserType::kRegular);
 
@@ -2596,10 +2593,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Retroactive) {
 
 TEST_F(FastPairPairerImplTest, DisplayPasskey) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairKeyboards,
-                            floss::features::kFlossEnabled},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(floss::features::kFlossEnabled);
 
   Login(user_manager::UserType::kRegular);
 

@@ -7777,10 +7777,6 @@ inline constexpr char kFaceRetouchOverrideDescription[] =
     "Enables or disables the face retouch feature using the relighting button "
     "in the VC panel.";
 
-inline constexpr char kFastPairKeyboardsName[] = "Enable Fast Pair Keyboards";
-inline constexpr char kFastPairKeyboardsDescription[] =
-    "Enables prototype support for Fast Pair for keyboards.";
-
 inline constexpr char kFastPairPwaCompanionName[] =
     "Enable Fast Pair Web Companion";
 inline constexpr char kFastPairPwaCompanionDescription[] =

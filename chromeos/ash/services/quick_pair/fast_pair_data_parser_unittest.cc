@@ -10,7 +10,6 @@
 #include <iterator>
 #include <optional>
 
-#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_service_data_creator.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -91,12 +90,7 @@ class FastPairDataParserTest : public testing::Test {
 };
 
 TEST_F(FastPairDataParserTest, DecryptResponseUnsuccessfully) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairKeyboards});
-
-  std::vector<uint8_t> response_bytes = {/*message_type=*/0x02,
+  std::vector<uint8_t> response_bytes = {/*message_type=*/0x00,
                                          /*address_bytes=*/0x02,
                                          0x03,
                                          0x04,
@@ -162,11 +156,6 @@ TEST_F(FastPairDataParserTest, DecryptResponseSuccessfully) {
 }
 
 TEST_F(FastPairDataParserTest, DecryptExtendedResponseSuccessfully) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairKeyboards},
-      /*disabled_features=*/{});
-
   std::vector<uint8_t> response_bytes;
 
   // Message type.

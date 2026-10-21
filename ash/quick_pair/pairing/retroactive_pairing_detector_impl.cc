@@ -165,8 +165,7 @@ void RetroactivePairingDetectorImpl::OnDevicePaired(
   // With the introduction of BLE Fast Pair devices, some devices could be
   // paired with their BLE address. Check BLE address for false positives as
   // well.
-  if (ash::features::IsFastPairKeyboardsEnabled() &&
-      potential_retroactive_addresses_.contains(device->ble_address())) {
+  if (potential_retroactive_addresses_.contains(device->ble_address())) {
     CD_LOG(VERBOSE, Feature::FP)
         << __func__
         << ": encountered a false positive for a potential retroactive pairing "

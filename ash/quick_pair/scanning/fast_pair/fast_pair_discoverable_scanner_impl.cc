@@ -56,8 +56,7 @@ bool IsValidDeviceType(const nearby::fastpair::Device& device) {
     if (device.device_type() == nearby::fastpair::DeviceType::MOUSE) {
       return true;
     }
-    if (ash::features::IsFastPairKeyboardsEnabled() &&
-        device.device_type() == nearby::fastpair::DeviceType::INPUT_DEVICE) {
+    if (device.device_type() == nearby::fastpair::DeviceType::INPUT_DEVICE) {
       return true;
     }
   }

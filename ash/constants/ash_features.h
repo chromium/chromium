@@ -259,8 +259,6 @@ BASE_DECLARE_FEATURE(kFastPairAdvertisingFormat2025);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFastPairBleRotation);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPairDebugMetadata);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kFastPairKeyboards);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPairPwaCompanion);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<std::string> kFastPairPwaCompanionInstallUri;
@@ -945,7 +943,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairAdvertisingFormat2025Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairBleRotationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairDebugMetadataEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairHandshakeRefactorEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairKeyboardsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairPwaCompanionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSoftwareScanningEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesEnabled();
