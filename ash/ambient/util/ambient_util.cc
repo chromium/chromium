@@ -16,7 +16,7 @@
 #include "ash/utility/lottie_util.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/no_destructor.h"
-#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
@@ -96,10 +96,12 @@ bool ParsedDynamicAssetId::operator<(const ParsedDynamicAssetId& other) const {
 
 bool ParseDynamicLottieAssetId(std::string_view asset_id,
                                ParsedDynamicAssetId& parsed_output) {
-  static const base::NoDestructor<std::string> kAssetIdPatternStr(
-      base::StrCat({kLottieCustomizableIdPrefix,
-                    R"(_Photo_Position([[:alnum:]]+)_([[:digit:]]+).*)"}));
-  static const base::NoDestructor<RE2> kAssetIdPattern(*kAssetIdPatternStr);
+  if (!base::StartsWith(asset_id, kLottieCustomizableIdPrefix)) {
+    return false;
+  }
+  asset_id.remove_prefix(kLottieCustomizableIdPrefix.size());
+  static constexpr LazyRE2 kAssetIdPattern = {
+      R"(_Photo_Position([[:alnum:]]+)_([[:digit:]]+).*)"};
   return RE2::FullMatch(asset_id, *kAssetIdPattern, &parsed_output.position_id,
                         &parsed_output.idx);
 }
