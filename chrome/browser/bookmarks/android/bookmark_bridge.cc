@@ -864,7 +864,9 @@ void BookmarkBridge::SetBookmarkTitle(JNIEnv* env,
                                       int32_t type,
                                       const std::u16string& title) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
-  CHECK(IsLoaded(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/574127478): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsLoaded());
 
   const BookmarkNode* bookmark = GetNodeByID(id, type);
 
