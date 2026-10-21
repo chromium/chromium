@@ -9,7 +9,6 @@ source_set("management") {
   ]
   deps = [
     "//base",
-    "//components/device_signals/core/common:features",
     "//components/enterprise",
     "//components/enterprise/connectors/core",
     "//components/policy/core/common",
