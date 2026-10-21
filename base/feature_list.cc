@@ -537,10 +537,14 @@ FeatureList::GetRuntimeMutableFeatureState(
 FeatureList::RuntimeMutableFeatureUpdate::RuntimeMutableFeatureUpdate(
     internal::RuntimeMutableFeatureState& state_entry,
     RuntimeFieldTrialInfo* override_info,
-    OverrideState override_state)
+    OverrideState override_state,
+    bool old_is_enabled,
+    bool new_is_enabled)
     : state_entry_(&state_entry),
       override_info_(override_info),
-      override_state_(override_state) {
+      override_state_(override_state),
+      old_is_enabled_(old_is_enabled),
+      new_is_enabled_(new_is_enabled) {
   CHECK(override_info_);
 }
 
@@ -549,6 +553,8 @@ FeatureList::RuntimeMutableFeatureUpdate::RuntimeMutableFeatureUpdate(
     : state_entry_(other.state_entry_),
       override_info_(std::move(other.override_info_)),
       override_state_(other.override_state_),
+      old_is_enabled_(other.old_is_enabled_),
+      new_is_enabled_(other.new_is_enabled_),
       stage_(std::exchange(other.stage_, Stage::kMovedFrom)) {}
 
 FeatureList::RuntimeMutableFeatureUpdate&
@@ -560,6 +566,8 @@ FeatureList::RuntimeMutableFeatureUpdate::operator=(
     state_entry_ = other.state_entry_;
     override_info_ = std::move(other.override_info_);
     override_state_ = other.override_state_;
+    old_is_enabled_ = other.old_is_enabled_;
+    new_is_enabled_ = other.new_is_enabled_;
     stage_ = std::exchange(other.stage_, Stage::kMovedFrom);
   }
   return *this;
@@ -576,7 +584,7 @@ void FeatureList::RuntimeMutableFeatureUpdate::RunPreMutationCallback() {
   if (!state_entry_->pre_mutation_callback.is_null()) {
     state_entry_->pre_mutation_callback.Run(
         state_entry_->feature.get(), override_info_->trial_name(),
-        override_info_->group_name(), override_state_);
+        override_info_->group_name(), old_is_enabled_, new_is_enabled_);
   }
 }
 
@@ -595,7 +603,7 @@ void FeatureList::RuntimeMutableFeatureUpdate::RunPostMutationCallback() {
   if (!state_entry_->post_mutation_callback.is_null()) {
     state_entry_->post_mutation_callback.Run(
         state_entry_->feature.get(), override_info_->trial_name(),
-        override_info_->group_name(), override_state_);
+        override_info_->group_name(), old_is_enabled_, new_is_enabled_);
   }
 }
 
@@ -652,7 +660,15 @@ FeatureList::PrepareRuntimeMutableFeatureStateUpdateImpl(
   // If we get here, the feature is registered for runtime mutability. The
   // feature pointer in the entry is guaranteed to be non-null and the feature
   // has its runtime mutability bits properly set.
-  return RuntimeMutableFeatureUpdate(it->second, override_info, override_state);
+  const Feature& feature = it->second.feature.get();
+  // Compute the effective enabled states before and after the update, without
+  // activating any field trial.
+  const bool old_is_enabled = IsFeatureEnabledForOverrideState(
+      feature, GetOverrideStateImpl(feature, /*activate_trial=*/false));
+  const bool new_is_enabled =
+      IsFeatureEnabledForOverrideState(feature, override_state);
+  return RuntimeMutableFeatureUpdate(it->second, override_info, override_state,
+                                     old_is_enabled, new_is_enabled);
 }
 
 bool FeatureList::HasRuntimeMutabilityEnabledByFeatureName(
@@ -1178,8 +1194,12 @@ void FeatureList::BuildTrialToFeaturesIndex() {
 }
 
 bool FeatureList::IsFeatureEnabled(const Feature& feature) const {
-  OverrideState overridden_state = GetOverrideState(feature);
+  return IsFeatureEnabledForOverrideState(feature, GetOverrideState(feature));
+}
 
+bool FeatureList::IsFeatureEnabledForOverrideState(
+    const Feature& feature,
+    OverrideState overridden_state) const {
   // If marked as OVERRIDE_USE_DEFAULT, simply return the default state below.
   if (overridden_state != OVERRIDE_USE_DEFAULT) {
     return overridden_state == OVERRIDE_ENABLE_FEATURE;

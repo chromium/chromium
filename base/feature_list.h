@@ -180,14 +180,21 @@ class BASE_EXPORT FeatureList {
                             const ControllingTrialInfo&) = default;
   };
 
-  // Callback to be invoked when a runtime mutable feature's OverrideState
-  // changes at runtime.
+  // Callback to be invoked when a runtime mutable feature's state changes at
+  // runtime. `field_trial_name` and `group_name` identify the runtime field
+  // trial override that is being applied. `old_is_enabled` and
+  // `new_is_enabled` are the effective enabled states of the feature before
+  // and after the change, respectively (taking into account the feature's
+  // default state if it uses it). Note that a callback may be invoked even if
+  // `old_is_enabled == new_is_enabled`, e.g. when only the controlling trial,
+  // group or params change.
   using OnRuntimeMutableFeatureStateChangedCallback =
       base::RepeatingCallback<void(
           std::reference_wrapper<const Feature> /*feature*/,
           std::string_view /*field_trial_name*/,
           std::string_view /*group_name*/,
-          OverrideState /*override_state*/)>;
+          bool /*old_is_enabled*/,
+          bool /*new_is_enabled*/)>;
 
   // Encapsulates the 3-phase execution of updating a runtime mutable feature's
   // state (pre-mutation callback, state update, post-mutation callback).
@@ -235,11 +242,16 @@ class BASE_EXPORT FeatureList {
     RuntimeMutableFeatureUpdate(
         internal::RuntimeMutableFeatureState& state_entry,
         RuntimeFieldTrialInfo* override_info,
-        OverrideState override_state);
+        OverrideState override_state,
+        bool old_is_enabled,
+        bool new_is_enabled);
 
     raw_ptr<internal::RuntimeMutableFeatureState> state_entry_ = nullptr;
     base::raw_ptr<RuntimeFieldTrialInfo> override_info_;
     OverrideState override_state_ = OVERRIDE_USE_DEFAULT;
+    // The effective enabled states of the feature before and after the update.
+    bool old_is_enabled_;
+    bool new_is_enabled_;
     Stage stage_ = Stage::kInitial;
   };
 
@@ -687,6 +699,13 @@ class BASE_EXPORT FeatureList {
   // public FeatureList::IsEnabled() static function on the global singleton.
   // Requires the FeatureList to have already been fully initialized.
   bool IsFeatureEnabled(const Feature& feature) const;
+
+  // Returns whether `feature` is enabled if its override state is
+  // `override_state`, falling back to the feature's default state (including
+  // any country restrictions) for OVERRIDE_USE_DEFAULT. Has no side effects
+  // (e.g. does not activate any field trial).
+  bool IsFeatureEnabledForOverrideState(const Feature& feature,
+                                        OverrideState override_state) const;
 
   // Returns whether the given |feature| is enabled. This is invoked by the
   // public FeatureList::GetStateIfOverridden() static function on the global

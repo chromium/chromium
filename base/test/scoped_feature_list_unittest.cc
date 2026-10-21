@@ -783,14 +783,16 @@ TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatures) {
     return BindLambdaForTesting(
         [&events, phase](std::reference_wrapper<const Feature> feature,
                          std::string_view trial_name,
-                         std::string_view group_name,
-                         FeatureList::OverrideState state) {
+                         std::string_view group_name, bool old_is_enabled,
+                         bool new_is_enabled) {
           // Every callback is passed the synthetic study/group identifying the
-          // simulated mutation, along with the state being applied.
+          // simulated mutation, along with the enabled states before and after
+          // the mutation.
           EXPECT_EQ(StrCat({"RuntimeMutationStudy", feature.get().name}),
                     trial_name);
           EXPECT_EQ("RuntimeMutationDisabled", group_name);
-          EXPECT_EQ(FeatureList::OVERRIDE_DISABLE_FEATURE, state);
+          EXPECT_TRUE(old_is_enabled);
+          EXPECT_FALSE(new_is_enabled);
 
           events.push_back(
               StrCat({phase, " ", feature.get().name, " ",

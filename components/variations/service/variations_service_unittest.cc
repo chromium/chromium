@@ -3909,11 +3909,12 @@ TEST_F(VariationsServiceTest,
       base::BindLambdaForTesting(
           [&event_log](std::reference_wrapper<const base::Feature> feature,
                        std::string_view study_name, std::string_view group_name,
-                       base::FeatureList::OverrideState state) {
+                       bool old_is_enabled, bool new_is_enabled) {
             event_log.push_back("A_pre");
             EXPECT_EQ(study_name, "Study1");
             EXPECT_EQ(group_name, "Group1");
-            EXPECT_EQ(state, base::FeatureList::OVERRIDE_DISABLE_FEATURE);
+            EXPECT_TRUE(old_is_enabled);
+            EXPECT_FALSE(new_is_enabled);
             // Neither feature should have been mutated yet.
             EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
             EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
@@ -3926,11 +3927,12 @@ TEST_F(VariationsServiceTest,
       base::BindLambdaForTesting(
           [&event_log](std::reference_wrapper<const base::Feature> feature,
                        std::string_view study_name, std::string_view group_name,
-                       base::FeatureList::OverrideState state) {
+                       bool old_is_enabled, bool new_is_enabled) {
             event_log.push_back("A_post");
             EXPECT_EQ(study_name, "Study1");
             EXPECT_EQ(group_name, "Group1");
-            EXPECT_EQ(state, base::FeatureList::OVERRIDE_DISABLE_FEATURE);
+            EXPECT_TRUE(old_is_enabled);
+            EXPECT_FALSE(new_is_enabled);
             // All mutations should have been applied already.
             EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
             EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
@@ -3945,11 +3947,12 @@ TEST_F(VariationsServiceTest,
       base::BindLambdaForTesting(
           [&event_log](std::reference_wrapper<const base::Feature> feature,
                        std::string_view study_name, std::string_view group_name,
-                       base::FeatureList::OverrideState state) {
+                       bool old_is_enabled, bool new_is_enabled) {
             event_log.push_back("B_pre");
             EXPECT_EQ(study_name, "Study2");
             EXPECT_EQ(group_name, "Group2");
-            EXPECT_EQ(state, base::FeatureList::OVERRIDE_DISABLE_FEATURE);
+            EXPECT_TRUE(old_is_enabled);
+            EXPECT_FALSE(new_is_enabled);
             // Neither feature should have been mutated yet.
             EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
             EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
@@ -3962,11 +3965,12 @@ TEST_F(VariationsServiceTest,
       base::BindLambdaForTesting(
           [&event_log](std::reference_wrapper<const base::Feature> feature,
                        std::string_view study_name, std::string_view group_name,
-                       base::FeatureList::OverrideState state) {
+                       bool old_is_enabled, bool new_is_enabled) {
             event_log.push_back("B_post");
             EXPECT_EQ(study_name, "Study2");
             EXPECT_EQ(group_name, "Group2");
-            EXPECT_EQ(state, base::FeatureList::OVERRIDE_DISABLE_FEATURE);
+            EXPECT_TRUE(old_is_enabled);
+            EXPECT_FALSE(new_is_enabled);
             // All mutations should have been applied already.
             EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
             EXPECT_FALSE(base::FeatureList::IsEnabled(kTestRuntimeFeatureB));
@@ -4020,7 +4024,7 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_RotatesUmaLog) {
           [&event_log, &service](
               std::reference_wrapper<const base::Feature> feature,
               std::string_view study_name, std::string_view group_name,
-              base::FeatureList::OverrideState state) {
+              bool old_is_enabled, bool new_is_enabled) {
             event_log.push_back("pre_mutation");
             // Before mutations are applied, RotateUmaLogForRuntimeMutability
             // should not have been called yet.
@@ -4034,7 +4038,7 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_RotatesUmaLog) {
           [&event_log, &service](
               std::reference_wrapper<const base::Feature> feature,
               std::string_view study_name, std::string_view group_name,
-              base::FeatureList::OverrideState state) {
+              bool old_is_enabled, bool new_is_enabled) {
             event_log.push_back("post_mutation");
             // After mutations are applied, RotateUmaLogForRuntimeMutability
             // should have been called exactly once.
@@ -4206,14 +4210,14 @@ TEST_F(VariationsServiceTest,
       base::BindLambdaForTesting(
           [&event_log](std::reference_wrapper<const base::Feature> feature,
                        std::string_view study_name, std::string_view group_name,
-                       base::FeatureList::OverrideState state) {
+                       bool old_is_enabled, bool new_is_enabled) {
             event_log.push_back("pre_mutation");
           }),
       /*post_mutation_callback=*/
       base::BindLambdaForTesting(
           [&event_log](std::reference_wrapper<const base::Feature> feature,
                        std::string_view study_name, std::string_view group_name,
-                       base::FeatureList::OverrideState state) {
+                       bool old_is_enabled, bool new_is_enabled) {
             event_log.push_back("post_mutation");
           }));
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));
@@ -4360,8 +4364,8 @@ TEST_F(VariationsServiceTest,
   auto record_post_mutation = base::BindLambdaForTesting(
       [&applied_features](std::reference_wrapper<const base::Feature> feature,
                           std::string_view study_name,
-                          std::string_view group_name,
-                          base::FeatureList::OverrideState state) {
+                          std::string_view group_name, bool old_is_enabled,
+                          bool new_is_enabled) {
         applied_features.push_back(
             base::StrCat({feature.get().name, ":", group_name}));
       });
@@ -4489,7 +4493,7 @@ TEST_F(VariationsServiceTest,
       base::BindLambdaForTesting(
           [](std::reference_wrapper<const base::Feature> feature,
              std::string_view study_name, std::string_view group_name,
-             base::FeatureList::OverrideState state) {
+             bool old_is_enabled, bool new_is_enabled) {
             // Tamper with the runtime override to simulate a corrupted state.
             auto override_info =
                 base::FeatureList::GetInstance()
@@ -4541,9 +4545,8 @@ TEST_F(VariationsServiceTest,
           [&callback_called](
               std::reference_wrapper<const base::Feature> feature,
               std::string_view study_name, std::string_view group_name,
-              base::FeatureList::OverrideState state) {
-            callback_called = true;
-          }),
+              bool old_is_enabled,
+              bool new_is_enabled) { callback_called = true; }),
       /*post_mutation_callback=*/
       base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));

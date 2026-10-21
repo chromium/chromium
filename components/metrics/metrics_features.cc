@@ -74,10 +74,11 @@ void OnNoopFeatureStateChanged(
     std::reference_wrapper<const base::Feature> feature,
     std::string_view field_trial_name,
     std::string_view group_name,
-    base::FeatureList::OverrideState override_state) {
+    bool old_is_enabled,
+    bool new_is_enabled) {
   DVLOG(1) << "Runtime mutable feature state changed: " << feature.get().name
            << ", trial: " << field_trial_name << ", group: " << group_name
-           << ", state: " << override_state;
+           << ", enabled: " << old_is_enabled << " -> " << new_is_enabled;
 }
 
 }  // namespace
