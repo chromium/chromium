@@ -25,8 +25,6 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"google_drive", SymbolType::kCustom};
     case SymbolGoogleFull:
       return {@"google_full", SymbolType::kCustom};
-    case SymbolGoogleIcon:
-      return {@"google_icon", SymbolType::kCustom};
     case SymbolGoogleIconMonochrome:
       return {@"google_icon_monochrome", SymbolType::kCustom};
     case SymbolGoogleMaps:
