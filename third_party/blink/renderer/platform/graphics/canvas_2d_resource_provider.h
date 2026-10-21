@@ -136,7 +136,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   bool IsSingleBuffered() const;
 
   bool IsAccelerated() const { return is_accelerated_; }
-  bool IsSoftware() const { return is_software_; }
+  bool IsSoftware() const { return image_pool_->GetImageInfo().is_software; }
 
   viz::SharedImageFormat GetSharedImageFormat() const {
     return image_pool_->GetImageInfo().format;
@@ -256,7 +256,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
   const bool is_accelerated_;
-  const bool is_software_;
   bool is_cleared_ = false;
   bool notified_context_lost_ = false;
 

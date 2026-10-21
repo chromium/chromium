@@ -106,7 +106,7 @@ Canvas2DResourceProvider::NewOrRecycledResource() {
   CHECK(!IsSingleBuffered() || !resource->IsInitialized());
 
   if (!resource->IsInitialized()) {
-    if (image_pool_->GetImageInfo().is_software) {
+    if (IsSoftware()) {
       resource->InitializeSoftware(
           CreateWeakPtr(), shared_image_interface_provider_, hdr_metadata_);
     } else {
@@ -648,7 +648,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
     gpu::SharedImageUsageSet shared_image_usage_flags,
     base::OnceClosure context_lost_callback)
     : is_accelerated_(is_accelerated),
-      is_software_(false),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       hdr_metadata_(hdr_metadata),
       context_lost_callback_(std::move(context_lost_callback)) {
@@ -740,7 +739,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     base::OnceClosure context_lost_callback)
     : is_accelerated_(false),
-      is_software_(true),
       shared_image_interface_provider_(
           shared_image_interface_provider->GetWeakPtr()),
       hdr_metadata_(hdr_metadata),
