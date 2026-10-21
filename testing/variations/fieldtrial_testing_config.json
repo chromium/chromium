@@ -3212,6 +3212,25 @@
             ]
         }
     ],
+    "BrowsingDataModelSharedWorkerKeyWithoutURL": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261021",
+                    "enable_features": [
+                        "BrowsingDataModelSharedWorkerKeyWithoutURL"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowsingHistoryFilterDropdownPhase1Clank": [
         {
             "platforms": [
