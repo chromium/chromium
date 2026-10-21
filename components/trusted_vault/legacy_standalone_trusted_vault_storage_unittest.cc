@@ -10,14 +10,11 @@
 #include <vector>
 
 #include "base/base64.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
@@ -57,11 +54,9 @@ bool WriteLocalTrustedVaultFile(
   file_proto.set_serialized_local_trusted_vault(proto.SerializeAsString());
   file_proto.set_md5_digest_hex_string(
       MD5StringForTrustedVault(file_proto.serialized_local_trusted_vault()));
-  if (base::FeatureList::IsEnabled(kEnableTrustedVaultSHA256)) {
-    file_proto.set_sha256_digest_hex_string(
-        base::Base64Encode(crypto::hash::Sha256(
-            base::as_byte_span(file_proto.serialized_local_trusted_vault()))));
-  }
+  file_proto.set_sha256_digest_hex_string(
+      base::Base64Encode(crypto::hash::Sha256(
+          base::as_byte_span(file_proto.serialized_local_trusted_vault()))));
   return base::WriteFile(path, file_proto.SerializeAsString());
 }
 
@@ -82,12 +77,10 @@ trusted_vault_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
     return data_proto;
   }
 
-  if (base::FeatureList::IsEnabled(kEnableTrustedVaultSHA256)) {
-    if ((base::Base64Encode(crypto::hash::Sha256(base::as_byte_span(
-            file_proto.serialized_local_trusted_vault())))) !=
-        file_proto.sha256_digest_hex_string()) {
-      return data_proto;
-    }
+  if (base::Base64Encode(crypto::hash::Sha256(
+          base::as_byte_span(file_proto.serialized_local_trusted_vault()))) !=
+      file_proto.sha256_digest_hex_string()) {
+    return data_proto;
   }
   data_proto.ParseFromString(file_proto.serialized_local_trusted_vault());
   return data_proto;
@@ -493,39 +486,6 @@ TEST_F(LegacyStandaloneTrustedVaultStorageTest, MutateUserVault) {
       ReadLocalTrustedVaultFile(file_path());
   ASSERT_EQ(file_proto.user_size(), 1);
   EXPECT_EQ(file_proto.user(0).last_vault_key_version(), 7);
-}
-
-// This test checks that the `kEnableTrustedVaultSHA256` flag disables new
-// SHA256 writes.
-class LegacyStandaloneTrustedVaultStorageDisableSHA256Test
-    : public LegacyStandaloneTrustedVaultStorageTest {
- public:
-  LegacyStandaloneTrustedVaultStorageDisableSHA256Test() {
-    feature_list_.InitAndDisableFeature(kEnableTrustedVaultSHA256);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test that files written with corrupted SHA256 can still be read when the
-// feature is disabled.
-TEST_F(LegacyStandaloneTrustedVaultStorageDisableSHA256Test, DisablingSHA256) {
-  trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
-  // Set MD5 hash as normal since it takes precedence.
-  file_proto.set_md5_digest_hex_string(
-      MD5StringForTrustedVault(file_proto.serialized_local_trusted_vault()));
-  // Set corrupted sha256
-  file_proto.set_sha256_digest_hex_string("not_correct_digest");
-  ASSERT_TRUE(base::WriteFile(file_path(), file_proto.SerializeAsString()));
-
-  // Read the file from disk.
-  base::HistogramTester histogram_tester;
-  storage()->ReadDataFromDisk();
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.FileReadStatus." + security_domain_name_for_uma(),
-      /*sample=*/TrustedVaultFileReadStatusForUMA::kSuccess,
-      /*expected_bucket_count=*/1);
 }
 
 TEST_F(LegacyStandaloneTrustedVaultStorageTest, ReadDataForMigration) {

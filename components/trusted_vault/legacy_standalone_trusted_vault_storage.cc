@@ -14,7 +14,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -70,16 +69,19 @@ std::optional<trusted_vault_pb::LocalTrustedVault> ReadDataFromDiskImpl(
     return std::nullopt;
   }
 
-  if (base::FeatureList::IsEnabled(kEnableTrustedVaultSHA256)) {
-    if (file_proto.has_sha256_digest_hex_string() &&
-        (base::Base64Encode(crypto::hash::Sha256(base::as_byte_span(
-             file_proto.serialized_local_trusted_vault()))) !=
-         file_proto.sha256_digest_hex_string())) {
-      RecordTrustedVaultFileReadStatusForSecurityDomain(
-          security_domain_id,
-          TrustedVaultFileReadStatusForUMA::kSHA256DigestMismatch);
-      return std::nullopt;
-    }
+  // Note: Both digests only guard against accidental disk corruption (not
+  // malicious tampering). `has_sha256_digest_hex_string()` is checked
+  // conditionally for backward compatibility with files written before M138;
+  // complete removal of MD5 is deferred as this storage is being migrated to
+  // OSCrypt-encrypted storage.
+  if (file_proto.has_sha256_digest_hex_string() &&
+      (base::Base64Encode(crypto::hash::Sha256(
+           base::as_byte_span(file_proto.serialized_local_trusted_vault()))) !=
+       file_proto.sha256_digest_hex_string())) {
+    RecordTrustedVaultFileReadStatusForSecurityDomain(
+        security_domain_id,
+        TrustedVaultFileReadStatusForUMA::kSHA256DigestMismatch);
+    return std::nullopt;
   }
 
   trusted_vault_pb::LocalTrustedVault data_proto;
@@ -215,11 +217,9 @@ void WriteDataToDiskImpl(const trusted_vault_pb::LocalTrustedVault& data,
   file_proto.set_serialized_local_trusted_vault(data.SerializeAsString());
   file_proto.set_md5_digest_hex_string(
       MD5StringForTrustedVault(file_proto.serialized_local_trusted_vault()));
-  if (base::FeatureList::IsEnabled(kEnableTrustedVaultSHA256)) {
-    file_proto.set_sha256_digest_hex_string(
-        base::Base64Encode(crypto::hash::Sha256(
-            base::as_byte_span(file_proto.serialized_local_trusted_vault()))));
-  }
+  file_proto.set_sha256_digest_hex_string(
+      base::Base64Encode(crypto::hash::Sha256(
+          base::as_byte_span(file_proto.serialized_local_trusted_vault()))));
   bool success = base::ImportantFileWriter::WriteFileAtomically(
       file_path, file_proto.SerializeAsString(), "TrustedVault");
   if (!success) {

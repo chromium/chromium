@@ -10,14 +10,12 @@
 
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/legacy_standalone_trusted_vault_storage_adapter.h"
 #include "components/trusted_vault/local_domains_storage.h"
@@ -51,11 +49,9 @@ bool WriteLegacyTrustedVaultFile(
   file_proto.set_serialized_local_trusted_vault(proto.SerializeAsString());
   file_proto.set_md5_digest_hex_string(
       MD5StringForTrustedVault(file_proto.serialized_local_trusted_vault()));
-  if (base::FeatureList::IsEnabled(kEnableTrustedVaultSHA256)) {
-    file_proto.set_sha256_digest_hex_string(
-        base::Base64Encode(crypto::hash::Sha256(
-            base::as_byte_span(file_proto.serialized_local_trusted_vault()))));
-  }
+  file_proto.set_sha256_digest_hex_string(
+      base::Base64Encode(crypto::hash::Sha256(
+          base::as_byte_span(file_proto.serialized_local_trusted_vault()))));
   return base::WriteFile(path, file_proto.SerializeAsString());
 }
 
