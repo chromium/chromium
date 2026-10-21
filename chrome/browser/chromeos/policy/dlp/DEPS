@@ -13,7 +13,6 @@ include_rules = [
   # refactor chromeos codes in //chrome to break these dependencies; see
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
-  "+chrome/browser/apps/platform_apps",
   "+chrome/browser/ash/policy/dlp",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
@@ -34,6 +33,7 @@ specific_include_rules = {
   ],
   # Only tests need these //chrome dependencies.
   ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
+    "+chrome/browser/apps/platform_apps",
     "+chrome/browser/file_system_access",
     "+chrome/browser/printing",
   ],

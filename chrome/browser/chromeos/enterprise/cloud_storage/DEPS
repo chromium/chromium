@@ -12,20 +12,20 @@ include_rules = [
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
   "+chrome/browser/apps/app_service",
-  "+chrome/browser/apps/intent_helper",
-  "+chrome/browser/apps/link_capturing",
   "+chrome/browser/chromeos/extensions/odfs_config_private",
   "+chrome/browser/chromeos/upload_office_to_cloud",
-  "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
-  "+chrome/browser/web_applications/web_app_install_info.h",
 ]
 
 specific_include_rules = {
-  # Only tests need //chrome/browser/policy.
+  # Only tests need these //chrome dependencies.
   "one_drive_pref_observer_browsertest\\.cc": [
+    "+chrome/browser/apps/intent_helper",
+    "+chrome/browser/apps/link_capturing",
+    "+chrome/browser/extensions/extension_service.h",
     "+chrome/browser/policy/policy_test_utils.h",
     "+chrome/browser/policy/profile_policy_connector.h",
+    "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
+    "+chrome/browser/web_applications/web_app_install_info.h",
   ],
 }
