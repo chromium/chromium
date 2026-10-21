@@ -85,7 +85,7 @@ DeviceInfoSyncServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
 
   auto device_info_sync_client =
-      std::make_unique<browser_sync::DeviceInfoSyncClientImpl>(profile);
+      std::make_unique<DeviceInfoSyncClientImpl>(profile);
   auto local_device_info_provider =
       std::make_unique<syncer::LocalDeviceInfoProviderImpl>(
           chrome::GetChannel(),

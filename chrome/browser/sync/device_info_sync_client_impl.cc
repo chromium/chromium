@@ -31,8 +31,6 @@
 #include "chrome/browser/webauthn/android/cable_module_android.h"
 #endif
 
-namespace browser_sync {
-
 DeviceInfoSyncClientImpl::DeviceInfoSyncClientImpl(Profile* profile)
     : profile_(profile) {}
 
@@ -146,5 +144,3 @@ DeviceInfoSyncClientImpl::GetLocalPersonalContextInfo() const {
   return personal_context::PersonalContextKeyManager::
       GetLocalPersonalContextInfo(profile_->GetPrefs(), eligibility_service);
 }
-
-}  // namespace browser_sync

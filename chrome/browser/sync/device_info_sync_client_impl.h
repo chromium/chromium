@@ -12,8 +12,6 @@
 
 class Profile;
 
-namespace browser_sync {
-
 class DeviceInfoSyncClientImpl : public syncer::DeviceInfoSyncClient {
  public:
   explicit DeviceInfoSyncClientImpl(Profile* profile);
@@ -64,7 +62,5 @@ class DeviceInfoSyncClientImpl : public syncer::DeviceInfoSyncClient {
  private:
   const raw_ptr<Profile> profile_;
 };
-
-}  // namespace browser_sync
 
 #endif  // CHROME_BROWSER_SYNC_DEVICE_INFO_SYNC_CLIENT_IMPL_H_
