@@ -20,6 +20,7 @@ import zipfile
 
 from util import build_utils
 from util import md5_check
+from util import zipbuilder
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
 
@@ -32,7 +33,7 @@ _CUSTOM_D8_BINARY_PATH = os.path.join(
 _GRAALVM_MAX_DEX_INPUT_SIZE = 8 * 1024 * 1024
 # For dex merging, GraalVM is faster up to ~20 MiB.
 _GRAALVM_MAX_MERGE_INPUT_SIZE = 20 * 1024 * 1024
-# For --file-per-class-file invocations (_CreateIntermediateDexFiles), shard
+# For --file-per-class-file invocations (_CreateIntermediateDexJar), shard
 # inputs across concurrent GraalVM processes targeting ~1.5 MB per shard to
 # avoid GraalVM Serial GC pauses (e.g. 20.4 MB chrome_java: 5.60s JVM -> 1.18s).
 _GRAALVM_SHARD_TARGET_SIZE = int(1.5 * 1024 * 1024)
@@ -285,8 +286,8 @@ def _RunD8(
             raise
 
 
-def _ZipAligned(dex_files, output_path, services_map):
-    """Creates a .dex.jar with 4-byte aligned files.
+def _ZipStored(dex_files, output_path, services_map):
+    """Creates a .dex.jar with uncompressed (STORED) files.
 
     Args:
       dex_files: List of dex files.
@@ -296,11 +297,9 @@ def _ZipAligned(dex_files, output_path, services_map):
     with zipfile.ZipFile(output_path, 'w') as z:
         for i, dex_file in enumerate(dex_files):
             name = 'classes{}.dex'.format(i + 1 if i > 0 else '')
-            zip_helpers.add_to_zip_hermetic(
-                z, name, src_path=dex_file, alignment=4
-            )
+            zip_helpers.add_to_zip_hermetic(z, name, src_path=dex_file)
         for path, data in sorted(services_map.items()):
-            zip_helpers.add_to_zip_hermetic(z, path, data=data, alignment=4)
+            zip_helpers.add_to_zip_hermetic(z, path, data=data)
 
 
 def _CreateServicesMap(service_jars):
@@ -338,70 +337,95 @@ _MERGE_SERVICE_ENTRIES in dex.py.
     return ret
 
 
-def _CreateFinalDex(
-    d8_inputs, output, tmp_dir, dex_cmd, options=None, service_jars=None
-):
-    tmp_dex_output = os.path.join(tmp_dir, 'tmp_dex_output.zip')
-    services_map = _CreateServicesMap(service_jars or [])
+def _WriteServiceArgs(services_map, tmp_dir):
+    args = []
+    for i, (path, data) in enumerate(sorted(services_map.items())):
+        svc_file = os.path.join(tmp_dir, f'service_{i}.txt')
+        with open(svc_file, 'w', encoding='utf-8', newline='') as f:
+            f.write(data)
+        args += ['--add-file', f'{path}={svc_file}']
+    return args
 
-    needs_dexing = not all(f.endswith('.dex') for f in d8_inputs)
-    needs_dexmerge = output.endswith('.dex') or not (
-        options and options.intermediate
+
+def _MergeShardJars(shard_jars, output_path, services_map, warnings_as_errors):
+    with zipbuilder.ZipBuilder() as zb:
+        for sj in shard_jars:
+            zb.add_all_from_zip(sj, compress_level=zipbuilder.KEEP_COMPRESSION)
+        for path, data in sorted(services_map.items()):
+            zb.add_data(path, data, compress_level=0)
+        zb.write(output_path, warnings_as_errors=warnings_as_errors)
+
+
+def _CreateFinalDex(
+    d8_inputs,
+    output,
+    tmp_dir,
+    dex_cmd,
+    options=None,
+    services_map=None,
+):
+    services_map = services_map or {}
+    warnings_as_errors = not options or options.warnings_as_errors
+    show_desugar_warnings = bool(
+        options and options.show_desugar_default_interface_warnings
     )
-    if needs_dexing or needs_dexmerge:
+    if not output.endswith('.dex') and not (options and options.skip_custom_d8):
+        tmp_dex_output = os.path.join(tmp_dir, 'tmp_dex_output.jar')
+        extra_args = _WriteServiceArgs(services_map, tmp_dir)
+        _RunD8(
+            dex_cmd + extra_args,
+            d8_inputs,
+            tmp_dex_output,
+            warnings_as_errors,
+            show_desugar_warnings,
+        )
+        logging.debug('Performed dex merging directly to jar')
+    else:
+        tmp_dex_output = os.path.join(tmp_dir, 'tmp_dex_output.zip')
         tmp_dex_dir = os.path.join(tmp_dir, 'tmp_dex_dir')
         os.mkdir(tmp_dex_dir)
-
         _RunD8(
             dex_cmd,
             d8_inputs,
             tmp_dex_dir,
-            (not options or options.warnings_as_errors),
-            (options and options.show_desugar_default_interface_warnings),
+            warnings_as_errors,
+            show_desugar_warnings,
         )
         logging.debug('Performed dex merging')
-
         dex_files = [
             os.path.join(tmp_dex_dir, f) for f in os.listdir(tmp_dex_dir)
         ]
-
         if output.endswith('.dex'):
             if len(dex_files) > 1:
                 raise Exception('%d files created, expected 1' % len(dex_files))
             tmp_dex_output = dex_files[0]
         else:
-            _ZipAligned(sorted(dex_files), tmp_dex_output, services_map)
-    else:
-        # Skip dexmerger. Just put all incrementals into the .jar individually.
-        _ZipAligned(sorted(d8_inputs), tmp_dex_output, services_map)
-        logging.debug('Quick-zipped %d files', len(d8_inputs))
+            _ZipStored(sorted(dex_files), tmp_dex_output, services_map)
 
     # The dex file is complete and can be moved out of tmp_dir.
     shutil.move(tmp_dex_output, output)
 
 
-def _IntermediateDexFilePathsFromInputJars(class_inputs, incremental_dir):
-    """Returns list of intermediate dex file paths, .jar files with services."""
-    dex_files = []
-    service_jars = set()
+def _ScanClassInputJars(class_inputs):
+    """Returns ({jar: [(subpath, size), ...]}, [service_jars])."""
+    jar_class_entries = {}
+    service_jars = []
     for jar in class_inputs:
+        entries = []
+        has_services = False
         with zipfile.ZipFile(jar, 'r') as z:
-            for subpath in z.namelist():
+            for info in z.infolist():
+                subpath = info.filename
                 if _IsClassFile(subpath):
-                    subpath = subpath[:-5] + 'dex'
-                    dex_files.append(os.path.join(incremental_dir, subpath))
-                elif subpath.startswith('META-INF/services/'):
-                    service_jars.add(jar)
-    return dex_files, sorted(service_jars)
-
-
-def _DeleteStaleIncrementalDexFiles(dex_dir, dex_files):
-    """Deletes intermediate .dex files that are no longer needed."""
-    all_files = build_utils.FindInDirectory(dex_dir)
-    desired_files = set(dex_files)
-    for path in all_files:
-        if path not in desired_files:
-            os.unlink(path)
+                    entries.append((subpath, info.file_size))
+                elif subpath.startswith(
+                    'META-INF/services/'
+                ) and not subpath.endswith('/'):
+                    has_services = True
+        jar_class_entries[jar] = entries
+        if has_services:
+            service_jars.append(jar)
+    return jar_class_entries, service_jars
 
 
 def _ParseDesugarDeps(desugar_dependencies_file):
@@ -475,41 +499,9 @@ def _ClassFileNestPrefix(class_path):
     return base
 
 
-def _ScanClassInputJars(class_inputs):
-    """Returns {jar: [(subpath, size), ...]} for .class entries."""
-    jar_class_entries = {}
-    for jar in class_inputs:
-        entries = []
-        with zipfile.ZipFile(jar, 'r') as z:
-            for info in z.infolist():
-                if _IsClassFile(info.filename):
-                    entries.append((info.filename, info.file_size))
-        jar_class_entries[jar] = entries
-    return jar_class_entries
-
-
-def _SelectClassEntries(changes, jar_class_entries, required_classes_set):
-    if changes is None:
-        return jar_class_entries
-    selected = {}
-    for jar, entries in jar_class_entries.items():
-        changed_class_set = (
-            set(changes.IterChangedSubpaths(jar)) | required_classes_set
-        )
-        # D8 nest-based access desugaring requires the entire nest group to be
-        # present, else it aborts with "Class X requires its nest host Y to be
-        # on program or class path." Pull in sibling nestmates by host prefix.
-        nest_prefixes = {
-            _ClassFileNestPrefix(path)
-            for path in changed_class_set
-            if _IsClassFile(path)
-        }
-        selected[jar] = [
-            (name, sz)
-            for name, sz in entries
-            if _ClassFileNestPrefix(name) in nest_prefixes
-        ]
-    return selected
+@functools.cache
+def _GetFileSize(path):
+    return os.path.getsize(path)
 
 
 def _SingleShard(jar_class_entries):
@@ -576,40 +568,15 @@ def _BuildJarInputArgs(shard_map, jar_class_entries):
     return args
 
 
-def _ExtractClassFiles(changes, tmp_dir, class_inputs, required_classes_set):
-    classes_list = []
-    for jar in class_inputs:
-        if changes:
-            changed_class_set = (
-                set(changes.IterChangedSubpaths(jar)) | required_classes_set
-            )
-            nest_prefixes = {
-                _ClassFileNestPrefix(path)
-                for path in changed_class_set
-                if _IsClassFile(path)
-            }
-
-            def predicate(path, nest_prefixes=nest_prefixes):
-                return (
-                    _IsClassFile(path)
-                    and _ClassFileNestPrefix(path) in nest_prefixes
-                )
-        else:
-            predicate = _IsClassFile
-
-        classes_list.extend(
-            build_utils.ExtractAll(jar, path=tmp_dir, predicate=predicate)
-        )
-    return classes_list
-
-
-@functools.cache
-def _GetFileSize(path):
-    return os.path.getsize(path)
-
-
-def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
-    # Do a full rebuild when changes occur in non-input files.
+def _CreateIntermediateDexJar(
+    changes,
+    options,
+    tmp_dir,
+    dex_cmd,
+    output_jar,
+    jar_class_entries,
+    services_map,
+):
     allowed_changed = set(options.class_inputs)
     allowed_changed.update(options.dex_inputs)
     allowed_changed.update(options.classpath)
@@ -625,11 +592,15 @@ def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
             strings_changed,
             non_direct_input_changed,
         )
-        changes = None
 
-    if changes is None:
-        required_desugar_classes_set = set()
-    else:
+    is_incremental = bool(
+        options.incremental_dir
+        and not strings_changed
+        and not non_direct_input_changed
+        and os.path.exists(output_jar)
+    )
+
+    if is_incremental:
         required_desugar_classes_set = _ComputeRequiredDesugarClasses(
             changes,
             options.desugar_dependencies,
@@ -640,102 +611,181 @@ def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
             'Class files needing re-desugar: %d',
             len(required_desugar_classes_set),
         )
-
-    if options.skip_custom_d8:
-        tmp_extract_dir = os.path.join(tmp_dir, 'tmp_extract_dir')
-        os.mkdir(tmp_extract_dir)
-        class_files = _ExtractClassFiles(
-            changes,
-            tmp_extract_dir,
-            options.class_inputs,
-            required_desugar_classes_set,
-        )
-        if class_files:
-            _RunD8(
-                dex_cmd + ['--file-per-class-file'],
-                class_files,
-                options.incremental_dir,
-                options.warnings_as_errors,
-                options.show_desugar_default_interface_warnings,
+        classes_to_compile = {}
+        removed_dex_entries = []
+        for jar in options.class_inputs:
+            changed_class_set = (
+                set(changes.IterChangedSubpaths(jar))
+                | required_desugar_classes_set
             )
-        return
+            # D8 nest-based access desugaring requires the entire nest group to
+            # be present, else it aborts with "Class X requires its nest host Y
+            # to be on program or class path." Pull in sibling nestmates by
+            # host prefix.
+            nest_prefixes = {
+                _ClassFileNestPrefix(path)
+                for path in changed_class_set
+                if _IsClassFile(path)
+            }
+            classes_to_compile[jar] = [
+                (name, sz)
+                for name, sz in jar_class_entries[jar]
+                if _ClassFileNestPrefix(name) in nest_prefixes
+            ]
+            removed_dex_entries.extend(
+                path[:-6] + '.dex'
+                for path in changes.IterRemovedSubpaths(jar)
+                if _IsClassFile(path)
+            )
+        base_jar = output_jar
+    else:
+        if options.desugar_dependencies and os.path.exists(
+            options.desugar_dependencies
+        ):
+            # Since incremental dexing only ever adds to desugar_dependencies,
+            # whenever full dexes are required the .desugardeps files need to
+            # be manually removed.
+            os.unlink(options.desugar_dependencies)
+        classes_to_compile = jar_class_entries
+        removed_dex_entries = []
+        base_jar = None
 
-    jar_class_entries = _ScanClassInputJars(options.class_inputs)
-    classes_to_compile = _SelectClassEntries(
-        changes, jar_class_entries, required_desugar_classes_set
-    )
     num_classes = sum(len(v) for v in classes_to_compile.values())
-    logging.debug('Class entries to dex: %d', num_classes)
+    logging.debug(
+        'Class entries to dex: %d (incremental=%s)', num_classes, is_incremental
+    )
 
-    # If the only change is deleting a file, classes_to_compile will be empty.
-    if not num_classes:
-        return
-
-    dex_cmd = dex_cmd + ['--file-per-class-file']
-    if (
-        options.desugar_dependencies
-        and changes is None
-        and os.path.exists(options.desugar_dependencies)
-    ):
-        # Since incremental dexing only ever adds to the desugar_dependencies
-        # file, whenever full dexes are required the .desugardeps files need to
-        # be manually removed.
-        os.unlink(options.desugar_dependencies)
-
-    if (
+    base_dex_cmd = dex_cmd + ['--file-per-class-file']
+    can_shard = (
         dex_cmd[0] == _CUSTOM_D8_BINARY_PATH
         and not options.desugar_dependencies
         and not options.dump_inputs
-    ):
+        and not options.dex_inputs
+    )
+    if can_shard:
         shards = _PartitionClassEntriesIntoShards(
             classes_to_compile, _GRAALVM_SHARD_TARGET_SIZE
         )
     else:
         shards = _SingleShard(classes_to_compile)
 
-    def run_d8(shard):
-        cmd_args = _BuildJarInputArgs(shard, jar_class_entries)
+    tmp_dex_output = os.path.join(tmp_dir, 'tmp_dex_output.jar')
+    if len(shards) == 1:
+        cmd_args = _BuildJarInputArgs(shards[0], jar_class_entries)
+        if base_jar:
+            cmd_args += ['--base-jar', base_jar]
+            for dex_name in removed_dex_entries:
+                cmd_args += ['--exclude-entry', dex_name]
+        cmd_args += _WriteServiceArgs(services_map, tmp_dir)
         _RunD8(
-            dex_cmd + cmd_args,
+            base_dex_cmd + cmd_args,
             [],
-            options.incremental_dir,
+            tmp_dex_output,
             options.warnings_as_errors,
             options.show_desugar_default_interface_warnings,
         )
-
-    if len(shards) == 1:
-        run_d8(shards[0])
     else:
         logging.debug('Dexing across %d shards.', len(shards))
+        shard_jars = [
+            os.path.join(tmp_dir, f'shard_{i}.dex.jar')
+            for i in range(len(shards))
+        ]
+        other_shards_dex_names = []
+        if base_jar:
+            other_shards_dex_names = [
+                name[:-6] + '.dex'
+                for s in shards[1:]
+                for names in s.values()
+                for name in names
+            ]
+
+        def run_shard(idx):
+            cmd_args = _BuildJarInputArgs(shards[idx], jar_class_entries)
+            if idx == 0 and base_jar:
+                cmd_args += ['--base-jar', base_jar]
+                for dex_name in removed_dex_entries + other_shards_dex_names:
+                    cmd_args += ['--exclude-entry', dex_name]
+            _RunD8(
+                base_dex_cmd + cmd_args,
+                [],
+                shard_jars[idx],
+                options.warnings_as_errors,
+                options.show_desugar_default_interface_warnings,
+            )
+
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(shards)
         ) as executor:
-            for _ in executor.map(run_d8, shards):
+            for _ in executor.map(run_shard, range(len(shards))):
                 pass
-    logging.debug('Dexed class files.')
+        _MergeShardJars(
+            shard_jars,
+            tmp_dex_output,
+            services_map,
+            options.warnings_as_errors,
+        )
+
+    shutil.move(tmp_dex_output, output_jar)
+    logging.debug('Dexed class files into %s.', output_jar)
 
 
-def _OnStaleMd5(changes, options, final_dex_inputs, service_jars, dex_cmd):
+def _OnStaleMd5(changes, options, dex_cmd):
     logging.debug('_OnStaleMd5')
     with build_utils.TempDir() as tmp_dir:
-        if options.incremental_dir:
-            # Create directory for all intermediate dex files.
-            if not os.path.exists(options.incremental_dir):
-                os.makedirs(options.incremental_dir)
-
-            _DeleteStaleIncrementalDexFiles(
-                options.incremental_dir, final_dex_inputs
+        if (
+            options.incremental_dir
+            and options.class_inputs
+            and not options.skip_custom_d8
+        ):
+            jar_class_entries, class_service_jars = _ScanClassInputJars(
+                options.class_inputs
             )
-            logging.debug('Stale files deleted')
-            _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd)
+            services_map = _CreateServicesMap(
+                class_service_jars + options.dex_inputs
+            )
+            if options.intermediate and not options.dex_inputs:
+                _CreateIntermediateDexJar(
+                    changes,
+                    options,
+                    tmp_dir,
+                    dex_cmd,
+                    options.output,
+                    jar_class_entries,
+                    services_map,
+                )
+                return
 
+            os.makedirs(options.incremental_dir, exist_ok=True)
+            inter_jar = os.path.join(
+                options.incremental_dir, 'intermediate.dex.jar'
+            )
+            _CreateIntermediateDexJar(
+                changes,
+                options,
+                tmp_dir,
+                dex_cmd + ['--intermediate'],
+                inter_jar,
+                jar_class_entries,
+                {},
+            )
+            _CreateFinalDex(
+                [inter_jar] + options.dex_inputs,
+                options.output,
+                tmp_dir,
+                dex_cmd,
+                options=options,
+                services_map=services_map,
+            )
+            return
+
+        d8_inputs = options.class_inputs + options.dex_inputs
         _CreateFinalDex(
-            final_dex_inputs,
+            d8_inputs,
             options.output,
             tmp_dir,
             dex_cmd,
             options=options,
-            service_jars=service_jars,
+            services_map=_CreateServicesMap(d8_inputs),
         )
 
 
@@ -803,19 +853,9 @@ def main(args):
     depfile_deps = options.class_inputs_filearg + options.dex_inputs_filearg
 
     output_paths = [options.output]
-
-    track_subpaths_allowlist = []
-    if options.incremental_dir:
-        final_dex_inputs, service_jars = _IntermediateDexFilePathsFromInputJars(
-            options.class_inputs, options.incremental_dir
-        )
-        output_paths += final_dex_inputs
-        track_subpaths_allowlist += options.class_inputs
-    else:
-        final_dex_inputs = list(options.class_inputs)
-        service_jars = final_dex_inputs
-    service_jars += options.dex_inputs
-    final_dex_inputs += options.dex_inputs
+    track_subpaths_allowlist = (
+        list(options.class_inputs) if options.incremental_dir else []
+    )
 
     # Shard only for dexing intermediates (not dex merging).
     # desugar_dependencies produces an extra output, and sharding / merging it
@@ -846,6 +886,14 @@ def main(args):
 
     if use_custom_d8_binary:
         input_paths.append(_CUSTOM_D8_BINARY_PATH)
+        if (
+            options.incremental_dir
+            and options.class_inputs
+            and not options.dex_inputs
+            and not options.desugar_dependencies
+            and not options.dump_inputs
+        ):
+            input_paths += zipbuilder.get_input_paths()
         dex_cmd = [
             _CUSTOM_D8_BINARY_PATH,
             f'-Djava.home={build_utils.JAVA_HOME}',
@@ -921,12 +969,10 @@ def main(args):
     # The changes feature from md5_check allows us to only re-dex the class files
     # that have changed and the class files that need to be re-desugared by D8.
     md5_check.CallAndWriteDepfileIfStale(
-        lambda changes: _OnStaleMd5(
-            changes, options, final_dex_inputs, service_jars, dex_cmd
-        ),
+        lambda changes: _OnStaleMd5(changes, options, dex_cmd),
         options,
         input_paths=input_paths,
-        input_strings=dex_cmd + [str(bool(options.incremental_dir))],
+        input_strings=dex_cmd + [str(bool(options.incremental_dir)), 'v2'],
         output_paths=output_paths,
         pass_changes=True,
         track_subpaths_allowlist=track_subpaths_allowlist,

@@ -209,10 +209,10 @@ def __step_config(ctx, step_config):
                 "*.pak",
                 "*.sql",
             ],
-            # *.dex files are intermediate files used in incremental builds.
+            # *.dex and intermediate.dex.jar files are intermediate files used in incremental builds.
             # Fo remote actions, let's ignore them, assuming remote cache hits compensate.
-            "ignore_extra_input_pattern": ".*\\.dex",
-            "ignore_extra_output_pattern": ".*\\.dex",
+            "ignore_extra_input_pattern": ".*\\.dex(\\.jar)?",
+            "ignore_extra_output_pattern": ".*\\.dex(\\.jar)?",
             "remote": remote_run,
             "restat_content": True,
             "platform_ref": "large",

@@ -1687,6 +1687,8 @@ if (enable_java_templates) {
                    _custom_d8_binary_path,
                    _custom_d8_path,
                    _r8_path,
+                   _signflinger_binary_path,
+                   _signflinger_jar_path,
                  ] + java_paths_for_inputs
         if (defined(invoker.inputs)) {
           inputs += invoker.inputs
