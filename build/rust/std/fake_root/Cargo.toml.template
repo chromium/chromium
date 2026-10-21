@@ -9,9 +9,23 @@ edition = "2021"
 path = "../../../../RUST_SRC_ROOT/library/sysroot"
 default-features = false
 features = [
-    "backtrace",
     "profiler",
 ]
+
+# TODO(crbug.com/435700430): Remove both `target_os = "fuchsia"` sections below
+# once https://github.com/rust-lang/rust/issues/151776 is resolved.
+
+# Needed because `backtrace/src/print/fuchsia.rs` unconditionally imports
+# `object` on Fuchsia even when the `backtrace` feature is disabled.
+[target.'cfg(target_os = "fuchsia")'.dependencies.std]
+path = "../../../../RUST_SRC_ROOT/library/std"
+default-features = false
+features = ["object"]
+
+[target.'cfg(target_os = "fuchsia")'.dependencies.object]
+version = "*"
+default-features = false
+features = ["rustc-dep-of-std"]
 
 [patch.crates-io]
 compiler_builtins = { path = "../../../../RUST_SRC_ROOT/library/compiler-builtins/compiler-builtins" }

@@ -46,12 +46,11 @@ if (toolchain_has_rust) {
   if (!is_win) {
     # These are no longer present in the Windows toolchain.
     stdlib_files += [
-      "addr2line",
-      "adler2",
-      "gimli",
       "libc",
+
+      # TODO(crbug.com/435700430): Remove `memchr` and `object` once
+      # https://github.com/rust-lang/rust/issues/151776 is resolved.
       "memchr",
-      "miniz_oxide",
       "object",
     ]
   }
