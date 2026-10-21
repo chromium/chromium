@@ -399,10 +399,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3DShaderBlobSizeKB" units="KB"
-    expires_after="2025-01-05">
+    expires_after="2027-02-14">
   <owner>geofflang@chromium.org</owner>
   <owner>angle-team@google.com</owner>
-  <summary>The size of compiled D3D shader bytecode.</summary>
+  <summary>
+    The size of compiled D3D shader bytecode. NOTE: metric expired from
+    2025-01-05 to 2026-10-21.
+  </summary>
 </histogram>
 
 <histogram name="GPU.ANGLE.D3DShaderCompilationTimeUs" units="microseconds"
