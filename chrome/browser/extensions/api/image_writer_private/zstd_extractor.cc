@@ -4,40 +4,30 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/zstd_extractor.h"
 
-#include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <array>
+#include <limits>
 #include <memory>
-#include <optional>
 #include <utility>
-#include <vector>
 
-#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
-#include "third_party/zstd/src/lib/zstd.h"
+#include "chrome/browser/file_util_service.h"
 
 namespace extensions::image_writer {
 
 namespace {
 
-constexpr base::FilePath::CharType kExtractedBinFileName[] =
+constexpr base::FilePath::StringViewType kExtractedBinFileName =
     FILE_PATH_LITERAL("extracted.bin");
 
 // Zstandard frame magic number (0xFD2FB528 in little-endian byte order, per
 // RFC 8878 Section 3.1.1).
 constexpr std::array<uint8_t, 4> kExpectedMagic = {0x28, 0xb5, 0x2f, 0xfd};
-
-// Custom deleter for libzstd's decompression context (`ZSTD_DCtx`).
-struct ZstdDecompressionContextDeleter {
-  void operator()(ZSTD_DCtx* dctx) const { ZSTD_freeDCtx(dctx); }
-};
-
-using ScopedZstdDecompressionContext =
-    std::unique_ptr<ZSTD_DCtx, ZstdDecompressionContextDeleter>;
 
 }  // namespace
 
@@ -61,15 +51,43 @@ bool ZstdExtractor::IsZstdFile(const base::FilePath& image_path) {
 }
 
 // static
-void ZstdExtractor::Extract(ExtractionProperties properties) {
-  ZstdExtractor extractor(std::move(properties));
-  extractor.ExtractImpl();
+std::unique_ptr<ZstdExtractor> ZstdExtractor::Extract(
+    ExtractionProperties properties) {
+  auto extractor = base::WrapUnique(new ZstdExtractor(std::move(properties)));
+  extractor->ExtractImpl();
+  if (!extractor->remote_single_file_extractor_.is_bound()) {
+    return nullptr;
+  }
+  return extractor;
+}
+
+// static
+std::unique_ptr<ZstdExtractor> ZstdExtractor::CreateForTesting(
+    ExtractionProperties properties) {
+  return base::WrapUnique(new ZstdExtractor(std::move(properties)));
 }
 
 ZstdExtractor::ZstdExtractor(ExtractionProperties properties)
     : properties_(std::move(properties)) {}
 
 ZstdExtractor::~ZstdExtractor() = default;
+
+void ZstdExtractor::OnProgress(uint64_t total_bytes, uint64_t progress_bytes) {
+  // Avoid division by zero in the progress callback handler by not reporting
+  // progress for 0-byte files.
+  if (total_bytes == 0) {
+    return;
+  }
+  // `ExtractionProperties::ProgressCallback` (`Operation::OnExtractProgress`)
+  // takes signed `int64_t` byte counts (see crbug.com/489798713), so reject
+  // values that would overflow `int64_t` when converted from `uint64_t`.
+  if (total_bytes > std::numeric_limits<int64_t>::max() ||
+      progress_bytes > total_bytes) {
+    listener_.ReportBadMessage("invalid extraction progress values");
+    return;
+  }
+  properties_.progress_callback.Run(total_bytes, progress_bytes);
+}
 
 void ZstdExtractor::ExtractImpl() {
   base::File src_file(properties_.image_path,
@@ -78,13 +96,7 @@ void ZstdExtractor::ExtractImpl() {
                           base::File::FLAG_WIN_EXCLUSIVE_WRITE |
                           base::File::FLAG_WIN_SHARE_DELETE);
   if (!src_file.IsValid()) {
-    std::move(properties_.failure_callback).Run(error::kUnzipGenericError);
-    return;
-  }
-
-  const int64_t total_bytes = src_file.GetLength();
-  if (total_bytes <= 0) {
-    std::move(properties_.failure_callback).Run(error::kUnzipGenericError);
+    ResetAndRunFailureCallback(error::kUnzipGenericError);
     return;
   }
 
@@ -98,74 +110,65 @@ void ZstdExtractor::ExtractImpl() {
                           base::File::FLAG_WIN_EXCLUSIVE_WRITE |
                           base::File::FLAG_WIN_SHARE_DELETE);
   if (!dst_file.IsValid()) {
-    std::move(properties_.failure_callback).Run(error::kTempFileError);
+    ResetAndRunFailureCallback(error::kTempFileError);
     return;
   }
-
-  ScopedZstdDecompressionContext dctx(ZSTD_createDCtx());
-  if (!dctx || ZSTD_isError(ZSTD_initDStream(dctx.get()))) {
-    std::move(properties_.failure_callback).Run(error::kUnzipGenericError);
-    return;
-  }
-
   std::move(properties_.open_callback).Run(out_image_path);
-  properties_.progress_callback.Run(total_bytes, 0);
 
-  std::vector<uint8_t> in_buffer(ZSTD_DStreamInSize());
-  std::vector<uint8_t> out_buffer(ZSTD_DStreamOutSize());
+  service_.Bind(LaunchFileUtilService());
+  service_->BindSingleFileZstdFileExtractor(
+      remote_single_file_extractor_.BindNewPipeAndPassReceiver());
+  // `base::Unretained(this)` is safe here because `this` owns
+  // `remote_single_file_extractor_`, so the disconnect handler will not be
+  // invoked after `this` is destroyed.
+  remote_single_file_extractor_.set_disconnect_handler(
+      base::BindOnce(&ZstdExtractor::ResetAndRunFailureCallback,
+                     base::Unretained(this), error::kUnzipGenericError));
 
-  int64_t processed_bytes = 0;
-  size_t last_ret = 1;
-  bool decoded_any_input = false;
+  remote_single_file_extractor_->Extract(
+      std::move(src_file), std::move(dst_file),
+      listener_.BindNewPipeAndPassRemote(),
+      base::BindOnce(&ZstdExtractor::OnRemoteFinished, base::Unretained(this)));
+}
 
-  while (true) {
-    const std::optional<size_t> bytes_read =
-        src_file.ReadAtCurrentPos(in_buffer);
-    if (!bytes_read.has_value()) {
-      std::move(properties_.failure_callback).Run(error::kUnzipGenericError);
+void ZstdExtractor::OnRemoteFinished(
+    chrome::file_util::mojom::ExtractionResult result) {
+  switch (result) {
+    case chrome::file_util::mojom::ExtractionResult::kSuccess: {
+      auto complete_callback = std::move(properties_.complete_callback);
+      ResetMojoState();
+      std::move(complete_callback).Run();
       return;
     }
-    if (*bytes_read == 0) {
-      break;
+    case chrome::file_util::mojom::ExtractionResult::kGenericError: {
+      ResetAndRunFailureCallback(error::kUnzipGenericError);
+      return;
     }
-
-    decoded_any_input = true;
-    processed_bytes += static_cast<int64_t>(*bytes_read);
-
-    ZSTD_inBuffer input = {in_buffer.data(), *bytes_read, 0};
-    bool wrote_output = false;
-    while (input.pos < input.size) {
-      ZSTD_outBuffer output = {out_buffer.data(), out_buffer.size(), 0};
-      const size_t ret = ZSTD_decompressStream(dctx.get(), &output, &input);
-      if (ZSTD_isError(ret)) {
-        std::move(properties_.failure_callback).Run(error::kUnzipGenericError);
-        return;
-      }
-      last_ret = ret;
-
-      if (output.pos > 0) {
-        if (!dst_file.WriteAtCurrentPosAndCheck(
-                base::span(out_buffer).first(output.pos))) {
-          std::move(properties_.failure_callback).Run(error::kTempFileError);
-          return;
-        }
-        wrote_output = true;
-      }
+    case chrome::file_util::mojom::ExtractionResult::kInvalidSrcFile: {
+      ResetAndRunFailureCallback(error::kUnzipInvalidArchive);
+      return;
     }
-
-    if (wrote_output || last_ret == 0) {
-      properties_.progress_callback.Run(total_bytes, processed_bytes);
+    case chrome::file_util::mojom::ExtractionResult::kDstFileError: {
+      ResetAndRunFailureCallback(error::kTempFileError);
+      return;
     }
   }
+}
 
-  if (!decoded_any_input || last_ret != 0) {
-    std::move(properties_.failure_callback).Run(error::kUnzipGenericError);
-    return;
-  }
+void ZstdExtractor::ResetMojoState() {
+  listener_.reset();
+  remote_single_file_extractor_.reset();
+  service_.reset();
+  properties_.open_callback.Reset();
+  properties_.complete_callback.Reset();
+  properties_.failure_callback.Reset();
+  properties_.progress_callback.Reset();
+}
 
-  src_file.Close();
-  dst_file.Close();
-  std::move(properties_.complete_callback).Run();
+void ZstdExtractor::ResetAndRunFailureCallback(const std::string& error_id) {
+  auto failure_callback = std::move(properties_.failure_callback);
+  ResetMojoState();
+  std::move(failure_callback).Run(error_id);
 }
 
 }  // namespace extensions::image_writer

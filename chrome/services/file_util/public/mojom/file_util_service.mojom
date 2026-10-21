@@ -38,4 +38,10 @@ interface FileUtilService {
   [EnableIf=extractors]
   BindSingleFileTarXzFileExtractor(
       pending_receiver<SingleFileExtractor> receiver);
+
+  // Binds a SingleFileZstdFileExtractor instance of the SingleFileExtractor
+  // interface.
+  [EnableIf=extractors]
+  BindSingleFileZstdFileExtractor(
+      pending_receiver<SingleFileExtractor> receiver);
 };

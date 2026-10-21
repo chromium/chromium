@@ -7,13 +7,13 @@ module chrome.mojom;
 import "chrome/services/file_util/public/mojom/constants.mojom";
 import "mojo/public/mojom/base/file.mojom";
 
-// Service that extracts a single file from `src_file`. `src_file` is a .TAR.XZ
-// or .TAR file. SingleFileExtractor interface is a common interface for
-// .TAR.XZ file extraction and .TAR file extraction. `src_file` has to contain
-// a single file. If it does multiple files, the service rejects the request
-// and chrome.file_util.mojom.ExtractionResult.kInvalidSrcFile will return via
-// `result`. This service is designed to extract large files such as OS image
-// files.
+// Service that extracts a single file from `src_file`. `src_file` is a
+// .TAR.XZ, .TAR, or .ZST file. SingleFileExtractor interface is a common
+// interface for .TAR.XZ, .TAR, and .ZST file extraction. `src_file` has to
+// contain a single file. If it does multiple files, the service rejects the
+// request and chrome.file_util.mojom.ExtractionResult.kInvalidSrcFile will
+// return via `result`. This service is designed to extract large files such as
+// OS image files.
 interface SingleFileExtractor {
   // Extracts a single file from `src_file` and writes the result to
   // `dst_file`. Progress is regularly reported via the passed `listener`.
@@ -26,8 +26,10 @@ interface SingleFileExtractor {
 // Listener of extract operation.
 interface SingleFileExtractorListener {
   // Regularly called during the extract operation to report progress.
-  // `total_bytes` indicates the size of the destination file after extraction.
-  // `progress_bytes` indicates the bytes already written to the destination
-  // file.
+  // Depending on the archive format, `total_bytes` and `progress_bytes`
+  // indicate either the size of the destination file after extraction and the
+  // bytes written so far (for .TAR and .TAR.XZ, which read the uncompressed
+  // size from the tar header) or the size of the compressed source file and
+  // the bytes read so far (for .ZST).
   OnProgress(uint64 total_bytes, uint64 progress_bytes);
 };

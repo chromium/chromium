@@ -239,6 +239,8 @@ Operation* OperationManager::GetOperation(const ExtensionId& extension_id) {
 void OperationManager::DeleteOperation(const ExtensionId& extension_id) {
   auto existing_operation = operations_.find(extension_id);
   if (existing_operation != operations_.end()) {
+    existing_operation->second->PostTask(
+        base::BindOnce(&Operation::Cancel, existing_operation->second));
     operations_.erase(existing_operation);
   }
 }

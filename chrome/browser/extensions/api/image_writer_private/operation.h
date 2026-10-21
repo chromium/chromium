@@ -39,6 +39,7 @@ namespace image_writer {
 inline constexpr int kProgressComplete = 100;
 
 class OperationManager;
+class ZstdExtractor;
 
 #if !BUILDFLAG(IS_CHROMEOS)
 class ImageWriterUtilityClient;
@@ -235,6 +236,10 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   // Cleanup operations that must be run.  All these functions are run on
   // `task_runner_`.
   std::vector<base::OnceClosure> cleanup_functions_;
+
+  // Active Zstandard extractor, owned on `task_runner_` so it is terminated on
+  // cancellation or shutdown.
+  std::unique_ptr<ZstdExtractor> zstd_extractor_;
 
   static constexpr base::TaskTraits blocking_task_traits() {
     return {

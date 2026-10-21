@@ -17,6 +17,7 @@
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
 #include "chrome/browser/extensions/api/image_writer_private/xz_extractor.h"
 #include "chrome/browser/extensions/api/image_writer_private/zip_extractor.h"
+#include "chrome/browser/extensions/api/image_writer_private/zstd_extractor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/zlib/google/zip.h"
@@ -187,6 +188,63 @@ IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractBigTarXzFile) {
   std::string contents;
   ASSERT_TRUE(base::ReadFileToString(out_path, &contents));
   EXPECT_EQ(contents, std::string(2097152, '\0'));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractZstd) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::FilePath zstd_file = temp_dir_.GetPath().AppendASCII("test.zst");
+  constexpr uint8_t kZstdTestFrame[] = {
+      0x28, 0xb5, 0x2f, 0xfd, 0x20, 0x04, 0x21, 0x00, 0x00, 'f', 'o', 'o', '\n',
+  };
+  ASSERT_TRUE(base::WriteFile(zstd_file, kZstdTestFrame));
+  properties_.image_path = zstd_file;
+
+  base::FilePath out_path;
+  base::RunLoop run_loop;
+  EXPECT_CALL(open_callback_, Run(_)).WillOnce(SaveArg<0>(&out_path));
+  EXPECT_CALL(complete_callback_, Run())
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  std::unique_ptr<ZstdExtractor> extractor =
+      ZstdExtractor::Extract(std::move(properties_));
+  run_loop.Run();
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(out_path, &contents));
+  EXPECT_EQ("foo\n", contents);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, ExtractNonExistentZstd) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  properties_.image_path = temp_dir_.GetPath().AppendASCII("non_existent.zst");
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(failure_callback_, Run(error::kUnzipGenericError))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  std::unique_ptr<ZstdExtractor> extractor =
+      ZstdExtractor::Extract(std::move(properties_));
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ExtractorBrowserTest, CancelExtractZstd) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::FilePath zstd_file = temp_dir_.GetPath().AppendASCII("test.zst");
+  constexpr uint8_t kZstdTestFrame[] = {
+      0x28, 0xb5, 0x2f, 0xfd, 0x20, 0x04, 0x21, 0x00, 0x00, 'f', 'o', 'o', '\n',
+  };
+  ASSERT_TRUE(base::WriteFile(zstd_file, kZstdTestFrame));
+  properties_.image_path = zstd_file;
+
+  EXPECT_CALL(open_callback_, Run(_)).Times(1);
+  EXPECT_CALL(complete_callback_, Run()).Times(0);
+  EXPECT_CALL(failure_callback_, Run(_)).Times(0);
+
+  std::unique_ptr<ZstdExtractor> extractor =
+      ZstdExtractor::Extract(std::move(properties_));
+  extractor.reset();
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace extensions::image_writer

@@ -42,6 +42,11 @@ void FakeFileUtilService::BindSingleFileTarFileExtractor(
     mojo::PendingReceiver<chrome::mojom::SingleFileExtractor> receiver) {
   NOTREACHED();
 }
+
+void FakeFileUtilService::BindSingleFileZstdFileExtractor(
+    mojo::PendingReceiver<chrome::mojom::SingleFileExtractor> receiver) {
+  NOTREACHED();
+}
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)

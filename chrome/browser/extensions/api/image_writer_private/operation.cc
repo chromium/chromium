@@ -7,6 +7,8 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -22,11 +24,11 @@
 #include "chrome/browser/extensions/api/image_writer_private/tar_extractor.h"
 #include "chrome/browser/extensions/api/image_writer_private/xz_extractor.h"
 #include "chrome/browser/extensions/api/image_writer_private/zip_extractor.h"
+#include "chrome/browser/extensions/api/image_writer_private/zstd_extractor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace extensions {
-namespace image_writer {
+namespace extensions::image_writer {
 
 crypto::obsolete::Md5 MakeMd5HasherForImageWriter() {
   return crypto::obsolete::Md5();
@@ -38,7 +40,8 @@ namespace {
 bool IsArchive(const base::FilePath& image_path) {
   return ZipExtractor::IsZipFile(image_path) ||
          TarExtractor::IsTarFile(image_path) ||
-         XzExtractor::IsXzFile(image_path);
+         XzExtractor::IsXzFile(image_path) ||
+         ZstdExtractor::IsZstdFile(image_path);
 }
 
 // Extracts the archive at |image_path| using to |temp_dir_path| using a proper
@@ -77,6 +80,7 @@ Operation::Operation(base::WeakPtr<OperationManager> manager,
 }
 
 Operation::~Operation() {
+  task_runner_->DeleteSoon(FROM_HERE, std::move(zstd_extractor_));
   // base::ScopedTempDir must be destroyed on a thread that allows blocking IO
   // because it will try delete the directory if a call to Delete() hasn't been
   // made or was unsuccessful.
@@ -144,16 +148,33 @@ void Operation::Extract(base::OnceClosure continuation) {
     ExtractionProperties properties;
     properties.image_path = image_path_;
     properties.temp_dir_path = temp_dir_->GetPath();
-    properties.open_callback =
-        base::BindOnce(&Operation::OnExtractOpenComplete, this);
-    properties.complete_callback = base::BindOnce(
-        &Operation::CompleteAndContinue, this, std::move(continuation));
-    properties.failure_callback =
-        base::BindOnce(&Operation::OnExtractFailure, this);
-    properties.progress_callback =
-        base::BindRepeating(&Operation::OnExtractProgress, this);
 
-    ExtractArchive(std::move(properties));
+    if (ZstdExtractor::IsZstdFile(properties.image_path)) {
+      // `this` owns `zstd_extractor_` on `task_runner_` and resets it in
+      // `CompleteAndContinue()`, `CleanUp()`, and `~Operation()`, so
+      // `base::Unretained(this)` is safe and avoids a
+      // `scoped_refptr<Operation>` reference cycle during extraction.
+      properties.open_callback = base::BindOnce(
+          &Operation::OnExtractOpenComplete, base::Unretained(this));
+      properties.complete_callback =
+          base::BindOnce(&Operation::CompleteAndContinue,
+                         base::Unretained(this), std::move(continuation));
+      properties.failure_callback =
+          base::BindOnce(&Operation::OnExtractFailure, base::Unretained(this));
+      properties.progress_callback = base::BindRepeating(
+          &Operation::OnExtractProgress, base::Unretained(this));
+      zstd_extractor_ = ZstdExtractor::Extract(std::move(properties));
+    } else {
+      properties.open_callback =
+          base::BindOnce(&Operation::OnExtractOpenComplete, this);
+      properties.complete_callback = base::BindOnce(
+          &Operation::CompleteAndContinue, this, std::move(continuation));
+      properties.failure_callback =
+          base::BindOnce(&Operation::OnExtractFailure, this);
+      properties.progress_callback =
+          base::BindRepeating(&Operation::OnExtractProgress, this);
+      ExtractArchive(std::move(properties));
+    }
   } else {
     PostTask(std::move(continuation));
   }
@@ -226,6 +247,7 @@ void Operation::AddCleanUpFunction(base::OnceClosure callback) {
 
 void Operation::CompleteAndContinue(base::OnceClosure continuation) {
   CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
+  zstd_extractor_.reset();
   SetProgress(kProgressComplete);
   PostTask(std::move(continuation));
 }
@@ -337,7 +359,7 @@ void Operation::OnExtractFailure(const std::string& error) {
 
 void Operation::OnExtractProgress(int64_t total_bytes, int64_t progress_bytes) {
   CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
-  CHECK(total_bytes > 0);
+  CHECK_GT(total_bytes, 0);
 
   int progress_percent = kProgressComplete * progress_bytes / total_bytes;
   SetProgress(progress_percent);
@@ -345,11 +367,11 @@ void Operation::OnExtractProgress(int64_t total_bytes, int64_t progress_bytes) {
 
 void Operation::CleanUp() {
   CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
+  zstd_extractor_.reset();
   for (base::OnceClosure& cleanup_function : cleanup_functions_) {
     std::move(cleanup_function).Run();
   }
   cleanup_functions_.clear();
 }
 
-}  // namespace image_writer
-}  // namespace extensions
+}  // namespace extensions::image_writer

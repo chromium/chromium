@@ -42,6 +42,9 @@ class FileUtilService : public chrome::mojom::FileUtilService {
   void BindSingleFileTarFileExtractor(
       mojo::PendingReceiver<chrome::mojom::SingleFileExtractor> receiver)
       override;
+  void BindSingleFileZstdFileExtractor(
+      mojo::PendingReceiver<chrome::mojom::SingleFileExtractor> receiver)
+      override;
 #endif
 
   mojo::Receiver<chrome::mojom::FileUtilService> receiver_;

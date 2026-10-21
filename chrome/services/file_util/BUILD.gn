@@ -77,10 +77,13 @@ source_set("file_util") {
       "single_file_tar_reader.h",
       "single_file_tar_xz_file_extractor.cc",
       "single_file_tar_xz_file_extractor.h",
+      "single_file_zstd_file_extractor.cc",
+      "single_file_zstd_file_extractor.h",
     ]
     deps += [
       "//third_party/lzma_sdk",
       "//third_party/lzma_sdk:lzma_sdk_xz",
+      "//third_party/zstd:decompress",
     ]
   }
 }
@@ -93,6 +96,7 @@ source_set("unit_tests") {
       "single_file_tar_file_extractor_unittest.cc",
       "single_file_tar_reader_unittest.cc",
       "single_file_tar_xz_file_extractor_unittest.cc",
+      "single_file_zstd_file_extractor_unittest.cc",
     ]
 
     deps = [
