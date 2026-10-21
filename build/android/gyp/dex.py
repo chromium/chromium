@@ -475,6 +475,107 @@ def _ClassFileNestPrefix(class_path):
     return base
 
 
+def _ScanClassInputJars(class_inputs):
+    """Returns {jar: [(subpath, size), ...]} for .class entries."""
+    jar_class_entries = {}
+    for jar in class_inputs:
+        entries = []
+        with zipfile.ZipFile(jar, 'r') as z:
+            for info in z.infolist():
+                if _IsClassFile(info.filename):
+                    entries.append((info.filename, info.file_size))
+        jar_class_entries[jar] = entries
+    return jar_class_entries
+
+
+def _SelectClassEntries(changes, jar_class_entries, required_classes_set):
+    if changes is None:
+        return jar_class_entries
+    selected = {}
+    for jar, entries in jar_class_entries.items():
+        changed_class_set = (
+            set(changes.IterChangedSubpaths(jar)) | required_classes_set
+        )
+        # D8 nest-based access desugaring requires the entire nest group to be
+        # present, else it aborts with "Class X requires its nest host Y to be
+        # on program or class path." Pull in sibling nestmates by host prefix.
+        nest_prefixes = {
+            _ClassFileNestPrefix(path)
+            for path in changed_class_set
+            if _IsClassFile(path)
+        }
+        selected[jar] = [
+            (name, sz)
+            for name, sz in entries
+            if _ClassFileNestPrefix(name) in nest_prefixes
+        ]
+    return selected
+
+
+def _SingleShard(jar_class_entries):
+    single = {
+        jar: [name for name, _ in entries]
+        for jar, entries in jar_class_entries.items()
+        if entries
+    }
+    return [single]
+
+
+def _PartitionClassEntriesIntoShards(jar_class_entries, target_shard_size):
+    """Partitions .class entries into balanced shards, keeping nests together.
+
+    Args:
+      jar_class_entries: Dict of {jar_path: [(entry_name, file_size), ...]}.
+      target_shard_size: Target uncompressed byte size per shard.
+
+    Returns:
+      List of shard dicts, each mapping {jar_path: [entry_name, ...]}.
+    """
+    total_size = sum(
+        sz for entries in jar_class_entries.values() for _, sz in entries
+    )
+    num_shards = min(
+        os.cpu_count() or 8,
+        max(1, round(total_size / target_shard_size)),
+    )
+    if num_shards <= 1:
+        return _SingleShard(jar_class_entries)
+
+    groups = collections.defaultdict(list)
+    group_sizes = collections.defaultdict(int)
+    for jar, entries in jar_class_entries.items():
+        for name, sz in entries:
+            key = (jar, _ClassFileNestPrefix(name))
+            groups[key].append(name)
+            group_sizes[key] += sz
+
+    num_shards = min(num_shards, len(groups))
+    if num_shards <= 1:
+        return _SingleShard(jar_class_entries)
+
+    sorted_keys = sorted(groups.keys(), key=lambda k: (-group_sizes[k], k))
+    shards = [collections.defaultdict(list) for _ in range(num_shards)]
+    shard_sizes = [0] * num_shards
+    # Keep adding the next largest class cluster to the smallest shard.
+    for key in sorted_keys:
+        idx = min(range(num_shards), key=lambda i: shard_sizes[i])
+        shards[idx][key[0]].extend(groups[key])
+        shard_sizes[idx] += group_sizes[key]
+    return [dict(s) for s in shards if s]
+
+
+def _BuildJarInputArgs(shard_map, jar_class_entries):
+    args = []
+    for jar, entry_names in shard_map.items():
+        if not entry_names:
+            continue
+        args += ['--jar-input', jar]
+        if len(entry_names) < len(jar_class_entries[jar]):
+            for name in entry_names:
+                args += ['--jar-class', name]
+    return args
+
+
 def _ExtractClassFiles(changes, tmp_dir, class_inputs, required_classes_set):
     classes_list = []
     for jar in class_inputs:
@@ -482,10 +583,6 @@ def _ExtractClassFiles(changes, tmp_dir, class_inputs, required_classes_set):
             changed_class_set = (
                 set(changes.IterChangedSubpaths(jar)) | required_classes_set
             )
-
-            # D8 nest-based access desugaring requires the entire nest group to be
-            # present, else it aborts with "Class X requires its nest host Y to be
-            # on program or class path." Pull in sibling nestmates by host prefix.
             nest_prefixes = {
                 _ClassFileNestPrefix(path)
                 for path in changed_class_set
@@ -511,43 +608,7 @@ def _GetFileSize(path):
     return os.path.getsize(path)
 
 
-def _PartitionClassFilesIntoShards(class_files, target_shard_size):
-    """Partitions .class files into balanced shards, keeping nests together."""
-    total_size = sum(_GetFileSize(p) for p in class_files)
-    num_shards = min(
-        os.cpu_count() or 8,
-        max(1, round(total_size / target_shard_size)),
-    )
-    if num_shards <= 1:
-        return [class_files]
-
-    groups = collections.defaultdict(list)
-    group_sizes = collections.defaultdict(int)
-    for path in class_files:
-        prefix = _ClassFileNestPrefix(path)
-        groups[prefix].append(path)
-        group_sizes[prefix] += _GetFileSize(path)
-
-    num_shards = min(num_shards, len(groups))
-    if num_shards <= 1:
-        return [class_files]
-
-    sorted_prefixes = sorted(groups.keys(), key=lambda p: (-group_sizes[p], p))
-    shards = [[] for _ in range(num_shards)]
-    shard_sizes = [0] * num_shards
-    # Keep adding the next largest class cluster to the smallest shard.
-    for prefix in sorted_prefixes:
-        idx = min(range(num_shards), key=lambda i: shard_sizes[i])
-        shards[idx].extend(groups[prefix])
-        shard_sizes[idx] += group_sizes[prefix]
-    return [s for s in shards if s]
-
-
 def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
-    # Create temporary directory for classes to be extracted to.
-    tmp_extract_dir = os.path.join(tmp_dir, 'tmp_extract_dir')
-    os.mkdir(tmp_extract_dir)
-
     # Do a full rebuild when changes occur in non-input files.
     allowed_changed = set(options.class_inputs)
     allowed_changed.update(options.dex_inputs)
@@ -579,56 +640,79 @@ def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
             'Class files needing re-desugar: %d',
             len(required_desugar_classes_set),
         )
-    class_files = _ExtractClassFiles(
-        changes,
-        tmp_extract_dir,
-        options.class_inputs,
-        required_desugar_classes_set,
-    )
-    logging.debug('Extracted class files: %d', len(class_files))
 
-    # If the only change is deleting a file, class_files will be empty.
-    if class_files:
-        # Dex necessary classes into intermediate dex files.
-        dex_cmd = dex_cmd + ['--file-per-class-file']
-        if options.desugar_dependencies and not options.skip_custom_d8:
-            # Adding os.sep to remove the entire prefix.
-            dex_cmd += ['--file-tmp-prefix', tmp_extract_dir + os.sep]
-            if changes is None and os.path.exists(options.desugar_dependencies):
-                # Since incremental dexing only ever adds to the desugar_dependencies
-                # file, whenever full dexes are required the .desugardeps files need to
-                # be manually removed.
-                os.unlink(options.desugar_dependencies)
-        if (
-            dex_cmd[0] == _CUSTOM_D8_BINARY_PATH
-            and not options.desugar_dependencies
-            and not options.dump_inputs
-        ):
-            shards = _PartitionClassFilesIntoShards(
-                class_files, _GRAALVM_SHARD_TARGET_SIZE
-            )
-        else:
-            shards = [class_files]
-
-        def run_d8(shard):
+    if options.skip_custom_d8:
+        tmp_extract_dir = os.path.join(tmp_dir, 'tmp_extract_dir')
+        os.mkdir(tmp_extract_dir)
+        class_files = _ExtractClassFiles(
+            changes,
+            tmp_extract_dir,
+            options.class_inputs,
+            required_desugar_classes_set,
+        )
+        if class_files:
             _RunD8(
-                dex_cmd,
-                shard,
+                dex_cmd + ['--file-per-class-file'],
+                class_files,
                 options.incremental_dir,
                 options.warnings_as_errors,
                 options.show_desugar_default_interface_warnings,
             )
+        return
 
-        if len(shards) == 1:
-            run_d8(shards[0])
-        else:
-            logging.debug('Dexing across %d shards.', len(shards))
-            with concurrent.futures.ThreadPoolExecutor(
-                max_workers=len(shards)
-            ) as executor:
-                for _ in executor.map(run_d8, shards):
-                    pass
-        logging.debug('Dexed class files.')
+    jar_class_entries = _ScanClassInputJars(options.class_inputs)
+    classes_to_compile = _SelectClassEntries(
+        changes, jar_class_entries, required_desugar_classes_set
+    )
+    num_classes = sum(len(v) for v in classes_to_compile.values())
+    logging.debug('Class entries to dex: %d', num_classes)
+
+    # If the only change is deleting a file, classes_to_compile will be empty.
+    if not num_classes:
+        return
+
+    dex_cmd = dex_cmd + ['--file-per-class-file']
+    if (
+        options.desugar_dependencies
+        and changes is None
+        and os.path.exists(options.desugar_dependencies)
+    ):
+        # Since incremental dexing only ever adds to the desugar_dependencies
+        # file, whenever full dexes are required the .desugardeps files need to
+        # be manually removed.
+        os.unlink(options.desugar_dependencies)
+
+    if (
+        dex_cmd[0] == _CUSTOM_D8_BINARY_PATH
+        and not options.desugar_dependencies
+        and not options.dump_inputs
+    ):
+        shards = _PartitionClassEntriesIntoShards(
+            classes_to_compile, _GRAALVM_SHARD_TARGET_SIZE
+        )
+    else:
+        shards = _SingleShard(classes_to_compile)
+
+    def run_d8(shard):
+        cmd_args = _BuildJarInputArgs(shard, jar_class_entries)
+        _RunD8(
+            dex_cmd + cmd_args,
+            [],
+            options.incremental_dir,
+            options.warnings_as_errors,
+            options.show_desugar_default_interface_warnings,
+        )
+
+    if len(shards) == 1:
+        run_d8(shards[0])
+    else:
+        logging.debug('Dexing across %d shards.', len(shards))
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(shards)
+        ) as executor:
+            for _ in executor.map(run_d8, shards):
+                pass
+    logging.debug('Dexed class files.')
 
 
 def _OnStaleMd5(changes, options, final_dex_inputs, service_jars, dex_cmd):

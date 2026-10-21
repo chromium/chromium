@@ -291,6 +291,66 @@ Warning: Missing class com.example.Foo
                 ],
             )
 
+    def testScanClassInputJars(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            jar1 = os.path.join(tmpdir, 'one.jar')
+            with _RealZipFile(jar1, 'w') as z:
+                z.writestr('pkg/Foo.class', b'a' * 100)
+                z.writestr('module-info.class', b'skip')
+                z.writestr('META-INF/MANIFEST.MF', b'manifest')
+
+            entries = dex._ScanClassInputJars([jar1])
+            self.assertEqual(entries, {jar1: [('pkg/Foo.class', 100)]})
+
+    def testPartitionClassEntriesIntoShards_KeepsNestsTogether(self):
+        jar_entries = {
+            'a.jar': [
+                ('pkg/Big.class', 900),
+                ('pkg/Big$1.class', 300),
+                ('pkg/Big$Inner.class', 300),
+                ('pkg/SmallA.class', 700),
+                ('pkg/SmallB.class', 700),
+            ],
+        }
+        shards = dex._PartitionClassEntriesIntoShards(
+            jar_entries, target_shard_size=1000
+        )
+        self.assertGreaterEqual(len(shards), 2)
+        all_seen = []
+        big_shards = []
+        for idx, shard in enumerate(shards):
+            names = shard.get('a.jar', [])
+            all_seen.extend(names)
+            if any(n.startswith('pkg/Big') for n in names):
+                big_shards.append(idx)
+        self.assertEqual(len(big_shards), 1)
+        self.assertCountEqual(
+            all_seen, [name for name, _ in jar_entries['a.jar']]
+        )
+
+    def testBuildJarInputArgs(self):
+        jar_entries = {
+            'full.jar': [('a/A.class', 10), ('a/B.class', 20)],
+            'part.jar': [('b/C.class', 10), ('b/D.class', 20)],
+        }
+        shard = {
+            'full.jar': ['a/A.class', 'a/B.class'],
+            'part.jar': ['b/D.class'],
+            'empty.jar': [],
+        }
+        args = dex._BuildJarInputArgs(shard, jar_entries)
+        self.assertEqual(
+            args,
+            [
+                '--jar-input',
+                'full.jar',
+                '--jar-input',
+                'part.jar',
+                '--jar-class',
+                'b/D.class',
+            ],
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
