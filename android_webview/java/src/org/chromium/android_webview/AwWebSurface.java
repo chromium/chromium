@@ -53,6 +53,7 @@ public class AwWebSurface {
         if (mAwContents != null && mAwContents != awContents) {
             mAwContents.setWebSurface(null);
             mAwContents.setInvalidateListener(null);
+            mAwContents.getSettings().setForceFullscreenUnsupported(false);
             WebContents webContents = mAwContents.getWebContents();
             if (webContents != null) {
                 AwWebSurfaceJni.get().setForWebContents(webContents, null);
@@ -62,6 +63,7 @@ public class AwWebSurface {
         if (mAwContents != null) {
             mAwContents.setWebSurface(this);
             mAwContents.setInvalidateListener(mEventListener::onInvalidate);
+            mAwContents.getSettings().setForceFullscreenUnsupported(true);
             mAwContents.setOverScrollMode(View.OVER_SCROLL_NEVER);
             onWebContentsChanged();
             if (mWidth > 0 && mHeight > 0) {

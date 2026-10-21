@@ -229,6 +229,13 @@ public class AwSettings {
     private boolean mShouldFocusFirstNode = true;
     private boolean mGeolocationEnabled = true;
     private boolean mFullscreenSupported;
+    // WebSurface does not yet support fullscreen so when it is bound, we will explicitly prevent
+    // fullscreen from being entered.
+    // Our logic assumes that if a developer has implemented the fullscreen methods in our
+    // client, we should enable fullscreen mode.
+    // We are implementing these methods in AndroidX to mark them as deprecated so we need
+    // to force disable fullscreen here.
+    private boolean mForceFullscreenUnsupported;
     private boolean mSupportZoom = true;
     private boolean mBuiltInZoomControls;
     private boolean mDisplayZoomControls = true;
@@ -782,10 +789,19 @@ public class AwSettings {
         }
     }
 
+    void setForceFullscreenUnsupported(boolean forceUnsupported) {
+        synchronized (mAwSettingsLock) {
+            if (mForceFullscreenUnsupported != forceUnsupported) {
+                mForceFullscreenUnsupported = forceUnsupported;
+                mEventHandler.updateWebkitPreferencesLocked();
+            }
+        }
+    }
+
     @CalledByNative
     private boolean getFullscreenSupportedLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
-        return mFullscreenSupported;
+        return mFullscreenSupported && !mForceFullscreenUnsupported;
     }
 
     /** See {@link android.webkit.WebSettings#setNeedInitialFocus}. */

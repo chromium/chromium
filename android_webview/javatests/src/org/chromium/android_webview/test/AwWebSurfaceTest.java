@@ -296,6 +296,34 @@ public class AwWebSurfaceTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    public void testFullscreenDisabledWhileBound() throws Throwable {
+        mAwContents.getSettings().setJavaScriptEnabled(true);
+        mAwContents.getSettings().setFullscreenSupported(true);
+        mActivityTestRule.loadHtmlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), "<html></html>");
+
+        AwWebSurface surface = new AwWebSurface(new TestEventListener());
+        assertEquals(
+                "true",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, "document.fullscreenEnabled"));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> surface.setAwContents(mAwContents));
+        assertEquals(
+                "false",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, "document.fullscreenEnabled"));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> surface.setAwContents(null));
+        assertEquals(
+                "true",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, "document.fullscreenEnabled"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
     public void testWebContent_surfaceBindingMutualExclusion() {
         AwWebContent webContent = new AwWebContent();
 
