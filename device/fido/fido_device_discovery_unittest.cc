@@ -136,8 +136,7 @@ TEST(FidoDiscoveryTest, TestAddRemoveDevices) {
   FidoAuthenticator* authenticator1 = nullptr;
   EXPECT_CALL(observer, AuthenticatorAdded(&discovery, _))
       .WillOnce(DoAll(SaveArg<1>(&authenticator1),
-                      testing::InvokeWithoutArgs(
-                          [&device1_done]() { device1_done.Quit(); })));
+                      [&device1_done]() { device1_done.Quit(); }));
   EXPECT_CALL(*device1, GetId()).WillRepeatedly(Return("device1"));
   EXPECT_TRUE(discovery.AddDevice(std::move(device1)));
   EXPECT_EQ("device1", authenticator1->GetId());

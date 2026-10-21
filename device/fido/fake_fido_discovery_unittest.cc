@@ -124,8 +124,7 @@ TEST_F(FakeFidoDiscoveryTest, AddDevice) {
   discovery.AddDevice(std::move(device0));
 
   EXPECT_CALL(observer, DiscoveryStarted(&discovery, true, testing::SizeIs(1)))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&device0_done]() { device0_done.Quit(); }));
+      .WillOnce([&device0_done]() { device0_done.Quit(); });
   discovery.SimulateStarted(true);
   device0_done.Run();
   ::testing::Mock::VerifyAndClearExpectations(&observer);
@@ -134,8 +133,7 @@ TEST_F(FakeFidoDiscoveryTest, AddDevice) {
   EXPECT_CALL(*device1, GetId()).WillOnce(::testing::Return("device1"));
   base::RunLoop device1_done;
   EXPECT_CALL(observer, AuthenticatorAdded(&discovery, _))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&device1_done]() { device1_done.Quit(); }));
+      .WillOnce([&device1_done]() { device1_done.Quit(); });
   discovery.AddDevice(std::move(device1));
   device1_done.Run();
   ::testing::Mock::VerifyAndClearExpectations(&observer);

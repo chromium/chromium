@@ -32,7 +32,6 @@ using base::test::RunOnceCallback;
 
 using testing::_;
 using testing::DoAll;
-using testing::InvokeWithoutArgs;
 using testing::NiceMock;
 using testing::Return;
 
@@ -383,16 +382,16 @@ TEST_F(
   // a notification that services are now resolved.
   EXPECT_CALL(*mock_unknown_bluetooth_device_,
               IsGattServicesDiscoveryComplete())
-      .WillOnce(
-          DoAll(InvokeWithoutArgs([this]() {
-                  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                      FROM_HERE, base::BindLambdaForTesting([&]() {
-                        adapter_->GattServicesDiscovered(
-                            mock_bluetooth_adapter_.get(),
-                            mock_unknown_bluetooth_device_.get());
-                      }));
-                }),
-                Return(false)))
+      .WillOnce(DoAll(
+          [this]() {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE, base::BindLambdaForTesting([&]() {
+                  adapter_->GattServicesDiscovered(
+                      mock_bluetooth_adapter_.get(),
+                      mock_unknown_bluetooth_device_.get());
+                }));
+          },
+          Return(false)))
       .WillRepeatedly(Return(true));
 
   adapter_->AllowConnectionsForUuid(device::BluetoothUUID(kServiceId));
