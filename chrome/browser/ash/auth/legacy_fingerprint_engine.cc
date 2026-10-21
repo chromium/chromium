@@ -11,14 +11,16 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 
 namespace ash {
 namespace {
@@ -140,15 +142,21 @@ bool LegacyFingerprintEngine::IsFingerprintEnabled(
 bool LegacyFingerprintEngine::IsFingerprintAvailable(
     Purpose purpose,
     const AccountId& account_id) {
-  auto* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  content::BrowserContext* const browser_context =
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id);
 
-  auto* pref_service = profile->GetPrefs();
+  if (!browser_context) {
+    return false;
+  }
+
+  auto* pref_service = user_prefs::UserPrefs::Get(browser_context);
 
   if (!pref_service) {
     return false;
   }
 
-  if (profile != ProfileManager::GetPrimaryUserProfile() ||
+  auto* user_manager = user_manager::UserManager::Get();
+  if (!user_manager->IsPrimaryUser(user_manager->FindUser(account_id)) ||
       IsFingerprintDisabledByPolicy(*pref_service, purpose)) {
     return false;
   }

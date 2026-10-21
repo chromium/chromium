@@ -21,9 +21,7 @@
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
@@ -32,6 +30,9 @@
 #include "components/account_id/account_id.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 
 namespace ash {
 
@@ -67,17 +68,19 @@ void ActiveSessionFingerprintClientImpl::OnShellDestroying() {
 bool ActiveSessionFingerprintClientImpl::IsFingerprintAvailable(
     AuthRequest::Reason reason,
     const AccountId& account_id) {
-  auto* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  content::BrowserContext* const browser_context =
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(account_id);
 
-  CHECK(profile);
+  CHECK(browser_context);
 
-  auto* pref_service = profile->GetPrefs();
+  auto* pref_service = user_prefs::UserPrefs::Get(browser_context);
 
   if (!pref_service) {
     return false;
   }
 
-  if (profile != ProfileManager::GetPrimaryUserProfile()) {
+  auto* user_manager = user_manager::UserManager::Get();
+  if (!user_manager->IsPrimaryUser(user_manager->FindUser(account_id))) {
     return false;
   }
 
