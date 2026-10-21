@@ -723,7 +723,18 @@ DlpFilesControllerAsh::MapFilePathToPolicyComponent(
         service->GetProvidedFileSystemInfoList(provider_id);
     CHECK_EQ(one_drive_file_systems.size(), 1u);
 
-    if (one_drive_file_systems[0].mount_path().IsParent(file_path)) {
+    const base::FilePath& one_drive_mount_path =
+        one_drive_file_systems[0].mount_path();
+    if (one_drive_mount_path == file_path ||
+        one_drive_mount_path.IsParent(file_path)) {
+      return data_controls::Component::kOneDrive;
+    }
+
+    base::FilePath fusebox_mount_path =
+        ash::cloud_upload::GetODFSFuseboxMount(profile);
+    if (!fusebox_mount_path.empty() &&
+        (fusebox_mount_path == file_path ||
+         fusebox_mount_path.IsParent(file_path))) {
       return data_controls::Component::kOneDrive;
     }
   }

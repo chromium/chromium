@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -199,6 +201,91 @@ IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
 
   EXPECT_THAT(events[0],
               data_controls::IsDlpPolicyEvent(event_builder->Create()));
+}
+
+IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
+                       CheckIfDownloadAllowed_OneDriveFusebox) {
+  // Mount OneDrive file system.
+  auto fake_provider = ash::file_system_provider::FakeExtensionProvider::Create(
+      extension_misc::kODFSExtensionId);
+  const auto provider_id = fake_provider->GetId();
+  auto* service =
+      ash::file_system_provider::Service::Get(browser()->GetProfile());
+  service->RegisterProvider(std::move(fake_provider));
+
+  const auto mount_options = ash::file_system_provider::MountOptions(
+      "test-filesystem", "OneDrive Test FileSystem");
+  service->MountFileSystem(provider_id, mount_options);
+
+  base::FilePath fusebox_mount_path;
+  for (const auto& volume :
+       file_manager::VolumeManager::Get(browser()->GetProfile())
+           ->GetVolumeList()) {
+    if (volume->volume_label() == mount_options.display_name &&
+        volume->file_system_type() == file_manager::util::kFuseBox) {
+      fusebox_mount_path = volume->mount_path();
+      break;
+    }
+  }
+  ASSERT_FALSE(fusebox_mount_path.empty());
+
+  // Setup the reporting manager.
+  std::vector<DlpPolicyEvent> events;
+  auto reporting_manager =
+      std::make_unique<data_controls::DlpReportingManager>();
+  SetReportQueueForReportingManager(
+      reporting_manager.get(), events,
+      base::SequencedTaskRunner::GetCurrentDefault());
+  ON_CALL(*mock_rules_manager_, GetReportingManager)
+      .WillByDefault(::testing::Return(reporting_manager.get()));
+
+  const std::string rule_name = "Rule name";
+  const std::string rule_id = "Rule ID";
+
+  const DlpRulesManager::RuleMetadata rule_metadata(rule_name, rule_id);
+
+  EXPECT_CALL(
+      *mock_rules_manager_,
+      IsRestrictedComponent(_, data_controls::Component::kOneDrive, _, _, _))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<3>(kExampleUrl),
+                         testing::SetArgPointee<4>(rule_metadata),
+                         testing::Return(DlpRulesManager::Level::kBlock)));
+
+  EXPECT_CALL(*mock_rules_manager_, GetReportingManager())
+      .Times(::testing::AnyNumber());
+
+  testing::StrictMock<
+      base::MockCallback<DlpFilesControllerAsh::CheckIfDlpAllowedCallback>>
+      cb;
+  EXPECT_CALL(cb, Run(/*is_allowed=*/false)).Times(1);
+
+  const std::string file_path = "Downloads/file.txt";
+
+  files_controller_->CheckIfDownloadAllowed(
+      DlpFileDestination(GURL(kExampleUrl)),
+      fusebox_mount_path.Append(file_path), cb.Get());
+
+  ASSERT_EQ(events.size(), 1u);
+
+  auto event_builder = data_controls::DlpPolicyEventBuilder::Event(
+      GURL(kExampleUrl).spec(), rule_name, rule_id,
+      DlpRulesManager::Restriction::kFiles, DlpRulesManager::Level::kBlock);
+
+  event_builder->SetDestinationComponent(data_controls::Component::kOneDrive);
+  event_builder->SetContentName(base::FilePath(file_path).BaseName().value());
+
+  EXPECT_THAT(events[0],
+              data_controls::IsDlpPolicyEvent(event_builder->Create()));
+
+  // Also verify that the Fusebox mount root directory itself maps to kOneDrive
+  // (e.g. when set as the default download directory).
+  EXPECT_CALL(
+      *mock_rules_manager_,
+      IsRestrictedComponent(_, data_controls::Component::kOneDrive, _, _, _))
+      .WillOnce(testing::Return(DlpRulesManager::Level::kBlock));
+  EXPECT_TRUE(files_controller_->ShouldPromptBeforeDownload(
+      DlpFileDestination(GURL(kExampleUrl)), fusebox_mount_path));
 }
 
 IN_PROC_BROWSER_TEST_F(DlpFilesControllerAshBrowserTest,
