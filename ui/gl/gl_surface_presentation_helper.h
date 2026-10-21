@@ -80,6 +80,10 @@ class GL_EXPORT GLSurfacePresentationHelper {
     void Destroy(bool has_context = false);
 
     std::unique_ptr<GPUTimer> timer;
+    // CPU time at which `timer` was queued. The GPU can't execute the
+    // timestamp query before it's issued, so a GPU timestamp earlier than this
+    // indicates the GPU clock is out of sync with the CPU clock.
+    base::TimeTicks timer_issue_time;
     // GLFence is used only if gpu timers are not available.
     std::unique_ptr<GLFence> fence;
     int frame_id = -1;

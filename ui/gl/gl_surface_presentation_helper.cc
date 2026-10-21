@@ -97,6 +97,20 @@ bool GLSurfacePresentationHelper::GetFrameTimestampInfoIfAvailable(
     int64_t end = 0;
     frame.timer->GetStartEndTimestamps(&start, &end);
     *timestamp = base::TimeTicks() + base::Microseconds(start);
+    // GPUTiming converts GPU timestamps to CPU time using an offset computed
+    // from glGetInteger64v(GL_TIMESTAMP). Some drivers don't return a value in
+    // the same clock domain as timestamp queries (e.g. nouveau derives
+    // GL_TIMESTAMP from the CPU clock plus a delta computed once at startup,
+    // while queries use the GPU's own timer), so the two drift apart over the
+    // lifetime of the process. The result is a timestamp that is before the
+    // frame was drawn or in the future, which viz rejects as a presentation
+    // failure for every frame. The GPU must have reached the query after it
+    // was issued and before now, so fall back to the current time, as is done
+    // for fences, if the timestamp is outside that range.
+    const base::TimeTicks now = base::TimeTicks::Now();
+    if (*timestamp < frame.timer_issue_time || *timestamp > now) {
+      *timestamp = now;
+    }
   } else {
     if (!frame.fence->HasCompleted())
       return false;
@@ -228,8 +242,10 @@ void GLSurfacePresentationHelper::PreSwapBuffers(
   } else if (gpu_timing_client_) {
     std::unique_ptr<GPUTimer> timer;
     timer = gpu_timing_client_->CreateGPUTimer(false /* prefer_elapsed_time */);
+    const base::TimeTicks issue_time = base::TimeTicks::Now();
     timer->QueryTimeStamp();
     pending_frames_.push_back(Frame(std::move(timer), std::move(callback)));
+    pending_frames_.back().timer_issue_time = issue_time;
   } else if (gl_fence_supported_) {
     auto fence = GLFence::Create();
     pending_frames_.push_back(Frame(std::move(fence), std::move(callback)));
