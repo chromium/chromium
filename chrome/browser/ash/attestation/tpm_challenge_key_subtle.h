@@ -37,6 +37,28 @@ class TpmChallengeKeySubtle;
 
 class TpmChallengeKeySubtleFactory final {
  public:
+  // While this object is alive, `Create()` returns `instance` and must not be
+  // called again. If `Create()` hasn't taken `instance` by the time this object
+  // is destroyed, `instance` is destroyed with it.
+  class ScopedOneshotOverrideForTesting {
+   public:
+    explicit ScopedOneshotOverrideForTesting(
+        std::unique_ptr<TpmChallengeKeySubtle> instance);
+    // Non-copyable and non-movable because the global override pointer points
+    // to `this`. Test helpers can still return it by value via C++17 guaranteed
+    // copy elision (RVO).
+    ScopedOneshotOverrideForTesting(const ScopedOneshotOverrideForTesting&) =
+        delete;
+    ScopedOneshotOverrideForTesting& operator=(
+        const ScopedOneshotOverrideForTesting&) = delete;
+    ~ScopedOneshotOverrideForTesting();
+
+   private:
+    friend class TpmChallengeKeySubtleFactory;
+
+    std::unique_ptr<TpmChallengeKeySubtle> instance_;
+  };
+
   static std::unique_ptr<TpmChallengeKeySubtle> Create();
 
   // Recreates an object as it would be after |StartPrepareKeyStep| method call.
@@ -53,12 +75,6 @@ class TpmChallengeKeySubtleFactory final {
       const std::string& key_name,
       const std::string& public_key,
       Profile* profile);
-
-  static void SetForTesting(std::unique_ptr<TpmChallengeKeySubtle> next_result);
-  static bool WillReturnTestingInstance();
-
- private:
-  static TpmChallengeKeySubtle* next_result_for_testing_;
 };
 
 //===================== TpmChallengeKeySubtle ==================================

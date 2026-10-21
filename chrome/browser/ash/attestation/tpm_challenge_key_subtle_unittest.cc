@@ -826,7 +826,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, RestorePreparedKeyState) {
   const char* const key_name = kNonDefaultKeyName;
 
   // Inject mocks into the next result of CreateForPreparedKey.
-  TpmChallengeKeySubtleFactory::SetForTesting(
+  TpmChallengeKeySubtleFactory::ScopedOneshotOverrideForTesting scoped_override(
       std::make_unique<TpmChallengeKeySubtleImpl>(&mock_attestation_flow_,
                                                   &mock_cert_uploader_));
 
@@ -883,7 +883,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, KeyRegistrationFailed) {
   const char* const key_name = kNonDefaultKeyName;
 
   // Inject mocks into the next result of CreateForPreparedKey.
-  TpmChallengeKeySubtleFactory::SetForTesting(
+  TpmChallengeKeySubtleFactory::ScopedOneshotOverrideForTesting scoped_override(
       std::make_unique<TpmChallengeKeySubtleImpl>(&mock_attestation_flow_,
                                                   &mock_cert_uploader_));
 

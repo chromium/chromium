@@ -52,8 +52,8 @@ class TpmChallengeKeyTest : public ::testing::Test {
     auto mock_challenge_key_subtle =
         std::make_unique<StrictMock<MockTpmChallengeKeySubtle>>();
     mock_tpm_challenge_key_subtle_ = mock_challenge_key_subtle.get();
-    TpmChallengeKeySubtleFactory::SetForTesting(
-        std::move(mock_challenge_key_subtle));
+    TpmChallengeKeySubtleFactory::ScopedOneshotOverrideForTesting
+        scoped_override(std::move(mock_challenge_key_subtle));
 
     challenge_key_ = TpmChallengeKeyFactory::Create();
   }

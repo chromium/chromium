@@ -106,18 +106,29 @@ class DeviceTrustAshBrowserTest : public test::DeviceTrustBrowserTestBase {
  protected:
   explicit DeviceTrustAshBrowserTest(
       std::optional<DeviceTrustConnectorState> state = std::nullopt)
-      : DeviceTrustBrowserTestBase(std::move(state)) {
+      : DeviceTrustBrowserTestBase(std::move(state)) {}
+
+  void SetUpInProcessBrowserTestFixture() override {
+    test::DeviceTrustBrowserTestBase::SetUpInProcessBrowserTestFixture();
+    // On ChromeOS (except Flex), `DeviceTrustServiceFactory` uses
+    // `AshAttestationServiceImpl`, which gets the challenge response for
+    // `TriggerUrlNavigation()` from `TpmChallengeKeyFactory::Create()`. Use a
+    // fake that succeeds, as `VerifyAttestationFlowSuccessful()` expects.
     auto mock_challenge_key =
         std::make_unique<ash::attestation::MockTpmChallengeKey>();
     mock_challenge_key->EnableFake();
-    ash::attestation::TpmChallengeKeyFactory::SetForTesting(
-        std::move(mock_challenge_key));
+    scoped_challenge_key_override_.emplace(std::move(mock_challenge_key));
   }
 
-  void TearDownOnMainThread() override {
-    ash::attestation::TpmChallengeKeyFactory::Create();
-    test::DeviceTrustBrowserTestBase::TearDownOnMainThread();
+  void TearDownInProcessBrowserTestFixture() override {
+    scoped_challenge_key_override_.reset();
+    test::DeviceTrustBrowserTestBase::TearDownInProcessBrowserTestFixture();
   }
+
+ private:
+  std::optional<
+      ash::attestation::TpmChallengeKeyFactory::ScopedOneshotOverrideForTesting>
+      scoped_challenge_key_override_;
 };
 
 using DeviceTrustBrowserTest = DeviceTrustAshBrowserTest;

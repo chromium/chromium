@@ -5,9 +5,11 @@
 #include "chrome/browser/ash/platform_keys/keystore_service.h"
 
 #include <initializer_list>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
@@ -844,21 +846,28 @@ TEST_F(KeystoreServiceTest, RemoveCertificateFail) {
 
 //------------------------------------------------------------------------------
 
-attestation::MockTpmChallengeKey* InjectMockChallengeKey() {
+// Makes `TpmChallengeKeyFactory::Create()` return a new mock while the returned
+// override is alive.
+[[nodiscard]] std::pair<
+    attestation::TpmChallengeKeyFactory::ScopedOneshotOverrideForTesting,
+    attestation::MockTpmChallengeKey*>
+InjectMockChallengeKey() {
   auto mock_challenge_key =
       std::make_unique<attestation::MockTpmChallengeKey>();
   attestation::MockTpmChallengeKey* challenge_key_ptr =
       mock_challenge_key.get();
-  attestation::TpmChallengeKeyFactory::SetForTesting(
-      std::move(mock_challenge_key));
-  return challenge_key_ptr;
+  // NOTE: ScopedOneshotOverrideForTesting is non-movable. Relying on C++17 RVO.
+  return std::pair<
+      attestation::TpmChallengeKeyFactory::ScopedOneshotOverrideForTesting,
+      attestation::MockTpmChallengeKey*>(std::move(mock_challenge_key),
+                                         challenge_key_ptr);
 }
 
 TEST_F(KeystoreServiceTest, ChallengeUserKeyNoMigrateSuccess) {
   // Incoming challenge and outgoing challenge response are imitated with the
   // same data blob. It is not realistic, but good enough for this test.
 
-  attestation::MockTpmChallengeKey* challenge_key_ptr =
+  auto [scoped_challenge_key_override, challenge_key_ptr] =
       InjectMockChallengeKey();
 
   EXPECT_CALL(*challenge_key_ptr,
@@ -886,7 +895,7 @@ TEST_F(KeystoreServiceTest, ChallengeUserKeyMigrateSuccess) {
   // Incoming challenge and outgoing challenge response are imitated with the
   // same data blob. It is not realistic, but good enough for this test.
 
-  attestation::MockTpmChallengeKey* challenge_key_ptr =
+  auto [scoped_challenge_key_override, challenge_key_ptr] =
       InjectMockChallengeKey();
 
   EXPECT_CALL(*challenge_key_ptr,
@@ -914,7 +923,7 @@ TEST_F(KeystoreServiceTest, ChallengeDeviceKeyNoMigrateSuccess) {
   // Incoming challenge and outgoing challenge response are imitated with the
   // same data blob. It is not realistic, but good enough for this test.
 
-  attestation::MockTpmChallengeKey* challenge_key_ptr =
+  auto [scoped_challenge_key_override, challenge_key_ptr] =
       InjectMockChallengeKey();
 
   EXPECT_CALL(*challenge_key_ptr,
@@ -943,7 +952,7 @@ TEST_F(KeystoreServiceTest, ChallengeDeviceKeyMigrateSuccess) {
   // Incoming challenge and outgoing challenge response are imitated with the
   // same data blob. It is not realistic, but good enough for this test.
 
-  attestation::MockTpmChallengeKey* challenge_key_ptr =
+  auto [scoped_challenge_key_override, challenge_key_ptr] =
       InjectMockChallengeKey();
 
   EXPECT_CALL(
@@ -973,7 +982,7 @@ TEST_F(KeystoreServiceTest, ChallengeUserEcdsaKeyMigrateSuccess) {
   // Incoming challenge and outgoing challenge response are imitated with the
   // same data blob. It is not realistic, but good enough for this test.
 
-  attestation::MockTpmChallengeKey* challenge_key_ptr =
+  auto [scoped_challenge_key_override, challenge_key_ptr] =
       InjectMockChallengeKey();
 
   EXPECT_CALL(*challenge_key_ptr,
@@ -998,7 +1007,7 @@ TEST_F(KeystoreServiceTest, ChallengeUserEcdsaKeyMigrateSuccess) {
 }
 
 TEST_F(KeystoreServiceTest, ChallengeKeyFail) {
-  attestation::MockTpmChallengeKey* challenge_key_ptr =
+  auto [scoped_challenge_key_override, challenge_key_ptr] =
       InjectMockChallengeKey();
 
   auto challenge_result = attestation::TpmChallengeKeyResult::MakeError(

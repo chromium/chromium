@@ -34,11 +34,29 @@ class TpmChallengeKey;
 
 class TpmChallengeKeyFactory final {
  public:
-  static std::unique_ptr<TpmChallengeKey> Create();
-  static void SetForTesting(std::unique_ptr<TpmChallengeKey> next_result);
+  // While this object is alive, `Create()` returns `instance` and must not be
+  // called again. If `Create()` hasn't taken `instance` by the time this object
+  // is destroyed, `instance` is destroyed with it.
+  class ScopedOneshotOverrideForTesting {
+   public:
+    explicit ScopedOneshotOverrideForTesting(
+        std::unique_ptr<TpmChallengeKey> instance);
+    // Non-copyable and non-movable because the global override pointer points
+    // to `this`. Test helpers can still return it by value via C++17 guaranteed
+    // copy elision (RVO).
+    ScopedOneshotOverrideForTesting(const ScopedOneshotOverrideForTesting&) =
+        delete;
+    ScopedOneshotOverrideForTesting& operator=(
+        const ScopedOneshotOverrideForTesting&) = delete;
+    ~ScopedOneshotOverrideForTesting();
 
- private:
-  static TpmChallengeKey* next_result_for_testing_;
+   private:
+    friend class TpmChallengeKeyFactory;
+
+    std::unique_ptr<TpmChallengeKey> instance_;
+  };
+
+  static std::unique_ptr<TpmChallengeKey> Create();
 };
 
 //=========================== TpmChallengeKey ==================================

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -49,15 +50,34 @@ using ResultCode = TpmChallengeKeyResultCode;
 
 //==================== TpmChallengeKeySubtleFactory ============================
 
-TpmChallengeKeySubtle* TpmChallengeKeySubtleFactory::next_result_for_testing_ =
-    nullptr;
+namespace {
+
+// The `ScopedOneshotOverrideForTesting` that is alive, if any.
+TpmChallengeKeySubtleFactory::ScopedOneshotOverrideForTesting*
+    g_oneshot_override = nullptr;
+
+}  // namespace
+
+TpmChallengeKeySubtleFactory::ScopedOneshotOverrideForTesting::
+    ScopedOneshotOverrideForTesting(
+        std::unique_ptr<TpmChallengeKeySubtle> instance)
+    : instance_(std::move(instance)) {
+  CHECK_IS_TEST();
+  CHECK(instance_);
+  CHECK(!g_oneshot_override) << "Only one override allowed";
+  g_oneshot_override = this;
+}
+
+TpmChallengeKeySubtleFactory::ScopedOneshotOverrideForTesting::
+    ~ScopedOneshotOverrideForTesting() {
+  g_oneshot_override = nullptr;
+}
 
 // static
 std::unique_ptr<TpmChallengeKeySubtle> TpmChallengeKeySubtleFactory::Create() {
-  if (next_result_for_testing_) [[unlikely]] {
-    std::unique_ptr<TpmChallengeKeySubtle> result(next_result_for_testing_);
-    next_result_for_testing_ = nullptr;
-    return result;
+  if (g_oneshot_override) [[unlikely]] {
+    CHECK(g_oneshot_override->instance_) << "Create() can be called only once";
+    return std::move(g_oneshot_override->instance_);
   }
 
   return std::make_unique<TpmChallengeKeySubtleImpl>();
@@ -76,20 +96,6 @@ TpmChallengeKeySubtleFactory::CreateForPreparedKey(
   result->RestorePreparedKeyState(flow_type, will_register_key, key_crypto_type,
                                   key_name, public_key, profile);
   return result;
-}
-
-// static
-void TpmChallengeKeySubtleFactory::SetForTesting(
-    std::unique_ptr<TpmChallengeKeySubtle> next_result) {
-  CHECK(next_result_for_testing_ == nullptr, base::NotFatalUntil::M161);
-  // unique_ptr itself cannot be stored in a static variable because of its
-  // complex destructor.
-  next_result_for_testing_ = next_result.release();
-}
-
-// static
-bool TpmChallengeKeySubtleFactory::WillReturnTestingInstance() {
-  return (next_result_for_testing_ != nullptr);
 }
 
 //===================== TpmChallengeKeySubtleImpl ==============================

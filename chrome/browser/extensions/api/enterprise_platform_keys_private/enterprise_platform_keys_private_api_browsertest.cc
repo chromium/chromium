@@ -23,6 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ash::attestation::TpmChallengeKeyFactory;
 using testing::NiceMock;
 
 namespace extensions {
@@ -33,6 +34,17 @@ namespace {
 
 const char kUserEmail[] = "test@google.com";
 
+// Makes `TpmChallengeKeyFactory::Create()` return a fake that succeeds while
+// the returned override is alive.
+[[nodiscard]] TpmChallengeKeyFactory::ScopedOneshotOverrideForTesting
+SetMockTpmChallenger() {
+  auto mock_tpm_challenge_key =
+      std::make_unique<NiceMock<ash::attestation::MockTpmChallengeKey>>();
+  mock_tpm_challenge_key->EnableFake();
+  return TpmChallengeKeyFactory::ScopedOneshotOverrideForTesting(
+      std::move(mock_tpm_challenge_key));
+}
+
 class EPKPChallengeKeyTestBase : public ExtensionApiTest {
  protected:
   EPKPChallengeKeyTestBase() = default;
@@ -42,14 +54,6 @@ class EPKPChallengeKeyTestBase : public ExtensionApiTest {
     extension_ = ExtensionBuilder("Test").Build();
     prefs_ = browser()->GetProfile()->GetPrefs();
     SetAuthenticatedUser();
-  }
-
-  void SetMockTpmChallenger() {
-    auto mock_tpm_challenge_key =
-        std::make_unique<NiceMock<ash::attestation::MockTpmChallengeKey>>();
-    mock_tpm_challenge_key->EnableFake();
-    ash::attestation::TpmChallengeKeyFactory::SetForTesting(
-        std::move(mock_tpm_challenge_key));
   }
 
   // Derived classes can override this method to set the required authenticated
@@ -96,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(EPKPChallengeMachineKeyTest, ExtensionNotAllowlisted) {
 }
 
 IN_PROC_BROWSER_TEST_F(EPKPChallengeMachineKeyTest, Success) {
-  SetMockTpmChallenger();
+  auto scoped_tpm_challenge_key_override = SetMockTpmChallenger();
 
   base::ListValue allowlist;
   allowlist.Append(extension_->id());
@@ -142,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(EPKPChallengeUserKeyTest, ExtensionNotAllowlisted) {
 }
 
 IN_PROC_BROWSER_TEST_F(EPKPChallengeUserKeyTest, Success) {
-  SetMockTpmChallenger();
+  auto scoped_tpm_challenge_key_override = SetMockTpmChallenger();
 
   base::ListValue allowlist;
   allowlist.Append(extension_->id());
