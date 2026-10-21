@@ -168,9 +168,14 @@ The Omnibox Java code resides under `chrome/browser/ui/android/omnibox/java/src/
 - **Thread Synchronization & Atomic Primitives**: Prefer atomic primitives over locks when sharing basic information across threads (e.g. `AtomicBoolean` rather than `Object sLock` + `Boolean mMember`).
 - **Placement**: Ensure logic is implemented in the correct architectural location as early as possible in the flow.
 - **OmniboxUrlUtils for NTP Evaluation**: In Omnibox and LocationBar UI logic, always use `OmniboxUrlUtils.isNtpUrl(url)` rather than calling `UrlUtilities.isNtpUrl(url)` directly. This ensures consistent handling of transient empty/invalid URLs occurring during new tab or new window creation before navigation commits (see crbug.com/553118979), preventing UI flickers (such as showing a globe icon instead of the search engine logo) and enabling early cursor focus.
-- **JNI Type Conversions (`@JniType`)**:
+- **JNI Type Conversions (`@JniType`) & Safe Native Pointers (`JniTypeToken`, `JniUniquePtr`)**:
   - Rely on `@JniType` when declaring native methods to avoid manually converting types.
   - If a conversion doesn't exist and is used more than 3 times already, the conversion should be added and existing call sites should be updated.
+  - **Strongly Prefer `JniTypeToken` & `JniUniquePtr` Over Raw `long` Pointers**:
+    - Never pass or store raw `long` native addresses (`reinterpret_cast<intptr_t>(ptr)`) or write manual `delete this` / `delete ptr` in native `Destroy` methods when Java owns a C++ peer.
+    - Define a type token extending `org.jni_zero.JniTypeToken` annotated with `@JniType("::namespace::NativeClass")` to associate the Java token with the C++ class at compile time.
+    - Use `JniUniquePtr<NativeClassToken>` (`jni_zero::JniUniquePtr<NativeClass>` in C++, constructed via `jni_zero::MakeUnique<NativeClass>(...)`) when Java owns the native object. Call `mNative.destroy()` in Java's `destroy()` method—this automatically invokes the C++ destructor, eliminating manual `delete` in native code, providing compile-time type safety, use-after-free protection, and automatic `LifetimeAssert` leak detection.
+    - Declare `@NativeMethods` parameters accepting the pointer as `JniPtr<NativeClassToken> self` (which dispatches directly to C++ member functions without needing a boilerplate `Destroy(JNIEnv*)` method). Use `JniRawPtr<NativeClassToken>` (`jni_zero::MakeRaw(ptr)`) when C++ owns the object and Java only borrows a long-lived reference (`mNative.release()`).
 - **Time Measurement (`TimeUtils` over `SystemClock`)**: Prefer `TimeUtils` (`org.chromium.base.TimeUtils`, e.g. `TimeUtils.uptimeMillis()`, `TimeUtils.elapsedRealtimeMillis()`) over `SystemClock` or `System.currentTimeMillis()`. `TimeUtils` provides a unified, mockable clock in tests via `FakeTimeTestRule` and eliminates wall-clock flakiness.
 - **Static Test Overrides (`ResettersForTesting`)**: Any static variable (`sVariableName`) that provides a `setVariableNameForTesting(...)` method must register a resetter inside the setter:
   ```java
