@@ -100,7 +100,8 @@ void DropArrow::SetIndex(const BrowserRootView::DropIndex& index) {
 }
 
 void DropArrow::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK(scoped_observation_.IsObservingSource(arrow_widget_.get()));
+  CHECK(scoped_observation_.IsObservingSource(arrow_widget_.get()),
+        base::NotFatalUntil::M162);
   scoped_observation_.Reset();
   arrow_view_ = nullptr;
   arrow_widget_ = nullptr;

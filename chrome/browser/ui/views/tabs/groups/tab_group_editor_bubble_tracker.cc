@@ -41,8 +41,8 @@ void TabGroupEditorBubbleTracker::SetScrollView(
 
 void TabGroupEditorBubbleTracker::Opened(
     std::unique_ptr<views::Widget> bubble_widget) {
-  DCHECK(bubble_widget);
-  DCHECK(!is_open_);
+  CHECK(bubble_widget, base::NotFatalUntil::M162);
+  CHECK(!is_open_, base::NotFatalUntil::M162);
   widget_ = std::move(bubble_widget);
   is_open_ = true;
   widget_->MakeCloseSynchronous(

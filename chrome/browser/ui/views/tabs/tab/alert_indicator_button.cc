@@ -138,7 +138,7 @@ class AlertIndicatorButton::FadeAnimationDelegate
 
 AlertIndicatorButton::AlertIndicatorButton(Delegate* delegate)
     : delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M162);
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   GetViewAccessibility().SetName(
@@ -394,7 +394,8 @@ void AlertIndicatorButton::NotifyClick(const ui::Event& event) {
     base::RecordAction(base::UserMetricsAction("AlertIndicatorButton_Mute"));
     TransitionToAlertState(tabs::TabAlert::kAudioMuting);
   } else {
-    DCHECK(alert_state_ == tabs::TabAlert::kAudioMuting);
+    CHECK(alert_state_ == tabs::TabAlert::kAudioMuting,
+          base::NotFatalUntil::M162);
     base::RecordAction(base::UserMetricsAction("AlertIndicatorButton_Unmute"));
     TransitionToAlertState(tabs::TabAlert::kAudioPlaying);
   }

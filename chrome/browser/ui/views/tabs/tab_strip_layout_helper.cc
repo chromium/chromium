@@ -200,7 +200,7 @@ int TabStripLayoutHelper::CalculatePreferredWidth() {
 
 int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
   auto [bounds, layout_domain] = CalculateIdealBounds(available_width);
-  DCHECK_EQ(slots_.size(), bounds.size());
+  CHECK_EQ(slots_.size(), bounds.size(), base::NotFatalUntil::M162);
   tab_strip_layout_domain_ = layout_domain;
 
   views::ViewModelT<Tab>* tabs = get_tabs_callback_.Run();

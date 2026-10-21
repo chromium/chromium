@@ -92,7 +92,7 @@ void RecordUmaCancellation(base::TimeTicks dialog_open_time) {
 }
 
 void RecordUmaSelection(base::TimeTicks dialog_open_time) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   RecordUma(GDMPreferCurrentTabResult::kUserSelectedThisTab, dialog_open_time);
 }
 
@@ -124,7 +124,7 @@ ShareThisTabDialogView::ShareThisTabDialogView(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kThisTabCaptureAutoReject)),
       dialog_open_time_(base::TimeTicks::Now()) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(!auto_accept_this_tab_capture_ || !auto_reject_this_tab_capture_);
 
   SetModalType(params.modality);
@@ -244,13 +244,13 @@ void ShareThisTabDialogView::RecordUmaDismissal() const {
 }
 
 void ShareThisTabDialogView::DetachParent() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   parent_ = nullptr;
 }
 
 gfx::Size ShareThisTabDialogView::CalculatePreferredSize(
     const views::SizeBounds& /*available_size*/) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   static constexpr size_t kDialogViewWidth = 600;
   return gfx::Size(
       kDialogViewWidth,
@@ -262,7 +262,7 @@ bool ShareThisTabDialogView::ShouldShowWindowTitle() const {
 }
 
 bool ShareThisTabDialogView::Accept() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(!activation_timer_.IsRunning());
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   if (ShareThisTabSourceView::IsTabSharingBlocked(web_contents_.get())) {
@@ -291,7 +291,7 @@ bool ShareThisTabDialogView::Accept() {
 }
 
 bool ShareThisTabDialogView::Cancel() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   source_view_->StopRefreshing();
   activation_timer_.Stop();
   RecordUmaCancellation(dialog_open_time_);
@@ -299,7 +299,7 @@ bool ShareThisTabDialogView::Cancel() {
 }
 
 bool ShareThisTabDialogView::ShouldShowCloseButton() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   return false;
 }
 
@@ -371,7 +371,7 @@ void ShareThisTabDialogView::SetupAudioToggle() {
 }
 
 void ShareThisTabDialogView::Activate() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   source_view_->Activate();
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
@@ -391,7 +391,7 @@ void ShareThisTabDialogView::Activate() {
 }
 
 void ShareThisTabDialogView::ActivateForTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   activation_timer_.Stop();
   Activate();
 }
@@ -399,7 +399,7 @@ void ShareThisTabDialogView::ActivateForTesting() {
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 void ShareThisTabDialogView::OnScreenshotAllowedUpdated(
     bool screenshot_allowed) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (source_view_) {
     source_view_->UpdateBlockedState();
   }
@@ -412,7 +412,7 @@ void ShareThisTabDialogView::OnScreenshotAllowedUpdated(
 #endif
 
 bool ShareThisTabDialogView::ShouldAutoAccept() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!web_contents_) {
     return false;
@@ -440,7 +440,7 @@ bool ShareThisTabDialogView::ShouldAutoAccept() const {
 }
 
 bool ShareThisTabDialogView::ShouldAutoReject() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   return auto_reject_this_tab_capture_;
 }
@@ -449,11 +449,11 @@ BEGIN_METADATA(ShareThisTabDialogView)
 END_METADATA
 
 ShareThisTabMediaPicker::ShareThisTabMediaPicker() : dialog_(nullptr) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 ShareThisTabMediaPicker::~ShareThisTabMediaPicker() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (dialog_) {
     dialog_->RecordUmaDismissal();
     dialog_->DetachParent();
@@ -465,7 +465,7 @@ void ShareThisTabMediaPicker::Show(
     const DesktopMediaPicker::Params& params,
     std::vector<std::unique_ptr<DesktopMediaList>> source_lists,
     DoneCallback done_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(!callback_);
   CHECK(!dialog_);
 
@@ -477,7 +477,7 @@ void ShareThisTabMediaPicker::Show(
 void ShareThisTabMediaPicker::NotifyDialogResult(
     base::expected<content::DesktopMediaID,
                    blink::mojom::MediaStreamRequestResult> result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Once this method is called the |dialog_| will close and destroy itself.
   dialog_->DetachParent();

@@ -300,14 +300,15 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
                                   views::View* close_button,
                                   TabSlotController* controller)
       : tab_(tab), close_button_(close_button), controller_(controller) {
-    DCHECK(close_button_);
+    CHECK(close_button_, base::NotFatalUntil::M162);
     tab_close_button_observation_.Observe(close_button_.get());
   }
   TabCloseButtonObserver(const TabCloseButtonObserver&) = delete;
   TabCloseButtonObserver& operator=(const TabCloseButtonObserver&) = delete;
 
   ~TabCloseButtonObserver() override {
-    DCHECK(tab_close_button_observation_.IsObserving());
+    CHECK(tab_close_button_observation_.IsObserving(),
+          base::NotFatalUntil::M162);
     tab_close_button_observation_.Reset();
   }
 
@@ -355,7 +356,7 @@ Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
                             : nullptr),
       title_(new TabTitle()),
       title_animation_(this) {
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M162);
 
   tab_style_views_ = TabStyleViews::Create(CreateStyleDelegate(this),
                                            TabStripOrientation::kHorizontal);
@@ -473,12 +474,12 @@ bool Tab::IsActive() const {
 }
 
 void Tab::AnimationEnded(const gfx::Animation* animation) {
-  DCHECK_EQ(animation, &title_animation_);
+  CHECK_EQ(animation, &title_animation_, base::NotFatalUntil::M162);
   title_->SetBoundsRect(target_title_bounds_);
 }
 
 void Tab::AnimationProgressed(const gfx::Animation* animation) {
-  DCHECK_EQ(animation, &title_animation_);
+  CHECK_EQ(animation, &title_animation_, base::NotFatalUntil::M162);
   title_->SetBoundsRect(gfx::Tween::RectValueBetween(
       gfx::Tween::CalculateValue(gfx::Tween::FAST_OUT_SLOW_IN,
                                  animation->GetCurrentValue()),
@@ -869,7 +870,7 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::EventType::kGestureTapDown: {
       // TAP_DOWN is only dispatched for the first touch point.
-      DCHECK_EQ(1, event->details().touch_points());
+      CHECK_EQ(1, event->details().touch_points(), base::NotFatalUntil::M162);
 
       // See comment in OnMousePressed() as to why we copy the event.
       ui::GestureEvent event_in_parent(*event, views::AsViewClass<View>(this),
@@ -1247,8 +1248,8 @@ float Tab::GetZValue() const {
     sort_value += 2.f;
   }
 
-  DCHECK_GE(sort_value, 0.0f);
-  DCHECK_LE(sort_value, TabStyle::kMaximumZValue);
+  CHECK_GE(sort_value, 0.0f, base::NotFatalUntil::M162);
+  CHECK_LE(sort_value, TabStyle::kMaximumZValue, base::NotFatalUntil::M162);
 
   return sort_value;
 }

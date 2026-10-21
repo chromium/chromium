@@ -103,7 +103,8 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
     parent()->GetViewsInGroup(GetGroup(), &neighbours);
     for (auto& neighbour : neighbours) {
       if (neighbour != this) {
-        DCHECK(views::IsViewClass<DesktopMediaSourceView>(neighbour));
+        CHECK(views::IsViewClass<DesktopMediaSourceView>(neighbour),
+              base::NotFatalUntil::M162);
         DesktopMediaSourceView* source_view =
             static_cast<DesktopMediaSourceView*>(neighbour);
         source_view->SetSelected(false);
@@ -155,7 +156,8 @@ views::View* DesktopMediaSourceView::GetSelectedViewForGroup(int group) {
   }
 
   for (auto& neighbour : neighbours) {
-    DCHECK(views::IsViewClass<DesktopMediaSourceView>(neighbour));
+    CHECK(views::IsViewClass<DesktopMediaSourceView>(neighbour),
+          base::NotFatalUntil::M162);
     DesktopMediaSourceView* source_view =
         static_cast<DesktopMediaSourceView*>(neighbour);
     if (source_view->selected_) {

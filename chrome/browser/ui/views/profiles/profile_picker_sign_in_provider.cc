@@ -137,7 +137,7 @@ void ProfilePickerSignInProvider::SwitchToSignIn(
   if (!profile_path_.empty()) {
     bool profile_exists = profile_manager->LoadProfileByPath(
         profile_path_, /*incognito=*/false, std::move(profile_init_callback));
-    DCHECK(profile_exists);
+    CHECK(profile_exists, base::NotFatalUntil::M162);
   } else {
     // Silently create the new profile for browsing on GAIA (so that the sign-in
     // cookies are stored in the right profile).
@@ -260,8 +260,8 @@ void ProfilePickerSignInProvider::OnProfileInitialized(
     std::move(switch_finished_callback.value()).Run(false);
     return;
   }
-  DCHECK(!profile_);
-  DCHECK(!contents());
+  CHECK(!profile_, base::NotFatalUntil::M162);
+  CHECK(!contents(), base::NotFatalUntil::M162);
 
   profile_ = new_profile;
   profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
@@ -318,7 +318,7 @@ bool ProfilePickerSignInProvider::IsInitialized() const {
 
 void ProfilePickerSignInProvider::FinishFlow(
     const CoreAccountInfo& account_info) {
-  DCHECK(IsInitialized());
+  CHECK(IsInitialized(), base::NotFatalUntil::M162);
   host_->SetNativeToolbarSigninButtonsVisible(false);
   ResetWebContentsDelegates();
   std::move(callback_).Run(profile_.get(), account_info, std::move(contents_),

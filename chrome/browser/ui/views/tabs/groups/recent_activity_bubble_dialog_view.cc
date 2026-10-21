@@ -932,7 +932,8 @@ RecentActivityBubbleCoordinator* RecentActivityBubbleCoordinator::From(
 
 void RecentActivityBubbleCoordinator::OnWidgetDestroying(
     views::Widget* widget) {
-  DCHECK(bubble_widget_observation_.IsObservingSource(widget));
+  CHECK(bubble_widget_observation_.IsObservingSource(widget),
+        base::NotFatalUntil::M162);
   bubble_widget_observation_.Reset();
 }
 
@@ -981,7 +982,7 @@ bool RecentActivityBubbleCoordinator::IsShowing() {
 
 void RecentActivityBubbleCoordinator::ShowCommon(
     std::unique_ptr<RecentActivityBubbleDialogView> bubble) {
-  DCHECK(!tracker_.view());
+  CHECK(!tracker_.view(), base::NotFatalUntil::M162);
   tracker_.SetView(bubble.get());
   auto* widget =
       RecentActivityBubbleDialogView::CreateBubble(std::move(bubble));

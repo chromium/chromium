@@ -282,8 +282,9 @@ views::View* ProfilePicker::GetViewForTesting() {
 // static
 void ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
     base::OnceClosure callback) {
-  DCHECK(!g_profile_picker_opened_callback_for_testing);
-  DCHECK(!callback.is_null());
+  CHECK(!g_profile_picker_opened_callback_for_testing,
+        base::NotFatalUntil::M162);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M162);
   g_profile_picker_opened_callback_for_testing =
       new base::OnceClosure(std::move(callback));
 }
@@ -334,7 +335,7 @@ void ProfilePickerView::NavigationFinishedObserver::DidFinishNavigation(
 // ProfilePickerView ----------------------------------------------------------
 
 void ProfilePickerView::UpdateParams(ProfilePicker::Params&& params) {
-  DCHECK(params_.CanReusePickerWindow(params));
+  CHECK(params_.CanReusePickerWindow(params), base::NotFatalUntil::M162);
   params_ = std::move(params);
 }
 
@@ -602,7 +603,7 @@ bool ProfilePickerView::MaybeReopen(ProfilePicker::Params& params) {
 }
 
 void ProfilePickerView::Display() {
-  DCHECK_NE(state_, kClosing);
+  CHECK_NE(state_, kClosing, base::NotFatalUntil::M162);
   TRACE_EVENT2("browser,startup", "ProfilePickerView::Display", "entry_point",
                params_.entry_point(), "state", state_);
 
@@ -630,14 +631,14 @@ void ProfilePickerView::OnPickerProfileCreated(Profile* picker_profile) {
       "browser,startup", "ProfilePickerView::OnPickerProfileCreated",
       "profile_path",
       (picker_profile ? picker_profile->GetPath().AsUTF8Unsafe() : ""));
-  DCHECK(picker_profile);
+  CHECK(picker_profile, base::NotFatalUntil::M162);
   Init(picker_profile);
 
   InitializeFeaturePromo(picker_profile);
 }
 
 void ProfilePickerView::Init(Profile* picker_profile) {
-  DCHECK_EQ(state_, kInitializing);
+  CHECK_EQ(state_, kInitializing, base::NotFatalUntil::M162);
   TRACE_EVENT1(
       "browser,startup", "ProfilePickerView::Init", "profile_path",
       (picker_profile ? picker_profile->GetPath().AsUTF8Unsafe() : ""));
@@ -688,7 +689,7 @@ void ProfilePickerView::Init(Profile* picker_profile) {
       views::HWNDForWidget(GetWidget()));
 #endif
 
-  DCHECK(flow_controller_);
+  CHECK(flow_controller_, base::NotFatalUntil::M162);
   flow_controller_->Init();
 }
 

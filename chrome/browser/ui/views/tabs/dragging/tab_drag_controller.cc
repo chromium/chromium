@@ -204,7 +204,7 @@ aura::Window* GetWindowForTabDraggingProperties(const TabDragContext* context) {
 
 // Returns true if `context` browser window is snapped.
 bool IsSnapped(const TabDragContext* context) {
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M162);
   chromeos::WindowStateType type =
       GetWindowForTabDraggingProperties(context)->GetProperty(
           chromeos::kWindowStateTypeKey);
@@ -450,8 +450,9 @@ TabDragController::Liveness TabDragController::Init(
     const gfx::Point& offset_from_source_view,
     ui::ListSelectionModel initial_selection_model,
     ui::mojom::DragEventSource event_source) {
-  DCHECK(!dragging_views.empty());
-  DCHECK(std::ranges::contains(dragging_views, source_view));
+  CHECK(!dragging_views.empty(), base::NotFatalUntil::M162);
+  CHECK(std::ranges::contains(dragging_views, source_view),
+        base::NotFatalUntil::M162);
 
   // There's some rare condition on Windows where we are destroying ourselves
   // during Init() at some point. It's unclear how this happens, so we'll take
@@ -1017,7 +1018,7 @@ void TabDragController::OnActiveStripWebContentsReplaced(
 
 TabDragController::Liveness TabDragController::SaveFocus() {
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
-  DCHECK(source_context_);
+  CHECK(source_context_, base::NotFatalUntil::M162);
 
   old_focused_view_tracker_->SetView(
       source_context_->GetWidget()->GetFocusManager()->GetFocusedView());
@@ -1081,7 +1082,7 @@ TabDragController::Liveness TabDragController::ContinueDragging(
   }
   last_point_in_screen_ = point_in_screen;
 
-  DCHECK(attached_context_);
+  CHECK(attached_context_, base::NotFatalUntil::M162);
 
   TabDragContext* target_context = source_context_;
   if (detach_behavior_ == DetachBehavior::kDetachable) {
@@ -1635,7 +1636,8 @@ void TabDragController::AttachImpl() {
   const std::vector<views::View*> views =
       GetViewsMatchingDraggedContents(attached_context_);
 
-  DCHECK_EQ(views.size(), drag_data_.tab_drag_data_.size());
+  CHECK_EQ(views.size(), drag_data_.tab_drag_data_.size(),
+           base::NotFatalUntil::M162);
   for (size_t i = 0; i < drag_data_.tab_drag_data_.size(); ++i) {
     drag_data_.tab_drag_data_[i].attached_view = views[i];
   }
@@ -1672,7 +1674,7 @@ TabDragController::Detach(ReleaseCapture release_capture) {
   // reattach ownership is transferred.
   std::unique_ptr<TabDragController> me =
       attached_context_->ReleaseDragController();
-  DCHECK_EQ(me.get(), this);
+  CHECK_EQ(me.get(), this, base::NotFatalUntil::M162);
 
   if (release_capture == ReleaseCapture::kReleaseCapture) {
     attached_context_->GetWidget()->ReleaseCapture();
@@ -1961,7 +1963,7 @@ TabDragController::Liveness TabDragController::RunMoveLoop(
   CHECK(!ShouldDragWindowUsingSystemDnD());
 
   move_loop_widget_ = GetAttachedBrowserWidget();
-  DCHECK(move_loop_widget_);
+  CHECK(move_loop_widget_, base::NotFatalUntil::M162);
 #if !BUILDFLAG(IS_CHROMEOS)
   // In ChromeOS, `SetBounds` is not used to avoid accidentally moving the
   // window to a different display. `drag_offset` is used to calculate initial
@@ -1982,7 +1984,7 @@ TabDragController::Liveness TabDragController::RunMoveLoop(
     // owned by the TabDragContext.
     std::unique_ptr<TabDragController> me =
         attached_context_->ReleaseDragController();
-    DCHECK_EQ(me.get(), this);
+    CHECK_EQ(me.get(), this, base::NotFatalUntil::M162);
     attached_context_->GetWidget()->ReleaseCapture();
     attached_context_->OwnDragController(std::move(me));
   }
@@ -2025,7 +2027,7 @@ TabDragController::Liveness TabDragController::RunMoveLoop(
   if (current_state_ == DragState::kWaitingToExitRunLoop) {
     current_state_ = DragState::kDraggingTabs;
   } else if (current_state_ == DragState::kWaitingToDragTabs) {
-    DCHECK(tab_strip_to_attach_to_after_exit_);
+    CHECK(tab_strip_to_attach_to_after_exit_, base::NotFatalUntil::M162);
     DetachAndAttachToNewContext(ReleaseCapture::kDontReleaseCapture,
                                 tab_strip_to_attach_to_after_exit_);
     current_state_ = DragState::kDraggingTabs;
@@ -2274,7 +2276,7 @@ void TabDragController::RevertDrag() {
 }
 
 void TabDragController::ResetSelection(TabStripModel* model) {
-  DCHECK(model);
+  CHECK(model, base::NotFatalUntil::M162);
   ui::ListSelectionModel selection_model;
   bool has_one_valid_tab = false;
   for (size_t i = 0; i < drag_data_.tab_drag_data_.size(); ++i) {
@@ -2282,7 +2284,7 @@ void TabDragController::ResetSelection(TabStripModel* model) {
     if (drag_data_.tab_drag_data_[i].contents) {
       int index =
           model->GetIndexOfWebContents(drag_data_.tab_drag_data_[i].contents);
-      DCHECK_GE(index, 0);
+      CHECK_GE(index, 0, base::NotFatalUntil::M162);
       selection_model.AddIndexToSelection(static_cast<size_t>(index));
       // Set this tab as active if:
       // a) we don't have an active tab yet
@@ -2632,7 +2634,7 @@ void TabDragController::CompleteDrag() {
 
     // The tabs in the group may have been closed during the drag.
     if (index != TabStripModel::kNoTab) {
-      DCHECK_GE(index, 0);
+      CHECK_GE(index, 0, base::NotFatalUntil::M162);
       selection.AddIndexToSelection(static_cast<size_t>(index));
       selection.set_active(static_cast<size_t>(index));
       selection.set_anchor(static_cast<size_t>(index));
@@ -2654,7 +2656,7 @@ void TabDragController::MaximizeAttachedWindow() {
     // was in "immersive fullscreen" mode, so toggle it back on.
     BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
         GetAttachedBrowserWidget()->GetNativeWindow());
-    DCHECK(browser_view);
+    CHECK(browser_view, base::NotFatalUntil::M162);
     if (!browser_view->IsFullscreen()) {
       chrome::ToggleFullscreenMode(browser_view->browser(),
                                    /*user_initiated=*/false);
@@ -2970,9 +2972,9 @@ BrowserWindowInterface* TabDragController::CreateBrowserForDrag(
 gfx::Point TabDragController::GetCursorScreenPoint() {
 #if BUILDFLAG(IS_CHROMEOS)
   views::Widget* widget = GetAttachedBrowserWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M162);
   aura::Window* widget_window = widget->GetNativeWindow();
-  DCHECK(widget_window->GetRootWindow());
+  CHECK(widget_window->GetRootWindow(), base::NotFatalUntil::M162);
   return aura::Env::GetInstance()->GetLastPointerPoint(
       event_source_, widget_window, /*fallback=*/last_point_in_screen_);
 #else
@@ -3079,7 +3081,7 @@ bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
   }
 #else
   TabStripModel* model = other_browser->GetTabStripModel();
-  DCHECK(model);
+  CHECK(model, base::NotFatalUntil::M162);
 
   const int active_index = model->active_index();
 
@@ -3143,7 +3145,7 @@ bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
 }
 
 int TabDragController::GetOutOfBoundsYCoordinate() const {
-  DCHECK(attached_context_);
+  CHECK(attached_context_, base::NotFatalUntil::M162);
   return attached_context_->GetBoundsInScreen().y() - kVerticalDetachMagnetism -
          1;
 }

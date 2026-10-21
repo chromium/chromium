@@ -60,7 +60,7 @@ ConfirmBubbleViews::ConfirmBubbleViews(
   label_ = AddChildView(std::make_unique<views::Label>(
       model_->GetMessageText(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY));
-  DCHECK(!label_->GetText().empty());
+  CHECK(!label_->GetText().empty(), base::NotFatalUntil::M162);
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetMultiLine(true);
   // Use a fixed maximum message width, so longer messages will wrap.

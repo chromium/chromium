@@ -66,7 +66,7 @@ base::TimeDelta GetPreviewImageCaptureDelay(
       break;
     }
   }
-  DCHECK_GE(ms, 0);
+  CHECK_GE(ms, 0, base::NotFatalUntil::M162);
   return base::Milliseconds(ms);
 }
 
@@ -343,12 +343,13 @@ void TabHoverCardController::UpdateHoverCard(
       }
       break;
     case TabSlotController::HoverCardUpdateType::kTabDataChanged:
-      DCHECK(anchor_target && IsHoverCardShowingForTab(anchor_target));
+      CHECK(anchor_target && IsHoverCardShowingForTab(anchor_target),
+            base::NotFatalUntil::M162);
       break;
     case TabSlotController::HoverCardUpdateType::kTabRemoved:
     case TabSlotController::HoverCardUpdateType::kAnimating:
       // Neither of these cases should have a tab associated.
-      DCHECK(!anchor_target);
+      CHECK(!anchor_target, base::NotFatalUntil::M162);
       break;
     case TabSlotController::HoverCardUpdateType::kEvent:
     case TabSlotController::HoverCardUpdateType::kFocus:
@@ -405,8 +406,8 @@ void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
                     TabSlotController::HoverCardUpdateType::kTabRemoved);
     // These postconditions should always be met after calling
     // UpdateHoverCard(nullptr, ...)
-    DCHECK(!target_tab_);
-    DCHECK(!target_tab_observation_.IsObserving());
+    CHECK(!target_tab_, base::NotFatalUntil::M162);
+    CHECK(!target_tab_observation_.IsObserving(), base::NotFatalUntil::M162);
   }
 }
 
@@ -589,9 +590,9 @@ void TabHoverCardController::StartThumbnailObservation(
     return;
   }
 
-  DCHECK(anchor_target);
-  DCHECK(hover_card_);
-  DCHECK(waiting_for_preview());
+  CHECK(anchor_target, base::NotFatalUntil::M162);
+  CHECK(hover_card_, base::NotFatalUntil::M162);
+  CHECK(waiting_for_preview(), base::NotFatalUntil::M162);
 
   const TabCardData& card_data = std::get<TabCardData>(anchor_target->data());
   auto thumbnail = card_data.thumbnail;
@@ -684,7 +685,7 @@ void TabHoverCardController::UpdateOrShowCard(
     // since delayed capture only happens when the hover card already exists,
     // and this code is only invoked if there is no hover card yet.
     delayed_show_timer_.Stop();
-    DCHECK_EQ(target_tab_, anchor_target);
+    CHECK_EQ(target_tab_, anchor_target, base::NotFatalUntil::M162);
     ShowHoverCard(is_initial, anchor_target);
   }
 }
@@ -797,7 +798,7 @@ bool TabHoverCardController::TargetTabIsValid() const {
 }
 
 void TabHoverCardController::OnCardFullyVisible() {
-  DCHECK(target_tab_);
+  CHECK(target_tab_, base::NotFatalUntil::M162);
   if (target_tab_ == hover_card_last_seen_on_tab_.get()) {
     return;
   }
@@ -865,7 +866,7 @@ void TabHoverCardController::OnSlideAnimationComplete(
 void TabHoverCardController::OnPreviewImageAvailable(
     TabHoverCardThumbnailObserver* observer,
     gfx::ImageSkia thumbnail_image) {
-  DCHECK_EQ(thumbnail_observer_.get(), observer);
+  CHECK_EQ(thumbnail_observer_.get(), observer, base::NotFatalUntil::M162);
 
   thumbnail_wait_state_ = ThumbnailWaitState::kNotWaiting;
 

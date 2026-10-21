@@ -629,7 +629,8 @@ void TabCollectionAnimatingLayoutManager::ResetViewsToTargetLayout(
 
 void TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView(
     views::View* child_view) {
-  DCHECK(std::ranges::contains(host_view()->children(), child_view));
+  CHECK(std::ranges::contains(host_view()->children(), child_view),
+        base::NotFatalUntil::M162);
   child_view->SetCanProcessEventsWithinSubtree(false);
   child_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   child_view->SetProperty(kPendingDeletion, true);
@@ -880,7 +881,8 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
     // in the start layout.
     gfx::Rect* previous_collection_bounds =
         child_view->GetProperty(kPreviousCollectionBounds);
-    DCHECK(!target_view_layout_map_.contains(child_view));
+    CHECK(!target_view_layout_map_.contains(child_view),
+          base::NotFatalUntil::M162);
     if (previous_collection_bounds &&
         !start_view_layout_map_.contains(child_view)) {
       const gfx::Rect start_bounds =

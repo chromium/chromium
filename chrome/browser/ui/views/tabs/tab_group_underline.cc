@@ -81,7 +81,7 @@ gfx::Insets TabGroupUnderline::GetInsetsForUnderline(
   }
 
   const Tab* const tab = views::AsViewClass<Tab>(sibling_view);
-  DCHECK(tab);
+  CHECK(tab, base::NotFatalUntil::M162);
 
   // Active tabs need the rounded bits of the underline poking out the sides.
   if (tab->IsActive()) {

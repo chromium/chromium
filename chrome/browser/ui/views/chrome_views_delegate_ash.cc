@@ -25,7 +25,7 @@ void ProcessAcceleratorNow(const ui::Accelerator& accelerator) {
 views::ViewsDelegate::ProcessMenuAcceleratorResult
 ChromeViewsDelegate::ProcessAcceleratorWhileMenuShowing(
     const ui::Accelerator& accelerator) {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M162);
 
   if (ash::AcceleratorController::Get()->OnMenuAccelerator(accelerator)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

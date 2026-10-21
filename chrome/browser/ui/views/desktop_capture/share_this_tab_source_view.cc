@@ -109,7 +109,7 @@ ShareThisTabSourceView::ShareThisTabSourceView(
     : web_contents_(web_contents),
       thumbnail_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(web_contents_);
 
   constexpr int kThrobberRadius = 14;
@@ -159,7 +159,7 @@ ShareThisTabSourceView::ShareThisTabSourceView(
 ShareThisTabSourceView::~ShareThisTabSourceView() = default;
 
 void ShareThisTabSourceView::Activate() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   throbber_->Stop();
   throbber_->SetVisible(false);
   activated_ = true;
@@ -167,12 +167,12 @@ void ShareThisTabSourceView::Activate() {
 }
 
 void ShareThisTabSourceView::StopRefreshing() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   refreshing_ = false;
 }
 
 void ShareThisTabSourceView::UpdateBlockedState() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   UpdateFaviconAndTabTitle();
 
   if (!activated_) {
@@ -198,14 +198,14 @@ void ShareThisTabSourceView::UpdateBlockedState() {
 
 gfx::Size ShareThisTabSourceView::CalculatePreferredSize(
     const views::SizeBounds& /*available_size*/) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   // TODO(crbug.com/40262420): Use distances from LayoutProvider
   return gfx::Size(kPreviewWidth + 2 * kPadding,
                    kTabTitleMaxRect.bottom() + kPadding);
 }
 
 void ShareThisTabSourceView::UpdateFaviconAndTabTitle() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!web_contents_) {
     return;
   }
@@ -233,7 +233,7 @@ void ShareThisTabSourceView::UpdateFaviconAndTabTitle() {
 }
 
 void ShareThisTabSourceView::Refresh() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!refreshing_) {
     return;  // No further refreshes scheduled.
@@ -272,7 +272,7 @@ void ShareThisTabSourceView::Refresh() {
 void ShareThisTabSourceView::OnCaptureHandled(
     uint32_t hash,
     const std::optional<gfx::ImageSkia>& image) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK((hash != last_hash_) == image.has_value());  // Only new frames passed.
 
   if (!refreshing_) {

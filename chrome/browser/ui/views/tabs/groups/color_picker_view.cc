@@ -69,7 +69,7 @@ class ColorPickerElementView : public views::Button {
         bubble_view_(bubble_view),
         color_id_(color_id),
         color_name_(color_name) {
-    DCHECK(selected_callback_);
+    CHECK(selected_callback_, base::NotFatalUntil::M162);
 
     GetViewAccessibility().SetName(color_name);
     SetInstallFocusRingOnFocus(true);
@@ -125,7 +125,7 @@ class ColorPickerElementView : public views::Button {
   }
 
   views::View* GetSelectedViewForGroup(int group) override {
-    DCHECK(parent());
+    CHECK(parent(), base::NotFatalUntil::M162);
     return parent()->GetSelectedViewForGroup(group);
   }
 
@@ -149,7 +149,7 @@ class ColorPickerElementView : public views::Button {
     gfx::RectF bounds(GetContentsBounds());
 
     // We should be a circle.
-    DCHECK_EQ(bounds.width(), bounds.height());
+    CHECK_EQ(bounds.width(), bounds.height(), base::NotFatalUntil::M162);
 
     const SkColor color =
         GetColorProvider()->GetColor(GetTabGroupDialogColorId(color_id_));
@@ -184,7 +184,7 @@ class ColorPickerElementView : public views::Button {
 
     gfx::RectF indicator_bounds(GetContentsBounds());
     indicator_bounds.Inset(gfx::InsetsF(kInset));
-    DCHECK(!indicator_bounds.size().IsEmpty());
+    CHECK(!indicator_bounds.size().IsEmpty(), base::NotFatalUntil::M162);
     canvas->DrawCircle(indicator_bounds.CenterPoint(),
                        indicator_bounds.width() / 2.0f, flags);
   }
@@ -216,7 +216,7 @@ ColorPickerView::ColorPickerView(
     tab_groups::TabGroupColorId initial_color_id,
     ColorSelectedCallback callback)
     : callback_(std::move(callback)) {
-  DCHECK(!colors.empty());
+  CHECK(!colors.empty(), base::NotFatalUntil::M162);
 
   elements_.reserve(colors.size());
   for (const auto& color : colors) {
@@ -275,8 +275,9 @@ views::View* ColorPickerView::GetSelectedViewForGroup(int group) {
 }
 
 views::Button* ColorPickerView::GetElementAtIndexForTesting(int index) {
-  DCHECK_GE(index, 0);
-  DCHECK_LT(index, static_cast<int>(elements_.size()));
+  CHECK_GE(index, 0, base::NotFatalUntil::M162);
+  CHECK_LT(index, static_cast<int>(elements_.size()),
+           base::NotFatalUntil::M162);
   return elements_[index];
 }
 

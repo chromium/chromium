@@ -138,7 +138,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowEnterpriseAccountConfirmation(
 void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmation(
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M162);
   sync_confirmation_callback_ = std::move(callback);
 
   if (enterprise_account_) {
@@ -166,7 +166,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncDisabledConfirmation(
     bool is_managed_account,
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M162);
   sync_disabled_ = true;
 
   sync_confirmation_callback_ = std::move(callback);
@@ -194,8 +194,9 @@ void ProfilePickerTurnSyncOnDelegate::SwitchToProfile(Profile* new_profile) {
 void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
     LoginUIService::SyncConfirmationUIClosedResult result) {
   // No need to listen to further confirmations any more.
-  DCHECK(scoped_login_ui_service_observation_.IsObservingSource(
-      LoginUIServiceFactory::GetForProfile(profile_)));
+  CHECK(scoped_login_ui_service_observation_.IsObservingSource(
+            LoginUIServiceFactory::GetForProfile(profile_)),
+        base::NotFatalUntil::M162);
   scoped_login_ui_service_observation_.Reset();
 
   if (!syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
@@ -221,8 +222,9 @@ void ProfilePickerTurnSyncOnDelegate::OnSyncConfirmationUIClosed(
 }
 
 void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmationScreen() {
-  DCHECK(sync_confirmation_callback_);
-  DCHECK(!scoped_login_ui_service_observation_.IsObserving());
+  CHECK(sync_confirmation_callback_, base::NotFatalUntil::M162);
+  CHECK(!scoped_login_ui_service_observation_.IsObserving(),
+        base::NotFatalUntil::M162);
   scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(profile_));
 
@@ -233,13 +235,13 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmationScreen() {
 
 void ProfilePickerTurnSyncOnDelegate::FinishSyncConfirmation(
     LoginUIService::SyncConfirmationUIClosedResult result) {
-  DCHECK(sync_confirmation_callback_);
+  CHECK(sync_confirmation_callback_, base::NotFatalUntil::M162);
   std::move(sync_confirmation_callback_).Run(result);
 }
 
 void ProfilePickerTurnSyncOnDelegate::ShowManagedUserNotice(
     ManagedUserProfileNoticeUI::ScreenType type) {
-  DCHECK(sync_confirmation_callback_);
+  CHECK(sync_confirmation_callback_, base::NotFatalUntil::M162);
   // Unretained as the delegate lives until `sync_confirmation_callback_` gets
   // called and thus always outlives the notice screen.
   if (adapter_) {
@@ -287,7 +289,8 @@ void ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed(
 
   // For the Profile Picker flows, the profile should always be new. Other flows
   // also handle whether data from the existing profile should be merged.
-  DCHECK_EQ(choice, signin::SIGNIN_CHOICE_NEW_PROFILE);
+  CHECK_EQ(choice, signin::SIGNIN_CHOICE_NEW_PROFILE,
+           base::NotFatalUntil::M162);
 
   switch (type) {
     case ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled:

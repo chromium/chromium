@@ -32,7 +32,7 @@ AudioCapturePermissionCheckerMac::AudioCapturePermissionCheckerMac(
     : callback_(std::move(callback)) {}
 
 AudioCapturePermissionCheckerMac::~AudioCapturePermissionCheckerMac() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (input_ipc_) {
     input_ipc_->CloseStream();
     input_ipc_.reset();
@@ -42,18 +42,18 @@ AudioCapturePermissionCheckerMac::~AudioCapturePermissionCheckerMac() {
 void AudioCapturePermissionCheckerMac::SetAudioStreamFactoryForTest(
     mojo::PendingRemote<media::mojom::AudioStreamFactory>
         audio_stream_factory) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   audio_stream_factory_for_test_ = std::move(audio_stream_factory);
 }
 
 AudioCapturePermissionChecker::State
 AudioCapturePermissionCheckerMac::GetState() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   return audio_permission_state_;
 }
 
 void AudioCapturePermissionCheckerMac::RunCheck() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (audio_permission_state_ != State::kUnknown) {
     return;
   }
@@ -98,12 +98,12 @@ void AudioCapturePermissionCheckerMac::OnError(
 void AudioCapturePermissionCheckerMac::OnMuted(bool is_muted) {}
 
 void AudioCapturePermissionCheckerMac::OnIPCClosed() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   input_ipc_.reset();
 }
 
 void AudioCapturePermissionCheckerMac::OnPermissionUpdate(bool has_permission) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (input_ipc_) {
     input_ipc_->CloseStream();
     input_ipc_.reset();

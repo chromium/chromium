@@ -299,7 +299,7 @@ void TabContainerImpl::ReturnTabSlotView(TabSlotView* view) {
   if (!view->parent()) {
     Tab* tab = views::AsViewClass<Tab>(view);
     if (tab) {
-      DCHECK(tab->closing());
+      CHECK(tab->closing(), base::NotFatalUntil::M162);
       OnTabRemoved(tab);
     }
     return;
@@ -346,7 +346,7 @@ void TabContainerImpl::OnGroupEditorOpened(
 }
 
 void TabContainerImpl::OnGroupMoved(const tab_groups::TabGroupId& group) {
-  DCHECK(group_views_[group]);
+  CHECK(group_views_[group], base::NotFatalUntil::M162);
 
   layout_helper_->UpdateGroupHeaderIndex(group);
 
@@ -625,7 +625,7 @@ TabContainerImpl::GetTrailingElementForZOrdering() const {
   // However, this method doesn't need to consider that case because it is
   // currently only called on the pinned TabContainer in a CompoundTabContainer,
   // which can't have tab groups. DCHECK that assumption:
-  DCHECK(!trailing_tab->group().has_value());
+  CHECK(!trailing_tab->group().has_value(), base::NotFatalUntil::M162);
 
   return ZOrderableTabContainerElement(trailing_tab);
 }
@@ -637,7 +637,7 @@ void TabContainerImpl::OnTabSlotAnimationProgressed(TabSlotView* view) {
 }
 
 void TabContainerImpl::OnTabCloseAnimationCompleted(Tab* tab) {
-  DCHECK(tab->closing());
+  CHECK(tab->closing(), base::NotFatalUntil::M162);
   OnTabRemoved(tab);
 
   // The ZOrder cache holds pointers to the tab view, however on deletion the
@@ -1285,7 +1285,7 @@ void TabContainerImpl::StartRemoveTabAnimation(Tab* tab,
       return;
     }
 
-    DCHECK(IsDragSessionEnding());
+    CHECK(IsDragSessionEnding(), base::NotFatalUntil::M162);
   }
 
   if (tab->parent() != this) {
@@ -1735,7 +1735,7 @@ bool TabContainerImpl::ShouldTabBeVisible(const Tab* tab) const {
 gfx::Rect TabContainerImpl::GetDropBounds(
     const BrowserRootView::DropIndex& drop_index,
     DropArrow::Direction* direction) {
-  DCHECK_NE(drop_index.index, -1);
+  CHECK_NE(drop_index.index, -1, base::NotFatalUntil::M162);
 
   // The X location the indicator points to.
   int center_x = -1;

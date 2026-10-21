@@ -375,7 +375,8 @@ void SplitTabView::OnCollapseStateChanged(
 
 std::unique_ptr<views::View> SplitTabView::RemoveChildViewForReparenting(
     views::View* child_view) {
-  DCHECK(std::ranges::contains(children(), child_view));
+  CHECK(std::ranges::contains(children(), child_view),
+        base::NotFatalUntil::M162);
   CHECK(collection_node_);
 
   auto children = collection_node_->GetDirectChildren();

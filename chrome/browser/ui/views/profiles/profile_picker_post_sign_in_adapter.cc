@@ -93,8 +93,8 @@ ProfilePickerPostSignInAdapter::ProfilePickerPostSignInAdapter(
       contents_(std::move(contents)),
       signin_access_point_(signin_access_point),
       profile_color_(profile_color) {
-  DCHECK(profile_);
-  DCHECK(contents_);
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(contents_, base::NotFatalUntil::M162);
   // TODO(crbug.com/40216113): Consider renaming the enum entry -- this does not
   // have to be profile creation flow, it can be profile onboarding.
   profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
@@ -112,7 +112,7 @@ ProfilePickerPostSignInAdapter::~ProfilePickerPostSignInAdapter() {
 
 void ProfilePickerPostSignInAdapter::Init(
     StepSwitchFinishedCallback step_switch_callback) {
-  DCHECK(!IsInitialized());
+  CHECK(!IsInitialized(), base::NotFatalUntil::M162);
   CHECK(!step_switch_callback->is_null());
   CHECK(step_switch_callback_->is_null());
   step_switch_callback_ = std::move(step_switch_callback);
@@ -223,7 +223,7 @@ void ProfilePickerPostSignInAdapter::FinishAndOpenBrowser(
 }
 
 void ProfilePickerPostSignInAdapter::SwitchToSyncConfirmation() {
-  DCHECK(IsInitialized());
+  CHECK(IsInitialized(), base::NotFatalUntil::M162);
   if (!step_switch_callback_->is_null()) {
     std::move(step_switch_callback_.value()).Run(true);
   }
@@ -240,7 +240,7 @@ void ProfilePickerPostSignInAdapter::SwitchToSyncConfirmation() {
 void ProfilePickerPostSignInAdapter::SwitchToManagedUserProfileNotice(
     ManagedUserProfileNoticeUI::ScreenType type,
     signin::SigninChoiceCallback process_user_choice_callback) {
-  DCHECK(IsInitialized());
+  CHECK(IsInitialized(), base::NotFatalUntil::M162);
   if (!step_switch_callback_->is_null()) {
     std::move(step_switch_callback_.value()).Run(true);
   }
@@ -301,7 +301,7 @@ void ProfilePickerPostSignInAdapter::SwitchToSignInCelebrationFinished(
 
 void ProfilePickerPostSignInAdapter::SwitchToProfileSwitch(
     const base::FilePath& profile_path) {
-  DCHECK(IsInitialized());
+  CHECK(IsInitialized(), base::NotFatalUntil::M162);
   if (!step_switch_callback_->is_null()) {
     std::move(step_switch_callback_.value()).Run(true);
   }
@@ -366,7 +366,7 @@ bool ProfilePickerPostSignInAdapter::HandleKeyboardEvent(
 }
 
 void ProfilePickerPostSignInAdapter::SwitchToSyncConfirmationFinished() {
-  DCHECK(IsInitialized());
+  CHECK(IsInitialized(), base::NotFatalUntil::M162);
   // Initialize the WebUI page once we know it's committed.
   SyncConfirmationUI* sync_confirmation_ui =
       static_cast<SyncConfirmationUI*>(contents()->GetWebUI()->GetController());

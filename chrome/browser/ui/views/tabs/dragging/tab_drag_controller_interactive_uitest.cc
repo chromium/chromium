@@ -1304,7 +1304,7 @@ class DetachToBrowserTabDragControllerTest
   // Returns true if the tab dragging info is correctly set on the attached
   // browser window.
   bool IsTabDraggingInfoSet(TabStrip* attached_tabstrip) {
-    DCHECK(attached_tabstrip);
+    CHECK(attached_tabstrip, base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_CHROMEOS)
     aura::Window* dragged_window =
         test::GetWindowForTabStrip(attached_tabstrip);
@@ -1318,7 +1318,7 @@ class DetachToBrowserTabDragControllerTest
   // Returns true if the tab dragging info is correctly cleared on the attached
   // browser window.
   bool IsTabDraggingInfoCleared(TabStrip* attached_tabstrip) {
-    DCHECK(attached_tabstrip);
+    CHECK(attached_tabstrip, base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_CHROMEOS)
     aura::Window* dragged_window =
         test::GetWindowForTabStrip(attached_tabstrip);
@@ -5924,14 +5924,14 @@ class DraggedWindowObserver : public aura::WindowObserver {
   }
 
   void StartObserving(aura::Window* window) {
-    DCHECK(!window_);
+    CHECK(!window_, base::NotFatalUntil::M162);
     window_ = window;
     window_->AddObserver(this);
   }
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override {
-    DCHECK_EQ(window_, window);
+    CHECK_EQ(window_, window, base::NotFatalUntil::M162);
     window_->RemoveObserver(this);
     window_ = nullptr;
   }
@@ -5939,7 +5939,7 @@ class DraggedWindowObserver : public aura::WindowObserver {
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    DCHECK_EQ(window_, window);
+    CHECK_EQ(window_, window, base::NotFatalUntil::M162);
     if (key == ash::kIsDraggingTabsKey) {
       if (!window_->GetProperty(ash::kIsDraggingTabsKey)) {
         // It should be triggered by TabDragController::ClearTabDraggingInfo()

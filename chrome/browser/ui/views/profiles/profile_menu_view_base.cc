@@ -196,7 +196,7 @@ class AvatarImageView : public views::ImageView {
   // views::ImageView:
   void OnThemeChanged() override {
     ImageView::OnThemeChanged();
-    DCHECK(!avatar_image_.IsEmpty());
+    CHECK(!avatar_image_.IsEmpty(), base::NotFatalUntil::M162);
     ui::ColorProvider* color_provider = GetColorProvider();
     CHECK(color_provider);
 
@@ -423,7 +423,7 @@ ProfileMenuViewBase::ProfileMenuViewBase(views::BubbleAnchor anchor_element,
       close_bubble_helper_(this, browser->GetTabStripModel()) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_margins(gfx::Insets(0));
-  DCHECK(!anchor_element.IsNull());
+  CHECK(!anchor_element.IsNull(), base::NotFatalUntil::M162);
 
   if (ui::TrackedElement* tracked_element = anchor_element.GetIfElement();
       tracked_element && tracked_element->IsA<views::TrackedElementViews>()) {
@@ -731,7 +731,7 @@ void ProfileMenuViewBase::AddAvailableProfile(
         profile_mgmt_heading_, ax::mojom::NameFrom::kAttribute);
   }
 
-  DCHECK(!image_model.IsEmpty());
+  CHECK(!image_model.IsEmpty(), base::NotFatalUntil::M162);
   const int icon_offset =
       (image_model.Size().width() - kOtherProfileImageSize) / 2;
 
@@ -905,7 +905,7 @@ bool ProfileMenuViewBase::HandleContextMenu(
 }
 
 void ProfileMenuViewBase::ButtonPressed(base::RepeatingClosure action) {
-  DCHECK(action);
+  CHECK(action, base::NotFatalUntil::M162);
   signin_ui_util::RecordProfileMenuClick(profile());
   action.Run();
 }

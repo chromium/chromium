@@ -70,7 +70,7 @@ void TabViewHorizontalLayout::OnShouldDisplayFaviconChanged() {
 
 void TabViewHorizontalLayout::AnimationProgressed(
     const gfx::Animation* animation) {
-  DCHECK_EQ(animation, &title_animation_);
+  CHECK_EQ(animation, &title_animation_, base::NotFatalUntil::M162);
   TabView().InvalidateLayout();
 }
 

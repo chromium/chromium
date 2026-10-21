@@ -587,7 +587,7 @@ void BrowserTabStripController::OnTabStripModelChanged(
     case TabStripModelChange::kInserted: {
       std::vector<TabStrip::AddTabData> tabs_to_add;
       for (const auto& contents : change.GetInsert()->contents) {
-        DCHECK(model_->ContainsIndex(contents.index));
+        CHECK(model_->ContainsIndex(contents.index), base::NotFatalUntil::M162);
         tabs::TabInterface* const tab_interface = contents.tab;
         tabs_to_add.push_back({.index = contents.index,
                                .handle = tab_interface->GetHandle(),

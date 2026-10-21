@@ -56,8 +56,8 @@ DesktopMediaListController::DesktopMediaListController(
               switches::kThisTabCaptureAutoReject)),
       auto_reject_capture_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kCaptureAutoReject)) {
-  DCHECK(dialog_);
-  DCHECK(media_list_);
+  CHECK(dialog_, base::NotFatalUntil::M162);
+  CHECK(media_list_, base::NotFatalUntil::M162);
 }
 
 DesktopMediaListController::~DesktopMediaListController() = default;
@@ -67,11 +67,11 @@ std::unique_ptr<views::View> DesktopMediaListController::CreateView(
     DesktopMediaSourceViewStyle single_style,
     const std::u16string& accessible_name,
     DesktopMediaList::Type type) {
-  DCHECK(!view_);
+  CHECK(!view_, base::NotFatalUntil::M162);
 
 #if BUILDFLAG(IS_MAC)
   if (media_list_->IsSourceListDelegated()) {
-    DCHECK(!view_);
+    CHECK(!view_, base::NotFatalUntil::M162);
     auto view = std::make_unique<DesktopMediaDelegatedSourceListView>(
         weak_factory_.GetWeakPtr(), accessible_name, type);
     view_ = view.get();
@@ -89,7 +89,7 @@ std::unique_ptr<views::View> DesktopMediaListController::CreateView(
 
 std::unique_ptr<views::View> DesktopMediaListController::CreateTabListView(
     const std::u16string& accessible_name) {
-  DCHECK(!view_);
+  CHECK(!view_, base::NotFatalUntil::M162);
 
   auto view = std::make_unique<DesktopMediaTabList>(this, accessible_name);
   view_ = view.get();
@@ -313,7 +313,7 @@ void DesktopMediaListController::OnSourcePreviewChanged(size_t index) {
 }
 
 void DesktopMediaListController::OnDelegatedSourceListSelection() {
-  DCHECK(media_list_->IsSourceListDelegated());
+  CHECK(media_list_->IsSourceListDelegated(), base::NotFatalUntil::M162);
   if (view_) {
     view_->GetSourceListListener()->OnDelegatedSourceListSelection();
   }
@@ -322,7 +322,7 @@ void DesktopMediaListController::OnDelegatedSourceListSelection() {
 }
 
 void DesktopMediaListController::OnDelegatedSourceListDismissed() {
-  DCHECK(media_list_->IsSourceListDelegated());
+  CHECK(media_list_->IsSourceListDelegated(), base::NotFatalUntil::M162);
   dialog_->OnDelegatedSourceListDismissed();
 }
 

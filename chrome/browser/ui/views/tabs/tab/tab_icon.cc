@@ -104,7 +104,7 @@ TabIcon::TabIcon()
   SetPreferredSize(gfx::Size(preferred_width, preferred_width));
 
   // Initial state (before any data) should not be animating.
-  DCHECK(!GetShowingLoadingAnimation());
+  CHECK(!GetShowingLoadingAnimation(), base::NotFatalUntil::M162);
 
   SetProperty(views::kElementIdentifierKey, kTabIconElementId);
 

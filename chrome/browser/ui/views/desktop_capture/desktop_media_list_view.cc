@@ -57,7 +57,8 @@ gfx::ImageSkia LoadDefaultIcon(aura::Window* window) {
 #endif
 
 DesktopMediaSourceView* AsDesktopMediaSourceView(views::View* view) {
-  DCHECK(views::IsViewClass<DesktopMediaSourceView>(view));
+  CHECK(views::IsViewClass<DesktopMediaSourceView>(view),
+        base::NotFatalUntil::M162);
   return static_cast<DesktopMediaSourceView*>(view);
 }
 
@@ -209,7 +210,7 @@ void DesktopMediaListView::OnSourceRemoved(size_t index) {
   }
 
   DesktopMediaSourceView* view = AsDesktopMediaSourceView(children()[index]);
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M162);
 
   bool was_selected = view->GetSelected();
   RemoveChildView(view);

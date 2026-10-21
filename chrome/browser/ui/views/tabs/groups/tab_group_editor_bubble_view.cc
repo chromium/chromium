@@ -324,7 +324,7 @@ void TabGroupEditorBubbleView::AddedToWidget() {
   }
 
   if (save_group_icon_) {
-    DCHECK(save_group_label_);
+    CHECK(save_group_label_, base::NotFatalUntil::M162);
 
     const bool enabled = save_group_icon_->GetEnabled();
     const SkColor text_color = save_group_label_->GetEnabledColor();
@@ -363,11 +363,12 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
                           base::Unretained(this)));
 
   // This dialog should only show up if the browser supports tab groups.
-  DCHECK(browser_->GetTabStripModel()->SupportsTabGroups());
+  CHECK(browser_->GetTabStripModel()->SupportsTabGroups(),
+        base::NotFatalUntil::M162);
 
   // `anchor_view` should always be defined as it will be used to source the
   // `anchor_widget_`.
-  DCHECK(anchor_view);
+  CHECK(anchor_view, base::NotFatalUntil::M162);
 
   // Initialize the bubble.
   if (anchor_rect) {
@@ -1375,14 +1376,14 @@ END_METADATA
 void TabGroupEditorBubbleView::TitleFieldController::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  DCHECK_EQ(sender, parent_->title_field_);
+  CHECK_EQ(sender, parent_->title_field_, base::NotFatalUntil::M162);
   parent_->UpdateGroup();
 }
 
 bool TabGroupEditorBubbleView::TitleFieldController::HandleKeyEvent(
     views::Textfield* sender,
     const ui::KeyEvent& key_event) {
-  DCHECK_EQ(sender, parent_->title_field_);
+  CHECK_EQ(sender, parent_->title_field_, base::NotFatalUntil::M162);
 
   // For special actions, only respond to key pressed events, to be consistent
   // with other views like buttons and dialogs.

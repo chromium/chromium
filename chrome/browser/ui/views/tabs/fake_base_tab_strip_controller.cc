@@ -51,7 +51,7 @@ void FakeBaseTabStripController::AddTab(int index,
 }
 
 void FakeBaseTabStripController::RemoveTab(int index) {
-  DCHECK(IsValidIndex(index));
+  CHECK(IsValidIndex(index), base::NotFatalUntil::M162);
   num_tabs_--;
   if (index < num_pinned_tabs_) {
     num_pinned_tabs_--;
@@ -310,7 +310,7 @@ void FakeBaseTabStripController::SetFocusedGroup(
 }
 
 void FakeBaseTabStripController::SetActiveIndex(int new_index) {
-  DCHECK(IsValidIndex(new_index));
+  CHECK(IsValidIndex(new_index), base::NotFatalUntil::M162);
   active_index_ = new_index;
   selection_model_.SetSelectedIndex(active_index_);
   if (tab_strip_) {

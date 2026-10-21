@@ -390,7 +390,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
 
   const RuntimeContext context = GetRuntimeContext(owner.window);
   profile_ = context.profile;
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M162);
 
   std::vector<std::string> volume_filter;
   if (use_media_store_filter) {

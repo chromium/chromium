@@ -540,7 +540,7 @@ class FirstRunPostSignInAdapter : public ProfilePickerPostSignInAdapter {
         step_completed_callback_(std::move(step_completed_callback)),
         play_celebration_sound_callback_(
             std::move(play_celebration_sound_callback)) {
-    DCHECK(step_completed_callback_);
+    CHECK(step_completed_callback_, base::NotFatalUntil::M162);
   }
 
   void Init(StepSwitchFinishedCallback step_switch_callback) override {
@@ -903,8 +903,8 @@ FirstRunFlowController::FirstRunFlowController(
                                           /*flow_type_string=*/"FREFlow"),
       profile_(profile),
       first_run_exited_callback_(std::move(first_run_exited_callback)) {
-  DCHECK(profile_);
-  DCHECK(first_run_exited_callback_);
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(first_run_exited_callback_, base::NotFatalUntil::M162);
 }
 
 FirstRunFlowController::~FirstRunFlowController() {
@@ -1058,7 +1058,7 @@ void FirstRunFlowController::PickProfile(
 }
 
 bool FirstRunFlowController::PreFinishWithBrowser() {
-  DCHECK(first_run_exited_callback_);
+  CHECK(first_run_exited_callback_, base::NotFatalUntil::M162);
   std::move(first_run_exited_callback_)
       .Run(ProfilePicker::FirstRunExitStatus::kCompleted, finish_reason_);
 
@@ -1106,7 +1106,7 @@ FirstRunFlowController::CreatePostSignInAdapter(
     Profile* signed_in_profile,
     const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents) {
-  DCHECK_EQ(profile_, signed_in_profile);
+  CHECK_EQ(profile_, signed_in_profile, base::NotFatalUntil::M162);
   return std::make_unique<FirstRunPostSignInAdapter>(
       host(), signed_in_profile, account_info, std::move(contents),
       base::BindOnce(&FirstRunFlowController::HandleIdentityStepsCompleted,

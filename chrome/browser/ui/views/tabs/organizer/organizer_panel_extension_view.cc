@@ -177,7 +177,7 @@ void OrganizerPanelExtensionView::OnViewDestroying() {
 
 void OrganizerPanelExtensionView::OnExtensionHostDestroyed(
     extensions::ExtensionHost* host) {
-  DCHECK_EQ(extension_host_.get(), host);
+  CHECK_EQ(extension_host_.get(), host, base::NotFatalUntil::M162);
   scoped_host_observation_.Reset();
   if (current_extension_id_ && browser_->GetProfile()) {
     auto* service = extensions::SidePanelService::Get(browser_->GetProfile());
