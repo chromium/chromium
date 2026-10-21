@@ -812,7 +812,10 @@ public class MediaDrmBridge {
         try {
             byte[] scopeId =
                     keyType == MediaDrm.KEY_TYPE_RELEASE ? sessionId.keySetId() : sessionId.drmId();
-            assert scopeId != null;
+            if (scopeId == null) {
+                Log.e(TAG, "getKeyRequest(%s): scopeId is null for keyType %d", sessionId, keyType);
+                return null;
+            }
             request = mMediaDrm.getKeyRequest(scopeId, data, mime, keyType, optionalParameters);
         } catch (android.media.NotProvisionedException e) {
             Log.e(
