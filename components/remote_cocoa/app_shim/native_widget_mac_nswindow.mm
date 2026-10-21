@@ -18,6 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/crash/core/common/crash_key.h"
 #import "components/remote_cocoa/app_shim/features.h"
+#import "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
@@ -939,10 +940,21 @@ struct NSEdgeAndCornerThicknesses {
 // responder. When AppKit calls |-encodeRestorableStateWithCoder:|, it
 // accomplishes the same thing by passing a custom coder.
 - (id)archiver:(NSKeyedArchiver*)archiver willEncodeObject:(id)object {
-  if (object == self)
+  if (object == self) {
     return nil;
-  if ([object isKindOfClass:[NSView class]])
+  }
+  if ([object isKindOfClass:[NSView class]]) {
     return nil;
+  }
+  // In fullscreen, NSToolbarFullScreenWindow is a child window that shares
+  // this window's first responder. When a view that is its first responder is
+  // removed, AppKit calls -[NSToolbarFullScreenWindow makeFirstResponder:self],
+  // which is forwarded to this window, leaving the NSToolbarFullScreenWindow
+  // itself as this window's first responder. It does not adopt
+  // NSSecureCoding, so archiving it throws. See https://crbug.com/566904500.
+  if (remote_cocoa::IsNSToolbarFullScreenWindow(object)) {
+    return nil;
+  }
   return object;
 }
 
