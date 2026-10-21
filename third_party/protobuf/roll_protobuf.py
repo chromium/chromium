@@ -272,6 +272,13 @@ def _RunGit(command: Sequence[str],
     return process
 
 
+def _SplitNulSeparatedPaths(output: bytes) -> list[str]:
+    return [
+        path for path in output.decode(
+            'utf-8', errors='surrogateescape').split('\0') if path
+    ]
+
+
 def _ResolveCommitHash(repository_path: str, revision: str) -> str | None:
     process = _RunGit(_GitCommandForRepository(
         repository_path,
@@ -447,94 +454,56 @@ def ApplyPatchFile(patch_path: str, target_directory: str) -> str | None:
     return process.stderr.decode('utf-8', errors='replace').strip()
 
 
+def _IsRegularFile(path: str) -> bool:
+    return os.path.isfile(path) and not os.path.islink(path)
+
+
 def _ListRegularFilesInDirectory(root_directory: str) -> set[str]:
     """Returns POSIX relative paths of regular files under root_directory."""
-    relative_paths: set[str] = set()
+    relative_paths = set()
     for current_root, directory_names, filenames in os.walk(root_directory):
         directory_names[:] = [
-            directory_name
-            for directory_name in directory_names
-            if directory_name not in ('.git', '__pycache__')
+            name for name in directory_names
+            if name not in ('.git', '__pycache__')
         ]
-        for filename in filenames:
-            if filename.endswith('.pyc'):
-                continue
-            full_path = os.path.join(current_root, filename)
-            if os.path.islink(full_path) or not os.path.isfile(full_path):
-                continue
-            relative_path = os.path.relpath(full_path, root_directory)
-            relative_paths.add(relative_path.replace('\\', '/'))
+        relative_paths.update(
+            os.path.relpath(os.path.join(current_root, filename),
+                            root_directory).replace('\\', '/')
+            for filename in filenames if not filename.endswith('.pyc')
+            and _IsRegularFile(os.path.join(current_root, filename)))
     return relative_paths
 
 
-def _IsInsideGitWorkTree(directory_path: str) -> bool:
-    """Returns True if directory_path resides inside a git working tree."""
-    completed_process = subprocess.run(
-        ['git', '-C', directory_path, 'rev-parse', '--is-inside-work-tree'],
-        env=_IsolatedGitEnvironment(),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    return (completed_process.returncode == 0
-            and completed_process.stdout.strip() == 'true')
-
-
 def _ListChromiumProtobufFiles(protobuf_directory: str) -> set[str]:
-    """Returns relative POSIX paths of non-ignored regular files in protobuf.
+    """Returns the files in //third_party/protobuf that `git add` would see.
 
-    Queries `git ls-files --cached --others --exclude-standard` with
-    `core.excludesFile` set to `os.devnull` so user-level global ignore rules do
-    not hide untracked local files inside `protobuf_directory`. Symlinks and
-    missing working-tree entries are skipped.
-
-    Args:
-      protobuf_directory: Path to `//third_party/protobuf`.
-
-    Returns:
-      Set of relative POSIX file paths present in `protobuf_directory`.
-
-    Raises:
-      RollProtobufError: If `protobuf_directory` is outside a git working tree,
-        `git ls-files` fails, or `README.chromium` is absent (for example, when
-        `protobuf_directory` itself is git-ignored).
+    That is tracked and untracked files minus .gitignore matches, with the
+    developer's global `core.excludesFile` neutralized. README.chromium must be
+    listed: otherwise protobuf_directory itself is git-ignored (a copy under
+    out/, say) and every comparison would pass vacuously.
     """
-    if not _IsInsideGitWorkTree(protobuf_directory):
+    work_tree_process = _RunGit([
+        'git', '-C', protobuf_directory, 'rev-parse', '--is-inside-work-tree'
+    ],
+                                accepted_return_codes=None)
+    if (work_tree_process.returncode != 0
+            or work_tree_process.stdout.decode().strip() != 'true'):
         raise RollProtobufError(
             f'{protobuf_directory} is not inside a git working tree; check '
-            f'needs git to apply .gitignore the way `git add` does.')
-
-    completed_process = subprocess.run(
-        [
-            'git',
-            '-C',
-            protobuf_directory,
-            '-c',
-            f'core.excludesFile={os.devnull}',
-            'ls-files',
-            '--cached',
-            '--others',
-            '--exclude-standard',
-            '-z',
+            'needs git to apply .gitignore the way `git add` does.')
+    listed_paths = _SplitNulSeparatedPaths(
+        _RunGit([
+            'git', '-C', protobuf_directory, '-c',
+            f'core.excludesFile={os.devnull}', 'ls-files', '--cached',
+            '--others', '--exclude-standard', '-z'
         ],
-        env=_IsolatedGitEnvironment(),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if completed_process.returncode != 0:
-        raise RollProtobufError(
-            f'git ls-files failed in {protobuf_directory}: '
-            f'{completed_process.stderr.strip()}')
-
-    present_paths: set[str] = set()
-    for raw_entry in completed_process.stdout.split('\0'):
-        if not raw_entry:
-            continue
-        normalized_path = raw_entry.replace('\\', '/')
-        full_path = os.path.join(protobuf_directory, normalized_path)
-        if not os.path.islink(full_path) and os.path.isfile(full_path):
-            present_paths.add(normalized_path)
+                failure_message=f'git ls-files failed in {protobuf_directory}'
+                ).stdout)
+    present_paths = {
+        path
+        for path in listed_paths
+        if _IsRegularFile(os.path.join(protobuf_directory, path))
+    }
     if _README_FILENAME not in present_paths:
         raise RollProtobufError(
             f'git ls-files returned no {_README_FILENAME} in '
