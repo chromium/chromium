@@ -68,6 +68,7 @@ struct COMPONENT_EXPORT(GFX) NativePixmapHandle {
   // modifier. We use this to indicate that layout information
   // (tiling/compression) if any will be communicated out of band.
   static constexpr uint64_t kNoModifier = 0x00ffffffffffffffULL;
+  static constexpr uint64_t kLinearModifier = 0x0ULL;
 
   NativePixmapHandle();
   NativePixmapHandle(NativePixmapHandle&& other);

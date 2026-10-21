@@ -167,6 +167,16 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   CHECK(!si_info.format.PrefersExternalSampler()) << si_info.format.ToString();
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+  // Only valid client from renderer on ChromeOS and Linux is VideoCapture, that
+  // uses SCANOUT_VEA_CPU_READ.
+  if (gpu_channel_->client_type() == viz::mojom::GpuClientType::kRenderer) {
+    CHECK_EQ(buffer_usage, gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
+             base::NotFatalUntil::M158);
+  }
+#endif
+
   // Copy which can be modified.
   SharedImageInfo si_info_copy = si_info;
   // Set CPU read/write usage based on buffer usage.
@@ -188,6 +198,14 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   CHECK(!si_info.format.PrefersExternalSampler()) << si_info.format.ToString();
 #endif
+
+#if !BUILDFLAG(IS_FUCHSIA)
+  // This path of creating SI with buffer_handle inside renderer is used only on
+  // Fuchsia for video decoder.
+  CHECK_NE(gpu_channel_->client_type(), viz::mojom::GpuClientType::kRenderer,
+           base::NotFatalUntil::M158);
+#endif
+
   auto buffer_handle_type = buffer_handle.type;
   auto mailbox = proxy_->CreateSharedImage(si_info, std::move(buffer_handle));
   return base::MakeRefCounted<ClientSharedImage>(AddMailbox(mailbox), si_info,

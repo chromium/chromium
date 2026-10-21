@@ -29,6 +29,10 @@ namespace gfx {
 static_assert(NativePixmapHandle::kNoModifier == DRM_FORMAT_MOD_INVALID,
               "gfx::NativePixmapHandle::kNoModifier should be an alias for"
               "DRM_FORMAT_MOD_INVALID");
+
+static_assert(NativePixmapHandle::kLinearModifier == DRM_FORMAT_MOD_LINEAR,
+              "gfx::NativePixmapHandle::kLinearModifier should be an alias for"
+              "DRM_FORMAT_MOD_LINEAR");
 #endif
 
 NativePixmapPlane::NativePixmapPlane() : stride(0), offset(0), size(0) {}
