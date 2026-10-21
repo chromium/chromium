@@ -476,4 +476,8 @@ std::string DevToolsPipeHandler::GetTypeForMetrics() {
   return "RemoteDebugger";
 }
 
+DevToolsAgentHostClient::PeerMetadata DevToolsPipeHandler::GetPeerMetadata() {
+  return {.transport_type = PeerMetadata::TransportType::kPipe};
+}
+
 }  // namespace content

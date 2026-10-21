@@ -9,6 +9,7 @@
 
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/input/input_constants.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/devtools_agent_host_client_channel.h"
 #include "content/public/browser/devtools_external_agent_proxy.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
@@ -27,6 +29,8 @@
 #include "content/public/test/test_utils.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -91,13 +95,50 @@ class TestWebContentsDelegate : public WebContentsDelegate {
   bool renderer_unresponsive_received_;
 };
 
+class RecordingDevToolsManagerDelegate : public DevToolsManagerDelegate {
+ public:
+  static RecordingDevToolsManagerDelegate* last_instance;
+  RecordingDevToolsManagerDelegate() { last_instance = this; }
+  ~RecordingDevToolsManagerDelegate() override {
+    if (last_instance == this) {
+      last_instance = nullptr;
+    }
+  }
+
+  void ClientAttached(DevToolsAgentHostClientChannel* channel) override {
+    last_attached_client_ = channel->GetClient();
+    last_attached_host_ = channel->GetAgentHost();
+  }
+
+  void ClientDetached(DevToolsAgentHostClientChannel* channel) override {
+    if (last_attached_client_ == channel->GetClient()) {
+      last_attached_client_ = nullptr;
+    }
+    if (last_attached_host_ == channel->GetAgentHost()) {
+      last_attached_host_ = nullptr;
+    }
+  }
+
+  DevToolsAgentHostClient* last_attached_client() const {
+    return last_attached_client_;
+  }
+  DevToolsAgentHost* last_attached_host() const { return last_attached_host_; }
+
+ private:
+  raw_ptr<DevToolsAgentHostClient> last_attached_client_ = nullptr;
+  raw_ptr<DevToolsAgentHost> last_attached_host_ = nullptr;
+};
+
+RecordingDevToolsManagerDelegate*
+    RecordingDevToolsManagerDelegate::last_instance = nullptr;
+
 class BrowserClient : public ContentBrowserClient {
  public:
   BrowserClient() = default;
   ~BrowserClient() override = default;
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate() override {
-    return std::make_unique<DevToolsManagerDelegate>();
+    return std::make_unique<RecordingDevToolsManagerDelegate>();
   }
 };
 
@@ -249,6 +290,130 @@ TEST_F(DevToolsAgentHostImplTest, TestExternalProxy) {
                                       base::byte_span_from_cstring("message2"));
 
   client_host.Close();
+}
+
+class CustomMetadataDevToolsClientHost : public TestDevToolsClientHost {
+ public:
+  explicit CustomMetadataDevToolsClientHost(PeerMetadata peer_metadata)
+      : peer_metadata_(std::move(peer_metadata)) {}
+
+  PeerMetadata GetPeerMetadata() override { return peer_metadata_; }
+
+ private:
+  PeerMetadata peer_metadata_;
+};
+
+TEST_F(DevToolsAgentHostImplTest,
+       TargetHandlerSessionDelegatesMetadataViaAttachToTarget) {
+  scoped_refptr<DevToolsAgentHost> page_host =
+      DevToolsAgentHost::GetOrCreateFor(web_contents());
+  scoped_refptr<DevToolsAgentHost> browser_host =
+      DevToolsAgentHost::CreateForDiscovery();
+
+  const net::IPEndPoint kPeerAddress(net::IPAddress::IPv4Localhost(), 54321);
+  CustomMetadataDevToolsClientHost root_client(
+      {.transport_type =
+           DevToolsAgentHostClient::PeerMetadata::TransportType::kWebSocket,
+       .peer_address = kPeerAddress});
+  root_client.InspectAgentHost(browser_host.get());
+  ASSERT_NE(RecordingDevToolsManagerDelegate::last_instance, nullptr);
+
+  std::string attach_cmd = base::StringPrintf(
+      "{\"id\":1,\"method\":\"Target.attachToTarget\","
+      "\"params\":{\"targetId\":\"%s\",\"flatten\":true}}",
+      page_host->GetId().c_str());
+  browser_host->DispatchProtocolMessage(&root_client,
+                                        base::as_byte_span(attach_cmd));
+
+  EXPECT_EQ(
+      RecordingDevToolsManagerDelegate::last_instance->last_attached_host(),
+      page_host.get());
+  DevToolsAgentHostClient* child_client =
+      RecordingDevToolsManagerDelegate::last_instance->last_attached_client();
+  ASSERT_NE(child_client, nullptr);
+  EXPECT_NE(child_client, &root_client);
+  DevToolsAgentHostClient::PeerMetadata child_metadata =
+      child_client->GetPeerMetadata();
+  EXPECT_EQ(child_metadata.transport_type,
+            DevToolsAgentHostClient::PeerMetadata::TransportType::kWebSocket);
+  EXPECT_EQ(child_metadata.peer_address, kPeerAddress);
+
+  root_client.Close();
+}
+
+TEST_F(DevToolsAgentHostImplTest,
+       TargetHandlerSessionDelegatesMetadataViaSetAutoAttach) {
+  scoped_refptr<DevToolsAgentHost> page_host =
+      DevToolsAgentHost::GetOrCreateFor(web_contents());
+  scoped_refptr<DevToolsAgentHost> browser_host =
+      DevToolsAgentHost::CreateForDiscovery();
+
+  CustomMetadataDevToolsClientHost root_client(
+      {.transport_type =
+           DevToolsAgentHostClient::PeerMetadata::TransportType::kPipe,
+       .peer_address = std::nullopt});
+  root_client.InspectAgentHost(browser_host.get());
+  ASSERT_NE(RecordingDevToolsManagerDelegate::last_instance, nullptr);
+
+  constexpr char kAutoAttachCmd[] =
+      "{\"id\":1,\"method\":\"Target.setAutoAttach\","
+      "\"params\":{\"autoAttach\":true,\"waitForDebuggerOnStart\":false,"
+      "\"flatten\":true}}";
+  browser_host->DispatchProtocolMessage(
+      &root_client, base::byte_span_from_cstring(kAutoAttachCmd));
+
+  EXPECT_EQ(
+      RecordingDevToolsManagerDelegate::last_instance->last_attached_host(),
+      page_host.get());
+  DevToolsAgentHostClient* child_client =
+      RecordingDevToolsManagerDelegate::last_instance->last_attached_client();
+  ASSERT_NE(child_client, nullptr);
+  EXPECT_NE(child_client, &root_client);
+  DevToolsAgentHostClient::PeerMetadata child_metadata =
+      child_client->GetPeerMetadata();
+  EXPECT_EQ(child_metadata.transport_type,
+            DevToolsAgentHostClient::PeerMetadata::TransportType::kPipe);
+  EXPECT_EQ(child_metadata.peer_address, std::nullopt);
+
+  root_client.Close();
+}
+
+TEST_F(DevToolsAgentHostImplTest,
+       TargetHandlerDelegatesMetadataViaExposeDevToolsProtocol) {
+  scoped_refptr<DevToolsAgentHost> page_host =
+      DevToolsAgentHost::GetOrCreateFor(web_contents());
+  scoped_refptr<DevToolsAgentHost> browser_host =
+      DevToolsAgentHost::CreateForDiscovery();
+
+  const net::IPEndPoint kPeerAddress(net::IPAddress::IPv4Localhost(), 54321);
+  CustomMetadataDevToolsClientHost root_client(
+      {.transport_type =
+           DevToolsAgentHostClient::PeerMetadata::TransportType::kWebSocket,
+       .peer_address = kPeerAddress});
+  root_client.InspectAgentHost(browser_host.get());
+  ASSERT_NE(RecordingDevToolsManagerDelegate::last_instance, nullptr);
+
+  std::string expose_cmd = base::StringPrintf(
+      "{\"id\":1,\"method\":\"Target.exposeDevToolsProtocol\","
+      "\"params\":{\"targetId\":\"%s\"}}",
+      page_host->GetId().c_str());
+  browser_host->DispatchProtocolMessage(&root_client,
+                                        base::as_byte_span(expose_cmd));
+
+  EXPECT_EQ(
+      RecordingDevToolsManagerDelegate::last_instance->last_attached_host(),
+      page_host.get());
+  DevToolsAgentHostClient* connector_client =
+      RecordingDevToolsManagerDelegate::last_instance->last_attached_client();
+  ASSERT_NE(connector_client, nullptr);
+  EXPECT_NE(connector_client, &root_client);
+  DevToolsAgentHostClient::PeerMetadata connector_metadata =
+      connector_client->GetPeerMetadata();
+  EXPECT_EQ(connector_metadata.transport_type,
+            DevToolsAgentHostClient::PeerMetadata::TransportType::kWebSocket);
+  EXPECT_EQ(connector_metadata.peer_address, kPeerAddress);
+
+  root_client.Close();
 }
 
 }  // namespace content

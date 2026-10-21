@@ -49,4 +49,9 @@ std::string DevToolsAgentHostClient::GetTypeForMetrics() {
   return "Other";
 }
 
+DevToolsAgentHostClient::PeerMetadata
+DevToolsAgentHostClient::GetPeerMetadata() {
+  return {};
+}
+
 }  // namespace content

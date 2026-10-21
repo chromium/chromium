@@ -220,6 +220,10 @@ class BrowserToPageConnector {
       return permissions_.allow_unsafe_operations;
     }
 
+    PeerMetadata GetPeerMetadata() override {
+      return connector_->peer_metadata_;
+    }
+
    private:
     raw_ptr<BrowserToPageConnector> connector_;
     BrowserConnectorHostClientPermissions permissions_;
@@ -229,9 +233,11 @@ class BrowserToPageConnector {
       const std::string& binding_name,
       DevToolsAgentHost* page_host,
       BrowserConnectorHostClientPermissions permissions,
+      DevToolsAgentHostClient::PeerMetadata peer_metadata,
       std::unique_ptr<Target::Backend::ExposeDevToolsProtocolCallback> callback)
       : binding_name_(binding_name),
         page_host_(page_host),
+        peer_metadata_(std::move(peer_metadata)),
         pending_callback_(std::move(callback)) {
     browser_host_ = BrowserDevToolsAgentHost::CreateForDiscovery();
     browser_host_client_ = std::make_unique<BrowserConnectorHostClient>(
@@ -361,6 +367,7 @@ class BrowserToPageConnector {
   std::string binding_name_;
   scoped_refptr<DevToolsAgentHost> browser_host_;
   scoped_refptr<DevToolsAgentHost> page_host_;
+  DevToolsAgentHostClient::PeerMetadata peer_metadata_;
   std::unique_ptr<BrowserConnectorHostClient> browser_host_client_;
   std::unique_ptr<BrowserConnectorHostClient> page_host_client_;
   int page_message_id_ = 0;
@@ -521,6 +528,9 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
   }
 
   std::string GetTypeForMetrics() override { return "DevTools"; }
+  PeerMetadata GetPeerMetadata() override {
+    return GetRootClient()->GetPeerMetadata();
+  }
   std::optional<url::Origin> GetNavigationInitiatorOrigin() override {
     return GetRootClient()->GetNavigationInitiatorOrigin();
   }
@@ -1349,8 +1359,9 @@ void TargetHandler::ExposeDevToolsProtocol(
         root_session_->GetClient()->AllowUnsafeOperations();
   }
 
-  new BrowserToPageConnector(binding_name.value_or("cdp"), agent_host.get(),
-                             permissions, std::move(callback));
+  new BrowserToPageConnector(
+      binding_name.value_or("cdp"), agent_host.get(), permissions,
+      root_session_->GetClient()->GetPeerMetadata(), std::move(callback));
 }
 
 Response TargetHandler::CreateTarget(

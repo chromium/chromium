@@ -36,6 +36,7 @@ class DevToolsPipeHandler : public DevToolsAgentHostClient {
   bool UsesBinaryProtocol() override;
   bool AllowUnsafeOperations() override;
   std::string GetTypeForMetrics() override;
+  PeerMetadata GetPeerMetadata() override;
 
   void Shutdown();
 
