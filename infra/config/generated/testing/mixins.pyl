@@ -1139,11 +1139,23 @@
       },
     },
   },
+  'win_gpu_ai_wpt_dimensions': {
+    'fail_if_unused': False,
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'gpu': '10de|8086|1002:7340|1002:744c|1002:7480|1002:7550',
+        'os': 'Windows',
+      },
+    },
+  },
   'win_gpu_gemma4_ai_wpt_dimensions': {
     'fail_if_unused': False,
     'swarming': {
       'dimensions': {
+        'cpu': 'x86-64',
         'gpu': '10de',
+        'os': 'Windows',
       },
     },
   },

@@ -1270,14 +1270,32 @@ targets.mixin(
     ),
 )
 
-# Restricts Windows GPU Gemma 4 AI WPT tasks to NVIDIA discrete GPUs
-# to prevent D3D12 vision compilation crashes on AMD integrated graphics
-# (see https://crbug.com/547946848).
+# Expands Windows GPU AI WPT tasks across both Windows 10 and Windows 11 x86-64
+# discrete GPUs (NVIDIA, Intel Arc/UHD, and discrete AMD Radeon RX 5500 XT /
+# 7600 / 7900 XTX / 9070 XT) while excluding integrated AMD APUs (1002:1638 and
+# 1002:164e) that have < 4 GB dedicated VRAM and fail on-device GPU model
+# preconditions.
+targets.mixin(
+    name = "win_gpu_ai_wpt_dimensions",
+    swarming = targets.swarming(
+        dimensions = {
+            "cpu": "x86-64",
+            "gpu": "10de|8086|1002:7340|1002:744c|1002:7480|1002:7550",
+            "os": "Windows",
+        },
+    ),
+)
+
+# Restricts Windows GPU Gemma 4 AI WPT tasks to Windows 10 and Windows 11 x86-64
+# NVIDIA discrete GPUs to prevent D3D12 vision compilation crashes on AMD
+# integrated graphics (see https://crbug.com/547946848).
 targets.mixin(
     name = "win_gpu_gemma4_ai_wpt_dimensions",
     swarming = targets.swarming(
         dimensions = {
+            "cpu": "x86-64",
             "gpu": "10de",
+            "os": "Windows",
         },
     ),
 )

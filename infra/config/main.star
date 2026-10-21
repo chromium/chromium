@@ -296,6 +296,7 @@ chromium_luci.configure_targets(
             "win-arm64": True,
             "win10": True,
             "win10-any": True,
+            "win_gpu_ai_wpt_dimensions": targets.IGNORE_UNUSED,
             "win_gpu_gemma4_ai_wpt_dimensions": targets.IGNORE_UNUSED,
             "xcode_27_main": True,
             "xctest": True,

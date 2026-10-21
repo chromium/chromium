@@ -1130,7 +1130,6 @@
         ],
         'mixins': [
           'chrome-intelligence-swarming-pool',
-          'win10',
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_win_gtests',
