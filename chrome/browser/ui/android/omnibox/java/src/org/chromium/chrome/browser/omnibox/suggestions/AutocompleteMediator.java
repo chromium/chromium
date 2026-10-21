@@ -575,7 +575,7 @@ class AutocompleteMediator
         propagateOmniboxSessionStateChange(false);
 
         // Notify processors that the omnibox session has ended so they can release
-        // per-session state (e.g. cached suggestion images in the image supplier).
+        // per-session state.
         mDropdownViewInfoListBuilder.onOmniboxSessionStateChange(false);
 
         mFuseboxCoordinator.notifyOmniboxSessionEnded(mOmniboxFocusResultedInNavigation);

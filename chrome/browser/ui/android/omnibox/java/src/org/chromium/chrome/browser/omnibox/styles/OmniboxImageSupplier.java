@@ -20,6 +20,9 @@ import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.MemoryPressureLevel;
+import org.chromium.base.MemoryPressureListener;
+import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -59,6 +62,13 @@ public class OmniboxImageSupplier {
     private final Context mContext;
     private final Map<GURL, List<Callback<Drawable>>> mPendingImageRequests;
     private final Map<String, Drawable.ConstantState> mDrawableCache;
+    private final MemoryPressureCallback mMemoryPressureCallback =
+            pressure -> {
+                if (pressure == MemoryPressureLevel.MODERATE
+                        || pressure == MemoryPressureLevel.CRITICAL) {
+                    resetCache();
+                }
+            };
     private Drawable.@Nullable ConstantState mBackgroundDrawableState;
     private final int mDesiredFaviconWidthPx;
     private final int mFallbackIconSize;
@@ -86,10 +96,13 @@ public class OmniboxImageSupplier {
                 context.getResources().getDimensionPixelSize(R.dimen.tile_view_icon_text_size);
         mPendingImageRequests = new HashMap<>();
         mDrawableCache = new HashMap<>();
+        MemoryPressureListener.addCallback(mMemoryPressureCallback);
     }
 
     /** Release any resources and deregister any callbacks created by this class. */
     public void destroy() {
+        MemoryPressureListener.removeCallback(mMemoryPressureCallback);
+
         if (mIconBridge != null) {
             mIconBridge.destroy();
             mIconBridge = null;
@@ -148,8 +161,8 @@ public class OmniboxImageSupplier {
             return;
         }
 
-        // Note: LargeIconBridge will serve <null> right away if a fetch was previously made and was
-        // unsuccessful.
+        // Note: LargeIconBridge will serve <null> right away if a fetch was previously made and
+        // was unsuccessful.
         mIconBridge.getLargeIconForUrl(
                 url,
                 mDesiredFaviconWidthPx / 2,
@@ -288,11 +301,16 @@ public class OmniboxImageSupplier {
         return path;
     }
 
+    /** Clear all pending in-flight image request callbacks without evicting cached images. */
+    public void clearPendingRequests() {
+        mPendingImageRequests.clear();
+    }
+
     /** Clear all cached entries. */
     public void resetCache() {
         if (mIconBridge != null) mIconBridge.createCache(MAX_IMAGE_CACHE_SIZE);
         if (mImageFetcher != null) mImageFetcher.clear();
-        mPendingImageRequests.clear();
+        clearPendingRequests();
         // Intentionally not re-setting vector shape cache.
     }
 

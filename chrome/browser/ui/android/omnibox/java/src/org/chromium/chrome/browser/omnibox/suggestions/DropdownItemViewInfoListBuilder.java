@@ -173,7 +173,7 @@ class DropdownItemViewInfoListBuilder {
      */
     void onOmniboxSessionStateChange(boolean activated) {
         if (!activated && mImageSupplier != null) {
-            mImageSupplier.resetCache();
+            mImageSupplier.clearPendingRequests();
         }
 
         for (int index = 0; index < mPriorityOrderedSuggestionProcessors.size(); index++) {
