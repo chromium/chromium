@@ -70,14 +70,12 @@
 
 namespace {
 
-// Will correspond to a 28x28 shadow circle when the location bar height is 34.
-const int kCircleShadowInset = 3;
+// Will correspond to a 34x34 shadow circle when the location bar height is 34.
+const int kCircleShadowInset = 0;
 
 // Corresponds to a 32x32 pill background shape when the location bar height
 // is 34.
 const int kPillShapeShadowInset = 1;
-
-const int kGLogoCircularShapeIconSize = 16;
 
 const int kGLogoPillShapeIconSize = 15;
 
@@ -545,7 +543,7 @@ void ContextualTasksButton::UpdateColorsAndInsets() {
   gfx::Insets insets;
   switch (shape) {
     case Shape::kCircle: {
-      const int icon_inset = (button_size - kGLogoCircularShapeIconSize) / 2;
+      const int icon_inset = (button_size - GetIconSize()) / 2;
       insets = gfx::Insets(icon_inset);
       break;
     }
@@ -918,7 +916,7 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
         features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
                                           : omnibox::kSearchSparkOldIcon,
         ui::kColorIcon,
-        GetShape() == Shape::kCircle ? kGLogoCircularShapeIconSize
+        GetShape() == Shape::kCircle ? GetIconSize()
                                      : kGLogoPillShapeIconSize);
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -939,7 +937,7 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
 #endif
   return ui::ImageModel::FromVectorIcon(contextual_tasks_icon, ui::kColorIcon,
                                         GetShape() == Shape::kCircle
-                                            ? kGLogoCircularShapeIconSize
+                                            ? GetIconSize()
                                             : kGLogoPillShapeIconSize);
 }
 
