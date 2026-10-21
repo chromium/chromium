@@ -144,10 +144,12 @@ Signer& Signer::operator=(Signer&&) = default;
 Signer::~Signer() = default;
 
 void Signer::Update(base::span<const uint8_t> data) {
+  CHECK(sign_context_);
   CHECK(EVP_DigestSignUpdate(sign_context_.get(), data.data(), data.size()));
 }
 
 std::vector<uint8_t> Signer::Finish() {
+  CHECK(sign_context_);
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   size_t len = 0;
@@ -157,6 +159,7 @@ std::vector<uint8_t> Signer::Finish() {
   std::vector<uint8_t> signature(len);
   CHECK(EVP_DigestSignFinal(sign_context_.get(), signature.data(), &len));
   signature.resize(len);
+  sign_context_.reset();
   return signature;
 }
 
@@ -180,6 +183,7 @@ Verifier& Verifier::operator=(Verifier&&) = default;
 Verifier::~Verifier() = default;
 
 void Verifier::Update(base::span<const uint8_t> data) {
+  CHECK(verify_context_);
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
   CHECK_EQ(
       EVP_DigestVerifyUpdate(verify_context_.get(), data.data(), data.size()),
@@ -187,9 +191,11 @@ void Verifier::Update(base::span<const uint8_t> data) {
 }
 
 bool Verifier::Finish() {
+  CHECK(verify_context_);
   OpenSSLErrStackTracer err_tracer(FROM_HERE);
   int rv = EVP_DigestVerifyFinal(verify_context_.get(), signature_.data(),
                                  signature_.size());
+  verify_context_.reset();
   return rv == 1;
 }
 

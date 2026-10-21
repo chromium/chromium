@@ -139,6 +139,24 @@ TEST(Sign, MoveSignerAndVerifier) {
   EXPECT_TRUE(verifier2.Finish());
 }
 
+TEST(Sign, UseAfterFinishDies) {
+  PrivateKey priv = PrivateKey::GenerateEcP256();
+  PublicKey pub = PublicKey::FromPrivateKey(priv);
+  const std::array<uint8_t, 4> kData = {1, 2, 3, 4};
+
+  crypto::sign::Signer signer(SignatureKind::ECDSA_SHA256, priv);
+  signer.Update(kData);
+  std::vector<uint8_t> signature = signer.Finish();
+  EXPECT_CHECK_DEATH(signer.Update(kData));
+  EXPECT_CHECK_DEATH(signer.Finish());
+
+  crypto::sign::Verifier verifier(SignatureKind::ECDSA_SHA256, pub, signature);
+  verifier.Update(kData);
+  EXPECT_TRUE(verifier.Finish());
+  EXPECT_CHECK_DEATH(verifier.Update(kData));
+  EXPECT_CHECK_DEATH((void)verifier.Finish());
+}
+
 TEST(Sign, CertificateSignatureKnownAnswer) {
   // The input data in this test comes from real certificates:
   // tbs_certificate ("to-be-signed certificate"), signature, and algorithm come
