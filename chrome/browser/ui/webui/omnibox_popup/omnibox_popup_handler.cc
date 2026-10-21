@@ -193,7 +193,8 @@ void OmniboxPopupHandler::RequestInputState() {
   auto* edit_model = controller_ ? controller_->edit_model() : nullptr;
   auto* popup_view = edit_model ? edit_model->popup_view() : nullptr;
   if (popup_view) {
-    popup_view->SyncNativeStateToWebUI(/*query_zps=*/false);
+    popup_view->SyncNativeStateToWebUI(/*query_zps=*/false,
+                                       /*show_full_url=*/false);
   }
 }
 
@@ -272,8 +273,9 @@ void OmniboxPopupHandler::SetInputState(
 
 void OmniboxPopupHandler::SetFocus(bool is_focused,
                                    bool query_zps,
-                                   bool select_all) {
-  page_->SetFocus(is_focused, query_zps, select_all);
+                                   bool select_all,
+                                   bool show_full_url) {
+  page_->SetFocus(is_focused, query_zps, select_all, show_full_url);
 }
 
 void OmniboxPopupHandler::FocusSearchWithDefaultSearchEngineKeywordMode() {

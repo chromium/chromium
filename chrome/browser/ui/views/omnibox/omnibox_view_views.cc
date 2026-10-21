@@ -597,7 +597,8 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
     // native textfield has `FocusBehavior::NEVER`. Delegate directly to the
     // popup view to open and focus the WebUI searchbox input.
     if (auto* popup_view = location_bar_view_->GetOmniboxPopupView()) {
-      popup_view->OnFocus(/*query_zps=*/is_user_initiated, select_all);
+      popup_view->OnFocus(/*query_zps=*/is_user_initiated, select_all,
+                          /*show_full_url=*/false);
     }
   } else {
     // On browser startup while WebUI is still initializing asynchronously,
@@ -1711,7 +1712,8 @@ void OmniboxViewViews::OnMouseReleased(const ui::MouseEvent& event) {
         if (preserve_matches) {
           popup_view->SyncNativeStateToWebUIPreservingMatches();
         } else {
-          popup_view->SyncNativeStateToWebUI(/*query_zps=*/false);
+          popup_view->SyncNativeStateToWebUI(/*query_zps=*/false,
+                                             /*show_full_url=*/false);
         }
       }
     }
@@ -1791,7 +1793,7 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
           base::FeatureList::IsEnabled(
               omnibox::kWebUIOmniboxFullPopupDoubleClick)) {
         location_bar_view_->GetOmniboxPopupView()->SyncNativeStateToWebUI(
-            /*query_zps=*/false);
+            /*query_zps=*/false, /*show_full_url=*/false);
       }
     }
   }

@@ -442,7 +442,8 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
       // signal.
       if (IsShown() && !controller()->edit_model()->has_focus()) {
         if (auto* popup_view = location_bar()->GetOmniboxPopupView()) {
-          popup_view->OnFocus(/*query_zps=*/false);
+          popup_view->OnFocus(/*query_zps=*/false, /*select_all=*/false,
+                              /*show_full_url=*/false);
         }
       }
 #endif  // BUILDFLAG(IS_MAC)
@@ -567,7 +568,8 @@ void OmniboxPopupFullPresenter::AppMenuClosed() {
     }
     RequestFocus();
     if (auto* popup_view = location_bar()->GetOmniboxPopupView()) {
-      popup_view->OnFocus(/*query_zps=*/false);
+      popup_view->OnFocus(/*query_zps=*/false, /*select_all=*/false,
+                          /*show_full_url=*/false);
     }
   }
 }

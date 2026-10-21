@@ -145,7 +145,12 @@ interface Page {
   // Called by the browser when focus changes within the active tab. `query_zps`
   // indicates whether to issue a Zero-Suggest autocomplete query upon focus.
   // `select_all` indicates whether to select all input text upon gaining focus.
-  SetFocus(bool is_focused, bool query_zps, bool select_all);
+  // `show_full_url` indicates whether to unelide the steady-state URL upon
+  // gaining focus.
+  SetFocus(bool is_focused,
+           bool query_zps,
+           bool select_all,
+           bool show_full_url);
 
   // Clears autocomplete results and resets active query ID in WebUI.
   ClearAutocompleteMatches();

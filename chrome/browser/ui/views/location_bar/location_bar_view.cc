@@ -608,7 +608,8 @@ void LocationBarView::FocusLocation(bool is_user_initiated,
         focus_manager->SetFocusedView(this);
       }
       ForwardFocusToWebUI(/*query_zps=*/is_user_initiated,
-                          /*select_all=*/is_user_initiated);
+                          /*select_all=*/is_user_initiated,
+                          /*show_full_url=*/is_user_initiated);
       return;
     }
   }
@@ -1691,7 +1692,8 @@ void LocationBarView::OnFocus() {
     // traversal, focus restoration), forward to WebUI without triggering an
     // unexpected Zero-Prefix Suggestion (ZPS) query.
     if (!moving_focus_to_webui_) {
-      ForwardFocusToWebUI(/*query_zps=*/false, /*select_all=*/false);
+      ForwardFocusToWebUI(/*query_zps=*/false, /*select_all=*/false,
+                          /*show_full_url=*/false);
     }
     return;
   }
@@ -1700,11 +1702,14 @@ void LocationBarView::OnFocus() {
   omnibox_view_->SetFocus(/*is_user_initiated=*/true);
 }
 
-void LocationBarView::ForwardFocusToWebUI(bool query_zps, bool select_all) {
+void LocationBarView::ForwardFocusToWebUI(bool query_zps,
+                                          bool select_all,
+                                          bool show_full_url) {
   if (auto* popup_view = GetOmniboxPopupView()) {
     popup_view->OnFocus(
         query_zps,
-        select_all || !GetOmniboxController()->edit_model()->has_focus());
+        select_all || !GetOmniboxController()->edit_model()->has_focus(),
+        show_full_url);
   }
 }
 
@@ -1847,7 +1852,8 @@ void LocationBarView::OnFullWebUiOmniboxReady() {
       base::AutoReset<bool> moving_focus(&moving_focus_to_webui_, true);
       focus_manager->SetFocusedView(this);
     }
-    ForwardFocusToWebUI(query_zps, /*select_all=*/false);
+    ForwardFocusToWebUI(query_zps, /*select_all=*/false,
+                        /*show_full_url=*/false);
   }
 
   // Switch native focus behavior.
@@ -2092,7 +2098,8 @@ void LocationBarView::OnOmniboxFocused() {
 void LocationBarView::OpenOmniboxPopup(bool query_zps) {
   if (is_full_webui_omnibox_ && !in_popup_state_transition_) {
     if (auto* popup_view = GetOmniboxPopupView()) {
-      popup_view->OnFocus(query_zps);
+      popup_view->OnFocus(query_zps, /*select_all=*/false,
+                          /*show_full_url=*/false);
     }
   }
 }

@@ -1044,7 +1044,7 @@ WebUIReadOnlyOmnibox::OnPointer(
             omnibox::kWebUIOmniboxFullPopupDoubleClick) &&
         location_bar_) {
       location_bar_->GetOmniboxPopupView()->SyncNativeStateToWebUI(
-          start_zero_suggest);
+          start_zero_suggest, /*show_full_url=*/false);
     }
   }
   return base::ok(std::monostate());

@@ -394,7 +394,7 @@ class LocationBarView
   // Forwards focus to the WebUI omnibox. Like `OmniboxViewViews::SetFocus()`,
   // this selects all when `select_all` is true or the omnibox didn't already
   // have focus.
-  void ForwardFocusToWebUI(bool query_zps, bool select_all);
+  void ForwardFocusToWebUI(bool query_zps, bool select_all, bool show_full_url);
 
   // Creates `omnibox_popup_aim_presenter_` if it doesn't exist yet and the
   // profile is eligible for the AI Mode popup. Returns whether it exists.

@@ -254,7 +254,8 @@ void WebUILocationBar::PropagateFocusRequest(
 
 void WebUILocationBar::OpenOmniboxIfFullPopup(bool query_zps) {
   if (using_full_popup_ && !in_popup_state_transition_) {
-    omnibox_popup_view_->OnFocus(query_zps);
+    omnibox_popup_view_->OnFocus(query_zps, /*select_all=*/false,
+                                 /*show_full_url=*/false);
   }
 }
 
@@ -936,12 +937,14 @@ void WebUILocationBar::HandleFocusRequestForFullPopup(
     omnibox_view_->EnterKeywordModeForDefaultSearchProvider();
   }
 
-  omnibox_popup_view_->OnFocus(is_user_initiated);
+  omnibox_popup_view_->OnFocus(is_user_initiated, /*select_all=*/false,
+                               /*show_full_url=*/false);
 
   // TODO(crbug.com/546101626): This is a bit off; there is risk of races
   // (but that's true overall), and sometimes this side doesn't know about
   // unelide results.
-  omnibox_popup_view_->SyncNativeStateToWebUI(is_user_initiated);
+  omnibox_popup_view_->SyncNativeStateToWebUI(is_user_initiated,
+                                              /*show_full_url=*/false);
 }
 
 void WebUILocationBar::SetSuppressionThresholdForTesting(

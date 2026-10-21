@@ -1562,10 +1562,13 @@ export class OmniboxPopupSearchboxElement extends
    * `visibilitychange`.
    */
   private onSetFocus_(
-      isFocused: boolean, queryZps: boolean = false,
-      selectAll: boolean = false) {
+      isFocused: boolean, queryZps: boolean = false, selectAll: boolean = false,
+      showFullUrl: boolean = false) {
     this.isLogicallyFocused_ = isFocused;
     if (isFocused) {
+      if (showFullUrl) {
+        this.maybeShowFullUrl_();
+      }
       if (document.visibilityState === 'visible') {
         this.deferredFocusAction_ = null;
         this.$.input.focus();

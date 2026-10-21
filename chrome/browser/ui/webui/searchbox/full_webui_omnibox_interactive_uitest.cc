@@ -781,7 +781,9 @@ class FullWebUIOmniboxInteractiveTestBase
                    if (auto* popup_view = BrowserWindow::FromBrowser(browser())
                                               ->GetLocationBar()
                                               ->GetOmniboxPopupView()) {
-                     popup_view->OnFocus(/*query_zps=*/true);
+                     popup_view->OnFocus(/*query_zps=*/true,
+                                         /*select_all=*/false,
+                                         /*show_full_url=*/false);
                    }
                  }),
                  WaitForPopupReady());
@@ -1049,7 +1051,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
             BrowserWindow::FromBrowser(browser())->GetLocationBar();
         location_bar->GetOmniboxView()->SetSelectionBounds(gfx::Range(0, 6));
         if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
-          popup_view->OnFocus(/*query_zps=*/true);
+          popup_view->OnFocus(/*query_zps=*/true, /*select_all=*/false,
+                              /*show_full_url=*/false);
         }
       }),
       // Verify popup opens and the WebUI input receives (0, 6) instead of (9,
@@ -1330,7 +1333,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, ClearAndManualBlur) {
         if (auto* popup_view = BrowserWindow::FromBrowser(browser())
                                    ->GetLocationBar()
                                    ->GetOmniboxPopupView()) {
-          popup_view->OnFocus(/*query_zps=*/true);
+          popup_view->OnFocus(/*query_zps=*/true, /*select_all=*/false,
+                              /*show_full_url=*/false);
         }
       }),
       // Verify popup is open, and WebUI input is empty.
@@ -1624,7 +1628,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, TabSwitchKeepsPopup) {
         BrowserWindow::FromBrowser(browser())
             ->GetLocationBar()
             ->GetOmniboxPopupView()
-            ->OnFocus(/*query_zps=*/true);
+            ->OnFocus(/*query_zps=*/true, /*select_all=*/false,
+                      /*show_full_url=*/false);
       }),
       WaitForPopupTransitionLockout(),
       // Start recording popup state changes.
@@ -2182,7 +2187,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
         // Set word selection range [0, 6] ("chrome").
         omnibox_view->SetSelectionBounds(gfx::Range(0, 6));
         if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
-          popup_view->OnFocus(/*query_zps=*/false);
+          popup_view->OnFocus(/*query_zps=*/false, /*select_all=*/false,
+                              /*show_full_url=*/false);
         }
       }),
       WaitForPopupReady(), WaitForWebUIInputValue("chrome://version"),
@@ -3337,6 +3343,40 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       WaitForOmniboxFocus(true), CheckWebUIInputSelection(0, 6));
 }
 
+// Verifies that pressing Ctrl+L / Cmd+L while the web page has focus (the
+// omnibox popup is closed) focuses the omnibox, unelides the steady-state URL
+// to the full URL (including scheme) and selects it. Unlike
+// `FocusLocationShortcutUnelidesAndSelectsFullUrl`, the key is handled by the
+// browser (`LocationBarView::FocusLocation()`), not by the WebUI page.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       FocusLocationShortcutFromPageUnelidesAndSelectsFullUrl) {
+  embedded_https_test_server().SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL url = embedded_https_test_server().GetURL("/title1.html");
+  const std::string full_url = url.spec();
+  // Steady-state display text strips the https:// scheme.
+  const std::string display_url = full_url.substr(strlen("https://"));
+
+  RunTestSequence(
+      // 1. Open the omnibox on an HTTPS URL, then click the page to close
+      // omnibox.
+      OpenInitialTabAndFocusOmnibox(kTab1, url),
+      WaitForWebUIInputValue(display_url), ClickWebPageBody(kTab1),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      UninstrumentWebContents(kPopupWebView), WaitForOmniboxFocus(false),
+      WaitForPopupTransitionLockout(),
+
+      // 2. Press Ctrl+L / Cmd+L with the page focused: the popup reopens with
+      // `full_url` fully selected.
+      SendKeyPress(kBrowserViewElementId, ui::VKEY_L,
+                   ui::EF_PLATFORM_ACCELERATOR),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      WaitForOmniboxFocus(true), WaitForWebUIInputValue(full_url),
+      InAnyContext(CheckWebUIInputSelection(0, full_url.length())));
+}
+
 // Verifies that text typed into the omnibox at startup reaches WebUI, whether
 // or not the popup is ready yet. On the Views toolbar,
 // `NativeFocusHandoffKeepsDraftAndSelection` forces the not-ready case.
@@ -3353,7 +3393,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
                                     /*clear_focus_if_failed=*/false);
         location_bar->GetOmniboxView()->SetUserText(u"chromium");
         if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
-          popup_view->SyncNativeStateToWebUI(/*query_zps=*/false);
+          popup_view->SyncNativeStateToWebUI(/*query_zps=*/false,
+                                             /*show_full_url=*/false);
         }
       }),
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
@@ -3384,7 +3425,8 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
         omnibox_view->SetUserText(u"chromium");
         omnibox_view->SetSelectionBounds(gfx::Range(0, 4));
         if (auto* popup_view = location_bar->GetOmniboxPopupView()) {
-          popup_view->SyncNativeStateToWebUI(/*query_zps=*/false);
+          popup_view->SyncNativeStateToWebUI(/*query_zps=*/false,
+                                             /*show_full_url=*/false);
         }
       }),
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),

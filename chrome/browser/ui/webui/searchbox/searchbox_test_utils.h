@@ -167,10 +167,11 @@ class MockOmniboxPopupPage : public omnibox_popup::mojom::Page {
               SetInputState,
               (omnibox_popup::mojom::OmniboxInputStatePtr state),
               (override));
-  MOCK_METHOD(void,
-              SetFocus,
-              (bool is_focused, bool query_zps, bool select_all),
-              (override));
+  MOCK_METHOD(
+      void,
+      SetFocus,
+      (bool is_focused, bool query_zps, bool select_all, bool show_full_url),
+      (override));
   MOCK_METHOD(void, ClearAutocompleteMatches, (), (override));
   MOCK_METHOD(void, ClearPopup, (ClearPopupCallback callback), (override));
   MOCK_METHOD(void, SetDefaultSearchProvider, (const std::string&), (override));

@@ -95,7 +95,8 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
                      bool is_tab_switch);
   void SetFocus(bool is_focused,
                 bool query_zps = false,
-                bool select_all = false);
+                bool select_all = false,
+                bool show_full_url = false);
   void FocusSearchWithDefaultSearchEngineKeywordMode();
   void ClearAutocompleteMatches();
   void ClearPopup(base::OnceClosure callback);

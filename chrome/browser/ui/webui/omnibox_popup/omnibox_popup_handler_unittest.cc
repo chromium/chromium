@@ -76,25 +76,32 @@ TEST_F(OmniboxPopupHandlerTest, OnShow) {
 }
 
 TEST_F(OmniboxPopupHandlerTest, SetFocus) {
-  EXPECT_CALL(page_, SetFocus(true, false, false));
+  EXPECT_CALL(page_, SetFocus(true, false, false, false));
   handler_->SetFocus(true);
   page_.FlushForTesting();
 }
 
 TEST_F(OmniboxPopupHandlerTest, SetFocusWithQueryZps) {
-  EXPECT_CALL(page_, SetFocus(true, true, false));
+  EXPECT_CALL(page_, SetFocus(true, true, false, false));
   handler_->SetFocus(true, /*query_zps=*/true);
   page_.FlushForTesting();
 }
 
 TEST_F(OmniboxPopupHandlerTest, SetFocusWithSelectAll) {
-  EXPECT_CALL(page_, SetFocus(true, true, true));
+  EXPECT_CALL(page_, SetFocus(true, true, true, false));
   handler_->SetFocus(true, /*query_zps=*/true, /*select_all=*/true);
   page_.FlushForTesting();
 }
 
+TEST_F(OmniboxPopupHandlerTest, SetFocusWithShowFullUrl) {
+  EXPECT_CALL(page_, SetFocus(true, true, true, true));
+  handler_->SetFocus(true, /*query_zps=*/true, /*select_all=*/true,
+                     /*show_full_url=*/true);
+  page_.FlushForTesting();
+}
+
 TEST_F(OmniboxPopupHandlerTest, SetFocusWithoutQueryZps) {
-  EXPECT_CALL(page_, SetFocus(false, false, false));
+  EXPECT_CALL(page_, SetFocus(false, false, false, false));
   handler_->SetFocus(false, /*query_zps=*/false);
   page_.FlushForTesting();
 }
