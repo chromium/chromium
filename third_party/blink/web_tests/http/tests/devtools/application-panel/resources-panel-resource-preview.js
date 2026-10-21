@@ -30,6 +30,9 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   function dump(node, prefix) {
     for (var child of node.children()) {
+      if (child.hidden) {
+        continue;
+      }
       TestRunner.addResult(prefix + child.listItemElement.textContent + (child.selected ? ' (selected)' : ''));
       dump(child, prefix + '  ');
     }
