@@ -693,13 +693,25 @@ bool HTMLCapabilityElementBase::MaybeRegisterPageEmbeddedPermissionControl() {
     return false;
   }
 
+  // `CreateEmbeddedPermissionRequestDescriptor()` computes `BoundsInWidget()`,
+  // which forces a synchronous style and layout update. That update can
+  // re-entrantly register this control, detach the frame, or change whether
+  // the element is rendered, so re-verify these conditions afterwards.
+  auto descriptor = CreateEmbeddedPermissionRequestDescriptor();
+  if (embedded_permission_control_receiver_.is_bound()) {
+    return true;
+  }
+  if (!GetDocument().GetFrame() || !IsRendered()) {
+    return false;
+  }
+
   mojo::PendingRemote<EmbeddedPermissionControlClient> client;
   embedded_permission_control_receiver_.Bind(
       client.InitWithNewPipeAndPassReceiver(), GetTaskRunner());
   CHECK(embedded_permission_control_receiver_.is_bound());
   GetPermissionService()->RegisterPageEmbeddedPermissionControl(
-      mojo::Clone(permission_descriptors_),
-      CreateEmbeddedPermissionRequestDescriptor(), std::move(client));
+      mojo::Clone(permission_descriptors_), std::move(descriptor),
+      std::move(client));
   return true;
 }
 
@@ -1133,9 +1145,15 @@ void HTMLCapabilityElementBase::RequestPageEmbededPermissions() {
   CHECK_LE(permission_descriptors_.size(), 2U);
   pending_request_created_ = base::TimeTicks::Now();
 
+  // `CreateEmbeddedPermissionRequestDescriptor()` forces a synchronous layout
+  // update, which may detach the frame or make the element unrendered.
+  auto descriptor = CreateEmbeddedPermissionRequestDescriptor();
+  if (!GetDocument().GetFrame() || !IsRendered()) {
+    return;
+  }
+
   GetPermissionService()->RequestPageEmbeddedPermission(
-      mojo::Clone(permission_descriptors_),
-      CreateEmbeddedPermissionRequestDescriptor(),
+      mojo::Clone(permission_descriptors_), std::move(descriptor),
       BindOnce(&HTMLCapabilityElementBase::OnEmbeddedPermissionsDecided,
                WrapWeakPersistent(this)));
 }
