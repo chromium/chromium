@@ -44,6 +44,7 @@ void IndigoImageReplacement::ReplacementFrameAttached(
 }
 
 int32_t IndigoImageReplacement::OnReadyToRender() {
+  rendering_replacement_ = true;
   remote_->RenderReplacement();
   return manager_->active_invocation_id().value().GetUnsafeValue();
 }

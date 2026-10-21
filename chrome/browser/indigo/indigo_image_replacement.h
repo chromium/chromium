@@ -38,6 +38,7 @@ class IndigoImageReplacement {
       const std::optional<base::Token>& tracked_element_id,
       blink::mojom::ObjectFit object_fit);
   bool is_primary() const { return is_primary_; }
+  bool rendering_replacement() const { return rendering_replacement_; }
   void ReplacementImageURLReady();
 
   const std::optional<base::Token>& tracked_element_id() const {
@@ -62,6 +63,7 @@ class IndigoImageReplacement {
   std::vector<uint8_t> original_image_webp_bytes_;
   base::OnceCallback<void(const GURL&)> pending_replacement_image_callback_;
   const bool is_primary_;
+  bool rendering_replacement_ = false;
   std::optional<base::Token> tracked_element_id_;
   blink::mojom::ObjectFit object_fit_ = blink::mojom::ObjectFit::kFill;
 };

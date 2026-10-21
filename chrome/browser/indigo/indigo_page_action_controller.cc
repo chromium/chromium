@@ -974,6 +974,15 @@ void IndigoPageActionController::FrameSizeChanged(
   }
 
   if (frame_size.IsEmpty()) {
+    // When a replacement iframe is first created and navigated to the
+    // component extension, its LocalFrameView is initialized with a 0x0 size
+    // before its layout geometry is synchronized from the parent frame. Ignore
+    // this initial 0x0 size before the replacement has been rendered.
+    // TODO(b/576343115): Handle the case where the replacement iframe is
+    // genuinely 0x0 after it is ready to render.
+    if (frame_size.IsZero() && !replacement->rendering_replacement()) {
+      return;
+    }
     Reset(ResetType::kResetReplacementsAndContentScript);
     ShowInvocationErrorToast(
         IndigoTransformationResult::kEmptyPrimaryImageSize);
