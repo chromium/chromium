@@ -11,10 +11,12 @@
 #include <variant>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -31,6 +33,10 @@
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -38,6 +44,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
@@ -143,6 +150,23 @@ GURL FileInDownloads(Profile* profile, base::FilePath file) {
   return mount_points
       ->CreateExternalFileSystemURL(blink::StorageKey::CreateFirstParty(origin),
                                     mount_point_name, file)
+      .ToGURL();
+}
+
+// Returns a FileSystemURL, encoded as a GURL, that points to a file in an
+// archive mount directory.
+GURL FileInArchive(base::FilePath file) {
+  url::Origin origin = file_manager::util::GetFilesAppOrigin();
+  constexpr char kArchiveMountPointName[] = "archive_mount";
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  mount_points->RegisterFileSystem(
+      kArchiveMountPointName, storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(),
+      base::FilePath(file_manager::util::kArchiveMountPath));
+  return mount_points
+      ->CreateExternalFileSystemURL(blink::StorageKey::CreateFirstParty(origin),
+                                    kArchiveMountPointName, file)
       .ToGURL();
 }
 
@@ -752,6 +776,72 @@ TEST_F(ArcAppsPublisherTest,
 
   ASSERT_TRUE(result.IsReady());
   ASSERT_EQ(apps::LaunchResult::kFailed, result.Get());
+}
+
+TEST_F(ArcAppsPublisherTest,
+       LaunchAppWithIntent_SharePathSucceeded_SendsOpenUrlRequest) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableArcVm);
+  // Initialize SeneschalClient and register the ARCVM guest session so that
+  // SharePathIfRequired succeeds in sharing the archive path with ARCVM.
+  ash::SeneschalClient::InitializeFake();
+  guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile())
+      ->AddGuestForTesting(guest_os::GuestId(
+          guest_os::VmType::ARCVM, arc::kArcVmName, /*container_name=*/""));
+  SetUpFileSystemInstance();
+
+  auto intent = apps_util::MakeEditIntent(
+      FileInArchive(base::FilePath("test.txt")), "text/plain");
+
+  const auto& fake_apps = arc_app_test()->fake_apps();
+  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
+                                                 fake_apps[0]->activity);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
+
+  base::test::TestFuture<apps::LaunchResult> result;
+  app_service_proxy()->LaunchAppWithIntent(
+      app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
+      /*window_info=*/nullptr, result.GetCallback());
+
+  EXPECT_EQ(apps::LaunchResult::kSuccess, result.Get());
+  ASSERT_EQ(file_system_instance()->handledUrlRequests().size(), 1u);
+  auto& url_request = file_system_instance()->handledUrlRequests()[0];
+  EXPECT_EQ(url_request->action_type, arc::mojom::ActionType::EDIT);
+  ASSERT_EQ(url_request->urls.size(), 1u);
+  EXPECT_EQ(url_request->urls[0]->mime_type, "text/plain");
+  EXPECT_EQ(url_request->urls[0]->content_url,
+            GURL("content://org.chromium.arc.volumeprovider/archive/test.txt"));
+
+  ash::SeneschalClient::Shutdown();
+}
+
+TEST_F(ArcAppsPublisherTest, LaunchAppWithIntent_SharePathFailed_ReturnsFalse) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ash::switches::kEnableArcVm);
+  // Unlike LaunchAppWithIntent_SharePathSucceeded_SendsOpenUrlRequest above, do
+  // not initialize SeneschalClient or register the ARCVM guest in
+  // GuestOsSessionTracker, so SharePathIfRequired fails and resolves to an
+  // empty content_urls list.
+  SetUpFileSystemInstance();
+
+  auto intent = apps_util::MakeEditIntent(
+      FileInArchive(base::FilePath("test.txt")), "text/plain");
+
+  const auto& fake_apps = arc_app_test()->fake_apps();
+  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
+                                                 fake_apps[0]->activity);
+  arc_app_test()->app_instance()->SendRefreshAppList(fake_apps);
+
+  base::test::TestFuture<apps::LaunchResult> result;
+  app_service_proxy()->LaunchAppWithIntent(
+      app_id, 0, std::move(intent), apps::LaunchSource::kFromFileManager,
+      /*window_info=*/nullptr, result.GetCallback());
+
+  ASSERT_TRUE(result.IsReady());
+  EXPECT_EQ(apps::LaunchResult::kFailed, result.Get());
+  EXPECT_TRUE(file_system_instance()->handledUrlRequests().empty());
 }
 
 TEST_F(

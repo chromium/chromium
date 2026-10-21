@@ -337,6 +337,14 @@ void OnContentUrlResolved(const base::FilePath& file_path,
                           apps::WindowInfoPtr window_info,
                           base::OnceCallback<void(bool)> callback,
                           const std::vector<GURL>& content_urls) {
+  // arc::ConvertToContentUrlsAndShare() returns an empty list if sharing the
+  // paths with ARCVM fails. Otherwise, it returns one URL per file.
+  if (content_urls.empty()) {
+    LOG(ERROR) << "Share files failed, file urls are empty";
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+  CHECK_EQ(content_urls.size(), intent->files.size());
   for (const auto& content_url : content_urls) {
     if (!content_url.is_valid()) {
       LOG(ERROR) << "Share files failed, file urls are not valid";
