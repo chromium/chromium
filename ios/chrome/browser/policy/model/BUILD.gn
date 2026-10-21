@@ -167,6 +167,7 @@ source_set("cloud_profile_reporting") {
     "//components/enterprise/device_attestation",
     "//components/keyed_service/core",
     "//components/policy/core/common",
+    "//ios/chrome/browser/enterprise/connectors/reporting",
     "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
     "//ios/chrome/browser/enterprise/signals/model",
     "//ios/chrome/browser/shared/model/application_context",

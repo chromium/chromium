@@ -12,8 +12,10 @@
 #import "components/enterprise/browser/reporting/reporting_features.h"
 #import "components/enterprise/browser/reporting/saas_usage/saas_usage_report_scheduler.h"
 #import "components/enterprise/device_attestation/device_attestation_service_factory.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/signals/model/ios_signals_aggregator_factory.h"
+#import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 #import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_ios.h"
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/policy/model/reporting/reporting_delegate_factory_ios.h"
@@ -62,8 +64,11 @@ CloudProfileReportingServiceFactoryIOS::CloudProfileReportingServiceFactoryIOS(
           ProfileSelection::kNoInstanceInIncognito,
           ServiceCreation::kCreateWithProfile,
           TestingCreation::kNoServiceForTests) {
+  DependsOn(policy::UserPolicySigninServiceFactory::GetInstance());
   DependsOn(enterprise::ProfileIdServiceFactoryIOS::GetInstance());
   DependsOn(IOSSignalsAggregatorFactory::GetInstance());
+  DependsOn(
+      enterprise_connectors::IOSRealtimeReportingClientFactory::GetInstance());
   enterprise::DeviceAttestationServiceFactory::SetAttestationServiceIOSProvider(
       base::BindRepeating(&ios::provider::CreateAttestationServiceIOS));
 }
