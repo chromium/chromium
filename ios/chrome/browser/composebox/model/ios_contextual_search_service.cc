@@ -23,7 +23,7 @@ IOSContextualSearchService::IOSContextualSearchService(
           locale,
           /*tab_validator=*/nullptr,
           std::move(get_auth_headers_callback)) {
-  // TODO(crbug.com/514803722): Implement and pass TabValidator for iOS.
+  // TODO(crbug.com/574434041): Implement and pass TabValidator for iOS.
 }
 
 IOSContextualSearchService::~IOSContextualSearchService() = default;
