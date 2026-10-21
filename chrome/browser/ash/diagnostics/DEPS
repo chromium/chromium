@@ -15,12 +15,12 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/net/network_health",
-  "+chrome/browser/profiles",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
   "diagnostics_browser_delegate_impl_unittest\\.cc": [
     "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
+    "+chrome/browser/profiles",
   ]
 }

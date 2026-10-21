@@ -19,22 +19,22 @@ include_rules = [
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/extensions/extension_service.h",
-  "+chrome/browser/extensions/test_extension_system.h",
-  "+chrome/browser/media/router/media_router_feature.h",
-  "+chrome/browser/prefs/browser_prefs.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/web_applications/mojom/user_display_mode.mojom.h",
-  "+chrome/browser/web_applications/test/fake_web_app_provider.h",
-  "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
-  "+chrome/browser/web_applications/web_app_install_info.h",
-  "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/test/base"
 ]
 
 specific_include_rules = {
   ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/extensions/extension_service.h",
+    "+chrome/browser/extensions/test_extension_system.h",
+    "+chrome/browser/media/router/media_router_feature.h",
+    "+chrome/browser/prefs/browser_prefs.h",
+    "+chrome/browser/web_applications/mojom/user_display_mode.mojom.h",
+    "+chrome/browser/web_applications/test/fake_web_app_provider.h",
+    "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
+    "+chrome/browser/web_applications/web_app_install_info.h",
     "+chrome/browser/web_applications/web_app_provider.h",
+    "+chrome/browser/web_applications/web_app_registrar.h",
   ],
   "note_taking_helper_browsertest\\.cc": [
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",

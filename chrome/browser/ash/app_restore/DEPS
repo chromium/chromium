@@ -8,7 +8,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/app_mode",
   "+chrome/browser/apps/app_service",
-  "+chrome/browser/apps/platform_apps",
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/floating_workspace",
@@ -23,8 +22,6 @@ include_rules = [
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/startup",
   "+chrome/browser/ui/webui/ash/settings",
-  "+chrome/browser/web_applications/web_app_install_info.h",
-  "+chrome/browser/web_applications/web_app_utils.h",
   "+chrome/common/buildflags.h",
   "+chrome/common/chrome_switches.h",
 ]
@@ -44,9 +41,12 @@ specific_include_rules = {
     "+chrome/browser/prefs/session_startup_pref.h",
   ],
   ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/apps/platform_apps",
     "+chrome/browser/prefs/browser_prefs.h",
     "+chrome/browser/prefs/session_startup_pref.h",
     "+chrome/browser/signin/identity_test_environment_profile_adaptor.h",
+    "+chrome/browser/web_applications/web_app_install_info.h",
+    "+chrome/browser/web_applications/web_app_utils.h",
   ],
   "app_restore_arc_task_handler_factory\\.cc": [
     "+chrome/browser/browser_process.h",

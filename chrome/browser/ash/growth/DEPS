@@ -15,13 +15,11 @@ include_rules = [
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/web_applications/mojom",
-  "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/web_app_command_scheduler.h",
   "+chrome/browser/web_applications/web_app_constants.h",
   "+chrome/browser/web_applications/web_app_helpers.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_provider.h",
-  "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/test/base",
 
   # Dependencies outside of //chrome:
@@ -40,6 +38,8 @@ specific_include_rules = {
     "+chrome/browser/browser_process_platform_part.h",
     "+chrome/browser/global_features.h",
     "+chrome/browser/prefs",
+    "+chrome/browser/web_applications/test",
+    "+chrome/browser/web_applications/web_app_registrar.h",
   ],
   "campaigns_manager_test_helper\\.cc": [
     "+chrome/browser/browser_process_platform_part.h",

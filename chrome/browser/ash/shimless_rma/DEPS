@@ -18,18 +18,10 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/system",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/extensions/extension_garbage_collector_factory.h",
-  "+chrome/browser/extensions/extension_service.h",
-  "+chrome/browser/extensions/extension_service_test_base.h",
-  "+chrome/browser/extensions/external_provider_manager.h",
-  "+chrome/browser/extensions/test_extension_system.h",
   "+chrome/browser/media/webrtc/media_capture_devices_dispatcher.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/ash",
   "+chrome/browser/web_applications/isolated_web_apps",
-  "+chrome/browser/web_applications/model/iwa_update_info.h",
-  "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
-  "+chrome/browser/web_applications/test/web_app_test_utils.h",
   "+chrome/browser/web_applications/web_app_command_scheduler.h",
   "+chrome/browser/web_applications/web_app.h",
   "+chrome/browser/web_applications/web_app_provider.h",
@@ -43,6 +35,14 @@ include_rules = [
 
 specific_include_rules = {
   "chrome_shimless_rma_delegate_unittest\\.cc": [
+    "+chrome/browser/extensions/extension_garbage_collector_factory.h",
+    "+chrome/browser/extensions/extension_service.h",
+    "+chrome/browser/extensions/extension_service_test_base.h",
+    "+chrome/browser/extensions/external_provider_manager.h",
+    "+chrome/browser/extensions/test_extension_system.h",
+    "+chrome/browser/web_applications/model/iwa_update_info.h",
+    "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
+    "+chrome/browser/web_applications/test/web_app_test_utils.h",
     "+chrome/common/pref_names.h",
   ],
 }
