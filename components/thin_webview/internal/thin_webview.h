@@ -34,8 +34,6 @@ class ThinWebView : public content::WebContentsObserver {
 
   ~ThinWebView() override;
 
-  void Destroy(JNIEnv* env);
-
   void SetWebContents(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jweb_contents,

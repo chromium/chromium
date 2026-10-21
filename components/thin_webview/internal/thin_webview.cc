@@ -21,7 +21,7 @@ using web_contents_delegate_android::WebContentsDelegateAndroid;
 
 namespace thin_webview::android {
 
-static int64_t JNI_ThinWebViewImpl_Init(
+static jni_zero::JniUniquePtr<ThinWebView> JNI_ThinWebViewImpl_Init(
     JNIEnv* env,
     const JavaRef<jobject>& obj,
     const JavaRef<jobject>& jcompositor_view,
@@ -30,9 +30,8 @@ static int64_t JNI_ThinWebViewImpl_Init(
       CompositorViewImpl::FromJavaObject(jcompositor_view);
   ui::WindowAndroid* window_android =
       ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
-  ThinWebView* view =
-      new ThinWebView(env, obj, compositor_view, window_android);
-  return reinterpret_cast<intptr_t>(view);
+  return jni_zero::MakeUnique<ThinWebView>(env, obj, compositor_view,
+                                           window_android);
 }
 
 ThinWebView::ThinWebView(JNIEnv* env,
@@ -45,10 +44,6 @@ ThinWebView::ThinWebView(JNIEnv* env,
       web_contents_(nullptr) {}
 
 ThinWebView::~ThinWebView() = default;
-
-void ThinWebView::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void ThinWebView::PrimaryPageChanged(content::Page& page) {
   // Disable browser controls when used for thin webview.
