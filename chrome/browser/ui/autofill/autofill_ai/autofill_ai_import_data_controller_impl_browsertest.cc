@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/autofill/autofill_ai/autofill_ai_import_data_bubble_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -20,13 +21,20 @@
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/test/widget_test.h"
 
 namespace autofill {
 
 namespace {
+
+using ::testing::Eq;
+using ::testing::FieldsAre;
+
 // Helper method used to simulate an update entity dialog for a private pass
 // (passport). Returns two entities where the first is the new one and second is
 // the old one. The new one contains one updated and one edited attribute.
@@ -132,6 +140,8 @@ class AutofillAiImportDataControllerImplTest : public DialogBrowserTest {
 
   AutofillAiImportDataControllerImpl* controller() { return controller_; }
 
+  AutofillBubbleBase* bubble_view() { return controller_->bubble_view(); }
+
   // Used in the save prompt case, this method can be called to set specific
   // attributes on the entity to be saved.
   void SetNewPassportOptions(
@@ -197,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
 
   ASSERT_TRUE(controller()->IsShowingBubble());
   EXPECT_TRUE(controller()->CloseOnAccept());
-  controller()->OnSaveButtonClicked();
+  controller()->OnBubbleClosed(
+      AutofillClient::AutofillAiBubbleResult::kCancelled);
   ASSERT_FALSE(controller()->IsShowingBubble());
 
   controller()->OnVisibilityChanged(content::Visibility::VISIBLE);
@@ -246,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
 
   ASSERT_TRUE(controller()->IsShowingBubble());
   EXPECT_FALSE(controller()->CloseOnAccept());
-  controller()->OnSaveButtonClicked();
+  static_cast<AutofillAiImportDataBubbleView*>(bubble_view())->AcceptDialog();
   // Expect it to stay open
   EXPECT_TRUE(controller()->IsShowingBubble());
 
@@ -325,6 +336,63 @@ IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
   EXPECT_EQ(
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       GURL(chrome::kWalletPassesPageURL));
+}
+
+// Tests that accepting a prompt that closes on accept keeps the bubble marked
+// as showing until the widget's asynchronous teardown (`WindowClosing()`)
+// completes, preventing a concurrent `ShowPrompt()` from sneaking in and being
+// auto-accepted by `WindowClosing()`.
+IN_PROC_BROWSER_TEST_F(AutofillAiImportDataControllerImplTest,
+                       AcceptPrompt_DeferredWidgetCloseBlocksConcurrentPrompt) {
+  base::test::TestFuture<AutofillClient::AutofillAiBubbleResult,
+                         std::optional<EntityInstance>,
+                         const AutofillClient::EntityImportUIContext&>
+      first_prompt_future;
+  controller()->ShowPrompt(test::GetPassportEntityInstance(), std::nullopt,
+                           /*close_on_accept=*/true,
+                           /*legal_message_lines=*/{},
+                           first_prompt_future.GetCallback());
+  ASSERT_TRUE(controller()->IsShowingBubble());
+  AutofillAiImportDataBubbleView* const first_bubble =
+      static_cast<AutofillAiImportDataBubbleView*>(bubble_view());
+  ASSERT_NE(first_bubble, nullptr);
+  views::test::WidgetDestroyedWaiter first_widget_destroyed_waiter(
+      first_bubble->GetWidget());
+
+  first_bubble->AcceptDialog();
+
+  ASSERT_TRUE(first_prompt_future.IsReady());
+  EXPECT_THAT(
+      first_prompt_future.Get(),
+      FieldsAre(
+          AutofillClient::AutofillAiBubbleResult::kAccepted, Eq(std::nullopt),
+          FieldsAre(
+              IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE,
+              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_DIALOG_SAVE_BUTTON)));
+  // The widget is closing asynchronously (`CloseNow()` is posted), so the
+  // controller still considers the bubble visible until `WindowClosing()` runs.
+  EXPECT_TRUE(controller()->IsShowingBubble());
+
+  // Attempting to show a second prompt before the first widget finishes
+  // closing is rejected with `kUnknown`.
+  base::test::TestFuture<AutofillClient::AutofillAiBubbleResult,
+                         std::optional<EntityInstance>,
+                         const AutofillClient::EntityImportUIContext&>
+      concurrent_prompt_future;
+  controller()->ShowPrompt(test::GetVehicleEntityInstance(), std::nullopt,
+                           /*close_on_accept=*/true,
+                           /*legal_message_lines=*/{},
+                           concurrent_prompt_future.GetCallback());
+  ASSERT_TRUE(concurrent_prompt_future.IsReady());
+  EXPECT_THAT(concurrent_prompt_future.Get(),
+              FieldsAre(AutofillClient::AutofillAiBubbleResult::kUnknown,
+                        Eq(std::nullopt),
+                        FieldsAre(Eq(std::nullopt), Eq(std::nullopt))));
+
+  // Once the first widget finishes closing, the controller is ready to show a
+  // new prompt.
+  first_widget_destroyed_waiter.Wait();
+  EXPECT_FALSE(controller()->IsShowingBubble());
 }
 
 }  // namespace autofill

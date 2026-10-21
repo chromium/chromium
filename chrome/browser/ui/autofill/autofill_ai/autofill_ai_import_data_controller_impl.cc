@@ -131,9 +131,7 @@ void AutofillAiImportDataControllerImpl::ShowLocalSaveNotification() {
 }
 
 void AutofillAiImportDataControllerImpl::OnSaveButtonClicked() {
-  if (GetSaveUpdateState().close_on_accept) {
-    OnBubbleClosed(AutofillClient::AutofillAiBubbleResult::kAccepted);
-  } else if (!GetSaveUpdateState().prompt_result_callback.is_null()) {
+  if (!GetSaveUpdateState().prompt_result_callback.is_null()) {
     std::move(GetSaveUpdateState().prompt_result_callback)
         .Run(AutofillClient::AutofillAiBubbleResult::kAccepted, std::nullopt,
              {GetNoticeStringId(), GetPrimaryButtonTextId(IsSavePrompt())});

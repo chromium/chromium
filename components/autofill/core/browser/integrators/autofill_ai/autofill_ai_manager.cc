@@ -711,7 +711,6 @@ void AutofillAiManager::HandleIneligibleWalletFallback(
               return;
             }
 
-            // This is a no-op for public passes.
             self->client_->CloseEntityImportBubble();
 
             switch (prompt_type) {
