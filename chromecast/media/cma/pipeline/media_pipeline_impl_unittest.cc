@@ -160,6 +160,37 @@ TEST(MediaPipelineImplTest, StartPlayingFromIgnoredWhileFlushPending) {
   task_environment.RunUntilIdle();
 }
 
+TEST(MediaPipelineImplTest,
+     SetPlaybackRateIgnoredWhenBackendInitializeFailsInStartPlayingFrom) {
+  base::test::TaskEnvironment task_environment;
+
+  MediaPipelineImpl media_pipeline;
+  MockCmaBackend::VideoDecoder video_decoder;
+  auto backend = std::make_unique<MockCmaBackend>();
+  auto frame_provider = std::make_unique<MockFrameProvider>();
+
+  ON_CALL(video_decoder, SetConfig).WillByDefault(Return(true));
+  EXPECT_CALL(*backend, CreateVideoDecoder).WillOnce(Return(&video_decoder));
+  EXPECT_CALL(*backend, Initialize).WillOnce(Return(false));
+  EXPECT_CALL(*backend, Start).Times(0);
+  EXPECT_CALL(*backend, SetPlaybackRate).Times(0);
+
+  media_pipeline.Initialize(LoadType::kLoadTypeMediaStream, std::move(backend),
+                            /*is_buffering_enabled=*/false);
+  media_pipeline.InitializeVideo(
+      {::media::VideoDecoderConfig(
+          ::media::VideoCodec::kH264,
+          ::media::VideoCodecProfile::H264PROFILE_MAIN,
+          ::media::VideoDecoderConfig::AlphaMode::kIsOpaque,
+          ::media::VideoColorSpace(1, 1, 1, gfx::ColorSpace::RangeID::FULL),
+          ::media::VideoTransformation(), gfx::Size(1920, 1080),
+          gfx::Rect(0, 0, 1920, 1080), gfx::Size(1920, 1080), {},
+          ::media::EncryptionScheme::kUnencrypted)},
+      VideoPipelineClient(), std::move(frame_provider));
+  media_pipeline.StartPlayingFrom(base::Seconds(0));
+  media_pipeline.SetPlaybackRate(1.0);
+}
+
 }  // namespace
 }  // namespace media
 }  // namespace chromecast

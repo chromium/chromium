@@ -72,8 +72,10 @@ MediaPipelineBackendStarboard::CreateVideoDecoder() {
 bool MediaPipelineBackendStarboard::Initialize() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   CHECK(starboard_->EnsureInitialized());
+  if (!CreatePlayer()) {
+    return false;
+  }
   state_ = State::kInitialized;
-  CreatePlayer();
   return true;
 }
 
@@ -221,7 +223,7 @@ void MediaPipelineBackendStarboard::OnGeometryChanged(
       static_cast<int>(display_rect.height));
 }
 
-void MediaPipelineBackendStarboard::CreatePlayer() {
+bool MediaPipelineBackendStarboard::CreatePlayer() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   // In streaming (mirroring/remoting) sessions, senders frequently negotiate
@@ -310,7 +312,10 @@ void MediaPipelineBackendStarboard::CreatePlayer() {
   player_ =
       starboard_->CreatePlayer(&params,
                                /*callback_handler=*/&player_callback_handler_);
-  CHECK(player_);
+  if (!player_) {
+    LOG(ERROR) << "Failed to create Starboard player.";
+    return false;
+  }
   player_has_audio_ = include_audio;
   if (include_audio && audio_decoder_) {
     audio_decoder_->SetOnFirstPushCallback(base::OnceClosure());
@@ -320,6 +325,7 @@ void MediaPipelineBackendStarboard::CreatePlayer() {
     OnGeometryChanged(*last_set_bounds_,
                       StarboardVideoPlane::Transform::TRANSFORM_NONE);
   }
+  return true;
 }
 
 void MediaPipelineBackendStarboard::OnAudioFirstPush() {
@@ -346,7 +352,7 @@ void MediaPipelineBackendStarboard::OnAudioFirstPush() {
   player_has_audio_ = false;
   starboard_->DestroyPlayer(old_player);
 
-  CreatePlayer();
+  CHECK(CreatePlayer());
   if (state_ == State::kPlaying) {
     ++seek_ticket_;
     starboard_->SeekTo(player_, last_seek_pts_, seek_ticket_);

@@ -68,8 +68,9 @@ class MediaPipelineBackendStarboard : public MediaPipelineBackend {
   void OnGeometryChanged(const RectF& display_rect,
                          StarboardVideoPlane::Transform transform);
 
-  // Creates the starboard player object.
-  void CreatePlayer();
+  // Creates the starboard player object. Returns true on success, false on
+  // failure.
+  bool CreatePlayer();
 
   // Called when the first non-EOS audio buffer is pushed to `audio_decoder_`.
   // In streaming mode, if the player was initially created as video-only

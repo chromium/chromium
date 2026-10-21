@@ -153,6 +153,18 @@ TEST_F(MediaPipelineBackendStarboardTest, InitializesSuccessfully) {
 }
 
 TEST_F(MediaPipelineBackendStarboardTest,
+       FailsToInitializeWhenPlayerCreationFails) {
+  EXPECT_CALL(*starboard_, EnsureInitialized).WillOnce(Return(true));
+  EXPECT_CALL(*starboard_, CreatePlayer).WillOnce(Return(nullptr));
+  EXPECT_CALL(*starboard_, DestroyPlayer).Times(0);
+
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  EXPECT_FALSE(backend.Initialize());
+}
+
+TEST_F(MediaPipelineBackendStarboardTest,
        SetsMaxVideoCapabilitiesToStreamingForIgnorePtsSyncType) {
   EXPECT_CALL(*starboard_, EnsureInitialized).WillOnce(Return(true));
   EXPECT_CALL(*starboard_, CreatePlayer(CreationParamHasStreamingEnabled(), _))

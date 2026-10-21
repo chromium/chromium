@@ -311,10 +311,12 @@ void MediaPipelineImpl::Flush(base::OnceClosure flush_cb) {
 void MediaPipelineImpl::SetPlaybackRate(double rate) {
   LOG(INFO) << __FUNCTION__ << " rate=" << rate;
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK((backend_state_ == BACKEND_STATE_PLAYING) ||
-         (backend_state_ == BACKEND_STATE_PAUSED));
 
   playback_rate_ = rate;
+  if ((backend_state_ != BACKEND_STATE_PLAYING) &&
+      (backend_state_ != BACKEND_STATE_PAUSED)) {
+    return;
+  }
   if (buffering_controller_ && buffering_controller_->IsBuffering())
     return;
 
