@@ -151,8 +151,7 @@ public final class ProductionSupportedFlagList {
                 "Override and enable features useful for BSA library testing/debugging."),
         Flag.baseFeature(
                 "DefaultPassthroughCommandDecoder", "Use the passthrough GLES2 command decoder."),
-        Flag.baseFeature(
-                "DefaultANGLEVulkan", "Use the Vulkan backend of ANGLE."),
+        Flag.baseFeature("DefaultANGLEVulkan", "Use the Vulkan backend of ANGLE."),
         Flag.baseFeature(
                 GpuFeatures.GPU_PERSISTENT_CACHE,
                 "Use GpuPersistentCache for GPU blob caching in memory and on disk (if "
@@ -1543,6 +1542,10 @@ public final class ProductionSupportedFlagList {
                 GwpAsanFeatures.GWP_ASAN_MALLOC_SMART_SAMPLING,
                 "Enables GWP-ASan smart sampling, which prioritizes allocation types that have not"
                         + " been sampled recently."),
+        Flag.baseFeature(
+                "AndroidSurfaceControlHdrOverlays",
+                "Enable the use of overlays on devices which support them for HDR content"
+                        + " playback."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
