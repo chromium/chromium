@@ -8,6 +8,7 @@
 #include <bit>
 #include <climits>
 #include <type_traits>
+#include <utility>
 
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_address_space.h"

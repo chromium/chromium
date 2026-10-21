@@ -7,7 +7,6 @@
 
 #include <bit>
 #include <cstddef>
-#include <utility>
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
