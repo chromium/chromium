@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/android/device_info.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "cc/layers/deadline_policy.h"
 #include "cc/slim/layer.h"
 #include "components/input/render_input_router.mojom.h"
@@ -22,6 +24,7 @@
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/features.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -59,8 +62,9 @@ class CustomScreenInfoRenderWidgetHostViewAndroid
   CustomScreenInfoRenderWidgetHostViewAndroid(
       RenderWidgetHostImpl* widget,
       gfx::NativeView parent_native_view,
-      cc::slim::Layer* parent_layer);
-  ~CustomScreenInfoRenderWidgetHostViewAndroid() override {}
+      cc::slim::Layer* parent_layer,
+      bool using_browser_compositor = false);
+  ~CustomScreenInfoRenderWidgetHostViewAndroid() override = default;
 
   void SetScreenInfo(display::ScreenInfo screen_info);
 
@@ -81,8 +85,12 @@ CustomScreenInfoRenderWidgetHostViewAndroid::
     CustomScreenInfoRenderWidgetHostViewAndroid(
         RenderWidgetHostImpl* widget,
         gfx::NativeView parent_native_view,
-        cc::slim::Layer* parent_layer)
-    : RenderWidgetHostViewAndroid(widget, parent_native_view, parent_layer) {}
+        cc::slim::Layer* parent_layer,
+        bool using_browser_compositor)
+    : RenderWidgetHostViewAndroid(widget,
+                                  parent_native_view,
+                                  parent_layer,
+                                  using_browser_compositor) {}
 
 void CustomScreenInfoRenderWidgetHostViewAndroid::SetScreenInfo(
     display::ScreenInfo screen_info) {
@@ -903,6 +911,8 @@ class RenderWidgetHostViewAndroidRotationTest
   void OnDidUpdateVisualPropertiesComplete(
       const cc::RenderFrameMetadata& metadata);
   void SetScreenInfo(display::ScreenInfo screen_info);
+  void OnAnimate();
+  bool IsVisualPropertiesUpdatePending();
 
   // ViewAndroid:
   void OnPhysicalBackingSizeChanged(const gfx::Size& size);
@@ -919,6 +929,10 @@ class RenderWidgetHostViewAndroidRotationTest
 
   // testing::Test:
   void SetUp() override;
+
+  // Whether the view uses the browser compositor, rather than the synchronous
+  // (WebView) compositor. Must be set before `SetUp()`.
+  bool use_browser_compositor_ = false;
 };
 
 void RenderWidgetHostViewAndroidRotationTest::SetPortraitScreenInfo(
@@ -1068,11 +1082,20 @@ void RenderWidgetHostViewAndroidRotationTest::OnVisibleViewportSizeChanged(
   GetParentView()->OnSizeChanged(width, height);
 }
 
+void RenderWidgetHostViewAndroidRotationTest::OnAnimate() {
+  render_widget_host_view_android()->OnAnimate(base::TimeTicks::Now());
+}
+
+bool RenderWidgetHostViewAndroidRotationTest::
+    IsVisualPropertiesUpdatePending() {
+  return render_widget_host_view_android()->visual_properties_update_pending_;
+}
+
 RenderWidgetHostViewAndroid*
 RenderWidgetHostViewAndroidRotationTest::CreateRenderWidgetHostViewAndroid(
     RenderWidgetHostImpl* widget_host) {
   return new CustomScreenInfoRenderWidgetHostViewAndroid(
-      widget_host, GetParentView(), GetParentLayer());
+      widget_host, GetParentView(), GetParentLayer(), use_browser_compositor_);
 }
 
 void RenderWidgetHostViewAndroidRotationTest::SetUp() {
@@ -1698,6 +1721,113 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest,
   rwhva->ShowWithVisibility(blink::mojom::PageVisibilityState::kVisible);
   EXPECT_TRUE(rwhva->GetLocalSurfaceId().is_valid());
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+}
+
+// Tests the FluidResize path of tablets and desktop Android, where the browser
+// compositor also re-synchronizes non-rotation resizes in Animate(), except in
+// fullscreen.
+//
+// Initializes to Portrait.
+class RenderWidgetHostViewAndroidFluidResizeTest
+    : public RenderWidgetHostViewAndroidRotationTest {
+ public:
+  RenderWidgetHostViewAndroidFluidResizeTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kFluidResize);
+  }
+  ~RenderWidgetHostViewAndroidFluidResizeTest() override = default;
+
+ protected:
+  // testing::Test:
+  void SetUp() override {
+    // FluidResize is only enabled on tablets and desktop Android.
+    base::android::device_info::set_is_desktop_for_testing(true);
+    use_browser_compositor_ = true;
+    RenderWidgetHostViewAndroidRotationTest::SetUp();
+    ASSERT_TRUE(features::IsFluidResizeEnabled());
+    // Complete the resize scheduled during setup.
+    OnAnimate();
+    ASSERT_FALSE(IsVisualPropertiesUpdatePending());
+  }
+
+  void TearDown() override {
+    RenderWidgetHostViewAndroidRotationTest::TearDown();
+    base::android::device_info::reset_is_desktop_for_testing();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that a fullscreen resize synchronizes immediately via
+// ScreenStateChangeHandler instead of deferring to Animate(), clearing any
+// pending visual properties ack, and that subsequent calls to OnAnimate() and
+// FireFullscreenTimeout() do not advance the LocalSurfaceId again.
+TEST_F(RenderWidgetHostViewAndroidFluidResizeTest,
+       FullscreenResizeSyncsImmediately) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  const viz::LocalSurfaceId initial_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+
+  // 1. Before fullscreen, a standalone non-rotation resize defers to Animate().
+  OnPhysicalBackingSizeChanged(gfx::Size(600, 700));
+  EXPECT_TRUE(IsVisualPropertiesUpdatePending());
+  OnAnimate();
+  EXPECT_FALSE(IsVisualPropertiesUpdatePending());
+  const viz::LocalSurfaceId pre_fs_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(initial_local_surface_id);
+
+  // 2. Enter fullscreen.
+  EnterFullscreenMode();
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+
+  auto* mock_host = static_cast<MockRenderWidgetHost*>(rwhva->host());
+  // An update from an earlier step of fullscreen entry awaits its ack.
+  mock_host->visual_properties_ack_pending_ = true;
+
+  // 3. Resize to fullscreen physical backing.
+  OnPhysicalBackingSizeChanged(fullscreen_portrait_physical_backing);
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  EXPECT_FALSE(IsVisualPropertiesUpdatePending());
+  EXPECT_FALSE(mock_host->visual_properties_ack_pending_);
+
+  const viz::LocalSurfaceId fullscreen_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(pre_fs_local_surface_id);
+
+  // Neither OnAnimate() nor FireFullscreenTimeout() advances LocalSurfaceId
+  // or sets visual_properties_update_pending_.
+  OnAnimate();
+  EXPECT_EQ(fullscreen_local_surface_id, rwhva->GetLocalSurfaceId());
+  EXPECT_FALSE(IsVisualPropertiesUpdatePending());
+
+  FireFullscreenTimeout();
+  EXPECT_EQ(fullscreen_local_surface_id, rwhva->GetLocalSurfaceId());
+  EXPECT_FALSE(IsVisualPropertiesUpdatePending());
+}
+
+// Tests that a fullscreen resize clears any update still deferred to Animate()
+// and that the subsequent Animate() does not allocate a new LocalSurfaceId.
+TEST_F(RenderWidgetHostViewAndroidFluidResizeTest,
+       FullscreenResizeSupersedesDeferredUpdate) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+
+  // 1. A standalone non-rotation resize defers to Animate(). Do not call
+  // OnAnimate(), leaving the deferred update pending.
+  OnPhysicalBackingSizeChanged(gfx::Size(600, 700));
+  EXPECT_TRUE(IsVisualPropertiesUpdatePending());
+
+  // 2. Enter fullscreen and resize to fullscreen physical backing.
+  EnterFullscreenMode();
+  OnPhysicalBackingSizeChanged(fullscreen_portrait_physical_backing);
+
+  // The immediate fullscreen sync supersedes the deferred update.
+  EXPECT_FALSE(IsVisualPropertiesUpdatePending());
+  const viz::LocalSurfaceId fullscreen_local_surface_id =
+      rwhva->GetLocalSurfaceId();
+
+  // The subsequent Animate() does not advance the LocalSurfaceId.
+  OnAnimate();
+  EXPECT_EQ(fullscreen_local_surface_id, rwhva->GetLocalSurfaceId());
+  EXPECT_FALSE(IsVisualPropertiesUpdatePending());
 }
 
 // Tests rotation and fullscreen cases that are supported by both the visual

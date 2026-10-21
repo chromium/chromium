@@ -511,15 +511,16 @@ bool RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
         } else {
           // A standalone non-rotation resize has occurred. For WebView, we sync
           // immediately. For the browser, schedule a vsync-aligned update to
-          // process it smoothly.
-          sync_needed = true;
-          if (rwhva_->using_browser_compositor_ &&
-              features::IsFluidResizeEnabled()) {
-            sync_needed = false;
-            if (!rwhva_->visual_properties_update_pending_) {
-              rwhva_->visual_properties_update_pending_ = true;
-              rwhva_->SetNeedsAnimate();
-            }
+          // process it smoothly. In fullscreen, sync now: the new size is
+          // embedded on a black fallback, and a deferred update waits for any
+          // pending visual properties ack.
+          const bool defer_to_animate = rwhva_->using_browser_compositor_ &&
+                                        features::IsFluidResizeEnabled() &&
+                                        !pending_screen_state_.is_fullscreen;
+          sync_needed = !defer_to_animate;
+          if (defer_to_animate && !rwhva_->visual_properties_update_pending_) {
+            rwhva_->visual_properties_update_pending_ = true;
+            rwhva_->SetNeedsAnimate();
           }
         }
       }
@@ -607,6 +608,8 @@ bool RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
     if (pending_screen_state_.is_fullscreen) {
       pending_screen_state_.any_non_rotation_size_changed = true;
     }
+    // This sync supersedes any update deferred to Animate().
+    rwhva_->visual_properties_update_pending_ = false;
     rwhva_->SynchronizeVisualProperties(
         deadline_policy, std::nullopt,
         /*reuse_current_local_surface_id=*/false,
@@ -652,6 +655,16 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
     RenderWidgetHostImpl* widget_host,
     gfx::NativeView parent_native_view,
     cc::slim::Layer* parent_layer)
+    : RenderWidgetHostViewAndroid(widget_host,
+                                  parent_native_view,
+                                  parent_layer,
+                                  CompositorImpl::IsInitialized()) {}
+
+RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
+    RenderWidgetHostImpl* widget_host,
+    gfx::NativeView parent_native_view,
+    cc::slim::Layer* parent_layer,
+    bool using_browser_compositor)
     : RenderWidgetHostViewBase(widget_host),
       is_window_visible_(true),
       is_window_activity_started_(true),
@@ -669,7 +682,7 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
               GetUIThreadTaskRunner({BrowserTaskType::kUserInput})),
           this)),
       stylus_text_selector_(this),
-      using_browser_compositor_(CompositorImpl::IsInitialized()),
+      using_browser_compositor_(using_browser_compositor),
       synchronous_compositor_client_(nullptr),
       observing_root_window_(false),
       prev_top_shown_pix_(0.f),

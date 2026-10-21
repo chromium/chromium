@@ -512,6 +512,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void SetInputTransferHandlerForTesting(InputTransferHandlerAndroid* handler);
 
  protected:
+  // Allows tests to choose between the browser compositor and the synchronous
+  // (WebView) compositor, rather than using `CompositorImpl::IsInitialized()`.
+  RenderWidgetHostViewAndroid(RenderWidgetHostImpl* widget,
+                              gfx::NativeView parent_native_view,
+                              cc::slim::Layer* parent_layer,
+                              bool using_browser_compositor);
   ~RenderWidgetHostViewAndroid() override;
 
   void CleanUpHostObservers() override;
