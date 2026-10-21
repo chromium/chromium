@@ -2,31 +2,23 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+"""Verifies that //third_party/protobuf is upstream plus patches/*.patch.
 
-"""Verifies //third_party/protobuf against upstream plus patches/*.patch.
-
-Chromium embeds the upstream protobuf repository directly inside
-//third_party/protobuf and maintains local modifications in two places:
-  1. Applied to the source tree under src/ or python/.
-  2. Recorded as top-level patch files in //third_party/protobuf/patches/*.patch
-     and documented under 'Description of the patches:' in README.chromium.
-
-During a roll, //third_party/protobuf is replaced with a fresh upstream release
-archive and patches/*.patch are replayed on top. If a prior commit edited src/
-or python/ without updating patches/*.patch (such as https://crrev.com/c/8422202
-for 0070-fix-deprecated-get-enum-in-message.patch), that edit is silently lost
-on the next roll (https://crbug.com/568074905).
+Chromium embeds upstream protobuf in //third_party/protobuf. Local changes
+are applied to src/ and python/, and also recorded as top-level
+patches/*.patch files (described in README.chromium). A roll replaces the tree
+with a fresh upstream archive and replays patches/*.patch, so an edit to src/
+that never made it into a patch is silently lost on the next roll
+(https://crbug.com/568074905, for example https://crrev.com/c/8422202).
+Design: https://crbug.com/568074175.
 
 Subcommands:
-  check: Extracts the upstream protobuf commit recorded in README.chromium's
-    'Revision:' line from a cached upstream repository, applies all top-level
-    patches/*.patch in sorted order, and verifies that the resulting tree
-    matches //third_party/protobuf modulo known Chromium exceptions.
+  check: Applies patches/*.patch in sorted order to the upstream commit on
+    README.chromium's 'Revision:' line and verifies that the result matches
+    //third_party/protobuf, modulo known Chromium exceptions.
 
-Exit codes:
-  0 (EXIT_CODE_SUCCESS): Command completed and all checks passed.
-  1 (EXIT_CODE_ERROR): Verification failed or an operational error occurred.
-  2: Invalid command-line usage (reported by argparse).
+Exit codes: 0 when all checks passed, 1 when verification failed or an error
+occurred, 2 for invalid usage (argparse).
 """
 
 from collections.abc import Collection, Sequence
@@ -558,170 +550,101 @@ def CheckTreeMatchesPatchedUpstream(
         )
 
 
-def _AppendFileListSection(
-        lines: list[str],
-        heading: str,
-        prefix_symbol: str,
-        file_paths: Sequence[str]) -> None:
-    """Appends a titled section of prefixed file paths when non-empty."""
-    if not file_paths:
-        return
-    lines.append('')
-    lines.append(f'{heading} ({len(file_paths)}):')
-    for relative_path in file_paths:
-        lines.append(f'  {prefix_symbol} {relative_path}')
-
-
-def FormatTreeVerificationReport(
-        verification_result: TreeVerificationResult) -> str:
-    """Formats a human-readable report for a TreeVerificationResult.
-
-    Returns a single summary line when `verification_result.IsClean()` is True,
-    the failing patch name and `git apply` diagnostic when a patch fails to
-    apply, or grouped sections listing modified (`M`), Chromium-only (`+`), and
-    missing upstream (`-`) files.
-    """
-    if verification_result.IsClean():
-        patch_count = len(verification_result.applied_patches)
-        return (
-            f'Verified //third_party/protobuf matches upstream '
-            f'{verification_result.upstream_revision} plus '
-            f'{patch_count} patch(es).')
-
-    if verification_result.failing_patch is not None:
+def FormatTreeVerificationReport(result: TreeVerificationResult) -> str:
+    revision = result.upstream_revision
+    if result.IsClean():
+        return (f'Verified //third_party/protobuf matches upstream {revision} '
+                f'plus {len(result.applied_patches)} patch(es).')
+    if result.failing_patch is not None:
         lines = [
-            f'Patch failed to apply to upstream '
-            f'{verification_result.upstream_revision}: '
-            f'{verification_result.failing_patch}',
+            f'Patch failed to apply to upstream {revision}: '
+            f'{result.failing_patch}'
         ]
-        if verification_result.failing_patch_error:
-            lines.append(verification_result.failing_patch_error)
+        if result.failing_patch_error:
+            lines.append(result.failing_patch_error)
         return '\n'.join(lines)
-
     lines = [
-        f'//third_party/protobuf does not match upstream '
-        f'{verification_result.upstream_revision} plus patches/*.patch:',
+        f'//third_party/protobuf does not match upstream {revision} plus '
+        'patches/*.patch:'
     ]
-    _AppendFileListSection(
-        lines,
-        'Modified files not explained by patches/',
-        'M',
-        verification_result.modified_files,
-    )
-    _AppendFileListSection(
-        lines,
-        'Chromium-only files not in known exceptions',
-        '+',
-        verification_result.chromium_only_files,
-    )
-    _AppendFileListSection(
-        lines,
-        'Upstream files missing from //third_party/protobuf',
-        '-',
-        verification_result.upstream_only_files,
-    )
+    for heading, symbol, paths in (
+        ('Modified files not explained by patches/', 'M',
+         result.modified_files),
+        ('Chromium-only files not in known exceptions', '+',
+         result.chromium_only_files),
+        ('Upstream files missing from //third_party/protobuf', '-',
+         result.upstream_only_files),
+    ):
+        if paths:
+            lines += ['', f'{heading} ({len(paths)}):']
+            lines += [f'  {symbol} {path}' for path in paths]
     return '\n'.join(lines)
 
 
-def _AddRepositoryOptions(parser: argparse.ArgumentParser) -> None:
-    """Registers directory and upstream repository flags on parser."""
-    parser.add_argument(
-        '-C',
-        '--build-dir',
-        dest='build_directory',
-        help=(
-            'Optional GN build output directory (for example, out/Default). '
-            'When provided without --cache-dir, stores roll cache data under '
-            '<build_dir>/.protobuf_roll/.'))
-    parser.add_argument(
-        '--protobuf-dir',
-        default=_PROTOBUF_DIRECTORY,
-        dest='protobuf_directory',
-        help='Path to //third_party/protobuf (default: script directory).')
-    parser.add_argument(
-        '--upstream-repo',
-        dest='upstream_repository_path',
-        help=(
-            'Path to an existing local upstream protobuf git repository '
-            '(skips cache clone and network fetch).'))
-    parser.add_argument(
-        '--cache-dir',
-        dest='cache_directory',
-        help=(
-            'Path to the bare upstream cache repository (default: '
+def main(command_line_arguments: Sequence[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description='Verifies //third_party/protobuf against upstream plus '
+        'patches/*.patch.')
+    subparsers = parser.add_subparsers(dest='subcommand', required=True)
+    subparsers.add_parser(
+        'check',
+        help='Verify that upstream at README.chromium Revision plus '
+        'patches/*.patch reproduces //third_party/protobuf.')
+    for subparser in subparsers.choices.values():
+        subparser.add_argument(
+            '-C',
+            '--build-dir',
+            dest='build_directory',
+            help='Optional GN build output directory (for example, '
+            'out/Default). When provided without --cache-dir, stores roll '
+            'cache data under <build_dir>/.protobuf_roll/.')
+        subparser.add_argument(
+            '--protobuf-dir',
+            default=_PROTOBUF_DIRECTORY,
+            dest='protobuf_directory',
+            help='Path to //third_party/protobuf (default: script directory).')
+        subparser.add_argument(
+            '--upstream-repo',
+            dest='upstream_repository_path',
+            help='Path to an existing local upstream protobuf git repository '
+            '(skips cache clone and network fetch).')
+        subparser.add_argument(
+            '--cache-dir',
+            dest='cache_directory',
+            help='Path to the bare upstream cache repository (default: '
             '$XDG_CACHE_HOME/chromium-protobuf-roll/upstream-protobuf or '
             '~/.cache/chromium-protobuf-roll/upstream-protobuf, or '
-            '<build_dir>/.protobuf_roll/upstream-protobuf when -C is set).'))
-    parser.add_argument(
-        '--upstream-url',
-        default=UPSTREAM_REPOSITORY_URL,
-        dest='upstream_url',
-        help=(
-            f'Remote git URL for upstream protobuf '
-            f'(default: {UPSTREAM_REPOSITORY_URL}).'))
-    parser.add_argument(
-        '--json',
-        action='store_true',
-        dest='should_output_json',
-        help='Print the verification result as machine-readable JSON.')
+            '<build_dir>/.protobuf_roll/upstream-protobuf when -C is set).')
+        subparser.add_argument('--upstream-url',
+                               default=UPSTREAM_REPOSITORY_URL,
+                               help='Remote git URL for upstream protobuf '
+                               f'(default: {UPSTREAM_REPOSITORY_URL}).')
+        subparser.add_argument(
+            '--json',
+            action='store_true',
+            dest='should_output_json',
+            help='Print the result as machine-readable JSON.')
+    arguments = parser.parse_args(command_line_arguments)
+    upstream_arguments = (arguments.upstream_repository_path,
+                          arguments.cache_directory, arguments.build_directory,
+                          arguments.upstream_url)
 
-
-def _ParseCommandLineArguments(
-        command_line_arguments: Sequence[str] | None) -> argparse.Namespace:
-    """Parses command-line arguments for roll_protobuf.py."""
-    parser = argparse.ArgumentParser(
-        description=(
-            'Verifies //third_party/protobuf against upstream plus '
-            'patches/*.patch.'))
-    subparsers = parser.add_subparsers(
-        dest='subcommand',
-        required=True,
-    )
-
-    check_parser = subparsers.add_parser(
-        'check',
-        help=(
-            'Verify that upstream at README.chromium Revision plus '
-            'patches/*.patch reproduces //third_party/protobuf.'))
-    _AddRepositoryOptions(check_parser)
-    return parser.parse_args(command_line_arguments)
-
-
-def _RunCheckSubcommand(arguments: argparse.Namespace) -> int:
-    """Executes the `check` subcommand and returns its process exit code."""
-    verification_result = CheckTreeMatchesPatchedUpstream(
-        protobuf_directory=arguments.protobuf_directory,
-        upstream_repository_path=arguments.upstream_repository_path,
-        cache_directory=arguments.cache_directory,
-        build_directory=arguments.build_directory,
-        upstream_url=arguments.upstream_url,
-    )
-    if arguments.should_output_json:
-        print(json.dumps(verification_result.ToDictionary(), indent=2))
-    else:
-        print(FormatTreeVerificationReport(verification_result))
-    return (EXIT_CODE_SUCCESS
-            if verification_result.IsClean() else EXIT_CODE_ERROR)
-
-
-def main(command_line_arguments: Sequence[str] | None = None) -> int:
-    """Runs the `roll_protobuf.py` CLI and returns its process exit code.
-
-    Args:
-      command_line_arguments: Optional sequence of CLI tokens (defaults to
-        `sys.argv[1:]`).
-
-    Returns:
-      `EXIT_CODE_SUCCESS` (0) when verification succeeds, or `EXIT_CODE_ERROR`
-      (1) when differences or runtime errors occur.
-    """
-    arguments = _ParseCommandLineArguments(command_line_arguments)
     try:
-        return _RunCheckSubcommand(arguments)
+        result = CheckTreeMatchesPatchedUpstream(arguments.protobuf_directory,
+                                                 *upstream_arguments)
+        report = FormatTreeVerificationReport(result)
+        exit_code = EXIT_CODE_SUCCESS if result.IsClean() else EXIT_CODE_ERROR
+        if arguments.should_output_json:
+            report = json.dumps(result.ToDictionary(), indent=2)
+        print(report)
+        return exit_code
     except (RollProtobufError, OSError) as error:
         if arguments.should_output_json:
-            error_payload = {'is_clean': False, 'error': str(error)}
-            print(json.dumps(error_payload, indent=2))
+            print(
+                json.dumps({
+                    'is_clean': False,
+                    'error': str(error)
+                }, indent=2))
         else:
             print(f'Error: {error}', file=sys.stderr)
         return EXIT_CODE_ERROR
