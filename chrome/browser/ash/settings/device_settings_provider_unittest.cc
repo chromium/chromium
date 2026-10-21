@@ -622,8 +622,6 @@ TEST_F(DeviceSettingsProviderTest, PolicyRetrievalFailedBadSignature) {
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceSettings.UpdatedStatus2",
       DeviceSettingsService::STORE_VALIDATION_ERROR, /*amount=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Enterprise.DeviceSettings.MissingPolicyMitigated", 0);
 }
 
 TEST_F(DeviceSettingsProviderTest, PolicyRetrievalNoPolicy) {
@@ -643,8 +641,6 @@ TEST_F(DeviceSettingsProviderTest, PolicyRetrievalNoPolicy) {
       "Enterprise.DeviceSettings.UpdatedStatus2",
       DeviceSettingsService::STORE_NO_POLICY,
       /*amount=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Enterprise.DeviceSettings.MissingPolicyMitigated", 0);
 }
 
 TEST_F(DeviceSettingsProviderTest, PolicyRetrievalNoPolicyMitigated) {
@@ -667,8 +663,6 @@ TEST_F(DeviceSettingsProviderTest, PolicyRetrievalNoPolicyMitigated) {
       "Enterprise.DeviceSettings.UpdatedStatus2",
       DeviceSettingsService::STORE_NO_POLICY,
       /*amount=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Enterprise.DeviceSettings.MissingPolicyMitigated", 1);
 }
 
 TEST_F(DeviceSettingsProviderTest, PolicyFailedPermanentlyNotification) {
@@ -694,8 +688,6 @@ TEST_F(DeviceSettingsProviderTest, PolicyFailedPermanentlyNotification) {
       "Enterprise.DeviceSettings.UpdatedStatus2",
       DeviceSettingsService::STORE_NO_POLICY,
       /*amount=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Enterprise.DeviceSettings.MissingPolicyMitigated", 0);
 }
 
 TEST_F(DeviceSettingsProviderTest, PolicyLoadNotification) {
@@ -714,8 +706,6 @@ TEST_F(DeviceSettingsProviderTest, PolicyLoadNotification) {
       "Enterprise.DeviceSettings.UpdatedStatus2",
       DeviceSettingsService::STORE_SUCCESS,
       /*amount=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Enterprise.DeviceSettings.MissingPolicyMitigated", 0);
 }
 
 TEST_F(DeviceSettingsProviderTest, LegacyDeviceLocalAccounts) {

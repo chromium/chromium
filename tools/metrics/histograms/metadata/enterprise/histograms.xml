@@ -1589,21 +1589,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.DeviceSettings.MissingPolicyMitigated"
-    enum="BooleanSuccess" expires_after="2025-12-01">
-  <owner>rbock@google.com</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <owner>managed-devices@google.com</owner>
-  <summary>
-    Recorded every time policy file is missing or corrupted on Chrome OS. Should
-    be compared to Enterprise.DeviceSettings.UpdatedStatus as happens only if
-    status is STORE_NO_POLICY and device being not managed.
-
-    Warning: this histogram was expired from 2024-12-01 to 2025-03-11. Data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.DeviceSettings.UpdatedStatus2"
     enum="DeviceSettingsStatus2" expires_after="2027-03-14">
   <owner>rbock@google.com</owner>
