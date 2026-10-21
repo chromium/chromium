@@ -873,11 +873,6 @@ class HistoryService : public KeyedService,
   // task runner.
   bool is_backend_init_scheduled_for_testing() const;
 
-  const syncer::LocalDeviceInfoProvider*
-  local_device_info_provider_for_testing() const {
-    return local_device_info_provider_;
-  }
-
  protected:
   // These are not currently used, hopefully we can do something in the future
   // to ensure that the most important things happen first.

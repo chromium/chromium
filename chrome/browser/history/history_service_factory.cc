@@ -7,7 +7,6 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/chrome_history_client.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/history/content/browser/content_visit_delegate.h"
 #include "components/history/content/browser/history_database_helper.h"
@@ -16,28 +15,16 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync_device_info/device_info_sync_service.h"
 
 namespace {
 
 std::unique_ptr<KeyedService> BuildHistoryService(
     content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
-  syncer::DeviceInfoSyncService* device_info_sync_service =
-      DeviceInfoSyncServiceFactory::GetForProfile(profile);
-  syncer::DeviceInfoTracker* device_info_tracker = nullptr;
-  syncer::LocalDeviceInfoProvider* local_device_info_provider = nullptr;
-  if (device_info_sync_service) {
-    device_info_tracker = device_info_sync_service->GetDeviceInfoTracker();
-    local_device_info_provider =
-        device_info_sync_service->GetLocalDeviceInfoProvider();
-  }
-
   auto history_service = std::make_unique<history::HistoryService>(
       std::make_unique<ChromeHistoryClient>(
           BookmarkModelFactory::GetForBrowserContext(context)),
       std::make_unique<history::ContentVisitDelegate>(context),
-      device_info_tracker, local_device_info_provider);
+      /*device_info_tracker=*/nullptr, /*local_device_info_provider=*/nullptr);
   history_service->Init(history::HistoryDatabaseParamsForPath(
       context->GetPath(), chrome::GetChannel()));
   return history_service;
@@ -112,7 +99,6 @@ HistoryServiceFactory::HistoryServiceFactory()
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
   DependsOn(BookmarkModelFactory::GetInstance());
-  DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
 
 HistoryServiceFactory::~HistoryServiceFactory() = default;
