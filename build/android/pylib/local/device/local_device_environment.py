@@ -35,8 +35,6 @@ LOGCAT_FILTERS = [
     'StrictMode:D',
 ]
 
-SYSTEM_USER_ID = 0
-
 
 def _DeviceCachePath(device):
     file_name = 'device_cache_%s.json' % device.adb.GetDeviceSerial()
@@ -208,36 +206,17 @@ class LocalDeviceEnvironment(environment.Environment):
         if self._logcat_output_file:
             self._logcat_output_dir = tempfile.mkdtemp()
 
+        force_main_user = self.force_main_user
+
         @handle_shard_failures_with(on_failure=self.DenylistDevice)
         def prepare_device(d):
             d.WaitUntilFullyBooted()
             self._LogDeviceTime(d)
 
-            force_main_user = self._force_main_user
-            if force_main_user is None:
-                # Default to forcing the main user on desktop HSUM devices.
-                force_main_user = d.is_desktop and d.GetProp(
-                    'ro.fw.mu.headless_system_user', cache=True
-                ) in ('true', '1')
-
             if force_main_user:
                 # Ensure the current user is the main user (the first real
                 # human user).
-                main_user = d.GetMainUser()
-                if d.GetCurrentUser() != main_user:
-                    logging.info(
-                        'Switching to the main user with id %s', main_user
-                    )
-                    d.SwitchUser(main_user)
-                d.target_user = main_user
-            elif d.GetCurrentUser() != SYSTEM_USER_ID:
-                # TODO(b/293175593): Remove this after "force_main_user"
-                # works fine.
-                # Use system user to run tasks to avoid "/sdcard "accessing
-                # issue due to multiple-users. For details, see
-                # https://source.android.com/docs/devices/admin/multi-user-testing
-                logging.info('Switching to user with id %s', SYSTEM_USER_ID)
-                d.SwitchUser(SYSTEM_USER_ID)
+                d.EnsureMainUser()
 
             if self._enable_device_cache:
                 cache_path = _DeviceCachePath(d)
@@ -280,13 +259,6 @@ class LocalDeviceEnvironment(environment.Environment):
                         gboard_prefs.SetBoolean('pk_always_show_vk', True)
 
         self.parallel_devices.pMap(prepare_device)
-
-        if self._force_main_user is None:
-            self._force_main_user = any(
-                isinstance(getattr(d, 'target_user', None), int)
-                and d.target_user != SYSTEM_USER_ID
-                for d in self._devices
-            )
 
     @property
     def current_try(self):
@@ -344,6 +316,14 @@ class LocalDeviceEnvironment(environment.Environment):
 
     @property
     def force_main_user(self):
+        if self._force_main_user is None and self._devices:
+            # Default to forcing the main user on desktop HSUM devices.
+            self._force_main_user = any(
+                d.is_desktop
+                and d.GetProp('ro.fw.mu.headless_system_user', cache=True)
+                in ('true', '1')
+                for d in self._devices
+            )
         return bool(self._force_main_user)
 
     @property

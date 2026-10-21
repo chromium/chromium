@@ -387,6 +387,26 @@ class LocalDeviceTestRunTest(unittest.TestCase):
         env = local_device_environment.LocalDeviceEnvironment(args, None, None)
         self.assertEqual(env.sharding_strategy, 'hash')
 
+    def _RecoverDevices(self, force_main_user):
+        device = mock.MagicMock()
+        test_run = TestLocalDeviceTestRun()
+        test_run._env.force_main_user = force_main_user
+        test_run._env.parallel_devices.pMap.side_effect = lambda f: f(device)
+        with mock.patch.object(
+            local_device_test_run.device_recovery, 'RecoverDevice'
+        ) as mock_recover:
+            test_run._RecoverDevices()
+        mock_recover.assert_called_once_with(device, None)
+        return device
+
+    def testRecoverDevices_restoresMainUser(self):
+        device = self._RecoverDevices(force_main_user=True)
+        device.EnsureMainUser.assert_called_once_with()
+
+    def testRecoverDevices_noForceMainUser(self):
+        device = self._RecoverDevices(force_main_user=False)
+        device.EnsureMainUser.assert_not_called()
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

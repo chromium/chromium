@@ -274,7 +274,15 @@ class LocalDeviceTestRun(test_run.TestRun):
             pass
 
     def _RecoverDevices(self):
-        self._env.parallel_devices.pMap(device_recovery.RecoverDevice, None)
+        def recover(device):
+            device_recovery.RecoverDevice(device, None)
+            # Recovery reboots the device, which brings HSUM devices back to
+            # the system user with the main user stopped and its storage
+            # locked ("Required key not available").
+            if self._env.force_main_user:
+                device.EnsureMainUser()
+
+        self._env.parallel_devices.pMap(recover)
 
     def _GetTestsToRetry(self, tests, try_results):
         """Get the tests to retry.
