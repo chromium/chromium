@@ -178,11 +178,8 @@ void AvatarToolbarIphController::MaybeShowSignInBenefitsIPHImpl() {
   if (!ShouldShowAvatarToolbarIPH()) {
     return;
   }
-  const bool show_new_signin =
-      base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSigninPromosNewSignin) &&
-      base::FeatureList::IsEnabled(
-          feature_engagement::kIPHSignInBenefitsNewSigninFeature);
+  const bool show_new_signin = base::FeatureList::IsEnabled(
+      feature_engagement::kIPHSignInBenefitsNewSigninFeature);
   const bool show_legacy = base::FeatureList::IsEnabled(
                                syncer::kReplaceSyncPromosWithSignInPromos) &&
                            base::FeatureList::IsEnabled(

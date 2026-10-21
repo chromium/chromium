@@ -337,8 +337,7 @@ class SignInBenefitsIphControllerTest : public AvatarToolbarIphControllerTest {
     features_.InitWithFeatures(
         {syncer::kReplaceSyncPromosWithSignInPromos,
          feature_engagement::kIPHSignInBenefitsFeature},
-        {syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
-         feature_engagement::kIPHSignInBenefitsNewSigninFeature});
+        {feature_engagement::kIPHSignInBenefitsNewSigninFeature});
   }
 
   void PreparePromo() {
@@ -414,8 +413,6 @@ class SignInBenefitsPromoTest
         {{syncer::kReplaceSyncPromosWithSignInPromos, test_case.enable_legacy},
          {feature_engagement::kIPHSignInBenefitsFeature,
           test_case.enable_legacy},
-         {syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
-          test_case.enable_new_signin},
          {feature_engagement::kIPHSignInBenefitsNewSigninFeature,
           test_case.enable_new_signin}});
     SignInBenefitsIphControllerTest::SetUp();
