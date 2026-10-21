@@ -15,8 +15,8 @@ creation) with apksig (APK signing) so that an APK can be created and signed in
 a single pass. The CIPD package contains signflinger.jar (a fat jar bundling
 zipflinger, apksig, and the Chromium-authored org.chromium.build.ZipBuilder
 main class from java/) as well as a GraalVM native-image executable
-(signflinger, for Linux x86_64 hosts with x86-64-v3 + SHA-NI), used by
-//build/android/gyp/apkbuilder.py and //build/android/gyp/dex.py.
+(signflinger, for Linux x86_64 hosts with x86-64-v2 + AVX2 + BMI2 + SHA-NI), used
+by //build/android/gyp/apkbuilder.py and //build/android/gyp/dex.py.
 
 Local Modifications:
 None

@@ -159,12 +159,15 @@ def _post_process(src_jar_path, dst_jar_path):
         output_bin,
         main_class=_MAIN_CLASS,
         tracing_args_list=tracing_args_list,
-        # Enable SHA-NI and CLMUL intrinsics on top of x86-64-v3 (AVX2) so
-        # SHA-256 signing uses hardware sha256rnds2 instructions. Callers fall
-        # back to signflinger.jar on hosts lacking these CPU features.
+        # Enable only the CPU features needed by the SHA-1, SHA-256 and CRC32
+        # intrinsics: SHA-1 needs SHA on top of x86-64-v2, SHA-256 also needs
+        # AVX, AVX2 and BMI2 (it falls back to a ~7x slower path without them),
+        # and CRC32 needs CLMUL. The rest of x86-64-v3 is omitted to support
+        # more hosts. Callers fall back to signflinger.jar on hosts lacking
+        # these CPU features (see //build/android/gyp/util/zipbuilder.py).
         extra_native_image_args=[
-            '-march=x86-64-v3',
-            '-H:CPUFeatures=SHA,CLMUL,AES',
+            '-march=x86-64-v2',
+            '-H:CPUFeatures=AVX,AVX2,BMI2,SHA,CLMUL,AES',
         ],
     )
 

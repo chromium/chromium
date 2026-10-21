@@ -151,6 +151,7 @@ def build_native_image(
       extra_reachability_metadata: Optional dict with 'reflection' and/or
           'resources' lists to merge into reachability-metadata.json.
       extra_native_image_args: Optional list of extra flags for native-image.
+          Unless this contains a -march= flag, -march=compatibility is used.
     """
     graal_home = ensure_graalvm()
     java_bin = os.path.join(graal_home, 'bin', 'java')
@@ -235,8 +236,13 @@ def build_native_image(
         ]
         for exp in all_exports:
             ni_cmd.append(f'-J--add-exports={exp}')
-        if extra_native_image_args:
-            ni_cmd.extend(extra_native_image_args)
+        # native-image defaults to -march=x86-64-v3 (AVX2), which fails to
+        # start on older hosts. Some intrinsics still use AVX and AVX2 when
+        # available via -H:RuntimeCheckedCPUFeatures (default: AVX,AVX2).
+        extra_native_image_args = extra_native_image_args or []
+        if not any(a.startswith('-march=') for a in extra_native_image_args):
+            ni_cmd.append('-march=compatibility')
+        ni_cmd.extend(extra_native_image_args)
         ni_cmd.append('GraalVmWrapper')
         common.run_cmd(ni_cmd)
         shutil.copy(temp_output, output_path)
