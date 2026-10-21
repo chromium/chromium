@@ -26,6 +26,23 @@ namespace {
 // Don't show errors for policies starting with that prefix.
 const char kPolicyCommentPrefix[] = "_comment";
 
+bool IsCloudOnlyPolicySource(const policy::PolicyMap::Entry& policy) {
+  return policy.source == policy::POLICY_SOURCE_CLOUD ||
+         policy.source == policy::POLICY_SOURCE_CLOUD_FROM_ASH;
+}
+
+bool IsCloudPolicySource(const policy::PolicyMap::Entry& policy) {
+  if (policy.source == policy::POLICY_SOURCE_MERGED) {
+    for (const auto& conflict : policy.conflicts) {
+      if (!IsCloudOnlyPolicySource(conflict.entry())) {
+        return false;
+      }
+    }
+    return true;
+  }
+  return IsCloudOnlyPolicySource(policy);
+}
+
 }  // namespace
 
 ConfigurationPolicyHandlerList::ConfigurationPolicyHandlerList(
@@ -172,7 +189,13 @@ bool ConfigurationPolicyHandlerList::IsPolicySupported(
   if (policy_details->source_restriction == kSourceRestrictionCloudOnly &&
       !IsCloudOnlyPolicy(entry)) {
     if (errors) {
-      errors->AddError(entry.first, IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
+      if (!are_cloud_only_policies_allowed_ &&
+          IsCloudPolicySource(entry.second)) {
+        errors->AddError(entry.first,
+                         IDS_POLICY_CLOUD_MANAGEMENT_DISABLED_ERROR);
+      } else {
+        errors->AddError(entry.first, IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
+      }
     }
     return false;
   }
@@ -193,15 +216,6 @@ bool ConfigurationPolicyHandlerList::IsBlockedPlatformDevicePolicy(
   }
   return false;
 }
-
-namespace {
-
-bool IsCloudOnlyPolicySource(const policy::PolicyMap::Entry& policy) {
-  return policy.source == policy::POLICY_SOURCE_CLOUD ||
-         policy.source == policy::POLICY_SOURCE_CLOUD_FROM_ASH;
-}
-
-}  // namespace
 
 bool ConfigurationPolicyHandlerList::IsCloudOnlyPolicy(
     PolicyMap::const_reference entry) const {
@@ -224,15 +238,7 @@ bool ConfigurationPolicyHandlerList::IsCloudOnlyPolicy(
     return true;
   }
 
-  if (entry.second.source == POLICY_SOURCE_MERGED) {
-    for (const auto& conflict : entry.second.conflicts) {
-      if (!IsCloudOnlyPolicySource(conflict.entry())) {
-        return false;
-      }
-    }
-    return true;
-  }
-  return IsCloudOnlyPolicySource(entry.second);
+  return IsCloudPolicySource(entry.second);
 }
 
 bool ConfigurationPolicyHandlerList::IsBlockedFuturePolicy(

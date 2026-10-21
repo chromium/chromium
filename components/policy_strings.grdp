@@ -228,6 +228,9 @@
   <message name="IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR" desc="The text displayed in the status column when a policy that should only be set in the cloud is set from another source.">
     Ignored because the policy is not set by a cloud source.
   </message>
+  <message name="IDS_POLICY_CLOUD_MANAGEMENT_DISABLED_ERROR" desc="The text displayed in the status column when a cloud policy is ignored because Chrome Browser Cloud Management is disabled.">
+    Ignored because Chrome Browser Cloud Management is disabled.
+  </message>
   <message name="IDS_POLICY_CLOUD_USER_ONLY_ERROR" desc="The text displayed in the status column when a policy should only be set from cloud user is set from another source.">
     Ignored because the policy can only be set as a cloud user policy.
   </message>

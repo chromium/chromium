@@ -186,7 +186,8 @@ class ConfigurationPolicyHandlerListTest : public ::testing::Test {
   PolicyMap policies_;
   PoliciesSet deprecated_policies_;
   PoliciesSet future_policies_;
-  PolicyDetails details_{false, false, false, kProfile, kSourceRestrictionNone, 0, {}};
+  PolicyDetails details_{false, false, false, kProfile, kSourceRestrictionNone,
+                         0,     {}};
 
   std::unique_ptr<ConfigurationPolicyHandlerList> handler_list_;
 };
@@ -345,6 +346,16 @@ TEST_F(ConfigurationPolicyHandlerListTest,
   AddPolicy(kPolicyName, /*is_cloud=*/true, base::Value(kPolicyValue));
   ApplySettings();
   VerifyPolicyAndPref(kPolicyName, /*in_pref=*/false);
+  EXPECT_EQ(
+      GetErrorMessages(kPolicyName),
+      l10n_util::GetStringUTF16(IDS_POLICY_CLOUD_MANAGEMENT_DISABLED_ERROR));
+  ClearErrors();
+
+  // Platform source is disallowed when cloud-only policies are not allowed.
+  ClearPrefs();
+  AddPolicy(kPolicyName, /*is_cloud=*/false, base::Value(kPolicyValue));
+  ApplySettings();
+  VerifyPolicyAndPref(kPolicyName, /*in_pref=*/false);
   EXPECT_EQ(GetErrorMessages(kPolicyName),
             l10n_util::GetStringUTF16(IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR));
   ClearErrors();
@@ -363,6 +374,16 @@ TEST_F(ConfigurationPolicyHandlerListTest,
   // allowed.
   ClearPolicies();
   AddPolicy(key::kCloudReportingEnabled, /*is_cloud=*/true,
+            base::Value(kPolicyValue));
+  ApplySettings();
+  VerifyPolicyAndPref(key::kCloudReportingEnabled, /*in_pref=*/false);
+  EXPECT_EQ(
+      GetErrorMessages(key::kCloudReportingEnabled),
+      l10n_util::GetStringUTF16(IDS_POLICY_CLOUD_MANAGEMENT_DISABLED_ERROR));
+  ClearErrors();
+
+  ClearPrefs();
+  AddPolicy(key::kCloudReportingEnabled, /*is_cloud=*/false,
             base::Value(kPolicyValue));
   ApplySettings();
   VerifyPolicyAndPref(key::kCloudReportingEnabled, /*in_pref=*/false);
