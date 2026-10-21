@@ -7,7 +7,6 @@
 
 module blink.mojom;
 
-import "services/network/public/mojom/schemeful_site.mojom";
 import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -96,17 +95,6 @@ union PotentiallyOpaqueURNConfigVector {
   Opaque opaque;
 };
 
-struct SharedStorageBudgetMetadata {
-  network.mojom.SchemefulSite site;
-  double budget_to_charge;
-  bool top_navigated;
-};
-
-union PotentiallyOpaqueSharedStorageBudgetMetadata {
-  SharedStorageBudgetMetadata transparent;
-  Opaque opaque;
-};
-
 // Stores information about the frame's parent's permissions policy. Normally
 // this information is inaccessible due to the fenced frame boundary, but this
 // is needed when calculating permissions inheritance. This information will be
@@ -149,8 +137,6 @@ struct FencedFrameConfig {
   PotentiallyOpaqueAdAuctionData? ad_auction_data;
 
   PotentiallyOpaqueConfigVector? nested_configs;
-
-  PotentiallyOpaqueSharedStorageBudgetMetadata? shared_storage_budget_metadata;
 
   // This is the internal URN that represents this config in the browser-side
   // `FencedFrameURLMapping`. When this config is navigated to via a fenced
@@ -213,8 +199,6 @@ struct FencedFrameProperties {
   // to avoid use as a data sidechannel between auction worklets and the
   // fenced frames their results are loaded in.
   PotentiallyOpaqueURNConfigVector? nested_urn_config_pairs;
-
-  PotentiallyOpaqueSharedStorageBudgetMetadata? shared_storage_budget_metadata;
 
   DeprecatedFencedFrameMode mode;
 

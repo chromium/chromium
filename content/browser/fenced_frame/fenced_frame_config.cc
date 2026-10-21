@@ -85,27 +85,6 @@ FencedFrameConfig::FencedFrameConfig(
   is_ad_component_ = is_ad_component;
 }
 
-FencedFrameConfig::FencedFrameConfig(
-    const GURL& urn_uuid,
-    const GURL& mapped_url,
-    const SharedStorageBudgetMetadata& shared_storage_budget_metadata,
-    scoped_refptr<FencedFrameReporter> fenced_frame_reporter)
-    : urn_uuid_(urn_uuid),
-      mapped_url_(std::in_place,
-                  mapped_url,
-                  VisibilityToEmbedder::kOpaque,
-                  VisibilityToContent::kTransparent),
-      deprecated_should_freeze_initial_size_(std::in_place,
-                                             false,
-                                             VisibilityToEmbedder::kTransparent,
-                                             VisibilityToContent::kOpaque),
-      shared_storage_budget_metadata_(std::in_place,
-                                      shared_storage_budget_metadata,
-                                      VisibilityToEmbedder::kOpaque,
-                                      VisibilityToContent::kOpaque),
-      fenced_frame_reporter_(std::move(fenced_frame_reporter)),
-      mode_(DeprecatedFencedFrameMode::kOpaqueAds) {}
-
 FencedFrameConfig::FencedFrameConfig(const FencedFrameConfig&) = default;
 FencedFrameConfig::FencedFrameConfig(FencedFrameConfig&&) = default;
 FencedFrameConfig::~FencedFrameConfig() = default;
@@ -145,9 +124,6 @@ blink::FencedFrame::RedactedFencedFrameConfig FencedFrameConfig::RedactFor(
     }
   }
 
-  RedactProperty(shared_storage_budget_metadata_, entity,
-                 redacted_config.shared_storage_budget_metadata_);
-
   // The mode never needs to be redacted, because it is a function of which API
   // was called to generate the config, rather than any cross-site data.
   redacted_config.mode_ = mode_;
@@ -163,7 +139,6 @@ blink::FencedFrame::RedactedFencedFrameConfig FencedFrameConfig::RedactFor(
 FencedFrameProperties::FencedFrameProperties()
     : ad_auction_data_(std::nullopt),
       nested_urn_config_pairs_(std::nullopt),
-      shared_storage_budget_metadata_(std::nullopt),
       partition_nonce_(std::in_place,
                        base::UnguessableToken::Create(),
                        VisibilityToEmbedder::kOpaque,
@@ -189,7 +164,6 @@ FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
       ad_auction_data_(config.ad_auction_data_),
       on_navigate_callback_(config.on_navigate_callback_),
       nested_urn_config_pairs_(std::nullopt),
-      shared_storage_budget_metadata_(std::nullopt),
       fenced_frame_reporter_(config.fenced_frame_reporter_),
       partition_nonce_(std::in_place,
                        base::UnguessableToken::Create(),
@@ -200,12 +174,6 @@ FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
       is_ad_component_(config.is_ad_component_),
       effective_enabled_permissions_(config.effective_enabled_permissions_),
       parent_permissions_info_(config.parent_permissions_info_) {
-  if (config.shared_storage_budget_metadata_) {
-    shared_storage_budget_metadata_.emplace(
-        &config.shared_storage_budget_metadata_->GetValueIgnoringVisibility(),
-        config.shared_storage_budget_metadata_->visibility_to_embedder_,
-        config.shared_storage_budget_metadata_->visibility_to_content_);
-  }
   if (config.nested_configs_) {
     nested_urn_config_pairs_.emplace(
         GenerateURNConfigVectorForConfigs(
@@ -253,18 +221,6 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
       }
     } else {
       redacted_properties.nested_urn_config_pairs_.emplace(std::nullopt);
-    }
-  }
-  if (shared_storage_budget_metadata_.has_value()) {
-    std::optional<raw_ptr<const SharedStorageBudgetMetadata>>
-        potentially_opaque_ptr =
-            shared_storage_budget_metadata_->GetValueForEntity(entity);
-    if (potentially_opaque_ptr.has_value()) {
-      redacted_properties.shared_storage_budget_metadata_ =
-          blink::FencedFrame::RedactedFencedFrameProperty(
-              std::make_optional(*potentially_opaque_ptr.value()));
-    } else {
-      redacted_properties.shared_storage_budget_metadata_.emplace(std::nullopt);
     }
   }
 

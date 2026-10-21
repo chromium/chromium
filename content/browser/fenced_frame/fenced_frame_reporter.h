@@ -239,7 +239,6 @@ class CONTENT_EXPORT FencedFrameReporter
 
  private:
   friend class base::RefCounted<FencedFrameReporter>;
-  friend class FencedFrameURLMappingTestPeer;
 
   struct PendingEvent {
     PendingEvent(
@@ -301,13 +300,6 @@ class CONTENT_EXPORT FencedFrameReporter
       std::string& error_message,
       blink::mojom::ConsoleMessageLevel& console_message_level,
       const std::string& devtools_request_id);
-
-  // Used by FencedFrameURLMappingTestPeer.
-  const base::flat_map<blink::FencedFrame::ReportingDestination,
-                       ReportingDestinationInfo>&
-  reporting_metadata() const {
-    return reporting_metadata_;
-  }
 
   // Notify the installed observers whether the beacon is queued to be sent or
   // not.

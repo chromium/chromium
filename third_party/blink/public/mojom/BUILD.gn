@@ -639,10 +639,6 @@ mojom("mojom_platform") {
           cpp = "::blink::FencedFrame::AdAuctionData"
         },
         {
-          mojom = "blink.mojom.SharedStorageBudgetMetadata"
-          cpp = "::blink::FencedFrame::SharedStorageBudgetMetadata"
-        },
-        {
           mojom = "blink.mojom.ReportingDestination"
           cpp = "::blink::FencedFrame::ReportingDestination"
         },
@@ -669,10 +665,6 @@ mojom("mojom_platform") {
         {
           mojom = "blink.mojom.PotentiallyOpaqueConfigVector"
           cpp = "::blink::FencedFrame::RedactedFencedFrameProperty<std::vector<::blink::FencedFrame::RedactedFencedFrameConfig>>"
-        },
-        {
-          mojom = "blink.mojom.PotentiallyOpaqueSharedStorageBudgetMetadata"
-          cpp = "::blink::FencedFrame::RedactedFencedFrameProperty<::blink::FencedFrame::SharedStorageBudgetMetadata>"
         },
         {
           mojom = "blink.mojom.FencedFrameConfig"

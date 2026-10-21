@@ -1520,15 +1520,10 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
     return false;
   }
 
-  // `request_` may not have been set by DidStartNavigation() yet, due to
-  // either:
-  // 1) Prerendered page activation can be deferred by CommitDeferringConditions
-  //    in BeginNavigation().
-  // 2) Fenced frame navigation can be deferred on pending URL mapping.
-  //
-  // In these cases, we set the `request_` here.
-  if (request->is_running_potential_prerender_activation_checks() ||
-      request->is_deferred_on_fenced_frame_url_mapping_for_testing()) {
+  // `request_` may not have been set by DidStartNavigation() yet, because
+  // prerendered page activation can be deferred by CommitDeferringConditions
+  // in BeginNavigation(). In this case, we set the `request_` here.
+  if (request->is_running_potential_prerender_activation_checks()) {
     DCHECK(!request_);
     request_ = request;
   }

@@ -59,21 +59,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::AdAuctionDataDataView,
 
 template <>
 struct BLINK_COMMON_EXPORT
-    StructTraits<blink::mojom::SharedStorageBudgetMetadataDataView,
-                 blink::FencedFrame::SharedStorageBudgetMetadata> {
-  static const net::SchemefulSite& site(
-      const blink::FencedFrame::SharedStorageBudgetMetadata& input);
-  static double budget_to_charge(
-      const blink::FencedFrame::SharedStorageBudgetMetadata& input);
-  static bool top_navigated(
-      const blink::FencedFrame::SharedStorageBudgetMetadata& input);
-
-  static bool Read(blink::mojom::SharedStorageBudgetMetadataDataView data,
-                   blink::FencedFrame::SharedStorageBudgetMetadata* out_data);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ParentPermissionsInfoDataView,
                  blink::FencedFrame::ParentPermissionsInfo> {
   static const std::vector<network::ParsedPermissionsPolicyDeclaration>&
@@ -187,30 +172,6 @@ class BLINK_COMMON_EXPORT UnionTraits<
 };
 
 template <>
-class BLINK_COMMON_EXPORT UnionTraits<
-    blink::mojom::PotentiallyOpaqueSharedStorageBudgetMetadataDataView,
-    Prop<blink::FencedFrame::SharedStorageBudgetMetadata>> {
- public:
-  static const blink::FencedFrame::SharedStorageBudgetMetadata& transparent(
-      const Prop<blink::FencedFrame::SharedStorageBudgetMetadata>&
-          shared_storage_budget_metadata) {
-    return *shared_storage_budget_metadata.potentially_opaque_value;
-  }
-  static blink::FencedFrame::Opaque opaque(
-      const Prop<blink::FencedFrame::SharedStorageBudgetMetadata>&) {
-    return blink::FencedFrame::Opaque::kOpaque;
-  }
-
-  static bool Read(
-      blink::mojom::PotentiallyOpaqueSharedStorageBudgetMetadataDataView data,
-      Prop<blink::FencedFrame::SharedStorageBudgetMetadata>* out);
-
-  static blink::mojom::PotentiallyOpaqueSharedStorageBudgetMetadataDataView::Tag
-  GetTag(const Prop<blink::FencedFrame::SharedStorageBudgetMetadata>&
-             shared_storage_budget_metadata);
-};
-
-template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::FencedFrameConfigDataView,
                  blink::FencedFrame::RedactedFencedFrameConfig> {
@@ -245,13 +206,6 @@ struct BLINK_COMMON_EXPORT
   nested_configs(const blink::FencedFrame::RedactedFencedFrameConfig& config) {
     return config.nested_configs_;
   }
-  static const std::optional<
-      Prop<blink::FencedFrame::SharedStorageBudgetMetadata>>&
-  shared_storage_budget_metadata(
-      const blink::FencedFrame::RedactedFencedFrameConfig& config) {
-    return config.shared_storage_budget_metadata_;
-  }
-
   static const blink::FencedFrame::DeprecatedFencedFrameMode& mode(
       const blink::FencedFrame::RedactedFencedFrameConfig& config) {
     return config.mode_;
@@ -301,12 +255,6 @@ struct BLINK_COMMON_EXPORT
   static blink::mojom::PotentiallyOpaqueURNConfigVectorPtr
   nested_urn_config_pairs(
       const blink::FencedFrame::RedactedFencedFrameProperties& properties);
-  static const std::optional<
-      Prop<blink::FencedFrame::SharedStorageBudgetMetadata>>&
-  shared_storage_budget_metadata(
-      const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
-    return properties.shared_storage_budget_metadata_;
-  }
   static const blink::FencedFrame::DeprecatedFencedFrameMode& mode(
       const blink::FencedFrame::RedactedFencedFrameProperties& properties) {
     return properties.mode_;

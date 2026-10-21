@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -54,23 +53,6 @@ enum DeprecatedFencedFrameMode {
 struct BLINK_COMMON_EXPORT AdAuctionData {
   url::Origin interest_group_owner;
   std::string interest_group_name;
-};
-
-// The metadata for the shared storage runURLSelectionOperation's budget,
-// which includes the shared storage's `site` and the amount of budget to
-// charge when a fenced frame that originates from the URN is navigating a top
-// frame. Before the fenced frame results in a top navigation, this
-// `SharedStorageBudgetMetadata` will be stored/associated with the URN inside
-// the `FencedFrameURLMapping`.
-struct BLINK_COMMON_EXPORT SharedStorageBudgetMetadata {
-  net::SchemefulSite site;
-  double budget_to_charge = 0;
-
-  // The bool `top_navigated` needs to be mutable because the overall
-  // `FencedFrameConfig`/`FencedFrameProperties` object is const in virtually
-  // all cases, except that we want to change this bool to true after a frame
-  // with this config navigates the top for the first time.
-  mutable bool top_navigated = false;
 };
 
 struct BLINK_COMMON_EXPORT ParentPermissionsInfo {
@@ -129,10 +111,6 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   nested_configs() const {
     return nested_configs_;
   }
-  const std::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>&
-  shared_storage_budget_metadata() const {
-    return shared_storage_budget_metadata_;
-  }
   const DeprecatedFencedFrameMode& mode() const { return mode_; }
   const std::vector<network::mojom::PermissionsPolicyFeature>&
   effective_enabled_permissions() const {
@@ -158,8 +136,6 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   std::optional<
       RedactedFencedFrameProperty<std::vector<RedactedFencedFrameConfig>>>
       nested_configs_;
-  std::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>
-      shared_storage_budget_metadata_;
 
   // TODO(crbug.com/1347953): Not yet used.
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
@@ -211,10 +187,6 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   nested_urn_config_pairs() const {
     return nested_urn_config_pairs_;
   }
-  const std::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>&
-  shared_storage_budget_metadata() const {
-    return shared_storage_budget_metadata_;
-  }
   const DeprecatedFencedFrameMode& mode() const { return mode_; }
   const std::vector<network::mojom::PermissionsPolicyFeature>&
   effective_enabled_permissions() const {
@@ -243,8 +215,6 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   std::optional<RedactedFencedFrameProperty<
       std::vector<std::pair<GURL, RedactedFencedFrameConfig>>>>
       nested_urn_config_pairs_;
-  std::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>
-      shared_storage_budget_metadata_;
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
   std::vector<network::mojom::PermissionsPolicyFeature>
       effective_enabled_permissions_;

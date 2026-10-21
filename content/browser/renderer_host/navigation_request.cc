@@ -2424,11 +2424,6 @@ NavigationRequest::~NavigationRequest() {
   }
 #endif
 
-  if (is_deferred_on_fenced_frame_url_mapping_) {
-    CHECK(NeedFencedFrameURLMapping());
-    GetFencedFrameURLMap().RemoveObserverForURN(common_params_->url, this);
-  }
-
   RecordEarlyRenderFrameHostSwapMetrics();
 
   if (IsNavigationStarted()) {
@@ -2626,13 +2621,6 @@ void NavigationRequest::BeginNavigation() {
         !is_fenced_frame);
 
     FencedFrameURLMapping& fenced_frame_urls_map = GetFencedFrameURLMap();
-
-    // If the mapping finishes synchronously, OnFencedFrameURLMappingComplete
-    // will be synchronously called and will reset
-    // `is_deferred_on_fenced_frame_url_mapping_` to false.
-    is_deferred_on_fenced_frame_url_mapping_ = true;
-
-    fenced_frame_url_mapping_start_time_ = base::TimeTicks::Now();
 
     // OnFencedFrameURLMappingComplete() and BeginNavigationImpl() will be
     // invoked after this.
@@ -2834,7 +2822,6 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
   TRACE_EVENT("navigation",
               "NavigationRequest::OnFencedFrameURLMappingComplete",
               perfetto::Flow::FromPointer(this));
-  is_deferred_on_fenced_frame_url_mapping_ = false;
 
   // The URL mapping might have failed (e.g. because the urn is invalid):
   if (!properties.has_value()) {
@@ -2889,9 +2876,9 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
     commit_params_->original_url = mapped_url_value;
   }
 
-  // Store the browser's view of the fenced frame properties along with any
-  // embedder context for shared storage in the`NavigationRequest`. Upon commit,
-  // it will be stored in the fenced frame root `FrameTreeNode`.
+  // Store the browser's view of the fenced frame properties in the
+  // `NavigationRequest`. Upon commit, it will be stored in the fenced frame
+  // root `FrameTreeNode`.
   fenced_frame_properties_ = properties;
 
   // For urns loaded into iframes, we disable certain aspects of fenced frames:
@@ -2899,16 +2886,6 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
   if (!frame_tree_node_->IsFencedFrameRoot()) {
     CHECK(blink::features::IsAllowURNsInIframeEnabled());
     fenced_frame_properties_->AdjustPropertiesForUrnIframe();
-  }
-
-  // This implies the URN is created from shared storage.
-  if (fenced_frame_properties_->shared_storage_budget_metadata()) {
-    base::TimeDelta time_spent_in_fenced_frame_url_mapping =
-        base::TimeTicks::Now() - fenced_frame_url_mapping_start_time_;
-
-    base::UmaHistogramTimes(
-        "Storage.SharedStorage.Timing.UrlMappingDuringNavigation",
-        time_spent_in_fenced_frame_url_mapping);
   }
 
   BeginNavigationImpl();  // DO NOT ADD CODE after this, because it might have

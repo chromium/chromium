@@ -15,7 +15,6 @@
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/fenced_frame_test_utils.h"
-#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -26,16 +25,6 @@
 namespace content {
 
 namespace {
-
-GURL GenerateAndVerifyPendingMappedURN(
-    FencedFrameURLMapping* fenced_frame_url_mapping) {
-  std::optional<GURL> pending_urn =
-      fenced_frame_url_mapping->GeneratePendingMappedURN();
-  EXPECT_TRUE(pending_urn.has_value());
-  EXPECT_TRUE(pending_urn->is_valid());
-
-  return pending_urn.value();
-}
 
 class FencedFrameURLMappingTest : public RenderViewHostTestHarness {
  public:
@@ -89,111 +78,6 @@ TEST_F(FencedFrameURLMappingTest, NonExistentUUID) {
   EXPECT_EQ(std::nullopt, observer.nested_urn_config_pairs());
 }
 
-TEST_F(FencedFrameURLMappingTest, PendingMappedUUID) {
-  FencedFrameURLMapping fenced_frame_url_mapping;
-  const GURL urn_uuid1 =
-      GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
-  const GURL urn_uuid2 =
-      GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
-
-  TestFencedFrameURLMappingResultObserver observer1;
-  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid1, &observer1);
-  EXPECT_FALSE(observer1.mapping_complete_observed());
-
-  TestFencedFrameURLMappingResultObserver observer2;
-  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid2, &observer2);
-  EXPECT_FALSE(observer2.mapping_complete_observed());
-
-  net::SchemefulSite shared_storage_site(GURL("https://bar.com"));
-  GURL mapped_url = GURL("https://foo.com");
-
-  // Two SharedStorageBudgetMetadata for the same site can happen if the same
-  // blink::Document invokes window.sharedStorage.runURLSelectionOperation()
-  // twice. Each call will generate a distinct URN. And if the input urls have
-  // different size, the budget_to_charge (i.e. log(n)) will be also different.
-  SimulateSharedStorageURNMappingComplete(fenced_frame_url_mapping, urn_uuid1,
-                                          mapped_url, shared_storage_site,
-                                          /*budget_to_charge=*/2.0);
-
-  SimulateSharedStorageURNMappingComplete(fenced_frame_url_mapping, urn_uuid2,
-                                          mapped_url, shared_storage_site,
-                                          /*budget_to_charge=*/3.0);
-
-  EXPECT_TRUE(observer1.mapping_complete_observed());
-  EXPECT_EQ(mapped_url, observer1.mapped_url());
-  EXPECT_EQ(std::nullopt, observer1.nested_urn_config_pairs());
-
-  EXPECT_TRUE(observer2.mapping_complete_observed());
-  EXPECT_EQ(mapped_url, observer2.mapped_url());
-  EXPECT_EQ(std::nullopt, observer2.nested_urn_config_pairs());
-
-  SharedStorageBudgetMetadata* metadata1 =
-      fenced_frame_url_mapping.GetSharedStorageBudgetMetadataForTesting(
-          urn_uuid1);
-
-  EXPECT_TRUE(metadata1);
-  EXPECT_EQ(metadata1->site, shared_storage_site);
-  EXPECT_DOUBLE_EQ(metadata1->budget_to_charge, 2.0);
-
-  SharedStorageBudgetMetadata* metadata2 =
-      fenced_frame_url_mapping.GetSharedStorageBudgetMetadataForTesting(
-          urn_uuid2);
-
-  EXPECT_TRUE(metadata2);
-  EXPECT_EQ(metadata2->site, shared_storage_site);
-  EXPECT_DOUBLE_EQ(metadata2->budget_to_charge, 3.0);
-}
-
-TEST_F(FencedFrameURLMappingTest, RemoveObserverOnPendingMappedUUID) {
-  FencedFrameURLMapping fenced_frame_url_mapping;
-  const GURL urn_uuid =
-      GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
-
-  TestFencedFrameURLMappingResultObserver observer;
-  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer);
-  EXPECT_FALSE(observer.mapping_complete_observed());
-
-  fenced_frame_url_mapping.RemoveObserverForURN(urn_uuid, &observer);
-
-  SimulateSharedStorageURNMappingComplete(
-      fenced_frame_url_mapping, urn_uuid,
-      /*mapped_url=*/GURL("https://foo.com"),
-      /*shared_storage_site=*/
-      net::SchemefulSite::Deserialize("https://bar.com"),
-      /*budget_to_charge=*/2.0);
-
-  EXPECT_FALSE(observer.mapping_complete_observed());
-}
-
-TEST_F(FencedFrameURLMappingTest, RegisterTwoObservers) {
-  FencedFrameURLMapping fenced_frame_url_mapping;
-  const GURL urn_uuid =
-      GenerateAndVerifyPendingMappedURN(&fenced_frame_url_mapping);
-
-  TestFencedFrameURLMappingResultObserver observer1;
-  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer1);
-  EXPECT_FALSE(observer1.mapping_complete_observed());
-
-  TestFencedFrameURLMappingResultObserver observer2;
-  fenced_frame_url_mapping.ConvertFencedFrameURNToURL(urn_uuid, &observer2);
-  EXPECT_FALSE(observer2.mapping_complete_observed());
-
-  SimulateSharedStorageURNMappingComplete(
-      fenced_frame_url_mapping, urn_uuid,
-      /*mapped_url=*/GURL("https://foo.com"),
-      /*shared_storage_site=*/
-      net::SchemefulSite::Deserialize("https://bar.com"),
-      /*budget_to_charge=*/2.0);
-
-  EXPECT_TRUE(observer1.mapping_complete_observed());
-  EXPECT_EQ(GURL("https://foo.com"), observer1.mapped_url());
-  EXPECT_EQ(std::nullopt, observer1.nested_urn_config_pairs());
-  EXPECT_TRUE(observer2.mapping_complete_observed());
-  EXPECT_EQ(GURL("https://foo.com"), observer2.mapped_url());
-  EXPECT_EQ(std::nullopt, observer2.nested_urn_config_pairs());
-}
-
-
 // Test the correctness of the URN format. The URN is expected to be in the
 // format "urn:uuid:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" as per RFC-4122.
 TEST_F(FencedFrameURLMappingTest, HasCorrectFormat) {
@@ -233,14 +117,9 @@ TEST_F(FencedFrameURLMappingTest, ReportingMetadataSuccess) {
   EXPECT_EQ(fenced_frame_reporter.get(), observer.fenced_frame_reporter());
 }
 
-
-// Test that number of urn mappings limit is enforced for pending mapped urn
-// generation.
+// Test that number of urn mappings limit is enforced.
 TEST_F(FencedFrameURLMappingTest, ExceedNumOfUrnMappingsLimitFailsAddURL) {
   FencedFrameURLMapping fenced_frame_url_mapping;
-
-  // Able to generate pending mapped URN when map is not full.
-  EXPECT_TRUE(fenced_frame_url_mapping.GeneratePendingMappedURN().has_value());
 
   // Able to add urn mapping when map is not full.
   const GURL test_url("https://test.test");
@@ -253,9 +132,6 @@ TEST_F(FencedFrameURLMappingTest, ExceedNumOfUrnMappingsLimitFailsAddURL) {
       &fenced_frame_url_mapping);
   GURL url("https://a.test");
   fenced_frame_url_mapping_test_peer.FillMap(url);
-
-  // Cannot generate pending mapped URN when map is full.
-  EXPECT_FALSE(fenced_frame_url_mapping.GeneratePendingMappedURN().has_value());
 
   // Subsequent additions of urn mapping should fail when map is full.
   const GURL extra_url("https://extra.test");

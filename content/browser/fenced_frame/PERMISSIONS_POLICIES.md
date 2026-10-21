@@ -482,23 +482,6 @@ involves getting information about installed fonts from the operating system.
 This can be used for fingerprinting since installed fonts are unique to each
 computer.
 
-### 🔺🖐️ Shared Storage selectURL(): exfiltration/fingerprinting risk, no infiltration risk
-*Feature: kSharedStorage, kSharedStorageSelectUrl*
-
-There is no infiltration risk, as enabling this feature inside a fenced frame
-will have no effect on what information about the embedder is available to the
-frame.
-
-There is no exfiltration or fingerprinting risk directly to the embedder with
-this API, as it is set up (both through worklets and rendering selectURL result
-in a fenced frame) to prevent the sensitive data it keeps from being exfiltrated
-and joined with cross-site data. However, there is the possibility of leaking 3
-bits per `selectURL()` invocation. One of 8 URLs that can be input to
-`selectURL()` gets selected based on cross-site data, and the existence of the
-resulting frame and the URL that was picked can be leaked via network requests
-from the result rendering fenced frame. This is an ongoing privacy consideration
-for fenced frames.
-
 ### 🔺🖐️ Shared Storage get(): no risk
 *Feature: Deprecated unpartitioned access feature*
 

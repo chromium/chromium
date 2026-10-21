@@ -10,26 +10,16 @@
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "net/base/net_errors.h"
-#include "net/base/schemeful_site.h"
 
 namespace content {
 
 class FrameTreeNode;
 class RenderFrameHost;
-class MappingResultObserver;
 
 // `node` is expected to be the child FrameTreeNode created in response to a
 // <fencedframe> element being created. This method returns the FrameTreeNode of
 // the fenced frame's inner FrameTree.
 FrameTreeNode* GetFencedFrameRootNode(FrameTreeNode* node);
-
-void SimulateSharedStorageURNMappingComplete(
-    FencedFrameURLMapping& fenced_frame_url_mapping,
-    const GURL& urn_uuid,
-    const GURL& mapped_url,
-    const net::SchemefulSite& shared_storage_site,
-    double budget_to_charge,
-    scoped_refptr<FencedFrameReporter> fenced_frame_reporter = nullptr);
 
 // Tests can use this class to observe and check the URL mapping result.
 class TestFencedFrameURLMappingResultObserver
@@ -97,19 +87,6 @@ class FencedFrameURLMappingTestPeer {
   explicit FencedFrameURLMappingTestPeer(
       FencedFrameURLMapping* fenced_frame_url_mapping)
       : fenced_frame_url_mapping_(fenced_frame_url_mapping) {}
-
-  bool HasObserver(const GURL& urn_uuid,
-                   FencedFrameURLMapping::MappingResultObserver* observer);
-
-  // Returns as an out parameter the `ReportingMetadata`'s map for value
-  // `"shared-storage-select-url"` associated with `urn_uuid`, or leaves the out
-  // parameter unchanged if there's no shared storage reporting metadata
-  // associated (i.e. `urn_uuid` did not originate from shared storage or else
-  // there was no metadata passed from JavaScript). Precondition: `urn_uuid`
-  // exists in `urn_uuid_to_url_map_`.
-  void GetSharedStorageReportingMap(
-      const GURL& urn_uuid,
-      SharedStorageReportingMap* out_reporting_map);
 
   // Insert urn mappings until it reaches the limit.
   void FillMap(const GURL& url);

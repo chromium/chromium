@@ -1038,37 +1038,6 @@ std::optional<FencedFrameProperties>& FrameTreeNode::GetFencedFrameProperties(
   return node ? node->fenced_frame_properties_ : fenced_frame_properties_;
 }
 
-size_t FrameTreeNode::GetFencedFrameDepth(
-    size_t& shared_storage_fenced_frame_root_count) {
-  CHECK_EQ(shared_storage_fenced_frame_root_count, 0u,
-           base::NotFatalUntil::M152);
-
-  size_t depth = 0;
-  FrameTreeNode* node = this;
-
-  while (node->fenced_frame_status() !=
-         FencedFrameStatus::kNotNestedInFencedFrame) {
-    if (node->fenced_frame_status() == FencedFrameStatus::kFencedFrameRoot) {
-      depth += 1;
-
-      // This implies the fenced frame is from shared storage.
-      if (node->fenced_frame_properties_ &&
-          node->fenced_frame_properties_->shared_storage_budget_metadata()) {
-        shared_storage_fenced_frame_root_count += 1;
-      }
-    } else {
-      CHECK_EQ(node->fenced_frame_status(),
-               FencedFrameStatus::kIframeNestedWithinFencedFrame,
-               base::NotFatalUntil::M152);
-    }
-
-    CHECK(node->GetParentOrOuterDocument(), base::NotFatalUntil::M152);
-    node = node->GetParentOrOuterDocument()->frame_tree_node();
-  }
-
-  return depth;
-}
-
 std::optional<base::UnguessableToken> FrameTreeNode::GetFencedFrameNonce() {
   // For partition nonce, all nested frame inside a fenced frame tree should
   // operate on the partition nonce of the frame tree root.
@@ -1110,29 +1079,6 @@ bool FrameTreeNode::IsErrorPageIsolationEnabled() const {
 
 void FrameTreeNode::SetSrcdocValue(const std::string& srcdoc_value) {
   srcdoc_value_ = srcdoc_value;
-}
-
-std::vector<const SharedStorageBudgetMetadata*>
-FrameTreeNode::FindSharedStorageBudgetMetadata() {
-  std::vector<const SharedStorageBudgetMetadata*> result;
-  FrameTreeNode* node = this;
-
-  while (true) {
-    if (node->fenced_frame_properties_ &&
-        node->fenced_frame_properties_->shared_storage_budget_metadata()) {
-      result.emplace_back(
-          node->fenced_frame_properties_->shared_storage_budget_metadata()
-              ->GetValueIgnoringVisibility());
-    }
-
-    if (!node->GetParentOrOuterDocument()) {
-      break;
-    }
-
-    node = node->GetParentOrOuterDocument()->frame_tree_node();
-  }
-
-  return result;
 }
 
 const scoped_refptr<BrowsingContextState>&

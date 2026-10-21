@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
-#include "net/base/schemeful_site.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "url/gurl.h"
@@ -25,21 +24,6 @@ namespace content {
 FencedFrameURLMapping::FencedFrameURLMapping() = default;
 
 FencedFrameURLMapping::~FencedFrameURLMapping() = default;
-
-FencedFrameURLMapping::SharedStorageURNMappingResult::
-    SharedStorageURNMappingResult() = default;
-
-FencedFrameURLMapping::SharedStorageURNMappingResult::
-    SharedStorageURNMappingResult(
-        GURL mapped_url,
-        SharedStorageBudgetMetadata budget_metadata,
-        scoped_refptr<FencedFrameReporter> fenced_frame_reporter)
-    : mapped_url(std::move(mapped_url)),
-      budget_metadata(std::move(budget_metadata)),
-      fenced_frame_reporter(std::move(fenced_frame_reporter)) {}
-
-FencedFrameURLMapping::SharedStorageURNMappingResult::
-    ~SharedStorageURNMappingResult() = default;
 
 void FencedFrameURLMapping::ImportPendingAdComponents(
     const std::vector<std::pair<GURL, FencedFrameConfig>>& components) {
@@ -92,7 +76,6 @@ std::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
 
 void FencedFrameURLMapping::ClearMapForTesting() {
   urn_uuid_to_url_map_.clear();
-  pending_urn_uuid_to_url_map_.clear();
 }
 
 std::optional<FencedFrameURLMapping::UrnUuidToUrlMap::iterator>
@@ -111,31 +94,10 @@ FencedFrameURLMapping::AddMappingForUrl(const GURL& url) {
       .first;
 }
 
-std::optional<GURL> FencedFrameURLMapping::GeneratePendingMappedURN() {
-  if (IsFull()) {
-    return std::nullopt;
-  }
-
-  GURL urn_uuid = GenerateUrnUuid();
-  CHECK(!IsMapped(urn_uuid));
-  CHECK(!IsPendingMapped(urn_uuid));
-
-  pending_urn_uuid_to_url_map_.emplace(
-      urn_uuid, std::set<raw_ptr<MappingResultObserver>>());
-  return urn_uuid;
-}
-
 void FencedFrameURLMapping::ConvertFencedFrameURNToURL(
     const GURL& urn_uuid,
     MappingResultObserver* observer) {
   CHECK(blink::IsValidUrnUuidURL(urn_uuid), base::NotFatalUntil::M160);
-
-  if (IsPendingMapped(urn_uuid)) {
-    CHECK(!pending_urn_uuid_to_url_map_.at(urn_uuid).count(observer),
-          base::NotFatalUntil::M160);
-    pending_urn_uuid_to_url_map_.at(urn_uuid).emplace(observer);
-    return;
-  }
 
   std::optional<FencedFrameProperties> properties;
 
@@ -152,93 +114,12 @@ void FencedFrameURLMapping::ConvertFencedFrameURNToURL(
   observer->OnFencedFrameURLMappingComplete(properties);
 }
 
-void FencedFrameURLMapping::RemoveObserverForURN(
-    const GURL& urn_uuid,
-    MappingResultObserver* observer) {
-  auto it = pending_urn_uuid_to_url_map_.find(urn_uuid);
-  if (it == pending_urn_uuid_to_url_map_.end()) {
-    // A harmless race condition may occur that the pending urn to url map has
-    // changed out from under the place that is calling this function (so the
-    // destructors were already called), so it's empty.
-    return;
-  }
-
-  auto observer_it = it->second.find(observer);
-  if (observer_it == it->second.end()) {
-    // Similarly, the observer may not be associated with the urn.
-    return;
-  }
-
-  it->second.erase(observer_it);
-}
-
-std::optional<FencedFrameConfig>
-FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
-    const GURL& urn_uuid,
-    const SharedStorageURNMappingResult& mapping_result) {
-  auto pending_it = pending_urn_uuid_to_url_map_.find(urn_uuid);
-  CHECK(pending_it != pending_urn_uuid_to_url_map_.end());
-
-  CHECK(!IsMapped(urn_uuid), base::NotFatalUntil::M160);
-
-  std::optional<FencedFrameConfig> config = std::nullopt;
-
-  // Only if the resolved URL is fenced-frame-compatible do we:
-  //   1.) Add it to `urn_uuid_to_url_map_`
-  //   2.) Report it back to any already-queued observers
-  // TODO(crbug.com/40223071): Simplify this by making Shared Storage only
-  // capable of producing URLs that fenced frames can navigate to.
-  if (blink::IsValidFencedFrameURL(mapping_result.mapped_url)) {
-    config = FencedFrameConfig(urn_uuid, mapping_result.mapped_url,
-                               mapping_result.budget_metadata,
-                               std::move(mapping_result.fenced_frame_reporter));
-    config->mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
-    config->allows_information_inflow_ = true;
-
-    urn_uuid_to_url_map_.emplace(urn_uuid, *config);
-  }
-
-  std::set<raw_ptr<MappingResultObserver>>& observers = pending_it->second;
-
-  std::optional<FencedFrameProperties> properties = std::nullopt;
-  auto final_it = urn_uuid_to_url_map_.find(urn_uuid);
-  if (final_it != urn_uuid_to_url_map_.end()) {
-    properties = FencedFrameProperties(final_it->second);
-  }
-
-  for (MappingResultObserver* observer : observers) {
-    observer->OnFencedFrameURLMappingComplete(properties);
-  }
-
-  pending_urn_uuid_to_url_map_.erase(pending_it);
-
-  return config;
-}
-
-SharedStorageBudgetMetadata*
-FencedFrameURLMapping::GetSharedStorageBudgetMetadataForTesting(
-    const GURL& urn_uuid) {
-  auto it = urn_uuid_to_url_map_.find(urn_uuid);
-  CHECK(it != urn_uuid_to_url_map_.end());
-
-  if (!it->second.shared_storage_budget_metadata_) {
-    return nullptr;
-  }
-
-  return &it->second.shared_storage_budget_metadata_->value_;
-}
-
 bool FencedFrameURLMapping::IsMapped(const GURL& urn_uuid) const {
   return urn_uuid_to_url_map_.contains(urn_uuid);
 }
 
-bool FencedFrameURLMapping::IsPendingMapped(const GURL& urn_uuid) const {
-  return pending_urn_uuid_to_url_map_.contains(urn_uuid);
-}
-
 bool FencedFrameURLMapping::IsFull() const {
-  return urn_uuid_to_url_map_.size() + pending_urn_uuid_to_url_map_.size() >=
-         kMaxUrnMappingSize;
+  return urn_uuid_to_url_map_.size() >= kMaxUrnMappingSize;
 }
 
 }  // namespace content

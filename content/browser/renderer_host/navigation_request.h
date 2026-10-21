@@ -1251,10 +1251,6 @@ class CONTENT_EXPORT NavigationRequest
       std::string message,
       std::optional<url::Origin> required_origin = std::nullopt);
 
-  bool is_deferred_on_fenced_frame_url_mapping_for_testing() const {
-    return is_deferred_on_fenced_frame_url_mapping_;
-  }
-
   base::WeakPtr<NavigationRequest> GetWeakPtr();
 
   bool is_running_potential_prerender_activation_checks() const {
@@ -3509,15 +3505,6 @@ class CONTENT_EXPORT NavigationRequest
   // prerender_frame_tree_node_id() is not available yet while they are
   // running.
   bool is_running_potential_prerender_activation_checks_ = false;
-
-  // Set to true before the fenced frame url mapping. Reset to false when the
-  // mapping finishes. If the initial mapping state of the urn:uuid is pending,
-  // the mapping will finish asynchronously; otherwise, the mapping will finish
-  // synchronously.
-  bool is_deferred_on_fenced_frame_url_mapping_ = false;
-
-  // The start time of fenced frame url mapping.
-  base::TimeTicks fenced_frame_url_mapping_start_time_;
 
   // The id of the prerendered page. This will be a valid PrerenderHostId value
   // when this navigation will activate a prerendered page. For all other
