@@ -7,8 +7,8 @@
 #include <map>
 
 #include "ash/constants/ash_login_pref_names.h"
-#include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -166,31 +166,12 @@ std::string GetMetricsClientID(PrefService& local_state,
 
 OobeMetricsHelper::OobeMetricsHelper(PrefService* local_state,
                                      metrics::MetricsService* metrics_service)
-    : local_state_getter_(base::BindRepeating(
-          [](PrefService* local_state) { return local_state; },
-          local_state)),
-      metrics_service_getter_(base::BindRepeating(
-          [](metrics::MetricsService* metrics_service) {
-            return metrics_service;
-          },
-          metrics_service)) {
-  CHECK(local_state);
+    : local_state_(CHECK_DEREF(local_state)),
+      metrics_service_(metrics_service) {
+  if (!metrics_service_) {
+    CHECK_IS_TEST();
+  }
 
-  Initialize();
-}
-
-OobeMetricsHelper::OobeMetricsHelper(
-    base::PassKey<LoginDisplayHostCommon>,
-    LocalStateGetterCallback local_state_getter,
-    MetricsServiceGetterCallback metrics_service_getter)
-    : local_state_getter_(std::move(local_state_getter)),
-      metrics_service_getter_(std::move(metrics_service_getter)) {
-  Initialize();
-}
-
-OobeMetricsHelper::~OobeMetricsHelper() = default;
-
-void OobeMetricsHelper::Initialize() {
   if (StatsReportingController::IsInitialized()) {
     stats_reporting_subscription_ =
         StatsReportingController::Get()->AddObserver(base::BindRepeating(
@@ -198,6 +179,8 @@ void OobeMetricsHelper::Initialize() {
             base::Unretained(this)));
   }
 }
+
+OobeMetricsHelper::~OobeMetricsHelper() = default;
 
 void OobeMetricsHelper::RecordScreenShownStatus(OobeScreenId screen,
                                                 ScreenShownStatus status) {
@@ -224,8 +207,7 @@ void OobeMetricsHelper::RecordUpdatedStepShownStatus(OobeScreenId screen,
   std::string screen_name = GetCaptializedScreenName(screen);
   std::string histogram_name = kUmaScreenShownStatusName2 + screen_name;
   if (!IsOobeOnlyScreen(screen)) {
-    histogram_name +=
-        "." + GetOnboardingTypeSuffix(CHECK_DEREF(local_state_getter_.Run()));
+    histogram_name += "." + GetOnboardingTypeSuffix(local_state_.get());
   }
   base::UmaHistogramEnumeration(histogram_name, status);
 }
@@ -264,8 +246,7 @@ void OobeMetricsHelper::RecordUpdatedStepCompletionTime(
   std::string screen_name = GetCaptializedScreenName(screen);
   std::string histogram_name = kUmaScreenCompletionTimeName2 + screen_name;
   if (!IsOobeOnlyScreen(screen)) {
-    histogram_name +=
-        "." + GetOnboardingTypeSuffix(CHECK_DEREF(local_state_getter_.Run()));
+    histogram_name += "." + GetOnboardingTypeSuffix(local_state_.get());
   }
   base::UmaHistogramCustomTimes(histogram_name, step_time,
                                 base::Milliseconds(10), base::Minutes(10), 100);
@@ -280,19 +261,17 @@ void OobeMetricsHelper::RecordPreLoginOobeFirstStart() {
   // Record `False` to report the `Started` bucket.
   base::UmaHistogramBoolean(kUmaOobeFlowStatus, false);
 
-  PrefService& local_state = CHECK_DEREF(local_state_getter_.Run());
-  metrics::MetricsService* metrics_service = metrics_service_getter_.Run();
-
   // Store the metrics client ID to be later compared to the metrics
   // client ID at the end of OOBE.
-  local_state.SetString(prefs::kOobeMetricsClientIdAtOobeStart,
-                        GetMetricsClientID(local_state, metrics_service));
+  local_state_->SetString(
+      prefs::kOobeMetricsClientIdAtOobeStart,
+      GetMetricsClientID(local_state_.get(), metrics_service_.get()));
 
   // With pre-consent metrics feature, the consent status before first user sign
   // in is set to true. OobeMetricsHelper needs to record the consent status
   // when OOBE first starts.
   if (StatsReportingController::Get()->IsEnabled()) {
-    local_state.SetBoolean(prefs::kOobeMetricsReportedAsEnabled, true);
+    local_state_->SetBoolean(prefs::kOobeMetricsReportedAsEnabled, true);
   }
 }
 
@@ -341,8 +320,7 @@ void OobeMetricsHelper::RecordOnboardingStart(base::Time oobe_start_time) {
 
   // Record `False` to report the `Started` bucket.
   base::UmaHistogramBoolean(
-      kUmaOnboardingFlowStatus +
-          GetOnboardingTypeSuffix(CHECK_DEREF(local_state_getter_.Run())),
+      kUmaOnboardingFlowStatus + GetOnboardingTypeSuffix(local_state_.get()),
       false);
 }
 
@@ -353,9 +331,6 @@ void OobeMetricsHelper::RecordOnboadingComplete(
     observer.OnOnboardingCompleted();
   }
 
-  PrefService& local_state = CHECK_DEREF(local_state_getter_.Run());
-  metrics::MetricsService* metrics_service = metrics_service_getter_.Run();
-
   if (!oobe_start_time.is_null()) {
     // Record `True` to report the `Completed` bucket.
     base::UmaHistogramBoolean(kUmaOobeFlowStatus, true);
@@ -364,14 +339,15 @@ void OobeMetricsHelper::RecordOnboadingComplete(
 
     // Record `Metrics Client ID Reset` histograms.
     std::string initial_id =
-        local_state.GetString(prefs::kOobeMetricsClientIdAtOobeStart);
+        local_state_->GetString(prefs::kOobeMetricsClientIdAtOobeStart);
 
     if (initial_id.empty()) {
       base::UmaHistogramEnumeration(
           kUmaOobeMetricsClientIdReset2,
           OobeMetricsClientIdResetState::kInitialIDMissing);
     } else {
-      std::string current_id = GetMetricsClientID(local_state, metrics_service);
+      std::string current_id =
+          GetMetricsClientID(local_state_.get(), metrics_service_.get());
       if (current_id.empty()) {
         base::UmaHistogramEnumeration(
             kUmaOobeMetricsClientIdReset2,
@@ -395,15 +371,15 @@ void OobeMetricsHelper::RecordOnboadingComplete(
     // Record whether `StatsReportingController` reported a reset during OOBE.
     base::UmaHistogramBoolean(
         kUmaOobeStatsReportingControllerReportedReset,
-        local_state.GetBoolean(
+        local_state_->GetBoolean(
             prefs::kOobeStatsReportingControllerReportedReset));
 
-    local_state.ClearPref(prefs::kOobeMetricsReportedAsEnabled);
-    local_state.ClearPref(prefs::kOobeStatsReportingControllerReportedReset);
+    local_state_->ClearPref(prefs::kOobeMetricsReportedAsEnabled);
+    local_state_->ClearPref(prefs::kOobeStatsReportingControllerReportedReset);
   }
 
   if (!onboarding_start_time.is_null()) {
-    std::string type = GetOnboardingTypeSuffix(local_state);
+    std::string type = GetOnboardingTypeSuffix(local_state_.get());
 
     // Record `True` to report the `Completed` bucket.
     base::UmaHistogramBoolean(kUmaOnboardingFlowStatus + type, true);
@@ -452,8 +428,7 @@ void OobeMetricsHelper::RecordChoobeResume() {
 }
 
 void OobeMetricsHelper::RecordEnrollingUserType() {
-  PrefService& local_state = CHECK_DEREF(local_state_getter_.Run());
-  bool is_consumer = local_state.GetBoolean(prefs::kOobeIsConsumerSegment);
+  bool is_consumer = local_state_->GetBoolean(prefs::kOobeIsConsumerSegment);
   base::UmaHistogramBoolean("OOBE.Enrollment.IsUserEnrollingAConsumer",
                             is_consumer);
 }
@@ -470,25 +445,23 @@ void OobeMetricsHelper::RecordChromeVersion() {
 }
 
 void OobeMetricsHelper::OnStatsReportingSettingUpdated() {
-  PrefService& local_state = CHECK_DEREF(local_state_getter_.Run());
-
   // Return if the method was called outside of OOBE or the first onboarding
   // experience.
-  if (local_state.GetTime(prefs::kOobeStartTime).is_null()) {
+  if (local_state_->GetTime(prefs::kOobeStartTime).is_null()) {
     return;
   }
 
   bool enabled = StatsReportingController::Get()->IsEnabled();
   if (enabled) {
-    local_state.SetBoolean(prefs::kOobeMetricsReportedAsEnabled, true);
-  } else if (local_state.GetBoolean(prefs::kOobeMetricsReportedAsEnabled)) {
+    local_state_->SetBoolean(prefs::kOobeMetricsReportedAsEnabled, true);
+  } else if (local_state_->GetBoolean(prefs::kOobeMetricsReportedAsEnabled)) {
     base::debug::DumpWithoutCrashing();
 
     // It's possible that the `dump` will never be uploaded due to the client
     // ID reset, therefore, store that metrics was reset in OOBE to report it
     // at at later time.
-    local_state.SetBoolean(prefs::kOobeStatsReportingControllerReportedReset,
-                           true);
+    local_state_->SetBoolean(prefs::kOobeStatsReportingControllerReportedReset,
+                             true);
   }
 }
 

@@ -7,10 +7,11 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "base/types/pass_key.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -22,8 +23,6 @@ class MetricsService;
 }
 
 namespace ash {
-
-class LoginDisplayHostCommon;
 
 // Handles metrics for OOBE.
 class OobeMetricsHelper {
@@ -100,20 +99,11 @@ class OobeMetricsHelper {
     virtual void OnChoobeResumed() {}
   };
 
-  // For common use.
-  //
-  // `local_state` instance must be non-null and must outlive |this|.
-  // `metrics_service` instance can be null in tests.
+  // `local_state` must not be null and must outlive `this`.
+  // `metrics_service` may be null in tests, and must outlive `this` if
+  // non-null.
   OobeMetricsHelper(PrefService* local_state,
                     ::metrics::MetricsService* metrics_service);
-
-  // Workaround of the timing issue for short term.
-  using LocalStateGetterCallback = base::RepeatingCallback<PrefService*()>;
-  using MetricsServiceGetterCallback =
-      base::RepeatingCallback<::metrics::MetricsService*()>;
-  OobeMetricsHelper(base::PassKey<LoginDisplayHostCommon>,
-                    LocalStateGetterCallback local_state_getter,
-                    MetricsServiceGetterCallback metrics_service_callback);
 
   ~OobeMetricsHelper();
   OobeMetricsHelper(const OobeMetricsHelper& other) = delete;
@@ -178,8 +168,6 @@ class OobeMetricsHelper {
   void RemoveObserver(Observer* observer);
 
  private:
-  void Initialize();
-
   void RecordUpdatedStepShownStatus(OobeScreenId screen,
                                     ScreenShownStatus status);
   void RecordUpdatedStepCompletionTime(OobeScreenId screen,
@@ -191,15 +179,15 @@ class OobeMetricsHelper {
   // `true` then `false` during OOBE.
   void OnStatsReportingSettingUpdated();
 
+  const raw_ref<PrefService> local_state_;
+  const raw_ptr<::metrics::MetricsService> metrics_service_;
+
   // Maps screen names to last time of their shows.
   std::map<OobeScreenId, base::TimeTicks> screen_show_times_;
 
   base::CallbackListSubscription stats_reporting_subscription_;
 
   base::ObserverList<Observer> observers_;
-
-  LocalStateGetterCallback local_state_getter_;
-  MetricsServiceGetterCallback metrics_service_getter_;
 };
 
 }  // namespace ash
