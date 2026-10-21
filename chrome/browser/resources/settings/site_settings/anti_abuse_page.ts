@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
 
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -34,6 +35,8 @@ export interface SettingsAntiAbusePageElement {
 
 export type AntiAbusePageElement = SettingsAntiAbusePageElement;
 
+const ANTI_ABUSE_PREF_KEY = 'synthetic.settings.site_settings.anti_abuse';
+
 const AntiAbuseElementBase = SettingsViewMixinLit(
     SiteSettingsMixinLit(WebUiListenerMixinLit(CrLitElement)));
 
@@ -51,27 +54,6 @@ export class SettingsAntiAbusePageElement extends AntiAbuseElementBase {
 
   override render() {
     return getHtml.bind(this)();
-  }
-
-  static override get properties() {
-    return {
-      /**
-       * Preference object used to keep track of the selected content setting
-       * option.
-       */
-      pref_: {type: Object},
-    };
-  }
-
-  protected accessor pref_: chrome.settingsPrivate.PrefObject<boolean> = {
-    key: '',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: false,
-  };
-
-  protected getToggleDisabled_(): boolean {
-    return this.pref_.enforcement ===
-        chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 
   override connectedCallback() {
@@ -93,11 +75,14 @@ export class SettingsAntiAbusePageElement extends AntiAbuseElementBase {
   }
 
   private async updateToggleValue_() {
-    const defaultValue = await this.browserProxy.getDefaultValueForContentType(
-        ContentSettingsTypes.ANTI_ABUSE);
+    const [defaultValue] = await Promise.all([
+      this.browserProxy.getDefaultValueForContentType(
+          ContentSettingsTypes.ANTI_ABUSE),
+      PrefService.getInstance().whenInitialized(),
+    ]);
 
     const pref: chrome.settingsPrivate.PrefObject<boolean> = {
-      key: '',
+      key: ANTI_ABUSE_PREF_KEY,
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: isSettingEnabled(defaultValue.setting),
     };
@@ -122,7 +107,7 @@ export class SettingsAntiAbusePageElement extends AntiAbuseElementBase {
       pref.controlledBy = controlledBy;
     }
 
-    this.pref_ = pref;
+    PrefService.getInstance().setSyntheticPref(pref);
   }
 
   /**

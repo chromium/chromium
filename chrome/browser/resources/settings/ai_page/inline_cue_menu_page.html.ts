@@ -29,7 +29,9 @@ export function getHtml(this: SettingsInlineCueMenuPageElement) {
         aria-hidden="true">
     </cr-icon>
   </div>
-  <settings-toggle-button id="mainToggle" .pref="${this.pref_}" no-set-pref
+  <settings-toggle-button id="mainToggle"
+      pref-key="synthetic.settings.contextual_cueing.inline_cue_menu.enabled"
+      no-set-pref
       label="$i18n{siteSettingsInlineCueMenuToggleLabel}"
       sub-label="$i18n{siteSettingsInlineCueMenuToggleSublabel}"
       @settings-boolean-control-change="${

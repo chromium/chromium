@@ -17,8 +17,8 @@
       id="blockAutoplaySetting"
       class="hr"
       label="$i18n{siteSettingsBlockAutoplaySetting}"
-      pref="{{blockAutoplayStatus_.pref}}"
-      disabled="[[!blockAutoplayStatus_.enabled]]"
+      pref-key="synthetic.settings.site_settings.block_autoplay"
+      disabled="[[!blockAutoplayEnabled_]]"
       hidden="[[!enableBlockAutoplayContentSetting_]]"
       on-settings-boolean-control-change="onBlockAutoplayToggleChange_"
       no-set-pref>

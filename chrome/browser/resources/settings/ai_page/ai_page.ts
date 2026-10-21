@@ -33,6 +33,8 @@ import {FeatureOptInState, SettingsAiPageFeaturePrefName} from './constants.js';
 // <if expr="_google_chrome">
 import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from './on_device_ai_browser_proxy.js';
 import {OnDeviceAiBrowserProxyImpl} from './on_device_ai_browser_proxy.js';
+
+const ON_DEVICE_AI_PREF_KEY = 'synthetic.settings.on_device_ai_enabled';
 // </if>
 
 const SettingsAiPageElementBase = WebUiListenerMixinLit(
@@ -63,9 +65,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       showGoogleSearchAiModeWorkspaceControl_: {type: Boolean},
       showDictationControl_: {type: Boolean},
       historySearchPref_: {type: Object},
-      // <if expr="_google_chrome">
-      onDeviceAiPref_: {type: Object},
-      // </if>
     };
   }
 
@@ -89,14 +88,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       loadTimeData.getBoolean('showGoogleSearchAiModeWorkspaceControl');
   protected accessor showDictationControl_: boolean =
       loadTimeData.getBoolean('showDictationControl');
-  // <if expr="_google_chrome">
-  protected accessor onDeviceAiPref_:
-      chrome.settingsPrivate.PrefObject<boolean> = {
-    key: 'settings.on_device_ai_enabled',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: true,
-  };
-  // </if>
 
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -115,7 +106,12 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     const setOnDeviceAiPref = (onDeviceAiEnabled: OnDeviceAiEnabled) =>
         this.setOnDeviceAiPref_(onDeviceAiEnabled);
     this.addWebUiListener('on-device-ai-enabled-changed', setOnDeviceAiPref);
-    this.onDeviceAiBrowserProxy_.getOnDeviceAiEnabled().then(setOnDeviceAiPref);
+    Promise
+        .all([
+          this.onDeviceAiBrowserProxy_.getOnDeviceAiEnabled(),
+          PrefService.getInstance().whenInitialized(),
+        ])
+        .then(([onDeviceAiEnabled]) => setOnDeviceAiPref(onDeviceAiEnabled));
     // </if>
   }
 
@@ -290,7 +286,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
   private setOnDeviceAiPref_(onDeviceAiEnabled: OnDeviceAiEnabled) {
     const pref: chrome.settingsPrivate.PrefObject<boolean> = {
-      key: 'settings.on_device_ai_enabled',
+      key: ON_DEVICE_AI_PREF_KEY,
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: onDeviceAiEnabled.enabled,
     };
@@ -301,7 +297,7 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
       pref.value = false;
     }
 
-    this.onDeviceAiPref_ = pref;
+    PrefService.getInstance().setSyntheticPref(pref);
   }
   // </if>
 

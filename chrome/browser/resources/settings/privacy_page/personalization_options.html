@@ -132,7 +132,7 @@ import {RestartType} from '../relaunch_mixin_lit.js';
         it is alays selected but disabled. -->
     ${this.showSearchAggregatorSuggest_ ? html`
       <settings-toggle-button id="searchAggregatorSuggestToggle"
-          .pref="${this.searchAggregatorSuggestFakePref_}"
+          pref-key="synthetic.settings.search_aggregator_suggest"
           disabled
           class="hr"
           label="$i18n{searchAggregatorSuggestPref}"

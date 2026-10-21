@@ -9,6 +9,7 @@ import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -25,6 +26,9 @@ interface BlockAutoplayStatus {
   enabled: boolean;
   pref: chrome.settingsPrivate.PrefObject<boolean>;
 }
+
+const BLOCK_AUTOPLAY_PREF_KEY =
+    'synthetic.settings.site_settings.block_autoplay';
 
 const SoundPageElementBase =
     SettingsViewMixin(WebUiListenerMixin(PolymerElement));
@@ -48,11 +52,9 @@ export class SoundPageElement extends SoundPageElementBase {
         value: ContentSettingsTypes,
       },
 
-      blockAutoplayStatus_: {
-        type: Object,
-        value() {
-          return {};
-        },
+      blockAutoplayEnabled_: {
+        type: Boolean,
+        value: false,
       },
 
       enableBlockAutoplayContentSetting_: {
@@ -65,7 +67,7 @@ export class SoundPageElement extends SoundPageElementBase {
   }
 
   declare searchTerm: string;
-  declare private blockAutoplayStatus_: BlockAutoplayStatus;
+  declare private blockAutoplayEnabled_: boolean;
   declare private enableBlockAutoplayContentSetting_: boolean;
 
   private browserProxy_: SiteSettingsBrowserProxy =
@@ -74,25 +76,20 @@ export class SoundPageElement extends SoundPageElementBase {
   override ready() {
     super.ready();
 
-    this.onBlockAutoplayStatusChanged_({
-      pref: {
-        key: '',
-        type: chrome.settingsPrivate.PrefType.BOOLEAN,
-        value: false,
-      },
-      enabled: false,
-    });
-
     this.addWebUiListener(
         'onBlockAutoplayStatusChanged',
         (status: BlockAutoplayStatus) =>
             this.onBlockAutoplayStatusChanged_(status));
   }
 
-
   // Called when the block autoplay status changes.
   private onBlockAutoplayStatusChanged_(autoplayStatus: BlockAutoplayStatus) {
-    this.blockAutoplayStatus_ = autoplayStatus;
+    this.blockAutoplayEnabled_ = autoplayStatus.enabled;
+    PrefService.getInstance().setSyntheticPref({
+      ...autoplayStatus.pref,
+      key: BLOCK_AUTOPLAY_PREF_KEY,
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    });
   }
 
   // Updates the block autoplay pref when the toggle is changed.

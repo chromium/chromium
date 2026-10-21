@@ -106,8 +106,6 @@ export class SettingsPersonalizationOptionsElement extends
 
       showSearchAggregatorSuggest_: {type: Boolean},
 
-      searchAggregatorSuggestFakePref_: {type: Object},
-
       showSignoutDialog_: {type: Boolean},
 
       shouldUseMetricsConsentRestructure_: {type: Boolean},
@@ -133,14 +131,6 @@ export class SettingsPersonalizationOptionsElement extends
 
   protected accessor showSearchAggregatorSuggest_: boolean =
       loadTimeData.getBoolean('showSearchAggregatorSuggest');
-  protected accessor searchAggregatorSuggestFakePref_:
-      chrome.settingsPrivate.PrefObject<boolean> = {
-    key: 'enterprise_search_aggregator_settings.fake_pref',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: true,
-    enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-    controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
-  };
 
   protected accessor showSignoutDialog_: boolean = false;
   protected accessor syncFirstSetupInProgress_: boolean = false;

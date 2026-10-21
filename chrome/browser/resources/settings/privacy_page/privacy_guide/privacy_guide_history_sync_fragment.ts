@@ -14,6 +14,7 @@ import '../../icons.html.js';
 
 import type {SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {SignedInState, SyncBrowserProxyImpl, syncPrefsIndividualDataTypes} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -34,6 +35,9 @@ export interface PrivacyGuideHistorySyncFragmentElement {
     historyToggle: SettingsToggleButtonElement,
   };
 }
+
+const HISTORY_SYNC_VIRTUAL_PREF_KEY =
+    'synthetic.settings.privacy_guide.history_sync';
 
 const PrivacyGuideHistorySyncFragmentElementBase =
     RouteObserverMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
@@ -56,9 +60,6 @@ export class PrivacyGuideHistorySyncFragmentElement extends
 
   static override get properties() {
     return {
-      /** Virtual pref to drive the settings-toggle from syncPrefs. */
-      historySyncVirtualPref_: {type: Object},
-
       syncStatus_: {type: Object},
     };
   }
@@ -71,12 +72,6 @@ export class PrivacyGuideHistorySyncFragmentElement extends
    * set with the next sync prefs update.
    */
   private syncAllCache_: boolean|null = null;
-  protected accessor historySyncVirtualPref_:
-      chrome.settingsPrivate.PrefObject<boolean> = {
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: false,
-    key: '',
-  };
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private startStateHistorySyncOn_: boolean;
@@ -97,8 +92,12 @@ export class PrivacyGuideHistorySyncFragmentElement extends
     this.addWebUiListener(
         'sync-status-changed',
         (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
-    this.syncBrowserProxy_.getSyncStatus().then(
-        (syncStatus: SyncStatus) => this.onSyncStatusChanged_(syncStatus));
+    Promise
+        .all([
+          this.syncBrowserProxy_.getSyncStatus(),
+          PrefService.getInstance().whenInitialized(),
+        ])
+        .then(([syncStatus]) => this.onSyncStatusChanged_(syncStatus));
     this.addWebUiListener(
         'sync-prefs-changed',
         (syncPrefs: SyncPrefs) => this.onSyncPrefsChange_(syncPrefs));
@@ -176,23 +175,17 @@ export class PrivacyGuideHistorySyncFragmentElement extends
     } else {
       val = this.syncPrefs_.syncAllDataTypes || this.syncPrefs_.typedUrlsSynced;
     }
-    this.historySyncVirtualPref_ = {
-      ...this.historySyncVirtualPref_,
-      value: val,
-    };
+    PrefService.getInstance().setPrefValue(HISTORY_SYNC_VIRTUAL_PREF_KEY, val);
   }
 
   protected onToggleChange_() {
-    this.historySyncVirtualPref_ = {
-      ...this.historySyncVirtualPref_,
-      value: this.$.historyToggle.checked,
-    };
+    const checked = this.$.historyToggle.checked;
     if (!this.syncStatus_ ||
         this.syncStatus_.signedInState === SignedInState.SIGNED_IN) {
-      this.syncPrefs_.tabsSynced = this.historySyncVirtualPref_.value;
-      this.syncPrefs_.savedTabGroupsSynced = this.historySyncVirtualPref_.value;
+      this.syncPrefs_.tabsSynced = checked;
+      this.syncPrefs_.savedTabGroupsSynced = checked;
     }
-    this.syncPrefs_.typedUrlsSynced = this.historySyncVirtualPref_.value;
+    this.syncPrefs_.typedUrlsSynced = checked;
     this.syncPrefs_.syncAllDataTypes = this.shouldSyncAllBeOn_();
     this.syncBrowserProxy_.setSyncDatatypes(this.syncPrefs_);
     if (this.syncPrefs_.typedUrlsSynced) {

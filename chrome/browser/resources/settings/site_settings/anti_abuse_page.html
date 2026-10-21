@@ -2,11 +2,10 @@
     route-path="${this.routePath}">
   <settings-toggle-button
       id="toggleButton"
-      .pref="${this.pref_}"
+      pref-key="synthetic.settings.site_settings.anti_abuse"
       no-set-pref
       label="$i18n{siteSettingsAntiAbuse}"
       sub-label="$i18n{siteSettingsAntiAbuseDescription}"
-      ?disabled="${this.getToggleDisabled_()}"
       @settings-boolean-control-change="${this.onSettingsBooleanControlChange_}">
   </settings-toggle-button>
   <div class="settings-columned-section">

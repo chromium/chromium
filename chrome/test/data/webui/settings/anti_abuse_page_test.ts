@@ -7,9 +7,11 @@ import 'chrome://settings/lazy_load.js';
 
 import type {SettingsAntiAbusePageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, DefaultSettingSource, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 import {assertEquals, assertNotEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import type {SiteSettingsPref} from './test_util.js';
 import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs} from './test_util.js';
@@ -28,7 +30,12 @@ suite('SettingsAntiAbusePage', function() {
   let browserProxy: TestSiteSettingsBrowserProxy;
 
   // Initialize a settings-anti-abuse-page before each test.
-  setup(function() {
+  setup(async function() {
+    const prefsBrowserProxy = new TestPrefsBrowserProxy([]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
     browserProxy = new TestSiteSettingsBrowserProxy();
     SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -68,7 +75,7 @@ suite('SettingsAntiAbusePage', function() {
     let categoryEnabled = toggleElement.checked;
     assertEquals(category, ContentSettingsTypes.ANTI_ABUSE);
     assertEquals(expectedEnabled, categoryEnabled);
-    assertFalse(toggleElement.disabled);
+    assertFalse(toggleElement.controlDisabled());
 
 
     // Click the toggle and verify that the preference value is
@@ -123,7 +130,7 @@ suite('SettingsAntiAbusePage', function() {
     await browserProxy.whenCalled('getDefaultValueForContentType');
     await microtasksFinished();
     assertFalse(toggleElement.checked);
-    assertTrue(toggleElement.disabled);
+    assertTrue(toggleElement.controlDisabled());
 
     // Stop enforcement.
     const enabledPref = createAntiAbusePref(ContentSetting.ALLOW);
@@ -132,6 +139,6 @@ suite('SettingsAntiAbusePage', function() {
 
     await microtasksFinished();
     assertTrue(toggleElement.checked);
-    assertFalse(toggleElement.disabled);
+    assertFalse(toggleElement.controlDisabled());
   });
 });

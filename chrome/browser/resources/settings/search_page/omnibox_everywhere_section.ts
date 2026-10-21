@@ -39,6 +39,9 @@ export interface SettingsOmniboxEverywhereSectionElement {
   };
 }
 
+const SYNTHETIC_SHOW_SHORTCUTS_PREF_KEY =
+    'synthetic.settings.omnibox_everywhere.show_shortcuts';
+
 const SettingsOmniboxEverywhereSectionElementBase =
     PrefServiceObserverMixinLit(I18nMixinLit(CrLitElement));
 
@@ -60,20 +63,11 @@ export class SettingsOmniboxEverywhereSectionElement extends
     return {
       registeredShortcut_: {type: String},
       isEnabled_: {type: Boolean},
-      isShortcutsShowing_: {type: Boolean},
-      syntheticShowShortcutsPref_: {type: Object},
     };
   }
 
   protected accessor registeredShortcut_: string = '';
   protected accessor isEnabled_: boolean = false;
-  protected accessor isShortcutsShowing_: boolean = false;
-  protected accessor syntheticShowShortcutsPref_:
-      chrome.settingsPrivate.PrefObject<boolean> = {
-    key: 'omnibox_everywhere.show_shortcuts',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: false,
-  };
   private showShortcutsPrefValue_: number = ShowShortcutsPrefValue.UNSET;
   private ntpShortcutsVisible_: boolean = true;
   private browserProxy_: OmniboxEverywhereBrowserProxy =
@@ -107,19 +101,20 @@ export class SettingsOmniboxEverywhereSectionElement extends
   }
 
   private updateShortcutsShowing_() {
-    if (this.showShortcutsPrefValue_ === ShowShortcutsPrefValue.ENABLED) {
-      this.isShortcutsShowing_ = true;
-    } else if (
-        this.showShortcutsPrefValue_ === ShowShortcutsPrefValue.DISABLED) {
-      this.isShortcutsShowing_ = false;
-    } else {
-      this.isShortcutsShowing_ = this.ntpShortcutsVisible_;
+    let isShortcutsShowing: boolean;
+    switch (this.showShortcutsPrefValue_) {
+      case ShowShortcutsPrefValue.ENABLED:
+        isShortcutsShowing = true;
+        break;
+      case ShowShortcutsPrefValue.DISABLED:
+        isShortcutsShowing = false;
+        break;
+      default:
+        isShortcutsShowing = this.ntpShortcutsVisible_;
+        break;
     }
-    this.syntheticShowShortcutsPref_ = {
-      key: 'omnibox_everywhere.show_shortcuts',
-      type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: this.isShortcutsShowing_,
-    };
+    PrefService.getInstance().setPrefValue(
+        SYNTHETIC_SHOW_SHORTCUTS_PREF_KEY, isShortcutsShowing);
   }
 
   protected async onMainToggleChange_(event: Event) {

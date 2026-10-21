@@ -102,6 +102,70 @@ function getSyntheticPrefs(): chrome.settingsPrivate.PrefObject[] {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,
     },
+    {
+      key: 'synthetic.settings.contextual_cueing.inline_cue_menu.enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.dns_over_https.secure_dns_toggle',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.glic.experimental_triggering_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'synthetic.settings.glic.fake_pref',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.glic.web_actuation_disabled_for_enterprise',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+    },
+    {
+      key: 'synthetic.settings.glic.web_actuation_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.omnibox_everywhere.show_shortcuts',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.on_device_ai_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'synthetic.settings.privacy_guide.history_sync',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.search_aggregator_suggest',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+    },
+    {
+      key: 'synthetic.settings.site_settings.anti_abuse',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.site_settings.block_autoplay',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
   ];
 }
 

@@ -5,7 +5,7 @@ import {SecureDnsResolverType} from './secure_dns.js';
     <settings-toggle-button
         id="secureDnsToggle"
         class="hr"
-        .pref="${this.secureDnsToggle_}"
+        pref-key="synthetic.settings.dns_over_https.secure_dns_toggle"
         label="$i18n{secureDns}"
         sub-label="${this.secureDnsDescription_}"
         @change="${this.onToggleChange_}">

@@ -87,11 +87,12 @@ export function getHtml(this: SettingsAiPageElement) {
       show-send-feedback-button
       @send-feedback="${this.onOnDeviceAiSendFeedback_}">
     <settings-toggle-button id="onDeviceAiToggle" class="hr"
-        .pref="${this.onDeviceAiPref_}"
+        pref-key="synthetic.settings.on_device_ai_enabled"
         label="$i18n{onDeviceAiEnabledLabel}"
         sub-label-with-link="$i18n{onDeviceAiEnabledSubLabel}"
         @sub-label-link-clicked="${this.onOnDeviceAiSubLabelLinkClicked_}"
-        @settings-boolean-control-change="${this.onOnDeviceAiSettingsBooleanControlChange_}">
+        @settings-boolean-control-change="${
+            this.onOnDeviceAiSettingsBooleanControlChange_}">
     </settings-toggle-button>
   </settings-section>
 </if>

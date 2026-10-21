@@ -13,6 +13,7 @@ import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_subpage.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -31,6 +32,9 @@ export interface SettingsInlineCueMenuPageElement {
     mainToggle: SettingsToggleButtonElement,
   };
 }
+
+const INLINE_CUE_MENU_PREF_KEY =
+    'synthetic.settings.contextual_cueing.inline_cue_menu.enabled';
 
 const SettingsInlineCueMenuPageElementBase =
     SettingsViewMixinLit(WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
@@ -51,17 +55,11 @@ export class SettingsInlineCueMenuPageElement extends
 
   static override get properties() {
     return {
-      pref_: {type: Object},
       sites_: {type: Array},
       showAddSiteDialog_: {type: Boolean},
     };
   }
 
-  protected accessor pref_: chrome.settingsPrivate.PrefObject<boolean> = {
-    key: '',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: false,
-  };
   protected accessor sites_: RawSiteException[] = [];
   protected accessor showAddSiteDialog_: boolean = false;
 
@@ -127,16 +125,19 @@ export class SettingsInlineCueMenuPageElement extends
   }
 
   private async updateToggleValue_() {
-    const defaultValue = await this.browserProxy_.getDefaultValueForContentType(
-        ContentSettingsTypes.INLINE_CUE_MENU);
+    const [defaultValue] = await Promise.all([
+      this.browserProxy_.getDefaultValueForContentType(
+          ContentSettingsTypes.INLINE_CUE_MENU),
+      PrefService.getInstance().whenInitialized(),
+    ]);
 
     const pref: chrome.settingsPrivate.PrefObject<boolean> = {
-      key: '',
+      key: INLINE_CUE_MENU_PREF_KEY,
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: isSettingEnabled(defaultValue.setting),
     };
 
-    // Update pref_ policy enforcement properties to match standard
+    // Update pref policy enforcement properties to match standard
     // ContentSettings category controls (see
     // settings_category_default_radio_group.ts).
     if (defaultValue.source !== undefined &&
@@ -159,7 +160,7 @@ export class SettingsInlineCueMenuPageElement extends
       pref.controlledBy = controlledBy;
     }
 
-    this.pref_ = pref;
+    PrefService.getInstance().setSyntheticPref(pref);
   }
 
   protected onMainToggleSettingsBooleanControlChange_() {

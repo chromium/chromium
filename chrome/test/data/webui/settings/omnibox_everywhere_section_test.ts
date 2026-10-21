@@ -85,7 +85,8 @@ suite('OmniboxEverywhereSectionTest', function() {
         0,
         prefService.getPref<number>('omnibox_everywhere.show_shortcuts').value);
     assertEquals(
-        'omnibox_everywhere.show_shortcuts', showShortcutsToggle.pref!.key);
+        'synthetic.settings.omnibox_everywhere.show_shortcuts',
+        showShortcutsToggle.pref!.key);
     assertTrue(showShortcutsToggle.checked);
   });
 

@@ -23,7 +23,7 @@ export function getHtml(this: PrivacyGuideHistorySyncFragmentElement) {
 <div class="fragment-content">
   <div class="embedded-setting-wrapper">
     <settings-toggle-button id="historyToggle"
-        .pref="${this.historySyncVirtualPref_}"
+        pref-key="synthetic.settings.privacy_guide.history_sync"
         @change="${this.onToggleChange_}"
         label="${this.getHistorySyncToggleLabel_()}">
     </settings-toggle-button>

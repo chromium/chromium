@@ -19,6 +19,7 @@ import '../../controls/settings_toggle_button.js';
 import './secure_dns_input.js';
 
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import type {ResolverOption, SecureDnsSetting, SecurityPageBrowserProxy} from '/shared/settings/security_page/security_page_browser_proxy.js';
 import {SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from '/shared/settings/security_page/security_page_browser_proxy.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -44,8 +45,8 @@ export interface SettingsSecureDnsElement {
   };
 }
 
-const SettingsSecureDnsElementBase =
-    WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
+const SettingsSecureDnsElementBase = PrefServiceObserverMixinLit(
+    WebUiListenerMixinLit(I18nMixinLit(CrLitElement)));
 
 /**
  * Enum for the categories of options in the secure DNS resolver select
@@ -58,6 +59,9 @@ export enum SecureDnsResolverType {
 }
 
 export type SecureDnsElement = SettingsSecureDnsElement;
+
+const SECURE_DNS_TOGGLE_PREF_KEY =
+    'synthetic.settings.dns_over_https.secure_dns_toggle';
 
 export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   static get is() {
@@ -75,7 +79,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   static override get properties() {
     return {
       secureDnsDescription_: {type: String},
-      secureDnsToggle_: {type: Object},
       showSecureDnsOptions_: {type: Boolean},
       resolverOptions_: {type: Array},
       privacyPolicyString_: {type: String},
@@ -84,12 +87,6 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   }
 
   protected accessor secureDnsDescription_: string = '';
-  protected accessor secureDnsToggle_:
-      chrome.settingsPrivate.PrefObject<boolean> = {
-    key: '',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: false,
-  };
   protected accessor showSecureDnsOptions_: boolean = false;
   protected accessor resolverOptions_: ResolverOption[] = [];
   protected accessor privacyPolicyString_: TrustedHTML =
@@ -101,6 +98,12 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.addPrefObserver<boolean>(SECURE_DNS_TOGGLE_PREF_KEY, pref => {
+      this.showSecureDnsOptions_ =
+          pref.enforcement !== chrome.settingsPrivate.Enforcement.ENFORCED &&
+          pref.value;
+    });
 
     // Fetch the options for the dropdown menu before configuring the setting
     // to match the underlying host resolver configuration.
@@ -127,26 +130,21 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    * configuration.
    */
   private onSecureDnsPrefsChanged_(setting: SecureDnsSetting) {
+    let toggleValue = false;
     switch (setting.mode) {
       case SecureDnsMode.SECURE:
       case SecureDnsMode.AUTOMATIC:
-        this.secureDnsToggle_ = {
-          ...this.secureDnsToggle_,
-          value: true,
-        };
+        toggleValue = true;
         this.updateConfigRepresentation_(setting.mode, setting.config);
         break;
       case SecureDnsMode.OFF:
-        this.secureDnsToggle_ = {
-          ...this.secureDnsToggle_,
-          value: false,
-        };
+        toggleValue = false;
         break;
       default:
         assertNotReached('Received unknown secure DNS mode');
     }
 
-    this.updateManagementView_(setting);
+    this.updateManagementView_(setting, toggleValue);
   }
 
   /**
@@ -156,12 +154,8 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    */
   protected async onToggleChange_() {
     this.showSecureDnsOptions_ = this.$.secureDnsToggle.checked;
-    this.secureDnsToggle_ = {
-      ...this.secureDnsToggle_,
-      value: this.$.secureDnsToggle.checked,
-    };
 
-    if (!this.secureDnsToggle_.value) {
+    if (!this.$.secureDnsToggle.checked) {
       this.updateDnsPrefs_(SecureDnsMode.OFF);
       return;
     }
@@ -246,13 +240,14 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
    * Updates the setting to communicate the type of management, if any. The
    * setting is always collapsed if there is any management.
    */
-  private updateManagementView_(setting: SecureDnsSetting) {
+  private updateManagementView_(
+      setting: SecureDnsSetting, toggleValue: boolean) {
     // If the underlying secure DNS mode pref has an enforced value, communicate
     // that via the toggle pref.
     const pref: chrome.settingsPrivate.PrefObject<boolean> = {
-      key: '',
+      key: SECURE_DNS_TOGGLE_PREF_KEY,
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: this.secureDnsToggle_.value,
+      value: toggleValue,
     };
 
     // The message to be displayed when the device is managed. On Chrome OS, if
@@ -291,14 +286,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
               setting.managementMode);
       }
     }
-    this.secureDnsToggle_ = pref;
-
-    if (this.secureDnsToggle_.enforcement ===
-        chrome.settingsPrivate.Enforcement.ENFORCED) {
-      this.showSecureDnsOptions_ = false;
-    } else {
-      this.showSecureDnsOptions_ = this.secureDnsToggle_.value;
-    }
+    PrefService.getInstance().setSyntheticPref(pref);
   }
 
   /**

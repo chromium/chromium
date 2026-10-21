@@ -20,7 +20,8 @@ export function getHtml(this: SettingsGlicSubpageElement) {
     <h2 class="cr-title-text">$i18n{glicPreferencesSection}</h2>
     <!-- Glic Policy Disabled - show disabled controls -->
     ${this.disallowedByAdmin_ ? html`
-      <settings-toggle-button id="launcherToggle" .pref="${this.fakePref_}"
+      <settings-toggle-button id="launcherToggle"
+          pref-key="synthetic.settings.glic.fake_pref"
           disabled label="$i18n{glicOsWidgetToggle}">
       </settings-toggle-button>
     ` : html`
@@ -167,23 +168,27 @@ export function getHtml(this: SettingsGlicSubpageElement) {
     <!-- Glic Policy Disabled - show disabled controls -->
     ${this.disallowedByAdmin_ ? html`
       <settings-toggle-button
-          id="geolocationToggle" .pref="${this.fakePref_}" disabled
+          id="geolocationToggle"
+          pref-key="synthetic.settings.glic.fake_pref" disabled
           label="$i18n{glicLocationToggle}"
           sub-label="${this.getLocationSubLabel_()}">
       </settings-toggle-button>
       <settings-toggle-button class="hr"
-          id="microphoneToggle" .pref="${this.fakePref_}" disabled
+          id="microphoneToggle"
+          pref-key="synthetic.settings.glic.fake_pref" disabled
           label="$i18n{glicMicrophoneToggle}"
           sub-label="${this.getMicrophoneSubLabel_()}">
       </settings-toggle-button>
       <settings-toggle-button class="hr"
-          id="tabAccessToggle" .pref="${this.fakePref_}" disabled
+          id="tabAccessToggle"
+          pref-key="synthetic.settings.glic.fake_pref" disabled
           label="$i18n{glicTabAccessToggle}"
           sub-label="${this.getTabAccessSubLabel_()}"
           ?hidden="${this.showGlicDefaultTabContextSetting_}">
       </settings-toggle-button>
       <settings-toggle-button class="hr"
-          id="defaultTabAccessToggle" .pref="${this.fakePref_}" disabled
+          id="defaultTabAccessToggle"
+          pref-key="synthetic.settings.glic.fake_pref" disabled
           label="$i18n{glicDefaultTabAccessToggle}"
           sub-label-with-link="${this.getDefaultTabAccessSubLabel_()}"
           @sub-label-link-clicked="${
@@ -191,8 +196,8 @@ export function getHtml(this: SettingsGlicSubpageElement) {
           ?hidden="${!this.showGlicDefaultTabContextSetting_}">
       </settings-toggle-button>
       <settings-toggle-button class="hr"
-          id="keepSidepanelOpenOnNewTabsToggle" .pref="${this.fakePref_}"
-          disabled
+          id="keepSidepanelOpenOnNewTabsToggle"
+          pref-key="synthetic.settings.glic.fake_pref" disabled
           label="$i18n{glicKeepSidepanelOpenOnNewTabsToggle}"
           sub-label="$i18n{glicKeepSidepanelOpenOnNewTabsToggleSublabel}"
           ?hidden="${!this.showGlicKeepSidepanelOpenOnNewTabsSetting_}">
@@ -438,8 +443,8 @@ export function getHtml(this: SettingsGlicSubpageElement) {
     <!-- Glic Policy Disabled - show disabled controls -->
     ${this.disallowedByAdmin_ ? html`
       <settings-toggle-button
-          id="webActuationToggleDisabled" .pref="${this.fakePref_}"
-          disabled
+          id="webActuationToggleDisabled"
+          pref-key="synthetic.settings.glic.fake_pref" disabled
           label="$i18n{glicWebActuationToggle}"
           sub-label-with-link="${this.getWebActuationSubLabel_()}"
           @sub-label-link-clicked="${
@@ -450,8 +455,7 @@ export function getHtml(this: SettingsGlicSubpageElement) {
       ${!this.isWebActuationDisabledForEnterprise_ ? html`
         <settings-toggle-button
             id="webActuationToggle"
-            .pref="${this.webActuationEnabledPref_}"
-            no-set-pref
+            pref-key="synthetic.settings.glic.web_actuation_enabled"
             label="$i18n{glicWebActuationToggle}"
             sub-label-with-link="${this.getWebActuationSubLabel_()}"
             @sub-label-link-clicked="${
@@ -474,7 +478,7 @@ export function getHtml(this: SettingsGlicSubpageElement) {
       ` : html`
         <settings-toggle-button disabled
             id="webActuationToggle"
-            .pref="${this.webActuationDisabledForEnterprisePref_}"
+            pref-key="synthetic.settings.glic.web_actuation_disabled_for_enterprise"
             label="$i18n{glicWebActuationToggle}"
             sub-label-with-link="${this.getWebActuationSubLabel_()}"
             @sub-label-link-clicked="${
@@ -555,8 +559,7 @@ export function getHtml(this: SettingsGlicSubpageElement) {
             id="glicExperimentalTriggeringToggle"
             class="hr"
             ?disabled="${this.isExperimentalTriggeringDisabled_()}"
-            .pref="${this.experimentalTriggeringEnabledPref_}"
-            no-set-pref
+            pref-key="synthetic.settings.glic.experimental_triggering_enabled"
             label="$i18n{glicExperimentalTriggering}"
             sub-label-with-link="${
                 this.getExperimentalTriggeringSubLabel_()}"
