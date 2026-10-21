@@ -183,8 +183,14 @@ class InitialWebUIBrowserTestBase : public InProcessBrowserTest {
 
   explicit InitialWebUIBrowserTestBase(
       std::vector<base::test::FeatureRefAndParams> additional_features) {
+    // `kSpareRendererForSitePerProcess` is enabled by default in production,
+    // but disabled in `InProcessBrowserTest::Initialize()` when
+    // `!EXPENSIVE_TEST_LOGIC_IS_ON()` for test speed. Re-enable it here so
+    // InitialWebUI navigation and metrics tests run with standard spare
+    // renderer behavior.
     std::vector<base::test::FeatureRefAndParams> base_features = {
         {features::kInitialWebUI, {{"use_separate_process", "true"}}},
+        {features::kSpareRendererForSitePerProcess, {}},
         {features::kWebUIReloadButton, {}},
         {features::kSkipIPCChannelPausingForNonGuests, {}},
         {features::kWebUIInProcessResourceLoadingV2, {}}};
