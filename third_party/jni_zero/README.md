@@ -96,7 +96,7 @@ To associate a Java type with a C++ pointer type, extend `JniTypeToken`:
 
 ```java
 @JniType("::foo::MyClass")
-public interface NativeMyClass extends JniTypeToken {}
+interface NativeMyClass extends JniTypeToken {}
 ```
 
 | Ownership Model      | Java Type         | C++ Type                    | Description                                                                                                                                                                                                                                                             |
@@ -166,7 +166,7 @@ To add JNI to a class:
 ```java
 class MyClass {
   @JniType("::MyClass")
-  public interface NativeMyClass extends JniTypeToken {}
+  interface NativeMyClass extends JniTypeToken {}
 
   private JniUniquePtr<NativeMyClass> mNative;
   private long mLegacyNativePointer;

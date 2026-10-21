@@ -22,7 +22,7 @@ import org.chromium.content_public.browser.WebContents;
 @NullMarked
 public class CookieControlsBridge {
     @JniType("::content_settings::CookieControlsBridge")
-    public interface NativeCookieControlsBridge extends JniTypeToken {}
+    interface NativeCookieControlsBridge extends JniTypeToken {}
 
     private @Nullable JniUniquePtr<NativeCookieControlsBridge> mNativeCookieControlsBridge;
     private final CookieControlsObserver mObserver;

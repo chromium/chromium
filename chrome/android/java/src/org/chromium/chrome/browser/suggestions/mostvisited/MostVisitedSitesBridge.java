@@ -27,7 +27,7 @@ import java.util.List;
 @NullMarked
 public class MostVisitedSitesBridge implements MostVisitedSites {
     @JniType("::MostVisitedSitesBridge")
-    public interface NativeMostVisitedSitesBridge extends JniTypeToken {}
+    interface NativeMostVisitedSitesBridge extends JniTypeToken {}
 
     private @Nullable JniUniquePtr<NativeMostVisitedSitesBridge> mNativeMostVisitedSitesBridge;
 

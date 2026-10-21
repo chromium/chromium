@@ -22,7 +22,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 @NullMarked
 public abstract class ContentSettingsObserver {
     @JniType("::content_settings::AndroidObserver")
-    public interface NativeAndroidObserver extends JniTypeToken {}
+    interface NativeAndroidObserver extends JniTypeToken {}
 
     private final JniUniquePtr<NativeAndroidObserver> mNativeAndroidObserver;
     private boolean mIsDestroyed;

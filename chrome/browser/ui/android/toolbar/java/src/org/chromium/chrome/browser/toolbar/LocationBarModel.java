@@ -89,7 +89,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class LocationBarModel implements ToolbarDataProvider, LocationBarDataProvider {
     @JniType("::LocationBarModelAndroid")
-    public interface NativeLocationBarModelAndroid extends JniTypeToken {}
+    interface NativeLocationBarModelAndroid extends JniTypeToken {}
 
     private static final int LRU_CACHE_SIZE = 10;
 

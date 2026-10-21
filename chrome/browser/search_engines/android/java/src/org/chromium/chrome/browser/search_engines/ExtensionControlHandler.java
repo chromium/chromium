@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 @NullMarked
 public class ExtensionControlHandler {
     @JniType("::ExtensionControlHandler")
-    public interface NativeExtensionControlHandler extends JniTypeToken {}
+    interface NativeExtensionControlHandler extends JniTypeToken {}
 
     private static @Nullable Supplier<ExtensionControlHandler> sFactoryForTesting;
 
@@ -66,7 +66,7 @@ public class ExtensionControlHandler {
     }
 
     @NativeMethods
-    public interface Natives {
+    interface Natives {
         JniUniquePtr<NativeExtensionControlHandler> init(@JniType("Profile*") Profile profile);
 
         void disableExtension(

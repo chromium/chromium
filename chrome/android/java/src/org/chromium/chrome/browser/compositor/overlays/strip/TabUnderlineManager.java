@@ -29,7 +29,7 @@ import java.util.Set;
 @NullMarked
 public class TabUnderlineManager {
     @JniType("::android::TabUnderlineManager")
-    public interface NativeTabUnderlineManager extends JniTypeToken {}
+    interface NativeTabUnderlineManager extends JniTypeToken {}
 
     /** An observer for tab underline state changes across Android UI surfaces. */
     public interface Observer {
