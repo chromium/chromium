@@ -12,7 +12,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -350,11 +349,9 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest
     std::vector<base::test::FeatureRef> disabled_features;
     if (std::get<0>(GetParam())) {
       enabled_features = {syncer::kReplaceSyncPromosWithSignInPromos,
-                          syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
                           syncer::kUnoPhase2FollowUp};
     } else {
       disabled_features = {syncer::kReplaceSyncPromosWithSignInPromos,
-                           syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
                            syncer::kUnoPhase2FollowUp};
     }
     scoped_features_.InitWithFeatures(enabled_features, disabled_features);
@@ -381,11 +378,9 @@ class SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam()) {
       enabled_features = {syncer::kReplaceSyncPromosWithSignInPromos,
-                          syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
                           syncer::kUnoPhase2FollowUp};
     } else {
       disabled_features = {syncer::kReplaceSyncPromosWithSignInPromos,
-                           syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
                            syncer::kUnoPhase2FollowUp};
     }
     scoped_features_.InitWithFeatures(enabled_features, disabled_features);
@@ -732,84 +727,6 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
-// The user chooses to manage sync settings in the sync confirmation dialog.
-// The profile customization is not shown in this case.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
-    SyncSettings) {
-  if (InUnoPhase2ModelWithFastFollows()) {
-    GTEST_SKIP() << "History opt-in does not have a settings link.";
-  }
-
-  SignIn();
-  sync_confirmation_observer_->StartWatchingNewWebContents();
-
-  controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /*is_forced_intercept=*/false);
-  EXPECT_TRUE(controller()->ShowsModalDialog());
-  sync_confirmation_observer_->Wait();
-  EXPECT_EQ(
-      dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
-      kSyncConfirmationUrl);
-
-  SimulateSyncConfirmationUIClosing(LoginUIService::CONFIGURE_SYNC_FIRST);
-  // kSync consent level is not revoked.
-  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSync);
-  // Browser displays a sync settings tab.
-  EXPECT_EQ(
-      browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
-      kSyncSettingsUrl);
-  // Sync settings abort the fre dialog.
-  EXPECT_FALSE(controller()->ShowsModalDialog());
-  EXPECT_TRUE(ProfileSwitchPromoHasBeenShown());
-  ExpectRecordedEvents({DialogEvent::kStart, DialogEvent::kShowSyncConfirmation,
-                        DialogEvent::kSyncConfirmationClickSettings});
-  ExpectSigninHistogramsRecorded();
-}
-
-// Closes the fre dialog before the sync confirmation is shown. Tests that
-// `TurnSyncOnHelper` is eventually destroyed.
-IN_PROC_BROWSER_TEST_P(
-    SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
-    CloseDialogBeforeSyncConfirmationIsShown) {
-  if (InUnoPhase2ModelWithFastFollows()) {
-    GTEST_SKIP() << "History opt-in does not use the TurnSyncOnHelper object";
-  }
-
-  // It's important to use an enterprise email here in order to block the sync
-  // confirmation UI until the sync engine starts.
-  SignIn();
-  // Delays the sync confirmation UI.
-  sync_service()->SetMaxTransportState(
-      syncer::SyncService::TransportState::INITIALIZING);
-
-  controller()->ShowModalInterceptFirstRunExperienceDialog(
-      account_id(), /*is_forced_intercept=*/false);
-
-  // The dialog is shown asynchronously. We wait for the posted tasks to run,
-  // but nothing will be shown until we update the Sync service state.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(controller()->ShowsModalDialog());
-
-  controller()->CloseModalSignin();
-  EXPECT_FALSE(controller()->ShowsModalDialog());
-
-  // `TurnSyncOnHelper` should be destroyed after the sync engine is up and
-  // running.
-  sync_service()->SetMaxTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
-  sync_service()->FireStateChanged();
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return !TurnSyncOnHelper::HasCurrentTurnSyncOnHelperForTesting(
-        GetProfile());
-  }));
-
-  // Sync is aborted.
-  ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
-  ExpectRecordedEvents({DialogEvent::kStart});
-  ExpectSigninHistogramsRecorded();
-}
-
 // Tests the case when sync is disabled by policy. The fre dialog starts with
 // the profile customization UI.
 IN_PROC_BROWSER_TEST_P(
@@ -966,7 +883,7 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     SigninInterceptFirstRunExperienceDialogBrowserTest,
-    ::testing::Combine(::testing::Bool(),
+    ::testing::Combine(::testing::Values(true),
                        ::testing::Values(kConsumerEmail, kEnterpriseEmail)),
     [](const auto& info) {
       return (std::get<0>(info.param) ? "InUnoModel" : "InDiceModel") +
@@ -978,7 +895,7 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
-    ::testing::Bool());
+    ::testing::Values(true));
 
 class
     SigninInterceptFirstRunExperienceDialogEnterpriseManagementHandlingBrowserTest
@@ -994,12 +911,8 @@ class
     std::vector<base::test::FeatureRef> disabled_features;
     if (std::get<0>(GetParam())) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-      enabled_features.push_back(
-          syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
     } else {
       disabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-      disabled_features.push_back(
-          syncer::kReplaceSyncPromosWithSigninPromosNewSignin);
     }
     if (std::get<1>(GetParam())) {
       enabled_features.push_back(syncer::kUnoPhase2FollowUp);
@@ -1036,22 +949,15 @@ class
                     ->GetModalDialogWebContentsForTesting()
                     ->GetLastCommittedURL(),
                 kHistorySyncUrl);
-    } else if (InUnoPhase2ModelNoFastFollows()) {
-      theme_service()->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
-          ThemeSyncableService::ThemeSyncState::kApplied);
-      profile_customization_observer_->Wait();
-      EXPECT_EQ(dialog()
-                    ->GetModalDialogWebContentsForTesting()
-                    ->GetLastCommittedURL(),
-                kProfileCustomizationUrl);
-    } else {
-      // Dice model, regardless of the status of the kUnoPhase2FollowUp flag.
-      sync_confirmation_observer_->Wait();
-      EXPECT_EQ(dialog()
-                    ->GetModalDialogWebContentsForTesting()
-                    ->GetLastCommittedURL(),
-                kSyncConfirmationUrl);
+      return;
     }
+    CHECK(InUnoPhase2ModelNoFastFollows());
+    theme_service()->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
+        ThemeSyncableService::ThemeSyncState::kApplied);
+    profile_customization_observer_->Wait();
+    EXPECT_EQ(
+        dialog()->GetModalDialogWebContentsForTesting()->GetLastCommittedURL(),
+        kProfileCustomizationUrl);
   }
 
  private:
@@ -1103,7 +1009,7 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     All,
     SigninInterceptFirstRunExperienceDialogEnterpriseManagementHandlingBrowserTest,
-    ::testing::Combine(::testing::Bool(),
+    ::testing::Combine(::testing::Values(true),
                        ::testing::Bool(),
                        ::testing::Bool(),
                        ::testing::Bool()),
