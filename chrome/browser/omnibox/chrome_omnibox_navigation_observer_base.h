@@ -16,8 +16,14 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "ui/base/window_open_disposition.h"
 
+class GURL;
 class Profile;
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 // Monitors omnibox navigations in order to trigger behaviors that depend on
 // successful navigations.
@@ -51,6 +57,16 @@ class ChromeOmniboxNavigationObserverBase
   void On404();
 
   void OnAlternativeLoaderDone(bool success);
+
+  // Replaces the search shortcut for `search_url` with `alternative_nav_match`,
+  // clears the saved search term in `HistoryService`, and opens
+  // `alternative_nav_match.destination_url` in `web_contents`.
+  static void OpenAlternativeNavMatch(
+      content::WebContents* web_contents,
+      const std::u16string& text,
+      const AutocompleteMatch& alternative_nav_match,
+      const GURL& search_url,
+      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
 
  protected:
   ChromeOmniboxNavigationObserverBase(

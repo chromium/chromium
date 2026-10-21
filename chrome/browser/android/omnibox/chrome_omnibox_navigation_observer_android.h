@@ -16,8 +16,9 @@ namespace content {
 class NavigationHandle;
 }  // namespace content
 
-// Android subclass of ChromeOmniboxNavigationObserverBase. Does not yet show a
-// UI prompt when the alternative-navigation probe succeeds.
+// Android implementation of ChromeOmniboxNavigationObserverBase. When the
+// alternative navigation probe succeeds, shows an Android message prompt once
+// the search result has also loaded.
 //
 // Please see the class comment on the base class for important information
 // about the memory management of this object.
@@ -44,6 +45,8 @@ class ChromeOmniboxNavigationObserverAndroid
       network::mojom::URLLoaderFactory* loader_factory = nullptr);
 
   ~ChromeOmniboxNavigationObserverAndroid() override;
+
+  void ShowAlternativeNavMessage();
 };
 
 #endif  // CHROME_BROWSER_ANDROID_OMNIBOX_CHROME_OMNIBOX_NAVIGATION_OBSERVER_ANDROID_H_

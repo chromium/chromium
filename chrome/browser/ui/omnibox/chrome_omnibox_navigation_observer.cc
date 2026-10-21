@@ -9,23 +9,15 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/typed_macros.h"
-#include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/infobar_spec.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
-#include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/page_navigator.h"
-#include "content/public/browser/web_contents.h"
-#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -87,25 +79,8 @@ void ChromeOmniboxNavigationObserver::ShowAlternativeNavInfoBar(
           if (!contents) {
             return false;
           }
-          Profile* profile =
-              Profile::FromBrowserContext(contents->GetBrowserContext());
-          history::HistoryService* const history_service =
-              HistoryServiceFactory::GetForProfile(
-                  profile, ServiceAccessType::IMPLICIT_ACCESS);
-          scoped_refptr<ShortcutsBackend> shortcuts_backend(
-              ShortcutsBackendFactory::GetForProfile(profile));
-          if (shortcuts_backend) {
-            shortcuts_backend->DeleteShortcutsWithURL(search_url);
-            shortcuts_backend->AddOrUpdateShortcut(text, match);
-          }
-          if (history_service) {
-            history_service->DeleteKeywordSearchTermForURL(search_url);
-          }
-          contents->OpenURL(
-              content::OpenURLParams(match.destination_url, content::Referrer(),
-                                     disposition, ui::PAGE_TRANSITION_TYPED,
-                                     /*is_renderer_initiated=*/false),
-              /*navigation_handle_callback=*/{});
+          OpenAlternativeNavMatch(contents, text, match, search_url,
+                                  disposition);
           return true;
         },
         text, match, search_url);

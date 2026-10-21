@@ -11,9 +11,12 @@
 #include "base/functional/bind.h"
 #include "base/trace_event/typed_macros.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -24,6 +27,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -34,6 +38,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -344,6 +349,40 @@ void ChromeOmniboxNavigationObserverBase::OnAlternativeLoaderDone(
   }
   loader_.reset();
   // |this| might be deleted here.
+}
+
+// static
+void ChromeOmniboxNavigationObserverBase::OpenAlternativeNavMatch(
+    content::WebContents* web_contents,
+    const std::u16string& text,
+    const AutocompleteMatch& alternative_nav_match,
+    const GURL& search_url,
+    WindowOpenDisposition disposition) {
+  if (!web_contents) {
+    return;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  scoped_refptr<ShortcutsBackend> shortcuts_backend =
+      ShortcutsBackendFactory::GetForProfile(profile);
+  // May be NULL in incognito.
+  if (shortcuts_backend) {
+    shortcuts_backend->DeleteShortcutsWithURL(search_url);
+    shortcuts_backend->AddOrUpdateShortcut(text, alternative_nav_match);
+  }
+
+  history::HistoryService* const history_service =
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::IMPLICIT_ACCESS);
+  if (history_service) {
+    history_service->DeleteKeywordSearchTermForURL(search_url);
+  }
+
+  web_contents->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                            alternative_nav_match.destination_url, disposition,
+                            ui::PAGE_TRANSITION_TYPED),
+                        /*navigation_handle_callback=*/{});
 }
 
 void ChromeOmniboxNavigationObserverBase::OnSuccessfulNavigation() {

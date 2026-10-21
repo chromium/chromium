@@ -6,29 +6,46 @@
 
 #include <memory>
 
+#include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/android/android_theme_resources.h"
+#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/messages/android/message_enums.h"
+#include "components/messages/android/message_wrapper.h"
+#include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+using ::testing::_;
 using ::testing::Assign;
+using ::testing::DoAll;
 using ::testing::Mock;
+using ::testing::Return;
+using ::testing::SaveArg;
 
 namespace {
 
@@ -50,7 +67,8 @@ class MockShortcutsObserver
 }  // namespace
 
 class ChromeOmniboxNavigationObserverAndroidTest
-    : public ChromeRenderViewHostTestHarness {
+    : public ChromeRenderViewHostTestHarness,
+      public content::WebContentsDelegate {
  public:
   ChromeOmniboxNavigationObserverAndroidTest(
       const ChromeOmniboxNavigationObserverAndroidTest&) = delete;
@@ -85,6 +103,7 @@ class ChromeOmniboxNavigationObserverAndroidTest
       network::mojom::URLLoaderFactory* loader_factory = nullptr) {
     AutocompleteMatch match;
     match.keyword = kTestKeyword;
+    match.destination_url = GURL(kTestUrl);
     return new ChromeOmniboxNavigationObserverAndroid(
         navigation_handle, profile(), u" text", match, alternative_nav_match,
         loader_factory);
@@ -132,6 +151,42 @@ class ChromeOmniboxNavigationObserverAndroidTest
     backend_->AddObserver(&shortcuts_observer_);
   }
 
+  // Runs a navigation with an alternative match for `http://intranet/` whose
+  // HEAD request completes with `head_status`, then destroys the handle so the
+  // observer runs its destructor.
+  void RunAlternativeNavProbe(net::HttpStatusCode head_status) {
+    network::TestURLLoaderFactory loader_factory;
+    auto handle = CreateHandle(200);
+    AutocompleteMatch alt_match;
+    alt_match.destination_url = GURL("http://intranet/");
+    CreateObserver(*handle, alt_match, &loader_factory)
+        ->DidFinishNavigation(handle.get());
+    EXPECT_TRUE(loader_factory.SimulateResponseForPendingRequest(
+        "http://intranet/", "", head_status));
+  }
+
+  void DismissEnqueuedMessage() {
+    if (enqueued_message_) {
+      enqueued_message_.ExtractAsDangling()->HandleDismissCallback(
+          base::android::AttachCurrentThread(),
+          static_cast<int>(messages::DismissReason::UNKNOWN));
+    }
+  }
+
+  void ExpectMessageEnqueued() {
+    EXPECT_CALL(message_dispatcher_bridge_,
+                EnqueueMessage(_, web_contents(),
+                               messages::MessageScopeType::NAVIGATION,
+                               messages::MessagePriority::kNormal))
+        .WillOnce(DoAll(SaveArg<0>(&enqueued_message_), Return(true)));
+  }
+
+  messages::MockMessageDispatcherBridge& message_dispatcher_bridge() {
+    return message_dispatcher_bridge_;
+  }
+  messages::MessageWrapper* enqueued_message() { return enqueued_message_; }
+  ShortcutsBackend* backend() { return backend_.get(); }
+
   MockShortcutsObserver shortcuts_observer_;
 
  private:
@@ -139,19 +194,45 @@ class ChromeOmniboxNavigationObserverAndroidTest
   void SetUp() override;
   void TearDown() override;
 
+  // content::WebContentsDelegate:
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params,
+      base::OnceCallback<void(content::NavigationHandle&)>
+          navigation_handle_callback) override;
+
+  testing::NiceMock<messages::MockMessageDispatcherBridge>
+      message_dispatcher_bridge_;
+  raw_ptr<messages::MessageWrapper> enqueued_message_ = nullptr;
   scoped_refptr<ShortcutsBackend> backend_;
 };
 
 void ChromeOmniboxNavigationObserverAndroidTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
+  web_contents()->SetDelegate(this);
+  messages::MessageDispatcherBridge::SetInstanceForTesting(
+      &message_dispatcher_bridge_);
 }
 
 void ChromeOmniboxNavigationObserverAndroidTest::TearDown() {
+  DismissEnqueuedMessage();
+  messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
   ChromeRenderViewHostTestHarness::TearDown();
 
   if (backend_) {
     backend_->RemoveObserver(&shortcuts_observer_);
   }
+}
+
+content::WebContents*
+ChromeOmniboxNavigationObserverAndroidTest::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  source->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(params));
+  return source;
 }
 
 TEST_F(ChromeOmniboxNavigationObserverAndroidTest, AllHttp200AreFine) {
@@ -305,4 +386,69 @@ TEST_F(ChromeOmniboxNavigationObserverAndroidTest,
   EXPECT_EQ(ChromeOmniboxNavigationObserverBase::AlternativeFetchState::
                 kFetchSucceeded,
             GetFetchState(*observer));
+}
+
+TEST_F(ChromeOmniboxNavigationObserverAndroidTest,
+       AlternateNavMessageShownOnFetchSuccess) {
+  ExpectMessageEnqueued();
+
+  RunAlternativeNavProbe(net::HTTP_OK);
+
+  ASSERT_TRUE(enqueued_message());
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_INTRANET_REDIRECT_MESSAGE_TITLE,
+                                       u"intranet"),
+            enqueued_message()->GetTitle());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_INTRANET_REDIRECT_MESSAGE_PRIMARY_BUTTON),
+      enqueued_message()->GetPrimaryButtonText());
+  EXPECT_EQ(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFO_OUTLINE_LOGO_24DP),
+      enqueued_message()->GetIconResourceId());
+}
+
+TEST_F(ChromeOmniboxNavigationObserverAndroidTest,
+       AlternateNavMessageNotShownOnFetchFailure) {
+  EXPECT_CALL(message_dispatcher_bridge(), EnqueueMessage).Times(0);
+
+  RunAlternativeNavProbe(net::HTTP_NOT_FOUND);
+}
+
+TEST_F(ChromeOmniboxNavigationObserverAndroidTest,
+       AlternateNavMessagePrimaryAction) {
+  CreateBackend();
+  ExpectMessageEnqueued();
+
+  RunAlternativeNavProbe(net::HTTP_OK);
+  ASSERT_TRUE(enqueued_message());
+  ASSERT_EQ(1u, backend()->shortcuts_map().size());
+  EXPECT_EQ(
+      GURL(kTestUrl),
+      backend()->shortcuts_map().begin()->second.match_core.destination_url);
+
+  enqueued_message()->HandleActionClick(base::android::AttachCurrentThread());
+
+  ASSERT_EQ(1u, backend()->shortcuts_map().size());
+  EXPECT_EQ(
+      GURL("http://intranet/"),
+      backend()->shortcuts_map().begin()->second.match_core.destination_url);
+  ASSERT_TRUE(navigation_controller()->GetPendingEntry());
+  EXPECT_EQ(GURL("http://intranet/"),
+            navigation_controller()->GetPendingEntry()->GetURL());
+}
+
+TEST_F(ChromeOmniboxNavigationObserverAndroidTest,
+       AlternateNavMessagePrimaryActionAfterWebContentsDestroyed) {
+  CreateBackend();
+  ExpectMessageEnqueued();
+
+  RunAlternativeNavProbe(net::HTTP_OK);
+  ASSERT_TRUE(enqueued_message());
+
+  DeleteContents();
+  enqueued_message()->HandleActionClick(base::android::AttachCurrentThread());
+
+  ASSERT_EQ(1u, backend()->shortcuts_map().size());
+  EXPECT_EQ(
+      GURL(kTestUrl),
+      backend()->shortcuts_map().begin()->second.match_core.destination_url);
 }

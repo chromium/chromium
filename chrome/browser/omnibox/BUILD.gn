@@ -30,10 +30,13 @@ source_set("omnibox") {
     "//chrome/browser:intranet_redirect_detector",
     "//chrome/browser/autocomplete",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/history",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//components/content_settings/browser",
+    "//components/history/core/browser",
     "//components/keyed_service/content",
+    "//components/keyed_service/core",
     "//components/omnibox/browser",
     "//components/omnibox/common",
     "//components/search_engines",
@@ -41,6 +44,7 @@ source_set("omnibox") {
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom:url_loader_base",
+    "//ui/base",
     "//url",
   ]
 }
