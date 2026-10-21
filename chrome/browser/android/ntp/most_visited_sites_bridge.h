@@ -28,7 +28,7 @@ class MostVisitedSitesBridge {
   MostVisitedSitesBridge(const MostVisitedSitesBridge&) = delete;
   MostVisitedSitesBridge& operator=(const MostVisitedSitesBridge&) = delete;
 
-  void Destroy();
+  ~MostVisitedSitesBridge();
 
   void OnHomepageStateChanged();
 
@@ -71,8 +71,6 @@ class MostVisitedSitesBridge {
   double GetSuggestionScore(const GURL& url);
 
  private:
-  ~MostVisitedSitesBridge();
-
   class JavaObserver;
   std::unique_ptr<JavaObserver> java_observer_;
 
