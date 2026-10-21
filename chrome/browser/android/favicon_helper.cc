@@ -59,7 +59,9 @@ bool FaviconHelper::GetLocalFaviconImageForURL(
     int32_t j_desired_size_in_pixel,
     bool fallback_to_host,
     const JavaRef<jobject>& j_favicon_image_callback) {
-  CHECK(profile, base::NotFatalUntil::M161);
+  // TODO(crbug.com/575577375): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(profile);
   if (!profile) {
     return false;
   }
