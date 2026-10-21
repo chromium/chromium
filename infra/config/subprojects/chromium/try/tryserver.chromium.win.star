@@ -28,7 +28,7 @@ try_.defaults.set(
     experiments = {
         "chromium_tests.resultdb_module": 100,
         "luci.buildbucket.run_in_turboci": 100,
-        "luci.buildbucket.run_in_turboci.grpc_client": 5,
+        "luci.buildbucket.run_in_turboci.grpc_client": 25,
     },
     orchestrator_cores = "2|4",
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
