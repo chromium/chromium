@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -15,16 +16,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_state_ash.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
@@ -101,13 +103,6 @@ bool ShouldShowQuickAnswers() {
     return true;
   }
   return false;
-}
-
-bool IsActiveUserInternal() {
-  auto* user = user_manager::UserManager::Get()->GetActiveUser();
-  const std::string email = user->GetAccountId().GetUserEmail();
-
-  return gaia::IsGoogleInternalAccountEmail(email);
 }
 
 // Error case might return nullptr(s). Consider an error case as no result.
@@ -234,7 +229,12 @@ void QuickAnswersControllerImpl::OnTextAvailable(
 
   Context context;
   context.surrounding_text = surrounding_text;
-  context.device_properties.is_internal = IsActiveUserInternal();
+  // The context menu may be in an incognito window, so read the account from
+  // the original profile, which holds the annotation.
+  context.device_properties.is_internal = gaia::IsGoogleInternalAccountEmail(
+      CHECK_DEREF(ash::AnnotatedAccountId::Get(
+                      CHECK_DEREF(profile_.get()).GetOriginalProfile()))
+          .GetUserEmail());
 
   // Cache anchor-bounds and query.
   anchor_bounds_ = anchor_bounds;

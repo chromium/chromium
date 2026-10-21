@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_arc_tracker.h"
@@ -269,15 +268,16 @@ void ArcOpenUrlDelegateImpl::OpenUrlFromArc(const GURL& url) {
     return;
   }
 
-  const auto* user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!user) {
-    LOG(WARNING) << "Primary user is unavailable. "
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session) {
+    LOG(WARNING) << "Primary session is unavailable. "
                  << "Content URL access will not be granted.";
     return;
   }
 
-  GURL url_to_open =
-      ConvertArcUrlToExternalFileUrlIfNeeded(user->GetAccountId(), url);
+  GURL url_to_open = ConvertArcUrlToExternalFileUrlIfNeeded(
+      primary_session->account_id(), url);
   ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url_to_open, ash::NewWindowDelegate::OpenUrlFrom::kArc,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -290,15 +290,18 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   // Fetch the profile associated with ARC. This method should only be called
   // for a |url| which was installed via ARC, and so we want the web app that is
   // opened through here to be installed in the profile associated with ARC.
-  // |user| may be null if sign-in hasn't happened yet
-  const auto* user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!user) {
+  // The primary session may be null if sign-in hasn't happened yet.
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session) {
     return;
   }
 
   // `profile` may be null if sign-in has happened but the profile isn't loaded
   // yet.
-  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
   if (!profile) {
     return;
   }
@@ -406,12 +409,15 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
   // Fetch the profile associated with ARC. This method should only be called
   // for a |url| which was installed via ARC, and so we want the web app that is
   // opened through here to be installed in the profile associated with ARC.
-  const auto* user = user_manager::UserManager::Get()->GetPrimaryUser();
-  CHECK(user, base::NotFatalUntil::M162);
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
 
   // |profile| may be null if sign-in has happened but the profile isn't loaded
   // yet.
-  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
   if (!profile) {
     return;
   }

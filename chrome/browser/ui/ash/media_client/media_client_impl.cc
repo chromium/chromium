@@ -47,6 +47,8 @@
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/media_session.h"
@@ -330,9 +332,10 @@ void MediaClientImpl::RequestCaptureState() {
         ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
   }
 
-  const user_manager::User* primary_user = manager->GetPrimaryUser();
-  if (primary_user) {
-    capture_states[primary_user->GetAccountId()] |= vm_media_capture_state_;
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (primary_session) {
+    capture_states[primary_session->account_id()] |= vm_media_capture_state_;
   }
 
   media_controller_->NotifyCaptureState(std::move(capture_states));

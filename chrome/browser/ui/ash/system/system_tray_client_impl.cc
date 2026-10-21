@@ -266,13 +266,13 @@ class SystemTrayClientImpl::EnterpriseAccountObserver
   }
 
   void UpdateProfile() {
-    user_manager::User* user =
-        user_manager::UserManager::Get()->GetActiveUser();
+    const session_manager::Session* session =
+        SessionManager::Get()->GetActiveSession();
     Profile* profile =
-        user ? Profile::FromBrowserContext(
-                   ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-                       user))
-             : nullptr;
+        session ? Profile::FromBrowserContext(
+                      ash::BrowserContextHelper::Get()
+                          ->GetBrowserContextByAccountId(session->account_id()))
+                : nullptr;
     if (profile == profile_) {
       return;
     }
@@ -389,8 +389,13 @@ void SystemTrayClientImpl::SetShowEolNotice(bool show,
 void SystemTrayClientImpl::ShowSettings(int64_t display_id) {
   // TODO(jamescook): Use different metric for OS settings.
   base::RecordAction(base::UserMetricsAction("ShowOptions"));
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const session_manager::Session* session =
+      SessionManager::Get()->GetActiveSession();
+  CHECK(session);
   ash::SettingsAppManager::Get()->Open(
-      CHECK_DEREF(user_manager::UserManager::Get()->GetActiveUser()),
+      CHECK_DEREF(
+          user_manager::UserManager::Get()->FindUser(session->account_id())),
       {.display_id = display_id});
 }
 

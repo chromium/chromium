@@ -32,21 +32,13 @@
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/user_manager.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace {
 
 using AssistantBrowserDelegate = ash::assistant::AssistantBrowserDelegate;
-
-Profile* GetActiveUserProfile() {
-  user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  CHECK(active_user);
-  return Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user));
-}
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. If any value is added, please update
@@ -129,7 +121,7 @@ bool IsGoogleChrome() {
 AssistantBrowserDelegateImpl::AssistantBrowserDelegateImpl() {
   auto* session_manager = session_manager::SessionManager::Get();
   // AssistantBrowserDelegateImpl must be created before any user session is
-  // created. Otherwise, it will not get OnUserProfileLoaded notification.
+  // created. Otherwise, it will not get OnUserSessionStarted notification.
   CHECK(session_manager->sessions().empty(), base::NotFatalUntil::M162);
   session_manager->AddObserver(this);
 }
@@ -296,7 +288,14 @@ void AssistantBrowserDelegateImpl::SetGoogleChromeBuildForTesting() {
 }
 
 void AssistantBrowserDelegateImpl::OnUserSessionStarted(bool is_primary_user) {
-  if (is_primary_user) {
-    InitializeNewEntryPointFor(GetActiveUserProfile());
+  if (!is_primary_user) {
+    return;
   }
+  // The primary session is the one that just started.
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  InitializeNewEntryPointFor(Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id())));
 }
