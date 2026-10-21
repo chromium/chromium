@@ -14,6 +14,7 @@
 #include "components/js_injection/common/enum.mojom.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "content/public/browser/android/message_payload.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/JsReplyProxy_jni.h"
@@ -42,8 +43,7 @@ void JavaScriptResultCallback(
 JsReplyProxy::JsReplyProxy(js_injection::WebMessageReplyProxy* reply_proxy)
     : reply_proxy_(reply_proxy) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_ref_.Reset(
-      Java_JsReplyProxy_create(env, reinterpret_cast<intptr_t>(this)));
+  java_ref_.Reset(Java_JsReplyProxy_create(env, jni_zero::MakeRaw(this)));
 }
 
 JsReplyProxy::~JsReplyProxy() {
