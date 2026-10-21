@@ -54,42 +54,6 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
       </div>
     </section>
 
-    <section id="coverageSection">
-      <h2>Your ratings</h2>
-      <div id="ratingStatus" ?complete="${this.areAllTopicsRated_()}">
-        <cr-icon icon="${this.areAllTopicsRated_() ?
-            'cr:check-circle' : 'cr:error'}" aria-hidden="true">
-        </cr-icon>
-        <div id="ratingProgress">${this.getRatingProgressText_()}</div>
-      </div>
-      ${this.getCoverageTopics_().length > 0 ? html`
-        <div class="secondary">
-          If you have time, also review these topics on their details page:
-        </div>
-        <ul id="coverageTopics">
-          ${this.getCoverageTopics_().map(topic => html`
-            <li ?done="${this.isCoverageTopicDone_(topic)}">
-              <cr-icon icon="${this.isCoverageTopicDone_(topic) ?
-                  'cr:check-circle' : 'cr:chevron-right'}"
-                  aria-hidden="true">
-              </cr-icon>
-              <a href="#" data-id="${topic.id}"
-                  @click="${this.onCoverageTopicClick_}">${topic.title}</a>
-              ${this.isCoverageTopicDone_(topic) ? html`
-                <span class="secondary">Reviewed</span>
-              ` : ''}
-            </li>
-          `)}
-        </ul>
-      ` : ''}
-      <cr-textarea id="missingTopics"
-          label="Missing topics (optional)" autogrow rows="2"
-          placeholder="What did you browse that should have been a topic?"
-          .value="${this.missingTopics_}"
-          @value-changed="${this.onMissingTopicsValueChanged_}">
-      </cr-textarea>
-    </section>
-
     <section id="redactionSection">
       <h2>Sites</h2>
       <div class="secondary">
@@ -141,6 +105,42 @@ export function getHtml(this: TopicFeedbackExportDialogElement) {
         </li>
       `)}
     </ul>
+
+    <section id="coverageSection">
+      <h2>Your ratings</h2>
+      <div id="ratingStatus" ?complete="${this.areAllTopicsRated_()}">
+        <cr-icon icon="${this.areAllTopicsRated_() ?
+            'cr:check-circle' : 'cr:error'}" aria-hidden="true">
+        </cr-icon>
+        <div id="ratingProgress">${this.getRatingProgressText_()}</div>
+      </div>
+      ${this.getCoverageTopics_().length > 0 ? html`
+        <div class="secondary">
+          If you have time, also review these topics on their details page:
+        </div>
+        <ul id="coverageTopics">
+          ${this.getCoverageTopics_().map(topic => html`
+            <li ?done="${this.isCoverageTopicDone_(topic)}">
+              <cr-icon icon="${this.isCoverageTopicDone_(topic) ?
+                  'cr:check-circle' : 'cr:chevron-right'}"
+                  aria-hidden="true">
+              </cr-icon>
+              <a href="#" data-id="${topic.id}"
+                  @click="${this.onCoverageTopicClick_}">${topic.title}</a>
+              ${this.isCoverageTopicDone_(topic) ? html`
+                <span class="secondary">Reviewed</span>
+              ` : ''}
+            </li>
+          `)}
+        </ul>
+      ` : ''}
+      <cr-textarea id="missingTopics"
+          label="Missing topics (optional)" autogrow rows="2"
+          placeholder="What did you browse that should have been a topic?"
+          .value="${this.missingTopics_}"
+          @value-changed="${this.onMissingTopicsValueChanged_}">
+      </cr-textarea>
+    </section>
 
     <section id="privacySection">
       <h2>Privacy</h2>

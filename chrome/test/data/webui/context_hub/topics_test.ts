@@ -945,7 +945,13 @@ suite('TopicFeedbackExportDialog', () => {
             .every(checkbox => checkbox.disabled && !checkbox.checked));
   });
 
-  test('keeps the site list off the privacy section when short', async () => {
+  test('shows the sites right after the history window', async () => {
+    await openDialog();
+    assertEquals(
+        'redactionSection', query('#windowSection')!.nextElementSibling!.id);
+  });
+
+  test('keeps the site list off the next section when short', async () => {
     const domains: TopicsFeedbackExportPreview['domains'] = [];
     for (let i = 0; i < 30; i++) {
       domains.push({
@@ -964,10 +970,11 @@ suite('TopicFeedbackExportDialog', () => {
         crDialog.shadowRoot.querySelector<HTMLElement>('#content-wrapper')!;
     wrapper.style.maxHeight = '400px';
 
-    const list = query('#domainList')!.getBoundingClientRect();
-    const privacy = query('#privacySection')!.getBoundingClientRect();
-    assertEquals(136, Math.round(list.height));
-    assertTrue(list.bottom <= privacy.top);
+    const list = query('#domainList')!;
+    const listRect = list.getBoundingClientRect();
+    const nextRect = list.nextElementSibling!.getBoundingClientRect();
+    assertEquals(136, Math.round(listRect.height));
+    assertTrue(listRect.bottom <= nextRect.top);
     const container = crDialog.shadowRoot.querySelector('#container')!;
     assertTrue(container.scrollHeight > container.clientHeight);
   });
