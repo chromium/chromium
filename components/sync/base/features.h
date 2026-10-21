@@ -185,9 +185,6 @@ BASE_DECLARE_FEATURE(kSyncValidateAccessToken);
 // SyncCycle rather than reading from ServerConnectionManager's cache.
 BASE_DECLARE_FEATURE(kSyncUsePropagatedAccessToken);
 
-// If enabled, Sync invalidations will bypass the scheduler on Android.
-BASE_DECLARE_FEATURE(kSyncInvalidationsBypassScheduler);
-
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, search engines and site search will be synced on Android LFF.
 BASE_DECLARE_FEATURE(kSyncSearchEnginesAndroidLFF);
