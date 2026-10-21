@@ -45,6 +45,7 @@
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_controller.h"
@@ -732,7 +733,8 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconSystemPermission) {
   EXPECT_FALSE(content_setting_image_model->blocked_on_system_level());
 
   // If notification permission is allowed at the chrome level, the indicator
-  // should show.
+  // should show. Since the system permission was explicitly denied, the label
+  // should not be shown.
   HostContentSettingsMapFactory::GetForProfile(profile())
       ->SetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
                                  CONTENT_SETTING_ALLOW);
@@ -740,7 +742,22 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconSystemPermission) {
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
   EXPECT_TRUE(content_setting_image_model->is_blocked());
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
   EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
+  EXPECT_FALSE(content_setting_image_model->should_keep_label_expanded());
+  EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
+
+  // If the system permission was implicitly denied, the label should be shown
+  // and kept expanded.
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(content_setting_image_model->is_blocked());
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(),
+            IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
+  EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
+  EXPECT_TRUE(content_setting_image_model->should_keep_label_expanded());
   EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
 
   // Granting system permission should remove the indicator.
@@ -749,6 +766,7 @@ TEST_F(ContentSettingImageModelTest, NotificationsIconSystemPermission) {
   content_setting_image_model->Update(web_contents());
   EXPECT_FALSE(content_setting_image_model->is_visible());
   EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
+  EXPECT_FALSE(content_setting_image_model->should_keep_label_expanded());
   EXPECT_FALSE(content_setting_image_model->blocked_on_system_level());
 }
 
@@ -791,7 +809,10 @@ TEST_F(ContentSettingImageModelTest,
   content_setting_image_model->Update(web_contents());
   EXPECT_TRUE(content_setting_image_model->is_visible());
   EXPECT_TRUE(content_setting_image_model->is_blocked());
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(),
+            IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
   EXPECT_TRUE(content_setting_image_model->should_auto_open_bubble());
+  EXPECT_TRUE(content_setting_image_model->should_keep_label_expanded());
   EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "ContentSettings.Notifications.SystemPermissionIconShown"));
@@ -824,6 +845,18 @@ TEST_F(ContentSettingImageModelTest,
   EXPECT_TRUE(content_setting_image_model->is_visible());
   EXPECT_EQ(2, user_action_tester.GetActionCount(
                    "ContentSettings.Notifications.SystemPermissionIconShown"));
+
+  // If the system permission was explicitly denied, the icon should show, but
+  // without the label or auto-opening the bubble.
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kExplicitlyDenied);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_TRUE(content_setting_image_model->is_blocked());
+  EXPECT_EQ(content_setting_image_model->explanatory_string_id(), 0);
+  EXPECT_FALSE(content_setting_image_model->should_auto_open_bubble());
+  EXPECT_FALSE(content_setting_image_model->should_keep_label_expanded());
+  EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
 }
 #endif
 

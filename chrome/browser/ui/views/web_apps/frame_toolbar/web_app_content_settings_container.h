@@ -44,6 +44,7 @@ class WebAppContentSettingsContainer : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  void ChildPreferredSizeChanged(views::View* child) override;
   void ChildVisibilityChanged(views::View* child) override;
 
   const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>&

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
@@ -22,6 +23,10 @@
 
 class BrowserWindowInterface;
 class ContentSettingImageModel;
+
+namespace content {
+class WebContents;
+}
 
 namespace gfx {
 class FontList;
@@ -55,6 +60,11 @@ class ContentSettingImageView : public IconLabelBubbleView,
   void SetIconColor(std::optional<SkColor> color);
   std::optional<SkColor> GetIconColor() const;
 
+  // Disables transient in-out label animations. Does not affect labels that
+  // stay expanded until the bubble is closed (see
+  // ContentSettingImageModel::should_keep_label_expanded).
+  // TODO(https://crbug.com/575951625): Clean up how PWA titlebar content
+  // setting animations and quiet notification UI interact.
   void disable_animation() { can_animate_ = false; }
 
   bool ShowBubbleImpl();
@@ -97,6 +107,18 @@ class ContentSettingImageView : public IconLabelBubbleView,
     return content_setting_image_model_->get_tooltip();
   }
 
+  bool is_label_kept_expanded_for_testing() const {
+    return keep_label_expanded_;
+  }
+
+  gfx::SlideAnimation& slide_animation_for_testing() {
+    return slide_animation_;
+  }
+
+ protected:
+  // IconLabelBubbleView:
+  bool ShouldShowLabelAfterAnimation() const override;
+
  private:
   // Avoid confusing between IconLabelBubbleView::Delegate and now globalized
   // ContentSettingImageViewDelegate.
@@ -110,6 +132,9 @@ class ContentSettingImageView : public IconLabelBubbleView,
 
   void UpdateElementIdentifier();
 
+  // Stops keeping the label expanded and collapses it, optionally animated.
+  void CollapseKeptExpandedLabel(bool animate);
+
   raw_ptr<ContentSettingImageViewDelegate> delegate_ = nullptr;  // Weak.
   std::unique_ptr<ContentSettingImageModel> content_setting_image_model_;
   raw_ptr<views::BubbleDialogDelegateView> bubble_view_ = nullptr;
@@ -120,6 +145,13 @@ class ContentSettingImageView : public IconLabelBubbleView,
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
   bool can_animate_ = true;
+
+  // True while the explanatory label should stay expanded until the user has
+  // opened and closed the bubble, rather than animating back out on its own.
+  // See ContentSettingImageModel::should_keep_label_expanded.
+  bool keep_label_expanded_ = false;
+  // The WebContents for which the label is kept expanded.
+  base::WeakPtr<content::WebContents> label_expanded_web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CONTENT_SETTING_IMAGE_VIEW_H_

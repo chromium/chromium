@@ -35,6 +35,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -50,6 +51,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -67,6 +69,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
+#include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -111,6 +114,7 @@
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -153,6 +157,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -183,6 +188,10 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #endif
 
 #if defined(USE_AURA)
@@ -351,7 +360,137 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
       EXPECT_EQ(view->height(), button_height);
     }
   }
+
+  const auto& views = content_settings->get_content_setting_views();
+  auto it =
+      std::ranges::find(views, ContentSettingImageModel::ImageType::kPopups,
+                        &ContentSettingImageView::GetType);
+  ASSERT_NE(it, views.end());
+  EXPECT_TRUE((*it)->GetVisible());
+  // Non-notification content setting icons have animation disabled in the PWA
+  // titlebar, so the explanatory label should not be shown.
+  EXPECT_FALSE((*it)->ShouldShowLabel());
 }
+
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest,
+    NotificationIconLabelAnimationAndAutoOpenBubbleInPwaTitlebar) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  WebAppToolbarButtonContainer::DisableAnimationForTesting(false);
+
+  const GURL app_url("https://test.org");
+  const webapps::AppId app_id =
+      helper()->InstallAndLaunchWebApp(browser(), app_url);
+
+  content::WebContents* web_contents =
+      helper()->browser_view()->GetActiveWebContents();
+
+  WebAppToolbarButtonContainer* toolbar_right_container =
+      helper()->web_app_frame_toolbar()->get_right_container_for_testing();
+  WebAppContentSettingsContainer* content_settings =
+      toolbar_right_container->content_settings_container();
+  ASSERT_TRUE(content_settings);
+
+  const auto& views = content_settings->get_content_setting_views();
+  auto it = std::ranges::find(
+      views, ContentSettingImageModel::ImageType::kNotifications,
+      &ContentSettingImageView::GetType);
+  ASSERT_NE(it, views.end());
+  ContentSettingImageView* notification_view = *it;
+  EXPECT_FALSE(notification_view->GetVisible());
+
+  // Simulate system-level notification permission being denied and the web app
+  // requesting notification permission.
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
+  content_settings::PageSpecificContentSettings::GetForFrame(
+      web_contents->GetPrimaryMainFrame())
+      ->SetNotificationsWasDeniedBecauseOfSystemPermission();
+  views::test::RunScheduledLayout(helper()->browser_view());
+
+  // Even during the initial titlebar fade-in delay, showing the notification
+  // label and auto-opened bubble ensures the container is immediately visible.
+  EXPECT_TRUE(content_settings->GetVisible());
+  EXPECT_TRUE(notification_view->GetVisible());
+  EXPECT_TRUE(notification_view->ShouldShowLabel());
+  EXPECT_NE(notification_view->GetBubbleViewForTesting(), nullptr);
+  EXPECT_TRUE(notification_view->is_label_kept_expanded_for_testing());
+
+  // Once the label has finished animating in, it stays expanded while the
+  // bubble is open. The animation is stepped manually rather than by spinning
+  // the run loop, since the real app shim may connect and overwrite the faked
+  // system permission status in the meantime.
+  gfx::AnimationTestApi label_animation(
+      &notification_view->slide_animation_for_testing());
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  label_animation.SetStartTime(start_time);
+  label_animation.Step(start_time + base::Seconds(5));
+  EXPECT_FALSE(notification_view->is_animating_label());
+  views::test::RunScheduledLayout(helper()->browser_view());
+  EXPECT_TRUE(notification_view->ShouldShowLabel());
+  EXPECT_GT(notification_view->width(),
+            notification_view->GetMinimumSize().width());
+  const int expanded_width = notification_view->width();
+
+  // Close the auto-opened bubble.
+  views::Widget* bubble_widget = notification_view->GetBubbleWidget();
+  ASSERT_NE(bubble_widget, nullptr);
+  bubble_widget->CloseNow();
+  EXPECT_EQ(notification_view->GetBubbleViewForTesting(), nullptr);
+  EXPECT_FALSE(notification_view->is_label_kept_expanded_for_testing());
+
+  // Closing the bubble animates the label out.
+  EXPECT_TRUE(notification_view->is_animating_label());
+  start_time = base::TimeTicks::Now();
+  label_animation.SetStartTime(start_time);
+  label_animation.Step(start_time + base::Seconds(5));
+  EXPECT_FALSE(notification_view->is_animating_label());
+  views::test::RunScheduledLayout(helper()->browser_view());
+  EXPECT_TRUE(notification_view->GetVisible());
+  EXPECT_FALSE(notification_view->ShouldShowLabel());
+  EXPECT_LT(notification_view->width(), expanded_width);
+
+  // Granting system notification permission hides the icon and resets the
+  // label animation.
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kGranted);
+  views::test::RunScheduledLayout(helper()->browser_view());
+  EXPECT_FALSE(notification_view->GetVisible());
+  EXPECT_FALSE(notification_view->ShouldShowLabel());
+
+  // Denying system notification permission again re-shows the icon and
+  // re-runs the label animation, this time without auto-opening the bubble.
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
+  views::test::RunScheduledLayout(helper()->browser_view());
+  EXPECT_TRUE(notification_view->GetVisible());
+  EXPECT_TRUE(notification_view->ShouldShowLabel());
+  EXPECT_EQ(notification_view->GetBubbleViewForTesting(), nullptr);
+  EXPECT_TRUE(notification_view->is_label_kept_expanded_for_testing());
+
+  // The label stays expanded after animating in, even without a bubble.
+  start_time = base::TimeTicks::Now();
+  label_animation.SetStartTime(start_time);
+  label_animation.Step(start_time + base::Seconds(5));
+  EXPECT_FALSE(notification_view->is_animating_label());
+  EXPECT_TRUE(notification_view->ShouldShowLabel());
+
+  // Opening and closing the bubble collapses the label.
+  EXPECT_TRUE(notification_view->ShowBubbleImpl());
+  EXPECT_TRUE(notification_view->ShouldShowLabel());
+  bubble_widget = notification_view->GetBubbleWidget();
+  ASSERT_NE(bubble_widget, nullptr);
+  bubble_widget->CloseNow();
+  EXPECT_FALSE(notification_view->is_label_kept_expanded_for_testing());
+  start_time = base::TimeTicks::Now();
+  label_animation.SetStartTime(start_time);
+  label_animation.Step(start_time + base::Seconds(5));
+  EXPECT_FALSE(notification_view->is_animating_label());
+  EXPECT_FALSE(notification_view->ShouldShowLabel());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   const GURL app_url("https://test.org");

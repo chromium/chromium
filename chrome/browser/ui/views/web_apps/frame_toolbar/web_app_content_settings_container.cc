@@ -54,6 +54,7 @@ WebAppContentSettingsContainer::WebAppContentSettingsContainer(
         views::CreateEmptyBorder(kContentSettingIconInteriorPadding));
     image_view->SetExpandedLabelAdditionalInsets(
         kExpandedLabelAdditionalInsets);
+    image_view->SetTextSubpixelRenderingEnabled(false);
     image_view->disable_animation();
     views::SetHitTestComponent(image_view.get(), static_cast<int>(HTCLIENT));
     content_setting_views_.push_back(image_view.get());
@@ -66,6 +67,10 @@ WebAppContentSettingsContainer::~WebAppContentSettingsContainer() = default;
 void WebAppContentSettingsContainer::UpdateContentSettingViewsVisibility() {
   for (ContentSettingImageView* v : content_setting_views_) {
     v->Update();
+    if (v->GetVisible() && (v->ShouldShowLabel() || v->IsBubbleShowing()) &&
+        layer() && layer()->GetTargetOpacity() == 0) {
+      EnsureVisible();
+    }
   }
 }
 
@@ -112,10 +117,15 @@ gfx::Size WebAppContentSettingsContainer::CalculatePreferredSize(
   return preferred;
 }
 
+void WebAppContentSettingsContainer::ChildPreferredSizeChanged(
+    views::View* child) {
+  PreferredSizeChanged();
+}
+
 void WebAppContentSettingsContainer::ChildVisibilityChanged(
     views::View* child) {
   views::View::ChildVisibilityChanged(child);
-  InvalidateLayout();
+  PreferredSizeChanged();
 }
 
 BEGIN_METADATA(WebAppContentSettingsContainer)

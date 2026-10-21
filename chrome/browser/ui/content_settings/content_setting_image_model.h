@@ -147,6 +147,13 @@ class ContentSettingImageModel {
 
   bool should_auto_open_bubble() { return should_auto_open_bubble_; }
 
+  // Whether the explanatory label should stay expanded once it has animated in,
+  // rather than animating back out after a short delay. The label collapses
+  // once the user has opened and closed the bubble, or the icon is hidden.
+  bool should_keep_label_expanded() const {
+    return should_keep_label_expanded_;
+  }
+
   bool blocked_on_system_level() { return blocked_on_system_level_; }
 
  protected:
@@ -173,6 +180,9 @@ class ContentSettingImageModel {
   void set_should_auto_open_bubble(const bool should_auto_open_bubble) {
     should_auto_open_bubble_ = should_auto_open_bubble;
   }
+  void set_should_keep_label_expanded(bool keep_expanded) {
+    should_keep_label_expanded_ = keep_expanded;
+  }
   void set_blocked_on_system_level(const bool blocked_on_system_level) {
     blocked_on_system_level_ = blocked_on_system_level;
   }
@@ -198,6 +208,7 @@ class ContentSettingImageModel {
   const ImageType image_type_;
   const bool image_type_should_notify_accessibility_;
   bool should_auto_open_bubble_ = false;
+  bool should_keep_label_expanded_ = false;
   bool blocked_on_system_level_ = false;
   std::optional<int> icon_size_;
 };

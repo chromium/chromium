@@ -1421,7 +1421,9 @@ ContentSettingNotificationsImageModel::ContentSettingNotificationsImageModel()
 bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   set_should_auto_open_bubble(false);
+  set_should_keep_label_expanded(false);
   set_blocked_on_system_level(false);
+  set_explanatory_string_id(0);
 
 #if BUILDFLAG(IS_MAC)
   if (std::optional<webapps::AppId> app_id =
@@ -1466,10 +1468,25 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
         base::RecordAction(base::UserMetricsAction(
             "ContentSettings.Notifications.SystemPermissionIconShown"));
       }
+      set_accessibility_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
+      set_blocked_on_system_level(true);
+      // If the user explicitly turned off notifications for this app at the
+      // system level, only show the icon without drawing further attention to
+      // it.
+      if (system_permission_status ==
+          AppShimRegistry::NotificationPermissionStatus::kExplicitlyDenied) {
+        return true;
+      }
+      // Otherwise show the explanatory label, and keep it expanded until the
+      // user has seen the bubble.
+      // TODO(crbug.com/575482442): Only keep the label expanded a limited
+      // number of times per web app, and fall back to a less aggressive
+      // indicator afterwards.
+      set_explanatory_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
+      set_should_keep_label_expanded(true);
       // If the chrome level permission was just auto-denied, also popup the
       // bubble.
       set_should_auto_open_bubble(was_denied_because_of_system_permission);
-      set_blocked_on_system_level(true);
       return true;
     }
   }
