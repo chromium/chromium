@@ -19,15 +19,9 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/extensions/api/enterprise_reporting_private.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
-#include "components/policy/core/common/cloud/cloud_policy_core.h"
-#include "components/policy/core/common/cloud/cloud_policy_store.h"
-#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
-#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -38,6 +32,14 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "services/network/test/test_url_loader_factory.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
+#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/proto/device_management_backend.pb.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 namespace {
@@ -81,10 +83,12 @@ constexpr char kManifestTemplate[] = R"(
 class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
  public:
   ProxyOverrideRulesPrivateApiTest() {
+#if !BUILDFLAG(IS_CHROMEOS)
     browser_dm_token_storage_.SetClientId("client_id");
     browser_dm_token_storage_.SetEnrollmentToken("enrollment_token");
     browser_dm_token_storage_.SetDMToken("dm_token");
     policy::BrowserDMTokenStorage::SetForTesting(&browser_dm_token_storage_);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
   ~ProxyOverrideRulesPrivateApiTest() override = default;
@@ -145,6 +149,7 @@ class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
 
     identity_test_env()->SetTestURLLoaderFactory(&test_url_loader_factory_);
 
+#if !BUILDFLAG(IS_CHROMEOS)
     // Set device org's affiliated IDs.
     auto* browser_policy_manager =
         g_browser_process->browser_policy_connector()
@@ -154,6 +159,7 @@ class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
     browser_policy_data->add_device_affiliation_ids(kAffiliationId);
     browser_policy_manager->core()->store()->set_policy_data_for_testing(
         std::move(browser_policy_data));
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
   void TearDownOnMainThread() override {
@@ -175,7 +181,9 @@ class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 
+#if !BUILDFLAG(IS_CHROMEOS)
   policy::FakeBrowserDMTokenStorage browser_dm_token_storage_;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
