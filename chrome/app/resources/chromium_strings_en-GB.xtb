@@ -120,6 +120,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2190166659037789668">Update check error: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Remove account from Chromium</translation>
 <translation id="2201788217099588893">Use the Chromium app to take the best shopping tools on the go</translation>
+<translation id="2209877494277346829">Isolate Chromium from other apps</translation>
 <translation id="2210502920229141283">Stay safer on the go with Enhanced Safe Browsing on Chromium for iOS</translation>
 <translation id="2210682093923538346">Dangerous site. Chromium removed notifications.</translation>
 <translation id="2236949375853147973">My Activity</translation>
@@ -192,6 +193,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2977470724722393594">Chromium is up to date</translation>
 <translation id="2977506796191543575">If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing</translation>
 <translation id="2981563588585023386">To stay safer online with your parent's choices, sign in to Chromium</translation>
+<translation id="2992577225802060159">Protects Chromium's memory from other applications on your computer.</translation>
 <translation id="3003694935412297923">All tasks</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium needs to verify that it's you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data (1 item) will be deleted.}other{Chromium needs to verify that it's you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data ({count} items) will be deleted.}}</translation>
 <translation id="3013473503895162900">Open <ph name="URL" /> in a new tab in Chromium.</translation>
@@ -468,7 +470,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="5949225980829865667">To get this bookmark and more on all your devices, sign in to Chromium</translation>
 <translation id="5953657885167112863">Make Chromium yours</translation>
 <translation id="5960071705175224773">Your settings were changed by an unknown app</translation>
-<translation id="5977420883993828287">Pinned! Use contextual tasks again from the toolbar</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Your organisation closes Chromium automatically when it isn't used for one minute.}other{Your organisation closes Chromium automatically when it isn't used for # minutes.}}</translation>
 <translation id="5987687638152509985">Update Chromium to start sync</translation>
 <translation id="5990360079535151574">From the 'Contextual tasks' button on the toolbar, you can reopen Contextual tasks to ask questions while you browse</translation>

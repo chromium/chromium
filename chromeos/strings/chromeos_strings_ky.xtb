@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Болжолдуу натыйжа үчүн <ph name="CATEGORY_TEXT" /> маанисин төмөнкүгө бөлүңүз: <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Сүрөттүн булагы</translation>
 <translation id="1446954767133808402">сапфир</translation>
-<translation id="1449035143498573192">Google Издөө кызматында ачуу</translation>
 <translation id="1451536289672181509">Түзмөк — баскычтоп.</translation>
 <translation id="1452939186874918380">кол чатырлар</translation>
 <translation id="145402479967797468">Башкаруу элементтери (ойнотууну)</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> алдын ала көрүү</translation>
 <translation id="1668469839109562275">Камтылган VPN</translation>
 <translation id="1669047024429367828">Көрсөтүлүшү</translation>
-<translation id="1670478569471758522">Сиз тандаган нерсе тууралуу кеңири маалымат</translation>
 <translation id="1672499492233627739">Веб-камерадагы видео түрмөк</translation>
 <translation id="1676557873873341166">Видео жаздырылууда</translation>
 <translation id="1684279041537802716">Басымдуу түс</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Түзөтүлүп бүттү</translation>
 <translation id="3532980081107202182">Болжол менен <ph name="MIN_REMAINING" /> мүнөт калды</translation>
 <translation id="3533790840489634638">бассейн</translation>
-<translation id="3547264467365135390">Формула</translation>
 <translation id="3552832331940389362">түштөн кийин жааган жамгырды карап отурган мышыктын жапон анимациялык сүрөтү</translation>
 <translation id="3557205324756024651">Жергиликтүү идентификация (милдеттүү эмес)</translation>
 <translation id="3565064564551103223">Уруксат берилген IP-даректер</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Сүрөттөлүшү</translation>
 <translation id="3869314628814282185">тюль</translation>
 <translation id="387301095347517405">Батарея толук кубатталган циклдердин саны</translation>
-<translation id="3877066159641251281">Котормону угуу</translation>
 <translation id="3880601782712134623">Ар кандай үндөрдү автоматтык түрдө айырмалап, ар бирин Маектеш 1 жана Маектеш 2 деп белгилеп коёт</translation>
 <translation id="38811596981744338">Юридикалык маселе</translation>
 <translation id="3885327323343477505">Көшөгөнү өзгөртүү</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Жаңыртуу процессин улантуу үчүн <ph name="DEVICE_NAME" /> түзмөгүнүн USB кабелин сууруп, анан кайра сайыңыз</translation>
 <translation id="5099354524039520280">өйдө</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> баскычы жок ыкчам баскыч айрым колдонмолордун ыкчам баскычына каршы келиши мүмкүн. Бул ыкчам баскычты колдоно берүү үчүн кайра басыңыз же <ph name="KEY" /> баскычы бар жаңы ыкчам баскычты басыңыз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Окшош:</translation>
 <translation id="5130848777448318809">понилер</translation>
 <translation id="5137451382116112100">Толук</translation>
 <translation id="5139813694804168398">тынчымды алба</translation>
 <translation id="5140788690559353412">Мектеп аккаунтуңузга кирүү мүмкүнчүлүгүнөн айрылганда, Gmail, Документтер, Слайддар жана башкалар сыяктуу электрондук почтага жана Google Drive файлдарына кире албай каласыз.</translation>
 <translation id="5142961317498132443">Аныктыгын текшерүү</translation>
 <translation id="5144311987923128508">Ырастоо баскычы эми өчүрүлдү</translation>
-<translation id="5144887194300568405">Котормону көчүрүү</translation>
 <translation id="5145081769226915336">Караңгы тема автоматтык түрдө күйгүзүлсүнбү?</translation>
 <translation id="5145331109270917438">Өзгөртүлгөн күнү</translation>
 <translation id="5154917547274118687">Эстутум</translation>

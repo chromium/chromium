@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
-<translation id="1003222766972176318">සිහිකැඳවීම: සුරැකි දීමනාව ලබා ගත හැකිය</translation>
 <translation id="1008557486741366299">දැන් නොවේ</translation>
 <translation id="100957008357583611">ඔබේ ස්ථානය භාවිත කරන්නද?</translation>
 <translation id="1010200102790553230">පිටුව පසුව පූරණ කරන්න</translation>
@@ -1127,6 +1126,7 @@
 <translation id="2911973620368911614">වැඩ ගිණුම්කරණ පරිශීලක හැඳුනුම</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> සාමාන්‍යයෙන් ඔබගේ තොරතුරු ආරක්ෂා කිරීමට සංකේත භාවිත කරයි. මෙම අවස්ථාවේදී Chrome <ph name="SITE" /> වෙත සබැඳීමට උත්සාහ කළ විට, වෙබ් අඩවිය නුපුරුදු සහ වැරදි අක්තපත්‍ර ආපසු එවීය. ප්‍රහාරකයෙක් <ph name="SITE" /> මෙන් හැඟවීමට උත්සාහ කරමින් සිටී, නැතහොත් Wi-Fi පිරීම් තිරය සබැඳුමට බාධා කර ඇත. දත්ත කිසිවක් හුවමාරු කර ගැනීමට පෙර Chrome සබැඳුම නතර වූ නිසා ඔබගේ තොරතුරු තවමත් සුරක්ෂිතය.</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> වෙතින් බිඳ වැටීම්</translation>
+<translation id="291568339791418558">සියලු උපාංග</translation>
 <translation id="2916038427272391327">අනෙකුත් වැඩසටහන් වසන්න</translation>
 <translation id="2917630513638801879">සියන් 1</translation>
 <translation id="2922350208395188000">සේවාදායකයේ සහතිකය සහතික කළ නොහැක</translation>
@@ -1462,7 +1462,6 @@
 <translation id="3479552764303398839">දැන් නොවේ</translation>
 <translation id="3481315707647070701">දෘශ්‍යකරණය සහ සංස්කරණය</translation>
 <translation id="3484560055331845446">ඔබට ඔබේ Google ගිණුමට ප්‍රවේශය අහිමි විය හැක. Chrome දැන් ඔබේ මුරපදය වෙනස් කිරීම නිර්දේශ කරයි. පුරන ලෙස ඔබෙන් අසනු ලැබේ.</translation>
-<translation id="3484861421501147767">සිහිකැඳවීම: සුරැකි ප්‍රවර්ධන කේතය තිබේ</translation>
 <translation id="3485901585646640838">ඔබේ Google ගිණුමේ සුරකින ලද මුරපද සහ තවත් දේ භාවිතා කිරීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
 <translation id="3487845404393360112">බඳුන 4</translation>
 <translation id="3493881266323043047">වලංගුතාවය</translation>
@@ -1822,6 +1821,7 @@
 <translation id="4067774859633143413">පූර්ණ තිරයෙන් පිටවී බාගැනීම බැලීමට, |<ph name="ACCELERATOR" />| ඔබා සිටින්න</translation>
 <translation id="4067947977115446013">වලංගු ලිපිනයක් එක් කරන්න</translation>
 <translation id="4072486802667267160">ඔබේ ඇණවුම සැකසීමේ දෝෂයක් විය. නැවත උත්සාහ කරන්න.</translation>
+<translation id="4073293290376142777">පුරන්න ද?</translation>
 <translation id="4073376909608563327">උපාංග අගුලු හැරීම භාවිත කළ නොහැකි විය</translation>
 <translation id="4073797364926776829">කාඩ්පත බලන්න</translation>
 <translation id="4075732493274867456">සේවාලාභියා සහ සේවාදායකයා පොදු SSL ප්‍රොටොකෝල අනුවාදයක් හෝ කේතාංක කට්ටලයක් සඳහා සහාය නොදක්වයි.</translation>
@@ -1854,6 +1854,7 @@
 <translation id="4107047499377819067">VPN පසුබිම් සේවා ස්ථාපනය ආරම්භ කර ඇත, මෙයට මිනිත්තු කිහිපයක් ගත වීමට හැක.</translation>
 <translation id="4110642094637545339">Google Pay, AfterPay ලාංඡනය</translation>
 <translation id="4110652170750985508">ඔබේ ගෙවීම සමාලෝචනය කරන්න</translation>
+<translation id="411071007970303441">සියලු නළුවන්</translation>
 <translation id="4112140312785995938">පසුපසට සොයන්න</translation>
 <translation id="4114007503059268298">ඔබට ඔබේ Google ගිණුමේ සහ මෙම උපාංගයේ මෙම කාඩ්පත සුරැකීමට අවශ්‍යයි ද?</translation>
 <translation id="4114146879518089587">අඩවිය වෙත ඉදිරියට යන්න</translation>
@@ -3440,6 +3441,7 @@
 <translation id="6753460329812070808">Chrome වෙතින් යෝජනාව ඉවත් කරන ලදි</translation>
 <translation id="6757797048963528358">ඔබගේ උපාංගය නින්දට ගියේය.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> හට ඔබේ චලන සහ ආලෝක සංවේදක භාවිත කිරීමට අවශ්‍යයි</translation>
+<translation id="6766488013065406604">Google මුරපද කළමනාකරු වෙත යන්න</translation>
 <translation id="6770747695101757579">කඩදාසි (කපු)</translation>
 <translation id="6772959465807028761">YouTube භාවිත කිරීමට, ඔබේ Google ගිණුම සමග ඉදිරියට යන්න</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3652,6 @@
 <translation id="7120588595737538743">බා ගැනීම් සහ තිර රූ</translation>
 <translation id="7124354851782353862">ඔබේ CVC ඇතුළු කරන්න</translation>
 <translation id="7129409597930077180">මෙම ලිපිනයට නැව්ගත කළ නොහැකිය. වෙනත් ලිපිනයක් තෝරන්න.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">උඩුගත කිරීම අවහිරයි</translation>
 <translation id="7132939140423847331">ඔබගේ පරිපාලක මෙම දත්ත පිටපත් කිරීම තහනම් කර ඇත.</translation>
 <translation id="7134653428559514680">මෙම අඩවියෙන් බෙදා ගැනීම නිර්දේශ නොකරයි</translation>
@@ -3967,6 +3968,7 @@
 <translation id="7637571805876720304">Chromium වෙතින් ණය කාඩ්පත ඉවත් කරන්නද?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{කිසිවක් නැත}=1{ඔබේ ගිණුමේ මුරපද 1 (<ph name="DOMAIN_LIST" /> සඳහා)}one{ඔබේ ගිණුමේ මුරපද # (<ph name="DOMAIN_LIST" /> සඳහා)}other{ඔබේ ගිණුමේ මුරපද # (<ph name="DOMAIN_LIST" /> සඳහා)}}</translation>
 <translation id="7638605456503525968">අනුක්‍රමික තොට</translation>
+<translation id="7644100755247241229">Google Wallet භාවිතයෙන් මිතුරන්ට සහ ව්‍යාපාරවලට Pix යවන්න</translation>
 <translation id="7646681339175747202">ඔබ මේ දැන් භාවිතා කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදි. Google මුරපද කළමනාකරු ඔබේ මුරපදය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="7647206758853451655">මුද්‍රණ ගුණත්වය</translation>
 <translation id="7648133459447652947">ඔබේ කර්සරය පෙන්වීමට, යෙදුම් මාරු කරන්න, පිටුව නැවත පූරණය කරන්න, නැතහොත් ආපසු යන්න</translation>
@@ -4070,6 +4072,7 @@
 <translation id="7791543448312431591">එක් කරන්න</translation>
 <translation id="7798389633136518089">ක්ලවුඩ් සේවයකින් ප්‍රතිපත්තිය සකසා නැති බැවින් නොසලකා හැරිණි.</translation>
 <translation id="7800304661137206267"><ph name="CIPHER" /> පණිවිඩ සහතික කිරීම සඳහා  සහ <ph name="MAC" /> යතුරු  ලෙස සහිතව <ph name="KX" /> භාවිතයෙන් සබැඳුම සංකේතනය කර ඇත.</translation>
+<translation id="780228007282527248">ඔබේ සෙවීම වැඩි දියුණු කිරීමට ටැබ් එකක් හෝ රූපයක් එක් කරන්න</translation>
 <translation id="7802523362929240268">අඩවිය නිත්‍යානුකූලයි</translation>
 <translation id="7802989406998618639">ඔබේ බැංකුවට ඒ ඔබ බව සත්‍යාපනය කර ගත හැකි පරිදි <ph name="SIDE_OF_CARD" /> හි සංඛ්‍යා <ph name="NUMBER_OF_DIGITS" />ක ආරක්ෂක කේතය ඇතුළු කරන්න</translation>
 <translation id="780301667611848630">එපා ස්තූතියි</translation>

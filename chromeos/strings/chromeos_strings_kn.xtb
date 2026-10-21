@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">ಅಂದಾಜು ಫಲಿತಾಂಶಕ್ಕಾಗಿ, <ph name="CATEGORY_TEXT" /> ನ ಮೌಲ್ಯವನ್ನು <ph name="CONVERSION_RATE" /> ಸಂಖ್ಯೆಯಿಂದ ಭಾಗಿಸಿ</translation>
 <translation id="1442433966118452622">ಚಿತ್ರದ ಮೂಲ</translation>
 <translation id="1446954767133808402">ಸಫೈರ್</translation>
-<translation id="1449035143498573192">Google Search ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="1451536289672181509">ಸಾಧನವು ಕೀಬೋರ್ಡ್ ಆಗಿದೆ.</translation>
 <translation id="1452939186874918380">ಛತ್ರಿಗಳು</translation>
 <translation id="145402479967797468">ಪ್ಲೇಬ್ಯಾಕ್‌ ನಿಯಂತ್ರಣಗಳು</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> ಅನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ</translation>
 <translation id="1668469839109562275">ಬಿಲ್ಟ್-ಇನ್ VPN</translation>
 <translation id="1669047024429367828">ಗೋಚರತೆ</translation>
-<translation id="1670478569471758522">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಹೆಚ್ಚಿನ ಮಾಹಿತಿ</translation>
 <translation id="1672499492233627739">ವೆಬ್‌ಕ್ಯಾಮ್ ವೀಡಿಯೊ ಫೀಡ್</translation>
 <translation id="1676557873873341166">ವೀಡಿಯೊ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1684279041537802716">ಆ್ಯಕ್ಸೆಂಟ್ ಬಣ್ಣ</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">ಎಡಿಟ್ ಮಾಡುವುದು ಮುಗಿದಿದೆ</translation>
 <translation id="3532980081107202182">ಸುಮಾರು <ph name="MIN_REMAINING" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="3533790840489634638">ಈಜುಕೊಳ</translation>
-<translation id="3547264467365135390">ಫಾರ್ಮುಲಾ</translation>
 <translation id="3552832331940389362">ಮಧ್ಯಾಹ್ನದ ವೇಳೆ ಕಿಟಕಿಯ ಮೇಲೆ ಕುಳಿತು ಮಳೆ ನೋಡುತ್ತಿರುವ ಬೆಕ್ಕಿನ ಜಪಾನೀಸ್ ಅನಿಮೇಷನ್ ಚಿತ್ರ</translation>
 <translation id="3557205324756024651">ಸ್ಥಳೀಯ ಗುರುತು (ಐಚ್ಛಿಕ)</translation>
 <translation id="3565064564551103223">ಅನುಮತಿಸಲಾದ IP ಗಳು</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">ವಿವರಣೆ</translation>
 <translation id="3869314628814282185">ಟ್ಯೂಲ್</translation>
 <translation id="387301095347517405">ನಿಮ್ಮ ಬ್ಯಾಟರಿಯನ್ನು ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಮಾಡಿರುವ ಸಂಖ್ಯೆ</translation>
-<translation id="3877066159641251281">ಅನುವಾದವನ್ನು ಆಲಿಸಿ</translation>
 <translation id="3880601782712134623">ವಿಭಿನ್ನ ಧ್ವನಿಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪತ್ತೆಹಚ್ಚಲು ಹಾಗೂ ಪ್ರತಿಯೊಬ್ಬ ಸ್ಪೀಕರ್‌ಗೆ ಸ್ಪೀಕರ್ 1 ಮತ್ತು ಸ್ಪೀಕರ್ 2 ಎಂಬಂತಹ ಸಾಮಾನ್ಯ ಲೇಬಲ್ ಅನ್ನು ನೀಡಲು</translation>
 <translation id="38811596981744338">ಕಾನೂನಾತ್ಮಕ ಸಮಸ್ಯೆ</translation>
 <translation id="3885327323343477505">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಬದಲಾಯಿಸಿ</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003"><ph name="DEVICE_NAME" /> USB ಕೇಬಲ್ ಅನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಿ ಹಾಗೂ ಅಪ್‌ಡೇಟ್‌ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು ಅದನ್ನು ಪುನಃ ಸೇರಿಸಿ</translation>
 <translation id="5099354524039520280">ಮೇಲಕ್ಕೆ</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> ಕೀ ಇಲ್ಲದ ಶಾರ್ಟ್‌ಕಟ್ ಕೆಲವು ಆ್ಯಪ್‌ಗಳ ಶಾರ್ಟ್‌ಕಟ್‌ನೊಂದಿಗೆ ಹೊಂದಿಕೊಳ್ಳದೇ ಇರಬಹುದು. ಇದನ್ನು ಬಳಸುವುದನ್ನು ಮುಂದುವರಿಸಲು ಈ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಒತ್ತಿ ಅಥವಾ <ph name="KEY" /> ಕೀ ಬಳಸಿಕೊಂಡು ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">ಸಮಾನ:</translation>
 <translation id="5130848777448318809">ಪೋನಿಗಳು</translation>
 <translation id="5137451382116112100">ಸಂಪೂರ್ಣ</translation>
 <translation id="5139813694804168398">ಅಡಚಣೆ ಮಾಡಬೇಡಿ</translation>
 <translation id="5140788690559353412">ನಿಮ್ಮ ಶಾಲಾ ಖಾತೆಗೆ ನೀವು ಆ್ಯಕ್ಸೆಸ್‌ ಅನ್ನು ಕಳೆದುಕೊಂಡಾಗ, ನೀವು ಇನ್ನು ಮುಂದೆ ಸಂಯೋಜಿತ ಇಮೇಲ್‌ ಮತ್ತು Google Drive ಫೈಲ್‌ಗಳಾದ Gmail, Docs, Slides ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್‌ ಅನ್ನು ಹೊಂದಿರುವುದಿಲ್ಲ.</translation>
 <translation id="5142961317498132443">ಪ್ರಮಾಣೀಕರಣ</translation>
 <translation id="5144311987923128508">ದೃಢೀಕರಿಸಿ ಎಂಬ ಬಟನ್ ಅನ್ನು ಈಗ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
-<translation id="5144887194300568405">ಅನುವಾದ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="5145081769226915336">ಡಾರ್ಕ್ ಮೋಡ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆನ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="5145331109270917438">ದಿನಾಂಕ ಮಾರ್ಪಡಿಸಿದೆ</translation>
 <translation id="5154917547274118687">ಸ್ಮರಣೆ</translation>

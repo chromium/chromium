@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Make Chrome your own with custom colours and images for your homepage</translation>
 <translation id="389521680295183045">Sites can ask to know when you're actively using your device</translation>
 <translation id="3895926599014793903">Force enable zoom</translation>
-<translation id="3905475044299942653">Stop lots of notifications</translation>
 <translation id="3922092564198021702">On your phone, open Settings</translation>
 <translation id="3924858949939391676">Show links once Reading mode is on</translation>
 <translation id="3933121352599513978">Collapse unwanted requests (recommended)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">You'll find your groups in the tab group section across all your devices</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> is blocked from using your information on</translation>
 <translation id="4953688446973710931">When on, sites can ask to download multiple files automatically. When off, sites can't download multiple files automatically.</translation>
-<translation id="4962975101802056554">Revoke all permissions for device</translation>
 <translation id="4972737347717125191">Sites can ask to use virtual reality devices and data</translation>
 <translation id="4973805849704516244">Chrome colours bottom sheet</translation>
 <translation id="497421865427891073">go forward</translation>
@@ -704,7 +702,6 @@ Advanced Protection controls these Chrome settings:</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8441146129660941386">Seek backward</translation>
 <translation id="8444433999583714703">To let <ph name="APP_NAME" /> access your location, also turn on location in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Revoke device permission</translation>
 <translation id="8463843545738141778">This setting is disabled because you turned on Advanced Protection in Android settings.</translation>
 <translation id="8467359479529706065">New tab page appearance bottom sheet opened at half height</translation>
 <translation id="8471525937465764768">Sites usually connect to USB devices for features such as printing a document or saving to a storage device</translation>

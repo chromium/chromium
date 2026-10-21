@@ -118,6 +118,7 @@
 <translation id="2190166659037789668">Virhe päivityksiä tarkistettaessa: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Poista tili Chromiumista</translation>
 <translation id="2201788217099588893">Lataa Chromium-sovellus, niin voi hyödyntää parhaat ostostyökalut missä tahansa</translation>
+<translation id="2209877494277346829">Eristä Chromium muista sovelluksista</translation>
 <translation id="2210502920229141283">Pysy turvassa liikkeellä iOS:n Chromiumin Parannetun selaussuojan avulla</translation>
 <translation id="2210682093923538346">Vaarallinen sivusto. Chromium poisti ilmoitukset.</translation>
 <translation id="2236949375853147973">Oma toiminta</translation>
@@ -190,6 +191,7 @@
 <translation id="2977470724722393594">Chromium on ajan tasalla.</translation>
 <translation id="2977506796191543575">Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chromium voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, myös osia sivujen sisällöstä</translation>
 <translation id="2981563588585023386">Jos haluat käyttää vanhempasi valintoja verkossa, kirjaudu Chromiumiin</translation>
+<translation id="2992577225802060159">Suojaa Chromiumin muistia muilta tietokoneen sovelluksilta.</translation>
 <translation id="3003694935412297923">Kaikki tehtävät</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromiumin on vahvistettava henkilöllisyytesi, ennen kuin tiettyä dataa voidaan tallentaa Google-tilillesi ja käyttää kaikilla laitteillasi. Jos kirjaudut ulos nyt, tämä data (1 kohde) poistetaan.}other{Chromiumin on vahvistettava henkilöllisyytesi, ennen kuin tiettyä dataa voidaan tallentaa Google-tilillesi ja käyttää kaikilla laitteillasi. Jos kirjaudut ulos nyt, tämä data ({count} kohde) poistetaan.}}</translation>
 <translation id="3013473503895162900">Avaa <ph name="URL" /> uudella välilehdellä Chromiumissa.</translation>
@@ -466,7 +468,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5949225980829865667">Kirjaudu Chromiumiin, niin voit käyttää tätä kirjanmerkkiä ja muuta sisältöä kaikilla laitteillasi</translation>
 <translation id="5953657885167112863">Tee Chromiumista näköisesi</translation>
 <translation id="5960071705175224773">Tuntematon sovellus on muuttanut asetuksiasi</translation>
-<translation id="5977420883993828287">Kiinnitetty! Käytä kontekstuaalisia tehtäviä uudelleen yläpalkista</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organisaatiosi sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty 1 minuuttiin.}other{Organisaatiosi sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty # minuuttiin.}}</translation>
 <translation id="5987687638152509985">Aloita synkronointi päivittämällä Chromium.</translation>
 <translation id="5990360079535151574">Yläpalkin "Kontekstuaaliset tehtävät" ‑painikkeella voit avata kontekstuaaliset tehtävät uudelleen ja esittää kysymyksiä selailun aikana</translation>

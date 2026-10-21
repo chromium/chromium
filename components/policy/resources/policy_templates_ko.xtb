@@ -6617,6 +6617,17 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
 <translation id="5081204761483900654">제한된 관리 게스트 세션</translation>
 <translation id="5082296146261894974">사용자가 휴대전화 허브 알림을 클릭하여 Eche 애플리케이션을 실행하도록 허용합니다.</translation>
 <translation id="5082572440690475059">다음 사이트에서 File System API를 통한 읽기 액세스 허용</translation>
+<translation id="5084849119584030624"><ph name="PRODUCT_NAME" />에서 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />의 연결 설정을 구성합니다.
+
+이 정책은 더 이상 지원되지 않으며 무시됩니다. 대신 <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> 정책을 사용하세요.
+
+정책은 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />을(를) 통해 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 웹 애플리케이션 URL을 구성합니다. 이 URL은 https 스키마를 사용하고 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 도메인을 가리키며 사용자 이름 또는 비밀번호를 포함하지 않는 유효한 URL이어야 합니다. 이러한 요구사항을 충족하지 않으면 정책이 무시되고 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성되지 않은 상태로 유지됩니다.
+
+이 정책을 설정하면 관리 계정 또는 관리 브라우저로 로그인한 사용자에 대해 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성됩니다.
+
+이 정책을 설정하지 않으면 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성되지 않습니다.
+
+이 정책은 일반적인 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 통합을 제어하지 않습니다. 일반적인 통합은 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 제어할 수 있습니다.</translation>
 <translation id="5085647276663819155">인쇄 미리보기 사용 안함</translation>
 <translation id="5087922428454325090">사용자가 브라우저를 통해 웹 앱을 설치할 수 없습니다.</translation>
 <translation id="5087932158260897375">정책을 False로 설정하면 도메인 안정성 진단 데이터 보고가 사용 중지되고 데이터가 Google로 전송되지 않습니다.
@@ -8489,25 +8500,6 @@ ArcEnabled 및 UnaffiliatedArcAllowed 정책에서 적용하는 제한사항과 
 <translation id="6244061205361004687">사용자가 VPN을 수동으로 연결 해제하거나 수정하도록 허용</translation>
 <translation id="6244210204546589761">시작 시 열리는 URL</translation>
 <translation id="6244263962918757383">Chrome 추천 설정</translation>
-<translation id="6245828368576563662">이 정책을 사용하면 특정 URL 패턴과 일치하는 웹 요청에 커스텀 HTTP 헤더를 삽입하는 규칙 목록을 정의할 수 있습니다. 이 정책에 의해 설정된 헤더는 요청에 원래 포함되어 있던 헤더뿐만 아니라 사용자 또는 확장 프로그램이 시도한 수정 사항보다 우선 적용됩니다.
-
-이 정책의 일반적인 사용 사례는 커스텀 헤더(예: <ph name="EXAMPLE_HEADER_NAME" />)를 삽입하여 테넌트 액세스 제어를 적용하는 것입니다.
-
-이 정책은 규칙 목록을 허용합니다. 각 규칙에는 다음이 포함됩니다.
-
-* <ph name="PATTERNS_KEY" />: 일치시킬 URL 패턴 목록입니다. URL 패턴의 형식을 지정하는 방법을 확인하세요( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
-
-* <ph name="HEADERS_KEY" />: 삽입할 헤더를 나타내는 객체 목록입니다. 각 객체에는 다음이 포함됩니다.
-
-  * <ph name="HEADER_NAME_KEY" />: 삽입할 헤더의 이름입니다.
-
-  * <ph name="HEADER_VALUE_KEY" />: 삽입할 헤더의 값입니다.
-
-요청과 일치하는 규칙이 여러 개 있는 경우 일치하는 모든 규칙의 헤더가 적용됩니다. 이름이 같은 헤더가 여러 개 있는 경우 가장 구체적인 URL 패턴이 있는 헤더가 적용됩니다. 패턴이 동일하게 구체적인 경우에는 목록에서 마지막에 표시되는 패턴이 적용됩니다.
-
-헤더 이름은 RFC 2616( https://www.rfc-editor.org/rfc/rfc2616 )을 준수해야 합니다. 헤더 값에는 NUL, CR 또는 LF 기호가 포함되어서는 안 됩니다. 개별 헤더는 8KB를 초과할 수 없습니다. 잘못된 헤더 및 URL 패턴은 무시됩니다.
-
-이 정책은 모든 규칙에서 총 500개 URL 패턴으로 제한됩니다. 각 규칙에는 최대 20개 헤더가 포함될 수 있습니다. 이러한 기준점을 초과하는 패턴과 헤더는 무시됩니다.</translation>
 <translation id="624595269193747921">일치하는 프린터 검색을 특정 프린터 집합으로 제한할지를 나타냅니다.</translation>
 <translation id="6246290059248303618">로컬 네트워크에 있는 다른 기기에서 시작한 <ph name="PRODUCT_NAME" /> 세션에 미디어 컨트롤을 표시합니다.</translation>
 <translation id="6247316685259031374">이 정책은 오디오 프로세스 샌드박스를 제어합니다.
@@ -10040,23 +10032,6 @@ SkyVault 사용자에게만 적용됩니다. 즉, LocalUserFilesAllowed가 false
 
       참고: 현재 스캔 기능은 기능 플래그를 통해 기본적으로 사용 중지되어 있습니다. 사용자가 기능 플래그를 통해 사용 설정하는 경우에도 정책에 따라 기능이 계속 사용 중지될 수 있습니다.</translation>
 <translation id="7115684775550072082">텍스트 및 XML MIME 유형일 경우에만 공백 유지</translation>
-<translation id="7116098886490965998">나열된 ID 공급업체에서 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />를 사용한 싱글 사인온(SSO)을 사용 중지합니다.
-
-<ph name="POLICY_VALUE_ALL" /> 값을 추가하면 SSO에 대해 지원되는 모든 ID 공급업체가 사용 중지됩니다.
-
-<ph name="POLICY_VALUE_MICROSOFT" /> 값을 추가하면 Chrome에서 Microsoft® 클라우드 ID 공급업체에 대한 싱글 사인온(SSO) 지원이 중지됩니다.
-
-이 정책을 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 지원하는 모든 ID 공급업체가 사용 설정됩니다.
-
-<ph name="PRODUCT_NAME" />에서 사용 설정되어 있고 관리자가 기기에서 구성한 ID 공급업체의 경우, <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />를 지원하는 애플리케이션에서 해당 ID 공급업체를 사용하여 한 번 로그인한 사용자는 해당 ID 공급업체를 사용하여 웹 서비스에 자동으로 로그인할 수 있습니다. 각 인증 이벤트의 사용자 인증 정보 관련 정보가 사용자의 클라우드 ID 공급업체로 전송됩니다.
-
-참고:
-
-<ph name="PRODUCT_NAME" />에서는 시크릿 모드 또는 게스트 모드에서 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />를 사용한 싱글 사인온(SSO)을 지원하지 않습니다.
-
-<ph name="PRODUCT_NAME" />에서는 Microsoft, Okta와 같은 ID 공급업체에 대해 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />를 사용한 싱글 사인온(SSO)만 지원합니다.
-
-이 기능은 <ph name="MAC_OS_NAME" /> 10.15부터 사용할 수 있습니다.</translation>
 <translation id="7119538491527883595">로컬 사용자 데이터 저장소</translation>
 <translation id="7121046543122812054">이 정책은 지원 중단되었으므로 <ph name="BROWSER_SIGNIN_POLICY_NAME" /> 정책을 대신 사용하시기 바랍니다.
 
@@ -12471,6 +12446,17 @@ false로 설정되면 정책 데이터 및 정책을 가져오는 시간이 수�
 <translation id="8621146428060651659">프록시에 대한 소켓 풀 무작위화 허용</translation>
 <translation id="862621549134406761">RSA 키 사용 검사를 사용 설정합니다.</translation>
 <translation id="8626826495474944836">모든 사이트에 사이트 격리 필요</translation>
+<translation id="8628954914373039931">이 설정은 사용자가 <ph name="PRODUCT_OS_NAME" /> 기기에 로그인한 후 브라우저 창의 콘텐츠 영역 및 Android 애플리케이션에서 Google 계정 간에 전환하도록 허용합니다.
+
+      이 정책을 false로 설정하면 시크릿 모드가 아닌 브라우저 콘텐츠 영역 및 Android 애플리케이션에서 다른 Google 계정에 로그인할 수 없습니다.
+
+      이 정책을 설정하지 않거나 True로 설정하면 기본 동작이 사용되어 브라우저 콘텐츠 영역 및 Android 애플리케이션에서 다른 Google 계정에 로그인할 수 있습니다. 단, 자녀 계정은 시크릿 모드가 아닌 콘텐츠 영역에서 차단됩니다.
+
+      Android에서는 이 설정을 통해 사용자가 <ph name="PRODUCT_NAME" />에 로그인되어 있으면 Google 웹사이트의 콘텐츠 영역에서 Google 계정을 더 추가할 수 있는지 여부를 제어합니다. 이 정책을 false로 설정하면 Google 웹사이트에서 다른 Google 계정을 추가하는 옵션(예: 계정 메뉴의 '다른 계정 추가' 버튼)을 제공하지 않습니다. 이 정책을 설정하지 않거나 true로 설정하면 Google 웹사이트에서 다른 Google 계정을 추가할 수 있습니다. 이 정책은 Android 기기 자체에 Google 계정을 추가하는 것을 차단하지 않습니다.
+
+      시크릿 모드를 통해 다른 계정에 로그인하지 못하도록 하려면 IncognitoModeAvailability 정책을 사용하여 시크릿 모드를 차단해 보세요.
+
+      사용자가 쿠키를 차단하면 인증되지 않은 상태로 Google 서비스에 액세스할 수 있습니다.</translation>
 <translation id="8630797597241896082">생성형 AI VC 배경 허용 및 AI 모델 개선</translation>
 <translation id="8631314130868563649">피크 시프트 전원 관리 사용 중지</translation>
 <translation id="8631434304112909927">버전 <ph name="UNTIL_VERSION" /> 이하</translation>

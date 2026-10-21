@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Personalizējiet pārlūku Chrome, izmantojot pielāgotas krāsas un attēlus sākumlapai.</translation>
 <translation id="389521680295183045">Vietnēs var tikt pieprasīta informācija par to, kad jūs aktīvi lietojat savu ierīci.</translation>
 <translation id="3895926599014793903">Tālummaiņas piespiedu iespējošana</translation>
-<translation id="3905475044299942653">Apturiet pārmērīgus paziņojumus</translation>
 <translation id="3922092564198021702">Tālrunī atveriet sadaļu Iestatījumi.</translation>
 <translation id="3924858949939391676">Rādīt saites, kad ir ieslēgts lasīšanas režīms</translation>
 <translation id="3933121352599513978">Sakļaut nevēlamos pieprasījumus (ieteicams)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Savas grupas varēsiet skatīt ciļņu grupu sadaļā visās savās ierīcēs.</translation>
 <translation id="4945443401464700059">Vietnei <ph name="SITE" /> ir liegts izmantot jūsu informāciju</translation>
 <translation id="4953688446973710931">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju automātiski lejupielādēt vairākus failus. Kad šis slēdzis ir izslēgts, vietnes nevar automātiski lejupielādēt vairākus failus.</translation>
-<translation id="4962975101802056554">Atsaukt visas atļaujas, kas piešķirtas ierīcei</translation>
 <translation id="4972737347717125191">Atļaut vietnēm pieprasīt atļauju izmantot virtuālās realitātes ierīces un datus</translation>
 <translation id="4973805849704516244">Chrome krāsu ekrāna apakšdaļas lapa</translation>
 <translation id="497421865427891073">Doties uz priekšu</translation>
@@ -704,7 +702,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus.</transl
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="8441146129660941386">Pārtīt atpakaļ</translation>
 <translation id="8444433999583714703">Lai atļautu lietotnei <ph name="APP_NAME" /> piekļūt jūsu atrašanās vietas datiem, ieslēdziet atrašanās vietas noteikšanu arī <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Atsaukt ierīces atļauju</translation>
 <translation id="8463843545738141778">Šis iestatījums ir atspējots, jo Android iestatījumos ieslēdzāt papildu aizsardzību.</translation>
 <translation id="8467359479529706065">Jaunas cilnes lapas izskata ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā</translation>
 <translation id="8471525937465764768">Parasti vietnēs savienojums ar USB ierīcēm tiek veidots, lai nodrošinātu noteiktas funkcijas, piemēram, dokumentu drukāšanu vai saglabāšanu atmiņas ierīcē.</translation>

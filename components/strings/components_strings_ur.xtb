@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
-<translation id="1003222766972176318">یاد دہانی: محفوظ کردہ پیشکش دستیاب ہے</translation>
 <translation id="1008557486741366299">ابھی نہیں</translation>
 <translation id="100957008357583611">آپ کا مقام استعمال کریں؟</translation>
 <translation id="1010200102790553230">صفحہ بعد میں لوڈ کریں</translation>
@@ -240,6 +239,7 @@
 <translation id="1393071644879491291">‏آپ نے جو سائٹ ملاحظہ کرنے کی کوشش کی ہے، اس پر حملہ آور دھوکے سے آپ سے سافٹ ویئر انسٹال کروا سکتے ہیں یا آپ کے پاس ورڈز، فون یا کریڈٹ کارڈ نمبرز جیسی چیزیں افشاء کروا سکتے ہیں۔ ‫Chrome تحفظ پر واپس جانے کا پُرزور مشورہ دیتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">‏‫Google والٹ میں ID کارڈ کو محفوظ طریقے سے شامل کریں</translation>
 <translation id="1398743098754840707">یہاں شامل کردہ سائٹس کو جوابات کے لیے حوالہ نہیں دیا جائے گا، چاہے ٹیب کھلا ہو۔ اگر آپ کی شامل کردہ سائٹ فی الحال کسی سلسلہ میں استعمال ہو رہی ہے تو سلسلہ کو اس کا حوالہ دینا بند کرنے میں 30 منٹ تک لگ سکتے ہیں۔</translation>
+<translation id="1403359480263156644">کارڈ کے حامل کا نام اپ ڈیٹ ہو گیا</translation>
 <translation id="1405567553485452995">ہلکا سبز</translation>
 <translation id="1406370515365284486">آپ کے ادائیگی کے طریقے اب بھی محفوظ کیے جائیں گے</translation>
 <translation id="1406500794671479665">توثیق ہو رہی ہے…</translation>
@@ -908,6 +908,7 @@
 <translation id="2498091847651709837">نیا کارڈ اسکین کریں</translation>
 <translation id="2501270939904835585">لیبلز (ساٹن)</translation>
 <translation id="2501278716633472235">پیچھے جائیں</translation>
+<translation id="250307989715832083">دستخط شامل کریں</translation>
 <translation id="250346157641628208">کاغذ (انک جیٹ)</translation>
 <translation id="2505063700931618106">کارڈ کی معلومات محفوظ ہو گئی</translation>
 <translation id="2505268675989099013">اکاؤنٹ محفوظ کریں</translation>
@@ -1464,7 +1465,6 @@
 <translation id="3479552764303398839">ابھی نہیں</translation>
 <translation id="3481315707647070701">ویژوئلائز کریں اور ترمیم کریں</translation>
 <translation id="3484560055331845446">‏آپ اپنے Google اکاؤنٹ تک رسائی سے محروم ہو سکتے ہیں۔ Chrome تجویز کرتا ہے کہ آپ ابھی اپنا پاس ورڈ تبدیل کریں۔ آپ سے سائن ان کرنے کو کہا جائے گا۔</translation>
-<translation id="3484861421501147767">یاد دہانی: محفوظ کردہ پرومو کوڈ دستیاب ہے</translation>
 <translation id="3485901585646640838">‏اپنے Google اکاؤنٹ میں محفوظ کردہ پاس ورڈز اور مزید استعمال کرنے کے لیے توثیق کریں کہ یہ آپ ہی ہیں</translation>
 <translation id="3487845404393360112">ٹرے 4</translation>
 <translation id="3493881266323043047">درستگی</translation>
@@ -1922,6 +1922,7 @@
 <translation id="4218327733815631046">تخمینی مقام برقرار رکھیں</translation>
 <translation id="4219596572397833317">اسمارٹ خریداری میں آپ کی مدد کے لیے قیمت کی سرگزشت اور مزید دیکھیں۔</translation>
 <translation id="4220128509585149162">کریشز</translation>
+<translation id="4220745762102459826">اور مزید</translation>
 <translation id="4221630205957821124">‏&lt;h4&gt;مرحلہ 1: پورٹل میں سائن ان کریں&lt;/h4&gt;
     &lt;p&gt;کیفیز یا ایئرپورٹس جیسے مقامات پر دستیاب Wi-Fi نیٹ ورکس کیلئے آپ کو سائن ان کرنے کی ضرورت پڑتی ہے۔ سائن ان صفحہ دیکھنے کیلئے، کسی ایسے صفحے پر جائیں جو&lt;code&gt;http://&lt;/code&gt; کا استعمال کرتا ہے۔&lt;/p&gt;
     &lt;ol&gt;
@@ -2297,6 +2298,7 @@
 <translation id="483241715238664915">وارننگز کو آن کریں</translation>
 <translation id="4833567658337394628">پیسٹ کرنے کی تجویز نہیں کی جاتی ہے</translation>
 <translation id="4840250757394056958">‏اپنے Chrome کی سرگزشت دیکھیں</translation>
+<translation id="4842085418602350953">‏اگلی بار ایپس کو سوئچ کیے بغیر Pix کے ساتھ ادائیگی کریں</translation>
 <translation id="4842365697443353018">بعد میں ادائیگی کرنے کا اختیار استعمال کرنے کیلئے فارم صاف کریں</translation>
 <translation id="484462545196658690">خودکار</translation>
 <translation id="4844937814014739139">اشتراک کردہ ٹیبز کو اسکرول اور زوم کرنا</translation>
@@ -2883,6 +2885,7 @@
 <translation id="5794065675298686371">قیمت کی ٹریکنگ کرنے والی اطلاعات کو آن کریں</translation>
 <translation id="5794093550048860249">ٹریکنگ نمبر</translation>
 <translation id="5796050750059455142">‏"<ph name="BEGIN_LINK" />‫Google کے دیگر پروڈکٹس میں اسمارٹ خصوصیات<ph name="LINK_END" />" کو آن کریں</translation>
+<translation id="5797916798049571144">یہ آپ کے کارڈ کی معلومات کے ساتھ محفوظ ہے لہذا یہ چیک آؤٹ پر خودکار طور پر پُر ہو جائے گا</translation>
 <translation id="5797984091151707075">منتظم کی پالیسی کے ذریعے بلاک کردہ</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
 <translation id="5806871454498484178">اسکرول اور زوم مسدود ہے</translation>
@@ -3445,6 +3448,7 @@
 <translation id="6753460329812070808">‏‫Chrome سے تجویز ہٹا دی گئی</translation>
 <translation id="6757797048963528358">آپ کا آلہ سیلپ وضع میں چلا گیا۔</translation>
 <translation id="6758934187792712102"><ph name="URL" /> آپ کے موشن اور لائٹ سینسرز کا استعمال کرنا چاہتا ہے</translation>
+<translation id="6766488013065406604">‏Google پاس ورڈ مینیجر پر جائیں</translation>
 <translation id="6770747695101757579">کاغذ (کاٹن)</translation>
 <translation id="6772959465807028761">‏‫YouTube استعمال کرنے کے لیے، اپنے Google اکاؤنٹ کے ساتھ جاری رکھیں</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3655,7 +3659,6 @@
 <translation id="7120588595737538743">ڈاؤن لوڈز اور اسکرین شاٹس</translation>
 <translation id="7124354851782353862">‏اپنا CVC درج کریں</translation>
 <translation id="7129409597930077180">اس پتے پر ترسیل نہیں ہو سکتی۔ کوئی مختلف پتہ منتخب کریں۔</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">اپ لوڈ کرنا مسدود ہے</translation>
 <translation id="7132939140423847331">آپ کے منتظم نے اس ڈیٹا کے کاپی کیے جانے پر پابندی لگائی ہے۔</translation>
 <translation id="7134653428559514680">اس سائٹ سے اشتراک کرنے کی تجویز نہیں کی جاتی ہے</translation>
@@ -4302,6 +4305,7 @@
 <translation id="8208629719488976364">‏آپ کے پرنٹ کردہ صفحات کا مواد اور آپ کے پرنٹر کے بارے میں معلومات کو تجزیہ کی خاطر Google کلاؤڈ یا فریقین ثالث کو بھیجا جاتا ہے۔ مثال کے طور پر، اسے حساس ڈیٹا کے لیے اسکین کیا جا سکتا ہے اور کمپنی کی پالیسیوں کی بنیاد پر اسٹور کیا جا سکتا ہے اور یہ آپ کے منتظم کو دکھائی دے سکتی ہے۔</translation>
 <translation id="8210490490377416373">پالیسی کا نام منتخب کریں</translation>
 <translation id="8211406090763984747">کنکشن محفوظ ہے</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{‫+ 1 دیگر ماخذ}other{‫+ # دیگر مآخذ}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">‏‎14 x 18 انچ</translation>
 <translation id="8218327578424803826">تفویض کردہ مقام</translation>

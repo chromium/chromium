@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">換上喜歡的首頁顏色和圖片，建立專屬 Chrome 瀏覽器</translation>
 <translation id="389521680295183045">網站可以要求偵測您使用裝置的時間</translation>
 <translation id="3895926599014793903">強制啟用縮放功能</translation>
-<translation id="3905475044299942653">禁止傳送大量通知</translation>
 <translation id="3922092564198021702">在手機開啟「設定」</translation>
 <translation id="3924858949939391676">開啟「閱讀模式」後顯示連結</translation>
 <translation id="3933121352599513978">收合不需要的要求 (建議)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">你可在「分頁群組」部分中查看所有裝置中的群組</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> 已被封鎖，無法在以下位置使用你的資料：</translation>
 <translation id="4953688446973710931">開咗之後，網站可以要求自動下載多個檔案。閂咗之後，網站唔可以自動下載多個檔案。</translation>
-<translation id="4962975101802056554">撤銷裝置所有的權限</translation>
 <translation id="4972737347717125191">網站可要求使用虛擬實境﻿裝置和資料</translation>
 <translation id="4973805849704516244">Chrome 顏色頁底面板</translation>
 <translation id="497421865427891073">往前</translation>
@@ -704,7 +702,6 @@
 <translation id="8428213095426709021">設定</translation>
 <translation id="8441146129660941386">向後回轉</translation>
 <translation id="8444433999583714703">如要讓 <ph name="APP_NAME" /> 存取您的位置，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟「位置資訊」功能。</translation>
-<translation id="8447861592752582886">撤消裝置權限</translation>
 <translation id="8463843545738141778">你已在 Android 設定中啟用「進階保護」功能，因此這項設定已停用。</translation>
 <translation id="8467359479529706065">新分頁外觀頁底面板宜家顯示喺畫面下半部</translation>
 <translation id="8471525937465764768">網站通常會連接 USB 裝置，以提供列印文件或儲存至儲存裝置等功能</translation>

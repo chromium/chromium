@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Atvērt jaunā ciļņu grupā</translation>
 <translation id="1670861525135254448">Transportlīdzekļa informācijas saglabāšana</translation>
 <translation id="1671568970992212376">Saglabājiet fotoattēlus pakalpojumā Google fotoattēli un piekļūstiet tiem jebkurā laikā.</translation>
+<translation id="1671824312818944549">Piezīme. Šis iestatījums darbojas labāk operētājsistēmā iOS 27 vai jaunākā versijā.</translation>
 <translation id="1674504678466460478">No <ph name="SOURCE_LANGUAGE" /> uz <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Zīmējiet, atzīmējiet ekrānā redzamo saturu vai pieskarieties tam, lai meklētu.</translation>
 <translation id="1678855624321223424">Pamatojoties uz jūsu organizācijas politikām, šajā failā var būt ietverta sensitīva informācija.</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">Sveicam atpakaļ!</translation>
 <translation id="2015722694326466240">Lai skatītu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="201759455285471444">Izvērst ciļņu grupu.</translation>
+<translation id="2022431790688770637">Pārvaldīt Gemini ieteikumus</translation>
 <translation id="2031515492007104071">Līmeņa paaugstināšana</translation>
 <translation id="2044394949148788042">Atveriet ciļņu režģi.</translation>
 <translation id="2044681667265133332">Kontu <ph name="USER_EMAIL" /> pārvalda domēnam <ph name="HOSTED_DOMAIN" /> atbilstošā organizācija, kas, iespējams, var skatīt noteiktu informāciju. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">Uzdodiet jautājumus un saņemiet MI nodrošinātas atbildes.</translation>
 <translation id="2870560284913253234">Vietne</translation>
 <translation id="2876369937070532032">Nosūta Google serveriem dažu apmeklēto lapu vietrāžus URL, ja jūsu drošība ir apdraudēta</translation>
+<translation id="2880119244122776372">Izveidojiet un kodējiet</translation>
 <translation id="2883151425485251736">Skatiet un rediģējiet no konta paslēptās tēmas</translation>
 <translation id="2884437560239137197">Nepieciešama rīcība</translation>
 <translation id="288655811176831528">Aizvērt cilni</translation>
@@ -1695,6 +1698,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6301104306974789820">Saņemt cenu izsekošanas paziņojumus</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Izvēlieties adreses joslas pozīciju</translation>
+<translation id="6305257382500066042">Izmēģināt jau tūlīt</translation>
 <translation id="6307241780749477694">Apstipriniet savu identitāti, lai iegūtu visas savas paroles šajā ierīcē.</translation>
 <translation id="6307792728709337290">Saglabājiet karti savā Google kontā, lai tās datus varētu automātiski aizpildīt šim un turpmākiem pirkumiem, kas veikti pārlūkā Chrome.</translation>
 <translation id="6316141353357700666">Parādītajā sarakstā izvēlieties paroli, kuru vēlaties izmantot.</translation>
@@ -1848,7 +1852,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6708501134077648845">Paroles iespējas</translation>
 <translation id="6709964700841491574">Bloķēšanas režīms</translation>
 <translation id="6710079714193676716">Pārvalda jūsu organizācija. Dažas funkcijas var nebūt pieejamas. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
-<translation id="6712003214447962889">Viedākas, ātrākas atbildes</translation>
 <translation id="6713676799463473249">Pārveidots: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Saņemtās cilnes</translation>
 <translation id="6722638373100589752">Lai automātiski aizpildītu informāciju, lietotnes Maks iestatījumos ieslēdziet iestatījumu “Izmantot sabiedriskā transporta kartes Google tīklā”.</translation>
@@ -2060,7 +2063,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Turpināt</translation>
 <translation id="741204030948306876">Jā, piekrītu</translation>
-<translation id="7417055777338419059">Kodējiet, rakstiet vai veidojiet slaidus</translation>
 <translation id="7419565702166471774">Vienmēr izmantot drošus savienojumus</translation>
 <translation id="7423098979219808738">Vispirms jautāt</translation>
 <translation id="7425053386765766120">Maksājuma veida pievienošana…</translation>
@@ -2110,6 +2112,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="7525067979554623046">Izveidot</translation>
 <translation id="75362970626182391">Jauna ciļņu grupa</translation>
 <translation id="7537586195939242955">Diemžēl pašlaik jūsu atļauju nevar instalēt lietotnē Passbook.</translation>
+<translation id="7540924742308928499">Ģenerējiet idejas un apkopojiet informāciju</translation>
 <translation id="754655535278952384">Pārbaudes laiks: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Aizvērt visas</translation>
 <translation id="7557508262441527045">Izrakstījies</translation>
@@ -2479,7 +2482,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8642417828095157370">Cilnes tiek kopīgotas, lai saņemtu atbilstošākas atbildes</translation>
 <translation id="8643403533759285912">Dzēst grupu</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">Nevarēja pārtraukt cenas izsekošanu.</translation>
 <translation id="8654802032646794042">Atcelt</translation>
 <translation id="8655861111558401309">Atlasiet vienumu Dzēst pārlūkošanas datus.</translation>
 <translation id="8659875081143553823">Uzgaidiet!</translation>

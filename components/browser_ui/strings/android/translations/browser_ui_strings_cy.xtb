@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Gwnewch Chrome yn unigryw i chi gyda lliwiau a lluniau personol ar gyfer eich hafan</translation>
 <translation id="389521680295183045">Gall gwefannau ofyn am wybod pan fyddwch wrthi'n defnyddio'ch dyfais</translation>
 <translation id="3895926599014793903">Gorfodi galluogi chwyddo</translation>
-<translation id="3905475044299942653">Atal llawer o hysbysiadau</translation>
 <translation id="3922092564198021702">Ar eich ffôn, agorwch y Gosodiadau</translation>
 <translation id="3924858949939391676">Dangos dolenni unwaith y bydd y Modd Darllen ymlaen</translation>
 <translation id="3933121352599513978">Crebachu ceisiadau digroeso (argymhellir)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Byddwch yn gweld eich grwpiau yn yr adran grwpiau tab ar draws eich holl ddyfeisiau</translation>
 <translation id="4945443401464700059">Mae <ph name="SITE" /> wedi'i rhwystro rhag defnyddio eich gwybodaeth ar</translation>
 <translation id="4953688446973710931">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am lawrlwytho mwy nag un ffeil yn awtomatig. Pan fydd wedi'i ddiffodd, ni all gwefannau lawrlwytho mwy nag un ffeil yn awtomatig.</translation>
-<translation id="4962975101802056554">Dirymu pob caniatâd ar gyfer y ddyfais</translation>
 <translation id="4972737347717125191">Gall gwefannau ofyn am gael defnyddio dyfeisiau rhithwirionedd a'u data</translation>
 <translation id="4973805849704516244">Dalen waelod Lliwiau Chrome</translation>
 <translation id="497421865427891073">Mynd ymlaen</translation>
@@ -704,7 +702,6 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:</translation>
 <translation id="8428213095426709021">Gosodiadau</translation>
 <translation id="8441146129660941386">Mynd yn ôl</translation>
 <translation id="8444433999583714703">I ganiatáu i <ph name="APP_NAME" /> gael mynediad at eich lleoliad, trowch leoliad ymlaen yn <ph name="BEGIN_LINK" />Gosodiadau Android<ph name="END_LINK" /> hefyd.</translation>
-<translation id="8447861592752582886">Dirymu caniatâd dyfais</translation>
 <translation id="8463843545738141778">Mae'r gosodiad hwn wedi'i analluogi oherwydd i chi droi Advanced Protection ymlaen yng Ngosodiadau Android.</translation>
 <translation id="8467359479529706065">Ymddangosiad dalen waelod tudalen tab newydd wedi'i hagor ar hanner uchder</translation>
 <translation id="8471525937465764768">Mae gwefannau fel arfer yn cysylltu â dyfeisiau USB ar gyfer nodweddion megis argraffu dogfen neu gynilo i ddyfais storio</translation>

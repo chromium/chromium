@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Открыть в новой группе вкладок</translation>
 <translation id="1670861525135254448">Сохранить данные о транспортном средстве?</translation>
 <translation id="1671568970992212376">Сохраняйте фотографии в Google Фото, чтобы они всегда были под рукой.</translation>
+<translation id="1671824312818944549">Примечание. Эта настройка лучше работает на iOS 27 и более поздних версий.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Обведите, выделите или нажмите на интересующий вас объект.</translation>
 <translation id="1678855624321223424">Согласно правилам вашей организации этот файл может содержать конфиденциальную информацию</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">С возвращением!</translation>
 <translation id="2015722694326466240">Чтобы просматривать пароли, настройте на устройстве код доступа.</translation>
 <translation id="201759455285471444">Развернуть группу вкладок.</translation>
+<translation id="2022431790688770637">Настроить подсказки от Gemini</translation>
 <translation id="2031515492007104071">Повышение уровня</translation>
 <translation id="2044394949148788042">Откройте сетку таблицы.</translation>
 <translation id="2044681667265133332">Аккаунтом <ph name="USER_EMAIL" /> управляет <ph name="HOSTED_DOMAIN" />. Некоторая ваша информация может быть видна этой организации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">Задавайте любые вопросы и получайте ответы от ИИ</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2876369937070532032">При угрозе безопасности отправлять в Google URL некоторых страниц, которые вы открываете</translation>
+<translation id="2880119244122776372">Создавайте и программируйте</translation>
 <translation id="2883151425485251736">Просмотр и изменение тем, которые вы скрыли</translation>
 <translation id="2884437560239137197">требуется действие</translation>
 <translation id="288655811176831528">Закрыть вкладку</translation>
@@ -1695,6 +1698,7 @@
 <translation id="6301104306974789820">Получать уведомления об изменении цены</translation>
 <translation id="6301767200000930965">Аа</translation>
 <translation id="630308129961693966">Выберите место адресной строки</translation>
+<translation id="6305257382500066042">Попробовать</translation>
 <translation id="6307241780749477694">Подтвердите личность, чтобы получить доступ ко всем паролям на этом устройстве.</translation>
 <translation id="6307792728709337290">Сохраните карту в аккаунте Google, и ее реквизиты автоматически заполнятся при этой и будущих покупках в Chrome.</translation>
 <translation id="6316141353357700666">Выберите пароль из списка.</translation>
@@ -1848,7 +1852,6 @@
 <translation id="6708501134077648845">Параметры паролей</translation>
 <translation id="6709964700841491574">Режим блокировки входа</translation>
 <translation id="6710079714193676716">Браузером управляет ваша организация. Некоторые функции могут быть недоступны. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">Более быстрые и точные ответы</translation>
 <translation id="6713676799463473249">Изменено <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Полученные вкладки</translation>
 <translation id="6722638373100589752">Чтобы ваши сведения подставлялись автоматически, в настройках Кошелька включите параметр "Использовать в сервисах Google".</translation>
@@ -2060,7 +2063,6 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Продолжить</translation>
 <translation id="741204030948306876">ОК</translation>
-<translation id="7417055777338419059">Пишите код или текст и создавайте презентации</translation>
 <translation id="7419565702166471774">Всегда использовать безопасные соединения</translation>
 <translation id="7423098979219808738">Сначала спрашивать</translation>
 <translation id="7425053386765766120">Добавить способ оплаты</translation>
@@ -2110,6 +2112,7 @@
 <translation id="7525067979554623046">Создать</translation>
 <translation id="75362970626182391">Новая группа вкладок</translation>
 <translation id="7537586195939242955">Не удалось внести данные в Passbook.</translation>
+<translation id="7540924742308928499">Поиск идей и краткий пересказ</translation>
 <translation id="754655535278952384">Проверено <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Закрыть все</translation>
 <translation id="7557508262441527045">Выполнен выход</translation>
@@ -2479,7 +2482,6 @@
 <translation id="8642417828095157370">Чтобы давать более подходящие ответы, Gemini получит доступ к вкладкам</translation>
 <translation id="8643403533759285912">Удалить группу</translation>
 <translation id="8646357898207744479">Объектив</translation>
-<translation id="8647280737650867362">Не удалось перестать отслеживать цену.</translation>
 <translation id="8654802032646794042">Отмена</translation>
 <translation id="8655861111558401309">Выберите "Удалить данные о работе в браузере"</translation>
 <translation id="8659875081143553823">Подождите…</translation>

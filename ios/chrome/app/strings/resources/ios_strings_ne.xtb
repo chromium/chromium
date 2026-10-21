@@ -625,6 +625,7 @@
 <translation id="2865392654629180917">जुनसुकै कुरा सोध्नुहोस् र AI मा आधारित जवाफहरू प्राप्त गर्नुहोस्</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2876369937070532032">यसले तपाईंको सुरक्षा जोखिममा हुँदा तपाईंले भ्रमण गर्ने केही पृष्ठका URL हरू Google मा पठाउँछ</translation>
+<translation id="2880119244122776372">बनाउनुहोस् र कोडिङ गर्नुहोस्</translation>
 <translation id="2883151425485251736">तपाईंले आफ्नो खाताबाट लुकाएका विषयहरू हेर्नुहोस् र बदल्नुहोस्</translation>
 <translation id="2884437560239137197">कारबाही गर्नु पर्ने हुन्छ</translation>
 <translation id="288655811176831528">ट्याब बन्द गर्नुहोस्</translation>
@@ -1697,6 +1698,7 @@
 <translation id="6301104306974789820">तपाईंले ट्र्याक गरेका उत्पादनको मूल्य घटेका खण्डमा सूचना प्राप्त गर्नुहोस्</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">आफ्नो एड्रेस बार कहाँ राख्ने भन्ने कुरा छनौट गर्नुहोस्</translation>
+<translation id="6305257382500066042">अहिले नै प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="6307241780749477694">यो डिभाइसमा भएका आफ्ना सबै पासवर्ड प्राप्त गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="6307792728709337290">यो खरिद र भविष्यमा Chrome मार्फत खरिद गर्दा कार्ड नम्बर स्वतः भरियोस् भन्नाका लागि Google खातामा आफ्नो कार्ड सेभ गर्नुहोस्।</translation>
 <translation id="6316141353357700666">तपाईंलाई देखाइने सूचीबाट आफूले प्रयोग गर्न चाहेको पासवर्ड छनौट गर्नुहोस्।</translation>
@@ -1850,7 +1852,6 @@
 <translation id="6708501134077648845">पासवर्डसम्बन्धी विकल्पहरू</translation>
 <translation id="6709964700841491574">लकडाउन मोड</translation>
 <translation id="6710079714193676716">तपाईंको सङ्गठनले यो ब्राउजर व्यवस्थापन गर्छ। केही सुविधाहरू उपलब्ध नहुन सक्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">अझ स्मार्ट र छिटा जवाफहरू</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" /> मा परिमार्जन गरिएको</translation>
 <translation id="6722623263381062480">प्राप्त भएका ट्याबहरू</translation>
 <translation id="6722638373100589752">आफ्नो जानकारी अटोफिल गर्न Wallet का सेटिङमा गई “Google का विभिन्न सेवामा पासहरू प्रयोग गर्नुहोस्” अन गर्नुहोस्</translation>
@@ -2062,7 +2063,6 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />। <ph name="MANAGED_STATUS" />।</translation>
 <translation id="7412027924265291969">जारी राख्नुहोस्</translation>
 <translation id="741204030948306876">हुन्छ, म सहमत छु</translation>
-<translation id="7417055777338419059">कोडिङ गर्नुहोस्, लेख्नुहोस् वा स्लाइडहरू बनाउनुहोस्</translation>
 <translation id="7419565702166471774">सधैँ सुरक्षित कनेक्सन प्रयोग गर्नुहोस्</translation>
 <translation id="7423098979219808738">पहिले सोध्नुहोस्</translation>
 <translation id="7425053386765766120">भुक्तानी विधि हाल्नुहोस्…</translation>
@@ -2112,6 +2112,7 @@
 <translation id="7525067979554623046">सिर्जना गर्नुहोस्</translation>
 <translation id="75362970626182391">नयाँ ट्याब समूह</translation>
 <translation id="7537586195939242955">माफ गर्नुहोस्, यस समयमा तपाईंको पासलाई पासबुकमा स्थापना गर्न सकिदैन।</translation>
+<translation id="7540924742308928499">आइडिया फुराउनुहोस् र सारांश बनाउनुहोस्</translation>
 <translation id="754655535278952384"><ph name="TIME" /> जाँच गरियो</translation>
 <translation id="7554645225856321710">सबै ट्याब बन्द गर्नुहोस्</translation>
 <translation id="7557508262441527045">साइन आउट गरिएको छ</translation>
@@ -2481,7 +2482,6 @@
 <translation id="8642417828095157370">अझ सान्दर्भिक जवाफहरू दिने प्रयोजनका लागि ट्याबहरू सेयर गरिन्छन्</translation>
 <translation id="8643403533759285912">समूह मेटाउनुहोस्</translation>
 <translation id="8646357898207744479">लेन्स</translation>
-<translation id="8647280737650867362">मूल्य ट्र्याक गर्ने कार्य रद्द गर्न सकिएन।</translation>
 <translation id="8654802032646794042">रद्द गर्नुहोस्</translation>
 <translation id="8655861111558401309">"ब्राउजिङ डेटा मेटाउनुहोस्" चयन गर्नुहोस्</translation>
 <translation id="8659875081143553823">एकै सेकेन्ड</translation>

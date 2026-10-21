@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவலைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள பக்கக் குழுவைச் சுருக்கும்.}}</translation>
 <translation id="2569352796411618312">பரிந்துரை: உங்களின் <ph name="NUMBER_OF_TABS" /> தாவல்கள் சமீபத்தில் பயன்படுத்தவில்லை. அவற்றை மூட வேண்டுமா?</translation>
 <translation id="257674075312929031">குழு</translation>
+<translation id="2628148780487543078">இடம் மாறாத பக்கங்களையும் மூடு</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_ONE" /> பக்கம் உள்ள பக்கக் குழுவை மீட்டெடுத்துத் திறக்கும்.}other{<ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள பக்கக் குழுவை மீட்டெடுத்துத் திறக்கும்.}}</translation>
 <translation id="2662028055331606429">ரேட்டிங்: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">தளத்திற்குச் செல்</translation>

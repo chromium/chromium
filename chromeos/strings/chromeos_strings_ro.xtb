@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Pentru un rezultat aproximativ, împarte valoarea pentru <ph name="CATEGORY_TEXT" /> la <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Sursa imaginii</translation>
 <translation id="1446954767133808402">safir</translation>
-<translation id="1449035143498573192">Deschide în Căutarea Google</translation>
 <translation id="1451536289672181509">Dispozitivul este o tastatură.</translation>
 <translation id="1452939186874918380">umbrele</translation>
 <translation id="145402479967797468">Comenzi de redare</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Previzualizează <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Rețea VPN încorporată</translation>
 <translation id="1669047024429367828">Vizibilitate</translation>
-<translation id="1670478569471758522">Mai multe informații despre selecția ta</translation>
 <translation id="1672499492233627739">Feed video de la camera web</translation>
 <translation id="1676557873873341166">Se înregistrează un videoclip</translation>
 <translation id="1684279041537802716">Culoarea de evidențiere</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Editarea s-a încheiat</translation>
 <translation id="3532980081107202182">Au mai rămas aproximativ <ph name="MIN_REMAINING" /> minute</translation>
 <translation id="3533790840489634638">iaz</translation>
-<translation id="3547264467365135390">Formulă</translation>
 <translation id="3552832331940389362">ilustrație japoneză cu o pisică așezată pe pervazul ferestrei, privind ploaia de după-amiază</translation>
 <translation id="3557205324756024651">Identitate locală (opțională)</translation>
 <translation id="3565064564551103223">Adrese IP permise</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Descriere</translation>
 <translation id="3869314628814282185">tul</translation>
 <translation id="387301095347517405">Numărul de cicluri complete de încărcare a bateriei</translation>
-<translation id="3877066159641251281">Ascultă traducerea</translation>
 <translation id="3880601782712134623">Detectează automat vocile distincte și acordă fiecărui vorbitor o etichetă generică, cum ar fi Vorbitor 1 și Vorbitor 2</translation>
 <translation id="38811596981744338">Problemă juridică</translation>
 <translation id="3885327323343477505">Schimbă screensaverul</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Deconectează cablul USB <ph name="DEVICE_NAME" />, apoi reintrodu-l pentru a continua procesul de actualizare</translation>
 <translation id="5099354524039520280">sus</translation>
 <translation id="5107243100836678918">Comanda rapidă fără <ph name="META_KEY" /> poate intra în conflict cu comanda rapidă a unei aplicații. Introdu din nou comanda rapidă ca să o folosești în continuare sau introdu o nouă comandă rapidă care folosește tasta <ph name="KEY" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Sinonime:</translation>
 <translation id="5130848777448318809">ponei</translation>
 <translation id="5137451382116112100">Complet</translation>
 <translation id="5139813694804168398">nu deranja</translation>
 <translation id="5140788690559353412">Când pierzi accesul la contul școlar, nu vei mai avea acces la e-mailul asociat și la fișierele Google Drive, cum ar fi Gmail, Documente, Prezentări și altele.</translation>
 <translation id="5142961317498132443">Autentificare</translation>
 <translation id="5144311987923128508">Butonul de confirmare este acum dezactivat</translation>
-<translation id="5144887194300568405">Copiază traducerea</translation>
 <translation id="5145081769226915336">Activezi automat modul întunecat?</translation>
 <translation id="5145331109270917438">Data modificării</translation>
 <translation id="5154917547274118687">Memorie</translation>

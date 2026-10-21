@@ -437,7 +437,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="130744661532298792">Untuk memastikan Anda selalu dapat menggunakan sandi yang tersimpan di Akun Google Anda, verifikasi diri Anda</translation>
 <translation id="1308105352527684175">Anda mungkin tidak dapat mengakses konten tertentu</translation>
 <translation id="1311092170520822848">Situs ini mengontrol pembaca kartu smart yang terhubung ke perangkat Anda dan kartu smart yang mungkin tersedia untuk pembaca kartu tersebut</translation>
-<translation id="131112175593356748">Tampilkan beberapa</translation>
 <translation id="131112695174432497">Data yang memengaruhi personalisasi iklan dihapus</translation>
 <translation id="131188242279372879">Temukan perlindungan yang ditingkatkan untuk mendapatkan tingkat keamanan tertinggi Chrome untuk hasil download</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Perbaiki Tab yang Memperlambat Browser Anda}other{Perbaiki Tab yang Memperlambat Browser Anda}}</translation>
@@ -2804,6 +2803,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3109206895301430738">Grup Tab Tersimpan</translation>
 <translation id="3109724472072898302">Diciutkan</translation>
 <translation id="3112292765614504292">Ukuran aplikasi: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Ciutkan</translation>
 <translation id="3112532142993641404">Untuk mengakses tab dari perangkat lain, login dan sinkronkan histori. Anda juga akan mendapatkan bookmark dan data lainnya di semua perangkat Anda. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="311347022006935575">Menambahkan tab ini</translation>
 <translation id="311394601889664316">Jangan izinkan situs mengedit file atau folder di perangkat Anda</translation>
@@ -4389,6 +4389,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4296632172536745000">Sandi awal Anda untuk situs ini ditemukan dalam pelanggaran data publik. Pada <ph name="DATE" />, Anda meminta <ph name="BRAND" /> untuk otomatis mengubah sandi Anda.</translation>
 <translation id="4297219207642690536">Mulai ulang dan reset</translation>
 <translation id="4297813521149011456">Rotasi layar</translation>
+<translation id="42981349822642051">Luaskan</translation>
 <translation id="4298660926525614540">Nama Penyimpanan Eksternal</translation>
 <translation id="4299022904780065004">&amp;Jendela Samaran baru</translation>
 <translation id="4300272766492248925">Buka aplikasi</translation>
@@ -5143,6 +5144,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4877276003880815204">Periksa Elemen</translation>
 <translation id="4878634973244289103">Tidak dapat mengirim masukan. Coba lagi nanti.</translation>
 <translation id="4878718769565915065">Gagal menambahkan sidik jari ke kunci keamanan ini</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}other{+#}}</translation>
 <translation id="4879491255372875719">Otomatis (default)</translation>
 <translation id="4880827082731008257">Telusuri histori</translation>
 <translation id="4881685975363383806">Jangan ingatkan saya lain kali</translation>
@@ -5627,6 +5629,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5247051749037287028">Nama yang ditampilkan (opsional)</translation>
 <translation id="5247243947166567755">Pilih <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">Tanya apa saja, langsung dari tempat Anda berada, dengan Gemini di Chrome</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{1 infobar lainnya akan muncul saat infobar ini ditutup}other{# infobar lainnya akan muncul saat infobar ini ditutup}}</translation>
 <translation id="5248934139541843042">Lihat penyelenggara</translation>
 <translation id="5249624017678798539">Browser mogok sebelum download selesai.</translation>
 <translation id="5249818097095743806">Gunakan kunci keamanan</translation>
@@ -5932,6 +5935,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5493792505296048976">layar aktif</translation>
 <translation id="5494016731375030300">Tab yang Baru Ditutup</translation>
 <translation id="5494362494988149300">Buka Setelah &amp;Selesai</translation>
+<translation id="5494439739088303974">Gunakan Google Lens untuk menanyakan informasi tentang teks atau gambar apa pun di halaman</translation>
 <translation id="5494879038325093596">Verifikasi diri Anda agar dapat mengaksesnya di semua perangkat dengan Akun Google Anda</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5495466433285976480">Hal ini akan menghapus semua pengguna lokal, file, data, dan setelan lain setelah Anda memulai ulang lagi. Semua pengguna perlu masuk kembali.</translation>

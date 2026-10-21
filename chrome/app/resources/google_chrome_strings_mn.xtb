@@ -118,7 +118,6 @@
 <translation id="2039417478970545937">Тохиргоо.</translation>
 <translation id="2040220733769034247">Chrome-г татаж, Google Бүртгэлдээ нэвтрэхийн тулд утсаараа QR кодыг скан хийнэ үү.</translation>
 <translation id="2044908892530830113">Mac-н цэсийн мөрд Chrome дахь хайлтыг харуулж, гарын товчлолыг асаагаарай</translation>
-<translation id="2050189601866423230">Та үзэх явцдаа асуулт асуухын тулд Google Хайлтын ХОУ-ы горимыг бэхлэх боломжтой</translation>
 <translation id="2091012649849228750">Google Chrome-н цаашдын шинэчлэлтийг авахын тулд танд Windows 10 эсвэл түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер Windows 8-г ашиглаж байна.</translation>
 <translation id="2094648590148273905">ChromeOS Flex-н нөхцөл</translation>
 <translation id="2094919256425865063">Ямар ч байсан Chrome-с гарах уу?</translation>
@@ -464,6 +463,7 @@
 <translation id="5386244825306882791">Энэ нь мөн таныг Chrome эхлүүлэхэд ямар хуудаснуудыг харуулах эсвэл Omnibox-оос хайхыг хянадаг.</translation>
 <translation id="5394833366792865639">Chrome-н таб хуваалцах</translation>
 <translation id="5402307365844630024">Chrome Бета дахь Gemini-г асаах/унтраах</translation>
+<translation id="5414664742659847155">Chrome-г бусад аппаас тусгаарлах</translation>
 <translation id="541844421954567481"><ph name="DEVICE_TYPE" /> дээрээ Chrome аппыг ашиглан нууц үг, таб болон бусад зүйлээ явж байх зуураа аваарай</translation>
 <translation id="5430073640787465221">Та сонгосон файл хүчин төгөлдөр бус эсвэл гэмтсэн байна.
 
@@ -679,6 +679,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7306401458628386911">Шуурхай үзэж эхлээрэй: Chrome одоо Windows-г эхлэх үед эхлэх боломжтой боллоо.</translation>
 <translation id="7308322188646931570">Файл татахын тулд Chrome-д санд хандах зөвшөөрөл шаардлагатай</translation>
 <translation id="7352651011704765696">Алдаа гарсан байна</translation>
+<translation id="7371412052245999753">Chrome-н санах ойг таны компьютер дээрх бусад аппликейшнаас хамгаална.</translation>
 <translation id="73786666777299047">Chrome Веб Дэлгүүр нээх</translation>
 <translation id="7386878009611068389">Эцэг эхийнхээ сонголтуудаар онлайн орчинд илүү аюулгүй байхын тулд та <ph name="USER_EMAIL_ADDRESS" />-р хэдийн нэвтэрсэн Chrome профайл руугаа сэлгэнэ үү</translation>
 <translation id="7398801000654795464">Та <ph name="USER_EMAIL_ADDRESS" /> нэрээр Chrome-д нэвтэрсэн байна. Та дараа дахин нэвтрэхдээ ижил хаяг ашиглан нэвтэрнэ үү.</translation>
@@ -771,7 +772,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8074398340364918139">Chrome-н тодорхой онцлог, өргөтгөлийг хайхын тулд хаяг оруулах хэсэгт товчлолыг нь сонгосон товчлуурт гарын товчийн хамт шивж оруулна уу</translation>
 <translation id="8077579734294125741">Chrome-н бусад профайл</translation>
 <translation id="8086881907087796310">Таны компьютер техник хангамжийн доод шаардлагад нийцэхгүй байгаа тул суулгалт амжилтгүй болсон.</translation>
-<translation id="8110438089258398864">Та үзэх явцдаа асуулт асуухын тулд Google Хайлтын ХОУ-ы горимыг дахин нээх боломжтой</translation>
 <translation id="8113883687556086139"><ph name="ACCOUNT_EMAIL" /> бүртгэлдээ Chrome-н өгөгдлөө ашиглах, хадгалахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="8115695070094288807">Chrome-г өөрийн болгоорой...</translation>
 <translation id="8118331347066725040">Lens-р хайхад зориулж санал хүсэлт илгээх</translation>
@@ -828,8 +828,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8555465886620020932">Үйлчилгээний алдаа: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Хэлний жагсаалтаас хайх</translation>
 <translation id="8575047640889685742">Google Бүртгэлийнхээ Chrome-н бүх өгөгдлийг шифрлэхийн тулд <ph name="BEGIN_LINK" />өөрийн нэвтрэх үгийг<ph name="END_LINK" /> ашиглана уу. Google Pay-н төлбөрийн хэрэгсэл, хаягийг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.</translation>
-<translation id="8590782867495422699">Google Хайлтын ХОУ-ы горимыг дахин нээх</translation>
-<translation id="8598779894319572882">Та хэрэгслийн мөр дээрх "Google Хайлтын ХОУ-ы горим" товчноос үзэх явцдаа асуулт асуухын тулд Google Хайлтын ХОУ-ы горимыг дахин нээх боломжтой</translation>
 <translation id="8614913330719544658">Google Chrome ажиллахгүй байна. Дахин эхүүлэх үү?</translation>
 <translation id="8623450603356630491">Утсан дээрээ Chrome-д нэвтрэх</translation>
 <translation id="8624541899164515475">Тохиргоо, шинэ табд нээгдэнэ.</translation>
@@ -884,7 +882,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="9014771989710951291">Олон байгууллага Chrome-г удирддаг</translation>
 <translation id="9018218886431812662">Суулгаж дууссан</translation>
 <translation id="9066987883552592250">Chrome Канар дахь Gemini-г хаах</translation>
-<translation id="9074041031320636790">Амжилттай! Та одоо Google Хайлтын ХОУ-ы горимоор үзэх явцдаа асуулт хялбархан асуух боломжтой</translation>
 <translation id="9090566250983691233">Chrome зарим файлыг яагаад блоклодог болохыг мэдэж авах</translation>
 <translation id="9106236359747881194">Хайх текстийг сонгоно уу</translation>
 <translation id="911206726377975832">Хайлтын мэдээллээ бас устгамаар байна уу?</translation>

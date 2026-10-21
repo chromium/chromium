@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Personalize o Chrome com cores e imagens personalizadas para a página inicial</translation>
 <translation id="389521680295183045">Os sites podem pedir para saber quando está a utilizar ativamente o dispositivo</translation>
 <translation id="3895926599014793903">Forçar ativação do zoom</translation>
-<translation id="3905475044299942653">Pare notificações excessivas</translation>
 <translation id="3922092564198021702">No telemóvel, abra as Definições</translation>
 <translation id="3924858949939391676">Mostrar links assim que o Modo de leitura estiver ativado</translation>
 <translation id="3933121352599513978">Reduzir pedidos indesejados (recomendado)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Vai encontrar os seus grupos na secção de grupos de separadores em todos os seus dispositivos</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> está impedido de usar as suas informações em</translation>
 <translation id="4953688446973710931">Quando esta opção está ativada, os sites podem pedir para transferir automaticamente vários ficheiros. Quando esta opção está desativada, os sites não podem transferir automaticamente vários ficheiros.</translation>
-<translation id="4962975101802056554">Revogar todas as autorizações do dispositivo</translation>
 <translation id="4972737347717125191">Os sites podem solicitar a utilização de dados e dispositivos de realidade virtual</translation>
 <translation id="4973805849704516244">Secção inferior de cores do Chrome</translation>
 <translation id="497421865427891073">Avançar</translation>
@@ -704,7 +702,6 @@ A Proteção avançada controla estas definições do Chrome:</translation>
 <translation id="8428213095426709021">Definições</translation>
 <translation id="8441146129660941386">Procurar para trás</translation>
 <translation id="8444433999583714703">Para permitir que a app <ph name="APP_NAME" /> aceda à sua localização, ative também a localização nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Revogar autorização do dispositivo</translation>
 <translation id="8463843545738141778">Esta definição está desativada porque ativou a Proteção avançada nas Definições do Android.</translation>
 <translation id="8467359479529706065">Secção inferior de aspeto da página Novo separador aberta a meia altura</translation>
 <translation id="8471525937465764768">Normalmente, os sites estabelecem ligação a dispositivos USB para funcionalidades como imprimir um documento ou guardar num dispositivo de armazenamento.</translation>

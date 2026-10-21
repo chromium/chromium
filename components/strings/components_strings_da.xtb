@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
-<translation id="1003222766972176318">Påmindelse: Et gemt tilbud er tilgængeligt</translation>
 <translation id="1008557486741366299">Ikke nu</translation>
 <translation id="100957008357583611">Vil du bruge din lokation?</translation>
 <translation id="1010200102790553230">Indlæs side senere</translation>
@@ -1127,6 +1126,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2911973620368911614">Bruger-id for jobkonto</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> bruger normalt kryptering til at beskytte dine oplysninger. Da Chrome forsøgte at oprette forbindelse til <ph name="SITE" /> denne gang, returnerede websitet usædvanlige og forkerte loginoplysninger. Dette kan skyldes, at en hacker har forsøgt at udgive sig for at være <ph name="SITE" />, eller at en Wi-Fi-loginskærm har forstyrret forbindelsen. Dine oplysninger er stadig sikre, idet Chrome afbrød forbindelsen, inden der blev udvekslet data.</translation>
 <translation id="2915068235268646559">Nedbrud fra <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Alle enheder</translation>
 <translation id="2916038427272391327">Luk andre programmer</translation>
 <translation id="2917630513638801879">Cyan 1</translation>
 <translation id="2922350208395188000">Serverens certifikat kan ikke kontrolleres.</translation>
@@ -1462,7 +1462,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3479552764303398839">Ikke nu</translation>
 <translation id="3481315707647070701">Visualiser og rediger</translation>
 <translation id="3484560055331845446">Du kan miste adgangen til din Google-konto. Chrome anbefaler, at du skifter din adgangskode nu. Du bliver bedt om at logge ind.</translation>
-<translation id="3484861421501147767">Påmindelse: En gemt promoveringskode er tilgængelig</translation>
 <translation id="3485901585646640838">Verificer din identitet for at bruge adgangskoder m.m., der er gemt på din Google-konto</translation>
 <translation id="3487845404393360112">Bakke 4</translation>
 <translation id="3493881266323043047">Gyldighed</translation>
@@ -1822,6 +1821,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4067774859633143413">Hold fingeren på |<ph name="ACCELERATOR" />| for at afslutte fuld skærm og se downloads</translation>
 <translation id="4067947977115446013">Tilføj gyldig adresse</translation>
 <translation id="4072486802667267160">Der opstod en fejl under behandlingen af din ordre. Prøv igen.</translation>
+<translation id="4073293290376142777">Vil du logge ind?</translation>
 <translation id="4073376909608563327">Enhedsoplåsning kunne ikke anvendes</translation>
 <translation id="4073797364926776829">Vis kort</translation>
 <translation id="4075732493274867456">Klienten og serveren understøtter ikke en fælles SSL-protokolversion eller et fælles krypteringsprogram.</translation>
@@ -1854,6 +1854,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4107047499377819067">Installationen af VPN-baggrundstjenester er startet. Dette kan tage et par minutter.</translation>
 <translation id="4110642094637545339">Google Pay, AfterPay-logo</translation>
 <translation id="4110652170750985508">Gennemgå din betaling</translation>
+<translation id="411071007970303441">Alle aktører</translation>
 <translation id="4112140312785995938">Spol tilbage</translation>
 <translation id="4114007503059268298">Vil du gemme dette kort på din Google-konto og på denne enhed?</translation>
 <translation id="4114146879518089587">Fortsæt til websitet</translation>
@@ -2293,6 +2294,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="483241715238664915">Aktivér advarsler</translation>
 <translation id="4833567658337394628">Indsættelse anbefales ikke</translation>
 <translation id="4840250757394056958">Se din Chrome-historik</translation>
+<translation id="4842085418602350953">Betal med Pix uden at skifte app næste gang</translation>
 <translation id="4842365697443353018">Ryd formularen for at bruge Betal senere</translation>
 <translation id="484462545196658690">Automatisk</translation>
 <translation id="4844937814014739139">Rulning og zoom på delte faner</translation>
@@ -3440,6 +3442,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6753460329812070808">Forslaget er fjernet fra Chrome</translation>
 <translation id="6757797048963528358">Din enhed gik i dvale.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> vil have tilladelse til at bruge dine bevægelses- og lyssensorer</translation>
+<translation id="6766488013065406604">Gå til Google Adgangs­kode­admin­istrator</translation>
 <translation id="6770747695101757579">Papir (bomuld)</translation>
 <translation id="6772959465807028761">Fortsæt med din Google-konto for at bruge YouTube</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3653,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="7120588595737538743">downloads og screenshots</translation>
 <translation id="7124354851782353862">Angiv din CVC</translation>
 <translation id="7129409597930077180">Der kan ikke sendes til denne adresse. Vælg en anden adresse.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Blokeret upload</translation>
 <translation id="7132939140423847331">Din administrator tillader ikke kopiering af disse data.</translation>
 <translation id="7134653428559514680">Vi anbefaler ikke, at du kopierer fra dette website</translation>
@@ -3968,6 +3970,7 @@ Yderligere oplysninger:
 <translation id="7637571805876720304">Vil du fjerne kreditkortet fra Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Ingen}=1{1 adgangskode på din konto (til <ph name="DOMAIN_LIST" />)}one{# adgangskode på din konto (til <ph name="DOMAIN_LIST" />)}other{# adgangskoder på din konto (til <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Serieporte</translation>
+<translation id="7644100755247241229">Brug Pix til at betale venner og virksomheder med Google Wallet</translation>
 <translation id="7646681339175747202">Den adgangskode, du lige har brugt, er blevet lækket i forbindelse med et brud på datasikkerheden. Google Adgangs­kode­admin­istrator anbefaler, at du ændrer din adgangskode med det samme.</translation>
 <translation id="7647206758853451655">Udskriftskvalitet</translation>
 <translation id="7648133459447652947">Hvis du vil have vist markøren igen, skal du skifte app, genindlæse siden eller gå tilbage</translation>
@@ -4071,6 +4074,7 @@ Yderligere oplysninger:
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="7798389633136518089">Politikken blev ignoreret, da den ikke er angivet af en skytjeneste.</translation>
 <translation id="7800304661137206267">Forbindelsen er krypteret ved hjælp af <ph name="CIPHER" /> med <ph name="MAC" /> til meddelelsesgodkendelse og <ph name="KX" /> som hovedudvekslingsmekanisme.</translation>
+<translation id="780228007282527248">Tilføj en fane eller et billede for at forbedre din søgning</translation>
 <translation id="7802523362929240268">Websitet er pålideligt</translation>
 <translation id="7802989406998618639">Angiv den <ph name="NUMBER_OF_DIGITS" />-cifrede sikkerhedskode på <ph name="SIDE_OF_CARD" />, så din bank kan verificere din identitet</translation>
 <translation id="780301667611848630">Nej tak</translation>
@@ -4296,6 +4300,7 @@ Yderligere oplysninger:
 <translation id="8208629719488976364">Indholdet på de sider, du udskriver, og oplysninger om din printer sendes til analyse i Google Cloud eller hos tredjeparter. Indholdet kan f.eks. blive scannet for følsomme oplysninger, og det kan blive gemt i henhold til virksomhedspolitikker og være synligt for din administrator.</translation>
 <translation id="8210490490377416373">Vælg navnet på politikken</translation>
 <translation id="8211406090763984747">Forbindelsen er sikker</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ 1 anden kilde}one{+ # anden kilde}other{+ # andre kilder}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 tommer</translation>
 <translation id="8218327578424803826">Tildelt placering:</translation>

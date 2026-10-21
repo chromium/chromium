@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Gutxi gorabeherako emaitza bat lortzeko, zatitu <ph name="CATEGORY_TEXT" /> balioa <ph name="CONVERSION_RATE" /> faktorearekin</translation>
 <translation id="1442433966118452622">Irudiaren iturburua</translation>
 <translation id="1446954767133808402">zafiroa</translation>
-<translation id="1449035143498573192">Ireki Google Bilaketa zerbitzuan</translation>
 <translation id="1451536289672181509">Gailua teklatu bat da.</translation>
 <translation id="1452939186874918380">euritakoak</translation>
 <translation id="145402479967797468">Erreprodukzioa kontrolatzeko aukerak</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Aurreikusi <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN integratua</translation>
 <translation id="1669047024429367828">Ikusgaitasuna</translation>
-<translation id="1670478569471758522">Informazio gehiago zure hautapenari buruz</translation>
 <translation id="1672499492233627739">Webcamaren bideo-jarioa</translation>
 <translation id="1676557873873341166">Bideoa grabatzen</translation>
 <translation id="1684279041537802716">Nabarmentzeko kolorea</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Amaitu editatzen</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> minutu inguru geratzen dira</translation>
 <translation id="3533790840489634638">igerileku</translation>
-<translation id="3547264467365135390">Formula</translation>
 <translation id="3552832331940389362">arratsaldeko euriari begira leiho-ertz baten gainean eserita dagoen katu baten ilustrazioa, animazio japoniarraren estiloan</translation>
 <translation id="3557205324756024651">Tokiko identitatea (aukerakoa)</translation>
 <translation id="3565064564551103223">Baimena duten IPak</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Azalpena</translation>
 <translation id="3869314628814282185">tula</translation>
 <translation id="387301095347517405">Bateriak kargatze-ziklo osoa zenbat aldiz egin duen</translation>
-<translation id="3877066159641251281">Entzun itzulpena</translation>
 <translation id="3880601782712134623">Ahots desberdinak automatikoki hauteman, eta hizlari bakoitzari etiketa orokor bat eman; adibidez, Hizlaria 1 eta Hizlaria 2.</translation>
 <translation id="38811596981744338">Legezko arazoa</translation>
 <translation id="3885327323343477505">Aldatu pantaila-babeslea</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Eguneratzen jarraitzeko, deskonektatu USB kablea <ph name="DEVICE_NAME" /> gailutik eta konekta ezazu berriro</translation>
 <translation id="5099354524039520280">gora</translation>
 <translation id="5107243100836678918">Baliteke <ph name="META_KEY" /> teklarik gabeko lasterbideak gatazkan egotea aplikazioren baten lasterbidearekin. Lasterbide hau erabiltzen jarraitzeko, saka ezazu berriro; bestela, sakatu beste lasterbide bat <ph name="KEY" /> tekla erabilita. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Antzekoak:</translation>
 <translation id="5130848777448318809">poneyak</translation>
 <translation id="5137451382116112100">Osoa</translation>
 <translation id="5139813694804168398">ez molestatzeko modua</translation>
 <translation id="5140788690559353412">Ikastetxeko kontua erabiltzeko baimena galdu ondoren, ezin izango dituzu erabili harekin lotutako helbide elektronikoa eta Google Drive-ko fitxategiak, hala nola Gmail, Dokumentuak, Aurkezpenak eta beste zerbitzu batzuetakoak.</translation>
 <translation id="5142961317498132443">Autentifikazioa</translation>
 <translation id="5144311987923128508">Berretsi botoia desgaituta dago orain</translation>
-<translation id="5144887194300568405">Kopiatu itzulpena</translation>
 <translation id="5145081769226915336">Modu iluna automatikoki aktibatu nahi duzu?</translation>
 <translation id="5145331109270917438">Data aldatu da</translation>
 <translation id="5154917547274118687">Memoria</translation>

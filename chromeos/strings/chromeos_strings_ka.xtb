@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">მიახლოებითი შედეგის მისაღებად გაყავით <ph name="CATEGORY_TEXT" />-ის მნიშვნელობა <ph name="CONVERSION_RATE" />-ზე</translation>
 <translation id="1442433966118452622">სურათის წყარო</translation>
 <translation id="1446954767133808402">საფირონი</translation>
-<translation id="1449035143498573192">Google Search-ში გახსნა</translation>
 <translation id="1451536289672181509">მოწყობილობა არის კლავიატურა.</translation>
 <translation id="1452939186874918380">ქოლგები</translation>
 <translation id="145402479967797468">დაკვრის მართვის საშუალებები</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />-ის გადახედვა</translation>
 <translation id="1668469839109562275">ჩაშენებული VPN</translation>
 <translation id="1669047024429367828">ხილვადობა</translation>
-<translation id="1670478569471758522">თქვენს არჩევანთან დაკავშირებული დამატებითი ინფორმაცია</translation>
 <translation id="1672499492233627739">ვიდეოს ნაკადი ვებკამერიდან</translation>
 <translation id="1676557873873341166">მიმდინარეობს ვიდეოს გადაღება</translation>
 <translation id="1684279041537802716">აქცენტის ფერი</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">რედაქტირების დასრულება</translation>
 <translation id="3532980081107202182">დარჩენილია დაახლოებით <ph name="MIN_REMAINING" /> წუთი</translation>
 <translation id="3533790840489634638">აუზი</translation>
-<translation id="3547264467365135390">ფორმულა</translation>
 <translation id="3552832331940389362">იაპონური ანიმაციის ილუსტრაცია, რომელშიც კატა ზის ფანჯრის რაფაზე და უყურებს წვიმას შუადღისას</translation>
 <translation id="3557205324756024651">ადგილობრივი იდენტობა (არასავალდებულო)</translation>
 <translation id="3565064564551103223">დაშვებული IP-ები</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">აღწერა</translation>
 <translation id="3869314628814282185">ტიული</translation>
 <translation id="387301095347517405">ბატარეის დატენის სრული ციკლების რაოდენობა</translation>
-<translation id="3877066159641251281">თარგმანის მოსმენა</translation>
 <translation id="3880601782712134623">ავტომატურად ამოიცნობს სხვადასხვა ხმას და მიანიჭებს თითოეულ მოსაუბრეს ზოგად ლეიბლებს, მაგალითად მოსაუბრე 1 და მოსაუბრე 2</translation>
 <translation id="38811596981744338">სამართლებრივი საკითხი</translation>
 <translation id="3885327323343477505">ეკრანმზოგის შეცვლა</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">გამოაერთეთ <ph name="DEVICE_NAME" />-ის ელკვების კაბელი და ისევ შეაერთეთ, რომ განახლება განაგრძოთ</translation>
 <translation id="5099354524039520280">ზემოთ</translation>
 <translation id="5107243100836678918">მალსახმობები „<ph name="META_KEY" />“ კლავიშის გარეშე, შესაძლოა, კონფლიქტში აღმოჩნდეს ზოგიერთი აპის მალსახმობებთან. ხელახლა დააჭირეთ ამ მალსახმობს, რომ გააგრძელოთ მისი გამოყენება, ან დააჭირეთ ახალ მალსახმობს „<ph name="KEY" />“ კლავიშთან ერთად. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">სინონიმური:</translation>
 <translation id="5130848777448318809">პონები</translation>
 <translation id="5137451382116112100">სრულ ეკრანზე</translation>
 <translation id="5139813694804168398">არ შემაწუხოთ</translation>
 <translation id="5140788690559353412">როცა სასკოლო ანგარიშზე წვდომას დაკარგავთ, აღარ გექნებათ წვდომა დაკავშირებულ ელფოსტაზე და Google Drive-ის ფაილებზე, როგორებიცაა Gmail, Docs, Slides და სხვა.</translation>
 <translation id="5142961317498132443">ავტორიზაცია</translation>
 <translation id="5144311987923128508">დადასტურების ღილაკი ახლა გათიშულია</translation>
-<translation id="5144887194300568405">თარგმანის კოპირება</translation>
 <translation id="5145081769226915336">გსურთ, ავტომატურად ჩაირთოს მუქი რეჟიმი?</translation>
 <translation id="5145331109270917438">ცვლილების თარიღი</translation>
 <translation id="5154917547274118687">მეხსიერება</translation>

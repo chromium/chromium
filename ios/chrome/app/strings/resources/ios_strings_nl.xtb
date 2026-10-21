@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Openen in nieuwe tabbladgroep</translation>
 <translation id="1670861525135254448">Voertuig opslaan</translation>
 <translation id="1671568970992212376">Sla foto's op in je Google Foto's en open ze wanneer je maar wilt.</translation>
+<translation id="1671824312818944549">Opmerking: Deze instelling werkt beter met iOS 27 of hoger.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> naar <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Teken, markeer of tik op iets op je scherm waarnaar je wilt zoeken</translation>
 <translation id="1678855624321223424">Op basis van het beleid van je organisatie kan dit bestand gevoelige informatie bevatten</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">Welkom terug.</translation>
 <translation id="2015722694326466240">Als je wachtwoorden wilt zien, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="201759455285471444">Tabbladgroep uitvouwen.</translation>
+<translation id="2022431790688770637">Gemini-suggesties beheren</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Open het tabbladraster</translation>
 <translation id="2044681667265133332">Het account <ph name="USER_EMAIL" /> wordt beheerd door <ph name="HOSTED_DOMAIN" />. Dit domein kan bepaalde informatie bekijken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">Stel vragen en krijg AI-gestuurde reacties</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Verzendt URL's van bepaalde pagina's die je bezoekt naar Google wanneer je beveiliging risico loopt</translation>
+<translation id="2880119244122776372">Bouwen en programmeren</translation>
 <translation id="2883151425485251736">Onderwerpen bekijken en bewerken die je hebt verborgen in je account</translation>
 <translation id="2884437560239137197">Aandacht vereist</translation>
 <translation id="288655811176831528">Tabblad sluiten</translation>
@@ -1695,6 +1698,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6301104306974789820">Meldingen voor volgen van prijzen krijgen</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Positie van de adresbalk kiezen</translation>
+<translation id="6305257382500066042">Nu proberen</translation>
 <translation id="6307241780749477694">Laat verifiëren dat jij het bent om al je wachtwoorden op dit apparaat te krijgen</translation>
 <translation id="6307792728709337290">Sla je kaart op in je Google-account om deze automatisch in te vullen voor deze aankoop en toekomstige aankopen die je in Chrome doet.</translation>
 <translation id="6316141353357700666">Kies het wachtwoord dat je wilt gebruiken in de lijst die verschijnt.</translation>
@@ -1848,7 +1852,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6708501134077648845">Wachtwoordopties</translation>
 <translation id="6709964700841491574">Lockdown-modus</translation>
 <translation id="6710079714193676716">Beheerd door je organisatie. Sommige functies zijn mogelijk niet beschikbaar. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">Slimmere, snellere antwoorden</translation>
 <translation id="6713676799463473249">Aangepast: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Verkregen tabbladen</translation>
 <translation id="6722638373100589752">Als je je gegevens automatisch wilt invullen, zet je Kaarten gebruiken op Google aan in de Wallet-instellingen</translation>
@@ -2060,7 +2063,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Doorgaan</translation>
 <translation id="741204030948306876">Ja, aanzetten</translation>
-<translation id="7417055777338419059">Programmeer, schrijf of maak dia's</translation>
 <translation id="7419565702166471774">Altijd beveiligde verbindingen gebruiken</translation>
 <translation id="7423098979219808738">Eerst vragen</translation>
 <translation id="7425053386765766120">Betaalmethode toevoegen…</translation>
@@ -2110,6 +2112,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7525067979554623046">Maken</translation>
 <translation id="75362970626182391">Nieuwe tabbladgroep</translation>
 <translation id="7537586195939242955">Je pas kan momenteel niet worden geïnstalleerd in Passbook.</translation>
+<translation id="7540924742308928499">Brainstormen en samenvatten</translation>
 <translation id="754655535278952384">Gecheckt: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Alles sluiten</translation>
 <translation id="7557508262441527045">Uitgelogd</translation>
@@ -2479,7 +2482,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8642417828095157370">Tabbladen worden gedeeld voor relevantere antwoorden</translation>
 <translation id="8643403533759285912">Groep verwijderen</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">Kan de prijs niet ontvolgen.</translation>
 <translation id="8654802032646794042">Annuleren</translation>
 <translation id="8655861111558401309">Selecteer Browsegegevens verwijderen</translation>
 <translation id="8659875081143553823">Een ogenblik geduld</translation>

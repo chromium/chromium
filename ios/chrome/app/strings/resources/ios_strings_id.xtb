@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Buka di Grup Tab Baru</translation>
 <translation id="1670861525135254448">Simpan kendaraan</translation>
 <translation id="1671568970992212376">Simpan foto di Google Foto dan akses foto kapan saja.</translation>
+<translation id="1671824312818944549">Catatan: Setelan ini berfungsi lebih baik dengan iOS 27 atau yang lebih baru.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ke <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Gambar, tandai, atau ketuk apa pun di layar untuk menelusuri</translation>
 <translation id="1678855624321223424">Berdasarkan kebijakan organisasi Anda, file ini mungkin berisi informasi sensitif</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">Selamat datang kembali!</translation>
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="201759455285471444">Luaskan grup tab.</translation>
+<translation id="2022431790688770637">Kelola saran Gemini</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Buka petak tab</translation>
 <translation id="2044681667265133332">Akun <ph name="USER_EMAIL" /> dikelola oleh <ph name="HOSTED_DOMAIN" />, yang mungkin dapat melihat beberapa informasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">Tanyakan apa saja dan dapatkan respons yang didukung AI</translation>
 <translation id="2870560284913253234">Situs</translation>
 <translation id="2876369937070532032">Mengirimkan URL beberapa halaman yang Anda kunjungi ke Google, jika keamanan Anda berisiko</translation>
+<translation id="2880119244122776372">Build dan buat kode</translation>
 <translation id="2883151425485251736">Melihat dan mengedit topik yang disembunyikan dari akun Anda</translation>
 <translation id="2884437560239137197">Perlu perhatian</translation>
 <translation id="288655811176831528">Tutup Tab</translation>
@@ -1695,6 +1698,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6301104306974789820">Dapatkan notifikasi pemantauan harga</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Pilih posisi kolom URL Anda</translation>
+<translation id="6305257382500066042">Coba sekarang</translation>
 <translation id="6307241780749477694">Verifikasi diri Anda untuk mendapatkan semua sandi di perangkat ini</translation>
 <translation id="6307792728709337290">Simpan kartu di Akun Google Anda guna mengisi otomatis kartu tersebut untuk pembelian ini dan pembelian mendatang yang dilakukan di Chrome.</translation>
 <translation id="6316141353357700666">Pilih sandi yang ingin Anda gunakan dari daftar yang muncul.</translation>
@@ -1848,7 +1852,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6708501134077648845">Opsi Sandi</translation>
 <translation id="6709964700841491574">Mode kunci total</translation>
 <translation id="6710079714193676716">Dikelola oleh organisasi Anda. Beberapa fitur mungkin tidak tersedia. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">Jawaban yang lebih cerdas dan lebih cepat</translation>
 <translation id="6713676799463473249">Diubah pada <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Tab yang Diterima</translation>
 <translation id="6722638373100589752">Untuk mengisi otomatis info Anda, aktifkan “Gunakan kartu di layanan Google” di setelan Wallet</translation>
@@ -2060,7 +2063,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Lanjutkan</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
-<translation id="7417055777338419059">Buat kode, tulis teks, atau buat slide</translation>
 <translation id="7419565702166471774">Selalu gunakan koneksi aman</translation>
 <translation id="7423098979219808738">Tanyakan dulu</translation>
 <translation id="7425053386765766120">Tambahkan metode pembayaran…</translation>
@@ -2110,6 +2112,7 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="7525067979554623046">Buat</translation>
 <translation id="75362970626182391">Grup Tab Baru</translation>
 <translation id="7537586195939242955">Maaf, Pass Anda tidak dapat dipasang ke Passbook saat ini.</translation>
+<translation id="7540924742308928499">Diskusikan dan ringkas</translation>
 <translation id="754655535278952384">Diperiksa <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Tutup Semua</translation>
 <translation id="7557508262441527045">Telah logout</translation>
@@ -2479,7 +2482,6 @@ Anda dapat memulai ulang kapan saja.</translation>
 <translation id="8642417828095157370">Tab dibagikan untuk menghasilkan jawaban yang lebih relevan</translation>
 <translation id="8643403533759285912">Hapus Grup</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">Tidak dapat membatalkan pemantauan harga.</translation>
 <translation id="8654802032646794042">Batal</translation>
 <translation id="8655861111558401309">Pilih Hapus Data Penjelajahan</translation>
 <translation id="8659875081143553823">Tunggu sebentar</translation>

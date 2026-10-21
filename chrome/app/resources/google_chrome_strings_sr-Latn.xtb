@@ -118,7 +118,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2039417478970545937">Podešavanja.</translation>
 <translation id="2040220733769034247">Skenirajte QR kôd telefonom da biste preuzeli Chrome i prijavili se na Google nalog.</translation>
 <translation id="2044908892530830113">Prikaži pretragu pomoću Chrome-a na traci menija Mac-a i uključi tastersku prečicu</translation>
-<translation id="2050189601866423230">Možete da zakačite AI režim Google pretrage da biste postavljali pitanja tokom pregledanja</translation>
 <translation id="2091012649849228750">Da biste dobijali buduća Google Chrome ažuriranja, treba vam Windows 10 ili novija verzija. Ovaj računar koristi Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flex uslovi</translation>
 <translation id="2094919256425865063">Želite li ipak da zatvorite Chrome?</translation>
@@ -464,6 +463,7 @@ Neke funkcije su možda nedostupne. Navedite drugi direktorijum profila ili kori
 <translation id="5386244825306882791">Kontroliše i stranicu koja se prikazuje kada pokrenete Chrome ili pretražujete iz omniboksa.</translation>
 <translation id="5394833366792865639">Delite Chrome karticu</translation>
 <translation id="5402307365844630024">Uključite ili isključite Gemini u Chrome beta verziji</translation>
+<translation id="5414664742659847155">Izoluj Chrome od drugih aplikacija</translation>
 <translation id="541844421954567481">Nosite svoje lozinke, kartice i drugo sa sobom pomoću aplikacije Chrome na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">Datoteka podešavanja je oštećena ili nevažeća.
 
@@ -679,6 +679,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7306401458628386911">Odmah počnite da pregledate: Chrome sada može da se pokrene kada se pokrene Windows.</translation>
 <translation id="7308322188646931570">Chrome traži pristup memorijskom prostoru da bi preuzimao datoteke</translation>
 <translation id="7352651011704765696">Došlo je do greške</translation>
+<translation id="7371412052245999753">Štiti Chrome memoriju od drugih aplikacija na računaru.</translation>
 <translation id="73786666777299047">Otvorite Chrome veb-prodavnicu</translation>
 <translation id="7386878009611068389">Ako želiš veću bezbednost onlajn uz izbore roditelja, pređi na svoj Chrome profil na kom si već prijavljen/a kao <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Bili ste prijavljeni u Chrome kao <ph name="USER_EMAIL_ADDRESS" />. Koristite isti nalog da biste se ponovo prijavili.</translation>
@@ -773,7 +774,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8074398340364918139">Da biste pretražili određenu Chrome funkciju ili dodatak, unesite njihovu prečicu u traku za adresu, a zatim pritisnite izabrani taster na tastaturi</translation>
 <translation id="8077579734294125741">Drugi Chrome profili</translation>
 <translation id="8086881907087796310">Instaliranje nije uspelo zato što računar ne ispunjava minimalne zahteve za hardver.</translation>
-<translation id="8110438089258398864">Možete ponovo da otvorite AI režim Google pretrage da biste postavljali pitanja tokom pregledanja</translation>
 <translation id="8113883687556086139">Potvrdite identitet da biste koristili i sačuvali Chrome podatke na nalogu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Prilagođavamo Chrome…</translation>
 <translation id="8118331347066725040">Pošaljite povratne informacije za pretragu pomoću Objektiva</translation>
@@ -830,8 +830,6 @@ Ne možete da sačuvate nove obeleživače na nalogu dok ne izbrišete neke. Ako
 <translation id="8555465886620020932">Greška u usluzi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Pretražite listu jezika</translation>
 <translation id="8575047640889685742">Koristite <ph name="BEGIN_LINK" />sopstvenu pristupnu frazu<ph name="END_LINK" /> da biste šifrovali sve Chrome podatke na Google nalogu. Načini plaćanja i adrese iz Google Pay-a se neće šifrovati. Istorija pregledanja iz Chrome-a se neće sinhronizovati.</translation>
-<translation id="8590782867495422699">Ponovo otvori AI režim Google pretrage</translation>
-<translation id="8598779894319572882">Pomoću dugmeta AI režim Google pretrage na traci s alatkama možete ponovo da otvorite AI režim Google pretrage da biste postavljali pitanja tokom pregledanja</translation>
 <translation id="8614913330719544658">Google Chrome ne reaguje. Želite li da ga odmah ponovo pokrenete?</translation>
 <translation id="8623450603356630491">Prijavite se u Chrome na telefonu</translation>
 <translation id="8624541899164515475">Podešavanja, otvaraju se na novoj kartici.</translation>
@@ -886,7 +884,6 @@ Ne možete da sačuvate nove obeleživače na nalogu dok ne izbrišete neke. Ako
 <translation id="9014771989710951291">Više organizacija upravlja Chrome-om</translation>
 <translation id="9018218886431812662">Instalacija je završena</translation>
 <translation id="9066987883552592250">Zatvorite Gemini u Chrome Canary-ju</translation>
-<translation id="9074041031320636790">Bravo! Sada možete lako da postavljate pitanja dok pregledate pomoću AI režima Google pretrage</translation>
 <translation id="9090566250983691233">Saznajte zašto Chrome blokira neke fajlove</translation>
 <translation id="9106236359747881194">Izaberite tekst za pretragu</translation>
 <translation id="911206726377975832">Želite li da izbrišete i podatke pregledanja?</translation>

@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Təxmini nəticə üçün <ph name="CATEGORY_TEXT" /> dəyərini <ph name="CONVERSION_RATE" /> ilə bölün</translation>
 <translation id="1442433966118452622">Şəkil mənbəyi</translation>
 <translation id="1446954767133808402">sapfir</translation>
-<translation id="1449035143498573192">Google Axtarışda açın</translation>
 <translation id="1451536289672181509">Cihaz klaviaturadır.</translation>
 <translation id="1452939186874918380">çətirlər</translation>
 <translation id="145402479967797468">Oxutma kontrolları</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Önizləyin: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Daxili VPN</translation>
 <translation id="1669047024429367828">Görünmə dərəcəsi</translation>
-<translation id="1670478569471758522">Seçimlə bağlı ətraflı məlumat</translation>
 <translation id="1672499492233627739">Veb kamera video lenti</translation>
 <translation id="1676557873873341166">Video çəkilir</translation>
 <translation id="1684279041537802716">Vurğulayıcı rəng</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Redaktəni bitirin</translation>
 <translation id="3532980081107202182">Təxminən <ph name="MIN_REMAINING" /> dəqiqə qalıb</translation>
 <translation id="3533790840489634638">hovuz</translation>
-<translation id="3547264467365135390">Düstur</translation>
 <translation id="3552832331940389362">günortadan sonra pəncərə altığında oturub yağışa baxan pişiyin yapon animasiya illüstrasiyası</translation>
 <translation id="3557205324756024651">Lokal kimlik (istəyə görə)</translation>
 <translation id="3565064564551103223">İcazə verilən IP'lər</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Təsvir</translation>
 <translation id="3869314628814282185">tül</translation>
 <translation id="387301095347517405">Batareyanızın tam şarj edilmə sayı</translation>
-<translation id="3877066159641251281">Tərcüməni dinləyin</translation>
 <translation id="3880601782712134623">Fərqli səsləri avtomatik aşkar edin və hər spikerə Spiker 1 və Spiker 2 kimi ümumi etiket verin</translation>
 <translation id="38811596981744338">Hüquqi problem</translation>
 <translation id="3885327323343477505">Ekran qoruyucunu dəyişdirin</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Güncəllənmə prosesinə davam etmək üçün <ph name="DEVICE_NAME" /> USB kabelini ayırın və yenidən taxın</translation>
 <translation id="5099354524039520280">yuxarı</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> düyməsi olmayan qısayol bəzi tətbiq qısayolları ilə ziddiyyətli ola bilər. Bu qısayoldan istifadəyə davam etmək üçün ona yenidən basın, yaxud <ph name="KEY" /> düyməsindən istifadə edərək yeni qısayola basın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Oxşar:</translation>
 <translation id="5130848777448318809">ponilər</translation>
 <translation id="5137451382116112100">Tam</translation>
 <translation id="5139813694804168398">narahat etməyin</translation>
 <translation id="5140788690559353412">Məktəb hesabınıza girişi itirdiyiniz zaman artıq əlaqəli e-məktublara və Gmail, Sənədlər, Slaydlar və s. kimi Google Disk fayllarına girişiniz olmayacaq.</translation>
 <translation id="5142961317498132443">İdentifikasiya</translation>
 <translation id="5144311987923128508">Təsdiq düyməsi deaktiv edilib</translation>
-<translation id="5144887194300568405">Tərcüməni kopyalayın</translation>
 <translation id="5145081769226915336">Qaranlıq rejim avtomatik aktiv edilsin?</translation>
 <translation id="5145331109270917438">Tarix redaktə edildi</translation>
 <translation id="5154917547274118687">Yaddaş</translation>

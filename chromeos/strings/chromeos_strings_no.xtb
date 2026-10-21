@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Divider <ph name="CATEGORY_TEXT" />-verdien med <ph name="CONVERSION_RATE" /> for å få et omtrentlig svar</translation>
 <translation id="1442433966118452622">Bildekilde</translation>
 <translation id="1446954767133808402">safir</translation>
-<translation id="1449035143498573192">Åpne i Google Søk</translation>
 <translation id="1451536289672181509">Enheten er et tastatur.</translation>
 <translation id="1452939186874918380">paraplyer</translation>
 <translation id="145402479967797468">Avspillingskontroller</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Forhåndsvis <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Innebygd VPN</translation>
 <translation id="1669047024429367828">Tilgang</translation>
-<translation id="1670478569471758522">Mer informasjon om det du har merket</translation>
 <translation id="1672499492233627739">Videofeed fra nettkameraet</translation>
 <translation id="1676557873873341166">Tar opp video</translation>
 <translation id="1684279041537802716">Markeringsfarge</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Redigeringen er fullført</translation>
 <translation id="3532980081107202182">Omtrent <ph name="MIN_REMAINING" /> minutter igjen</translation>
 <translation id="3533790840489634638">basseng</translation>
-<translation id="3547264467365135390">Formel</translation>
 <translation id="3552832331940389362">en japansk animasjonsillustrasjon av en katt som sitter i en vinduskarm og ser på regnet på ettermiddagen</translation>
 <translation id="3557205324756024651">Lokal identitet (valgfritt)</translation>
 <translation id="3565064564551103223">Tillatte IP-adresser</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Beskrivelse</translation>
 <translation id="3869314628814282185">tyll</translation>
 <translation id="387301095347517405">Antall ganger batteriet har gjennomgått en fullstendig ladesyklus</translation>
-<translation id="3877066159641251281">Lytt til oversettelsen</translation>
 <translation id="3880601782712134623">registrere unike stemmer automatisk og gi hver person en generisk etikett, for eksempel Person 1 og Person 2</translation>
 <translation id="38811596981744338">Juridisk problem</translation>
 <translation id="3885327323343477505">Bytt skjermsparer</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Koble fra USB-kabelen for <ph name="DEVICE_NAME" /> og sett den inn igjen for å fortsette oppdateringsprosessen</translation>
 <translation id="5099354524039520280">opp</translation>
 <translation id="5107243100836678918">Hurtigtaster uten <ph name="META_KEY" />-tasten kan komme i konflikt med hurtigtastene i enkelte apper. Trykk på hurtigtasten en gang til for å fortsette å bruke den, eller trykk på en ny hurtigtast som inneholder <ph name="KEY" />-tasten. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Lignende:</translation>
 <translation id="5130848777448318809">ponnier</translation>
 <translation id="5137451382116112100">Full</translation>
 <translation id="5139813694804168398">ikke forstyrr</translation>
 <translation id="5140788690559353412">Når du mister tilgangen til skolekontoen din, mister du også tilgangen til tilknyttede e-post- og Google Disk-filer, for eksempel Gmail, Dokumenter, Presentasjoner med flere.</translation>
 <translation id="5142961317498132443">Autentisering</translation>
 <translation id="5144311987923128508">Bekreft-knappen er nå deaktivert</translation>
-<translation id="5144887194300568405">Kopier oversettelsen</translation>
 <translation id="5145081769226915336">Vil du slå på mørk modus automatisk?</translation>
 <translation id="5145331109270917438">Dato endret</translation>
 <translation id="5154917547274118687">Minne</translation>

@@ -49,6 +49,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas.}=1{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas. No se reabrirá 1 ventana de Incógnito.}other{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas. No se reabrirán # ventanas de Incógnito.}}</translation>
 <translation id="1434626383986940139">Aplicaciones de Chrome Canary</translation>
 <translation id="1439793550875056299">Fijar Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{Tu administrador requiere que reinicies Chrome para aplicar una actualización. La ventana aislada no se volverá a abrir.}other{Tu administrador requiere que reinicies Chrome para aplicar una actualización. Las # ventanas aisladas no se volverán a abrir.}}</translation>
 <translation id="146866447420868597">¿Iniciar sesión en Chrome?</translation>
 <translation id="1476347941828409626">&amp;Gestionar perfiles de Chrome</translation>
 <translation id="1492280395845991349">Reinicia para finalizar la actualización de Chrome</translation>
@@ -117,7 +118,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2039417478970545937">Configuración.</translation>
 <translation id="2040220733769034247">Escanea el código QR con tu teléfono para descargar Chrome e iniciar sesión con tu cuenta de Google.</translation>
 <translation id="2044908892530830113">Mostrar la búsqueda con Chrome en la barra de menú de Mac y activar combinación de teclas</translation>
-<translation id="2050189601866423230">Puedes fijar el Modo IA de la Búsqueda de Google para hacer preguntas mientras navegas</translation>
 <translation id="2091012649849228750">Para recibir futuras actualizaciones de Google Chrome, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 8.</translation>
 <translation id="2094648590148273905">Términos de ChromeOS Flex</translation>
 <translation id="2094919256425865063">¿Quieres cerrar Chrome de todas formas?</translation>
@@ -273,6 +273,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="345171907106878721">Añadirte a Chrome</translation>
 <translation id="3453763134178591239">Términos de ChromeOS</translation>
 <translation id="3475778264501649775">Lleva tus contraseñas, pestañas y más allá donde vayas con la aplicación de Chrome en tu teléfono</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Tu administrador te pide que reinicies Chrome para aplicar esta actualización. La ventana aislada no se volverá a abrir.}other{Tu administrador te pide que reinicies Chrome para aplicar esta actualización. Las # ventanas aisladas no se volverán a abrir.}}</translation>
 <translation id="3539955434060988644">Abrir enlace en una ventana de incó&amp;gnito de Chrome</translation>
 <translation id="354621070532799440">Recordatorio: Las mejores funciones de seguridad de Google en tu bolsillo</translation>
 <translation id="3547866758548131919">Haz clic en el botón Resumir para compartir este documento con Gemini en Chrome, obtener un resumen rápido y hacer preguntas de seguimiento</translation>
@@ -288,12 +289,15 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="3622797965165704966">Ahora es más fácil utilizar Chrome con tu cuenta de Google y en ordenadores compartidos.</translation>
 <translation id="3628103251823745322">Ya has iniciado sesión con <ph name="EXISTING_USER" />. Para mantener tu información de navegación aparte, inicia sesión en Chrome con tu perfil de <ph name="USER_EMAIL_ADDRESS" />. También tendrás tu información guardada y otros datos en todos tus dispositivos.</translation>
 <translation id="3635073343384702370">Chrome puede comprobar tus contraseñas cuando las guardas</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas. La ventana aislada no se volverá a abrir.}other{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas. Las # ventanas aisladas no se volverán a abrir.}}</translation>
 <translation id="3636970668267555808">Accede fácilmente a las funciones que conoces, te encantan y en las que confías estableciendo Chrome como navegador predeterminado.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Tu administrador te pide que reinicies Chrome para aplicar esta actualización. Hay una ventana de Incógnito o aislada abierta. No se volverá a abrir después de reiniciar.}other{Tu administrador te pide que reinicies Chrome para aplicar esta actualización. Hay # ventanas de Incógnito y aisladas abiertas en los diferentes perfiles. No se volverán a abrir después de reiniciar.}}</translation>
 <translation id="3667616615096815454">No se puede realizar la instalación porque se trata de una aplicación desconocida para el servidor.</translation>
 <translation id="3673813398384385993">Chrome ha detectado que "<ph name="EXTENSION_NAME" />" contiene malware</translation>
 <translation id="3697952514309507634">Otros perfiles de Chrome</translation>
 <translation id="3703994572283698466">ChromeOS se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional, como el <ph name="BEGIN_LINK_LINUX_OSS" />entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versión de ChromeOS Flex</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Hay una nueva actualización de Chrome disponible que se aplicará en cuanto reinicies. Hay una ventana de Incógnito o aislada abierta. No se volverá a abrir después de reiniciar.}other{Hay una nueva actualización de Chrome disponible que se aplicará en cuanto reinicies. Hay # ventanas de Incógnito y aisladas abiertas en los diferentes perfiles. No se volverán a abrir después de reiniciar.}}</translation>
 <translation id="3718181793972440140">Se eliminará un elemento de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome te recomienda que la elimines. <ph name="BEGIN_LINK" />Más información sobre las extensiones compatibles<ph name="END_LINK" />}other{Chrome te recomienda que las elimines. <ph name="BEGIN_LINK" />Más información sobre las extensiones compatibles<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Profundiza en tu búsqueda añadiendo varias pestañas, archivos y herramientas con el botón Añade una pestaña u otros elementos.</translation>
@@ -421,6 +425,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="5003967926796347400">Haz clic en Gestor de contraseñas de Google</translation>
 <translation id="5043786843026425788">Más información sobre cómo buscar con Google Lens en Chrome</translation>
 <translation id="504867494566807945">Abre enlaces en Chrome desde cualquier aplicación. Además, se fija en la barra de tareas para que puedas acceder a él fácilmente.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{Protección Avanzada requiere que reinicies Chrome para aplicar una actualización. Hay una ventana de Incógnito o aislada abierta. No se volverá a abrir después de reiniciar.}other{Protección Avanzada requiere que reinicies Chrome para aplicar una actualización. Hay # ventanas de Incógnito y aisladas abiertas en los diferentes perfiles. No se volverán a abrir después de reiniciar.}}</translation>
 <translation id="5105120510934353742">Para recibir futuras actualizaciones de Google Chrome, necesitarás macOS 13 o una versión posterior. Este ordenador usa macOS 12.</translation>
 <translation id="5114340746415930644">Introduce tu frase de contraseña para usar y guardar datos de Chrome en tu cuenta (<ph name="USER_EMAIL" />)</translation>
 <translation id="5120334927898581447">Iniciar sesión en Chrome al iniciar sesión en otros servicios de Google</translation>
@@ -458,6 +463,7 @@ Puede que algunas funciones no estén disponibles. Especifica otro directorio de
 <translation id="5386244825306882791">También controla qué página se muestra al iniciar Chrome o al hacer búsquedas desde el omnibox.</translation>
 <translation id="5394833366792865639">Compartir una pestaña de Chrome</translation>
 <translation id="5402307365844630024">Activar o desactivar Gemini en Chrome Beta</translation>
+<translation id="5414664742659847155">Aislar Chrome de otras aplicaciones</translation>
 <translation id="541844421954567481">Lleva tus contraseñas, pestañas y más a cualquier lugar con la aplicación Chrome en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">Tu archivo de preferencias está dañado o no es válido.
 
@@ -485,6 +491,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">No se puede conectar a Internet. El servidor proxy requiere autenticación.</translation>
 <translation id="5709557627224531708">Establece Chrome como navegador predeterminado</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{Protección Avanzada requiere que reinicies Chrome para aplicar una actualización. La ventana aislada no se volverá a abrir.}other{Protección Avanzada requiere que reinicies Chrome para aplicar una actualización. Las # ventanas aisladas no se volverán a abrir.}}</translation>
 <translation id="5719246646468301581">Términos del Servicio Adicionales de Google Chrome y ChromeOS</translation>
 <translation id="5736850870166430177">Si un sitio intenta robarte tu contraseña o si descargas un archivo dañino, es posible que Chrome también envíe URLs, incluidos fragmentos de contenido de la página, a Navegación segura.</translation>
 <translation id="5742003800414899269">Usa la aplicación Chrome para llevarte las mejores herramientas de IA a cualquier lugar</translation>
@@ -512,6 +519,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="5960404530854194706">Chrome se actualizará cuando no estés usando el dispositivo</translation>
 <translation id="5980111191913430208">Las extensiones, las aplicaciones y los temas de fuentes desconocidas pueden dañar tu dispositivo. Chrome recomienda instalarlos únicamente desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Descargando... Horas restantes: <ph name="HOURS" />.</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{Tu administrador requiere que reinicies Chrome para aplicar una actualización. Hay una ventana de Incógnito o aislada abierta. No se volverá a abrir después de reiniciar.}other{Tu administrador requiere que reinicies Chrome para aplicar una actualización. Hay # ventanas de Incógnito y aisladas abiertas en los diferentes perfiles. No se volverán a abrir después de reiniciar.}}</translation>
 <translation id="6008161919456049856">Las contraseñas, los métodos de pago y las direcciones que hayas guardado en tu cuenta de Google se eliminarán de este dispositivo. Para usarlos de nuevo en Chromium, vuelve a iniciar sesión.</translation>
 <translation id="6009821354356307391">Hacer otra pregunta</translation>
 <translation id="6014316319780893079">Las <ph name="BEGIN_LINK" />herramientas de Chrome<ph name="END_LINK" /> te permiten navegar de forma segura y mantener el control</translation>
@@ -671,6 +679,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7306401458628386911">Empieza a navegar al instante: ahora Chrome puede iniciarse cuando se inicia Windows.</translation>
 <translation id="7308322188646931570">Chrome necesita acceso de almacenamiento para descargar archivos</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
+<translation id="7371412052245999753">Protege la memoria de Chrome de otras aplicaciones de tu ordenador.</translation>
 <translation id="73786666777299047">Abre Chrome Web Store</translation>
 <translation id="7386878009611068389">Para tener más protección online con las opciones de tus padres, cambia a tu perfil de Chrome, donde ya has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Habías iniciado sesión en Chrome como <ph name="USER_EMAIL_ADDRESS" />. Utiliza la misma cuenta para volver a iniciar sesión.</translation>
@@ -684,6 +693,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Tu organización eliminará automáticamente los datos de navegación cuando Chrome lleve 1 minuto sin usarse. Esto podría incluir el historial, los datos de Autocompletar y las descargas. Las pestañas seguirán abiertas.}other{Tu organización eliminará automáticamente los datos de navegación cuando Chrome lleve # minutos sin usarse. Esto podría incluir el historial, los datos de Autocompletar y las descargas. Las pestañas seguirán abiertas.}}</translation>
 <translation id="7466577301922356468">Si envías estos datos automáticamente a Google, ayudarás a mejorar Chrome. Puedes cambiar este ajuste en cualquier momento.</translation>
 <translation id="7477130805345743099">Chrome te avisará antes de cargar un sitio usando una conexión no segura</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Hay una nueva actualización de Chrome disponible que se aplicará en cuanto reinicies. La ventana aislada no se volverá a abrir.}other{Hay una nueva actualización de Chrome disponible que se aplicará en cuanto reinicies. Las # ventanas aisladas no se volverán a abrir.}}</translation>
 <translation id="7481213027396403996">Consigue la seguridad más potente de Chrome</translation>
 <translation id="749228101751499733">Mientras tengas la sesión iniciada, puedes usar tus contraseñas y más de tu cuenta de Google en Chrome. <ph name="SHORTCUT" /> puede cambiar la configuración de tus servicios de Google.</translation>
 <translation id="7496017508659652909">Chrome precarga las páginas, lo que te permite navegar y hacer búsquedas más rápido. <ph name="BEGIN_LINK" />Más información sobre la precarga de páginas<ph name="END_LINK" /></translation>
@@ -764,7 +774,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8074398340364918139">Para buscar una función o extensión de Chrome específica, escribe su atajo en la barra de direcciones y, después, pulsa la tecla de teclado que hayas seleccionado</translation>
 <translation id="8077579734294125741">Otros perfiles de Chrome</translation>
 <translation id="8086881907087796310">No se ha podido realizar la instalación porque tu ordenador no cumple los requisitos mínimos de hardware.</translation>
-<translation id="8110438089258398864">Puedes volver a abrir el Modo IA de la Búsqueda de Google para hacer preguntas mientras navegas</translation>
 <translation id="8113883687556086139">Verifica que eres tú para usar y guardar los datos de Chrome en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8115695070094288807">Personalizando Chrome...</translation>
 <translation id="8118331347066725040">Enviar comentarios sobre la búsqueda con Lens</translation>
@@ -800,6 +809,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8380754585531979907">Usa el teclado para desplazarte entre Gemini en Chrome y tu pestaña abierta.</translation>
 <translation id="8387459386171870978">Seguir usando Chrome</translation>
 <translation id="8394720698884623075">Comprueba URLs con una lista de sitios no seguros guardada en Chrome.</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas. Hay una ventana de Incógnito o aislada abierta. No se volverá a abrir después de reiniciar.}other{Chrome ha terminado de actualizarse. Puedes usar la versión más reciente cuando lo reinicies. A continuación, se reabrirán las pestañas que tuvieras abiertas. Hay # ventanas de Incógnito y aisladas abiertas en los diferentes perfiles. No se volverán a abrir después de reiniciar.}}</translation>
 <translation id="8403038600646341038">Logotipo de Chrome dentro de una pantalla de ordenador.</translation>
 <translation id="8418845734693287262">ChromeOS no ha podido sincronizar tus datos porque la información de inicio de sesión de tu cuenta está obsoleta.</translation>
 <translation id="842386925677997438">Herramientas de seguridad de Chrome</translation>
@@ -820,8 +830,6 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="8555465886620020932">Error del servicio: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Buscar en la lista de idiomas</translation>
 <translation id="8575047640889685742">Usar tu <ph name="BEGIN_LINK" />propia frase de contraseña<ph name="END_LINK" /> para cifrar todos los datos de Chrome en tu cuenta de Google. Los métodos de pago y las direcciones de Google Pay no se cifrarán. El historial de navegación de Chrome no se sincronizará.</translation>
-<translation id="8590782867495422699">Volver a abrir el Modo IA de la Búsqueda de Google</translation>
-<translation id="8598779894319572882">Con el botón Modo IA de la Búsqueda de Google de la barra de herramientas, puedes volver a abrir el Modo IA de la Búsqueda de Google para hacer preguntas mientras navegas</translation>
 <translation id="8614913330719544658">Google Chrome no responde. ¿Quieres reiniciarlo ahora?</translation>
 <translation id="8623450603356630491">Inicia sesión en Chrome en tu teléfono</translation>
 <translation id="8624541899164515475">Configuración, se abre en una pestaña nueva.</translation>
@@ -876,7 +884,6 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="9014771989710951291">Varias organizaciones gestionan Chrome</translation>
 <translation id="9018218886431812662">Instalación completada</translation>
 <translation id="9066987883552592250">Cerrar Gemini en Chrome Canary</translation>
-<translation id="9074041031320636790">¡Listo! Ahora puedes hacer preguntas fácilmente mientras navegas con el Modo IA de la Búsqueda de Google</translation>
 <translation id="9090566250983691233">Averigua por qué bloquea Chrome algunos archivos</translation>
 <translation id="9106236359747881194">Seleccionar texto para buscarlo</translation>
 <translation id="911206726377975832">¿Quieres borrar también los datos de navegación?</translation>

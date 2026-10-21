@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Divider værdien for <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /> for at se et omtrentligt resultat</translation>
 <translation id="1442433966118452622">Billedkilde</translation>
 <translation id="1446954767133808402">safir</translation>
-<translation id="1449035143498573192">Åbn i Google Søgning</translation>
 <translation id="1451536289672181509">Enheden er et tastatur.</translation>
 <translation id="1452939186874918380">paraplyer</translation>
 <translation id="145402479967797468">Afspilningsknapper</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Se forhåndsvisning af <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Indbygget VPN</translation>
 <translation id="1669047024429367828">Synlighed</translation>
-<translation id="1670478569471758522">Flere oplysninger relateret til dit valg</translation>
 <translation id="1672499492233627739">Videofeed fra webcam</translation>
 <translation id="1676557873873341166">Optager video</translation>
 <translation id="1684279041537802716">Kontrastfarve</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Færdig med at redigere</translation>
 <translation id="3532980081107202182">Ca. <ph name="MIN_REMAINING" /> minutter tilbage</translation>
 <translation id="3533790840489634638">pool</translation>
-<translation id="3547264467365135390">Formel</translation>
 <translation id="3552832331940389362">en japansk animeret illustration af en kat, der sidder i en vindueskarm og kigger på eftermiddagsregnen</translation>
 <translation id="3557205324756024651">Lokal identitet (valgfrit)</translation>
 <translation id="3565064564551103223">Tilladte IP'er</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Beskrivelse</translation>
 <translation id="3869314628814282185">tyl</translation>
 <translation id="387301095347517405">Antal gange dit batteri har gennemgået en fuld opladningscyklus</translation>
-<translation id="3877066159641251281">Lyt til oversættelse</translation>
 <translation id="3880601782712134623">Registrer automatisk forskellige stemmer, og giv hver person, der taler, et generisk navn som f.eks. Taler 1 og Taler 2</translation>
 <translation id="38811596981744338">Juridisk problem</translation>
 <translation id="3885327323343477505">Skift pauseskærm</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Tag USB-kablet ud af <ph name="DEVICE_NAME" />, og sæt det derefter i igen for at fortsætte opdateringsprocessen</translation>
 <translation id="5099354524039520280">op</translation>
 <translation id="5107243100836678918">En genvej uden <ph name="META_KEY" />-tasten kan skabe problemer i forbindelse med genveje i visse apps. Tryk på denne genvej igen for at fortsætte med at bruge den, eller tryk på en ny genvej ved hjælp af <ph name="KEY" />-tasten. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Lignende:</translation>
 <translation id="5130848777448318809">ponyer</translation>
 <translation id="5137451382116112100">Fuld</translation>
 <translation id="5139813694804168398">forstyr ikke</translation>
 <translation id="5140788690559353412">Når du mister adgangen til din skolekonto, har du ikke længere adgang til den tilknyttede mail og Google Drev-filer som f.eks. Gmail, Docs, Slides m.m.</translation>
 <translation id="5142961317498132443">Godkendelse</translation>
 <translation id="5144311987923128508">Knappen Bekræft er nu deaktiveret</translation>
-<translation id="5144887194300568405">Kopiér oversættelse</translation>
 <translation id="5145081769226915336">Vil du aktivere mørk tilstand automatisk?</translation>
 <translation id="5145331109270917438">Dato for ændring</translation>
 <translation id="5154917547274118687">Hukommelse</translation>

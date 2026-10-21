@@ -113,7 +113,6 @@
 <translation id="1432110487435300883"><ph name="CATEGORY_TEXT" /> durch <ph name="CONVERSION_RATE" /> dividieren, um ein ungefähres Ergebnis zu erhalten</translation>
 <translation id="1442433966118452622">Bildquelle</translation>
 <translation id="1446954767133808402">Saphir</translation>
-<translation id="1449035143498573192">In der Google Suche öffnen</translation>
 <translation id="1451536289672181509">Das Gerät ist eine Tastatur.</translation>
 <translation id="1452939186874918380">Regenschirme</translation>
 <translation id="145402479967797468">Wiedergabesteuerung</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Vorschau anzeigen für „<ph name="PREVIEW_OBJECT" />“</translation>
 <translation id="1668469839109562275">Integriertes VPN</translation>
 <translation id="1669047024429367828">Sichtbarkeit</translation>
-<translation id="1670478569471758522">Weitere Informationen zu deiner Auswahl</translation>
 <translation id="1672499492233627739">Webcam-Videofeed</translation>
 <translation id="1676557873873341166">Video wird aufgezeichnet</translation>
 <translation id="1684279041537802716">Akzentfarbe</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Fertig</translation>
 <translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
 <translation id="3533790840489634638">Schwimmbecken</translation>
-<translation id="3547264467365135390">Formel</translation>
 <translation id="3552832331940389362">eine japanische Animationsillustration einer Katze, die am Nachmittag auf einem Fensterbrett sitzt und den Regen beobachtet</translation>
 <translation id="3557205324756024651">Lokale Identität (optional)</translation>
 <translation id="3565064564551103223">Zugelassene IPs</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Beschreibung</translation>
 <translation id="3869314628814282185">Tüll</translation>
 <translation id="387301095347517405">Wie oft der Akku vollständig aufgeladen wurde</translation>
-<translation id="3877066159641251281">Übersetzung anhören</translation>
 <translation id="3880601782712134623">Unterschiedliche Stimmen automatisch erkennen und jedem Sprecher ein generisches Label zuweisen, z. B. „Sprecher 1“ und „Sprecher 2“</translation>
 <translation id="38811596981744338">Rechtliches Problem</translation>
 <translation id="3885327323343477505">Bildschirmschoner ändern</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Ziehe das USB-Kabel von <ph name="DEVICE_NAME" /> ab und schließe es dann wieder an, um das Update fortzusetzen</translation>
 <translation id="5099354524039520280">Nach oben</translation>
 <translation id="5107243100836678918">Eine Tastenkombination ohne <ph name="META_KEY" />-Taste kann einen Konflikt mit der Tastenkombination einer App verursachen. Wenn du diese Tastenkombination weiter verwenden möchtest, drück sie noch einmal. Anderenfalls kannst du eine neue Tastenkombination mit der <ph name="KEY" />-Taste eingeben. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Ähnlich:</translation>
 <translation id="5130848777448318809">Ponys</translation>
 <translation id="5137451382116112100">Voll</translation>
 <translation id="5139813694804168398">Bitte nicht stören</translation>
 <translation id="5140788690559353412">Wenn du den Zugriff auf dein Konto einer Bildungseinrichtung verlierst, hast du auch keinen Zugriff mehr auf die zugehörigen E‑Mails und Google Drive-Dateien in Produkten wie Gmail, Google Docs und Google Präsentationen.</translation>
 <translation id="5142961317498132443">Authentifizierung</translation>
 <translation id="5144311987923128508">Button „Bestätigen“ ist jetzt deaktiviert</translation>
-<translation id="5144887194300568405">Übersetzung kopieren</translation>
 <translation id="5145081769226915336">Dunklen Modus automatisch aktivieren?</translation>
 <translation id="5145331109270917438">Änderungsdatum</translation>
 <translation id="5154917547274118687">Speicher</translation>

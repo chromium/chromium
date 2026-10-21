@@ -114,7 +114,6 @@
 <translation id="2039417478970545937">Beállítások.</translation>
 <translation id="2040220733769034247">Olvassa be a QR-kódot telefonjával a Chrome letöltéséhez, majd jelentkezzen be Google-fiókjába.</translation>
 <translation id="2044908892530830113">A Keresés a Chrome-mal szolgáltatás megjelenítése a Mac menüsorán, valamint a billentyűparancs bekapcsolása</translation>
-<translation id="2050189601866423230">Kitűzheti a Google Kereső AI-módját, hogy böngészés közben tehessen fel kérdéseket.</translation>
 <translation id="2091012649849228750">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 8 operációs rendszer fut.</translation>
 <translation id="2094648590148273905">A ChromeOS Flex feltételei</translation>
 <translation id="2094919256425865063">Biztosan kilép a Chrome-ból?</translation>
@@ -458,6 +457,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="5386244825306882791">Továbbá azt is szabályozza, hogy melyik oldal jelenik meg a Chrome indításakor vagy a cím- és keresősávban indított kereséskor.</translation>
 <translation id="5394833366792865639">Chrome-lap megosztása</translation>
 <translation id="5402307365844630024">A Gemini a Chrome Bétában be- vagy kikapcsolása</translation>
+<translation id="5414664742659847155">A Chrome elkülönítése más alkalmazásoktól</translation>
 <translation id="541844421954567481">A Chrome alkalmazással útközben is hozzáférhet jelszavaihoz, lapjaihoz és egyebekhez <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="5430073640787465221">A beállításait tartalmazó fájl hibás vagy érvénytelen. A Google Chrome nem tudja helyreállítani a beállításait.</translation>
 <translation id="5465210843490471889">Válasszon ki egy Chrome-profilt a <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> használatához</translation>
@@ -671,6 +671,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="7306401458628386911">Azonnal elkezdheti a böngészést: a Chrome mostantól a Windows indításakor is elindulhat.</translation>
 <translation id="7308322188646931570">A Chrome-nak tárhelyhozzáférésre van szüksége a fájlok letöltéséhez</translation>
 <translation id="7352651011704765696">Valami nem működik</translation>
+<translation id="7371412052245999753">Megvédi a Chrome memóriáját a számítógépen lévő más alkalmazásoktól.</translation>
 <translation id="73786666777299047">A Chrome Webáruház megnyitása</translation>
 <translation id="7386878009611068389">Ha szeretnéd, hogy a szülőd által kiválasztott beállításokkal nagyobb biztonságban legyél az interneten, válts a Chrome-profilodra, amelybe már be vagy jelentkezve a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" /> néven volt bejelentkezve a Chrome-ba. Kérjük, ugyanazzal a fiókkal jelentkezzen be újra.</translation>
@@ -765,7 +766,6 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="8074398340364918139">Ha egy adott Chrome-funkcióra vagy -bővítményre szeretne rákeresni, gépelje be a kapcsolódó gyorsparancsot a címsávba, majd nyomja le a kiválasztott billentyűt.</translation>
 <translation id="8077579734294125741">Egyéb Chrome-profilok</translation>
 <translation id="8086881907087796310">A telepítés sikertelen volt, mert a számítógép nem felel meg a minimális hardverkövetelményeknek.</translation>
-<translation id="8110438089258398864">Újra megnyithatja a Google Kereső AI-módját, hogy böngészés közben tehessen fel kérdéseket.</translation>
 <translation id="8113883687556086139">Igazolja személyazonosságát, ha a Chrome-adatokat szeretné használni és tárolni a fiókjában (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8115695070094288807">A Chrome személyre szabása…</translation>
 <translation id="8118331347066725040">Visszajelzés küldése a Lens segítségével való keresésről</translation>
@@ -822,8 +822,6 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="8555465886620020932">Szolgáltatáshiba: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Keresés a nyelvek listájában</translation>
 <translation id="8575047640889685742"><ph name="BEGIN_LINK" />Saját összetett jelszó<ph name="END_LINK" /> használata a Google-fiókjában tárolt Chrome-adatok mindegyikének titkosításához. A Google Payből származó fizetési módok és címek nem lesznek titkosítva. A Chrome böngészési előzményei nem lesznek szinkronizálva.</translation>
-<translation id="8590782867495422699">A Google Kereső AI-módjának újbóli megnyitása</translation>
-<translation id="8598779894319572882">Az eszköztáron található „Google Kereső AI-mód” gombbal újra megnyithatja a Google Kereső AI-módját, hogy kérdéseket tegyen fel böngészés közben.</translation>
 <translation id="8614913330719544658">A Google Chrome nem válaszol. Újraindítja most?</translation>
 <translation id="8623450603356630491">Jelentkezzen be a Chrome-ba a telefonján</translation>
 <translation id="8624541899164515475">Beállítások, új lapon nyílik meg.</translation>
@@ -878,7 +876,6 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="9014771989710951291">Több szervezet is kezeli a Chrome-ot</translation>
 <translation id="9018218886431812662">A telepítés befejeződött</translation>
 <translation id="9066987883552592250">A Gemini bezárása a Chrome Canaryban</translation>
-<translation id="9074041031320636790">Sikerült! Mostantól egyszerűen tehet fel kérdéseket böngészés közben a Google Kereső AI-módjával.</translation>
 <translation id="9090566250983691233">További információ arról, hogy miért tilt le bizonyos fájlokat a Chrome</translation>
 <translation id="9106236359747881194">Jelöljön ki szöveget a kereséshez</translation>
 <translation id="911206726377975832">Törli a böngészési adatait is?</translation>

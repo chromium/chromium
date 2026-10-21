@@ -117,6 +117,7 @@
 <translation id="2190166659037789668">Errore controllo aggiornamenti: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Rimuovi account da Chromium</translation>
 <translation id="2201788217099588893">Usa l'app Chromium per portare con te i migliori strumenti per lo shopping ovunque ti trovi</translation>
+<translation id="2209877494277346829">Isola Chromium da altre app</translation>
 <translation id="2210502920229141283">Maggiore sicurezza ovunque ti trovi con la Navigazione sicura avanzata su Chromium per iOS</translation>
 <translation id="2210682093923538346">Sito pericoloso. Chromium ha rimosso le notifiche.</translation>
 <translation id="2236949375853147973">Le mie attività</translation>
@@ -189,6 +190,7 @@
 <translation id="2977470724722393594">Chromium è aggiornato</translation>
 <translation id="2977506796191543575">Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura</translation>
 <translation id="2981563588585023386">Per navigare online in modo più sicuro con le scelte del tuo genitore, accedi a Chromium</translation>
+<translation id="2992577225802060159">Protegge la memoria di Chromium da altre applicazioni sul computer.</translation>
 <translation id="3003694935412297923">Tutte le attività</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium deve verificare la tua identità per poter salvare alcuni dati nel tuo Account Google e utilizzarli su tutti i tuoi dispositivi. Se esci ora, questi dati (1 elemento) verranno eliminati.}other{Chromium deve verificare la tua identità per poter salvare alcuni dati nel tuo Account Google e utilizzarli su tutti i tuoi dispositivi. Se esci ora, questi dati ({count} elementi) verranno eliminati.}}</translation>
 <translation id="3013473503895162900">Apri <ph name="URL" /> in una nuova scheda in Chromium.</translation>
@@ -465,7 +467,6 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="5949225980829865667">Accedi a Chromium per trovare questo preferito e altro su tutti i tuoi dispositivi</translation>
 <translation id="5953657885167112863">Rendi Chromium personale</translation>
 <translation id="5960071705175224773">Le tue impostazioni sono state modificate da un'app sconosciuta</translation>
-<translation id="5977420883993828287">Fissato. Usa di nuovo Attività contestuali dalla barra degli strumenti</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per 1 minuto.}other{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per # minuti.}}</translation>
 <translation id="5987687638152509985">Aggiorna Chromium per avviare la sincronizzazione</translation>
 <translation id="5990360079535151574">Dal pulsante "Attività contestuali" sulla barra degli strumenti, puoi riaprire Attività contestuali per fare domande mentre navighi</translation>

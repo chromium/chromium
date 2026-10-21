@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Aby uzyskać wynik przybliżony, podziel <ph name="CATEGORY_TEXT" /> przez <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Źródło obrazu</translation>
 <translation id="1446954767133808402">szafiru</translation>
-<translation id="1449035143498573192">Otwórz w wyszukiwarce Google</translation>
 <translation id="1451536289672181509">Urządzenie to klawiatura.</translation>
 <translation id="1452939186874918380">parasole</translation>
 <translation id="145402479967797468">Elementy sterujące odtwarzaniem</translation>
@@ -175,7 +174,6 @@
 <translation id="1664796644829245314">Wyświetl podgląd: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Wbudowana sieć VPN</translation>
 <translation id="1669047024429367828">Widoczność</translation>
-<translation id="1670478569471758522">Więcej informacji związanych z Twoim wyborem</translation>
 <translation id="1672499492233627739">Przekaz z kamery internetowej</translation>
 <translation id="1676557873873341166">Nagrywam obraz</translation>
 <translation id="1684279041537802716">Kolor uzupełniający</translation>
@@ -559,7 +557,6 @@
 <translation id="353214771040290298">Zakończ edycję</translation>
 <translation id="3532980081107202182">Pozostało około <ph name="MIN_REMAINING" /> min</translation>
 <translation id="3533790840489634638">sadzawka</translation>
-<translation id="3547264467365135390">Wzór</translation>
 <translation id="3552832331940389362">ilustracja z japońskiej animacji przedstawiająca kota siedzącego na oknie i patrzącego na popołudniowy deszcz</translation>
 <translation id="3557205324756024651">Tożsamość lokalna (opcjonalnie)</translation>
 <translation id="3565064564551103223">Dozwolone adresy IP</translation>
@@ -630,7 +627,6 @@
 <translation id="3866249974567520381">Opis</translation>
 <translation id="3869314628814282185">tiulu</translation>
 <translation id="387301095347517405">Liczba wykonanych pełnych cykli ładowania baterii</translation>
-<translation id="3877066159641251281">Odsłuchaj tłumaczenie</translation>
 <translation id="3880601782712134623">automatycznie wykrywać różne głosy i przypisywać każdemu rozmówcy etykietę ogólną, taką jak Osoba 1 i Osoba 2;</translation>
 <translation id="38811596981744338">Problem prawny</translation>
 <translation id="3885327323343477505">Zmień wygaszacz ekranu</translation>
@@ -922,14 +918,12 @@
 <translation id="5095761549884461003">Aby kontynuować proces aktualizacji, odłącz kabel USB urządzenia <ph name="DEVICE_NAME" />, a następnie podłącz go ponownie</translation>
 <translation id="5099354524039520280">w górę</translation>
 <translation id="5107243100836678918">Skrót bez klawisza <ph name="META_KEY" /> może być w konflikcie z jakimś skrótem aplikacji. Naciśnij ten skrót ponownie, aby nadal go używać, albo naciśnij nowy skrót z użyciem klawisza <ph name="KEY" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Synonimy:</translation>
 <translation id="5130848777448318809">kucyki</translation>
 <translation id="5137451382116112100">Pełne</translation>
 <translation id="5139813694804168398">Nie przeszkadzać</translation>
 <translation id="5140788690559353412">Gdy utracisz dostęp do konta szkolnego, stracisz również dostęp do powiązanych z nim usług, takich jak poczta e-mail czy pliki na Dysku Google (np. Dokumentów, Arkuszy czy Prezentacji).</translation>
 <translation id="5142961317498132443">Uwierzytelnianie</translation>
 <translation id="5144311987923128508">Przycisk potwierdzenia jest teraz wyłączony</translation>
-<translation id="5144887194300568405">Kopiuj tłumaczenie</translation>
 <translation id="5145081769226915336">Włączać automatycznie tryb ciemny?</translation>
 <translation id="5145331109270917438">Data modyfikacji</translation>
 <translation id="5154917547274118687">Pamięć</translation>

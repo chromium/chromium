@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
-<translation id="1003222766972176318">提醒：可使用已儲存的優惠</translation>
 <translation id="1008557486741366299">暫時不要</translation>
 <translation id="100957008357583611">要使用您的位置資訊嗎？</translation>
 <translation id="1010200102790553230">稍後載入網頁</translation>
@@ -240,6 +239,7 @@
 <translation id="1393071644879491291">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝軟件或提供資料，例如密碼、電話號碼或信用卡號碼等資料。Chrome 強烈建議你不要瀏覽這類網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解此警告訊息<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">安全地新增身分證至「Google 錢包」</translation>
 <translation id="1398743098754840707">即使分頁已開啟，系統亦不會根據此處新增的網站內容提供答覆。如果訊息串目前在使用你加入的網站，可能需要最多 30 分鐘才會停止參考該網站。</translation>
+<translation id="1403359480263156644">已更新持卡人姓名</translation>
 <translation id="1405567553485452995">淺綠色</translation>
 <translation id="1406370515365284486">你的付款方法仍會保存</translation>
 <translation id="1406500794671479665">驗證中…</translation>
@@ -908,6 +908,7 @@
 <translation id="2498091847651709837">掃描新的信用卡</translation>
 <translation id="2501270939904835585">標籤 (光滑)</translation>
 <translation id="2501278716633472235">返回</translation>
+<translation id="250307989715832083">新增簽名</translation>
 <translation id="250346157641628208">紙張 (噴墨打印)</translation>
 <translation id="2505063700931618106">已儲存卡資料</translation>
 <translation id="2505268675989099013">保護帳戶</translation>
@@ -1127,6 +1128,7 @@
 <translation id="2911973620368911614">工作帳戶使用者 ID</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> 通常會透過加密方式保護您的資料。Chrome 這次嘗試連線至 <ph name="SITE" /> 時，該網站傳回異常且錯誤的憑證。這可能是因為有攻擊者試圖偽裝成 <ph name="SITE" />，或 Wi-Fi 登入畫面導致連線中斷。請放心，Chrome 未有交換任何資料並已終止連線，所以您的資料仍然安全。</translation>
 <translation id="2915068235268646559">當機時間：<ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">所有裝置</translation>
 <translation id="2916038427272391327">關閉其他程式</translation>
 <translation id="2917630513638801879">青藍色 1</translation>
 <translation id="2922350208395188000">無法檢查伺服器憑證。</translation>
@@ -1462,7 +1464,6 @@
 <translation id="3479552764303398839">略過</translation>
 <translation id="3481315707647070701">視像化並編輯</translation>
 <translation id="3484560055331845446">您可能會失去 Google 帳戶存取權。Chrome 建議您立即變更密碼。系統會要求您登入。</translation>
-<translation id="3484861421501147767">提醒：可使用已儲存的宣傳代碼</translation>
 <translation id="3485901585646640838">如要使用儲存在 Google 帳戶的密碼和其他資料，請驗證身分</translation>
 <translation id="3487845404393360112">紙匣 4</translation>
 <translation id="3493881266323043047">有效性</translation>
@@ -1821,6 +1822,7 @@
 <translation id="4067774859633143413">如要離開全螢幕並查看下載內容，請按住 |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">新增有效的地址</translation>
 <translation id="4072486802667267160">處理您的訂單時發生錯誤，請再試一次。</translation>
+<translation id="4073293290376142777">要登入嗎？</translation>
 <translation id="4073376909608563327">無法使用裝置解鎖功能</translation>
 <translation id="4073797364926776829">查看虛擬卡</translation>
 <translation id="4075732493274867456">用戶端和伺服器不支援共通 SSL 通訊協定版本或加密套件。</translation>
@@ -1853,6 +1855,7 @@
 <translation id="4107047499377819067">VPN 背景服務已開始安裝，可能需時幾分鐘。</translation>
 <translation id="4110642094637545339">Google Pay、AfterPay 標誌</translation>
 <translation id="4110652170750985508">檢查您的付款</translation>
+<translation id="411071007970303441">所有參與者</translation>
 <translation id="4112140312785995938">向後回轉</translation>
 <translation id="4114007503059268298">要將此付款卡儲存至 Google 帳戶和此裝置上嗎？</translation>
 <translation id="4114146879518089587">繼續瀏覽網站</translation>
@@ -1917,6 +1920,7 @@
 <translation id="4218327733815631046">繼續使用概略位置</translation>
 <translation id="4219596572397833317">查看價格記錄和其他資料，作出更明智的購物決定。</translation>
 <translation id="4220128509585149162">當機</translation>
+<translation id="4220745762102459826">更多</translation>
 <translation id="4221630205957821124">&lt;h4&gt;步驟 1：從入口主頁登入&lt;/h4&gt;
     &lt;p&gt;咖啡室或機場等地點的 Wi-Fi 網絡需要先登入才能使用。如要查看登入頁面，請瀏覽使用 &lt;code&gt;http://&lt;/code&gt; 的網頁。&lt;/p&gt;
     &lt;ol&gt;
@@ -2878,6 +2882,7 @@
 <translation id="5794065675298686371">開啟價格追蹤通知</translation>
 <translation id="5794093550048860249">追蹤號碼</translation>
 <translation id="5796050750059455142">開啟「<ph name="BEGIN_LINK" />其他 Google 產品的智能功能<ph name="LINK_END" />」</translation>
+<translation id="5797916798049571144">系統已將這項異動儲存至卡片資訊，結帳時會自動填入</translation>
 <translation id="5797984091151707075">已被管理員政策封鎖</translation>
 <translation id="5804241973901381774">權限</translation>
 <translation id="5806871454498484178">已封鎖捲動和縮放</translation>
@@ -3439,6 +3444,7 @@
 <translation id="6753460329812070808">已從 Chrome 移除建議</translation>
 <translation id="6757797048963528358">您的裝置已進入休眠狀態。</translation>
 <translation id="6758934187792712102"><ph name="URL" /> 想使用動作和光線感應器</translation>
+<translation id="6766488013065406604">去「Google 密碼管理工具」</translation>
 <translation id="6770747695101757579">紙 (棉紙)</translation>
 <translation id="6772959465807028761">如要使用 YouTube，請登入 Google 帳戶再繼續操作</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3649,7 +3655,6 @@
 <translation id="7120588595737538743">下載檔案和螢幕截圖</translation>
 <translation id="7124354851782353862">輸入 CVC</translation>
 <translation id="7129409597930077180">無法運送至此地址，請選取其他地址。</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">已禁止上載</translation>
 <translation id="7132939140423847331">管理員已禁止複製此資料。</translation>
 <translation id="7134653428559514680">不建議分享此網站的內容</translation>
@@ -3967,6 +3972,7 @@
 <translation id="7637571805876720304">要從 Chromium 移除信用卡嗎？</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{無}=1{帳戶中有 1 個密碼 (適用於 <ph name="DOMAIN_LIST" />)}other{帳戶中有 # 個密碼 (適用於 <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">序列連接埠</translation>
+<translation id="7644100755247241229">透過「Google 錢包」，使用 Pix 付款給親友和商家</translation>
 <translation id="7646681339175747202">系統發現您剛才使用的密碼因資料外洩而被洩露。「Google 密碼管理工具」建議您立即變更密碼。</translation>
 <translation id="7647206758853451655">列印品質</translation>
 <translation id="7648133459447652947">如要顯示游標，請切換應用程式、重新載入頁面或返回</translation>
@@ -4070,6 +4076,7 @@
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798389633136518089">由於政策並非透過雲端來源設定，因此已忽略。</translation>
 <translation id="7800304661137206267">連線採用 <ph name="CIPHER" /> 加密，並設有 <ph name="MAC" /> 訊息驗證及 <ph name="KX" /> 金鑰交換機制。</translation>
+<translation id="780228007282527248">加入分頁或圖片以改善搜尋</translation>
 <translation id="7802523362929240268">合法網站</translation>
 <translation id="7802989406998618639">輸入<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位數安全碼，以便銀行驗證您的身份</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>

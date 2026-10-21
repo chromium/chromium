@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Goqa ithebhu engu-<ph name="TABS_COUNT_ONE" />.}one{Goqa iqembu lethebhu enamathebhu angu-<ph name="TABS_COUNT_MANY" />.}other{Goqa iqembu lethebhu enamathebhu angu-<ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="2569352796411618312">Isiphakamiso: <ph name="NUMBER_OF_TABS" /> yamathebhu akho awakasetshenziswa kamuva nje. Wavale?</translation>
 <translation id="257674075312929031">Iqembu</translation>
+<translation id="2628148780487543078">Vala namathebhu aphiniwe</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Buyisela futhi uvule iqembu lethebhu ngethebhu engu-<ph name="TABS_COUNT_ONE" /> umbala o-<ph name="COLOR_NAME" />.}one{Buyisela futhi uvule iqembu lethebhu ngamathebhu angu-<ph name="TABS_COUNT_MANY" /> umbala o-<ph name="COLOR_NAME" />.}other{Buyisela futhi uvule iqembu lethebhu ngamathebhu angu-<ph name="TABS_COUNT_MANY" /> umbala o-<ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> isilinganiso</translation>
 <translation id="266935134738038806">Vakashela isayithi</translation>

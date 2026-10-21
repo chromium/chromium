@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">用<ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /> 求近似值</translation>
 <translation id="1442433966118452622">图片来源</translation>
 <translation id="1446954767133808402">蓝宝石</translation>
-<translation id="1449035143498573192">在 Google 搜索中打开</translation>
 <translation id="1451536289672181509">设备类型是键盘。</translation>
 <translation id="1452939186874918380">雨伞</translation>
 <translation id="145402479967797468">播放控件</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">预览“<ph name="PREVIEW_OBJECT" />”</translation>
 <translation id="1668469839109562275">内置 VPN</translation>
 <translation id="1669047024429367828">显示设置</translation>
-<translation id="1670478569471758522">与您所选内容相关的更多信息</translation>
 <translation id="1672499492233627739">摄像头视频画面</translation>
 <translation id="1676557873873341166">正在录制视频</translation>
 <translation id="1684279041537802716">强调色</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">完成修改</translation>
 <translation id="3532980081107202182">还剩大约 <ph name="MIN_REMAINING" /> 分钟</translation>
 <translation id="3533790840489634638">水池</translation>
-<translation id="3547264467365135390">公式</translation>
 <translation id="3552832331940389362">一幅日式动漫插图，描绘了一只猫坐在午后的窗台上观雨</translation>
 <translation id="3557205324756024651">本地身份（可选）</translation>
 <translation id="3565064564551103223">允许使用的 IP</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">说明</translation>
 <translation id="3869314628814282185">薄纱</translation>
 <translation id="387301095347517405">您的电池已经历的完整充电循环次数</translation>
-<translation id="3877066159641251281">聆听译文</translation>
 <translation id="3880601782712134623">自动检测不同的语音，并为每位讲者添加一个宽泛的标签，例如讲者 1、讲者 2</translation>
 <translation id="38811596981744338">法律问题</translation>
 <translation id="3885327323343477505">更换屏保</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">请拔下<ph name="DEVICE_NAME" />的 USB 线，然后重新插入以继续更新流程</translation>
 <translation id="5099354524039520280">向上</translation>
 <translation id="5107243100836678918">不含<ph name="META_KEY" />键的快捷键可能会与某个应用的快捷方式冲突。再次按此快捷键可继续使用它，也可按含有<ph name="KEY" />键的新快捷键。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">近义词：</translation>
 <translation id="5130848777448318809">小马</translation>
 <translation id="5137451382116112100">全屏</translation>
 <translation id="5139813694804168398">勿扰模式</translation>
 <translation id="5140788690559353412">失去对学校账号的访问权限后，您将无法再访问相关的电子邮件和 Google 云端硬盘文件，例如 Gmail、文档、幻灯片等。</translation>
 <translation id="5142961317498132443">身份验证</translation>
 <translation id="5144311987923128508">“确认”按钮现已停用</translation>
-<translation id="5144887194300568405">复制译文</translation>
 <translation id="5145081769226915336">要自动开启深色模式吗？</translation>
 <translation id="5145331109270917438">修改日期</translation>
 <translation id="5154917547274118687">内存</translation>

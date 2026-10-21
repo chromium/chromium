@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">برای دستیابی به نتیجه تقریبی، مقدار <ph name="CATEGORY_TEXT" /> را بر <ph name="CONVERSION_RATE" /> تقسیم کنید</translation>
 <translation id="1442433966118452622">منبع تصویر</translation>
 <translation id="1446954767133808402">یاقوت کبود</translation>
-<translation id="1449035143498573192">‏باز کردن در «جستجوی Google»</translation>
 <translation id="1451536289672181509">دستگاه صفحه‌کلید است.</translation>
 <translation id="1452939186874918380">چتر</translation>
 <translation id="145402479967797468">کنترل‌های بازپخش</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">پیش‌دید کردن <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">‏VPN داخلی</translation>
 <translation id="1669047024429367828">رؤیت‌پذیری</translation>
-<translation id="1670478569471758522">اطلاعات بیشتر درباره انتخاب شما</translation>
 <translation id="1672499492233627739">جارزن ویدیویی وب‌کم</translation>
 <translation id="1676557873873341166">فیلم‌برداری</translation>
 <translation id="1684279041537802716">رنگ برجسته‌سازی</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">اتمام ویرایش</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> دقیقه باقی مانده است</translation>
 <translation id="3533790840489634638">استخر</translation>
-<translation id="3547264467365135390">فرمول</translation>
 <translation id="3552832331940389362">تصویر پویانمایی ژاپنی از گربه‌ای که بعدازظهر روی لبه پنجره نشسته و باران را تماشا می‌کند</translation>
 <translation id="3557205324756024651">شناسه محلی (اختیاری)</translation>
 <translation id="3565064564551103223">‏IPهای مجاز</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">توضیح</translation>
 <translation id="3869314628814282185">تور</translation>
 <translation id="387301095347517405">تعداد دفعاتی که باتری‌تان یک دوره شارژ کامل را گذرانده است</translation>
-<translation id="3877066159641251281">گوش دادن به ترجمه</translation>
 <translation id="3880601782712134623">شناسایی خودکار صداهای متمایز و اختصاص برچسب عمومی به آن‌ها، مثل «گوینده ۱» و «گوینده ۲»</translation>
 <translation id="38811596981744338">مسئله حقوقی</translation>
 <translation id="3885327323343477505">تغییر محافظ صفحه‌نمایش</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">‏برای ادامه فرایند به‌روزرسانی، کابل USB دستگاه <ph name="DEVICE_NAME" /> را جدا و دوباره وصل کنید</translation>
 <translation id="5099354524039520280">بالا</translation>
 <translation id="5107243100836678918">اگر میان‌بر کلید <ph name="META_KEY" /> نداشته باشد، ممکن است با میان‌بر برخی‌از برنامه‌ها تداخل پیدا کند. اگر می‌خواهید همچنان از این میان‌بر استفاده کنید آن را دوباره فشار دهید، یا میان‌بر جدیدی را بااستفاده از کلید <ph name="KEY" /> فشار دهید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">مترادف:</translation>
 <translation id="5130848777448318809">اسبچه</translation>
 <translation id="5137451382116112100">تمام‌صفحه</translation>
 <translation id="5139813694804168398">مزاحم نشوید</translation>
 <translation id="5140788690559353412">‏وقتی دسترسی به حساب تحصیلی خود را ازدست بدهید، دیگر به ایمیل منسوب و فایل‌های Google Drive مثل Gmail، «سندنگار»، «اسلایدنگار»، و غیره دسترسی نخواهید داشت.</translation>
 <translation id="5142961317498132443">اصالت‌سنجی</translation>
 <translation id="5144311987923128508">کلید تأیید اکنون غیرفعال است</translation>
-<translation id="5144887194300568405">کپی کردن ترجمه</translation>
 <translation id="5145081769226915336">حالت تاریک به‌طور خودکار روشن شود؟</translation>
 <translation id="5145331109270917438">تاریخ اصلاح</translation>
 <translation id="5154917547274118687">حافظه</translation>

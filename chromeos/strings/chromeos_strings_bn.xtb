@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">একটি আনুমানিক ফলাফলের জন্য, <ph name="CONVERSION_RATE" /> মান দ্বারা <ph name="CATEGORY_TEXT" /> ভাগ করুন</translation>
 <translation id="1442433966118452622">ছবির সোর্স</translation>
 <translation id="1446954767133808402">নীলা</translation>
-<translation id="1449035143498573192">Google Search-এ খুলুন</translation>
 <translation id="1451536289672181509">ডিভাইস একটি কীবোর্ড।</translation>
 <translation id="1452939186874918380">ছাতা</translation>
 <translation id="145402479967797468">প্লেব্যাক কন্ট্রোল</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />-এর প্রিভিউ দেখুন</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
 <translation id="1669047024429367828">দৃশ্যমানতা</translation>
-<translation id="1670478569471758522">আপনি যা বেছে নিয়েছেন সেই সম্পর্কে আরও তথ্য</translation>
 <translation id="1672499492233627739">ওয়েবক্যাম ভিডিও ফিড</translation>
 <translation id="1676557873873341166">ভিডিও ক্যাপচার করা হচ্ছে</translation>
 <translation id="1684279041537802716">অ্যাকসেন্ট রঙ</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">এডিট করা হয়েছে</translation>
 <translation id="3532980081107202182">প্রায় <ph name="MIN_REMAINING" /> মিনিট সময় লাগবে</translation>
 <translation id="3533790840489634638">পুল</translation>
-<translation id="3547264467365135390">ফর্মুলা</translation>
 <translation id="3552832331940389362">জাপানি অ্যানিমেশনের ইলাস্ট্রেশন যেখানে দেখা যাচ্ছে বিকেলবেলায় জানালায় বসে একটি বিড়াল বৃষ্টি দেখছে</translation>
 <translation id="3557205324756024651">স্থানীয় আইডেন্টিটি (ঐচ্ছিক)</translation>
 <translation id="3565064564551103223">অনুমোদিত IP অ্যাড্রেসগুলি</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">বর্ণনা</translation>
 <translation id="3869314628814282185">টুলে</translation>
 <translation id="387301095347517405">আপনার ব্যাটারি যতবার পুরো চার্জ দেওয়া হয়েছে</translation>
-<translation id="3877066159641251281">অনুবাদ শুনুন</translation>
 <translation id="3880601782712134623">অটোমেটিক স্বতন্ত্র ভয়েস শনাক্ত করা ও প্রত্যেক স্পিকারকে জেনেরিক লেবেল দেওয়া, যেমন স্পিকার ১ এবং স্পিকার ২</translation>
 <translation id="38811596981744338">আইনি সমস্যা</translation>
 <translation id="3885327323343477505">স্ক্রিন সেভার পরিবর্তন করুন</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003"><ph name="DEVICE_NAME" />-এর USB কেবেল আনপ্লাগ করুন এবং আপডেট করার প্রসেস চালিয়ে যেতে সেটি আবার যোগ করুন</translation>
 <translation id="5099354524039520280">উপরে</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> 'কী' ছাড়া শর্টকার্ট কয়েকটি অ্যাপের শর্টকার্টের ক্ষেত্রে সমস্যা সৃষ্টি করতে পারে। এটি ব্যবহার করা চালিয়ে যেতে এই শর্টকার্ট প্রেস করুন বা <ph name="KEY" /> 'কী' ব্যবহার করে নতুন শর্টকার্ট প্রেস করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">একই ধরনের:</translation>
 <translation id="5130848777448318809">ছোট ঘোড়া</translation>
 <translation id="5137451382116112100">ফুলস্ক্রিন স্ট্যাটাস</translation>
 <translation id="5139813694804168398">বিরক্ত করবেন না</translation>
 <translation id="5140788690559353412">স্কুল অ্যাকাউন্টে অ্যাক্সেস হারালে, সংশ্লিষ্ট ইমেল এবং Gmail, Docs, Slides এবং অন্যান্য Google Drive ফাইল আর অ্যাক্সেস করতে পারবেন না।</translation>
 <translation id="5142961317498132443">প্রমাণীকরণ</translation>
 <translation id="5144311987923128508">কনফার্ম বোতাম এখন অ্যাক্টিভ নেই</translation>
-<translation id="5144887194300568405">অনুবাদ কপি করুন</translation>
 <translation id="5145081769226915336">'ডার্ক' মোড অটোমেটিক চালু করবেন?</translation>
 <translation id="5145331109270917438">পরিবর্তনের তারিখ</translation>
 <translation id="5154917547274118687">স্মৃতি</translation>

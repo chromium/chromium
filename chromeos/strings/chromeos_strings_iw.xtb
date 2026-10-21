@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">כדי לקבל תוצאה מקורבת, צריך לחלק את הערך של <ph name="CATEGORY_TEXT" /> ב-<ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">מקור התמונה</translation>
 <translation id="1446954767133808402">ספיר</translation>
-<translation id="1449035143498573192">‏פתיחה בחיפוש Google</translation>
 <translation id="1451536289672181509">המכשיר הוא מקלדת.</translation>
 <translation id="1452939186874918380">מטריות</translation>
 <translation id="145402479967797468">‏רכיבי UI להפעלה</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">תצוגה מקדימה של <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">‏רשתות VPN מובנות</translation>
 <translation id="1669047024429367828">חשיפה</translation>
-<translation id="1670478569471758522">מידע נוסף שקשור לבחירה שלך</translation>
 <translation id="1672499492233627739">פיד הווידאו של מצלמת האינטרנט</translation>
 <translation id="1676557873873341166">מתבצעת הקלטת וידאו</translation>
 <translation id="1684279041537802716">צבע משני</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">העריכה הסתיימה</translation>
 <translation id="3532980081107202182">נותרו <ph name="MIN_REMAINING" /> דקות בערך</translation>
 <translation id="3533790840489634638">בריכה</translation>
-<translation id="3547264467365135390">נוסחה</translation>
 <translation id="3552832331940389362">איור אנימציה יפני של חתול יושב על אדן החלון וצופה בגשם בשעות הצהריים</translation>
 <translation id="3557205324756024651">זהות מקומית (אופציונלי)</translation>
 <translation id="3565064564551103223">‏כתובות IP מורשות</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">תיאור</translation>
 <translation id="3869314628814282185">טול</translation>
 <translation id="387301095347517405">מספר הפעמים שבהן הסוללה נטענה במלואה</translation>
-<translation id="3877066159641251281">האזנה לתרגום</translation>
 <translation id="3880601782712134623">לזהות אוטומטית קולות ייחודיים ולתת לכל אחד מהם תווית גנרית, כמו 'דובר 1' ו'דובר 2'</translation>
 <translation id="38811596981744338">בעיה משפטית</translation>
 <translation id="3885327323343477505">החלפת שומר המסך</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">‏כדי להמשיך בתהליך העדכון, צריך לנתק את כבל ה-USB של <ph name="DEVICE_NAME" /> ולהכניס אותו שוב</translation>
 <translation id="5099354524039520280">למעלה</translation>
 <translation id="5107243100836678918">מקשי קיצור בלי המקש <ph name="META_KEY" /> עלולים להיות חופפים למקשי הקיצור באפליקציה כלשהי. כדי להשתמש במקשי הקיצור האלה בכל זאת, צריך להקיש עליהם שוב. אחרת, צריך להקיש על מקשי קיצור חדשים שכוללים את המקש <ph name="KEY" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">נרדפות:</translation>
 <translation id="5130848777448318809">סוסי פוני</translation>
 <translation id="5137451382116112100">מסך מלא</translation>
 <translation id="5139813694804168398">נא לא להפריע</translation>
 <translation id="5140788690559353412">‏אם הגישה לחשבון הבית ספרי שלך תאבד, לא תהיה לך יותר גישה לאימייל ולקבצים ב-Google Drive שמשויכים לחשבון, כמו Gmail, ‏Docs, ‏Slides ועוד.</translation>
 <translation id="5142961317498132443">אימות</translation>
 <translation id="5144311987923128508">כפתור האישור מושבת עכשיו</translation>
-<translation id="5144887194300568405">העתקת התרגום</translation>
 <translation id="5145081769226915336">להפעיל את המצב הכהה באופן אוטומטי?</translation>
 <translation id="5145331109270917438">תאריך שינוי</translation>
 <translation id="5154917547274118687">זיכרון</translation>

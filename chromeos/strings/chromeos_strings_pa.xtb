@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">ਅੰਦਾਜ਼ਨ ਨਤੀਜੇ ਲਈ, <ph name="CATEGORY_TEXT" /> ਮੁੱਲ ਨੂੰ <ph name="CONVERSION_RATE" /> ਨਾਲ ਭਾਗ ਕਰੋ</translation>
 <translation id="1442433966118452622">ਚਿੱਤਰ ਸਰੋਤ</translation>
 <translation id="1446954767133808402">ਨੀਲਮ</translation>
-<translation id="1449035143498573192">Google Search ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="1451536289672181509">ਡੀਵਾਈਸ ਇੱਕ ਕੀ-ਬੋਰਡ ਹੈ।</translation>
 <translation id="1452939186874918380">ਛੱਤਰੀਆਂ</translation>
 <translation id="145402479967797468">ਪਲੇਬੈਕ ਕੰਟਰੋਲ</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>
 <translation id="1668469839109562275">ਅੰਦਰ-ਮੌਜੂਦ VPN</translation>
 <translation id="1669047024429367828">ਦਿਖਣਯੋਗਤਾ</translation>
-<translation id="1670478569471758522">ਤੁਹਾਡੀ ਚੋਣ ਨਾਲ ਸੰਬੰਧਿਤ ਹੋਰ ਜਾਣਕਾਰੀ</translation>
 <translation id="1672499492233627739">ਵੈੱਬਕੈਮ ਵੀਡੀਓ ਫ਼ੀਡ</translation>
 <translation id="1676557873873341166">ਵੀਡੀਓ ਬਣਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1684279041537802716">ਐਕਸੈਂਟ ਰੰਗ</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">ਸੰਪਾਦਨ ਪੂਰਾ ਹੋਇਆ</translation>
 <translation id="3532980081107202182">ਲਗਭਗ <ph name="MIN_REMAINING" /> ਮਿੰਟ ਬਾਕੀ</translation>
 <translation id="3533790840489634638">ਪੂਲ</translation>
-<translation id="3547264467365135390">ਫ਼ਾਰਮੂਲਾ</translation>
 <translation id="3552832331940389362">ਇੱਕ ਜਪਾਨੀ ਐਨੀਮੇਸ਼ਨ ਚਿੱਤਰ, ਜਿਸ ਵਿੱਚ ਇੱਕ ਬਿੱਲੀ ਖਿੜਕੀ 'ਤੇ ਬੈਠੀ ਦੁਪਹਿਰ ਨੂੰ ਮੀਂਹ ਦੇਖ ਰਹੀ ਹੈ</translation>
 <translation id="3557205324756024651">ਸਥਾਨਕ ਪਛਾਣ (ਵਿਕਲਪਿਕ)</translation>
 <translation id="3565064564551103223">ਮਨਜ਼ੂਰਸ਼ੁਦਾ IP</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">ਵਰਣਨ</translation>
 <translation id="3869314628814282185">ਟਯੂਲ</translation>
 <translation id="387301095347517405">ਤੁਹਾਡੀ ਬੈਟਰੀ ਵੱਲੋਂ ਚਾਰਜ ਹੋਣ ਦੇ ਚੱਕਰ ਨੂੰ ਪੂਰਾ ਕੀਤੇ ਜਾਣ ਦੀ ਗਿਣਤੀ</translation>
-<translation id="3877066159641251281">ਅਨੁਵਾਦ ਨੂੰ ਸੁਣੋ</translation>
 <translation id="3880601782712134623">ਵਿਲੱਖਣ ਅਵਾਜ਼ਾਂ ਦਾ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪਤਾ ਲਗਾਉਂਦੀ ਹੈ ਅਤੇ ਹਰੇਕ ਸਪੀਕਰ ਨੂੰ ਸਪੀਕਰ 1 ਅਤੇ ਸਪੀਕਰ 2 ਵਰਗੇ ਆਮ ਲੇਬਲ ਦਿੰਦੀ ਹੈ</translation>
 <translation id="38811596981744338">ਕਨੂੰਨੀ ਸਮੱਸਿਆ</translation>
 <translation id="3885327323343477505">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬਦਲੋ</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003"><ph name="DEVICE_NAME" /> ਦੀ USB ਕੇਬਲ ਨੂੰ ਅਣਪਲੱਗ ਕਰੋ ਅਤੇ ਅੱਪਡੇਟ ਦੀ ਪ੍ਰਕਿਰਿਆ ਜਾਰੀ ਰੱਖਣ ਲਈ ਫਿਰ ਉਸਨੂੰ ਦੁਬਾਰਾ ਪਾਓ</translation>
 <translation id="5099354524039520280">ਉੱਪਰ</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> ਕੁੰਜੀ ਤੋਂ ਬਿਨਾਂ ਸ਼ਾਰਟਕੱਟ ਦੀ ਵਰਤੋਂ ਕਰਨ 'ਤੇ ਕੁਝ ਐਪਾਂ ਦੇ ਸ਼ਾਰਟਕੱਟ ਵਿੱਚ ਗੜਬੜ ਹੋ ਸਕਦੀ ਹੈ। ਇਸਦੀ ਵਰਤੋਂ ਜਾਰੀ ਰੱਖਣ ਲਈ ਇਸ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ ਜਾਂ <ph name="KEY" /> ਕੁੰਜੀ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਕੋਈ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">ਮਿਲਦੇ-ਜੁਲਦੇ:</translation>
 <translation id="5130848777448318809">ਟੱਟੂ</translation>
 <translation id="5137451382116112100">ਪੂਰੀ ਸਕ੍ਰੀਨ</translation>
 <translation id="5139813694804168398">ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ</translation>
 <translation id="5140788690559353412">ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ ਸਕੂਲ ਖਾਤੇ ਤੱਕ ਪਹੁੰਚ ਗੁਆ ਦਿੰਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਡੇ ਕੋਲ ਸੰਬੰਧਿਤ ਈਮੇਲ ਅਤੇ Google Drive ਫ਼ਾਈਲਾਂ ਜਿਵੇਂ ਕਿ Gmail, Docs, Slides ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਤੱਕ ਪਹੁੰਚ ਨਹੀਂ ਹੋਵੇਗੀ।</translation>
 <translation id="5142961317498132443">ਪ੍ਰਮਾਣੀਕਰਨ</translation>
 <translation id="5144311987923128508">ਤਸਦੀਕ ਕਰੋ ਬਟਨ ਹੁਣ ਬੰਦ ਹੈ</translation>
-<translation id="5144887194300568405">ਅਨੁਵਾਦ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="5145081769226915336">ਕੀ ਗੂੜ੍ਹਾ ਮੋਡ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5145331109270917438">ਤਾਰੀਖ ਸੰਸ਼ੋਧਿਤ ਕੀਤੀ</translation>
 <translation id="5154917547274118687">ਮੈਮਰੀ</translation>

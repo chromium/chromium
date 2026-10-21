@@ -325,6 +325,7 @@
 <translation id="1925706052394657380">Buka tetapan <ph name="BEGIN_BOLD" />Apl Lalai<ph name="END_BOLD" /> dalam iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Pautan diterima}other{{count} pautan diterima}}</translation>
 <translation id="1941314575388338491">Ketik dua kali untuk menyalin.</translation>
+<translation id="1942483019269000450">Untuk meneruskan tugas, Gemini boleh meminta Google Wallet untuk mengisi maklumat kad kredit anda</translation>
 <translation id="1943478190258551035">Menu → Tetapan</translation>
 <translation id="1944477975050820119">Dapatkan cadangan masa nyata yang boleh membantu anda menemukan cara baharu untuk menyemak imbas dengan AI. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Log masuk dengan akaun terurus</translation>
@@ -365,6 +366,7 @@
 <translation id="20485545164632846">item baharu</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> akaun menggunakan kata laluan yang sama</translation>
 <translation id="205013082884273671">Cari apa-apa perkara pada skrin anda</translation>
+<translation id="2053311407685904414">Pilih alamat</translation>
 <translation id="2054044186557130763">Log masuk sebagai <ph name="NAME" /> <ph name="EMAIL" />, diurus oleh organisasi anda.</translation>
 <translation id="2059166748188874810">Perbandaran</translation>
 <translation id="2060638295449304809">Alamat ini hanya disimpan pada peranti ini. Untuk menggunakan kata laluan ini pada peranti anda yang lain, simpan kata laluan tersebut dalam Google Account anda, <ph name="USER_EMAIL" /></translation>
@@ -465,6 +467,7 @@
 <translation id="2359043044084662842">Terjemah</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2360196772093551345">Minta Tapak Mudah Alih</translation>
+<translation id="2360272811987888433">Log masuk manual</translation>
 <translation id="2362083820973145409">Log masuk sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Membuka tetapan.</translation>
 <translation id="2367025302166767427">Terdapat masalah semasa mengisi maklumat anda</translation>
 <translation id="2371084566192454134">Tab dan kumpulan tab</translation>
@@ -625,6 +628,7 @@
 <translation id="2865392654629180917">Tanya apa-apa sahaja dan dapatkan respons dikuasakan AI</translation>
 <translation id="2870560284913253234">Tapak</translation>
 <translation id="2876369937070532032">Menghantar URL sesetengah halaman yang anda lawati kepada Google, apabila keselamatan anda terancam</translation>
+<translation id="2880119244122776372">Bina dan kod</translation>
 <translation id="2883151425485251736">Lihat dan edit topik yang anda sembunyikan daripada akaun anda</translation>
 <translation id="2884437560239137197">Perhatian diperlukan</translation>
 <translation id="288655811176831528">Tutup Tab</translation>
@@ -772,6 +776,7 @@
 <translation id="3404232721752787413">Simpan dalam Google Photos</translation>
 <translation id="3406506285180498376">Kongsi halaman…</translation>
 <translation id="340669334496430859">Terakhir Diubah Suai</translation>
+<translation id="3407832712016477396">Gemini boleh menggunakan Google Password Manager untuk log masuk bagi pihak anda</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 Okt 2023</translation>
 <translation id="3419787211763835342">Bantu kami meningkatkan autolengkap dipertingkatkan</translation>
@@ -1048,6 +1053,8 @@
 <translation id="4290920330097335010">Jangan sekali-kali benarkan</translation>
 <translation id="4293154608148215505">telefon anda</translation>
 <translation id="4294506173142861371">Log masuk sebagai <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Masukkan secara manual</translation>
+<translation id="4297418774230471285">Pilih maklumat peribadi</translation>
 <translation id="4302061870579014542">Tetapkan kedudukan</translation>
 <translation id="4304713468139749426">Pengurus Kata Laluan</translation>
 <translation id="4309403553630140242">Ketik dua kali untuk mendapatkan maklumat lanjut</translation>
@@ -1386,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini ialah AI dan mungkin melakukan kesilapan. <ph name="BEGIN_LINK" />Maklumat lanjut tentang data berkaitan yang dihantar kepada Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Tiada apa-apa untuk diimport</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> daripada <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Log masuk ke <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318298563956633672">Anda telah menjejaki produk ini.</translation>
 <translation id="5327248766486351172">Nama</translation>
@@ -1697,6 +1705,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6301104306974789820">Dapatkan pemberitahuan penjejakan harga</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Pilih kedudukan bar alamat anda</translation>
+<translation id="6305257382500066042">Cubalah sekarang</translation>
 <translation id="6307241780749477694">Sahkan identiti anda untuk mendapatkan akses kepada semua kata laluan anda pada peranti ini</translation>
 <translation id="6307792728709337290">Simpan kad anda dalam Google Account anda untuk membuat autolengkap kad tersebut bagi pembelian ini dan pembelian masa hadapan yang dibuat pada Chrome.</translation>
 <translation id="6316141353357700666">Pilih kata laluan yang mahu digunakan daripada senarai yang dipaparkan.</translation>
@@ -1850,7 +1859,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6708501134077648845">Pilihan Kata Laluan</translation>
 <translation id="6709964700841491574">Mod kunci semua</translation>
 <translation id="6710079714193676716">Diurus oleh organisasi anda. Sesetengah ciri mungkin tidak tersedia. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">Jawapan yang lebih pintar dan lebih pantas</translation>
 <translation id="6713676799463473249">Diubah suai <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Tab Diterima</translation>
 <translation id="6722638373100589752">Untuk autolengkap maklumat anda, hidupkan “Gunakan pas merentas Google” dalam tetapan Wallet</translation>
@@ -2062,7 +2070,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Teruskan</translation>
 <translation id="741204030948306876">Ya, saya setuju</translation>
-<translation id="7417055777338419059">Buat pengekodan, tulis atau buat slaid</translation>
 <translation id="7419565702166471774">Sentiasa gunakan sambungan selamat</translation>
 <translation id="7423098979219808738">Tanya dahulu</translation>
 <translation id="7425053386765766120">Tambahkan kaedah pembayaran…</translation>
@@ -2112,6 +2119,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="7525067979554623046">Cipta</translation>
 <translation id="75362970626182391">Kumpulan Tab Baharu</translation>
 <translation id="7537586195939242955">Maaf, Pas anda tidak boleh dipasang pd Passbook pd masa ini.</translation>
+<translation id="7540924742308928499">Sumbang saran dan ringkaskan</translation>
 <translation id="754655535278952384">Disemak <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Tutup Semua</translation>
 <translation id="7557508262441527045">Dilog keluar</translation>
@@ -2205,6 +2213,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="7839994177130598711">Kini ahli keluarga anda boleh menggunakan nama pengguna dan kata laluan anda apabila mereka menggunakan Google Password Manager untuk log masuk ke <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Cari teks yang disalin</translation>
 <translation id="7841418003178675048">Pilih kad yang anda lihat pada halaman tab baharu anda.</translation>
+<translation id="7842369010458597654">Mengisi maklumat pembayaran</translation>
 <translation id="7845466610722898">Paparkan Senarai Bacaan</translation>
 <translation id="7846161022626028328">Terdapat ralat. Cuba lagi.</translation>
 <translation id="784623644169604270">Tiada aktiviti terbaharu</translation>
@@ -2481,7 +2490,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8642417828095157370">Tab dikongsi untuk mendapatkan jawapan yang lebih berkaitan</translation>
 <translation id="8643403533759285912">Padam Kumpulan</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">Tidak dapat menyahjejaki harga.</translation>
 <translation id="8654802032646794042">Batal</translation>
 <translation id="8655861111558401309">Pilih Padamkan Data Semakan Imbas.</translation>
 <translation id="8659875081143553823">Tunggu sebentar</translation>

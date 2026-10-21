@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
-<translation id="1003222766972176318">ৰিমাইণ্ডাৰ: ছেভ কৰি থোৱা অফাৰ উপলব্ধ</translation>
 <translation id="1008557486741366299">এতিয়া নহয়</translation>
 <translation id="100957008357583611">আপোনাৰ অৱস্থান ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="1010200102790553230">পৃষ্ঠাটো পাছত ল'ড কৰক</translation>
@@ -1461,7 +1460,6 @@
 <translation id="3479552764303398839">এতিয়া নহয়</translation>
 <translation id="3481315707647070701">ভিজুৱেলাইজ আৰু সম্পাদনা কৰক</translation>
 <translation id="3484560055331845446">আপুনি নিজৰ Google একাউণ্টলৈ এক্সেছ হেৰুৱাব পাৰে। Chromeএ আপোনাৰ পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰিছে। আপোনাক ছাইন ইন কৰিবলৈ কোৱা হ’ব।</translation>
-<translation id="3484861421501147767">ৰিমাইণ্ডাৰ: ছেভ কৰি থোৱা প্ৰচাৰৰ ক’ড উপলব্ধ</translation>
 <translation id="3485901585646640838">আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা পাছৱৰ্ড আৰু আন বস্তু ব্যৱহাৰ কৰিবলৈ, এয়া আপুনিয়েই বুলি সত্যাপন কৰক</translation>
 <translation id="3487845404393360112">ট্ৰে’ ৪</translation>
 <translation id="3493881266323043047">ব্যৱহাৰৰ সময়সীমা</translation>
@@ -3438,6 +3436,7 @@
 <translation id="6753460329812070808">Chromeৰ পৰা পৰামৰ্শ আঁতৰোৱা হৈছে</translation>
 <translation id="6757797048963528358">আপোনাৰ ডিভাইচটো সুপ্ত অৱস্থালৈ গৈছে।</translation>
 <translation id="6758934187792712102"><ph name="URL" />এ আপোনাৰ ম’শ্বন আৰু পোহৰৰ ছেন্সৰ ব্যৱহাৰ কৰিব বিচাৰে</translation>
+<translation id="6766488013065406604">Google Password Managerলৈ যাওক</translation>
 <translation id="6770747695101757579">কাগজ (কপাহী)</translation>
 <translation id="6772959465807028761">YouTube ব্যৱহাৰ কৰিবলৈ, আপোনাৰ Google একাউণ্টেৰে অব্যাহত কৰক</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3648,7 +3647,6 @@
 <translation id="7120588595737538743">ডাউনল’ড আৰু স্ক্ৰীনশ্বট</translation>
 <translation id="7124354851782353862">আপোনাৰ CVC দিয়ক</translation>
 <translation id="7129409597930077180">এই ঠিকনালৈ পঠিয়াব নোৱাৰি। অন্য এটা ঠিকনা বাছনি কৰক।</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">আপল’ড কৰাটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="7132939140423847331">আপোনাৰ প্ৰশাসকে এইখিনি ডেটা প্ৰতিলিপি কৰাটো নিষিদ্ধ কৰি থৈছে।</translation>
 <translation id="7134653428559514680">এই ছাইটটোৰ পৰা শ্বেয়াৰ কৰাটো চুপাৰিছ কৰা নহয়</translation>

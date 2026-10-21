@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">ခန့်မှန်းခြေရလဒ်အတွက် <ph name="CATEGORY_TEXT" /> တန်ဖိုးကို <ph name="CONVERSION_RATE" /> နှင့်စားပါ</translation>
 <translation id="1442433966118452622">ပုံရင်းမြစ်</translation>
 <translation id="1446954767133808402">နီလာ</translation>
-<translation id="1449035143498573192">Google Search တွင် ဖွင့်ရန်</translation>
 <translation id="1451536289672181509">ကိရိယာသည် ကီးဘုတ်ဖြစ်သည်။</translation>
 <translation id="1452939186874918380">ထီး</translation>
 <translation id="145402479967797468">ရုပ်သံ ထိန်းချုပ်ခလုတ်များ</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> ကို အစမ်းကြည့်ရန်</translation>
 <translation id="1668469839109562275">အသင့်ပါသော VPN</translation>
 <translation id="1669047024429367828">မြင်နိုင်မှု</translation>
-<translation id="1670478569471758522">သင်ရွေးသည့်အရာနှင့် သက်ဆိုင်သည့် နောက်ထပ်အချက်အလက်</translation>
 <translation id="1672499492233627739">ဝဘ်ကမ်ဗီဒီယို ဖိဒ်</translation>
 <translation id="1676557873873341166">ဗီဒီယိုရိုက်နေသည်</translation>
 <translation id="1684279041537802716">အားဖြည့် အရောင်</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">တည်းဖြတ်ပြီးပါပြီ</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> မိနစ်ခန့် ကျန်သည်</translation>
 <translation id="3533790840489634638">ရေအိုင်</translation>
-<translation id="3547264467365135390">ဖော်မြူလာ</translation>
 <translation id="3552832331940389362">နေ့လယ်ပိုင်း မိုးရွာနေသည်ကို ပြတင်းပေါက်ဘောင်ပေါ်တွင် ထိုင်ကြည့်နေသော ကြောင်တစ်ကောင်၏ ဂျပန်ကာတွန်းပုံ</translation>
 <translation id="3557205324756024651">နေရာတွင်း အထောက်အထား (ဆန္ဒရှိလျှင်)</translation>
 <translation id="3565064564551103223">ခွင့်ပြုထားသည့် IP များ</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">ဖော်ပြချက်</translation>
 <translation id="3869314628814282185">ပိုးဇာလွှာ</translation>
 <translation id="387301095347517405">သင့်ဘက်ထရီကို အားအပြည့်သွင်းထားသည့် အကြိမ်အရေအတွက်</translation>
-<translation id="3877066159641251281">ဘာသာပြန်ဆိုချက်ကို နားထောင်ရန်</translation>
 <translation id="3880601782712134623">ထင်ရှားသော အသံများကို အလိုအလျောက် သိရှိပြီး ပြောသူတစ်ဦးစီကို ‘ပြောသူ ၁’ နှင့် ‘ပြောသူ ၂’ ကဲ့သို့သော ယေဘုယျအညွှန်း တပ်ပေးသည်</translation>
 <translation id="38811596981744338">ဥပဒေရေးရာ ပြဿနာ</translation>
 <translation id="3885327323343477505">စကရင်နားချိန်ပုံ ပြောင်းရန်</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">အပ်ဒိတ်လုပ်ငန်းစဉ်ကို ရှေ့ဆက်ရန် <ph name="DEVICE_NAME" /> USB ကြိုးကို ပလတ်ဖြုတ်ပြီး ပြန်တပ်ပါ</translation>
 <translation id="5099354524039520280">အပေါ်သို့</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> ခလုတ်မပါသော ဖြတ်လမ်းလင့်ခ်သည် အက်ပ်အချို့၏ ဖြတ်လမ်းလင့်ခ်နှင့် ငြိနိုင်သည်။ ဆက်သုံးရန် ဤဖြတ်လမ်းလင့်ခ်ကို ထပ်နှိပ်ပါ (သို့) <ph name="KEY" /> ခလုတ်သုံးပြီး ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">အလားတူ-</translation>
 <translation id="5130848777448318809">မြင်းပု</translation>
 <translation id="5137451382116112100">အပြည့်</translation>
 <translation id="5139813694804168398">မနှောင့်ယှက်ရ</translation>
 <translation id="5140788690559353412">သင့်ကျောင်းအကောင့်ကို သုံးခွင့်ဆုံးရှုံးသောအခါ ၎င်းနှင့်ဆက်စပ်သည့် အီးမေးလ်အပြင် Gmail၊ Docs၊ Slides စသည်တို့ကဲ့သို့သော Google Drive ဖိုင်များကို သုံးခွင့်ရှိတော့မည် မဟုတ်ပါ။</translation>
 <translation id="5142961317498132443">အထောက်အထားစိစစ်မှု</translation>
 <translation id="5144311987923128508">အတည်ပြုခလုတ်ကို ပိတ်လိုက်ပါပြီ</translation>
-<translation id="5144887194300568405">ဘာသာပြန်ဆိုချက်ကို မိတ္တူကူးရန်</translation>
 <translation id="5145081769226915336">အမှောင်မုဒ်ကို အလိုအလျောက် ဖွင့်မလား။</translation>
 <translation id="5145331109270917438">ရက်စွဲကို ပြုပြင်ပြီးပါပြီ</translation>
 <translation id="5154917547274118687">မှတ်ဉာဏ်</translation>

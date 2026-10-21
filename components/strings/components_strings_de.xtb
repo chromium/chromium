@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
-<translation id="1003222766972176318">Erinnerung: gespeichertes Angebot verfügbar</translation>
 <translation id="1008557486741366299">Jetzt nicht</translation>
 <translation id="100957008357583611">Standort verwenden?</translation>
 <translation id="1010200102790553230">Seite später laden</translation>
@@ -240,6 +239,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1393071644879491291">Auf dieser Website besteht die Gefahr, dass Angreifer dich zur Installation von Software oder zur Preisgabe von Daten wie Passwörtern, deiner Telefonnummer oder Kreditkartennummern verleiten möchten. Chrome rät dringend dazu, auf den Button „Zurück zu sicherer Website“ zu klicken. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Personalausweis sicher zu Google Wallet hinzufügen</translation>
 <translation id="1398743098754840707">Websites, die du hier hinzufügst, werden für Antworten nicht berücksichtigt, auch wenn der Tab geöffnet ist. Wenn eine von dir hinzugefügte Website gerade in einem Thread verwendet wird, kann es bis zu 30 Minuten dauern, bis der Thread nicht mehr darauf verweist.</translation>
+<translation id="1403359480263156644">Name des Karteninhabers aktualisiert</translation>
 <translation id="1405567553485452995">Hellgrün</translation>
 <translation id="1406370515365284486">Deine Zahlungsmethoden bleiben gespeichert</translation>
 <translation id="1406500794671479665">Überprüfung wird durchgeführt...</translation>
@@ -908,6 +908,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2498091847651709837">Neue Karte scannen</translation>
 <translation id="2501270939904835585">Etiketten (Satin)</translation>
 <translation id="2501278716633472235">Zurück</translation>
+<translation id="250307989715832083">Signatur hinzufügen</translation>
 <translation id="250346157641628208">Papier (Tintenstrahl)</translation>
 <translation id="2505063700931618106">Karteninformationen gespeichert</translation>
 <translation id="2505268675989099013">Konto schützen</translation>
@@ -1081,6 +1082,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2807052079800581569">Y-Position des Bilds</translation>
 <translation id="2808278141522721006">Du kannst Windows Hello in den <ph name="SETTINGS" /> aktivieren oder deaktivieren</translation>
 <translation id="2820957248982571256">Wird gescannt...</translation>
+<translation id="282457273878278063">Kontaktdaten verwalten</translation>
 <translation id="2824775600643448204">Adress- und Suchleiste</translation>
 <translation id="2826760142808435982">Die Verbindung ist mit <ph name="CIPHER" /> verschlüsselt und authentifiziert und verwendet <ph name="KX" /> als Mechanismus für den Schlüsselaustausch.</translation>
 <translation id="2828797285817981634">Zugriff auf Bewegungssensoren vorübergehend erlaubt</translation>
@@ -1126,6 +1128,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2911973620368911614">Nutzer-ID der Konto-ID des Auftrags</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> schützt deine Informationen in der Regel durch Verschlüsselung. Als Chrome dieses Mal versuchte, eine Verbindung zu <ph name="SITE" /> herzustellen, gab die Website ungewöhnliche und falsche Anmeldedaten zurück. Entweder versucht ein Angreifer, sich als <ph name="SITE" /> auszugeben, oder die Verbindung wurde durch eine WLAN-Anmeldeseite unterbrochen. Da Chrome die Verbindung vor dem Austausch von Daten unterbrochen hat, sind deine Informationen weiterhin sicher.</translation>
 <translation id="2915068235268646559">Absturz vom <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Alle Geräte</translation>
 <translation id="2916038427272391327">Andere Programme schließen</translation>
 <translation id="2917630513638801879">Cyan 1</translation>
 <translation id="2922350208395188000">Das Serverzertifikat kann nicht überprüft werden.</translation>
@@ -1461,7 +1464,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3479552764303398839">Jetzt nicht</translation>
 <translation id="3481315707647070701">Visualisieren und bearbeiten</translation>
 <translation id="3484560055331845446">Du könntest den Zugriff auf dein Google-Konto verlieren. Chrome empfiehlt dir, dein Passwort jetzt zu ändern. Du wirst dazu aufgefordert, dich anzumelden.</translation>
-<translation id="3484861421501147767">Erinnerung: gespeicherter Gutscheincode verfügbar</translation>
 <translation id="3485901585646640838">Bestätige deine Identität, um Passwörter und andere Daten in deinem Google-Konto verwenden zu können</translation>
 <translation id="3487845404393360112">Fach 4</translation>
 <translation id="3493881266323043047">Gültigkeit</translation>
@@ -1819,6 +1821,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4067774859633143413">Zum Beenden des Vollbildmodus und Ansehen des Downloads |<ph name="ACCELERATOR" />| gedrückt halten</translation>
 <translation id="4067947977115446013">Gültige Adresse hinzufügen</translation>
 <translation id="4072486802667267160">Bei der Verarbeitung deiner Bestellung ist ein Fehler aufgetreten. Bitte versuche es noch einmal.</translation>
+<translation id="4073293290376142777">Anmelden?</translation>
 <translation id="4073376909608563327">Geräteentsperrung kann nicht verwendet werden</translation>
 <translation id="4073797364926776829">Karte ansehen</translation>
 <translation id="4075732493274867456">Client und Server unterstützen keine gemeinsame SSL-Protokollversion oder Verschlüsselungssammlung.</translation>
@@ -1851,6 +1854,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4107047499377819067">Die Installation der VPN-Hintergrunddienste wurde gestartet. Dies kann einige Minuten dauern.</translation>
 <translation id="4110642094637545339">Google Pay-Logo, AfterPay-Logo</translation>
 <translation id="4110652170750985508">Zahlung überprüfen</translation>
+<translation id="411071007970303441">Alle Akteure</translation>
 <translation id="4112140312785995938">Zurück springen</translation>
 <translation id="4114007503059268298">Möchtest du diese Karte in deinem Google-Konto und auf diesem Gerät speichern?</translation>
 <translation id="4114146879518089587">Weiter zur Website</translation>
@@ -1915,6 +1919,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4218327733815631046">Ungefähren Standort beibehalten</translation>
 <translation id="4219596572397833317">Sieh dir den Preisverlauf und weitere Informationen an, um bessere Kaufentscheidungen treffen zu können.</translation>
 <translation id="4220128509585149162">Abstürze</translation>
+<translation id="4220745762102459826">und weitere Daten</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Schritt 1: Beim Portal anmelden&lt;/h4&gt;
     &lt;p&gt;An manchen Orten wie in Cafés oder auf Flughäfen ist in WLANs eine Anmeldung erforderlich. Um zur Anmeldeseite zu gelangen, besuche eine Seite, die mit &lt;code&gt;http://&lt;/code&gt; beginnt.&lt;/p&gt;
     &lt;ol&gt;
@@ -2876,6 +2881,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5794065675298686371">Benachrichtigungen zum Preis-Tracking aktivieren</translation>
 <translation id="5794093550048860249">Sendungsnummer</translation>
 <translation id="5796050750059455142">Aktiviere „<ph name="BEGIN_LINK" />Smarte Funktionen in anderen Google-Produkten<ph name="LINK_END" />“</translation>
+<translation id="5797916798049571144">Er wird zusammen mit deinen Kartendaten gespeichert, damit er beim Bezahlen automatisch ausgefüllt wird</translation>
 <translation id="5797984091151707075">Durch Administratorrichtlinie blockiert</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
 <translation id="5806871454498484178">Scrollen und Zoomen blockiert</translation>
@@ -3437,6 +3443,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6753460329812070808">Vorschlag aus Chrome entfernt</translation>
 <translation id="6757797048963528358">Dein Gerät ist im Ruhemodus.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> möchte deine Bewegungs- und Lichtsensoren verwenden</translation>
+<translation id="6766488013065406604">Google Passwortmanager aufrufen</translation>
 <translation id="6770747695101757579">Papier (Baumwolle)</translation>
 <translation id="6772959465807028761">Wenn du YouTube nutzen möchtest, melde dich mit deinem Google-Konto an</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3647,7 +3654,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="7120588595737538743">Downloads und Screenshots</translation>
 <translation id="7124354851782353862">CVC eingeben</translation>
 <translation id="7129409597930077180">Der Versand an diese Adresse ist nicht möglich. Bitte wähle eine andere Adresse aus.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Hochladen blockiert</translation>
 <translation id="7132939140423847331">Dein Administrator hat das Kopieren dieser Daten untersagt.</translation>
 <translation id="7134653428559514680">Das Teilen von Inhalten dieser Website wird nicht empfohlen</translation>
@@ -3965,6 +3971,7 @@ Weitere Details:
 <translation id="7637571805876720304">Kreditkarte aus Chromium entfernen?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Keins}=1{1 Passwort in deinem Konto (für <ph name="DOMAIN_LIST" />)}other{# Passwörter in deinem Konto (für <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Serielle Schnittstellen</translation>
+<translation id="7644100755247241229">Du kannst jetzt Pix über Google Wallet an Freunde und Unternehmen senden</translation>
 <translation id="7646681339175747202">Das eingegebene Passwort wurde in einer Datenpanne gefunden. Der Google Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
 <translation id="7647206758853451655">Druckqualität</translation>
 <translation id="7648133459447652947">Zum Einblenden des Cursors wechsle zu einer anderen App, lade die Seite neu oder gehe zurück</translation>
@@ -4068,6 +4075,7 @@ Weitere Details:
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="7798389633136518089">Ignoriert, weil die Richtlinie nicht von einer cloudbasierten Quelle konfiguriert wurde.</translation>
 <translation id="7800304661137206267">Die Verbindung ist mit <ph name="CIPHER" /> verschlüsselt; für die Nachrichtenauthentifizierung wird <ph name="MAC" /> verwendet und als Mechanismus für den Schlüsselaustausch <ph name="KX" />.</translation>
+<translation id="780228007282527248">Tab oder Bild hinzufügen, um die Suche zu optimieren</translation>
 <translation id="7802523362929240268">Website ist vertrauenswürdig</translation>
 <translation id="7802989406998618639">Gib den <ph name="NUMBER_OF_DIGITS" />-stelligen Sicherheitscode auf der <ph name="SIDE_OF_CARD" /> ein, damit deine Bank deine Identität bestätigen kann</translation>
 <translation id="780301667611848630">Nein, danke</translation>

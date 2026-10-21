@@ -117,6 +117,7 @@
 <translation id="2190166659037789668">更新检查错误：<ph name="UPDATE_CHECK_ERROR" />。</translation>
 <translation id="2199210295479376551">从 Chromium 中移除账号</translation>
 <translation id="2201788217099588893">顶级购物工具随身带，尽在 Chromium 应用</translation>
+<translation id="2209877494277346829">将 Chromium 与其他应用隔离</translation>
 <translation id="2210502920229141283">在 iOS 版 Chromium 上启用增强型安全浏览功能，随时随地更安全地浏览网页</translation>
 <translation id="2210682093923538346">危险网站。Chromium 移除了通知权限。</translation>
 <translation id="2236949375853147973">我的活动记录</translation>
@@ -189,6 +190,7 @@
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="2977506796191543575">如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chromium 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能</translation>
 <translation id="2981563588585023386">若要使用家长选择的设置更安全地上网，请登录 Chromium</translation>
+<translation id="2992577225802060159">保护 Chromium 的内存免受计算机上其他应用的影响。</translation>
 <translation id="3003694935412297923">所有任务</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium 需要先验证您的身份，然后才能将某些数据保存到您的 Google 账号中，供您在所有设备上使用。如果现在就退出账号，这些数据（1 项）将被删除。}other{Chromium 需要先验证您的身份，然后才能将某些数据保存到您的 Google 账号中，供您在所有设备上使用。如果现在就退出账号，这些数据（{count} 项）将被删除。}}</translation>
 <translation id="3013473503895162900">在 Chromium 的新标签页中打开 <ph name="URL" />。</translation>
@@ -466,7 +468,6 @@
 <translation id="5949225980829865667">如需在您的所有设备上获取此书签等内容，请登录 Chromium</translation>
 <translation id="5953657885167112863">打造您的专属 Chromium</translation>
 <translation id="5960071705175224773">未知应用更改了您的设置</translation>
-<translation id="5977420883993828287">已固定！您可通过工具栏再次使用情境任务</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{您的组织会在 Chromium 闲置 1 分钟后自动关闭它。}other{您的组织会在 Chromium 闲置 # 分钟后自动关闭它。}}</translation>
 <translation id="5987687638152509985">更新 Chromium 以开始同步</translation>
 <translation id="5990360079535151574">您可以通过工具栏上的“情境任务”按钮重新打开情境任务，以便在浏览时提问</translation>

@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትርን ሰብስብ።}one{ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር የትር ቡድንን ሰብስብ።}other{ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር የትር ቡድንን ሰብስብ።}}</translation>
 <translation id="2569352796411618312">ጥቆማ ሐሳብ፦ ከእርስዎ ትሮች <ph name="NUMBER_OF_TABS" /> ያክሉ በቅርቡ ጥቅም ላይ አልዋሉም። ይዘጉ?</translation>
 <translation id="257674075312929031">ቡድን</translation>
+<translation id="2628148780487543078">እንዲሁም የተሰኩ ትሮችን ዝጋ</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ ቀለም <ph name="COLOR_NAME" /> ወደነበረበት ይመልሱ እና ይክፈቱ።}one{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ ቀለም <ph name="COLOR_NAME" /> ወደነበረበት ይመልሱ እና ይክፈቱ።}other{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ ቀለም <ph name="COLOR_NAME" /> ወደነበረበት ይመልሱ እና ይክፈቱ።}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ</translation>
 <translation id="266935134738038806">ጣቢያ ይጎብኙ</translation>

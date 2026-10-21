@@ -6605,6 +6605,17 @@ Nếu bạn không đặt chính sách này, thì tính năng "Giúp tôi viết
 <translation id="5081204761483900654">Các phiên khách được quản lý và bị hạn chế</translation>
 <translation id="5082296146261894974">Cho phép người dùng nhấp vào thông báo trong Trung tâm điều khiển điện thoại để chạy ứng dụng Eche.</translation>
 <translation id="5082572440690475059">Cho phép quyền đọc qua API Hệ thống tệp trên các trang web này</translation>
+<translation id="5084849119584030624">Định cấu hình chế độ cài đặt kết nối cho <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> trong <ph name="PRODUCT_NAME" />.
+
+Chính sách này không còn được hỗ trợ và sẽ bị bỏ qua. Thay vào đó, hãy sử dụng chính sách <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />.
+
+Chính sách này định cấu hình URL ứng dụng web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> thông qua <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />. URL này phải là một URL hợp lệ sử dụng giao thức HTTPS, trỏ đến miền <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> và không chứa tên người dùng hoặc mật khẩu. Nếu không đáp ứng các yêu cầu này, chính sách sẽ bị bỏ qua và <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ không được định cấu hình.
+
+Nếu bạn đặt chính sách này, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ được định cấu hình cho những người dùng đăng nhập bằng tài khoản được quản lý hoặc qua trình duyệt được quản lý.
+
+Nếu bạn không đặt chính sách này, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ không được định cấu hình.
+
+Xin lưu ý rằng chính sách này không kiểm soát việc tích hợp <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> nói chung. Bạn có thể kiểm soát việc tích hợp này qua chính sách <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="5085647276663819155">Vô hiệu hóa xem trước bản in</translation>
 <translation id="5087922428454325090">Người dùng không thể cài đặt ứng dụng web thông qua trình duyệt.</translation>
 <translation id="5087932158260897375">Nếu bạn đặt chính sách này thành false, thì tính năng báo cáo dữ liệu chẩn đoán về độ tin cậy của miền sẽ bị tắt và không có dữ liệu nào được gửi cho Google.
@@ -8494,25 +8505,6 @@ Từ phiên bản 114 trở lên, bạn không bắt buộc phải đặt chính
 <translation id="6244061205361004687">Cho phép người dùng ngắt kết nối hoặc sửa đổi VPN theo cách thủ công</translation>
 <translation id="6244210204546589761">Các URL sẽ mở khi khởi động</translation>
 <translation id="6244263962918757383">Chế độ cài đặt cho đề xuất của Chrome</translation>
-<translation id="6245828368576563662">Chính sách này cho phép xác định danh sách các quy tắc để chèn các tiêu đề HTTP tuỳ chỉnh vào những yêu cầu web khớp với các mẫu URL cụ thể. Các tiêu đề được thiết lập theo chính sách này sẽ được ưu tiên hơn những tiêu đề vốn có trong yêu cầu, cũng như những thay đổi mà người dùng hoặc tiện ích cố gắng thực hiện.
-
-Một trường hợp sử dụng phổ biến của chính sách này là thực thi các chế độ kiểm soát quyền truy cập của đối tượng thuê bằng cách chèn các tiêu đề tuỳ chỉnh (ví dụ: <ph name="EXAMPLE_HEADER_NAME" />).
-
-Chính sách này chấp nhận một danh sách các Quy tắc. Mỗi quy tắc chứa:
-
-* <ph name="PATTERNS_KEY" />: Danh sách các mẫu URL cần so khớp. Xem cách định dạng mẫu URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
-
-* <ph name="HEADERS_KEY" />: Danh sách các đối tượng đại diện cho tiêu đề cần chèn, mỗi đối tượng chứa:
-
-  * <ph name="HEADER_NAME_KEY" />: Tên của tiêu đề cần chèn.
-
-  * <ph name="HEADER_VALUE_KEY" />: Giá trị của tiêu đề cần chèn.
-
-Nếu nhiều quy tắc khớp với một yêu cầu, thì các tiêu đề trong tất cả các quy tắc trùng khớp sẽ được áp dụng. Trong trường hợp có nhiều tiêu đề cùng tên, tiêu đề có mẫu URL cụ thể nhất sẽ được áp dụng. Nếu các mẫu có mức độ cụ thể như nhau, thì mẫu xuất hiện cuối cùng trong danh sách sẽ được áp dụng.
-
-Tên tiêu đề phải tuân thủ RFC 2616 ( https://www.rfc-editor.org/rfc/rfc2616 ). Giá trị tiêu đề không được chứa các ký hiệu NUL, CR hoặc LF. Kích thước của từng tiêu đề không được vượt quá 8 KB. Tiêu đề và mẫu URL không hợp lệ sẽ bị bỏ qua.
-
-Chính sách này chỉ áp dụng cho tổng cộng 500 mẫu URL trên tất cả các quy tắc. Mỗi quy tắc có thể chứa tối đa 20 tiêu đề. Các mẫu và tiêu đề vượt quá ngưỡng này sẽ bị bỏ qua.</translation>
 <translation id="624595269193747921">Liệu có giới hạn phạm vi tìm kiếm máy in phù hợp ở một nhóm máy in cụ thể hay không.</translation>
 <translation id="6246290059248303618">Hiện bộ điều khiển nội dung nghe nhìn cho các phiên <ph name="PRODUCT_NAME" /> do các thiết bị khác trên mạng cục bộ bắt đầu</translation>
 <translation id="6247316685259031374">Chính sách này kiểm soát môi trường hộp cát của tiến trình âm thanh.
@@ -10075,23 +10067,6 @@ Chính sách này không ảnh hưởng đến các trình quản lý mật kh�
 
       Lưu ý: Tính năng quét hiện bị tắt theo mặc định thông qua cờ tính năng. Nếu người dùng bật tính năng này thông qua cờ tính năng, chính sách này vẫn có thể tắt tính năng này.</translation>
 <translation id="7115684775550072082">Chỉ giữ khoảng trắng cho loại mime xml (ngôn ngữ đánh dấu mở rộng) và văn bản</translation>
-<translation id="7116098886490965998">Tắt tính năng đăng nhập một lần bằng <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> đối với các nhà cung cấp dịch vụ danh tính có trong danh sách.
-
-Khi bạn thêm giá trị <ph name="POLICY_VALUE_ALL" />, tất cả các nhà cung cấp dịch vụ danh tính được hỗ trợ tính năng SSO sẽ bị tắt.
-
-Khi bạn thêm giá trị <ph name="POLICY_VALUE_MICROSOFT" />, nhà cung cấp dịch vụ danh tính trên đám mây của Microsoft® trong Chrome sẽ không được hỗ trợ tính năng đăng nhập một lần.
-
-Nếu bạn không đặt chính sách này, tất cả các nhà cung cấp dịch vụ danh tính được <ph name="PRODUCT_NAME" /> hỗ trợ sẽ được bật.
-
-Đối với nhà cung cấp dịch vụ danh tính được bật trong <ph name="PRODUCT_NAME" /> và được quản trị viên định cấu hình trên thiết bị, những người dùng từng đăng nhập bằng nhà cung cấp dịch vụ danh tính đó, trên bất kỳ ứng dụng nào hỗ trợ <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, đều có thể tự động đăng nhập vào các tài sản web bằng nhà cung cấp danh tính đó. Thông tin liên quan đến thông tin xác thực của người dùng được truyền đến nhà cung cấp dịch vụ danh tính trên đám mây của người dùng cho từng sự kiện xác thực.
-
-Lưu ý:
-
-<ph name="PRODUCT_NAME" /> không hỗ trợ tính năng Đăng nhập một lần bằng <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> ở chế độ ẩn danh hoặc chế độ khách.
-
-<ph name="PRODUCT_NAME" /> chỉ hỗ trợ tính năng Đăng nhập một lần bằng <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> đối với các nhà cung cấp dịch vụ danh tính sau đây: Microsoft, Okta.
-
-Tính năng này có trên <ph name="MAC_OS_NAME" /> 10.15 trở lên.</translation>
 <translation id="7119538491527883595">Bộ nhớ cục bộ cho dữ liệu người dùng</translation>
 <translation id="7121046543122812054">Chính sách này đã ngừng hoạt động, hãy cân nhắc sử dụng <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
@@ -12486,6 +12461,17 @@ Chính sách này luôn có hiệu lực đối với <ph name="PRODUCT_OS_NAME"
 <translation id="8621146428060651659">Cho phép ngẫu nhiên hoá nhóm socket cho các máy chủ proxy</translation>
 <translation id="862621549134406761">Bật tuỳ chọn kiểm tra việc sử dụng khoá RSA</translation>
 <translation id="8626826495474944836">Yêu cầu tính năng Tách biệt trang web cho mọi trang web</translation>
+<translation id="8628954914373039931">Chế độ cài đặt này cho phép người dùng chuyển đổi giữa các Tài khoản Google trong vùng nội dung của cửa sổ trình duyệt và trong các ứng dụng Android, sau khi họ đăng nhập vào thiết bị <ph name="PRODUCT_OS_NAME" /> của mình.
+
+      Nếu bạn đặt chính sách này thành false (sai), người dùng sẽ không được phép đăng nhập vào một Tài khoản Google khác từ vùng nội dung của trình duyệt không ẩn danh và từ các ứng dụng Android.
+
+      Nếu bạn không đặt hoặc đặt chính sách này thành true (đúng), thì hành vi mặc định sẽ được áp dụng: người dùng được phép đăng nhập vào một Tài khoản Google khác từ vùng nội dung của trình duyệt và các ứng dụng Android, nhưng riêng tài khoản của trẻ sẽ bị chặn đăng nhập trong vùng nội dung không ẩn danh.
+
+      Trên Android, chế độ cài đặt này kiểm soát việc người dùng có thể thêm Tài khoản Google bổ sung từ vùng nội dung của các trang web Google hay không khi họ đã đăng nhập vào <ph name="PRODUCT_NAME" />. Nếu bạn đặt chính sách này thành false (sai), các trang web của Google sẽ không cung cấp tuỳ chọn thêm một Tài khoản Google khác (ví dụ: nút "Thêm tài khoản khác" trong trình đơn tài khoản). Nếu bạn không đặt hoặc đặt chính sách này thành true (đúng), người dùng sẽ được phép thêm một Tài khoản Google khác từ các trang web của Google. Chính sách này không ngăn cản việc thêm Tài khoản Google vào chính thiết bị Android.
+
+      Trong trường hợp bạn không muốn cho phép đăng nhập vào một tài khoản khác thông qua chế độ ẩn danh, hãy cân nhắc việc chặn chế độ đó bằng chính sách IncognitoModeAvailability.
+
+      Xin lưu ý rằng người dùng sẽ có thể truy cập vào các dịch vụ của Google ở trạng thái chưa được xác thực nếu cookie của họ bị chặn.</translation>
 <translation id="8630797597241896082">Cho phép dùng Nền AI tạo sinh cho hội nghị truyền hình và cải thiện mô hình AI</translation>
 <translation id="8631314130868563649">Tắt chính sách quản lý nguồn điện khi chuyển đổi vào giờ cao điểm</translation>
 <translation id="8631434304112909927">cho đến phiên bản <ph name="UNTIL_VERSION" /></translation>

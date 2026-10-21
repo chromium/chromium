@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">홈페이지에 맞춤 색상과 이미지를 적용하여 나만의 Chrome을 만들어 보세요.</translation>
 <translation id="389521680295183045">사용자가 현재 기기를 사용 중인지 사이트에서 확인을 요청할 수 있음</translation>
 <translation id="3895926599014793903">확대/축소 강제 사용</translation>
-<translation id="3905475044299942653">많은 알림 중지</translation>
 <translation id="3922092564198021702">휴대전화에서 설정을 엽니다.</translation>
 <translation id="3924858949939391676">읽기 모드가 켜지면 링크 표시</translation>
 <translation id="3933121352599513978">원치 않는 요청 접기(권장)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">모든 기기의 탭 그룹 섹션에서 그룹을 확인할 수 있습니다.</translation>
 <translation id="4945443401464700059"><ph name="SITE" />에서 내 정보를 사용하지 못하도록 차단</translation>
 <translation id="4953688446973710931">사용 설정하면 사이트에서 여러 파일의 자동 다운로드를 요청할 수 있습니다. 사용 중지하면 사이트에서 여러 파일을 자동으로 다운로드할 수 없습니다.</translation>
-<translation id="4962975101802056554">기기에서 모든 권한을 취소합니다.</translation>
 <translation id="4972737347717125191">사이트에서 가상 현실 기기 및 데이터의 사용을 요청할 수 있음</translation>
 <translation id="4973805849704516244">Chrome 색상 하단 시트</translation>
 <translation id="497421865427891073">앞으로 이동</translation>
@@ -704,7 +702,6 @@
 <translation id="8428213095426709021">설정</translation>
 <translation id="8441146129660941386">뒤로 탐색</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" />에서 위치 정보에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 위치를 사용 설정하세요.</translation>
-<translation id="8447861592752582886">기기 액세스 권한 취소</translation>
 <translation id="8463843545738141778">Android 설정에서 고급 보호를 사용 설정했기 때문에 이 설정이 사용 중지되었습니다.</translation>
 <translation id="8467359479529706065">새 탭 페이지 모양 하단 시트가 절반 높이로 열림</translation>
 <translation id="8471525937465764768">사이트에서는 일반적으로 문서 인쇄 또는 스토리지 기기에 저장과 같은 기능을 사용하기 위해 USB 기기에 연결합니다.</translation>

@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Щоб отримати приблизний результат, поділіть значення "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Джерело зображення</translation>
 <translation id="1446954767133808402">сапфіру</translation>
-<translation id="1449035143498573192">Відкрити в Пошуку Google</translation>
 <translation id="1451536289672181509">Це клавіатура.</translation>
 <translation id="1452939186874918380">парасольки</translation>
 <translation id="145402479967797468">Елементи керування відтворенням</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Попередньо переглянути файл "<ph name="PREVIEW_OBJECT" />"</translation>
 <translation id="1668469839109562275">Вбудована мережа VPN</translation>
 <translation id="1669047024429367828">Видимість</translation>
-<translation id="1670478569471758522">Докладніша інформація, пов’язана з вибраним контентом</translation>
 <translation id="1672499492233627739">Відео з веб-камери</translation>
 <translation id="1676557873873341166">Записується відео</translation>
 <translation id="1684279041537802716">Акцентний колір</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Завершити редагування</translation>
 <translation id="3532980081107202182">Залишилося приблизно <ph name="MIN_REMAINING" /> хв</translation>
 <translation id="3533790840489634638">ставок</translation>
-<translation id="3547264467365135390">Формула</translation>
 <translation id="3552832331940389362">Ілюстрація з японського мультфільму, де кіт сидить на підвіконні й дивиться на дощ удень</translation>
 <translation id="3557205324756024651">Локальна ідентифікація (необов’язково)</translation>
 <translation id="3565064564551103223">Дозволені IP-адреси</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Опис</translation>
 <translation id="3869314628814282185">тюлю</translation>
 <translation id="387301095347517405">Кількість повних циклів заряджання акумулятора</translation>
-<translation id="3877066159641251281">Слухати переклад</translation>
 <translation id="3880601782712134623">автоматично виявляти різні голоси й призначати кожному мовцю загальні мітки, як-от "Мовець 1" і "Мовець 2";</translation>
 <translation id="38811596981744338">Порушення законодавства</translation>
 <translation id="3885327323343477505">Змінити заставку</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Щоб продовжити оновлення, від’єднайте кабель USB від пристрою <ph name="DEVICE_NAME" /> і вставте його знову</translation>
 <translation id="5099354524039520280">угору</translation>
 <translation id="5107243100836678918">Комбінація клавіш без клавіші <ph name="META_KEY" /> може конфліктувати з налаштуваннями деяких додатків. Натисніть цю комбінацію ще раз, щоб і далі використовувати її, або створіть новий варіант із клавішею <ph name="KEY" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Синоніми:</translation>
 <translation id="5130848777448318809">поні</translation>
 <translation id="5137451382116112100">На весь екран</translation>
 <translation id="5139813694804168398">не турбувати</translation>
 <translation id="5140788690559353412">Коли ви втратите доступ до облікового запису закладу освіти, то більше не зможете користуватися своєю електронною адресою і файлами на Google Диску, зокрема збереженими з Gmail, Документів, Презентацій тощо.</translation>
 <translation id="5142961317498132443">Автентифікація</translation>
 <translation id="5144311987923128508">Кнопку підтвердження вимкнено</translation>
-<translation id="5144887194300568405">Копіювати переклад</translation>
 <translation id="5145081769226915336">Вмикати темний режим автоматично?</translation>
 <translation id="5145331109270917438">Дата змінення</translation>
 <translation id="5154917547274118687">Пам’ять</translation>

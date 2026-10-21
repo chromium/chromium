@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Personnalisez Chrome avec des couleurs et des images personnalisées pour votre page d'accueil</translation>
 <translation id="389521680295183045">Les sites peuvent demander à savoir quand vous utilisez activement votre appareil</translation>
 <translation id="3895926599014793903">Forcer l'activation du zoom</translation>
-<translation id="3905475044299942653">Arrêter les nombreuses notifications</translation>
 <translation id="3922092564198021702">Sur votre téléphone, ouvrez Paramètres.</translation>
 <translation id="3924858949939391676">Afficher les liens une fois le mode Lecture activé</translation>
 <translation id="3933121352599513978">Réduire les demandes indésirables (recommandé)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Vos groupes s'afficheront dans la section "Groupes d'onglets" sur tous vos appareils</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> ne peut pas utiliser vos informations sur</translation>
 <translation id="4953688446973710931">Lorsque cette option est activée, les sites peuvent demander à télécharger automatiquement plusieurs fichiers. Lorsqu'elle est désactivée, les sites ne peuvent pas télécharger automatiquement plusieurs fichiers.</translation>
-<translation id="4962975101802056554">Révoquer toutes les autorisations de l'appareil</translation>
 <translation id="4972737347717125191">Les sites peuvent demander à utiliser des données et des appareils de réalité virtuelle</translation>
 <translation id="4973805849704516244">Bottom sheet des couleurs Chrome</translation>
 <translation id="497421865427891073">Avancer</translation>
@@ -704,7 +702,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :</translatio
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8441146129660941386">Retour rapide</translation>
 <translation id="8444433999583714703">Pour autoriser <ph name="APP_NAME" /> à accéder à votre position, activez également la localisation dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Révoquer l'autorisation d'accès à l'appareil</translation>
 <translation id="8463843545738141778">Ce paramètre est désactivé, car vous avez activé la Protection Avancée dans les paramètres Android.</translation>
 <translation id="8467359479529706065">Bottom sheet de l'apparence de la page Nouvel onglet ouverte à mi-hauteur</translation>
 <translation id="8471525937465764768">Les sites se connectent généralement aux appareils USB pour proposer des fonctionnalités comme l'impression de documents ou l'enregistrement sur un périphérique de stockage</translation>

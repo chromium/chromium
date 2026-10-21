@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Personaliza Chrome con colores e imágenes personalizados para tu página principal</translation>
 <translation id="389521680295183045">Los sitios pueden preguntarte cuándo usas activamente tu dispositivo</translation>
 <translation id="3895926599014793903">Forzar zoom</translation>
-<translation id="3905475044299942653">Dejar de recibir muchas notificaciones</translation>
 <translation id="3922092564198021702">En tu teléfono, abre Configuración</translation>
 <translation id="3924858949939391676">Mostrar enlaces cuando el modo Lectura esté activado</translation>
 <translation id="3933121352599513978">Ocultar solicitudes no deseadas (recomendado)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Encontrarás tus grupos en la sección de grupos de pestañas de todos tus dispositivos</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> no puede usar tu información en</translation>
 <translation id="4953688446973710931">Cuando esta opción está activada, los sitios pueden solicitar permiso para descargar varios archivos automáticamente. Si está desactivada, los sitios no pueden descargar varios archivos automáticamente.</translation>
-<translation id="4962975101802056554">Revocar todos los permisos de este dispositivo</translation>
 <translation id="4972737347717125191">Los sitios pueden solicitar permiso para utilizar datos y dispositivos de realidad virtual</translation>
 <translation id="4973805849704516244">Hoja inferior de colores de Chrome</translation>
 <translation id="497421865427891073">Avanzar</translation>
@@ -704,7 +702,6 @@ Protección Avanzada controla estos ajustes de Chrome:</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8441146129660941386">Buscar hacia atrás</translation>
 <translation id="8444433999583714703">Para que <ph name="APP_NAME" /> tenga acceso a tu ubicación, actívala también en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Revocar permiso de dispositivo</translation>
 <translation id="8463843545738141778">Este ajuste está inhabilitado porque has activado Protección Avanzada en los ajustes de Android.</translation>
 <translation id="8467359479529706065">Hoja inferior de apariencia de la página Nueva pestaña abierta a media altura</translation>
 <translation id="8471525937465764768">Los sitios se suelen conectar a dispositivos USB para usarlos en funciones como la impresión de documentos o el guardado de contenido en dispositivos de almacenamiento.</translation>

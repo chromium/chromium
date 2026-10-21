@@ -119,6 +119,7 @@
 <translation id="2190166659037789668">更新檢查錯誤：<ph name="UPDATE_CHECK_ERROR" />。</translation>
 <translation id="2199210295479376551">從 Chromium 移除帳戶</translation>
 <translation id="2201788217099588893">Chromium 應用程式讓最完善的購物工具隨時隨行</translation>
+<translation id="2209877494277346829">將 Chromium 與其他應用程式隔離</translation>
 <translation id="2210502920229141283">在 iOS 版 Chromium 啟用「強化安全瀏覽」，隨時隨地加強網上安全</translation>
 <translation id="2210682093923538346">危險網站。Chromium 已移除通知權限。</translation>
 <translation id="2236949375853147973">我的活動</translation>
@@ -191,6 +192,7 @@
 <translation id="2977470724722393594">Chromium 已是最新版本</translation>
 <translation id="2977506796191543575">如果有網站試圖盜取您的密碼，或當您下載有害檔案時，Chromium 亦可能將網址 (包括部分網頁內容) 傳送至「安全瀏覽」功能</translation>
 <translation id="2981563588585023386">如要按家長所選設定加強網上安全，請登入 Chromium</translation>
+<translation id="2992577225802060159">保護 Chromium 的記憶體，免受電腦上的其他應用程式存取。</translation>
 <translation id="3003694935412297923">所有工作</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium 需要先驗證身分，才能將部分資料儲存至 Google 帳戶，並在所有裝置上使用。如果你現在登出，系統將刪除有關資料 (1 個項目)。}other{Chromium 需要先驗證身分，才能將部分資料儲存至 Google 帳戶，並在所有裝置上使用。如果你現在登出，系統將刪除有關資料 ({count} 個項目)。}}</translation>
 <translation id="3013473503895162900">在 Chromium 中的新分頁開啟 <ph name="URL" />。</translation>
@@ -467,7 +469,6 @@
 <translation id="5949225980829865667">如要在所有裝置上使用此書籤和其他資料，請登入 Chromium</translation>
 <translation id="5953657885167112863">自訂 Chromium 體驗</translation>
 <translation id="5960071705175224773">你的設定已由不明應用程式變更</translation>
-<translation id="5977420883993828287">已固定！你可透過工具列再次使用「內容相關工作」</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{根據機構規定，Chromium 會在閒置 1 分鐘後自動關閉。}other{根據機構規定，Chromium 會在閒置 # 分鐘後自動關閉。}}</translation>
 <translation id="5987687638152509985">更新 Chromium 即可開始同步</translation>
 <translation id="5990360079535151574">你可透過工具列上的「內容相關工作」按鈕，重新開啟「內容相關工作」以在瀏覽時提問</translation>

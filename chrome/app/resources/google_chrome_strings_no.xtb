@@ -114,7 +114,6 @@
 <translation id="2039417478970545937">Innstillinger.</translation>
 <translation id="2040220733769034247">Skann QR-koden med telefonen for å laste ned Chrome og logge på Google-kontoen.</translation>
 <translation id="2044908892530830113">Vis søk med Chrome på Mac-menylinjen, og slå på hurtigtasten</translation>
-<translation id="2050189601866423230">Du kan feste AI-modusen for Google Søk for å stille spørsmål mens du surfer</translation>
 <translation id="2091012649849228750">For å få fremtidige Google Chrome-oppdateringer må du ha Windows 10 eller nyere. Denne datamaskinen bruker Windows 8.</translation>
 <translation id="2094648590148273905">Vilkår for ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vil du avslutte Chrome likevel?</translation>
@@ -458,6 +457,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="5386244825306882791">Den styrer også hvilken side som vises når du starter Chrome eller søker fra multifunksjonsfeltet.</translation>
 <translation id="5394833366792865639">Del en Chrome-fane</translation>
 <translation id="5402307365844630024">Slå av/på Gemini i Chrome Beta</translation>
+<translation id="5414664742659847155">Isoler Chrome fra andre apper</translation>
 <translation id="541844421954567481">Ta med deg passordene, fanene og mer med Chrome-appen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">Innstillingsfilen er skadet eller ugyldig. Google Chrome kan ikke gjenopprette innstillingene dine.</translation>
 <translation id="5465210843490471889">Velg en Chrome-profil som skal brukes med <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
@@ -671,6 +671,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="7306401458628386911">Begynn å surfe umiddelbart: Chrome kan nå startes når Windows starter.</translation>
 <translation id="7308322188646931570">Chrome må ha lagringstilgang for å laste ned filer</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
+<translation id="7371412052245999753">Beskytter Chrome-minnet mot andre apper på datamaskinen.</translation>
 <translation id="73786666777299047">Åpne Chrome Nettmarked</translation>
 <translation id="7386878009611068389">For å holde deg tryggere på nettet med innstillingene som forelderen din har valgt, bytt til Chrome-profilen din der du allerede er logget på som <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Du ble logget på Chrome som <ph name="USER_EMAIL_ADDRESS" />. Du må logge deg på igjen med samme konto.</translation>
@@ -765,7 +766,6 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="8074398340364918139">For å søke etter en bestemt Chrome-funksjon eller -utvidelse, skriv inn snarveien til den i adressefeltet, etterfulgt av tasten du har valgt på tastaturet</translation>
 <translation id="8077579734294125741">Andre Chrome-profiler</translation>
 <translation id="8086881907087796310">Installasjonen mislyktes fordi datamaskinen ikke oppfyller minimumskravene til maskinvare.</translation>
-<translation id="8110438089258398864">Du kan åpne AI-modus for Google Søk igjen for å stille spørsmål mens du surfer</translation>
 <translation id="8113883687556086139">Bekreft at det er deg, for å bruke og lagre Chrome-data i kontoen din, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Gjør Chrome til din …</translation>
 <translation id="8118331347066725040">Send tilbakemelding om søk med Lens</translation>
@@ -822,8 +822,6 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="8555465886620020932">Tjenestefeil: ‏<ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Søk på språklisten</translation>
 <translation id="8575047640889685742">Bruk din <ph name="BEGIN_LINK" />egen passordfrase<ph name="END_LINK" /> for å kryptere alle Chrome-dataene i Google-kontoen din. Betalingsmåter og adresser fra Google Pay krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.</translation>
-<translation id="8590782867495422699">Åpne AI-modus for Google Søk igjen</translation>
-<translation id="8598779894319572882">Med «AI-modus for Google Søk»-knappen på verktøylinjen kan du åpne AI-modus for Google Søk igjen for å stille spørsmål mens du surfer</translation>
 <translation id="8614913330719544658">Google Chrome svarer ikke. Vil du starte på nytt nå?</translation>
 <translation id="8623450603356630491">Logg på Chrome på telefonen</translation>
 <translation id="8624541899164515475">Innstillinger (åpnes i en ny fane).</translation>
@@ -878,7 +876,6 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="9014771989710951291">Flere organisasjoner administrerer Chrome</translation>
 <translation id="9018218886431812662">Installasjonen er fullført</translation>
 <translation id="9066987883552592250">Lukk Gemini i Chrome Canary</translation>
-<translation id="9074041031320636790">Fullført. Nå kan du enkelt stille spørsmål mens du surfer, med AI-modus for Google Søk</translation>
 <translation id="9090566250983691233">Finn ut hvorfor Chrome blokkerer enkelte filer</translation>
 <translation id="9106236359747881194">Merk tekst for å søke</translation>
 <translation id="911206726377975832">Vil du slette all nettlesingsdata også?</translation>

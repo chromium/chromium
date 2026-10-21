@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
-<translation id="1003222766972176318">Подсетник: Доступна је сачувана понуда</translation>
 <translation id="1008557486741366299">Не сада</translation>
 <translation id="100957008357583611">Желите ли да користите локацију?</translation>
 <translation id="1010200102790553230">Касније учитај страницу</translation>
@@ -1127,6 +1126,7 @@
 <translation id="2911973620368911614">ИД корисника за рачуноводствени задатак</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> обично користи шифровање да би заштитио информације. Када је Chrome овог пута покушао да се повеже са <ph name="SITE" />, веб-сајт је вратио необичне и нетачне акредитиве. Или нападач покушава да се представи као <ph name="SITE" /> или је екран за WiFi пријављивање прекинуо везу. Информације су и даље безбедне зато што је Chrome прекинуо везу пре него што су размењени било какви подаци.</translation>
 <translation id="2915068235268646559">Извештај о отказивању од <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Сви уређаји</translation>
 <translation id="2916038427272391327">Затворите друге програме</translation>
 <translation id="2917630513638801879">1. тиркизна</translation>
 <translation id="2922350208395188000">Није могуће проверити сертификат сервера.</translation>
@@ -1462,7 +1462,6 @@
 <translation id="3479552764303398839">Не сада</translation>
 <translation id="3481315707647070701">Визуализујте и измените</translation>
 <translation id="3484560055331845446">Могли бисте да изгубите приступ Google налогу. Chrome препоручује да одмах промените лозинку. Мораћете да се пријавите.</translation>
-<translation id="3484861421501147767">Подсетник: Доступан је сачувани промотивни кôд</translation>
 <translation id="3485901585646640838">Да бисте користили лозинке и друго сачуване на Google налогу, потврдите свој идентитет</translation>
 <translation id="3487845404393360112">4. фиока</translation>
 <translation id="3493881266323043047">Валидност</translation>
@@ -1822,6 +1821,7 @@
 <translation id="4067774859633143413">Да бисте изашли из режима целог екрана и прегледали преузимање, притисните и задржите |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Додајте важећу адресу</translation>
 <translation id="4072486802667267160">Дошло је до грешке при обради поруџбине. Пробајте поново.</translation>
+<translation id="4073293290376142777">Желите да се пријавите?</translation>
 <translation id="4073376909608563327">Откључавање уређаја није успело</translation>
 <translation id="4073797364926776829">Прикажи картицу</translation>
 <translation id="4075732493274867456">Клијент и сервер не подржавају исту верзију SSL протокола или пакет за шифровање.</translation>
@@ -1854,6 +1854,7 @@
 <translation id="4107047499377819067">Инсталирање VPN услуга у позадини је почело. Ово може да потраје неколико минута.</translation>
 <translation id="4110642094637545339">Логотип Google Pay-а, AfterPay-а</translation>
 <translation id="4110652170750985508">Прегледајте уплату</translation>
+<translation id="411071007970303441">Сви актери</translation>
 <translation id="4112140312785995938">Премотај уназад</translation>
 <translation id="4114007503059268298">Да ли желите да сачувате ову картицу на Google налогу и на овом уређају?</translation>
 <translation id="4114146879518089587">Настави на сајт</translation>
@@ -3439,6 +3440,7 @@
 <translation id="6753460329812070808">Предлог је уклоњен из Chrome-а</translation>
 <translation id="6757797048963528358">Уређај је прешао у режим спавања.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> жели да користи сензоре покрета и светлости</translation>
+<translation id="6766488013065406604">Идите у Google менаџер лозинки</translation>
 <translation id="6770747695101757579">Папир (памук)</translation>
 <translation id="6772959465807028761">Да бисте користили YouTube, наставите са Google налогом</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3649,7 +3651,6 @@
 <translation id="7120588595737538743">преузимања и снимке екрана</translation>
 <translation id="7124354851782353862">Унесите CVC</translation>
 <translation id="7129409597930077180">Слање на ову адресу није могуће. Изаберите другу адресу.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Отпремање је блокирано</translation>
 <translation id="7132939140423847331">Администратор је забранио копирање ових података.</translation>
 <translation id="7134653428559514680">Дељење са овог сајта није препоручено</translation>
@@ -3967,6 +3968,7 @@
 <translation id="7637571805876720304">Желите ли да уклоните кредитну картицу из Chromium-а?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Ниједна}=1{1 лозинка на налогу (за <ph name="DOMAIN_LIST" />)}one{# лозинка на налогу (за <ph name="DOMAIN_LIST" />)}few{# лозинке на налогу (за <ph name="DOMAIN_LIST" />)}other{# лозинки на налогу (за <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Серијски портови</translation>
+<translation id="7644100755247241229">Пошаљите Pix пријатељима и предузећима помоћу Google новчаника</translation>
 <translation id="7646681339175747202">Лозинка коју сте управо користили је пронађена при повреди података. Google менаџер лозинки препоручује да одмах промените лозинку.</translation>
 <translation id="7647206758853451655">Квалитет штампања</translation>
 <translation id="7648133459447652947">Да би се приказао курсор, промените апликацију, поново учитајте страницу или се вратите</translation>
@@ -4070,6 +4072,7 @@
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7798389633136518089">Занемарено јер смернице није подесио извор из клауда.</translation>
 <translation id="7800304661137206267">Веза је шифрована помоћу <ph name="CIPHER" />, са <ph name="MAC" /> за потврду идентитета поруке и <ph name="KX" /> као механизмом за размену кључева.</translation>
+<translation id="780228007282527248">Додајте картицу или слику да бисте побољшали претрагу</translation>
 <translation id="7802523362929240268">Сајт је легитиман</translation>
 <translation id="7802989406998618639">Унесите <ph name="NUMBER_OF_DIGITS" />-цифрени безбедносни кôд на <ph name="SIDE_OF_CARD" /> да би банка могла да потврди да сте то ви</translation>
 <translation id="780301667611848630">Не, хвала</translation>

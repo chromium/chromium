@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">За приблизителен резултат разделете стойността за <ph name="CATEGORY_TEXT" /> на <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Източник на изображението</translation>
 <translation id="1446954767133808402">сапфир</translation>
-<translation id="1449035143498573192">Отваряне в Google Търсене</translation>
 <translation id="1451536289672181509">Устройството е клавиатура.</translation>
 <translation id="1452939186874918380">чадъри</translation>
 <translation id="145402479967797468">Контроли за възпроизвеждане</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Визуализация на „<ph name="PREVIEW_OBJECT" />“</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
 <translation id="1669047024429367828">Видимост</translation>
-<translation id="1670478569471758522">Още информация, свързана с избраното от вас</translation>
 <translation id="1672499492233627739">Видеокартина от уебкамерата</translation>
 <translation id="1676557873873341166">Заснема се видеоклип</translation>
 <translation id="1684279041537802716">Цвят на акцентирането</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Край на редактирането</translation>
 <translation id="3532980081107202182">Остават около <ph name="MIN_REMAINING" /> минути</translation>
 <translation id="3533790840489634638">басейн</translation>
-<translation id="3547264467365135390">Формула</translation>
 <translation id="3552832331940389362">илюстрация в стил аниме на котка, която седи на перваза на прозорец и наблюдава следобедния дъжд</translation>
 <translation id="3557205324756024651">Локална самоличност (по избор)</translation>
 <translation id="3565064564551103223">Разрешени IP адреси</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Описание</translation>
 <translation id="3869314628814282185">тюл</translation>
 <translation id="387301095347517405">Броят пълни цикли на зареждане на батерията ви</translation>
-<translation id="3877066159641251281">Слушане на превода</translation>
 <translation id="3880601782712134623">автоматично разпознаване на различните гласове и обозначаване на говорещите с типов етикет, като например „Говорещ 1“ и „Говорещ 2“;</translation>
 <translation id="38811596981744338">Правен проблем</translation>
 <translation id="3885327323343477505">Промяна на скрийнсейвъра</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Изключете USB кабела на <ph name="DEVICE_NAME" /> и го включете отново, за да продължите процеса на актуализиране</translation>
 <translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Клавишната комбинация без клавиша „<ph name="META_KEY" />“ може да е в конфликт с комбинация в приложение. Натиснете тази комбинация отново, за да продължите да я използвате, или натиснете нова, като включите и клавиша „<ph name="KEY" />“. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Подобни:</translation>
 <translation id="5130848777448318809">понита</translation>
 <translation id="5137451382116112100">Цял екран</translation>
 <translation id="5139813694804168398">не безпокойте</translation>
 <translation id="5140788690559353412">Когато загубите достъп до училищния си профил, вече няма да имате достъп до свързаната електронна поща и файловете в Google Диск, като например Gmail, Документи, Презентации и др.</translation>
 <translation id="5142961317498132443">Удостоверяване</translation>
 <translation id="5144311987923128508">Бутонът за потвърждаване вече е деактивиран</translation>
-<translation id="5144887194300568405">Копиране на превода</translation>
 <translation id="5145081769226915336">Да се включва ли автоматично тъмният режим?</translation>
 <translation id="5145331109270917438">Дата на промяна</translation>
 <translation id="5154917547274118687">Памет</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
-<translation id="1003222766972176318">Xatırlatma: saxlanılmış təklif əlçatandır</translation>
 <translation id="1008557486741366299">İndi yox</translation>
 <translation id="100957008357583611">Məkanınızdan istifadə edilsin?</translation>
 <translation id="1010200102790553230">Səhifəni sonra yükləyin</translation>
@@ -1127,6 +1126,7 @@
 <translation id="2911973620368911614">İş hesabının istifadəçi ID'si</translation>
 <translation id="2914160345369867329">Məlumatınızı qorumaq üçün <ph name="SITE" /> adətən şifrələmə istifadə edir. Chrome bu dəfə <ph name="SITE" /> üzərinə qoşulmağa çalışanda sayt qeyri-adi və yanlış giriş məlumatlarını qaytarmağa başladı. Bu, hücum edən özünü <ph name="SITE" /> kimi apardıqda, və ya Wi-Fi tərəfindən bağlantı kəsintisi olduqda baş verir. Məlumatınız hələ də güvənlidir, çünki Chrome datanın mübadiləsindən öncə bağlantını kəsib.</translation>
 <translation id="2915068235268646559">Xəta tarixi: <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Bütün cihazlar</translation>
 <translation id="2916038427272391327">Digər proqramları bağlayın</translation>
 <translation id="2917630513638801879">Yaşımtıl mavi 1</translation>
 <translation id="2922350208395188000">Server sertifikatı yoxlana bilmədi.</translation>
@@ -1460,7 +1460,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3479552764303398839">İndi yox</translation>
 <translation id="3481315707647070701">Vizuallaşdırın və redaktə edin</translation>
 <translation id="3484560055331845446">Google Hesabınıza girişi itirə bilərsiniz. Chrome parolu dəyişməyi məsləhət görür. Daxil olmağınız tələb olunacaq.</translation>
-<translation id="3484861421501147767">Xatırlatma: Saxlanmış promo kodu əlçatandır</translation>
 <translation id="3485901585646640838">Google Hesabınızda saxlanılan parollardan və digər məlumatlardan istifadə etmək üçün kimliyinizi doğrulayın</translation>
 <translation id="3487845404393360112">Qab 4</translation>
 <translation id="3493881266323043047">Doğrulama</translation>
@@ -1818,6 +1817,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4067774859633143413">Tam ekrandan çıxmaq və endirməyə baxmaq üçün |<ph name="ACCELERATOR" />| düyməsini basıb saxlayın.</translation>
 <translation id="4067947977115446013">Düzgün Ünvan Əlavə Edin</translation>
 <translation id="4072486802667267160">Sifariş hazırlanarkən xəta baş verdi. Yenidən cəhd edin.</translation>
+<translation id="4073293290376142777">Hesaba giriş edilsin?</translation>
 <translation id="4073376909608563327">Cihazın kiliddən çıxarılmasından istifadə etmək mümkün olmadı</translation>
 <translation id="4073797364926776829">Karta baxın</translation>
 <translation id="4075732493274867456">Klient və server ümumi SSL protokol versiyasını və ya şifrə dəstini dəstəkləmir.</translation>
@@ -1850,6 +1850,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4107047499377819067">VPN fon xidmətlərinin quraşdırılması başladı və bir neçə dəqiqə çəkə bilər.</translation>
 <translation id="4110642094637545339">Google Pay, AfterPay loqosu</translation>
 <translation id="4110652170750985508">Ödənişi nəzərdən keçirin</translation>
+<translation id="411071007970303441">Bütün tərəflər</translation>
 <translation id="4112140312785995938">Geri çəkin</translation>
 <translation id="4114007503059268298">Bu kart Google Hesabı və bu cihazda yadda saxlansın?</translation>
 <translation id="4114146879518089587">Sayta davam edin</translation>
@@ -2289,6 +2290,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="483241715238664915">Xəbərdarlıqları aktiv edin</translation>
 <translation id="4833567658337394628">Əlavə etmək tövsiyə edilmir</translation>
 <translation id="4840250757394056958">Chrome tarixçənizə baxın</translation>
+<translation id="4842085418602350953">Növbəti dəfə tətbiqləri dəyişmədən Pix ilə ödəyin</translation>
 <translation id="4842365697443353018">Sonra ödəyin seçimindən istifadə etmək üçün formanı silin</translation>
 <translation id="484462545196658690">Avtomatik</translation>
 <translation id="4844937814014739139">Paylaşılan tabların sürüşdürülməsi və miqyasının dəyişdirilməsi</translation>
@@ -3436,6 +3438,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6753460329812070808">Təklif Chrome-dan silindi</translation>
 <translation id="6757797048963528358">Cihazınız yatmağa getdi.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> hərəkət və işıq sensorlarından istifadə etmək istəyir</translation>
+<translation id="6766488013065406604">Google Parol Menecerinə keçin</translation>
 <translation id="6770747695101757579">Kağız (pambıq)</translation>
 <translation id="6772959465807028761">YouTube istifadə etmək üçün Google Hesabınız ilə davam edin</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3646,7 +3649,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7120588595737538743">endirmələr və skrinşotlar</translation>
 <translation id="7124354851782353862">CVC-ni daxil edin</translation>
 <translation id="7129409597930077180">Bu ünvana göndərmək mümkün deyil. Başqa ünvan seçin.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Yükləmə bloklanıb</translation>
 <translation id="7132939140423847331">Admininiz bu məlumatın kopyalanmasını qadağan edib.</translation>
 <translation id="7134653428559514680">Bu saytdan paylaşmaq tövsiyə edilmir</translation>
@@ -3963,6 +3965,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7637571805876720304">Kredit kartı Chromium'dan silinsin?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Heç biri}=1{Hesabınızda 1 parol var (<ph name="DOMAIN_LIST" /> üçün)}other{Hesabınızda # parol var (<ph name="DOMAIN_LIST" /> üçün)}}</translation>
 <translation id="7638605456503525968">Seriya portları</translation>
+<translation id="7644100755247241229">Google Pulqabıdan istifadə edərək Pix-i dostlarınıza və bizneslərə göndərin</translation>
 <translation id="7646681339175747202">İndicə istifadə etdiyiniz parol bir data pozuntusunda tapılıb. Google Parol Meneceri parolunuzu indi dəyişdirmənizi tövsiyə edir.</translation>
 <translation id="7647206758853451655">Çap keyfiyyəti</translation>
 <translation id="7648133459447652947">Kursoru göstərmək üçün tətbiqləri dəyişin, səhifəni yenidən yükləyin və ya geri qayıdın</translation>
@@ -4066,6 +4069,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7791543448312431591">Əlavə etmək</translation>
 <translation id="7798389633136518089">Siyasət bulud mənbəyi tərəfindən təyin edilmədiyinə görə nəzərə alınmayıb.</translation>
 <translation id="7800304661137206267">Bağlantı <ph name="CIPHER" /> istifadə olunaraq şifrələndi, mesaj doğrulanması üçün <ph name="MAC" /> və açar mübadiləsi mexanizmi üçün <ph name="KX" /> oldu.</translation>
+<translation id="780228007282527248">Axtarışınızı təkmilləşdirmək üçün tab və ya şəkil əlavə edin</translation>
 <translation id="7802523362929240268">Sayt qanunidir</translation>
 <translation id="7802989406998618639">Bankın kimliyinizi doğrulaması üçün <ph name="SIDE_OF_CARD" />ndəki <ph name="NUMBER_OF_DIGITS" /> rəqəmli təhlükəsizlik kodunu daxil edin</translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
@@ -4291,6 +4295,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8208629719488976364">Çap etdiyiniz səhifələrin kontenti və printer haqqında məlumat təhlil üçün Google Cloud və ya üçüncü tərəflərə göndərilir. O, həssas data ilə bağlı skanlana, şirkət siyasətinə əsasən saxlana və administratora görünə bilər.</translation>
 <translation id="8210490490377416373">Siyasət adı seçin</translation>
 <translation id="8211406090763984747">Bağlantı təhlükəsizdir</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ 1 digər mənbə}other{+ # digər mənbə}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 düym</translation>
 <translation id="8218327578424803826">Ayrılmış yer:</translation>

@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ahenda <ph name="TABS_COUNT_ONE" /> vaheleht.}other{Ahenda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp.}}</translation>
 <translation id="2569352796411618312">Soovitus: <ph name="NUMBER_OF_TABS" /> vahelehte pole hiljuti kasutatud. Kas sulgeda need?</translation>
 <translation id="257674075312929031">Grupeeri</translation>
+<translation id="2628148780487543078">Sule ka kinnitatud vahelehed</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Taastage ja avage vahelehtede rühm <ph name="TABS_COUNT_ONE" /> vahelehega, värviga <ph name="COLOR_NAME" />.}other{Taastage ja avage vahelehtede rühm <ph name="TABS_COUNT_MANY" /> vahelehega, värviga <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> hinnang</translation>
 <translation id="266935134738038806">Külasta saiti</translation>

@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Deixe o Chrome do seu jeito com cores e imagens personalizadas na sua página inicial</translation>
 <translation id="389521680295183045">Os sites podem pedir para saber quando você está usando o dispositivo ativamente</translation>
 <translation id="3895926599014793903">Forçar zoom</translation>
-<translation id="3905475044299942653">Parar muitas notificações</translation>
 <translation id="3922092564198021702">No smartphone, acesse as Configurações.</translation>
 <translation id="3924858949939391676">Mostrar links quando o Modo de Leitura estiver ativado</translation>
 <translation id="3933121352599513978">Fechar solicitações indesejadas (recomendado)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Seus grupos vão aparecer na seção de grupos de guias em todos os seus dispositivos</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> não pode usar suas informações em</translation>
 <translation id="4953688446973710931">Quando essa configuração está ativada, os sites podem pedir o download automático de vários arquivos. Quando está desativada, os sites não podem fazer o download automático de vários arquivos.</translation>
-<translation id="4962975101802056554">Revogar todas as permissões para o dispositivo</translation>
 <translation id="4972737347717125191">Os sites podem pedir para usar dispositivos e dados de realidade virtual</translation>
 <translation id="4973805849704516244">Painel de cores do Chrome</translation>
 <translation id="497421865427891073">Avançar</translation>
@@ -704,7 +702,6 @@ A Proteção Avançada controla estas configurações do Chrome:</translation>
 <translation id="8428213095426709021">Configurações</translation>
 <translation id="8441146129660941386">Voltar</translation>
 <translation id="8444433999583714703">Para permitir que o app <ph name="APP_NAME" /> acesse seu local, ative-o também nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Revogar permissão do dispositivo</translation>
 <translation id="8463843545738141778">Essa configuração está desativada porque você ativou a Proteção Avançada nas configurações do Android.</translation>
 <translation id="8467359479529706065">A página inferior de aparência da página "Nova guia" está aberta na metade da altura</translation>
 <translation id="8471525937465764768">Os sites geralmente se conectam a dispositivos USB para recursos como imprimir um documento ou salvar em um dispositivo de armazenamento</translation>

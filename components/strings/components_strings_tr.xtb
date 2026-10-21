@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
-<translation id="1003222766972176318">Hatırlatıcı: Kaydedilen teklif kullanılabilir</translation>
 <translation id="1008557486741366299">Şimdi Değil</translation>
 <translation id="100957008357583611">Konumunuz kullanılsın mı?</translation>
 <translation id="1010200102790553230">Sayfayı daha sonra yükle</translation>
@@ -1127,6 +1126,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2911973620368911614">İş hesabı kullanıcı kimliği</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> normalde bilgilerinizi korumak için şifreleme kullanır. Chrome bu sefer <ph name="SITE" /> sitesine bağlanmayı denediğinde, web sitesi sıra dışı ve yanlış kimlik bilgileri döndürdü. Bir saldırgan <ph name="SITE" /> gibi davranmaya çalışıyor olabilir ya da bir kablosuz oturum açma ekranı bağlantıyı kesmiştir. Chrome herhangi bir veri alışverişinden önce bağlantıyı durdurduğu için bilgileriniz hâlâ güvendedir.</translation>
 <translation id="2915068235268646559">Kilitlenme zamanı: <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Tüm cihazlar</translation>
 <translation id="2916038427272391327">Diğer programları kapatın</translation>
 <translation id="2917630513638801879">Camgöbeği 1</translation>
 <translation id="2922350208395188000">Sunucunun sertifikası kontrol edilemiyor.</translation>
@@ -1462,7 +1462,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3479552764303398839">Şimdi değil</translation>
 <translation id="3481315707647070701">Görselleştirin ve düzenleyin</translation>
 <translation id="3484560055331845446">Google Hesabınıza erişimi kaybedebilirsiniz. Chrome, şifrenizi hemen değiştirmenizi önerir. Oturum açmanız istenecektir.</translation>
-<translation id="3484861421501147767">Hatırlatıcı: Kayıtlı promosyon kodu kullanılabilir</translation>
 <translation id="3485901585646640838">Google Hesabınızda kayıtlı şifreleri ve diğer bilgileri kullanmak için kimliğinizi doğrulayın</translation>
 <translation id="3487845404393360112">Tepsi 4</translation>
 <translation id="3493881266323043047">Geçerlilik</translation>
@@ -1822,6 +1821,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4067774859633143413">Tam ekrandan çıkıp indirme işlemini görmek için |<ph name="ACCELERATOR" />| tuşunu basılı tutun</translation>
 <translation id="4067947977115446013">Geçerli Adres Ekleyin</translation>
 <translation id="4072486802667267160">Ödemeniz işlenirken bir hata oluştu. Lütfen tekrar deneyin.</translation>
+<translation id="4073293290376142777">Oturum açılsın mı?</translation>
 <translation id="4073376909608563327">Cihazda kilit açma kullanılamadı</translation>
 <translation id="4073797364926776829">Kartı göster</translation>
 <translation id="4075732493274867456">İstemci ve sunucu, ortak bir SSL protokolü sürümünü veya şifre setini desteklemiyor.</translation>
@@ -1854,6 +1854,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4107047499377819067">VPN arka plan hizmetleri yüklenmeye başladı. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="4110642094637545339">Google Pay, AfterPay logosu</translation>
 <translation id="4110652170750985508">Ödemenizi inceleyin</translation>
+<translation id="411071007970303441">Tüm kaynaklar</translation>
 <translation id="4112140312785995938">Geri Sar</translation>
 <translation id="4114007503059268298">Bu kartı Google Hesabınıza ve bu cihaza kaydetmek İstiyor musunuz?</translation>
 <translation id="4114146879518089587">Siteye devam et</translation>
@@ -3440,6 +3441,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6753460329812070808">Öneri, Chrome'dan kaldırıldı</translation>
 <translation id="6757797048963528358">Cihazınız uyku moduna geçti.</translation>
 <translation id="6758934187792712102"><ph name="URL" />, hareket ve ışık sensörlerinizi kullanmak istiyor</translation>
+<translation id="6766488013065406604">Google Şifre Yöneticisi'ne gidin</translation>
 <translation id="6770747695101757579">Kağıt (Pamuk)</translation>
 <translation id="6772959465807028761">YouTube'u kullanmak için Google Hesabınızla devam edin</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3652,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="7120588595737538743">indirilenleri ve ekran görüntülerini</translation>
 <translation id="7124354851782353862">CVC'nizi girin</translation>
 <translation id="7129409597930077180">Bu adrese gönderim yapılamıyor. Farklı bir adres seçin.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Yükleme işlemi engellendi</translation>
 <translation id="7132939140423847331">Yöneticiniz bu verilerin kopyalanmasını engellemiş.</translation>
 <translation id="7134653428559514680">Bu siteden paylaşım yapmak önerilmez</translation>
@@ -3968,6 +3969,7 @@ Ek ayrıntılar:
 <translation id="7637571805876720304">Kredi kartı Chromium'dan kaldırılsın mı?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Yok}=1{Hesabınızda 1 şifre mevcut (<ph name="DOMAIN_LIST" /> için)}other{Hesabınızda # şifre mevcut (<ph name="DOMAIN_LIST" /> için)}}</translation>
 <translation id="7638605456503525968">Seri bağlantı noktaları</translation>
+<translation id="7644100755247241229">Google Cüzdan'ı kullanarak arkadaşlarınıza ve işletmelere Pix ile para gönderin</translation>
 <translation id="7646681339175747202">Az önce kullandığınız şifrenin bir veri ihlali sonucunda açığa çıktığı anlaşıldı. Google Şifre Yöneticisi şifrenizi hemen değiştirmenizi öneriyor.</translation>
 <translation id="7647206758853451655">Yazdırma kalitesi</translation>
 <translation id="7648133459447652947">İmlecinizi göstermek için uygulamalar arasında geçiş yapın, sayfayı yeniden yükleyin veya geri gidin</translation>
@@ -4071,6 +4073,7 @@ Ek ayrıntılar:
 <translation id="7791543448312431591">Ekle</translation>
 <translation id="7798389633136518089">Politika bir bulut kaynağı tarafından belirlenmediği için yok sayıldı.</translation>
 <translation id="7800304661137206267">Bağlantı, ileti kimlik doğrulaması için <ph name="MAC" /> ve anahtar değişim mekanizması olarak <ph name="KX" /> kullanılan <ph name="CIPHER" /> ile şifrelenmiştir.</translation>
+<translation id="780228007282527248">Aramanızı geliştirmek için sekme veya resim ekleyin</translation>
 <translation id="7802523362929240268">Site meşrudur</translation>
 <translation id="7802989406998618639">Bankanızın kimliğinizi doğrulayabilmesi için <ph name="SIDE_OF_CARD" /> yer alan <ph name="NUMBER_OF_DIGITS" /> basamaklı güvenlik kodunu girin</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>

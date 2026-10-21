@@ -119,6 +119,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2190166659037789668">Gabim në kontrollin e përditësimeve: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Hiqe llogarinë nga Chromium</translation>
 <translation id="2201788217099588893">Përdor aplikacionin e Chromium për të marrë veglat më të mira të blerjeve kur je në lëvizje</translation>
+<translation id="2209877494277346829">Izolo Chromium nga aplikacionet e tjera</translation>
 <translation id="2210502920229141283">Qëndro më i sigurt në lëvizje me "Shfletimin e sigurt të përmirësuar" në Chromium për iOS</translation>
 <translation id="2210682093923538346">Sajt i rrezikshëm. Chromium ka hequr njoftimet.</translation>
 <translation id="2236949375853147973">Aktiviteti im</translation>
@@ -191,6 +192,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2977470724722393594">Chromium është i përditësuar</translation>
 <translation id="2977506796191543575">Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chromium mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqeve, te "Shfletimi i sigurt".</translation>
 <translation id="2981563588585023386">Për të qëndruar më i sigurt online me zgjedhjet e prindit tënd, identifikohu në Chromium</translation>
+<translation id="2992577225802060159">Mbron memorien e Chromium nga aplikacionet e tjera në kompjuterin tënd.</translation>
 <translation id="3003694935412297923">Të gjitha detyrat</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium duhet të verifikojë që je ti përpara se të mund të ruhen disa të dhëna në "Llogarinë tënde të Google" dhe të përdoren në të gjitha pajisjet e tua. Nëse del tani, këto të dhëna (1 artikull) do të fshihen.}other{Chromium duhet të verifikojë që je ti përpara se të mund të ruhen disa të dhëna në "Llogarinë tënde të Google" dhe të përdoren në të gjitha pajisjet e tua. Nëse del tani, këto të dhëna ({count} artikuj) do të fshihen.}}</translation>
 <translation id="3013473503895162900">Hap <ph name="URL" /> në një skedë të re në Chromium.</translation>
@@ -467,7 +469,6 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="5949225980829865667">Për të marrë këtë faqeshënues dhe më shumë në të gjitha pajisjet e tua, identifikohu në Chromium</translation>
 <translation id="5953657885167112863">Personalizo Chromium sipas dëshirës</translation>
 <translation id="5960071705175224773">Cilësimet e tua u ndryshuan nga një aplikacion i panjohur</translation>
-<translation id="5977420883993828287">Gozhduar! Përdor përsëri "Detyrat kontekstuale" nga shiriti i veglave</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organizata jote e mbyll automatikisht Chromium kur ai nuk përdoret për 1 minutë.}other{Organizata jote e mbyll automatikisht Chromium kur ai nuk përdoret për # minuta.}}</translation>
 <translation id="5987687638152509985">Përditëso Chromium për të nisur sinkronizimin</translation>
 <translation id="5990360079535151574">Nga butoni "Detyrat kontekstuale" në shiritin e veglave, mund t'i rihapësh "Detyrat kontekstuale" për të bërë pyetje ndërkohë që shfleton</translation>

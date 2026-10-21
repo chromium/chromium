@@ -6755,6 +6755,17 @@ Jika kebijakan ini disetel ke Tidak Disetel, "Bantu tulis" akan diaktifkan di pe
 <translation id="5081204761483900654">Sesi tamu terkelola yang dibatasi</translation>
 <translation id="5082296146261894974">Mengizinkan pengguna mengklik notifikasi Phone Hub untuk meluncurkan aplikasi Eche.</translation>
 <translation id="5082572440690475059">Izinkan akses baca melalui File System API di situs ini</translation>
+<translation id="5084849119584030624">Mengonfigurasi setelan koneksi untuk <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> di <ph name="PRODUCT_NAME" />.
+
+Kebijakan ini tidak lagi didukung dan kini diabaikan. Sebagai gantinya, gunakan kebijakan <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />.
+
+Kebijakan ini mengonfigurasi URL aplikasi web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> melalui <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />. URL tersebut harus valid, menggunakan skema HTTPS, mengarah ke domain <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, serta tidak mencantumkan nama pengguna maupun sandi. Jika persyaratan ini tidak terpenuhi, kebijakan akan diabaikan dan <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
+
+Jika kebijakan ini disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> akan dikonfigurasi untuk pengguna yang login dengan akun terkelola atau browser terkelola.
+
+Jika kebijakan ini tidak disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
+
+Perhatikan bahwa kebijakan ini tidak mengontrol integrasi <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> umum, yang dapat dikontrol oleh kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="5085647276663819155">Nonaktifkan Pratinjau Cetak</translation>
 <translation id="5087922428454325090">Pengguna tidak dapat menginstal aplikasi web melalui browser.</translation>
 <translation id="5087932158260897375">Jika kebijakan ini disetel ke salah (false), pelaporan data diagnostik keandalan domain akan dinonaktifkan dan tidak ada data yang akan dikirim ke Google.
@@ -8663,25 +8674,6 @@ Di versi 114 dan yang lebih baru, kebijakan ini bersifat opsional jika kebijakan
 <translation id="6244061205361004687">Izinkan pengguna memutuskan koneksi atau mengubah VPN secara manual</translation>
 <translation id="6244210204546589761">URL untuk membuka saat permulaan</translation>
 <translation id="6244263962918757383">Setelan untuk ChromeSuggestions</translation>
-<translation id="6245828368576563662">Kebijakan ini memungkinkan penentuan daftar aturan untuk memasukkan header HTTP kustom ke dalam permintaan web yang cocok dengan pola URL tertentu. Header yang ditetapkan oleh kebijakan ini lebih diutamakan daripada header yang awalnya ada dalam permintaan, serta modifikasi yang dicoba dilakukan oleh pengguna atau ekstensi.
-
-Kasus penggunaan umum untuk kebijakan ini adalah untuk menerapkan kontrol akses tenant dengan memasukkan header kustom (misalnya, <ph name="EXAMPLE_HEADER_NAME" />).
-
-Kebijakan ini menerima daftar Aturan. Setiap Aturan berisi:
-
-* <ph name="PATTERNS_KEY" />: Daftar pola URL yang harus dicocokkan. Lihat cara memformat pola URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
-
-* <ph name="HEADERS_KEY" />: Daftar objek yang mewakili header yang akan dimasukkan, yang masing-masing berisi:
-
-  * <ph name="HEADER_NAME_KEY" />: Nama header yang akan dimasukkan.
-
-  * <ph name="HEADER_VALUE_KEY" />: Nilai header yang akan dimasukkan.
-
-Jika beberapa aturan cocok dengan permintaan, header dari semua aturan yang cocok akan diterapkan. Jika ada beberapa header dengan nama yang sama, header dengan pola URL yang paling spesifik akan diterapkan. Jika pola sama-sama spesifik, pola yang muncul terakhir dalam daftar akan diterapkan.
-
-Nama header harus mematuhi RFC 2616 ( https://www.rfc-editor.org/rfc/rfc2616 ). Nilai header tidak boleh berisi simbol NUL, CR, atau LF. Ukuran setiap header tidak boleh melebihi 8 KB. Header dan pola URL yang tidak valid akan diabaikan.
-
-Kebijakan ini dibatasi hingga total 500 pola URL di semua aturan. Setiap aturan dapat berisi maksimal 20 header. Pola dan header di luar batas ini akan diabaikan.</translation>
 <translation id="624595269193747921">Apakah ingin membatasi penelusuran printer yang cocok untuk satu set printer tertentu.</translation>
 <translation id="6246290059248303618">Menampilkan kontrol media untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain di jaringan lokal</translation>
 <translation id="6247316685259031374">Kebijakan ini mengontrol proses audio dalam sandbox.
@@ -10302,23 +10294,6 @@ API aksesibilitas.</translation>
 
       Catatan: Fitur pemindaian saat ini dinonaktifkan secara default melalui tombol fitur. Jika pengguna mengaktifkannya melalui tombol fitur, fitur tersebut masih dapat dinonaktifkan dengan kebijakan ini.</translation>
 <translation id="7115684775550072082">Hanya pertahankan spasi kosong untuk jenis MIME teks dan XML</translation>
-<translation id="7116098886490965998">Nonaktifkan single sign-on menggunakan <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> untuk penyedia identitas yang tercantum.
-
-Dengan menambahkan nilai <ph name="POLICY_VALUE_ALL" />, semua penyedia identitas yang didukung untuk SSO akan dinonaktifkan.
-
-Dengan menambahkan nilai <ph name="POLICY_VALUE_MICROSOFT" />, dukungan untuk single sign-on bagi penyedia identitas cloud Microsoft® di Chrome akan dinonaktifkan.
-
-Jika kebijakan ini tidak disetel, semua penyedia identitas yang didukung oleh <ph name="PRODUCT_NAME" /> akan diaktifkan.
-
-Pengguna yang login ke akunnya di aplikasi apa pun yang mendukung <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, menggunakan penyedia identitas yang diaktifkan di <ph name="PRODUCT_NAME" /> dan dikonfigurasi di perangkat oleh administrator, dapat login ke properti web menggunakan penyedia identitas tersebut secara otomatis. Informasi yang berkaitan dengan informasi autentikasi pengguna akan dikirimkan ke penyedia identitas cloud pengguna untuk setiap peristiwa autentikasi.
-
-Catatan:
-
-<ph name="PRODUCT_NAME" /> tidak mendukung Single Sign-On menggunakan <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> dalam mode Samaran atau Tamu.
-
-<ph name="PRODUCT_NAME" /> hanya mendukung Single Sign-On menggunakan <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> untuk penyedia identitas berikut: Microsoft, Okta.
-
-Fitur ini tersedia mulai <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="7119538491527883595">Penyimpanan data pengguna lokal</translation>
 <translation id="7121046543122812054">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
@@ -12754,6 +12729,17 @@ Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8621146428060651659">Izinkan pengacakan pool soket untuk proxy</translation>
 <translation id="862621549134406761">Aktifkan pemeriksaan penggunaan kunci RSA</translation>
 <translation id="8626826495474944836">Memerlukan Isolasi Situs untuk setiap situs</translation>
+<translation id="8628954914373039931">Setelan ini memungkinkan pengguna berganti antar-Akun Google dalam area konten jendela browser dan di aplikasi Android, setelah mereka login ke perangkat <ph name="PRODUCT_OS_NAME" />.
+
+      Jika kebijakan ini disetel ke salah (false), login ke Akun Google yang berbeda dari area konten browser non-Samaran dan aplikasi Android tidak akan diizinkan.
+
+      Jika kebijakan ini tidak disetel atau disetel ke benar (true), perilaku default akan digunakan: login ke Akun Google yang berbeda dari area konten browser dan aplikasi Android akan diizinkan, kecuali untuk akun anak yang akan diblokir untuk area konten non-Samaran.
+
+      Di Android, setelan ini mengontrol apakah pengguna dapat menambahkan Akun Google tambahan dari area konten situs Google saat mereka login ke <ph name="PRODUCT_NAME" />. Jika kebijakan ini disetel ke salah (false), situs Google tidak akan menawarkan opsi untuk menambahkan Akun Google lain (misalnya, tombol "Tambahkan akun lain" di menu akun). Jika kebijakan ini tidak disetel atau disetel ke benar (true), penambahan Akun Google lain dari situs Google akan diizinkan. Kebijakan ini tidak mencegah penambahan Akun Google ke perangkat Android itu sendiri.
+
+      Jika login ke akun yang berbeda tidak diizinkan melalui mode Samaran, pertimbangkan untuk memblokir mode tersebut menggunakan kebijakan IncognitoModeAvailability.
+
+      Perhatikan bahwa pengguna akan dapat mengakses layanan Google dalam status tidak diautentikasi dengan memblokir cookie mereka.</translation>
 <translation id="8630797597241896082">Izinkan Latar Belakang Konferensi Video AI Generatif dan tingkatkan kualitas model AI</translation>
 <translation id="8631314130868563649">Nonaktifkan manajemen pengaktifan daya baterai</translation>
 <translation id="8631434304112909927">sampai versi <ph name="UNTIL_VERSION" /></translation>

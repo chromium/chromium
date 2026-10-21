@@ -119,6 +119,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2190166659037789668">Eguneratzearen egiaztapenaren errorea: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Kendu kontua Chromium-etik</translation>
 <translation id="2201788217099588893">Erabili Chromium aplikazioa erosketak egiteko tresna onenak edonoiz eta edonon erabiltzeko</translation>
+<translation id="2209877494277346829">Isolatu Chromium beste aplikazioetatik</translation>
 <translation id="2210502920229141283">Egon seguruago edonoiz eta edonon iOS-erako Chromium-eko arakatze seguru hobetuarekin</translation>
 <translation id="2210682093923538346">Webgune arriskutsua. Chromium-ek jakinarazpenak erabiltzeko baimena kendu dio.</translation>
 <translation id="2236949375853147973">Nire jarduerak</translation>
@@ -191,6 +192,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2977470724722393594">Eguneratuta dago Chromium</translation>
 <translation id="2977506796191543575">Webguneren bat pasahitza lapurtzen saiatzen bada edo fitxategi kaltegarriren bat deskargatzen baduzu, baliteke Chromium-ek URLak ere bidaltzea (orriko edukiaren zati batzuk barne) Arakatze segurua eginbideari.</translation>
 <translation id="2981563588585023386">Gurasoen aukerekin sarean seguruago egoteko, hasi saioa Chromium-en</translation>
+<translation id="2992577225802060159">Chromium-en memoria ordenagailuko beste aplikazioetatik babesten du.</translation>
 <translation id="3003694935412297923">Zeregin guztiak</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium-ek zeu zarela egiaztatu behar du datu batzuk zure Google-ko kontuan gorde, eta gailu guztietan erabili ahal izan baino lehen. Orain amaitzen baduzu saioa, datu horiek (elementu bat) ezabatuko dira.}other{Chromium-ek zeu zarela egiaztatu behar du datu batzuk zure Google-ko kontuan gorde, eta gailu guztietan erabili ahal izan baino lehen. Orain amaitzen baduzu saioa, datu horiek ({count} elementu) ezabatuko dira.}}</translation>
 <translation id="3013473503895162900">Ireki <ph name="URL" /> Chromium-eko fitxa berri batean.</translation>
@@ -467,7 +469,6 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="5949225980829865667">Laster-marka hau eta abar gailu guztietan lortzeko, hasi saioa Chromium-en</translation>
 <translation id="5953657885167112863">Zeureganatu Chromium</translation>
 <translation id="5960071705175224773">Aplikazio ezezagun batek zure ezarpenak aldatu ditu</translation>
-<translation id="5977420883993828287">Ainguratu da! Erabili testuinguruaren araberako zereginak berriro tresna-barraren bidez</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Erakundeak automatikoki itxiko du Chromium minutu batez erabiltzen ez bada.}other{Erakundeak automatikoki itxiko du Chromium # minutuz erabiltzen ez bada.}}</translation>
 <translation id="5987687638152509985">Eguneratu Chromium sinkronizatzen hasteko</translation>
 <translation id="5990360079535151574">Tresna-barrako "Testuinguruaren araberako zereginak" botoiaren bidez, testuinguruaren araberako zereginak berriro ireki ditzakezu, arakatu bitartean galderak egiteko</translation>

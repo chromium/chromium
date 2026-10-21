@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
-<translation id="1003222766972176318">Áminning: vistað tilboð er tiltækt</translation>
 <translation id="1008557486741366299">Ekki núna</translation>
 <translation id="100957008357583611">Nota staðsetninguna þína?</translation>
 <translation id="1010200102790553230">Hlaða síðu seinna</translation>
@@ -1127,6 +1126,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2911973620368911614">Notandakenni vinnslureiknings</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> notar yfirleitt dulkóðun til að vernda upplýsingarnar þínar. Þegar Chrome reyndi að tengjast <ph name="SITE" /> í þetta skiptið sendi vefsvæðið óvenjuleg og röng skilríki til baka. Þetta getur gerst þegar tölvuþrjótur reynir að þykjast vera <ph name="SITE" /> eða innskráningarskjár fyrir Wi-Fi hefur truflað tenginguna. Upplýsingarnar þínar eru enn öruggar vegna þess að Chrome sleit tengingunni áður en skipst var á gögnum.</translation>
 <translation id="2915068235268646559">Hrun frá <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Öll tæki</translation>
 <translation id="2916038427272391327">Lokaðu öðrum forritum</translation>
 <translation id="2917630513638801879">Blágrænn 1</translation>
 <translation id="2922350208395188000">Ekki er hægt að kanna vottorð þjónsins.</translation>
@@ -1462,7 +1462,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3479552764303398839">Ekki núna</translation>
 <translation id="3481315707647070701">Birta og breyta</translation>
 <translation id="3484560055331845446">Þú gætir glatað aðganginum að Google-reikningnum þínum. Chrome mælir með því að þú skiptir um aðgangsorð núna. Þú verður beðin(n) um að skrá þig inn.</translation>
-<translation id="3484861421501147767">Áminning: Vistaður kynningarkóði tiltækur</translation>
 <translation id="3485901585646640838">Til að nota aðgangsorðin og fleira sem er vistað á Google-reikningnum þínum skaltu staðfesta að þetta sért þú</translation>
 <translation id="3487845404393360112">Bakki 4</translation>
 <translation id="3493881266323043047">Gildi</translation>
@@ -1822,6 +1821,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4067774859633143413">Til að loka öllum skjánum og sjá niðurhal skaltu halda |<ph name="ACCELERATOR" />| inni</translation>
 <translation id="4067947977115446013">Bæta gildu heimilisfangi við</translation>
 <translation id="4072486802667267160">Villa kom upp þegar verið var að vinna úr pöntuninni þinni. Reyndu aftur.</translation>
+<translation id="4073293290376142777">Skrá inn?</translation>
 <translation id="4073376909608563327">Ekki tókst að nota „Taka tæki úr lás“</translation>
 <translation id="4073797364926776829">Skoða kort</translation>
 <translation id="4075732493274867456">Biðlarinn og þjónninn styðja ekki sameiginlega útgáfu SSL-samskiptareglna eða dulkóðunarsafns.</translation>
@@ -1854,6 +1854,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4107047499377819067">Uppsetning á bakgrunnsþjónustu VPN er hafin, þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="4110642094637545339">Lógó fyrir Google Pay og AfterPay</translation>
 <translation id="4110652170750985508">Farðu yfir greiðsluna</translation>
+<translation id="411071007970303441">Allir aðilar</translation>
 <translation id="4112140312785995938">Spóla til baka</translation>
 <translation id="4114007503059268298">Viltu vista þetta kort á Google reikningnum þínum og í þessu tæki?</translation>
 <translation id="4114146879518089587">Áfram á vefsvæði</translation>
@@ -3440,6 +3441,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6753460329812070808">Tillaga fjarlægð úr Chrome</translation>
 <translation id="6757797048963528358">Tækið þitt fór að sofa.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> vill nota hreyfi- og birtuskynjarana þína</translation>
+<translation id="6766488013065406604">Opna Google-aðgangsorðastjórnun</translation>
 <translation id="6770747695101757579">Pappír (bómull)</translation>
 <translation id="6772959465807028761">Haltu áfram af Google-reikningnum þínum til að nota YouTube.</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3652,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7120588595737538743">niðurhal og skjámyndir</translation>
 <translation id="7124354851782353862">Sláðu inn CVC-númerið þitt</translation>
 <translation id="7129409597930077180">Ekki er hægt að senda á þetta heimilisfang. Veldu annað heimilisfang.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Lokað fyrir upphleðslu</translation>
 <translation id="7132939140423847331">Stjórnandi hefur bannað afritun þessara gagna.</translation>
 <translation id="7134653428559514680">Ekki er mælt með að deila af þessu vefsvæði</translation>
@@ -3967,6 +3968,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7637571805876720304">Fjarlægja kreditkort úr Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Ekkert}=1{1 aðgangsorð á reikningnum (fyrir <ph name="DOMAIN_LIST" />)}one{# aðgangsorð á reikningnum (fyrir <ph name="DOMAIN_LIST" />)}other{# aðgangsorð á reikningnum (fyrir <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Raðtengi</translation>
+<translation id="7644100755247241229">Sendu Pix til vina og fyrirtækja með Google-veski</translation>
 <translation id="7646681339175747202">Aðgangsorðið sem þú varst að nota fannst í öryggisbroti. Google aðgangsorðastjórnun mælir með að þú breytir aðgangsorðinu þínu strax.</translation>
 <translation id="7647206758853451655">Prentgæði</translation>
 <translation id="7648133459447652947">Til að sjá bendilinn þinn, skipta á milli forrita, endurnýja síðuna eða fara til baka</translation>
@@ -4070,6 +4072,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7791543448312431591">Bæta við</translation>
 <translation id="7798389633136518089">Hunsað þar sem reglan er ekki stillt í skýinu.</translation>
 <translation id="7800304661137206267">Tengingin er dulkóðuð með <ph name="CIPHER" />, <ph name="MAC" /> er notað fyrir skilaboðasannvottun og <ph name="KX" /> sem aðferð til að skiptast á lyklum.</translation>
+<translation id="780228007282527248">Bættu við flipa eða mynd til að bæta leitina</translation>
 <translation id="7802523362929240268">Vefsvæðið er traust</translation>
 <translation id="7802989406998618639">Sláðu inn <ph name="NUMBER_OF_DIGITS" /> tölustafa öryggiskóðann á <ph name="SIDE_OF_CARD" /> svo bankinn geti staðfest að þetta sért þú</translation>
 <translation id="780301667611848630">Nei, takk</translation>

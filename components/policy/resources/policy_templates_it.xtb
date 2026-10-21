@@ -6600,6 +6600,17 @@ Se non viene configurata, la funzionalità "Aiutami a scrivere" verrà attivata 
 <translation id="5081204761483900654">Sessioni Ospite gestite limitate</translation>
 <translation id="5082296146261894974">Consente agli utenti di fare clic sulla notifica di Phone Hub per avviare l'applicazione Eche.</translation>
 <translation id="5082572440690475059">Consenti l'accesso di lettura tramite l'API file system su questi siti</translation>
+<translation id="5084849119584030624">Configura le impostazioni di connessione per <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" />.
+
+Questa policy non è più supportata e viene ignorata. Usa invece la policy <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />.
+
+La policy configura l'URL dell'applicazione web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tramite <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> e deve essere un URL valido che utilizzi il protocollo https, faccia riferimento a un dominio <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> e non contenga né nome utente né password. Se non soddisfa questi requisiti, la policy viene ignorata e <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> non viene configurato.
+
+Se questa policy viene impostata, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> verrà configurato per gli utenti che hanno fatto l'accesso con un account gestito o un browser gestito.
+
+Se questa policy non viene impostata, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> non verrà configurato.
+
+Tieni presente che questa policy non controlla l'integrazione generale di <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, che può essere controllata dalla policy <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="5085647276663819155">Disattiva anteprima di stampa</translation>
 <translation id="5087922428454325090">Gli utenti non possono installare app web tramite il browser.</translation>
 <translation id="5087932158260897375">Se questa policy viene impostata su false, la segnalazione di dati diagnostici relativi all'attendibilità dei domini viene disattivata e non vengono inviati dati a Google.
@@ -8457,25 +8468,6 @@ Dalla versione 114 in poi, questa policy è facoltativa se viene configurata la 
 <translation id="6244061205361004687">Consenti all'utente di disconnettere o modificare manualmente una VPN</translation>
 <translation id="6244210204546589761">Pagine da aprire all'avvio</translation>
 <translation id="6244263962918757383">Impostazioni per ChromeSuggestions</translation>
-<translation id="6245828368576563662">Questa policy consente di definire un elenco di regole per inserire intestazioni HTTP personalizzate nelle richieste web che corrispondono a pattern URL specifici. Le intestazioni impostate da questa policy hanno la precedenza su quelle inizialmente presenti nella richiesta, nonché sulle modifiche tentate dagli utenti o dalle estensioni.
-
-Un caso d'uso comune per questa policy è l'applicazione dei controlli di accesso dei tenant mediante l'inserimento di intestazioni personalizzate (ad es. <ph name="EXAMPLE_HEADER_NAME" />).
-
-La policy accetta un elenco di regole. Ogni regola contiene:
-
-* <ph name="PATTERNS_KEY" />: un elenco di pattern URL da abbinare. Scopri come formattare un pattern URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-* <ph name="HEADERS_KEY" />: un elenco di oggetti che rappresentano le intestazioni da inserire, ognuno dei quali contiene:
-
-  * <ph name="HEADER_NAME_KEY" />: il nome dell'intestazione da inserire.
-
-  * <ph name="HEADER_VALUE_KEY" />: il valore dell'intestazione da inserire.
-
-Se più regole corrispondono a una richiesta, verranno applicate le intestazioni di tutte le regole corrispondenti. Se sono presenti più intestazioni con lo stesso nome, verrà applicata quella con il pattern URL più specifico. Se i pattern hanno la stessa specificità, verrà applicato quello che compare per ultimo nell'elenco.
-
-I nomi delle intestazioni devono essere conformi a RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616). I valori delle intestazioni non devono contenere simboli NUL, CR o LF. Le singole intestazioni non devono superare gli 8 kB. Le intestazioni e i pattern URL non validi verranno ignorati.
-
-Questa policy è limitata a un totale di 500 pattern URL in tutte le regole. Ogni regola può contenere al massimo 20 intestazioni. I pattern e le intestazioni che superano queste soglie verranno ignorati.</translation>
 <translation id="624595269193747921">Consente di stabilire se limitare o meno la ricerca della stampante corrispondente a un insieme specifico di stampanti.</translation>
 <translation id="6246290059248303618">Mostra i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi sulla rete locale</translation>
 <translation id="6247316685259031374">Questa policy consente di controllare la sandbox del processo audio.
@@ -10036,23 +10028,6 @@ API di accessibilità.</translation>
 
       Nota: al momento la funzionalità di scansione è disattivata per impostazione predefinita tramite un flag funzionalità. Se l'utente attiva la funzionalità tramite il flag funzionalità, questa potrà comunque essere disattivata dalla policy.</translation>
 <translation id="7115684775550072082">Mantieni solo gli spazi vuoti per i tipi MIME di testo e XML</translation>
-<translation id="7116098886490965998">Disattiva il Single Sign-On utilizzando <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> per i provider di identità elencati.
-
-Se aggiungi il valore <ph name="POLICY_VALUE_ALL" />, tutti i provider di identità supportati per il SSO vengono disabilitati.
-
-Se aggiungi il valore <ph name="POLICY_VALUE_MICROSOFT" />, il supporto per Single Sign-On per il provider di identità cloud Microsoft® in Chrome viene disattivato.
-
-Se non configuri questa policy, verranno attivati tutti i provider di identità supportati da <ph name="PRODUCT_NAME" />.
-
-Per i provider di identità che sono abilitati in <ph name="PRODUCT_NAME" /> e configurati sul dispositivo dall'amministratore, gli utenti che accedono una volta utilizzando quel provider di identità, su qualsiasi applicazione che supporta <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, possono accedere automaticamente alle proprietà web utilizzando quel provider di identità. Le informazioni relative ai dati di autenticazione dell'utente vengono trasmesse al provider di identità cloud dell'utente per ogni evento di autenticazione.
-
-Note:
-
-<ph name="PRODUCT_NAME" /> non supporta il Single Sign-On tramite <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> in modalità Ospite o Incognito.
-
-<ph name="PRODUCT_NAME" /> supporta il Single Sign-On solo con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> per i seguenti provider di identità: Microsoft, Okta.
-
-Questa funzionalità è disponibile a partire da <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="7119538491527883595">Spazio di archiviazione dei dati utente locale</translation>
 <translation id="7121046543122812054">Questa policy è deprecata. Potresti usare la policy <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
 
@@ -12428,6 +12403,17 @@ Questa policy viene sempre applicata per <ph name="PRODUCT_OS_NAME" />.</transla
 <translation id="8621146428060651659">Consenti la randomizzazione del pool di socket per i proxy</translation>
 <translation id="862621549134406761">Attiva il controllo dell'utilizzo delle chiavi RSA</translation>
 <translation id="8626826495474944836">Richiedi isolamento dei siti per ogni sito</translation>
+<translation id="8628954914373039931">Questa impostazione consente agli utenti di passare da un Account Google a un altro all'interno dell'area dei contenuti della finestra del browser e nelle app per Android, dopo avere fatto l'accesso al dispositivo <ph name="PRODUCT_OS_NAME" />.
+
+      Se questa policy è impostata su false, verrà bloccato l'accesso a un Account Google diverso all'interno delle aree dei contenuti del browser (non in Incognito) e delle app per Android.
+
+      Se questa policy non viene impostata o viene impostata su true, verrà usato il comportamento predefinito: sarà possibile accedere a un altro Account Google dall'area dei contenuti del browser e dalle applicazioni Android, ad eccezione degli account di minori, per i quali l'accesso non sarà consentito dall'area dei contenuti non in Incognito.
+
+      Su Android, questa impostazione consente di stabilire se gli utenti possono aggiungere altri Account Google dall'area dei contenuti dei siti web di Google dopo aver fatto l'accesso a <ph name="PRODUCT_NAME" />. Se questa policy viene impostata su false, i siti web di Google non offriranno l'opzione per aggiungere un altro Account Google (ad esempio, il pulsante "Aggiungi un altro account" nel menu dell'account). Se questa policy non viene impostata o se viene impostata su true, sarà consentito aggiungere un altro Account Google dai siti web di Google. Questa policy non impedisce l'aggiunta di Account Google al dispositivo Android stesso.
+
+      Se non deve essere consentito l'accesso a un altro account tramite la modalità Incognito, valuta la possibilità di bloccare questa modalità usando la policy IncognitoModeAvailability.
+
+      Tieni presente che, bloccando i cookie, gli utenti potranno accedere ai servizi Google in modalità non autenticata.</translation>
 <translation id="8630797597241896082">Consenti lo Sfondo AI generativa per videoconferenze e migliora i modelli di AI</translation>
 <translation id="8631314130868563649">Disattiva la gestione della variazione dei picchi energetici</translation>
 <translation id="8631434304112909927">fino alla versione <ph name="UNTIL_VERSION" /></translation>

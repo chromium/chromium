@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Hape në një grup të ri skedash</translation>
 <translation id="1670861525135254448">Ruaj automjetin</translation>
 <translation id="1671568970992212376">Ruaj fotografitë te "Fotografitë e Google" dhe qasu tek ato në çdo kohë.</translation>
+<translation id="1671824312818944549">Shënim. Ky cilësim funksionon më mirë me iOS 27 ose një version më të ri.</translation>
 <translation id="1674504678466460478">Nga <ph name="SOURCE_LANGUAGE" /> në <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Vizato, thekso ose trokit te çdo gjë në ekranin tënd për të kërkuar</translation>
 <translation id="1678855624321223424">Bazuar në politikat e organizatës sate, ky skedar mund të përmbajë informacione delikate</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">Mirë se erdhe përsëri!</translation>
 <translation id="2015722694326466240">Për të parë fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="201759455285471444">Zgjero grupin e skedave.</translation>
+<translation id="2022431790688770637">Menaxho sugjerimet e Gemini</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Hap rrjetën e skedave</translation>
 <translation id="2044681667265133332">Llogaria <ph name="USER_EMAIL" /> menaxhohet nga <ph name="HOSTED_DOMAIN" />, që mund të jetë në gjendje të shikojë disa informacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">Pyet për çdo gjë dhe merr përgjigje të mundësuara nga IA-ja</translation>
 <translation id="2870560284913253234">Sajti</translation>
 <translation id="2876369937070532032">Dërgon URL-të e disa faqeve që viziton te Google, kur siguria jote është në rrezik</translation>
+<translation id="2880119244122776372">Ndërto dhe kodo</translation>
 <translation id="2883151425485251736">Shiko dhe modifiko temat që ke fshehur nga llogaria</translation>
 <translation id="2884437560239137197">Nevojitet vëmendje</translation>
 <translation id="288655811176831528">Mbylle skedën</translation>
@@ -1695,6 +1698,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6301104306974789820">Merr njoftime për monitorimin e çmimeve</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Zgjidh pozicionin e shiritit të adresave</translation>
+<translation id="6305257382500066042">Provoje tani</translation>
 <translation id="6307241780749477694">Verifiko që je ti për të marrë të gjitha fjalëkalimet e tua në këtë pajisje</translation>
 <translation id="6307792728709337290">Ruaje kartën tënde në "Llogarinë tënde të Google" për ta plotësuar automatikisht për këtë blerje dhe për blerjet e ardhshme të bëra në Chrome.</translation>
 <translation id="6316141353357700666">Zgjidh fjalëkalimin që dëshiron të përdorësh nga lista që shfaqet.</translation>
@@ -1848,7 +1852,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6708501134077648845">Password Options</translation>
 <translation id="6709964700841491574">Modaliteti i bllokimit</translation>
 <translation id="6710079714193676716">Menaxhohet nga organizata jote. Disa veçori mund të jenë të padisponueshme. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">Përgjigje më inteligjente dhe më të shpejta</translation>
 <translation id="6713676799463473249">Modifikuar më <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Skedat e marra</translation>
 <translation id="6722638373100589752">Për të plotësuar automatikisht informacionet e tua, aktivizo "Përdor dokumentet dixhitale nëpër Google" te cilësimet e "Portofolit"</translation>
@@ -2060,7 +2063,6 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Vazhdo</translation>
 <translation id="741204030948306876">Po, jam dakord</translation>
-<translation id="7417055777338419059">Kodo, shkruaj ose krijo diapozitiva</translation>
 <translation id="7419565702166471774">Përdor gjithmonë lidhje të sigurta</translation>
 <translation id="7423098979219808738">Pyet në fillim</translation>
 <translation id="7425053386765766120">Shto mënyrën e pagesës…</translation>
@@ -2110,6 +2112,7 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="7525067979554623046">Krijo</translation>
 <translation id="75362970626182391">Grupi i ri i skedave</translation>
 <translation id="7537586195939242955">Na vjen keq, "Pass" nuk mund të instalohet te "Passbook" në këtë moment.</translation>
+<translation id="7540924742308928499">Gjenero ide dhe përmblidh</translation>
 <translation id="754655535278952384">Kontrolluar <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Mbylli të gjitha</translation>
 <translation id="7557508262441527045">Ke dalë</translation>
@@ -2179,6 +2182,7 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="7758789811447313947">Tema vjollcë</translation>
 <translation id="7759809451544302770">Opsionale</translation>
 <translation id="7765158879357617694">Zhvendos</translation>
+<translation id="7767651976342854115">Cilësimi i përdorimit të të dhënave hasi një gabim.</translation>
 <translation id="7768507955883790804">Sajtet e ndjekin automatikisht këtë cilësim kur i viziton ato</translation>
 <translation id="7772032839648071052">Konfirmo shprehjen e kalimit</translation>
 <translation id="7772948288262733182">Mirë se u ktheve</translation>
@@ -2478,7 +2482,6 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="8642417828095157370">Skedat ndahen për përgjigje më të përshtatshme</translation>
 <translation id="8643403533759285912">Fshi grupin</translation>
 <translation id="8646357898207744479">Lentja</translation>
-<translation id="8647280737650867362">Monitorimi i çmimeve nuk mund të anulohej.</translation>
 <translation id="8654802032646794042">Anulo</translation>
 <translation id="8655861111558401309">Zgjidh "Fshi të dhënat e shfletimit"</translation>
 <translation id="8659875081143553823">Prit një sekondë</translation>

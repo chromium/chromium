@@ -437,7 +437,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="130744661532298792">Da biste uvijek mogli upotrebljavati zaporke na svojem Google računu, potvrdite svoj identitet</translation>
 <translation id="1308105352527684175">Možda nećete moći pristupiti određenom sadržaju</translation>
 <translation id="1311092170520822848">Web-lokacija upravlja čitačima pametnih kartica povezanim s vašim uređajem, pa bi možda mogla upravljati i pametnim karticama kojima ti čitači mogu pristupiti</translation>
-<translation id="131112175593356748">Prikaži neke</translation>
 <translation id="131112695174432497">Brišu se podaci koji utječu na personalizaciju oglasa</translation>
 <translation id="131188242279372879">Otkrijte poboljšanu zaštitu da biste dobili najvišu Chromeovu razinu sigurnosti za preuzimanja</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Ispravite karticu koja usporava preglednik}one{Ispravite kartice koje usporavaju preglednik}few{Ispravite kartice koje usporavaju preglednik}other{Ispravite kartice koje usporavaju preglednik}}</translation>
@@ -1482,6 +1481,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2140788884185208305">Status baterije</translation>
 <translation id="2142328300403846845">Otvori vezu kao</translation>
 <translation id="2142582065325732898">Uključite <ph name="LINK1_BEGIN" />Chrome sinkronizaciju<ph name="LINK1_END" /> da biste vidjeli nedavne Chromeove kartice. <ph name="LINK2_BEGIN" />Saznajte više<ph name="LINK2_END" /></translation>
+<translation id="2142826581348795579">Grupa kartica bez fokusa</translation>
 <translation id="2143089736086572103">Vidljivo nekim kontaktima</translation>
 <translation id="2143765403545170146">Uvijek prikaži alatnu traku na cijelom zaslonu</translation>
 <translation id="2143778271340628265">Ručna konfiguracija proxyja</translation>
@@ -2480,6 +2480,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2878889940310164513">Dodaj mobilni telefon...</translation>
 <translation id="288042212351694283">Pristupite svojim Universal 2nd Factor uređajima</translation>
 <translation id="2881076733170862447">Kada kliknete proširenje</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{Kartica bez fokusa}one{Kartica bez fokusa}few{Kartice bez fokusa}other{Kartica bez fokusa}}</translation>
 <translation id="2882301808122022326">Odgovor protokola Omaha</translation>
 <translation id="2884070497102362193">Testirajte bateriju, procesor, memoriju, povezivost i drugo</translation>
 <translation id="2885129935310217435">Postoji gumb s istim nazivom. Odaberite drugi gumb.</translation>
@@ -2791,6 +2792,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3109206895301430738">Spremljeno u grupe kartica</translation>
 <translation id="3109724472072898302">Sažeto</translation>
 <translation id="3112292765614504292">Veličina aplikacije: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Sažmi</translation>
 <translation id="3112532142993641404">Da bi se prikazale kartice s drugih uređaja, prijavite se i sinkronizirajte povijest. Također ćete moći pristupati svojim oznakama i drugim podacima na svim svojim uređajima. Sinkronizaciju možete uvijek zaustaviti u postavkama. Google može prilagoditi Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
 <translation id="311347022006935575">Dodaje ovu karticu</translation>
 <translation id="311394601889664316">Ne dopuštaj web-lokacijama uređivanje datoteka ili mapa na uređaju</translation>
@@ -4375,6 +4377,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4296632172536745000">Vaša izvorna zaporka za ovu web-lokaciju pronađena je u javnom neovlaštenom pristupu podacima. Dana <ph name="DATE" /> zatražili ste od usluge <ph name="BRAND" /> da automatski promijeni vašu zaporku.</translation>
 <translation id="4297219207642690536">Ponovo pokreni i vrati na prethodno</translation>
 <translation id="4297813521149011456">Rotacija zaslona</translation>
+<translation id="42981349822642051">Proširi</translation>
 <translation id="4298660926525614540">Nazivi prijenosnih pohrana</translation>
 <translation id="4299022904780065004">Novi &amp;anonimni prozor</translation>
 <translation id="4300272766492248925">Otvori aplikaciju</translation>
@@ -5128,6 +5131,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="4877276003880815204">Pregledajte elemente</translation>
 <translation id="4878634973244289103">Povratne informacije nisu poslane. Pokušajte ponovo kasnije.</translation>
 <translation id="4878718769565915065">Dodavanje otiska prsta sigurnosnom ključu nije uspjelo</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}one{+#}few{+#}other{+#}}</translation>
 <translation id="4879491255372875719">Automatski (zadano)</translation>
 <translation id="4880827082731008257">Pretraži povijest</translation>
 <translation id="4881685975363383806">Nemoj me podsjećati sljedeći put</translation>
@@ -5612,6 +5616,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5247051749037287028">Ime za prikaz (izborno)</translation>
 <translation id="5247243947166567755">Odaberite: <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">Pitajte bilo što, gdje god se nalazili, uz Gemini u Chromeu</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{Još 1 traka s informacijama prikazat će se kad se ova zatvori}one{Još # traka s informacijama prikazat će se kad se ova zatvori}few{Još # trake s informacijama prikazat će se kad se ova zatvori}other{Još # traka s informacijama prikazat će se kad se ova zatvori}}</translation>
 <translation id="5248934139541843042">Prikaži organizatora</translation>
 <translation id="5249624017678798539">Preglednik se srušio prije nego što je preuzimanje dovršeno.</translation>
 <translation id="5249818097095743806">Upotrijebite sigurnosni ključ</translation>
@@ -5916,6 +5921,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5493792505296048976">zaslon uključen</translation>
 <translation id="5494016731375030300">Nedavno zatvorene kartice</translation>
 <translation id="5494362494988149300">Otvori nakon &amp;dovršetka</translation>
+<translation id="5494439739088303974">Pomoću Google objektiva možete postaviti pitanje o tekstu ili slici na stranici</translation>
 <translation id="5494879038325093596">Potvrdite svoj identitet da bi vam bila dostupna na svim uređajima s vašim Google računom</translation>
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5495466433285976480">Time će se ukloniti svi lokalni korisnici, datoteke, podaci i ostale postavke nakon sljedećeg ponovnog pokretanja uređaja. Svi će se korisnici morati ponovo prijaviti.</translation>
@@ -8045,6 +8051,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7148426638542880639">Web-lokacije možda neće funkcionirati kao što očekujete. Odaberite tu opciju ako na uređaju ne želite ostavljati podatke o web-lokacijama koje posjećujete.</translation>
 <translation id="7149893636342594995">Posljednja 24 sata</translation>
 <translation id="7152478047064750137">To proširenje ne zahtijeva nikakva posebna dopuštenja</translation>
+<translation id="7152923486458597248">Fokus na grupu</translation>
 <translation id="7153101072880472645">Uključivanje/isključivanje visokog kontrasta</translation>
 <translation id="715396040729904728">pokretač + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="7154130902455071009">promijeniti vašu početnu stranicu u: <ph name="START_PAGE" /></translation>

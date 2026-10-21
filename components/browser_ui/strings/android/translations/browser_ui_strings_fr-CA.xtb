@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Personnalisez Chrome avec des couleurs et des images personnalisées pour votre page d'accueil</translation>
 <translation id="389521680295183045">Les sites peuvent demander à savoir quand vous utilisez activement votre appareil</translation>
 <translation id="3895926599014793903">Forcer l'activation du zoom</translation>
-<translation id="3905475044299942653">Bloquer beaucoup de notifications</translation>
 <translation id="3922092564198021702">Sur votre téléphone, ouvrez Paramètres.</translation>
 <translation id="3924858949939391676">Afficher les liens une fois le mode Lecture activé</translation>
 <translation id="3933121352599513978">Réduire les requêtes indésirables (recommandé)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Vous trouverez vos groupes dans la section des groupes d'onglets sur tous vos appareils</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> n'est pas autorisé à utiliser vos informations sur</translation>
 <translation id="4953688446973710931">Lorsque cette option est activée, les sites peuvent demander de télécharger automatiquement plusieurs fichiers. Lorsqu'elle est désactivée, les sites ne peuvent pas télécharger automatiquement plusieurs fichiers.</translation>
-<translation id="4962975101802056554">Révoquer toutes les autorisations pour l'appareil</translation>
 <translation id="4972737347717125191">Les sites peuvent demander à utiliser des données et des appareils de réalité virtuelle</translation>
 <translation id="4973805849704516244">Zone de contenu dans le bas de l'écran concernant les couleurs de Chrome</translation>
 <translation id="497421865427891073">Avancer</translation>
@@ -704,7 +702,6 @@ La protection avancée contrôle ces paramètres Chrome :</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8441146129660941386">Rechercher vers l'arrière</translation>
 <translation id="8444433999583714703">Pour autoriser <ph name="APP_NAME" /> à accéder à votre position, activez aussi la localisation dans les <ph name="BEGIN_LINK" />paramètres d'Android<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Révoquer l'autorisation de l'appareil</translation>
 <translation id="8463843545738141778">Ce paramètre est désactivé parce que vous avez activé la protection avancée dans les paramètres Android.</translation>
 <translation id="8467359479529706065">Zone de contenu dans le bas de l'écran concernant l'apparence de la page Nouvel onglet ouverte à mi-hauteur</translation>
 <translation id="8471525937465764768">Les sites se connectent généralement aux appareils USB pour proposer des fonctionnalités comme l'impression de document ou l'enregistrement sur un périphérique de stockage</translation>

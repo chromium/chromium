@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Untuk mendapatkan perkiraan hasil, bagi nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Sumber gambar</translation>
 <translation id="1446954767133808402">safir</translation>
-<translation id="1449035143498573192">Buka di Google Penelusuran</translation>
 <translation id="1451536289672181509">Perangkat adalah keyboard.</translation>
 <translation id="1452939186874918380">payung</translation>
 <translation id="145402479967797468">Kontrol pemutaran</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Pratinjau <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN bawaan</translation>
 <translation id="1669047024429367828">Visibilitas</translation>
-<translation id="1670478569471758522">Info selengkapnya terkait pilihan Anda</translation>
 <translation id="1672499492233627739">Feed video webcam</translation>
 <translation id="1676557873873341166">Merekam video</translation>
 <translation id="1684279041537802716">Warna aksen</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Selesai mengedit</translation>
 <translation id="3532980081107202182">Sekitar <ph name="MIN_REMAINING" /> menit lagi</translation>
 <translation id="3533790840489634638">kolam renang</translation>
-<translation id="3547264467365135390">Formula</translation>
 <translation id="3552832331940389362">ilustrasi animasi Jepang yang menggambarkan kucing duduk di ambang jendela sambil melihat hujan di sore hari</translation>
 <translation id="3557205324756024651">Identitas lokal (opsional)</translation>
 <translation id="3565064564551103223">IP yang diizinkan</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Deskripsi</translation>
 <translation id="3869314628814282185">tule</translation>
 <translation id="387301095347517405">Frekuensi baterai melalui siklus pengisian daya penuh</translation>
-<translation id="3877066159641251281">Dengarkan terjemahan</translation>
 <translation id="3880601782712134623">Otomatis mendeteksi suara yang berbeda dan memberikan label umum pada masing-masing pembicara seperti Pembicara 1 dan Pembicara 2</translation>
 <translation id="38811596981744338">Masalah hukum</translation>
 <translation id="3885327323343477505">Ubah screensaver</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Cabut kabel USB <ph name="DEVICE_NAME" />, lalu colokkan kembali untuk melanjutkan proses update</translation>
 <translation id="5099354524039520280">ke atas</translation>
 <translation id="5107243100836678918">Pintasan tanpa tombol <ph name="META_KEY" /> mungkin bertentangan dengan pintasan aplikasi tertentu. Tekan pintasan ini lagi untuk terus menggunakannya, atau tekan pintasan baru menggunakan tombol <ph name="KEY" />. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Sinonim:</translation>
 <translation id="5130848777448318809">kuda poni</translation>
 <translation id="5137451382116112100">Penuh</translation>
 <translation id="5139813694804168398">Jangan Ganggu</translation>
 <translation id="5140788690559353412">Jika kehilangan akses ke akun sekolah, Anda tidak akan lagi memiliki akses ke email dan file Google Drive yang terkait seperti Gmail, Dokumen, Slide, dan lainnya.</translation>
 <translation id="5142961317498132443">Autentikasi</translation>
 <translation id="5144311987923128508">Tombol konfirmasi sekarang dinonaktifkan</translation>
-<translation id="5144887194300568405">Salin terjemahan</translation>
 <translation id="5145081769226915336">Aktifkan mode gelap secara otomatis?</translation>
 <translation id="5145331109270917438">Tanggal dimodifikasi</translation>
 <translation id="5154917547274118687">Memori</translation>

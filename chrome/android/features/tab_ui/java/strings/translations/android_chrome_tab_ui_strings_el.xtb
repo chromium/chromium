@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Συμπτύξτε <ph name="TABS_COUNT_ONE" /> καρτέλα.}other{Συμπτύξτε την ομάδα καρτελών με τις <ph name="TABS_COUNT_MANY" /> καρτέλες.}}</translation>
 <translation id="2569352796411618312">Πρόταση: <ph name="NUMBER_OF_TABS" /> από τις καρτέλες σας δεν έχουν χρησιμοποιηθεί πρόσφατα. Κλείσιμο αυτών των καρτελών;</translation>
 <translation id="257674075312929031">Ομάδα</translation>
+<translation id="2628148780487543078">Κλείσιμο και των καρφιτσωμένων καρτελών</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Επαναφορά και άνοιγμα ομάδας καρτελών με <ph name="TABS_COUNT_ONE" /> καρτέλα, με <ph name="COLOR_NAME" /> χρώμα.}other{Επαναφορά και άνοιγμα ομάδας καρτελών με <ph name="TABS_COUNT_MANY" /> καρτέλες, με <ph name="COLOR_NAME" /> χρώμα.}}</translation>
 <translation id="2662028055331606429">Αξιολόγηση <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Μετάβαση στον ιστότοπο</translation>

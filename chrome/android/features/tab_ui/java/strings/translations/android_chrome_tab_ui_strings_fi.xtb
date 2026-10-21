@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Tiivistä <ph name="TABS_COUNT_ONE" /> välilehti.}other{Tiivistä välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="2569352796411618312">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>
 <translation id="257674075312929031">Ryhmä</translation>
+<translation id="2628148780487543078">Sulje myös kiinnitetyt välilehdet</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Palauta ja avaa välilehtiryhmä, jossa on <ph name="TABS_COUNT_ONE" /> välilehti, väri <ph name="COLOR_NAME" />.}other{Palauta ja avaa välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä, väri <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Arvio: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Siirry sivustolle</translation>

@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sužavanje <ph name="TABS_COUNT_ONE" /> kartice.}one{Sužavanje grupe kartica s <ph name="TABS_COUNT_MANY" /> karticom.}few{Sužavanje grupe kartica s <ph name="TABS_COUNT_MANY" /> kartice.}other{Sužavanje grupe kartica s <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="2569352796411618312">Prijedlog: U zadnje vrijeme niste koristili sljedeći broj kartica: <ph name="NUMBER_OF_TABS" />. Zatvoriti ih?</translation>
 <translation id="257674075312929031">Grupa</translation>
+<translation id="2628148780487543078">Zatvori i zakačene kartice</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Vraćanje i otvaranje grupe kartica s <ph name="TABS_COUNT_ONE" /> karticom i bojom <ph name="COLOR_NAME" />.}one{Vraćanje i otvaranje grupe kartica s <ph name="TABS_COUNT_MANY" /> karticom i bojom <ph name="COLOR_NAME" />.}few{Vraćanje i otvaranje grupe kartica s <ph name="TABS_COUNT_MANY" /> kartice i bojom <ph name="COLOR_NAME" />.}other{Vraćanje i otvaranje grupe kartica s <ph name="TABS_COUNT_MANY" /> kartica i bojom <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Ocjena <ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Posjetite web lokaciju</translation>

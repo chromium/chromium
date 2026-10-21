@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">For an approximate result, divide the <ph name="CATEGORY_TEXT" /> value by <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Image source</translation>
 <translation id="1446954767133808402">sapphire</translation>
-<translation id="1449035143498573192">Open in Google Search</translation>
 <translation id="1451536289672181509">Device is a keyboard.</translation>
 <translation id="1452939186874918380">umbrellas</translation>
 <translation id="145402479967797468">Playback controls</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Preview <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Built-in VPN</translation>
 <translation id="1669047024429367828">Visibility</translation>
-<translation id="1670478569471758522">More info related to your selection</translation>
 <translation id="1672499492233627739">Webcam video feed</translation>
 <translation id="1676557873873341166">Taking video</translation>
 <translation id="1684279041537802716">Accent colour</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Finished editing</translation>
 <translation id="3532980081107202182">About <ph name="MIN_REMAINING" /> minutes remaining</translation>
 <translation id="3533790840489634638">swimming pool</translation>
-<translation id="3547264467365135390">Formula</translation>
 <translation id="3552832331940389362">a Japanese animation illustration of a cat sitting on a windowsill watching the rain in the afternoon</translation>
 <translation id="3557205324756024651">Local identity (optional)</translation>
 <translation id="3565064564551103223">Allowed IPs</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Description</translation>
 <translation id="3869314628814282185">tulle</translation>
 <translation id="387301095347517405">The number of times that your battery has gone through a full charging cycle</translation>
-<translation id="3877066159641251281">Listen to translation</translation>
 <translation id="3880601782712134623">Automatically detect distinct voices and give each speaker a generic label, such as Speaker 1 and Speaker 2</translation>
 <translation id="38811596981744338">Legal issue</translation>
 <translation id="3885327323343477505">Change screen saver</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Unplug the <ph name="DEVICE_NAME" /> USB cable and then reinsert it to continue the update process</translation>
 <translation id="5099354524039520280">up</translation>
 <translation id="5107243100836678918">Shortcut without <ph name="META_KEY" /> key might conflict with some app's shortcut. Press this shortcut again to continue using it, or press a new shortcut using the <ph name="KEY" /> key. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Similar:</translation>
 <translation id="5130848777448318809">ponies</translation>
 <translation id="5137451382116112100">Full</translation>
 <translation id="5139813694804168398">do not disturb</translation>
 <translation id="5140788690559353412">When you lose access to your school account, you will no longer have access to the associated email and Google Drive files such as Gmail, Docs, Slides and more.</translation>
 <translation id="5142961317498132443">Authentication</translation>
 <translation id="5144311987923128508">Confirm button is now disabled</translation>
-<translation id="5144887194300568405">Copy translation</translation>
 <translation id="5145081769226915336">Turn on dark mode automatically?</translation>
 <translation id="5145331109270917438">Date modified</translation>
 <translation id="5154917547274118687">Memory</translation>

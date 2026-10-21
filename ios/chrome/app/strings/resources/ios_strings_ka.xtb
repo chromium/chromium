@@ -625,6 +625,7 @@
 <translation id="2865392654629180917">იკითხეთ ნებისმიერი რამ და მიიღეთ პასუხები AI-ს მხარდაჭერით</translation>
 <translation id="2870560284913253234">საიტი</translation>
 <translation id="2876369937070532032">Google-ს უგზავნის თქვენ მიერ მონახულებული ზოგიერთი გვერდის URL-ებს, როცა უსაფრთხოება რისკის ქვეშ არის</translation>
+<translation id="2880119244122776372">აგება და კოდირება</translation>
 <translation id="2883151425485251736">ნახეთ და დაარედაქტირეთ თემები, რომლებიც დამალეთ თქვენი ანგარიშიდან</translation>
 <translation id="2884437560239137197">საჭიროა ყურადღება</translation>
 <translation id="288655811176831528">ჩანართის დახურვა</translation>
@@ -1697,6 +1698,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6301104306974789820">შეტყობინებების მიღება თვალმიდევნებულ ფასებთან დაკავშირებით</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">აირჩიეთ მისამართთა ზოლის პოზიცია</translation>
+<translation id="6305257382500066042">ახლავე ცდა</translation>
 <translation id="6307241780749477694">დაადასტურეთ ვინაობა თქვენს ყველა პაროლზე წვდომის მისაღებად</translation>
 <translation id="6307792728709337290">შეინახეთ თქვენი ბარათი Google ანგარიშში, რომ ავტომატურად შეავსოთ ის ამ და მომავალი შესყიდვებისთვის, რომლებიც Chrome-ში განხორციელდება.</translation>
 <translation id="6316141353357700666">ნაჩვენები სიიდან აირჩიეთ სასურველი პაროლი.</translation>
@@ -1850,7 +1852,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6708501134077648845">პაროლების ვარიანტები</translation>
 <translation id="6709964700841491574">ჩაკეტვის რეჟიმი</translation>
 <translation id="6710079714193676716">მართავს თქვენი ორგანიზაცია. შესაძლოა, ზოგიერთი ფუნქცია მიუწვდომელი იყოს. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">უფრო გონივრული, სწრაფი პასუხები</translation>
 <translation id="6713676799463473249">ცვლილება: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">მიღებული ჩანართები</translation>
 <translation id="6722638373100589752">თქვენი ინფორმაციის ავტომატურად შესავსებად ჩართეთ „საშვების გამოყენება Google-ში“ საფულის პარამეტრებში</translation>
@@ -2062,7 +2063,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">გაგრძელება</translation>
 <translation id="741204030948306876">დიახ, თანახმა ვარ</translation>
-<translation id="7417055777338419059">დაწერეთ კოდი, ტექსტი ან შექმენით სლაიდები</translation>
 <translation id="7419565702166471774">ყოველთვის დაცული კავშირების გამოყენება</translation>
 <translation id="7423098979219808738">წინასწარ კითხვა</translation>
 <translation id="7425053386765766120">გადახდის მეთოდის დამატება…</translation>
@@ -2112,6 +2112,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7525067979554623046">შექმნა</translation>
 <translation id="75362970626182391">ჩანართების ახალი ჯგუფი</translation>
 <translation id="7537586195939242955">სამწუხაროდ, ამჟამად შეუძლებელია Pass-ის დაინსტალირება Passbook-ში.</translation>
+<translation id="7540924742308928499">ბრეინშტორმინგი და შეჯამება</translation>
 <translation id="754655535278952384">შემოწმების დრო: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">ყველას დახურვა</translation>
 <translation id="7557508262441527045">გამოსული</translation>
@@ -2181,6 +2182,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7758789811447313947">იისფერი თემა</translation>
 <translation id="7759809451544302770">არასავალდებულო</translation>
 <translation id="7765158879357617694">გადატანა</translation>
+<translation id="7767651976342854115">მონაცემთა გამოყენების პარამეტრს პრობლემა შეექმნა.</translation>
 <translation id="7768507955883790804">საიტები, რომლებსაც მოინახულებთ, ავტომატურად გაითვალისწინებს ამ პარამეტრს</translation>
 <translation id="7772032839648071052">დაადასტურეთ პაროლი</translation>
 <translation id="7772948288262733182">კლავ მოგესალმებით</translation>
@@ -2480,7 +2482,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8642417828095157370">ჩანართები ზიარდება უფრო შესაბამისი პასუხების მისაღებად</translation>
 <translation id="8643403533759285912">ჯგუფის წაშლა</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">ფასისთვის თვალის მიდევნების გაუქმება შეუძლებელია.</translation>
 <translation id="8654802032646794042">გაუქმება</translation>
 <translation id="8655861111558401309">აირჩიეთ დათვალიერების მონაცემების წაშლა.</translation>
 <translation id="8659875081143553823">მოითმინეთ</translation>

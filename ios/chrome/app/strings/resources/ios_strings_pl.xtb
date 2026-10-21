@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Otwórz w nowej grupie kart</translation>
 <translation id="1670861525135254448">Zapisz pojazd</translation>
 <translation id="1671568970992212376">Zapisuj zdjęcia w Zdjęciach Google i uzyskuj do nich dostęp w dowolnym momencie.</translation>
+<translation id="1671824312818944549">Uwaga: to ustawienie działa lepiej w systemie iOS 27 lub nowszym.</translation>
 <translation id="1674504678466460478">Z: <ph name="SOURCE_LANGUAGE" /> na: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Aby wyszukać, narysuj, zaznacz lub kliknij dowolny element na ekranie</translation>
 <translation id="1678855624321223424">Zgodnie z zasadami obowiązującymi w organizacji ten plik może zawierać informacje poufne</translation>
@@ -324,6 +325,7 @@
 <translation id="1925706052394657380">Otwórz ustawienia <ph name="BEGIN_BOLD" />aplikacji domyślnych<ph name="END_BOLD" /> na iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Odebrano link}few{Odebrano {count} linki}many{Odebrano {count} linków}other{Odebrane {count} linku}}</translation>
 <translation id="1941314575388338491">Kliknij dwukrotnie, by skopiować.</translation>
+<translation id="1942483019269000450">Aby kontynuować zadanie, Gemini może poprosić Portfel Google o wypełnienie danych karty kredytowej</translation>
 <translation id="1943478190258551035">Menu → Ustawienia</translation>
 <translation id="1944477975050820119">Otrzymuj sugestie w czasie rzeczywistym, które pomogą Ci znaleźć nowe sposoby przeglądania z wykorzystaniem AI. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Zaloguj się na konto zarządzane</translation>
@@ -357,12 +359,14 @@
 <translation id="2012723204723845092">Witamy ponownie!</translation>
 <translation id="2015722694326466240">Aby wyświetlić hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="201759455285471444">Rozwiń grupę kart.</translation>
+<translation id="2022431790688770637">Zarządzaj sugestiami Gemini</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Otwieranie siatki kart</translation>
 <translation id="2044681667265133332">Kontem <ph name="USER_EMAIL" /> zarządza domena <ph name="HOSTED_DOMAIN" />, która może wyświetlać niektóre informacje. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nowy element</translation>
 <translation id="2049727122989709386">Na <ph name="COUNT" /> kontach masz to samo hasło</translation>
 <translation id="205013082884273671">Wyszukaj dowolną rzecz na ekranie</translation>
+<translation id="2053311407685904414">Wybierz adres</translation>
 <translation id="2054044186557130763">Zaloguj się jako <ph name="NAME" /> <ph name="EMAIL" />, konto zarządzane przez Twoją organizację.</translation>
 <translation id="2059166748188874810">Gmina</translation>
 <translation id="2060638295449304809">Ten adres został zapisany tylko na tym urządzeniu. Aby używać go na innych urządzeniach, zapisz go na swoim koncie Google <ph name="USER_EMAIL" /></translation>
@@ -463,6 +467,7 @@
 <translation id="2359043044084662842">Tłumacz</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2360196772093551345">Żądaj strony mobilnej</translation>
+<translation id="2360272811987888433">Zaloguj się ręcznie</translation>
 <translation id="2362083820973145409">Zalogowano jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otwiera ustawienia.</translation>
 <translation id="2367025302166767427">Nie udało się uzupełnić informacji</translation>
 <translation id="2371084566192454134">Karty i grupy kart</translation>
@@ -623,6 +628,7 @@
 <translation id="2865392654629180917">Pytaj o cokolwiek i otrzymuj odpowiedzi generowane przez AI</translation>
 <translation id="2870560284913253234">Witryna</translation>
 <translation id="2876369937070532032">Gdy Twoje bezpieczeństwo jest zagrożone, wysyła do Google adresy URL odwiedzanych stron</translation>
+<translation id="2880119244122776372">Twórz i programuj</translation>
 <translation id="2883151425485251736">Wyświetl tematy, które na Twoim koncie zostały ukryte, i wprowadź w nich zmiany</translation>
 <translation id="2884437560239137197">Wymaga uwagi</translation>
 <translation id="288655811176831528">Zamknij kartę</translation>
@@ -770,6 +776,7 @@
 <translation id="3404232721752787413">Zapisz w Zdjęciach Google</translation>
 <translation id="3406506285180498376">Udostępnij stronę…</translation>
 <translation id="340669334496430859">Ostatnia modyfikacja</translation>
+<translation id="3407832712016477396">Gemini może używać Menedżera haseł Google, żeby logować się za Ciebie</translation>
 <translation id="3409785640040772790">Mapy</translation>
 <translation id="3416023309465857378">25 października 2023 r.</translation>
 <translation id="3419787211763835342">Pomóż nam poprawić ulepszone autouzupełnianie</translation>
@@ -1046,6 +1053,8 @@
 <translation id="4290920330097335010">Nigdy nie zezwalaj</translation>
 <translation id="4293154608148215505">telefonie</translation>
 <translation id="4294506173142861371">Chcesz się zalogować jako <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Wpisz ręcznie</translation>
+<translation id="4297418774230471285">Wybierz dane osobowe</translation>
 <translation id="4302061870579014542">Ustaw pozycję</translation>
 <translation id="4304713468139749426">Menedżer haseł</translation>
 <translation id="4309403553630140242">Kliknij dwukrotnie, by dowiedzieć się więcej</translation>
@@ -1384,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini to AI i może popełniać błędy. <ph name="BEGIN_LINK" />Więcej informacji o odpowiednich danych wysyłanych do Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Nic do zaimportowania</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Zaloguj się na <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5318298563956633672">Śledzisz już ten produkt.</translation>
 <translation id="5327248766486351172">Nazwa</translation>
@@ -1695,6 +1705,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6301104306974789820">Otrzymuj powiadomienia ze śledzenia cen</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Wybierz położenie paska adresu</translation>
+<translation id="6305257382500066042">Wypróbuj</translation>
 <translation id="6307241780749477694">Aby pobrać wszystkie swoje hasła na to urządzenie, potwierdź swoją tożsamość</translation>
 <translation id="6307792728709337290">Zapisz kartę na koncie Google, żeby uzupełniać ją automatycznie podczas tego i przyszłych zakupów w Chrome.</translation>
 <translation id="6316141353357700666">Wybierz z wyświetlonej listy hasło, którego chcesz użyć.</translation>
@@ -1848,7 +1859,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6708501134077648845">Opcje dotyczące haseł</translation>
 <translation id="6709964700841491574">Tryb blokady</translation>
 <translation id="6710079714193676716">Zarządzana przez Twoją organizację. Niektóre funkcje mogą być niedostępne. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">Szybsze i bardziej trafne odpowiedzi</translation>
 <translation id="6713676799463473249">Zmodyfikowano <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Odebrano karty</translation>
 <translation id="6722638373100589752">Aby automatycznie uzupełniać informacje, włącz opcję „Korzystanie z kart w Google” w ustawieniach Portfela</translation>
@@ -2060,7 +2070,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Dalej</translation>
 <translation id="741204030948306876">Tak</translation>
-<translation id="7417055777338419059">Koduj, pisz lub twórz prezentacje</translation>
 <translation id="7419565702166471774">Zawsze używaj bezpiecznych połączeń</translation>
 <translation id="7423098979219808738">Najpierw zapytaj</translation>
 <translation id="7425053386765766120">Dodaj formę płatności…</translation>
@@ -2110,6 +2119,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="7525067979554623046">Utwórz</translation>
 <translation id="75362970626182391">Nowa grupa kart</translation>
 <translation id="7537586195939242955">Twojego hasła nie można teraz umieścić w Passbooku.</translation>
+<translation id="7540924742308928499">Burza mózgów i podsumowanie</translation>
 <translation id="754655535278952384">Sprawdzono <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Zamknij wszystko</translation>
 <translation id="7557508262441527045">Wylogowano</translation>
@@ -2203,6 +2213,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="7839994177130598711">Członkowie grupy rodzinnej mogą teraz korzystać z Twojej nazwy użytkownika i Twojego hasła podczas logowania się na stronie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> za pomocą Menedżera haseł Google.</translation>
 <translation id="7841180087127694526">Wyszukaj skopiowany tekst</translation>
 <translation id="7841418003178675048">Wybierz karty, które mają się wyświetlać na stronie nowej karty.</translation>
+<translation id="7842369010458597654">Wypełniam dane do płatności</translation>
 <translation id="7845466610722898">Pokaż listę Do przeczytania</translation>
 <translation id="7846161022626028328">Wystąpił błąd. Spróbuj ponownie.</translation>
 <translation id="784623644169604270">Brak ostatniej aktywności</translation>
@@ -2479,7 +2490,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="8642417828095157370">Udostępniasz karty, aby otrzymywać lepsze odpowiedzi</translation>
 <translation id="8643403533759285912">Usuń grupę</translation>
 <translation id="8646357898207744479">Obiektyw</translation>
-<translation id="8647280737650867362">Nie udało się zatrzymać śledzenia ceny.</translation>
 <translation id="8654802032646794042">Anuluj</translation>
 <translation id="8655861111558401309">Wybierz opcję Usuń dane przeglądania.</translation>
 <translation id="8659875081143553823">Chwileczkę</translation>

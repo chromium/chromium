@@ -119,6 +119,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2190166659037789668">Chyba kontroly aktualizácií: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Odstrániť účet z prehliadača Chromium</translation>
 <translation id="2201788217099588893">Získajte aplikáciu Chromium a majte najlepšie nákupné nástroje vždy so sebou</translation>
+<translation id="2209877494277346829">Izolovať Chromium od iných aplikácií</translation>
 <translation id="2210502920229141283">Zlepšené bezpečné prehliadanie v prehliadači Chromium pre systém iOS vám zaistí väčšiu bezpečnosť na cestách</translation>
 <translation id="2210682093923538346">Nebezpečný web. Prehliadač Chromium odstránil upozornenia.</translation>
 <translation id="2236949375853147973">Moja aktivita</translation>
@@ -191,6 +192,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2977470724722393594">Prehliadač Chromium bol aktualizovaný</translation>
 <translation id="2977506796191543575">Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chromium môže odoslať Bezpečnému prehliadaniu aj webové adresy vrátane častí obsahu stránok</translation>
 <translation id="2981563588585023386">Ak chceš zvýšiť svoju bezpečnosť na internete pomocou vybraných možností tvojho rodiča, prihlás sa do prehliadača Chromium</translation>
+<translation id="2992577225802060159">Chráni pamäť prehliadača Chromium pred inými aplikáciami v počítači.</translation>
 <translation id="3003694935412297923">Všetky úlohy</translation>
 <translation id="3012615494352020668">{count,plural, =1{Než sa niektoré údaje uložia do vášho účtu Google a začnú používať vo všetkých zariadeniach, musí Chromium overiť vašu totožnosť. Ak sa odhlásite teraz, tieto údaje (1 položka) budú odstránené.}few{Než sa niektoré údaje uložia do vášho účtu Google a začnú používať vo všetkých zariadeniach, musí Chromium overiť vašu totožnosť. Ak sa odhlásite teraz, tieto údaje ({count} položky) budú odstránené.}many{Chromium needs to verify it’s you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data ({count} items) will be deleted.}other{Než sa niektoré údaje uložia do vášho účtu Google a začnú používať vo všetkých zariadeniach, musí Chromium overiť vašu totožnosť. Ak sa odhlásite teraz, tieto údaje ({count} položiek) budú odstránené.}}</translation>
 <translation id="3013473503895162900">Otvorte <ph name="URL" /> na novej karte v prehliadači Chromium.</translation>
@@ -467,7 +469,6 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="5949225980829865667">Ak chcete mať túto záložku a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa do prehliadača Chromium</translation>
 <translation id="5953657885167112863">Prispôsobte si Chromium podľa seba</translation>
 <translation id="5960071705175224773">Vaše nastavenia zmenila neznáma aplikácia</translation>
-<translation id="5977420883993828287">Pripnuté! Kontextové úlohy môžete znova používať z panela s nástrojmi.</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Vaša organizácia Chromium automaticky zavrie, keď sa nebude používať jednu minútu.}few{Vaša organizácia Chromium automaticky zavrie, keď sa nebude používať # minúty.}many{Vaša organizácia Chromium automaticky zavrie, keď sa nebude používať # minúty.}other{Vaša organizácia Chromium automaticky zavrie, keď sa nebude používať # minút.}}</translation>
 <translation id="5987687638152509985">Ak chcete spustiť synchronizáciu, aktualizujte Chromium</translation>
 <translation id="5990360079535151574">Pomocou tlačidla Kontextové úlohy na paneli s nástrojmi môžete znova otvoriť kontextové úlohy a klásť otázky počas prehliadania</translation>

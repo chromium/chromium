@@ -120,6 +120,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="2190166659037789668">Yeniləmə yoxlaması xətası: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Hesabı Chromium-dan silin</translation>
 <translation id="2201788217099588893">İstənilən vaxt, istənilən yerdə ən yaxşı alış-veriş alətlərindən yararlanmaq üçün Chromium tətbiqindən istifadə edin</translation>
+<translation id="2209877494277346829">Chromium-u digər tətbiqlərdən təcrid edin</translation>
 <translation id="2210502920229141283">iOS üçün Chromium-da Qabaqcıl Güvənli Baxış ilə yolda daha təhlükəsiz olun</translation>
 <translation id="2210682093923538346">Təhlükəli sayt. Chromium bildirişləri sildi.</translation>
 <translation id="2236949375853147973">Fəaliyyətim</translation>
@@ -192,6 +193,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="2977470724722393594">Chromium güncəldir</translation>
 <translation id="2977506796191543575">Sayt parolunuzu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyinizdə Chromium səhifə məzmunundan kiçik nümunələr də daxil olmaqla, URL'ləri Təhlükəsiz Baxışa göndərə bilər</translation>
 <translation id="2981563588585023386">Onlayn təhlükəsizliyinizi valideyninizin seçimləri ilə qorumaq üçün Chromium-a daxil olun</translation>
+<translation id="2992577225802060159">Chromium-un yaddaşını kompüterinizdəki digər tətbiqlərdən qoruyur.</translation>
 <translation id="3003694935412297923">Bütün tapşırıqlar</translation>
 <translation id="3012615494352020668">{count,plural, =1{Müəyyən datanın Google Hesabınızda yadda saxlanılması və bütün cihazlarda istifadə edilməsi üçün Chromium kimliyinizi doğrulamalıdır. İndi çıxsanız, bu data (1 element) silinəcək.}other{Müəyyən datanın Google Hesabınızda yadda saxlanılması və bütün cihazlarda istifadə edilməsi üçün Chromium kimliyinizi doğrulamalıdır. İndi çıxsanız, bu data ({count} element) silinəcək.}}</translation>
 <translation id="3013473503895162900">Chromium-da yeni tabda <ph name="URL" /> açın.</translation>
@@ -466,7 +468,6 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="5949225980829865667">Bu əlfəcini və digərlərini bütün cihazlarınızda əldə etmək üçün Chromium-a daxil olun</translation>
 <translation id="5953657885167112863">Chromium-u özünüzə uyğunlaşdırın</translation>
 <translation id="5960071705175224773">Ayarlarınız naməlum tətbiq tərəfindən dəyişdirildi</translation>
-<translation id="5977420883993828287">Bərkidildi! Alətlər panelində Kontekstual Tapşırıqlardan yenidən istifadə edin</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Chromium 1 dəqiqə istifadə edilmədikdə təşkilat onu avtomatik bağlayır.}other{Chromium # dəqiqə istifadə edilmədikdə təşkilat onu avtomatik bağlayır.}}</translation>
 <translation id="5987687638152509985">Sinxronizasiyanı başlatmaq üçün Chromium'u güncəlləyin</translation>
 <translation id="5990360079535151574">Alətlər panelindəki "Kontekstual tapşırıqlar" düyməsi ilə axtarış edərkən sual vermək üçün Kontekstual tapşırıqları yenidən aça bilərsiniz</translation>

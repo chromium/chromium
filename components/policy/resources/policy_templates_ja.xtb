@@ -6293,6 +6293,17 @@ Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DI
 <translation id="5081204761483900654">制限付き管理対象ゲスト セッション</translation>
 <translation id="5082296146261894974">ユーザーがスマートフォン ハブの通知をクリックして Eche アプリを起動することを許可します。</translation>
 <translation id="5082572440690475059">File System API 経由での読み取りアクセスを許可するサイトを指定する</translation>
+<translation id="5084849119584030624"><ph name="PRODUCT_NAME" /> で <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> の接続設定を構成します。
+
+このポリシーはサポートが終了しており、無視されます。代わりに <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> ポリシーを使用してください。
+
+このポリシーでは、<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> を介して <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ウェブ アプリケーション URL を設定します。この URL は、HTTPS スキームを使用し、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ドメインを指していて、ユーザー名やパスワードを含んでいない、有効な URL である必要があります。これらの要件を満たしていない場合、ポリシーは無視され、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は未設定のままになります。
+
+このポリシーを設定した場合、管理対象アカウントまたは管理対象ブラウザでログインしたユーザーに対して <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> が構成されます。
+
+このポリシーを未設定のままにした場合、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は構成されません。
+
+なお、このポリシーは全般的な <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> の統合を制御するものではありません。そちらについては <ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで制御できます。</translation>
 <translation id="5085647276663819155">印刷プレビューを無効にする</translation>
 <translation id="5087922428454325090">ユーザーがブラウザからウェブアプリをインストールできないようにする。</translation>
 <translation id="5087932158260897375">このポリシーを false に設定した場合、ドメインの信頼性診断データのレポートは無効になり、データが Google に送信されることはありません。
@@ -8059,25 +8070,6 @@ JavaScript の最適化を無効にした場合、<ph name="PRODUCT_NAME" /> で
 <translation id="6244061205361004687">ユーザーによる手動での VPN の接続解除や変更を許可する</translation>
 <translation id="6244210204546589761">起動時に開く URL</translation>
 <translation id="6244263962918757383">ChromeSuggestions の設定</translation>
-<translation id="6245828368576563662">このポリシーでは、特定の URL パターンに一致するウェブ リクエストにカスタム HTTP ヘッダーを挿入するルールのリストを定義できます。このポリシーで設定したヘッダーは、リクエストに最初に存在していたヘッダーや、ユーザーまたは拡張機能によって試行された変更より優先されます。
-
-このポリシーの一般的なユースケースは、カスタム ヘッダー（例: <ph name="EXAMPLE_HEADER_NAME" />）を挿入してテナントのアクセス制御を適用することです。
-
-このポリシーでは、ルールのリストを指定できます。各ルールの構成要素:
-
-* <ph name="PATTERNS_KEY" />: 対象とする URL パターンのリスト。URL パターンの指定方法（https://support.google.com/chrome/a?p=url_blocklist_filter_format）をご確認ください。
-
-* <ph name="HEADERS_KEY" />: 挿入するヘッダーのオブジェクトのリスト。各オブジェクトの構成要素は次のとおりです。
-
-  * <ph name="HEADER_NAME_KEY" />: 挿入するヘッダーの名前。
-
-  * <ph name="HEADER_VALUE_KEY" />: 挿入するヘッダーの値。
-
-リクエストに複数のルールが一致する場合、一致したすべてのルールのヘッダーが適用されます。同じ名前のヘッダーが複数ある場合は、URL パターンの指定が最も詳細なヘッダーが適用されます。パターンの詳細度が同じ場合は、リストで最後のほうに指定されたパターンが適用されます。
-
-ヘッダー名は RFC 2616（https://www.rfc-editor.org/rfc/rfc2616）に準拠している必要があります。ヘッダー値に NUL、CR、LF 記号を含めることはできません。個々のヘッダーのサイズは 8 KB 未満である必要があります。無効なヘッダーと URL パターンは無視されます。
-
-このポリシーで指定できる URL パターンは、すべてのルールを合わせて最大 500 件です。各ルールには最大 20 個のヘッダーを含めることができます。これらの上限を超えるパターンとヘッダーは無視されます。</translation>
 <translation id="624595269193747921">照合するプリンタの検索の対象を特定のプリンタに限定するかどうかを指定します。</translation>
 <translation id="6246290059248303618">ローカル ネットワーク上の他のデバイスによって開始された <ph name="PRODUCT_NAME" /> セッションのメディア コントロールを表示する</translation>
 <translation id="6247316685259031374">このポリシーでは、音声処理のサンドボックス化を管理します。
@@ -9526,23 +9518,6 @@ SkyVault ユーザーのみ、つまり LocalUserFilesAllowed が false の場�
 
       注: 現在、スキャン機能は機能フラグによりデフォルトで無効になっています。ユーザーが機能フラグでこの機能を有効にしても、このポリシーにより引き続き無効になる可能性があります。</translation>
 <translation id="7115684775550072082">テキストと XML の MIME タイプでのみ空白文字を保持する</translation>
-<translation id="7116098886490965998">リストの ID プロバイダに対して、<ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> を使用したシングル サインオン（SSO）を無効にします。
-
-値 <ph name="POLICY_VALUE_ALL" /> を追加すると、SSO でサポートされているすべての ID プロバイダが無効になります。
-
-値 <ph name="POLICY_VALUE_MICROSOFT" /> を追加すると、Chrome で Microsoft® クラウド ID プロバイダのシングル サインオンのサポートが無効になります。
-
-このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> でサポートされているすべての ID プロバイダが有効になります。
-
-<ph name="PRODUCT_NAME" /> で有効化され、管理者によってデバイスに設定された ID プロバイダを使用して、<ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> をサポートする任意のアプリケーションでログインしたユーザーは、その ID プロバイダを使用してウェブ プロパティに自動ログインできます。ユーザーの認証情報に関する情報は、認証イベントごとにユーザーのクラウド ID プロバイダに送信されます。
-
-注:
-
-<ph name="PRODUCT_NAME" /> は、シークレット モードまたはゲストモードでの <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> を使用したシングル サインオンをサポートしていません。
-
-<ph name="PRODUCT_NAME" /> は、Microsoft と Okta の <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> を使用したシングル サインオンのみサポートしています。
-
-この機能は <ph name="MAC_OS_NAME" /> 10.15 以降で利用できます。</translation>
 <translation id="7119538491527883595">ローカル ユーザーデータ ストレージ</translation>
 <translation id="7121046543122812054">このポリシーはサポートが終了しています。代わりに <ph name="BROWSER_SIGNIN_POLICY_NAME" /> を使用してください。
 
@@ -11792,6 +11767,17 @@ false に設定した場合、管理対象のネットワークに接続され�
 <translation id="8621146428060651659">プロキシのソケットプールのランダム化を許可する</translation>
 <translation id="862621549134406761">RSA 鍵用途の確認を有効にする</translation>
 <translation id="8626826495474944836">すべてのサイトに対してサイト分離を必須にする</translation>
+<translation id="8628954914373039931">ユーザーが <ph name="PRODUCT_OS_NAME" /> デバイスにログインした後に、ブラウザ ウィンドウのコンテンツ領域内や Android アプリケーションで Google アカウントを切り替えることができるかどうかを制御します。
+
+      このポリシーを false に設定した場合、通常モードのブラウザのコンテンツ領域や Android アプリケーションから別の Google アカウントにログインすることはできません。
+
+      このポリシーを未設定のままにするか true に設定した場合、デフォルトの動作が使用されます。つまり、ブラウザのコンテンツ領域や Android アプリケーションから別の Google アカウントにログインでき、例外として子アカウントは通常モードのブラウザのコンテンツ領域でブロックされます。
+
+      Android では、この設定により、ユーザーが <ph name="PRODUCT_NAME" /> にログインした状態で Google ウェブサイトのコンテンツ領域から他の Google アカウントを追加できるかどうかを制御します。このポリシーを false に設定した場合、Google のウェブサイトには、別の Google アカウントを追加するオプション（アカウント メニューの [別のアカウントを追加] ボタンなど）は表示されません。このポリシーを未設定のままにするか true に設定した場合、Google のウェブサイトから別の Google アカウントを追加できます。このポリシーを設定しても、Android デバイス自体に Google アカウントを追加できなくなるわけではありません。
+
+      シークレット モードで別のアカウントにログインできないようにする必要がある場合は、IncognitoModeAvailability ポリシーを使用してシークレット モードをブロックすることをご検討ください。
+
+      なお、ユーザーは Cookie をブロックすることで、承認されていない状態でも Google のサービスにアクセスできます。</translation>
 <translation id="8630797597241896082">生成 AI ビデオ通話背景と AI モデルの改善を許可する</translation>
 <translation id="8631314130868563649">電力のピークシフト管理を無効にする</translation>
 <translation id="8631434304112909927">バージョン <ph name="UNTIL_VERSION" /> まで</translation>

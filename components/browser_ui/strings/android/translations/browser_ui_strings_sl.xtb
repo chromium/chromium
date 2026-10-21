@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Prilagodite si Chrome z barvami in slikami po meri za domačo stran</translation>
 <translation id="389521680295183045">Spletna mesta lahko zahtevajo, da izvejo, kdaj aktivno uporabljate napravo</translation>
 <translation id="3895926599014793903">Vsili povečavo</translation>
-<translation id="3905475044299942653">Ustavitev veliko obvestil</translation>
 <translation id="3922092564198021702">V telefonu odprite nastavitve</translation>
 <translation id="3924858949939391676">Prikaz povezav, ko je način za branje vklopljen</translation>
 <translation id="3933121352599513978">Strni neželene zahteve (priporočeno)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Skupine najdete v razdelku skupine zavihkov v vseh napravah</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> ne sme uporabljati vaših podatkov na</translation>
 <translation id="4953688446973710931">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo samodejni prenos več datotek. Če je ta možnost izklopljena, spletna mesta ne smejo samodejno prenesti več datotek.</translation>
-<translation id="4962975101802056554">Umik vseh dovoljenj za napravo</translation>
 <translation id="4972737347717125191">Spletna mesta lahko zahtevajo uporabo naprav in podatkov za navidezno resničnost</translation>
 <translation id="4973805849704516244">Razdelek na dnu zaslona z barvami Chroma</translation>
 <translation id="497421865427891073">Pojdi naprej</translation>
@@ -704,7 +702,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:</translation>
 <translation id="8428213095426709021">Nastavitve</translation>
 <translation id="8441146129660941386">Išči nazaj</translation>
 <translation id="8444433999583714703">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do lokacije, lokacijo vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Umik dovoljenja za dostop do naprave</translation>
 <translation id="8463843545738141778">Ta nastavitev je onemogočena, ker ste v nastavitvah za Android vklopili dodatno zaščito.</translation>
 <translation id="8467359479529706065">Razdelek na dnu zaslona za videz strani »Nov zavihek« je odprt pri polovični višini</translation>
 <translation id="8471525937465764768">Spletna mesta običajno vzpostavijo povezavo z napravami USB zaradi funkcij, kot sta tiskanje dokumenta ali shranjevanje podatkov v napravo za shranjevanje.</translation>

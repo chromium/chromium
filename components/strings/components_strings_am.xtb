@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
-<translation id="1003222766972176318">ማስታወሻ፦ የተቀመጠ ቅናሽ ይገኛል</translation>
 <translation id="1008557486741366299">አሁን አይደለም</translation>
 <translation id="100957008357583611">የእርስዎን አካባቢ ይጠቀሙ?</translation>
 <translation id="1010200102790553230">በኋላ ላይ ገፅ ጫን</translation>
@@ -1127,6 +1126,7 @@
 <translation id="2911973620368911614">የስራ አካውንቲንግ ተጠቃሚ መታወቂያ</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> የእርስዎን መረጃ ለመጠበቅ በመደበኝነት ምስጠራ ይጠቀማል። Chrome አሁን ከ<ph name="SITE" /> ጋር ለመገናኘት ሲሞክር ድር ጣቢያው ያልተለመደ እና ትክክል ያልሆኑ የመግቢያ ማስረጃዎችን መልሷል። ይህ አንድ አጥቂ <ph name="SITE" />ን አስመስሎ ለመቅረብ ከሞከረ ነው ወይም አንድ የWi-Fi መግቢያ ገፅ ግንኙነቱን ካቋረጠ ሊከሰት ይችላል። Chrome ማንኛውም የውሂብ ልውውጥ ከመካሄዱ በፊት ግንኙነቱን ስላቋረጠው የእርስዎ መረጃ ደህንነት ተጠብቋል።</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> ላይ ስንክል</translation>
+<translation id="291568339791418558">ሁሉም መሣሪያዎች</translation>
 <translation id="2916038427272391327">ሌሎች ፕሮግራሞችን ይዝጉ</translation>
 <translation id="2917630513638801879">ሳያን 1</translation>
 <translation id="2922350208395188000">የአገልጋይ እውቅና ማረጋገጫ ሊረጋገጥ አልቻለም።</translation>
@@ -1461,7 +1461,6 @@
 <translation id="3479552764303398839">አሁን አይደለም</translation>
 <translation id="3481315707647070701">ምስል ይሥሩ እና ያርትዑ</translation>
 <translation id="3484560055331845446">የGoogle መለያዎን መዳረሻ ሊያጡ ይችላሉ። Chrome የይለፍ ቃልዎን አሁኑኑ እንዲቀይሩት ይመክራል። በመለያ እንዲገቡ ይጠየቃሉ።</translation>
-<translation id="3484861421501147767">ማስታወሻ፦ የተቀመጠ የማስተዋወቂያ ኮድ አለ</translation>
 <translation id="3485901585646640838">Google መለያዎ ላይ የተቀመጡ የይለፍ ቃሎቹን እና ሌሎችንም ለመጠቀም እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="3487845404393360112">መሳቢያ 4</translation>
 <translation id="3493881266323043047">ተገቢነት</translation>
@@ -1821,6 +1820,7 @@
 <translation id="4067774859633143413">ከሙሉ ማያ ገጽ ለመውጣት እና ውርዱን ለማየት |<ph name="ACCELERATOR" />|ን ተጭነው ይያዙ</translation>
 <translation id="4067947977115446013">የሚሰራ አድራሻ ያስገቡ</translation>
 <translation id="4072486802667267160">የእርስዎን ትዕዛዝ መሥራት ላይ የሆነ ስህተት ነበር። እባክዎ እንደገና ይሞክሩ።</translation>
+<translation id="4073293290376142777">ይግባ?</translation>
 <translation id="4073376909608563327">የመሣሪያ መክፈቻን መጠቀም አልተቻለም</translation>
 <translation id="4073797364926776829">ካርድ ይመልከቱ</translation>
 <translation id="4075732493274867456">ደንበኛው እና አገልጋዩ የተለመደ የኤስኤስኤል ፕሮቶኮል ስሪት ወይም የስነ መሰውር ጥቅል አይደግፉም።</translation>
@@ -1853,6 +1853,7 @@
 <translation id="4107047499377819067">የVPN ዳራ አገልግሎቶችን መጫን ተጀምሯል፣ ይህ ጥቂት ደቂቃዎች ሊወስድ ይችላል።</translation>
 <translation id="4110642094637545339">Google Pay፣ የAfterPay ዓርማ</translation>
 <translation id="4110652170750985508">የእርስዎን ክፍያ ይገምግሙ</translation>
+<translation id="411071007970303441">ሁሉም ተዋናዮች</translation>
 <translation id="4112140312785995938">ወደኋላ ፈልግ</translation>
 <translation id="4114007503059268298">ይህን ካርድ በእርስዎ የGoogle መለያ ውስጥ እና በዚህ መሣሪያ ላይ ማስቀመጥ ይፈልጋሉ?</translation>
 <translation id="4114146879518089587">ወደ ጣቢያ ቀጥል</translation>
@@ -3439,6 +3440,7 @@
 <translation id="6753460329812070808">የአስተያየት ጥቆማ ከChrome ተወግዷል</translation>
 <translation id="6757797048963528358">የእርስዎ መሣሪያ ተኝቷል።</translation>
 <translation id="6758934187792712102"><ph name="URL" /> የእርስዎን የእንቅስቃሴ እና የብርሃን ዳሳሾች መጠቀም ይፈልጋል</translation>
+<translation id="6766488013065406604">ወደ Google የይለፍ ቃል አስተዳዳሪ ይሂዱ</translation>
 <translation id="6770747695101757579">ወረቀት (ጥጥ)</translation>
 <translation id="6772959465807028761">YouTube ለመጠቀም በGoogle መለያዎ ይቀጥሉ</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3649,7 +3651,6 @@
 <translation id="7120588595737538743">ውርዶች እና ቅጽበታዊ ገጽ እይታዎች</translation>
 <translation id="7124354851782353862">የእርስዎን ካርድ ማረጋገጫ ኮድ ያስገቡ</translation>
 <translation id="7129409597930077180">ወደዚህ አድራሻ መላክ አይቻልም። የተለየ አድራሻ ይምረጡ።</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">መስቀል ታግዷል</translation>
 <translation id="7132939140423847331">የእርስዎ አስተዳዳሪ ይህ ውሂብ እንዳይቀዳ ከልክሏል።</translation>
 <translation id="7134653428559514680">ከዚህ ጣቢያ ማጋራት አይመከርም</translation>
@@ -3967,6 +3968,7 @@
 <translation id="7637571805876720304">ክሬዲት ካርድ ከChromium ይወገድ?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{ምንም}=1{በእርስዎ መለያ ውስጥ 1 የይለፍ ቃል (ለ<ph name="DOMAIN_LIST" />)}one{በእርስዎ መለያ ውስጥ # የይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />)}other{በእርስዎ መለያ ውስጥ # የይለፍ ቃላት (ለ<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">ተከታታይ ወደቦች</translation>
+<translation id="7644100755247241229">Google Walletን በመጠቀም Pixን ለጓደኛዎች እና ለንግድ ሥራዎች ይላኩ</translation>
 <translation id="7646681339175747202">አሁን የተጠቀሙበት የይለፍ ቃል በውሂብ ጥሰት ውስጥ ተገኝቷል። Google የይለፍ ቃል አስተዳዳሪ የይለፍ ቃልዎን አሁን እንዲቀይሩ ይመክራል።</translation>
 <translation id="7647206758853451655">የህትመት ጥራት</translation>
 <translation id="7648133459447652947">ጠቋሚዎን ለማሳየት መተግበሪያዎችን ይቀይሩ፣ ገፁን እንደገና ይጫኑ ወይም ይመለሱ</translation>
@@ -4070,6 +4072,7 @@
 <translation id="7791543448312431591">ያክሉ</translation>
 <translation id="7798389633136518089">መመሪያው በደመና ምንጭ ስላልተቀናበረ ችላ ተብሏል።</translation>
 <translation id="7800304661137206267"><ph name="MAC" /> ለመልዕክት ማረጋገጥ እና ደግሞ <ph name="KX" /> ለቁልፍ መቀያየሪያ ስልቶች በማድረግ ግንኙነቱ <ph name="CIPHER" />ን በመጠቀም የተመሰጠረ ነው።</translation>
+<translation id="780228007282527248">ፍለጋዎን ለማሻሻል ትር ወይም ምስል ያክሉ</translation>
 <translation id="7802523362929240268">ጣቢያው ህጋዊ ነው</translation>
 <translation id="7802989406998618639">ባንክዎ እርስዎ መሆንዎን ማረጋገጥ እንዲችል በ<ph name="SIDE_OF_CARD" /> ላይ ያለውን ባለ <ph name="NUMBER_OF_DIGITS" />-አሃዝ የደህንነት ኮድ ያስገቡ</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>

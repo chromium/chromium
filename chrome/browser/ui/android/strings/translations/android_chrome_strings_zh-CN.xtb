@@ -91,7 +91,6 @@
 <translation id="1331212799747679585">Chrome 无法更新。更多选项</translation>
 <translation id="1332501820983677155">Google Chrome 功能快捷键</translation>
 <translation id="1333491156693005331">近期检查过</translation>
-<translation id="1336996151357442890">已退订 <ph name="SITE_NAME" />。当您下次访问时，系统会再次询问您。</translation>
 <translation id="1340839264183302272">退出分组</translation>
 <translation id="1342886103232377846">若要检查是否存在已泄露的密码，请前往 Google 密码管理工具</translation>
 <translation id="1343830902827845050">登录 Chrome</translation>
@@ -99,7 +98,6 @@
 <translation id="1355088659320425659">历史记录和标签页</translation>
 <translation id="1363028406613469049">跟踪</translation>
 <translation id="1366525380420346469">开启时</translation>
-<translation id="1372840539168747818">{NUM_SITES,plural, =1{您可以阻止这个网站继续发送通知}other{您可以阻止这些网站继续发送通知}}</translation>
 <translation id="137496472437646183">选择“增强型保护”</translation>
 <translation id="1376578503827013741">正在计算…</translation>
 <translation id="138181280295369883">登录即可在自己的所有设备上获取保存的信息等内容</translation>
@@ -185,7 +183,6 @@
 <translation id="1728803206919861584">要在无痕模式以外保存通行密钥吗？</translation>
 <translation id="1732514748744806741">如果您的密码遭外泄，我们会通知您</translation>
 <translation id="1737694586321018892">获享 Chrome 的最强安全防护</translation>
-<translation id="1747593111377567311">{NUM_SITES,plural, =1{1 个网站近期发送了大量通知}other{# 个网站近期发送了大量通知}}</translation>
 <translation id="1749561566933687563">同步您的书签</translation>
 <translation id="1750238553597293878">请继续使用您的 Google 账号的密码</translation>
 <translation id="1753744496844366747">Aa</translation>
@@ -350,7 +347,6 @@
 <translation id="2367818124433749493">开发者快捷键</translation>
 <translation id="2369058545741334020">在阅读模式下打开</translation>
 <translation id="2378656072948663224">Google 的最高级别保护，可抵御在线威胁</translation>
-<translation id="2385605401818128172">您可以查看发送大量通知的网站，并阻止它们日后继续发送通知</translation>
 <translation id="2386938421315164605">隐藏和取消隐藏主题</translation>
 <translation id="2390510615457643724">您想再次下载 <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) 吗？</translation>
 <translation id="2391579633712104609">180°</translation>
@@ -452,7 +448,6 @@
 <translation id="2794551654724114396">开启通知，获取实用提示，尽享 Chrome 的出色功能</translation>
 <translation id="2798977804328097977">跨设备无缝衔接</translation>
 <translation id="2805210243313393104">在您的所有设备上获取书签等信息</translation>
-<translation id="2819849308549746319">全部退订</translation>
 <translation id="2820047235535485532">您可以选择要将哪些数据保存到您的 Google 账号 <ph name="ACCOUNT_EMAIL" /> 中。\n您也可在书签、阅读清单或密码管理工具中查看和管理这些内容。</translation>
 <translation id="2826576843404243001">在您访问不支持安全连接的网站前，系统会发出警告。您无法更改此设置，因为您已启用“高级保护”。</translation>
 <translation id="2827278682606527653">动态卡片上的菜单已半屏打开</translation>
@@ -764,7 +759,6 @@
 <translation id="405399507749852140">当任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="4056223980640387499">棕褐色调</translation>
 <translation id="4062305924942672200">法律信息</translation>
-<translation id="4070897657850712662">{NUM_SITES,plural, =1{每天大约 1 条通知}other{每天大约 # 条通知}}</translation>
 <translation id="4072805772816336153">请稍后重试</translation>
 <translation id="4084682180776658562">添加书签</translation>
 <translation id="4084712963632273211">来自 <ph name="PUBLISHER_ORIGIN" /> - <ph name="BEGIN_DEEMPHASIZED" />由 Google 提供<ph name="END_DEEMPHASIZED" /></translation>
@@ -970,6 +964,7 @@
 <translation id="480990236307250886">打开主页</translation>
 <translation id="4812684235631257312">主机</translation>
 <translation id="4816492930507672669">适应页面</translation>
+<translation id="4819558594335204796">打开主页</translation>
 <translation id="4822710610088666676">已关闭并保存“<ph name="TAB_GROUP_TITLE" />”标签页分组</translation>
 <translation id="4835385943915508971">Chrome 无权访问请求的资源。</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{将包含 <ph name="TAB_COUNT_ONE" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}other{将包含 <ph name="TAB_COUNT_MANY" /> 个标签页（颜色为<ph name="COLOR_NAME" />）的标签页分组恢复为新的背景标签页分组。}}</translation>
@@ -1178,6 +1173,7 @@
 <translation id="5715150588940290235">要删除已保存的安全码吗？</translation>
 <translation id="572328651809341494">最近打开的标签页</translation>
 <translation id="5728072125198221967">关联的 Google 服务</translation>
+<translation id="5733447028358645932">浏览者</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />，已固定的无痕式标签页，正在播放音频</translation>
 <translation id="5744751019568455640">您可以在这里选择系统朗读网页内容时要使用的声音。如果您喜欢这个声音，并且希望我继续使用它，只要点按声音名称就可以了。</translation>
 <translation id="574845902699630049">以<ph name="OWNER_FULL_NAME" />的身份分享</translation>
@@ -1284,14 +1280,12 @@
 <translation id="6140948187512243695">显示详细信息</translation>
 <translation id="6142183503755612900">您可以随时在“设置”中更改默认搜索引擎</translation>
 <translation id="6146563240635539929">视频</translation>
-<translation id="614890671148262506">始终允许此网站发送通知</translation>
 <translation id="6150320133806434356">书签已保存</translation>
 <translation id="6150706324143004339">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请更新 Chrome</translation>
 <translation id="6154478581116148741">需在“设置”部分中开启屏幕锁定功能，才能从此设备中导出您的密码</translation>
 <translation id="6156323911414505561">显示书签栏</translation>
 <translation id="6162892189396105610">预加载 Chrome 认为您可能会访问的网页。</translation>
 <translation id="6165508094623778733">了解详情</translation>
-<translation id="6170675927290506430">前往通知设置页面</translation>
 <translation id="6184972259157699660"><ph name="TAB_TITLE" />，已设为静音的无痕式标签页</translation>
 <translation id="6186394685773237175">未发现任何已泄露的密码</translation>
 <translation id="6192907950379606605">获取图片说明</translation>
@@ -1310,6 +1304,7 @@
 <translation id="6246073558347462570">上下文弹窗</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>
 <translation id="6248988683584659830">搜索设置</translation>
+<translation id="6250046936554288508">AI 模式快捷方式</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />，已多选的固定无痕式标签页</translation>
 <translation id="6251449557817521191">在此处查看您的 Chrome 历史记录</translation>
 <translation id="6254139308321626268">您正在查看 PDF 文件</translation>
@@ -1468,7 +1463,6 @@
 <translation id="679845623837196966">显示阅读清单</translation>
 <translation id="679956319013005046">如需设置首选的自动填充服务，请先在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中添加该服务。</translation>
 <translation id="6802555630140434547">系统将会关闭此窗口</translation>
-<translation id="6803791793483522764">查看通知</translation>
 <translation id="6809470175540814047">在无痕式窗口中打开</translation>
 <translation id="6811034713472274749">页面已可供查看</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{图片，列表中有 1 张图片}other{图片，列表中有 # 张图片}}</translation>
@@ -1500,9 +1494,7 @@
 <translation id="6880903702195291049">权限设置正常</translation>
 <translation id="6883204995689174413">分享</translation>
 <translation id="6883264411109586397">{ITEMS_COUNT,plural, =1{有 1 项内容只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。}other{有 # 项内容只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
-<translation id="6883906387682976294">退订来自此网站的通知</translation>
 <translation id="688398477366397178">让网站知道您所用的语言。它们将尽可能以这些语言显示内容。</translation>
-<translation id="6885933993535178919">{NUM_SITES,plural, =1{已退订 1 个网站}other{已退订 # 个网站}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 个密码}other{# 个密码}}</translation>
 <translation id="6892009074348518725">如要使用此扩展程序，请登录 Chrome。您还可以将密码等信息保存在您的 Google 账号中并使用这些信息。</translation>
 <translation id="6896758677409633944">复制</translation>
@@ -1510,7 +1502,6 @@
 <translation id="6900532703269623216">增强型保护</translation>
 <translation id="6900654715912436255">确定要删除此搜索引擎吗？</translation>
 <translation id="6906448540340261898">请确保您可以一直使用 Google 账号的密码</translation>
-<translation id="6908230663105268638">已允许 <ph name="SITE_NAME" /> 发送通知</translation>
 <translation id="6908998565271542516">选项表单，用于批准/禁止访问某个网站，已全屏打开</translation>
 <translation id="6909589135458168665">预加载网页</translation>
 <translation id="6910211073230771657">已删除</translation>
@@ -1626,7 +1617,6 @@
 <translation id="7324354302972299151">发送“Do Not Track”请求</translation>
 <translation id="7333041109965360609">已退订通知</translation>
 <translation id="7335766481146072567">按“继续”</translation>
-<translation id="7336259382292148213">通知权限正常</translation>
 <translation id="7339898014177206373">打开新的窗口</translation>
 <translation id="7349983576451251297">在 Chrome 浏览器中打开网页，而不是在自定义标签页中打开</translation>
 <translation id="7352339641508007922">拖动即可截取长屏幕</translation>
@@ -1893,7 +1883,6 @@
 <translation id="8322452989119079156">在<ph name="NATIVE_APP_NAME" />中打开 - 发送自“<ph name="DEVICE_NAME" />”</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">书签和清单</translation>
-<translation id="8342727528718219152">Chrome 会通知您哪些网站可能发送了过多通知</translation>
 <translation id="834313815369870491">一律不翻译网站</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />，已选择的多个固定无痕式标签页之一，正在录制内容</translation>
 <translation id="8348430946834215779">尽可能使用 HTTPS，并在加载不支持 HTTPS 的网站前收到警告</translation>
@@ -2029,6 +2018,7 @@
 <translation id="8863714995118816041">已重新为 <ph name="SITE_NAME" /> 授予权限</translation>
 <translation id="8864055848767439877">正在与 <ph name="APP_NAME" /> 共享“<ph name="TAB_NAME" />”</translation>
 <translation id="8865415417596392024">您账号中的 Chrome 数据</translation>
+<translation id="886968456388055613">按浏览者过滤</translation>
 <translation id="8872506776304248286">在应用中打开</translation>
 <translation id="8880275451109933094">双页视图</translation>
 <translation id="8890668505403261809">搜索无痕式标签页</translation>

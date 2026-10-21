@@ -118,6 +118,7 @@
 <translation id="2190166659037789668">Error de comprovació d'actualització: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Suprimeix el compte de Chromium</translation>
 <translation id="2201788217099588893">Utilitza l'aplicació Chromium per portar amb tu les millors eines de compres mentre et desplaces</translation>
+<translation id="2209877494277346829">Aïlla Chromium d'altres aplicacions</translation>
 <translation id="2210502920229141283">Protegeix-te més siguis on siguis amb la funció Navegació segura millorada a Chromium per a iOS</translation>
 <translation id="2210682093923538346">Lloc web perillós. Chromium ha suprimit les notificacions.</translation>
 <translation id="2236949375853147973">La meva activitat</translation>
@@ -190,6 +191,7 @@
 <translation id="2977470724722393594">Chromium està actualitzat</translation>
 <translation id="2977506796191543575">Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chromium també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
 <translation id="2981563588585023386">Per protegir-te més en línia amb les eleccions del teu pare o mare, inicia la sessió a Chromium</translation>
+<translation id="2992577225802060159">Protegeix la memòria de Chromium d'altres aplicacions de l'ordinador.</translation>
 <translation id="3003694935412297923">Totes les tasques</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium ha de verificar la teva identitat perquè algunes dades es puguin desar al teu Compte de Google i utilitzar-se en tots els teus dispositius. Si tanques la sessió ara, aquestes dades (1 element) se suprimiran.}other{Chromium ha de verificar la teva identitat perquè algunes dades es puguin desar al teu Compte de Google i utilitzar-se en tots els teus dispositius. Si tanques la sessió ara, aquestes dades ({count} elements) se suprimiran.}}</translation>
 <translation id="3013473503895162900">Obre <ph name="URL" /> en una pestanya nova a Chromium.</translation>
@@ -466,7 +468,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5949225980829865667">Per obtenir aquesta adreça d'interès i més en tots els dispositius, inicia la sessió a Chromium</translation>
 <translation id="5953657885167112863">Personalitza Chromium al teu gust</translation>
 <translation id="5960071705175224773">Una aplicació desconeguda ha canviat la configuració</translation>
-<translation id="5977420883993828287">S'ha fixat. Torna a utilitzar les tasques contextuals des de la barra d'eines.</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{La teva organització tanca Chromium automàticament quan no s'utilitza durant 1 minut.}other{La teva organització tanca Chromium automàticament quan no s'utilitza durant # minuts.}}</translation>
 <translation id="5987687638152509985">Actualitza Chromium per iniciar la sincronització</translation>
 <translation id="5990360079535151574">Des del botó Tasques contextuals de la barra d'eines, pots tornar a obrir les tasques contextuals per fer preguntes mentre navegues</translation>

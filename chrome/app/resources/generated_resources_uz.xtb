@@ -437,7 +437,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="130744661532298792">Google hisobingizdagi parollardan istalgan vaqt foydalanish uchun shaxsingizni tasdiqlang</translation>
 <translation id="1308105352527684175">Ayrim kontentga ruxsat yopilgan boʻlishi mumkin</translation>
 <translation id="1311092170520822848">Bu sayt qurilmaga ulangan smart kart-riderlarga ruxsat olgan va ehtimolan ularning smart kartalarini boshqarishi mumkin</translation>
-<translation id="131112175593356748">Kamroq</translation>
 <translation id="131112695174432497">Reklamani moslashtirishga aloqador axborot oʻchirildi</translation>
 <translation id="131188242279372879">Chromeda yuklanmalardan yuqori darajali himoyalanish uchun kengaytirilgan himoya bilan tanishing</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Brauzerni sekinlashtiruvchi varaqni tuzating}other{Brauzerni sekinlashtiruvchi varaqlarni tuzating}}</translation>
@@ -1484,6 +1483,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2140788884185208305">Batareya holati</translation>
 <translation id="2142328300403846845">Havolani quyidagicha ochish</translation>
 <translation id="2142582065325732898">Oxirgi Chrome varaqlarini ochish uchun <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> funksiyasini yoqing. <ph name="LINK2_BEGIN" />Batafsil<ph name="LINK2_END" /></translation>
+<translation id="2142826581348795579">Varaqlar guruhi fokusdan yechildi</translation>
 <translation id="2143089736086572103">Ayrim kontaktlarga koʻrinadi</translation>
 <translation id="2143765403545170146">Asboblar paneli har doim to‘liq ekran rejimida ko‘rsatilsin</translation>
 <translation id="2143778271340628265">Proksini qo‘lda sozlash</translation>
@@ -1595,6 +1595,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2220572644011485463">PIN kod yoki parol</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Nomsiz media manba</translation>
+<translation id="2223747115628460234">Ochiq varaqlarga qaytish</translation>
 <translation id="2224337661447660594">Internet yo‘q</translation>
 <translation id="2224444042887712269">Bu sozlama <ph name="OWNER_EMAIL" /> tomonidan o‘rnatilingan.</translation>
 <translation id="2224551243087462610">Jild nomini o‘zgartirish</translation>
@@ -1723,6 +1724,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2318143611928805047">Qog‘oz hajmi</translation>
 <translation id="2319459402137712349">Klaviaturani ochish uchun matn maydonchasini tanlang. Shuningdek, ekranning quyi qismidagi klaviatura belgisini tanlash mumkin.</translation>
 <translation id="2319993584768066746">Kirish ekranidagi suratlar</translation>
+<translation id="2322015964223112232">Ochiq varaqlarga qaytish</translation>
 <translation id="2322193970951063277">Sarlavha va taglavhalar</translation>
 <translation id="2322622365472107569">Tugash vaqti: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Saqlangan Wi-Fi tarmoqlar</translation>
@@ -2482,6 +2484,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2878889940310164513">Mobil tarmoq kiritish...</translation>
 <translation id="288042212351694283">Universal 2nd Factor qurilmalariga ruxsat</translation>
 <translation id="2881076733170862447">Kengaytma bosilganda</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{Varaq fokusdan yechildi}other{Varaqlar fokusdan yechildi}}</translation>
 <translation id="2882301808122022326">Omaha javobi</translation>
 <translation id="2884070497102362193">Batareya, CPU, xotira, ulanish va boshqalarni sinang</translation>
 <translation id="2885129935310217435">Bu ayni nomdagi tugma. Boshqa birini tanlang.</translation>
@@ -2793,6 +2796,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3109206895301430738">Saqlangan varaqlar guruhi</translation>
 <translation id="3109724472072898302">Yig‘ilgan</translation>
 <translation id="3112292765614504292">Ilova hajmi: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Yig‘ish</translation>
 <translation id="3112532142993641404">Boshqa qurilmalardagi varaqlarni olish uchun hisobga kiring va tarixni sinxronlang. Shuningdek, bukmarklar va boshqa maʼlumotlardan barcha qurilmalarda foydalana olasiz. Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="311347022006935575">Bu varaqni kiritdi</translation>
 <translation id="311394601889664316">Saytlarga qurilmadagi fayl yoki jildlarni tahrirlashni taqiqlash</translation>
@@ -4376,6 +4380,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4296632172536745000">Bu saytdagi asl parolingizning ommaviy oshkor qilingani aniqlandi. <ph name="DATE" /> sanasida <ph name="BRAND" /> orqali parolingizni avtomatik almashtirishni soʻragansiz.</translation>
 <translation id="4297219207642690536">Qayta ishga tushirish va asliga qaytarish</translation>
 <translation id="4297813521149011456">Ekran holati</translation>
+<translation id="42981349822642051">Kengaytirish</translation>
 <translation id="4298660926525614540">Tashqi xotira nomlari</translation>
 <translation id="4299022904780065004">Yangi &amp;inkognito oynasi</translation>
 <translation id="4300272766492248925">Ilovani ochish</translation>
@@ -5129,6 +5134,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4877276003880815204">Elementlarni tekshirish</translation>
 <translation id="4878634973244289103">Fikr-mulohaza yuborilmadi. Keyinroq qaytadan urining.</translation>
 <translation id="4878718769565915065">Bu elektron kalitga barmoq izi kiritilmadi</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}other{+#}}</translation>
 <translation id="4879491255372875719">Avtomatik (birlamchi)</translation>
 <translation id="4880827082731008257">Qidiruv tarixi</translation>
 <translation id="4881685975363383806">Boshqa eslatilmasin</translation>
@@ -5578,6 +5584,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5214639857958972833">“<ph name="BOOKMARK_TITLE" />” bukmarki yaratildi.</translation>
 <translation id="5215450412607891876">Kengaytirilgan xavfsizlik yangilanishini yoqish</translation>
 <translation id="5216674789212441076">Jonli izohlar avtomatik tarjima qilinadi. Izohlar tarjima qilinishi uchun Googlega yuboriladi.</translation>
+<translation id="5217925057416367138">Hozirda ijro qilinmoqda</translation>
 <translation id="5220011581825921581">qidiruv + tepaga strelkasi</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> translatsiya qilinmadi</translation>
 <translation id="5222403284441421673">Xavfli yuklanma bloklandi</translation>
@@ -5612,6 +5619,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5247051749037287028">Ko‘rinadigan nom (ixtiyoriy)</translation>
 <translation id="5247243947166567755">Tanlash: <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">Chrome ichida Gemini yordamchisiga istalgan savolni bering</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{Bu yopilganda yana 1 ta axborot paneli chiqadi}other{Bu yopilganda yana # ta axborot paneli chiqadi}}</translation>
 <translation id="5248934139541843042">Tashkilotchini koʻrish</translation>
 <translation id="5249624017678798539">Yuklab olish tugallanishidan oldin brauzer qotib qoldi.</translation>
 <translation id="5249818097095743806">Elektron kalitdan foydalanish</translation>
@@ -5917,6 +5925,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5493792505296048976">ekran yoniq</translation>
 <translation id="5494016731375030300">Oxirgi yopilgan varaqlar</translation>
 <translation id="5494362494988149300">&amp;Yakunlanishida ochish</translation>
+<translation id="5494439739088303974">Sahifadagi istalgan matn yoki rasm haqida ma’lumot olish uchun Google Lens ishlating</translation>
 <translation id="5494879038325093596">Google hisobingiz orqali barcha qurilmalarda olish uchun shaxsingizni tasdiqlang</translation>
 <translation id="5494920125229734069">Hammasini tanlash</translation>
 <translation id="5495466433285976480">Qayta o‘chirib yoqishdan so‘ng barcha mahalliy hisoblar, fayllar, ma’lumotlar va boshqa sozlamalar o‘chirib yuboriladi. Barcha foydalanuvchilar hisobga qaytadan kirishlari kerak bo‘ladi.</translation>
@@ -8044,6 +8053,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7148426638542880639">Saytlar kutilganidek ishlamasligi mumkin. Ochilgan saytlar haqida qurilmangizda maʼlumot qoldirishni xohlamasangiz, ushbu parametrni tanlang.</translation>
 <translation id="7149893636342594995">Oxirgi 24 soat</translation>
 <translation id="7152478047064750137">Bu kengaytma hech qanday maxsus ruxsat talab qilmaydi</translation>
+<translation id="7152923486458597248">Guruhga fokuslash</translation>
 <translation id="7153101072880472645">Yuqori kontrast sozlamasi</translation>
 <translation id="715396040729904728">launcher + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="7154130902455071009">Boshlash sahifani quyidagisiga almashtirish: <ph name="START_PAGE" /></translation>

@@ -120,6 +120,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2190166659037789668">Opdateringkontroleringfout: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Verwyder rekening uit Chromium</translation>
 <translation id="2201788217099588893">Gebruik die Chromium-app om die beste inkopienutsgoed saam te neem terwyl jy aan die beweeg is</translation>
+<translation id="2209877494277346829">Isoleer Chromium van ander apps</translation>
 <translation id="2210502920229141283">Bly veiliger terwyl jy aan die beweeg is met Verbeterde Veiligblaai op Chromium vir iOS</translation>
 <translation id="2210682093923538346">Gevaarlike webwerf. Chromium het kennisgewings verwyder.</translation>
 <translation id="2236949375853147973">My aktiwiteit</translation>
@@ -192,6 +193,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2977470724722393594">Chromium is op datum</translation>
 <translation id="2977506796191543575">As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chromium dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur</translation>
 <translation id="2981563588585023386">Meld aan by Chromium om met jou ouers se keuses veiliger aanlyn te bly</translation>
+<translation id="2992577225802060159">Beskerm Chromium se geheue teen ander apps op jou rekenaar.</translation>
 <translation id="3003694935412297923">Alle take</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium moet verifieer dat dit jy is voordat sommige data in jou Google-rekening gestoor kan word en op al jou toestelle gebruik kan word. As jy nou afmeld, sal hierdie data (1 item) uitgevee word.}other{Chromium moet verifieer dat dit jy is voordat sommige data in jou Google-rekening gestoor kan word en op al jou toestelle gebruik kan word. As jy nou afmeld, sal hierdie data ({count} items) uitgevee word.}}</translation>
 <translation id="3013473503895162900">Maak <ph name="URL" /> in 'n nuwe oortjie in Chromium oop.</translation>
@@ -468,7 +470,6 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="5949225980829865667">Meld aan by Chromium om hierdie boekmerk en meer op al jou toestelle te kry</translation>
 <translation id="5953657885167112863">Maak Chromium joune</translation>
 <translation id="5960071705175224773">Jou instellings is deur ’n onbekende app verander</translation>
-<translation id="5977420883993828287">Vasgespeld! Gebruik weer Kontekstuele Take vanaf die nutsbalk</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Jou organisasie maak Chromium outomaties toe nadat dit 1 minuut lank nie gebruik is nie.}other{Jou organisasie maak Chromium outomaties toe nadat dit # minute lank nie gebruik is nie.}}</translation>
 <translation id="5987687638152509985">Dateer Chromium op om sinkronisering te begin</translation>
 <translation id="5990360079535151574">Jy kan vanaf die “Kontekstuele Take”-knoppie op die nutsbalk Kontekstuele Take heropen om vrae te vra terwyl jy blaai</translation>

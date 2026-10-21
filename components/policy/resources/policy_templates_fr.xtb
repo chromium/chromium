@@ -6502,6 +6502,17 @@ Si cette règle n'est pas configurée, "Aide-moi à écrire" sera activé sur le
 <translation id="5081204761483900654">Sessions Invité gérées restreintes</translation>
 <translation id="5082296146261894974">Permet aux utilisateurs de cliquer sur une notification Phone Hub pour lancer l'application Eche.</translation>
 <translation id="5082572440690475059">Autoriser l'accès en lecture via l'API File System pour ces sites</translation>
+<translation id="5084849119584030624">Configure les paramètres de connexion pour <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> dans <ph name="PRODUCT_NAME" />.
+
+Cette règle n'est plus prise en charge et est ignorée. Utilisez plutôt la règle <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />.
+
+La règle configure l'URL de l'application Web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> via <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />, qui doit être une URL valide utilisant le schéma https, redirigeant vers un domaine <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> et n'incluant pas de nom d'utilisateur ni de mot de passe. Si elle ne respecte pas ces exigences, la règle est ignorée et <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> n'est pas configuré.
+
+Si cette règle est définie, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sera configuré pour les utilisateurs connectés avec un compte géré ou un navigateur géré.
+
+Si cette règle n'est pas définie, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ne sera pas configuré.
+
+Notez que cette règle ne gère pas l'intégration globale de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, laquelle peut être contrôlée à l'aide de la règle <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="5085647276663819155">Désactiver l'aperçu avant impression</translation>
 <translation id="5087922428454325090">Les utilisateurs ne peuvent pas installer d'applications Web via le navigateur.</translation>
 <translation id="5087932158260897375">Si cette règle est définie sur "False", les rapports sur les données de diagnostic de fiabilité du domaine sont désactivés et aucune donnée n'est envoyée à Google.
@@ -8329,25 +8340,6 @@ Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
 <translation id="6244061205361004687">Autoriser l'utilisateur à déconnecter ou modifier manuellement un VPN</translation>
 <translation id="6244210204546589761">URL à ouvrir au démarrage</translation>
 <translation id="6244263962918757383">Paramètres pour ChromeSuggestions</translation>
-<translation id="6245828368576563662">Cette règle permet de définir une liste de règles pour l'injection d'en-têtes HTTP personnalisés dans les requêtes Web correspondant à des formats d'URL spécifiques. Les en-têtes définis par cette règle prévalent sur ceux qui étaient initialement présents dans la requête, ainsi que sur les modifications tentées par les utilisateurs ou les extensions.
-
-Un cas d'utilisation courant de cette règle consiste à appliquer des contrôles d'accès aux locataires en injectant des en-têtes personnalisés (par exemple, <ph name="EXAMPLE_HEADER_NAME" />).
-
-Cette règle accepte une liste de règles. Chaque règle contient :
-
-* <ph name="PATTERNS_KEY" /> : une liste de formats d'URL à mettre en correspondance. Découvrez les formats d'URL à respecter (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-* <ph name="HEADERS_KEY" /> : liste d'objets représentant les en-têtes à injecter, chacun contenant :
-
-  * <ph name="HEADER_NAME_KEY" /> : nom de l'en-tête à injecter.
-
-  * <ph name="HEADER_VALUE_KEY" /> : valeur de l'en-tête à injecter.
-
-Si une requête est concernée par plusieurs règles, les en-têtes de toutes les règles correspondantes seront appliqués. Si plusieurs en-têtes portent le même nom, celui dont le format d'URL est le plus spécifique sera appliqué. Si aucun format n'est plus spécifique qu'un autre, celui qui apparaît en dernier dans la liste sera appliqué.
-
-Les noms d'en-tête doivent être conformes à la norme RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616). Les valeurs d'en-tête ne doivent pas contenir les symboles NUL, CR ni LF. La taille des en-têtes individuels ne doit pas dépasser 8 ko. Les en-têtes et les formats d'URL non valides seront ignorés.
-
-Cette règle est limitée à un total de 500 formats d'URL pour l'ensemble des règles. Chaque règle peut contenir au maximum 20 en-têtes. Les formats et les en-têtes au-delà de ces seuils seront ignorés.</translation>
 <translation id="624595269193747921">Limiter ou non la recherche d'une imprimante correspondant aux critères spécifiés à un groupe d'imprimantes spécifique.</translation>
 <translation id="6246290059248303618">Afficher les commandes multimédias pour les sessions <ph name="PRODUCT_NAME" /> lancées par d'autres appareils sur le réseau local</translation>
 <translation id="6247316685259031374">Cette règle permet de contrôler l'exécution en bac à sable du processus audio.
@@ -9863,23 +9855,6 @@ Cette règle ne concerne pas les gestionnaires de mots de passe tiers qui utilis
 
       Remarque : la fonctionnalité de numérisation est actuellement désactivée par défaut via un flag de fonctionnalité. Si l'utilisateur active la fonctionnalité avec ce flag, il reste possible de la désactiver à l'aide de cette règle.</translation>
 <translation id="7115684775550072082">Ne conserver les espaces blancs que pour les types MIME texte et XML</translation>
-<translation id="7116098886490965998">Désactivez l'authentification unique utilisant <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> pour les fournisseurs d'identité listés.
-
-Si vous ajoutez la valeur <ph name="POLICY_VALUE_ALL" />, tous les fournisseurs d'identité pris en charge pour l'authentification unique sont désactivés.
-
-Si vous ajoutez la valeur <ph name="POLICY_VALUE_MICROSOFT" />, la prise en charge de l'authentification unique pour le fournisseur d'identité cloud Microsoft® dans Chrome sera désactivée.
-
-Si vous ne configurez pas cette règle, tous les fournisseurs d'identité pris en charge par <ph name="PRODUCT_NAME" /> seront activés.
-
-Pour les fournisseurs d'identité activés dans <ph name="PRODUCT_NAME" /> et configurés sur l'appareil par l'administrateur, les utilisateurs qui se connectent une fois via ce fournisseur d'identité, sur n'importe quelle appli compatible avec <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />, peuvent être connectés automatiquement aux propriétés Web utilisant ce fournisseur d'identité. Les informations concernant l'authentification de l'utilisateur sont transmises au fournisseur d'identité cloud de l'utilisateur pour chaque événement d'authentification.
-
-Remarques :
-
-<ph name="PRODUCT_NAME" /> ne prend pas en charge l'authentification unique utilisant <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> en mode navigation privée ou Invité.
-
-<ph name="PRODUCT_NAME" /> ne prend en charge l'authentification unique utilisant <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> que pour les fournisseurs d'identité suivants : Microsoft, Okta.
-
-Cette fonctionnalité est disponible à partir de <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="7119538491527883595">Stockage des données utilisateur locales</translation>
 <translation id="7121046543122812054">Cette règle étant obsolète, vous pouvez utiliser <ph name="BROWSER_SIGNIN_POLICY_NAME" /> à la place.
 
@@ -12237,6 +12212,17 @@ Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8621146428060651659">Autoriser la randomisation du pool de sockets pour les proxys</translation>
 <translation id="862621549134406761">Activer la vérification de l'utilisation des clés RSA</translation>
 <translation id="8626826495474944836">Exiger l'isolation de chaque site</translation>
+<translation id="8628954914373039931">Ce paramètre permet aux utilisateurs de changer de compte Google depuis la zone de contenu de leur fenêtre de navigateur et dans les applications Android une fois connectés à leur appareil <ph name="PRODUCT_OS_NAME" />.
+
+      Si cette règle est définie sur "False", il ne sera pas possible de se connecter à un autre compte Google depuis une zone de contenu en dehors du mode navigation privée, ni depuis les applications Android.
+
+      Si cette règle n'est pas configurée ou si elle est définie sur "True", le comportement par défaut est appliqué : la connexion à un autre compte Google depuis la zone de contenu du navigateur et les applications Android est autorisée, sauf pour les comptes enfant, pour lesquels elle est bloquée pour la zone de contenu en mode navigation privée.
+
+      Sur Android, ce paramètre détermine si les utilisateurs peuvent ajouter d'autres comptes Google depuis la zone de contenu des sites Web Google lorsqu'ils sont connectés à <ph name="PRODUCT_NAME" />. Si cette règle est définie sur "False", les sites Web Google ne proposeront pas l'option permettant d'ajouter un autre compte Google (par exemple, le bouton "Ajouter un compte" dans le menu du compte). Si cette règle n'est pas configurée ou si elle est définie sur "True", l'ajout d'un autre compte Google depuis des sites Web Google sera autorisé. Cette règle n'empêche pas d'ajouter des comptes Google à l'appareil Android lui-même.
+
+      Si la connexion à un autre compte ne doit pas être autorisée en mode navigation privée, envisagez de bloquer ce mode avec la règle IncognitoModeAvailability.
+
+      Notez que les utilisateurs pourront accéder aux services Google sans s'authentifier en bloquant leurs cookies.</translation>
 <translation id="8630797597241896082">Autoriser l'arrière-plan de visioconférence par IA générative et améliorer les modèles d'IA</translation>
 <translation id="8631314130868563649">Désactiver l'alimentation alternée en heures pleines</translation>
 <translation id="8631434304112909927">jusqu'à la version <ph name="UNTIL_VERSION" /></translation>

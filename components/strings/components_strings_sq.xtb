@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sq">
-<translation id="1003222766972176318">Rikujtesë: një ofertë e ruajtur e disponueshme</translation>
 <translation id="1008557486741366299">Jo tani</translation>
 <translation id="100957008357583611">Të përdoret vendndodhja jote?</translation>
 <translation id="1010200102790553230">Ngarkoje faqen më vonë</translation>
@@ -240,6 +239,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1393071644879491291">Sulmuesit në sajtin që u përpoqe të vizitoje mund të të mashtrojnë që të instalosh një softuer ose të zbulosh gjëra të tilla si fjalëkalimet, numrat e telefonit ose të kartave të kreditit. Chrome rekomandon shumë të kthehesh aty ku je i sigurt. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Shto kartën e identitetit në mënyrë të sigurt te "Portofoli i Google"</translation>
 <translation id="1398743098754840707">Sajtet që shton këtu nuk do të referohen për përgjigje, edhe nëse skeda është e hapur. Nëse një sajt që shton po përdoret aktualisht në një bashkëbisedim, mund të duhen deri në 30 minuta që bashkëbisedimi të mos e referojë më.</translation>
+<translation id="1403359480263156644">Emri i mbajtësit të kartës u përditësua</translation>
 <translation id="1405567553485452995">Jeshile e çelur</translation>
 <translation id="1406370515365284486">Mënyrat e tua të pagesës do të ruhen përsëri</translation>
 <translation id="1406500794671479665">Po verifikon...</translation>
@@ -908,6 +908,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2498091847651709837">Skano një kartë të re</translation>
 <translation id="2501270939904835585">Etiketa (saten)</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
+<translation id="250307989715832083">Shto nënshkrimin</translation>
 <translation id="250346157641628208">Letër (inkjet)</translation>
 <translation id="2505063700931618106">Informacionet e kartës u ruajtën</translation>
 <translation id="2505268675989099013">Mbroje llogarinë</translation>
@@ -1127,6 +1128,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2911973620368911614">ID-ja e përdoruesit të llogarisë së punës</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> përdor zakonisht enkriptimin për mbrojtjen e informacionit tënd. Kur Chrome u përpoq të lidhej me <ph name="SITE" /> këtë herë, uebsajti dërgoi prapa kredenciale të pazakonta dhe të pasakta. Kjo mund të ndodhë kur një sulmues po përpiqet të pretendojë se është <ph name="SITE" /> ose lidhja është ndërprerë nga një ekran i identifikimit të Wi-Fi. Informacioni yt është ende i sigurt sepse Chrome e ndaloi lidhjen para se të shkëmbehej ndonjë e dhënë.</translation>
 <translation id="2915068235268646559">Ndërprerje aksidentale nga <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Të gjitha pajisjet</translation>
 <translation id="2916038427272391327">Mbyll programet e tjera</translation>
 <translation id="2917630513638801879">Gurkali 1</translation>
 <translation id="2922350208395188000">Certifikata e serverit nuk mund të kontrollohet.</translation>
@@ -1462,7 +1464,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3479552764303398839">Jo tani</translation>
 <translation id="3481315707647070701">Vizualizo dhe modifiko</translation>
 <translation id="3484560055331845446">Mund të humbësh qasjen në "Llogarinë tënde të Google". Chrome rekomandon që ta ndryshosh fjalëkalimin tani. Do të të kërkohet që të identifikohesh.</translation>
-<translation id="3484861421501147767">Rikujtesë: Një kod promocional i ruajtur është i disponueshëm</translation>
 <translation id="3485901585646640838">Për të përdorur fjalëkalimet dhe të tjera të ruajtura në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="3487845404393360112">Tabakaja 4</translation>
 <translation id="3493881266323043047">Vlefshmëria</translation>
@@ -1822,6 +1823,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4067774859633143413">Për të dalë nga ekrani i plotë dhe për të shikuar shkarkimin, shtyp dhe mbaj shtypur |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Shto adresë të vlefshme</translation>
 <translation id="4072486802667267160">Ndodhi një gabim gjatë përpunimit të porosisë. Provo përsëri.</translation>
+<translation id="4073293290376142777">Do të identifikohesh?</translation>
 <translation id="4073376909608563327">Shkyçja e pajisjes nuk mund të përdorej</translation>
 <translation id="4073797364926776829">Shiko kartën</translation>
 <translation id="4075732493274867456">Klienti dhe serveri nuk mbështesin një version të zakonshëm të protokollit SSL ose një paketë të shifrimit.</translation>
@@ -1854,6 +1856,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4107047499377819067">Instalimi i shërbimeve të VPN-së në sfond ka filluar. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="4110642094637545339">Google Pay, logoja e AfterPay</translation>
 <translation id="4110652170750985508">Rishiko pagesën tënde</translation>
+<translation id="411071007970303441">Të gjithë aktorët</translation>
 <translation id="4112140312785995938">Kërko prapa</translation>
 <translation id="4114007503059268298">Dëshiron që ta ruash këtë kartë te "Llogaria jote e Google" dhe në këtë pajisje?</translation>
 <translation id="4114146879518089587">Vazhdo te sajti</translation>
@@ -1918,6 +1921,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4218327733815631046">Mbaj vendndodhjen e përafërt</translation>
 <translation id="4219596572397833317">Shiko historikun e çmimit dhe më shumë për të të ndihmuar të kryesh blerje më të zgjuara.</translation>
 <translation id="4220128509585149162">Ndërprerjet aksidentale</translation>
+<translation id="4220745762102459826">dhe më shumë</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Hapi 1: Identifikohu në portal&lt;/h4&gt;
     &lt;p&gt;Rrjetet Wi-Fi në vende të tilla si kafenetë apo aeroportet kërkojnë që të identifikohesh. Për të parë faqen e identifikimit, vizito një faqe që përdor &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2879,6 +2883,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5794065675298686371">Aktivizo njoftimet për monitorimin e çmimeve</translation>
 <translation id="5794093550048860249">Numri i gjurmimit</translation>
 <translation id="5796050750059455142">Aktivizo "<ph name="BEGIN_LINK" />Veçoritë inteligjente në produktet e tjera të Google<ph name="LINK_END" />"</translation>
+<translation id="5797916798049571144">Ai është ruajtur me informacionet e kartës sate, kështu që do të plotësohet automatikisht në përfundim të blerjes</translation>
 <translation id="5797984091151707075">Bllokuar nga politika e administratorit</translation>
 <translation id="5804241973901381774">Lejet</translation>
 <translation id="5806871454498484178">Lëvizja dhe zmadhimi janë bllokuar</translation>
@@ -3439,6 +3444,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6753460329812070808">Sugjerimi u hoq nga Chrome</translation>
 <translation id="6757797048963528358">Pajisja jote kaloi në gjumë.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> dëshiron të përdorë sensorët e lëvizjes dhe të dritës</translation>
+<translation id="6766488013065406604">Shko te "Menaxheri i fjalëkalimeve i Google"</translation>
 <translation id="6770747695101757579">Letër (pambuk)</translation>
 <translation id="6772959465807028761">Për të përdorur YouTube, vazhdo me "Llogarinë tënde të Google"</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3649,7 +3655,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="7120588595737538743">shkarkimet dhe pamjet e ekranit</translation>
 <translation id="7124354851782353862">Fut kodin CVC</translation>
 <translation id="7129409597930077180">Nuk mund të dërgohet në këtë adresë. Zgjidh një adresë tjetër.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Ngarkimi u bllokua</translation>
 <translation id="7132939140423847331">Administratori yt e ka ndaluar kopjimin e këtyre të dhënave.</translation>
 <translation id="7134653428559514680">Ndarja nga ky sajt nuk rekomandohet</translation>
@@ -3966,6 +3971,7 @@ Detaje shtesë:
 <translation id="7637571805876720304">Të hiqet karta e kreditit nga Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Asnjë}=1{1 fjalëkalim në llogarinë tënde (për <ph name="DOMAIN_LIST" />)}other{# fjalëkalime në llogarinë tënde (për <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Portat seriale</translation>
+<translation id="7644100755247241229">Dërgo Pix te miqtë dhe bizneset duke përdorur "Portofolin e Google"</translation>
 <translation id="7646681339175747202">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve i Google" rekomandon që ta ndryshosh fjalëkalimin tënd tani.</translation>
 <translation id="7647206758853451655">Cilësia e printimit</translation>
 <translation id="7648133459447652947">Për të shfaqur kursorin, ndërro aplikacionet, ringarko faqen ose kthehu prapa</translation>
@@ -4069,6 +4075,7 @@ Detaje shtesë:
 <translation id="7791543448312431591">Shtoje</translation>
 <translation id="7798389633136518089">U shpërfill sepse politika nuk është caktuar nga një burim në renë kompjuterike.</translation>
 <translation id="7800304661137206267">Lidhja është e enkriptuar me <ph name="CIPHER" />, me <ph name="MAC" /> për vërtetimin e mesazhit dhe <ph name="KX" /> si mekanizmi i shkëmbimit të çelësit.</translation>
+<translation id="780228007282527248">Shto një skedë ose imazh për të përmirësuar kërkimin tënd</translation>
 <translation id="7802523362929240268">Sajti është i ligjshëm</translation>
 <translation id="7802989406998618639">Fut kodin e sigurisë me <ph name="NUMBER_OF_DIGITS" /> shifra në <ph name="SIDE_OF_CARD" /> që banka të mund të verifikojë që je ti</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
-<translation id="1003222766972176318">రిమైండర్: సేవ్ చేసిన ఆఫర్ అందుబాటులో ఉంది</translation>
 <translation id="1008557486741366299">ఇప్పుడు కాదు</translation>
 <translation id="100957008357583611">మీ లొకేషన్‌ను ఉపయోగించాలా?</translation>
 <translation id="1010200102790553230">పేజీని తర్వాత లోడ్ చేయి</translation>
@@ -1458,7 +1457,6 @@
 <translation id="3479552764303398839">ఇప్పుడు కాదు</translation>
 <translation id="3481315707647070701">విజువలైజ్ చేయండి, ఎడిట్ చేయండి</translation>
 <translation id="3484560055331845446">మీరు మీ Google ఖాతాకు యాక్సెస్‌ని కోల్పోవచ్చు. మీరు ఇప్పుడే మీ పాస్‌వర్డ్‌ని మార్చాల్సిందిగా Chrome సిఫార్సు చేస్తోంది. మీరు సైన్ ఇన్ చేయాల్సి ఉంటుంది.</translation>
-<translation id="3484861421501147767">రిమైండర్: సేవ్ చేసిన ప్రోమో కోడ్ అందుబాటులో ఉంది</translation>
 <translation id="3485901585646640838">మీ Google ఖాతాలో సేవ్ చేయబడిన పాస్‌వర్డ్‌లను, మరిన్నింటిని ఉపయోగించడానికి, ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="3487845404393360112">ట్రే 4</translation>
 <translation id="3493881266323043047">చెల్లుబాటు</translation>
@@ -2349,7 +2347,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, వెతకడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="4930153903256238152">ఎక్కువ సామర్థ్యం</translation>
-<translation id="4930714375720679147">ఆన్ చేయి</translation>
+<translation id="4930714375720679147">ఆన్ చేయండి</translation>
 <translation id="4931347573573430180">జారీ చేసిన తేదీ</translation>
 <translation id="4932035752129140860">మీరు పేస్ట్ చేసిన లేదా జోడించిన టెక్స్ట్ Google Cloudకు లేదా థర్డ్-పార్టీలకు విశ్లేషణ కోసం పంపబడుతుంది. ఉదాహరణకు, అది సున్నితమైన వ్యక్తిగత సమాచారం కోసం స్కాన్ చేయబడవచ్చు, కంపెనీ పాలసీల ఆధారంగా స్టోర్ చేయబడవచ్చు, మీ అడ్మినిస్ట్రేటర్‌కు కనిపించవచ్చు.</translation>
 <translation id="4932733599132424254">తేదీ</translation>
@@ -3438,6 +3436,7 @@
 <translation id="6753460329812070808">Chrome నుండి సూచనను తీసివేశారు</translation>
 <translation id="6757797048963528358">మీ పరికరం నిద్రావస్థకు వెళ్లింది.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> మీ మోషన్, లైట్ సెన్సార్‌లను ఉపయోగించాలనుకుంటోంది</translation>
+<translation id="6766488013065406604">Google Password Managerకు వెళ్లండి</translation>
 <translation id="6770747695101757579">పేపర్ (కాటన్)</translation>
 <translation id="6772959465807028761">YouTubeను ఉపయోగించడానికి, మీ Google ఖాతాతో కొనసాగించండి</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3648,7 +3647,6 @@
 <translation id="7120588595737538743">డౌన్‌లోడ్‌లు, స్క్రీన్‌షాట్‌లు</translation>
 <translation id="7124354851782353862">మీ CVCని ఎంటర్ చేయండి</translation>
 <translation id="7129409597930077180">ఈ అడ్రస్‌కు రవాణా చేయడం సాధ్యం కాదు. వేరే అడ్రస్‌ను ఎంచుకోండి.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">అప్‌లోడ్ చేయకుండా బ్లాక్ చేయబడింది</translation>
 <translation id="7132939140423847331">మీ అడ్మిన్ ఈ డేటాను కాపీ చేయకుండా నిషేధించారు.</translation>
 <translation id="7134653428559514680">ఈ సైట్ నుండి షేర్ చేయడం సరైన పని కాదు</translation>

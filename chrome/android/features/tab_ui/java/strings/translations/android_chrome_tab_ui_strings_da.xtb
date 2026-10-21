@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Skjul <ph name="TABS_COUNT_ONE" /> fane.}one{Skjul fanegruppe med <ph name="TABS_COUNT_MANY" /> fane.}other{Skjul fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="2569352796411618312">Forslag: <ph name="NUMBER_OF_TABS" /> af dine faner er ikke blevet brugt for nylig. Vil du lukke dem?</translation>
 <translation id="257674075312929031">Gruppe</translation>
+<translation id="2628148780487543078">Luk også fastgjorte faner</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Gendan og åbn fanegruppen med <ph name="TABS_COUNT_ONE" /> fane i farven <ph name="COLOR_NAME" />.}one{Gendan og åbn fanegruppen med <ph name="TABS_COUNT_MANY" /> fane i farven <ph name="COLOR_NAME" />.}other{Gendan og åbn fanegruppen med <ph name="TABS_COUNT_MANY" /> faner i farven <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Bedømmelse: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Besøg website</translation>

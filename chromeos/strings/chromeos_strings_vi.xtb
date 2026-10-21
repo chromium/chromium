@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Để biết kết quả gần đúng, hãy lấy giá trị <ph name="CATEGORY_TEXT" /> chia cho <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Nguồn hình ảnh</translation>
 <translation id="1446954767133808402">lam ngọc</translation>
-<translation id="1449035143498573192">Mở trong Google Tìm kiếm</translation>
 <translation id="1451536289672181509">Thiết bị là bàn phím.</translation>
 <translation id="1452939186874918380">cái ô</translation>
 <translation id="145402479967797468">Bộ điều khiển chế độ phát</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Xem trước <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN tích hợp sẵn</translation>
 <translation id="1669047024429367828">Chế độ hiển thị</translation>
-<translation id="1670478569471758522">Thông tin khác có liên quan đến nội dung bạn chọn</translation>
 <translation id="1672499492233627739">Nguồn cấp dữ liệu video webcam</translation>
 <translation id="1676557873873341166">Đang quay video</translation>
 <translation id="1684279041537802716">Màu nhấn</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Hoàn tất chỉnh sửa</translation>
 <translation id="3532980081107202182">Còn khoảng <ph name="MIN_REMAINING" /> phút nữa</translation>
 <translation id="3533790840489634638">hồ nước</translation>
-<translation id="3547264467365135390">Công thức</translation>
 <translation id="3552832331940389362">hình minh hoạ một chú mèo đang ngồi trên bệ cửa sổ ngắm mưa vào buổi chiều theo phong cách hoạt hình Nhật Bản</translation>
 <translation id="3557205324756024651">Nhận dạng cục bộ (tuỳ chọn)</translation>
 <translation id="3565064564551103223">IP được phép</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Mô tả</translation>
 <translation id="3869314628814282185">vải tuyn</translation>
 <translation id="387301095347517405">Số lần pin của bạn được sạc đầy</translation>
-<translation id="3877066159641251281">Nghe bản dịch</translation>
 <translation id="3880601782712134623">Tự động phát hiện các giọng nói khác nhau và gắn nhãn chung chung cho từng người nói, chẳng hạn như Người nói 1 và Người nói 2</translation>
 <translation id="38811596981744338">Vấn đề pháp lý</translation>
 <translation id="3885327323343477505">Thay đổi trình bảo vệ màn hình</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Rút cáp USB của <ph name="DEVICE_NAME" /> ra rồi cắm lại để tiếp tục quá trình cập nhật</translation>
 <translation id="5099354524039520280">lên</translation>
 <translation id="5107243100836678918">Phím tắt không dùng phím <ph name="META_KEY" /> có thể xung đột với phím tắt của ứng dụng nào đó. Nhấn phím tắt này một lần nữa để tiếp tục sử dụng hoặc nhấn một phím tắt mới dùng phím <ph name="KEY" />. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Tương tự:</translation>
 <translation id="5130848777448318809">ngựa pony</translation>
 <translation id="5137451382116112100">Toàn màn hình</translation>
 <translation id="5139813694804168398">không làm phiền</translation>
 <translation id="5140788690559353412">Khi mất quyền truy cập vào tài khoản trường học, bạn cũng sẽ không còn quyền truy cập vào các tệp trên Google Drive và email được liên kết, chẳng hạn như Gmail, Tài liệu, Trang trình bày, v.v.</translation>
 <translation id="5142961317498132443">Xác thực</translation>
 <translation id="5144311987923128508">Nút Xác nhận hiện đã tắt</translation>
-<translation id="5144887194300568405">Sao chép bản dịch</translation>
 <translation id="5145081769226915336">Tự động bật chế độ tối?</translation>
 <translation id="5145331109270917438">Ngày sửa đổi</translation>
 <translation id="5154917547274118687">Bộ nhớ</translation>

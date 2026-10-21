@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Če želite približni rezultat, delite vrednost kategorije »<ph name="CATEGORY_TEXT" />« s/z: <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Vir slike</translation>
 <translation id="1446954767133808402">safir</translation>
-<translation id="1449035143498573192">Odpri v Iskanju Google</translation>
 <translation id="1451536289672181509">Naprava je tipkovnica.</translation>
 <translation id="1452939186874918380">dežniki</translation>
 <translation id="145402479967797468">Kontrolniki predvajanja</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Predogled datoteke <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Vgrajeno omrežje VPN</translation>
 <translation id="1669047024429367828">Vidnost</translation>
-<translation id="1670478569471758522">Več informacij, povezanih z vašim izborom</translation>
 <translation id="1672499492233627739">Vir videa spletne kamere</translation>
 <translation id="1676557873873341166">Snemanje videoposnetka</translation>
 <translation id="1684279041537802716">Barva poudarka</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Urejanje je končano</translation>
 <translation id="3532980081107202182">Še približno <ph name="MIN_REMAINING" /> min</translation>
 <translation id="3533790840489634638">tolmun</translation>
-<translation id="3547264467365135390">Formula</translation>
 <translation id="3552832331940389362">japonska animacijska ilustracija mačke, ki sedi na okenski polici in opazuje popoldanski dež</translation>
 <translation id="3557205324756024651">Lokalna identiteta (izbirno)</translation>
 <translation id="3565064564551103223">Dovoljeni IP-ji</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Opis</translation>
 <translation id="3869314628814282185">til</translation>
 <translation id="387301095347517405">Število ciklov popolnega polnjenja baterije.</translation>
-<translation id="3877066159641251281">Poslušanje prevoda</translation>
 <translation id="3880601782712134623">Samodejno zaznavanje različnih glasov in dodeljevanje splošnih oznak, na primer Govorec 1 in Govorec 2, vsakemu govorcu.</translation>
 <translation id="38811596981744338">Pravna težava</translation>
 <translation id="3885327323343477505">Spremeni ohranjevalnik zaslona</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Če želite nadaljevati postopek posodobitve, odklopite kabel USB naprave <ph name="DEVICE_NAME" /> in ga znova vstavite</translation>
 <translation id="5099354524039520280">gor</translation>
 <translation id="5107243100836678918">Bližnjica brez tipke <ph name="META_KEY" /> je morda v sporu z bližnjico katere druge aplikacije. Če želite še naprej uporabljati to bližnjico, jo znova pritisnite, ali pritisnite novo bližnjico s tipko <ph name="KEY" />. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Podobno:</translation>
 <translation id="5130848777448318809">poniji</translation>
 <translation id="5137451382116112100">Cel zaslon</translation>
 <translation id="5139813694804168398">Ne moti</translation>
 <translation id="5140788690559353412">Ko izgubite dostop do šolskega računa, ne boste več imeli dostopa do povezanih e-poštnih sporočil in datotek v Googlu Drive, kot so datoteke za Gmail, Dokumente, Predstavitve in drugo.</translation>
 <translation id="5142961317498132443">Preverjanje pristnosti</translation>
 <translation id="5144311987923128508">Gumb za potrditev je zdaj onemogočen</translation>
-<translation id="5144887194300568405">Kopiraj prevod</translation>
 <translation id="5145081769226915336">Želite samodejno vklopiti temni način?</translation>
 <translation id="5145331109270917438">Datum spremembe</translation>
 <translation id="5154917547274118687">Pomnilnik</translation>

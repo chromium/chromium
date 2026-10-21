@@ -116,7 +116,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="2039417478970545937">Ayarlar.</translation>
 <translation id="2040220733769034247">Chrome-u endirmək və Google Hesabınıza daxil olmaq üçün QR kodunu telefonunuzla skan edin.</translation>
 <translation id="2044908892530830113">Mac menyu panelində Chrome ilə axtarış göstərilsin və klaviatura qısayolunu aktivləşdirin</translation>
-<translation id="2050189601866423230">Axtarış edərkən sual vermək üçün Google Axtarış üzrə Sİ rejimini bərkidə bilərsiniz</translation>
 <translation id="2091012649849228750">Google Chrome güncəlləmələrini əldə etmək üçün Windows 10 və ya daha yeni versiya tələb olunur. Bu kompüter Windows 8 istifadə edir.</translation>
 <translation id="2094648590148273905">ChromeOS Flex şərtləri</translation>
 <translation id="2094919256425865063">İstənilən halda Chrome'dan çıxılsın?</translation>
@@ -462,6 +461,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="5386244825306882791">O, həmçinin Chrome'u başlatdığınız zaman və ya Omnibox'dan axtarış etdiyiniz zaman göstərilən səhifəyə nəzarət edir.</translation>
 <translation id="5394833366792865639">Chrome tabı paylaşın</translation>
 <translation id="5402307365844630024">Chrome Beta-da Gemini-ı yandırın/söndürün</translation>
+<translation id="5414664742659847155">Chrome-u digər tətbiqlərdən təcrid edin</translation>
 <translation id="541844421954567481"><ph name="DEVICE_TYPE" /> cihazında Chrome tətbiqi ilə parollarınızı, tablarınızı və daha çoxunu istənilən vaxt, istənilən yerdə əldə edin</translation>
 <translation id="5430073640787465221">Tərcih faylınız zədələnib və ya yanlışdır.  Google Chrome ayarlarınızı bərpa edə bilmir.</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> ilə istifadə etmək üçün Chrome profili seçin</translation>
@@ -675,6 +675,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7306401458628386911">Dərhal nəzər salmağa başlayın: Chrome artıq Windows işə düşdükdə işə salına bilər.</translation>
 <translation id="7308322188646931570">Faylları endirmək üçün Chrome yaddaşa giriş tələb edir</translation>
 <translation id="7352651011704765696">Xəta oldu</translation>
+<translation id="7371412052245999753">Chrome-un yaddaşını kompüterinizdəki digər tətbiqlərdən qoruyur.</translation>
 <translation id="73786666777299047">Chrome Veb Mağazanı Açın</translation>
 <translation id="7386878009611068389">Onlayn təhlükəsizliyinizi valideyninizin seçimləri ilə qorumaq üçün artıq <ph name="USER_EMAIL_ADDRESS" /> kimi daxil olduğunuz Chrome profilinə keçin</translation>
 <translation id="7398801000654795464">Chrome'a <ph name="USER_EMAIL_ADDRESS" /> olaraq daxil olmuşdunuz. Lütfən, yenidən daxil olmaq üçün eyni hesabdan istifadə edin.</translation>
@@ -769,7 +770,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8074398340364918139">Xüsusi Chrome funksiyası və ya artırmasını axtarmaq üçün ünvan panelinə onun qısayolunu, sonra isə seçdiyiniz klaviatura düyməsini daxil edin</translation>
 <translation id="8077579734294125741">Digər Chrome profilləri</translation>
 <translation id="8086881907087796310">Kompüteriniz minimum avadanlıq tələblərinə cavab vermədiyi üçün quraşdırma alınmadı.</translation>
-<translation id="8110438089258398864">Axtarış edərkən sual vermək üçün Google Axtarış üzrə Sİ rejimini yenidən aça bilərsiniz</translation>
 <translation id="8113883687556086139">Chrome datasını hesabınızda (<ph name="ACCOUNT_EMAIL" />) istifadə etmək və yadda saxlamaq üçün kimliyinizi doğrulayın</translation>
 <translation id="8115695070094288807">Chrome sizin üçün hazırlanır...</translation>
 <translation id="8118331347066725040">Linza ilə axtarış üçün rəy göndərin</translation>
@@ -826,8 +826,6 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8555465886620020932">Xidmət xətası: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Dil siyahısını axtarın</translation>
 <translation id="8575047640889685742">Google Hesabındakı bütün Chrome datasını şifrələmək üçün <ph name="BEGIN_LINK" />öz parol ifadənizdən<ph name="END_LINK" /> istifadə edin. Google Pay-dən ödəniş metodu və ünvanlar şifrələnməyəcək. Chrome-dan brauzer tarixçəsi sinxronlaşdırılmayacaq.</translation>
-<translation id="8590782867495422699">Google Axtarış Sİ rejimini yenidən açın</translation>
-<translation id="8598779894319572882">Alətlər panelindəki "Google Axtarış üzrə Sİ rejimi" düyməsindən istifadə edərək axtarış zamanı suallar vermək üçün Google Axtarış üzrə Sİ rejimini yenidən aça bilərsiniz</translation>
 <translation id="8614913330719544658">Google Chrome cavab vermir. Yenidən başladılsın?</translation>
 <translation id="8623450603356630491">Telefonda Chrome-a daxil olun</translation>
 <translation id="8624541899164515475">Ayarlar, yeni tabda açılır.</translation>
@@ -882,7 +880,6 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="9014771989710951291">Bir neçə təşkilat Chrome-u idarə edir</translation>
 <translation id="9018218886431812662">Quraşdırma tamamlandı</translation>
 <translation id="9066987883552592250">Gemini-ı Chrome Canary-də bağlayın</translation>
-<translation id="9074041031320636790">Uğurlu oldu! Artıq Google Axtarış üzrə Sİ rejimi ilə axtarış edərkən asanlıqla suallar verə bilərsiniz</translation>
 <translation id="9090566250983691233">Chrome-un bəzi faylları bloklama səbəbini öyrənin</translation>
 <translation id="9106236359747881194">Axtarmaq üçün mətn seçin</translation>
 <translation id="911206726377975832">Brauzinq datanız da silinsin?</translation>

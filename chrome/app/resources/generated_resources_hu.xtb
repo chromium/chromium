@@ -437,7 +437,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="130744661532298792">Annak érdekében, hogy mindig használhassa a Google-fiókjában lévő jelszavakat, igazolja személyazonosságát.</translation>
 <translation id="1308105352527684175">Előfordulhat, hogy Ön nem férhet hozzá bizonyos tartalmakhoz</translation>
 <translation id="1311092170520822848">Ez a webhely szabályozza az Ön eszközéhez csatlakoztatott intelligenskártya-olvasókat, és adott esetben a számukra hozzáférhető intelligens kártyákat.</translation>
-<translation id="131112175593356748">Néhány megjelenítése</translation>
 <translation id="131112695174432497">A hirdetések személyre szabását befolyásoló adatok törlődnek</translation>
 <translation id="131188242279372879">Fedezze fel a Speciális védelmet, amely a Chrome legmagasabb szintű védelmét nyújtja a letöltésekhez</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Javítsa ki a böngészőt lassító lapot}other{Javítsa ki a böngészőt lassító lapokat}}</translation>
@@ -1602,6 +1601,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2220572644011485463">PIN-kód vagy jelszó</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Névtelen médiaforrás</translation>
+<translation id="2223747115628460234">Vissza a megnyitott lapokhoz</translation>
 <translation id="2224337661447660594">Nincs internet</translation>
 <translation id="2224444042887712269">Ez a beállítás a következő fiókhoz tartozik: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Mappa nevének szerkesztése</translation>
@@ -1730,6 +1730,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2318143611928805047">Papírméret</translation>
 <translation id="2319459402137712349">A billentyűzet megnyitásához válasszon ki egy szövegmezőt. Kiválaszthatja a képernyő alján található Billentyűzet ikont is.</translation>
 <translation id="2319993584768066746">Fotók a bejelentkezési képernyőn</translation>
+<translation id="2322015964223112232">Vissza a megnyitott lapokhoz</translation>
 <translation id="2322193970951063277">Fejlécek és láblécek</translation>
 <translation id="2322622365472107569">Befejezési idő: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Mentett Wi-Fi-hálózatok</translation>
@@ -2801,6 +2802,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3109206895301430738">Elmentett lapcsoportok</translation>
 <translation id="3109724472072898302">Összecsukott</translation>
 <translation id="3112292765614504292">Alkalmazás mérete: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Listanézet</translation>
 <translation id="3112532142993641404">Ha a többi eszközén lévő lapokhoz is szeretne hozzáférni, jelentkezzen be, majd szinkronizálja az előzményeit. Egyebek mellett a könyvjelzőihez is hozzáférhet bármely eszközén. A beállítások között bármikor leállíthatja a szinkronizálást. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>
 <translation id="311347022006935575">Hozzáadta ezt a lapot</translation>
 <translation id="311394601889664316">A webhelyek nem szerkeszthetik az eszközén lévő fájlokat és mappákat</translation>
@@ -4385,6 +4387,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4296632172536745000">A webhelyhez tartozó eredeti jelszava nyilvános adatvédelmi incidensben volt érintett. <ph name="DATE" /> dátummal arra kérte a(z) <ph name="BRAND" /> alkalmazást, hogy automatikusan módosítsa a jelszavát.</translation>
 <translation id="4297219207642690536">Újraindítás és visszaállítás</translation>
 <translation id="4297813521149011456">Kijelző elforgatása</translation>
+<translation id="42981349822642051">Kibontás</translation>
 <translation id="4298660926525614540">Cserélhető tárhely nevei</translation>
 <translation id="4299022904780065004">Új &amp;inkognitó ablak</translation>
 <translation id="4300272766492248925">Alkalmazás megnyitása</translation>
@@ -5139,6 +5142,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4877276003880815204">Elemek vizsgálata</translation>
 <translation id="4878634973244289103">A visszajelzés elküldése nem sikerült. Kérjük, próbálkozzon később.</translation>
 <translation id="4878718769565915065">Nem sikerült hozzáadni ujjlenyomatot ehhez a biztonsági kulcshoz</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}other{+#}}</translation>
 <translation id="4879491255372875719">Automatikus (alapértelmezett)</translation>
 <translation id="4880827082731008257">Keresés az előzmények között</translation>
 <translation id="4881685975363383806">Ne emlékeztessen többször</translation>
@@ -5588,6 +5592,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5214639857958972833">„<ph name="BOOKMARK_TITLE" />” könyvjelző létrehozva.</translation>
 <translation id="5215450412607891876">Kiterjesztett biztonsági frissítések bekapcsolása</translation>
 <translation id="5216674789212441076">Az élő feliratok automatikus fordítása. A feliratokat elküldi a rendszer a Google-nak fordításra.</translation>
+<translation id="5217925057416367138">Lejátszás folyamatban</translation>
 <translation id="5220011581825921581">keresés + felfelé nyíl</translation>
 <translation id="5221516927483787768">Sikertelen átküldés: <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Nem biztonságos letöltés letiltva</translation>
@@ -5622,6 +5627,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5247051749037287028">Megjelenítendő név (nem kötelező)</translation>
 <translation id="5247243947166567755">A következő kiválasztása: <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">Bármit megkérdezhet, közvetlenül a Gemini Chrome-ban segítségével</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{Még 1 információs sáv jelenik meg, ha ezt bezárja}other{# további információs sáv jelenik meg, ha ezt bezárja}}</translation>
 <translation id="5248934139541843042">Rendező megtekintése</translation>
 <translation id="5249624017678798539">A böngésző a letöltés befejeződése előtt összeomlott.</translation>
 <translation id="5249818097095743806">Biztonsági kulcs használata</translation>
@@ -5927,6 +5933,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5493792505296048976">képernyő bekapcsolva</translation>
 <translation id="5494016731375030300">Legutóbb bezárt lapok</translation>
 <translation id="5494362494988149300">Megnyitás, amikor &amp;kész</translation>
+<translation id="5494439739088303974">A Google Lens segítségével kérdezhet az oldalon található bármely szövegről vagy képről</translation>
 <translation id="5494879038325093596">Igazolja személyazonosságát, hogy az összes eszközén hozzáférhessen a jelszavához a Google-fiókjával.</translation>
 <translation id="5494920125229734069">Összes kiválasztása</translation>
 <translation id="5495466433285976480">Ezzel a következő újraindítás után eltávolítja az összes helyi felhasználót, valamint minden fájlt, adatot és egyéb beállítást. Az összes felhasználónak újra be kell jelentkeznie.</translation>

@@ -437,7 +437,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="130744661532298792">For å sikre at du alltid kan bruke passordene i Google-kontoen din, bekreft at det er deg</translation>
 <translation id="1308105352527684175">Du har kanskje ikke tilgang til visse typer innhold</translation>
 <translation id="1311092170520822848">Dette nettstedet kontrollerer smartkortlesere som er koblet til enheten din, og potensielt smartkort som er tilgjengelige for dem</translation>
-<translation id="131112175593356748">Vis noen</translation>
 <translation id="131112695174432497">Data som påvirker personlig tilpasning av annonser, blir slettet</translation>
 <translation id="131188242279372879">Bruk økt beskyttelse for å få det høyeste sikkerhetsnivået for nedlastinger i Chrome</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Løs problemet med fanen som gjør nettleseren treg}other{Løs problemet med fanene som gjør nettleseren treg}}</translation>
@@ -1489,6 +1488,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2140788884185208305">Batterihelse</translation>
 <translation id="2142328300403846845">Åpne linken som</translation>
 <translation id="2142582065325732898">Slå på <ph name="LINK1_BEGIN" />Chrome-synkronisering<ph name="LINK1_END" /> for å se nylige Chrome-faner. <ph name="LINK2_BEGIN" />Finn ut mer<ph name="LINK2_END" /></translation>
+<translation id="2142826581348795579">Fokuseringen på fanegruppen er avsluttet</translation>
 <translation id="2143089736086572103">Synlig for noen kontakter</translation>
 <translation id="2143765403545170146">Vis alltid verktøyraden i fullskjerm</translation>
 <translation id="2143778271340628265">Manuell konfigurasjon av proxy-tjener</translation>
@@ -1600,6 +1600,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2220572644011485463">PIN-kode eller passord</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Mediekilde uten navn</translation>
+<translation id="2223747115628460234">Gå tilbake til åpne faner</translation>
 <translation id="2224337661447660594">Ingen nettilkobling</translation>
 <translation id="2224444042887712269">Denne innstillingen tilhører <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Rediger mappenavn</translation>
@@ -1728,6 +1729,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2318143611928805047">Papirstørrelse</translation>
 <translation id="2319459402137712349">Velg et tekstfelt for å åpne tastaturet. Du kan også velge Tastatur-ikonet nederst på skjermen.</translation>
 <translation id="2319993584768066746">Bilder på påloggingsskjermen</translation>
+<translation id="2322015964223112232">Gå tilbake til åpne faner</translation>
 <translation id="2322193970951063277">Topp- og bunntekst</translation>
 <translation id="2322622365472107569">Sluttid: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Lagrede Wifi-nettverk</translation>
@@ -2487,6 +2489,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2878889940310164513">Legg til SIM-kort…</translation>
 <translation id="288042212351694283">Tilgang til de universelle annenfaktorenhetene dine</translation>
 <translation id="2881076733170862447">Når du klikker på utvidelsen</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{Fokus på fane avsluttet}other{Faner uten fokus}}</translation>
 <translation id="2882301808122022326">Omaha-respons</translation>
 <translation id="2884070497102362193">Test batteri, prosessor, minne, tilkoblinger med mer</translation>
 <translation id="2885129935310217435">Det finnes en knapp med dette navnet. Velg et annet.</translation>
@@ -2798,6 +2801,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3109206895301430738">Lagrede fanegrupper</translation>
 <translation id="3109724472072898302">Skjult</translation>
 <translation id="3112292765614504292">Appstørrelse: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Skjul</translation>
 <translation id="3112532142993641404">Logg på og synkroniser loggen for å få fanene fra de andre enhetene. Du får også bokmerkene med mer på alle enheter. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen.</translation>
 <translation id="311347022006935575">La til denne fanen</translation>
 <translation id="311394601889664316">Ikke la nettsteder redigere filer eller mapper på enheten</translation>
@@ -4381,6 +4385,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4296632172536745000">Det opprinnelige passordet ditt for dette nettstedet ble funnet i et offentlig databrudd. Den <ph name="DATE" /> ba du <ph name="BRAND" /> om å endre passordet ditt automatisk.</translation>
 <translation id="4297219207642690536">Start på nytt og tilbakestill</translation>
 <translation id="4297813521149011456">Skjermrotasjon</translation>
+<translation id="42981349822642051">Vis</translation>
 <translation id="4298660926525614540">Navn på flyttbare lagringsmedier</translation>
 <translation id="4299022904780065004">Nytt &amp;inkognitovindu</translation>
 <translation id="4300272766492248925">Åpne appen</translation>
@@ -5134,6 +5139,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4877276003880815204">Undersøk elementer</translation>
 <translation id="4878634973244289103">Kunne ikke sende tilbakemeldingen. Prøv på nytt senere.</translation>
 <translation id="4878718769565915065">Kunne ikke legge til fingeravtrykket på denne sikkerhetsnøkkelen</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}other{+#}}</translation>
 <translation id="4879491255372875719">Automatisk (standard)</translation>
 <translation id="4880827082731008257">Søk i loggen</translation>
 <translation id="4881685975363383806">Ikke minn meg på dette neste gang</translation>
@@ -5583,6 +5589,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5214639857958972833">Bokmerket «<ph name="BOOKMARK_TITLE" />» er opprettet.</translation>
 <translation id="5215450412607891876">Slå på forlenget periode for sikkerhetsoppdateringer</translation>
 <translation id="5216674789212441076">Oversetter direkteteksting automatisk. Teksting sendes til Google for oversettelse.</translation>
+<translation id="5217925057416367138">Spilles av nå</translation>
 <translation id="5220011581825921581">søketasten + oppoverpil</translation>
 <translation id="5221516927483787768">Kan ikke caste <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">En usikker nedlasting er blokkert</translation>
@@ -5617,6 +5624,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5247051749037287028">Visningsnavn (valgfritt)</translation>
 <translation id="5247243947166567755">Velg <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">Spør om hva som helst, akkurat der du er, med Gemini i Chrome</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{1 informasjonslinje til vises når denne lukkes}other{# informasjonslinjer til vises når denne lukkes}}</translation>
 <translation id="5248934139541843042">Vis arrangøren</translation>
 <translation id="5249624017678798539">Nettleseren krasjet før nedlastingen var ferdig.</translation>
 <translation id="5249818097095743806">Bruk sikkerhetsnøkkelen din</translation>
@@ -5920,6 +5928,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5493792505296048976">skjerm på</translation>
 <translation id="5494016731375030300">Nylig lukkede faner</translation>
 <translation id="5494362494988149300">Åpne når ne&amp;dlastingen er ferdig</translation>
+<translation id="5494439739088303974">Bruk Google Lens til å spørre om tekst eller bilder på siden</translation>
 <translation id="5494879038325093596">Bekreft at det er deg for å få det på alle enheter med Google-kontoen din</translation>
 <translation id="5494920125229734069">Velg alle</translation>
 <translation id="5495466433285976480">Dette fjerner alle lokale brukere, filer, data og andre innstillinger etter neste omstart. Alle brukere må logge inn på nytt.</translation>
@@ -8048,6 +8057,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7148426638542880639">Noen nettsteder fungerer kanskje ikke som forventet. Velg dette alternativet hvis du ikke vil etterlate deg informasjon om nettstedene du besøker, på denne enheten.</translation>
 <translation id="7149893636342594995">Siste døgn</translation>
 <translation id="7152478047064750137">Denne utvidelsen krever ingen spesielle tillatelser</translation>
+<translation id="7152923486458597248">Fokuser på gruppen</translation>
 <translation id="7153101072880472645">Høy kontrast på/av</translation>
 <translation id="715396040729904728">Appoversikt-tasten + Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="7154130902455071009">endre startsiden din til: <ph name="START_PAGE" /></translation>

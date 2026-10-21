@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
-<translation id="1003222766972176318">रिमाइंडर: सेव किया गया ऑफ़र उपलब्ध है</translation>
 <translation id="1008557486741366299">अभी नहीं</translation>
 <translation id="100957008357583611">क्या आप अपनी जगह की जानकारी का इस्तेमाल करना चाहते हैं?</translation>
 <translation id="1010200102790553230">पेज को बाद में लोड करें</translation>
@@ -1130,6 +1129,7 @@
 <translation id="2911973620368911614">जॉब अकाउंटिंग यूज़र आईडी</translation>
 <translation id="2914160345369867329">आम तौर पर, आपकी जानकारी सुरक्षित रखने के लिए <ph name="SITE" /> एन्क्रिप्शन का इस्तेमाल करती है. जब Chrome ने इस बार <ph name="SITE" /> से कनेक्ट करने की कोशिश की, तो वेबसाइट ने ऐसे क्रेडेंशियल वापस भेजे जो असामान्य और गलत थे. ऐसा तब हो सकता है, जब कोई हमलावर <ph name="SITE" /> होने का दावा करने की कोशिश कर रहा हो या किसी वाई-फ़ाई साइन इन स्क्रीन ने कनेक्शन में रुकावट पैदा की हो. आपकी जानकारी अब भी सुरक्षित है, क्योंकि किसी भी डेटा को एक्सचेंज करने से पहले ही, Chrome ने कनेक्शन रोक दिया था.</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> की क्रैश रिपोर्ट</translation>
+<translation id="291568339791418558">सभी डिवाइस</translation>
 <translation id="2916038427272391327">दूसरे प्रोग्राम बंद करें</translation>
 <translation id="2917630513638801879">सायन 1</translation>
 <translation id="2922350208395188000">सर्वर प्रमाणपत्र की जाँच नहीं की जा सकती.</translation>
@@ -1464,7 +1464,6 @@
 <translation id="3479552764303398839">अभी नहीं</translation>
 <translation id="3481315707647070701">देखें और बदलाव करें</translation>
 <translation id="3484560055331845446">आप अपने Google खाते का ऐक्सेस खो सकते हैं. Chrome आपको इसी समय अपना पासवर्ड बदलने का सुझाव देता है. आपको साइन इन करने को कहा जाएगा.</translation>
-<translation id="3484861421501147767">रिमाइंडर: सेव किया गया प्रोमो कोड उपलब्ध है</translation>
 <translation id="3485901585646640838">अपने Google खाते में सेव किए गए पासवर्ड वगैरह का इस्तेमाल करने के लिए, अपनी पहचान की पुष्टि करें</translation>
 <translation id="3487845404393360112">ट्रे 4</translation>
 <translation id="3493881266323043047">मान्यता</translation>
@@ -1824,6 +1823,7 @@
 <translation id="4067774859633143413">फ़ुल स्क्रीन से बाहर निकलने और डाउनलोड की गई फ़ाइलें देखने के लिए, |<ph name="ACCELERATOR" />| दबाकर रखें</translation>
 <translation id="4067947977115446013">मान्य पता जोड़ें</translation>
 <translation id="4072486802667267160">आपका आदेश संसाधित करते समय गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
+<translation id="4073293290376142777">क्या आपको साइन इन करना है?</translation>
 <translation id="4073376909608563327">डिवाइस को अनलॉक करने की सुविधा का इस्तेमाल नहीं किया जा सका</translation>
 <translation id="4073797364926776829">कार्ड देखें</translation>
 <translation id="4075732493274867456">क्लाइंट और सर्वर, सामान्य SSL प्रोटोकॉल वर्शन या सिफ़र सुइट का समर्थन नहीं करते हैं.</translation>
@@ -1856,6 +1856,7 @@
 <translation id="4107047499377819067">वीपीएन की बैकग्राउंड सेवाएं इंस्टॉल होना शुरू हो गई हैं. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="4110642094637545339">Google Pay, AfterPay का लोगो</translation>
 <translation id="4110652170750985508">अपना भुगतान देखें</translation>
+<translation id="411071007970303441">सभी इकाइयां</translation>
 <translation id="4112140312785995938">पीछे जाएं</translation>
 <translation id="4114007503059268298">क्या आपको इस कार्ड की जानकारी अपने Google खाते और इस डिवाइस में सेव करनी है?</translation>
 <translation id="4114146879518089587">साइट पर जाएं</translation>
@@ -3444,6 +3445,7 @@
 <translation id="6753460329812070808">Chrome से सुझाव हटा दिया गया है</translation>
 <translation id="6757797048963528358">आपका डिवाइस निष्क्रिय हो गया है.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> को आपके डिवाइस के मोशन और लाइट सेंसर इस्तेमाल करने की अनुमति चाहिए</translation>
+<translation id="6766488013065406604">Google Password Manager पर जाएं</translation>
 <translation id="6770747695101757579">पेपर (कॉटन)</translation>
 <translation id="6772959465807028761">YouTube का इस्तेमाल करने के लिए, अपने Google खाते से प्रोसेस जारी रखें</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3654,7 +3656,6 @@
 <translation id="7120588595737538743">डाउनलोड की गई फ़ाइलें और स्क्रीनशॉट</translation>
 <translation id="7124354851782353862">अपना सीवीसी डालें</translation>
 <translation id="7129409597930077180">इस पते पर शिप नहीं किया जा सकता. कोई दूसरा पता चुनें.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">फ़ाइल को अपलोड करने की अनुमति नहीं है</translation>
 <translation id="7132939140423847331">आपके एडमिन ने इस डेटा को कॉपी किए जाने पर रोक लगाई है.</translation>
 <translation id="7134653428559514680">इस साइट से कॉन्टेंट शेयर करने का सुझाव नहीं दिया जाता</translation>
@@ -3972,6 +3973,7 @@
 <translation id="7637571805876720304">क्रोमियम से क्रेडिट कार्ड निकालें?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{कोई भी पासवर्ड नहीं है}=1{आपके खाते में 1 पासवर्ड है (<ph name="DOMAIN_LIST" /> के लिए)}one{आपके खाते में # पासवर्ड है (<ph name="DOMAIN_LIST" /> के लिए)}other{आपके खाते में # पासवर्ड हैं (<ph name="DOMAIN_LIST" /> के लिए)}}</translation>
 <translation id="7638605456503525968">सीरियल पोर्ट</translation>
+<translation id="7644100755247241229">Google Wallet का इस्तेमाल करके, दोस्तों और कारोबारों को Pix से पेमेंट करें</translation>
 <translation id="7646681339175747202">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google Password Manager, आपके पासवर्ड को तुरंत बदलने का सुझाव देता है.</translation>
 <translation id="7647206758853451655">प्रिंट क्वालिटी</translation>
 <translation id="7648133459447652947">अपना कर्सर देखने के लिए ऐप्लिकेशन स्विच करें, पेज को फिर से लोड करें या वापस जाएं</translation>
@@ -4075,6 +4077,7 @@
 <translation id="7791543448312431591">जोड़ें</translation>
 <translation id="7798389633136518089">नीति को किसी क्लाउड स्रोत के ज़रिए सेट नहीं किया गया है। इसलिए, इसे स्वीकार नहीं किया गया.</translation>
 <translation id="7800304661137206267">कनेक्शन को <ph name="MAC" /> का इस्तेमाल करके मैसेज की पुष्टि के लिए <ph name="KX" /> के साथ सुरक्षित किया गया है और यह मुख्य एक्सचेंज तकनीक के तौर पर <ph name="CIPHER" /> का इस्तेमाल करता है.</translation>
+<translation id="780228007282527248">अपनी खोज को बेहतर बनाने के लिए, कोई टैब या इमेज जोड़ें</translation>
 <translation id="7802523362929240268">साइट वैध है</translation>
 <translation id="7802989406998618639"><ph name="SIDE_OF_CARD" /> पर <ph name="NUMBER_OF_DIGITS" /> अंकों का सुरक्षा कोड डालें, ताकि बैंक आपकी पहचान की पुष्टि कर सके</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>

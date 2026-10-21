@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысын жию.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар қойындылар тобын жию.}}</translation>
 <translation id="2569352796411618312">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды біраздан бері пайдаланылмады. Олар жабылсын ба?</translation>
 <translation id="257674075312929031">Топ</translation>
+<translation id="2628148780487543078">Бекітілген қойындыларды да жабу</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар топтарын қалпына келтіру және ашу.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="COLOR_NAME" /> түсті қойындылар топтарын қалпына келтіру және ашу.}}</translation>
 <translation id="2662028055331606429">Бағасы: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Сайтқа кіру</translation>

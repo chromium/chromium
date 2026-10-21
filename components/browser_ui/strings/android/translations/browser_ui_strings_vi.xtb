@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Cá nhân hoá Chrome bằng màu sắc và hình ảnh tuỳ chỉnh cho trang chủ của bạn</translation>
 <translation id="389521680295183045">Các trang web có thể yêu cầu được phát hiện khi bạn đang dùng thiết bị</translation>
 <translation id="3895926599014793903">Buộc bật thu phóng</translation>
-<translation id="3905475044299942653">Ngừng nhận nhiều thông báo</translation>
 <translation id="3922092564198021702">Trên điện thoại, hãy mở phần Cài đặt</translation>
 <translation id="3924858949939391676">Hiển thị các đường liên kết khi Chế độ đọc đang bật</translation>
 <translation id="3933121352599513978">Thu gọn các yêu cầu không mong muốn (nên dùng)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Bạn sẽ thấy các nhóm trong mục nhóm thẻ trên tất cả các thiết bị của bạn</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> không được sử dụng thông tin của bạn</translation>
 <translation id="4953688446973710931">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu tự động tải nhiều tệp xuống. Khi bạn tắt tuỳ chọn này, các trang web không thể tự động tải nhiều tệp xuống.</translation>
-<translation id="4962975101802056554">Thu hồi tất cả các quyền đối với thiết bị</translation>
 <translation id="4972737347717125191">Các trang web có thể yêu cầu sử dụng dữ liệu và thiết bị thực tế ảo</translation>
 <translation id="4973805849704516244">Bảng màu Chrome ở dưới cùng</translation>
 <translation id="497421865427891073">Đi về phía trước</translation>
@@ -704,7 +702,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="8441146129660941386">Tìm kiếm lùi</translation>
 <translation id="8444433999583714703">Để cho phép <ph name="APP_NAME" /> truy cập vào thông tin vị trí của bạn, hãy bật cả dịch vụ vị trí trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Thu hồi quyền truy cập thiết bị</translation>
 <translation id="8463843545738141778">Chế độ cài đặt này bị tắt vì bạn đã bật tính năng Bảo vệ nâng cao trong phần Cài đặt Android.</translation>
 <translation id="8467359479529706065">Bảng giao diện trang thẻ mới ở dưới cùng đã mở trên một nửa màn hình</translation>
 <translation id="8471525937465764768">Các trang web thường kết nối với thiết bị USB để áp dụng những tính năng như in tài liệu hoặc lưu vào thiết bị lưu trữ</translation>

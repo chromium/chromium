@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Personalizza Chrome con colori e immagini personalizzati per la tua home page</translation>
 <translation id="389521680295183045">I siti possono chiedere di sapere quando stai utilizzando attivamente il tuo dispositivo</translation>
 <translation id="3895926599014793903">Attivazione forzata dello zoom</translation>
-<translation id="3905475044299942653">Interrompi notifiche eccessive</translation>
 <translation id="3922092564198021702">Apri le Impostazioni sullo smartphone</translation>
 <translation id="3924858949939391676">Mostra i link una volta attivata la modalità Lettura</translation>
 <translation id="3933121352599513978">Comprimi le richieste indesiderate (opzione consigliata)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Troverai i tuoi gruppi nella sezione Gruppi di schede su tutti i tuoi dispositivi</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> non può usare le tue informazioni su</translation>
 <translation id="4953688446973710931">Quando l'opzione è attiva, i siti possono chiedere di scaricare automaticamente più file. Quando l'opzione è disattivata, i siti non possono scaricare automaticamente più file.</translation>
-<translation id="4962975101802056554">Revoca tutte le autorizzazioni per il dispositivo</translation>
 <translation id="4972737347717125191">I siti possono chiedere di usare dati e dispositivi per realtà virtuale</translation>
 <translation id="4973805849704516244">Riquadro inferiore Colori di Chrome</translation>
 <translation id="497421865427891073">Avanti</translation>
@@ -704,7 +702,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8441146129660941386">Posiziona indietro</translation>
 <translation id="8444433999583714703">Per consentire all'app <ph name="APP_NAME" /> di accedere alla tua posizione, devi attivare la posizione anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Revoca autorizzazione dispositivo</translation>
 <translation id="8463843545738141778">Questa impostazione è disattivata perché hai attivato la protezione avanzata nelle Impostazioni di Android.</translation>
 <translation id="8467359479529706065">Riquadro inferiore di Aspetto della pagina Nuova scheda aperto nella parte inferiore dello schermo</translation>
 <translation id="8471525937465764768">In genere, i siti si connettono a dispositivi USB per funzionalità come la stampa di un documento o il salvataggio su un dispositivo di archiviazione</translation>

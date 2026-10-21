@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Personalizează Chrome cu culori și imagini personalizate pentru pagina de pornire</translation>
 <translation id="389521680295183045">Site-urile pot solicita permisiunea de a afla când folosești activ dispozitivul</translation>
 <translation id="3895926599014793903">Forțează activarea zoomului</translation>
-<translation id="3905475044299942653">Oprește numărul mare de notificări</translation>
 <translation id="3922092564198021702">Pe telefon, deschide Setări</translation>
 <translation id="3924858949939391676">Afișează linkurile după activarea modului de lectură</translation>
 <translation id="3933121352599513978">Restrânge solicitările nedorite (recomandat)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Vei găsi grupurile în secțiunea Grup de file de pe toate dispozitivele</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> nu are permisiunea de a folosi informațiile tale pe</translation>
 <translation id="4953688446973710931">Când opțiunea este activată, site-urile pot solicita permisiunea de a descărca automat mai multe fișiere. Când opțiunea este dezactivată, site-urile nu pot descărca automat mai multe fișiere.</translation>
-<translation id="4962975101802056554">Revocă toate permisiunile pentru dispozitiv</translation>
 <translation id="4972737347717125191">Site-urile pot solicita permisiunea de a folosi dispozitive de realitate virtuală și date conexe</translation>
 <translation id="4973805849704516244">Foaia din partea de jos Culori Chrome</translation>
 <translation id="497421865427891073">Înainte</translation>
@@ -704,7 +702,6 @@ Protecția avansată gestionează următoarele setări Chrome:</translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8441146129660941386">Derulează înapoi</translation>
 <translation id="8444433999583714703">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze locația, activează locația și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Revocă permisiunea de accesare a dispozitivului</translation>
 <translation id="8463843545738141778">Această setare este dezactivată deoarece ai activat Protecția avansată în Setările Android.</translation>
 <translation id="8467359479529706065">Foaia din partea de jos cu aspectul paginii Filă nouă deschisă la jumătate din înălțime</translation>
 <translation id="8471525937465764768">Site-urile se conectează de obicei la dispozitive USB pentru funcții cum ar fi imprimarea unui document sau salvarea pe un dispozitiv de stocare</translation>

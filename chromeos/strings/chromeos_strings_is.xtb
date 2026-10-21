@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Deildu gildinu <ph name="CATEGORY_TEXT" /> með <ph name="CONVERSION_RATE" /> til að fá námundaða niðurstöðu</translation>
 <translation id="1442433966118452622">Uppruni myndar</translation>
 <translation id="1446954767133808402">safír</translation>
-<translation id="1449035143498573192">Opna í Google-leit</translation>
 <translation id="1451536289672181509">Tækið er lyklaborð.</translation>
 <translation id="1452939186874918380">regnhlífar</translation>
 <translation id="145402479967797468">Spilunarstýringar</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Forskoða <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Innbyggt VPN</translation>
 <translation id="1669047024429367828">Sýnileiki</translation>
-<translation id="1670478569471758522">Meiri upplýsingar sem tengjast þínu vali</translation>
 <translation id="1672499492233627739">Myndskeiðsstraumur vefmyndavélar</translation>
 <translation id="1676557873873341166">Myndbandsupptaka í gangi</translation>
 <translation id="1684279041537802716">Áherslulitur</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Breytingum lokið</translation>
 <translation id="3532980081107202182">Um <ph name="MIN_REMAINING" /> mínútur eftir</translation>
 <translation id="3533790840489634638">sundlaug</translation>
-<translation id="3547264467365135390">Formúla</translation>
 <translation id="3552832331940389362">japönsk teiknimyndaskreyting af ketti sem situr á gluggakistu og horfir á síðdegisrigninguna</translation>
 <translation id="3557205324756024651">Staðbundið auðkenni (valkvætt)</translation>
 <translation id="3565064564551103223">Leyfðar IP-tölur</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Lýsing</translation>
 <translation id="3869314628814282185">tjulli</translation>
 <translation id="387301095347517405">Fjöldi skipta sem rafhlaðan hefur tæmst og verið fullhlaðin aftur</translation>
-<translation id="3877066159641251281">Hlusta á þýðingu</translation>
 <translation id="3880601782712134623">Greina sjálfkrafa ólíkar raddir og merkja hvern mælanda með sjálfgefnu merki, t.d. Mælandi 1 og Mælandi 2</translation>
 <translation id="38811596981744338">Lagalegt vandamál</translation>
 <translation id="3885327323343477505">Breyta skjávara</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Aftengdu USB-snúru <ph name="DEVICE_NAME" /> og stingdu henni síðan aftur í samband til að halda áfram uppfærsluferlinu</translation>
 <translation id="5099354524039520280">upp</translation>
 <translation id="5107243100836678918">Flýtileið án <ph name="META_KEY" />-lykils gæti stangast á við flýtileið einhvers forrits. Ýttu aftur á þessa flýtileið til að halda áfram að nota hana eða ýttu á nýja flýtileið með <ph name="KEY" />-lyklinum. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Svipað:</translation>
 <translation id="5130848777448318809">smáhestar</translation>
 <translation id="5137451382116112100">Allur skjárinn</translation>
 <translation id="5139813694804168398">ónáðið ekki</translation>
 <translation id="5140788690559353412">Þegar þú glatar aðgangi að skólareikningnum þínum glatarðu einnig aðgangi að tengdu netfangi og skrám á Google Drive, s.s. úr Gmail, Skjölum, Skyggnum og víðar.</translation>
 <translation id="5142961317498132443">Auðkenning</translation>
 <translation id="5144311987923128508">Slökkt er á staðfestingarhnappi</translation>
-<translation id="5144887194300568405">Afrita þýðingu</translation>
 <translation id="5145081769226915336">Kveikja sjálfkrafa á dökkri stillingu?</translation>
 <translation id="5145331109270917438">Dagsetning breytingar</translation>
 <translation id="5154917547274118687">Minni</translation>

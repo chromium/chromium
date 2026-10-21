@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Մոտավոր արդյունք ստանալու համար «<ph name="CATEGORY_TEXT" />» արժեքը բաժանեք <ph name="CONVERSION_RATE" />-ի</translation>
 <translation id="1442433966118452622">Պատկերի աղբյուրը</translation>
 <translation id="1446954767133808402">շափյուղա</translation>
-<translation id="1449035143498573192">Բացել Google Որոնման մեջ</translation>
 <translation id="1451536289672181509">Սարքը ստեղնաշար է։</translation>
 <translation id="1452939186874918380">անձրևանոցներ</translation>
 <translation id="145402479967797468">Նվագարկման կառավարման տարրեր</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Նախադիտում (<ph name="PREVIEW_OBJECT" />)</translation>
 <translation id="1668469839109562275">Ներկառուցված VPN</translation>
 <translation id="1669047024429367828">Տեսանելիություն</translation>
-<translation id="1670478569471758522">Լրացուցիչ տեղեկություններ՝ կապված ձեր ընտրության հետ</translation>
 <translation id="1672499492233627739">Վեբ տեսախցիկի տեսահոսք</translation>
 <translation id="1676557873873341166">Տեսագրում</translation>
 <translation id="1684279041537802716">Ակցենտի գույն</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Խմբագրումը կատարված է</translation>
 <translation id="3532980081107202182">Մնացել է մոտ <ph name="MIN_REMAINING" /> րոպե</translation>
 <translation id="3533790840489634638">լողավազան</translation>
-<translation id="3547264467365135390">Բանաձև</translation>
 <translation id="3552832331940389362">ճապոնական անիմացիոն նկարազարդում, որում պատուհանագոգին նստած կատուն հետևում է կեսօրից հետո տեղացող անձրևին</translation>
 <translation id="3557205324756024651">Տեղային իսկորոշում (պարտադիր չէ)</translation>
 <translation id="3565064564551103223">Թույլատրված IP-ներ</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Նկարագրություն</translation>
 <translation id="3869314628814282185">շղարշ</translation>
 <translation id="387301095347517405">Քանի անգամ է ձեր մարտկոցն ամբողջությամբ լիցքավորվել</translation>
-<translation id="3877066159641251281">Լսել թարգմանությունը</translation>
 <translation id="3880601782712134623">Ավտոմատ հայտնաբերել տարբեր ձայներ և յուրաքանչյուր խոսողին տալ ընդհանուր բնույթի պիտակ, օրինակ՝ Խոսող 1, Խոսող 2</translation>
 <translation id="38811596981744338">Իրավական խնդիր</translation>
 <translation id="3885327323343477505">Փոխել էկրանապահը</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Թարմացումը շարունակելու համար ձեր <ph name="DEVICE_NAME" /> սարքից անջատեք USB մալուխը և նորից միացրեք այն</translation>
 <translation id="5099354524039520280">վերև</translation>
 <translation id="5107243100836678918">Առանց «<ph name="META_KEY" />» ստեղնի դյուրանցումը կարող է հակասել որոշ հավելվածների դյուրանցումներին։ Կրկին սեղմեք այս դյուրանցումը՝ դրա օգտագործումը շարունակելու համար, կամ սեղմեք նոր դյուրանցում՝ օգտագործելով «<ph name="KEY" />» ստեղնը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Հոմանիշներ՝</translation>
 <translation id="5130848777448318809">պոնիներ</translation>
 <translation id="5137451382116112100">Լիաէկրան</translation>
 <translation id="5139813694804168398">չանհանգստացնել</translation>
 <translation id="5140788690559353412">Երբ կորցնեք ձեր ուսումնական հաշվի հասանելիությունը, կապված էլ․ հասցեն ու Google Drive-ի ֆայլերը (օր․՝ Gmail-ում, Փաստաթղթերում, Սլայդներում և այլն) ձեզ այլևս հասանելի չեն լինի։</translation>
 <translation id="5142961317498132443">Նույնականացում</translation>
 <translation id="5144311987923128508">Հաստատել կոճակն այժմ ընտրված չէ</translation>
-<translation id="5144887194300568405">Պատճենել թարգմանությունը</translation>
 <translation id="5145081769226915336">Ավտոմատ միացնե՞լ մուգ ռեժիմը</translation>
 <translation id="5145331109270917438">Փոփոխման ամսաթիվ</translation>
 <translation id="5154917547274118687">Հիշողություն</translation>

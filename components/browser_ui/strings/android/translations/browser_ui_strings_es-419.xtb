@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Modifica Chrome a tu gusto con imágenes y colores personalizados para tu página principal</translation>
 <translation id="389521680295183045">Los sitios pueden solicitar permiso para saber en qué momento estás usando activamente el dispositivo</translation>
 <translation id="3895926599014793903">Forzar habilitación de zoom</translation>
-<translation id="3905475044299942653">Detener muchas notificaciones</translation>
 <translation id="3922092564198021702">En tu teléfono, abre Configuración</translation>
 <translation id="3924858949939391676">Muesta vínculos una vez que se active el Modo de lectura</translation>
 <translation id="3933121352599513978">Contraer solicitudes no deseadas (recomendado)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Encontrarás tus grupos en la sección de grupos de pestañas de todos tus dispositivos</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> no puede utilizar tu información en</translation>
 <translation id="4953688446973710931">Cuando esta opción está activada, los sitios pueden solicitar permiso para descargar automáticamente varios archivos. Cuando está desactivada, los sitios no pueden descargar varios archivos automáticamente.</translation>
-<translation id="4962975101802056554">Revocar todos los permisos del dispositivo</translation>
 <translation id="4972737347717125191">Permitir que los sitios soliciten permiso para usar datos y dispositivos de realidad virtual</translation>
 <translation id="4973805849704516244">Hoja inferior de Colores de Chrome</translation>
 <translation id="497421865427891073">Avanzar</translation>
@@ -704,7 +702,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:<
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8441146129660941386">Buscar más atrás</translation>
 <translation id="8444433999583714703">Para permitir que <ph name="APP_NAME" /> acceda a tu ubicación, actívala también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Revocar permiso para el dispositivo</translation>
 <translation id="8463843545738141778">Se inhabilitó este parámetro de configuración porque activaste la Protección avanzada en la configuración de Android.</translation>
 <translation id="8467359479529706065">La hoja inferior de la apariencia de la página Nueva pestaña está abierta a media altura</translation>
 <translation id="8471525937465764768">Por lo general los sitios se conectan a dispositivos USB para habilitar funciones, como imprimir un documento o guardar datos en un dispositivo de almacenamiento.</translation>

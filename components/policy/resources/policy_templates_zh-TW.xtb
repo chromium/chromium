@@ -6357,6 +6357,17 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 <translation id="5081204761483900654">有限制的受管理訪客工作階段</translation>
 <translation id="5082296146261894974">允許使用者透過點選 Phone Hub 通知的方式啟動 Eche 應用程式。</translation>
 <translation id="5082572440690475059">允許這些網站透過 File System API 進行讀取</translation>
+<translation id="5084849119584030624">設定 <ph name="PRODUCT_NAME" /> 的 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 連線設定。
+
+系統已不再支援這項政策，並會予以忽略。請改用 <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> 政策。
+
+這項政策會透過 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網頁應用程式網址，該網址必須有效，且須採用 https 配置、指向 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網域，而且不含使用者名稱或密碼。如果不符合這些規定，系統會忽略這項政策，且不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+如果設定這項政策，系統會為登入代管帳戶或受管理瀏覽器的使用者完成 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 設定。
+
+如果未設定這項政策，系統就不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+請注意，這項政策不會控管一般的 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 整合功能，該功能可透過 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策管理。</translation>
 <translation id="5085647276663819155">停用列印預覽</translation>
 <translation id="5087922428454325090">使用者無法透過瀏覽器安裝網頁應用程式。</translation>
 <translation id="5087932158260897375">如果將這項政策設為 False，系統就會停用網域可靠性診斷資料回報功能，而且不會傳送任何資料給 Google。
@@ -8145,25 +8156,6 @@ IP 位址空間覆寫有兩種形式：
 <translation id="6244061205361004687">允許使用者手動中斷連線或修改 VPN</translation>
 <translation id="6244210204546589761">起始時開啟的網址</translation>
 <translation id="6244263962918757383">Chrome 建議設定</translation>
-<translation id="6245828368576563662">這項政策可讓你定義規則清單，將自訂 HTTP 標頭插入符合特定網址模式的網頁要求。這項政策設定的標頭優先順序高於要求中原有的標頭，也高於使用者或擴充功能所做的修改。
-
-這項政策的常見用途是插入自訂標頭 (例如 <ph name="EXAMPLE_HEADER_NAME" />)，強制執行租戶存取控管機制。
-
-這項政策接受規則清單。每項規則都包含：
-
-* <ph name="PATTERNS_KEY" />：要比對的網址模式清單。請參閱網址模式的格式設定說明 (https://support.google.com/chrome/a?p=url_blocklist_filter_format)。
-
-* <ph name="HEADERS_KEY" />：要插入的標頭物件清單，每個物件包含：
-
-  * <ph name="HEADER_NAME_KEY" />：要插入的標頭名稱。
-
-  * <ph name="HEADER_VALUE_KEY" />：要插入的標頭值。
-
-如果多項規則符合要求，系統會套用所有相符規則中的標頭。如有多個同名標頭，系統會套用網址模式最明確的標頭。如果網址模式的明確程度相同，系統會套用清單中最後一個標頭。
-
-標頭名稱必須符合 RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616) 規定。標頭值不得含有 NUL、CR 或 LF 符號。個別標頭的大小不得超過 8 KB。系統會忽略無效的標頭和網址模式。
-
-在這項政策中，所有規則的網址模式數量上限不得超過 500 個，每項規則最多可有 20 個標頭。如果超過上述門檻，系統將忽略多出來的網址模式和標頭。</translation>
 <translation id="624595269193747921">是否僅限在特定一組印表機中搜尋相符的印表機。</translation>
 <translation id="6246290059248303618">顯示由區域網路中其他裝置啟動的 <ph name="PRODUCT_NAME" /> 工作階段媒體控制項</translation>
 <translation id="6247316685259031374">這項政策可控管音訊程序的沙箱機制。
@@ -9631,23 +9623,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 
       注意：根據預設，掃描功能目前已透過功能旗標停用。如果使用者透過功能旗標啟用該功能，這項政策仍可將其停用。</translation>
 <translation id="7115684775550072082">僅保留文字和 XML MIME 類型的空白字元</translation>
-<translation id="7116098886490965998">為清單中的識別資訊提供者停用 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 的單一登入服務。
-
-如果新增 <ph name="POLICY_VALUE_ALL" /> 這個值，所有支援的單一登入 (SSO) 識別資訊提供者都會遭到停用。
-
-如果新增 <ph name="POLICY_VALUE_MICROSOFT" /> 這個值，Chrome 將停止支援 Microsoft® 雲端識別資訊提供者的單一登入服務。
-
-如未設定這項政策，系統會啟用 <ph name="PRODUCT_NAME" /> 支援的所有識別資訊提供者。
-
-如果系統管理員在裝置上的 <ph name="PRODUCT_NAME" /> 啟用識別資訊提供者並完成設定，使用者只要在支援 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 的應用程式中，透過該識別資訊提供者登入過一次，就能自動使用該識別資訊提供者登入網站資源。在每個驗證事件中，與使用者驗證資訊相關的資訊都會傳送給使用者的雲端識別資訊提供者。
-
-注意事項：
-
-<ph name="PRODUCT_NAME" /> 的無痕或訪客模式不支援使用 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 的單一登入服務。
-
-<ph name="PRODUCT_NAME" /> 僅支援以下識別資訊提供者使用 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 的單一登入服務：Microsoft、Okta。
-
-這項功能自 <ph name="MAC_OS_NAME" /> 10.15 起開放使用。</translation>
 <translation id="7119538491527883595">本機使用者資料儲存空間</translation>
 <translation id="7121046543122812054">這項政策已遭淘汰，建議改用「<ph name="BROWSER_SIGNIN_POLICY_NAME" />」。
 
@@ -11952,6 +11927,17 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="8621146428060651659">允許 Proxy 的通訊端集區隨機化</translation>
 <translation id="862621549134406761">啟用 RSA 金鑰用途檢查功能</translation>
 <translation id="8626826495474944836">要求針對所有網站啟用網站隔離功能</translation>
+<translation id="8628954914373039931">如果啟用這項設定，當使用者登入 <ph name="PRODUCT_OS_NAME" /> 裝置後，將可在瀏覽器視窗的內容區域和 Android 應用程式中切換 Google 帳戶。
+
+      如果將這項政策設為 False，使用者將無法透過非無痕式瀏覽器內容區域和 Android 應用程式登入其他 Google 帳戶。
+
+      如果將這項政策設為 True 或不予設定，系統就會採用預設行為：使用者可透過瀏覽器內容區域和 Android 應用程式登入其他 Google 帳戶，但無法透過非無痕式內容區域登入兒童帳戶。
+
+      在 Android 裝置上，這項設定可控管使用者登入 <ph name="PRODUCT_NAME" /> 後，能否透過 Google 網站的內容區域新增其他 Google 帳戶。如果將這項政策設為 False，Google 網站就不會提供新增其他 Google 帳戶的選項 (例如帳戶選單中的「新增其他帳戶」按鈕)。如果未設定這項政策或設為 True，使用者就能透過 Google 網站新增其他 Google 帳戶。這項政策不會禁止使用者在 Android 裝置上新增 Google 帳戶。
+
+      如要禁止透過無痕模式登入其他帳戶，建議你使用 IncognitoModeAvailability 政策封鎖該模式。
+
+      請注意，使用者只要封鎖 Google 服務的 Cookie，即可在未經驗證的狀態下存取 Google 服務。</translation>
 <translation id="8630797597241896082">允許使用生成式 AI VC 背景並改善 AI 模型</translation>
 <translation id="8631314130868563649">停用尖峰轉移電源管理</translation>
 <translation id="8631434304112909927">到第 <ph name="UNTIL_VERSION" /> 版為止</translation>

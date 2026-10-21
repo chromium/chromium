@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
-<translation id="1003222766972176318">リマインダー: 保存済みのクーポンを利用できます</translation>
 <translation id="1008557486741366299">後で</translation>
 <translation id="100957008357583611">位置情報を使用しますか？</translation>
 <translation id="1010200102790553230">後でページを読み込む</translation>
@@ -1127,6 +1126,7 @@
 <translation id="2911973620368911614">ジョブ管理ユーザー ID</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> では通常、暗号化して情報を保護しています。今回、Chrome から <ph name="SITE" /> への接続試行時に、このウェブサイトからいつもとは異なる誤った認証情報が返されました。悪意のあるユーザーが <ph name="SITE" /> になりすまそうとしているか、Wi-Fi ログイン画面で接続が中断された可能性があります。データのやり取りが行われる前に Chrome によって接続が停止されたため、情報は引き続き保護されています。</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> のクラッシュ</translation>
+<translation id="291568339791418558">すべてのデバイス</translation>
 <translation id="2916038427272391327">他のプログラムを終了する</translation>
 <translation id="2917630513638801879">シアン 1</translation>
 <translation id="2922350208395188000">サーバーの証明書を確認できません。</translation>
@@ -1462,7 +1462,6 @@
 <translation id="3479552764303398839">後で</translation>
 <translation id="3481315707647070701">ビジュアル化して編集</translation>
 <translation id="3484560055331845446">Google アカウントにアクセスできなくなる可能性があります。Chrome で今すぐパスワードを変更することをおすすめします。変更の際には、ログインするよう求められます。</translation>
-<translation id="3484861421501147767">リマインダー: 保存済みのプロモーション コードを利用できます</translation>
 <translation id="3485901585646640838">Google アカウントに保存されているパスワードなどの情報を使用するには、本人確認を行ってください</translation>
 <translation id="3487845404393360112">トレイ 4</translation>
 <translation id="3493881266323043047">有効期間</translation>
@@ -1822,6 +1821,7 @@
 <translation id="4067774859633143413">全画面表示を終了してダウンロードを表示するには、|<ph name="ACCELERATOR" />| を長押しします</translation>
 <translation id="4067947977115446013">有効なアドレスの追加</translation>
 <translation id="4072486802667267160">ご注文の処理中にエラーが発生しました。もう一度お試しください。</translation>
+<translation id="4073293290376142777">ログインしますか？</translation>
 <translation id="4073376909608563327">デバイスのロック解除を使用できませんでした</translation>
 <translation id="4073797364926776829">カードを表示</translation>
 <translation id="4075732493274867456">クライアントとサーバーで、共通の SSL プロトコル バージョンまたは暗号スイートがサポートされていません。</translation>
@@ -1854,6 +1854,7 @@
 <translation id="4107047499377819067">VPN バックグラウンド サービスのインストールが開始しました。完了まで数分かかることがあります。</translation>
 <translation id="4110642094637545339">Google Pay、AfterPay のロゴ</translation>
 <translation id="4110652170750985508">お支払いの確認</translation>
+<translation id="411071007970303441">すべてのアクター</translation>
 <translation id="4112140312785995938">後方に移動</translation>
 <translation id="4114007503059268298">このカードを Google アカウントとこのデバイスに保存しますか？</translation>
 <translation id="4114146879518089587">サイトへ移動</translation>
@@ -3440,6 +3441,7 @@
 <translation id="6753460329812070808">Chrome から候補を削除しました</translation>
 <translation id="6757797048963528358">デバイスがスリープ状態です。</translation>
 <translation id="6758934187792712102"><ph name="URL" /> がモーション センサーと光センサーの使用許可を求めています</translation>
+<translation id="6766488013065406604">Google パスワード マネージャーに移動</translation>
 <translation id="6770747695101757579">紙（コットン）</translation>
 <translation id="6772959465807028761">YouTube を使用するには、Google アカウントで続行してください</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3652,6 @@
 <translation id="7120588595737538743">ダウンロードとスクリーンショット</translation>
 <translation id="7124354851782353862">CVC を入力してください</translation>
 <translation id="7129409597930077180">この住所には配送できません。別の住所を選択してください。</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">アップロードがブロックされました</translation>
 <translation id="7132939140423847331">このデータのコピーは管理者によって禁止されています。</translation>
 <translation id="7134653428559514680">このサイトからの共有は推奨されていません</translation>
@@ -3968,6 +3969,7 @@
 <translation id="7637571805876720304">Chromium からクレジット カードを削除してもよろしいですか？</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{なし}=1{アカウントに保存されているパスワード 1 件（<ph name="DOMAIN_LIST" />）}other{アカウントに保存されているパスワード # 件（<ph name="DOMAIN_LIST" />）}}</translation>
 <translation id="7638605456503525968">シリアルポート</translation>
+<translation id="7644100755247241229">Google ウォレットを使用して友人やビジネスに Pix を送信できます</translation>
 <translation id="7646681339175747202">たった今使用したパスワードがデータ侵害で検出されました。Google パスワード マネージャーでは、パスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="7647206758853451655">印刷画質</translation>
 <translation id="7648133459447652947">カーソルを表示するには、アプリを切り替えるか、ページを再読み込みするか、前に戻ります</translation>
@@ -4071,6 +4073,7 @@
 <translation id="7791543448312431591">追加</translation>
 <translation id="7798389633136518089">ポリシーがクラウドソースによって設定されていないため、無視されました。</translation>
 <translation id="7800304661137206267">この接続は <ph name="CIPHER" /> で暗号化されており、メッセージ認証には <ph name="MAC" />、鍵交換メカニズムには <ph name="KX" /> が使用されています。</translation>
+<translation id="780228007282527248">タブまたは画像を追加して検索を拡張する</translation>
 <translation id="7802523362929240268">正規のサイトです</translation>
 <translation id="7802989406998618639">カード発行会社による本人確認のため、<ph name="SIDE_OF_CARD" />に記載されている <ph name="NUMBER_OF_DIGITS" /> 桁のセキュリティ コードを入力してください</translation>
 <translation id="780301667611848630">利用しない</translation>

@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Prispôsobte si Chrome vlastnými farbami a obrázkami na domovskej stránke</translation>
 <translation id="389521680295183045">Weby sa môžu pýtať, keď chcú zistiť, kedy aktívne používate zariadenie</translation>
 <translation id="3895926599014793903">Vynútiť povolenie priblíženia</translation>
-<translation id="3905475044299942653">Zastavenie veľkého množstva upozornení</translation>
 <translation id="3922092564198021702">Otvorte v telefóne Nastavenia</translation>
 <translation id="3924858949939391676">Zobrazovať odkazy po zapnutí režimu čítania</translation>
 <translation id="3933121352599513978">Zbaliť nechcené požiadavky (odporúčané)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Skupiny nájdete v sekcii skupín kariet vo všetkých svojich zariadeniach</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> má zablokované používanie vašich informácií na webe</translation>
 <translation id="4953688446973710931">Keď je táto možnosť zapnutá, weby môžu žiadať o automatické sťahovanie viacerých súborov. Keď je táto možnosť vypnutá, weby nemôžu automaticky stiahnuť viacero súborov.</translation>
-<translation id="4962975101802056554">Odvolať všetky povolenia pre zariadenie</translation>
 <translation id="4972737347717125191">Weby môžu žiadať o použitie zariadení virtuálnej reality a súvisiacich údajov</translation>
 <translation id="4973805849704516244">Dolný hárok farieb Chromu</translation>
 <translation id="497421865427891073">Ďalej</translation>
@@ -704,7 +702,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:</translation>
 <translation id="8428213095426709021">Nastavenia</translation>
 <translation id="8441146129660941386">Pretočiť dozadu</translation>
 <translation id="8444433999583714703">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> používať vašu polohu, zapnite ju aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Odvolať povolenie pre zariadenie</translation>
 <translation id="8463843545738141778">Toto nastavenie je deaktivované, pretože ste v nastaveniach Androidu zapli rozšírenú ochranu.</translation>
 <translation id="8467359479529706065">Dolný hárok vzhľadu stránky na novej karte je otvorený na polovičnú výšku</translation>
 <translation id="8471525937465764768">Weby sa zvyčajne pripájajú k zariadeniam USB, aby mohli poskytovať funkcie, ako tlač dokumentu alebo uloženie do zariadenia</translation>

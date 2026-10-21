@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">สำหรับผลลัพธ์โดยประมาณ ให้นำค่า <ph name="CATEGORY_TEXT" /> มาหารด้วย <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">แหล่งที่มาของภาพ</translation>
 <translation id="1446954767133808402">แซฟไฟร์</translation>
-<translation id="1449035143498573192">เปิดใน Google Search</translation>
 <translation id="1451536289672181509">อุปกรณ์เป็นแป้นพิมพ์</translation>
 <translation id="1452939186874918380">ร่ม</translation>
 <translation id="145402479967797468">ตัวควบคุมการเล่น</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">ตัวอย่าง <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN ในตัว</translation>
 <translation id="1669047024429367828">ระดับการเข้าถึง</translation>
-<translation id="1670478569471758522">ข้อมูลเพิ่มเติมเกี่ยวกับสิ่งที่คุณเลือก</translation>
 <translation id="1672499492233627739">ฟีดวิดีโอเว็บแคม</translation>
 <translation id="1676557873873341166">กำลังถ่ายวิดีโอ</translation>
 <translation id="1684279041537802716">สีเฉพาะจุด</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">เสร็จสิ้นการแก้ไข</translation>
 <translation id="3532980081107202182">เหลือเวลาอีกประมาณ <ph name="MIN_REMAINING" /> นาที</translation>
 <translation id="3533790840489634638">สระน้ำ</translation>
-<translation id="3547264467365135390">สูตร</translation>
 <translation id="3552832331940389362">ภาพเคลื่อนไหวสไตล์ญี่ปุ่นของแมวนั่งอยู่บนขอบหน้าต่างดูฝนตกในช่วงบ่าย</translation>
 <translation id="3557205324756024651">ข้อมูลประจำตัวในเครื่อง (ไม่บังคับ)</translation>
 <translation id="3565064564551103223">IP ที่อนุญาต</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">คำอธิบาย</translation>
 <translation id="3869314628814282185">แพรโปร่ง</translation>
 <translation id="387301095347517405">จำนวนครั้งที่ชาร์จแบตเตอรี่จนเต็ม</translation>
-<translation id="3877066159641251281">ฟังคำแปล</translation>
 <translation id="3880601782712134623">ตรวจหาเสียงที่แตกต่างกันและติดป้ายกำกับทั่วไปให้ผู้พูดแต่ละคน เช่น ผู้พูด 1 และผู้พูด 2 โดยอัตโนมัติ</translation>
 <translation id="38811596981744338">ปัญหาทางกฎหมาย</translation>
 <translation id="3885327323343477505">เปลี่ยนโปรแกรมรักษาหน้าจอ</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">ถอดสาย USB ของ <ph name="DEVICE_NAME" /> แล้วเสียบใหม่เพื่ออัปเดตต่อ</translation>
 <translation id="5099354524039520280">ขึ้น</translation>
 <translation id="5107243100836678918">แป้นพิมพ์ลัดที่ไม่มีแป้น<ph name="META_KEY" />อาจขัดแย้งกับแป้นพิมพ์ลัดของบางแอป กดแป้นพิมพ์ลัดนี้อีกครั้งเพื่อใช้ต่อไป หรือกดแป้นพิมพ์ลัดใหม่โดยใช้แป้น<ph name="KEY" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">คล้ายกัน:</translation>
 <translation id="5130848777448318809">ม้าแคระ</translation>
 <translation id="5137451382116112100">เต็ม</translation>
 <translation id="5139813694804168398">ห้ามรบกวน</translation>
 <translation id="5140788690559353412">เมื่อคุณสูญเสียสิทธิ์เข้าถึงบัญชีโรงเรียน คุณจะไม่สามารถเข้าถึงอีเมลและไฟล์ใน Google ไดรฟ์ที่เชื่อมโยง เช่น Gmail, เอกสาร, สไลด์ และอื่นๆ ได้อีกต่อไป</translation>
 <translation id="5142961317498132443">การตรวจสอบสิทธิ์</translation>
 <translation id="5144311987923128508">ปิดใช้ปุ่มยืนยันแล้ว</translation>
-<translation id="5144887194300568405">คัดลอกคำแปล</translation>
 <translation id="5145081769226915336">เปิดโหมดมืดโดยอัตโนมัติใช่ไหม</translation>
 <translation id="5145331109270917438">วันที่แก้ไข</translation>
 <translation id="5154917547274118687">หน่วยความจำ</translation>

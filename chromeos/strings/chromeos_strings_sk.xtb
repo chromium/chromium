@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Približný výsledok získate, keď hodnotu <ph name="CATEGORY_TEXT" /> vydelíte číslom <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Zdroj obrázka</translation>
 <translation id="1446954767133808402">zafír</translation>
-<translation id="1449035143498573192">Otvoriť vo Vyhľadávaní Google</translation>
 <translation id="1451536289672181509">Zariadenie je klávesnica.</translation>
 <translation id="1452939186874918380">dáždniky</translation>
 <translation id="145402479967797468">Ovládanie prehrávania</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Zobraziť ukážku položky <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Vstavaná sieť VPN</translation>
 <translation id="1669047024429367828">Viditeľnosť</translation>
-<translation id="1670478569471758522">Ďalšie informácie súvisiace s vaším výberom</translation>
 <translation id="1672499492233627739">Videoprenos z webovej kamery</translation>
 <translation id="1676557873873341166">Nahráva sa video</translation>
 <translation id="1684279041537802716">Zvýrazňujúca farba</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Dokončiť úpravy</translation>
 <translation id="3532980081107202182">Zostávajúci čas je približne <ph name="MIN_REMAINING" /> min.</translation>
 <translation id="3533790840489634638">bazén</translation>
-<translation id="3547264467365135390">Vzorec</translation>
 <translation id="3552832331940389362">obrázok mačky, ktorá sedí na parapete a pozerá sa na popoludňajší dážď, vytvorený v japonskom štýle</translation>
 <translation id="3557205324756024651">Miestna identita (nepovinné)</translation>
 <translation id="3565064564551103223">Povolené adresy IP</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Popis</translation>
 <translation id="3869314628814282185">tyl</translation>
 <translation id="387301095347517405">Koľkokrát prešla vaša batéria úplným cyklom nabíjania</translation>
-<translation id="3877066159641251281">Vypočuť preklad</translation>
 <translation id="3880601782712134623">automaticky rozpoznávať rôzne hlasy a každému hovoriacemu prideliť všeobecný štítok, napríklad 1. hovoriaci a 2. hovoriaci;</translation>
 <translation id="38811596981744338">Právny problém</translation>
 <translation id="3885327323343477505">Zmeniť šetrič obrazovky</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Ak chcete pokračovať v aktualizácii, odpojte kábel USB zariadenia <ph name="DEVICE_NAME" /> a znova ho pripojte</translation>
 <translation id="5099354524039520280">hore</translation>
 <translation id="5107243100836678918">Skratka bez klávesa <ph name="META_KEY" /> môže byť v konflikte so skratkou niektorej aplikácie. Ak chcete túto skratku naďalej používať, znova ju stlačte, prípadne stlačte novú skratku a použite pritom kláves <ph name="KEY" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Podobné:</translation>
 <translation id="5130848777448318809">poníky</translation>
 <translation id="5137451382116112100">Na celú obrazovku</translation>
 <translation id="5139813694804168398">režim bez vyrušení</translation>
 <translation id="5140788690559353412">Keď stratíte prístup k svojmu školskému účtu, už nebudete mať prístup k spojeným e‑mailom ani súborom na Disku Google, ako sú Gmail, Dokumenty, Prezentácie a ďalšie.</translation>
 <translation id="5142961317498132443">Overenie totožnosti</translation>
 <translation id="5144311987923128508">Tlačidlo Potvrdiť je vypnuté</translation>
-<translation id="5144887194300568405">Kopírovať preklad</translation>
 <translation id="5145081769226915336">Chcete, aby sa tmavý režim zapínal automaticky?</translation>
 <translation id="5145331109270917438">Dátum úpravy</translation>
 <translation id="5154917547274118687">Pamäť</translation>

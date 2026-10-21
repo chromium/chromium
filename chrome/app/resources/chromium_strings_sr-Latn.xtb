@@ -120,6 +120,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2190166659037789668">Greška sa proverom ažuriranja: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Ukloni nalog iz Chromium-a</translation>
 <translation id="2201788217099588893">Koristite aplikaciju Chromium i ponesite sa sobom najbolje alatke za kupovinu</translation>
+<translation id="2209877494277346829">Izoluj Chromium od drugih aplikacija</translation>
 <translation id="2210502920229141283">Budite bezbedniji u pokretu uz poboljšano bezbedno pregledanje u Chromium-u za iOS</translation>
 <translation id="2210682093923538346">Opasan sajt. Chromium je uklonio obaveštenja.</translation>
 <translation id="2236949375853147973">Moje aktivnosti</translation>
@@ -192,6 +193,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
 <translation id="2977506796191543575">Ako neki sajt pokuša da ukrade vašu lozinku ili probate da preuzmete štetni fajl, Chromium može da pošalje URL-ove, uključujući delove sadržaja stranice, u Bezbedno pregledanje</translation>
 <translation id="2981563588585023386">Ako želiš veću bezbednost onlajn uz izbore roditelja, prijavi se u Chromium</translation>
+<translation id="2992577225802060159">Štiti Chromium memoriju od drugih aplikacija na računaru.</translation>
 <translation id="3003694935412297923">Svi zadaci</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium mora da verifikuje da ste to vi da bi neki podaci mogli da se sačuvaju na Google nalogu i koriste na svim uređajima. Ako se odjavite odmah, ovi podaci (1 stavka) će se izbrisati.}one{Chromium mora da verifikuje da ste to vi da bi neki podaci mogli da se sačuvaju na Google nalogu i koriste na svim uređajima. Ako se odjavite odmah, ovi podaci ({count} stavka) će se izbrisati.}few{Chromium mora da verifikuje da ste to vi da bi neki podaci mogli da se sačuvaju na Google nalogu i koriste na svim uređajima. Ako se odjavite odmah, ovi podaci ({count} stavke) će se izbrisati.}other{Chromium mora da verifikuje da ste to vi da bi neki podaci mogli da se sačuvaju na Google nalogu i koriste na svim uređajima. Ako se odjavite odmah, ovi podaci ({count} stavki) će se izbrisati.}}</translation>
 <translation id="3013473503895162900">Otvorite <ph name="URL" /> na novoj kartici u Chromium-u.</translation>
@@ -468,7 +470,6 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="5949225980829865667">Da bi vam ovaj obeleživač i drugi sadržaj bili dostupni na svim uređajima, prijavite se u Chromium</translation>
 <translation id="5953657885167112863">Prilagodite Chromium sebi</translation>
 <translation id="5960071705175224773">Nepoznata aplikacija je promenila podešavanja</translation>
-<translation id="5977420883993828287">Zakačeno je. Ponovo koristite kontekstualne zadatke sa trake s alatkama</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organizacija automatski zatvara Chromium kada se ne koristi 1 minut.}one{Organizacija automatski zatvara Chromium kada se ne koristi # minut.}few{Organizacija automatski zatvara Chromium kada se ne koristi # minuta.}other{Organizacija automatski zatvara Chromium kada se ne koristi # minuta.}}</translation>
 <translation id="5987687638152509985">Ažurirajte Chromium da biste započeli sinhronizaciju</translation>
 <translation id="5990360079535151574">Pomoću dugmeta Kontekstualni zadaci na traci s alatkama možete ponovo da otvorite kontekstualne zadatke da biste postavljali pitanja tokom pregledanja</translation>

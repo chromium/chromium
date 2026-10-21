@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">如要計算約數，請將<ph name="CATEGORY_TEXT" />的數值除以 <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">圖片來源</translation>
 <translation id="1446954767133808402">藍寶石</translation>
-<translation id="1449035143498573192">在「Google 搜尋」中開啟</translation>
 <translation id="1451536289672181509">裝置類型係鍵盤。</translation>
 <translation id="1452939186874918380">傘</translation>
 <translation id="145402479967797468">播放控制項</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">預覽「<ph name="PREVIEW_OBJECT" />」</translation>
 <translation id="1668469839109562275">內置 VPN</translation>
 <translation id="1669047024429367828">分享設定</translation>
-<translation id="1670478569471758522">同所揀內容有關嘅詳情</translation>
 <translation id="1672499492233627739">網絡攝影機視像畫面</translation>
 <translation id="1676557873873341166">正在錄影</translation>
 <translation id="1684279041537802716">強調色</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">完成編輯</translation>
 <translation id="3532980081107202182">大約尚餘 <ph name="MIN_REMAINING" /> 分鐘</translation>
 <translation id="3533790840489634638">水池</translation>
-<translation id="3547264467365135390">公式</translation>
 <translation id="3552832331940389362">一幅日本動畫插圖，呈現一隻貓坐在窗台看著下午的雨景</translation>
 <translation id="3557205324756024651">本機身分 (選用)</translation>
 <translation id="3565064564551103223">已允許的 IP</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">描述</translation>
 <translation id="3869314628814282185">薄紗</translation>
 <translation id="387301095347517405">電池經過完整充電循環的次數</translation>
-<translation id="3877066159641251281">聆聽翻譯內容</translation>
 <translation id="3880601782712134623">自動偵測不同語音，並為每個講者分別指派通用標籤 (如「講者 1」和「講者 2」)</translation>
 <translation id="38811596981744338">法律問題</translation>
 <translation id="3885327323343477505">改螢幕保護程式</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">請拔除「<ph name="DEVICE_NAME" />」USB 線，然後重新插上以繼續更新程序</translation>
 <translation id="5099354524039520280">向上</translation>
 <translation id="5107243100836678918">使用快速鍵時如未按下<ph name="META_KEY" />鍵，可能會與部分應用程式的快速鍵發生衝突。再按下此快速鍵即可繼續使用，或按下<ph name="KEY" />鍵重新輸入快速鍵。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">近義詞：</translation>
 <translation id="5130848777448318809">小馬</translation>
 <translation id="5137451382116112100">全螢幕</translation>
 <translation id="5139813694804168398">請勿騷擾</translation>
 <translation id="5140788690559353412">失去學校帳戶存取權後，你將無法再存取相關聯的電郵和「Google 雲端硬碟」檔案，例如 Gmail、「文件」和「簡」報等。</translation>
 <translation id="5142961317498132443">驗證</translation>
 <translation id="5144311987923128508">而家停用咗「確認」掣</translation>
-<translation id="5144887194300568405">複製翻譯</translation>
 <translation id="5145081769226915336">要自動開啟深色模式嗎？</translation>
 <translation id="5145331109270917438">已修改日期</translation>
 <translation id="5154917547274118687">記憶體</translation>

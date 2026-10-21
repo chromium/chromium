@@ -117,6 +117,7 @@
 <translation id="2190166659037789668">Yangilanishni tekshirishda xato: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Hisobni Chromiumdan chiqarish</translation>
 <translation id="2201788217099588893">Eng yaxshi xarid vositalari har doim yoningizda boʻlishi uchun Chromium ilovasidan foydalaning</translation>
+<translation id="2209877494277346829">Chromiumni boshqa ilovalardan ajratish</translation>
 <translation id="2210502920229141283">iOS uchun Chromium saytlarni kuchaytirilgan rejimda xavfsiz kezish funksiyasi bilan maʼlumotlarni himoyalang</translation>
 <translation id="2210682093923538346">Xavfli sayt. Chromium bildirishnomalarni olib tashladi.</translation>
 <translation id="2236949375853147973">Harakatlarim</translation>
@@ -189,6 +190,7 @@
 <translation id="2977470724722393594">Siz Chromium brauzerining eng oxirgi versiyasidan foydalanyapsiz.</translation>
 <translation id="2977506796191543575">Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chromium ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin</translation>
 <translation id="2981563588585023386">Ota-onangiz belgilagan sozlamalar asosida internetni xavfsiz kezishingiz uchun Chromiumga kiring</translation>
+<translation id="2992577225802060159">Chromium xotirasini kompyuteringizdagi boshqa ilovalardan himoyalaydi.</translation>
 <translation id="3003694935412297923">Barcha vazifalar</translation>
 <translation id="3012615494352020668">{count,plural, =1{Ayrim maʼlumotlar Google hisobingizda saqlanishi va barcha qurilmalarda ishlatilishidan avval Chromium shaxsingizni tasdiqlashi kerak. Hozir chiqsangiz, bu maʼlumotlar (1 obyekt) oʻchib ketadi.}other{Ayrim maʼlumotlar Google hisobingizda saqlanishi va barcha qurilmalarda ishlatilishidan avval Chromium shaxsingizni tasdiqlashi kerak. Hozir chiqsangiz, bu maʼlumotlar ({count} obyekt) oʻchib ketadi.}}</translation>
 <translation id="3013473503895162900">Chromiumda yangi varaqda ochish: <ph name="URL" /></translation>
@@ -463,7 +465,6 @@ Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="5949225980829865667">Bu bukmark va boshqalardan barcha qurilmalarda foydalanish uchun Chromium hisobiga kiring</translation>
 <translation id="5953657885167112863">Chromiumni oʻzingizga moslang</translation>
 <translation id="5960071705175224773">Sozlamalar notanish ilova tomonidan oʻzgartirildi</translation>
-<translation id="5977420883993828287">Mahkamlandi! Endi uni asboblar panelidan ochish mumkin</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Chromium 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi.}other{Chromium # daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi.}}</translation>
 <translation id="5987687638152509985">Sinxronizatsiyani boshlash uchun Chromium brauzerini yangilang</translation>
 <translation id="5990360079535151574">Asboblar panelidagi “Kontekstli vazifalar” tugmasi orqali internetni kezish davomida savollar berish uchun Kontekstli vazifalarni qayta ochishingiz mumkin</translation>

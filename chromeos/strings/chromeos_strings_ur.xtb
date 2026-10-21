@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">ایک تخمینی نتیجے کے لیے، <ph name="CATEGORY_TEXT" /> قدر کو <ph name="CONVERSION_RATE" /> سے تقسیم کریں</translation>
 <translation id="1442433966118452622">تصویر کا ماخذ</translation>
 <translation id="1446954767133808402">نیلم</translation>
-<translation id="1449035143498573192">‏Google تلاش میں کھولیں</translation>
 <translation id="1451536289672181509">آلہ ایک کی بورڈ ہے۔</translation>
 <translation id="1452939186874918380">چھتریاں</translation>
 <translation id="145402479967797468">پلے بیک کنٹرولز</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> کا پیش منظر دیکھیں</translation>
 <translation id="1668469839109562275">‏پہلے سے موجود VPN</translation>
 <translation id="1669047024429367828">مرئیت</translation>
-<translation id="1670478569471758522">آپ کے انتخاب سے متعلق مزید معلومات</translation>
 <translation id="1672499492233627739">ویب کیم ویڈیو فیڈ</translation>
 <translation id="1676557873873341166">ویڈیو بنائی جا رہی ہے</translation>
 <translation id="1684279041537802716">ایکسینٹ کا رنگ</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">ترمیم ہو گئی</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> منٹ باقی ہیں</translation>
 <translation id="3533790840489634638">پول</translation>
-<translation id="3547264467365135390">فارمولہ</translation>
 <translation id="3552832331940389362">دوپہر میں کھڑکی پر بیٹھے بارش دیکھتی ہوئی بلی کے جاپانی اینیمیشن کا خاکہ</translation>
 <translation id="3557205324756024651">مقامی شناخت (اختیاری)</translation>
 <translation id="3565064564551103223">‏اجازت یافتہ IPs</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">تفصیل</translation>
 <translation id="3869314628814282185">ریشمی جالدار</translation>
 <translation id="387301095347517405">آپ کی بیٹری کے مکمل طور پر چارج ہونے کی تعداد</translation>
-<translation id="3877066159641251281">ترجمہ سنیں</translation>
 <translation id="3880601782712134623">مختلف آوازوں کا خودکار طور پتہ لگائیں اور ہر اسپیکر کو ایک عام لیبل دیں جیسے کہ اسپیکر 1 اور اسپیکر 2</translation>
 <translation id="38811596981744338">قانونی مسئلہ</translation>
 <translation id="3885327323343477505">اسکرین سیور تبدیل کریں</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">‏اپ ڈیٹ ہونے کے عمل کو جاری رکھنے کے لیے <ph name="DEVICE_NAME" /> کے USB کیبل کو ان پلگ کریں اور پھر اسے دوبارہ داخل کریں</translation>
 <translation id="5099354524039520280">اوپر</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> کی کلید کے بغیر شارٹ کٹ کچھ ایپ کے شارٹ کٹ سے متصادم ہو سکتا ہے۔ اس شارٹ کٹ کا استعمال جاری رکھنے کے لیے اسے دوبارہ دبائیں یا <ph name="KEY" /> کی کلید کا استعمال کرتے ہوئے نیا شارٹ کٹ دبائیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">ملتا جلتا:</translation>
 <translation id="5130848777448318809">پونیز</translation>
 <translation id="5137451382116112100">فُل</translation>
 <translation id="5139813694804168398">ڈسٹرب نہ کریں</translation>
 <translation id="5140788690559353412">‏جب آپ اپنے اسکول اکاؤنٹ تک رسائی کھو دیتے ہیں تو آپ کو متعلقہ ای میل اور Google Drive فائلز جیسے Gmail، Docs، Slides وغیرہ تک مزید رسائی حاصل نہیں ہوگی۔</translation>
 <translation id="5142961317498132443">تصدیق</translation>
 <translation id="5144311987923128508">تصدیق کا بٹن اب غیر فعال ہے</translation>
-<translation id="5144887194300568405">ترجمہ کاپی کریں</translation>
 <translation id="5145081769226915336">تاریک وضع کو خودکار طور پر آن کریں؟</translation>
 <translation id="5145331109270917438">تاریخ میں ترمیم کی گئی ہے</translation>
 <translation id="5154917547274118687">میموری</translation>

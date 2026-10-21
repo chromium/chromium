@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Přizpůsobte si Chrome pomocí vlastních barev a obrázků pro domovskou stránku</translation>
 <translation id="389521680295183045">Weby mohou požádat o to, aby mohly zjišťovat, zda aktivně používáte své zařízení</translation>
 <translation id="3895926599014793903">Vynutit aktivaci přiblížení</translation>
-<translation id="3905475044299942653">Zastavit spousty oznámení</translation>
 <translation id="3922092564198021702">V telefonu přejděte do Nastavení</translation>
 <translation id="3924858949939391676">Po zapnutí režimu čtení zobrazit odkazy</translation>
 <translation id="3933121352599513978">Sbalit nechtěné žádosti (doporučeno)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Skupiny najdete v sekci skupin karet an všech svých zařízeních</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> má zablokováno používání vašich údajů na</translation>
 <translation id="4953688446973710931">Když je tato možnost zapnutá, weby mohou žádat o automatické stažení více souborů. Když je vypnutá, weby nemohou stahovat automaticky více souborů.</translation>
-<translation id="4962975101802056554">Zrušit všechna oprávnění pro zařízení</translation>
 <translation id="4972737347717125191">Weby mohou požádat o použití zařízení a dat pro virtuální realitu</translation>
 <translation id="4973805849704516244">Spodní panel barev Chromu</translation>
 <translation id="497421865427891073">Vpřed</translation>
@@ -704,7 +702,6 @@ Pokročilá ochrana spravuje tato nastavení Chromu:</translation>
 <translation id="8428213095426709021">Nastavení</translation>
 <translation id="8441146129660941386">Přetočit dozadu</translation>
 <translation id="8444433999583714703">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit přístup ke své poloze, zapněte polohu také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Zrušit oprávnění zařízení</translation>
 <translation id="8463843545738141778">Tohle nastavení nejde zapnout, protože jste v nastavení Androidu zapnuli pokročilou ochranu.</translation>
 <translation id="8467359479529706065">Spodní panel vzhledu stránky Nová karta otevřený na polovinu výšky</translation>
 <translation id="8471525937465764768">Weby se obvykle připojují k zařízením USB kvůli funkcím, jako je tisk dokumentu nebo uložení obsahu na paměťové zařízení</translation>

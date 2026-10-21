@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Bëje Chrome tëndin me ngjyra dhe imazhe të personalizuara për faqen tënde kryesore</translation>
 <translation id="389521680295183045">Sajtet mund të kërkojnë të dinë kur e përdor pajisjen tënde në mënyrë aktive</translation>
 <translation id="3895926599014793903">Aktivizo me detyrim zmadhimin</translation>
-<translation id="3905475044299942653">Ndalo shumë njoftime</translation>
 <translation id="3922092564198021702">Në telefon, hap "Cilësimet"</translation>
 <translation id="3924858949939391676">Shfaq lidhjet pasi të jetë aktivizuar "Modaliteti i leximit"</translation>
 <translation id="3933121352599513978">Palos kërkesat e padëshiruara (rekomandohet)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Grupet e tua do t'i gjesh te seksioni i grupeve të skedave në të gjitha pajisjet e tua</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> është bllokuar që të mos përdorë informacionet e tua në</translation>
 <translation id="4953688446973710931">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të shkarkojnë automatikisht shumë skedarë. Kur cilësimi është joaktiv, sajtet nuk mund të shkarkojnë automatikisht shumë skedarë.</translation>
-<translation id="4962975101802056554">Anulo të gjitha lejet për pajisjen</translation>
 <translation id="4972737347717125191">Sajtet mund të kërkojnë të përdorin të dhënat dhe pajisjet e realitetit virtual</translation>
 <translation id="4973805849704516244">Fleta e poshtme e ngjyrave të Chrome</translation>
 <translation id="497421865427891073">Vazhdo përpara</translation>
@@ -704,7 +702,6 @@
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8441146129660941386">Kërko prapa</translation>
 <translation id="8444433999583714703">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te vendndodhja jote, aktivizo gjithashtu vendndodhjen në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Revoko lejen e pajisjes</translation>
 <translation id="8463843545738141778">Ky cilësim është i çaktivizuar sepse ke aktivizuar "Mbrojtjen e përparuar" te "Cilësimet" e Android.</translation>
 <translation id="8467359479529706065">Fleta e poshtme e pamjes së faqeve të skedave të reja u hap në gjysmë lartësi</translation>
 <translation id="8471525937465764768">Sajtet lidhen zakonisht me pajisjet me USB për veçoritë si printimi i një dokumenti ose ruajtja te një pajisje e hapësirës ruajtëse</translation>

@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Para obter un resultado aproximado, divide o valor de <ph name="CATEGORY_TEXT" /> entre <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Fonte da imaxe</translation>
 <translation id="1446954767133808402">zafiro</translation>
-<translation id="1449035143498573192">Abrir na Busca de Google</translation>
 <translation id="1451536289672181509">O dispositivo é un teclado.</translation>
 <translation id="1452939186874918380">paraugas</translation>
 <translation id="145402479967797468">Controis de reprodución</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Mostrar vista previa de: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN integrada</translation>
 <translation id="1669047024429367828">Visibilidade</translation>
-<translation id="1670478569471758522">Máis información relacionada coa túa selección</translation>
 <translation id="1672499492233627739">Feed de vídeo da cámara web</translation>
 <translation id="1676557873873341166">Gravando vídeo</translation>
 <translation id="1684279041537802716">Cor de énfase</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Edición feita</translation>
 <translation id="3532980081107202182">Quedan <ph name="MIN_REMAINING" /> minutos aproximadamente</translation>
 <translation id="3533790840489634638">estanque</translation>
-<translation id="3547264467365135390">Fórmula</translation>
 <translation id="3552832331940389362">ilustración de animación xaponesa dun gato sentado no peitoril dunha ventá mirando a chuvia pola tarde</translation>
 <translation id="3557205324756024651">Identidade local (opcional)</translation>
 <translation id="3565064564551103223">Enderezos IP permitidos</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Descrición</translation>
 <translation id="3869314628814282185">tule</translation>
 <translation id="387301095347517405">Número de veces que a batería se someteu a un ciclo de carga completo</translation>
-<translation id="3877066159641251281">Escoitar a tradución</translation>
 <translation id="3880601782712134623">Detectar automaticamente as distintas voces e atribuírlles unha etiqueta xenérica a cada unha (por exemplo, Falante 1 e Falante 2)</translation>
 <translation id="38811596981744338">Problema legal</translation>
 <translation id="3885327323343477505">Cambiar protector de pantalla</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Desconecta o cable USB do dispositivo (<ph name="DEVICE_NAME" />) e, a continuación, volve inserilo para seguir co proceso de actualización</translation>
 <translation id="5099354524039520280">arriba</translation>
 <translation id="5107243100836678918">Un atallo sen a tecla <ph name="META_KEY" /> podería entrar en conflito co atallo dalgunha aplicación. Preme este atallo de novo para seguir usándoo ou preme un novo que inclúa a tecla <ph name="KEY" />. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Similares:</translation>
 <translation id="5130848777448318809">ponis</translation>
 <translation id="5137451382116112100">Completa</translation>
 <translation id="5139813694804168398">non molestar</translation>
 <translation id="5140788690559353412">Cando perdas o acceso á túa conta de centro educativo, tampouco poderás acceder ao correo electrónico asociado nin aos ficheiros de Google Drive, como os de Gmail, Documentos ou Presentacións, entre outros.</translation>
 <translation id="5142961317498132443">Autenticación</translation>
 <translation id="5144311987923128508">O botón de confirmación xa está desactivado</translation>
-<translation id="5144887194300568405">Copiar a tradución</translation>
 <translation id="5145081769226915336">Queres activar o modo escuro automaticamente?</translation>
 <translation id="5145331109270917438">Data de modificación</translation>
 <translation id="5154917547274118687">Memoria</translation>

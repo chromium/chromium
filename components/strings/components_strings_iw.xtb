@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
-<translation id="1003222766972176318">תזכורת: יש מבצע שמור</translation>
 <translation id="1008557486741366299">לא עכשיו</translation>
 <translation id="100957008357583611">להשתמש במיקום שלך?</translation>
 <translation id="1010200102790553230">לטעינת הדף מאוחר יותר</translation>
@@ -240,6 +239,7 @@
 <translation id="1393071644879491291">‏תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות או לחשוף פרטים כמו הסיסמאות, מספרי הטלפון או מספרי כרטיסי האשראי שלך. אזהרה מ-Chrome: ממש לא מומלץ להמשיך. עדיף לעשות אחורה פנה. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">‏הוספת תעודה מזהה באופן מאובטח ל-Google Wallet</translation>
 <translation id="1398743098754840707">אתרים שיתווספו לכאן לא יהיו מקור לתשובות, גם אם הכרטיסייה פתוחה. אם האתר שמוסיפים נמצא באותו רגע בשימוש בשרשור, יכול להיות שיעברו עד 30 דקות עד שהשרשור יפסיק להפנות אליו.</translation>
+<translation id="1403359480263156644">שם בעל הכרטיס עודכן</translation>
 <translation id="1405567553485452995">ירוק בהיר</translation>
 <translation id="1406370515365284486">אמצעי התשלום שלך עדיין יישמרו</translation>
 <translation id="1406500794671479665">מאמת...</translation>
@@ -908,6 +908,7 @@
 <translation id="2498091847651709837">סריקת כרטיס חדש</translation>
 <translation id="2501270939904835585">Labels (Satin)</translation>
 <translation id="2501278716633472235">חזרה</translation>
+<translation id="250307989715832083">הוספת חתימה</translation>
 <translation id="250346157641628208">Paper (Inkjet)</translation>
 <translation id="2505063700931618106">פרטי הכרטיס נשמרו</translation>
 <translation id="2505268675989099013">הגנה על החשבון</translation>
@@ -1127,6 +1128,7 @@
 <translation id="2911973620368911614">מזהה משתמש של חשבון עבודה</translation>
 <translation id="2914160345369867329">‏האתר <ph name="SITE" /> משתמש בדרך כלל בהצפנה כדי להגן על המידע שלך. כאשר Chrome ניסה הפעם להתחבר ל-<ph name="SITE" />, האתר שלח חזרה אישורים חריגים ושגויים. יכול להיות שתוקף מנסה להתחזות לאתר <ph name="SITE" />, או שמסך כניסה ל-Wi-Fi הפריע לחיבור. המידע שלך עדיין מאובטח מכיוון ש-Chrome הפסיק את החיבור לפני חילופי הנתונים.</translation>
 <translation id="2915068235268646559">קריסה משעה <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">כל המכשירים</translation>
 <translation id="2916038427272391327">סגירת תוכניות אחרות</translation>
 <translation id="2917630513638801879">ציאן 1</translation>
 <translation id="2922350208395188000">לא ניתן לבדוק את אישור השרת.</translation>
@@ -1462,7 +1464,6 @@
 <translation id="3479552764303398839">לא עכשיו</translation>
 <translation id="3481315707647070701">המחשה ועריכה</translation>
 <translation id="3484560055331845446">‏ייתכן שמישהו אחר ישלול את הגישה שלך לחשבון Google. לגלישה בטוחה ב-Chrome, מומלץ לשנות את הסיסמה עכשיו.</translation>
-<translation id="3484861421501147767">תזכורת: יש קוד הטבה שמור</translation>
 <translation id="3485901585646640838">‏כדי להשתמש בסיסמאות ובפרטים נוספים ששמורים בחשבון Google, צריך לאמת את הזהות שלך</translation>
 <translation id="3487845404393360112">מגש 4</translation>
 <translation id="3493881266323043047">תוקף</translation>
@@ -1822,6 +1823,7 @@
 <translation id="4067774859633143413">כדי לצאת מהמסך המלא ולראות את מה שהורדת, צריך ללחוץ לחיצה ארוכה על |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">הוספה של כתובת חוקית</translation>
 <translation id="4072486802667267160">התרחשה שגיאה במהלך עיבוד התשלום שלך. יש לנסות שוב.</translation>
+<translation id="4073293290376142777">רוצה להיכנס לחשבון?</translation>
 <translation id="4073376909608563327">לא ניתן היה להשתמש בביטול הנעילה של המכשיר</translation>
 <translation id="4073797364926776829">הצגת הכרטיס</translation>
 <translation id="4075732493274867456">‏הלקוח והשרת אינם תומכים בגרסה נפוצה של פרוטוקול SSL או בחבילת הצפנה.</translation>
@@ -1854,6 +1856,7 @@
 <translation id="4107047499377819067">‏ההתקנה של שירותי ה-VPN שפועלים ברקע החלה. יכול להיות שזה ייקח כמה דקות.</translation>
 <translation id="4110642094637545339">‏הלוגו של Google Pay ו-AfterPay</translation>
 <translation id="4110652170750985508">בדיקת התשלום</translation>
+<translation id="411071007970303441">כל הגורמים</translation>
 <translation id="4112140312785995938">הרצה לאחור</translation>
 <translation id="4114007503059268298">‏רוצה לשמור את פרטי הכרטיס בחשבון Google שלך ובמכשיר הזה?</translation>
 <translation id="4114146879518089587">המשך לאתר</translation>
@@ -1918,6 +1921,7 @@
 <translation id="4218327733815631046">להמשיך עם מיקום משוער</translation>
 <translation id="4219596572397833317">צפייה בהיסטוריית המחירים ובנתונים נוספים תעזור לך לקנות בצורה חכמה יותר.</translation>
 <translation id="4220128509585149162">קריסה</translation>
+<translation id="4220745762102459826">ועוד</translation>
 <translation id="4221630205957821124">‏&lt;h4&gt;שלב ראשון: כניסה לפורטל&lt;/h4&gt;
     &lt;p&gt;כדי להשתמש ברשתות Wi-Fi במקומות כמו בתי קפה ושדות תעופה, צריך להיכנס לפורטל ייעודי. כדי לראות את דף הכניסה צריך להיכנס לדף שהכתובת שלו מתחילה ב-&lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2884,6 +2888,7 @@ Del</translation>
 <translation id="5794065675298686371">הפעלת התראות על מעקב מחירים</translation>
 <translation id="5794093550048860249">מספר מעקב</translation>
 <translation id="5796050750059455142">‏מפעילים את ההגדרה <ph name="BEGIN_LINK" />תכונות חכמות במוצרים אחרים של Google<ph name="LINK_END" /></translation>
+<translation id="5797916798049571144">השם נשמר עם פרטי הכרטיס, כך שהוא ימולא אוטומטית בשלב התשלום</translation>
 <translation id="5797984091151707075">התוכן נחסם בגלל מדיניות האדמין</translation>
 <translation id="5804241973901381774">הרשאות</translation>
 <translation id="5806871454498484178">אי אפשר לגלול ולשנות את מרחק התצוגה</translation>
@@ -3445,6 +3450,7 @@ Del</translation>
 <translation id="6753460329812070808">‏ההצעה הוסרה מ-Chrome</translation>
 <translation id="6757797048963528358">המכשיר עבר למצב שינה.</translation>
 <translation id="6758934187792712102">האתר <ph name="URL" /> רוצה להשתמש בחיישני התנועה והאור</translation>
+<translation id="6766488013065406604">‏ל'מנהל הסיסמאות של Google'</translation>
 <translation id="6770747695101757579">Paper (Cotton)</translation>
 <translation id="6772959465807028761">‏כדי להשתמש ב-YouTube, צריך להמשיך עם חשבון Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3655,7 +3661,6 @@ Del</translation>
 <translation id="7120588595737538743">הורדות וצילומי מסך</translation>
 <translation id="7124354851782353862">יש להזין את קוד האימות</translation>
 <translation id="7129409597930077180">לא ניתן לבצע משלוח לכתובת הזו. עליך לבחור כתובת אחרת.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">ההעלאה חסומה</translation>
 <translation id="7132939140423847331">מנהל המערכת שלך אסר על העתקת הנתונים האלה.</translation>
 <translation id="7134653428559514680">לא מומלץ לשתף תוכן מהאתר הזה</translation>
@@ -3973,6 +3978,7 @@ Del</translation>
 <translation id="7637571805876720304">‏האם להסיר מ-Chromium את כרטיס האשראי?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{אין סיסמאות}=1{סיסמה אחת בחשבון (עבור <ph name="DOMAIN_LIST" />)}one{# סיסמאות בחשבון (עבור <ph name="DOMAIN_LIST" />)}two{# סיסמאות בחשבון (עבור <ph name="DOMAIN_LIST" />)}other{# סיסמאות בחשבון (עבור <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">יציאות טוריות</translation>
+<translation id="7644100755247241229">‏אפשר להשתמש ב-Pix כדי להעביר כסף לחברים ולשלם לעסקים באמצעות Google Wallet</translation>
 <translation id="7646681339175747202">‏הסיסמה שבה השתמשת עכשיו אותרה בפרצה באבטחת מידע. לפי מנהל הסיסמאות של Google, מומלץ לשנות את הסיסמה שלך עכשיו.</translation>
 <translation id="7647206758853451655">איכות הדפסה</translation>
 <translation id="7648133459447652947">כדי להציג את הסמן, צריך לעבור בין אפליקציות, לטעון מחדש את הדף או לחזור אחורה</translation>
@@ -4076,6 +4082,7 @@ Del</translation>
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="7798389633136518089">המדיניות לא הובאה בחשבון מפני שלא הוגדרה על-ידי מקור בענן.</translation>
 <translation id="7800304661137206267">החיבור מוצפן באמצעות <ph name="CIPHER" /> עם <ph name="MAC" /> לאימות הודעות ועם <ph name="KX" /> בתור מנגנון להחלפת מפתחות.</translation>
+<translation id="780228007282527248">כדי לשפר את החיפוש, אפשר להוסיף כרטיסייה או תמונה</translation>
 <translation id="7802523362929240268">האתר חוקי</translation>
 <translation id="7802989406998618639">יש להזין את קוד האבטחה בן <ph name="NUMBER_OF_DIGITS" /> הספרות שמופיע על <ph name="SIDE_OF_CARD" /> כדי שהבנק יוכל לאמת את זהותך</translation>
 <translation id="780301667611848630">לא תודה</translation>

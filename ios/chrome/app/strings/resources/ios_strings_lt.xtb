@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Atidaryti naujoje skirtukų grupėje</translation>
 <translation id="1670861525135254448">Išsaugokite transporto priemonę</translation>
 <translation id="1671568970992212376">Išsaugokite nuotraukas „Google“ nuotraukose ir bet kada jas pasiekite.</translation>
+<translation id="1671824312818944549">Pastaba: šis nustatymas geriau veikia naudojant 27 ar naujesnės versijos „iOS“.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> į <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Pieškite, paryškinkite arba palieskite bet kurį ekrano objektą, kad atliktumėte paiešką</translation>
 <translation id="1678855624321223424">Pagal jūsų organizacijos politiką šiame faile gali būti neskelbtinos informacijos</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">Sveiki sugrįžę!</translation>
 <translation id="2015722694326466240">Jei norite matyti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="201759455285471444">Išskleisti skirtukų grupę.</translation>
+<translation id="2022431790688770637">Tvarkyti „Gemini“ pasiūlymus</translation>
 <translation id="2031515492007104071">Naujas lygis</translation>
 <translation id="2044394949148788042">Atidarykite skirtuko tinklelį</translation>
 <translation id="2044681667265133332">Paskyrą <ph name="USER_EMAIL" /> tvarko svetainė <ph name="HOSTED_DOMAIN" />, kuri gali peržiūrėti tam tikrą informaciją. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">Paklauskite ko nors ir gaukite DI pagrįstų atsakymų</translation>
 <translation id="2870560284913253234">Svetainė</translation>
 <translation id="2876369937070532032">Siunčia „Google“ kai kurių puslapių, kuriuose lankotės, URL, kai kyla pavojus jūsų saugai</translation>
+<translation id="2880119244122776372">Kurkite ir programuokite</translation>
 <translation id="2883151425485251736">Peržiūrėkite ir redaguokite temas, kurias paslėpėte paskyroje</translation>
 <translation id="2884437560239137197">Reikia atkreipti dėmesį</translation>
 <translation id="288655811176831528">Uždaryti skirtuką</translation>
@@ -1695,6 +1698,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6301104306974789820">Gaukite kainų stebėjimo pranešimus</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Adreso juostos pozicijos pasirinkimas</translation>
+<translation id="6305257382500066042">Išbandykite dabar</translation>
 <translation id="6307241780749477694">Patvirtinkite savo tapatybę, kad gautumėte visus slaptažodžius šiame įrenginyje</translation>
 <translation id="6307792728709337290">Išsaugokite kortelę „Google“ paskyroje, kad galėtumėte automatiškai ją užpildyti šiam ir būsimiems pirkiniams, atliekamiems naršyklėje „Chrome“.</translation>
 <translation id="6316141353357700666">Iš pateikto sąrašo pasirinkite norimą naudoti slaptažodį.</translation>
@@ -1848,7 +1852,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6708501134077648845">Slaptažodžių parinktys</translation>
 <translation id="6709964700841491574">Užrakinimo režimas</translation>
 <translation id="6710079714193676716">Valdo jūsų organizacija. Kai kurios funkcijos gali būti nepasiekiamos. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">Išmanesni, greitesni atsakymai</translation>
 <translation id="6713676799463473249">Pakeista <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Gauti skirtukai</translation>
 <translation id="6722638373100589752">Jei norite automatiškai užpildyti informaciją, „Wallet“ nustatymuose įjunkite parinktį „Naudoti korteles sistemoje „Google“</translation>
@@ -2060,7 +2063,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Tęsti</translation>
 <translation id="741204030948306876">Taip, sutinku</translation>
-<translation id="7417055777338419059">Kurti kodą, rašyti arba kurti skaidres</translation>
 <translation id="7419565702166471774">Visada naudoti saugų ryšį</translation>
 <translation id="7423098979219808738">Pirmiausia paklausti</translation>
 <translation id="7425053386765766120">Pridėti mokėjimo metodą…</translation>
@@ -2110,6 +2112,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="7525067979554623046">Sukurti</translation>
 <translation id="75362970626182391">Nauja skirtukų grupė</translation>
 <translation id="7537586195939242955">Deja, šiuo metu negalima įdiegti „Pass“ į „Passbook“.</translation>
+<translation id="7540924742308928499">Generuokite ir apibendrinkite idėjas</translation>
 <translation id="754655535278952384">Tikrinta <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Uždaryti viską</translation>
 <translation id="7557508262441527045">Atsijungta</translation>
@@ -2479,7 +2482,6 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="8642417828095157370">Skirtukai bendrinami, kad gautumėte aktualesnius atsakymus</translation>
 <translation id="8643403533759285912">Ištrinti grupę</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">Nepavyko atsisakyti kainos stebėjimo.</translation>
 <translation id="8654802032646794042">Atšaukti</translation>
 <translation id="8655861111558401309">Pasirinkite „Ištrinti naršymo duomenis“</translation>
 <translation id="8659875081143553823">Šiek tiek palaukite</translation>

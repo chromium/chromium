@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Megnyitás új lapcsoportban</translation>
 <translation id="1670861525135254448">Jármű mentése</translation>
 <translation id="1671568970992212376">Fotókat menthet a Google Fotókba, és bármikor hozzájuk férhet.</translation>
+<translation id="1671824312818944549">Megjegyzés: Ez a beállítás jobban működik iOS 27 vagy újabb verzió esetén.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> nyelvről <ph name="TARGET_LANGUAGE" /> nyelvre</translation>
 <translation id="1676102443145105381">Rajzolással, kijelöléssel vagy koppintással válasszon ki bármit a képernyőn, amire rá szeretne keresni.</translation>
 <translation id="1678855624321223424">A szervezeti házirendek alapján ez a fájl bizalmas információkat tartalmazhat</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">Üdvözöljük ismét!</translation>
 <translation id="2015722694326466240">A jelszavak megtekintéséhez előbb be kell állítania az eszközön a biztonsági kódot.</translation>
 <translation id="201759455285471444">Lapcsoport kibontása.</translation>
+<translation id="2022431790688770637">Gemini-javaslatok kezelése</translation>
 <translation id="2031515492007104071">Szintlépés</translation>
 <translation id="2044394949148788042">Nyissa meg a laprácsot</translation>
 <translation id="2044681667265133332">A(z) <ph name="USER_EMAIL" /> fiókot a(z) <ph name="HOSTED_DOMAIN" /> kezeli, amely megtekinthet bizonyos adatokat. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">Bármit megkérdezhet, és AI-alapú válaszokat kaphat</translation>
 <translation id="2870560284913253234">Webhely</translation>
 <translation id="2876369937070532032">Elküldi egyes felkeresett oldalak URL-jét a Google-nak, ha veszélyben van az Ön biztonsága</translation>
+<translation id="2880119244122776372">Létrehozás és kódolás</translation>
 <translation id="2883151425485251736">Megtekintheti és szerkesztheti a fiókjában elrejtett témákat</translation>
 <translation id="2884437560239137197">Figyelem szükséges</translation>
 <translation id="288655811176831528">Lap bezárása</translation>
@@ -1695,6 +1698,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6301104306974789820">Árkövetési értesítések fogadása</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">A címsáv helyének kiválasztása</translation>
+<translation id="6305257382500066042">Próbálja ki most</translation>
 <translation id="6307241780749477694">Igazolja személyazonosságát, hogy hozzáférhessen az összes jelszavához ezen az eszközön</translation>
 <translation id="6307792728709337290">Mentse el kártyát a Google-fiókjába, hogy automatikusan kitölthesse a jelenlegi és a Chrome-ban végzett jövőbeli vásárlások során.</translation>
 <translation id="6316141353357700666">A megjelenő listából válassza ki a használni kívánt jelszót.</translation>
@@ -1848,7 +1852,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6708501134077648845">Jelszóbeállítások</translation>
 <translation id="6709964700841491574">Zárt mód</translation>
 <translation id="6710079714193676716">Az Ön szervezete kezeli. Előfordulhat, hogy egyes funkciók nem állnak rendelkezésre. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
-<translation id="6712003214447962889">Okosabb, gyorsabb válaszok</translation>
 <translation id="6713676799463473249">Módosítva: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Fogadott lapok</translation>
 <translation id="6722638373100589752">Az adatok automatikus kitöltéséhez kapcsolja be a „Kártyák használata a Google-on” beállítást a Wallet beállításaiban.</translation>
@@ -2060,7 +2063,6 @@ Bármikor újraindíthatja.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Tovább</translation>
 <translation id="741204030948306876">Igen, folytatom</translation>
-<translation id="7417055777338419059">Kódolás, írás vagy diák készítése</translation>
 <translation id="7419565702166471774">Mindig használjon biztonságos kapcsolatokat</translation>
 <translation id="7423098979219808738">Kérdezzen rá</translation>
 <translation id="7425053386765766120">Fizetési mód hozzáadása…</translation>
@@ -2110,6 +2112,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="7525067979554623046">Létrehozás</translation>
 <translation id="75362970626182391">Új lapcsoport</translation>
 <translation id="7537586195939242955">Sajnos jelenleg nem lehet létrehozni a kupont a Passbookban.</translation>
+<translation id="7540924742308928499">Ötletelés és összegzés</translation>
 <translation id="754655535278952384">Ellenőrizve ekkor: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Az összes bezárása</translation>
 <translation id="7557508262441527045">Kijelentkezve</translation>
@@ -2179,6 +2182,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="7758789811447313947">Ibolya téma</translation>
 <translation id="7759809451544302770">Nem kötelező</translation>
 <translation id="7765158879357617694">Áthelyezés</translation>
+<translation id="7767651976342854115">Hiba történt az adathasználati beállításnál.</translation>
 <translation id="7768507955883790804">A webhelyek a felkereséskor automatikusan ezt a beállítást követik</translation>
 <translation id="7772032839648071052">Összetett jelszó megerősítése</translation>
 <translation id="7772948288262733182">Örülünk, hogy újra látjuk!</translation>
@@ -2478,7 +2482,6 @@ Bármikor újraindíthatja.</translation>
 <translation id="8642417828095157370">A lapok meg lesznek osztva, hogy relevánsabb válaszokat kaphasson</translation>
 <translation id="8643403533759285912">Csoport törlése</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">Nem sikerült leállítani az ár nyomon követését.</translation>
 <translation id="8654802032646794042">Mégse</translation>
 <translation id="8655861111558401309">Válassza a Böngészési adatok törlése lehetőséget</translation>
 <translation id="8659875081143553823">Egy pillanat…</translation>

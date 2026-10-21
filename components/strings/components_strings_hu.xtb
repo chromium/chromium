@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
-<translation id="1003222766972176318">Emlékeztető: van egy mentett ajánlat</translation>
 <translation id="1008557486741366299">Ne most</translation>
 <translation id="100957008357583611">Engedélyezi a helyadatok használatát?</translation>
 <translation id="1010200102790553230">Oldal betöltése később</translation>
@@ -1127,6 +1126,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2911973620368911614">Munkafiók felhasználói azonosítója</translation>
 <translation id="2914160345369867329">A(z) <ph name="SITE" /> webhely rendes esetben titkosítást alkalmaz az Ön adatainak védelme érdekében. Amikor a Chrome most csatlakozni próbált, a(z) <ph name="SITE" /> webhely szokatlan és helytelen hitelesítési adatokat küldött vissza. Ez olyankor fordulhat elő, amikor egy támadó megpróbálja magát kiadni a(z) <ph name="SITE" /> webhelynek, vagy valamilyen Wi-Fi-bejelentkezési képernyő megszakította a kapcsolatot. Adatai továbbra is biztonságban vannak, mivel a Chrome még azt megelőzően megszakította a kapcsolatot, hogy bármiféle adatcserére sor kerülhetett volna.</translation>
 <translation id="2915068235268646559">Összeomlás – <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Minden eszköz</translation>
 <translation id="2916038427272391327">Zárja be a többi programot</translation>
 <translation id="2917630513638801879">Cián 1</translation>
 <translation id="2922350208395188000">A szerver tanúsítványát nem sikerült leellenőrizni.</translation>
@@ -1460,7 +1460,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3479552764303398839">Ne most</translation>
 <translation id="3481315707647070701">Vizualizálás és szerkesztés</translation>
 <translation id="3484560055331845446">Elveszítheti a hozzáférést Google-fiókjához. A Chrome azt javasolja, hogy azonnal módosítsa jelszavát. Be kell majd jelentkeznie.</translation>
-<translation id="3484861421501147767">Emlékeztető: Mentett promóciós kódot használhat fel</translation>
 <translation id="3485901585646640838">Ha továbbra is szeretné használni a Google-fiókjában mentett jelszavakat és egyebeket, igazolja személyazonosságát</translation>
 <translation id="3487845404393360112">4. tálca</translation>
 <translation id="3493881266323043047">Érvényesség</translation>
@@ -1819,6 +1818,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4067774859633143413">A teljes képernyős nézetből való kilépéshez és a letöltés megtekintéséhez tartsa lenyomva a következőt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Érvényes címet adjon meg</translation>
 <translation id="4072486802667267160">Hiba történt a rendelés feldolgozása közben. Kérjük, próbálja újra.</translation>
+<translation id="4073293290376142777">Bejelentkezik?</translation>
 <translation id="4073376909608563327">Nem sikerült az eszköz feloldási módszerének használata</translation>
 <translation id="4073797364926776829">Kártya megtekintése</translation>
 <translation id="4075732493274867456">Az ügyfél és a szerver nem támogat ugyanolyan SSL-protokollverziót vagy rejtjelezési csomagot.</translation>
@@ -1851,6 +1851,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4107047499377819067">Elkezdődött a VPN-háttérszolgáltatások telepítése. Ez eltarthat néhány percig.</translation>
 <translation id="4110642094637545339">Google Pay, AfterPay-logó</translation>
 <translation id="4110652170750985508">Befizetés áttekintése</translation>
+<translation id="411071007970303441">Minden szereplő</translation>
 <translation id="4112140312785995938">Ugrás visszafelé</translation>
 <translation id="4114007503059268298">Szeretné menteni a kártyát Google-fiókjába és az eszközre?</translation>
 <translation id="4114146879518089587">Tovább a webhelyre</translation>
@@ -3437,6 +3438,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6753460329812070808">Javaslat eltávolítva a Chrome-ból</translation>
 <translation id="6757797048963528358">Eszköze alvó üzemmódba váltott.</translation>
 <translation id="6758934187792712102">A(z) <ph name="URL" /> használni szeretné az Ön mozgás- és fényérzékelőit</translation>
+<translation id="6766488013065406604">Ugrás a Google Jelszókezelőhöz</translation>
 <translation id="6770747695101757579">Papír (karton)</translation>
 <translation id="6772959465807028761">A YouTube használatához jelentkezz be a Google-fiókodba</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3647,7 +3649,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="7120588595737538743">letöltések és képernyőképek</translation>
 <translation id="7124354851782353862">Adja meg a CVC-számot</translation>
 <translation id="7129409597930077180">Erre a címre nem lehetséges a szállítás. Válasszon másik címet.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Feltöltés letiltva</translation>
 <translation id="7132939140423847331">A rendszergazda nem engedélyezi az adatok másolását.</translation>
 <translation id="7134653428559514680">Erről a webhelyről nem javasolt a megosztás</translation>
@@ -3965,6 +3966,7 @@ További részletek:
 <translation id="7637571805876720304">Eltávolítja a hitelkártyát a Chromiumból?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Nincs}=1{1 jelszó található a fiókban (a következőhöz: <ph name="DOMAIN_LIST" />)}other{# jelszó található a fiókban (a következőhöz: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Soros portok</translation>
+<translation id="7644100755247241229">Elküldheti a Pix szolgáltatást ismerősöknek és cégeknek a Google Wallet használatával</translation>
 <translation id="7646681339175747202">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. A Google Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
 <translation id="7647206758853451655">Nyomtatási minőség</translation>
 <translation id="7648133459447652947">A kurzor megjelenítéséhez, az alkalmazások közötti váltáshoz, az oldal újratöltéséhez vagy a visszalépéshez</translation>
@@ -4068,6 +4070,7 @@ További részletek:
 <translation id="7791543448312431591">Hozzáadás</translation>
 <translation id="7798389633136518089">Figyelmen kívül hagyva, mert a házirendet nem felhőbeli forrás állította be.</translation>
 <translation id="7800304661137206267">A kapcsolat a(z) <ph name="CIPHER" /> használatával lett kódolva, <ph name="MAC" /> algoritmussal az üzenethitelesítéshez és <ph name="KX" /> algoritmussal a kulcscserélő folyamathoz.</translation>
+<translation id="780228007282527248">Lap vagy kép hozzáadása a keresés javításához</translation>
 <translation id="7802523362929240268">A webhely valódi</translation>
 <translation id="7802989406998618639">Adja meg <ph name="SIDE_OF_CARD" /> található, <ph name="NUMBER_OF_DIGITS" /> számjegyből álló biztonsági kódot, hogy a bank ellenőrizni tudja a személyazonosságát</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>

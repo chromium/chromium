@@ -6450,6 +6450,17 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="5081204761483900654">受限受管理访客会话</translation>
 <translation id="5082296146261894974">允许用户通过点击 Phone Hub 通知来启动 Eche 应用。</translation>
 <translation id="5082572440690475059">允许在这些网站上通过 File System API 读取内容</translation>
+<translation id="5084849119584030624">在 <ph name="PRODUCT_NAME" /> 中配置 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 的连接设置。
+
+此政策已不再受支持，并会被忽略。请改用 <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> 政策。
+
+此政策通过 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 配置 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> Web 应用网址，该网址必须是使用 https 协议、指向 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 域名且不包含用户名或密码的有效网址。如果未满足这些要求，系统会忽略此政策，并且 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 将保持未配置状态。
+
+如果设置了此政策，系统会为使用受管理账号或受管理浏览器登录的用户配置 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+如果未设置此政策，系统将不会配置 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+请注意，此政策不会控制常规的 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 集成，该集成可通过 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策控制。</translation>
 <translation id="5085647276663819155">停用打印预览</translation>
 <translation id="5087922428454325090">用户无法通过浏览器安装 Web 应用。</translation>
 <translation id="5087932158260897375">如果此政策设为 false，系统会停用网域可靠性诊断数据报告功能，且不会向 Google 发送任何数据。
@@ -8263,25 +8274,6 @@ IP 地址空间覆盖有两种形式：
 <translation id="6244061205361004687">允许用户手动断开或修改 VPN</translation>
 <translation id="6244210204546589761">启动时打开的网址</translation>
 <translation id="6244263962918757383">Chrome 建议设置</translation>
-<translation id="6245828368576563662">此政策支持定义一系列规则，以便将自定义 HTTP 标头注入与特定网址格式匹配的 Web 请求中。此政策设置的标头优先于请求中最初存在的标头，以及用户或扩展程序尝试进行的修改。
-
-此政策的常见使用场景是通过注入自定义标头（例如 <ph name="EXAMPLE_HEADER_NAME" />）来强制执行租户访问权限控制。
-
-此政策接受规则列表。每条规则都包含：
-
-* <ph name="PATTERNS_KEY" />：要匹配的网址格式列表。了解如何设置网址格式 (https://support.google.com/chrome/a?p=url_blocklist_filter_format)。
-
-* <ph name="HEADERS_KEY" />：表示要注入的标头的对象列表，每个对象包含：
-
-  * <ph name="HEADER_NAME_KEY" />：要注入的标头的名称。
-
-  * <ph name="HEADER_VALUE_KEY" />：要注入的标头的值。
-
-如果有多条规则与请求匹配，系统将应用所有匹配规则中的标头。如果多个标头同名，系统将应用网址格式最具体的标头。如果网址格式的具体程度相同，系统将应用列表中最后出现的标头。
-
-标头名称必须符合 RFC 2616 ( https://www.rfc-editor.org/rfc/rfc2616 )。标头值不得包含 NUL、CR 或 LF 符号。单个标头的大小不得超过 8KB。系统会忽略无效的标头和网址格式。
-
-此政策中所有规则的网址格式总数限制为 500 个。每条规则最多可包含 20 个标头。超出这些阈值的格式和标头将被忽略。</translation>
 <translation id="624595269193747921">是否要将相符打印机的搜索范围限定为一组特定的打印机。</translation>
 <translation id="6246290059248303618">显示由本地网络中的其他设备启动的 <ph name="PRODUCT_NAME" /> 会话的媒体控件</translation>
 <translation id="6247316685259031374">此政策用于控制音频进程是否会采用沙盒机制。
@@ -9788,25 +9780,6 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 
       注意：目前，扫描功能的默认状态是已通过功能标志停用。即便用户通过功能标志启用了该功能，它仍能被此政策停用。</translation>
 <translation id="7115684775550072082">仅保留文本和 XML MIME 类型的空白</translation>
-<translation id="7116098886490965998">为列出的身份提供方停用使用 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 进行单点登录的功能。
-
-如果您添加值 <ph name="POLICY_VALUE_ALL" />，系统会停用支持的所有单点登录身份提供方。
-
-如果您添加值 <ph name="POLICY_VALUE_MICROSOFT" />，系统会停用 Chrome 中对 Microsoft® 云身份提供方的单点登录支持。
-
-如果您未设置此政策，系统会启用 <ph name="PRODUCT_NAME" /> 支持的所有身份提供方。
-
-对于在 <ph name="PRODUCT_NAME" /> 中启用并由管理员在设备上配置的身份提供方，如果用户在任何支持 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 的应用中使用该身份提供方登录一次，则可以使用该身份提供方自动登录网站媒体资源。系统会针对每个身份验证事件，将与用户的身份验证信息相关的信息传输给该用户的云身份提供方。
-
-注意：
-
-<ph name="PRODUCT_NAME" /> 不支持在无痕模式或访客模式下使用 <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> 进行单点登录。
-
-<ph name="PRODUCT_NAME" /> 仅支持使用
-<ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />
-为以下身份提供方实现单点登录：Microsoft、Okta。
-
-此功能适用于 <ph name="MAC_OS_NAME" /> 10.15 及以上的系统。</translation>
 <translation id="7119538491527883595">本地用户数据存储</translation>
 <translation id="7121046543122812054">此政策已被弃用，请考虑改用 <ph name="BROWSER_SIGNIN_POLICY_NAME" />。
 
@@ -12139,6 +12112,15 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="8621146428060651659">允许为代理随机化套接字池大小</translation>
 <translation id="862621549134406761">启用 RSA 密钥用法检查</translation>
 <translation id="8626826495474944836">要求为所有网站启用网站隔离功能</translation>
+<translation id="8628954914373039931">此设置允许用户在登录 <ph name="PRODUCT_OS_NAME" /> 设备后，在浏览器窗口的内容区域和 Android 应用中切换使用不同的 Google 账号。
+
+      如果此政策设为 false，系统将不允许用户从处于非无痕模式的浏览器内容区域和 Android 应用登录其他 Google 账号。
+      如果此政策未设置或设为 true，系统将采用默认行为：允许从浏览器内容区域和 Android 应用登录其他 Google 账号，但儿童账号除外，因为系统会禁止用户从处于非无痕模式的浏览器内容区域执行此操作。
+      在 Android 设备上，此设置用于控制用户在登录 <ph name="PRODUCT_NAME" /> 后，能否通过 Google 网站的内容区域添加其他 Google 账号。如果此政策设为 false，Google 网站将不会提供添加其他 Google 账号的选项（例如，账号菜单中的“添加其他账号”按钮）。如果此政策未设置或设为 true，系统将允许从 Google 网站添加其他 Google 账号。此政策不会阻止向 Android 设备本身添加 Google 账号。
+
+      如果不想允许通过无痕模式登录其他账号，请考虑使用 IncognitoModeAvailability 政策阻止该模式。
+
+      请注意，用户可以通过屏蔽 Cookie，在未经身份验证的情况下访问 Google 服务。</translation>
 <translation id="8630797597241896082">允许使用生成式 AI 视频会议背景功能并改进 AI 模型</translation>
 <translation id="8631314130868563649">停用“用电高峰期切换电源”电源管理政策</translation>
 <translation id="8631434304112909927">到版本 <ph name="UNTIL_VERSION" /> 为止</translation>

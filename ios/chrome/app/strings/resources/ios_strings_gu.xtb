@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">નવા ટૅબના ગ્રૂપમાં ખોલો</translation>
 <translation id="1670861525135254448">વાહનની માહિતી સાચવો</translation>
 <translation id="1671568970992212376">તમારા Google Photosમાં ફોટા સાચવો અને તેને કોઈપણ સમયે ઍક્સેસ કરો.</translation>
+<translation id="1671824312818944549">નોંધ: આ સેટિંગ iOS 27 કે તેનાથી નવા વર્ઝન સાથે વધુ સારી રીતે કામ કરે છે.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />થી<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">શોધવા માટે તમારી સ્ક્રીન પર કંઈપણ દોરો, હાઇલાઇટ કરો અથવા ટૅપ કરો</translation>
 <translation id="1678855624321223424">તમારી સંસ્થાની પૉલિસીઓના આધારે, આ ફાઇલમાં સંવેદનશીલ માહિતી હોઈ શકે છે</translation>
@@ -324,6 +325,7 @@
 <translation id="1925706052394657380">iOSમાં <ph name="BEGIN_BOLD" />ડિફૉલ્ટ ઍપ<ph name="END_BOLD" />ના સેટિંગ ખોલો</translation>
 <translation id="1938871630297275912">{count,plural, =1{લિંક પ્રાપ્ત થઈ}one{{count} લિંક પ્રાપ્ત થઈ}other{{count} લિંક પ્રાપ્ત થઈ}}</translation>
 <translation id="1941314575388338491">કૉપિ કરવા માટે બે વાર ટૅપ કરો.</translation>
+<translation id="1942483019269000450">કાર્ય ચાલુ રાખવા માટે, Gemini Google Walletને તમારા ક્રેડિટ કાર્ડની માહિતી ભરવા માટે કહી શકે છે</translation>
 <translation id="1943478190258551035">મેનૂ → સેટિંગ</translation>
 <translation id="1944477975050820119">AI વડે બ્રાઉઝ કરવાની નવી રીતો શોધવામાં તમારી મદદ કરી શકે તેવા રિઅલ-ટાઇમ સૂચનો મેળવો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">મેનેજ એકાઉન્ટ સાથે સાઇન ઇન કરો</translation>
@@ -357,12 +359,14 @@
 <translation id="2012723204723845092">આપનું ફરી સ્વાગત છે!</translation>
 <translation id="2015722694326466240">પાસવર્ડ જોવા માટે, તમારે સૌથી પહેલા તમારા ઉપકરણ પર એક પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="201759455285471444">ટૅબનું ગ્રૂપ મોટું કરો.</translation>
+<translation id="2022431790688770637">Geminiના સૂચનો મેનેજ કરો</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">ટૅબ ગ્રિડ ખોલો</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> એકાઉન્ટ, <ph name="HOSTED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે, જે કદાચ અમુક માહિતી જોઈ શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">નવી આઇટમ</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> એકાઉન્ટ એક જ પાસવર્ડનો ઉપયોગ કરી રહ્યાં છે</translation>
 <translation id="205013082884273671">તમારી સ્ક્રીન પર જે કંઈ પણ દેખાય છે તે શોધો</translation>
+<translation id="2053311407685904414">સરનામું પસંદ કરો</translation>
 <translation id="2054044186557130763"><ph name="NAME" /> <ph name="EMAIL" /> તરીકે સાઇન ઇન કરો, તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="2059166748188874810">નગરપાલિકા</translation>
 <translation id="2060638295449304809">આ સરનામું માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો, <ph name="USER_EMAIL" /></translation>
@@ -463,6 +467,7 @@
 <translation id="2359043044084662842">અનુવાદ કરો</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2360196772093551345">મોબાઇલ સાઇટની વિનંતી કરો</translation>
+<translation id="2360272811987888433">મેન્યુઅલ સાઇન ઇન</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> તરીકે સાઇન ઇન થયા. <ph name="USER_EMAIL" />. સેટિંગ ખોલે છે.</translation>
 <translation id="2367025302166767427">તમારી માહિતી ભરવામાં સમસ્યા આવી</translation>
 <translation id="2371084566192454134">ટૅબ અને ટૅબના ગ્રૂપ</translation>
@@ -623,6 +628,7 @@
 <translation id="2865392654629180917">કંઈ પણ પૂછો અને AI-સંચાલિત જવાબો મેળવો</translation>
 <translation id="2870560284913253234">સાઇટ</translation>
 <translation id="2876369937070532032">તમારી સુરક્ષા જોખમમાં હોય ત્યારે, તમે મુલાકાત લેતા હો તે કેટલાક પેજના URLs Googleને મોકલે છે</translation>
+<translation id="2880119244122776372">બિલ્ડ અને કોડ</translation>
 <translation id="2883151425485251736">તમે તમારા એકાઉન્ટમાંથી છુપાવેલા વિષયો જુઓ અને તેમાં ફેરફાર કરો</translation>
 <translation id="2884437560239137197">ધ્યાન આપવું જરૂરી છે</translation>
 <translation id="288655811176831528">ટૅબ બંધ કરો</translation>
@@ -770,6 +776,7 @@
 <translation id="3404232721752787413">Google Photosમાં સાચવો</translation>
 <translation id="3406506285180498376">પેજ શેર કરો…</translation>
 <translation id="340669334496430859">છેલ્લે આ સમયે ફેરફાર કર્યો</translation>
+<translation id="3407832712016477396">Gemini તમારા માટે સાઇન ઇન કરવા, Google Password Managerનો ઉપયોગ કરી શકે છે</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 ઑક્ટોબર, 2023</translation>
 <translation id="3419787211763835342">ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધાને વધુ સારી બનાવવામાં મદદ કરો</translation>
@@ -1046,6 +1053,8 @@
 <translation id="4290920330097335010">ક્યારેય મંજૂરી આપશો નહીં</translation>
 <translation id="4293154608148215505">તમારો ફોન</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> તરીકે સાઇન ઇન કરીએ?</translation>
+<translation id="4297031046690565608">મેન્યુઅલી દાખલ કરો</translation>
+<translation id="4297418774230471285">વ્યક્તિગત માહિતી પસંદ કરો</translation>
 <translation id="4302061870579014542">સ્થાન સેટ કરો</translation>
 <translation id="4304713468139749426">પાસવર્ડ મેનેજર</translation>
 <translation id="4309403553630140242">વધુ માહિતી માટે બે વાર ટૅપ કરો</translation>
@@ -1384,6 +1393,7 @@
 <translation id="5315029634103634221">Gemini, AI છે અને તે ભૂલો કરી શકે છે. <ph name="BEGIN_LINK" />Googleને મોકલવામાં આવેલા સંબંધિત ડેટા વિશે વધુ<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">આયાત કરવા માટે કંઈ નથી</translation>
 <translation id="5316356981864168850"><ph name="NUM_SUGGESTIONS" />માંથી <ph name="INDEX" /></translation>
+<translation id="5316823130598991834"><ph name="SITE_DOMAIN" />માં સાઇન ઇન કરો</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5318298563956633672">તમે આ પ્રોડક્ટને પહેલેથી જ ટ્રૅક કરી રહ્યાં છો.</translation>
 <translation id="5327248766486351172">નામ</translation>
@@ -1695,6 +1705,7 @@
 <translation id="6301104306974789820">કિંમત ટ્રૅક કરવા વિશે નોટિફિકેશન મેળવો</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">તમારા ઍડ્રેસ બારની સ્થિતિ પસંદ કરો</translation>
+<translation id="6305257382500066042">હમણાં જ અજમાવી જુઓ</translation>
 <translation id="6307241780749477694">આ ડિવાઇસ પર તમારા બધા પાસવર્ડ મેળવવા માટે ખાતરી કરો કે તે તમે જ છો</translation>
 <translation id="6307792728709337290">આ ખરીદી અને Chrome પર કરવામાં આવનારી ભવિષ્યની ખરીદીઓ માટે તમારું કાર્ડ ઑટોમૅટિક રીતે ભરવા માટે તેને તમારા Google એકાઉન્ટમાં સાચવો.</translation>
 <translation id="6316141353357700666">દેખાય છે તે સૂચિમાંથી તમે ઉપયોગમાં લેવા માગતા હો તે પાસવર્ડ પસંદ કરો.</translation>
@@ -1848,7 +1859,6 @@
 <translation id="6708501134077648845">પાસવર્ડના વિકલ્પો</translation>
 <translation id="6709964700841491574">લૉકડાઉન મોડ</translation>
 <translation id="6710079714193676716">તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે. અમુક સુવિધાઓ અનુપલબ્ધ હોઈ શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">વધુ સ્માર્ટ, વધુ ઝડપી જવાબો</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" />ના રોજ ફેરફાર કર્યો</translation>
 <translation id="6722623263381062480">પ્રાપ્ત કરેલા ટૅબ</translation>
 <translation id="6722638373100589752">તમારી માહિતી ઑટોમૅટિક રીતે ભરવા માટે, Walletના સેટિંગમાં “સમગ્ર Google પર પાસનો ઉપયોગ કરો” સુવિધા ચાલુ કરો</translation>
@@ -2060,7 +2070,6 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">ચાલુ રાખો</translation>
 <translation id="741204030948306876">હા, મને માન્ય છે</translation>
-<translation id="7417055777338419059">કોડ કરો, લખો અથવા સ્લાઇડ બનાવો</translation>
 <translation id="7419565702166471774">હંમેશાં સુરક્ષિત કનેક્શનનો ઉપયોગ કરો</translation>
 <translation id="7423098979219808738">પ્રથમ પૂછો</translation>
 <translation id="7425053386765766120">ચુકવણીની પદ્ધતિ ઉમેરો…</translation>
@@ -2110,6 +2119,7 @@
 <translation id="7525067979554623046">બનાવો</translation>
 <translation id="75362970626182391">ટૅબનું નવું ગ્રૂપ</translation>
 <translation id="7537586195939242955">માફ કરશો, તમારો પાસ આ સમયે પાસબુક પર ઇન્સ્ટોલ કરી શકાતો નથી.</translation>
+<translation id="7540924742308928499">સામૂહિક રીતે સમસ્યાનું સમાધાન કરો અને સારાંશ આપો</translation>
 <translation id="754655535278952384">છેલ્લે ચેક કર્યાનો સમય <ph name="TIME" /></translation>
 <translation id="7554645225856321710">બધું બંધ કરો</translation>
 <translation id="7557508262441527045">સાઇન આઉટ કર્યું</translation>
@@ -2203,6 +2213,7 @@
 <translation id="7839994177130598711"><ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />માં સાઇન ઇન કરવા માટે જ્યારે કુટુંબના સભ્યો Google Password Managerનો ઉપયોગ કરે, ત્યારે તેઓ હવેથી તમારું વપરાશકર્તાનું નામ અને પાસવર્ડનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="7841180087127694526">કૉપિ કરેલી ટેક્સ્ટ શોધો</translation>
 <translation id="7841418003178675048">તમારા નવા ટૅબના પેજ પર તમારે કયા કાર્ડ જોવા છે તે પસંદ કરો.</translation>
+<translation id="7842369010458597654">ચુકવણીની માહિતી ભરી રહ્યાં છીએ</translation>
 <translation id="7845466610722898">વાંચન સૂચિ બતાવો</translation>
 <translation id="7846161022626028328">કોઈ ભૂલ આવી હતી. ફરી પ્રયાસ કરો.</translation>
 <translation id="784623644169604270">તાજેતરની કોઈ ઍક્ટિવિટી નથી</translation>
@@ -2479,7 +2490,6 @@
 <translation id="8642417828095157370">વધુ સંબંધિત જવાબો માટે ટૅબ શેર કરવામાં આવે છે</translation>
 <translation id="8643403533759285912">ગ્રૂપ ડિલીટ કરો</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">કિંમતને ટ્રૅક કરવાનું બંધ કરી શક્યા નથી.</translation>
 <translation id="8654802032646794042">રદ કરો</translation>
 <translation id="8655861111558401309">'બ્રાઉઝિંગ ડેટા ડિલીટ કરો' પસંદ કરો</translation>
 <translation id="8659875081143553823">બસ એક જ સેકંડ</translation>

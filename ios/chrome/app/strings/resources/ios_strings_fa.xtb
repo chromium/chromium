@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">باز کردن در گروه زبانه جدید</translation>
 <translation id="1670861525135254448">ذخیره کردن وسیله نقلیه</translation>
 <translation id="1671568970992212376">‏عکس‌ها را در Google Photos ذخیره کنید و هر زمان خواستید به آن‌ها دسترسی داشته باشید.</translation>
+<translation id="1671824312818944549">‏توجه: این تنظیم با iOS 27 یا جدیدتر بهتر کار می‌کند.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> به<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">برای جستجو کردن می‌توانید هر چیزی را روی صفحه‌نمایش خود بکشید، برجسته کنید، یا روی آن تک‌ضرب بزنید</translation>
 <translation id="1678855624321223424">براساس خط‌مشی‌های سازمانتان، این فایل ممکن است حاوی اطلاعات حساس باشد</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">بازگشتتان را خوشامد می‌گوییم!</translation>
 <translation id="2015722694326466240">برای دیدن گذرنویسه‌ها، اول باید گذرنویسه‌ای برای دستگاه تنظیم کنید.</translation>
 <translation id="201759455285471444">ازهم باز کردن گروه زبانه.</translation>
+<translation id="2022431790688770637">‏مدیریت کردن پیشنهادهای Gemini</translation>
 <translation id="2031515492007104071">ارتقای سطح</translation>
 <translation id="2044394949148788042">باز کردن شبکه زبانه</translation>
 <translation id="2044681667265133332">حساب <ph name="USER_EMAIL" /> تحت‌مدیریت <ph name="HOSTED_DOMAIN" /> است. این دامنه ممکن است بتواند برخی اطلاعات را مشاهده کند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">هرچه می‌خواهید بپرسید و پاسخ‌هایی با بهره‌گیری از هوش مصنوعی بگیرید</translation>
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2876369937070532032">‏اگر امنیتتان درخطر باشد، نشانی وب برخی از صفحه‌هایی را که بازدید می‌کنید به Google می‌فرستد</translation>
+<translation id="2880119244122776372">ساختن و کدنویسی</translation>
 <translation id="2883151425485251736">مشاهده و ویرایش موضوع‌هایی که در حسابتان پنهان کرده‌اید</translation>
 <translation id="2884437560239137197">نیاز به توجه</translation>
 <translation id="288655811176831528">بستن زبانه</translation>
@@ -698,6 +701,7 @@
 <translation id="3140825265190223781">گذرواژه‌ها و گذرکلیدهای ذخیره‌شده</translation>
 <translation id="3143515551205905069">لغو همگام‌سازی</translation>
 <translation id="3144126448740580210">تمام</translation>
+<translation id="3147048678293362228">مدیریت کردن اطلاعات تماس…</translation>
 <translation id="3147521114983561406">گذرکلیدها در مدیر گذرواژه‌تان ذخیره می‌شوند. در زبانه‌های «ناشناس» و معمولی دردسترس هستند.</translation>
 <translation id="3148052723910099040">جدول زبانه معمول</translation>
 <translation id="3148237711805373460">به آنجا هدایت شوم</translation>
@@ -1694,6 +1698,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6301104306974789820">دریافت اعلان‌های پیگیری قیمت</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">انتخاب کردن جای نوار نشانی</translation>
+<translation id="6305257382500066042">اکنون امتحان کنید</translation>
 <translation id="6307241780749477694">هویت خود را درستی‌سنجی کنید تا به همه گذرواژه‌هایتان در این دستگاه دسترسی داشته باشید</translation>
 <translation id="6307792728709337290">‏کارتتان را در «حساب Google» ذخیره کنید تا برای این خرید و خریدهای بعدی که در Chrome انجام می‌دهید صورت خودکار تکمیل شود</translation>
 <translation id="6316141353357700666">در فهرستی که خواهید دید، گذرواژه موردنظر برای استفاده را انتخاب کنید.</translation>
@@ -1847,7 +1852,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6708501134077648845">گزینه‌های گذرواژه</translation>
 <translation id="6709964700841491574">حالت «قفل همه»</translation>
 <translation id="6710079714193676716">توسط سازمانتان مدیریت می‌شود. ممکن است برخی از ویژگی‌ها دردسترس نباشد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">پاسخ‌های هوشمندانه‌تر و سریع‌تر</translation>
 <translation id="6713676799463473249">در تاریخ <ph name="LAST_MODIFICATION_DATE" /> اصلاح شد</translation>
 <translation id="6722623263381062480">برگه‌های دریافت‌شده</translation>
 <translation id="6722638373100589752">‏برای تکمیل خودکار اطلاعات، «استفاده از مجوزها در سراسر Google» را در تنظیمات «کیف پول» روشن کنید</translation>
@@ -1870,6 +1874,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6770452996697898492">[رزروشده]</translation>
 <translation id="6775952316617222141">‏‫Live شدن با Gemini در Chrome</translation>
 <translation id="6779455296366983087">داده‌های مرورتان حذف خواهد شد</translation>
+<translation id="6782311720357312958">‏پرسیدن از Google</translation>
 <translation id="6782531425936234573">صادر کردن داده‌ها</translation>
 <translation id="6789665473250283877">برداشتن <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">روی «افزودن زبانه به گروه جدید» تک‌ضرب بزنید</translation>
@@ -2058,7 +2063,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7411034503745719324">‫<ph name="EMAIL" />‏. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">ادامه</translation>
 <translation id="741204030948306876">بله، موافقم</translation>
-<translation id="7417055777338419059">کدنویسی کنید، بنویسید، یا اسلاید بسازید</translation>
 <translation id="7419565702166471774">همیشه از اتصال‌های امن استفاده شود</translation>
 <translation id="7423098979219808738">ابتدا سؤال شود</translation>
 <translation id="7425053386765766120">افزودن روش پرداخت…</translation>
@@ -2108,6 +2112,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7525067979554623046">ایجاد کردن</translation>
 <translation id="75362970626182391">گروه زبانه جدید</translation>
 <translation id="7537586195939242955">‏متأسفانه نصب «جواز» در Passbook فعلاً امکان‌پذیر نیست.</translation>
+<translation id="7540924742308928499">بارش فکری و خلاصه کردن</translation>
 <translation id="754655535278952384">آخرین بررسی: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">بستن همه</translation>
 <translation id="7557508262441527045">از سیستم خارج شدید</translation>
@@ -2177,6 +2182,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7758789811447313947">زمینه بنفش</translation>
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7765158879357617694">حرکت دادن</translation>
+<translation id="7767651976342854115">تنظیم مصرف داده با خطا مواجه شد.</translation>
 <translation id="7768507955883790804">وقتی از سایت‌ها بازدید می‌کنید، آن‌ها به‌طور خودکار این تنظیم را دنبال می‌کنند</translation>
 <translation id="7772032839648071052">تأیید گذرعبارت</translation>
 <translation id="7772948288262733182">بازگشتتان را خوشامد می‌گوییم</translation>
@@ -2476,7 +2482,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8642417828095157370">زبانه‌ها برای ارائه پاسخ‌های مربوط‌تر هم‌رسانی می‌شوند</translation>
 <translation id="8643403533759285912">حذف گروه</translation>
 <translation id="8646357898207744479">لنز</translation>
-<translation id="8647280737650867362">پیگیری قیمت لغو نشد.</translation>
 <translation id="8654802032646794042">لغو</translation>
 <translation id="8655861111558401309">حذف داده‌های مرور را انتخاب کنید.</translation>
 <translation id="8659875081143553823">لحظه‌ای صبر کنید</translation>

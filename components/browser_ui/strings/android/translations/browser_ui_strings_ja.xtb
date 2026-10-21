@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">ホームページの色や画像をカスタマイズして Chrome を自分仕様にすることができます</translation>
 <translation id="389521680295183045">サイトがデバイスのアクティブ状態の検出を要求できるようにする</translation>
 <translation id="3895926599014793903">強制的にズームを有効にする</translation>
-<translation id="3905475044299942653">頻繁な通知をブロック</translation>
 <translation id="3922092564198021702">スマートフォンの [設定] を開きます</translation>
 <translation id="3924858949939391676">リーディング モードがオンになったらリンクを表示します</translation>
 <translation id="3933121352599513978">不要なリクエストを閉じる（推奨）</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">グループは、お使いのすべてのデバイスのタブグループ セクションに表示されます</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> は次のサイトであなたの情報を使用できません</translation>
 <translation id="4953688446973710931">オンにすると、サイトは複数のファイルの自動ダウンロードを要求できます。オフにすると、サイトは複数のファイルを自動ダウンロードできません。</translation>
-<translation id="4962975101802056554">デバイスのすべての権限を取り消します</translation>
 <translation id="4972737347717125191">サイトがバーチャル リアリティ デバイスとデータの使用を要求できるようにする</translation>
 <translation id="4973805849704516244">Chrome の色のボトムシート</translation>
 <translation id="497421865427891073">次に進む</translation>
@@ -704,7 +702,6 @@
 <translation id="8428213095426709021">設定</translation>
 <translation id="8441146129660941386">後方にシーク再生</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> に現在地へのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも位置情報をオンにしてください。</translation>
-<translation id="8447861592752582886">デバイスの許可を取り消します</translation>
 <translation id="8463843545738141778">Android の設定で高度な保護を有効にしたため、この設定は無効になっています。</translation>
 <translation id="8467359479529706065">新しいタブページの外観のボトムシートが画面の下半分に表示されています</translation>
 <translation id="8471525937465764768">ドキュメントの印刷やストレージ デバイスへの保存のため、サイトが USB デバイスに接続する場合があります。</translation>

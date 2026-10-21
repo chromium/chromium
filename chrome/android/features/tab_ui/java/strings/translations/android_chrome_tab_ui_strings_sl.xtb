@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Strni <ph name="TABS_COUNT_ONE" /> zavihek.}one{Strni skupino zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Strni skupino zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Strni skupino zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki.}other{Strni skupino zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
 <translation id="2569352796411618312">Predlog: Toliko zavihkov nedavno niste uporabljali: <ph name="NUMBER_OF_TABS" />. Ali jih želite zapreti?</translation>
 <translation id="257674075312929031">Združi</translation>
+<translation id="2628148780487543078">Zapri tudi pripete zavihke</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Obnovitev in odpiranje skupine zavihkov z <ph name="TABS_COUNT_ONE" /> zavihkom, barva: <ph name="COLOR_NAME" />.}one{Obnovitev in odpiranje skupine zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihkom, barva: <ph name="COLOR_NAME" />.}two{Obnovitev in odpiranje skupine zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihkoma, barva: <ph name="COLOR_NAME" />.}few{Obnovitev in odpiranje skupine zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />.}other{Obnovitev in odpiranje skupine zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki, barva: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Na spletno mesto</translation>

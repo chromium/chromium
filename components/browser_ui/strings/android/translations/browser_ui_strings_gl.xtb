@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Dálle o teu toque a Chrome con cores e imaxes personalizados para a páxina de inicio</translation>
 <translation id="389521680295183045">Os sitios poden pedirche permiso para saber cando estás utilizando o dispositivo de maneira activa</translation>
 <translation id="3895926599014793903">Forzar a activación do zoom</translation>
-<translation id="3905475044299942653">Deter o exceso de notificacións</translation>
 <translation id="3922092564198021702">No teléfono, abre a configuración</translation>
 <translation id="3924858949939391676">Mostra as ligazóns cando o modo de lectura estea activado</translation>
 <translation id="3933121352599513978">Contraer solicitudes non desexadas (recomendado)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Atoparás os teus grupos na sección Grupos de pestanas que hai en todos os teus dispositivos</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> non ten permitido usar a túa información en</translation>
 <translation id="4953688446973710931">Cando esta opción está activada, os sitios poden pedirche permiso para descargar automaticamente varios ficheiros. Cando esta opción está desactivada, os sitios non poden descargar automaticamente varios ficheiros.</translation>
-<translation id="4962975101802056554">Revogar todos os permisos do dispositivo</translation>
 <translation id="4972737347717125191">Os sitios poden pedirche permiso para usar datos e dispositivos de realidade virtual</translation>
 <translation id="4973805849704516244">Panel inferior de cores de Chrome</translation>
 <translation id="497421865427891073">Avanzar</translation>
@@ -704,7 +702,6 @@ A Protección avanzada controla estas opcións de Chrome:</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8441146129660941386">Buscar cara atrás</translation>
 <translation id="8444433999583714703">Para permitir que <ph name="APP_NAME" /> acceda á túa localización, actívaa tamén en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Revoga o permiso do dispositivo</translation>
 <translation id="8463843545738141778">Esta opción de configuración está desactivada porque activaches Protección avanzada na configuración de Android.</translation>
 <translation id="8467359479529706065">Panel inferior do aspecto da páxina Nova pestana aberto a altura media</translation>
 <translation id="8471525937465764768">Os sitios adoitan conectarse aos dispositivos USB para ofrecerche determinadas funcións (por exemplo, imprimir documentos ou gardar información nun dispositivo de almacenamento)</translation>

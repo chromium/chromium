@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Pour obtenir un résultat approximatif, diviser la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Source de l'image</translation>
 <translation id="1446954767133808402">saphir</translation>
-<translation id="1449035143498573192">Ouvrir dans la recherche Google</translation>
 <translation id="1451536289672181509">L'appareil est un clavier.</translation>
 <translation id="1452939186874918380">parapluies</translation>
 <translation id="145402479967797468">Commandes de lecture</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Prévisualiser : <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN intégré</translation>
 <translation id="1669047024429367828">Visibilité</translation>
-<translation id="1670478569471758522">Plus d'informations liées à votre sélection</translation>
 <translation id="1672499492233627739">Flux vidéo de la webcam</translation>
 <translation id="1676557873873341166">Enregistrement vidéo…</translation>
 <translation id="1684279041537802716">Couleur d'accentuation</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Modification terminée</translation>
 <translation id="3532980081107202182">Environ <ph name="MIN_REMAINING" /> minutes restantes</translation>
 <translation id="3533790840489634638">plan d'eau</translation>
-<translation id="3547264467365135390">Formule</translation>
 <translation id="3552832331940389362">une illustration d'animation japonaise représentant un chat assis sur un rebord de fenêtre, en train de regarder la pluie tomber l'après-midi</translation>
 <translation id="3557205324756024651">Identité locale (facultatif)</translation>
 <translation id="3565064564551103223">IP autorisées</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Description</translation>
 <translation id="3869314628814282185">tulle</translation>
 <translation id="387301095347517405">Nombre de cycles de charge complets effectués sur votre batterie</translation>
-<translation id="3877066159641251281">Écouter la traduction</translation>
 <translation id="3880601782712134623">détecter automatiquement les différentes voix et attribuer un identifiant générique (par exemple, Intervenant 1 et Intervenant 2) à chaque intervenant ;</translation>
 <translation id="38811596981744338">Problème juridique</translation>
 <translation id="3885327323343477505">Modifier l'économiseur d'écran</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Débranchez le câble USB de <ph name="DEVICE_NAME" />, puis réinsérez-le pour continuer le processus de mise à jour</translation>
 <translation id="5099354524039520280">haut</translation>
 <translation id="5107243100836678918">Un raccourci sans la touche <ph name="META_KEY" /> peut entrer en conflit avec un raccourci d'une appli. Appuyez de nouveau sur ce raccourci pour continuer à l'utiliser ou appuyez sur un nouveau raccourci avec la touche <ph name="KEY" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Synonymes :</translation>
 <translation id="5130848777448318809">poneys</translation>
 <translation id="5137451382116112100">Plein écran</translation>
 <translation id="5139813694804168398">Ne pas déranger</translation>
 <translation id="5140788690559353412">En perdant l'accès à votre compte scolaire, vous ne pourrez plus accéder à la messagerie ni aux fichiers Google Drive associés (Gmail, Docs, Slides, etc.).</translation>
 <translation id="5142961317498132443">Authentification</translation>
 <translation id="5144311987923128508">Le bouton "Confirmer" est désormais désactivé</translation>
-<translation id="5144887194300568405">Copier la traduction</translation>
 <translation id="5145081769226915336">Activer automatiquement le mode sombre ?</translation>
 <translation id="5145331109270917438">Date de modification</translation>
 <translation id="5154917547274118687">Mémoire</translation>

@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Muutke Chrome omanäoliseks, kasutades avalehel kohandatud värve ja pilte.</translation>
 <translation id="389521680295183045">Saidid võivad küsida luba selle teadmiseks, millal seadet aktiivselt kasutate</translation>
 <translation id="3895926599014793903">Sundluba suumimine</translation>
-<translation id="3905475044299942653">Paljude märguannete peatamine</translation>
 <translation id="3922092564198021702">Avage telefonis menüü Seaded</translation>
 <translation id="3924858949939391676">Kui lugemisrežiim on sisse lülitatud, kuvatakse lingid</translation>
 <translation id="3933121352599513978">Ahenda soovimatud taotlused (soovitatud)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Grupid kuvatakse kõikides seadmetes vahelehegruppide jaotises</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> on blokeeritud kasutamast teie teavet saidil</translation>
 <translation id="4953688446973710931">Kui see on sisse lülitatud, võivad saidid küsida luba mitme faili automaatseks allalaadimiseks. Kui see on välja lülitatud, ei saa saidid mitut faili automaatselt alla laadida.</translation>
-<translation id="4962975101802056554">Seadme puhul kõigi lubade tühistamine</translation>
 <translation id="4972737347717125191">Saidid saavad küsida luba VR-seadmete ja -andmete kasutamiseks</translation>
 <translation id="4973805849704516244">Chrome'i värvide alumine leht</translation>
 <translation id="497421865427891073">Edasiminek</translation>
@@ -704,7 +702,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8441146129660941386">Keri tagasi</translation>
 <translation id="8444433999583714703">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie asukohale, lülitage funktsioon Asukoht sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Seadme loa tühistamine</translation>
 <translation id="8463843545738141778">See seade on keelatud, kuna lülitasite Androidi seadetes täiustatud kaitse sisse.</translation>
 <translation id="8467359479529706065">Uue vahelehe välimuse alumine leht on avatud poolel kõrgusel</translation>
 <translation id="8471525937465764768">Saidid loovad USB-seadmetega ühenduse tavaliselt teatud funktsioonide jaoks, näiteks dokumentide printimiseks või salvestusseadmele talletamiseks</translation>

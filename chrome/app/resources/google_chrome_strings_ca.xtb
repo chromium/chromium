@@ -114,7 +114,6 @@
 <translation id="2039417478970545937">Configuració.</translation>
 <translation id="2040220733769034247">Escaneja el codi QR amb el telèfon per baixar Chrome i iniciar la sessió al teu Compte de Google.</translation>
 <translation id="2044908892530830113">Mostra la cerca amb Chrome a la barra de menú de Mac i activa les tecles de drecera</translation>
-<translation id="2050189601866423230">Pots fixar el mode IA de la Cerca de Google per fer preguntes mentre navegues</translation>
 <translation id="2091012649849228750">Per obtenir actualitzacions de Google Chrome en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 8.</translation>
 <translation id="2094648590148273905">Condicions de ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vols sortir de Chrome igualment?</translation>
@@ -458,6 +457,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5386244825306882791">També controla la pàgina que es mostra quan inicieu Chrome o quan feu una cerca des de l'omnibox.</translation>
 <translation id="5394833366792865639">Comparteix una pestanya de Chrome</translation>
 <translation id="5402307365844630024">Commuta Gemini a Chrome Beta</translation>
+<translation id="5414664742659847155">Aïlla Chrome d'altres aplicacions</translation>
 <translation id="541844421954567481">Mentre et desplaces, porta amb tu les teves contrasenyes, pestanyes i més amb l'aplicació Chrome al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">El fitxer de preferències està malmès o no és vàlid. Google Chrome no pot recuperar la configuració.</translation>
 <translation id="5465210843490471889">Tria un perfil de Chrome per utilitzar-lo amb <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
@@ -671,6 +671,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7306401458628386911">Comença a navegar a l'instant: ara Chrome es pot obrir quan s'inicia Windows.</translation>
 <translation id="7308322188646931570">Chrome necessita accedir a l'emmagatzematge per baixar fitxers</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
+<translation id="7371412052245999753">Protegeix la memòria de Chrome d'altres aplicacions de l'ordinador.</translation>
 <translation id="73786666777299047">Obre Chrome Web Store</translation>
 <translation id="7386878009611068389">Per protegir-te més en línia amb les opcions del teu pare o mare, canvia al perfil de Chrome en què ja tens la sessió iniciada amb <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Teníeu la sessió iniciada a Chrome com a <ph name="USER_EMAIL_ADDRESS" />. Utilitzeu el mateix compte per tornar-hi a iniciar la sessió.</translation>
@@ -765,7 +766,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="8074398340364918139">Per cercar una funció o una extensió específiques de Chrome, escriu la seva drecera a la barra d'adreces, seguida de la tecla que hagis seleccionat</translation>
 <translation id="8077579734294125741">Altres perfils de Chrome</translation>
 <translation id="8086881907087796310">La instal·lació ha fallat perquè l'ordinador no compleix els requisits mínims de maquinari.</translation>
-<translation id="8110438089258398864">Pots tornar a obrir el mode IA de la Cerca de Google per fer preguntes mentre navegues</translation>
 <translation id="8113883687556086139">Verifica la teva identitat per utilitzar i desar les dades de Chrome al teu compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">S'està personalitzant Chrome...</translation>
 <translation id="8118331347066725040">Envia suggeriments per a la cerca amb Lens</translation>
@@ -822,8 +822,6 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="8555465886620020932">Error de servei: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Cerca a la llista d'idiomes</translation>
 <translation id="8575047640889685742">Utilitza la <ph name="BEGIN_LINK" />teva frase de contrasenya<ph name="END_LINK" /> per encriptar totes les dades de Chrome al teu Compte de Google Les formes de pagament i les adreces de Google Pay no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.</translation>
-<translation id="8590782867495422699">Torna a obrir el mode IA de la Cerca de Google</translation>
-<translation id="8598779894319572882">Des del botó Mode IA de la Cerca de Google de la barra d'eines, pots tornar a obrir el mode IA de la Cerca de Google per fer preguntes mentre navegues</translation>
 <translation id="8614913330719544658">Google Chrome no respon. Voleu tornar-lo a iniciar ara?</translation>
 <translation id="8623450603356630491">Inicia la sessió a Chrome al telèfon</translation>
 <translation id="8624541899164515475">Configuració; s'obre en una pestanya nova.</translation>
@@ -878,7 +876,6 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="9014771989710951291">Diverses organitzacions gestionen Chrome</translation>
 <translation id="9018218886431812662">La instal·lació s'ha completat</translation>
 <translation id="9066987883552592250">Tanca Gemini a Chrome Canary</translation>
-<translation id="9074041031320636790">Fet! Ara pots fer preguntes fàcilment mentre navegues amb el mode IA de la Cerca de Google.</translation>
 <translation id="9090566250983691233">Descobreix per què Chrome bloqueja alguns fitxers</translation>
 <translation id="9106236359747881194">Selecciona text per cercar</translation>
 <translation id="911206726377975832">També voleu suprimir les dades de navegació?</translation>

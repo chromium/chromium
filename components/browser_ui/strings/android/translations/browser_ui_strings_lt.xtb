@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Suasmeninkite „Chrome“ naudodami tinkintas pagrindinio puslapio spalvas ir vaizdus</translation>
 <translation id="389521680295183045">Svetainės gali prašyti leisti sužinoti, kada aktyviai naudojate įrenginį</translation>
 <translation id="3895926599014793903">Priverstinai įgalinti mastelio keitimą</translation>
-<translation id="3905475044299942653">Daugybės pranešimų sustabdymas</translation>
 <translation id="3922092564198021702">Telefone atidarykite skiltį „Nustatymai“</translation>
 <translation id="3924858949939391676">Rodyti nuorodas, kai įjungtas Teksto perskaitymo režimas</translation>
 <translation id="3933121352599513978">Sutraukti nepageidaujamas užklausas (rekomenduojama)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Grupes rasite skirtukų grupės skiltyje visuose įrenginiuose</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> blokuojamas jūsų informacijos naudojimas</translation>
 <translation id="4953688446973710931">Įjungus svetainėse gali būti prašoma automatiškai atsisiųsti kelis failus. Išjungus svetainėse negalima automatiškai atsisiųsti kelių failų.</translation>
-<translation id="4962975101802056554">Anuliuoti visus įrenginio leidimus</translation>
 <translation id="4972737347717125191">Svetainėse gali būti prašoma naudoti virtualiosios realybės įrenginius ir duomenis</translation>
 <translation id="4973805849704516244">Apatinis „Chrome“ spalvų lapas</translation>
 <translation id="497421865427891073">Eiti pirmyn</translation>
@@ -704,7 +702,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.</
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8441146129660941386">Ieškoti einant atgal</translation>
 <translation id="8444433999583714703">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų vietovę, taip pat įjunkite ją <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Anuliuoti įrenginio leidimą</translation>
 <translation id="8463843545738141778">Šis nustatymas išjungtas, nes „Android“ nustatymuose įjungėte Papildomą apsaugą.</translation>
 <translation id="8467359479529706065">Naujo skirtuko puslapio išvaizdos apatinis lapas atidarytas iki pusės ekrano aukščio</translation>
 <translation id="8471525937465764768">Paprastai svetainėse prisijungiama prie USB įrenginių vykdant tam tikras funkcijas, pvz., spausdinant dokumentą ar saugant saugyklos įrenginyje</translation>

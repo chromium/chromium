@@ -437,7 +437,6 @@
 <translation id="130744661532298792">为了确保您可以一直使用 Google 账号中的密码，请验证是您本人在操作</translation>
 <translation id="1308105352527684175">您可能无法访问某些内容</translation>
 <translation id="1311092170520822848">此网站正在控制连接到您的设备的智能卡读卡器，并且可能会控制读卡器中的智能卡</translation>
-<translation id="131112175593356748">显示部分</translation>
 <translation id="131112695174432497">对广告个性化有影响的数据会被删除</translation>
 <translation id="131188242279372879">了解增强型保护，为下载内容提供最高级别的 Chrome 安全防护</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{修复导致浏览器运行缓慢的标签页}other{修复导致浏览器运行缓慢的标签页}}</translation>
@@ -1482,6 +1481,7 @@
 <translation id="2140788884185208305">电池状况</translation>
 <translation id="2142328300403846845">以其他身份打开链接</translation>
 <translation id="2142582065325732898">您需要开启 <ph name="LINK1_BEGIN" />Chrome 同步<ph name="LINK1_END" />才能查看最近打开的 Chrome 标签页。<ph name="LINK2_BEGIN" />了解详情<ph name="LINK2_END" /></translation>
+<translation id="2142826581348795579">未聚焦的标签页组</translation>
 <translation id="2143089736086572103">向某些联系人显示</translation>
 <translation id="2143765403545170146">在全屏模式下始终显示工具栏</translation>
 <translation id="2143778271340628265">手动配置代理</translation>
@@ -1593,6 +1593,7 @@
 <translation id="2220572644011485463">PIN 码或密码</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">未命名的媒体来源</translation>
+<translation id="2223747115628460234">返回到打开的标签页</translation>
 <translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="2224444042887712269">此设置属于<ph name="OWNER_EMAIL" />。</translation>
 <translation id="2224551243087462610">修改文件夹名</translation>
@@ -1718,6 +1719,7 @@
 <translation id="2318143611928805047">纸张尺寸</translation>
 <translation id="2319459402137712349">选择文本字段即可打开键盘。您也可以选择屏幕底部的“键盘”图标。</translation>
 <translation id="2319993584768066746">在登录屏幕上显示照片</translation>
+<translation id="2322015964223112232">返回到打开的标签页</translation>
 <translation id="2322193970951063277">页眉和页脚</translation>
 <translation id="2322622365472107569">结束时间：<ph name="TIME" /></translation>
 <translation id="2323018538045954000">保存的 WLAN 网络</translation>
@@ -2477,6 +2479,7 @@
 <translation id="2878889940310164513">添加移动网络…</translation>
 <translation id="288042212351694283">访问您的 Universal 2nd Factor 设备</translation>
 <translation id="2881076733170862447">当您点击此扩展程序时</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{未聚焦的标签页}other{未聚焦的标签页}}</translation>
 <translation id="2882301808122022326">Omaha 响应</translation>
 <translation id="2884070497102362193">测试电池、CPU、内存、连接性等方面</translation>
 <translation id="2885129935310217435">已存在具有相同名称的按钮。请选择其他名称。</translation>
@@ -2788,6 +2791,7 @@
 <translation id="3109206895301430738">已保存的标签页分组</translation>
 <translation id="3109724472072898302">已收起</translation>
 <translation id="3112292765614504292">应用大小：<ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">收起</translation>
 <translation id="3112532142993641404">如需获取其他设备上的标签页，请登录并同步历史记录。这样一来，您还可在所有设备上获取书签等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="311347022006935575">添加了此标签页</translation>
 <translation id="311394601889664316">不允许网站修改您设备上的文件或文件夹</translation>
@@ -4370,6 +4374,7 @@
 <translation id="4296632172536745000">我们发现，您在此网站上使用的原密码在某次公开数据泄露事件中外泄。您曾在 <ph name="DATE" />要求 <ph name="BRAND" />自动为您更改密码。</translation>
 <translation id="4297219207642690536">重启并重置</translation>
 <translation id="4297813521149011456">显示屏旋转</translation>
+<translation id="42981349822642051">展开</translation>
 <translation id="4298660926525614540">可移动存储设备名称</translation>
 <translation id="4299022904780065004">打开新的无痕式窗口(&amp;I)</translation>
 <translation id="4300272766492248925">打开应用</translation>
@@ -5123,6 +5128,7 @@
 <translation id="4877276003880815204">检查元素</translation>
 <translation id="4878634973244289103">无法发送反馈。请稍后重试。</translation>
 <translation id="4878718769565915065">未能向此安全密钥添加指纹</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}other{+#}}</translation>
 <translation id="4879491255372875719">自动（默认）</translation>
 <translation id="4880827082731008257">搜索记录</translation>
 <translation id="4881685975363383806">下次不再提醒我</translation>
@@ -5572,6 +5578,7 @@
 <translation id="5214639857958972833">已创建“<ph name="BOOKMARK_TITLE" />”书签。</translation>
 <translation id="5215450412607891876">开启延长安全更新</translation>
 <translation id="5216674789212441076">自动翻译实时字幕。系统会将字幕发送给 Google 进行翻译。</translation>
+<translation id="5217925057416367138">正在播放</translation>
 <translation id="5220011581825921581">搜索键 + 向上键</translation>
 <translation id="5221516927483787768">无法投放 <ph name="HOST_NAME" /> 中的内容</translation>
 <translation id="5222403284441421673">已阻止不安全的下载</translation>
@@ -5606,6 +5613,7 @@
 <translation id="5247051749037287028">显示名（可选）</translation>
 <translation id="5247243947166567755">选择“<ph name="BOOKMARK_TITLE" />”</translation>
 <translation id="524751727772074981">借助 Chrome 中的 Gemini，无需离开当前页面即可随心提问</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{关闭此信息栏后，系统会再显示 1 个信息栏}other{关闭此信息栏后，系统会再显示 # 个信息栏}}</translation>
 <translation id="5248934139541843042">查看整理工具</translation>
 <translation id="5249624017678798539">浏览器崩溃了，下载还未完成。</translation>
 <translation id="5249818097095743806">使用安全密钥</translation>
@@ -5910,6 +5918,7 @@
 <translation id="5493792505296048976">已开启屏幕</translation>
 <translation id="5494016731375030300">最近关闭的标签页</translation>
 <translation id="5494362494988149300">完成后打开(&amp;D)</translation>
+<translation id="5494439739088303974">使用 Google 智能镜头询问网页上的任何文字或图片</translation>
 <translation id="5494879038325093596">请验证您的身份，以便在所有设备上通过您的 Google 账号获取此密码</translation>
 <translation id="5494920125229734069">全选</translation>
 <translation id="5495466433285976480">执行此操作后，所有本地用户、文件、数据和其他设置都将遭到删除，下次重启后您将再也看不到这些内容。所有用户均必须重新登录。</translation>
@@ -8035,6 +8044,7 @@
 <translation id="7148426638542880639">网站可能会无法按预期运行。如果您不想在设备上保留与您访问网站有关的信息，请选择此选项。</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
 <translation id="7152478047064750137">此扩展程序无需任何特殊权限</translation>
+<translation id="7152923486458597248">聚焦标签页组</translation>
 <translation id="7153101072880472645">高对比度模式开/关</translation>
 <translation id="715396040729904728">启动器键 + Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="7154130902455071009">将您的初始页更改为：<ph name="START_PAGE" /></translation>

@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Draga saman <ph name="TABS_COUNT_ONE" /> flipa.}one{Draga saman flipahóp með <ph name="TABS_COUNT_MANY" /> flipa.}other{Draga saman flipahóp með <ph name="TABS_COUNT_MANY" /> flipum.}}</translation>
 <translation id="2569352796411618312">Tillaga: <ph name="NUMBER_OF_TABS" /> af flipunum þínum hafa ekki verið notaðir nýlega. Viltu loka þeim?</translation>
 <translation id="257674075312929031">Hópur</translation>
+<translation id="2628148780487543078">Loka einnig festum flipum</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Endurheimtu og opnaðu flipahóp með <ph name="TABS_COUNT_ONE" /> flipa, <ph name="COLOR_NAME" /> á litinn.}one{Endurheimtu og opnaðu flipahóp með <ph name="TABS_COUNT_MANY" /> flipa, <ph name="COLOR_NAME" /> á litinn.}other{Endurheimtu og opnaðu flipahóp með <ph name="TABS_COUNT_MANY" /> flipum, <ph name="COLOR_NAME" /> á litinn.}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> einkunn</translation>
 <translation id="266935134738038806">Fara á vefsvæði</translation>

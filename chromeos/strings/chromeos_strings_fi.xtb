@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Jos haluat likimääräisen tuloksen, jaa <ph name="CATEGORY_TEXT" /> tällä luvulla: <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Kuvan lähde</translation>
 <translation id="1446954767133808402">safiiri</translation>
-<translation id="1449035143498573192">Avaa Google Haussa</translation>
 <translation id="1451536289672181509">Laite on näppäimistö.</translation>
 <translation id="1452939186874918380">sateenvarjot</translation>
 <translation id="145402479967797468">Toiston ohjaimet</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Esikatsele: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Sisäänrakennettu VPN</translation>
 <translation id="1669047024429367828">Näkyvyys</translation>
-<translation id="1670478569471758522">Lisää valintaasi liittyvää tietoa</translation>
 <translation id="1672499492233627739">Webkameran videofiidi</translation>
 <translation id="1676557873873341166">Tallennetaan videota</translation>
 <translation id="1684279041537802716">Korostusväri</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Muokkaus valmis</translation>
 <translation id="3532980081107202182">Noin <ph name="MIN_REMAINING" /> minuuttia jäljellä</translation>
 <translation id="3533790840489634638">uima-allas</translation>
-<translation id="3547264467365135390">Kaava</translation>
 <translation id="3552832331940389362">japanilainen animaatiopiirros kissasta, joka istuu ikkunalaudalla ja katselee sadetta iltapäivällä</translation>
 <translation id="3557205324756024651">Paikallinen identiteetti (valinnainen)</translation>
 <translation id="3565064564551103223">Sallitut IP-osoitteet</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Kuvaus</translation>
 <translation id="3869314628814282185">tylli</translation>
 <translation id="387301095347517405">Kuinka monta kertaa akku on ollut täynnä ja sitten tyhjentynyt</translation>
-<translation id="3877066159641251281">Kuuntele käännös</translation>
 <translation id="3880601782712134623">Tunnista eri äänet automaattisesti ja anna kullekin niistä yleinen tunniste, esim. "Kaiutin 1" ja "Kaiutin 2"</translation>
 <translation id="38811596981744338">Oikeudellinen ongelma</translation>
 <translation id="3885327323343477505">Vaihda näytönsäästäjä</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Irrota USB-johto (<ph name="DEVICE_NAME" />) ja kytke se takaisin jatkaaksesi päivitysprosessia.</translation>
 <translation id="5099354524039520280">ylös</translation>
 <translation id="5107243100836678918">Pikakomento ilman <ph name="META_KEY" />näppäintä voi olla ristiriidassa toisen sovelluksen pikakomennon kanssa. Jatka pikakomennon käyttöä painamalla sitä uudelleen tai paina uutta pikakomentoa <ph name="KEY" />näppäimellä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Samantyyppisiä:</translation>
 <translation id="5130848777448318809">ponit</translation>
 <translation id="5137451382116112100">Koko näyttö</translation>
 <translation id="5139813694804168398">älä häiritse</translation>
 <translation id="5140788690559353412">Kun menetät pääsyn koulutiliisi, et enää voi käyttää siihen liittyviä sähköposti‑ ja Google Drive ‑tiedostoja, kuten Gmailia, Docsia ja Slidesia.</translation>
 <translation id="5142961317498132443">Todennus</translation>
 <translation id="5144311987923128508">Vahvistuspainike on nyt poistettu käytöstä</translation>
-<translation id="5144887194300568405">Kopioi käännös</translation>
 <translation id="5145081769226915336">Laitetaanko tumma tila päälle automaattisesti?</translation>
 <translation id="5145331109270917438">Muokkauspäivämäärä</translation>
 <translation id="5154917547274118687">Muisti</translation>

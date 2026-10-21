@@ -118,7 +118,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2039417478970545937">Ezarpenak.</translation>
 <translation id="2040220733769034247">Eskaneatu QR kodea telefonoarekin Chrome deskargatzeko eta Google-ko kontuan saioa hasteko.</translation>
 <translation id="2044908892530830113">Erakutsi Chrome-rekin bilatzeko aukera Mac-eko menu-barran eta aktibatu lasterbidea</translation>
-<translation id="2050189601866423230">Google Bilaketa zerbitzuaren AA modua aingura dezakezu, arakatu bitartean galderak egiteko</translation>
 <translation id="2091012649849228750">Etorkizunean Google Chrome-ren eguneratzeak eskuratzeko, Windows 10 edo bertsio berriago bat beharko duzu. Ordenagailua Windows 8 erabiltzen ari da.</translation>
 <translation id="2094648590148273905">ChromeOS Flex-en baldintzak</translation>
 <translation id="2094919256425865063">Chrome-tik irten nahi duzu hala ere?</translation>
@@ -463,6 +462,7 @@ Agian eginbide batzuk ez dira erabilgarri egongo. Zehaztu profilaren beste direk
 <translation id="5386244825306882791">Chrome hastean edo Omnibox bidez bilatzean erakutsiko den orria ere kontrolatzen du.</translation>
 <translation id="5394833366792865639">Partekatu Chrome-ko fitxa bat</translation>
 <translation id="5402307365844630024">Aktibatu/Desaktibatu Chrome Beta-ko Gemini</translation>
+<translation id="5414664742659847155">Isolatu Chrome beste aplikazioetatik</translation>
 <translation id="541844421954567481">Eraman pasahitzak, fitxak eta bestelako datuak edonora <ph name="DEVICE_TYPE" /> gailurako Chrome aplikazioarekin</translation>
 <translation id="5430073640787465221">Hobespenen fitxategia hondatuta dago edo ez du balio.
 
@@ -678,6 +678,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7306401458628386911">Hasi berehala arakatzen: Windows abiaraztean abiaraz daiteke orain Chrome.</translation>
 <translation id="7308322188646931570">Chrome-k fitxategiak deskargatzearren memorian sartzeko baimena behar du</translation>
 <translation id="7352651011704765696">Arazo bat izan da</translation>
+<translation id="7371412052245999753">Chrome-ren memoria ordenagailuko beste aplikazioetatik babesten du.</translation>
 <translation id="73786666777299047">Ireki Chrome Web Store</translation>
 <translation id="7386878009611068389">Gurasoen aukerekin sarean seguruago egoteko, aldatu zure Chrome-ko profilera, bertan <ph name="USER_EMAIL_ADDRESS" /> gisa saioa hasita baitaukazu jada</translation>
 <translation id="7398801000654795464">Chrome arakatzaileko saioa <ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu. Saioa berriro hasteko, erabili hasiera batean erabilitako kontu bera.</translation>
@@ -772,7 +773,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8074398340364918139">Chrome-ren eginbide edo luzapen jakin bat bilatzeko, idatzi haren lasterbidea helbide-barran eta, ondoren, sakatu hautatutako tekla</translation>
 <translation id="8077579734294125741">Chrome-ko beste profilak</translation>
 <translation id="8086881907087796310">Instalazioak huts egin du, ordenagailuak hardwarearen gutxieneko eskakizunak betetzen ez dituelako.</translation>
-<translation id="8110438089258398864">Google Bilaketa zerbitzuaren AA modua berriro ireki dezakezu, arakatu bitartean galderak egiteko</translation>
 <translation id="8113883687556086139">Chrome-ko datuak zure kontuan (<ph name="ACCOUNT_EMAIL" />) erabiltzeko eta gordetzeko, egiaztatu zeu zarela</translation>
 <translation id="8115695070094288807">Chrome pertsonalizatzen…</translation>
 <translation id="8118331347066725040">Bidali Lens-ekin bilatzeari buruzko oharrak</translation>
@@ -829,8 +829,6 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="8555465886620020932">Zerbitzuaren errorea: <ph name="SERVICE_ERROR" /></translation>
 <translation id="856656450041460113">Bilatu hizkuntzen zerrendan</translation>
 <translation id="8575047640889685742">Erabili <ph name="BEGIN_LINK" />zeure pasaesaldia<ph name="END_LINK" /> Google-ko kontuko Chrome-ko datu guztiak enkriptatzeko Google Pay-ko ordainketa-metodoak eta helbideak ez dira enkriptatuko. Chrome-ko arakatze-historia ez da sinkronizatuko.</translation>
-<translation id="8590782867495422699">Ireki berriro Google Bilaketa zerbitzuaren AA modua</translation>
-<translation id="8598779894319572882">Tresna-barrako "Google Bilaketa zerbitzuaren AA modua" botoiaren bidez, Google Bilaketa zerbitzuaren AA modua berriro ireki dezakezu, arakatu bitartean galderak egiteko</translation>
 <translation id="8614913330719544658">Google Chrome-k ez du erantzuten. Berrabiarazi nahi duzu?</translation>
 <translation id="8623450603356630491">Hasi Chrome saioa telefonoan</translation>
 <translation id="8624541899164515475">Ezarpenak, beste fitxa batean irekitzen da.</translation>
@@ -885,7 +883,6 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="9014771989710951291">Erakunde batek baino gehiagok kudeatzen dute Chrome</translation>
 <translation id="9018218886431812662">Instalatu da</translation>
 <translation id="9066987883552592250">Itxi Chrome Canary-ko Gemini</translation>
-<translation id="9074041031320636790">Eginda! Orain, arakatu bitartean galderak egin ditzakezu erraz, Google Bilaketa zerbitzuaren AA moduarekin.</translation>
 <translation id="9090566250983691233">Ikusi zergatik blokeatzen dituen Chrome-k fitxategi batzuk</translation>
 <translation id="9106236359747881194">Hautatu bilatu beharreko testua</translation>
 <translation id="911206726377975832">Arakatze-datuak ere ezabatu nahi dituzu?</translation>

@@ -437,7 +437,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="130744661532298792">Kad užtikrintumėte, jog visada galėsite naudoti slaptažodžius „Google“ paskyroje, patvirtinkite savo tapatybę</translation>
 <translation id="1308105352527684175">Gali būti, kad negalėsite pasiekti tam tikro turinio</translation>
 <translation id="1311092170520822848">Ši svetainė valdo išmaniųjų kortelių skaitytuvus, prijungtus prie jūsų įrenginio, ir galimai jiems pasiekiamas išmaniąsias korteles</translation>
-<translation id="131112175593356748">Rodyti kai kuriuos</translation>
 <translation id="131112695174432497">Duomenys, turintys įtakos suasmeninant skelbimus, ištrinami</translation>
 <translation id="131188242279372879">Atraskite sustiprintą apsaugą, kad užtikrintumėte aukščiausio lygio „Chrome“ atsisiuntimų saugą</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Pataisykite skirtuką, kuris lėtina naršyklę}one{Pataisykite skirtukus, kurie lėtina naršyklę}few{Pataisykite skirtukus, kurie lėtina naršyklę}many{Pataisykite skirtukus, kurie lėtina naršyklę}other{Pataisykite skirtukus, kurie lėtina naršyklę}}</translation>
@@ -2805,6 +2804,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3109206895301430738">Išsaugotos skirtukų grupės</translation>
 <translation id="3109724472072898302">Suskleista</translation>
 <translation id="3112292765614504292">Programos dydis: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Sutraukti</translation>
 <translation id="3112532142993641404">Jei norite gauti skirtukus iš kitų įrenginių, prisijunkite ir sinchronizuokite istoriją. Be to, žymes ir kitas funkcijas pasieksite visuose įrenginiuose. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="311347022006935575">Pridėjo šį skirtuką</translation>
 <translation id="311394601889664316">Neleisti svetainėms redaguoti failų ar aplankų jūsų įrenginyje</translation>
@@ -4390,6 +4390,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4296632172536745000">Pradinis šios svetainės slaptažodis aptiktas dėl viešo duomenų saugos pažeidimo. <ph name="DATE" /> paprašėte „<ph name="BRAND" />“ automatiškai pakeisti slaptažodį.</translation>
 <translation id="4297219207642690536">Paleisti ir nustatyti iš naujo</translation>
 <translation id="4297813521149011456">Ekrano sukimas</translation>
+<translation id="42981349822642051">Išskleisti</translation>
 <translation id="4298660926525614540">Pašalinamų saugyklų pavadinimai</translation>
 <translation id="4299022904780065004">Naujas &amp;inkognito langas</translation>
 <translation id="4300272766492248925">Atidaryti programą</translation>
@@ -5144,6 +5145,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4877276003880815204">Inspect Elements</translation>
 <translation id="4878634973244289103">Nepavyko išsiųsti atsiliepimo. Vėliau bandykite dar kartą.</translation>
 <translation id="4878718769565915065">Nepavyko pridėti kontrolinio kodo prie šio saugos rakto</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}one{dar #}few{dar #}many{dar #}other{dar #}}</translation>
 <translation id="4879491255372875719">Automatinis (numatytasis)</translation>
 <translation id="4880827082731008257">Ieškoti istorijoje</translation>
 <translation id="4881685975363383806">Nepriminti kitą kartą</translation>
@@ -5628,6 +5630,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5247051749037287028">Rodomas pavadinimas (neprivaloma)</translation>
 <translation id="5247243947166567755">Pasirinkite „<ph name="BOOKMARK_TITLE" />“</translation>
 <translation id="524751727772074981">Klauskite bet ko, kad ir kur būtumėte, naudodami „Gemini“ naršyklėje „Chrome“</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{Uždarius šią informacijos juostą, bus parodyta dar viena informacijos juosta}one{Uždarius šią informacijos juostą, bus parodyta dar # informacijos juosta}few{Uždarius šią informacijos juostą, bus parodytos dar # informacijos juostos}many{Uždarius šią informacijos juostą, bus parodyta dar # informacijos juostos}other{Uždarius šią informacijos juostą, bus parodyta dar # informacijos juostų}}</translation>
 <translation id="5248934139541843042">Peržiūrėti rengėją</translation>
 <translation id="5249624017678798539">Naršyklė užstrigo nebaigus atsisiųsti.</translation>
 <translation id="5249818097095743806">Naudokite saugos raktą</translation>
@@ -5933,6 +5936,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5493792505296048976">ekranas įjungtas</translation>
 <translation id="5494016731375030300">Neseniai uždaryti skirtukai</translation>
 <translation id="5494362494988149300">&amp;Baigus atidaryti</translation>
+<translation id="5494439739088303974">Naudodami „Google Lens“ paklauskite apie bet kokį puslapio tekstą ar vaizdą</translation>
 <translation id="5494879038325093596">Patvirtinkite savo tapatybę, kad gautumėte jį visuose įrenginiuose, kuriuose esate prisijungę prie „Google“ paskyros</translation>
 <translation id="5494920125229734069">Pasirinkti viską</translation>
 <translation id="5495466433285976480">Jei atliksite šį veiksmą, kitą kartą paleidus iš naujo bus pašalinti visi vietiniai naudotojai, failai, duomenys ir kiti nustatymai. Visiems naudotojams reikės dar kartą prisijungti.</translation>

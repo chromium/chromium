@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
-<translation id="1003222766972176318">Podsjetnik: dostupna je sačuvana ponuda</translation>
 <translation id="1008557486741366299">Ne sada</translation>
 <translation id="100957008357583611">Koristiti vašu lokaciju?</translation>
 <translation id="1010200102790553230">Učitaj stranicu kasnije</translation>
@@ -1127,6 +1126,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2911973620368911614">ID korisnika poslovnog računa za računovodstvo</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> obično koristi šifriranje za zaštitu vaših informacija. Kada se Chrome ovaj put pokušao povezati s web lokacijom <ph name="SITE" />, web lokacija je vratila neobične i netačne akreditive. To se može dogoditi kada se napadač pokušava predstaviti kao web lokacija <ph name="SITE" />, ili je vezu omeo ekran za prijavu na WiFi. Vaše informacije su i dalje sigurne jer je Chrome prekinuo vezu prije bilo kakve razmjene podataka.</translation>
 <translation id="2915068235268646559">Pad aplikacije od <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Svi uređaji</translation>
 <translation id="2916038427272391327">Zatvorite druge programe</translation>
 <translation id="2917630513638801879">1. cijan</translation>
 <translation id="2922350208395188000">Nije moguće provjeriti certifikat servera.</translation>
@@ -1462,7 +1462,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="3479552764303398839">Ne sada</translation>
 <translation id="3481315707647070701">Vizuelizirajte i uredite</translation>
 <translation id="3484560055331845446">Možete izgubiti pristup svom Google računu. Chrome preporučuje da odmah promijenite lozinku. Od vas će se tražiti da se prijavite.</translation>
-<translation id="3484861421501147767">Podsjetnik: sačuvani promotivni kôd je dostupan</translation>
 <translation id="3485901585646640838">Da koristite lozinke i druge stavke sačuvane na Google računu, potvrdite identitet</translation>
 <translation id="3487845404393360112">Ladica 4</translation>
 <translation id="3493881266323043047">Valjanost</translation>
@@ -1822,6 +1821,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="4067774859633143413">Da zatvorite prikaz preko cijelog ekrana i vidite preuzimanje, pritisnite i zadržite |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Dodajte važeću adresu</translation>
 <translation id="4072486802667267160">Došlo je do greške prilikom obrade vaše narudžbe. Pokušajte ponovo.</translation>
+<translation id="4073293290376142777">Želite li se prijaviti?</translation>
 <translation id="4073376909608563327">Korištenje otključavanja uređaja nije uspjelo</translation>
 <translation id="4073797364926776829">Prikaži karticu</translation>
 <translation id="4075732493274867456">Klijent i server ne podržavaju verziju zajedničkog SSL protokola ili paket za šifriranje.</translation>
@@ -1854,6 +1854,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="4107047499377819067">Instalacija VPN usluga u pozadini je započela. Ovo može potrajati nekoliko minuta.</translation>
 <translation id="4110642094637545339">Google Pay, AfterPayov logotip</translation>
 <translation id="4110652170750985508">Pregledajte svoje plaćanje</translation>
+<translation id="411071007970303441">Svi subjekti</translation>
 <translation id="4112140312785995938">Pomakni unazad</translation>
 <translation id="4114007503059268298">Želite li sačuvati ovu karticu na Google računu i ovom uređaju?</translation>
 <translation id="4114146879518089587">Nastavi na web lokaciju</translation>
@@ -3440,6 +3441,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6753460329812070808">Prijedlog je uklonjen iz Chromea</translation>
 <translation id="6757797048963528358">Vaš uređaj je u stanju mirovanja.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> želi koristiti senzore kretanja i svjetla</translation>
+<translation id="6766488013065406604">Odlazak u Google upravitelj lozinki</translation>
 <translation id="6770747695101757579">Papir (pamuk)</translation>
 <translation id="6772959465807028761">Da koristiš YouTube, nastavi putem Google računa</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3652,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="7120588595737538743">preuzimanja i snimaka ekrana</translation>
 <translation id="7124354851782353862">Unesite CVC</translation>
 <translation id="7129409597930077180">Dostava na ovu adresu nije moguća. Odaberite drugu adresu.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Otpremanje je blokirano</translation>
 <translation id="7132939140423847331">Vaš administrator je zabranio kopiranje ovih podataka.</translation>
 <translation id="7134653428559514680">Dijeljenje s ove web lokacije se ne preporučuje</translation>
@@ -3968,6 +3969,7 @@ Dodatni detalji:
 <translation id="7637571805876720304">Ukloniti kreditnu karticu iz Chromiuma?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Nijedna}=1{1 lozinka na vašem računu (za domene <ph name="DOMAIN_LIST" />)}one{# lozinka na vašem računu (za domene <ph name="DOMAIN_LIST" />)}few{# lozinke na vašem računu (za domene <ph name="DOMAIN_LIST" />)}other{# lozinki na vašem računu (za domene <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Serijski priključci</translation>
+<translation id="7644100755247241229">Šaljite novac prijateljima i preduzećima putem Pixa pomoću Google Novčanika</translation>
 <translation id="7646681339175747202">Lozinka koju ste upravo upotrijebili je pronađena u narušavanju podataka. Google upravitelj lozinki preporučuje da odmah promijenite lozinku.</translation>
 <translation id="7647206758853451655">Kvalitet štampanja</translation>
 <translation id="7648133459447652947">Da prikažete kursor, promijenite aplikaciju, ponovo učitajte stranicu ili se vratite</translation>
@@ -4071,6 +4073,7 @@ Dodatni detalji:
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798389633136518089">Zanemareno jer pravilo nije postavio izvor u oblaku.</translation>
 <translation id="7800304661137206267">Veza je šifrirana pomoću <ph name="CIPHER" />, uz <ph name="MAC" /> za autentifikaciju poruka i <ph name="KX" /> kao mehanizam za razmjenu ključeva.</translation>
+<translation id="780228007282527248">Dodajte karticu ili sliku da poboljšate pretraživanje</translation>
 <translation id="7802523362929240268">Web stranica je zakonita</translation>
 <translation id="7802989406998618639">Unesite <ph name="NUMBER_OF_DIGITS" />-cifreni sigurnosni kôd na <ph name="SIDE_OF_CARD" /> da banka može potvrditi da ste to zaista vi</translation>
 <translation id="780301667611848630">Ne, hvala</translation>

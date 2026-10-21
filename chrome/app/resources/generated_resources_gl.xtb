@@ -437,7 +437,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="130744661532298792">Para poder usar sempre os contrasinais na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="1308105352527684175">É posible que non poidas acceder a determinado contido</translation>
 <translation id="1311092170520822848">Este sitio está controlando os lectores de tarxetas intelixentes conectados ao teu dispositivo e, posiblemente, as tarxetas dispoñibles para eles</translation>
-<translation id="131112175593356748">Mostrar algúns</translation>
 <translation id="131112695174432497">Elimínanse os datos que repercuten na personalización de anuncios</translation>
 <translation id="131188242279372879">Descubre a protección mellorada para dispor do máximo nivel de seguranza de Chrome nas descargas</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Corrixe a pestana que fai que o navegador vaia máis lento}other{Corrixe as pestanas que fan que o navegador vaia máis lento}}</translation>
@@ -2792,6 +2791,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3109206895301430738">Grupos de pestanas gardados</translation>
 <translation id="3109724472072898302">Contraído</translation>
 <translation id="3112292765614504292">Tamaño da aplicación: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Contraer</translation>
 <translation id="3112532142993641404">Para ver as túas pestanas dos teus outros dispositivos, inicia sesión e sincroniza o historial. Tamén poderás acceder aos teus marcadores e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="311347022006935575">Pestana engadida</translation>
 <translation id="311394601889664316">Non permitir que os sitios editen ficheiros nin cartafoles do teu dispositivo</translation>
@@ -4380,6 +4380,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4296632172536745000">O teu contrasinal orixinal para este sitio atopouse nunha violación da seguranza dos datos pública. O <ph name="DATE" /> pedícheslle ao <ph name="BRAND" /> que che cambiase automaticamente o contrasinal.</translation>
 <translation id="4297219207642690536">Reiniciar e restablecer</translation>
 <translation id="4297813521149011456">Rotación da pantalla</translation>
+<translation id="42981349822642051">Ampliar</translation>
 <translation id="4298660926525614540">Nomes dos dispositivos de almacenamento extraíbles</translation>
 <translation id="4299022904780065004">Nova ventá do modo de &amp;incógnito</translation>
 <translation id="4300272766492248925">Abrir aplicación</translation>
@@ -5134,6 +5135,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4877276003880815204">Inspeccionar elementos</translation>
 <translation id="4878634973244289103">Non se puido enviar o comentario. Téntao de novo máis tarde.</translation>
 <translation id="4878718769565915065">Produciuse un erro ao engadir unha impresión dixital a esta chave de seguranza</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}other{+#}}</translation>
 <translation id="4879491255372875719">Automático (opción predeterminada)</translation>
 <translation id="4880827082731008257">Historial de busca</translation>
 <translation id="4881685975363383806">Non lembrar a próxima vez</translation>
@@ -5618,6 +5620,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5247051749037287028">Nome visible (opcional)</translation>
 <translation id="5247243947166567755">Seleccionar <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">Fai preguntas desde onde esteas con Gemini en Chrome</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{Aparecerá 1 barra de información máis cando se peche esta}other{Aparecerán # barras de información máis cando se peche esta}}</translation>
 <translation id="5248934139541843042">Ver o organizador</translation>
 <translation id="5249624017678798539">O navegador fallou antes de completar a descarga.</translation>
 <translation id="5249818097095743806">Usa a túa chave de seguranza</translation>
@@ -5923,6 +5926,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5493792505296048976">pantalla activada</translation>
 <translation id="5494016731375030300">Pestanas pechadas recentemente</translation>
 <translation id="5494362494988149300">Abrir ao fi&amp;nalizar</translation>
+<translation id="5494439739088303974">Usa Google Lens para facer preguntas sobre calquera texto ou imaxe da páxina</translation>
 <translation id="5494879038325093596">Verifica a túa identidade para acceder a el en todos os dispositivos coa túa Conta de Google</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5495466433285976480">Esta acción eliminará todos os usuarios, ficheiros, datos e outras configuracións locais a próxima vez que reinicies. Todos os usuarios deberán iniciar sesión de novo.</translation>

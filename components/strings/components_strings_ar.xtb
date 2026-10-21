@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
-<translation id="1003222766972176318">هذا تذكير بتوفّر عرض تم حفظه</translation>
 <translation id="1008557486741366299">ليس الآن</translation>
 <translation id="100957008357583611">هل تريد استخدام موقعك الجغرافي؟</translation>
 <translation id="1010200102790553230">تحميل الصفحة لاحقًا</translation>
@@ -401,7 +400,7 @@
 <translation id="1656024727720460136">‏بسَّط Chrome عرض هذه الصفحة لتسهيل قراءتها. استرَدّ Chrome الصفحة الأصلية عبر اتصال آمن.</translation>
 <translation id="1656489000284462475">الاستلام</translation>
 <translation id="1658918301167915956">أجهزة تتضمّن بلوتوث</translation>
-<translation id="1662550410081243962">حفظ طرق الدفع واستخدامها لملء النماذج</translation>
+<translation id="1662550410081243962">حفظ طرق الدفع وملء حقولها</translation>
 <translation id="1662980953334786797">الترتيب نفسه</translation>
 <translation id="1663578299724791827">‏حفظ "رقم المسافر المعروف" (KTN) بأمان</translation>
 <translation id="1663943134801823270">‏يتم أخذ البطاقات والعناوين من Chrome، ويمكنك إدارتها في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
@@ -769,7 +768,7 @@
 <translation id="2277949605527755300">يريد الموقع الإلكتروني <ph name="URL" /> تتبُّع حركات يديك</translation>
 <translation id="22792995594807632">يجب مراجعة الملفات قبل تنزيلها</translation>
 <translation id="2279607542590042584">‏مفتاح المرور • "كلمات السر" في Apple</translation>
-<translation id="2283340219607151381">حفظ العناوين وملؤها</translation>
+<translation id="2283340219607151381">حفظ العناوين وملء حقولها</translation>
 <translation id="2283447177162560884">تم حذف "<ph name="PAGE_TITLE" />".</translation>
 <translation id="2283599456633275070">السفر</translation>
 <translation id="2285709459648658719">جوازات السفر</translation>
@@ -1127,6 +1126,7 @@
 <translation id="2911973620368911614">رقم تعريف حساب العمل للمستخدم</translation>
 <translation id="2914160345369867329">‏يستخدِم الموقع الإلكتروني <ph name="SITE" /> التشفير عادة لحماية معلوماتك. عندما حاول Chromium الاتصال بالموقع الإلكتروني <ph name="SITE" /> هذه المرة، أرجَع الموقع الإلكتروني بيانات اعتماد غير عادية وغير صحيحة. وقد يحدث هذا عندما يحاول أحد المهاجمين التظاهر بأنّه <ph name="SITE" />، أو إذا قاطعت شاشة تسجيل دخول Wi-Fi الاتصال، مع العلم بأنّ معلوماتك لا تزال آمنة لأنّ Chromium أوقَفَ الاتصال قبل تبادل أي بيانات.</translation>
 <translation id="2915068235268646559">مُعطّل منذ <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">جميع الأجهزة</translation>
 <translation id="2916038427272391327">إغلاق البرامج الأخرى</translation>
 <translation id="2917630513638801879">الأزرق السماوي 1</translation>
 <translation id="2922350208395188000">لا يمكن التحقق من شهادة الخادم.</translation>
@@ -1462,7 +1462,6 @@
 <translation id="3479552764303398839">ليس الآن</translation>
 <translation id="3481315707647070701">إنشاء الصور وتعديلها</translation>
 <translation id="3484560055331845446">‏قد لا تتمكّن من الوصول إلى حسابك على Google. لذا ينصح Chrome بتغيير كلمة مرورك الآن. وسيُطلَب منك تسجيل الدخول.</translation>
-<translation id="3484861421501147767">هذا تذكير بتوفّر رمز ترويجي تم حفظه</translation>
 <translation id="3485901585646640838">‏لاستخدام كلمات المرور وغيرها من المعلومات المحفوظة في حسابك على Google، يجب إثبات هويتك</translation>
 <translation id="3487845404393360112">الدُرج 4</translation>
 <translation id="3493881266323043047">الصلاحية</translation>
@@ -1822,6 +1821,7 @@
 <translation id="4067774859633143413">للخروج من وضع "ملء الشاشة" والاطّلاع على عملية التنزيل، اضغط مع الاستمرار على |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">إضافة عنوان صالح</translation>
 <translation id="4072486802667267160">حدث خطأ أثناء معالجة طلبك. يُرجى إعادة المحاولة.</translation>
+<translation id="4073293290376142777">تسجيل الدخول؟</translation>
 <translation id="4073376909608563327">تعذّر استخدام فتح قفل الجهاز</translation>
 <translation id="4073797364926776829">الاطّلاع على البطاقة</translation>
 <translation id="4075732493274867456">لا يدعم كل من العميل والخادم مجموعة ترميز أو إصدار بروتوكول طبقة المقابس الآمنة الشائع.</translation>
@@ -1854,6 +1854,7 @@
 <translation id="4107047499377819067">‏بدأ تثبيت خدمات VPN التي تُشغَّل في الخلفية، وقد يستغرق هذا الإجراء بضع دقائق.</translation>
 <translation id="4110642094637545339">‏شعارَي Google Pay وAfterPay</translation>
 <translation id="4110652170750985508">مراجعة الدفعة</translation>
+<translation id="411071007970303441">جميع الأطراف المعنية</translation>
 <translation id="4112140312785995938">الانتقال إلى الخلف</translation>
 <translation id="4114007503059268298">‏هل تريد حفظ هذه البطاقة في حسابك على Google وعلى هذا الجهاز؟</translation>
 <translation id="4114146879518089587">المتابعة إلى الموقع الإلكتروني</translation>
@@ -3327,7 +3328,7 @@
 <translation id="6550245281449521513">لا يُسمح بقفل الماوس</translation>
 <translation id="6551737294564628267">‫<ph name="ATTRIBUTE_NAME" />، جديد</translation>
 <translation id="6552244083450538912">قد يظل نشاطك مرئيًا للجهات التالية: المواقع الإلكترونية التي تتم زيارتها، وصاحب العمل أو المؤسسة التعليمية، ومزوّد خدمة الإنترنت</translation>
-<translation id="6552566579578780089">عمليات الدفع</translation>
+<translation id="6552566579578780089">طرق الدفع</translation>
 <translation id="6553777254569586547">‫<ph name="SUGGESTION_TITLE" />، <ph name="SUGGESTION_TYPE" />، وهذا العنصر رقم <ph name="MATCH_POSITION" /> من إجمالي <ph name="NUM_MATCHES_IN_GROUP" /> في المجموعة "<ph name="GROUP_HEADER" />"</translation>
 <translation id="6554732001434021288">تمّت زيارة الموقع الإلكتروني آخر مرّة قبل <ph name="NUM_DAYS" /> يوم.</translation>
 <translation id="6556866813142980365">إعادة</translation>
@@ -3440,6 +3441,7 @@
 <translation id="6753460329812070808">‏تمت إزالة الاقتراح من Chrome</translation>
 <translation id="6757797048963528358">خضع جهازك إلى وضع السكون.</translation>
 <translation id="6758934187792712102">يريد "<ph name="URL" />" استخدام أدوات استشعار الإضاءة والحركة</translation>
+<translation id="6766488013065406604">‏الانتقال إلى "مدير كلمات المرور في Google"</translation>
 <translation id="6770747695101757579">ورق (قطني)</translation>
 <translation id="6772959465807028761">‏لاستخدام YouTube، يُرجى المتابعة باستخدام حسابك على Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3652,6 @@
 <translation id="7120588595737538743">عمليات التنزيل ولقطات الشاشة</translation>
 <translation id="7124354851782353862">‏أدخِل رمز التحقق من البطاقة (CVC)</translation>
 <translation id="7129409597930077180">لا يمكن الشحن على هذا العنوان. اختَر عنوانًا آخر.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">تحميل الملفات محظور</translation>
 <translation id="7132939140423847331">حظر المشرف نسخ هذه البيانات.</translation>
 <translation id="7134653428559514680">لا يُنصَح بالمشاركة من هذا الموقع الإلكتروني</translation>
@@ -3968,6 +3969,7 @@
 <translation id="7637571805876720304">‏هل تريد إزالة بطاقة الائتمان من Chromium؟</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{ما مِن كلمات مرور}=1{لديك كلمة مرور واحدة في حسابك (ضمن <ph name="DOMAIN_LIST" />)}two{لديك كلمتا مرور في حسابك (ضمن <ph name="DOMAIN_LIST" />)}few{لديك # كلمات مرور في حسابك (ضمن <ph name="DOMAIN_LIST" />)}many{لديك # كلمة مرور في حسابك (ضمن <ph name="DOMAIN_LIST" />)}other{لديك # كلمة مرور في حسابك (ضمن <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">المنافذ التسلسلية</translation>
+<translation id="7644100755247241229">‏يمكنك إرسال الدفعات عبر Pix إلى الشركات والأصدقاء الذين يستخدمون "محفظة Google"</translation>
 <translation id="7646681339175747202">‏استُخدمت كلمة المرور التي أدخلتها للتو في عملية اختراق للبيانات، لذلك ينصح "مدير كلمات المرور في Google" بتغيير كلمة مرورك الآن.</translation>
 <translation id="7647206758853451655">جودة الطباعة</translation>
 <translation id="7648133459447652947">لإظهار المؤشر، يمكنك التبديل بين التطبيقات أو إعادة تحميل الصفحة أو الرجوع</translation>
@@ -4071,6 +4073,7 @@
 <translation id="7791543448312431591">إضافة</translation>
 <translation id="7798389633136518089">تم التجاهل لعدم إعداد السياسة من خلال أحد مصادر السحابة الإلكترونية.</translation>
 <translation id="7800304661137206267">تم ترميز الاتصال باستخدام <ph name="CIPHER" />، مع <ph name="MAC" /> لمصادقة الرسالة و<ph name="KX" /> كآلية التبادل الرئيسية.</translation>
+<translation id="780228007282527248">يمكنك إضافة علامة تبويب أو صورة لتحسين بحثك</translation>
 <translation id="7802523362929240268">الموقع الإلكتروني مشروع</translation>
 <translation id="7802989406998618639">يُرجى إدخال رمز الأمان المكوّن من ‏<ph name="NUMBER_OF_DIGITS" /> أرقام المكتوب على <ph name="SIDE_OF_CARD" /> ليتمكّن المصرف من إثبات هويتك.</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>

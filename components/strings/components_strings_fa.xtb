@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
-<translation id="1003222766972176318">یادآوری: پیشنهاد ذخیره‌شده دردسترس است</translation>
 <translation id="1008557486741366299">حالا نه</translation>
 <translation id="100957008357583611">از مکان شما استفاده شود؟</translation>
 <translation id="1010200102790553230">بار کردن صفحه در فرصتی دیگر</translation>
@@ -1128,6 +1127,7 @@
 <translation id="2911973620368911614">شناسه کاربر حسابداری کار</translation>
 <translation id="2914160345369867329">‏<ph name="SITE" /> معمولاً از رمزگذاری برای محافظت از اطلاعات شما استفاده می‌کند. اما این بار که Chrome تلاش کرد به <ph name="SITE" /> متصل شود، وب‌سایت اطلاعات کاربری نامعمول و نادرستی را برگرداند. ممکن است مهاجمی در تلاش باشد خود را به‌جای <ph name="SITE" /> معرفی کند، یا ممکن است صفحه ورود به سیستم Wi-Fi در اتصال اختلال ایجاد کرده باشد. اطلاعات شما همچنان امن است، زیرا Chrome پیش‌از آنکه داده‌ای مبادله کند اتصال را قطع کرد.</translation>
 <translation id="2915068235268646559">خرابی از <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">همه دستگاه‌ها</translation>
 <translation id="2916038427272391327">برنامه‌های دیگر را ببندید</translation>
 <translation id="2917630513638801879">فیروزه‌ای ۱</translation>
 <translation id="2922350208395188000">گواهی سرور بررسی نمی‌شود.</translation>
@@ -1463,7 +1463,6 @@
 <translation id="3479552764303398839">حالا نه</translation>
 <translation id="3481315707647070701">دیداری‌سازی و ویرایش کردن</translation>
 <translation id="3484560055331845446">‏ممکن است دسترسی به حساب Google را از دست بدهید. Chrome توصیه می‌کند اکنون گذرواژه‌تان را تغییر دهید. از شما خواسته می‌شود به سیستم وارد شوید.</translation>
-<translation id="3484861421501147767">یادآوری: کد ترویجی ذخیره‌شده دردسترس است</translation>
 <translation id="3485901585646640838">‏برای استفاده از گذرواژه‌ها و دیگر موارد ذخیره‌شده در «حساب Google»، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="3487845404393360112">سینی ۴</translation>
 <translation id="3493881266323043047">اعتبار</translation>
@@ -1823,6 +1822,7 @@
 <translation id="4067774859633143413">برای خروج از تمام‌صفحه و مشاهده بارگیری، |<ph name="ACCELERATOR" />| را فشار دهید و نگه دارید</translation>
 <translation id="4067947977115446013">افزودن نشانی معتبر</translation>
 <translation id="4072486802667267160">هنگام پردازش سفارش شما خطایی روی داد. لطفاً دوباره امتحان کنید.</translation>
+<translation id="4073293290376142777">به سیستم وارد می‌شوید؟</translation>
 <translation id="4073376909608563327">نمی‌توان از باز کردن قفل دستگاه استفاده کرد</translation>
 <translation id="4073797364926776829">مشاهده کارت</translation>
 <translation id="4075732493274867456">‏کلاینت و سرور از مجموعه رمزگذاری یا نسخه پروتکل SSL مشترکی استفاده نمی‌کنند.</translation>
@@ -1855,6 +1855,7 @@
 <translation id="4107047499377819067">نصب سرویس‌های پس‌زمینه‌ای وی‌پی‌ان شروع شد و ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="4110642094637545339">‏‫Google Pay، نشان‌واره AfterPay</translation>
 <translation id="4110652170750985508">مرور پرداخت</translation>
+<translation id="411071007970303441">همه کنشگران</translation>
 <translation id="4112140312785995938">رفتن به عقب</translation>
 <translation id="4114007503059268298">‏می‌خواهید این کارت در «حساب Google» شما و این دستگاه ذخیره شود؟</translation>
 <translation id="4114146879518089587">رفتن به سایت</translation>
@@ -3441,6 +3442,7 @@
 <translation id="6753460329812070808">‏پیشنهاد از Chrome برداشته شد</translation>
 <translation id="6757797048963528358">دستگاهتان به خواب رفته است.</translation>
 <translation id="6758934187792712102">‫<ph name="URL" /> می‌خواهد از حسگرهای حرکتی و نوری شما استفاده کند</translation>
+<translation id="6766488013065406604">‏رفتن به «مدیر گذرواژه Google»</translation>
 <translation id="6770747695101757579">کاغذ (پنبه‌ای)</translation>
 <translation id="6772959465807028761">‏برای استفاده کردن از YouTube، با «حساب Google» خود ادامه دهید</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3651,7 +3653,6 @@
 <translation id="7120588595737538743">بارگیری‌ها و نماگرفت‌ها</translation>
 <translation id="7124354851782353862">‏کد تأیید کارت (CVC) را وارد کنید</translation>
 <translation id="7129409597930077180">ارسال به این نشانی ممکن نیست. نشانی دیگری را انتخاب کنید.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">بارگذاری مسدود شد</translation>
 <translation id="7132939140423847331">سرپرست کپی شدن این داده‌ها را ممنوع کرده است.</translation>
 <translation id="7134653428559514680">هم‌رسانی از این سایت توصیه نمی‌شود</translation>
@@ -3969,6 +3970,7 @@
 <translation id="7637571805876720304">‏کارت اعتباری از Chromium پاک شود؟</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{هیچ‌ گذرواژه‌ای}=1{۱ گذرواژه در حسابتان (برای <ph name="DOMAIN_LIST" />)}one{# گذرواژه در حسابتان (برای <ph name="DOMAIN_LIST" />)}other{# گذرواژه در حسابتان (برای <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">درگاه‌های سریال</translation>
+<translation id="7644100755247241229">‏با استفاده از «کیف پول Google»، برای دوستان و کسب‌وکارها Pix ارسال کنید</translation>
 <translation id="7646681339175747202">‏گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه لو رفته است. «مدیر گذرواژه Google» توصیه می‌کند گذرواژه‌تان را همین‌حالا تغییر دهید.</translation>
 <translation id="7647206758853451655">کیفیت چاپ</translation>
 <translation id="7648133459447652947">برای نمایش مکان‌نما، بین برنامه‌ها جابه‌جا شوید، صفحه را مجدداً بار کنید، یا به عقب برگردید</translation>
@@ -4072,6 +4074,7 @@
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="7798389633136518089">نادیده گرفته شد چون خط‌مشی توسط منبع ابری تنظیم نشده است.</translation>
 <translation id="7800304661137206267">اتصال با استفاده از <ph name="CIPHER" /> و با <ph name="MAC" /> برای راستی‌آزمایی پیام و <ph name="KX" /> به‌عنوان مکانیسم تبدیل کلید رمزگذاری می‌شود.</translation>
+<translation id="780228007282527248">برای بهبود جستجو، زبانه یا تصویر اضافه کنید</translation>
 <translation id="7802523362929240268">سایت مجاز است</translation>
 <translation id="7802989406998618639">کد امنیتی <ph name="NUMBER_OF_DIGITS" /> رقمی <ph name="SIDE_OF_CARD" /> را وارد کنید تا بانکتان بتواند هویت شما را تأیید کند</translation>
 <translation id="780301667611848630">نه متشکرم</translation>

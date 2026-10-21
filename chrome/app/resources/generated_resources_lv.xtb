@@ -437,7 +437,6 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="130744661532298792">Lai vienmēr varētu izmantot Google kontā saglabātās paroles, apstipriniet savu identitāti.</translation>
 <translation id="1308105352527684175">Iespējams, nevarēsiet piekļūt noteiktam saturam</translation>
 <translation id="1311092170520822848">Šī vietne kontrolē viedkaršu lasītājus, kas ir pievienoti jūsu ierīcei, un, iespējams, arī pieejamās viedkartes.</translation>
-<translation id="131112175593356748">Rādīt dažus</translation>
 <translation id="131112695174432497">Tiek dzēsti dati, kas ietekmē reklāmu personalizēšanu</translation>
 <translation id="131188242279372879">Izmantojiet uzlabotu aizsardzību, kas nodrošina augstākā līmeņa drošību lejupielādēm pārlūkā Chrome</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Novērsiet problēmu cilnē, kas palēnina pārlūka darbību}zero{Novērsiet problēmas cilnēs, kas palēnina pārlūka darbību}one{Novērsiet problēmas cilnēs, kas palēnina pārlūka darbību}other{Novērsiet problēmas cilnēs, kas palēnina pārlūka darbību}}</translation>
@@ -2792,6 +2791,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="3109206895301430738">Saglabātās ciļņu grupas</translation>
 <translation id="3109724472072898302">Sakļauts</translation>
 <translation id="3112292765614504292">Lietotnes lielums: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Sakļaut</translation>
 <translation id="3112532142993641404">Lai iegūtu cilnes no citām savām ierīcēm, pierakstieties un sinhronizējiet vēsturi. Varēsiet arī piekļūt grāmatzīmēm un citiem datiem visās savās ierīcēs. Jebkurā brīdī iestatījumos varat pārtraukt sinhronizēšanu. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
 <translation id="311347022006935575">Pievienoja šo cilni</translation>
 <translation id="311394601889664316">Neļaut vietnēm rediģēt failus vai mapes jūsu ierīcē</translation>
@@ -4375,6 +4375,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4296632172536745000">Jūsu sākotnējā šīs vietnes parole tika atklāta publiska datu aizsardzības pārkāpuma dēļ. Tālāk norādītajā datumā jūs lūdzāt pakalpojumam <ph name="BRAND" /> automātiski nomainīt jūsu paroli: <ph name="DATE" />.</translation>
 <translation id="4297219207642690536">Restartēt un atiestatīt</translation>
 <translation id="4297813521149011456">Displeja pagriešana</translation>
+<translation id="42981349822642051">Izvērst</translation>
 <translation id="4298660926525614540">Noņemamo krātuves ierīču nosaukumi</translation>
 <translation id="4299022904780065004">Jauns &amp;inkognito režīma logs</translation>
 <translation id="4300272766492248925">Atvērt lietotni</translation>
@@ -5129,6 +5130,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4877276003880815204">Pārbaudīt elementus</translation>
 <translation id="4878634973244289103">Nevar nosūtīt atsauksmes. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="4878718769565915065">Neizdevās pievienot pirksta nospiedumu šai drošības atslēgai.</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}zero{+#}one{+#}other{+#}}</translation>
 <translation id="4879491255372875719">Automātiski (noklusējums)</translation>
 <translation id="4880827082731008257">Meklēšanas vēsture</translation>
 <translation id="4881685975363383806">Nākamreiz vairs neatgādināt</translation>
@@ -5613,6 +5615,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5247051749037287028">Parādāmais nosaukums (neobligāti)</translation>
 <translation id="5247243947166567755">Atlasīt vienumu <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">Atvērtajā ekrānā varat jautāt jebko Gemini pārlūkā Chrome</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{Kad šī informācijas josla tiks aizvērta, tiks rādīta vēl viena informācijas josla.}zero{Kad šī informācijas josla tiks aizvērta, tiks rādītas vēl # informācijas joslas.}one{Kad šī informācijas josla tiks aizvērta, tiks rādīta vēl # informācijas josla.}other{Kad šī informācijas josla tiks aizvērta, tiks rādītas vēl # informācijas joslas.}}</translation>
 <translation id="5248934139541843042">Skatīt kārtotāju</translation>
 <translation id="5249624017678798539">Pārlūks avarēja, pirms lejupielāde tika pabeigta.</translation>
 <translation id="5249818097095743806">Izmantojiet drošības atslēgu</translation>
@@ -5917,6 +5920,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5493792505296048976">ekrāns ieslēgts</translation>
 <translation id="5494016731375030300">Nesen aizvērtās cilnes</translation>
 <translation id="5494362494988149300">Atvērt, ka&amp;d lejupielāde pabeigta</translation>
+<translation id="5494439739088303974">Izmantojiet Google Lens, lai jautātu par jebkuru lapā esošo tekstu vai attēlu</translation>
 <translation id="5494879038325093596">Apstipriniet savu identitāti, lai varētu lietot šo paroli visās ierīcēs, kurās izmantojat savu Google kontu.</translation>
 <translation id="5494920125229734069">Atlasīt visu</translation>
 <translation id="5495466433285976480">Šādi pēc nākamās restartēšanas reizes tiks noņemti visi lokālie lietotāji, faili, dati un citi iestatījumi. Visiem lietotājiem būs atkārtoti jāpierakstās.</translation>

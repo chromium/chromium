@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Lai iegūtu aptuvenu rezultātu, <ph name="CATEGORY_TEXT" /> jādala ar <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Attēla avots</translation>
 <translation id="1446954767133808402">safīrs</translation>
-<translation id="1449035143498573192">Atvērt Google meklēšanā</translation>
 <translation id="1451536289672181509">Ierīce ir tastatūra.</translation>
 <translation id="1452939186874918380">lietussargi</translation>
 <translation id="145402479967797468">Atskaņošanas vadīklas</translation>
@@ -170,7 +169,6 @@
 <translation id="1664796644829245314">Priekšskatīt attēlu <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Iebūvēts VPN</translation>
 <translation id="1669047024429367828">Redzamība</translation>
-<translation id="1670478569471758522">Plašāka informācija par jūsu atlasi</translation>
 <translation id="1672499492233627739">Tīmekļa kameras video plūsma</translation>
 <translation id="1676557873873341166">Notiek videoklipa uzņemšana</translation>
 <translation id="1684279041537802716">Izcēluma krāsa</translation>
@@ -554,7 +552,6 @@
 <translation id="353214771040290298">Pabeigt rediģēšanu</translation>
 <translation id="3532980081107202182">Atlikušas aptuveni <ph name="MIN_REMAINING" /> minūtes</translation>
 <translation id="3533790840489634638">pludmales peļķe</translation>
-<translation id="3547264467365135390">Formula</translation>
 <translation id="3552832331940389362">japāņu animācijas ilustrācija, kurā kaķis sēž uz palodzes un vēro pēcpusdienas lietu</translation>
 <translation id="3557205324756024651">Lokālā identitāte (neobligāti)</translation>
 <translation id="3565064564551103223">Atļautās IP adreses</translation>
@@ -625,7 +622,6 @@
 <translation id="3866249974567520381">Apraksts</translation>
 <translation id="3869314628814282185">tills</translation>
 <translation id="387301095347517405">Cik pilnu uzlādes ciklu ir bijis jūsu akumulatoram</translation>
-<translation id="3877066159641251281">Klausīties tulkojumu</translation>
 <translation id="3880601782712134623">automātiski noteiktu atšķirīgas balsis un katram runātājam piešķirtu vispārīgu iezīmi, piemēram, “1. runātājs” un “2. runātājs”;</translation>
 <translation id="38811596981744338">Juridiska problēma</translation>
 <translation id="3885327323343477505">Mainīt ekrānsaudzētāju</translation>
@@ -912,14 +908,12 @@
 <translation id="5095761549884461003">Lai turpinātu atjaunināšanas procesu, atvienojiet ierīces (<ph name="DEVICE_NAME" />) USB vadu un pēc tam atkārtoti pievienojiet to.</translation>
 <translation id="5099354524039520280">uz augšu</translation>
 <translation id="5107243100836678918">Īsinājumtaustiņi, kuros netiek izmantots taustiņš <ph name="META_KEY" />, var būt pretrunā ar noteiktas lietotnes īsinājumtaustiņiem. Vēlreiz nospiediet šos īsinājumtaustiņus, lai turpinātu tos lietot, vai nospiediet jaunus īsinājumtaustiņus, kuros izmantots taustiņš <ph name="KEY" />. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
-<translation id="5108781503443873320">Līdzīga nozīme:</translation>
 <translation id="5130848777448318809">poniji</translation>
 <translation id="5137451382116112100">Pilnekrāna režīms</translation>
 <translation id="5139813694804168398">Netraucēt</translation>
 <translation id="5140788690559353412">Kad zaudēsiet piekļuvi skolas kontam, vairs nevarēsiet piekļūt saistītajiem e-pasta un Google diska failiem, piemēram, Gmail e-pasta ziņojumiem, Dokumentu failiem, Google prezentācijām un citiem failiem.</translation>
 <translation id="5142961317498132443">Autentifikācija</translation>
 <translation id="5144311987923128508">Apstiprinājuma poga tagad ir atspējota</translation>
-<translation id="5144887194300568405">Kopēt tulkojumu</translation>
 <translation id="5145081769226915336">Vai automātiski ieslēgt tumšo režīmu?</translation>
 <translation id="5145331109270917438">Modificēšanas datums</translation>
 <translation id="5154917547274118687">Atmiņa</translation>

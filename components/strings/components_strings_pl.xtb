@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
-<translation id="1003222766972176318">Przypomnienie: dostępna jest zapisana oferta</translation>
 <translation id="1008557486741366299">Nie teraz</translation>
 <translation id="100957008357583611">Użyć lokalizacji?</translation>
 <translation id="1010200102790553230">Wczytaj stronę później</translation>
@@ -240,6 +239,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1393071644879491291">Osoby przeprowadzające atak na stronie, którą próbujesz otworzyć, mogą podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia takich danych jak Twoje hasła, numery telefonów czy numery kart kredytowych. Chrome zdecydowanie zaleca powrót do bezpieczeństwa. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Bezpiecznie dodaj dowód tożsamości do Portfela Google</translation>
 <translation id="1398743098754840707">Witryny dodane tutaj nie będą używane jako odniesienie w odpowiedziach, nawet wtedy, gdy karta będzie otwarta. Jeśli dodana witryna jest obecnie używana w wątku, może minąć do 30 minut, zanim wątek przestanie się do niej odwoływać.</translation>
+<translation id="1403359480263156644">Zaktualizowano imię i nazwisko posiadacza karty</translation>
 <translation id="1405567553485452995">Jasnozielony</translation>
 <translation id="1406370515365284486">Twoje formy płatności nadal będą zapisane</translation>
 <translation id="1406500794671479665">Weryfikuję...</translation>
@@ -908,6 +908,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2498091847651709837">Zeskanuj nową kartę</translation>
 <translation id="2501270939904835585">Etykiety (satyna)</translation>
 <translation id="2501278716633472235">Wróć</translation>
+<translation id="250307989715832083">Dodaj podpis</translation>
 <translation id="250346157641628208">Papier (drukarka atramentowa)</translation>
 <translation id="2505063700931618106">Dane karty zostały zapisane</translation>
 <translation id="2505268675989099013">Chroń konto</translation>
@@ -1127,6 +1128,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2911973620368911614">Identyfikator użytkownika konta zadania</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> zazwyczaj chroni Twoje informacje za pomocą szyfrowania. Tym razem podczas próby połączenia się ze stroną <ph name="SITE" /> w Chrome strona odesłała nietypowe i nieprawidłowe dane logowania. Może się tak zdarzyć, gdy pod stronę <ph name="SITE" /> podszywa się atakująca osoba albo gdy ekran logowania do sieci Wi-Fi przerwie połączenie. Twoje informacje są nadal bezpieczne, bo połączenie w Chrome zakończyło się przed wymianą jakichkolwiek danych.</translation>
 <translation id="2915068235268646559">Awaria od <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Wszystkie urządzenia</translation>
 <translation id="2916038427272391327">Zamknij inne programy</translation>
 <translation id="2917630513638801879">Cyjan 1</translation>
 <translation id="2922350208395188000">Nie można sprawdzić certyfikatu serwera.</translation>
@@ -1462,7 +1464,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3479552764303398839">Nie teraz</translation>
 <translation id="3481315707647070701">Wizualizuj i edytuj</translation>
 <translation id="3484560055331845446">Możesz stracić dostęp do swojego konta Google. Chrome zaleca natychmiastową zmianę hasła. Zobaczysz prośbę, by się zalogować.</translation>
-<translation id="3484861421501147767">Przypomnienie: dostępny jest zapisany kod promocyjny</translation>
 <translation id="3485901585646640838">Aby używać haseł i innych ustawień zapisanych na koncie Google, potwierdź swoją tożsamość</translation>
 <translation id="3487845404393360112">Taca 4</translation>
 <translation id="3493881266323043047">Ważność</translation>
@@ -1822,6 +1823,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4067774859633143413">Aby zamknąć tryb pełnoekranowy i zobaczyć pobrane pliki, naciśnij i przytrzymaj |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Dodaj poprawny adres</translation>
 <translation id="4072486802667267160">Podczas przetwarzania zamówienia wystąpił błąd. Spróbuj ponownie.</translation>
+<translation id="4073293290376142777">Czy chcesz się zalogować?</translation>
 <translation id="4073376909608563327">Nie udało się użyć odblokowywania urządzenia</translation>
 <translation id="4073797364926776829">Wyświetl kartę</translation>
 <translation id="4075732493274867456">Klient i serwer nie obsługują wspólnej wersji protokołu SSL lub mechanizmu szyfrowania.</translation>
@@ -1854,6 +1856,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4107047499377819067">Rozpoczęła się instalacja usług VPN działających w tle. Może to potrwać kilka minut.</translation>
 <translation id="4110642094637545339">Logo Google Pay, AfterPay</translation>
 <translation id="4110652170750985508">Sprawdź szczegóły płatności</translation>
+<translation id="411071007970303441">Wszyscy aktorzy</translation>
 <translation id="4112140312785995938">Przewiń do tyłu</translation>
 <translation id="4114007503059268298">Czy chcesz zapisać tę kartę na swoim koncie Google i na tym urządzeniu?</translation>
 <translation id="4114146879518089587">Przejdź do witryny</translation>
@@ -1918,6 +1921,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4218327733815631046">Pozostaw przybliżoną lokalizację</translation>
 <translation id="4219596572397833317">Zobacz historię cen i inne informacje, które pomogą Ci mądrze robić zakupy.</translation>
 <translation id="4220128509585149162">Awarie</translation>
+<translation id="4220745762102459826">i inne dane</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Krok 1. Zaloguj się w portalu&lt;/h4&gt;
     &lt;p&gt;Aby w miejscach takich jak kawiarnie czy lotniska korzystać z sieci Wi-Fi, trzeba się w nich zalogować. Aby pojawiła się strona logowania, otwórz stronę rozpoczynającą się od &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2293,6 +2297,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="483241715238664915">Włącz ostrzeżenia</translation>
 <translation id="4833567658337394628">Wklejanie nie jest zalecane</translation>
 <translation id="4840250757394056958">Wyświetl historię Chrome</translation>
+<translation id="4842085418602350953">Następnym razem zapłać Pixem bez przełączania się między aplikacjami</translation>
 <translation id="4842365697443353018">Wyczyść formularz, aby użyć płatności odroczonej</translation>
 <translation id="484462545196658690">Automatycznie</translation>
 <translation id="4844937814014739139">Przewijanie i powiększanie udostępnionych kart</translation>
@@ -2879,6 +2884,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5794065675298686371">Włącz powiadomienia dotyczące śledzenia cen</translation>
 <translation id="5794093550048860249">Numer śledzenia przesyłki</translation>
 <translation id="5796050750059455142">Włącz „<ph name="BEGIN_LINK" />Inteligentne funkcje w innych usługach Google<ph name="LINK_END" />”</translation>
+<translation id="5797916798049571144">Te informacje zostały zapisane z danymi karty i będą automatycznie uzupełniane podczas płatności</translation>
 <translation id="5797984091151707075">Zablokowane przez zasadę administratora</translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
 <translation id="5806871454498484178">Przewijanie i powiększanie zablokowane</translation>
@@ -3440,6 +3446,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6753460329812070808">Sugestia została usunięta z Chrome</translation>
 <translation id="6757797048963528358">Twoje urządzenie przeszło w tryb uśpienia.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> chce używać Twoich czujników ruchu i światła</translation>
+<translation id="6766488013065406604">Otwórz Menedżera haseł Google</translation>
 <translation id="6770747695101757579">Papier (bawełna)</translation>
 <translation id="6772959465807028761">Aby korzystać z YouTube, zaloguj się na konto Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3657,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7120588595737538743">pobranych plików i zrzutów ekranu</translation>
 <translation id="7124354851782353862">Wpisz kod CVC</translation>
 <translation id="7129409597930077180">Nie można wysłać pod ten adres. Wybierz inny.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Przesyłanie jest zablokowane</translation>
 <translation id="7132939140423847331">Administrator nie zezwala na kopiowanie tych danych.</translation>
 <translation id="7134653428559514680">Udostępnianie z tej witryny nie jest zalecane</translation>
@@ -3968,6 +3974,7 @@ Dodatkowe informacje:
 <translation id="7637571805876720304">Usunąć tę kartę kredytową z Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Brak}=1{Na Twoim koncie zapisane jest 1 hasło (dla domen <ph name="DOMAIN_LIST" />)}few{Na Twoim koncie zapisane są # hasła (dla domen <ph name="DOMAIN_LIST" />)}many{Na Twoim koncie zapisanych jest # haseł (dla domen <ph name="DOMAIN_LIST" />)}other{Na Twoim koncie zapisane jest # hasła (dla domen <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Porty szeregowe</translation>
+<translation id="7644100755247241229">Wysyłaj środki za pomocą Pix do znajomych i firm, korzystając z Portfela Google</translation>
 <translation id="7646681339175747202">Znaleźliśmy użyte właśnie hasło wśród ujawnionych w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł Google zaleca natychmiastową zmianę hasła.</translation>
 <translation id="7647206758853451655">Jakość wydruku</translation>
 <translation id="7648133459447652947">Aby wyświetlić kursor, przełącz aplikacje, odśwież stronę lub wróć do poprzedniej</translation>
@@ -4071,6 +4078,7 @@ Dodatkowe informacje:
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798389633136518089">Zignorowano, ponieważ zasada nie została ustawiona przez źródło w chmurze.</translation>
 <translation id="7800304661137206267">Przesyłane dane są szyfrowane za pomocą algorytmu <ph name="CIPHER" />. Metoda uwierzytelniania komunikatów to <ph name="MAC" />, a mechanizm wymiany kluczy to <ph name="KX" />.</translation>
+<translation id="780228007282527248">Dodaj kartę lub obraz, aby ulepszyć wyszukiwanie</translation>
 <translation id="7802523362929240268">Strona spełnia wymagania prawne</translation>
 <translation id="7802989406998618639">Wpisz <ph name="NUMBER_OF_DIGITS" />-cyfrowy kod zabezpieczający, który znajduje się <ph name="SIDE_OF_CARD" />, aby Twój bank mógł się upewnić, że to Ty</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
@@ -4296,6 +4304,7 @@ Dodatkowe informacje:
 <translation id="8208629719488976364">Zawartość drukowanych stron i informacje o drukarce są wysyłane do Google Cloud lub innych firm w celu przeanalizowania. Na przykład mogą zostać przeskanowane pod kątem danych wrażliwych, a także mogą być przechowywane zgodnie z zasadami firmy i widoczne dla administratora.</translation>
 <translation id="8210490490377416373">Wybierz nazwę zasady</translation>
 <translation id="8211406090763984747">Połączenie jest bezpieczne</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ 1 inne źródło}few{+ # inne źródła}many{+ # innych źródeł}other{+ # innego źródła}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 cali</translation>
 <translation id="8218327578424803826">Przypisana lokalizacja:</translation>

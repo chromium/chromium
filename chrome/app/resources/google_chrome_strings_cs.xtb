@@ -49,6 +49,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1425903838053942728">{COUNT,plural, =0{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou.}=1{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. Anonymní okno se znovu neotevře.}few{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymní okna se znovu neotevřou.}many{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymního okna se znovu neotevře.}other{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moci používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. # anonymních oken se znovu neotevře.}}</translation>
 <translation id="1434626383986940139">Aplikace Chrome Canary</translation>
 <translation id="1439793550875056299">Připnout Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{Váš administrátor vás kvůli instalaci aktualizace žádá, ať Chrome spustíte znovu. Izolované okno se znovu neotevře.}few{Váš administrátor vás kvůli instalaci aktualizace žádá, ať Chrome spustíte znovu. Vaše # izolovaná okna se znovu neotevřou.}many{Váš administrátor vás kvůli instalaci aktualizace žádá, ať Chrome spustíte znovu. Vašich # izolovaného okna se znovu neotevře.}other{Váš administrátor vás kvůli instalaci aktualizace žádá, ať Chrome spustíte znovu. Vašich # izolovaných oken se znovu neotevře.}}</translation>
 <translation id="146866447420868597">Přihlásit se do Chromu?</translation>
 <translation id="1476347941828409626">&amp;Spravovat profily Chrome</translation>
 <translation id="1492280395845991349">Aktualizaci Chromu dokončíte opětovným spuštěním</translation>
@@ -117,7 +118,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2039417478970545937">Nastavení.</translation>
 <translation id="2040220733769034247">Naskenováním QR kódu si do telefonu stáhněte Chrome a přihlaste se ke svému účtu Google.</translation>
 <translation id="2044908892530830113">Zobrazovat vyhledávání v Chromu na liště s nabídkou na Macu a zapnout klávesovou zkratku</translation>
-<translation id="2050189601866423230">Režim AI ve Vyhledávání Google si můžete připnout a pokládat pak otázky přímo při prohlížení</translation>
 <translation id="2091012649849228750">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 8.</translation>
 <translation id="2094648590148273905">Smluvní podmínky systému ChromeOS Flex</translation>
 <translation id="2094919256425865063">Přesto Chrome ukončit?</translation>
@@ -273,6 +273,7 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="345171907106878721">Přidejte do Chromu svůj účet</translation>
 <translation id="3453763134178591239">Smluvní podmínky systému ChromeOS</translation>
 <translation id="3475778264501649775">Vezměte si svá hesla, karty a další položky s sebou na cesty s aplikací Chrome na telefonu</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Váš administrátor vás žádá, ať kvůli použití této aktualizace Chrome spustíte znovu. Izolované okno se znovu neotevře.}few{Váš administrátor vás žádá, ať kvůli použití této aktualizace Chrome spustíte znovu. Vaše # izolovaná okna se znovu neotevřou.}many{Váš administrátor vás žádá, ať kvůli použití této aktualizace Chrome spustíte znovu. Vašich # izolovaného okna se znovu neotevře.}other{Váš administrátor vás žádá, ať kvůli použití této aktualizace Chrome spustíte znovu. Vašich # izolovaných oken se znovu neotevře.}}</translation>
 <translation id="3539955434060988644">Otevřít odkaz v &amp;anonymním okně Chromu</translation>
 <translation id="354621070532799440">Připomenutí: Nejlepší bezpečnostní funkce od Googlu v kapse</translation>
 <translation id="3547866758548131919">Kliknutím na tlačítko Shrnout můžete tento dokument sdílet s Gemini v Chromu a získat tak rychlý přehled a možnost klást doplňující otázky</translation>
@@ -288,12 +289,15 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="3622797965165704966">Používání Chromu se spravovaným účtem Google a sdílenými počítači je teď snazší.</translation>
 <translation id="3628103251823745322">Už je přihlášen uživatel <ph name="EXISTING_USER" />. Pokud své procházení chcete oddělit, přihlaste se do Chromu ve svém vlastním profilu jako <ph name="USER_EMAIL_ADDRESS" />. Navíc budete mít své uložené informace a další obsah k dispozici na všech svých zařízeních.</translation>
 <translation id="3635073343384702370">Chrome může hesla zkontrolovat, pouze když si je uložíte</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moct používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. Izolované okno se znovu neotevře.}few{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moct používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. Vaše # izolovaná okna se znovu neotevřou.}many{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moct používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. Vašich # izolovaného okna se znovu neotevře.}other{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moct používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. Vašich # izolovaných oken se znovu neotevře.}}</translation>
 <translation id="3636970668267555808">Nastavte si Chrome jako výchozí prohlížeč. Budete tak mít snadno přístup k funkcím, které znáte, máte rádi a kterým důvěřujete.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Váš administrátor vás žádá, ať kvůli použití této aktualizace Chrome spustíte znovu. Je otevřeno anonymní nebo izolované okno. Po opětovném spuštění se znovu neotevře.}few{Váš administrátor vás žádá, ať kvůli použití této aktualizace Chrome spustíte znovu. V různých profilech jsou otevřená # anonymní a izolovaná okna. Po opětovném spuštění se znovu neotevřou.}many{Váš administrátor vás žádá, ať kvůli použití této aktualizace Chrome spustíte znovu. V různých profilech je otevřeno # anonymních a izolovaných oken. Po opětovném spuštění se znovu neotevřou.}other{Váš administrátor vás žádá, ať kvůli použití této aktualizace Chrome spustíte znovu. V různých profilech je otevřeno # anonymních a izolovaných oken. Po opětovném spuštění se znovu neotevřou.}}</translation>
 <translation id="3667616615096815454">Aplikaci nelze nainstalovat, protože ji server nezná.</translation>
 <translation id="3673813398384385993">Prohlížeč Chrome zjistil, že rozšíření <ph name="EXTENSION_NAME" /> obsahuje malware</translation>
 <translation id="3697952514309507634">Další profily Chrome</translation>
 <translation id="3703994572283698466">Systém ChromeOS by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />, jako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostředí Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Verze systému ChromeOS Flex</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Je k dispozici nová aktualizace Chromu, která se použije po opětovném spuštění. Je otevřeno anonymní nebo izolované okno. Po opětovném spuštění se znovu neotevře.}few{Je k dispozici nová aktualizace Chromu, která se použije po opětovném spuštění. V různých profilech jsou otevřená # anonymní a izolovaná okna. Po opětovném spuštění se znovu neotevřou.}many{Je k dispozici nová aktualizace Chromu, která se použije po opětovném spuštění. V různých profilech je otevřeno # anonymních a izolovaných oken. Po opětovném spuštění se znovu neotevřou.}other{Je k dispozici nová aktualizace Chromu, která se použije po opětovném spuštění. V různých profilech je otevřeno # anonymních a izolovaných oken. Po opětovném spuštění se znovu neotevřou.}}</translation>
 <translation id="3718181793972440140">Ze zařízení bude smazána 1 položka. Budete-li chtít své údaje později načíst, přihlaste se do Chromu jako <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome vám doporučuje odstranit ho. <ph name="BEGIN_LINK" />Další informace o podporovaných rozšířeních<ph name="END_LINK" />}few{Chrome vám doporučuje odstranit je. <ph name="BEGIN_LINK" />Další informace o podporovaných rozšířeních<ph name="END_LINK" />}many{Chrome vám doporučuje odstranit je. <ph name="BEGIN_LINK" />Další informace o podporovaných rozšířeních<ph name="END_LINK" />}other{Chrome vám doporučuje odstranit je. <ph name="BEGIN_LINK" />Další informace o podporovaných rozšířeních<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Prohloubit vyhledávání přidáním několika karet, souborů a nástrojů pomocí tlačítka Přidat kartu a další položky.</translation>
@@ -420,6 +424,7 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="5003967926796347400">Klikněte na Správce hesel Google</translation>
 <translation id="5043786843026425788">Další informace o vyhledávání pomocí Google Lens v Chromu</translation>
 <translation id="504867494566807945">Otevírejte v Chromu odkazy ze všech aplikací. Navíc se pro snadný přístup připne na hlavní panel.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{Pokročilá ochrana vyžaduje opětovné spuštění Chromu, aby bylo možné nainstalovat aktualizaci. Je otevřeno anonymní nebo izolované okno. Po opětovném spuštění se znovu neotevře.}few{Pokročilá ochrana vyžaduje opětovné spuštění Chromu, aby bylo možné nainstalovat aktualizaci. V různých profilech jsou otevřená # anonymní a izolovaná okna. Po opětovném spuštění se znovu neotevřou.}many{Pokročilá ochrana vyžaduje opětovné spuštění Chromu, aby bylo možné nainstalovat aktualizaci. V různých profilech je otevřeno # anonymních a izolovaných oken. Po opětovném spuštění se znovu neotevřou.}other{Pokročilá ochrana vyžaduje opětovné spuštění Chromu, aby bylo možné nainstalovat aktualizaci. V různých profilech je otevřeno # anonymních a izolovaných oken. Po opětovném spuštění se znovu neotevřou.}}</translation>
 <translation id="5105120510934353742">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém MacOS 13 nebo novější. Tento počítač používá systém macOS 12.</translation>
 <translation id="5114340746415930644">Pokud chcete používat a ukládat data Chromu ve svém účtu <ph name="USER_EMAIL" />, zadejte heslovou frázi</translation>
 <translation id="5120334927898581447">Přihlášení do Chromu při přihlášení do jiných služeb Google</translation>
@@ -457,6 +462,7 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="5386244825306882791">Také řídí, která stránka se zobrazí, když spustíte Chrome nebo budete vyhledávat v omniboxu.</translation>
 <translation id="5394833366792865639">Sdílet kartu prohlížeče Chrome</translation>
 <translation id="5402307365844630024">Přepnout Gemini v Chromu Beta</translation>
+<translation id="5414664742659847155">Izolovat Chrome od ostatních aplikací</translation>
 <translation id="541844421954567481">Vezměte si svá hesla, karty a další položky s sebou na cesty s aplikací Chrome na zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">Soubor nastavení je poškozený nebo neplatný.
 
@@ -484,6 +490,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nelze se připojit k internetu. Proxy server vyžaduje ověření.</translation>
 <translation id="5709557627224531708">Nastavte si Chrome jako výchozí prohlížeč</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{Pokročilá ochrana vyžaduje opětovné spuštění Chromu, aby bylo možné nainstalovat aktualizaci. Izolované okno se znovu neotevře.}few{Pokročilá ochrana vyžaduje opětovné spuštění Chromu, aby bylo možné nainstalovat aktualizaci. Vaše # izolovaná okna se znovu neotevřou.}many{Pokročilá ochrana vyžaduje opětovné spuštění Chromu, aby bylo možné nainstalovat aktualizaci. Vašich # izolovaného okna se znovu neotevře.}other{Pokročilá ochrana vyžaduje opětovné spuštění Chromu, aby bylo možné nainstalovat aktualizaci. Vašich # izolovaných oken se znovu neotevře.}}</translation>
 <translation id="5719246646468301581">Dodatečné smluvní podmínky prohlížeče Google Chrome a systému ChromeOS</translation>
 <translation id="5736850870166430177">Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky</translation>
 <translation id="5742003800414899269">S aplikací Chrome můžete mít na cestách ty nejlepší AI nástroje</translation>
@@ -511,6 +518,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="5960404530854194706">Chrome se aktualizuje, až budete pryč</translation>
 <translation id="5980111191913430208">Rozšíření, aplikace a motivy z neznámých zdrojů mohou poškodit vaše zařízení. Chrome doporučuje instalovat je pouze z tohoto zdroje: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Stahování… Zbývající čas: <ph name="HOURS" /> h.</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{Váš administrátor vás kvůli instalaci aktualizace žádá, ať Chrome spustíte znovu. Je otevřeno anonymní nebo izolované okno. Po opětovném spuštění se znovu neotevře.}few{Váš administrátor vás kvůli instalaci aktualizace žádá, ať Chrome spustíte znovu. V různých profilech jsou otevřená # anonymní a izolovaná okna. Po opětovném spuštění se znovu neotevřou.}many{Váš administrátor vás kvůli instalaci aktualizace žádá, ať Chrome spustíte znovu. V různých profilech je otevřeno # anonymních a izolovaných oken. Po opětovném spuštění se znovu neotevřou.}other{Váš administrátor vás kvůli instalaci aktualizace žádá, ať Chrome spustíte znovu. V různých profilech je otevřeno # anonymních a izolovaných oken. Po opětovném spuštění se znovu neotevřou.}}</translation>
 <translation id="6008161919456049856">Vaše hesla, platební metody a adresy, které jste si uložili do účtu Google, budou z tohoto zařízení odstraněny. Pokud je budete chtít v Chromu zase použít, znovu se přihlaste.</translation>
 <translation id="6009821354356307391">Položit doplňující otázku</translation>
 <translation id="6014316319780893079">S <ph name="BEGIN_LINK" />nástroji v prohlížeči Chrome<ph name="END_LINK" /> budete při procházení v bezpečí a budete mít vše pod kontrolou</translation>
@@ -670,6 +678,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7306401458628386911">Začněte hned procházet internet: Chrome se teď může spouštět zároveň s Windows.</translation>
 <translation id="7308322188646931570">Aby bylo možné stahovat soubory, potřebuje Chrome přístup k úložišti</translation>
 <translation id="7352651011704765696">Něco se pokazilo</translation>
+<translation id="7371412052245999753">Chrání paměť Chromu před ostatními aplikacemi v počítači.</translation>
 <translation id="73786666777299047">Otevřít Internetový obchod Chrome</translation>
 <translation id="7386878009611068389">Pokud na internetu chcete být víc v bezpečí s nastavením od rodičů, přepněte na profil Chrome, ve kterém jste už přihlášeni jako <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">K prohlížeči Chrome jste byli přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />. Přihlaste se prosím znovu pomocí stejného účtu.</translation>
@@ -683,6 +692,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Když Chrome 1 minutu nebudete používat, vaše organizace automaticky vymaže údaje o prohlížení. Může to zahrnovat historii, automatické vyplňování a stažené soubory. Vaše karty zůstanou otevřené.}few{Když Chrome # minuty nebudete používat, vaše organizace automaticky vymaže údaje o prohlížení. Může to zahrnovat historii, automatické vyplňování a stažené soubory. Vaše karty zůstanou otevřené.}many{Když Chrome # minuty nebudete používat, vaše organizace automaticky vymaže údaje o prohlížení. Může to zahrnovat historii, automatické vyplňování a stažené soubory. Vaše karty zůstanou otevřené.}other{Když Chrome # minut nebudete používat, vaše organizace automaticky vymaže údaje o prohlížení. Může to zahrnovat historii, automatické vyplňování a stažené soubory. Vaše karty zůstanou otevřené.}}</translation>
 <translation id="7466577301922356468">Automatické odesílání těchto dat do Googlu pomáhá s vylepšováním Chromu. Toto nastavení můžete kdykoli změnit.</translation>
 <translation id="7477130805345743099">Před načtením jakéhokoli webu pomocí nezabezpečeného připojení vás Chrome upozorní</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Je k dispozici nová aktualizace Chromu, která se použije po opětovném spuštění. Izolované okno se znovu neotevře.}few{Je k dispozici nová aktualizace Chromu, která se použije po opětovném spuštění. Vaše # izolovaná okna se znovu neotevřou.}many{Je k dispozici nová aktualizace Chromu, která se použije po opětovném spuštění. Vašich # izolovaného okna se znovu neotevře.}other{Je k dispozici nová aktualizace Chromu, která se použije po opětovném spuštění. Vašich # izolovaných oken se znovu neotevře.}}</translation>
 <translation id="7481213027396403996">Aktivujte si v Chromu maximální zabezpečení</translation>
 <translation id="749228101751499733">Když jste přihlášeni, můžete v Chromu používat hesla a další položky ze svého účtu Google. Pomocí zkratky <ph name="SHORTCUT" /> můžete nastavení služeb Google změnit.</translation>
 <translation id="7496017508659652909">Chrome načítá stránky předběžně, což zrychluje procházení a vyhledávání. <ph name="BEGIN_LINK" />Další informace o předběžném načítání stránek<ph name="END_LINK" /></translation>
@@ -763,7 +773,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8074398340364918139">Pokud chcete při vyhledávání použít konkrétní funkci nebo rozšíření Chromu, zadejte do adresního řádku jejich zkratku a poté stiskněte vybranou klávesu</translation>
 <translation id="8077579734294125741">Další profily Chrome</translation>
 <translation id="8086881907087796310">Instalace se nezdařila, protože váš počítač nesplňuje minimální požadavky na hardware.</translation>
-<translation id="8110438089258398864">Režim AI ve Vyhledávání Google můžete znovu otevřít a pokládat otázky při prohlížení</translation>
 <translation id="8113883687556086139">Pokud chcete používat a ukládat data Chromu ve svém účtu <ph name="ACCOUNT_EMAIL" />, ověřte svou totožnost</translation>
 <translation id="8115695070094288807">Přizpůsobení Chromu…</translation>
 <translation id="8118331347066725040">Zpětná vazba k vyhledávání s funkcí Lens</translation>
@@ -799,6 +808,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8380754585531979907">Pomocí klávesnice můžete přecházet mezi Gemini v Chromu a otevřenou kartou.</translation>
 <translation id="8387459386171870978">Pokračovat v používání Chromu</translation>
 <translation id="8394720698884623075">Kontroluje adresy URL oproti seznamu nebezpečných webů uloženému v Chromu</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moct používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. Je otevřeno anonymní nebo izolované okno. Po opětovném spuštění se znovu neotevře.}few{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moct používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. V různých profilech jsou otevřená # anonymní a izolovaná okna. Po opětovném spuštění se znovu neotevřou.}many{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moct používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. V různých profilech je otevřeno # anonymních a izolovaných oken. Po opětovném spuštění se znovu neotevřou.}other{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moct používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. V různých profilech je otevřeno # anonymních a izolovaných oken. Po opětovném spuštění se znovu neotevřou.}}</translation>
 <translation id="8403038600646341038">Logo Chrome na obrazovce počítače.</translation>
 <translation id="8418845734693287262">ChromeOS vaše data nemohl synchronizovat, protože vaše přihlašovací údaje nejsou aktuální.</translation>
 <translation id="842386925677997438">Bezpečnostní nástroje prohlížeče Chrome</translation>
@@ -819,8 +829,6 @@ Nové záložky nebude možné do účtu uložit, dokud některé nesmažete. Po
 <translation id="8555465886620020932">Chyba služby: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Vyhledat v seznamu jazyků</translation>
 <translation id="8575047640889685742">Veškerá data Chromu ve vašem účtu Google šifrovat pomocí vaší <ph name="BEGIN_LINK" />vlastní heslové fráze<ph name="END_LINK" />. Platební metody a adresy z Google Pay se šifrovat nebudou. Historie prohlížení v Chromu se nebude synchronizovat.</translation>
-<translation id="8590782867495422699">Znovu otevřít režim AI ve Vyhledávání Google</translation>
-<translation id="8598779894319572882">Pomocí tlačítka Režim AI ve Vyhledávání Google na liště můžete tuto funkci znovu otevřít a pokládat otázky při prohlížení</translation>
 <translation id="8614913330719544658">Google Chrome neodpovídá. Restartovat?</translation>
 <translation id="8623450603356630491">Přihlaste se do Chromu na telefonu</translation>
 <translation id="8624541899164515475">Nastavení, otevře se na nové kartě.</translation>
@@ -875,7 +883,6 @@ Nové záložky nebude možné do účtu uložit, dokud některé nesmažete. Po
 <translation id="9014771989710951291">Chrome spravuje několik organizací</translation>
 <translation id="9018218886431812662">Instalace byla dokončena</translation>
 <translation id="9066987883552592250">Zavřít Gemini v Chromu Canary</translation>
-<translation id="9074041031320636790">Podařilo se! Teď můžete pomocí režimu AI ve Vyhledávání Google snadno pokládat otázky přímo při prohlížení</translation>
 <translation id="9090566250983691233">Přečtěte si, proč Chrome některé soubory blokuje</translation>
 <translation id="9106236359747881194">Vyberte text, který chcete vyhledat</translation>
 <translation id="911206726377975832">Vymazat také všechna data procházení?</translation>

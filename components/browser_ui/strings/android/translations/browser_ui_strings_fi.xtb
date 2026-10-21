@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Tee Chromesta itsesi näköinen lisäämällä etusivulle omia värejä ja kuvia</translation>
 <translation id="389521680295183045">Sivustot saavat pyytää luvan tietää, milloin käytät laitetta aktiivisesti</translation>
 <translation id="3895926599014793903">Ota zoomaus käyttöön</translation>
-<translation id="3905475044299942653">Estä useat ilmoitukset</translation>
 <translation id="3922092564198021702">Avaa puhelimella Asetukset</translation>
 <translation id="3924858949939391676">Näytä linkit, kun lukutila on päällä</translation>
 <translation id="3933121352599513978">Tiivistä ei-toivotut pyynnöt (suositus)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Löydät ryhmäsi välilehtiryhmäosiosta kaikilla laitteillasi</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> ei saa käyttää tietojasi näillä sivustoilla:</translation>
 <translation id="4953688446973710931">Kun tämä on päällä, sivustot voivat pyytää lupaa ladata useita tiedostoja automaattisesti. Kun tämä on pois päältä, sivustot eivät voi ladata useita tiedostoja automaattisesti.</translation>
-<translation id="4962975101802056554">Peru kaikki laitteen käyttöoikeudet</translation>
 <translation id="4972737347717125191">Sivustot saavat pyytää virtuaalitodellisuuslaitteiden ja ‑datan käyttölupaa</translation>
 <translation id="4973805849704516244">Chrome-värien alapaneeli</translation>
 <translation id="497421865427891073">Siirry eteenpäin</translation>
@@ -704,7 +702,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="8428213095426709021">Asetukset</translation>
 <translation id="8441146129660941386">Kelaa taaksepäin</translation>
 <translation id="8444433999583714703">Ota sijaintitiedot käyttöön myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn sijaintiisi.</translation>
-<translation id="8447861592752582886">Peru laitteen käyttöoikeus</translation>
 <translation id="8463843545738141778">Tämä asetus on poistettu käytöstä, koska laitoit Lisäsuojaus-asetuksen päälle Android-asetuksissa.</translation>
 <translation id="8467359479529706065">Uusi välilehti ‐sivun ulkoasun alapaneeli avattu puoliksi</translation>
 <translation id="8471525937465764768">Sivustot yhdistävät yleensä USB-laitteisiin tulostaakseen dokumentteja tai lisätäkseen niitä tallennustilaan</translation>

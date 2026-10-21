@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
-<translation id="1003222766972176318">Onthounota: gestoorde aanbieding is beskikbaar</translation>
 <translation id="1008557486741366299">Nie nou nie</translation>
 <translation id="100957008357583611">Gebruik jou ligging?</translation>
 <translation id="1010200102790553230">Laai bladsy later</translation>
@@ -1127,6 +1126,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2911973620368911614">Taakrekening se gebruiker-ID</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> gebruik gewoonlik enkripsie om jou inligting te beskerm. Toe Chrome hierdie keer aan <ph name="SITE" /> probeer koppel het, het die webwerf ongewone en verkeerde eiebewyse teruggestuur. Dit kan gebeur wanneer 'n aanvaller probeer voorgee om <ph name="SITE" /> te wees, óf wanneer 'n Wi-Fi-aanmeldskerm die verbinding onderbreek het. Jou inligting is steeds veilig, want Chrome het die verbinding gestaak voordat enige data uitgeruil is.</translation>
 <translation id="2915068235268646559">Omval op <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Alle toestelle</translation>
 <translation id="2916038427272391327">Maak ander programme toe</translation>
 <translation id="2917630513638801879">Siaan 1</translation>
 <translation id="2922350208395188000">Bediener se sertifikaat kan nie nagegaan word nie.</translation>
@@ -1462,7 +1462,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3479552764303398839">Nie nou nie</translation>
 <translation id="3481315707647070701">Visualiseer en wysig</translation>
 <translation id="3484560055331845446">Jy kan toegang tot jou Google-rekening verloor. Chrome beveel aan dat jy jou wagwoord nou verander. Jy sal gevra word om aan te meld.</translation>
-<translation id="3484861421501147767">Onthounota: gestoorde promosiekode is beskikbaar</translation>
 <translation id="3485901585646640838">Verifieer dat dit jy is om wagwoorde wat in jou Google-rekening gestoor is en meer te gebruik</translation>
 <translation id="3487845404393360112">Laai 4</translation>
 <translation id="3493881266323043047">Geldigheid</translation>
@@ -1822,6 +1821,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4067774859633143413">Druk en hou |<ph name="ACCELERATOR" />| om uit volskerm te gaan en aflaai te sien</translation>
 <translation id="4067947977115446013">Voeg geldige adres by</translation>
 <translation id="4072486802667267160">Kon nie jou betaling verwerk nie. Probeer weer.</translation>
+<translation id="4073293290376142777">Meld aan?</translation>
 <translation id="4073376909608563327">Kon nie toestelontsluiting gebruik nie</translation>
 <translation id="4073797364926776829">Bekyk kaart</translation>
 <translation id="4075732493274867456">Die kliënt en bediener steun nie 'n gemeenskaplike SSL-protokolweergawe of kodesuite nie.</translation>
@@ -1854,6 +1854,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4107047499377819067">Installasie van VPN-agtergronddienste het begin; dit kan ’n paar minute neem.</translation>
 <translation id="4110642094637545339">Google Pay-, AfterPay-logo</translation>
 <translation id="4110652170750985508">Gaan jou betaling na</translation>
+<translation id="411071007970303441">Alle mense</translation>
 <translation id="4112140312785995938">Soek agtertoe</translation>
 <translation id="4114007503059268298">Wil jy hierdie kaart in jou Google-rekening en op hierdie toestel stoor?</translation>
 <translation id="4114146879518089587">Gaan voort na werf</translation>
@@ -3440,6 +3441,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6753460329812070808">Voorstel is uit Chrome verwyder</translation>
 <translation id="6757797048963528358">Jou toestel het gaan slaap.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> wil jou beweging- en ligsensors gebruik</translation>
+<translation id="6766488013065406604">Gaan na Google Wagwoordbestuurder</translation>
 <translation id="6770747695101757579">Papier (katoen)</translation>
 <translation id="6772959465807028761">Gaan voort met jou Google-rekening om YouTube te gebruik</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3652,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="7120588595737538743">aflaaie en skermskote</translation>
 <translation id="7124354851782353862">Voer jou CVC in</translation>
 <translation id="7129409597930077180">Kan nie na hierdie adres versend nie. Kies 'n ander adres.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Oplaai is geblokkeer</translation>
 <translation id="7132939140423847331">Jou admin het verbied dat hierdie data gekopieer word.</translation>
 <translation id="7134653428559514680">Dit word nie aanbeveel om van hierdie webwerf af te deel nie</translation>
@@ -3967,6 +3968,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7637571805876720304">Verwyder kredietkaart uit Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Geen}=1{1 wagwoord vir jou rekening (vir <ph name="DOMAIN_LIST" />)}other{# wagwoorde vir jou rekening (vir <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Reekspoorte</translation>
+<translation id="7644100755247241229">Gebruik Google Wallet om Pix aan vriende en besighede te stuur</translation>
 <translation id="7646681339175747202">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Google Wagwoordbestuurder beveel aan dat jy jou wagwoord nou verander.</translation>
 <translation id="7647206758853451655">Drukgehalte</translation>
 <translation id="7648133459447652947">Wissel apps, herlaai die bladsy of gaan terug om jou skermpyltjie te wys</translation>
@@ -4070,6 +4072,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7791543448312431591">Voeg by</translation>
 <translation id="7798389633136518089">Geïgnoreer omdat die beleid nie deur 'n wolkbron gestel is nie.</translation>
 <translation id="7800304661137206267">Die verbinding word geënkripteer deur <ph name="CIPHER" /> te gebruik, met <ph name="MAC" /> vir boodskapstawing en <ph name="KX" /> as die sleuteluitruilmeganisme.</translation>
+<translation id="780228007282527248">Voeg ’n oortjie of prent by om jou soektog te verbeter</translation>
 <translation id="7802523362929240268">Werf is eg</translation>
 <translation id="7802989406998618639">Voer die <ph name="NUMBER_OF_DIGITS" />-syfersekuriteitkode op die <ph name="SIDE_OF_CARD" /> in sodat jou bank kan verifieer dat dit jy is</translation>
 <translation id="780301667611848630">Nee, dankie</translation>

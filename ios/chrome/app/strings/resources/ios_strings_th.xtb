@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">เปิดในกลุ่มแท็บใหม่</translation>
 <translation id="1670861525135254448">บันทึกยานพาหนะ</translation>
 <translation id="1671568970992212376">บันทึกรูปภาพใน Google Photos และเข้าถึงได้ทุกเมื่อ</translation>
+<translation id="1671824312818944549">หมายเหตุ: การตั้งค่านี้ทำงานได้ดีขึ้นเมื่อใช้ iOS 27 ขึ้นไป</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />เป็น<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">วง ไฮไลต์ หรือแตะสิ่งใดก็ได้บนหน้าจอเพื่อค้นหา</translation>
 <translation id="1678855624321223424">ไฟล์นี้อาจมีข้อมูลที่ละเอียดอ่อนตามนโยบายขององค์กร</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">ยินดีต้อนรับกลับมา</translation>
 <translation id="2015722694326466240">หากต้องการดูรหัสผ่าน คุณต้องตั้งพาสโค้ดในอุปกรณ์ก่อน</translation>
 <translation id="201759455285471444">ขยายกลุ่มแท็บ</translation>
+<translation id="2022431790688770637">จัดการคำแนะนำของ Gemini</translation>
 <translation id="2031515492007104071">เลื่อนระดับ</translation>
 <translation id="2044394949148788042">เปิดตารางกริดของแท็บ</translation>
 <translation id="2044681667265133332">บัญชี <ph name="USER_EMAIL" /> จัดการโดย <ph name="HOSTED_DOMAIN" /> ซึ่งอาจดูข้อมูลบางอย่างได้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">ถามอะไรก็ได้และรับคำตอบจาก AI</translation>
 <translation id="2870560284913253234">เว็บไซต์</translation>
 <translation id="2876369937070532032">ส่ง URL ของหน้าบางส่วนที่คุณเข้าชมไปให้ Google เมื่อการรักษาความปลอดภัยมีความเสี่ยง</translation>
+<translation id="2880119244122776372">สร้างและเขียนโค้ด</translation>
 <translation id="2883151425485251736">ดูและแก้ไขหัวข้อที่คุณซ่อนไปจากบัญชี</translation>
 <translation id="2884437560239137197">ต้องดำเนินการ</translation>
 <translation id="288655811176831528">ปิดแท็บ</translation>
@@ -1695,6 +1698,7 @@
 <translation id="6301104306974789820">รับการแจ้งเตือนการติดตามราคา</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">เลือกตำแหน่งของแถบที่อยู่</translation>
+<translation id="6305257382500066042">ลองใช้เลย</translation>
 <translation id="6307241780749477694">โปรดยืนยันว่าเป็นคุณเพื่อรับรหัสผ่านทั้งหมดในอุปกรณ์นี้</translation>
 <translation id="6307792728709337290">บันทึกบัตรไว้ในบัญชี Google เพื่อป้อนข้อความอัตโนมัติสำหรับการซื้อใน Chrome ครั้งนี้และในอนาคต</translation>
 <translation id="6316141353357700666">เลือกรหัสผ่านที่ต้องการใช้จากรายการที่ปรากฏ</translation>
@@ -1848,7 +1852,6 @@
 <translation id="6708501134077648845">ตัวเลือกรหัสผ่าน</translation>
 <translation id="6709964700841491574">โหมดปิดล็อก</translation>
 <translation id="6710079714193676716">จัดการโดยองค์กร ฟีเจอร์บางอย่างอาจไม่พร้อมใช้งาน <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">คำตอบที่ฉลาดและรวดเร็วขึ้น</translation>
 <translation id="6713676799463473249">แก้ไขเมื่อ <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">แท็บที่ได้รับ</translation>
 <translation id="6722638373100589752">เปิด "ใช้บัตรในบริการต่างๆ ของ Google" ในการตั้งค่า Wallet เพื่อป้อนข้อความอัตโนมัติ</translation>
@@ -2060,7 +2063,6 @@
 <translation id="7411034503745719324"><ph name="EMAIL" /> <ph name="MANAGED_STATUS" /></translation>
 <translation id="7412027924265291969">ดำเนินการต่อ</translation>
 <translation id="741204030948306876">ได้สิ ตกลง</translation>
-<translation id="7417055777338419059">เขียนโค้ด เขียนข้อความ หรือสร้างสไลด์</translation>
 <translation id="7419565702166471774">ใช้การเชื่อมต่อที่ปลอดภัยทุกครั้ง</translation>
 <translation id="7423098979219808738">ถามก่อน</translation>
 <translation id="7425053386765766120">เพิ่มวิธีการชำระเงิน…</translation>
@@ -2110,6 +2112,7 @@
 <translation id="7525067979554623046">สร้าง</translation>
 <translation id="75362970626182391">กลุ่มแท็บใหม่</translation>
 <translation id="7537586195939242955">ขออภัย ไม่สามารถติดตั้ง Pass ของคุณใน Passbook ในขณะนี้</translation>
+<translation id="7540924742308928499">ระดมความคิดและสรุป</translation>
 <translation id="754655535278952384">ตรวจสอบเมื่อ <ph name="TIME" /></translation>
 <translation id="7554645225856321710">ปิดทั้งหมด</translation>
 <translation id="7557508262441527045">ออกจากระบบแล้ว</translation>
@@ -2479,7 +2482,6 @@
 <translation id="8642417828095157370">ระบบได้แชร์แท็บเพื่อให้ได้คำตอบที่เกี่ยวข้องมากขึ้น</translation>
 <translation id="8643403533759285912">ลบกลุ่ม</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">ยกเลิกการติดตามราคาไม่ได้</translation>
 <translation id="8654802032646794042">ยกเลิก</translation>
 <translation id="8655861111558401309">เลือก "ลบข้อมูลการท่องเว็บ"</translation>
 <translation id="8659875081143553823">รอสักครู่</translation>

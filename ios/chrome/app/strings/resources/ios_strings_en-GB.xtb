@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Open in new tab group</translation>
 <translation id="1670861525135254448">Save vehicle</translation>
 <translation id="1671568970992212376">Save photos in your Google Photos and access them at any time.</translation>
+<translation id="1671824312818944549">Note: This setting works better with iOS 27 or newer.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> to <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Draw, highlight or tap anything on your screen to search</translation>
 <translation id="1678855624321223424">Based on your organisation's policies, this file may contain sensitive information</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">Welcome back!</translation>
 <translation id="2015722694326466240">To see passwords, you must first set a passcode on your device.</translation>
 <translation id="201759455285471444">Expand tab group.</translation>
+<translation id="2022431790688770637">Manage Gemini suggestions</translation>
 <translation id="2031515492007104071">Level up</translation>
 <translation id="2044394949148788042">Open the tab grid</translation>
 <translation id="2044681667265133332">The account <ph name="USER_EMAIL" /> is managed by <ph name="HOSTED_DOMAIN" />, which may be able to view some information. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">Ask anything and get AI-powered responses</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Sends URLs of some pages that you visit to Google, when your security is at risk</translation>
+<translation id="2880119244122776372">Build and code</translation>
 <translation id="2883151425485251736">See and edit topics that you've hidden from your account</translation>
 <translation id="2884437560239137197">Attention needed</translation>
 <translation id="288655811176831528">Close Tab</translation>
@@ -1695,6 +1698,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6301104306974789820">Get price tracking notifications</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Choose your address bar position</translation>
+<translation id="6305257382500066042">Try it now</translation>
 <translation id="6307241780749477694">Verify that it's you to get all your passwords on this device</translation>
 <translation id="6307792728709337290">Save your card in your Google Account to autofill it for this purchase and future purchases made on Chrome.</translation>
 <translation id="6316141353357700666">Choose the password that you want to use from the list that appears.</translation>
@@ -1848,7 +1852,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6708501134077648845">Password options</translation>
 <translation id="6709964700841491574">Lockdown mode</translation>
 <translation id="6710079714193676716">Managed by your organisation. Some features may be unavailable. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">Smarter, faster answers</translation>
 <translation id="6713676799463473249">Modified on <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Received tabs</translation>
 <translation id="6722638373100589752">To autofill your info, turn on 'Use passes across Google' in Wallet settings</translation>
@@ -2060,7 +2063,6 @@ You can restart at any time.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Continue</translation>
 <translation id="741204030948306876">Yes, I'm in</translation>
-<translation id="7417055777338419059">Code, write or make slides</translation>
 <translation id="7419565702166471774">Always use secure connections</translation>
 <translation id="7423098979219808738">Ask first</translation>
 <translation id="7425053386765766120">Add payment method…</translation>
@@ -2110,6 +2112,7 @@ You can restart at any time.</translation>
 <translation id="7525067979554623046">Create</translation>
 <translation id="75362970626182391">New tab group</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
+<translation id="7540924742308928499">Brainstorm and summarise</translation>
 <translation id="754655535278952384">Checked <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Close all</translation>
 <translation id="7557508262441527045">Signed out</translation>
@@ -2479,7 +2482,6 @@ You can restart at any time.</translation>
 <translation id="8642417828095157370">Tabs are shared for more relevant answers</translation>
 <translation id="8643403533759285912">Delete group</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">Couldn't untrack the price.</translation>
 <translation id="8654802032646794042">Cancel</translation>
 <translation id="8655861111558401309">Select Delete browsing data</translation>
 <translation id="8659875081143553823">Just a sec</translation>

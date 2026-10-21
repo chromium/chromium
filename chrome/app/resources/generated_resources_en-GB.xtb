@@ -437,7 +437,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="130744661532298792">To make sure that you can always use the passwords in your Google Account, verify that it's you</translation>
 <translation id="1308105352527684175">You may not be able to access certain content</translation>
 <translation id="1311092170520822848">This site is controlling smart card readers connected to your device and potentially smart cards available to them</translation>
-<translation id="131112175593356748">Show some</translation>
 <translation id="131112695174432497">Data that affects Ad Personalisation is deleted</translation>
 <translation id="131188242279372879">Discover enhanced protection to get Chrome's highest level of security for downloads</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Fix the tab that's slowing your browser}other{Fix the tabs that are slowing your browser}}</translation>
@@ -2805,6 +2804,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3109206895301430738">Saved tab groups</translation>
 <translation id="3109724472072898302">Collapsed</translation>
 <translation id="3112292765614504292">App size: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Collapse</translation>
 <translation id="3112532142993641404">To get your tabs from your other devices, sign in and sync history. You'll also get your bookmarks and more on all of your devices. You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="311347022006935575">Added this tab</translation>
 <translation id="311394601889664316">Don't allow sites to edit files or folders on your device</translation>
@@ -4390,6 +4390,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4296632172536745000">Your original password for this site was found in a public data breach. On <ph name="DATE" />, you asked <ph name="BRAND" /> to change your password automatically for you.</translation>
 <translation id="4297219207642690536">Restart and reset</translation>
 <translation id="4297813521149011456">Display rotation</translation>
+<translation id="42981349822642051">Expand</translation>
 <translation id="4298660926525614540">Removable Storage Names</translation>
 <translation id="4299022904780065004">New &amp;Incognito window</translation>
 <translation id="4300272766492248925">Open app</translation>
@@ -5144,6 +5145,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4877276003880815204">Inspect elements</translation>
 <translation id="4878634973244289103">Unable to send feedback. Please try again later.</translation>
 <translation id="4878718769565915065">Adding a fingerprint to this security key failed</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}other{+#}}</translation>
 <translation id="4879491255372875719">Automatic (default)</translation>
 <translation id="4880827082731008257">Search history</translation>
 <translation id="4881685975363383806">Don't remind me next time</translation>
@@ -5628,6 +5630,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5247051749037287028">Display name (optional)</translation>
 <translation id="5247243947166567755">Select <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">Ask anything, right where you are, with Gemini in Chrome</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{One more infobar will appear when this one is closed}other{# more infobars will appear when this one is closed}}</translation>
 <translation id="5248934139541843042">View organiser</translation>
 <translation id="5249624017678798539">The browser crashed before the download completed.</translation>
 <translation id="5249818097095743806">Use your security key</translation>
@@ -5933,6 +5936,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5493792505296048976">screen on</translation>
 <translation id="5494016731375030300">Recently closed tabs</translation>
 <translation id="5494362494988149300">Open When &amp;Finished</translation>
+<translation id="5494439739088303974">Use Google Lens to ask about any text or image on the page</translation>
 <translation id="5494879038325093596">Verify that it's you to get it on all devices with your Google Account</translation>
 <translation id="5494920125229734069">Select all</translation>
 <translation id="5495466433285976480">This will remove all local users, files, data and other settings after your next restart. All users will need to sign in again.</translation>

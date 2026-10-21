@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Abrir nun grupo de pestanas novo</translation>
 <translation id="1670861525135254448">Garda o vehículo</translation>
 <translation id="1671568970992212376">Garda fotos en Google Fotos e accede a elas cando queiras.</translation>
+<translation id="1671824312818944549">Nota: Esta opción de configuración funciona mellor con iOS 27 ou versións posteriores.</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Marca co dedo, destaca ou toca calquera cousa da pantalla para buscala</translation>
 <translation id="1678855624321223424">Segundo as políticas da túa organización, este ficheiro pode conter información confidencial</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">Dámosche a benvida de novo!</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="201759455285471444">Despregar o grupo de pestanas.</translation>
+<translation id="2022431790688770637">Xestionar suxestións de Gemini</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Abre a grade de pestanas</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> xestiona a conta <ph name="USER_EMAIL" />, polo que é posible que poida ver parte da información. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">Fai preguntas e obtén respostas con tecnoloxía de IA</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2876369937070532032">Enviar a Google os URL das páxinas que visitas cando a túa seguranza corra perigo</translation>
+<translation id="2880119244122776372">Crea e programa</translation>
 <translation id="2883151425485251736">Consulta e edita temas que ocultaches na túa conta</translation>
 <translation id="2884437560239137197">Presta atención</translation>
 <translation id="288655811176831528">Pechar pestana</translation>
@@ -1695,6 +1698,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6301104306974789820">Obter notificacións de seguimento de prezos</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Escolle a posición da túa barra de enderezos</translation>
+<translation id="6305257382500066042">Probar agora</translation>
 <translation id="6307241780749477694">Verifica a túa identidade para ter todos os teus contrasinais neste dispositivo</translation>
 <translation id="6307792728709337290">Garda a túa tarxeta na túa Conta de Google para que se autocomplete a información cando fagas esta compra e outras futuras en Chrome.</translation>
 <translation id="6316141353357700666">Escolle o contrasinal que queiras usar na lista que se mostre.</translation>
@@ -1848,7 +1852,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6708501134077648845">Password Options</translation>
 <translation id="6709964700841491574">Modo de bloqueo</translation>
 <translation id="6710079714193676716">Xestionado pola túa organización. É posible que algunhas funcións non estean dispoñibles. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">Respostas máis intelixentes e rápidas</translation>
 <translation id="6713676799463473249">Última modificación: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Pestanas recibidas</translation>
 <translation id="6722638373100589752">Para autocompletar a túa información, na configuración de Wallet activa Usar pases en Google</translation>
@@ -2060,7 +2063,6 @@ Podes reinicialo cando queiras.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Continuar</translation>
 <translation id="741204030948306876">Si, acepto</translation>
-<translation id="7417055777338419059">Programa, escribe ou fai presentacións</translation>
 <translation id="7419565702166471774">Usar sempre conexións seguras</translation>
 <translation id="7423098979219808738">Preguntar primeiro</translation>
 <translation id="7425053386765766120">Engadir método de pago…</translation>
@@ -2110,6 +2112,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="7525067979554623046">Crear</translation>
 <translation id="75362970626182391">Novo grupo de pestanas</translation>
 <translation id="7537586195939242955">Non se pode instalar o teu pase en Passbook neste momento.</translation>
+<translation id="7540924742308928499">Inspírate e resume contido</translation>
 <translation id="754655535278952384">Última comprobación: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Pechar todo</translation>
 <translation id="7557508262441527045">Pechouse a sesión</translation>
@@ -2479,7 +2482,6 @@ Podes reinicialo cando queiras.</translation>
 <translation id="8642417828095157370">As pestanas compártense para obter respostas máis relevantes</translation>
 <translation id="8643403533759285912">Eliminar grupo</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">Non se puido facer un seguimento do prezo.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8655861111558401309">Selecciona Eliminar datos de navegación</translation>
 <translation id="8659875081143553823">Só un segundo</translation>

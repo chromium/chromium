@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
-<translation id="1003222766972176318">Потсетник: зачуваната понуда е достапна</translation>
 <translation id="1008557486741366299">Не сега</translation>
 <translation id="100957008357583611">Да се користи локацијата?</translation>
 <translation id="1010200102790553230">Вчитај ја страницата подоцна</translation>
@@ -1127,6 +1126,7 @@
 <translation id="2911973620368911614">ID на корисникот на работниот налог</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> обично користи шифрирање за да ги заштити вашите податоци. Кога Chrome овој пат се обиде да се поврзе на <ph name="SITE" />, веб-сајтот врати невообичаени и неточни акредитиви. Ова може да се случи кога напаѓач се преправа дека е <ph name="SITE" /> или кога екран за најавување на Wi-Fi го прекинува поврзувањето. Вашите податоци сѐ уште се безбедни, затоа што Chrome го запре поврзувањето пред да се разменат податоци.</translation>
 <translation id="2915068235268646559">Пад од <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Сите уреди</translation>
 <translation id="2916038427272391327">Затворете ги другите програми</translation>
 <translation id="2917630513638801879">Сино-зелена 1</translation>
 <translation id="2922350208395188000">Не може да се провери сертификатот на серверот.</translation>
@@ -1462,7 +1462,6 @@
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3481315707647070701">Визуализирајте и изменувајте</translation>
 <translation id="3484560055331845446">Може да го изгубите пристапот до сметката на Google. Chrome препорачува да ја промените лозинката сега. Ќе се побара од вас да се најавите.</translation>
-<translation id="3484861421501147767">Потсетник: достапен е зачуван промотивен код</translation>
 <translation id="3485901585646640838">За да ги користите лозинките и друго што се зачувани во вашата сметка на Google, потврдете го вашиот идентитет</translation>
 <translation id="3487845404393360112">Фиока 4</translation>
 <translation id="3493881266323043047">Важност</translation>
@@ -1822,6 +1821,7 @@
 <translation id="4067774859633143413">За да излезете од цел екран и да го видите преземањето, притиснете и задржете |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Додајте важечка адреса</translation>
 <translation id="4072486802667267160">Настана грешка при обработката на вашата нарачка. Обидете се повторно.</translation>
+<translation id="4073293290376142777">Ќе се најавите?</translation>
 <translation id="4073376909608563327">Не можеше да се користи отклучување уред</translation>
 <translation id="4073797364926776829">Прикажи картичка</translation>
 <translation id="4075732493274867456">Клиентот и серверот не ја поддржуваат верзијата на заедничкиот SSL-протокол или пакетот за шифрирање.</translation>
@@ -1854,6 +1854,7 @@
 <translation id="4107047499377819067">Инсталирањето на заднинските услуги на VPN започна. Ова може да трае неколку минути.</translation>
 <translation id="4110642094637545339">Лого на Google Pay и AfterPay</translation>
 <translation id="4110652170750985508">Преглед на плаќањето</translation>
+<translation id="411071007970303441">Сите ентитети</translation>
 <translation id="4112140312785995938">Премотај наназад</translation>
 <translation id="4114007503059268298">Дали сакате да ја зачувате картичкава во вашата сметка на Google и на уредов?</translation>
 <translation id="4114146879518089587">Продолжи кон сајтот</translation>
@@ -3440,6 +3441,7 @@
 <translation id="6753460329812070808">Предлогот е отстранет од Chrome</translation>
 <translation id="6757797048963528358">Уредот е во режим на спиење.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> сака да ги користи вашите сензори за движење и светлина</translation>
+<translation id="6766488013065406604">Одете во Google Password Manager</translation>
 <translation id="6770747695101757579">Хартија (памук)</translation>
 <translation id="6772959465807028761">За да користите YouTube, продолжете со вашата сметка на Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3652,6 @@
 <translation id="7120588595737538743">преземања и слики од екранот</translation>
 <translation id="7124354851782353862">Внесување на вашиот CVC</translation>
 <translation id="7129409597930077180">Не може да се испорача на оваа адреса. Изберете друга.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Блокирано прикачување</translation>
 <translation id="7132939140423847331">Администраторот забранил копирање на податоциве.</translation>
 <translation id="7134653428559514680">Не се препорачува споделување од сајтов</translation>
@@ -3967,6 +3968,7 @@
 <translation id="7637571805876720304">Да се отстрани кредитната картичка од Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Ниедна}=1{1 лозинка во вашата сметка (за <ph name="DOMAIN_LIST" />)}one{# лозинка во вашата сметка (за <ph name="DOMAIN_LIST" />)}other{# лозинки во вашата сметка (за <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Сериски порти</translation>
+<translation id="7644100755247241229">Испраќајте Pix до пријателите и бизнисите со Google Wallet</translation>
 <translation id="7646681339175747202">Лозинката која штотуку ја употребивте е откриена при упад во податоци. Google Password Manager ви препорачува да ја промените лозинката веднаш.</translation>
 <translation id="7647206758853451655">Квалитет на печатењето</translation>
 <translation id="7648133459447652947">За да се прикаже курсорот, сменете ја апликацијата, вчитајте ја страницата повторно или вратете се назад</translation>
@@ -4070,6 +4072,7 @@
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7798389633136518089">Игнорирано бидејќи правилото не е поставено од извор во облак.</translation>
 <translation id="7800304661137206267">Врската е шифрирана со употреба на <ph name="CIPHER" />, со <ph name="MAC" /> за автентикација на пораките и <ph name="KX" /> како механизам за размена на клучевите.</translation>
+<translation id="780228007282527248">Додајте картичка или слика за да го подобрите пребарувањето</translation>
 <translation id="7802523362929240268">Сајтот е легитимен</translation>
 <translation id="7802989406998618639">Внесете го безбедносниот код со <ph name="NUMBER_OF_DIGITS" /> цифри на <ph name="SIDE_OF_CARD" /> за да може вашата банка да го потврди вашиот идентитет</translation>
 <translation id="780301667611848630">Не, фала</translation>

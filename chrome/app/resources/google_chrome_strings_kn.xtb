@@ -116,7 +116,6 @@
 <translation id="2039417478970545937">ಸೆಟ್ಟಿಂಗ್‌ಗಳು.</translation>
 <translation id="2040220733769034247">Chrome ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಮತ್ತು ನಿಮ್ಮ Google ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಫೋನ್ ಮೂಲಕ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ.</translation>
 <translation id="2044908892530830113">Mac ಮೆನು ಬಾರ್‌ನಲ್ಲಿ Chrome ಮೂಲಕ ಹುಡುಕಿ ಅನ್ನು ತೋರಿಸಿ ಮತ್ತು ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
-<translation id="2050189601866423230">ನೀವು ಬ್ರೌಸ್ ಮಾಡುವಾಗ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಲು ನೀವು Google Search AI ಮೋಡ್ ಅನ್ನು ಪಿನ್ ಮಾಡಬಹುದು</translation>
 <translation id="2091012649849228750">ಭವಿಷ್ಯದ Google Chrome ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ನಿಮಗೆ Windows 10 ಅಥವಾ ನಂತರದ ಅಗತ್ಯವಿದೆ. ಈ ಕಂಪ್ಯೂಟರ್ ಪ್ರಸ್ತುತ Windows 8 ಅನ್ನು ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="2094648590148273905">ChromeOS Flex ನಿಯಮಗಳು</translation>
 <translation id="2094919256425865063">ಹೇಗಿದ್ದರೂ Chrome ಅನ್ನು ಮುಚ್ಚುವುದೇ?</translation>
@@ -460,6 +459,7 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="5386244825306882791">ನೀವು Chrome ಪ್ರಾರಂಭಿಸಿದಾಗ ಅಥವಾ ಓಮ್ನಿಬಾಕ್ಸ್ ನಿಂದ ಹುಡುಕಿದಾಗ ತೋರಿಸಬೇಕಾದ ಪುಟವನ್ನು ಕೂಡಾ ಇದು ನಿಯಂತ್ರಿಸುತ್ತದೆ.</translation>
 <translation id="5394833366792865639">Chrome ಟ್ಯಾಬ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="5402307365844630024">Chrome ಬೀಟಾದಲ್ಲಿ Gemini ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
+<translation id="5414664742659847155">ಇತರ ಆ್ಯಪ್‌ಗಳಿಂದ Chrome ಅನ್ನು ಪ್ರತ್ಯೇಕಿಸಿ</translation>
 <translation id="541844421954567481">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ Chrome ಆ್ಯಪ್ ಮೂಲಕ ಪ್ರಯಾಣದಲ್ಲಿರುವಾಗ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="5430073640787465221">ನಿಮ್ಮ ಪ್ರಾಶಸ್ತ್ಯಗಳ ಫೈಲ್ ದೋಷಪೂರಿತವಾಗಿದೆ ಅಥವಾ ಅಮಾನ್ಯವಾಗಿದೆ. ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಪಡೆದುಕೊಳ್ಳುವಲ್ಲಿ Google Chrome ವಿಫಲಗೊಂಡಿದೆ.</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> ಜೊತೆಗೆ ಬಳಸಲು Chrome ಪ್ರೊಫೈಲ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -673,6 +673,7 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="7306401458628386911">ತಕ್ಷಣವೇ ಬ್ರೌಸ್ ಮಾಡಲು ಪ್ರಾರಂಭಿಸಿ: Windows ಪ್ರಾರಂಭವಾದಾಗ Chrome ಈಗ ಪ್ರಾರಂಭಿಸಬಹುದು.</translation>
 <translation id="7308322188646931570">ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು Chrome ಗೆ ಸಂಗ್ರಹಣೆಯನ್ನು ಪ್ರವೇಶಿಸುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7352651011704765696">ಯಾವುದೋ ತಪ್ಪು ಸಂಭವಿಸಿದೆ</translation>
+<translation id="7371412052245999753">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿರುವ ಇತರ ಆ್ಯಪ್‌ಗಳಿಂದ Chrome ನ ಮೆಮೊರಿಯನ್ನು ರಕ್ಷಿಸುತ್ತದೆ.</translation>
 <translation id="73786666777299047">Chrome ವೆಬ್‌ ಸ್ಟೋರ್ ತೆರೆಯಿರಿ</translation>
 <translation id="7386878009611068389">ನಿಮ್ಮ ಪೋಷಕರ ಆಯ್ಕೆಗಳೊಂದಿಗೆ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಸುರಕ್ಷಿತವಾಗಿರಲು, ನೀವು ಈಗಾಗಲೇ ಸೈನ್‌ ಇನ್‌ ಮಾಡಿರುವ ನಿಮ್ಮ Chrome ಪ್ರೊಫೈಲ್‌ <ph name="USER_EMAIL_ADDRESS" /> ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" /> ನಂತೆ Chrome ಅನ್ನು ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿರುವಿರಿ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಅದೇ ಖಾತೆಯನ್ನು ಬಳಸಿ.</translation>
@@ -767,7 +768,6 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="8074398340364918139">ನಿರ್ದಿಷ್ಟ Chrome ಫೀಚರ್ ಅಥವಾ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅನ್ನು ಹುಡುಕಲು, ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಅದರ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ, ನಂತರ ನೀವು ಆಯ್ಕೆಮಾಡಿದ ಕೀಬೋರ್ಡ್ ಕೀಯನ್ನು ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="8077579734294125741">ಇತರ Chrome ಪ್ರೊಫೈಲ್‌ಗಳು</translation>
 <translation id="8086881907087796310">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್ ಕನಿಷ್ಠ ಹಾರ್ಡ್‌ವೇರ್ ಅಗತ್ಯತೆಗಳನ್ನು ಪೂರೈಸದ ಕಾರಣ ಇನ್‌ಸ್ಟಾಲೇಶನ್ ವಿಫಲವಾಗಿದೆ.</translation>
-<translation id="8110438089258398864">ನೀವು ಬ್ರೌಸ್ ಮಾಡುವಾಗ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಲು ನೀವು Google Search AI ಮೋಡ್ ಅನ್ನು ಪುನಃ ತೆರೆಯಬಹುದು</translation>
 <translation id="8113883687556086139">ನಿಮ್ಮ ಖಾತೆ <ph name="ACCOUNT_EMAIL" /> ನಲ್ಲಿ Chrome ಡೇಟಾವನ್ನು ಸೇವ್ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="8115695070094288807">Chrome ಅನ್ನು ನಿಮ್ಮದಾಗಿಸಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8118331347066725040">Lens ಬಳಸಿಕೊಂಡು ಹುಡುಕಲು ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
@@ -824,8 +824,6 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="8555465886620020932">ಸೇವಾ ದೋಷ: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">ಭಾಷೆಯ ಪಟ್ಟಿಯನ್ನು ಹುಡುಕಿ</translation>
 <translation id="8575047640889685742">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಎಲ್ಲಾ Chrome ಡೇಟಾವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲು ನಿಮ್ಮ <ph name="BEGIN_LINK" />ಸ್ವಂತ ಪಾಸ್‌ಫ್ರೇಸ್<ph name="END_LINK" /> ಬಳಸಿ. Google Pay ನಲ್ಲಿನ ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ. Chrome ನ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವು ಸಿಂಕ್ ಆಗುವುದಿಲ್ಲ.</translation>
-<translation id="8590782867495422699">Google Search AI ಮೋಡ್ ಅನ್ನು ಮರುತೆರೆಯಿರಿ</translation>
-<translation id="8598779894319572882">ಟೂಲ್‌ಬಾರ್‌ನಲ್ಲಿರುವ "Google Search AI ಮೋಡ್" ಬಟನ್‌ನಿಂದ, ನೀವು ಬ್ರೌಸ್ ಮಾಡುವಾಗ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಲು ನೀವು Google Search AI ಮೋಡ್ ಅನ್ನು ಪುನಃ ತೆರೆಯಬಹುದು</translation>
 <translation id="8614913330719544658">Google Chrome ಸ್ಪಂದಿಸುತ್ತಿಲ್ಲ. ಇದೀಗ ಮರುಪ್ರಾರಂಭಿಸುವುದೆ?
 </translation>
 <translation id="8623450603356630491">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
@@ -881,7 +879,6 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="9014771989710951291">ಬಹು ಸಂಸ್ಥೆಗಳು Chrome ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತವೆ</translation>
 <translation id="9018218886431812662">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಿಕೆಯು ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="9066987883552592250">Chrome Canary ನಲ್ಲಿ Gemini ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
-<translation id="9074041031320636790">ಯಶಸ್ವಿಯಾಗಿದೆ! ನೀವು Google Search AI ಮೋಡ್‌ ಮೂಲಕ ಬ್ರೌಸ್ ಮಾಡುತ್ತಿರುವುದರಿಂದ ಈಗ ನೀವು ಸುಲಭವಾಗಿ ಪ್ರಶ್ನೆಗಳನ್ನು ಕೇಳಬಹುದು</translation>
 <translation id="9090566250983691233">Chrome ಕೆಲವು ಫೈಲ್‌ಗಳನ್ನು ಏಕೆ ನಿರ್ಬಂಧಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ತಿಳಿಯಿರಿ</translation>
 <translation id="9106236359747881194">ಹುಡುಕಲು ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="911206726377975832">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಸಹ ಅಳಿಸುವುದೇ?</translation>

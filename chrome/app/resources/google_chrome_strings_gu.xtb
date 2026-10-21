@@ -118,7 +118,6 @@
 <translation id="2039417478970545937">સેટિંગ.</translation>
 <translation id="2040220733769034247">Chrome ડાઉનલોડ કરવા અને તમારા Google એકાઉન્ટમાં સાઇન ઇન કરવા માટે તમારા ફોન વડે QR કોડને સ્કૅન કરો.</translation>
 <translation id="2044908892530830113">Mac મેનૂ બારમાં Chromeમાં શોધવાની સુવિધા બતાવો અને કીબોર્ડ શૉર્ટકટ ચાલુ કરો</translation>
-<translation id="2050189601866423230">તમે બ્રાઉઝ કરો ત્યારે પ્રશ્નો પૂછવા માટે, તમે Google Search AI મોડને પિન કરી શકો છો</translation>
 <translation id="2091012649849228750">Google Chromeની ભાવિ અપડેટ મેળવવા માટે, તમારે Windows 10 કે તે પછીના વર્ઝન પર અપડેટ કરવું જરૂરી રહેશે. આ કમ્પ્યુટર Windows 8નો ઉપયોગ કરે છે.</translation>
 <translation id="2094648590148273905">ChromeOS Flexની શરતો</translation>
 <translation id="2094919256425865063">છતાં પણ Chrome બંધ કરવું છે?</translation>
@@ -464,6 +463,7 @@
 <translation id="5386244825306882791">જ્યારે તમે Chrome શરૂ કરો અથવા ઑમ્નિબૉક્સ પરથી શોધ કરો ત્યારે કયું પેજ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>
 <translation id="5394833366792865639">Chrome ટૅબ શેર કરો</translation>
 <translation id="5402307365844630024">Chrome બીટામાં Gemini ટૉગલ કરો</translation>
+<translation id="5414664742659847155">Chromeને અન્ય ઍપથી અલગ કરો</translation>
 <translation id="541844421954567481">તમારા <ph name="DEVICE_TYPE" /> પર Chrome ઍપ વડે તમારા પાસવર્ડ, ટૅબ અને બીજું ઘણું મુસાફરીમાં સાથે રાખો</translation>
 <translation id="5430073640787465221">તમારી પસંદગીઓ ફાઇલ દૂષિત અથવા અમાન્ય છે.
 
@@ -679,6 +679,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7306401458628386911">ઝટપટ બ્રાઉઝિંગ શરૂ કરો: હવે Windows શરૂ થાય ત્યારે Chrome લૉન્ચ થઈ શકે છે.</translation>
 <translation id="7308322188646931570">ફાઇલો ડાઉનલોડ કરવા માટે Chromeને સ્ટોરેજના ઍક્સેસની જરૂર પડે છે</translation>
 <translation id="7352651011704765696">કંઈક ખોટું થયું હતું</translation>
+<translation id="7371412052245999753">તમારા કમ્પ્યૂટર પરની અન્ય ઍપ્લિકેશનોથી Chromeની મેમરીનું રક્ષણ કરે છે.</translation>
 <translation id="73786666777299047">Chrome વેબ દુકાન ખોલો</translation>
 <translation id="7386878009611068389">તમારા માતાપિતાની પસંદગીઓ સાથે ઑનલાઇન વધુ સલામત રહેવા માટે, તમારી Chrome પ્રોફાઇલ પર સ્વિચ કરો, જેમાં તમે પહેલેથી <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન થયા છો</translation>
 <translation id="7398801000654795464">તમે Chromeમાં <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કર્યું હતું. ફરીથી સાઇન ઇન કરવા માટે કૃપા કરીને એ જ એકાઉન્ટનો ઉપયોગ કરો.</translation>
@@ -773,7 +774,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8074398340364918139">Chromeની કોઈ ચોક્કસ સુવિધા કે એક્સ્ટેન્શન શોધવા માટે, ઍડ્રેસ બારમાં તેનો શૉર્ટકટ અને તે પછી પસંદ કરેલા તમારા કીબોર્ડની કી ટાઇપ કરો</translation>
 <translation id="8077579734294125741">અન્ય Chrome પ્રોફાઇલ</translation>
 <translation id="8086881907087796310">તમારું કમ્પ્યૂટર, હાર્ડવેરની ઓછામાં ઓછી આવશ્યકતાઓ પૂર્ણ ન કરી શકવાને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
-<translation id="8110438089258398864">તમે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે Google Search AI મોડ ફરીથી ખોલી શકો છો</translation>
 <translation id="8113883687556086139">તમારા <ph name="ACCOUNT_EMAIL" /> એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="8115695070094288807">Chromeને તમારું બનાવી રહ્યા છીએ...</translation>
 <translation id="8118331347066725040">'Lens વડે શોધો' માટે પ્રતિસાદ મોકલો</translation>
@@ -830,8 +830,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8555465886620020932">સેવામાં ભૂલ: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">ભાષાની સૂચિ શોધો</translation>
 <translation id="8575047640889685742">તમારા Google એકાઉન્ટમાંનો Chromeનો બધો ડેટા એન્ક્રિપ્ટ કરવા માટે તમારા <ph name="BEGIN_LINK" />પોતાના પાસફ્રેઝ<ph name="END_LINK" />નો ઉપયોગ કરો. Google Payમાંથી ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંનો બ્રાઉઝિંગ ઇતિહાસ સિંક કરવામાં આવશે નહીં.</translation>
-<translation id="8590782867495422699">Google Searchનો AI મોડ ફરીથી ખોલો</translation>
-<translation id="8598779894319572882">ટૂલબાર પરના "Google Search AI મોડ" બટન પરથી, તમે બ્રાઉઝ કરતી વખતે પ્રશ્નો પૂછવા માટે Google Search AI મોડ ફરીથી ખોલી શકો છો</translation>
 <translation id="8614913330719544658">Google Chrome પ્રતિસાદ આપતું નથી. હવે ફરીથી લોંચ કરીએ?</translation>
 <translation id="8623450603356630491">તમારા ફોન પર Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="8624541899164515475">સેટિંગ, નવા ટૅબમાં ખૂલે છે.</translation>
@@ -886,7 +884,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="9014771989710951291">એકથી વધુ સંસ્થાઓ Chromeને મેનેજ કરે છે</translation>
 <translation id="9018218886431812662">ઇન્સ્ટૉલેશન પૂર્ણ</translation>
 <translation id="9066987883552592250">Chrome Canaryમાં Gemini બંધ કરો</translation>
-<translation id="9074041031320636790">સફળતા! હવે તમે Google Search AI મોડ વડે બ્રાઉઝ કરો ત્યારે સરળતાથી પ્રશ્નો પૂછી શકો છો</translation>
 <translation id="9090566250983691233">Chrome શા માટે અમુક ફાઇલો બ્લૉક કરે છે, તે જાણો</translation>
 <translation id="9106236359747881194">શોધવા માટે ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="911206726377975832">તમારો બ્રાઉઝિંગ ડેટા પણ ડિલીટ કરી દઈએ?</translation>

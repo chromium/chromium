@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Om du vill ha ett ungefärligt resultat dividerar du värdet för <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Bildkälla</translation>
 <translation id="1446954767133808402">safir</translation>
-<translation id="1449035143498573192">Öppna i Google Sök</translation>
 <translation id="1451536289672181509">Enheten är ett tangentbord.</translation>
 <translation id="1452939186874918380">paraplyn</translation>
 <translation id="145402479967797468">Uppspelningskontroller</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Förhandsgranska <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Inbyggt VPN</translation>
 <translation id="1669047024429367828">Synlighet</translation>
-<translation id="1670478569471758522">Mer information om det som är markerat</translation>
 <translation id="1672499492233627739">Videoflöde från webbkameran</translation>
 <translation id="1676557873873341166">Spelar in video</translation>
 <translation id="1684279041537802716">Accentfärg</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Klar med redigeringen</translation>
 <translation id="3532980081107202182">Ungefär <ph name="MIN_REMAINING" /> minuter kvar</translation>
 <translation id="3533790840489634638">pool</translation>
-<translation id="3547264467365135390">Formel</translation>
 <translation id="3552832331940389362">en japansk animeringsillustration av en katt som sitter på en fönsterbräda och tittar på regnet en eftermiddag</translation>
 <translation id="3557205324756024651">Lokal identitet (valfritt)</translation>
 <translation id="3565064564551103223">Tillåtna IP-adresser</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Beskrivning</translation>
 <translation id="3869314628814282185">tyll</translation>
 <translation id="387301095347517405">Antalet gånger som batteriet har laddats hela sin kapacitet</translation>
-<translation id="3877066159641251281">Lyssna på översättningen</translation>
 <translation id="3880601782712134623">Identifiera automatiskt olika röster och ge varje talare en generisk etikett, till exempel Talare 1 och Talare 2</translation>
 <translation id="38811596981744338">Juridiskt problem</translation>
 <translation id="3885327323343477505">Ändra skärmsläckare</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Koppla bort USB-kabeln från <ph name="DEVICE_NAME" /> och anslut den sedan igen för att fortsätta uppdateringsprocessen</translation>
 <translation id="5099354524039520280">upp</translation>
 <translation id="5107243100836678918">Ett kortkommando utan <ph name="META_KEY" />tangenten kan hamna i konflikt med ett kortkommando för en viss app. Tryck på kortkommandot igen om du vill fortsätta använda det, eller tryck på ett nytt kortkommando med <ph name="KEY" />tangenten. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Liknande:</translation>
 <translation id="5130848777448318809">ponnyer</translation>
 <translation id="5137451382116112100">Helskärm</translation>
 <translation id="5139813694804168398">stör ej</translation>
 <translation id="5140788690559353412">När du förlorar åtkomsten till skolkontot har du inte längre åtkomst till e-post och filer i Google Drive som Gmail, Dokument, Presentationer med mera.</translation>
 <translation id="5142961317498132443">Autentisering</translation>
 <translation id="5144311987923128508">Knappen Bekräfta är nu inaktiverad</translation>
-<translation id="5144887194300568405">Kopiera översättning</translation>
 <translation id="5145081769226915336">Vill du aktivera mörkt läge automatiskt?</translation>
 <translation id="5145331109270917438">Ändringsdatum</translation>
 <translation id="5154917547274118687">Minne</translation>

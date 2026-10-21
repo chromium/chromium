@@ -117,6 +117,7 @@
 <translation id="2190166659037789668">Güncelleme denetimi hatası: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Hesabı Chromium'dan kaldır</translation>
 <translation id="2201788217099588893">En iyi alışveriş araçlarından hareket halindeyken yararlanmak için Chromium uygulamasını kullanın</translation>
+<translation id="2209877494277346829">Chromium'u diğer uygulamalardan ayır</translation>
 <translation id="2210502920229141283">iOS için Chromium'da Gelişmiş Güvenli Tarama ile hareket halindeyken güvende kalın</translation>
 <translation id="2210682093923538346">Tehlikeli site. Chromium, bildirimleri kaldırdı.</translation>
 <translation id="2236949375853147973">Etkinliğim</translation>
@@ -189,6 +190,7 @@
 <translation id="2977470724722393594">Chromium güncel durumda</translation>
 <translation id="2977506796191543575">Chromium, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
 <translation id="2981563588585023386">Anne veya babanızın seçimleriyle internette daha güvende olmak için Chromium'da oturum açın</translation>
+<translation id="2992577225802060159">Chromium'un belleğini bilgisayarınızdaki diğer uygulamalardan korur.</translation>
 <translation id="3003694935412297923">Tüm görevler</translation>
 <translation id="3012615494352020668">{count,plural, =1{Bazı verilerin Google Hesabınıza kaydedilip tüm cihazlarınızda kullanılabilmesi için Chromium'un kimliğinizi doğrulaması gerekir. Oturumu şimdi kapatırsanız bu veriler (1 öğe) silinir.}other{Bazı verilerin Google Hesabınıza kaydedilip tüm cihazlarınızda kullanılabilmesi için Chromium'un kimliğinizi doğrulaması gerekir. Oturumu şimdi kapatırsanız bu veriler ({count} öğe) silinir.}}</translation>
 <translation id="3013473503895162900"><ph name="URL" /> adresini Chromium'da yeni bir sekmede açar.</translation>
@@ -463,7 +465,6 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="5949225980829865667">Bu yer işaretine ve diğer öğelere tüm cihazlarınızdan erişmek için Chromium'da oturum açın</translation>
 <translation id="5953657885167112863">Chromium'u Kendinize Uyarlayın</translation>
 <translation id="5960071705175224773">Ayarlarınız bilinmeyen bir uygulama tarafından değiştirildi</translation>
-<translation id="5977420883993828287">Sabitlendi. Araç çubuğundan Bağlamsal Görevler'i tekrar kullanın</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Kuruluşunuz, 1 dakika kullanılmadığında Chromium'u otomatik olarak kapatır.}other{Kuruluşunuz, # dakika kullanılmadığında Chromium'u otomatik olarak kapatır.}}</translation>
 <translation id="5987687638152509985">Senkronizasyonu başlatmak için Chromium'u güncelleyin</translation>
 <translation id="5990360079535151574">Araç çubuğundaki "Bağlamsal Görevler" düğmesini kullanarak Bağlamsal Görevler'i yeniden açabilir ve gezinirken soru sorabilirsiniz</translation>

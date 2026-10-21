@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">새 탭 그룹에서 열기</translation>
 <translation id="1670861525135254448">차량 저장</translation>
 <translation id="1671568970992212376">Google 포토에 사진을 저장하고 언제든지 액세스하세요.</translation>
+<translation id="1671824312818944549">참고: 이 설정은 iOS 27 이상에서 더 잘 작동합니다.</translation>
 <translation id="1674504678466460478">출발어: <ph name="SOURCE_LANGUAGE" />, 도착어: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">화면에서 무엇이든 그리거나, 강조 표시하거나, 탭하여 검색하세요.</translation>
 <translation id="1678855624321223424">조직의 정책에 따라 이 파일에는 민감한 정보가 포함되어 있을 수 있습니다.</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">다시 방문해 주셔서 감사합니다</translation>
 <translation id="2015722694326466240">비밀번호를 보려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
 <translation id="201759455285471444">탭 그룹을 펼칩니다.</translation>
+<translation id="2022431790688770637">Gemini 추천 관리</translation>
 <translation id="2031515492007104071">레벨 업</translation>
 <translation id="2044394949148788042">탭 그리드 열기</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> 계정은 일부 정보를 볼 수 있는 <ph name="HOSTED_DOMAIN" />에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">무엇이든 물어보고 AI 기반 대답을 받아 보세요.</translation>
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2876369937070532032">보안상의 위험이 있을 때 일부 방문 페이지의 URL을 Google로 전송합니다.</translation>
+<translation id="2880119244122776372">빌드 및 코딩</translation>
 <translation id="2883151425485251736">계정에서 숨긴 주제 확인 및 수정</translation>
 <translation id="2884437560239137197">주의 필요</translation>
 <translation id="288655811176831528">탭 닫기</translation>
@@ -1695,6 +1698,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6301104306974789820">가격 추적 알림 받기</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">주소 표시줄 위치 선택</translation>
+<translation id="6305257382500066042">지금 사용해 보기</translation>
 <translation id="6307241780749477694">이 기기에서 모든 비밀번호를 가져오려면 본인 인증을 진행하세요.</translation>
 <translation id="6307792728709337290">Google 계정에 카드를 저장하면 이번 구매는 물론, 향후 Chrome에서 구매 시에도 카드 정보가 자동으로 완성됩니다.</translation>
 <translation id="6316141353357700666">표시되는 목록에서 사용할 비밀번호를 선택합니다.</translation>
@@ -1848,7 +1852,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6708501134077648845">비밀번호 옵션</translation>
 <translation id="6709964700841491574">잠금 모드</translation>
 <translation id="6710079714193676716">조직에서 관리합니다. 일부 기능은 제공되지 않을 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">더 스마트하고 빠른 대답</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" />에 수정됨</translation>
 <translation id="6722623263381062480">수신된 탭</translation>
 <translation id="6722638373100589752">정보를 자동 완성하려면 월렛 설정에서 'Google 서비스 전반에서 패스 사용'을 사용 설정하세요.</translation>
@@ -2060,7 +2063,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7411034503745719324"><ph name="EMAIL" />, <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">계속</translation>
 <translation id="741204030948306876">사용</translation>
-<translation id="7417055777338419059">코딩, 글쓰기 또는 슬라이드 만들기</translation>
 <translation id="7419565702166471774">항상 보안 연결 사용</translation>
 <translation id="7423098979219808738">우선 확인</translation>
 <translation id="7425053386765766120">결제 수단 추가…</translation>
@@ -2110,6 +2112,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7525067979554623046">만들기</translation>
 <translation id="75362970626182391">새 탭 그룹</translation>
 <translation id="7537586195939242955">현재 패스를 패스북에 설치할 수 없습니다.</translation>
+<translation id="7540924742308928499">브레인스토밍 및 요약</translation>
 <translation id="754655535278952384">확인 시간: <ph name="TIME" /></translation>
 <translation id="7554645225856321710">모두 닫기</translation>
 <translation id="7557508262441527045">로그아웃됨</translation>
@@ -2479,7 +2482,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="8642417828095157370">더 관련성 높은 대답을 제공하기 위해 탭이 공유됩니다</translation>
 <translation id="8643403533759285912">그룹 삭제</translation>
 <translation id="8646357898207744479">렌즈</translation>
-<translation id="8647280737650867362">가격 추적을 해제할 수 없습니다.</translation>
 <translation id="8654802032646794042">취소</translation>
 <translation id="8655861111558401309">인터넷 사용 기록 삭제를 선택합니다.</translation>
 <translation id="8659875081143553823">잠시 기다려 주세요.</translation>

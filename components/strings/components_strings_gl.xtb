@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
-<translation id="1003222766972176318">Lembra que hai unha oferta gardada dispoñible</translation>
 <translation id="1008557486741366299">Agora non</translation>
 <translation id="100957008357583611">Queres usar a túa localización?</translation>
 <translation id="1010200102790553230">Cargar páxina máis tarde</translation>
@@ -1127,6 +1126,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2911973620368911614">ID de usuario de contabilidade de traballos</translation>
 <translation id="2914160345369867329">Normalmente, <ph name="SITE" /> encripta a túa información para protexela. Nesta ocasión, cando Chrome tentou conectar con <ph name="SITE" />, o sitio web devolveu unhas credenciais estrañas e incorrectas. É posible que un atacante tentase facerse pasar por <ph name="SITE" /> ou que a pantalla de inicio de sesión da wifi interrompese a conexión. Non obstante, a túa información segue a salvo porque Chrome detivo a conexión antes de intercambiar datos.</translation>
 <translation id="2915068235268646559">Fallo (<ph name="CRASH_TIME" />)</translation>
+<translation id="291568339791418558">Todos os dispositivos</translation>
 <translation id="2916038427272391327">Pecha outros programas</translation>
 <translation id="2917630513638801879">Ciano 1</translation>
 <translation id="2922350208395188000">Non se pode comprobar o certificado do servidor.</translation>
@@ -1462,7 +1462,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3479552764303398839">Agora non</translation>
 <translation id="3481315707647070701">Visualiza e edita</translation>
 <translation id="3484560055331845446">Poderías perder o acceso á túa Conta de Google. Chrome recoméndache que cambies de contrasinal agora. Deberás iniciar sesión.</translation>
-<translation id="3484861421501147767">Recordatorio: tes un código promocional gardado dispoñible</translation>
 <translation id="3485901585646640838">Para utilizar os contrasinais e outros elementos gardados na túa Conta de Google, verifica a túa identidade</translation>
 <translation id="3487845404393360112">Bandexa 4</translation>
 <translation id="3493881266323043047">Validez</translation>
@@ -1822,6 +1821,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4067774859633143413">Para saír da pantalla completa e ver a descarga, mantén premido |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Engade un enderezo válido</translation>
 <translation id="4072486802667267160">Produciuse un erro ao procesar a túa solicitude. Téntao de novo.</translation>
+<translation id="4073293290376142777">Queres iniciar sesión?</translation>
 <translation id="4073376909608563327">Non se puido usar o desbloqueo do dispositivo</translation>
 <translation id="4073797364926776829">Ver tarxeta</translation>
 <translation id="4075732493274867456">O cliente e o servidor non admiten unha versión do protocolo SSL ou o paquete de cifraxe comúns.</translation>
@@ -1854,6 +1854,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4107047499377819067">Iniciouse a instalación dos servizos en segundo plano de VPN. Pode levar uns minutos.</translation>
 <translation id="4110642094637545339">Logotipos de Google Pay e AfterPay</translation>
 <translation id="4110652170750985508">Revisa o pago</translation>
+<translation id="411071007970303441">Todos as entidades</translation>
 <translation id="4112140312785995938">Retroceder</translation>
 <translation id="4114007503059268298">Queres gardar esta tarxeta na túa Conta de Google e neste dispositivo?</translation>
 <translation id="4114146879518089587">Continuar ata o sitio</translation>
@@ -3440,6 +3441,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6753460329812070808">Quitouse a suxestión de Chrome</translation>
 <translation id="6757797048963528358">O teu dispositivo entrou no modo de suspensión.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> quere usar os sensores de movemento e de luz</translation>
+<translation id="6766488013065406604">Ir ao xestor de contrasinais de Google</translation>
 <translation id="6770747695101757579">Papel (algodón)</translation>
 <translation id="6772959465807028761">Para usar YouTube, continúa coa túa Conta de Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3652,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="7120588595737538743">descargas e capturas de pantalla</translation>
 <translation id="7124354851782353862">Introducir o teu CVC</translation>
 <translation id="7129409597930077180">Non se pode realizar o envío a este enderezo. Selecciona un diferente.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Bloqueouse a carga</translation>
 <translation id="7132939140423847331">O teu administrador prohibiu que copiases estes datos.</translation>
 <translation id="7134653428559514680">Non se recomenda compartir contido deste sitio</translation>
@@ -3967,6 +3968,7 @@ Detalles adicionais:
 <translation id="7637571805876720304">Queres eliminar a túa tarxeta de crédito de Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Ningún}=1{1 contrasinal na túa conta (para <ph name="DOMAIN_LIST" />)}other{# contrasinais na túa conta (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Portos de serie</translation>
+<translation id="7644100755247241229">Usa Pix para realizar pagos a amizades e empresas con Google Wallet</translation>
 <translation id="7646681339175747202">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. O xestor de contrasinais de Google recomenda que o cambies agora.</translation>
 <translation id="7647206758853451655">Calidade de impresión</translation>
 <translation id="7648133459447652947">Para mostrar o cursor, cambia de aplicación, volve cargar a páxina ou vai atrás</translation>
@@ -4070,6 +4072,7 @@ Detalles adicionais:
 <translation id="7791543448312431591">Engadir</translation>
 <translation id="7798389633136518089">Ignorouse porque a política non se estableceu desde a nube.</translation>
 <translation id="7800304661137206267">A conexión cifrouse mediante <ph name="CIPHER" /> con <ph name="MAC" /> para a autenticación da mensaxe e con <ph name="KX" /> como mecanismo de intercambio de claves.</translation>
+<translation id="780228007282527248">Engade unha pestana ou unha imaxe para mellorar a busca</translation>
 <translation id="7802523362929240268">O sitio é lexítimo</translation>
 <translation id="7802989406998618639">Indica o código de seguranza de <ph name="NUMBER_OF_DIGITS" /> díxitos que se atopa no <ph name="SIDE_OF_CARD" /> para que o banco poida verificar a túa identidade</translation>
 <translation id="780301667611848630">Non, grazas</translation>

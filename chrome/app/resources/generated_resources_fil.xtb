@@ -437,7 +437,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="130744661532298792">Para matiyak na magagamit mo ang mga password sa iyong Google Account anumang oras, i-verify na ikaw ito</translation>
 <translation id="1308105352527684175">Posibleng hindi mo ma-access ang ilang partikular na content</translation>
 <translation id="1311092170520822848">Kinokontrol ng site na ito ang mga smart card reader na nakakonekta sa iyong device at mga smart card na posibleng available sa mga ito</translation>
-<translation id="131112175593356748">Magpakita ng ilan</translation>
 <translation id="131112695174432497">Dine-delete ang data na nakakaapekto sa pag-personalize ng ad</translation>
 <translation id="131188242279372879">Alamin ang pinaigting na proteksyon para makuha ang pinakamataas na level ng seguridad ng Chrome para sa mga pag-download</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Ayusin ang Tab na Nagpapabagal sa Iyong Browser}one{Ayusin ang Mga Tab na Nagpapabagal sa Iyong Browser}other{Ayusin ang Mga Tab na Nagpapabagal sa Iyong Browser}}</translation>
@@ -831,6 +830,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1621984899599015181">Pinapamahalaan ng iyong organisasyon ang mga opsyon para sa pagbabahagi. Posibleng nakatago ang ilang item.</translation>
 <translation id="1622054403950683339">Kalimutan ang Wi-Fi network</translation>
 <translation id="1623723619460186680">Pag-dim sa blue light</translation>
+<translation id="1623799258803152950">Naka-share sa Google ang page na ito at ang naka-highlight na text</translation>
 <translation id="1626581272720526544">Puwede kang mag-download ng mga Android app at laro sa pamamagitan ng Play Store. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">Mga Descriptor ng File</translation>
 <translation id="1627408615528139100">Na-download na</translation>
@@ -2805,6 +2805,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3109206895301430738">Mga na-save na Mga Grupo ng Tab</translation>
 <translation id="3109724472072898302">Naka-collapse</translation>
 <translation id="3112292765614504292">Laki ng app: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Tiklupin</translation>
 <translation id="3112532142993641404">Para makuha ang iyong mga tab mula sa iba mo pang device, mag-sign in at i-sync ang history. Makukuha mo rin ang iyong mga bookmark at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="311347022006935575">Idinagdag ang tab na ito</translation>
 <translation id="311394601889664316">Huwag payagan ang mga site na mag-edit ng mga file o folder sa iyong device</translation>
@@ -2845,6 +2846,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3143515551205905069">Kanselahin ang pag-sync</translation>
 <translation id="3143754809889689516">I-play mula sa simula</translation>
 <translation id="3144647712221361880">Buksan ang link bilang</translation>
+<translation id="3146436581677566946">On-device model</translation>
 <translation id="3147878021189006333">Omnibox</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3150927491400159470">I-hard Reload</translation>
@@ -3210,6 +3212,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3424969259347320884">Ilarawan Ang Ginagawa Mo Noong Nag-crash Ang Tab</translation>
 <translation id="3426562492084153055">Mag-browse ng mga skill</translation>
 <translation id="3427092606871434483">Payagan (default)</translation>
+<translation id="3427822597374329810">Maliit na model ng eksperto</translation>
 <translation id="3429086384982427336">Hinding-hindi mangangasiwa ng mga link ng protocol ang mga app na nakalista sa ibaba.</translation>
 <translation id="3429174588714165399">Gumawa ng shortcut sa page na ito</translation>
 <translation id="3429271624041785769">Mga wika ng content sa web</translation>
@@ -3589,6 +3592,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3701167022068948696">Ayusin ngayon</translation>
 <translation id="3701515417135397388">Balaan ka kung nakompromiso ang isang password sa paglabag sa data</translation>
 <translation id="3701778844313851487">Pumunta sa Mga Extension</translation>
+<translation id="3701846426433416920">I-delete ang model</translation>
 <translation id="3703166520839776970">Kung patuloy na nangyayari ang isyung ito, piliin ang "Higit pang detalye" sa ibaba para kumuha ng higit pang impormasyon mula sa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3703699162703116302">Na-refresh ang ticket</translation>
 <translation id="370415077757856453">Na-block ang JavaScript</translation>
@@ -4390,6 +4394,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4296632172536745000">Nakita ang iyong orihinal na password para sa site na ito sa isang pampublikong breach sa data. Noong <ph name="DATE" />, hiniling mo sa <ph name="BRAND" /> na awtomatikong palitan ang password mo para sa iyo.</translation>
 <translation id="4297219207642690536">I-restart at i-reset</translation>
 <translation id="4297813521149011456">Pag-rotate ng display</translation>
+<translation id="42981349822642051">Palawakin</translation>
 <translation id="4298660926525614540">Mga Pangalan ng Naaalis na Storage</translation>
 <translation id="4299022904780065004">Bagong &amp;Incognito window</translation>
 <translation id="4300272766492248925">Buksan ang app</translation>
@@ -5144,6 +5149,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4877276003880815204">Siyasatin ang Mga Element</translation>
 <translation id="4878634973244289103">Hindi maipadala ang feedback. Pakisubukan ulit sa ibang pagkakataon.</translation>
 <translation id="4878718769565915065">Hindi nakapagdagdag ng fingerprint sa security key na ito</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}one{+#}other{+#}}</translation>
 <translation id="4879491255372875719">Awtomatiko (default)</translation>
 <translation id="4880827082731008257">History ng paghahanap</translation>
 <translation id="4881685975363383806">Huwag nang ipaalala sa akin sa susunod</translation>
@@ -5628,6 +5634,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5247051749037287028">Display name (opsyonal)</translation>
 <translation id="5247243947166567755">Piliin ang <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">Magtanong, nasaan ka man, gamit ang Gemini sa Chrome</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{1 pang infobar ang lalabas kapag isinara ito}one{# pang infobar ang lalabas kapag isinara ito}other{# pang infobar ang lalabas kapag isinara ito}}</translation>
 <translation id="5248934139541843042">Tingnan ang organizer</translation>
 <translation id="5249624017678798539">Nag-crash ang browser bago nakumpleto ang pag-download.</translation>
 <translation id="5249818097095743806">Gamitin ang iyong security key</translation>
@@ -5933,6 +5940,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5493792505296048976">naka-on ang screen</translation>
 <translation id="5494016731375030300">Mga Kamakailang Isinarang Tab</translation>
 <translation id="5494362494988149300">Buksan Kapag &amp;Tapos Na</translation>
+<translation id="5494439739088303974">Gamitin ang Google Lens para magtanong tungkol sa anumang text o larawan sa page</translation>
 <translation id="5494879038325093596">I-verify na ikaw ito para makuha ito sa lahat ng device gamit ang iyong Google Account</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
 <translation id="5495466433285976480">Tatanggalin nito ang lahat ng lokal na user, file, data, at iba pang mga setting sa iyong susunod na pag-restart. Kakailanganing mag-sign in muli ng lahat ng user.</translation>

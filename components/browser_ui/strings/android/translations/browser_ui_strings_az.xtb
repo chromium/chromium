@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Əsas səhifəniz üçün fərdi rənglər və şəkillərlə Chrome-u fərdiləşdirin</translation>
 <translation id="389521680295183045">Saytlar cihazınızdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək üçün icazə istəyə bilər</translation>
 <translation id="3895926599014793903">Zoom'a icazə verməyə məcbur edin</translation>
-<translation id="3905475044299942653">Çoxlu bildirişləri dayandırın</translation>
 <translation id="3922092564198021702">Telefonda Ayarları açın</translation>
 <translation id="3924858949939391676">Oxu rejimi aktiv olduqdan sonra keçidləri göstərin</translation>
 <translation id="3933121352599513978">Lazımsız sorğuları yığcamlaşdırın (tövsiyə edilir)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Qrupları bütün cihazlarınızda tab qrupu bölməsində tapa bilərsiniz</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> saytının məlumatlarınızdan istifadəsi bloklanıb</translation>
 <translation id="4953688446973710931">Aktiv ediləndə saytlar çoxsaylı faylları avtomatik endirmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar çoxsaylı faylları avtomatik endirə bilməz.</translation>
-<translation id="4962975101802056554">Cihaz üçün bütün icazələri ləğv edin</translation>
 <translation id="4972737347717125191">Saytlar virtual reallıq cihazları və datadan istifadə üçün icazə istəyə bilər</translation>
 <translation id="4973805849704516244">Chrome Colors üzrə aşağıdakı vərəq</translation>
 <translation id="497421865427891073">İrəli</translation>
@@ -704,7 +702,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8441146129660941386">Geri axtarı</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> tətbiqinə məkanınıza giriş icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> məkanı da aktiv edin.</translation>
-<translation id="8447861592752582886">Cihaz icazəsini ləğv edin</translation>
 <translation id="8463843545738141778">Android Ayarlarında Qabaqcıl Qorumanı yandırdığınız üçün bu ayar deaktiv edilib.</translation>
 <translation id="8467359479529706065">Yeni tab səhifəsi görünüşü üzrə aşağıdakı vərəq yarım hündürlükdə açıldı</translation>
 <translation id="8471525937465764768">Saytlar adətən sənəd çap etmək və ya yaddaş cihazında saxlamaq kimi xüsusiyyətlər üçün USB cihazlarına qoşulur</translation>

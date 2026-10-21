@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
-<translation id="1003222766972176318">შეხსენება: ხელმისაწვდომია შენახული შემოთავაზება</translation>
 <translation id="1008557486741366299">ახლა არა</translation>
 <translation id="100957008357583611">გსურთ თქვენი მდებარეობის გამოყენება?</translation>
 <translation id="1010200102790553230">გვერდის მოგვიანებით ჩატვირთვა</translation>
@@ -1463,7 +1462,6 @@
 <translation id="3479552764303398839">ახლა არა</translation>
 <translation id="3481315707647070701">ვიზუალიზაცია და რედაქტირება</translation>
 <translation id="3484560055331845446">თქვენ შეიძლება დაკარგოთ წვდომა თქვენს Google ანგარიშზე. Chrome გირჩევთ, ახლავე შეცვალოთ პაროლი. თქვენ მოგიწევთ სისტემაში შესვლა.</translation>
-<translation id="3484861421501147767">შეხსენება: ხელმისაწვდომია შენახული პრომოკოდი</translation>
 <translation id="3485901585646640838">დაადასტურეთ ვინაობა, რომ გამოიყენოთ თქვენს Google ანგარიშში შენახული პაროლები და სხვა შენახული კონტენტი</translation>
 <translation id="3487845404393360112">ლანგარი 4</translation>
 <translation id="3493881266323043047">მოქმედების ვადა</translation>
@@ -3443,6 +3441,7 @@
 <translation id="6753460329812070808">შემოთავაზება ამოიშალა Chrome-იდან</translation>
 <translation id="6757797048963528358">თქვენი მოწყობილობა ძილის რეჟიმზე გადავიდა.</translation>
 <translation id="6758934187792712102"><ph name="URL" />-ს სურს თქვენი მოძრაობისა და განათების სენსორების გამოყენება</translation>
+<translation id="6766488013065406604">Google პაროლების მმართველზე გადასვლა</translation>
 <translation id="6770747695101757579">ქაღალდი (ბამბის)</translation>
 <translation id="6772959465807028761">YouTube-ის გამოსაყენებლად განაგრძეთ თქვენი Google ანგარიშით</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3653,7 +3652,6 @@
 <translation id="7120588595737538743">ჩამოტვირთვები და ეკრანის ანაბეჭდები</translation>
 <translation id="7124354851782353862">შეიყვანეთ თქვენი CVC</translation>
 <translation id="7129409597930077180">ამ მისამართზე გაგზავნა ვერ მოხერხდება. აირჩიეთ სხვა მისამართი.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">ატვირთვა დაბლოკილია</translation>
 <translation id="7132939140423847331">თქვენი ადმინისტრატორი კრძალავს ამ მონაცემთა კოპირებას.</translation>
 <translation id="7134653428559514680">ამ საიტიდან გაზიარება არ არის რეკომენდებული</translation>

@@ -91,7 +91,6 @@
 <translation id="1331212799747679585">Chrome can’t update. More options</translation>
 <translation id="1332501820983677155">Google Chrome feature shortcuts</translation>
 <translation id="1333491156693005331">Checked recently</translation>
-<translation id="1336996151357442890">Unsubscribed from <ph name="SITE_NAME" />. You'll be asked again on your next visit.</translation>
 <translation id="1340839264183302272">Leave group</translation>
 <translation id="1342886103232377846">To check for compromised passwords, go to Google Password Manager</translation>
 <translation id="1343830902827845050">Sign in to Chrome</translation>
@@ -99,7 +98,6 @@
 <translation id="1355088659320425659">History and tabs</translation>
 <translation id="1363028406613469049">Track</translation>
 <translation id="1366525380420346469">When on</translation>
-<translation id="1372840539168747818">{NUM_SITES,plural, =1{You can stop this site from sending future notifications}other{You can stop these sites from sending future notifications}}</translation>
 <translation id="137496472437646183">Choose Enhanced protection</translation>
 <translation id="1376578503827013741">Computing…</translation>
 <translation id="138181280295369883">Sign in to get your saved info and more on all your devices</translation>
@@ -185,7 +183,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1728803206919861584">Save passkey outside Incognito?</translation>
 <translation id="1732514748744806741">If your passwords are compromised, we'll let you know</translation>
 <translation id="1737694586321018892">Get Chrome's strongest security</translation>
-<translation id="1747593111377567311">{NUM_SITES,plural, =1{1 site recently sent a lot of notifications}other{# sites recently sent a lot of notifications}}</translation>
 <translation id="1749561566933687563">Sync your bookmarks</translation>
 <translation id="1750238553597293878">Keep using the passwords in your Google Account</translation>
 <translation id="1753744496844366747">Aa</translation>
@@ -350,7 +347,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2367818124433749493">Developer shortcuts</translation>
 <translation id="2369058545741334020">Open in reading mode</translation>
 <translation id="2378656072948663224">Google's highest level of protection against online threats</translation>
-<translation id="2385605401818128172">You can review sites that send a lot of notifications and stop them from sending more in the future</translation>
 <translation id="2386938421315164605">Hide and unhide topics</translation>
 <translation id="2390510615457643724">Do you want to download <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> again?</translation>
 <translation id="2391579633712104609">180°</translation>
@@ -452,7 +448,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2794551654724114396">Turn on notifications for useful tips to help you get the best of Chrome</translation>
 <translation id="2798977804328097977">Seamlessly continue on any device</translation>
 <translation id="2805210243313393104">Get your bookmarks and more on all your devices</translation>
-<translation id="2819849308549746319">Unsubscribe all</translation>
 <translation id="2820047235535485532">You can choose what data to save in your Google Account, <ph name="ACCOUNT_EMAIL" />.\nYou can also view and manage these items in your bookmarks, reading list or password manager.</translation>
 <translation id="2826576843404243001">For sites that don't support secure connections, get warned before visiting the site. You can't change this setting because you have Advanced Protection enabled.</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -764,7 +759,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="405399507749852140">Get alerts if the price drops on any site</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4062305924942672200">Legal information</translation>
-<translation id="4070897657850712662">{NUM_SITES,plural, =1{About 1 notification a day}other{About # notifications a day}}</translation>
 <translation id="4072805772816336153">Try again later</translation>
 <translation id="4084682180776658562">Bookmark</translation>
 <translation id="4084712963632273211">From <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />delivered by Google<ph name="END_DEEMPHASIZED" /></translation>
@@ -970,6 +964,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="480990236307250886">Open the homepage</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4816492930507672669">Fit to page</translation>
+<translation id="4819558594335204796">Open the homepage</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> tab group closed and saved</translation>
 <translation id="4835385943915508971">Chrome does not have access to the requested resource.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{Restore tab group of <ph name="TAB_COUNT_ONE" /> tab, colour <ph name="COLOR_NAME" />, as a new background tab group.}other{Restore tab group of <ph name="TAB_COUNT_MANY" /> tabs, colour <ph name="COLOR_NAME" />, as a new background tab group.}}</translation>
@@ -1285,14 +1280,12 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6140948187512243695">Show details</translation>
 <translation id="6142183503755612900">You can change your default at any time in settings.</translation>
 <translation id="6146563240635539929">Videos</translation>
-<translation id="614890671148262506">Always allow notifications from this site</translation>
 <translation id="6150320133806434356">Bookmark saved</translation>
 <translation id="6150706324143004339">To use and save Chrome data in your Google Account, update Chrome</translation>
 <translation id="6154478581116148741">Turn on screen lock in Settings to export your passwords from this device</translation>
 <translation id="6156323911414505561">Show bookmarks bar</translation>
 <translation id="6162892189396105610">Preloads pages that Chrome thinks that you are likely to visit.</translation>
 <translation id="6165508094623778733">Learn more</translation>
-<translation id="6170675927290506430">Go to notification settings</translation>
 <translation id="6184972259157699660"><ph name="TAB_TITLE" />, muted Incognito tab</translation>
 <translation id="6186394685773237175">No compromised passwords found</translation>
 <translation id="6192907950379606605">Get image descriptions</translation>
@@ -1311,6 +1304,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6246073558347462570">Context pop-up window</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6248988683584659830">Search settings</translation>
+<translation id="6250046936554288508">AI Mode shortcut</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, multiselected pinned incognito tab</translation>
 <translation id="6251449557817521191">View your Chrome history here</translation>
 <translation id="6254139308321626268">You're viewing a PDF file</translation>
@@ -1469,7 +1463,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="679845623837196966">Show reading list</translation>
 <translation id="679956319013005046">To set your preferred service for autofill, first add the service in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" /> .</translation>
 <translation id="6802555630140434547">The window will be closed</translation>
-<translation id="6803791793483522764">Review notifications</translation>
 <translation id="6809470175540814047">Open in Incognito window</translation>
 <translation id="6811034713472274749">Page is ready to view</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{Images, 1 image in list}other{Images, # images in list}}</translation>
@@ -1501,9 +1494,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6880903702195291049">Permissions look good</translation>
 <translation id="6883204995689174413">Share</translation>
 <translation id="6883264411109586397">{ITEMS_COUNT,plural, =1{1 item is saved only to this device. To use it on your other devices, save it in your Google Account.}other{# items are saved only to this device. To use them on your other devices, save them in your Google Account.}}</translation>
-<translation id="6883906387682976294">Unsubscribe notifications from this site</translation>
 <translation id="688398477366397178">Let websites know the languages that you speak. They'll show content in those languages, when possible.</translation>
-<translation id="6885933993535178919">{NUM_SITES,plural, =1{Unsubscribed from 1 site}other{Unsubscribed from # sites}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 password}other{# passwords}}</translation>
 <translation id="6892009074348518725">To use this extension, sign in to Chrome. You'll also be able to use and save your passwords and more from your Google Account.</translation>
 <translation id="6896758677409633944">Copy</translation>
@@ -1511,7 +1502,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6900532703269623216">Enhanced protection</translation>
 <translation id="6900654715912436255">Are you sure that you want to delete this search engine?</translation>
 <translation id="6906448540340261898">Make sure that you can always use the passwords in your Google Account</translation>
-<translation id="6908230663105268638">Notifications allowed for <ph name="SITE_NAME" /></translation>
 <translation id="6908998565271542516">Option to approve or not approve a website opened at full height</translation>
 <translation id="6909589135458168665">Preload pages</translation>
 <translation id="6910211073230771657">Deleted</translation>
@@ -1629,7 +1619,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7324354302972299151">Send a 'Do Not Track' request</translation>
 <translation id="7333041109965360609">Unsubscribed from notifications</translation>
 <translation id="7335766481146072567">Press continue</translation>
-<translation id="7336259382292148213">Notifications look good</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7349983576451251297">Open web pages in Chrome browser instead of custom tabs</translation>
 <translation id="7352339641508007922">Drag to take a long screenshot</translation>
@@ -1896,7 +1885,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8322452989119079156">Open in <ph name="NATIVE_APP_NAME" /> – sent from <ph name="DEVICE_NAME" /></translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">Bookmarks and lists</translation>
-<translation id="8342727528718219152">Chrome will let you know about sites that may be sending too many notifications</translation>
 <translation id="834313815369870491">Never translate sites</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, multi-selected pinned recording incognito tab</translation>
 <translation id="8348430946834215779">Use HTTPS whenever possible and receive a warning before loading sites that don’t support it</translation>

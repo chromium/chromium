@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Yaqin natijalarni olish uchun <ph name="CATEGORY_TEXT" /> qiymatini <ph name="CONVERSION_RATE" /> ga boʻling</translation>
 <translation id="1442433966118452622">Rasm manbasi</translation>
 <translation id="1446954767133808402">sapfir</translation>
-<translation id="1449035143498573192">Google Qidiruvida ochish</translation>
 <translation id="1451536289672181509">Qurilma — klaviatura.</translation>
 <translation id="1452939186874918380">soyabonlar</translation>
 <translation id="145402479967797468">Ijro tugmalari</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Razm solish: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ichki oʻrnatilgan VPN</translation>
 <translation id="1669047024429367828">Ochiqligi</translation>
-<translation id="1670478569471758522">Tanlagan matningizga aloqador qoʻshimcha maʼlumotlar</translation>
 <translation id="1672499492233627739">Veb kamera video tasmasi</translation>
 <translation id="1676557873873341166">Video yozib olinmoqda</translation>
 <translation id="1684279041537802716">Aksent rangi</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Tahrirlashni tugatish</translation>
 <translation id="3532980081107202182">Taxminan <ph name="MIN_REMAINING" /> daqiqa qoldi</translation>
 <translation id="3533790840489634638">hovuz</translation>
-<translation id="3547264467365135390">Formula</translation>
 <translation id="3552832331940389362">Yapon animatsiyasi uslubidagi tushdan keyingi yomgʻirni oyna ortida tomosha qilayotgan mushuk tasviri</translation>
 <translation id="3557205324756024651">Qurilmadagi hisob (ixtiyoriy)</translation>
 <translation id="3565064564551103223">Ruxsat etilgan IP manzillar</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Tavsif</translation>
 <translation id="3869314628814282185">tul</translation>
 <translation id="387301095347517405">Batareya toʻliq quvvat olgan davrlar soni</translation>
-<translation id="3877066159641251281">Tarjimani tinglash</translation>
 <translation id="3880601782712134623">Ovozlarni avtomatik aniqlash va har bir maʼruzachiga tegishli umumiy nom berish, masalan, Gapiruvchi 1 va Gapiruvchi 2 kabi.</translation>
 <translation id="38811596981744338">Huquqiy masala</translation>
 <translation id="3885327323343477505">Ekran lavhasini oʻzgartirish</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Yangilashda davom etish uchun <ph name="DEVICE_NAME" /> USB kabelini uzib, qayta ulang</translation>
 <translation id="5099354524039520280">yuqoriga</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> tugmasisiz tezkor tugma ayrim ilova tugmasiga ziddiyat chiqarishi mumkin. Foydalanishda davom etish uchun tezkor tugmani qayta bosing yoki yangisini <ph name="KEY" /> tugmasi bilan bosing. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Oʻxshash:</translation>
 <translation id="5130848777448318809">ponilar</translation>
 <translation id="5137451382116112100">Toʻliq</translation>
 <translation id="5139813694804168398">bezovta qilinmasin</translation>
 <translation id="5140788690559353412">Maktab hisobingizga ruxsatingiz yopilsa, unga aloqador email hamda Google Drive omboridagi Gmail xatlari, Docs hujjatlari, Slides taqdimotlari va boshqa fayllarga ruxsat ham yopiladi.</translation>
 <translation id="5142961317498132443">Autentifikatsiya</translation>
 <translation id="5144311987923128508">Tasdiqlash tugmasi faolsizlantirildi</translation>
-<translation id="5144887194300568405">Tarjimadan nusxa olish</translation>
 <translation id="5145081769226915336">Tungi mavzu avtomatik yoqilsinmi?</translation>
 <translation id="5145331109270917438">O‘zgartirilgan sanasi</translation>
 <translation id="5154917547274118687">Operativ xotira</translation>

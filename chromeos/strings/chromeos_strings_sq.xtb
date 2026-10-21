@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Për një rezultat të përafërt, pjesëto vlerën <ph name="CATEGORY_TEXT" /> me <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Burimi i imazhit</translation>
 <translation id="1446954767133808402">safir</translation>
-<translation id="1449035143498573192">Hap në "Kërko në Google"</translation>
 <translation id="1451536289672181509">Pajisja është një tastierë.</translation>
 <translation id="1452939186874918380">çadra</translation>
 <translation id="145402479967797468">Kontrollet e luajtjes</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Shiko paraprakisht <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN e integruar</translation>
 <translation id="1669047024429367828">Dukshmëria</translation>
-<translation id="1670478569471758522">Më shumë informacione në lidhje me zgjedhjen tënde</translation>
 <translation id="1672499492233627739">Furnizimi i videos i uebkamerës</translation>
 <translation id="1676557873873341166">Po nxjerr një video</translation>
 <translation id="1684279041537802716">Ngjyra e theksit</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Modifikimi përfundoi</translation>
 <translation id="3532980081107202182">Rreth <ph name="MIN_REMAINING" /> minuta të mbetura</translation>
 <translation id="3533790840489634638">pishinë</translation>
-<translation id="3547264467365135390">Formula</translation>
 <translation id="3552832331940389362">një ilustrim animacioni japonez i një maceje të ulur në pezulin e dritares duke shikuar shiun në një pasdite</translation>
 <translation id="3557205324756024651">Identiteti lokal (opsional)</translation>
 <translation id="3565064564551103223">IP-të e lejuara</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Përshkrimi</translation>
 <translation id="3869314628814282185">tyl</translation>
 <translation id="387301095347517405">Numri i herëve që bateria ka kryer një cikël të plotë karikimi</translation>
-<translation id="3877066159641251281">Dëgjo përkthimin</translation>
 <translation id="3880601782712134623">Të zbulojë automatikisht zërat e veçantë dhe t'i japë çdo folësi një etiketë të përgjithshme, si p.sh. "Folësi 1" dhe "Folësi 2".</translation>
 <translation id="38811596981744338">Problem ligjor</translation>
 <translation id="3885327323343477505">Ndrysho mbrojtësin e ekranit</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Hiq kabllon USB të "<ph name="DEVICE_NAME" />" dhe më pas fute sërish për të vazhduar procesin e përditësimit</translation>
 <translation id="5099354524039520280">lart</translation>
 <translation id="5107243100836678918">Shkurtorja pa tastin "<ph name="META_KEY" />" mund të jetë në konflikt me shkurtoren e një aplikacioni tjetër. Shtyp përsëri këtë shkurtore për të vazhduar ta përdorësh ose shtyp një shkurtore të re duke përdorur tastin "<ph name="KEY" />". <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Të ngjashme:</translation>
 <translation id="5130848777448318809">kalushë</translation>
 <translation id="5137451382116112100">I plotë</translation>
 <translation id="5139813694804168398">mos shqetëso</translation>
 <translation id="5140788690559353412">Kur humb qasjen te llogaria jote e shkollës, nuk do të kesh më qasje tek email-i i lidhur dhe te skedarët e "Diskut të Google", si p.sh. Gmail, "Dokumentet", "Diapozitivat" etj.</translation>
 <translation id="5142961317498132443">Vërtetimi</translation>
 <translation id="5144311987923128508">Butoni "Konfirmo" është çaktivizuar tani</translation>
-<translation id="5144887194300568405">Kopjo përkthimin</translation>
 <translation id="5145081769226915336">Të çaktivizohet automatikisht modaliteti i errët?</translation>
 <translation id="5145331109270917438">Data u modifikua</translation>
 <translation id="5154917547274118687">Memoria</translation>

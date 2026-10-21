@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">अनुमानित नतीजा पाने के लिए, <ph name="CATEGORY_TEXT" /> वैल्यू को <ph name="CONVERSION_RATE" /> से विभाजित करें</translation>
 <translation id="1442433966118452622">इमेज का सोर्स</translation>
 <translation id="1446954767133808402">सैफ़ायर</translation>
-<translation id="1449035143498573192">Google Search में खोलें</translation>
 <translation id="1451536289672181509">डिवाइस एक कीबोर्ड है.</translation>
 <translation id="1452939186874918380">छतरियां</translation>
 <translation id="145402479967797468">प्लेबैक कंट्रोल</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> की झलक देखें</translation>
 <translation id="1668469839109562275">पहले से मौजूद वीपीएन</translation>
 <translation id="1669047024429367828">किसको दिखे</translation>
-<translation id="1670478569471758522">आपने जो विकल्प चुना है उसके बारे में ज़्यादा जानकारी</translation>
 <translation id="1672499492233627739">वेबकैम वीडियो फ़ीड</translation>
 <translation id="1676557873873341166">वीडियो रिकॉर्ड हो रहा है</translation>
 <translation id="1684279041537802716">एक्सेंट का रंग</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">बदलाव हो गया</translation>
 <translation id="3532980081107202182">करीब <ph name="MIN_REMAINING" /> मिनट बचे हैं</translation>
 <translation id="3533790840489634638">पूल</translation>
-<translation id="3547264467365135390">फ़ॉर्मूला</translation>
 <translation id="3552832331940389362">एक बिल्ली की जैपनीज़ ऐनिमेशन वाली फ़ोटो है. वह खिड़की के पास बैठकर दोपहर में हो रही बारिश का लुत्फ़ उठा रही है</translation>
 <translation id="3557205324756024651">लोकल आइडेंटिटी (ज़रूरी नहीं)</translation>
 <translation id="3565064564551103223">जिन आईपी को अनुमति दी गई है</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">वर्णन</translation>
 <translation id="3869314628814282185">ट्यूल</translation>
 <translation id="387301095347517405">इतनी बार आपकी बैटरी पूरी चार्ज हुई है</translation>
-<translation id="3877066159641251281">अनुवाद सुनें</translation>
 <translation id="3880601782712134623">यह अलग-अलग आवाज़ों की पहचान करता है. साथ ही, पहचानी गई हर आवाज़ को एक लेबल देता है. जैसे, स्पीकर 1 और स्पीकर 2</translation>
 <translation id="38811596981744338">कानूनी समस्या</translation>
 <translation id="3885327323343477505">स्क्रीन सेवर बदलें</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">अपडेट की प्रोसेस जारी रखने के लिए, <ph name="DEVICE_NAME" /> की यूएसबी केबल हटाएं और इसे फिर से लगाएं</translation>
 <translation id="5099354524039520280">ऊपर</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> बटन के बिना किसी शॉर्टकट का इस्तेमाल करने पर, कुछ ऐप्लिकेशन के शॉर्टकट में गड़बड़ी हो सकती है. इस शॉर्टकट का इस्तेमाल जारी रखने के लिए कुंजियों को फिर से दबाएं या <ph name="KEY" /> बटन के साथ किसी नए शॉर्टकट का इस्तेमाल करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">इसी अर्थ वाले दूसरे शब्द:</translation>
 <translation id="5130848777448318809">खच्चर</translation>
 <translation id="5137451382116112100">फ़ुलस्क्रीन मोड</translation>
 <translation id="5139813694804168398">परेशान न करें</translation>
 <translation id="5140788690559353412">स्कूल वाले खाते का ऐक्सेस हट जाने पर, आपके पास उससे जुड़े ईमेल और Google Drive में सेव की गई फ़ाइलों का ऐक्सेस नहीं रहेगा. जैसे, Gmail, Docs, Slides वगैरह पर बनाई गई फ़ाइलें.</translation>
 <translation id="5142961317498132443">पुष्टि करना</translation>
 <translation id="5144311987923128508">'पुष्टि करें' बटन को अब बंद कर दिया गया है</translation>
-<translation id="5144887194300568405">अनुवाद कॉपी करें</translation>
 <translation id="5145081769226915336">क्या गहरे रंग वाले मोड के अपने-आप चालू होने की सुविधा चालू करनी है?</translation>
 <translation id="5145331109270917438">बदलाव की तारीख</translation>
 <translation id="5154917547274118687">मेमोरी</translation>

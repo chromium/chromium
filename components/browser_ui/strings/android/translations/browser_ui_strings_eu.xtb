@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Pertsonalizatu Chrome orri nagusirako kolore eta irudi pertsonalizatuekin</translation>
 <translation id="389521680295183045">Webguneek gailua noiz erabiltzen ari zaren jakitea eska dezakete</translation>
 <translation id="3895926599014793903">Behartu zooma gaitzera</translation>
-<translation id="3905475044299942653">Gelditu gehiegizko jakinarazpenak</translation>
 <translation id="3922092564198021702">Telefonoan, ireki Ezarpenak.</translation>
 <translation id="3924858949939391676">Erakutsi estekak irakurtzeko modua aktibatuta dagoenean</translation>
 <translation id="3933121352599513978">Tolestu nahi ez diren eskaerak (gomendatua)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">"Fitxa taldeak" atalean aurkituko dituzu taldeak gailu guztietan</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> webguneak debekatuta dauka zure informazioa erabiltzea hemen:</translation>
 <translation id="4953688446973710931">Aktibatuta dagoenean, webguneek fitxategi bat baino gehiago automatikoki deskargatzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute deskargatu fitxategi bat baino gehiago automatikoki.</translation>
-<translation id="4962975101802056554">Baliogabetu gailuaren baimen guztiak</translation>
 <translation id="4972737347717125191">Webguneek errealitate birtualeko gailuak eta datuak erabiltzea eska dezakete</translation>
 <translation id="4973805849704516244">Chrome-ko koloreei buruzko pantailaren behealdean ainguratutako orria</translation>
 <translation id="497421865427891073">Aurrera</translation>
@@ -704,7 +702,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:</translat
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8441146129660941386">Atzeratu</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> aplikazioari kokapena erabiltzeko baimena emateko, kokapena erabiltzeko baimena aktibatu behar duzu <ph name="BEGIN_LINK" />Android-en ezarpenetan<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Kendu gailua erabiltzeko baimena</translation>
 <translation id="8463843545738141778">Ezarpen hau desgaituta dago Android-eko Ezarpenak atalean Babes aurreratua aktibatu duzulako.</translation>
 <translation id="8467359479529706065">Pantailaren behealdean ainguratutako orria, fitxa berriaren itxura duena, altuera erdian irekita dago</translation>
 <translation id="8471525937465764768">Webguneak USB bidezko gailuetara konektatu ohi dira dokumentu bat inprimatzeko edo biltegiratze-gailu batean gordetzeko, eta antzeko eginbideak eskaintzeko</translation>

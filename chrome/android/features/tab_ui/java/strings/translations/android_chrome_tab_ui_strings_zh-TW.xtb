@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收合 <ph name="TABS_COUNT_ONE" /> 個分頁。}other{收合包含 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組。}}</translation>
 <translation id="2569352796411618312">建議：你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
 <translation id="257674075312929031">群組</translation>
+<translation id="2628148780487543078">一併關閉固定分頁</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{還原並開啟這個分頁群組，群組中有 <ph name="TABS_COUNT_ONE" /> 個分頁，顏色是<ph name="COLOR_NAME" />。}other{還原並開啟這個分頁群組，群組中有 <ph name="TABS_COUNT_MANY" /> 個分頁，顏色是<ph name="COLOR_NAME" />。}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" /> 分)</translation>
 <translation id="266935134738038806">造訪網站</translation>

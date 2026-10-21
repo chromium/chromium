@@ -91,7 +91,6 @@
 <translation id="1331212799747679585">Chrome을 업데이트할 수 없습니다. 옵션 더보기</translation>
 <translation id="1332501820983677155">Chrome 기능 단축키</translation>
 <translation id="1333491156693005331">최근에 확인됨</translation>
-<translation id="1336996151357442890"><ph name="SITE_NAME" /> 사이트의 알림 수신을 거부했습니다. 다음에 사이트를 방문할 때 설정을 다시 확인합니다.</translation>
 <translation id="1340839264183302272">그룹 나가기</translation>
 <translation id="1342886103232377846">유출된 비밀번호가 있는지 확인하려면 Google 비밀번호 관리자로 이동하세요</translation>
 <translation id="1343830902827845050">Chrome에 로그인하세요</translation>
@@ -99,7 +98,6 @@
 <translation id="1355088659320425659">방문 기록 및 탭</translation>
 <translation id="1363028406613469049">추적</translation>
 <translation id="1366525380420346469">켜졌을 때</translation>
-<translation id="1372840539168747818">{NUM_SITES,plural, =1{이 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}other{이 사이트에서 향후 알림을 보내지 못하도록 할 수 있습니다.}}</translation>
 <translation id="137496472437646183">향상된 보호 모드를 선택합니다.</translation>
 <translation id="1376578503827013741">계산 중...</translation>
 <translation id="138181280295369883">모든 기기에서 저장된 정보 등을 사용하려면 로그인하세요</translation>
@@ -185,7 +183,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1728803206919861584">시크릿 모드 외부에서 패스키를 저장하시겠습니까?</translation>
 <translation id="1732514748744806741">비밀번호가 유출된 경우 알려 드립니다.</translation>
 <translation id="1737694586321018892">Chrome의 가장 강력한 보안 기능 이용하기</translation>
-<translation id="1747593111377567311">{NUM_SITES,plural, =1{최근에 알림을 많이 보낸 사이트 1개}other{최근에 많은 알림을 보낸 사이트 #개}}</translation>
 <translation id="1749561566933687563">북마크 동기화</translation>
 <translation id="1750238553597293878">Google 계정의 비밀번호를 계속 사용하세요.</translation>
 <translation id="1753744496844366747">Aa</translation>
@@ -350,7 +347,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2367818124433749493">개발자 단축키</translation>
 <translation id="2369058545741334020">읽기 모드로 열기</translation>
 <translation id="2378656072948663224">온라인 위협에 대비한 Google의 최고 수준 보호</translation>
-<translation id="2385605401818128172">알림을 많이 보내는 사이트를 검토하고, 향후 알림을 보내지 못하도록 할 수 있습니다.</translation>
 <translation id="2386938421315164605">주제 숨기기 및 숨기기 해제</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" />(<ph name="FILE_SIZE" />) 파일을 다시 다운로드하시겠습니까?</translation>
 <translation id="2391579633712104609">180°</translation>
@@ -452,7 +448,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2794551654724114396">알림을 사용 설정하여 Chrome을 최대한 활용하는 데 도움이 되는 유용한 팁을 받아 보세요.</translation>
 <translation id="2798977804328097977">모든 기기에서 원활하게 계속 사용하세요</translation>
 <translation id="2805210243313393104">모든 기기에 북마크 등을 가져오세요</translation>
-<translation id="2819849308549746319">모두 수신 거부</translation>
 <translation id="2820047235535485532">Google 계정(<ph name="ACCOUNT_EMAIL" />)에 저장할 데이터를 선택할 수 있습니다.\n북마크, 읽기 목록 또는 비밀번호 관리자에서 이러한 항목을 보고 관리할 수도 있습니다.</translation>
 <translation id="2826576843404243001">보안 연결을 지원하지 않는 사이트의 경우, 사이트를 방문하기 전에 경고를 표시합니다. 고급 보호가 사용 설정되어 있으므로 이 설정을 변경할 수 없습니다.</translation>
 <translation id="2827278682606527653">피드 카드 메뉴 절반 높이</translation>
@@ -764,7 +759,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="405399507749852140">사이트에서 가격이 인하되면 알림이 전송됩니다</translation>
 <translation id="4056223980640387499">세피아</translation>
 <translation id="4062305924942672200">법적 정보</translation>
-<translation id="4070897657850712662">{NUM_SITES,plural, =1{하루에 알림 약 1개}other{하루에 알림 약 #개}}</translation>
 <translation id="4072805772816336153">나중에 다시 시도해 보세요.</translation>
 <translation id="4084682180776658562">북마크</translation>
 <translation id="4084712963632273211">발신자: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google 제공<ph name="END_DEEMPHASIZED" /></translation>
@@ -970,6 +964,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="480990236307250886">홈페이지 열기</translation>
 <translation id="4812684235631257312">호스트</translation>
 <translation id="4816492930507672669">페이지 맞춤</translation>
+<translation id="4819558594335204796">홈페이지 열기</translation>
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> 탭 그룹을 닫고 저장함</translation>
 <translation id="4835385943915508971">Chrome에서 요청된 리소스에 액세스할 권한이 없습니다.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개, <ph name="COLOR_NAME" /> 색상의 탭 그룹을 새 백그라운드 탭 그룹으로 복원합니다.}other{탭 <ph name="TAB_COUNT_MANY" />개, <ph name="COLOR_NAME" /> 색상의 탭 그룹을 새 백그라운드 탭 그룹으로 복원합니다.}}</translation>
@@ -1285,14 +1280,12 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6140948187512243695">세부정보 표시</translation>
 <translation id="6142183503755612900">언제든지 설정에서 기본 검색엔진을 변경할 수 있습니다</translation>
 <translation id="6146563240635539929">동영상</translation>
-<translation id="614890671148262506">이 사이트의 알림 항상 허용</translation>
 <translation id="6150320133806434356">북마크 저장됨</translation>
 <translation id="6150706324143004339">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 Chrome을 업데이트하세요</translation>
 <translation id="6154478581116148741">이 기기에서 비밀번호를 내보내려면 설정에서 화면 잠금을 사용 설정하세요</translation>
 <translation id="6156323911414505561">북마크바 표시</translation>
 <translation id="6162892189396105610">Chrome에서 사용자가 방문할 가능성이 높다고 생각되는 페이지를 미리 로드합니다.</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
-<translation id="6170675927290506430">알림 설정으로 이동</translation>
 <translation id="6184972259157699660"><ph name="TAB_TITLE" />, 음소거된 시크릿 탭</translation>
 <translation id="6186394685773237175">유출된 비밀번호가 없습니다.</translation>
 <translation id="6192907950379606605">이미지 설명 보기</translation>
@@ -1311,6 +1304,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6246073558347462570">컨텍스트 팝업 창</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6248988683584659830">설정 검색</translation>
+<translation id="6250046936554288508">AI 모드 바로가기</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, 여러 개 선택된 시크릿 탭 고정</translation>
 <translation id="6251449557817521191">여기에서 Chrome 방문 기록 보기</translation>
 <translation id="6254139308321626268">PDF 파일을 보는 중</translation>
@@ -1469,7 +1463,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="679845623837196966">읽기 목록 표시</translation>
 <translation id="679956319013005046">자동 완성에 사용할 기본 서비스를 설정하려면 먼저 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 서비스를 추가하세요.</translation>
 <translation id="6802555630140434547">창이 닫힙니다.</translation>
-<translation id="6803791793483522764">알림 검토</translation>
 <translation id="6809470175540814047">시크릿 창으로 열기</translation>
 <translation id="6811034713472274749">페이지를 볼 수 있음</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{이미지, 목록에 있는 이미지 1개}other{이미지, 목록에 있는 이미지 #개}}</translation>
@@ -1501,9 +1494,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6880903702195291049">권한 문제 없음</translation>
 <translation id="6883204995689174413">공유</translation>
 <translation id="6883264411109586397">{ITEMS_COUNT,plural, =1{항목 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요.}other{항목 #개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요.}}</translation>
-<translation id="6883906387682976294">이 사이트의 알림 수신 거부</translation>
 <translation id="688398477366397178">사용하는 언어를 웹사이트에 알려주세요. 가능한 경우 해당 언어로 콘텐츠가 표시됩니다.</translation>
-<translation id="6885933993535178919">{NUM_SITES,plural, =1{사이트 1개의 알림 수신 거부함}other{사이트 #개의 알림 수신 거부함}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{비밀번호 1개}other{비밀번호 #개}}</translation>
 <translation id="6892009074348518725">이 확장 프로그램을 사용하려면 Chrome에 로그인하세요. Google 계정에서 비밀번호 등의 항목을 사용하고 저장할 수도 있습니다.</translation>
 <translation id="6896758677409633944">복사</translation>
@@ -1511,7 +1502,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6900532703269623216">향상된 보호 모드</translation>
 <translation id="6900654715912436255">이 검색엔진을 삭제하시겠습니까?</translation>
 <translation id="6906448540340261898">Google 계정의 비밀번호를 언제든지 사용할 수 있도록 설정하세요.</translation>
-<translation id="6908230663105268638"><ph name="SITE_NAME" />의 알림이 허용됨</translation>
 <translation id="6908998565271542516">웹사이트 승인 또는 비승인 옵션이 전체 높이로 열림</translation>
 <translation id="6909589135458168665">페이지 미리 로드</translation>
 <translation id="6910211073230771657">삭제됨</translation>
@@ -1629,7 +1619,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7324354302972299151">'Do Not Track' 요청 전송</translation>
 <translation id="7333041109965360609">알림을 수신 거부했습니다</translation>
 <translation id="7335766481146072567">계속을 누릅니다.</translation>
-<translation id="7336259382292148213">알림 문제 없음</translation>
 <translation id="7339898014177206373">새 창</translation>
 <translation id="7349983576451251297">Chrome 브라우저에서 맞춤 탭 대신 웹페이지 열기</translation>
 <translation id="7352339641508007922">긴 스크린샷을 찍으려면 드래그하세요.</translation>
@@ -1896,7 +1885,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8322452989119079156"><ph name="NATIVE_APP_NAME" />에서 열기 - <ph name="DEVICE_NAME" />에서 전송됨</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">북마크 및 목록</translation>
-<translation id="8342727528718219152">Chrome에서 알림을 너무 많이 보내는 사이트에 관한 알림을 전송합니다.</translation>
 <translation id="834313815369870491">사이트 번역 안 함</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, 여러 개 선택되고 고정되고 녹화 중인 시크릿 탭</translation>
 <translation id="8348430946834215779">가능하면 항상 HTTPS를 사용하고 이를 지원하지 않는 사이트를 로드하기 전에 경고를 표시합니다.</translation>

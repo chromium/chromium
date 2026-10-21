@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">للحصول على نتيجة تقريبية، يمكنك قسمة قيمة <ph name="CATEGORY_TEXT" /> على <ph name="CONVERSION_RATE" />.</translation>
 <translation id="1442433966118452622">مصدر الصورة</translation>
 <translation id="1446954767133808402">الياقوت الأزرق</translation>
-<translation id="1449035143498573192">‏فتح في "بحث Google"</translation>
 <translation id="1451536289672181509">الجهاز هو لوحة مفاتيح.</translation>
 <translation id="1452939186874918380">مظلات</translation>
 <translation id="145402479967797468">عناصر التحكّم في التشغيل</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">معاينة <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">‏شبكة VPN المُدمجة</translation>
 <translation id="1669047024429367828">إذن الوصول</translation>
-<translation id="1670478569471758522">معلومات إضافية ذات صلة باختيارك</translation>
 <translation id="1672499492233627739">خلاصة فيديو كاميرا الويب</translation>
 <translation id="1676557873873341166">تسجيل فيديو</translation>
 <translation id="1684279041537802716">لون التمييز</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">تم التعديل</translation>
 <translation id="3532980081107202182">يتبقّى حوالي <ph name="MIN_REMAINING" /> دقيقة.</translation>
 <translation id="3533790840489634638">بركة طبيعية</translation>
-<translation id="3547264467365135390">المعادَلة</translation>
 <translation id="3552832331940389362">صورة بأسلوب الرسوم المتحركة اليابانية لقطّة تجلس على حافة نافذة وتشاهد المطر بعد الظهر</translation>
 <translation id="3557205324756024651">هوية الجهاز (اختياري)</translation>
 <translation id="3565064564551103223">‏عناوين IP المسموح بها</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">الوصف</translation>
 <translation id="3869314628814282185">التُول</translation>
 <translation id="387301095347517405">عدد المرات التي تم فيها شحن بطاريتك بالكامل</translation>
-<translation id="3877066159641251281">الاستماع إلى الترجمة</translation>
 <translation id="3880601782712134623">رصد الأصوات المختلفة تلقائيًا ومنح تصنيف عام لكل متحدّث مثل "المتحدّث 1" و"المتحدّث 2"</translation>
 <translation id="38811596981744338">مشكلة قانونية</translation>
 <translation id="3885327323343477505">تغيير شاشة الاستراحة</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">‏عليك فصل كابل USB في <ph name="DEVICE_NAME" /> ثم إعادة توصيله لمواصلة عملية التحديث</translation>
 <translation id="5099354524039520280">لأعلى</translation>
 <translation id="5107243100836678918">قد يتعارض الاختصار بدون مفتاح <ph name="META_KEY" /> مع اختصار بعض التطبيقات. اضغط على هذا الاختصار مرة أخرى لمواصلة استخدامه، أو اضغط على اختصار جديد يستخدِم مفتاح <ph name="KEY" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">المرادفات المشابهة:</translation>
 <translation id="5130848777448318809">مهور</translation>
 <translation id="5137451382116112100">ملء الشاشة</translation>
 <translation id="5139813694804168398">عدم الإزعاج</translation>
 <translation id="5140788690559353412">‏عند فقدان إمكانية الوصول إلى حسابك الذي تديره المؤسسة التعليمية، لن يعود بإمكانك الوصول إلى عنوان بريدك الإلكتروني وملفات Google Drive المرتبطة، مثل Gmail و"مستندات Google" و"العروض التقديمية من Google" وغير ذلك.</translation>
 <translation id="5142961317498132443">المصادقة</translation>
 <translation id="5144311987923128508">تم إيقاف زر "تأكيد" الآن</translation>
-<translation id="5144887194300568405">نسخ الترجمة</translation>
 <translation id="5145081769226915336">هل تريد تفعيل "الوضع الداكن" تلقائيًا؟</translation>
 <translation id="5145331109270917438">تاريخ التعديل</translation>
 <translation id="5154917547274118687">الذاكرة</translation>

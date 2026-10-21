@@ -625,6 +625,7 @@
 <translation id="2865392654629180917">ఏదైనా అడగండి, AI-ఆధారిత సమాధానాలను పొందండి</translation>
 <translation id="2870560284913253234">సైట్</translation>
 <translation id="2876369937070532032">మీ భద్రతకు ప్రమాదం పొంచి ఉన్నప్పుడు, మీరు సందర్శించే కొన్ని పేజీల URLలను Googleకు పంపుతుంది</translation>
+<translation id="2880119244122776372">బిల్డ్ చేయండి, కోడ్ చేయండి</translation>
 <translation id="2883151425485251736">మీ ఖాతా నుండి దాచిన టాపిక్‌లను చూడండి, ఎడిట్ చేయండి</translation>
 <translation id="2884437560239137197">దృష్టి సారించాల్సి ఉంది</translation>
 <translation id="288655811176831528">ట్యాబ్‌ని మూసివేయండి</translation>
@@ -1251,7 +1252,7 @@
 <translation id="4913626501929406101">మీ పాస్‌వర్డ్ కాపీని మీ ఫ్యామిలీ గ్రూప్‌లోని ఎవరితోనైనా మీరు సురక్షితంగా షేర్ చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">మీరు <ph name="USER_EMAIL" />‌గా సైన్ ఇన్ చేసినప్పుడు, మీరు ఇప్పటికే ఉన్న బ్రౌజింగ్ డేటాను ఉపయోగించవచ్చు. మీ సంస్థ, మీ డేటాను చూడగలదు.</translation>
 <translation id="4918086044614829423">ఆమోదించు</translation>
-<translation id="4930714375720679147">ఆన్ చేయి</translation>
+<translation id="4930714375720679147">ఆన్ చేయండి</translation>
 <translation id="4932733599132424254">తేదీ</translation>
 <translation id="4936354130727646074">ఎప్పటికీ తరలించవద్దు</translation>
 <translation id="4937410517508563815">ఖాతాలో పాస్‌వర్డ్‌లను సేవ్ చేయండి</translation>
@@ -1697,6 +1698,7 @@
 <translation id="6301104306974789820">ధర ట్రాకింగ్ నోటిఫికేషన్‌లను పొందండి</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">మీ అడ్రస్ బార్ పొజిషన్ ఎంచుకోండి</translation>
+<translation id="6305257382500066042">దీన్ని ఇప్పుడే ట్రై చేయండి</translation>
 <translation id="6307241780749477694">ఈ పరికరంలో మీ పాస్‌వర్డ్‌లన్నింటిని పొందడానికి ఇది మీరేనని వెరిఫై చేయండి</translation>
 <translation id="6307792728709337290">ఈ కొనుగోలు కోసమే కాకుండా, Chromeలో మీరు భవిష్యత్తులో చేసే కొనుగోళ్ల కోసం కూడా కార్డ్ వివరాలను ఆటోఫిల్ చేయడానికి, వాటిని మీ Google ఖాతాలో సేవ్ చేసుకోండి.</translation>
 <translation id="6316141353357700666">కనిపించే లిస్ట్ నుండి మీరు ఉపయోగించాలనుకునే పాస్‌వర్డ్‌ను ఎంచుకోండి.</translation>
@@ -1850,7 +1852,6 @@
 <translation id="6708501134077648845">పాస్‌వర్డ్ ఆప్షన్‌లు</translation>
 <translation id="6709964700841491574">లాక్‌డౌన్ మోడ్</translation>
 <translation id="6710079714193676716">మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతోంది. కొన్ని ఫీచర్‌లు అందుబాటులో ఉండకపోవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">మరింత స్మార్ట్, వేగవంతమైన సమాధానాలు</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" /> తేదీన ఎడిట్ చేయబడింది</translation>
 <translation id="6722623263381062480">అందుకున్న ట్యాబ్‌లు</translation>
 <translation id="6722638373100589752">మీ సమాచారాన్ని ఆటోఫిల్ చేయడానికి, Wallet సెట్టింగ్‌లలో “Google అంతటా పాస్‌లను ఉపయోగించండి” అనేది ఆన్ చేయండి</translation>
@@ -2062,7 +2063,6 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">కొనసాగించండి</translation>
 <translation id="741204030948306876">సరే, సమ్మతమే</translation>
-<translation id="7417055777338419059">కోడింగ్ చేయండి, రాయండి లేదా స్లయిడ్‌లను రూపొందించండి</translation>
 <translation id="7419565702166471774">ఎల్లప్పుడూ సురక్షిత కనెక్షన్‌లను ఉపయోగించండి</translation>
 <translation id="7423098979219808738">ముందుగా అడుగుతుంది</translation>
 <translation id="7425053386765766120">పేమెంట్ ఆప్షన్‌ను జోడించండి…</translation>
@@ -2112,6 +2112,7 @@
 <translation id="7525067979554623046">క్రియేట్ చేయండి</translation>
 <translation id="75362970626182391">కొత్త ట్యాబ్ గ్రూప్</translation>
 <translation id="7537586195939242955">క్షమించండి, ఈ సమయంలో పాస్‌బుక్‌కు మీ పాస్‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడదు.</translation>
+<translation id="7540924742308928499">ఐడియాలను చర్చించి, సారాంశాన్ని పొందండి</translation>
 <translation id="754655535278952384">చెక్ - ఇన్ <ph name="TIME" /></translation>
 <translation id="7554645225856321710">అన్నింటినీ మూసివేయండి</translation>
 <translation id="7557508262441527045">సైన్ అవుట్ చేశారు</translation>
@@ -2481,7 +2482,6 @@
 <translation id="8642417828095157370">మరిన్ని సందర్భోచితమైన సమాధానాల కోసం, ట్యాబ్‌లు షేర్ అయ్యాయి</translation>
 <translation id="8643403533759285912">గ్రూప్‌ను తొలగించడం</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">ధరను అన్‌ట్రాక్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="8654802032646794042">రద్దు చేయండి</translation>
 <translation id="8655861111558401309">'బ్రౌజింగ్ డేటాను తొలగించండి' ఆప్షన్‌ను ఎంచుకోండి</translation>
 <translation id="8659875081143553823">ఒక క్షణం వేచి ఉండండి</translation>

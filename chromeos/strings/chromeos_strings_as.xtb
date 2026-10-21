@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">এটা আনুমানিক ফলাফলৰ বাবে, <ph name="CATEGORY_TEXT" />ৰ মানটোক <ph name="CONVERSION_RATE" />ৰে হৰণ কৰক</translation>
 <translation id="1442433966118452622">প্ৰতিচ্ছবিৰ উৎস</translation>
 <translation id="1446954767133808402">নীলম</translation>
-<translation id="1449035143498573192">Google Searchত খোলক</translation>
 <translation id="1451536289672181509">ডিভাইচটো এখন কীব’ৰ্ড।</translation>
 <translation id="1452939186874918380">ছাতি</translation>
 <translation id="145402479967797468">প্লে’বেকৰ নিয়ন্ত্ৰণ</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> পূৰ্বদৰ্শন কৰক</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
 <translation id="1669047024429367828">দৃশ্যমানতা</translation>
-<translation id="1670478569471758522">আপোনাৰ বাছনি সম্পৰ্কীয় অধিক তথ্য</translation>
 <translation id="1672499492233627739">ৱেবকেমৰ ভিডিঅ’ ফীড</translation>
 <translation id="1676557873873341166">ভিডিঅ’ চিত্ৰগ্ৰহণ কৰি থকা হৈছে</translation>
 <translation id="1684279041537802716">এক্সেণ্টৰ ৰং</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">সম্পাদনা সম্পন্ন হৈছে</translation>
 <translation id="3532980081107202182">প্ৰায় <ph name="MIN_REMAINING" /> মিনিট বাকী আছে</translation>
 <translation id="3533790840489634638">পুল</translation>
-<translation id="3547264467365135390">সূত্ৰ</translation>
 <translation id="3552832331940389362">খিৰিকীৰ কাষত বহি আবেলিৰ বৰষুণ চাই থকা মেকুৰী এটাৰ এখন জাপানীজ এনিমেশ্বন চিত্ৰণ</translation>
 <translation id="3557205324756024651">স্থানীয় পৰিচয় (ঐচ্ছিক)</translation>
 <translation id="3565064564551103223">অনুমতিপ্ৰাপ্ত আইপি</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">বিৱৰণ</translation>
 <translation id="3869314628814282185">টুল</translation>
 <translation id="387301095347517405">আপোনাৰ বেটাৰীটোৱে এটা সম্পূৰ্ণ চাৰ্জিং চক্ৰৰ মাজেৰে যোৱাৰ সংখ্যা</translation>
-<translation id="3877066159641251281">অনুবাদটো শুনক</translation>
 <translation id="3880601782712134623">স্বয়ংক্ৰিয়ভাৱে ভইচ চিনাক্ত কৰক আৰু প্ৰতিগৰাকী স্পীকাৰত এটা সাধাৰণ লেবেল যোগ দিয়ক, যেনে, স্পীকাৰ ১ আৰু স্পীকাৰ ২</translation>
 <translation id="38811596981744338">আইনী সমস্যা</translation>
 <translation id="3885327323343477505">স্ক্ৰীন ছেভাৰ সলনি কৰক</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003"><ph name="DEVICE_NAME" />ৰ ইউএছবি কে’বলডাল আনপ্লাগ কৰক আৰু তাৰ পাছত আপডে’ট প্ৰক্ৰিয়াটো অব্যাহত ৰাখিবলৈ ইয়াক প্লাগত পুনৰ ইনছাৰ্ট কৰক</translation>
 <translation id="5099354524039520280">ওপৰ</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> কী নথকা শ্বৰ্টকাটে কিছুমান এপৰ শ্বৰ্টকাটৰ সৈতে সংঘাত সৃষ্টি কৰিব পাৰে। এই শ্বৰ্টকাটটো ব্যৱহাৰ কৰি থাকিবলৈ এইটোত পুনৰ টিপক অথবা <ph name="KEY" /> কীটো ব্যৱহাৰ কৰি এটা নতুন শ্বৰ্টকাটত টিপক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">একেধৰণৰ:</translation>
 <translation id="5130848777448318809">সৰু ঘোঁৰা</translation>
 <translation id="5137451382116112100">সম্পূৰ্ণ</translation>
 <translation id="5139813694804168398">অসুবিধা নিদিব ম’ড</translation>
 <translation id="5140788690559353412">আপুনি নিজৰ বিদ্যালয়ৰ একাউণ্টলৈ এক্সেছ হেৰুওৱালে, আপোনাৰ ওচৰত Gmail, Docs, Slides আৰু অধিকৰ দৰে সহযোগী ইমেইল আৰু Google Driveৰ ফাইলসমূহৰ এক্সেছ আৰু নাথাকিব।</translation>
 <translation id="5142961317498132443">বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণ</translation>
 <translation id="5144311987923128508">নিশ্চিত কৰক বুটামটো এতিয়া অক্ষম কৰা হৈছে</translation>
-<translation id="5144887194300568405">অনুবাদ প্ৰতিলিপি কৰক</translation>
 <translation id="5145081769226915336">স্বয়ংক্ৰিয়ভাৱে গাঢ় ম’ড অন কৰিবনে?</translation>
 <translation id="5145331109270917438">তাৰিখ সংশোধন কৰা হৈছে</translation>
 <translation id="5154917547274118687">মেম’ৰি</translation>

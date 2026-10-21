@@ -437,7 +437,6 @@
 <translation id="130744661532298792">Google 계정에서 언제든지 비밀번호를 사용할 수 있도록 본인 인증을 완료하세요.</translation>
 <translation id="1308105352527684175">특정 콘텐츠에 액세스하지 못할 수 있습니다.</translation>
 <translation id="1311092170520822848">사이트에서 기기에 연결된 스마트 카드 리더 및 해당 리더에서 사용할 수 있는 스마트 카드를 제어합니다.</translation>
-<translation id="131112175593356748">일부 표시</translation>
 <translation id="131112695174432497">광고 개인 최적화에 영향을 미치는 데이터가 삭제됨</translation>
 <translation id="131188242279372879">Chrome의 향상된 보호 모드를 통해 안전하게 다운로드하세요.</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{브라우저 속도를 저하시키는 탭 수정}other{브라우저 속도를 저하시키는 탭 수정}}</translation>
@@ -2806,6 +2805,7 @@
 <translation id="3109206895301430738">저장된 탭 그룹</translation>
 <translation id="3109724472072898302">접힘</translation>
 <translation id="3112292765614504292">앱 크기: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">접기</translation>
 <translation id="3112532142993641404">다른 기기에서 탭을 가져오려면 로그인하고 방문 기록을 동기화하세요. 이렇게 하면 모든 기기에서 북마크 등을 사용할 수 있습니다. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="311347022006935575">이 탭이 추가되었습니다.</translation>
 <translation id="311394601889664316">사이트에서 기기에 있는 파일이나 폴더를 수정하도록 허용하지 않음</translation>
@@ -4389,6 +4389,7 @@
 <translation id="4296632172536745000">이 사이트의 원래 비밀번호가 공개 정보 유출로 인해 노출되었습니다. <ph name="DATE" />에 비밀번호를 자동으로 변경해 달라고 <ph name="BRAND" />에 요청했습니다.</translation>
 <translation id="4297219207642690536">다시 시작 및 재설정</translation>
 <translation id="4297813521149011456">화면 회전</translation>
+<translation id="42981349822642051">펼치기</translation>
 <translation id="4298660926525614540">이동식 저장소 이름</translation>
 <translation id="4299022904780065004">새 시크릿 창(&amp;I)</translation>
 <translation id="4300272766492248925">앱 열기</translation>
@@ -5143,6 +5144,7 @@
 <translation id="4877276003880815204">요소 검사</translation>
 <translation id="4878634973244289103">의견을 보낼 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="4878718769565915065">보안 키에 지문을 추가할 수 없습니다.</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}other{#개 이상}}</translation>
 <translation id="4879491255372875719">자동(기본값)</translation>
 <translation id="4880827082731008257">검색 기록</translation>
 <translation id="4881685975363383806">다음번에 알리지 않음</translation>
@@ -5627,6 +5629,7 @@
 <translation id="5247051749037287028">표시 이름(선택사항)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> 선택</translation>
 <translation id="524751727772074981">어디서든 무엇이든 Chrome의 Gemini에게 물어보세요</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{이 정보 표시줄을 닫으면 정보 표시줄 1개가 더 표시됩니다.}other{이 정보 표시줄을 닫으면 정보 표시줄 #개가 더 표시됩니다.}}</translation>
 <translation id="5248934139541843042">주최자 보기</translation>
 <translation id="5249624017678798539">다운로드가 완료되기 전에 브라우저가 종료되었습니다.</translation>
 <translation id="5249818097095743806">보안 키 사용</translation>
@@ -5932,6 +5935,7 @@
 <translation id="5493792505296048976">화면 켜짐</translation>
 <translation id="5494016731375030300">최근에 닫은 탭</translation>
 <translation id="5494362494988149300">완료되면 열기(&amp;D)</translation>
+<translation id="5494439739088303974">Google 렌즈를 사용하여 페이지의 텍스트 또는 이미지에 관해 질문하세요.</translation>
 <translation id="5494879038325093596">Google 계정에 비밀번호를 저장하고 모든 기기에서 사용하려면 본인 인증을 진행하세요</translation>
 <translation id="5494920125229734069">모두 선택</translation>
 <translation id="5495466433285976480">다음에 다시 시작할 때 모든 로컬 사용자, 파일, 데이터 및 기타 설정이 삭제됩니다. 모든 사용자는 다시 로그인해야 합니다.</translation>

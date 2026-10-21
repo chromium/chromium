@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Am ganlyniad bras, rhannu'r gwerth <ph name="CATEGORY_TEXT" /> â <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Ffynhonnell y llun</translation>
 <translation id="1446954767133808402">saffirlas</translation>
-<translation id="1449035143498573192">Agor yn Google Search</translation>
 <translation id="1451536289672181509">Mae'r ddyfais yn fysellfwrdd.</translation>
 <translation id="1452939186874918380">ymbarelau</translation>
 <translation id="145402479967797468">Rheolyddion chwarae</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Rhagolwg <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN integredig</translation>
 <translation id="1669047024429367828">Gwelededd</translation>
-<translation id="1670478569471758522">Rhagor o wybodaeth yn ymwneud â'ch dewis</translation>
 <translation id="1672499492233627739">Ffrwd fideo'r gwe-gamera</translation>
 <translation id="1676557873873341166">Cymryd fideo</translation>
 <translation id="1684279041537802716">Lliw arlliw</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Wedi gorffen golygu</translation>
 <translation id="3532980081107202182">Tua <ph name="MIN_REMAINING" /> o funudau ar ôl</translation>
 <translation id="3533790840489634638">pwll</translation>
-<translation id="3547264467365135390">Fformiwla</translation>
 <translation id="3552832331940389362">llun animeiddiad Japaneaidd o gath yn eistedd ar silff ffenestr yn gwylio'r glaw yn y prynhawn</translation>
 <translation id="3557205324756024651">Hunaniaeth leol (dewisol)</translation>
 <translation id="3565064564551103223">Cyfeiriadau IP a ganiateir</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Disgrifiad</translation>
 <translation id="3869314628814282185">tiwl</translation>
 <translation id="387301095347517405">Nifer o weithiau y mae eich batri wedi mynd drwy gylch gwefru llawn</translation>
-<translation id="3877066159641251281">Gwrando ar y cyfieithiad</translation>
 <translation id="3880601782712134623">Canfod lleisiau gwahanol yn awtomatig a rhoi label generig fel Siaradwr 1 a Siaradwr 2 i bob siaradwr</translation>
 <translation id="38811596981744338">Mater cyfreithiol</translation>
 <translation id="3885327323343477505">Newid arbedwr sgrîn</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Datgysylltwch y cebl USB <ph name="DEVICE_NAME" /> ac yna ei ailosod i barhau â'r broses ddiweddaru</translation>
 <translation id="5099354524039520280">i fyny</translation>
 <translation id="5107243100836678918">Gallai llwybr byr heb fysell <ph name="META_KEY" /> wrthdaro â llwybr byr rhai apiau. Pwyswch y llwybr byr hwn eto i barhau i'w ddefnyddio, neu pwyswch lwybr byr newydd gan ddefnyddio'r fysell <ph name="KEY" />. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Tebyg:</translation>
 <translation id="5130848777448318809">merlod</translation>
 <translation id="5137451382116112100">Llawn</translation>
 <translation id="5139813694804168398">peidiwch ag aflonyddu</translation>
 <translation id="5140788690559353412">Pan fyddwch yn colli mynediad at eich cyfrif ysgol, ni fydd bellach gennych fynediad at yr e-bost cysylltiedig a ffeiliau Google Drive megis Gmail, Docs, Slides a rhagor.</translation>
 <translation id="5142961317498132443">Dilysu</translation>
 <translation id="5144311987923128508">Mae'r botwm Cadarnhau bellach wedi'i analluogi</translation>
-<translation id="5144887194300568405">Copïo cyfieithiad</translation>
 <translation id="5145081769226915336">Troi'r modd tywyll ymlaen yn awtomatig?</translation>
 <translation id="5145331109270917438">Dyddiad a addaswyd</translation>
 <translation id="5154917547274118687">Cof</translation>

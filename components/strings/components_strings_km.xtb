@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
-<translation id="1003222766972176318">រំលឹក៖ អាចប្រើការផ្ដល់ជូនដែលរក្សាទុកបានហើយ</translation>
 <translation id="1008557486741366299">មិនមែនឥឡូវនេះទេ</translation>
 <translation id="100957008357583611">ប្រើទីតាំងរបស់អ្នកឬ?</translation>
 <translation id="1010200102790553230">ផ្ទុកទំព័រនៅ​ពេលក្រោយ</translation>
@@ -1468,7 +1467,6 @@
 <translation id="3479552764303398839">មិនមែនឥឡូវនេះទេ</translation>
 <translation id="3481315707647070701">បង្ហាញជារូបភាព ហើយកែ</translation>
 <translation id="3484560055331845446">អ្នកអាច​បាត់បង់​សិទ្ធិចូល​ប្រើ​គណនី Google របស់អ្នក។ Chrome ណែនាំ​ឱ្យប្ដូរ​ពាក្យសម្ងាត់​របស់អ្នក​ឥឡូវនេះ។ អ្នកនឹងត្រូវបាន​ស្នើ​ឱ្យ​ចូល​គណនី។</translation>
-<translation id="3484861421501147767">ការរំលឹក៖ មាន​កូដ​ផ្តល់ជូនពិសេស​ដែលបានរក្សាទុក</translation>
 <translation id="3485901585646640838">ដើម្បីប្រើ​ពាក្យ​សម្ងាត់ និង​អ្វីៗ​ជាច្រើនទៀត​ដែលបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក សូម​ផ្ទៀងផ្ទាត់​ថាជាអ្នក</translation>
 <translation id="3487845404393360112">ទម្រទី 4</translation>
 <translation id="3493881266323043047">សុពលភាព</translation>
@@ -2303,6 +2301,7 @@
 <translation id="483241715238664915">បើក​ការព្រមាន</translation>
 <translation id="4833567658337394628">មិនណែនាំឱ្យដាក់ចូលទេ</translation>
 <translation id="4840250757394056958">មើលប្រវត្តិ Chrome របស់អ្នក</translation>
+<translation id="4842085418602350953">ទូទាត់តាម Pix ដោយមិនប្ដូរ​កម្មវិធី​នៅលើក​ក្រោយ</translation>
 <translation id="4842365697443353018">សម្អាត​ទម្រង់​បែបបទ ដើម្បីប្រើ "ទូទាត់ពេលក្រោយ"</translation>
 <translation id="484462545196658690">ស្វ័យប្រវត្តិ</translation>
 <translation id="4844937814014739139">ការរំកិល និង​ការពង្រីកបង្រួម​ផ្ទាំង​ដែលបាន​ចែករំលែក</translation>
@@ -3451,6 +3450,7 @@
 <translation id="6753460329812070808">បានដក​ការណែនាំ​ចេញពី Chrome</translation>
 <translation id="6757797048963528358">ឧបករណ៍របស់អ្នកបានដេកហើយ</translation>
 <translation id="6758934187792712102"><ph name="URL" /> ចង់ប្រើសេនស័រចាប់ចលនា និងពន្លឺរបស់អ្នក</translation>
+<translation id="6766488013065406604">ចូលទៅកាន់​កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់</translation>
 <translation id="6770747695101757579">ក្រដាស (កប្បាស)</translation>
 <translation id="6772959465807028761">ដើម្បីប្រើ YouTube សូមបន្តដោយប្រើគណនី Google របស់អ្នក</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3661,7 +3661,6 @@
 <translation id="7120588595737538743">ឯកសារដែលបានទាញយក និងរូបថតអេក្រង់</translation>
 <translation id="7124354851782353862">បញ្ចូល CVC របស់​អ្នក</translation>
 <translation id="7129409597930077180">មិនអាចដឹកជញ្ជូនតាមប្រៃសណីយ៍ទៅអាសយដ្ឋាននេះបានទេ។ សូមជ្រើសរើសអាសយដ្ឋានផ្សេង។</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">បានទប់ស្កាត់​ការបង្ហោះ</translation>
 <translation id="7132939140423847331">អ្នកគ្រប់គ្រង​របស់អ្នក​បានហាមឃាត់​មិនឱ្យ​ចម្លងទិន្នន័យនេះ។</translation>
 <translation id="7134653428559514680">មិនណែនាំឱ្យ​ចែករំលែក​ពីគេហទំព័រ​នេះទេ</translation>
@@ -4310,6 +4309,7 @@
 <translation id="8208629719488976364">ខ្លឹមសារ​ទំព័រ​ដែល​អ្នកបោះពុម្ព និង​ព័ត៌មាន​អំពី​ម៉ាស៊ីនបោះពុម្ព​របស់​អ្នក​ត្រូវ​បាន​ផ្ញើ​ទៅ Google Cloud ឬ​ភាគី​ទីបី​ដើម្បី​វិភាគ។ ឧទាហរណ៍ វា​អាចត្រូវបាន​ស្កេន ដើម្បីរកមើល​ទិន្នន័យ​រសើប និង​អាច​ត្រូវបាន​រក្សាទុក​ដោយផ្អែកតាម​គោលការណ៍​របស់ក្រុមហ៊ុន ហើយអ្នកគ្រប់គ្រងរបស់អ្នកអាចមើលឃើញវា។</translation>
 <translation id="8210490490377416373">ជ្រើសរើស​ឈ្មោះ​គោលការណ៍</translation>
 <translation id="8211406090763984747">ការតភ្ជាប់មានសុវត្ថិភាព</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ ប្រភព 1 ផ្សេងទៀត}other{+ ប្រភព # ផ្សេងទៀត}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 in</translation>
 <translation id="8218327578424803826">ទីតាំងដែលបានកំណត់៖</translation>

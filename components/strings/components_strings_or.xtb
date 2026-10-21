@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
-<translation id="1003222766972176318">ରିମାଇଣ୍ଡର୍: ସେଭ୍ କରାଯାଇଥିବା ଅଫର୍ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="1008557486741366299">ଏବେ ନୁହେଁ</translation>
 <translation id="100957008357583611">ଆପଣଙ୍କ ଲୋକେସନ୍ ବ୍ୟବହାର କରିବେ?</translation>
 <translation id="1010200102790553230">ପରେ ପୃଷ୍ଠା ଲୋଡ୍‌ କରନ୍ତୁ</translation>
@@ -1127,6 +1126,7 @@
 <translation id="2911973620368911614">ଜବ ଆକାଉଣ୍ଟିଂ ୟୁଜର ID</translation>
 <translation id="2914160345369867329">ଆପଣଙ୍କ ସୂଚନାକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ <ph name="SITE" />ସାଧାରଣତଃ ଏନକ୍ରିପସନ୍ ବ୍ୟବହାର କରେ। ଏହି ଥର Chrome <ph name="SITE" /> ସହ ସଂଯୋଗ କରିବାକୁ ଚେଷ୍ଟା କରିବା ସମୟରେ ୱେବସାଇଟଟି ଅସ୍ୱାଭାବିକ ଏବଂ ଭୁଲ କ୍ରେଡେନ୍ସିଆଲଗୁଡ଼ିକ ଫେରାଇଲା। କୌଣସି ଆକ୍ରମଣକାରୀ <ph name="SITE" /> ହୋଇଥିବାର ଛଳନା କରିବାର ଚେଷ୍ଟା କଲେ କିମ୍ବା ଏକ ୱାଇ-ଫାଇ ସାଇନ୍-ଇନ୍ ସ୍କ୍ରିନର ସଂଯୋଗରେ ବ୍ୟାଘାତ ସୃଷ୍ଟି ହେଲେ ଏପରି ହୋଇପାରେ। ଆପଣଙ୍କ ସୂଚନା ଏବେ ବି ସୁରକ୍ଷିତ ଅଛି କାରଣ କୌଣସି ଡାଟା ବିନିମୟ ହେବା ପୂର୍ବରୁ Chrome ସଂଯୋଗଟିକୁ ବନ୍ଦ କରିଦେଇଥିଲା।</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" />ରେ କ୍ରାସ୍ ହୋଇଛି</translation>
+<translation id="291568339791418558">ସମସ୍ତ ଡିଭାଇସ</translation>
 <translation id="2916038427272391327">ଅନ୍ୟ ପ୍ରୋଗ୍ରାମ୍‌ଗୁଡ଼ିକ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2917630513638801879">ସାଇଆନ 1</translation>
 <translation id="2922350208395188000">ସର୍ଭରର ସାର୍ଟିଫିକେଟ୍‌ ଯାଞ୍ଚ କରିହେବ ନାହିଁ</translation>
@@ -1460,7 +1460,6 @@
 <translation id="3479552764303398839">ଏବେ ନୁହେଁ</translation>
 <translation id="3481315707647070701">ଭିଜୁଆଲାଇଜ କରି ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="3484560055331845446">ଆପଣ, ନିଜର Google ଆକାଉଣ୍ଟର ଆକ୍ସେସ୍‌ ହରାଇପାରନ୍ତି। ବର୍ତ୍ତମାନ Chrome ଆପଣଙ୍କୁ ପାସ୍‌ୱାର୍ଡ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି। ଆପଣଙ୍କୁ ସାଇନ୍‌ ଇନ୍ ପାଇଁ କୁହାଯିବ।</translation>
-<translation id="3484861421501147767">ରିମାଇଣ୍ଡର: ସେଭ କରାଯାଇଥିବା ପ୍ରମୋ କୋଡ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="3485901585646640838">ପାସୱାର୍ଡ ଏବଂ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇଥିବା ଅଧିକ ବ୍ୟବହାର କରିବାକୁ, ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="3487845404393360112">ଟ୍ରେ 4</translation>
 <translation id="3493881266323043047">ବୈଧତା:</translation>
@@ -1819,6 +1818,7 @@
 <translation id="4067774859633143413">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯାଇ ଡାଉନଲୋଡ ଦେଖିବା ପାଇଁ |<ph name="ACCELERATOR" />|କୁ ଦବାଇ ଧରି ରଖନ୍ତୁ</translation>
 <translation id="4067947977115446013">ବୈଧ ଠିକଣା ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4072486802667267160">ଆପଣଙ୍କର ଅର୍ଡର୍ ପ୍ରକ୍ରିୟାକରଣ କରିବା ସମୟରେ ଏକ ତ୍ରୁଟି ହୋଇଛି। ଦୟାକରି ପୁଣିଥରେ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="4073293290376142777">ସାଇନ ଇନ କରିବେ?</translation>
 <translation id="4073376909608563327">ଡିଭାଇସ ଅନଲକ ବ୍ୟବହାର କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="4073797364926776829">କାର୍ଡ ଦେଖନ୍ତୁ</translation>
 <translation id="4075732493274867456">କ୍ଲାଏଣ୍ଟ ଓ ସର୍ଭର୍ ଏକ ସାଧାରଣ SSL ପ୍ରୋଟୋକଲ୍ ସଂସ୍କରଣ କିମ୍ବା ସାଇଫର୍ ସୁଟ୍‍ର ସମର୍ଥନ କରନ୍ତି ନାହିଁ।</translation>
@@ -1851,6 +1851,7 @@
 <translation id="4107047499377819067">VPN ବେକଗ୍ରାଉଣ୍ଡ ସେବାଗୁଡ଼ିକର ଇନଷ୍ଟଲେସନ ଆରମ୍ଭ ହୋଇଛି, ଏଥିପାଇଁ କିଛି ମିନିଟ ଲାଗିପାରେ।</translation>
 <translation id="4110642094637545339">Google Pay, AfterPay ଲୋଗୋ</translation>
 <translation id="4110652170750985508">ଆପଣ ପେମେଣ୍ଟର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
+<translation id="411071007970303441">ସମସ୍ତ ଆକ୍ଟର</translation>
 <translation id="4112140312785995938">ପଛକୁ ଆଣନ୍ତୁ</translation>
 <translation id="4114007503059268298">ଆପଣ ଏହି କାର୍ଡକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ଏବଂ ଏହି ଡିଭାଇସରେ ସେଭ କରିବାକୁ ଚାହାଁନ୍ତି?</translation>
 <translation id="4114146879518089587">ସାଇଟର ବ୍ୟବହାର ଜାରି ରଖନ୍ତୁ</translation>
@@ -3436,6 +3437,7 @@
 <translation id="6753460329812070808">Chromeରୁ ପରାମର୍ଶକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="6757797048963528358">ଆପଣଙ୍କର ଡିଭାଇସ୍ ନିଷ୍କ୍ରିୟ ହୋ‍ଇଯାଇଛି।</translation>
 <translation id="6758934187792712102"><ph name="URL" /> ଆପଣଙ୍କ ମୋସନ ଏବଂ ଲାଇଟ ସେନ୍ସରଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
+<translation id="6766488013065406604">Google Password Managerକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6770747695101757579">କାଗଜ (କଟନ)</translation>
 <translation id="6772959465807028761">YouTube ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3646,7 +3648,6 @@
 <translation id="7120588595737538743">ଡାଉନଲୋଡ ଏବଂ ସ୍କ୍ରିନସଟ</translation>
 <translation id="7124354851782353862">ଆପଣଙ୍କ CVC ଲେଖନ୍ତୁ</translation>
 <translation id="7129409597930077180">ଏହି ଠିକଣାକୁ ପଠାଯାଇପାରିବ ନାହିଁ। ଏକ ଭିନ୍ନ ଠିକଣା ଚୟନ କରନ୍ତୁ।</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">ଅପଲୋଡ କରିବା ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="7132939140423847331">ଆପଣଙ୍କ ଆଡମିନ ଏହି ଡାଟାକୁ କପି କରିବାରୁ ପ୍ରତିବନ୍ଧିତ କରିଛନ୍ତି।</translation>
 <translation id="7134653428559514680">ଏହି ସାଇଟରୁ ସେୟାର କରିବାକୁ ସୁପାରିଶ କରାଯାଇନାହିଁ</translation>
@@ -3963,6 +3964,7 @@
 <translation id="7637571805876720304">Chromiumରୁ କ୍ରେଡିଟ୍ କାର୍ଡ କାଢ଼ିବେ?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ 1ଟି ପାସୱାର୍ଡ (<ph name="DOMAIN_LIST" /> ପାଇଁ)}other{ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ #ଟି ପାସୱାର୍ଡ (<ph name="DOMAIN_LIST" /> ପାଇଁ)}}</translation>
 <translation id="7638605456503525968">କ୍ରମିକ ପୋର୍ଟଗୁଡ଼ିକ</translation>
+<translation id="7644100755247241229">Google Wallet ବ୍ୟବହାର କରି ସାଙ୍ଗମାନଙ୍କୁ ଏବଂ ବିଜିନେସଗୁଡ଼ିକୁ Pix ପଠାନ୍ତୁ</translation>
 <translation id="7646681339175747202">ଆପଣ ଏବେ ବ୍ୟବହାର କରିଥିବା ପାସୱାର୍ଡ ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି। Google Password Manager ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ପାସୱାର୍ଡକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସୁପାରିଶ କରେ।</translation>
 <translation id="7647206758853451655">ପ୍ରିଣ୍ଟ ଗୁଣବତ୍ତା</translation>
 <translation id="7648133459447652947">ଆପଣଙ୍କର କର୍ସର ଦେଖାଇବାକୁ, ଆପ୍ସ ସ୍ୱିଚ କରି ପୃଷ୍ଠାକୁ ରିଲୋଡ କରନ୍ତୁ କିମ୍ବା ପଛକୁ ଫେରନ୍ତୁ</translation>
@@ -4066,6 +4068,7 @@
 <translation id="7791543448312431591">ଯୋଡନ୍ତୁ</translation>
 <translation id="7798389633136518089">ନୀତିଟି, କ୍ଲାଉଡ୍ ସୋର୍ସ ଦ୍ୱାରା ସେଟ୍ କରାଯାଇନଥିବା ଯୋଗୁଁ ଅଣଦେଖା କରାଯାଇଛି।</translation>
 <translation id="7800304661137206267">ମେସେଜ୍ ପ୍ରାମାଣିକତା ପାଇଁ <ph name="MAC" />, ମୁଖ୍ୟ ବିନିମୟ ପ୍ରକ୍ରିୟା ରୂପରେ <ph name="KX" /> ସହ <ph name="CIPHER" /> ବ୍ୟବହାର କରି, ସଂଯୋଗକୁ ଏନ୍‌କ୍ରିପ୍ଟ କରାଯାଇଛି।</translation>
+<translation id="780228007282527248">ଆପଣଙ୍କ ସର୍ଚ୍ଚକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଏକ ଟାବ କିମ୍ବା ଇମେଜ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7802523362929240268">ସାଇଟ୍‍ ଆଇନ୍‌ସଙ୍ଗତ ଅଟେ</translation>
 <translation id="7802989406998618639"><ph name="SIDE_OF_CARD" />ରେ <ph name="NUMBER_OF_DIGITS" />-ଅଙ୍କ ବିଶିଷ୍ଟ ସୁରକ୍ଷା କୋଡ ଲେଖନ୍ତୁ ଯାହା ଫଳରେ ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଆପଣଙ୍କ ବେଙ୍କ ଯାଞ୍ଚ କରିପାରିବ</translation>
 <translation id="780301667611848630">ନା, ଧନ୍ୟବାଦ</translation>

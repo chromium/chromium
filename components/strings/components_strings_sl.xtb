@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
-<translation id="1003222766972176318">Opomnik: Shranjena ponudba je na voljo</translation>
 <translation id="1008557486741366299">Ne zdaj</translation>
 <translation id="100957008357583611">Želite uporabiti lokacijo?</translation>
 <translation id="1010200102790553230">Naloži stran pozneje</translation>
@@ -1127,6 +1126,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2911973620368911614">ID uporabnika za računovodstvo glede opravil</translation>
 <translation id="2914160345369867329">Spletno mesto <ph name="SITE" /> za zaščito vaših podatkov običajno uporablja šifriranje. Ko se je Chrome tokrat poskusil povezati s spletnim mestom <ph name="SITE" />, je to vrnilo nenavadne in nepravilne poverilnice. Do tega lahko pride, če se napadalec lažno predstavlja za spletno mesto <ph name="SITE" /> ali če je povezavo prekinil zaslon za prijavo v omrežje Wi-Fi. Vaši podatki so še vedno varni, saj je Chrome pred izmenjavo podatkov prekinil povezavo.</translation>
 <translation id="2915068235268646559">Zrušitev: <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Vse naprave</translation>
 <translation id="2916038427272391327">Zaprite druge programe</translation>
 <translation id="2917630513638801879">Cianova 1</translation>
 <translation id="2922350208395188000">Potrdila strežnika ni mogoče preveriti.</translation>
@@ -1462,7 +1462,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3479552764303398839">Ne zdaj</translation>
 <translation id="3481315707647070701">Vizualiziranje in urejanje</translation>
 <translation id="3484560055331845446">Izgubite lahko dostop do Google Računa. Chrome priporoča, da spremenite geslo. Pozvani boste, da se prijavite.</translation>
-<translation id="3484861421501147767">Opomnik: Shranjena promocijska koda je na voljo</translation>
 <translation id="3485901585646640838">Če želite uporabljati gesla in druge podatke, shranjene v računu Google, potrdite, da ste to vi</translation>
 <translation id="3487845404393360112">Pladenj 4</translation>
 <translation id="3493881266323043047">Veljavnost</translation>
@@ -1822,6 +1821,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4067774859633143413">Če želite zapreti celozaslonski način in si ogledati prenos, pridržite |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Dodajanje veljavnega naslova</translation>
 <translation id="4072486802667267160">Pri obdelavi naročila je prišlo do napake. Poskusite znova.</translation>
+<translation id="4073293290376142777">Se želite prijaviti?</translation>
 <translation id="4073376909608563327">Odklepanja naprave ni bilo mogoče uporabiti</translation>
 <translation id="4073797364926776829">Ogled kartice</translation>
 <translation id="4075732493274867456">Odjemalec in strežnik ne podpirata skupne različice protokola SSL ali šifrirne zbirke.</translation>
@@ -1854,6 +1854,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4107047499377819067">Nameščanje storitev v ozadju za omrežje se je začelo in lahko traja nekaj minut.</translation>
 <translation id="4110642094637545339">Logotip Googla Pay in storitve AfterPay</translation>
 <translation id="4110652170750985508">Pregled plačila</translation>
+<translation id="411071007970303441">Vsi akterji</translation>
 <translation id="4112140312785995938">Išči nazaj</translation>
 <translation id="4114007503059268298">Ali želite shraniti to kartico v račun Google in v tej napravi?</translation>
 <translation id="4114146879518089587">Na spletno mesto</translation>
@@ -3440,6 +3441,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6753460329812070808">Predlog je odstranjen iz Chroma</translation>
 <translation id="6757797048963528358">Naprava je preklopila v stanje pripravljenosti.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> želi uporabljati tipala gibanja in svetlobe</translation>
+<translation id="6766488013065406604">Odprite Googlovega upravitelja gesel</translation>
 <translation id="6770747695101757579">Paper (Cotton)</translation>
 <translation id="6772959465807028761">Če želiš uporabljati YouTube, nadaljuj z računom Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3652,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7120588595737538743">prenosov in posnetkov zaslona</translation>
 <translation id="7124354851782353862">Vnesite kodo CVC</translation>
 <translation id="7129409597930077180">Pošiljanje na ta naslov ni mogoče. Izberite drugega.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Blokirano nalaganje</translation>
 <translation id="7132939140423847331">Skrbnik je prepovedal kopiranje teh podatkov.</translation>
 <translation id="7134653428559514680">Deljenje s tega spletnega mesta ni priporočljivo</translation>
@@ -3968,6 +3969,7 @@ Dodatne podrobnosti:
 <translation id="7637571805876720304">Želite kreditno kartico odstraniti iz Chromiuma?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Nič}=1{1 geslo v računu (za <ph name="DOMAIN_LIST" />)}one{# geslo v računu (za <ph name="DOMAIN_LIST" />)}two{# gesli v računu (za <ph name="DOMAIN_LIST" />)}few{# gesla v računu (za <ph name="DOMAIN_LIST" />)}other{# gesel v računu (za <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Serijska vrata</translation>
+<translation id="7644100755247241229">Pošljite Pix prijateljem in podjetjem z Google Denarnico</translation>
 <translation id="7646681339175747202">Geslo, ki ste ga pravkar uporabili, je bilo najdeno v podatkovni kršitvi. Googlov upravitelj gesel priporoča, da geslo spremenite takoj.</translation>
 <translation id="7647206758853451655">Kakovost tiskanja</translation>
 <translation id="7648133459447652947">Če želite prikazati kazalec, preklopiti med aplikacijami, znova naložiti stran ali se vrniti nazaj</translation>
@@ -4071,6 +4073,7 @@ Dodatne podrobnosti:
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798389633136518089">Prezrto, ker pravilnika ni nastavil vir iz oblaka.</translation>
 <translation id="7800304661137206267">Povezava je šifrirana s <ph name="CIPHER" /> in uporablja <ph name="MAC" /> za preverjanje pristnosti sporočil ter <ph name="KX" /> kot mehanizem za izmenjavo ključev.</translation>
+<translation id="780228007282527248">Dodajte zavihek ali sliko, da izboljšate iskanje</translation>
 <translation id="7802523362929240268">Spletno mesto je legitimno</translation>
 <translation id="7802989406998618639">Vnesite <ph name="NUMBER_OF_DIGITS" />-mestno varnostno kodo na <ph name="SIDE_OF_CARD" />, da bo lahko vaša banka potrdila vašo identiteto.</translation>
 <translation id="780301667611848630">Ne, hvala</translation>

@@ -437,7 +437,6 @@
 <translation id="130744661532298792">為確保你可隨時使用 Google 帳戶中的密碼，請驗證身分</translation>
 <translation id="1308105352527684175">你可能無法存取特定內容</translation>
 <translation id="1311092170520822848">此網站正控制連接至你裝置的智能讀卡器，且可能會存取讀卡器中的智能卡</translation>
-<translation id="131112175593356748">顯示一部分</translation>
 <translation id="131112695174432497">系統將刪除會影響廣告個人化的資料</translation>
 <translation id="131188242279372879">探索強化保護功能，即可享有 Chrome 就下載檔案提供的最強大安全防護</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{修正導致瀏覽器運作緩慢的分頁}other{修正導致瀏覽器運作緩慢的分頁}}</translation>
@@ -1114,6 +1113,7 @@
 <translation id="1842681835432895345">在鏡像模式中排除此顯示屏</translation>
 <translation id="184273675144259287">以先前的備份取代您的 Linux 應用程式和檔案</translation>
 <translation id="1843048149176045210">複製下載連結</translation>
+<translation id="1845498360590376126">首頁是新分頁</translation>
 <translation id="1845727111305721124">已允許播放音效</translation>
 <translation id="1846100293138248204">儲存至「記憶」</translation>
 <translation id="1846308012215045257">按住 Ctrl 鍵並按一下即可執行 <ph name="PLUGIN_NAME" /></translation>
@@ -1491,7 +1491,7 @@
 <translation id="2140788884185208305">電池壽命</translation>
 <translation id="2142328300403846845">以其他身分開啟連結</translation>
 <translation id="2142582065325732898">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />即可查看最近開啟的 Chrome 分頁。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
-<translation id="2142826581348795579">已將焦點移出分頁群組</translation>
+<translation id="2142826581348795579">取消聚焦的分頁群組</translation>
 <translation id="2143089736086572103">向部份聯絡人顯示</translation>
 <translation id="2143765403545170146">在全螢幕模式下永遠顯示工具列</translation>
 <translation id="2143778271340628265">手動 Proxy 設定</translation>
@@ -2492,7 +2492,7 @@
 <translation id="2878889940310164513">新增流動網絡…</translation>
 <translation id="288042212351694283">存取您的 Universal 2nd Factor 裝置</translation>
 <translation id="2881076733170862447">當您點擊擴充程式時</translation>
-<translation id="2881174510090437224">{NUM_TABS,plural, =1{已將焦點移出分頁}other{已將焦點移出分頁}}</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{取消聚焦的分頁}other{取消聚焦的分頁}}</translation>
 <translation id="2882301808122022326">Omaha 回應</translation>
 <translation id="2884070497102362193">測試電池、CPU、記憶體、連接性等等</translation>
 <translation id="2885129935310217435">已有相同名稱的按鈕，請選擇其他名稱。</translation>
@@ -2804,6 +2804,7 @@
 <translation id="3109206895301430738">儲存咗嘅分頁群組</translation>
 <translation id="3109724472072898302">已收合</translation>
 <translation id="3112292765614504292">應用程式大小：<ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">收合</translation>
 <translation id="3112532142993641404">如要取用其他裝置上的分頁，請登入並同步記錄。你也可在你的所有裝置上取用書籤及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="311347022006935575">已加入此分頁</translation>
 <translation id="311394601889664316">不允許網站編輯裝置上的檔案或資料夾</translation>
@@ -3381,6 +3382,7 @@
 <translation id="3553442438687311630">Microsoft 驗證</translation>
 <translation id="3554493885489666172">您的裝置由 <ph name="PROFILE_NAME" /> 管理。管理員可以存取此裝置上任何設定檔中的資料。</translation>
 <translation id="3555812735919707620">移除擴充功能</translation>
+<translation id="3556409966119759596">在新分頁中顯示頁尾</translation>
 <translation id="3557101512409028104">透過 Family Link 設定網站限制和裝置使用時間限制</translation>
 <translation id="3558579881215044733"><ph name="WINDOW_TITLE" /> - Gemini 正在處理工作…</translation>
 <translation id="3559079791149580653">停止投放畫面去 <ph name="DEVICE_NAME" /></translation>
@@ -4387,6 +4389,7 @@
 <translation id="4296632172536745000">你在這個網站的原密碼在公開資料外洩事件中外洩。你於 <ph name="DATE" />要求「<ph name="BRAND" />」自動為你更改密碼。</translation>
 <translation id="4297219207642690536">重新啟動並重設</translation>
 <translation id="4297813521149011456">螢幕旋轉</translation>
+<translation id="42981349822642051">展開</translation>
 <translation id="4298660926525614540">卸除式儲存裝置名稱</translation>
 <translation id="4299022904780065004">新增無痕式視窗(&amp;I)</translation>
 <translation id="4300272766492248925">開啟應用程式</translation>
@@ -5082,6 +5085,7 @@
 <translation id="4841475798258477260">此裝置只可連接特定的流動網絡。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">這個網頁正嘗試從未授權的來源載入指令碼。</translation>
 <translation id="484462545196658690">自動</translation>
+<translation id="4844967571080002061">進一步瞭解新分頁背景</translation>
 <translation id="4846273627924459555">問關於「<ph name="SEARCH_TERMS" />」的問題</translation>
 <translation id="4846628405149428620">選取此網站可以儲存變更的位置</translation>
 <translation id="4846680374085650406">您目前所採用的是管理員的建議設定。</translation>
@@ -5140,6 +5144,7 @@
 <translation id="4877276003880815204">檢查元素</translation>
 <translation id="4878634973244289103">無法傳送意見，請稍後再試。</translation>
 <translation id="4878718769565915065">無法將指紋新增到此安全密鑰</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}other{+#}}</translation>
 <translation id="4879491255372875719">自動 (預設)</translation>
 <translation id="4880827082731008257">搜尋記錄</translation>
 <translation id="4881685975363383806">下次不要提醒我</translation>
@@ -5624,6 +5629,7 @@
 <translation id="5247051749037287028">顯示名稱 (選填)</translation>
 <translation id="5247243947166567755">揀 <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">隨時隨地向 Chrome 版 Gemini 提問</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{關閉此資料列後，另外 1 個資料列就會顯示}other{關閉此資料列後，另外 # 個資料列就會顯示}}</translation>
 <translation id="5248934139541843042">查看主辦者</translation>
 <translation id="5249624017678798539">瀏覽器在下載尚未完成時當機。</translation>
 <translation id="5249818097095743806">使用安全密鑰</translation>
@@ -5889,6 +5895,7 @@
 <translation id="5463856536939868464">選單包含隱藏的書籤</translation>
 <translation id="5466374726908360271">貼上並搜尋「<ph name="SEARCH_TERMS" />」 (&amp;S)</translation>
 <translation id="5466721587278161554">分頁群組會儲存在書籤列、應用程式選單，並會在同步功能開啟後同步至你登入帳戶的所有裝置</translation>
+<translation id="5466743034850405734">開啟新分頁</translation>
 <translation id="5467207440419968613">已封鎖<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">正在尋找檔案共用</translation>
 <translation id="5468330507528805311">網絡共享狀態：</translation>
@@ -5928,6 +5935,7 @@
 <translation id="5493792505296048976">螢幕已開啟</translation>
 <translation id="5494016731375030300">最近關閉的分頁</translation>
 <translation id="5494362494988149300">下載完成時自動開啟檔案(&amp;D)</translation>
+<translation id="5494439739088303974">用「Google 智能鏡頭」查詢頁面上嘅任何文字或者圖片</translation>
 <translation id="5494879038325093596">驗證身分，以在所有已登入 Google 帳戶的裝置上取用</translation>
 <translation id="5494920125229734069">全部選取</translation>
 <translation id="5495466433285976480">這樣會在下次重新啟動時移除所有本機使用者、檔案、數據和其他設定。所有使用者都必須重新登入。</translation>
@@ -6542,6 +6550,7 @@
 <translation id="5979421442488174909">翻譯成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="5979469435153841984">如要將網頁加入書籤，請按一下網址列中的星號</translation>
 <translation id="5982578203375898585">下載完成後顯示下載檔案</translation>
+<translation id="5982657619592274533">隱藏新分頁的頁尾</translation>
 <translation id="5983716913605894570">生成緊…</translation>
 <translation id="5984222099446776634">最近瀏覽的網站</translation>
 <translation id="598426658342593742">將分頁移至側邊</translation>
@@ -8053,7 +8062,7 @@
 <translation id="7148426638542880639">網站可能無法正常運作。如果您不希望在裝置留下網站瀏覽資訊，請選擇此選項。</translation>
 <translation id="7149893636342594995">最近 24 小時</translation>
 <translation id="7152478047064750137">這個擴充程式不需要任何特殊權限</translation>
-<translation id="7152923486458597248">將焦點移至群組</translation>
+<translation id="7152923486458597248">聚焦群組</translation>
 <translation id="7153101072880472645">開啟/關閉高對比模式</translation>
 <translation id="715396040729904728">啟動器 + Shift + <ph name="TOP_ROW_KEY" /> 鍵</translation>
 <translation id="7154130902455071009">將您的起始網頁變更為：<ph name="START_PAGE" /></translation>

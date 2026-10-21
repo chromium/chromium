@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">ដើម្បីទទួលបាន​លទ្ធផល​ប្រហាក់ប្រហែល សូមចែក​តម្លៃ<ph name="CATEGORY_TEXT" />នឹង <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">ប្រភព​រូបភាព</translation>
 <translation id="1446954767133808402">ត្បូងកណ្ដៀង</translation>
-<translation id="1449035143498573192">បើកក្នុងម៉ាស៊ីនស្វែងរកនៅលើ Google</translation>
 <translation id="1451536289672181509">ឧបករណ៍គឺជាក្ដារចុច។</translation>
 <translation id="1452939186874918380">ឆត្រ</translation>
 <translation id="145402479967797468">ផ្ទាំងគ្រប់គ្រងការចាក់</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">មើល <ph name="PREVIEW_OBJECT" /> សាកល្បង</translation>
 <translation id="1668469839109562275">VPN ដែលភ្ជាប់​មកជាមួយស្រាប់</translation>
 <translation id="1669047024429367828">លទ្ធភាពមើលឃើញ</translation>
-<translation id="1670478569471758522">ព័ត៌មានបន្ថែម​ពាក់ព័ន្ធនឹង​ការជ្រើសរើស​របស់អ្នក</translation>
 <translation id="1672499492233627739">ព័ត៌មាន​វីដេអូ​ពី​កាមេរ៉ាបណ្ដាញ</translation>
 <translation id="1676557873873341166">កំពុង​ថតវីដេអូ</translation>
 <translation id="1684279041537802716">ពណ៌​រំលេច</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">កែរួចរាល់</translation>
 <translation id="3532980081107202182">នៅសល់ប្រហែល <ph name="MIN_REMAINING" /> នាទីទៀត</translation>
 <translation id="3533790840489634638">អាងហែល​ទឹក</translation>
-<translation id="3547264467365135390">រូបមន្ត</translation>
 <translation id="3552832331940389362">រូបភាព​គំនូរ​ជីវចល​ជប៉ុន​នៃឆ្មា​ដែលអង្គុយលើ​ផ្នែកលយ​ពីបង្អួច កំពុង​មើល​ភ្លៀងធ្លាក់​នៅពេល​រសៀល</translation>
 <translation id="3557205324756024651">អត្តសញ្ញាណ​មូលដ្ឋាន (មិនតម្រូវ)</translation>
 <translation id="3565064564551103223">IP ដែលត្រូវបាន​អនុញ្ញាត</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">ការពិពណ៌នា</translation>
 <translation id="3869314628814282185">ទូល</translation>
 <translation id="387301095347517405">ចំនួនដង​ដែលថ្មរបស់អ្នក​បានសាកពេញ</translation>
-<translation id="3877066159641251281">ស្ដាប់​ការបកប្រែ</translation>
 <translation id="3880601782712134623">ចាប់ដឹង​សំឡេង​ខុសៗគ្នា​ដោយស្វ័យប្រវត្តិ និង​ដាក់ស្លាក​ទូទៅ​សម្គាល់​អ្នកនិយាយ​ម្នាក់ៗ ដូចជា​អ្នកនិយាយទី 1 និង​អ្នកនិយាយទី 2 ជាដើម</translation>
 <translation id="38811596981744338">បញ្ហាផ្លូវច្បាប់</translation>
 <translation id="3885327323343477505">ប្ដូរធាតុរក្សាអេក្រង់</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">ដក​ខ្សែ USB <ph name="DEVICE_NAME" /> រួចដោតវា​ចូលម្ដង​ទៀត ដើម្បីបន្ត​ដំណើរការ​ដំឡើងកំណែ</translation>
 <translation id="5099354524039520280">ឡើងលើ</translation>
 <translation id="5107243100836678918">ផ្លូវកាត់​ដែលគ្មានគ្រាប់ចុច<ph name="META_KEY" />ប្រហែលជា​ជាន់គ្នា​ជាមួយ​ផ្លូវកាត់​របស់កម្មវិធី​មួយចំនួន។ សូមចុច​ផ្លូវកាត់នេះ​ម្ដងទៀត ដើម្បីបន្ត​ប្រើប្រាស់​វា ឬចុច​ផ្លូវកាត់ថ្មី​ដោយប្រើគ្រាប់ចុច<ph name="KEY" />។ <ph name="LINK_BEGIN" />ស្វែងយល់​បន្ថែម<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">ស្រដៀង៖</translation>
 <translation id="5130848777448318809">កូនសេះ</translation>
 <translation id="5137451382116112100">អេក្រង់ពេញ</translation>
 <translation id="5139813694804168398">កុំរំខាន</translation>
 <translation id="5140788690559353412">នៅពេលអ្នកបាត់បង់សិទ្ធិចូលប្រើគណនីសាលារៀនរបស់អ្នក អ្នកនឹងលែងមានសិទ្ធិចូលប្រើឯកសារ Google ថាស និងអ៊ីមែលដែលពាក់ព័ន្ធ ដូចជា Gmail, ឯកសារ, បទបង្ហាញ និងអ្វីៗជាច្រើនទៀត។</translation>
 <translation id="5142961317498132443">ការ​ផ្ទៀងផ្ទាត់​</translation>
 <translation id="5144311987923128508">ឥឡូវនេះ ប៊ូតុងបញ្ជាក់ត្រូវបានបិទហើយ</translation>
-<translation id="5144887194300568405">ចម្លងការបកប្រែ</translation>
 <translation id="5145081769226915336">បើកមុខងារងងឹតដោយស្វ័យប្រវត្តិឬទេ?</translation>
 <translation id="5145331109270917438">កាលបរិច្ឆេទបានកែសម្រូល</translation>
 <translation id="5154917547274118687">មេម៉ូរី</translation>

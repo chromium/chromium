@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Palos <ph name="TABS_COUNT_ONE" /> skedë.}other{Palos grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
 <translation id="2569352796411618312">Sugjerim: <ph name="NUMBER_OF_TABS" /> nga skedat e tua nuk janë përdorur së fundi. Do t'i mbyllësh ato?</translation>
 <translation id="257674075312929031">Grup</translation>
+<translation id="2628148780487543078">Mbyll gjithashtu skedat e gozhduara</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Restauro dhe hap grupin e skedave me <ph name="TABS_COUNT_ONE" /> skedë, ngjyra <ph name="COLOR_NAME" />.}other{Restauro dhe hap grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda, ngjyra <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Vlerësimi <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Vizito sajtin</translation>

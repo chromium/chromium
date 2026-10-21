@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">नए टैब ग्रुप में खोलें</translation>
 <translation id="1670861525135254448">वाहन की जानकारी सेव करें</translation>
 <translation id="1671568970992212376">अपनी फ़ोटो Google Photos में सेव करें और किसी भी समय ऐक्सेस करें.</translation>
+<translation id="1671824312818944549">ध्यान दें: यह सेटिंग, iOS 27 या इसके बाद के वर्शन पर और बेहतर तरीके से काम करती है.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> से <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">स्क्रीन पर दिख रहे कॉन्टेंट के बारे में जानकारी खोजने के लिए, उस पर सर्कल बनाएं, उसे हाइलाइट करें या उस पर टैप करें</translation>
 <translation id="1678855624321223424">आपके संगठन की नीतियों के आधार पर, इस फ़ाइल में संवेदनशील जानकारी हो सकती है</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">आपका फिर से स्वागत है!</translation>
 <translation id="2015722694326466240">पासवर्ड देखने के लिए, आपको सबसे पहले अपने डिवाइस पर एक पासवर्ड सेट करना होगा.</translation>
 <translation id="201759455285471444">टैब ग्रुप को बड़ा करें.</translation>
+<translation id="2022431790688770637">Gemini के सुझावों को मैनेज करें</translation>
 <translation id="2031515492007104071">लेवल अप</translation>
 <translation id="2044394949148788042">टैब ग्रिड खोलें</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> खाते को <ph name="HOSTED_DOMAIN" /> मैनेज करता है. यह कुछ जानकारी देख सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">कोई भी सवाल पूछें और एआई की मदद से जवाब पाएं</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2876369937070532032">आपकी सुरक्षा को खतरा होने पर उन पेज के यूआरएल भेजे जाते हैं जिन पर आप Google के ज़रिए जाते हैं.</translation>
+<translation id="2880119244122776372">बनाएं और कोडिंग करें</translation>
 <translation id="2883151425485251736">अपने खाते से छिपाए गए विषयों को देखें और उनमें बदलाव करें</translation>
 <translation id="2884437560239137197">ध्यान देने की ज़रूरत है</translation>
 <translation id="288655811176831528">टैब बंद करें</translation>
@@ -1695,6 +1698,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6301104306974789820">प्रॉडक्ट की कीमत ट्रैक करने से जुड़ी सूचनाएं पाएं</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">पता बार की जगह अडजस्ट करें</translation>
+<translation id="6305257382500066042">इसे अभी आज़माएं</translation>
 <translation id="6307241780749477694">इस डिवाइस पर अपने सभी पासवर्ड ऐक्सेस करने के लिए, अपनी पहचान की पुष्टि करें</translation>
 <translation id="6307792728709337290">अपने Google खाते में कार्ड की जानकारी सेव करें. इससे, Chrome पर मौजूदा और आगे की जाने वाली खरीदारी के लिए, कार्ड की जानकारी ऑटोमैटिक तरीके से भर जाती है.</translation>
 <translation id="6316141353357700666">सूची में से वह पासवर्ड चुनें जिसे आपको इस्तेमाल करना है.</translation>
@@ -1848,7 +1852,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6708501134077648845">पासवर्ड के विकल्प</translation>
 <translation id="6709964700841491574">लॉकडाउन मोड</translation>
 <translation id="6710079714193676716">आपका संगठन प्रबंधित करता है. हो सकता है कि कुछ सुविधाएं उपलब्ध न रहें. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">बेहतरीन जवाब तेज़ी से पाएं</translation>
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" /> को बदलाव किया गया</translation>
 <translation id="6722623263381062480">मिले टैब</translation>
 <translation id="6722638373100589752">अपनी जानकारी अपने-आप भरने के लिए, Wallet की सेटिंग में जाकर “Google के सभी प्लैटफ़ॉर्म पर पास इस्तेमाल करें” को चालू करें</translation>
@@ -2060,7 +2063,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">जारी रखें</translation>
 <translation id="741204030948306876">हां, मैं सहमत हूं</translation>
-<translation id="7417055777338419059">कोडिंग करें, कॉन्टेंट लिखें या स्लाइड बनाएं</translation>
 <translation id="7419565702166471774">हमेशा सुरक्षित कनेक्शन इस्तेमाल करें</translation>
 <translation id="7423098979219808738">पहले पूछें</translation>
 <translation id="7425053386765766120">पेमेंट का तरीका जोड़ें…</translation>
@@ -2110,6 +2112,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7525067979554623046">बनाएं</translation>
 <translation id="75362970626182391">नया टैब ग्रुप</translation>
 <translation id="7537586195939242955">क्षमा करें, इस समय पासबुक में पास इंस्टॉल नहीं किया जा सकता.</translation>
+<translation id="7540924742308928499">आइडिया जनरेट करें और खास जानकारी पाएं</translation>
 <translation id="754655535278952384"><ph name="TIME" /> जांच की गई</translation>
 <translation id="7554645225856321710">सभी टैब बंद करें</translation>
 <translation id="7557508262441527045">साइन आउट किया जा चुका है</translation>
@@ -2479,7 +2482,6 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8642417828095157370">आपको ज़्यादा काम के जवाब देने के लिए, टैब शेयर किए जाते हैं</translation>
 <translation id="8643403533759285912">ग्रुप मिटाएं</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">कीमत को ट्रैक करने की सुविधा बंद नहीं की जा सकी.</translation>
 <translation id="8654802032646794042">रद्द करें</translation>
 <translation id="8655861111558401309">'ब्राउज़िंग डेटा मिटाएं' को चुनें</translation>
 <translation id="8659875081143553823">बस एक सेकंड</translation>

@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">За приближен резултат, поделете ја вредноста на <ph name="CATEGORY_TEXT" /> со <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Извор на сликата</translation>
 <translation id="1446954767133808402">сафир</translation>
-<translation id="1449035143498573192">Отворете во „Пребарување на Google“</translation>
 <translation id="1451536289672181509">Уредот е тастатура.</translation>
 <translation id="1452939186874918380">чадори</translation>
 <translation id="145402479967797468">Контроли за репродукција</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Преглед на <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
 <translation id="1669047024429367828">Видливост</translation>
-<translation id="1670478569471758522">Повеќе детали поврзани со вашиот избор</translation>
 <translation id="1672499492233627739">Видеоактивност на веб-камерата</translation>
 <translation id="1676557873873341166">Снимање видео</translation>
 <translation id="1684279041537802716">Боја за нагласување</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Изменувањето е готово</translation>
 <translation id="3532980081107202182">Преостануваат околу <ph name="MIN_REMAINING" /> мин.</translation>
 <translation id="3533790840489634638">базен</translation>
-<translation id="3547264467365135390">Формула</translation>
 <translation id="3552832331940389362">јапонска илустрација со анимација на мачка што седи на прозорец и го гледа попладневниот дожд</translation>
 <translation id="3557205324756024651">Локален идентитет (незадолжително)</translation>
 <translation id="3565064564551103223">Дозволени IP адреси</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Опис</translation>
 <translation id="3869314628814282185">тул</translation>
 <translation id="387301095347517405">Колку пати батеријата поминала низ целосен циклус на полнење</translation>
-<translation id="3877066159641251281">Слушнете го преводот</translation>
 <translation id="3880601782712134623">за да открива различни гласови автоматски и на секој од нив да му доделува етикета како „Говорник 1“ и „Говорник 2“</translation>
 <translation id="38811596981744338">Правен проблем</translation>
 <translation id="3885327323343477505">Променете го штедачот на екранот</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Исклучете го USB-кабелот на <ph name="DEVICE_NAME" />, па вклучете го повторно за да продолжите со процесот на ажурирање</translation>
 <translation id="5099354524039520280">нагоре</translation>
 <translation id="5107243100836678918">Можно е да дојде до поклопување меѓу кратенка без копче за <ph name="META_KEY" /> и кратенката на некоја апликација. Притиснете ја кратенкава повторно за да продолжите да ја користите или притиснете нова кратенка со копчето за <ph name="KEY" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Слични:</translation>
 <translation id="5130848777448318809">понија</translation>
 <translation id="5137451382116112100">Цел екран</translation>
 <translation id="5139813694804168398">Не вознемирувај</translation>
 <translation id="5140788690559353412">Кога ќе го изгубите пристапот до вашата училишна сметка, веќе нема да имате пристап до поврзаната е-пошта и датотеките во Google Drive, како Gmail, Docs, Slides и друго.</translation>
 <translation id="5142961317498132443">Проверка</translation>
 <translation id="5144311987923128508">Копчето „Потврди“ сега е оневозможено</translation>
-<translation id="5144887194300568405">Копирај го преводот</translation>
 <translation id="5145081769226915336">Да се вклучи „Темен режим“ автоматски?</translation>
 <translation id="5145331109270917438">Датум на промена</translation>
 <translation id="5154917547274118687">Меморија</translation>

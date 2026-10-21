@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Gør Chrome personlig med tilpassede farver og billeder på din startside</translation>
 <translation id="389521680295183045">Websites kan anmode om at få at vide, hvornår du aktivt bruger din enhed</translation>
 <translation id="3895926599014793903">Tving aktivering af zoom</translation>
-<translation id="3905475044299942653">Sæt en stopper for mange notifikationer</translation>
 <translation id="3922092564198021702">Åbn Indstillinger på din telefon</translation>
 <translation id="3924858949939391676">Vis links, når Læsetilstand er aktiveret</translation>
 <translation id="3933121352599513978">Skjul uønskede anmodninger (anbefales)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Du finder dine grupper i sektionen for fanegrupper på alle dine enheder</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> er blokeret, så det ikke kan bruge dine oplysninger på</translation>
 <translation id="4953688446973710931">Når dette er slået til, kan websites anmode om tilladelse til automatisk at downloade flere filer. Når dette er slået fra, kan websites ikke downloade flere filer automatisk.</translation>
-<translation id="4962975101802056554">Tilbagekald alle tilladelser for enheden</translation>
 <translation id="4972737347717125191">Websites kan anmode om tilladelse til at bruge virtual reality-enheder og -data</translation>
 <translation id="4973805849704516244">Felt i bunden med Chrome-farver</translation>
 <translation id="497421865427891073">Gå fremad</translation>
@@ -704,7 +702,6 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8441146129660941386">Spol tilbage</translation>
 <translation id="8444433999583714703">Aktivér også lokation i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" /> for at give <ph name="APP_NAME" /> adgang til din lokation.</translation>
-<translation id="8447861592752582886">Tilbagekald adgangstilladelsen til enheden</translation>
 <translation id="8463843545738141778">Denne indstilling er deaktiveret, fordi du har aktiveret Avanceret beskyttelse i Android-indstillingerne.</translation>
 <translation id="8467359479529706065">Feltet i bunden, der viser udseendet af siden Ny fane, er åbnet i halv højde</translation>
 <translation id="8471525937465764768">Websites opretter normalt forbindelse til USB-enheder for at kunne udskrive dokumenter eller gemme filer på en lagerenhed</translation>

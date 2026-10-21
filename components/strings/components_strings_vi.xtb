@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
-<translation id="1003222766972176318">Lời nhắc: bạn có thể dùng ưu đãi đã lưu</translation>
 <translation id="1008557486741366299">Để sau</translation>
 <translation id="100957008357583611">Sử dụng thông tin vị trí của bạn?</translation>
 <translation id="1010200102790553230">Tải trang vào lúc khác</translation>
@@ -240,6 +239,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1393071644879491291">Những kẻ tấn công trên trang web bạn đã cố truy cập có thể lừa bạn cài đặt phần mềm hoặc tiết lộ các thông tin như mật khẩu, số điện thoại hoặc số thẻ tín dụng. Bạn nên quay lại trang an toàn. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm về cảnh báo này<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1397342126322860141">Thêm thẻ căn cước một cách an toàn vào Google Wallet</translation>
 <translation id="1398743098754840707">Các trang web bạn thêm vào đây sẽ không được tham khảo để đưa ra câu trả lời, ngay cả khi thẻ đó đang mở. Nếu một trang web mà bạn thêm hiện đang được dùng trong một chuỗi, thì có thể mất đến 30 phút để chuỗi ngừng tham khảo trang web đó.</translation>
+<translation id="1403359480263156644">Đã cập nhật tên chủ thẻ</translation>
 <translation id="1405567553485452995">Xanh lục nhạt</translation>
 <translation id="1406370515365284486">Các phương thức thanh toán của bạn vẫn sẽ được lưu</translation>
 <translation id="1406500794671479665">Đang xác minh...</translation>
@@ -908,6 +908,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2498091847651709837">Quét thẻ mới</translation>
 <translation id="2501270939904835585">Nhãn (Satin)</translation>
 <translation id="2501278716633472235">Quay lại</translation>
+<translation id="250307989715832083">Thêm chữ ký</translation>
 <translation id="250346157641628208">Giấy (In phun)</translation>
 <translation id="2505063700931618106">Đã lưu thông tin thẻ</translation>
 <translation id="2505268675989099013">Bảo vệ tài khoản</translation>
@@ -1127,6 +1128,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2911973620368911614">Mã người dùng tài khoản công việc</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> thường sử dụng mã hóa để bảo vệ thông tin của bạn. Khi Chrome cố gắng kết nối với <ph name="SITE" /> tại thời điểm này, trang web đã gửi lại thông tin xác thực không chính xác và bất thường. Điều này có thể xảy ra khi kẻ tấn công đang cố gắng giả mạo là <ph name="SITE" /> hoặc màn hình đăng nhập Wi-Fi đã làm gián đoạn kết nối. Thông tin của bạn vẫn an toàn do Chrome đã ngừng kết nối trước khi bất kỳ dữ liệu nào được trao đổi.</translation>
 <translation id="2915068235268646559">Sự cố từ <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Tất cả thiết bị</translation>
 <translation id="2916038427272391327">Đóng các chương trình khác</translation>
 <translation id="2917630513638801879">Xanh lơ 1</translation>
 <translation id="2922350208395188000">Không thể kiểm tra chứng chỉ của máy chủ.</translation>
@@ -1462,7 +1464,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3479552764303398839">Để sau</translation>
 <translation id="3481315707647070701">Trực quan hoá và chỉnh sửa</translation>
 <translation id="3484560055331845446">Bạn có thể mất quyền truy cập vào Tài khoản Google của mình. Chrome khuyên bạn nên đổi mật khẩu ngay bây giờ. Bạn sẽ được yêu cầu đăng nhập.</translation>
-<translation id="3484861421501147767">Lời nhắc: Bạn có mã khuyến mãi đã lưu</translation>
 <translation id="3485901585646640838">Để sử dụng mật khẩu và nhiều dữ liệu khác đã lưu trong Tài khoản Google, hãy xác minh danh tính của bạn</translation>
 <translation id="3487845404393360112">Khay 4</translation>
 <translation id="3493881266323043047">Hiệu lực</translation>
@@ -1822,6 +1823,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4067774859633143413">Để thoát khỏi chế độ toàn màn hình và xem tệp đã tải xuống, hãy nhấn và giữ |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Thêm địa chỉ hợp lệ</translation>
 <translation id="4072486802667267160">Đã xảy ra lỗi khi xử lý đơn đặt hàng của bạn. Vui lòng thử lại.</translation>
+<translation id="4073293290376142777">Bạn có muốn đăng nhập không?</translation>
 <translation id="4073376909608563327">Không thể sử dụng tính năng mở khoá thiết bị</translation>
 <translation id="4073797364926776829">Xem thẻ</translation>
 <translation id="4075732493274867456">Ứng dụng và máy chủ không hỗ trợ bộ mã hóa hoặc phiên bản giao thức SSL thông thường.</translation>
@@ -1854,6 +1856,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4107047499377819067">Quá trình cài đặt dịch vụ nền VPN đã bắt đầu. Quá trình này có thể mất vài phút.</translation>
 <translation id="4110642094637545339">Biểu trưng của Google Pay, AfterPay</translation>
 <translation id="4110652170750985508">Xem xét thanh toán của bạn</translation>
+<translation id="411071007970303441">Tất cả tác nhân</translation>
 <translation id="4112140312785995938">Tua lùi</translation>
 <translation id="4114007503059268298">Bạn có muốn lưu thông tin thẻ này vào Tài khoản Google và trên thiết bị này không?</translation>
 <translation id="4114146879518089587">Tiếp tục chuyển tới trang web</translation>
@@ -1918,6 +1921,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4218327733815631046">Giữ nguyên vị trí ước chừng</translation>
 <translation id="4219596572397833317">Xem giá theo thời gian cùng nhiều thông tin khác để mua sắm thông minh hơn.</translation>
 <translation id="4220128509585149162">Sự cố</translation>
+<translation id="4220745762102459826">và các mục khác</translation>
 <translation id="4221630205957821124">&lt;h4&gt;Bước 1: Đăng nhập vào cổng&lt;/h4&gt;
     &lt;p&gt;Mạng Wi-Fi ở những nơi như quán cà phê hoặc sân bay cần bạn phải đăng nhập. Để xem trang đăng nhập, hãy truy cập vào một trang sử dụng &lt;code&gt;http://&lt;/code&gt;.&lt;/p&gt;
     &lt;ol&gt;
@@ -2879,6 +2883,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5794065675298686371">Bật thông báo theo dõi giá</translation>
 <translation id="5794093550048860249">Số vận đơn</translation>
 <translation id="5796050750059455142">Bật "<ph name="BEGIN_LINK" />Các tính năng thông minh trong các sản phẩm khác của Google<ph name="LINK_END" />"</translation>
+<translation id="5797916798049571144">Tên chủ thẻ được lưu cùng với thông tin thẻ của bạn và sẽ tự động được điền khi thanh toán</translation>
 <translation id="5797984091151707075">Bị chặn theo chính sách của quản trị viên</translation>
 <translation id="5804241973901381774">Quyền</translation>
 <translation id="5806871454498484178">Đã chặn cuộn và thu phóng</translation>
@@ -3440,6 +3445,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6753460329812070808">Đã xoá đề xuất khỏi Chrome</translation>
 <translation id="6757797048963528358">Thiết bị của bạn đã chuyển sang chế độ ngủ.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> muốn sử dụng cảm biến chuyển động và cảm biến ánh sáng</translation>
+<translation id="6766488013065406604">Truy cập vào Trình quản lý mật khẩu của Google</translation>
 <translation id="6770747695101757579">Giấy (Cotton)</translation>
 <translation id="6772959465807028761">Để sử dụng YouTube, hãy tiếp tục bằng Tài khoản Google của bạn</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3656,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7120588595737538743">tệp đã tải xuống và ảnh chụp màn hình</translation>
 <translation id="7124354851782353862">Nhập CVC</translation>
 <translation id="7129409597930077180">Không thể giao hàng đến địa chỉ này. Chọn một địa chỉ khác.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Tính năng tải lên bị chặn</translation>
 <translation id="7132939140423847331">Quản trị viên của bạn đã cấm sao chép dữ liệu này.</translation>
 <translation id="7134653428559514680">Không nên chia sẻ từ trang web này</translation>
@@ -3968,6 +3973,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7637571805876720304">Bạn muốn xóa thẻ tín dụng khỏi Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Không có}=1{1 mật khẩu trong tài khoản của bạn (cho <ph name="DOMAIN_LIST" />)}other{# mật khẩu trong tài khoản của bạn (cho <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Cổng nối tiếp</translation>
+<translation id="7644100755247241229">Chuyển tiền qua Pix cho bạn bè và doanh nghiệp bằng Google Wallet</translation>
 <translation id="7646681339175747202">Mật khẩu bạn vừa sử dụng đã bị lộ trong một sự cố rò rỉ dữ liệu. Trình quản lý mật khẩu của Google khuyên bạn nên đổi mật khẩu ngay.</translation>
 <translation id="7647206758853451655">Chất lượng in</translation>
 <translation id="7648133459447652947">Để hiện con trỏ, hãy chuyển ứng dụng, tải lại trang hoặc quay lại</translation>
@@ -4071,6 +4077,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7791543448312431591">Thêm</translation>
 <translation id="7798389633136518089">Đã bỏ qua vì bạn không đặt chính sách này bằng một nguồn trên đám mây.</translation>
 <translation id="7800304661137206267">Kết nối được mã hóa bằng <ph name="CIPHER" />, với <ph name="MAC" /> để xác thực thư và <ph name="KX" /> là cơ chế trao đổi chính.</translation>
+<translation id="780228007282527248">Thêm thẻ hoặc hình ảnh để cải thiện kết quả tìm kiếm</translation>
 <translation id="7802523362929240268">Trang web hợp pháp</translation>
 <translation id="7802989406998618639">Nhập mã bảo mật gồm <ph name="NUMBER_OF_DIGITS" /> chữ số trên <ph name="SIDE_OF_CARD" /> để ngân hàng có thể xác minh danh tính của bạn</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>

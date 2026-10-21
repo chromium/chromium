@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Για ένα αποτέλεσμα κατά προσέγγιση, διαιρέστε την τιμή <ph name="CATEGORY_TEXT" /> με το <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Προέλευση εικόνας</translation>
 <translation id="1446954767133808402">ζαφείρι</translation>
-<translation id="1449035143498573192">Άνοιγμα στην Αναζήτηση Google</translation>
 <translation id="1451536289672181509">Η συσκευή είναι πληκτρολόγιο.</translation>
 <translation id="1452939186874918380">ομπρέλες</translation>
 <translation id="145402479967797468">Στοιχεία ελέγχου αναπαραγωγής</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Προεπισκόπηση <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ενσωματωμένο VPN</translation>
 <translation id="1669047024429367828">Ορατότητα</translation>
-<translation id="1670478569471758522">Περισσότερες πληροφορίες σχετικά με την επιλογή σας</translation>
 <translation id="1672499492233627739">Ροή βίντεο webcam</translation>
 <translation id="1676557873873341166">Λήψη βίντεο</translation>
 <translation id="1684279041537802716">Χρώμα έμφασης</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Ολοκλήρωση επεξεργασίας</translation>
 <translation id="3532980081107202182">Απομένουν περίπου <ph name="MIN_REMAINING" /> λεπτά</translation>
 <translation id="3533790840489634638">πισίνα</translation>
-<translation id="3547264467365135390">Τύπος</translation>
 <translation id="3552832331940389362">εικόνα σε στιλ ιαπωνικού κινούμενου σχεδίου με μια γάτα που κάθεται σε ένα περβάζι και παρακολουθεί τη βροχή το απόγευμα</translation>
 <translation id="3557205324756024651">Τοπική ταυτότητα (προαιρετικό)</translation>
 <translation id="3565064564551103223">IP που επιτρέπονται</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Περιγραφή</translation>
 <translation id="3869314628814282185">τούλι</translation>
 <translation id="387301095347517405">Ο αριθμός των φορών που η μπαταρία σας ολοκλήρωσε έναν πλήρη κύκλο φόρτισης</translation>
-<translation id="3877066159641251281">Ακρόαση μετάφρασης</translation>
 <translation id="3880601782712134623">Να εντοπίζει αυτόματα ξεχωριστές φωνές και να εκχωρεί μια γενική ετικέτα σε κάθε ομιλητή, όπως Ομιλητής 1 και Ομιλητής 2</translation>
 <translation id="38811596981744338">Νομικό ζήτημα</translation>
 <translation id="3885327323343477505">Αλλαγή προφύλαξης οθόνης</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Αποσυνδέστε το καλώδιο USB της συσκευής <ph name="DEVICE_NAME" /> και τοποθετήστε το ξανά για να συνεχίσετε τη διαδικασία ενημέρωσης</translation>
 <translation id="5099354524039520280">επάνω</translation>
 <translation id="5107243100836678918">Η συντόμευση χωρίς πλήκτρο <ph name="META_KEY" /> ενδέχεται να δημιουργήσει διένεξη με τη συντόμευση κάποιας εφαρμογής. Πατήστε ξανά αυτή τη συντόμευση για να συνεχίσετε να τη χρησιμοποιείτε ή πατήστε μια νέα συντόμευση χρησιμοποιώντας το πλήκτρο <ph name="KEY" />. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Συνώνυμα:</translation>
 <translation id="5130848777448318809">πόνυ</translation>
 <translation id="5137451382116112100">Πλήρης</translation>
 <translation id="5139813694804168398">μην ενοχλείτε</translation>
 <translation id="5140788690559353412">Όταν χάσετε την πρόσβαση στον λογαριασμό σχολείου σας, δεν θα έχετε πλέον πρόσβαση στα συσχετισμένα μηνύματα ηλεκτρονικού ταχυδρομείου και στα αρχεία Google Drive, όπως του Gmail, των Εγγράφων, των Παρουσιάσεων κ.ά.</translation>
 <translation id="5142961317498132443">Έλεγχος ταυτότητας</translation>
 <translation id="5144311987923128508">Το κουμπί επιβεβαίωσης είναι πλέον απενεργοποιημένο</translation>
-<translation id="5144887194300568405">Αντιγραφή μετάφρασης</translation>
 <translation id="5145081769226915336">Να ενεργοποιείται αυτόματα η λειτουργία χαμηλού φωτισμού;</translation>
 <translation id="5145331109270917438">Ημερομηνία τροποποίησης</translation>
 <translation id="5154917547274118687">Μνήμη</translation>

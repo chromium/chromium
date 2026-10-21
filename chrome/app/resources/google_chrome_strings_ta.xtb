@@ -114,7 +114,6 @@
 <translation id="2039417478970545937">அமைப்புகள்.</translation>
 <translation id="2040220733769034247">Chromeமைப் பதிவிறக்கி உங்கள் Google கணக்கில் உள்நுழைய, மொபைல் மூலம் QR குறியீட்டை ஸ்கேன் செய்யுங்கள்.</translation>
 <translation id="2044908892530830113">Mac மெனு பட்டியில் Chromeமில் Search காட்டி, கீபோர்டு ஷார்ட்கட்டை ஆன் செய்</translation>
-<translation id="2050189601866423230">பிரவுஸ் செய்யும்போதே கேள்விகளை எளிதாகக் கேட்க Google Search AI மோடைப் பின் செய்யலாம்</translation>
 <translation id="2091012649849228750">இனிவரும் Google Chrome புதுப்பிப்புகளைப் பெற Windows 10 அல்லது அதற்குப் பிந்தைய பதிப்பு தேவை. இந்தக் கம்ப்யூட்டர் Windows 8 பதிப்பைப் பயன்படுத்துகிறது.</translation>
 <translation id="2094648590148273905">ChromeOS Flex விதிமுறைகள்</translation>
 <translation id="2094919256425865063">Chrome இலிருந்து வெளியேறவா?</translation>
@@ -458,6 +457,7 @@
 <translation id="5386244825306882791">Chromeமைத் தொடங்கும்போது அல்லது ஆம்னிபாக்ஸிலிருந்து தேடலை மேற்கொள்ளும்போது காண்பிக்கப்படும் பக்கத்தையும் இது கட்டுப்படுத்துகிறது.</translation>
 <translation id="5394833366792865639">Chrome பக்கத்தைப் பகிர்</translation>
 <translation id="5402307365844630024">Chrome பீட்டாவில் Geminiயை ஆன்/ஆஃப் செய்யும்</translation>
+<translation id="5414664742659847155">பிற ஆப்ஸிலிருந்து Chromeமை ஐசோலேட் செய்</translation>
 <translation id="541844421954567481">உங்கள் <ph name="DEVICE_TYPE" /> இல் Chrome ஆப்ஸ் மூலம் கடவுச்சொற்கள், பக்கங்கள் மற்றும் பலவற்றை எங்கிருந்தும் அணுகுங்கள்</translation>
 <translation id="5430073640787465221">உங்கள் விருப்பத்தேர்வுகளின் ஃபைல் சிதைவடைந்துள்ளது அல்லது தவறானது. உங்கள் அமைப்புகளை Google Chrome ஆல் மீட்டெடுக்க முடியவில்லை.</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /> உடன் பயன்படுத்த ஒரு Chrome சுயவிவரத்தைத் தேர்வுசெய்யுங்கள்</translation>
@@ -671,6 +671,7 @@
 <translation id="7306401458628386911">உடனடியாக பிரவுசிங் செய்யத் தொடங்குங்கள்: Windows தொடங்கும்போதே Chromeமை இப்போது தொடங்கலாம்.</translation>
 <translation id="7308322188646931570">ஃபைல்களைப் பதிவிறக்க Chromeக்குச் சேமிப்பிட அணுகல் தேவை</translation>
 <translation id="7352651011704765696">ஏதோ தவறு ஏற்பட்டது</translation>
+<translation id="7371412052245999753">உங்கள் கம்ப்யூட்டரில் உள்ள பிற ஆப்ஸிலிருந்து Chromeமின் நினைவகத்தைப் பாதுகாக்கும்.</translation>
 <translation id="73786666777299047">Chrome இணைய அங்காடியைத் திற</translation>
 <translation id="7386878009611068389">உங்கள் பெற்றோர் தேர்வுசெய்துள்ள அமைப்புகளுடன் ஆன்லைனில் பாதுகாப்பாக இருக்க, <ph name="USER_EMAIL_ADDRESS" /> என்ற கணக்கில் ஏற்கெனவே உள்நுழைந்துள்ள Chrome சுயவிவரத்திற்கு மாறுங்கள்</translation>
 <translation id="7398801000654795464">Chromeல் <ph name="USER_EMAIL_ADDRESS" /> ஆக உள்நுழைந்திருந்தீர்கள். மீண்டும் உள்நுழைய அதே கணக்கைப் பயன்படுத்தவும்.</translation>
@@ -765,7 +766,6 @@
 <translation id="8074398340364918139">குறிப்பிட்ட Chrome அம்சம் அல்லது நீட்டிப்பைத் தேட, முகவரிப் பட்டியில் அதன் ஷார்ட்கட்டை டைப் செய்தபிறகு நீங்கள் தேர்ந்தெடுத்த கீபோர்டு பட்டனை டைப் செய்யவும்</translation>
 <translation id="8077579734294125741">பிற Chrome சுயவிவரங்கள்</translation>
 <translation id="8086881907087796310">குறைந்தபட்ச வன்பொருள் தேவைகளை உங்கள் கம்ப்யூட்டர் பூர்த்திசெய்யவில்லை என்பதால் நிறுவ முடியவில்லை.</translation>
-<translation id="8110438089258398864">பிரவுசிங் செய்யும்போதே கேள்விகளைக் கேட்க Google Search AI மோடை மீண்டும் திறக்கலாம்</translation>
 <translation id="8113883687556086139">உங்கள் கணக்கில் (<ph name="ACCOUNT_EMAIL" />) உள்ள Chrome தரவைப் பயன்படுத்தவும் சேமிக்கவும் இது நீங்கள்தான் என்பதை உறுதிப்படுத்தவும்</translation>
 <translation id="8115695070094288807">உங்களுக்கான Chrome தயாராகிறது...</translation>
 <translation id="8118331347066725040">Lens மூலம் தேடுதல் குறித்த கருத்தை அனுப்புக</translation>
@@ -822,8 +822,6 @@
 <translation id="8555465886620020932">சேவைப் பிழை: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">மொழிப் பட்டியலைத் தேடும்</translation>
 <translation id="8575047640889685742">எனது Google கணக்கில் உள்ள Chrome தரவு எல்லாவற்றையும் என்க்ரிப்ஷன் செய்ய <ph name="BEGIN_LINK" />எனது கடவுச்சொற்றொடரைப்<ph name="END_LINK" /> பயன்படுத்து. Google Payயில் உள்ள பேமெண்ட் முறைகளும் முகவரிகளும் என்க்ரிப்ட் செய்யப்படாது. Chromeமில் உள்ள பிரவுசிங் பதிவுகள் ஒத்திசைக்கப்படாது.</translation>
-<translation id="8590782867495422699">Google Search AI மோடை மீண்டும் திறக்கும்</translation>
-<translation id="8598779894319572882">கருவிப்பட்டியில் உள்ள "Google Search AI மோடு" பட்டனில் இருந்து, பிரவுசிங் செய்யும்போதே கேள்விகளைக் கேட்க Google Search AI மோடை மீண்டும் திறக்கலாம்</translation>
 <translation id="8614913330719544658">Google Chrome பதிலளிக்கவில்லை. இப்போது மீண்டும் தொடங்கவா?</translation>
 <translation id="8623450603356630491">மொபைலில் Chromeமில் உள்நுழையுங்கள்</translation>
 <translation id="8624541899164515475">அமைப்புகள், புதிய பக்கத்தில் திறக்கும்.</translation>
@@ -878,7 +876,6 @@
 <translation id="9014771989710951291">Chromeமைப் பல நிறுவனங்கள் நிர்வகிக்கின்றன</translation>
 <translation id="9018218886431812662">நிறுவப்பட்டது</translation>
 <translation id="9066987883552592250">Chrome Canaryயில் Geminiயை மூடும்</translation>
-<translation id="9074041031320636790">முடிந்தது! Google Search AI மோடில் பிரவுஸ் செய்யும்போதே கேள்விகளை இப்போது எளிதாகக் கேட்கலாம்</translation>
 <translation id="9090566250983691233">சில ஃபைல்களை Chrome ஏன் தடுக்கிறது என்பதைத் தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="9106236359747881194">தேட வார்த்தையைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="911206726377975832">உங்கள் உலாவிய தரவையும் நீக்க வேண்டுமா?</translation>

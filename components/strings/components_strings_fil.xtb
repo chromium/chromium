@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
-<translation id="1003222766972176318">Paalala: may available na naka-save na alok</translation>
 <translation id="1008557486741366299">Hindi Ngayon</translation>
 <translation id="100957008357583611">Gamitin ang iyong lokasyon?</translation>
 <translation id="1010200102790553230">I-load ang page sa ibang pagkakataon</translation>
@@ -1127,6 +1126,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2911973620368911614">User ID ng accounting ng trabaho</translation>
 <translation id="2914160345369867329">Karaniwang gumagamit ang <ph name="SITE" /> ng pag-encrypt para protektahan ang iyong impormasyon. Noong sinubukang kumonekta ng Chrome sa <ph name="SITE" /> sa pagkakataong ito, nagbalik ang website ng mga hindi pangkaraniwan at maling kredensyal. Posibleng mangyari ito kapag sinusubukan ng isang attacker na magpanggap bilang <ph name="SITE" />, o naputol ang koneksyon dahil sa isang screen ng pag-sign in sa Wi-Fi. Secure pa rin ang iyong impormasyon dahil inihinto ng Chrome ang koneksyon bago magkaroon ng palitan ng anumang data.</translation>
 <translation id="2915068235268646559">Pag-crash mula noong <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Lahat ng device</translation>
 <translation id="2916038427272391327">Isara ang iba pang program</translation>
 <translation id="2917630513638801879">Cyan 1</translation>
 <translation id="2922350208395188000">Hindi masuri ang certificate ng server.</translation>
@@ -1462,7 +1462,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3479552764303398839">Hindi ngayon</translation>
 <translation id="3481315707647070701">I-visualize at i-edit</translation>
 <translation id="3484560055331845446">Maaari kang mawalan ng access sa iyong Google Account. Inirerekomenda ng Chrome na palitan na ang iyong password. Hihilingin sa iyong mag-sign in.</translation>
-<translation id="3484861421501147767">Paalala: May available na naka-save na promo code</translation>
 <translation id="3485901585646640838">Para magamit ang mga password at higit pa na naka-save sa iyong Google Account, i-verify na ikaw ito</translation>
 <translation id="3487845404393360112">Tray 4</translation>
 <translation id="3493881266323043047">Pagkakabisa</translation>
@@ -1822,6 +1821,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4067774859633143413">Para lumabas sa full screen at makita ang download, pindutin nang matagal ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Magdagdag ng Wastong Address</translation>
 <translation id="4072486802667267160">Nagkaroon ng error sa pagproseso ng iyong order. Pakisubukang muli.</translation>
+<translation id="4073293290376142777">Mag-sign in?</translation>
 <translation id="4073376909608563327">Hindi magamit ang pag-unlock ng device</translation>
 <translation id="4073797364926776829">Tingnan ang card</translation>
 <translation id="4075732493274867456">Hindi sinusuportahan ng client at server ang isang karaniwang bersyon o cipher suite ng SSL protocol.</translation>
@@ -1854,6 +1854,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4107047499377819067">Nagsimula na ang pag-install ng mga serbisyo sa background ng VPN, posible itong abutin nang ilang minuto.</translation>
 <translation id="4110642094637545339">Google Pay, logo ng AfterPay</translation>
 <translation id="4110652170750985508">Suriin ang iyong pagbabayad</translation>
+<translation id="411071007970303441">Lahat ng actor</translation>
 <translation id="4112140312785995938">Mag-seek Pabalik</translation>
 <translation id="4114007503059268298">Gusto mo bang i-save ang card na ito sa iyong Google Account at sa device na ito?</translation>
 <translation id="4114146879518089587">Magpatuloy sa site</translation>
@@ -2293,6 +2294,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="483241715238664915">I-on ang mga babala</translation>
 <translation id="4833567658337394628">Hindi inirerekomenda ang pag-paste</translation>
 <translation id="4840250757394056958">Tingnan ang iyong history sa Chrome</translation>
+<translation id="4842085418602350953">Magbayad gamit ang Pix nang hindi lumilipat ng app sa susunod</translation>
 <translation id="4842365697443353018">I-clear ang form para magamit ang pay later</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Pag-scroll at pag-zoom ng mga naka-share na tab</translation>
@@ -3440,6 +3442,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6753460329812070808">Inalis ang suhestyon sa Chrome</translation>
 <translation id="6757797048963528358">Nag-sleep ang iyong device.</translation>
 <translation id="6758934187792712102">Gustong gamitin ng <ph name="URL" /> ang iyong mga sensor ng paggalaw at liwanag</translation>
+<translation id="6766488013065406604">Pumunta sa Google Password Manager</translation>
 <translation id="6770747695101757579">Papel (Cotton)</translation>
 <translation id="6772959465807028761">Para gamitin ang YouTube, magpatuloy gamit ang iyong Google Account</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3653,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="7120588595737538743">mga download at screenshot</translation>
 <translation id="7124354851782353862">Ilagay ang iyong CVC</translation>
 <translation id="7129409597930077180">Hindi maaaring magpadala sa address na ito. Pumili ng ibang address.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Na-block ang pag-upload</translation>
 <translation id="7132939140423847331">Ipinagbawal ng iyong admin ang pagkopya sa data na ito.</translation>
 <translation id="7134653428559514680">Hindi inirerekomenda ang pag-share mula sa site na ito</translation>
@@ -3968,6 +3970,7 @@ Mga karagdagang detalye:
 <translation id="7637571805876720304">Gusto mo bang alisin ang credit card sa Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Wala}=1{1 password sa iyong account (para sa <ph name="DOMAIN_LIST" />)}one{# password sa iyong account (para sa <ph name="DOMAIN_LIST" />)}other{# na password sa iyong account (para sa <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Mga serial port</translation>
+<translation id="7644100755247241229">Magpadala ng Pix sa mga kaibigan at negosyo gamit ang Google Wallet</translation>
 <translation id="7646681339175747202">Nakita sa isang paglabag sa data ang password na kakagamit mo lang. Inirerekomenda ng Google Password Manager na palitan na ngayon ang password mo.</translation>
 <translation id="7647206758853451655">Kalidad ng pag-print</translation>
 <translation id="7648133459447652947">Para ipakita ang iyong cursor, lumipat ng app, i-reload ang page, o bumalik</translation>
@@ -4071,6 +4074,7 @@ Mga karagdagang detalye:
 <translation id="7791543448312431591">Idagdag</translation>
 <translation id="7798389633136518089">Binalewala dahil hindi itinakda ng isang cloud source ang patakaran.</translation>
 <translation id="7800304661137206267">Na-encrypt ang koneksyon gamit ang <ph name="CIPHER" />, kasama ang <ph name="MAC" /> para sa pagpapatunay ng mensahe at <ph name="KX" /> bilang mekanismo ng pangunahing pagpapalit.</translation>
+<translation id="780228007282527248">Magdagdag ng tab o larawan para mapahusay ang iyong paghahanap</translation>
 <translation id="7802523362929240268">Lehitimo ang site</translation>
 <translation id="7802989406998618639">Ilagay ang <ph name="NUMBER_OF_DIGITS" /> (na) digit na panseguridad na code sa <ph name="SIDE_OF_CARD" /> para ma-verify ng iyong bangko na ikaw ito</translation>
 <translation id="780301667611848630">Hindi salamat</translation>
@@ -4296,6 +4300,7 @@ Mga karagdagang detalye:
 <translation id="8208629719488976364">Ipinapadala sa Google Cloud o mga third party ang content ng mga page na pini-print mo at ang impormasyon tungkol sa iyong printer para sa pagsusuri. Halimbawa, puwedeng i-scan ang mga ito para sa sensitibong data at puwede itong i-store batay sa mga patakaran ng kumpanya at posibleng nakikita ito ng iyong administrator.</translation>
 <translation id="8210490490377416373">Pumili ng pangalan ng patakaran</translation>
 <translation id="8211406090763984747">Secure ang koneksyon</translation>
+<translation id="8213803874191593803">{NUM_SOURCES,plural, =1{+ 1 iba pang source}one{+ # iba pang source}other{+ # na iba pang source}}</translation>
 <translation id="8213853114485953510">JIS Exec</translation>
 <translation id="8216640997712497593">14 x 18 in</translation>
 <translation id="8218327578424803826">Itinakdang Lokasyon:</translation>

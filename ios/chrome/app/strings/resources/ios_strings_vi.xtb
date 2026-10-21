@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Mở trong Nhóm thẻ mới</translation>
 <translation id="1670861525135254448">Lưu thông tin xe</translation>
 <translation id="1671568970992212376">Lưu ảnh vào Google Photos để có thể truy cập bất cứ lúc nào.</translation>
+<translation id="1671824312818944549">Lưu ý: Chế độ cài đặt này hoạt động hiệu quả hơn trên iOS 27 trở lên.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> sang <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Vẽ, đánh dấu hoặc nhấn vào nội dung bất kỳ trên màn hình để tìm kiếm</translation>
 <translation id="1678855624321223424">Theo các chính sách của tổ chức bạn, tệp này có thể chứa thông tin nhạy cảm</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">Chào mừng bạn quay lại!</translation>
 <translation id="2015722694326466240">Để xem mật khẩu, trước tiên bạn phải đặt mật mã trên thiết bị của mình.</translation>
 <translation id="201759455285471444">Mở rộng nhóm thẻ.</translation>
+<translation id="2022431790688770637">Quản lý đề xuất của Gemini</translation>
 <translation id="2031515492007104071">Tăng cấp</translation>
 <translation id="2044394949148788042">Mở lưới thẻ</translation>
 <translation id="2044681667265133332">Tài khoản <ph name="USER_EMAIL" /> do <ph name="HOSTED_DOMAIN" /> quản lý. Họ có thể xem một số thông tin. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">Đặt câu hỏi để nhận câu trả lời dựa trên AI</translation>
 <translation id="2870560284913253234">Trang web</translation>
 <translation id="2876369937070532032">Gửi URL của một số trang mà bạn truy cập cho Google khi bạn gặp rủi ro về bảo mật</translation>
+<translation id="2880119244122776372">Xây dựng và lập trình</translation>
 <translation id="2883151425485251736">Xem và sửa những chủ đề bạn đã ẩn khỏi tài khoản</translation>
 <translation id="2884437560239137197">Cần chú ý</translation>
 <translation id="288655811176831528">Đóng thẻ</translation>
@@ -1695,6 +1698,7 @@
 <translation id="6301104306974789820">Nhận thông báo theo dõi giá</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Chọn vị trí thanh địa chỉ</translation>
+<translation id="6305257382500066042">Dùng thử ngay bây giờ</translation>
 <translation id="6307241780749477694">Xác minh danh tính của bạn để dùng tất cả mật khẩu trên thiết bị này</translation>
 <translation id="6307792728709337290">Lưu thẻ vào Tài khoản Google của bạn để tự động điền thông tin thẻ cho giao dịch mua này và các giao dịch mua trong tương lai trên Chrome.</translation>
 <translation id="6316141353357700666">Chọn mật khẩu bạn muốn sử dụng từ danh sách hiện ra.</translation>
@@ -1848,7 +1852,6 @@
 <translation id="6708501134077648845">Các lựa chọn mật khẩu</translation>
 <translation id="6709964700841491574">Chế độ khoá</translation>
 <translation id="6710079714193676716">Do tổ chức của bạn quản lý. Bạn có thể không dùng được một số tính năng. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">Câu trả lời thông minh hơn, nhanh hơn</translation>
 <translation id="6713676799463473249">Đã sửa đổi vào <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Đã nhận thẻ</translation>
 <translation id="6722638373100589752">Để tự động điền thông tin, hãy bật chế độ "Sử dụng thẻ và vé trên các sản phẩm và dịch vụ của Google" trong phần cài đặt Wallet</translation>
@@ -2060,7 +2063,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Tiếp tục</translation>
 <translation id="741204030948306876">Có, tôi đồng ý</translation>
-<translation id="7417055777338419059">Lập trình, viết hoặc tạo trang trình bày</translation>
 <translation id="7419565702166471774">Luôn sử dụng kết nối bảo mật</translation>
 <translation id="7423098979219808738">Hỏi trước</translation>
 <translation id="7425053386765766120">Thêm phương thức thanh toán…</translation>
@@ -2110,6 +2112,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7525067979554623046">Tạo</translation>
 <translation id="75362970626182391">Nhóm thẻ mới</translation>
 <translation id="7537586195939242955">Rất tiếc, không thể cài đặt Pass (Vé xem) của bạn vào Passbook (Ví điện tử) lúc này.</translation>
+<translation id="7540924742308928499">Lên ý tưởng và tóm tắt</translation>
 <translation id="754655535278952384">Đã kiểm tra <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Đóng tất cả</translation>
 <translation id="7557508262441527045">Đã đăng xuất</translation>
@@ -2479,7 +2482,6 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="8642417828095157370">Các thẻ được chia sẻ để Gemini có thể đưa ra câu trả lời phù hợp hơn</translation>
 <translation id="8643403533759285912">Xoá nhóm</translation>
 <translation id="8646357898207744479">Ống kính</translation>
-<translation id="8647280737650867362">Không thể bỏ theo dõi giá này.</translation>
 <translation id="8654802032646794042">Huỷ</translation>
 <translation id="8655861111558401309">Chọn Xoá dữ liệu duyệt web</translation>
 <translation id="8659875081143553823">Hãy đợi giây lát</translation>

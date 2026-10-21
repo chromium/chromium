@@ -116,7 +116,6 @@
 <translation id="2039417478970545937">Cài đặt.</translation>
 <translation id="2040220733769034247">Quét mã QR bằng điện thoại để tải Chrome xuống rồi đăng nhập vào Tài khoản Google của bạn.</translation>
 <translation id="2044908892530830113">Hiện tính năng tìm kiếm bằng Chrome trên thanh trình đơn của máy Mac và bật phím tắt</translation>
-<translation id="2050189601866423230">Bạn có thể ghim Chế độ AI của Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="2091012649849228750">Để nhận các bản cập nhật Google Chrome sau này, máy tính của bạn cần sử dụng hệ điều hành Windows 10 trở lên. Hệ điều hành hiện tại là Windows 8.</translation>
 <translation id="2094648590148273905">Điều khoản của ChromeOS Flex</translation>
 <translation id="2094919256425865063">Bạn vẫn muốn thoát khỏi Chrome?</translation>
@@ -462,6 +461,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5386244825306882791">Tiện ích này cũng điều khiển trang nào được hiển thị khi bạn khởi động Chrome hoặc tìm kiếm từ Thanh địa chỉ.</translation>
 <translation id="5394833366792865639">Chia sẻ một thẻ Chrome</translation>
 <translation id="5402307365844630024">Bật/tắt Gemini trong Chrome Beta</translation>
+<translation id="5414664742659847155">Cô lập Chrome khỏi các ứng dụng khác</translation>
 <translation id="541844421954567481">Mang theo mật khẩu, thẻ và nhiều dữ liệu khác mọi lúc, mọi nơi nhờ ứng dụng Chrome trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">Tệp tùy chọn của bạn bị hỏng hoặc không hợp lệ. Google Chrome không thể khôi phục cài đặt của bạn.</translation>
 <translation id="5465210843490471889">Chọn một hồ sơ Chrome để dùng với <ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" /></translation>
@@ -675,6 +675,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7306401458628386911">Bắt đầu duyệt web ngay lập tức: Chrome hiện có thể khởi chạy khi Windows khởi động.</translation>
 <translation id="7308322188646931570">Chrome cần quyền truy cập vào bộ nhớ để tải tệp xuống</translation>
 <translation id="7352651011704765696">Đã xảy ra lỗi</translation>
+<translation id="7371412052245999753">Bảo vệ bộ nhớ của Chrome khỏi các ứng dụng khác trên máy tính của bạn.</translation>
 <translation id="73786666777299047">Mở cửa hàng Chrome trực tuyến</translation>
 <translation id="7386878009611068389">Để giúp bạn an toàn hơn trên mạng với các lựa chọn của cha mẹ, hãy chuyển sang hồ sơ Chrome mà bạn đã đăng nhập bằng <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Bạn đã đăng nhập vào Chrome là <ph name="USER_EMAIL_ADDRESS" />. Vui lòng sử dụng cùng tài khoản để đăng nhập lại.</translation>
@@ -769,7 +770,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8074398340364918139">Để tìm kiếm một tính năng hoặc tiện ích cụ thể của Chrome, hãy nhập lối tắt của tính năng hoặc tiện ích đó vào thanh địa chỉ, sau đó nhấn phím bạn chọn trên bàn phím</translation>
 <translation id="8077579734294125741">Các hồ sơ khác trên Chrome</translation>
 <translation id="8086881907087796310">Cài đặt không thành công vì máy tính của bạn không đáp ứng được các yêu cầu tối thiểu về phần cứng.</translation>
-<translation id="8110438089258398864">Bạn có thể mở lại Chế độ AI của Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="8113883687556086139">Xác minh danh tính của bạn để sử dụng và lưu dữ liệu trên Chrome vào tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn</translation>
 <translation id="8115695070094288807">Đang tuỳ chỉnh Chrome cho phù hợp với bạn...</translation>
 <translation id="8118331347066725040">Gửi ý kiến phản hồi về tính năng tìm kiếm bằng Ống kính</translation>
@@ -826,8 +826,6 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="8555465886620020932">Lỗi dịch vụ: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Tìm kiếm trong danh sách ngôn ngữ</translation>
 <translation id="8575047640889685742">Sử dụng <ph name="BEGIN_LINK" />cụm mật khẩu của riêng bạn<ph name="END_LINK" /> để mã hoá tất cả dữ liệu Chrome trong Tài khoản Google Các địa chỉ và phương thức thanh toán từ Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.</translation>
-<translation id="8590782867495422699">Mở lại Chế độ AI của Google Tìm kiếm</translation>
-<translation id="8598779894319572882">Từ nút "Chế độ AI của Google Tìm kiếm" trên thanh công cụ, bạn có thể mở lại Chế độ AI của Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="8614913330719544658">Google Chrome không hồi đáp. Chạy lại ngay bây giờ?</translation>
 <translation id="8623450603356630491">Đăng nhập vào Chrome trên điện thoại</translation>
 <translation id="8624541899164515475">Trang Cài đặt, mở trong thẻ mới.</translation>
@@ -882,7 +880,6 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="9014771989710951291">Nhiều tổ chức quản lý Chrome</translation>
 <translation id="9018218886431812662">Đã cài đặt xong</translation>
 <translation id="9066987883552592250">Đóng Gemini trong Chrome Canary</translation>
-<translation id="9074041031320636790">Thành công! Giờ đây, bạn có thể dễ dàng đặt câu hỏi khi duyệt web bằng Chế độ AI của Google Tìm kiếm</translation>
 <translation id="9090566250983691233">Tìm hiểu lý do Chrome chặn một số tệp</translation>
 <translation id="9106236359747881194">Chọn văn bản bạn muốn tìm</translation>
 <translation id="911206726377975832">Bạn cũng muốn xóa dữ liệu duyệt web của mình?</translation>

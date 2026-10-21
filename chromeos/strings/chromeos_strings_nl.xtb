@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Deel de waarde voor <ph name="CATEGORY_TEXT" /> door <ph name="CONVERSION_RATE" /> voor een resultaat bij benadering</translation>
 <translation id="1442433966118452622">Afbeeldingsbron</translation>
 <translation id="1446954767133808402">saffier</translation>
-<translation id="1449035143498573192">Openen in Google Zoeken</translation>
 <translation id="1451536289672181509">Apparaat is een toetsenbord.</translation>
 <translation id="1452939186874918380">paraplu's</translation>
 <translation id="145402479967797468">Afspeelbediening</translation>
@@ -176,7 +175,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="1664796644829245314">Voorbeeld van <ph name="PREVIEW_OBJECT" /> laten zien</translation>
 <translation id="1668469839109562275">Ingebouwde VPN</translation>
 <translation id="1669047024429367828">Zichtbaarheid</translation>
-<translation id="1670478569471758522">Meer informatie met over je selectie</translation>
 <translation id="1672499492233627739">Videofeed van webcam</translation>
 <translation id="1676557873873341166">Video opnemen</translation>
 <translation id="1684279041537802716">Accentkleur</translation>
@@ -560,7 +558,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="353214771040290298">Klaar met bewerken</translation>
 <translation id="3532980081107202182">Nog ongeveer <ph name="MIN_REMAINING" /> minuten</translation>
 <translation id="3533790840489634638">zwembad</translation>
-<translation id="3547264467365135390">Formule</translation>
 <translation id="3552832331940389362">een Japanse animatie-illustratie van een kat die op een vensterbank zit en naar de regen kijkt in de middag</translation>
 <translation id="3557205324756024651">Lokale identiteit (optioneel)</translation>
 <translation id="3565064564551103223">Toegestane IP's</translation>
@@ -631,7 +628,6 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="3866249974567520381">Beschrijving</translation>
 <translation id="3869314628814282185">tule</translation>
 <translation id="387301095347517405">Het aantal keren dat de batterij een volledige oplaadcyclus heeft doorlopen</translation>
-<translation id="3877066159641251281">Vertaling beluisteren</translation>
 <translation id="3880601782712134623">Automatisch verschillende stemmen herkennen en elke spreker een algemeen label geven, zoals Spreker 1 en Spreker 2</translation>
 <translation id="38811596981744338">Juridisch probleem</translation>
 <translation id="3885327323343477505">Screensaver wijzigen</translation>
@@ -924,14 +920,12 @@ Generatieve AI kan fouten maken, ook in informatie over mensen, dus dubbelcheck 
 <translation id="5095761549884461003">Koppel de USB-kabel van de <ph name="DEVICE_NAME" /> los en sluit deze weer aan om door te gaan met het updateproces</translation>
 <translation id="5099354524039520280">omhoog</translation>
 <translation id="5107243100836678918">Sneltoets zonder <ph name="META_KEY" />-toets kan conflicteren met de sneltoets van bepaalde apps. Druk opnieuw op deze sneltoets om die te blijven gebruiken of druk op een nieuwe sneltoets met de <ph name="KEY" />-toets. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Vergelijkbaar:</translation>
 <translation id="5130848777448318809">pony's</translation>
 <translation id="5137451382116112100">Volledig</translation>
 <translation id="5139813694804168398">Niet storen</translation>
 <translation id="5140788690559353412">Als je de toegang tot je schoolaccount kwijtraakt, heb je ook geen toegang meer tot de bijbehorende e-mail en Google Drive-bestanden, zoals Gmail, Documenten en Presentaties.</translation>
 <translation id="5142961317498132443">Verificatie</translation>
 <translation id="5144311987923128508">De knop Bevestigen staat nu uit</translation>
-<translation id="5144887194300568405">Vertaling kopiëren</translation>
 <translation id="5145081769226915336">Donkere modus automatisch aanzetten?</translation>
 <translation id="5145331109270917438">Bijgewerkt op</translation>
 <translation id="5154917547274118687">Geheugen</translation>

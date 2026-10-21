@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Yaklaşık sonuç için <ph name="CATEGORY_TEXT" /> değerini <ph name="CONVERSION_RATE" /> değerine böl</translation>
 <translation id="1442433966118452622">Resim kaynağı</translation>
 <translation id="1446954767133808402">safir</translation>
-<translation id="1449035143498573192">Google Arama'da açın</translation>
 <translation id="1451536289672181509">Cihazın türü klavye.</translation>
 <translation id="1452939186874918380">şemsiyeler</translation>
 <translation id="145402479967797468">Oynatma kontrolleri</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> adlı takvimi önizle</translation>
 <translation id="1668469839109562275">Yerleşik VPN</translation>
 <translation id="1669047024429367828">Görünürlük</translation>
-<translation id="1670478569471758522">Seçiminizle ilgili daha fazla bilgi</translation>
 <translation id="1672499492233627739">Web kamerası video feed'i</translation>
 <translation id="1676557873873341166">Video çekiliyor</translation>
 <translation id="1684279041537802716">Vurgu rengi</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Düzenleme tamamlandı</translation>
 <translation id="3532980081107202182">Yaklaşık <ph name="MIN_REMAINING" /> dakika kaldı</translation>
 <translation id="3533790840489634638">havuz</translation>
-<translation id="3547264467365135390">Formül</translation>
 <translation id="3552832331940389362">öğleden sonra pencere kenarında oturup yağmuru izleyen bir kedinin Japon animasyon çizimi</translation>
 <translation id="3557205324756024651">Yerel kimlik (isteğe bağlı)</translation>
 <translation id="3565064564551103223">İzin verilen IP'ler</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Açıklama</translation>
 <translation id="3869314628814282185">tül</translation>
 <translation id="387301095347517405">Pilinizin tam şarj döngüsünden geçme sayısı</translation>
-<translation id="3877066159641251281">Çeviriyi dinle</translation>
 <translation id="3880601782712134623">Farklı sesleri otomatik olarak algılar ve her birine Konuşmacı 1 ya da Konuşmacı 2 gibi genel bir etiket atar.</translation>
 <translation id="38811596981744338">Yasal sorun</translation>
 <translation id="3885327323343477505">Ekran koruyucuyu değiştir</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Güncelleme işlemine devam etmek için <ph name="DEVICE_NAME" /> USB kablosunu çıkarıp tekrar takın</translation>
 <translation id="5099354524039520280">yukarı</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> tuşu olmayan kısayol bazı uygulamaların kısayoluyla çakışabilir. Kullanmaya devam etmek için bu kısayola tekrar basın veya <ph name="KEY" /> tuşunu kullanarak yeni bir kısayola basın. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Benzer:</translation>
 <translation id="5130848777448318809">midilliler</translation>
 <translation id="5137451382116112100">Tam</translation>
 <translation id="5139813694804168398">Rahatsız Etmeyin</translation>
 <translation id="5140788690559353412">Okul hesabınıza erişimi kaybettiğinizde artık ilgili e-posta ve Google Drive dosyalarına (ör. Gmail, Dokümanlar, Slaytlar vb.) erişemezsiniz.</translation>
 <translation id="5142961317498132443">Kimlik Doğrulama</translation>
 <translation id="5144311987923128508">Onayla düğmesi şu anda devre dışı</translation>
-<translation id="5144887194300568405">Çeviriyi kopyala</translation>
 <translation id="5145081769226915336">Koyu mod otomatik olarak açılsın mı?</translation>
 <translation id="5145331109270917438">Değiştirilme tarihi</translation>
 <translation id="5154917547274118687">Bellek</translation>

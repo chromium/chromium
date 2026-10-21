@@ -118,7 +118,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2039417478970545937">Inställningar.</translation>
 <translation id="2040220733769034247">Skanna QR-koden med telefonen för att ladda ned Chrome och logga in på ditt Google-konto.</translation>
 <translation id="2044908892530830113">Visa Sök med Chrome i menyraden på Mac och aktivera kortkommandot</translation>
-<translation id="2050189601866423230">Du kan fästa AI-läget i Google Sök för att ställa frågor medan du surfar</translation>
 <translation id="2091012649849228750">Du behöver Windows 10 eller senare för att få kommande uppdateringar av Google Chrome. På den här datorn används Windows 8.</translation>
 <translation id="2094648590148273905">Villkor för ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vill du avsluta Chrome ändå?</translation>
@@ -464,6 +463,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om d
 <translation id="5386244825306882791">Det styr också vilken sida som visas när du startar Chrome eller söker i adressfältet.</translation>
 <translation id="5394833366792865639">Dela en flik i Chrome</translation>
 <translation id="5402307365844630024">Aktivera/inaktivera Gemini i Chrome Beta</translation>
+<translation id="5414664742659847155">Isolera Chrome från andra appar</translation>
 <translation id="541844421954567481">Ta med dig dina lösenord, flikar och annat var du än är med Chrome-appen på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">Inställningsfilen är skadad eller ogiltig.
 
@@ -679,6 +679,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7306401458628386911">Börja surfa direkt: Chrome kan nu startas när Windows startas.</translation>
 <translation id="7308322188646931570">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
+<translation id="7371412052245999753">Skyddar Chromes minne från andra appar på datorn.</translation>
 <translation id="73786666777299047">Öppna Chrome Web Store</translation>
 <translation id="7386878009611068389">Du kan skydda dig online med dina föräldrars val genom att byta till din Chrome-profil där du redan är inloggad som <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Du var inloggad i Chrome som <ph name="USER_EMAIL_ADDRESS" />. Använd samma konto när du loggar in igen.</translation>
@@ -773,7 +774,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8074398340364918139">Om du vill söka efter en specifik funktion eller ett specifikt tillägg i Chrome skriver du kortkommandot i adressfältet följt av önskad tangent</translation>
 <translation id="8077579734294125741">Andra Chrome-profiler</translation>
 <translation id="8086881907087796310">Installationen misslyckades eftersom datorn inte uppfyller minimikraven för hårdvara.</translation>
-<translation id="8110438089258398864">Du kan öppna AI-läget i Google Sök igen för att ställa frågor medan du surfar</translation>
 <translation id="8113883687556086139">Verifiera din identitet för att använda och spara Chrome-data i ditt konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Anpassar Chrome …</translation>
 <translation id="8118331347066725040">Skicka feedback för sökning med Lens</translation>
@@ -830,8 +830,6 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="8555465886620020932">Tjänstfel: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Sök efter språklista</translation>
 <translation id="8575047640889685742">Använd din <ph name="BEGIN_LINK" />egen lösenfras<ph name="END_LINK" /> för att kryptera all Chrome-data i Google-kontot. Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chrome synkroniseras inte.</translation>
-<translation id="8590782867495422699">Öppna AI-läget i Google Sök igen</translation>
-<translation id="8598779894319572882">Med knappen AI-läge i Google Sök i verktygsfältet kan du öppna AI-läget i Google Sök igen för att ställa frågor medan du surfar</translation>
 <translation id="8614913330719544658">Google Chrome svarar inte. Vill du starta om nu?</translation>
 <translation id="8623450603356630491">Logga in i Chrome på telefonen</translation>
 <translation id="8624541899164515475">Inställningar, öppnas på en ny flik.</translation>
@@ -886,7 +884,6 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="9014771989710951291">Flera organisationer hanterar Chrome</translation>
 <translation id="9018218886431812662">Installationen har slutförts</translation>
 <translation id="9066987883552592250">Stäng Gemini i Chrome Canary</translation>
-<translation id="9074041031320636790">Klart! Nu kan du enkelt ställa frågor medan du surfar med AI-läget i Google Sök</translation>
 <translation id="9090566250983691233">Läs mer om varför vissa filer blockeras i Chrome</translation>
 <translation id="9106236359747881194">Markera text för att söka</translation>
 <translation id="911206726377975832">Vill du även ta bort din webbinformation?</translation>

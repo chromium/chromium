@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
-<translation id="1003222766972176318">Pengingat: tersedia penawaran yang tersimpan</translation>
 <translation id="1008557486741366299">Jangan Sekarang</translation>
 <translation id="100957008357583611">Gunakan lokasi Anda?</translation>
 <translation id="1010200102790553230">Muat halaman nanti</translation>
@@ -1128,6 +1127,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2911973620368911614">ID pengguna akuntansi tugas</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> biasanya menggunakan enkripsi untuk melindungi informasi Anda. Saat Chrome mencoba terhubung ke <ph name="SITE" /> kali ini, situs mengembalikan kredensial yang salah dan tidak biasa. Hal ini dapat terjadi jika ada penyerang mencoba berpura-pura menjadi <ph name="SITE" />, atau layar login Wi-Fi telah mengganggu koneksi. Informasi Anda masih aman karena Chrome menghentikan koneksi sebelum terjadi pertukaran data apa pun.</translation>
 <translation id="2915068235268646559">Error dari <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Semua perangkat</translation>
 <translation id="2916038427272391327">Tutup program lain</translation>
 <translation id="2917630513638801879">Sian 1</translation>
 <translation id="2922350208395188000">Sertifikat server tidak dapat diperiksa.</translation>
@@ -1463,7 +1463,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3479552764303398839">Jangan sekarang</translation>
 <translation id="3481315707647070701">Visualisasikan dan edit</translation>
 <translation id="3484560055331845446">Anda dapat kehilangan akses ke Akun Google Anda. Chrome merekomendasikan untuk mengubah sandi Anda sekarang. Anda akan diminta untuk login.</translation>
-<translation id="3484861421501147767">Pengingat: Kode promo yang disimpan tersedia</translation>
 <translation id="3485901585646640838">Untuk menggunakan sandi dan lainnya yang disimpan di Akun Google Anda, verifikasi diri Anda</translation>
 <translation id="3487845404393360112">Baki 4</translation>
 <translation id="3493881266323043047">Validitas</translation>
@@ -1822,6 +1821,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4067774859633143413">Untuk keluar dari layar penuh dan melihat hasil download, tekan lama |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Tambahkan Alamat yang Valid</translation>
 <translation id="4072486802667267160">Terjadi error saat memproses pesanan Anda. Harap coba lagi.</translation>
+<translation id="4073293290376142777">Login?</translation>
 <translation id="4073376909608563327">Tidak dapat menggunakan fitur buka kunci perangkat</translation>
 <translation id="4073797364926776829">Lihat kartu</translation>
 <translation id="4075732493274867456">Klien dan server tidak mendukung versi protokol SSL umum atau cipher suite.</translation>
@@ -1854,6 +1854,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4107047499377819067">Penginstalan layanan latar belakang VPN telah dimulai, proses ini mungkin memerlukan waktu beberapa menit.</translation>
 <translation id="4110642094637545339">Logo Google Pay, AfterPay</translation>
 <translation id="4110652170750985508">Tinjau pembayaran</translation>
+<translation id="411071007970303441">Semua pihak</translation>
 <translation id="4112140312785995938">Cari Mundur</translation>
 <translation id="4114007503059268298">Ingin menyimpan kartu ini di Akun Google Anda dan perangkat ini?</translation>
 <translation id="4114146879518089587">Lanjutkan ke situs</translation>
@@ -3440,6 +3441,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6753460329812070808">Saran dihapus dari Chrome</translation>
 <translation id="6757797048963528358">Perangkat Anda sedang dalam mode tidur.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> ingin menggunakan sensor gerakan dan cahaya</translation>
+<translation id="6766488013065406604">Buka Pengelola Sandi Google</translation>
 <translation id="6770747695101757579">Kertas (Katun)</translation>
 <translation id="6772959465807028761">Untuk menggunakan YouTube, lanjutkan dengan Akun Google-mu</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3650,7 +3652,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7120588595737538743">download dan screenshot</translation>
 <translation id="7124354851782353862">Masukkan CVC Anda</translation>
 <translation id="7129409597930077180">Tidak dapat mengirim ke alamat ini. Pilih alamat lain.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Upload yang diblokir</translation>
 <translation id="7132939140423847331">Admin Anda telah melarang data ini disalin.</translation>
 <translation id="7134653428559514680">Berbagi dari situs ini tidak direkomendasikan</translation>
@@ -3966,6 +3967,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7637571805876720304">Hapus kartu kredit dari Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Tidak ada}=1{1 sandi di akun Anda (untuk <ph name="DOMAIN_LIST" />)}other{# sandi di akun Anda (untuk <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Port serial</translation>
+<translation id="7644100755247241229">Kirim Pix ke teman dan bisnis menggunakan Google Wallet</translation>
 <translation id="7646681339175747202">Sandi yang baru saja Anda gunakan terekspos dalam pelanggaran data. Pengelola Sandi Google merekomendasikan untuk mengubah sandi Anda sekarang.</translation>
 <translation id="7647206758853451655">Kualitas cetakan</translation>
 <translation id="7648133459447652947">Untuk menampilkan kursor, beralih aplikasi, memuat ulang halaman, atau kembali</translation>
@@ -4069,6 +4071,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7791543448312431591">Tambahkan</translation>
 <translation id="7798389633136518089">Diabaikan karena kebijakan ini tidak ditetapkan oleh sumber cloud.</translation>
 <translation id="7800304661137206267">Sambungan dienkripsi menggunakan <ph name="CIPHER" />, dengan <ph name="MAC" /> untuk autentikasi pesan dan <ph name="KX" /> sebagai mekanisme pertukaran kunci.</translation>
+<translation id="780228007282527248">Tambahkan tab atau gambar untuk meningkatkan penelusuran Anda</translation>
 <translation id="7802523362929240268">Situs ini sah</translation>
 <translation id="7802989406998618639">Masukkan kode keamanan <ph name="NUMBER_OF_DIGITS" /> digit pada <ph name="SIDE_OF_CARD" /> agar bank dapat memverifikasi diri Anda</translation>
 <translation id="780301667611848630">Lain kali</translation>

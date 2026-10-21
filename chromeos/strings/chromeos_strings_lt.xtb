@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Norint apytiksliai apskaičiuoti rezultatą, reikia padalyti kategorijos „<ph name="CATEGORY_TEXT" />“ vertę iš <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Vaizdo šaltinis</translation>
 <translation id="1446954767133808402">safyro</translation>
-<translation id="1449035143498573192">Atidaryti „Google“ paieškoje</translation>
 <translation id="1451536289672181509">Įrenginys yra klaviatūra.</translation>
 <translation id="1452939186874918380">skėčiai</translation>
 <translation id="145402479967797468">Atkūrimo valdikliai</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Peržiūrėti kalendorių „<ph name="PREVIEW_OBJECT" />“</translation>
 <translation id="1668469839109562275">Įtaisytasis VPN</translation>
 <translation id="1669047024429367828">Matomumas</translation>
-<translation id="1670478569471758522">Daugiau informacijos, susijusios su jūsų pasirinkimu</translation>
 <translation id="1672499492233627739">Žiniatinklio kameros vaizdo įrašo sklaidos kanalas</translation>
 <translation id="1676557873873341166">Fiksuojamas vaizdo įrašas</translation>
 <translation id="1684279041537802716">Paryškinimo spalva</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Suredaguota</translation>
 <translation id="3532980081107202182">Liko apie <ph name="MIN_REMAINING" /> min.</translation>
 <translation id="3533790840489634638">baseinas</translation>
-<translation id="3547264467365135390">Formulė</translation>
 <translation id="3552832331940389362">japoniška animacinė iliustracija, kurioje vaizduojama ant palangės tupinti katė, popiet stebinti lietų</translation>
 <translation id="3557205324756024651">Vietinio ryšio tapatybė (pasirenkama)</translation>
 <translation id="3565064564551103223">Leidžiami IP</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Aprašas</translation>
 <translation id="3869314628814282185">tiulio</translation>
 <translation id="387301095347517405">Kartų, kai akumuliatorius buvo įkraunamas visą ciklą, skaičius</translation>
-<translation id="3877066159641251281">Klausyti vertimo</translation>
 <translation id="3880601782712134623">Automatiškai aptikti skirtingus balsus ir kiekvienam kalbančiajam suteikti bendrojo pobūdžio etiketę, pvz., „1 kalbantysis“ ir „2 kalbantysis“</translation>
 <translation id="38811596981744338">Teisinė problema</translation>
 <translation id="3885327323343477505">Keisti ekrano užsklandą</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Jei norite tęsti atnaujinimo procesą, atjunkite „<ph name="DEVICE_NAME" />“ USB laidą ir vėl jį prijunkite</translation>
 <translation id="5099354524039520280">aukštyn</translation>
 <translation id="5107243100836678918">Spartusis klavišas be klavišo „<ph name="META_KEY" />“ gali būti nesuderinamas su kai kurių programų sparčiaisiais klavišais. Dar kartą paspauskite šį spartųjį klavišą, jei norite toliau jį naudoti, arba paspauskite naują spartųjį klavišą naudodami klavišą „<ph name="KEY" />“. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Panašūs:</translation>
 <translation id="5130848777448318809">poniai</translation>
 <translation id="5137451382116112100">Viso ekrano režimas</translation>
 <translation id="5139813694804168398">netrukdymo režimas</translation>
 <translation id="5140788690559353412">Praradę prieigą prie mokyklos paskyros nebegalėsite pasiekti susietų el. pašto ir „Google“ disko failų, pvz., „Gmail“, Dokumentų, Skaidrių ir kt.</translation>
 <translation id="5142961317498132443">Autentifikavimas</translation>
 <translation id="5144311987923128508">Mygtukas „Patvirtinti“ dabar išjungtas</translation>
-<translation id="5144887194300568405">Kopijuoti vertimą</translation>
 <translation id="5145081769226915336">Automatiškai įjungti tamsų režimą?</translation>
 <translation id="5145331109270917438">Pakeitimo data</translation>
 <translation id="5154917547274118687">Atmintis</translation>

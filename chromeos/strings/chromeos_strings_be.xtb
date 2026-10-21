@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Каб атрымаць прыблізны вынік, падзяліце значэнне "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Крыніца відарыса</translation>
 <translation id="1446954767133808402">сапфір</translation>
-<translation id="1449035143498573192">Адкрыць у Google Пошуку</translation>
 <translation id="1451536289672181509">Гэта клавіятура.</translation>
 <translation id="1452939186874918380">парасоны</translation>
 <translation id="145402479967797468">Элементы кіравання прайграваннем</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Перадпрагляд: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Убудаваная сетка VPN</translation>
 <translation id="1669047024429367828">Бачнасць</translation>
-<translation id="1670478569471758522">Дадатковая інфармацыя, звязаная з выбраным вамі змесцівам</translation>
 <translation id="1672499492233627739">Відэатрансляцыя з вэб-камеры</translation>
 <translation id="1676557873873341166">Ідзе здымка відэа</translation>
 <translation id="1684279041537802716">Колер акцэнту</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Гатова</translation>
 <translation id="3532980081107202182">Прыблізны час да завяршэння: <ph name="MIN_REMAINING" /> хв</translation>
 <translation id="3533790840489634638">вадаём</translation>
-<translation id="3547264467365135390">Формула</translation>
 <translation id="3552832331940389362">ілюстрацыя кошкі ў стылі японскай анімацыі, якая ўдзень сядзіць на падаконніку і назірае за дажджом</translation>
 <translation id="3557205324756024651">Лакальнае пасведчанне (неабавязкова)</translation>
 <translation id="3565064564551103223">Дазволеныя IP-адрасы</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Апісанне</translation>
 <translation id="3869314628814282185">цюль</translation>
 <translation id="387301095347517405">Колькасць поўных пройдзеных цыклаў зарадкі акумулятара</translation>
-<translation id="3877066159641251281">Праслухаць пераклад</translation>
 <translation id="3880601782712134623">аўтаматычна вызначаць асобныя галасы і прызначаць кожнаму суразмоўніку агульную метку, напрыклад, "Суразмоўнік 1" і "Суразмоўнік 2";</translation>
 <translation id="38811596981744338">Парушэнне заканадаўства</translation>
 <translation id="3885327323343477505">Змяніць застаўку</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Каб працягнуць абнаўленне, адключыце кабель USB прылады "<ph name="DEVICE_NAME" />", а потым падключыце яго зноў</translation>
 <translation id="5099354524039520280">уверх</translation>
 <translation id="5107243100836678918">Спалучэнне клавіш, у якім не выкарыстоўваецца клавіша "<ph name="META_KEY" />", можа канфліктаваць са спалучэннямі клавіш іншых праграм. Націсніце гэта спалучэнне клавіш яшчэ раз, калі вы хочаце выкарыстоўваць яго і далей, або націсніце іншае спалучэнне клавіш, у якім выкарыстоўваецца клавіша "<ph name="KEY" />". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Маюць падобнае значэнне:</translation>
 <translation id="5130848777448318809">поні</translation>
 <translation id="5137451382116112100">Поўны экран</translation>
 <translation id="5139813694804168398">Не турбаваць</translation>
 <translation id="5140788690559353412">Страціўшы доступ да вучэбнага ўліковага запісу, вы таксама страціце доступ да прывязанага да яго адраса электроннай пошты і файлаў на Google Дыску, напрыклад Gmail, Дакументаў, Прэзентацый і іншых.</translation>
 <translation id="5142961317498132443">Аўтэнтыфікацыя</translation>
 <translation id="5144311987923128508">Кнопка "Пацвердзіць" зараз неактыўная</translation>
-<translation id="5144887194300568405">Скапіраваць пераклад</translation>
 <translation id="5145081769226915336">Уключаць цёмны рэжым аўтаматычна?</translation>
 <translation id="5145331109270917438">Дата змянення</translation>
 <translation id="5154917547274118687">Памяць</translation>

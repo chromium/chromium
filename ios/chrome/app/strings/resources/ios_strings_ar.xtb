@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">الفتح في مجموعة علامات تبويب جديدة</translation>
 <translation id="1670861525135254448">حفظ بيانات المركبة</translation>
 <translation id="1671568970992212376">‏يمكنك حفظ صورك في "صور Google" للوصول إليها متى شئت.</translation>
+<translation id="1671824312818944549">‏ملاحظة: يعمل هذا الإعداد بشكل أفضل مع الإصدار iOS 27 أو الإصدارات الأحدث.</translation>
 <translation id="1674504678466460478">من <ph name="SOURCE_LANGUAGE" /> إلى <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">يمكنك رسم دائرة حول أي محتوى على شاشتك أو تمييزه أو النقر عليه للبحث عن معلومات حوله</translation>
 <translation id="1678855624321223424">استنادًا إلى سياسات مؤسستك، قد يحتوي هذا الملف على معلومات حساسة</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">مرحبًا من جديد</translation>
 <translation id="2015722694326466240">للاطّلاع على كلمات المرور، يجب أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="201759455285471444">توسيع مجموعة علامات التبويب</translation>
+<translation id="2022431790688770637">‏إدارة اقتراحات Gemini</translation>
 <translation id="2031515492007104071">‏الانتقال إلى مستوى أعلى (Level Up)</translation>
 <translation id="2044394949148788042">فتح شبكة علامات التبويب</translation>
 <translation id="2044681667265133332">يتولّى النطاق <ph name="HOSTED_DOMAIN" /> إدارة الحساب <ph name="USER_EMAIL" />، وقد يكون بإمكانه الاطّلاع على بعض البيانات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -550,7 +552,7 @@
 <translation id="2640733327287333451">بلا اسم مستخدم ••••••</translation>
 <translation id="264215785133931186">تم إجراء عملية التحقُّق للتوّ</translation>
 <translation id="2647434099613338025">إضافة لغة</translation>
-<translation id="2648812801228676606">لقد سجّلت الدخول بحساب <ph name="NAME_OR_EMAIL" /> مسبقًا</translation>
+<translation id="2648812801228676606">سبق أن سجّلت الدخول بحساب <ph name="NAME_OR_EMAIL" /></translation>
 <translation id="2649592894792404568">‏أنت على وشك حذف بياناتك في "مدير كلمات المرور في Google"</translation>
 <translation id="2652129567809778422">اختيار كلمة مرور</translation>
 <translation id="2658056020748144467">تعذَّر فتح الملف</translation>
@@ -623,7 +625,9 @@
 <translation id="2865392654629180917">يكفي طرح أي سؤال للحصول على ردود بالذكاء الاصطناعي</translation>
 <translation id="2870560284913253234">الموقع</translation>
 <translation id="2876369937070532032">‏يتم إرسال عناوين URL لبعض الصفحات التي تزورها إلى Google، عندما يكون أمانك في خطر</translation>
+<translation id="2880119244122776372">إنشاء وكتابة الرموز البرمجية</translation>
 <translation id="2883151425485251736">يمكنك الاطّلاع على المواضيع التي تم إخفاؤها عن حسابك وتعديلها.</translation>
+<translation id="2884437560239137197">تنبيه مُهم</translation>
 <translation id="288655811176831528">إغلاق علامة التبويب</translation>
 <translation id="2888631381369839306">تم تفعيل إشعارات ميزة "تتبُّع الأسعار"</translation>
 <translation id="2893168226686371498">المتصفح التلقائي</translation>
@@ -1665,6 +1669,7 @@
 <translation id="6227958838185907047">تسجيل الدخول بحساب "<ph name="NAME" />" <ph name="EMAIL" /></translation>
 <translation id="6231782223312638214">مقترح</translation>
 <translation id="6232329973559504466">البحث في وضع التصفُّح المتخفي</translation>
+<translation id="6233463157595806945">يجب إدخال معلومات</translation>
 <translation id="6234310016144827337">يُرجى التحقّق من الاتصال بالإنترنت وإعادة المحاولة</translation>
 <translation id="6236952928980352967">استعادة التحذير</translation>
 <translation id="623755660902014047">وضع القراءة</translation>
@@ -1691,10 +1696,12 @@
 <translation id="6301104306974789820">الحصول على الإشعارات الخاصة بتتبُّع أسعار المنتجات</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">اختيار موضع شريط العناوين</translation>
+<translation id="6305257382500066042">تجربة الميزة الآن</translation>
 <translation id="6307241780749477694">يُرجى إثبات هويتك للحصول على جميع كلمات المرور على هذا الجهاز</translation>
 <translation id="6307792728709337290">‏يمكنك حفظ بطاقتك في حسابك على Google لملء بياناتها تلقائيًا عند إجراء عملية الشراء هذه وعمليات شراء مستقبلية في Chrome.</translation>
 <translation id="6316141353357700666">اختَر كلمة المرور التي تريد استخدامها من القائمة التي تظهر.</translation>
 <translation id="6321526113093607004">الإضافة إلى الإشارات المرجعية</translation>
+<translation id="6322064144568952786">تعذّر تنفيذ المهمة</translation>
 <translation id="6324054713176642683">يمكنك الاختيار من بين المظاهر والألوان المتوفّرة أو تحميل صورة خاصة بك.</translation>
 <translation id="6327249202318869726">‏تم إيقاف Gemini في حسابك. يُرجى التواصل مع المشرف للحصول على مزيد من المعلومات.</translation>
 <translation id="6331836477476466332">متصفّح أكثر أمانًا وفعالية</translation>
@@ -1843,7 +1850,6 @@
 <translation id="6708501134077648845">خيارات كلمات السر</translation>
 <translation id="6709964700841491574">وضع التأمين</translation>
 <translation id="6710079714193676716">تتم إدارة المتصفِّح من خلال مؤسستك. وقد تكون بعض الميزات غير متوفِّرة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">إجابات أسرع وأكثر ذكاءً</translation>
 <translation id="6713676799463473249">تاريخ آخر تعديل: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">علامات التبويب المُستلمَة</translation>
 <translation id="6722638373100589752">‏لملء معلوماتك تلقائيًا، عليك تفعيل الإعداد "استخدام البطاقات في خدمات Google المختلفة" في إعدادات "محفظة Google"</translation>
@@ -2012,6 +2018,7 @@
 <translation id="7241135764990439166">وضع التصفُّح المتخفي غير متاح</translation>
 <translation id="7245288034498365666">تنظيم علامات التبويب وتوفير الوقت</translation>
 <translation id="7253951228444156601">جارٍ التحقّق من كلمات المرور…</translation>
+<translation id="725583671816239562">اكتملت المهمة</translation>
 <translation id="7261217796641151584">مشاركة المجموعة</translation>
 <translation id="7266578100016339897">يساعدك ذلك في إبقاء متصفّحك منظّمًا. يمكنك تغيير هذا الخيار في الإعدادات متى شئت.</translation>
 <translation id="7270491814777319521">‏تسري <ph name="BEGIN_LINK" />بنود خدمة Google<ph name="END_LINK" /> و<ph name="BEGIN_LINK" />إشعار الخصوصية في "تطبيقات Gemini"<ph name="END_LINK" />. ‫Gemini هو نموذج ذكاء اصطناعي وقد يعرض معلومات خاطئة، بما فيها تلك المتعلقة بالأشخاص.</translation>
@@ -2054,7 +2061,6 @@
 <translation id="7411034503745719324">‫<ph name="EMAIL" />. <ph name="MANAGED_STATUS" /></translation>
 <translation id="7412027924265291969">متابعة</translation>
 <translation id="741204030948306876">نعم، أوافق</translation>
-<translation id="7417055777338419059">إنشاء رموز برمجية أو نصوص أو شرائح</translation>
 <translation id="7419565702166471774">استخدام الاتصالات الآمنة دائمًا</translation>
 <translation id="7423098979219808738">السؤال أولاً</translation>
 <translation id="7425053386765766120">إضافة طريقة دفع…</translation>
@@ -2104,6 +2110,7 @@
 <translation id="7525067979554623046">إنشاء</translation>
 <translation id="75362970626182391">مجموعة علامات تبويب جديدة</translation>
 <translation id="7537586195939242955">‏عذرًا، لا يمكن أن تكون بطاقتك مثبتة على Passbook في الوقت الحالي.</translation>
+<translation id="7540924742308928499">استلهام الأفكار والتلخيص</translation>
 <translation id="754655535278952384">تم التحقّق من كلمات المرور <ph name="TIME" /></translation>
 <translation id="7554645225856321710">إغلاق الكل</translation>
 <translation id="7557508262441527045">تمّ تسجيل الخروج</translation>
@@ -2474,7 +2481,6 @@
 <translation id="8642417828095157370">تتم مشاركة علامات التبويب لتقديم ردود أكثر صلةً</translation>
 <translation id="8643403533759285912">حذف المجموعة</translation>
 <translation id="8646357898207744479">‏عدسة Google</translation>
-<translation id="8647280737650867362">تعذَّر إيقاف تتبُّع السعر.</translation>
 <translation id="8654802032646794042">إلغاء</translation>
 <translation id="8655861111558401309">يُرجى اختيار "حذف بيانات التصفّح"</translation>
 <translation id="8659875081143553823">لحظة من فضلك</translation>

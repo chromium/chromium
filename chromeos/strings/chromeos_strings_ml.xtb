@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">ഒരു ഏകദേശ ഫലത്തിനായി, <ph name="CONVERSION_RATE" /> കൊണ്ട് <ph name="CATEGORY_TEXT" /> എന്ന മൂല്യത്തെ ഭാഗിക്കുക</translation>
 <translation id="1442433966118452622">ചിത്രത്തിന്റെ ഉറവിടം</translation>
 <translation id="1446954767133808402">സഫയർ</translation>
-<translation id="1449035143498573192">Google Search-ൽ തുറക്കുക</translation>
 <translation id="1451536289672181509">ഉപകരണം ഒരു കീബോർഡാണ്.</translation>
 <translation id="1452939186874918380">കുടകൾ</translation>
 <translation id="145402479967797468">പ്ലേബാക്ക് നിയന്ത്രണങ്ങൾ</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> പ്രിവ്യൂ ചെയ്യുക</translation>
 <translation id="1668469839109562275">ബിൽറ്റ് ഇൻ VPN</translation>
 <translation id="1669047024429367828">ദൃശ്യപരത</translation>
-<translation id="1670478569471758522">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട കൂടുതൽ വിവരങ്ങൾ</translation>
 <translation id="1672499492233627739">വെബ്‌ക്യാം വീഡിയോ ഫീഡ്</translation>
 <translation id="1676557873873341166">വീഡിയോ എടുക്കുന്നു</translation>
 <translation id="1684279041537802716">ആക്‌സന്റ് നിറം</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">എഡിറ്റ് ചെയ്യൽ പൂർത്തിയാക്കി</translation>
 <translation id="3532980081107202182">ഏകദേശം <ph name="MIN_REMAINING" /> മിനിറ്റ് ശേഷിക്കുന്നു</translation>
 <translation id="3533790840489634638">പൂൾ</translation>
-<translation id="3547264467365135390">ഫോർമുല</translation>
 <translation id="3552832331940389362">ഉച്ച നേരത്ത് മഴ കണ്ടുകൊണ്ട് ജനൽപ്പടിയിലിരിക്കുന്ന പൂച്ചയുടെ ജാപ്പനീസ് ആനിമേഷൻ ചിത്രീകരണം</translation>
 <translation id="3557205324756024651">ലോക്കൽ ഐഡന്റിറ്റി (ഓപ്‌ഷണൽ)</translation>
 <translation id="3565064564551103223">അനുവദനീയമായ IP-കൾ</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">വിവരണം</translation>
 <translation id="3869314628814282185">ട്യൂൾ</translation>
 <translation id="387301095347517405">നിങ്ങളുടെ ബാറ്ററി പൂർണ്ണമായി ചാർജ് ചെയ്തതിന്റെ എണ്ണം</translation>
-<translation id="3877066159641251281">വിവർത്തനം ശ്രവിക്കുക</translation>
 <translation id="3880601782712134623">സവിശേഷമായ ശബ്ദങ്ങൾ സ്വയമേവ കണ്ടെത്തി അവ ഓരോന്നിനും സ്പീക്കർ 1, സ്പീക്കർ 2 പോലുള്ള പൊതു ലേബൽ നൽകുക</translation>
 <translation id="38811596981744338">നിയമ പ്രശ്‌നം</translation>
 <translation id="3885327323343477505">സ്ക്രീൻ സേവർ മാറ്റുക</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരാൻ <ph name="DEVICE_NAME" /> എന്നതിന്റെ USB കേബിൾ അൺപ്ലഗ് ചെയ്‌ത ശേഷം വീണ്ടും ഇൻസേർട്ട് ചെയ്യുക</translation>
 <translation id="5099354524039520280">മുകളിലേക്ക്</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> കീ ഇല്ലാത്ത കുറുക്കുവഴിയും മറ്റേതെങ്കിലും ആപ്പിന്റെ കുറുക്കുവഴികളും തമ്മിൽ മാറിപ്പോകാൻ ഇടയുണ്ട്. തുടർന്നും ഉപയോഗിക്കാൻ ഈ കുറുക്കുവഴിയിൽ അമർത്തുക, അല്ലെങ്കിൽ <ph name="KEY" /> കീ ഉപയോഗിക്കുന്ന പുതിയൊരു കുറുക്കുവഴിയിൽ അമർത്തുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">സമാനമായത്:</translation>
 <translation id="5130848777448318809">പോണികൾ</translation>
 <translation id="5137451382116112100">പൂർണ്ണ സ്ക്രീൻ</translation>
 <translation id="5139813694804168398">ശല്യപ്പെടുത്തരുത്</translation>
 <translation id="5140788690559353412">സ്‌കൂൾ അക്കൗണ്ടിലേക്കുള്ള ആക്‌സസ് നഷ്ടപ്പെടുമ്പോൾ, അനുബന്ധ ഇമെയിലിലേക്കും Gmail, Docs, Slides, എന്നിവയും മറ്റും പോലുള്ള Google Drive ഫയലുകളിലേക്കും നിങ്ങൾക്ക് ഇനി ആക്‌സസ് ഉണ്ടായിരിക്കില്ല.</translation>
 <translation id="5142961317498132443">പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="5144311987923128508">'സ്ഥിരീകരിക്കുക' ബട്ടൺ ഇപ്പോൾ പ്രവർത്തനരഹിതമാക്കി</translation>
-<translation id="5144887194300568405">വിവർത്തനം പകർത്തുക</translation>
 <translation id="5145081769226915336">ഡാർക്ക് മോഡ് സ്വയമേവ ഓണാക്കണോ?</translation>
 <translation id="5145331109270917438">പരിഷ്‌ക്കരിച്ചത്</translation>
 <translation id="5154917547274118687">മെമ്മറി</translation>

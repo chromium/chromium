@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Gjør Chrome til din egen med egendefinerte farger og bilder på startsiden</translation>
 <translation id="389521680295183045">Nettsteder kan be om å få vite når du bruker enheten aktivt</translation>
 <translation id="3895926599014793903">Tving zoom på</translation>
-<translation id="3905475044299942653">Stopp mange varsler</translation>
 <translation id="3922092564198021702">Åpne Innstillinger på telefonen</translation>
 <translation id="3924858949939391676">Vis linker når lesemodus er på</translation>
 <translation id="3933121352599513978">Skjul uønskede forespørsler (anbefales)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Du finner gruppene dine i fanegruppedelen på alle enhetene dine</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> er blokkert fra å bruke informasjonen din på</translation>
 <translation id="4953688446973710931">Når dette er på, kan nettsteder be om å få laste ned flere filer automatisk. Når dette er av, kan ikke nettsteder laste ned flere filer automatisk.</translation>
-<translation id="4962975101802056554">Opphev alle tillatelser for enheten</translation>
 <translation id="4972737347717125191">Nettsteder kan be om å få bruke virtuell virkelighet-enheter og -data</translation>
 <translation id="4973805849704516244">Felt nederst for Chrome-farger</translation>
 <translation id="497421865427891073">Gå til neste</translation>
@@ -704,7 +702,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8441146129660941386">Spol bakover</translation>
 <translation id="8444433999583714703">For å gi <ph name="APP_NAME" /> tilgang til posisjonen din må du også slå på posisjon i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Opphev tillatelsen til enhetstilgang</translation>
 <translation id="8463843545738141778">Denne innstillingen er deaktivert fordi du har slått på Avansert beskyttelse i Android-innstillingene.</translation>
 <translation id="8467359479529706065">Nytt faneområde som er åpnet i bunnarket vises i halv høyde</translation>
 <translation id="8471525937465764768">Nettsteder kobler vanligvis til USB-enheter for å kunne tilby funksjoner som å skrive ut dokumenter eller lagre filer på lagringsenheter</translation>

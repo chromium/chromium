@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Բացել ներդիրների նոր խմբում</translation>
 <translation id="1670861525135254448">Պահել փոխադրամիջոցը</translation>
 <translation id="1671568970992212376">Պահեք լուսանկարները Google Լուսանկարներում և օգտագործեք ցանկացած պահի։</translation>
+<translation id="1671824312818944549">Նշում․ այս կարգավորումն ավելի լավ է աշխատում iOS 27 կամ ավելի նոր տարբերակով։</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />ից <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Շրջագծեք, ընդգծեք կամ հպեք՝ էկրանին ընտրելով այն տարրը, որի մասին ուզում եք տեղեկություններ որոնել</translation>
 <translation id="1678855624321223424">Ձեր կազմակերպության կանոնների համաձայն՝ այս ֆայլը կարող է զգայուն տեղեկություններ պարունակել</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">Բարի վերադարձ</translation>
 <translation id="2015722694326466240">Գաղտնաբառերը տեսնելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
 <translation id="201759455285471444">Ծավալել ներդիրների խումբը։</translation>
+<translation id="2022431790688770637">Կառավարել Gemini-ի առաջարկները</translation>
 <translation id="2031515492007104071">Մակարդակի բարձրացում</translation>
 <translation id="2044394949148788042">Բացեք ներդիրների ցանցը</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> հաշիվը կառավարվում է <ph name="HOSTED_DOMAIN" /> տիրույթի կողմից, որին հնարավոր է, որ տեսանելի լինել որոշ տեղեկություններ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">Հարց տվեք և ստացեք ԱԲ-ի հիման վրա պատասխաններ</translation>
 <translation id="2870560284913253234">Կայք</translation>
 <translation id="2876369937070532032">Ձեր այցելած որոշ էջերի URL-ներն ուղարկվում են Google-ին, երբ ձեր հաշիվը կամ սարքը վտանգված է</translation>
+<translation id="2880119244122776372">Ստեղծեք և ծրագրավորեք</translation>
 <translation id="2883151425485251736">Դիտեք և փոփոխեք թեմաները, որոնք թաքցրել եք ձեր հաշվից</translation>
 <translation id="2884437560239137197">Ուշադրություն</translation>
 <translation id="288655811176831528">Փակել ներդիրը</translation>
@@ -1695,6 +1698,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6301104306974789820">Ստանալ ծանուցումներ գների հետագծման մասին</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Ընտրեք ձեր հասցեագոտու դիրքը</translation>
+<translation id="6305257382500066042">Փորձել</translation>
 <translation id="6307241780749477694">Հաստատեք ձեր ինքնությունը, որպեսզի ձեզ հասանելի լինեն ձեր բոլոր գաղտնաբառերն այս սարքում</translation>
 <translation id="6307792728709337290">Պահեք ձեր քարտը Google հաշվում, որպեսզի այն ավտոմատ լրացվի այս և հետագա գնումների ժամանակ, որոնք կկատարեք Chrome-ում։</translation>
 <translation id="6316141353357700666">Հայտնվող ցանկից ընտրեք գաղտնաբառը, որը ցանկանում եք օգտագործել։</translation>
@@ -1848,7 +1852,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6708501134077648845">Գաղտնաբառերի կարգավորումներ</translation>
 <translation id="6709964700841491574">Արգելափակման ռեժիմ</translation>
 <translation id="6710079714193676716">Կառավարվում է ձեր կազմակերպության կողմից։ Որոշ գործառույթներ կարող են հասանելի չլինել։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">Ավելի խելացի, ավելի արագ պատասխաններ</translation>
 <translation id="6713676799463473249">Փոփոխվել է <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Ստացված ներդիրներ</translation>
 <translation id="6722638373100589752">Ձեր տեղեկություններն ավտոմատ լրացնելու համար Wallet-ի կարգավորումներում միացրեք «Օգտագործել անցաքարտերը Google-ում» կարգավորումը</translation>
@@ -2060,7 +2063,6 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="7411034503745719324"><ph name="EMAIL" />։ <ph name="MANAGED_STATUS" />։</translation>
 <translation id="7412027924265291969">Շարունակել</translation>
 <translation id="741204030948306876">Լավ</translation>
-<translation id="7417055777338419059">Գրեք կոդ, տեքստեր կամ ստեղծեք սլայդներ</translation>
 <translation id="7419565702166471774">Միշտ օգտագործել անվտանգ միացումներ</translation>
 <translation id="7423098979219808738">Նախ հարցնել</translation>
 <translation id="7425053386765766120">Ավելացնել վճարման եղանակ…</translation>
@@ -2110,6 +2112,7 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="7525067979554623046">Ստեղծել</translation>
 <translation id="75362970626182391">Ներդիրների նոր խումբ</translation>
 <translation id="7537586195939242955">Ներեցեք, այս պահին հնարավոր չէ տեղադրել ձեր Անցագիրը Անցագրերի մատյանում:</translation>
+<translation id="7540924742308928499">Գեներացրեք գաղափարներ և ամփոփեք</translation>
 <translation id="754655535278952384">Ստուգվել է <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Փակել բոլորը</translation>
 <translation id="7557508262441527045">Դուք դուրս եք գրվել հաշվից</translation>
@@ -2179,6 +2182,7 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="7758789811447313947">Մանուշակագույն թեմա</translation>
 <translation id="7759809451544302770">Կամընտիր</translation>
 <translation id="7765158879357617694">Տեղափոխել</translation>
+<translation id="7767651976342854115">Տվյալների օգտագործման կարգավորման սխալ առաջացավ։</translation>
 <translation id="7768507955883790804">Երբ դուք այցելում եք կայքեր, դրանք ավտոմատ հետևում են այս կարգավորմանը։</translation>
 <translation id="7772032839648071052">Հաստատեք անցաբառը</translation>
 <translation id="7772948288262733182">Բարի վերադարձ</translation>
@@ -2478,7 +2482,6 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="8642417828095157370">Ներդիրների բովանդակությունը փոխանցվում է, որպեսզի պատասխաններն ավելի համապատասխան լինեն</translation>
 <translation id="8643403533759285912">Ջնջել խումբը</translation>
 <translation id="8646357898207744479">Տեսապակի</translation>
-<translation id="8647280737650867362">Չհաջողվեց չեղարկել գնի հետագծումը։</translation>
 <translation id="8654802032646794042">Չեղարկել</translation>
 <translation id="8655861111558401309">Ընտրեք «Ջնջել այցելությունների պատմությունը»</translation>
 <translation id="8659875081143553823">Սպասեք...</translation>

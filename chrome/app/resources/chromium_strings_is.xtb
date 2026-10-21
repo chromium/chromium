@@ -120,6 +120,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2190166659037789668">Villa við uppfærsluleit: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Fjarlægja reikning úr Chromium</translation>
 <translation id="2201788217099588893">Notaðu Chromium-forritið til að hafa bestu innkaupaverkfærin með þér á ferðinni</translation>
+<translation id="2209877494277346829">Einangra Chromium frá öðrum forritum</translation>
 <translation id="2210502920229141283">Vertu öruggari á ferðinni með Enn öruggari vefskoðun í Chromium fyrir iOS</translation>
 <translation id="2210682093923538346">Skaðlegt vefsvæði. Chromium fjarlægði tilkynningar.</translation>
 <translation id="2236949375853147973">Mín virkni</translation>
@@ -192,6 +193,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2977470724722393594">Chromium er uppfært</translation>
 <translation id="2977506796191543575">Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chromium einnig sent vefslóðir í örugga vefskoðun, þar á meðal hluta af innihaldi síðna</translation>
 <translation id="2981563588585023386">Til að vera öruggari á netinu með vali foreldra þinna skaltu skrá þig inn í Chromium</translation>
+<translation id="2992577225802060159">Verndar minni Chromium gegn öðrum forritum í tölvunni þinni.</translation>
 <translation id="3003694935412297923">Öll verkefni</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium þarf að staðfesta að þetta sért þú svo að þú getir vistað tiltekin gögn á Google-reikningnum þínum og notað þau í öllum tækjunum þínum. Ef þú skráir þig út núna verður þessum gögnum (1 atriði) eytt.}one{Chromium þarf að staðfesta að þetta sért þú svo að þú getir vistað tiltekin gögn á Google-reikningnum þínum og notað þau í öllum tækjunum þínum. Ef þú skráir þig út núna verður þessum gögnum ({count} atriði) eytt.}other{Chromium þarf að staðfesta að þetta sért þú svo að þú getir vistað tiltekin gögn á Google-reikningnum þínum og notað þau í öllum tækjunum þínum. Ef þú skráir þig út núna verður þessum gögnum ({count} atriði) eytt.}}</translation>
 <translation id="3013473503895162900">Opna <ph name="URL" /> í nýjum flipa í Chromium.</translation>
@@ -468,7 +470,6 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="5949225980829865667">Skráðu þig inn í Chromium til að fá þetta bókamerki og fleiri í öllum tækjunum þínum</translation>
 <translation id="5953657885167112863">Gerðu Chromium-vafrann að þínum</translation>
 <translation id="5960071705175224773">Óþekkt forrit breytti stillingunum þínum</translation>
-<translation id="5977420883993828287">Fest! Notaðu samhengismiðuð verkefni aftur af tækjastikunni</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Fyrirtækið lokar Chromium sjálfkrafa eftir aðgerðaleysi í 1 mínútu.}one{Fyrirtækið lokar Chromium sjálfkrafa eftir aðgerðaleysi í # mínútu.}other{Fyrirtækið lokar Chromium sjálfkrafa eftir aðgerðaleysi í # mínútur.}}</translation>
 <translation id="5987687638152509985">Uppfærðu Chromium til að hefja samstillingu</translation>
 <translation id="5990360079535151574">Með hnappnum „Samhengismiðuð verkefni“ á tækjastikunni getur þú opnað samhengismiðuð verkefni aftur til að spyrja spurninga á meðan þú vafrar</translation>

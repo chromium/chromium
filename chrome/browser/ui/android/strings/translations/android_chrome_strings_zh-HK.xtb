@@ -91,7 +91,6 @@
 <translation id="1331212799747679585">無法更新 Chrome。其他選項</translation>
 <translation id="1332501820983677155">Google Chrome 功能快速鍵</translation>
 <translation id="1333491156693005331">最近檢查過</translation>
-<translation id="1336996151357442890">已取消訂閱 <ph name="SITE_NAME" />。系統將於你下次瀏覽時再次詢問你。</translation>
 <translation id="1340839264183302272">離開群組</translation>
 <translation id="1342886103232377846">如要檢查密碼是否被盜用，請前往「Google 密碼管理工具」</translation>
 <translation id="1343830902827845050">登入 Chrome</translation>
@@ -99,7 +98,6 @@
 <translation id="1355088659320425659">記錄和分頁</translation>
 <translation id="1363028406613469049">曲目</translation>
 <translation id="1366525380420346469">開啟時</translation>
-<translation id="1372840539168747818">{NUM_SITES,plural, =1{你可禁止此網站在日後傳送通知}other{你可禁止這些網站在日後傳送通知}}</translation>
 <translation id="137496472437646183">選取 [強化保護]</translation>
 <translation id="1376578503827013741">正在運算…</translation>
 <translation id="138181280295369883">登入帳戶即可在所有裝置上取用已儲存的資料及其他內容</translation>
@@ -185,7 +183,6 @@
 <translation id="1728803206919861584">要在無痕模式外儲存密鑰嗎？</translation>
 <translation id="1732514748744806741">如果你的密碼被盜用，我們會通知你</translation>
 <translation id="1737694586321018892">取得 Chrome 最強大的安全防護</translation>
-<translation id="1747593111377567311">{NUM_SITES,plural, =1{1 個網站最近曾傳送大量通知}other{# 個網站最近曾傳送大量通知}}</translation>
 <translation id="1749561566933687563">同步您的書籤</translation>
 <translation id="1750238553597293878">繼續使用 Google 帳戶中的密碼</translation>
 <translation id="1753744496844366747">Aa</translation>
@@ -350,7 +347,6 @@
 <translation id="2367818124433749493">開發人員快速鍵</translation>
 <translation id="2369058545741334020">用閱讀模式開啟</translation>
 <translation id="2378656072948663224">Google 最高級別的網絡威脅防護</translation>
-<translation id="2385605401818128172">你可以檢查傳送大量通知的網站，並禁止這些網站日後再傳送通知</translation>
 <translation id="2386938421315164605">隱藏和取消隱藏主題</translation>
 <translation id="2390510615457643724">要再次下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
 <translation id="2391579633712104609">180 度</translation>
@@ -452,7 +448,6 @@
 <translation id="2794551654724114396">開啟通知，接收有助你充分善用 Chrome 的實用貼士</translation>
 <translation id="2798977804328097977">在任何裝置上無縫繼續</translation>
 <translation id="2805210243313393104">在任何裝置上取用書籤及其他設定</translation>
-<translation id="2819849308549746319">全部取消訂閱</translation>
 <translation id="2820047235535485532">你可以選擇將哪些資料儲存到 Google 帳戶 <ph name="ACCOUNT_EMAIL" />。\n你也可以在書籤、閱讀清單或密碼管理工具中查看及管理這些項目。</translation>
 <translation id="2826576843404243001">如果網站不支援安全連線，系統會在瀏覽前發出警告。由於已啟用「進階保護」功能，因此你無法變更此設定。</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
@@ -764,7 +759,6 @@
 <translation id="405399507749852140">如果產品在任何網站上降價，系統將通知您</translation>
 <translation id="4056223980640387499">棕褐色</translation>
 <translation id="4062305924942672200">法律資料</translation>
-<translation id="4070897657850712662">{NUM_SITES,plural, =1{每天約傳送 1 則通知}other{每天約傳送 # 則通知}}</translation>
 <translation id="4072805772816336153">請稍後再試</translation>
 <translation id="4084682180776658562">書籤</translation>
 <translation id="4084712963632273211">發佈者：<ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />由 Google 提供<ph name="END_DEEMPHASIZED" /></translation>
@@ -970,6 +964,7 @@
 <translation id="480990236307250886">開啟首頁</translation>
 <translation id="4812684235631257312">主機</translation>
 <translation id="4816492930507672669">依頁面大小調整</translation>
+<translation id="4819558594335204796">開啟首頁</translation>
 <translation id="4822710610088666676">已關閉並儲存「<ph name="TAB_GROUP_TITLE" />」分頁群組</translation>
 <translation id="4835385943915508971">Chrome 沒有要求資源的存取權。</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{將有 <ph name="TAB_COUNT_ONE" /> 個分頁的分頁群組 (<ph name="COLOR_NAME" />) 還原為新的背景分頁群組。}other{將有 <ph name="TAB_COUNT_MANY" /> 個分頁的分頁群組 (<ph name="COLOR_NAME" />) 還原為新的背景分頁群組。}}</translation>
@@ -1285,14 +1280,12 @@
 <translation id="6140948187512243695">顯示詳細資料</translation>
 <translation id="6142183503755612900">你可在設定中隨時變更預設設定</translation>
 <translation id="6146563240635539929">影片</translation>
-<translation id="614890671148262506">一律允許此網站傳送通知</translation>
 <translation id="6150320133806434356">已儲存書籤</translation>
 <translation id="6150706324143004339">如要在 Google 帳戶中使用及儲存 Chrome 資料，請更新 Chrome</translation>
 <translation id="6154478581116148741">在「設定」中開啟螢幕鎖定功能，即可從此裝置匯出您的密碼</translation>
 <translation id="6156323911414505561">顯示書籤列</translation>
 <translation id="6162892189396105610">預先載入 Chrome 認為您可能瀏覽的網頁。</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
-<translation id="6170675927290506430">前往通知設定</translation>
 <translation id="6184972259157699660"><ph name="TAB_TITLE" />，已經靜音嘅無痕式分頁</translation>
 <translation id="6186394685773237175">找不到被盜用的密碼</translation>
 <translation id="6192907950379606605">取得圖片說明</translation>
@@ -1311,6 +1304,7 @@
 <translation id="6246073558347462570">內容彈出式視窗</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6248988683584659830">搜尋設定</translation>
+<translation id="6250046936554288508">AI 模式捷徑</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />，複選咗嘅固定無痕式分頁</translation>
 <translation id="6251449557817521191">在此查看 Chrome 記錄</translation>
 <translation id="6254139308321626268">你正在檢視 PDF 檔案</translation>
@@ -1469,7 +1463,6 @@
 <translation id="679845623837196966">顯示閱讀清單</translation>
 <translation id="679956319013005046">如要設定偏好的自動填入服務，請先在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中加入該服務。</translation>
 <translation id="6802555630140434547">視窗即將關閉</translation>
-<translation id="6803791793483522764">檢查通知</translation>
 <translation id="6809470175540814047">在無痕式視窗中開啟</translation>
 <translation id="6811034713472274749">網頁已準備就緒，可供查看</translation>
 <translation id="6813359536773993594">{FILE_COUNT,plural, =1{圖片，清單中有 1 張圖片}other{圖片，清單中有 # 張圖片}}</translation>
@@ -1501,9 +1494,7 @@
 <translation id="6880903702195291049">權限沒有問題</translation>
 <translation id="6883204995689174413">分享</translation>
 <translation id="6883264411109586397">{ITEMS_COUNT,plural, =1{1 個項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}other{# 個項目只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}}</translation>
-<translation id="6883906387682976294">取消訂閱此網站的通知</translation>
 <translation id="688398477366397178">如果網站知道你使用哪些語言，就會盡可能以這些語言顯示內容。</translation>
-<translation id="6885933993535178919">{NUM_SITES,plural, =1{已取消訂閱 1 個網站}other{已取消訂閱 # 個網站}}</translation>
 <translation id="6886500155621657325">{ITEMS_COUNT,plural, =1{1 個密碼}other{# 個密碼}}</translation>
 <translation id="6892009074348518725">如要使用此擴充程式，請登入 Chrome。你還可以儲存並使用 Google 帳戶中的密碼和其他資料。</translation>
 <translation id="6896758677409633944">複製</translation>
@@ -1511,7 +1502,6 @@
 <translation id="6900532703269623216">強化保護功能</translation>
 <translation id="6900654715912436255">確定要刪除此搜尋引擎嗎？</translation>
 <translation id="6906448540340261898">請確保您可隨時使用 Google 帳戶中的密碼</translation>
-<translation id="6908230663105268638">已允許 <ph name="SITE_NAME" /> 傳送通知</translation>
 <translation id="6908998565271542516">核准或者唔核准網站嘅選項宜家顯示喺成個畫面</translation>
 <translation id="6909589135458168665">預先載入網頁</translation>
 <translation id="6910211073230771657">已刪除</translation>
@@ -1629,7 +1619,6 @@
 <translation id="7324354302972299151">傳送「Do Not Track」要求</translation>
 <translation id="7333041109965360609">已取消訂閱通知</translation>
 <translation id="7335766481146072567">按一下 [繼續]</translation>
-<translation id="7336259382292148213">通知權限沒有問題</translation>
 <translation id="7339898014177206373">新視窗</translation>
 <translation id="7349983576451251297">在 Chrome 瀏覽器 (而非自訂分頁) 開啟網頁</translation>
 <translation id="7352339641508007922">拖曳以擷取長螢幕截圖</translation>
@@ -1896,7 +1885,6 @@
 <translation id="8322452989119079156">在「<ph name="NATIVE_APP_NAME" />」中開啟 - 由「<ph name="DEVICE_NAME" />」傳送</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="8333026248928723981">書籤和清單</translation>
-<translation id="8342727528718219152">如有網站可能傳送太多通知，Chrome 會提示你</translation>
 <translation id="834313815369870491">永遠不要翻譯的網站</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />，複選咗錄緊媒體嘅固定無痕式分頁</translation>
 <translation id="8348430946834215779">盡量使用 HTTPS，並在系統載入不支援 HTTPS 的網站前先接收提醒</translation>
@@ -2032,7 +2020,7 @@
 <translation id="8863714995118816041">已再次向 <ph name="SITE_NAME" /> 授予權限</translation>
 <translation id="8864055848767439877">正在與 <ph name="APP_NAME" /> 共用 <ph name="TAB_NAME" /></translation>
 <translation id="8865415417596392024">帳戶中的 Chrome 資料</translation>
-<translation id="886968456388055613">依瀏覽者篩選</translation>
+<translation id="886968456388055613">按瀏覽者篩選</translation>
 <translation id="8872506776304248286">在應用程式中開啟</translation>
 <translation id="8880275451109933094">雙頁檢視</translation>
 <translation id="8890668505403261809">搜尋無痕式分頁</translation>

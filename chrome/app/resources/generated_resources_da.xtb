@@ -437,7 +437,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="130744661532298792">Verificer din identitet for at sikre, at du altid kan bruge adgangskoderne på din Google-konto</translation>
 <translation id="1308105352527684175">Du kan muligvis ikke få adgang til visse typer indhold</translation>
 <translation id="1311092170520822848">Dette website styrer chipkortlæsere, der er knyttet til din enhed, og muligvis chipkort, der er tilgængelige for dem</translation>
-<translation id="131112175593356748">Vis nogle</translation>
 <translation id="131112695174432497">Data, der påvirker personlig tilpasning af annoncer, slettes</translation>
 <translation id="131188242279372879">Prøv forbedret beskyttelse for at få Chromes højeste sikkerhedsniveau for downloads</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Løs problemet med den fane, der gør din browser langsom}one{Løs problemet med den fane, der gør din browser langsom}other{Løs problemet med de faner, der gør din browser langsom}}</translation>
@@ -831,6 +830,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1621984899599015181">Delingsindstilingerne administreres af din organisation. Nogle elementer er muligvis skjult.</translation>
 <translation id="1622054403950683339">Glem Wi-Fi-netværk</translation>
 <translation id="1623723619460186680">Reduktion af blåt lys</translation>
+<translation id="1623799258803152950">Denne side og den fremhævede tekst deles med Google</translation>
 <translation id="1626581272720526544">Du kan downloade Android-apps og -spil via Play Butik. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">Filbeskrivelser</translation>
 <translation id="1627408615528139100">Er allerede downloadet</translation>
@@ -2806,6 +2806,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3109206895301430738">Gemte fanegrupper</translation>
 <translation id="3109724472072898302">Skjult</translation>
 <translation id="3112292765614504292">Appstørrelse: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Skjul</translation>
 <translation id="3112532142993641404">Log ind, og synkroniser historikken for at få adgang til dine faner fra dine andre enheder. Du kan også se dine bogmærker og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="311347022006935575">Har tilføjet denne fane</translation>
 <translation id="311394601889664316">Tillad ikke, at websites redigerer filer og mapper på din enhed</translation>
@@ -2846,6 +2847,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3143515551205905069">Annuller synkronisering</translation>
 <translation id="3143754809889689516">Afspil fra begyndelsen</translation>
 <translation id="3144647712221361880">Åbn linket som</translation>
+<translation id="3146436581677566946">Model på enheden</translation>
 <translation id="3147878021189006333">Omnifelt</translation>
 <translation id="3149510190863420837">Chrome-apps</translation>
 <translation id="3150927491400159470">Genindlæs fuldstændig</translation>
@@ -3211,6 +3213,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3424969259347320884">Beskriv, hvad du foretog dig, da fanen gik ned</translation>
 <translation id="3426562492084153055">Gennemse færdigheder</translation>
 <translation id="3427092606871434483">Tillad (standardindstilling)</translation>
+<translation id="3427822597374329810">Lille ekspertmodel</translation>
 <translation id="3429086384982427336">De apps, der er angivet nedenfor, håndterer aldrig protokollinks.</translation>
 <translation id="3429174588714165399">Opret en genvej til denne side</translation>
 <translation id="3429271624041785769">Sprog for webindhold</translation>
@@ -3590,6 +3593,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3701167022068948696">Løs problemet nu</translation>
 <translation id="3701515417135397388">Få en underretning, hvis en adgangskode er blevet kompromitteret i forbindelse med et brud på datasikkerheden</translation>
 <translation id="3701778844313851487">Gå til Udvidelser</translation>
+<translation id="3701846426433416920">Slet model</translation>
 <translation id="3703166520839776970">Hvis dette problem fortsætter, kan du vælge "Flere oplysninger" nedenfor for at få flere oplysninger fra <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3703699162703116302">Billetten blev opdateret</translation>
 <translation id="370415077757856453">JavaScript er blokeret</translation>
@@ -4391,6 +4395,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4296632172536745000">Din oprindelige adgangskode til dette website blev fundet i forbindelse med et offentligt brud på datasikkerheden. Den <ph name="DATE" /> bad du <ph name="BRAND" /> om automatisk at ændre din adgangskode for dig.</translation>
 <translation id="4297219207642690536">Genstart og nulstil</translation>
 <translation id="4297813521149011456">Skærmrotation</translation>
+<translation id="42981349822642051">Udvid</translation>
 <translation id="4298660926525614540">Navne på flytbare lagre</translation>
 <translation id="4299022904780065004">Nyt &amp;inkognitovindue</translation>
 <translation id="4300272766492248925">Åbn app</translation>
@@ -5145,6 +5150,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4877276003880815204">Inspect Elements (Undersøg elementer)</translation>
 <translation id="4878634973244289103">Din feedback kunne ikke indsendes. Prøv igen senere.</translation>
 <translation id="4878718769565915065">Der blev ikke føjet et fingeraftryk til denne sikkerhedsnøgle</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}one{+#}other{+#}}</translation>
 <translation id="4879491255372875719">Automatisk (standard)</translation>
 <translation id="4880827082731008257">Søg i historikken</translation>
 <translation id="4881685975363383806">Påmind mig ikke næste gang</translation>
@@ -5629,6 +5635,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5247051749037287028">Vist navn (valgfrit)</translation>
 <translation id="5247243947166567755">Vælg <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">Spørg om alt, lige der hvor du er, med Gemini i Chrome</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{Der vises 1 informationsbjælke mere, når dette lukkes}one{Der vises # informationsbjælke mere, når dette lukkes}other{Der vises # informationsbjælker mere, når dette lukkes}}</translation>
 <translation id="5248934139541843042">Se arrangør</translation>
 <translation id="5249624017678798539">Browseren lukkede ned, før overførslen var fuldført.</translation>
 <translation id="5249818097095743806">Brug din sikkerhedsnøgle</translation>
@@ -5934,6 +5941,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5493792505296048976">skærmen er tændt</translation>
 <translation id="5494016731375030300">Seneste lukkede faner</translation>
 <translation id="5494362494988149300">Åbn når &amp;færdigt</translation>
+<translation id="5494439739088303974">Brug Google Lens til at stille spørgsmål om tekst eller billeder på siden</translation>
 <translation id="5494879038325093596">Verificer din identitet for at bruge den på alle enheder med din Google-konto</translation>
 <translation id="5494920125229734069">Vælg alle</translation>
 <translation id="5495466433285976480">Dette vil fjerne alle lokale brugere, filer, data og andre indstillinger, når du genstarter næste gang. Alle brugere skal logge ind igen.</translation>

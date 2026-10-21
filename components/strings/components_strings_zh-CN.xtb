@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
-<translation id="1003222766972176318">提醒：可以使用已保存的优惠</translation>
 <translation id="1008557486741366299">以后再说</translation>
 <translation id="100957008357583611">允许此网站使用您的位置信息？</translation>
 <translation id="1010200102790553230">保存网页以供日后加载</translation>
@@ -1127,6 +1126,7 @@
 <translation id="2911973620368911614">工作账号用户 ID</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> 通常会使用加密技术来保护您的信息。Chrome 此次尝试连接到 <ph name="SITE" /> 时，该网站发回了异常的错误凭证。这可能是因为有攻击者在试图冒充 <ph name="SITE" />，或者 Wi-Fi 登录屏幕中断了此次连接。请放心，您的信息仍然是安全的，因为 Chrome 尚未进行任何数据交换便停止了连接。</translation>
 <translation id="2915068235268646559">崩溃时间：<ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">所有设备</translation>
 <translation id="2916038427272391327">关闭其他程序</translation>
 <translation id="2917630513638801879">青色 1</translation>
 <translation id="2922350208395188000">无法核实服务器证书。</translation>
@@ -1460,7 +1460,6 @@
 <translation id="3479552764303398839">以后再说</translation>
 <translation id="3481315707647070701">直观呈现，随心修改</translation>
 <translation id="3484560055331845446">您可能会无法再访问自己的 Google 账号。Chrome 建议您立即更改密码。系统会要求您登录。</translation>
-<translation id="3484861421501147767">提醒：可以使用已保存的促销代码</translation>
 <translation id="3485901585646640838">若要使用 Google 账号中保存的密码和其他信息，请验证您的身份</translation>
 <translation id="3487845404393360112">纸匣 4</translation>
 <translation id="3493881266323043047">有效期</translation>
@@ -1818,6 +1817,7 @@
 <translation id="4067774859633143413">若要退出全屏模式并查看下载内容，请按住 |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">添加有效地址</translation>
 <translation id="4072486802667267160">处理您的订单时出错。请重试。</translation>
+<translation id="4073293290376142777">要登录吗？</translation>
 <translation id="4073376909608563327">无法使用设备解锁</translation>
 <translation id="4073797364926776829">查看卡</translation>
 <translation id="4075732493274867456">客户端和服务器不支持一般 SSL 协议版本或加密套件。</translation>
@@ -1850,6 +1850,7 @@
 <translation id="4107047499377819067">已开始安装 VPN 后台服务，这可能需要几分钟时间。</translation>
 <translation id="4110642094637545339">Google Pay、AfterPay 徽标</translation>
 <translation id="4110652170750985508">查看您的付款</translation>
+<translation id="411071007970303441">所有操作者</translation>
 <translation id="4112140312785995938">快退</translation>
 <translation id="4114007503059268298">要将这张卡的信息保存到您的 Google 账号中和此设备上吗？</translation>
 <translation id="4114146879518089587">继续访问网站</translation>
@@ -3435,6 +3436,7 @@
 <translation id="6753460329812070808">已从 Chrome 中移除建议</translation>
 <translation id="6757797048963528358">您的设备已进入休眠模式。</translation>
 <translation id="6758934187792712102"><ph name="URL" /> 想使用您的移动传感器和光传感器</translation>
+<translation id="6766488013065406604">前往 Google 密码管理工具</translation>
 <translation id="6770747695101757579">纸（棉纸）</translation>
 <translation id="6772959465807028761">如要使用 YouTube，请登录 Google 账号继续操作</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3645,7 +3647,6 @@
 <translation id="7120588595737538743">下载内容和屏幕截图</translation>
 <translation id="7124354851782353862">请输入 CVC</translation>
 <translation id="7129409597930077180">无法向此地址送货。请另选一个地址。</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /><ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">禁止上传</translation>
 <translation id="7132939140423847331">您的管理员已禁止复制此数据。</translation>
 <translation id="7134653428559514680">不建议从该网站分享</translation>
@@ -3963,6 +3964,7 @@
 <translation id="7637571805876720304">要从 Chromium 中移除信用卡吗？</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{无}=1{您的账号中保存了 1 个密码（关联的网域：<ph name="DOMAIN_LIST" />）}other{您的账号中保存了 # 个密码（关联的网域：<ph name="DOMAIN_LIST" />）}}</translation>
 <translation id="7638605456503525968">串行端口</translation>
+<translation id="7644100755247241229">通过 Google 钱包使用 Pix 向好友和商家付款</translation>
 <translation id="7646681339175747202">您刚才使用的密码遭遇了数据泄露。Google 密码管理工具建议您立即更改密码。</translation>
 <translation id="7647206758853451655">打印质量</translation>
 <translation id="7648133459447652947">如需显示光标，请切换应用、重新加载页面或返回</translation>
@@ -4066,6 +4068,7 @@
 <translation id="7791543448312431591">添加</translation>
 <translation id="7798389633136518089">此政策不是由云端来源设置，因此已被忽略。</translation>
 <translation id="7800304661137206267">该连接是使用 <ph name="CIPHER" /> 进行加密的，同时使用 <ph name="MAC" /> 进行讯息身份验证并使用 <ph name="KX" /> 作为密钥交换机制。</translation>
+<translation id="780228007282527248">添加标签页或图片，让搜索更精准</translation>
 <translation id="7802523362929240268">网站是合规的</translation>
 <translation id="7802989406998618639">输入<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位数安全码，以便银行验证您的身份</translation>
 <translation id="780301667611848630">不用了</translation>

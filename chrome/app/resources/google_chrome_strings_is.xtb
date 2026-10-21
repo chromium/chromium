@@ -118,7 +118,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2039417478970545937">Stillingar.</translation>
 <translation id="2040220733769034247">Skannaðu QR-kóðann með símanum þínum til að sækja Chrome og skrá þig inn á Google-reikninginn þinn.</translation>
 <translation id="2044908892530830113">Sýna leit með Chrome á Mac-valmyndarstiku og kveikja á flýtilykli</translation>
-<translation id="2050189601866423230">Þú getur fest gervigreindarstillingu Google-leitar til að spyrja spurninga á meðan þú vafrar</translation>
 <translation id="2091012649849228750">Til að fá frekari uppfærslur á Google Chrome þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 8.</translation>
 <translation id="2094648590148273905">Skilmálar ChromeOS Flex</translation>
 <translation id="2094919256425865063">Viltu samt loka Chrome?</translation>
@@ -464,6 +463,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 <translation id="5386244825306882791">Þetta stýrir því einnig hvaða síða er birt þegar þú ræsir Chrome eða leitar úr veffangastikunni.</translation>
 <translation id="5394833366792865639">Deila Chrome flipa</translation>
 <translation id="5402307365844630024">Velja/afvelja Gemini í Chrome Beta</translation>
+<translation id="5414664742659847155">Einangra Chrome frá öðrum forritum</translation>
 <translation id="541844421954567481">Hafðu aðgangsorðin þín, flipa og fleira með þér á ferðinni með Chrome-forritinu í <ph name="DEVICE_TYPE" /></translation>
 <translation id="5430073640787465221">Kjörstillingaskráin þín er skemmd eða ógild.
 
@@ -679,6 +679,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7306401458628386911">Byrjaðu að vafra samstundis: Chrome getur nú ræst þegar Windows ræsist.</translation>
 <translation id="7308322188646931570">Chrome þarf aðgang að geymslu til að geta sótt skrár</translation>
 <translation id="7352651011704765696">Eitthvað fór úrskeiðis</translation>
+<translation id="7371412052245999753">Verndar minni Chrome gegn öðrum forritum í tölvunni þinni.</translation>
 <translation id="73786666777299047">Opna vefverslun Chrome</translation>
 <translation id="7386878009611068389">Til að vera öruggari á netinu með vali foreldra þinna skaltu skipta yfir í Chrome-prófílinn þinn þar sem þú ert þegar innskráð(ur) sem <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Þú varst skráð(ur) inn á Chrome sem <ph name="USER_EMAIL_ADDRESS" />. Notaðu sama reikning til að skrá þig inn aftur.</translation>
@@ -772,7 +773,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8074398340364918139">Til að leita að tilteknum eiginleika eða viðbót Chrome skaltu slá inn flýtileiðina í veffangastikuna og ýta svo á valinn flýtilykil</translation>
 <translation id="8077579734294125741">Aðrir Chrome-prófílar</translation>
 <translation id="8086881907087796310">Uppsetning mistókst vegna þess að tölvan þín uppfyllir ekki lágmarksskilyrði um vélbúnað.</translation>
-<translation id="8110438089258398864">Þú getur opnað gervigreindarstillingu Google-leitar aftur til að spyrja spurninga á meðan þú vafrar</translation>
 <translation id="8113883687556086139">Staðfestu að þetta sért þú til að nota og vista Chrome-gögn á reikningnum þínum, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Verið er að sérsníða Chrome...</translation>
 <translation id="8118331347066725040">Senda ábendingu vegna leitar með Linsu</translation>
@@ -829,8 +829,6 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="8555465886620020932">Þjónustuvilla: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Leita í lista tungumála</translation>
 <translation id="8575047640889685742">Notaðu <ph name="BEGIN_LINK" />eigið aðgangsorð<ph name="END_LINK" /> til að dulkóða öll Chrome-gögn á Google-reikningnum þínum. Upplýsingar um greiðslumáta og heimilisföng úr Google Pay verða ekki dulkóðaðar. Vafraferill Chrome samstillist ekki.</translation>
-<translation id="8590782867495422699">Opna aftur gervigreindarstillingu Google-leitar</translation>
-<translation id="8598779894319572882">Með því að ýta á hnappinn „Gervigreindarstilling Google-leitar“ á tækjastikunni getur þú opnað gervigreindarstillingu Google-leitar aftur til að spyrja spurninga á meðan þú vafrar</translation>
 <translation id="8614913330719544658">Google Chrome svarar ekki. Endurræsa núna?</translation>
 <translation id="8623450603356630491">Skráðu þig inn á Chrome í símanum þínum</translation>
 <translation id="8624541899164515475">Stillingar, opnast í nýjum flipa.</translation>
@@ -885,7 +883,6 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="9014771989710951291">Mörg fyrirtæki hafa umsjón með Chrome</translation>
 <translation id="9018218886431812662">Uppsetningu lokið</translation>
 <translation id="9066987883552592250">Loka Gemini í Chrome Canary</translation>
-<translation id="9074041031320636790">Þetta tókst! Nú geturðu spurt spurninga á auðveldan hátt á meðan þú vafrar með gervigreindarstillingu Google-leitar</translation>
 <translation id="9090566250983691233">Kynntu þér hvers vegna Chrome lokar á sumar skrár</translation>
 <translation id="9106236359747881194">Veldu texta til að leita</translation>
 <translation id="911206726377975832">Eyða líka vafragögnum?</translation>

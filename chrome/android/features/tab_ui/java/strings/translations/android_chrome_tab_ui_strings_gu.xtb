@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="2569352796411618312">સૂચન: હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
 <translation id="257674075312929031">જૂથ</translation>
+<translation id="2628148780487543078">પિન કરેલા ટૅબ પણ બંધ કરો</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ, રંગ <ph name="COLOR_NAME" /> ધરાવતા ટૅબના ગ્રૂપ રિસ્ટોર કરો અને ખોલો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ, રંગ <ph name="COLOR_NAME" /> ધરાવતા ટૅબના ગ્રૂપ રિસ્ટોર કરો અને ખોલો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ, રંગ <ph name="COLOR_NAME" /> ધરાવતા ટૅબના ગ્રૂપ રિસ્ટોર કરો અને ખોલો.}}</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ</translation>
 <translation id="266935134738038806">સાઇટની મુલાકાત લો</translation>

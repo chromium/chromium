@@ -117,6 +117,7 @@
 <translation id="2190166659037789668">更新確認エラー: <ph name="UPDATE_CHECK_ERROR" />。</translation>
 <translation id="2199210295479376551">Chromium からアカウントを削除</translation>
 <translation id="2201788217099588893">Chromium アプリで、便利なショッピング ツールを外出先でも利用できます</translation>
+<translation id="2209877494277346829">Chromium を他のアプリから分離する</translation>
 <translation id="2210502920229141283">iOS 版 Chromium のセーフ ブラウジング保護強化機能により、外出先で安全に使用できます</translation>
 <translation id="2210682093923538346">危険なサイトのため、Chromium で通知の権限を削除しました。</translation>
 <translation id="2236949375853147973">マイ アクティビティ</translation>
@@ -189,6 +190,7 @@
 <translation id="2977470724722393594">Chromium は最新版です</translation>
 <translation id="2977506796191543575">サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります</translation>
 <translation id="2981563588585023386">保護者の方が指定した設定でインターネットをより安全に利用するには、Chromium にログインしてください</translation>
+<translation id="2992577225802060159">Chromium のメモリがパソコン上の他のアプリケーションからアクセスされないよう保護します。</translation>
 <translation id="3003694935412297923">すべてのタスク</translation>
 <translation id="3012615494352020668">{count,plural, =1{Google アカウントに一部のデータを保存して、すべてのデバイスで使用できるようにするには、Chromium で本人確認を行う必要があります。今すぐログアウトすると、このデータ（1 個のアイテム）は削除されます。}other{Google アカウントに一部のデータを保存して、すべてのデバイスで使用できるようにするには、Chromium で本人確認を行う必要があります。今すぐログアウトすると、このデータ（{count} 個のアイテム）は削除されます。}}</translation>
 <translation id="3013473503895162900">Chromium の新しいタブで <ph name="URL" /> を開きます。</translation>
@@ -463,7 +465,6 @@
 <translation id="5949225980829865667">すべてのデバイスでこのブックマークなどを使用するには、Chromium にログインしてください</translation>
 <translation id="5953657885167112863">Chromium を自分好みに</translation>
 <translation id="5960071705175224773">不明なアプリによって設定が変更されました</translation>
-<translation id="5977420883993828287">固定しました。ツールバーからコンテキスト タスクを使用できます</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium を自動的に終了します。}other{# 分間使用しなかった場合、組織は Chromium を自動的に終了します。}}</translation>
 <translation id="5987687638152509985">同期を開始するには、Chromium を更新します</translation>
 <translation id="5990360079535151574">ツールバーの [コンテキスト タスク] ボタンからコンテキスト タスクを再度開いて、ブラウジング中に質問できます</translation>

@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">ଏକ ଆନୁମାନିକ ଫଳାଫଳ ପାଇଁ <ph name="CONVERSION_RATE" /> ଭେଲ୍ୟୁକୁ <ph name="CATEGORY_TEXT" /> ଦ୍ୱାରା ଭାଗ କରନ୍ତୁ</translation>
 <translation id="1442433966118452622">ଇମେଜ ସୋର୍ସ</translation>
 <translation id="1446954767133808402">ସାଫାୟାର</translation>
-<translation id="1449035143498573192">Google Searchରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="1451536289672181509">ଡିଭାଇସଟି ଏକ କୀବୋର୍ଡ ଅଟେ।</translation>
 <translation id="1452939186874918380">ଛତା</translation>
 <translation id="145402479967797468">ପ୍ଲେବେକ ନିୟନ୍ତ୍ରଣ</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />ର ପ୍ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="1668469839109562275">ବିଲ୍ଟ-ଇନ VPN</translation>
 <translation id="1669047024429367828">ଭିଜିବିଲିଟୀ</translation>
-<translation id="1670478569471758522">ଆପଣଙ୍କ ଚୟନ ସମ୍ବନ୍ଧିତ ଅଧିକ ସୂଚନା</translation>
 <translation id="1672499492233627739">ୱେବକ୍ୟାମ ଭିଡିଓ ଫିଡ</translation>
 <translation id="1676557873873341166">ଭିଡିଓ ନିଆଯାଉଛି</translation>
 <translation id="1684279041537802716">ଆକ୍ସେଣ୍ଟ ରଙ୍ଗ</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">ଏଡିଟିଂ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="3532980081107202182">ପ୍ରାୟ <ph name="MIN_REMAINING" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
 <translation id="3533790840489634638">ପୁଲ</translation>
-<translation id="3547264467365135390">ସୂତ୍ର</translation>
 <translation id="3552832331940389362">ଅପରାହ୍ନରେ ଝରକା ପାଖରେ ବସି ବର୍ଷାକୁ ଦେଖୁଥିବା ଏକ ବିଲେଇର ଜାପାନିଜ ଆନିମେସନ ଇଲୁଷ୍ଟ୍ରେସନ</translation>
 <translation id="3557205324756024651">ସ୍ଥାନୀୟ ପରିଚୟ (ଇଚ୍ଛାଧୀନ)</translation>
 <translation id="3565064564551103223">ଅନୁମତି ଦିଆଯାଇଥିବା IPଗୁଡ଼ିକ</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">ବିବରଣୀ</translation>
 <translation id="3869314628814282185">ଟ୍ୟୁଲ</translation>
 <translation id="387301095347517405">ଆପଣଙ୍କ ବ୍ୟାଟେରୀ ଯେତେ ଥର ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଚାର୍ଜ ହୋଇଛି</translation>
-<translation id="3877066159641251281">ଅନୁବାଦକୁ ଶୁଣନ୍ତୁ</translation>
 <translation id="3880601782712134623">ସ୍ୱତନ୍ତ୍ର ଭଏସଗୁଡ଼ିକୁ ସ୍ୱତଃ ଚିହ୍ନଟ କରି ପ୍ରତ୍ୟେକ ସ୍ପିକରଙ୍କୁ ସ୍ପିକର 1 ଏବଂ ସ୍ପିକର 2 ପରି ଏକ ଜେନେରିକ ଲେବଲ ଦେବ</translation>
 <translation id="38811596981744338">ଆଇନଗତ ସମସ୍ୟା</translation>
 <translation id="3885327323343477505">ସ୍କ୍ରିନ ସେଭର ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003"><ph name="DEVICE_NAME" /> USB କେବୁଲକୁ ଅନପ୍ଲଗ କରି ଅପଡେଟ ପ୍ରକ୍ରିୟା ଜାରି ରଖିବା ପାଇଁ ଏହାକୁ ପୁଣି ଇନସାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5099354524039520280">ଉପର</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> କୀ ବିନା ସର୍ଟକଟ କିଛି ଆପର ସର୍ଟକଟ ସହ ବିବାଦ ସୃଷ୍ଟି କରିପାରେ। ଏହି ସର୍ଟକଟକୁ ବ୍ୟବହାର କରିବା ଜାରି ରଖିବା ପାଇଁ ପୁଣି ଏହାକୁ ଦବାନ୍ତୁ କିମ୍ବା <ph name="KEY" /> କୀ ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">ସମାନ:</translation>
 <translation id="5130848777448318809">ପୋନି</translation>
 <translation id="5137451382116112100">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ</translation>
 <translation id="5139813694804168398">ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="5140788690559353412">ଆପଣଙ୍କର ସ୍କୁଲ ଆକାଉଣ୍ଟକୁ ଆପଣ ଆକ୍ସେସ ହରାଇଲେ, ଆପଣଙ୍କ ପାଖରେ ଆଉ ସମ୍ବନ୍ଧିତ ଇମେଲ ଏବଂ Gmail, Docs, Slides ଓ ଆହୁରି ଅନେକ କିଛି ପରି Google Drive ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ ରହିବ ନାହିଁ।</translation>
 <translation id="5142961317498132443">ପ୍ରମାଣିକରଣ</translation>
 <translation id="5144311987923128508">ସୁନିଶ୍ଚିତ କରନ୍ତୁ ବଟନକୁ ବର୍ତ୍ତମାନ ଅକ୍ଷମ କରାଯାଇଛି</translation>
-<translation id="5144887194300568405">ଅନୁବାଦ କପି କରନ୍ତୁ</translation>
 <translation id="5145081769226915336">ସ୍ୱତଃ ଡାର୍କ ମୋଡକୁ ଚାଲୁ କରିବେ?</translation>
 <translation id="5145331109270917438">ପରିବର୍ତ୍ତିତ ତାରିଖ</translation>
 <translation id="5154917547274118687">ମେମୋରୀ</translation>

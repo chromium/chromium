@@ -118,7 +118,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2039417478970545937">Mga Setting.</translation>
 <translation id="2040220733769034247">I-scan ang QR code gamit ang iyong telepono para i-download ang Chrome at mag-sign in sa Google Account mo.</translation>
 <translation id="2044908892530830113">Ipakita ang paghahanap gamit ang Chrome sa menu bar ng Mac at i-on ang keyboard shortcut</translation>
-<translation id="2050189601866423230">Puwede mong i-pin ang AI Mode ng Google Search para makapagtanong habang nagba-browse ka</translation>
 <translation id="2091012649849228750">Para makatanggap ng mga update sa Google Chrome sa hinaharap, kakailanganin mo ng Windows 10 o mas bago. Gumagamit ng Windows 8 ang computer na ito.</translation>
 <translation id="2094648590148273905">Mga tuntunin ng ChromeOS Flex</translation>
 <translation id="2094919256425865063">Umalis pa rin sa Chrome?</translation>
@@ -464,6 +463,7 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="5386244825306882791">Kinokontrol din nito kung anong pahina ang ipinapakita kapag sinimulan mo ang Chrome o naghanap mula sa Omnibox.</translation>
 <translation id="5394833366792865639">Magbahagi ng tab ng Chrome</translation>
 <translation id="5402307365844630024">I-toggle ang Gemini sa Chrome Beta</translation>
+<translation id="5414664742659847155">Ihiwalay ang Chrome sa iba pang app</translation>
 <translation id="541844421954567481">Dalhin ang iyong mga password, tab, at higit pa nang on the go gamit ang Chrome app sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="5430073640787465221">Sira o di-wasto ang iyong file ng mga kagustuhan.
 
@@ -679,6 +679,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7306401458628386911">Masimulan kaagad ang pag-browse: Puwede na ngayong ilunsad ang Chrome kapag nagsimula na ang Windows.</translation>
 <translation id="7308322188646931570">Kailangan ng Chrome ng access sa storage para mag-download ng mga file</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
+<translation id="7371412052245999753">Pinoprotektahan ang memory ng Chrome mula sa iba pang application sa iyong computer.</translation>
 <translation id="73786666777299047">Buksan ang Chrome Web Store</translation>
 <translation id="7386878009611068389">Para manatiling mas ligtas online sa pamamagitan ng mga pinili ng iyong magulang, lumipat sa profile mo sa Chrome kung saan naka-sign in ka na bilang <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="7398801000654795464">Naka-sign in ka sa Chrome bilang <ph name="USER_EMAIL_ADDRESS" />. Pakigamit ang parehong account upang mag-sign in muli.</translation>
@@ -773,7 +774,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="8074398340364918139">Para maghanap ng partikular na feature o extension ng Chrome, i-type ang shortcut nito sa address bar, kasunod ang iyong napiling keyboard key</translation>
 <translation id="8077579734294125741">Iba pang Profile sa Chrome</translation>
 <translation id="8086881907087796310">Hindi na-install dahil hindi natutugunan ng iyong computer ang mga minimum na requirement sa hardware.</translation>
-<translation id="8110438089258398864">Mabubuksan mo ulit ang AI Mode ng Google Search para makapagtanong habang nagba-browse ka</translation>
 <translation id="8113883687556086139">I-verify na ikaw ito para magamit at ma-save ang data sa Chrome sa iyong account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8115695070094288807">Ginagawang iyo ang Chrome...</translation>
 <translation id="8118331347066725040">Magpadala ng feedback para sa paghahanap gamit ang Lens</translation>
@@ -830,8 +830,6 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="8555465886620020932">Error sa serbisyo: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Maghanap sa listahan ng wika</translation>
 <translation id="8575047640889685742">Gamitin ang iyong <ph name="BEGIN_LINK" />sariling passphrase<ph name="END_LINK" /> para i-encrypt ang lahat ng data sa Chrome sa Google Account mo. Hindi mae-encrypt ang mga paraan ng pagbabayad at address mula sa Google Pay. Hindi masi-sync ang history ng pag-browse mula sa Chrome.</translation>
-<translation id="8590782867495422699">Buksan ulit ang Google Search AI Mode</translation>
-<translation id="8598779894319572882">Mula sa button na "AI Mode ng Google Search" sa toolbar, mabubuksan mo ulit ang AI Mode ng Google Search para makapagtanong habang nagba-browse ka</translation>
 <translation id="8614913330719544658">Hindi gumagana ang Google Chrome. Ilunsad muli ngayon?</translation>
 <translation id="8623450603356630491">Mag-sign in sa Chrome sa iyong telepono</translation>
 <translation id="8624541899164515475">Mga setting, magbubukas sa bagong tab.</translation>
@@ -886,7 +884,6 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="9014771989710951291">Maraming organisasyon ang namamahala sa Chrome</translation>
 <translation id="9018218886431812662">Tapos na ang pag-install</translation>
 <translation id="9066987883552592250">Isara ang Gemini sa Chrome Canary</translation>
-<translation id="9074041031320636790">Tagumpay! Madali ka na ngayong makakapagtanong habang nagba-browse ka gamit ang AI Mode ng Google Search</translation>
 <translation id="9090566250983691233">Alamin kung bakit bina-block ng Chrome ang ilang file</translation>
 <translation id="9106236359747881194">Piliin ang text para maghanap</translation>
 <translation id="911206726377975832">Tatanggalin din ang iyong data sa pag-browse?</translation>

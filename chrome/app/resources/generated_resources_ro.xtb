@@ -437,7 +437,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="130744661532298792">Pentru a te asigura că poți folosi oricând parolele din Contul Google, confirmă-ți identitatea</translation>
 <translation id="1308105352527684175">Este posibil să nu poți accesa un anumit conținut</translation>
 <translation id="1311092170520822848">Acest site controlează cititoarele de carduri inteligente conectate la dispozitivul tău și, eventual, cardurile inteligente disponibile pentru acestea.</translation>
-<translation id="131112175593356748">Afișează câteva</translation>
 <translation id="131112695174432497">Datele care influențează personalizarea anunțurilor sunt șterse</translation>
 <translation id="131188242279372879">Descoperă protecția îmbunătățită pentru a beneficia de cel mai înalt nivel de securitate pentru descărcări din Chrome</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Remediază problemele filei care încetinește browserul}few{Remediază problemele filelor care încetinesc browserul}other{Remediază problemele filelor care încetinesc browserul}}</translation>
@@ -2792,6 +2791,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3109206895301430738">Grupuri de file salvate</translation>
 <translation id="3109724472072898302">Restrâns</translation>
 <translation id="3112292765614504292">Dimensiunea aplicației: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Restrânge</translation>
 <translation id="3112532142993641404">Pentru a accesa filele de pe alte dispozitive, conectează-te și sincronizează istoricul. În plus, vei putea accesa marcajele și alte date pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="311347022006935575">A adăugat această filă</translation>
 <translation id="311394601889664316">Nu permite site-urilor să modifice fișierele sau dosarele de pe dispozitiv</translation>
@@ -4376,6 +4376,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4296632172536745000">Parola inițială pentru acest site a fost găsită într-o încălcare a securității datelor publice. Pe <ph name="DATE" /> ai solicitat ca <ph name="BRAND" /> să-ți schimbe automat parola.</translation>
 <translation id="4297219207642690536">Repornește și resetează</translation>
 <translation id="4297813521149011456">Rotirea afișajului</translation>
+<translation id="42981349822642051">Extinde</translation>
 <translation id="4298660926525614540">Nume de dispozitive de stocare amovibile</translation>
 <translation id="4299022904780065004">Fereastră nouă &amp;incognito</translation>
 <translation id="4300272766492248925">Deschide aplicația</translation>
@@ -5129,6 +5130,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4877276003880815204">Inspectează elementele</translation>
 <translation id="4878634973244289103">Feedbackul nu poate fi trimis. Încearcă din nou mai târziu.</translation>
 <translation id="4878718769565915065">Nu s-a putut adăuga o amprentă la cheia de securitate</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}few{+#}other{+#}}</translation>
 <translation id="4879491255372875719">Automat (prestabilit)</translation>
 <translation id="4880827082731008257">Caută în istoric</translation>
 <translation id="4881685975363383806">Nu-mi reaminti data viitoare</translation>
@@ -5613,6 +5615,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5247051749037287028">Numele afișat (opțional)</translation>
 <translation id="5247243947166567755">Selectează <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">Întreabă orice în locul în care te afli, cu Gemini în Chrome</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{Va mai apărea o bară de informații când aceasta este închisă}few{Vor apărea încă # bare de informații când aceasta este închisă}other{Vor apărea încă # de bare de informații când aceasta este închisă}}</translation>
 <translation id="5248934139541843042">Vezi organizatorul</translation>
 <translation id="5249624017678798539">Browserul s-a blocat înainte de finalizarea descărcării.</translation>
 <translation id="5249818097095743806">Folosește cheia de securitate</translation>
@@ -5917,6 +5920,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5493792505296048976">ecran activat</translation>
 <translation id="5494016731375030300">File închise recent</translation>
 <translation id="5494362494988149300">Deschide când s-a &amp;descărcat</translation>
+<translation id="5494439739088303974">Folosește Google Lens pentru a întreba despre orice text sau imagine din pagină</translation>
 <translation id="5494879038325093596">Confirmă-ți identitatea pentru a o folosi pe toate dispozitivele cu Contul Google</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5495466433285976480">Această acțiune va elimina utilizatorii, fișierele, datele și alte setări locale după următoarea repornire. Va fi necesar ca toți utilizatorii să se conecteze din nou.</translation>

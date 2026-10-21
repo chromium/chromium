@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Ойролцоо дүн гаргахын тулд <ph name="CATEGORY_TEXT" />-н утгыг <ph name="CONVERSION_RATE" />-д хуваана уу</translation>
 <translation id="1442433966118452622">Зургийн эх сурвалж</translation>
 <translation id="1446954767133808402">индраанил</translation>
-<translation id="1449035143498573192">Google Хайлтад нээх</translation>
 <translation id="1451536289672181509">Төхөөрөмж нь гар байна.</translation>
 <translation id="1452939186874918380">шүхрүүд</translation>
 <translation id="145402479967797468">Дахин тоглуулах удирдлага</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" />-г урьдчилан үзэх</translation>
 <translation id="1668469839109562275">Бүрэлдэхүүн VPN</translation>
 <translation id="1669047024429367828">Харагдац</translation>
-<translation id="1670478569471758522">Таны сонголттой холбоотой илүү их мэдээлэл</translation>
 <translation id="1672499492233627739">Вебкамерын видео хангамж</translation>
 <translation id="1676557873873341166">Видео бичиж байна</translation>
 <translation id="1684279041537802716">Өргөлтийн өнгө</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Засаж дууслаа</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> орчим минут үлдсэн байна</translation>
 <translation id="3533790840489634638">усан сан</translation>
-<translation id="3547264467365135390">Томьёо</translation>
 <translation id="3552832331940389362">үдээс хойш цонхны тавцан дээр суун бороо орохыг харж буй муурын японы хүүхэлдэйн хэв маягтай зураг чимэглэл</translation>
 <translation id="3557205324756024651">Дотоод таниулбар (заавал биш)</translation>
 <translation id="3565064564551103223">Зөвшөөрсөн IP</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Тодорхойлолт</translation>
 <translation id="3869314628814282185">торон</translation>
 <translation id="387301095347517405">Таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо</translation>
-<translation id="3877066159641251281">Орчуулгыг сонсох</translation>
 <translation id="3880601782712134623">Ялгаатай дуу хоолойг автоматаар илрүүлж, яригч тус бүрд 1-р яригч болон 2-р яригч зэрэг ерөнхий шошго өгөх</translation>
 <translation id="38811596981744338">Хуулийн асуудал</translation>
 <translation id="3885327323343477505">Дэлгэц амраагчийг өөрчлөх</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Шинэчлэх явцыг үргэлжлүүлэхийн тулд <ph name="DEVICE_NAME" />-н USB кабелийг салгаад, дахин залгана уу</translation>
 <translation id="5099354524039520280">дээшээ</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> товчгүй товчлол нь зарим аппын товчлолтой зөрчилдөж магадгүй. Энэ товчлолыг үргэлжлүүлэн ашиглахын тулд үүнийг дахин дарах эсвэл <ph name="KEY" /> товчийг ашиглан шинэ товчлол дарна уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Төстэй:</translation>
 <translation id="5130848777448318809">одой морьд</translation>
 <translation id="5137451382116112100">Бүтэн</translation>
 <translation id="5139813694804168398">бүү саад бол</translation>
 <translation id="5140788690559353412">Та сургуулийн бүртгэлдээ хандах эрхээ алдсан байхдаа цаашид Gmail, Докс, Үзүүлэн болон бусад үйлчилгээний холбогдох имэйл, Google Драйвын файлд хандах эрхгүй болно.</translation>
 <translation id="5142961317498132443">Баталгаажуулалт</translation>
 <translation id="5144311987923128508">Баталгаажуулах товчлуурыг одоо идэвхгүй болгосон</translation>
-<translation id="5144887194300568405">Орчуулгыг хуулах</translation>
 <translation id="5145081769226915336">Бараан горимыг автоматаар асаах уу?</translation>
 <translation id="5145331109270917438">Огноо өөрчлөгдсөн</translation>
 <translation id="5154917547274118687">Санах ойн</translation>

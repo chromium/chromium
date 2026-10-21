@@ -118,7 +118,6 @@
 <translation id="2039417478970545937">ସେଟିଂସ।</translation>
 <translation id="2040220733769034247">Chrome ଡାଉନଲୋଡ କରିବାକୁ ଆପଣଙ୍କ ଫୋନ ମାଧ୍ୟମରେ QR କୋଡକୁ ସ୍କାନ କରି ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="2044908892530830113">Mac ମେନୁ ବାରରେ Chromeରେ ସର୍ଚ୍ଚକୁ ଦେଖାନ୍ତୁ ଏବଂ କୀବୋର୍ଡ ସର୍ଟକଟକୁ ଚାଲୁ କରନ୍ତୁ</translation>
-<translation id="2050189601866423230">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ପ୍ରଶ୍ନ ପଚାରିବା ପାଇଁ Google Search AI ମୋଡକୁ ପିନ କରିପାରିବେ</translation>
 <translation id="2091012649849228750">ଭବିଷ୍ୟତରେ Google Chromeର ଅପଡେଟଗୁଡ଼ିକ ପାଇବା ପାଇଁ, ଆପଣ Windows 10 କିମ୍ବା ତା'ପରର ସଂସ୍କରଣ ଆବଶ୍ୟକ କରିବେ। ଏହି କମ୍ପ୍ୟୁଟରରେ Windows 8 ବ୍ୟବହାର କରାଯାଉଛି।</translation>
 <translation id="2094648590148273905">ChromeOS Flex ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="2094919256425865063">ଯେକୌଣସି ମତେ Chrome ପରିତ୍ୟାଗ କରିବେ?</translation>
@@ -463,6 +462,7 @@
 <translation id="5386244825306882791">ଯେତେବେଳେ ଆପଣ Chrome ଆରମ୍ଭ କରନ୍ତି କିମ୍ବା Omniboxରୁ ସର୍ଚ୍ଚ କରନ୍ତି, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠା ଦେଖାଯିବ ତାହା ମଧ୍ୟ ଏହା ନିୟନ୍ତ୍ରଣ କରେ।</translation>
 <translation id="5394833366792865639">ଗୋଟିଏ Chrome ଟାବ୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="5402307365844630024">Chrome ବିଟାରେ Geminiକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
+<translation id="5414664742659847155">ଅନ୍ୟ ଆପ୍ସରୁ Chromeକୁ ଆଇସୋଲେଟ କରେ</translation>
 <translation id="541844421954567481">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ Chrome ଆପ ସହ ଯାତ୍ରା କରିବା ସମୟରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ, ଟାବ ଏବଂ ଆହୁରି ଅନେକ କିଛି ନିଅନ୍ତୁ</translation>
 <translation id="5430073640787465221">ଆପଣଙ୍କର ଅଗ୍ରାଧିକାର ଫାଇଲ୍‌ ଖରାପ କିମ୍ବା ଅବୈଧ ଅଟେ।
 
@@ -678,6 +678,7 @@
 <translation id="7306401458628386911">ତୁରନ୍ତ ବ୍ରାଉଜ କରିବା ଆରମ୍ଭ କରନ୍ତୁ: Windows ଆରମ୍ଭ ହେଲେ Chrome ବର୍ତ୍ତମାନ ଲଞ୍ଚ ହୋଇପାରିବ।</translation>
 <translation id="7308322188646931570">ଫାଇଲ୍‌ଗୁଡ଼ିକ ଡାଉନ୍‌ଲୋଡ୍ କରିବାକୁ Chrome ଷ୍ଟୋରେଜ୍ ଆକ୍ସେସ୍ ଆବଶ୍ୟକ କରେ</translation>
 <translation id="7352651011704765696">କିଛି ଭୁଲ୍ ହୋଇଛି</translation>
+<translation id="7371412052245999753">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରରେ ଥିବା ଅନ୍ୟ ଆପ୍ଲିକେସନରୁ Chromeର ମେମୋରୀକୁ ସୁରକ୍ଷିତ ରଖେ।</translation>
 <translation id="73786666777299047">Chrome ୱେବ୍ ଷ୍ଟୋର୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="7386878009611068389">ତୁମ ବାପାମାଙ୍କ ପସନ୍ଦଗୁଡ଼ିକ ସହିତ ଅନଲାଇନରେ ସୁରକ୍ଷିତ ରହିବା ପାଇଁ ତୁମେ ପୂର୍ବରୁ <ph name="USER_EMAIL_ADDRESS" /> ଭାବରେ ସାଇନ ଇନ କରିଥିବା ତୁମ Chrome ପ୍ରୋଫାଇଲକୁ ସୁଇଚ କର</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" /> ଭାବରେ ଆପଣ Chromeରେ ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି। ପୁଣିଥରେ ସାଇନ୍ ଇନ୍ କରିବା ପାଇଁ ଦୟାକରି ସେହି ଆକାଉଣ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -772,7 +773,6 @@
 <translation id="8074398340364918139">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ Chrome ଫିଚର କିମ୍ବା ଏକ୍ସଟେନସନ ସର୍ଚ୍ଚ କରିବାକୁ ଠିକଣା ବାରରେ ଏହାର ସର୍ଟକଟ ଟାଇପ କରିବା ପରେ ଆପଣଙ୍କ ଚୟନିତ କୀବୋର୍ଡର କୀ'କୁ ଟାଇପ କରନ୍ତୁ</translation>
 <translation id="8077579734294125741">ଅନ୍ୟ Chrome ପ୍ରୋଫାଇଲଗୁଡ଼ିକ</translation>
 <translation id="8086881907087796310">ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟର ସର୍ବନିମ୍ନ ହାର୍ଡୱେର ଆବଶ୍ୟକତାକୁ ପୂରଣ କରୁନଥିବା ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
-<translation id="8110438089258398864">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ପ୍ରଶ୍ନ ପଚାରିବା ପାଇଁ Google Search AI ମୋଡକୁ ପୁଣି ଖୋଲିପାରିବେ</translation>
 <translation id="8113883687556086139">ଆପଣଙ୍କ <ph name="ACCOUNT_EMAIL" /> ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8115695070094288807">ଆପଣଙ୍କ ପସନ୍ଦ ଅନୁଯାୟୀ Chromeକୁ ପ୍ରସ୍ତୁତ କରାଯାଉଛି...</translation>
 <translation id="8118331347066725040">Lens ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ ପାଇଁ ମତାମତ ପଠାନ୍ତୁ</translation>
@@ -829,8 +829,6 @@
 <translation id="8555465886620020932">ସେବା ତ୍ରୁଟି: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="856656450041460113">ଭାଷାର ତାଲିକା ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8575047640889685742">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଥିବା ସମସ୍ତ Chrome ଡାଟା ଏନକ୍ରିପ୍ଟ କରିବା ପାଇଁ ଆପଣଙ୍କ <ph name="BEGIN_LINK" />ନିଜର ପାସଫ୍ରେଜ<ph name="END_LINK" /> ବ୍ୟବହାର କରନ୍ତୁ। ପେମେଣ୍ଟ ପଦ୍ଧତି ଏବଂ Google Payରୁ ଠିକଣାଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯିବ ନାହିଁ। Chromeରୁ ବ୍ରାଉଜିଂ ଇତିହାସ ସିଙ୍କ କରାଯିବ ନାହିଁ।</translation>
-<translation id="8590782867495422699">Google Search AI ମୋଡକୁ ପୁଣି ଖୋଲନ୍ତୁ</translation>
-<translation id="8598779894319572882">ଟୁଲବାରରେ ଥିବା "Google Search AI ମୋଡ" ବଟନରୁ, ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ପ୍ରଶ୍ନ ପଚାରିବା ପାଇଁ Google Search AI ମୋଡକୁ ପୁଣି ଖୋଲିପାରିବେ</translation>
 <translation id="8614913330719544658">Google Chrome କୌଣସି ପ୍ରତିକ୍ରିୟା ଦେଉନାହିଁ। ପୁଣିଥରେ ଲଞ୍ଚ କରିବେ?</translation>
 <translation id="8623450603356630491">ଆପଣଙ୍କ ଫୋନରେ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="8624541899164515475">ସେଟିଂସ, ନୂଆ ଟାବରେ ଖୋଲେ।</translation>
@@ -885,7 +883,6 @@
 <translation id="9014771989710951291">ଏକାଧିକ ସଂସ୍ଥା Chromeକୁ ପରିଚାଳନା କରେ</translation>
 <translation id="9018218886431812662">ଇନ୍‌ଷ୍ଟଲ୍ କରିବା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="9066987883552592250">Chrome Canaryରେ Gemini ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="9074041031320636790">ସଫଳ! ଆପଣ ବର୍ତ୍ତମାନ Google Search AI ମୋଡ ସହ ବ୍ରାଉଜ କରିବା ସମୟରେ ସହଜରେ ପ୍ରଶ୍ନ ପଚାରିପାରିବେ</translation>
 <translation id="9090566250983691233">Chrome କାହିଁକି କିଛି ଫାଇଲକୁ ବ୍ଲକ କରେ ତାହା ଜାଣନ୍ତୁ</translation>
 <translation id="9106236359747881194">ସର୍ଚ୍ଚ କରିବା ପାଇଁ ଟେକ୍ସଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="911206726377975832">ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଡାଟା ମଧ୍ୟ ବିଲୋପ କରିବେ?</translation>

@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Anpassa Chrome med egna färger och bilder på startsidan</translation>
 <translation id="389521680295183045">Webbplatser kan begära tillstånd att få veta om du använder enheten aktivt</translation>
 <translation id="3895926599014793903">Tvinga aktivering av zoom</translation>
-<translation id="3905475044299942653">Stoppa många aviseringar</translation>
 <translation id="3922092564198021702">Öppna Inställningar på telefonen</translation>
 <translation id="3924858949939391676">Visa länkar när läsläget är aktiverat</translation>
 <translation id="3933121352599513978">Komprimera oönskade begäranden (rekommenderas)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Du hittar dina grupper i avsnittet Flikgrupper på alla dina enheter</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> har blockerats från att använda dina uppgifter på</translation>
 <translation id="4953688446973710931">När detta är aktiverat kan webbplatser be om att ladda ned flera filer automatiskt. När detta är inaktiverat får webbplatser inte ladda ned flera filer automatiskt.</translation>
-<translation id="4962975101802056554">Återkalla alla behörigheter för enheten</translation>
 <translation id="4972737347717125191">Webbplatser får begära tillstånd att använda VR-enheter och VR-data</translation>
 <translation id="4973805849704516244">Ark på nedre delen av skärmen för Chrome-färger</translation>
 <translation id="497421865427891073">Fortsätt</translation>
@@ -704,7 +702,6 @@ Avancerat skydd styr följande Chrome-inställningar:</translation>
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="8441146129660941386">Sök bakåt</translation>
 <translation id="8444433999583714703">Om du vill ge <ph name="APP_NAME" /> åtkomst till din plats måste du även aktivera plats i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Återkalla enhetsbehörighet</translation>
 <translation id="8463843545738141778">Inställningen är inaktiverad eftersom du har aktiverat Avancerat skydd i Android-inställningarna.</translation>
 <translation id="8467359479529706065">Arket på nedre delen av skärmen för utseende på sidan Ny flik har öppnats över halva skärmen</translation>
 <translation id="8471525937465764768">Åtkomst till USB-enheter brukar kunna behövas för funktioner som att skriva ut dokument eller spara filer på en lagringsenhet</translation>

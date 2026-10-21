@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
-<translation id="1003222766972176318">Muistutus: tallennettu tarjous saatavilla</translation>
 <translation id="1008557486741366299">Ei nyt</translation>
 <translation id="100957008357583611">Käytä sijaintiasi?</translation>
 <translation id="1010200102790553230">Lataa sivu myöhemmin</translation>
@@ -1127,6 +1126,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2911973620368911614">Työpaikan kirjanpitokäyttäjän tunnus</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> suojaa tietosi normaalisti salauksen avulla. Kun Chrome yritti yhdistää sivustoon (<ph name="SITE" />) tällä kertaa, sivusto palautti epätavalliset ja virheelliset tiedot. Joko hyökkääjä yrittää esittää olevansa <ph name="SITE" /> tai Wi-Fi-kirjautumisnäyttö on keskeyttänyt yhteyden. Tietosi ovat edelleen turvassa, sillä Chrome katkaisi yhteyden, ennen kuin mitään dataa vaihdettiin.</translation>
 <translation id="2915068235268646559">Kaatuminen <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Kaikki laitteet</translation>
 <translation id="2916038427272391327">Sulje muita ohjelmia.</translation>
 <translation id="2917630513638801879">Turkoosi 1</translation>
 <translation id="2922350208395188000">Palvelimen varmennetta ei voi tarkistaa.</translation>
@@ -1463,7 +1463,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3479552764303398839">Ei nyt</translation>
 <translation id="3481315707647070701">Visualisoi ja muokkaa</translation>
 <translation id="3484560055331845446">Saatat menettää pääsyn Google-tilillesi. Chrome suosittelee vaihtamaan salasanan nyt. Sinua pyydetään kirjautumaan sisään.</translation>
-<translation id="3484861421501147767">Muistutus: Tallennettu tarjouskoodi käytettävissä</translation>
 <translation id="3485901585646640838">Vahvista henkilöllisyytesi, jotta voit käyttää esimerkiksi Google-tilillesi tallennettuja salasanoja</translation>
 <translation id="3487845404393360112">Lokero 4</translation>
 <translation id="3493881266323043047">Voimassaolo</translation>
@@ -1823,6 +1822,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4067774859633143413">Poistu koko näytön tilasta ja katso lataus painamalla pitkään |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Lisää kelvollinen osoite</translation>
 <translation id="4072486802667267160">Virhe tilausta käsiteltäessä. Yritä uudelleen.</translation>
+<translation id="4073293290376142777">Kirjaudutaanko sisään?</translation>
 <translation id="4073376909608563327">Laitteen lukituksen avaustapaa ei voitu käyttää</translation>
 <translation id="4073797364926776829">Katso kortti</translation>
 <translation id="4075732493274867456">Asiakassovellus ja palvelin eivät tue samaa SSL-protokollaversiota tai salaustekniikkaa.</translation>
@@ -1855,6 +1855,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4107047499377819067">VPN-taustapalvelujen asennus on alkanut, ja siihen voi mennä muutama minuutti.</translation>
 <translation id="4110642094637545339">Google Pay- ja AfterPay-logo</translation>
 <translation id="4110652170750985508">Tarkasta maksu</translation>
+<translation id="411071007970303441">Kaikki toimijat</translation>
 <translation id="4112140312785995938">Kelaa taaksepäin</translation>
 <translation id="4114007503059268298">Haluatko tallentaa tämän kortin Google-tilillesi ja tälle laitteelle?</translation>
 <translation id="4114146879518089587">Jatka sivustolle</translation>
@@ -3441,6 +3442,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6753460329812070808">Ehdotus poistettu Chromesta</translation>
 <translation id="6757797048963528358">Laitteesi siirtyi virransäästötilaan.</translation>
 <translation id="6758934187792712102"><ph name="URL" /> haluaa käyttää liike- ja valoantureita</translation>
+<translation id="6766488013065406604">Siirry Google Salasanoihin</translation>
 <translation id="6770747695101757579">Paperi (puuvilla)</translation>
 <translation id="6772959465807028761">Jatka YouTuben käyttöä Google-tilillä</translation>
 <translation id="6775759552199460396">JIS B2 (515 mm x 728 mm)</translation>
@@ -3651,7 +3653,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="7120588595737538743">lataukset ja kuvakaappaukset</translation>
 <translation id="7124354851782353862">Lisää CVC-koodi</translation>
 <translation id="7129409597930077180">Lähetys tähän osoitteeseen ei onnistu. Valitse eri osoite.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Estetty lataus</translation>
 <translation id="7132939140423847331">Järjestelmänvalvojasi on kieltänyt tämän datan kopioimisen.</translation>
 <translation id="7134653428559514680">Tältä sivustolta ei kannata jakaa</translation>
@@ -3969,6 +3970,7 @@ Lisätietoja:
 <translation id="7637571805876720304">Poistetaanko luottokortti Chromiumista?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Ei mitään}=1{1 salasana tililläsi (<ph name="DOMAIN_LIST" />)}other{# salasanaa tililläsi (<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Sarjaportit</translation>
+<translation id="7644100755247241229">Maksa Pixillä kavereille ja yrityksille Google Walletin kautta</translation>
 <translation id="7646681339175747202">Juuri käyttämäsi salasana löytyi tietosuojaloukkauksesta. Googlen Salasanojen ylläpito suosittelee, että vaihdat sen heti.</translation>
 <translation id="7647206758853451655">Tulostuslaatu</translation>
 <translation id="7648133459447652947">Näytä kohdistin, vaihda sovellusta, päivitä sivu tai palaa takaisin</translation>
@@ -4072,6 +4074,7 @@ Lisätietoja:
 <translation id="7791543448312431591">Lisää</translation>
 <translation id="7798389633136518089">Ohitettu, koska käytäntöä ei ole asettanut pilvipalvelun lähde.</translation>
 <translation id="7800304661137206267">Tämä yhteys on salattu käyttäen algoritmia <ph name="CIPHER" />, viestit todennetaan menetelmällä <ph name="MAC" /> ja avainvaihtomekanismi on toteutettu menetelmällä <ph name="KX" />.</translation>
+<translation id="780228007282527248">Paranna hakua lisäämällä välilehti tai kuva</translation>
 <translation id="7802523362929240268">Sivusto on luotettava</translation>
 <translation id="7802989406998618639">Lisää <ph name="NUMBER_OF_DIGITS" />-numeroinen turvakoodi (<ph name="SIDE_OF_CARD" />). Näin pankkisi voi vahvistaa henkilöllisyytesi</translation>
 <translation id="780301667611848630">Ei kiitos</translation>

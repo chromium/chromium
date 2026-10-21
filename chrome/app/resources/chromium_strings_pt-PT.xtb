@@ -118,6 +118,7 @@
 <translation id="2190166659037789668">Erro na verificação de atualizações: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Remover conta do Chromium</translation>
 <translation id="2201788217099588893">Use a app Chromium para levar as melhores ferramentas de compras consigo para qualquer lugar</translation>
+<translation id="2209877494277346829">Isolar o Chromium de outras apps</translation>
 <translation id="2210502920229141283">Mantenha-se em segurança quando estiver em viagem com a Navegação segura melhorada no Chromium para iOS</translation>
 <translation id="2210682093923538346">Site perigoso. O Chromium removeu notificações.</translation>
 <translation id="2236949375853147973">A minha atividade</translation>
@@ -190,6 +191,7 @@
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
 <translation id="2977506796191543575">Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chromium também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura</translation>
 <translation id="2981563588585023386">Para teres mais segurança online com as escolhas dos teus pais, inicia sessão no Chromium</translation>
+<translation id="2992577225802060159">Protege a memória do Chromium de outras aplicações no seu computador.</translation>
 <translation id="3003694935412297923">Todas as tarefas</translation>
 <translation id="3012615494352020668">{count,plural, =1{O Chromium precisa de validar a sua identidade antes de ser possível guardar alguns dados na sua Conta Google e usá-los em todos os seus dispositivos. Se terminar sessão agora, estes dados (1 item) são eliminados.}other{O Chromium precisa de validar a sua identidade antes de ser possível guardar alguns dados na sua Conta Google e usá-los em todos os seus dispositivos. Se terminar sessão agora, estes dados ({count} itens) vão ser eliminados.}}</translation>
 <translation id="3013473503895162900">Abra <ph name="URL" /> num novo separador no Chromium.</translation>
@@ -466,7 +468,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="5949225980829865667">Para ter este marcador e muito mais em todos os seus dispositivos, inicie sessão no Chromium</translation>
 <translation id="5953657885167112863">Personalize o Chromium</translation>
 <translation id="5960071705175224773">As suas definições foram alteradas por uma app desconhecida</translation>
-<translation id="5977420883993828287">Fixadas! Use novamente as Tarefas contextuais a partir da barra de ferramentas</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{A sua organização fecha automaticamente o Chromium quando não é usado durante 1 minuto.}other{A sua organização fecha automaticamente o Chromium quando não é usado durante # minutos.}}</translation>
 <translation id="5987687638152509985">Atualize o Chromium para iniciar a sincronização</translation>
 <translation id="5990360079535151574">A partir do botão do botão "Tarefas contextuais" na barra de ferramentas, pode reabrir as Tarefas contextuais para fazer perguntas enquanto navega.</translation>

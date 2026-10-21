@@ -437,7 +437,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="130744661532298792">Verifiera din identitet för att se till att du alltid kan använda lösenorden i Google-kontot</translation>
 <translation id="1308105352527684175">Du kanske inte kan komma åt visst innehåll</translation>
 <translation id="1311092170520822848">Den här webbplatsen styr smartkortsläsare som är anslutna till enheten och eventuellt smartkort som är tillgängliga för dem</translation>
-<translation id="131112175593356748">Visa några</translation>
 <translation id="131112695174432497">Data som påverkar annonsanpassning raderas</translation>
 <translation id="131188242279372879">Upptäck utökat skydd och få Chromes bästa säkerhet för nedladdningar</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Åtgärda fliken som saktar ned webbläsaren}other{Åtgärda flikarna som saktar ned webbläsaren}}</translation>
@@ -1492,6 +1491,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2140788884185208305">Batterihälsa</translation>
 <translation id="2142328300403846845">Öppna länk som</translation>
 <translation id="2142582065325732898">Aktivera <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> för att se de senaste flikarna i Chrome. <ph name="LINK2_BEGIN" />Läs mer<ph name="LINK2_END" /></translation>
+<translation id="2142826581348795579">Flikgrupp utan fokus</translation>
 <translation id="2143089736086572103">Visas för vissa kontakter</translation>
 <translation id="2143765403545170146">Visa alltid verktygsfältet i helskärmsläge</translation>
 <translation id="2143778271340628265">Manuell proxykonfiguration</translation>
@@ -2492,6 +2492,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2878889940310164513">Lägg till mobilnätverk …</translation>
 <translation id="288042212351694283">Åtkomst till dina Universal 2nd Factor-enheter</translation>
 <translation id="2881076733170862447">När du klickar på tillägget</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{Flik utan fokus}other{Flikar utan fokus}}</translation>
 <translation id="2882301808122022326">Omaha-svar</translation>
 <translation id="2884070497102362193">Testa batteri, CPU, minne, anslutning och mycket annat</translation>
 <translation id="2885129935310217435">Det finns en knapp med samma namn. Välj en annan.</translation>
@@ -2803,6 +2804,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3109206895301430738">Sparade flikgrupper</translation>
 <translation id="3109724472072898302">Komprimerat</translation>
 <translation id="3112292765614504292">Appstorlek: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Komprimera</translation>
 <translation id="3112532142993641404">Logga in och synkronisera historik om du vill få tillgång till flikarna från dina andra enheter. Du får även dina bokmärken med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="311347022006935575">Lade till den här fliken</translation>
 <translation id="311394601889664316">Tillåt inte att webbplatser redigerar filer eller mappar på enheten</translation>
@@ -4388,6 +4390,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4296632172536745000">Ditt ursprungliga lösenord för den här webbplatsen har hittats i ett offentligt dataintrång. Den <ph name="DATE" /> bad du <ph name="BRAND" /> att ändra ditt lösenord automatiskt.</translation>
 <translation id="4297219207642690536">Starta om och återställ</translation>
 <translation id="4297813521149011456">Skärmrotation</translation>
+<translation id="42981349822642051">Expandera</translation>
 <translation id="4298660926525614540">Namn på externa lagringsenheter</translation>
 <translation id="4299022904780065004">Nytt &amp;inkognitofönster</translation>
 <translation id="4300272766492248925">Öppna appen</translation>
@@ -5142,6 +5145,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4877276003880815204">Inspektera element</translation>
 <translation id="4878634973244289103">Det gick inte att skicka feedback. Försök igen senare.</translation>
 <translation id="4878718769565915065">Det gick inte att lägga till ett fingeravtryck på säkerhetsnyckeln</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}other{+#}}</translation>
 <translation id="4879491255372875719">Automatiskt (standard)</translation>
 <translation id="4880827082731008257">Sökhistorik</translation>
 <translation id="4881685975363383806">Påminn mig inte nästa gång</translation>
@@ -5626,6 +5630,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5247051749037287028">Visningsnamn (valfritt)</translation>
 <translation id="5247243947166567755">Välj <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">Fråga vad du vill, precis där du är, med Gemini i Chrome</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{1 informationsfält till visas när det här stängs}other{# informationsfält till visas när det här stängs}}</translation>
 <translation id="5248934139541843042">Visa organisatör</translation>
 <translation id="5249624017678798539">Webbläsaren kraschade innan nedladdningen slutförts.</translation>
 <translation id="5249818097095743806">Använd säkerhetsnyckeln</translation>
@@ -5931,6 +5936,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5493792505296048976">skärm på</translation>
 <translation id="5494016731375030300">Nyligen stängda flikar</translation>
 <translation id="5494362494988149300">Öppna när nedladdning är &amp;klar</translation>
+<translation id="5494439739088303974">Använd Google Lens för att fråga om text eller bilder på sidan</translation>
 <translation id="5494879038325093596">Verifiera din identitet för att få tillgång på alla enheter med ditt Google-konto</translation>
 <translation id="5494920125229734069">Markera alla</translation>
 <translation id="5495466433285976480">Om du gör detta tas alla lokala användare, filer, data och andra inställningar bort efter nästa omstart. Alla användare måste logga in igen.</translation>
@@ -8059,6 +8065,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7148426638542880639">Webbplatser kanske inte fungerar som förväntat. Välj det här alternativet om du inte vill lämna information på enheten om webbplatser du besöker.</translation>
 <translation id="7149893636342594995">Senaste 24 timmarna</translation>
 <translation id="7152478047064750137">Det här tillägget kräver inga särskilda behörigheter</translation>
+<translation id="7152923486458597248">Fokusera på grupp</translation>
 <translation id="7153101072880472645">Hög kontrast på/av</translation>
 <translation id="715396040729904728">appstartaren + skift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="7154130902455071009">Ändra startsida till: <ph name="START_PAGE" /></translation>

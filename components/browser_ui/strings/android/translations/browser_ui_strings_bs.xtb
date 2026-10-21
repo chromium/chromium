@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Personalizirajte Chrome prilagođenim bojama i slikama za početnu stranicu</translation>
 <translation id="389521680295183045">Web lokacije mogu tražiti da znaju kada aktivno koristite uređaj</translation>
 <translation id="3895926599014793903">Prisilno omogući zumiranje</translation>
-<translation id="3905475044299942653">Zaustavite slanje velikog broja obavještenja</translation>
 <translation id="3922092564198021702">Na telefonu otvorite Postavke.</translation>
 <translation id="3924858949939391676">Prikaz linkova nakon uključivanja načina rada za čitanje</translation>
 <translation id="3933121352599513978">Suzi neželjene zahtjeve (preporučeno)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Pronaći ćete grupe u odjeljku grupa kartica na svim svojim uređajima</translation>
 <translation id="4945443401464700059">Blokirali ste da web lokacija <ph name="SITE" /> koristi informacije o vama na</translation>
 <translation id="4953688446973710931">Kada je postavka uključena, web lokacije mogu zatražiti da automatski preuzimaju više fajlova. Kada je postavka isključena, web lokacije ne mogu automatski preuzimati više fajlova.</translation>
-<translation id="4962975101802056554">Opozovite sva odobrenja za uređaj</translation>
 <translation id="4972737347717125191">Web lokacije mogu tražiti da koriste uređaje i podatke virtuelne realnosti</translation>
 <translation id="4973805849704516244">Donja tabela boja Chromea</translation>
 <translation id="497421865427891073">Idi naprijed</translation>
@@ -704,7 +702,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8441146129660941386">Pomicanje unazad</translation>
 <translation id="8444433999583714703">Da dozvolite da <ph name="APP_NAME" /> pristupa vašoj lokaciji, također uključite lokaciju u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
-<translation id="8447861592752582886">Opozivanje dozvole za uređaj</translation>
 <translation id="8463843545738141778">Postavka je onemogućena jer ste uključili Naprednu zaštitu u Postavkama Androida.</translation>
 <translation id="8467359479529706065">Donja tabela izgleda stranice Nova kartica je otvorena na pola visine</translation>
 <translation id="8471525937465764768">Web lokacije se obično povezuju s USB uređajima radi funkcija kao što je štampanje dokumenta ili pohranjivanje na uređaj za pohranu</translation>

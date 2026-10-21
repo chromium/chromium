@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Адкрыць у новай групе ўкладак</translation>
 <translation id="1670861525135254448">Захавайце транспартны сродак</translation>
 <translation id="1671568970992212376">Захоўвайце фота ў Google Фота і атрымлівайце доступ да іх у любы час.</translation>
+<translation id="1671824312818944549">Заўвага. Гэта налада працуе лепш у iOS 27 і навейшых версіях.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Абводзьце, вылучайце ці націскайце на любое змесціва на экране, каб выканаць пошук</translation>
 <translation id="1678855624321223424">Згодна з правіламі вашай арганізацыі гэты файл можа змяшчаць канфідэнцыяльную інфармацыю</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">З вяртаннем!</translation>
 <translation id="2015722694326466240">Каб убачыць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
 <translation id="201759455285471444">Разгарнуць групу ўкладак.</translation>
+<translation id="2022431790688770637">Кіраваць прапановамі Gemini</translation>
 <translation id="2031515492007104071">Новы ўзровень</translation>
 <translation id="2044394949148788042">Адкрыйце сетку ўкладак</translation>
 <translation id="2044681667265133332">Уліковым запісам <ph name="USER_EMAIL" /> кіруе дамен "<ph name="HOSTED_DOMAIN" />", які можа праглядаць пэўную інфармацыю. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">Задавайце пытанні і атрымлівайце адказы на аснове AI</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2876369937070532032">Адпраўляе URL-адрасы некаторых наведаных вамі старонак у Google, калі ваша бяспека пад пагрозай</translation>
+<translation id="2880119244122776372">Стварайце і праграмуйце</translation>
 <translation id="2883151425485251736">Праглядайце і змяняйце схаваныя вамі тэмы</translation>
 <translation id="2884437560239137197">Звярніце ўвагу</translation>
 <translation id="288655811176831528">Закрыць укладку</translation>
@@ -698,6 +701,7 @@
 <translation id="3140825265190223781">Захаваныя паролі і ключы доступу</translation>
 <translation id="3143515551205905069">Скасаваць сінхранізацыю</translation>
 <translation id="3144126448740580210">ГАТОВА</translation>
+<translation id="3147048678293362228">Кіраваць кантактнай інфармацыяй…</translation>
 <translation id="3147521114983561406">Ключы доступу захоўваюцца ў менеджары пароляў. Імі можна карыстацца як ва ўкладках у рэжыме інкогніта, так і ў звычайных укладках.</translation>
 <translation id="3148052723910099040">Сетка звычайных укладак</translation>
 <translation id="3148237711805373460">Перайсці</translation>
@@ -1694,6 +1698,7 @@
 <translation id="6301104306974789820">Атрымліваць апавяшчэнні аб змяненні цаны</translation>
 <translation id="6301767200000930965">Аа</translation>
 <translation id="630308129961693966">Выберыце пазіцыю адраснага радка</translation>
+<translation id="6305257382500066042">Паспрабаваць</translation>
 <translation id="6307241780749477694">Каб атрымаць доступ да ўсіх пароляў на гэтай прыладзе, спраўдзіце сваю асобу</translation>
 <translation id="6307792728709337290">Захавайце картку ва Уліковым запісе Google, каб яе рэквізіты запаўняліся аўтаматычна пры гэтай і наступных куплях у Chrome.</translation>
 <translation id="6316141353357700666">Выберыце патрэбны пароль са спіса.</translation>
@@ -1847,7 +1852,6 @@
 <translation id="6708501134077648845">Налады пароляў</translation>
 <translation id="6709964700841491574">Рэжым блакіроўкі</translation>
 <translation id="6710079714193676716">Пад кіраваннем вашай арганізацыі. Некаторыя функцыі могуць быць недаступныя. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">Больш інтэлектуальныя і хуткія адказы</translation>
 <translation id="6713676799463473249">Зменена <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Атрыманыя ўкладкі</translation>
 <translation id="6722638373100589752">Каб выкарыстоўваць аўтазапаўненне, у наладах Кашалька ўключыце функцыю "Выкарыстоўваць карткі ў сэрвісах Google"</translation>
@@ -1870,6 +1874,7 @@
 <translation id="6770452996697898492">[ЗАБРАНІРАВАНА]</translation>
 <translation id="6775952316617222141">Выкарыстоўваць рэжым Live ў Gemini ў Chrome</translation>
 <translation id="6779455296366983087">Даныя пра работу ў браўзеры будуць выдалены</translation>
+<translation id="6782311720357312958">Спытаць у Google</translation>
 <translation id="6782531425936234573">Экспартаваць даныя</translation>
 <translation id="6789665473250283877">Выдаліць інструмент "<ph name="TOOL_NAME" />"</translation>
 <translation id="6791425686608802741">Націсніце "Дадаць укладку ў новую групу".</translation>
@@ -2058,7 +2063,6 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Працягнуць</translation>
 <translation id="741204030948306876">Так, я згаджаюся</translation>
-<translation id="7417055777338419059">Пішыце код, тэксты або стварайце слайды</translation>
 <translation id="7419565702166471774">Заўсёды выкарыстоўваць бяспечнае падключэнне</translation>
 <translation id="7423098979219808738">Спачатку запытваць</translation>
 <translation id="7425053386765766120">Дадаць спосаб аплаты…</translation>
@@ -2108,6 +2112,7 @@
 <translation id="7525067979554623046">Стварыць</translation>
 <translation id="75362970626182391">Новая група ўкладак</translation>
 <translation id="7537586195939242955">Зараз усталяваць пароль у Passbook не ўдалося.</translation>
+<translation id="7540924742308928499">Генерыруйце ідэі і падсумоўвайце</translation>
 <translation id="754655535278952384">Праверана <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Закрыць усе</translation>
 <translation id="7557508262441527045">Выкананы выхад</translation>
@@ -2177,6 +2182,7 @@
 <translation id="7758789811447313947">Фіялетавая тэма</translation>
 <translation id="7759809451544302770">Неабавязкова</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
+<translation id="7767651976342854115">Падчас загрузкі налады выкарыстання даных адбылася памылка.</translation>
 <translation id="7768507955883790804">Пры наведванні сайтаў яны будуць аўтаматычна ўлічваць гэту наладу</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
 <translation id="7772948288262733182">З вяртаннем!</translation>
@@ -2476,7 +2482,6 @@
 <translation id="8642417828095157370">Укладкі абагульваюцца, каб адказы былі больш рэлевантнымі</translation>
 <translation id="8643403533759285912">Выдаліць групу</translation>
 <translation id="8646357898207744479">Аб’ектыў</translation>
-<translation id="8647280737650867362">Не ўдалося скасаваць адсочванне цаны.</translation>
 <translation id="8654802032646794042">Скасаваць</translation>
 <translation id="8655861111558401309">Націсніце "Выдаліць даныя пра работу ў браўзеры".</translation>
 <translation id="8659875081143553823">Секунду</translation>

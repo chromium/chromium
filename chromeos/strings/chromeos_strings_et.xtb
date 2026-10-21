@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Umbkaudse tulemuse saamiseks jagage <ph name="CATEGORY_TEXT" /> arvuga <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Pildi allikas</translation>
 <translation id="1446954767133808402">safiirist</translation>
-<translation id="1449035143498573192">Google'i otsingus avamine</translation>
 <translation id="1451536289672181509">Seade on klaviatuur.</translation>
 <translation id="1452939186874918380">vihmavarjud</translation>
 <translation id="145402479967797468">Taasesituse juhtnupud</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Üksuse <ph name="PREVIEW_OBJECT" /> eelvaade</translation>
 <translation id="1668469839109562275">Sisseehitatud VPN</translation>
 <translation id="1669047024429367828">Nähtavus</translation>
-<translation id="1670478569471758522">Teie valikuga seotud lisateave</translation>
 <translation id="1672499492233627739">Veebikaamera videovoog</translation>
 <translation id="1676557873873341166">Video jäädvustamine</translation>
 <translation id="1684279041537802716">Aktsentvärv</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Muudetud</translation>
 <translation id="3532980081107202182">Jäänud on ligikaudu <ph name="MIN_REMAINING" /> minutit</translation>
 <translation id="3533790840489634638">bassein</translation>
-<translation id="3547264467365135390">Valem</translation>
 <translation id="3552832331940389362">Jaapani animaillustratsioon kassist, kes istub aknalaual ja vaatab pärastlõunast vihmasadu</translation>
 <translation id="3557205324756024651">Kohalik identiteet (valikuline)</translation>
 <translation id="3565064564551103223">Lubatud IP-d</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Kirjeldus</translation>
 <translation id="3869314628814282185">tüllist</translation>
 <translation id="387301095347517405">See arv näitab, mitu korda on teie seadme aku läbinud täieliku laadimistsükli</translation>
-<translation id="3877066159641251281">Kuula tõlget</translation>
 <translation id="3880601782712134623">Eri häälte automaatne tuvastamine ja igale kõnelejale üldise sildi (nt kõneleja 1 ja kõneleja 2) määramine</translation>
 <translation id="38811596981744338">Juriidiline probleem</translation>
 <translation id="3885327323343477505">Muuda ekraanisäästjat</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Eemaldage seadme <ph name="DEVICE_NAME" /> USB-kaabel ja sisestage see uuesti, et värskendamist jätkata</translation>
 <translation id="5099354524039520280">üles</translation>
 <translation id="5107243100836678918">Otsetee ilma klahvita <ph name="META_KEY" /> võib olla vastuolus mõne rakenduse otseteega. Kasutamise jätkamiseks vajutage seda otseteed uuesti või vajutage klahvi <ph name="KEY" /> abil uut otseteed. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Sarnased:</translation>
 <translation id="5130848777448318809">ponid</translation>
 <translation id="5137451382116112100">Täisekraan</translation>
 <translation id="5139813694804168398">mitte segada</translation>
 <translation id="5140788690559353412">Kui kaotate oma koolikontole juurdepääsu, ei pääse te enam juurde sellega seotud e-postile ega Google Drive’i failidele, sh sisule teenustest Gmail, Dokumendid, Esitlused jt.</translation>
 <translation id="5142961317498132443">Autentimine</translation>
 <translation id="5144311987923128508">Nupp Kinnita on nüüd keelatud</translation>
-<translation id="5144887194300568405">Kopeeri tõlge</translation>
 <translation id="5145081769226915336">Kas lülitada tume režiim automaatselt sisse?</translation>
 <translation id="5145331109270917438">Muutmise kuupäev</translation>
 <translation id="5154917547274118687">Mälu</translation>

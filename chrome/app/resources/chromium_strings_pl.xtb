@@ -117,6 +117,7 @@
 <translation id="2190166659037789668">Błąd sprawdzania aktualizacji: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Usuń konto z Chromium</translation>
 <translation id="2201788217099588893">Pobierz aplikację Chromium, aby mieć najlepsze narzędzia do zakupów zawsze przy sobie</translation>
+<translation id="2209877494277346829">Izoluj Chromium od innych aplikacji</translation>
 <translation id="2210502920229141283">Zwiększ swoje bezpieczeństwo w dowolnym miejscu dzięki Ulepszonemu bezpiecznemu przeglądaniu w Chromium na iOS</translation>
 <translation id="2210682093923538346">Niebezpieczna witryna. Przeglądarka Chromium usunęła powiadomienia.</translation>
 <translation id="2236949375853147973">Moja aktywność</translation>
@@ -189,6 +190,7 @@
 <translation id="2977470724722393594">Masz aktualną wersję Chromium</translation>
 <translation id="2977506796191543575">Jeśli strona próbuje wykraść Twoje hasło lub pobierasz szkodliwy plik, Chromium może też wysłać URL wraz z fragmentami zawartości strony do usługi Bezpieczne przeglądanie.</translation>
 <translation id="2981563588585023386">Aby zapewnić sobie większe bezpieczeństwo online dzięki ustawieniom wybranym przez Twojego rodzica, zaloguj się w Chromium</translation>
+<translation id="2992577225802060159">Chroni pamięć Chromium przed innymi aplikacjami na komputerze.</translation>
 <translation id="3003694935412297923">Wszystkie zadania</translation>
 <translation id="3012615494352020668">{count,plural, =1{Zanim niektóre dane będą mogły zostać zapisane na Twoim koncie Google i używane na wszystkich Twoich urządzeniach, Chromium musi potwierdzić Twoją tożsamość. Jeśli wylogujesz się teraz, te dane (1 element) zostaną usunięte.}few{Zanim niektóre dane będą mogły zostać zapisane na Twoim koncie Google i używane na wszystkich Twoich urządzeniach, Chromium musi potwierdzić Twoją tożsamość. Jeśli wylogujesz się teraz, te dane ({count} elementy) zostaną usunięte.}many{Zanim niektóre dane będą mogły zostać zapisane na Twoim koncie Google i używane na wszystkich Twoich urządzeniach, Chromium musi potwierdzić Twoją tożsamość. Jeśli wylogujesz się teraz, te dane ({count} elementów) zostaną usunięte.}other{Zanim niektóre dane będą mogły zostać zapisane na Twoim koncie Google i używane na wszystkich Twoich urządzeniach, Chromium musi potwierdzić Twoją tożsamość. Jeśli wylogujesz się teraz, te dane ({count} elementu) zostaną usunięte.}}</translation>
 <translation id="3013473503895162900">Otwórz <ph name="URL" /> w nowej karcie w Chromium.</translation>
@@ -463,7 +465,6 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="5949225980829865667">Aby mieć dostęp do tej zakładki i innych funkcji na wszystkich swoich urządzeniach, zaloguj się w Chromium</translation>
 <translation id="5953657885167112863">Dostosuj Chromium do swoich potrzeb</translation>
 <translation id="5960071705175224773">Twoje ustawienia zmieniła nieznana aplikacja</translation>
-<translation id="5977420883993828287">Przypięto. Użyj ponownie zadań kontekstowych z paska narzędzi</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Twoja organizacja automatycznie zamyka przeglądarkę Chromium, gdy nie korzystasz z niej przez minutę.}few{Twoja organizacja automatycznie zamyka przeglądarkę Chromium, gdy nie korzystasz z niej przez # minuty.}many{Twoja organizacja automatycznie zamyka przeglądarkę Chromium, gdy nie korzystasz z niej przez # minut.}other{Twoja organizacja automatycznie zamyka przeglądarkę Chromium, gdy nie korzystasz z niej przez # minuty.}}</translation>
 <translation id="5987687638152509985">Zaktualizuj Chromium, by rozpocząć synchronizację</translation>
 <translation id="5990360079535151574">Za pomocą przycisku „Zadania kontekstowe” na pasku narzędzi możesz ponownie otworzyć zadania kontekstowe, aby zadawać pytania podczas przeglądania</translation>

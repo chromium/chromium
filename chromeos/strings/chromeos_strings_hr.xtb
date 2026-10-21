@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Za približan rezultat podijelite vrijednost <ph name="CATEGORY_TEXT" /> s <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Izvor slike</translation>
 <translation id="1446954767133808402">safira</translation>
-<translation id="1449035143498573192">Otvori u Google pretraživanju</translation>
 <translation id="1451536289672181509">Uređaj je tipkovnica.</translation>
 <translation id="1452939186874918380">kišobrani</translation>
 <translation id="145402479967797468">Kontrole reprodukcije</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Pregled: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
 <translation id="1669047024429367828">Vidljivost</translation>
-<translation id="1670478569471758522">Više informacija u vezi s vašim odabirom</translation>
 <translation id="1672499492233627739">Videofeed web-kamere</translation>
 <translation id="1676557873873341166">Snimanje videozapisa</translation>
 <translation id="1684279041537802716">Boja isticanja</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Uređivanje je završeno</translation>
 <translation id="3532980081107202182">Preostalo je oko <ph name="MIN_REMAINING" /> min</translation>
 <translation id="3533790840489634638">bazen</translation>
-<translation id="3547264467365135390">Formula</translation>
 <translation id="3552832331940389362">japanska animacija ilustracije mačke koja sjedi na prozorskoj dasci i promatra kišu poslijepodne</translation>
 <translation id="3557205324756024651">Lokalni identitet (nije obavezno)</translation>
 <translation id="3565064564551103223">Dopušteni IP-jevi</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Opis</translation>
 <translation id="3869314628814282185">tila</translation>
 <translation id="387301095347517405">Koliko se puta vaša baterija potpuno napunila</translation>
-<translation id="3877066159641251281">Poslušajte prijevod</translation>
 <translation id="3880601782712134623">automatski otkrio različite glasove i svakom govorniku dao generičku oznaku kao što su Govornik 1 i Govornik 2</translation>
 <translation id="38811596981744338">Pravni problem</translation>
 <translation id="3885327323343477505">Promijeni čuvar zaslona</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Iskopčajte USB kabel uređaja <ph name="DEVICE_NAME" />, a zatim ga ponovo umetnite da biste nastavili s postupkom ažuriranja</translation>
 <translation id="5099354524039520280">gore</translation>
 <translation id="5107243100836678918">Prečac bez tipke <ph name="META_KEY" /> može biti u sukobu s prečacem neke aplikacije. Ponovno pritisnite taj prečac kako biste ga nastavili upotrebljavati ili pritisnite novi prečac pomoću tipke <ph name="KEY" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Slično:</translation>
 <translation id="5130848777448318809">poniji</translation>
 <translation id="5137451382116112100">Pun</translation>
 <translation id="5139813694804168398">ne uznemiravaj</translation>
 <translation id="5140788690559353412">Kad izgubite pristup školskom računu, više nećete imati pristup povezanoj e-pošti i datotekama na Google disku kao što su Gmail, Dokumenti, Prezentacije i druge.</translation>
 <translation id="5142961317498132443">Autentifikacija</translation>
 <translation id="5144311987923128508">Gumb Potvrdi sad je onemogućen</translation>
-<translation id="5144887194300568405">Kopiraj prijevod</translation>
 <translation id="5145081769226915336">Želite li automatski uključiti tamni način rada?</translation>
 <translation id="5145331109270917438">Datum izmjene</translation>
 <translation id="5154917547274118687">Memorija</translation>

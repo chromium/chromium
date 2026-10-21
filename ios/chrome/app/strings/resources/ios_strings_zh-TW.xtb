@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">在新分頁群組開啟</translation>
 <translation id="1670861525135254448">儲存車輛</translation>
 <translation id="1671568970992212376">將相片儲存到 Google 相簿，隨時都能存取。</translation>
+<translation id="1671824312818944549">注意：這項設定在 iOS 27 以上版本中效果較佳。</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯為<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">在畫面上繪圖、標示或輕觸內容即可搜尋</translation>
 <translation id="1678855624321223424">根據貴機構的政策，這個檔案可能含有機密資訊</translation>
@@ -357,6 +358,7 @@
 <translation id="2012723204723845092">歡迎回來！</translation>
 <translation id="2015722694326466240">你必須先在裝置上設定螢幕解鎖密碼才能查看密碼。</translation>
 <translation id="201759455285471444">展開分頁群組。</translation>
+<translation id="2022431790688770637">管理 Gemini 建議</translation>
 <translation id="2031515492007104071">升級</translation>
 <translation id="2044394949148788042">開啟分頁方格</translation>
 <translation id="2044681667265133332">這個帳戶 (<ph name="USER_EMAIL" />) 是由 <ph name="HOSTED_DOMAIN" /> 管理，管理者或許可以查看部分資訊。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -623,6 +625,7 @@
 <translation id="2865392654629180917">萬事皆可問，AI 幫你答</translation>
 <translation id="2870560284913253234">網站</translation>
 <translation id="2876369937070532032">當網站具有安全性風險時，Chrome 會將你造訪的部分網頁網址傳送給 Google</translation>
+<translation id="2880119244122776372">建構與寫程式</translation>
 <translation id="2883151425485251736">查看及編輯你在帳戶中設為隱藏的主題</translation>
 <translation id="2884437560239137197">敬請注意</translation>
 <translation id="288655811176831528">關閉分頁</translation>
@@ -1695,6 +1698,7 @@
 <translation id="6301104306974789820">接收價格追蹤通知</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">選擇網址列位置</translation>
+<translation id="6305257382500066042">立即體驗</translation>
 <translation id="6307241780749477694">通過身分驗證，即可在這部裝置上存取所有密碼</translation>
 <translation id="6307792728709337290">將卡片儲存到 Google 帳戶，即可在 Chrome 中購物時自動填入卡片資訊。</translation>
 <translation id="6316141353357700666">從顯示清單中選取要使用的密碼。</translation>
@@ -1848,7 +1852,6 @@
 <translation id="6708501134077648845">自動填寫與密碼</translation>
 <translation id="6709964700841491574">鎖定模式</translation>
 <translation id="6710079714193676716">由貴機構管理，部分功能可能無法使用。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">更聰明、更快速的解答</translation>
 <translation id="6713676799463473249">修改日期：<ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">收到的分頁</translation>
 <translation id="6722638373100589752">如要自動填入資訊，請在錢包設定中開啟「在各項 Google 服務中使用憑證」</translation>
@@ -2060,7 +2063,6 @@
 <translation id="7411034503745719324"><ph name="EMAIL" />。<ph name="MANAGED_STATUS" />。</translation>
 <translation id="7412027924265291969">繼續</translation>
 <translation id="741204030948306876">是，我要啟用</translation>
-<translation id="7417055777338419059">編寫程式碼、撰寫內容或製作簡報</translation>
 <translation id="7419565702166471774">一律使用安全連線</translation>
 <translation id="7423098979219808738">先詢問我</translation>
 <translation id="7425053386765766120">新增付款方式…</translation>
@@ -2110,6 +2112,7 @@
 <translation id="7525067979554623046">建立</translation>
 <translation id="75362970626182391">新增分頁群組</translation>
 <translation id="7537586195939242955">很抱歉，目前無法將您的通行票證加到 Passbook。</translation>
+<translation id="7540924742308928499">腦力激盪與重點摘要</translation>
 <translation id="754655535278952384">上次檢查時間：<ph name="TIME" /></translation>
 <translation id="7554645225856321710">全部關閉</translation>
 <translation id="7557508262441527045">已登出</translation>
@@ -2479,7 +2482,6 @@
 <translation id="8642417828095157370">系統會分享分頁內容，以提供更符合需求的答案</translation>
 <translation id="8643403533759285912">刪除群組</translation>
 <translation id="8646357898207744479">智慧鏡頭</translation>
-<translation id="8647280737650867362">無法取消追蹤價格。</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8655861111558401309">選取「刪除瀏覽資料」</translation>
 <translation id="8659875081143553823">請稍候</translation>

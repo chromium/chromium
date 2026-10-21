@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Para um resultado aproximado, divida o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Origem da imagem</translation>
 <translation id="1446954767133808402">safira</translation>
-<translation id="1449035143498573192">Abrir na Pesquisa Google</translation>
 <translation id="1451536289672181509">Este dispositivo é um teclado.</translation>
 <translation id="1452939186874918380">guarda-chuvas</translation>
 <translation id="145402479967797468">Controles de mídia</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Visualizar <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN integrado</translation>
 <translation id="1669047024429367828">Visibilidade</translation>
-<translation id="1670478569471758522">Mais informações relacionadas à sua seleção</translation>
 <translation id="1672499492233627739">Feed de vídeo da webcam</translation>
 <translation id="1676557873873341166">Captura de vídeo ativada</translation>
 <translation id="1684279041537802716">Cor de destaque</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Concluído</translation>
 <translation id="3532980081107202182">Aproximadamente <ph name="MIN_REMAINING" /> minutos restantes</translation>
 <translation id="3533790840489634638">piscina</translation>
-<translation id="3547264467365135390">Fórmula</translation>
 <translation id="3552832331940389362">uma ilustração no estilo de animação japonesa de um gato sentado em uma janela observando a chuva durante a tarde</translation>
 <translation id="3557205324756024651">Identidade local (opcional)</translation>
 <translation id="3565064564551103223">IPs permitidos</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Descrição</translation>
 <translation id="3869314628814282185">tule</translation>
 <translation id="387301095347517405">O número de vezes que a bateria passou por um ciclo completo de carregamento</translation>
-<translation id="3877066159641251281">Ouvir tradução</translation>
 <translation id="3880601782712134623">Detectar vozes diferentes automaticamente e atribuir um identificador genérico a cada pessoa, como Falante 1 e Falante 2.</translation>
 <translation id="38811596981744338">Problema jurídico</translation>
 <translation id="3885327323343477505">Mudar o protetor de tela</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Desconecte e reconecte o cabo USB do <ph name="DEVICE_NAME" /> para continuar o processo de atualização</translation>
 <translation id="5099354524039520280">para cima</translation>
 <translation id="5107243100836678918">Atalhos sem a tecla <ph name="META_KEY" /> podem entrar em conflito com o atalho de algum app. Pressione esse atalho novamente para continuar a usá-lo ou pressione um novo atalho usando a tecla <ph name="KEY" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Semelhantes:</translation>
 <translation id="5130848777448318809">pôneis</translation>
 <translation id="5137451382116112100">Tela cheia</translation>
 <translation id="5139813694804168398">Não perturbe</translation>
 <translation id="5140788690559353412">Ao perder o acesso à conta escolar, você também perde o acesso ao e-mail e aos arquivos do Google Drive associados, como os do Gmail, Documentos, Apresentações e outros.</translation>
 <translation id="5142961317498132443">Autenticação</translation>
 <translation id="5144311987923128508">O botão de confirmação está desativado</translation>
-<translation id="5144887194300568405">Copiar tradução</translation>
 <translation id="5145081769226915336">Ativar o modo escuro automaticamente?</translation>
 <translation id="5145331109270917438">Data da última modificação</translation>
 <translation id="5154917547274118687">Memória</translation>

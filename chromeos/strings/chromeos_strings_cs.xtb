@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Přibližný výsledek získáte vydělením hodnoty <ph name="CATEGORY_TEXT" /> číslem <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Zdroj obrázku</translation>
 <translation id="1446954767133808402">safír</translation>
-<translation id="1449035143498573192">Otevřít ve Vyhledávání Google</translation>
 <translation id="1451536289672181509">Zařízení je klávesnice.</translation>
 <translation id="1452939186874918380">deštníky</translation>
 <translation id="145402479967797468">Ovládací prvky přehrávání</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Náhled <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Vestavěná VPN</translation>
 <translation id="1669047024429367828">Viditelnost</translation>
-<translation id="1670478569471758522">Další informace související s vaším výběrem</translation>
 <translation id="1672499492233627739">Zdroj videa z webkamery</translation>
 <translation id="1676557873873341166">Pořizování videa</translation>
 <translation id="1684279041537802716">Barva zvýraznění</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Úpravy dokončeny</translation>
 <translation id="3532980081107202182">Zbývající minuty: <ph name="MIN_REMAINING" /></translation>
 <translation id="3533790840489634638">bazén</translation>
-<translation id="3547264467365135390">Vzorec</translation>
 <translation id="3552832331940389362">ilustrace kočky sedící na okenním parapetu a pozorující odpolední déšť ve stylu japonských animací</translation>
 <translation id="3557205324756024651">Místní identita (volitelné)</translation>
 <translation id="3565064564551103223">Povolené IP adresy</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Popis</translation>
 <translation id="3869314628814282185">tyl</translation>
 <translation id="387301095347517405">Údaj, kolikrát baterie prošla celým cyklem nabíjení</translation>
-<translation id="3877066159641251281">Poslechnout si překlad</translation>
 <translation id="3880601782712134623">Automaticky rozpozná jednotlivé hlasy a každému přidělí obecný štítek, například Mluvčí 1 a Mluvčí 2</translation>
 <translation id="38811596981744338">Právní problém</translation>
 <translation id="3885327323343477505">Změnit spořič obrazovky</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Pokud chcete v procesu aktualizace pokračovat, odpojte od zařízení <ph name="DEVICE_NAME" /> kabel USB a znovu ho připojte</translation>
 <translation id="5099354524039520280">nahoru</translation>
 <translation id="5107243100836678918">Zkratka bez klávesy <ph name="META_KEY" /> může být v konfliktu se zkratkou některé aplikace. Pokud tuto zkratku chcete nadále používat, stiskněte ji znovu, nebo stiskněte novou klávesovou zkratku s klávesou <ph name="KEY" />. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Podobný význam:</translation>
 <translation id="5130848777448318809">poníci</translation>
 <translation id="5137451382116112100">Maximalizovat</translation>
 <translation id="5139813694804168398">nerušit</translation>
 <translation id="5140788690559353412">Když ztratíte přístup ke školnímu účtu, nebudete už mít přístup k přidruženým e‑mailům a souborům na Disku Google, jako jsou Gmail, Dokumenty, Prezentace a další.</translation>
 <translation id="5142961317498132443">Ověření</translation>
 <translation id="5144311987923128508">Tlačítko Potvrdit teď není aktivní</translation>
-<translation id="5144887194300568405">Kopírovat překlad</translation>
 <translation id="5145081769226915336">Zapínat tmavý režim automaticky?</translation>
 <translation id="5145331109270917438">Datum úpravy</translation>
 <translation id="5154917547274118687">Paměť</translation>

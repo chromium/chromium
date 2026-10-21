@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Per un risultato approssimativo, dividi il valore <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Origine immagine</translation>
 <translation id="1446954767133808402">zaffiro</translation>
-<translation id="1449035143498573192">Apri nella Ricerca Google</translation>
 <translation id="1451536289672181509">Il dispositivo è una tastiera.</translation>
 <translation id="1452939186874918380">ombrelli</translation>
 <translation id="145402479967797468">Controlli di riproduzione</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Visualizza <ph name="PREVIEW_OBJECT" /> in anteprima</translation>
 <translation id="1668469839109562275">VPN integrata</translation>
 <translation id="1669047024429367828">Visibilità</translation>
-<translation id="1670478569471758522">Maggiori informazioni relative alla tua selezione</translation>
 <translation id="1672499492233627739">Feed video della webcam</translation>
 <translation id="1676557873873341166">Acquisizione video in corso…</translation>
 <translation id="1684279041537802716">Colore intenso</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Modifica completata</translation>
 <translation id="3532980081107202182">Mancano circa <ph name="MIN_REMAINING" /> minuti</translation>
 <translation id="3533790840489634638">piscina</translation>
-<translation id="3547264467365135390">Formula</translation>
 <translation id="3552832331940389362">Un'illustrazione di animazione giapponese di un gatto seduto su un davanzale a guardare la pioggia pomeridiana.</translation>
 <translation id="3557205324756024651">Identità locale (facoltativa)</translation>
 <translation id="3565064564551103223">IP consentiti</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Descrizione</translation>
 <translation id="3869314628814282185">tulle</translation>
 <translation id="387301095347517405">Il numero di cicli di ricarica completi della batteria</translation>
-<translation id="3877066159641251281">Ascolta la traduzione</translation>
 <translation id="3880601782712134623">Rileva automaticamente le voci distinte e assegna a un'etichetta generica ogni persona che parla, come Persona 1 e Persona 2</translation>
 <translation id="38811596981744338">Problema legale</translation>
 <translation id="3885327323343477505">Cambia salvaschermo</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Scollega il cavo USB di <ph name="DEVICE_NAME" /> e reinseriscilo per continuare il processo di aggiornamento</translation>
 <translation id="5099354524039520280">su</translation>
 <translation id="5107243100836678918">La scorciatoia senza tasto <ph name="META_KEY" /> potrebbe essere in conflitto con la scorciatoia di alcune app. Premi di nuovo questa scorciatoia per continuare a utilizzarla oppure premine una nuova usando il tasto <ph name="KEY" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Sinonimi:</translation>
 <translation id="5130848777448318809">pony</translation>
 <translation id="5137451382116112100">Schermo intero</translation>
 <translation id="5139813694804168398">Non disturbare</translation>
 <translation id="5140788690559353412">Se perdi l'accesso al tuo account della scuola, non potrai più accedere all'email associata e ai file di Google Drive, come quelli salvati in Gmail, Documenti, Presentazioni e altri ancora.</translation>
 <translation id="5142961317498132443">Autenticazione</translation>
 <translation id="5144311987923128508">Il pulsante Conferma è ora disattivato</translation>
-<translation id="5144887194300568405">Copia traduzione</translation>
 <translation id="5145081769226915336">Vuoi attivare automaticamente la modalità Buio?</translation>
 <translation id="5145331109270917438">Data modifica</translation>
 <translation id="5154917547274118687">Memoria</translation>

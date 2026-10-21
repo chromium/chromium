@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
-<translation id="1003222766972176318">Напамін: захаваная прапанова даступная</translation>
 <translation id="1008557486741366299">Не зараз</translation>
 <translation id="100957008357583611">Выкарыстоўваць даныя пра ваша месцазнаходжанне?</translation>
 <translation id="1010200102790553230">Загрузіць старонку пазней</translation>
@@ -1128,6 +1127,7 @@
 <translation id="2911973620368911614">Ідэнтыфікатар карыстальніка ўліковага запісу задання</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> звычайна выкарыстоўвае шыфраванне для абароны вашай інфармацыі. Пры спробе Chrome падключыцца да <ph name="SITE" /> вэб-сайт адправіў незвычайныя і няправільныя ўліковыя даныя. Такое адбываецца, калі зламыснік спрабуе выдаць сябе за <ph name="SITE" /> або экран уваходу ў сетку Wi-Fi перарывае падключэнне. Ваша інфармацыя ўсё роўна абаронена, паколькі Chrome перарваў падключэнне да абмену данымі.</translation>
 <translation id="2915068235268646559">Час збою: <ph name="CRASH_TIME" /></translation>
+<translation id="291568339791418558">Усе прылады</translation>
 <translation id="2916038427272391327">Закрыйце іншыя праграмы.</translation>
 <translation id="2917630513638801879">Блакітны 1</translation>
 <translation id="2922350208395188000">Немагчыма праверыць сертыфікат сервера.</translation>
@@ -1463,7 +1463,6 @@
 <translation id="3479552764303398839">Не зараз</translation>
 <translation id="3481315707647070701">Візуалізуйце і рэдагуйце</translation>
 <translation id="3484560055331845446">Вы можаце страціць доступ да свайго Уліковага запісу Google. Chrome рэкамендуе змяніць пароль. Вас папросяць увайсці ва ўліковы запіс.</translation>
-<translation id="3484861421501147767">Напамін: захаваны прома-код даступны</translation>
 <translation id="3485901585646640838">Пацвердзіце сваю асобу, каб выкарыстоўваць паролі і іншыя даныя, якія захоўваюцца ў вашым Уліковы запісе Google</translation>
 <translation id="3487845404393360112">Латок 4</translation>
 <translation id="3493881266323043047">Тэрмін дзеяння</translation>
@@ -1822,6 +1821,7 @@
 <translation id="4067774859633143413">Каб выйсці з поўнаэкраннага рэжыму і паглядзець спампоўку, націсніце і ўтрымлівайце |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Дадайце сапраўдны адрас</translation>
 <translation id="4072486802667267160">Адбылася памылка апрацоўкi вашага заказу. Паўтарыце спробу.</translation>
+<translation id="4073293290376142777">Увайсці?</translation>
 <translation id="4073376909608563327">Не ўдалося выкарыстаць функцыю разблакіроўкі прылады</translation>
 <translation id="4073797364926776829">Праглядзець картку</translation>
 <translation id="4075732493274867456">Кліент і сервер не падтрымліваюць агульную версію пратакола SLL або набор шыфраў.</translation>
@@ -1854,6 +1854,7 @@
 <translation id="4107047499377819067">Пачалося ўсталяванне фонавых сэрвісаў VPN. Гэты працэс можа заняць некалькі хвілін.</translation>
 <translation id="4110642094637545339">Лагатыпы Google Pay і AfterPay</translation>
 <translation id="4110652170750985508">Праверце плацеж</translation>
+<translation id="411071007970303441">Усе карыстальнікі</translation>
 <translation id="4112140312785995938">Перайсці назад</translation>
 <translation id="4114007503059268298">Захаваць гэту картку ў вашым Уліковым запісе Google і на гэтай прыладзе?</translation>
 <translation id="4114146879518089587">Перайсці на сайт</translation>
@@ -3439,6 +3440,7 @@
 <translation id="6753460329812070808">Прапанова выдалена з Chrome</translation>
 <translation id="6757797048963528358">Прылада перайшла ў рэжым сну.</translation>
 <translation id="6758934187792712102">Сайт "<ph name="URL" />" запытвае дазвол на выкарыстанне датчыкаў руху і святла</translation>
+<translation id="6766488013065406604">Перайсці ў Менеджар пароляў Google</translation>
 <translation id="6770747695101757579">Баваўняная папера</translation>
 <translation id="6772959465807028761">Каб выкарыстоўваць YouTube, увайдзі ва Уліковы запіс Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
@@ -3649,7 +3651,6 @@
 <translation id="7120588595737538743">спампоўкі і здымкі экрана</translation>
 <translation id="7124354851782353862">Увядзіце код CVC</translation>
 <translation id="7129409597930077180">Адпраўка на гэты адрас немагчымая. Выберыце іншы адрас.</translation>
-<translation id="7129809579943936035"><ph name="VALUE_PROP" /> <ph name="DETAILS" /></translation>
 <translation id="7130775116821607281">Запампоўванне забаронена</translation>
 <translation id="7132939140423847331">Ваш адміністратар забараніў капіраванне гэтых даных.</translation>
 <translation id="7134653428559514680">Не рэкамендуецца абагульваць змесціва з гэтага сайта</translation>
@@ -3967,6 +3968,7 @@
 <translation id="7637571805876720304">Выдаліць крэдытную картку з браўзера Chromium?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{Няма}=1{1 пароль ва ўліковым запісе (для даменаў <ph name="DOMAIN_LIST" />)}one{# пароль ва ўліковым запісе (для даменаў <ph name="DOMAIN_LIST" />)}few{# паролі ва ўліковым запісе (для даменаў <ph name="DOMAIN_LIST" />)}many{# пароляў ва ўліковым запісе (для даменаў <ph name="DOMAIN_LIST" />)}other{# пароля ва ўліковым запісе (для даменаў <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">Паслядоўныя парты</translation>
+<translation id="7644100755247241229">Адпраўляйце пераводы праз Pix сябрам і кампаніям з дапамогай Google Кашалька</translation>
 <translation id="7646681339175747202">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Рэкамендуем змяніць яго зараз жа ў Менеджары пароляў Google.</translation>
 <translation id="7647206758853451655">Якасць друку</translation>
 <translation id="7648133459447652947">Каб паказаць курсор, змяніце праграмы, перазагрузіце старонку ці вярніцеся на папярэднюю</translation>
@@ -4070,6 +4072,7 @@
 <translation id="7791543448312431591">Дадаць</translation>
 <translation id="7798389633136518089">Не прымяняецца, паколькі палітыка не вызначана з воблака.</translation>
 <translation id="7800304661137206267">Падключэнне зашыфравана з дапамогай <ph name="CIPHER" />, для аўтэнтыфікацыі паведамленняў выкарыстоўваецца <ph name="MAC" />, механізм абмену ключамі – <ph name="KX" />.</translation>
+<translation id="780228007282527248">Дадайце ўкладку або відарыс, каб палепшыць пошук</translation>
 <translation id="7802523362929240268">Сайт надзейны</translation>
 <translation id="7802989406998618639">Увядзіце <ph name="NUMBER_OF_DIGITS" />-значны код бяспекі на <ph name="SIDE_OF_CARD" />, каб банк мог спраўдзіць вашу асобу</translation>
 <translation id="780301667611848630">Не, дзякуй</translation>

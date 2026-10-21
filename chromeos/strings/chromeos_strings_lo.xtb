@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">ສຳລັບຜົນໄດ້ຮັບໂດຍປະມານ, ໃຫ້ຫານ <ph name="CATEGORY_TEXT" /> ດ້ວຍ <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">ທີ່ມາຮູບ</translation>
 <translation id="1446954767133808402">ໄພລິນ</translation>
-<translation id="1449035143498573192">ເປີດໃນ Google ຊອກຫາ</translation>
 <translation id="1451536289672181509">ອຸປະກອນແມ່ນແປ້ນພິມ.</translation>
 <translation id="1452939186874918380">ຄັນຮົ່ມ</translation>
 <translation id="145402479967797468">ການຄວບຄຸມການຫຼິ້ນ</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">ສະແດງຕົວຢ່າງ <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN ໃນຕົວ</translation>
 <translation id="1669047024429367828">ການແບ່ງປັນ</translation>
-<translation id="1670478569471758522">ຂໍ້ມູນເພີ່ມເຕີມກ່ຽວຂ້ອງກັບການເລືອກຂອງທ່ານ</translation>
 <translation id="1672499492233627739">ຟີດວິດີໂອເວັບແຄມ</translation>
 <translation id="1676557873873341166">ກຳລັງຖ່າຍວິດີໂອ</translation>
 <translation id="1684279041537802716">ສີເດັ່ນ</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">ສຳເລັດການແກ້ໄຂ</translation>
 <translation id="3532980081107202182">ຍັງເຫຼືອອີກປະມານ <ph name="MIN_REMAINING" /> ນາທີ</translation>
 <translation id="3533790840489634638">ອ່າງ</translation>
-<translation id="3547264467365135390">ສູດຄິດໄລ່</translation>
 <translation id="3552832331940389362">ພາບເຄື່ອນໄຫວຮູບແບບຍີ່ປຸ່ນຂອງແມວນັ່ງຢູ່ເທິງຂອບປ່ອງຢ້ຽມເບິ່ງຝົນຕົກໃນຕອນບ່າຍ</translation>
 <translation id="3557205324756024651">ຂໍ້ມູນປະຈຳຕົວໃນເຄື່ອງ (ບໍ່ບັງຄັບ)</translation>
 <translation id="3565064564551103223">IP ທີ່ອະນຸຍາດ</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">ລາຍ​ລະ​ອຽດ</translation>
 <translation id="3869314628814282185">ຜ້າແກ້ວ</translation>
 <translation id="387301095347517405">ຈຳນວນເທື່ອທີ່ແບັດເຕີຣີຂອງທ່ານມີຮອບການສາກໄຟເຕັມ.</translation>
-<translation id="3877066159641251281">ຟັງຄຳແປ</translation>
 <translation id="3880601782712134623">ກວດຫາສຽງທີ່ແຕກຕ່າງກັນ ແລະ ຕິດປ້າຍກຳກັບທົ່ວໄປໃຫ້ຜູ້ເວົ້າແຕ່ລະຄົນ ເຊັ່ນ: ຜູ້ເວົ້າ 1 ແລະ ຜູ້ເວົ້າ 2 ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="38811596981744338">ປະເດັນທາງກົດໝາຍ</translation>
 <translation id="3885327323343477505">ປ່ຽນພາບພັກໜ້າຈໍ</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">ຖອດປລັກສາຍ USB <ph name="DEVICE_NAME" /> ອອກ ແລ້ວສຽບຄືນໃໝ່ເພື່ອສືບຕໍ່ຂັ້ນຕອນການອັບເດດ</translation>
 <translation id="5099354524039520280">ຂຶ້ນ</translation>
 <translation id="5107243100836678918">ຄີລັດທີ່ບໍ່ມີປຸ່ມ <ph name="META_KEY" /> ອາດຂັດແຍ່ງກັບທາງລັດຂອງບາງແອັບ. ກົດທາງລັດນີ້ອີກຄັ້ງເພື່ອສືບຕໍ່ໃຊ້ມັນ ຫຼື ກົດທາງລັດໃໝ່ໂດຍໃຊ້ປຸ່ມ <ph name="KEY" />. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">ຄ້າຍກັນ:</translation>
 <translation id="5130848777448318809">ມ້າແຄະ</translation>
 <translation id="5137451382116112100">ເຕັມໜ້າຈໍ</translation>
 <translation id="5139813694804168398">ຫ້າມລົບກວນ</translation>
 <translation id="5140788690559353412">ເມື່ອທ່ານສູນເສຍສິດເຂົ້າເຖິງບັນຊີໂຮງຮຽນຂອງທ່ານ, ທ່ານຈະບໍ່ສາມາດເຂົ້າເຖິງອີເມວ ແລະ ໄຟລ໌ໃນ Google Drive ທີ່ເຊື່ອມໂຍງ ເຊັ່ນ: Gmail, Docs, Slides ແລະ ອື່ນໆໄດ້ອີກຕໍ່ໄປ.</translation>
 <translation id="5142961317498132443">ການຮັບຮອງຄວາມຖືກຕ້ອງ</translation>
 <translation id="5144311987923128508">ປິດການນຳໃຊ້ປຸ່ມຢືນຢັນແລ້ວ</translation>
-<translation id="5144887194300568405">ສຳເນົາຄໍາແປ</translation>
 <translation id="5145081769226915336">ເປີດໃຊ້ໂໝດມືດໂດຍອັດຕະໂນມັດບໍ?</translation>
 <translation id="5145331109270917438">ວັນ​ທີ​ດັດ​ແປງ</translation>
 <translation id="5154917547274118687">ຄວາມ​ຈໍາ</translation>

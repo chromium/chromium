@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Per obtenir un resultat aproximat, divideix el valor de <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Font de la imatge</translation>
 <translation id="1446954767133808402">safir</translation>
-<translation id="1449035143498573192">Obre a la Cerca de Google</translation>
 <translation id="1451536289672181509">El dispositiu és un teclat.</translation>
 <translation id="1452939186874918380">paraigües</translation>
 <translation id="145402479967797468">Controls de reproducció</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Previsualitza <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN integrada</translation>
 <translation id="1669047024429367828">Visibilitat</translation>
-<translation id="1670478569471758522">Més informació relacionada amb la teva selecció</translation>
 <translation id="1672499492233627739">Feed de vídeo de la càmera web</translation>
 <translation id="1676557873873341166">S'està gravant un vídeo</translation>
 <translation id="1684279041537802716">Color d'èmfasi</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Edició finalitzada</translation>
 <translation id="3532980081107202182">Queden aproximadament <ph name="MIN_REMAINING" /> minuts</translation>
 <translation id="3533790840489634638">piscina</translation>
-<translation id="3547264467365135390">Fórmula</translation>
 <translation id="3552832331940389362">una il·lustració d'animació japonesa d'un gat assegut a la finestra mirant la pluja a la tarda</translation>
 <translation id="3557205324756024651">Identitat local (opcional)</translation>
 <translation id="3565064564551103223">IP permeses</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Descripció</translation>
 <translation id="3869314628814282185">tul</translation>
 <translation id="387301095347517405">El nombre de vegades que la bateria s'ha carregat completament</translation>
-<translation id="3877066159641251281">Escolta la traducció</translation>
 <translation id="3880601782712134623">Detectar automàticament cadascuna de les veus i assignar a cada interlocutor una etiqueta genèrica, com ara Interlocutor 1 i Interlocutor 2</translation>
 <translation id="38811596981744338">Problema legal</translation>
 <translation id="3885327323343477505">Canvia l'estalvi de pantalla</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Desconnecta el cable USB del <ph name="DEVICE_NAME" /> i torna'l a connectar per continuar el procés d'actualització</translation>
 <translation id="5099354524039520280">amunt</translation>
 <translation id="5107243100836678918">La drecera sense tecla de <ph name="META_KEY" /> pot entrar en conflicte amb la drecera d'alguna aplicació. Torna a prémer aquesta drecera per continuar utilitzant-la o prem-ne una altra mitjançant la tecla de <ph name="KEY" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Similars:</translation>
 <translation id="5130848777448318809">ponis</translation>
 <translation id="5137451382116112100">Complet</translation>
 <translation id="5139813694804168398">No molestis</translation>
 <translation id="5140788690559353412">Si perds l'accés al teu compte de centre educatiu, ja no tindràs accés al correu electrònic ni als fitxers de Google Drive associats, com ara Gmail, Documents, Presentacions i més.</translation>
 <translation id="5142961317498132443">Autenticació</translation>
 <translation id="5144311987923128508">El botó Confirma ara està desactivat</translation>
-<translation id="5144887194300568405">Copia la traducció</translation>
 <translation id="5145081769226915336">Vols activar el mode fosc automàticament?</translation>
 <translation id="5145331109270917438">Data de modificació</translation>
 <translation id="5154917547274118687">Memòria</translation>

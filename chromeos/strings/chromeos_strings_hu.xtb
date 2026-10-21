@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Hozzávetőleges eredményért ossza el a(z) <ph name="CATEGORY_TEXT" /> értékét ennyivel: <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Kép forrása</translation>
 <translation id="1446954767133808402">zafír</translation>
-<translation id="1449035143498573192">Megnyitás a Google Keresőben</translation>
 <translation id="1451536289672181509">Az eszköz egy billentyűzet.</translation>
 <translation id="1452939186874918380">esernyők</translation>
 <translation id="145402479967797468">Lejátszásvezérlők</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Előnézet: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Beépített VPN</translation>
 <translation id="1669047024429367828">Láthatóság</translation>
-<translation id="1670478569471758522">A kiválasztott elemhez kapcsolódó további információ</translation>
 <translation id="1672499492233627739">Webkamera videófeedje</translation>
 <translation id="1676557873873341166">Videó készítése…</translation>
 <translation id="1684279041537802716">Kiemelés színe</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Szerkesztés kész</translation>
 <translation id="3532980081107202182">Körülbelül <ph name="MIN_REMAINING" /> perc van hátra</translation>
 <translation id="3533790840489634638">medence</translation>
-<translation id="3547264467365135390">Képlet</translation>
 <translation id="3552832331940389362">ablakpárkányon ülő, a délutáni esőt figyelő macskát ábrázoló japán animációsfilm-illusztráció</translation>
 <translation id="3557205324756024651">Helyi azonosító (nem kötelező)</translation>
 <translation id="3565064564551103223">Engedélyezett IP-címek</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Leírás</translation>
 <translation id="3869314628814282185">tüll</translation>
 <translation id="387301095347517405">Annak a száma, hogy hány teljes töltési ciklusa volt az akkumulátornak.</translation>
-<translation id="3877066159641251281">Fordítás meghallgatása</translation>
 <translation id="3880601782712134623">Automatikusan észleli a különböző hangokat, és mindegyik beszélőhöz általános címkét (pl. 1. beszélő és 2. beszélő) rendel hozzá</translation>
 <translation id="38811596981744338">Jogi probléma</translation>
 <translation id="3885327323343477505">Képernyőkímélő módosítása</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Húzza ki a(z) <ph name="DEVICE_NAME" /> USB-kábelét, majd csatlakoztassa újra a frissítési folyamat folytatásához</translation>
 <translation id="5099354524039520280">felfelé</translation>
 <translation id="5107243100836678918">A(z) <ph name="META_KEY" /> billentyű nélküli billentyűparancs ütközhet egyes alkalmazások billentyűparancsaival. Ha továbbra is használni szeretné, nyomja le újra ezt a billentyűparancsot, vagy nyomjon le egy új billentyűparancsot a(z) <ph name="KEY" /> billentyű használatával. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Rokon értelmű:</translation>
 <translation id="5130848777448318809">pónik</translation>
 <translation id="5137451382116112100">Teljes</translation>
 <translation id="5139813694804168398">ne zavarjanak</translation>
 <translation id="5140788690559353412">Ha elveszíti az iskolai fiókjához való hozzáférését, akkor a jövőben nem fog tudni hozzáférni a hozzá tartozó e-mailekhez és Google Drive-fájlokhoz (például a Gmailhez, a Dokumentumokhoz, a Diákhoz stb.).</translation>
 <translation id="5142961317498132443">Hitelesítés</translation>
 <translation id="5144311987923128508">A Megerősítés gomb mostantól le van tiltva</translation>
-<translation id="5144887194300568405">Fordítás másolása</translation>
 <translation id="5145081769226915336">Szeretné a sötét mód automatikus bekapcsolását?</translation>
 <translation id="5145331109270917438">Módosítás dátuma</translation>
 <translation id="5154917547274118687">Memória</translation>

@@ -6551,6 +6551,17 @@ Si no se define esta política, Ayúdame a escribir se habilitará en los dispos
 <translation id="5081204761483900654">Sesiones de invitado administradas y restringidas</translation>
 <translation id="5082296146261894974">Permitir que los usuarios hagan clic en una notificación de la función Mi teléfono para abrir la aplicación Eche.</translation>
 <translation id="5082572440690475059">Permitir el acceso de lectura a través de la API File System en estos sitios web</translation>
+<translation id="5084849119584030624">Configura los ajustes de conexión de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> en <ph name="PRODUCT_NAME" />.
+
+Esta política ya no se admite y se ignora. Usa la política <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> en su lugar.
+
+La política configura la URL de la aplicación web de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> mediante <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />, que debe ser una URL válida que use el esquema https, apunte a un dominio de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> y no incluya un nombre de usuario ni una contraseña. Si no cumple estos requisitos, la política se ignorará y <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> se quedará sin configurar.
+
+Si se define esta política, se configurará <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> para los usuarios que hayan iniciado sesión con una cuenta gestionada o en un navegador gestionado.
+
+Si no se define esta política, no se configurará <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.
+
+Ten en cuenta que esta política no controla la integración general de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que se puede controlar mediante la política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
 <translation id="5087922428454325090">Los usuarios no pueden instalar aplicaciones web mediante el navegador.</translation>
 <translation id="5087932158260897375">Si se asigna el valor false a esta política, se inhabilitarán los informes de datos de diagnóstico sobre la fiabilidad de dominios y no se enviarán datos a Google.
@@ -8409,25 +8420,6 @@ En la versión 114 y posteriores, esta política es opcional si se establece la 
 <translation id="6244061205361004687">Permitir que el usuario desconecte o modifique manualmente una VPN</translation>
 <translation id="6244210204546589761">URL que se deben abrir al inicio</translation>
 <translation id="6244263962918757383">Configuración de ChromeSuggestions</translation>
-<translation id="6245828368576563662">Esta política permite definir una lista de reglas para inyectar encabezados HTTP personalizados en las solicitudes web que coincidan con patrones de URL específicos. Los encabezados definidos por esta política tienen prioridad sobre los que estaban presentes inicialmente en la solicitud, así como sobre las modificaciones que intenten hacer los usuarios o las extensiones.
-
-Un caso práctico habitual de esta política es aplicar obligatoriamente controles de acceso de cliente inyectando encabezados personalizados (por ejemplo, <ph name="EXAMPLE_HEADER_NAME" />).
-
-La política acepta una lista de reglas. Cada regla contiene:
-
-* <ph name="PATTERNS_KEY" />: una lista de patrones de URL con los que se debe coincidir. Consulta cómo aplicar formato a un patrón de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
-
-* <ph name="HEADERS_KEY" />: una lista de objetos que representan los encabezados que se van a inyectar. Cada uno de ellos contiene lo siguiente:
-
-  * <ph name="HEADER_NAME_KEY" />: el nombre del encabezado que se va a inyectar.
-
-  * <ph name="HEADER_VALUE_KEY" />: el valor del encabezado que se va a inyectar.
-
-Si varias reglas coinciden con una solicitud, se aplicarán los encabezados de todas las reglas que coincidan. Si hay varios encabezados con el mismo nombre, se aplicará el que tenga el patrón de URL más específico. Si los patrones son igual de específicos, se aplicará el que aparezca en último lugar en la lista.
-
-Los nombres de encabezado deben cumplir el protocolo RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616). Los valores de encabezado no deben contener símbolos NUL, CR ni LF. Los encabezados individuales no deben superar los 8 KB de tamaño. Los encabezados y patrones de URL no válidos se ignorarán.
-
-Esta política está limitada a un total de 500 patrones de URL en todas las reglas. Cada regla puede contener un máximo de 20 encabezados. Los patrones y encabezados que superen estos umbrales se ignorarán.</translation>
 <translation id="624595269193747921">Especifica si se limitará la búsqueda de la impresora coincidente a un conjunto de impresoras concreto.</translation>
 <translation id="6246290059248303618">Mostrar controles multimedia para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos en la red local</translation>
 <translation id="6247316685259031374">Esta política controla el entorno aislado de audio.
@@ -9955,23 +9947,6 @@ Esta política no afecta a los gestores de contraseñas de terceros que usan API
 
       Nota: Actualmente, la función de análisis está inhabilitada mediante una marca de función. Si el usuario la habilita mediante la marca de función, la función se podrá seguir inhabilitando con esta política.</translation>
 <translation id="7115684775550072082">Solo conservar espacios en los tipos de MIME de texto y XML</translation>
-<translation id="7116098886490965998">Inhabilita el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para los proveedores de identidades que se indican.
-
-Si añades el valor <ph name="POLICY_VALUE_ALL" />, se inhabilitarán todos los proveedores de identidades admitidos para el inicio de sesión único.
-
-Si añades el valor <ph name="POLICY_VALUE_MICROSOFT" />, se inhabilitará la compatibilidad de Chrome con el inicio de sesión único para el proveedor de identidades en la nube de Microsoft®.
-
-Si no se define esta política, se habilitarán todos los proveedores de identidades admitidos de <ph name="PRODUCT_NAME" />.
-
-En el caso de los proveedores de identidades que se han habilitado en <ph name="PRODUCT_NAME" /> y que ha configurado el administrador en el dispositivo, los usuarios que inicien sesión una vez en su cuenta usando ese proveedor de identidades (en cualquier aplicación que admita <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" />) podrán iniciar sesión automáticamente en propiedades web usando ese proveedor de identidades. La información relativa a la autenticación del usuario se transmite al proveedor de identidades en la nube del usuario en cada evento de autenticación.
-
-Notas:
-
-<ph name="PRODUCT_NAME" /> no admite el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> en los modos Incógnito o Invitado.
-
-<ph name="PRODUCT_NAME" /> solo admite el inicio de sesión único con <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> para los siguientes proveedores de identidades: Microsoft, Okta.
-
-Esta función está disponible a partir de <ph name="MAC_OS_NAME" /> 10.15.</translation>
 <translation id="7119538491527883595">Almacenamiento de datos de usuario local</translation>
 <translation id="7121046543122812054">Esta política está obsoleta. Te recomendamos que uses <ph name="BROWSER_SIGNIN_POLICY_NAME" /> en su lugar.
 
@@ -12347,6 +12322,17 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.
 <translation id="8621146428060651659">Permitir la aleatorización del grupo de sockets para proxies</translation>
 <translation id="862621549134406761">Habilitar comprobación de uso de claves RSA</translation>
 <translation id="8626826495474944836">Requerir aislamiento de sitio web para todos los sitios</translation>
+<translation id="8628954914373039931">Este ajuste permite a los usuarios cambiar de una cuenta de Google a otra desde el área de contenido de la ventana del navegador y en las aplicaciones Android, después de iniciar sesión en su dispositivo <ph name="PRODUCT_OS_NAME" />.
+
+      Si se le asigna el valor false, no se permitirá iniciar sesión en otra cuenta de Google desde un área de contenido del navegador que no sea de Incógnito ni desde aplicaciones Android.
+
+      Si no se establece esta política o se le asigna el valor true, se usará el comportamiento predeterminado: se permitirá iniciar sesión en una cuenta de Google diferente desde el área de contenido del navegador y las aplicaciones Android, excepto en el caso de las cuentas infantiles, en las que se bloqueará en el área de contenido que no sea de Incógnito.
+
+      En Android, este ajuste controla si los usuarios pueden añadir más cuentas de Google desde el área de contenido de los sitios web de Google mientras tienen la sesión iniciada en <ph name="PRODUCT_NAME" />. Si se le asigna el valor false, los sitios web de Google no ofrecerán la opción de añadir otra cuenta de Google (por ejemplo, el botón "Añadir otra cuenta" del menú de la cuenta). Si no se define esta política o se le asigna el valor true, se permitirá añadir otra cuenta de Google desde los sitios web de Google. Esta política no impide añadir cuentas de Google al propio dispositivo Android.
+
+      Si no se debe permitir iniciar sesión en otra cuenta mediante el modo Incógnito, puedes bloquear ese modo con la política IncognitoModeAvailability.
+
+      Ten en cuenta que los usuarios podrán acceder a los servicios de Google sin autenticarse bloqueando sus cookies.</translation>
 <translation id="8630797597241896082">Permitir IA generativa en VC Background y mejorar los modelos de IA</translation>
 <translation id="8631314130868563649">Inhabilitar la gestión del cambio de alimentación en picos</translation>
 <translation id="8631434304112909927">hasta la versión <ph name="UNTIL_VERSION" /></translation>

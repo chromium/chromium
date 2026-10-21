@@ -291,7 +291,6 @@
 <translation id="3870711497942672548">Ana sayfanız için özel renkler ve resimlerle Chrome'u kişiselleştirin</translation>
 <translation id="389521680295183045">Siteler, cihazımı etkin olarak kullandığımda bilmek isteyebilir</translation>
 <translation id="3895926599014793903">Yakınlaştırmayı etkinleştirmeye zorla</translation>
-<translation id="3905475044299942653">Çok fazla bildirim gelmesini engelleyin</translation>
 <translation id="3922092564198021702">Telefonunuzda Ayarlar'ı açın.</translation>
 <translation id="3924858949939391676">Okuma Modu açıldıktan sonra bağlantılar görüntülenir</translation>
 <translation id="3933121352599513978">İstenmeyen istekleri daralt (önerilir)</translation>
@@ -385,7 +384,6 @@
 <translation id="4936863036653376783">Gruplarınızı tüm cihazlarınızda sekme grubu bölümünde bulabilirsiniz</translation>
 <translation id="4945443401464700059"><ph name="SITE" /> sitesinin, şu sitelerdeki bilgilerinizi kullanması engellendi:</translation>
 <translation id="4953688446973710931">Bu düğme açıkken siteler birden fazla dosyayı otomatik olarak indirmek isteyebilir. Düğme kapalıyken siteler birden fazla dosyayı otomatik olarak indiremez.</translation>
-<translation id="4962975101802056554">Cihaz için tüm izinleri iptal eder</translation>
 <translation id="4972737347717125191">Siteler sanal gerçeklik cihazlarını ve verilerini kullanmak isteyebilir</translation>
 <translation id="4973805849704516244">Chrome Renkleri alt sayfası</translation>
 <translation id="497421865427891073">İlerle</translation>
@@ -704,7 +702,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8441146129660941386">Geriye doğru git</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> uygulamasının konumunuza erişebilmesi için <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'nda da konumu açın.</translation>
-<translation id="8447861592752582886">Cihaz iznini iptal et</translation>
 <translation id="8463843545738141778">Android Ayarları'nda Gelişmiş Koruma'yı etkinleştirdiğiniz için bu ayar devre dışı bırakıldı.</translation>
 <translation id="8467359479529706065">Yeni sekme sayfası görünümü alt sayfası, ekranın yarısına kadar açıldı</translation>
 <translation id="8471525937465764768">Doküman yazdırma veya depolama cihazına kaydetme gibi özelliklerin kullanılması için siteler genellikle USB cihazlara bağlanır</translation>

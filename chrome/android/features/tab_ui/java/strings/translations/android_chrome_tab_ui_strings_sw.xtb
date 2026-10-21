@@ -61,6 +61,7 @@
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Kunja kichupo <ph name="TABS_COUNT_ONE" />.}other{Kunja kikundi chenye vichupo <ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="2569352796411618312">Pendekezo: Hujatumia vichupo <ph name="NUMBER_OF_TABS" /> hivi majuzi. Ungependa tuvifunge?</translation>
 <translation id="257674075312929031">Kikundi</translation>
+<translation id="2628148780487543078">Funga pia vichupo vilivyobandikwa</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{Rejesha kisha ufungue kikundi cha vichupo kilicho na kichupo <ph name="TABS_COUNT_ONE" /> cha rangi ya <ph name="COLOR_NAME" />.}other{Rejesha kisha ufungue kikundi cha vichupo kilicho na vichupo <ph name="TABS_COUNT_MANY" /> cha rangi ya <ph name="COLOR_NAME" />.}}</translation>
 <translation id="2662028055331606429">Imekadiriwa alama <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Tembelea tovuti</translation>

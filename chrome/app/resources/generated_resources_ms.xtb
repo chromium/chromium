@@ -437,7 +437,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="130744661532298792">Untuk memastikan anda dapat menggunakan kata laluan pada bila-bila masa dalam Google Account anda, sahkan identiti anda</translation>
 <translation id="1308105352527684175">Anda mungkin tidak dapat mengakses kandungan tertentu</translation>
 <translation id="1311092170520822848">Laman ini sedang mengawal pembaca kad pintar yang disambungkan kepada peranti anda dan kad pintar yang berkemungkinan tersedia untuk pembaca tersebut</translation>
-<translation id="131112175593356748">Tunjukkan beberapa item</translation>
 <translation id="131112695174432497">Data yang mempengaruhi pemeribadian iklan dipadamkan</translation>
 <translation id="131188242279372879">Temukan perlindungan dipertingkat untuk mendapatkan tahap keselamatan tertinggi Chrome bagi muat turun</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Betulkan Tab yang Memperlahankan Penyemak Imbas Anda}other{Betulkan Tab yang Memperlahankan Penyemak Imbas Anda}}</translation>
@@ -831,6 +830,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1621984899599015181">Pilihan perkongsian diurus oleh organisasi anda. Sesetengah item mungkin disembunyikan.</translation>
 <translation id="1622054403950683339">Lupakan rangkaian Wi-Fi</translation>
 <translation id="1623723619460186680">Pengurangan cahaya biru</translation>
+<translation id="1623799258803152950">Halaman ini dan teks yang diserlahkan dikongsi dengan Google</translation>
 <translation id="1626581272720526544">Anda boleh memuat turun apl dan permainan Android melalui Play Store. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="1627276047960621195">Pemerihal Fail</translation>
 <translation id="1627408615528139100">Telah pun dimuat turun</translation>
@@ -2806,6 +2806,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3109206895301430738">Kumpulan Tab Disimpan</translation>
 <translation id="3109724472072898302">Diruntuhkan</translation>
 <translation id="3112292765614504292">Saiz apl: <ph name="APP_SIZE" /></translation>
+<translation id="3112378005171663295">Runtuhkan</translation>
 <translation id="3112532142993641404">Untuk mendapatkan tab anda daripada peranti anda yang lain, log masuk dan segerakkan sejarah. Anda juga akan mendapat penanda halaman anda dan pelbagai lagi pada semua peranti anda. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="311347022006935575">Tab ini ditambahkan</translation>
 <translation id="311394601889664316">Jangan benarkan laman mengedit fail atau folder pada peranti anda</translation>
@@ -2846,6 +2847,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3143515551205905069">Batalkan penyegerakan</translation>
 <translation id="3143754809889689516">Mainkan dari permulaan</translation>
 <translation id="3144647712221361880">Buka pautan sebagai</translation>
+<translation id="3146436581677566946">Model pada peranti</translation>
 <translation id="3147878021189006333">Kotak Omni</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3150927491400159470">Muat Semula Keras</translation>
@@ -3211,6 +3213,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3424969259347320884">Terangkan Perkara Yang Sedang Anda Lakukan Semasa Ranap Tab Berlaku</translation>
 <translation id="3426562492084153055">Semak imbas kemahiran</translation>
 <translation id="3427092606871434483">Benarkan (lalai)</translation>
+<translation id="3427822597374329810">Model pakar kecil</translation>
 <translation id="3429086384982427336">Apl yang disenaraikan di bawah tidak akan mengendalikan pautan protokol.</translation>
 <translation id="3429174588714165399">Buat pintasan kepada halaman ini</translation>
 <translation id="3429271624041785769">Bahasa kandungan web</translation>
@@ -3591,6 +3594,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3701167022068948696">Betulkan sekarang</translation>
 <translation id="3701515417135397388">Memberi anda amaran jika terdapat kata laluan terjejas dalam pelanggaran data</translation>
 <translation id="3701778844313851487">Akses Sambungan</translation>
+<translation id="3701846426433416920">Padamkan model</translation>
 <translation id="3703166520839776970">Jika masalah ini tetap berlaku, pilih "Lagi butiran" di bawah untuk mendapatkan maklumat lanjut daripada <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3703699162703116302">Tiket dimuat semula</translation>
 <translation id="370415077757856453">JavaScript disekat</translation>
@@ -4392,6 +4396,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4296632172536745000">Kata laluan asal anda untuk laman ini ditemukan dalam pelanggaran data awam. Pada <ph name="DATE" />, anda meminta <ph name="BRAND" /> menukar kata laluan anda secara automatik untuk anda.</translation>
 <translation id="4297219207642690536">Mulakan semula dan tetapkan semula</translation>
 <translation id="4297813521149011456">Putaran paparan</translation>
+<translation id="42981349822642051">Kembangkan</translation>
 <translation id="4298660926525614540">Nama Storan Boleh Tanggal</translation>
 <translation id="4299022904780065004">Tetingkap &amp;Inkognito baharu</translation>
 <translation id="4300272766492248925">Buka apl</translation>

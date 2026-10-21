@@ -118,7 +118,6 @@
 <translation id="2039417478970545937">설정</translation>
 <translation id="2040220733769034247">휴대전화로 QR 코드를 스캔하여 Chrome을 다운로드하고 Google 계정에 로그인하세요.</translation>
 <translation id="2044908892530830113">Mac 메뉴 바에 Chrome으로 검색 표시 및 키보드 단축키 사용 설정</translation>
-<translation id="2050189601866423230">Google 검색 AI 모드를 고정하여 탐색 중에 질문할 수 있습니다.</translation>
 <translation id="2091012649849228750">향후 Chrome 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 8을 사용 중입니다.</translation>
 <translation id="2094648590148273905">ChromeOS Flex 약관</translation>
 <translation id="2094919256425865063">Chrome을 종료하시겠습니까?</translation>
@@ -463,6 +462,7 @@
 <translation id="5386244825306882791">또한 Chrome을 시작하거나 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="5394833366792865639">Chrome 탭 공유</translation>
 <translation id="5402307365844630024">Chrome 베타의 Gemini 전환</translation>
+<translation id="5414664742659847155">다른 앱에서 Chrome 분리</translation>
 <translation id="541844421954567481"><ph name="DEVICE_TYPE" />에서 Chrome 앱을 사용하여 이동 중에도 비밀번호, 탭 등을 이용하세요</translation>
 <translation id="5430073640787465221">환경설정 파일이 손상되었거나 잘못되었습니다.
 
@@ -678,6 +678,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7306401458628386911">즉시 탐색 시작: 이제 Windows 시작 시 Chrome을 실행할 수 있습니다.</translation>
 <translation id="7308322188646931570">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 있어야 합니다</translation>
 <translation id="7352651011704765696">문제가 발생했습니다</translation>
+<translation id="7371412052245999753">컴퓨터의 다른 애플리케이션으로부터 Chrome의 메모리를 보호합니다.</translation>
 <translation id="73786666777299047">Chrome 웹 스토어 열기</translation>
 <translation id="7386878009611068389">부모님의 선택을 통해 온라인에서 더 안전하게 보호하려면 이미 <ph name="USER_EMAIL_ADDRESS" />님으로 로그인되어 있는 Chrome 프로필로 전환하세요.</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chrome에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>
@@ -772,7 +773,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8074398340364918139">특정 Chrome 기능 또는 확장 프로그램을 검색하려면 주소 표시줄에 바로가기를 입력한 다음 선택한 키보드 키를 입력하세요</translation>
 <translation id="8077579734294125741">기타 Chrome 프로필</translation>
 <translation id="8086881907087796310">컴퓨터가 최소 하드웨어 요구사항을 충족하지 않으므로 설치에 실패했습니다.</translation>
-<translation id="8110438089258398864">Google 검색 AI 모드를 다시 열어 탐색 중에 질문할 수 있습니다.</translation>
 <translation id="8113883687556086139"><ph name="ACCOUNT_EMAIL" /> 계정에서 Chrome 데이터를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
 <translation id="8115695070094288807">나만의 Chrome 만들기...</translation>
 <translation id="8118331347066725040">렌즈로 검색에 관한 의견 보내기</translation>
@@ -829,8 +829,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8555465886620020932">서비스 오류(<ph name="SERVICE_ERROR" />)가 발생했습니다.</translation>
 <translation id="856656450041460113">언어 목록 검색</translation>
 <translation id="8575047640889685742"><ph name="BEGIN_LINK" />나만의 암호<ph name="END_LINK" />를 사용하여 Google 계정에 있는 모든 Chrome 데이터를 암호화하세요. Google Pay의 결제 수단 및 주소는 암호화되지 않습니다. Chrome 방문 기록은 동기화되지 않습니다.</translation>
-<translation id="8590782867495422699">Google 검색 AI 모드 다시 열기</translation>
-<translation id="8598779894319572882">툴바의 'Google 검색 AI 모드' 버튼에서 Google 검색 AI 모드를 다시 열어 탐색 중에 질문할 수 있습니다.</translation>
 <translation id="8614913330719544658">Chrome이 응답하지 않습니다. 다시 시작하시겠습니까?</translation>
 <translation id="8623450603356630491">휴대전화에서 Chrome에 로그인하기</translation>
 <translation id="8624541899164515475">설정, 새 탭에서 열립니다.</translation>
@@ -885,7 +883,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="9014771989710951291">여러 조직에서 Chrome을 관리합니다.</translation>
 <translation id="9018218886431812662">설치 완료</translation>
 <translation id="9066987883552592250">Chrome Canary의 Gemini 닫기</translation>
-<translation id="9074041031320636790">완료되었습니다. 이제 Google 검색 AI 모드를 사용해 탐색 중에도 쉽게 질문할 수 있습니다</translation>
 <translation id="9090566250983691233">Chrome에서 일부 파일을 차단하는 이유 알아보기</translation>
 <translation id="9106236359747881194">검색할 텍스트 선택</translation>
 <translation id="911206726377975832">인터넷 사용 기록도 삭제하시겠습니까?</translation>

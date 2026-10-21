@@ -118,6 +118,7 @@
 <translation id="2190166659037789668">Värskenduse kontrolli viga: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Eemalda konto Chromiumist</translation>
 <translation id="2201788217099588893">Kasutage Chromiumi rakendust, et parimaid ostutööriistad liikvel olles kaasa võtta.</translation>
+<translation id="2209877494277346829">Chromiumi isoleerimine muudest rakendustest</translation>
 <translation id="2210502920229141283">iOS-i Chromium pakub täiustatud ohutut sirvimist, mis kaitseb teid liikvel olles paremini</translation>
 <translation id="2210682093923538346">Ohtlik sait. Chromium eemaldas märguanded.</translation>
 <translation id="2236949375853147973">Minu tegevused</translation>
@@ -190,6 +191,7 @@
 <translation id="2977470724722393594">Chromium on ajakohane</translation>
 <translation id="2977506796191543575">Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chromium saata URL-id ja lehe sisu osad teenusele Google'i ohutu sirvimine.</translation>
 <translation id="2981563588585023386">Selleks et end veebis vanema valikute abil kaitata, logi Chromiumisse sisse</translation>
+<translation id="2992577225802060159">Kaitseb Chromiumi mälu teie arvutis olevate muude rakenduste eest.</translation>
 <translation id="3003694935412297923">Kõik ülesanded</translation>
 <translation id="3012615494352020668">{count,plural, =1{Selleks et teatud andmeid saaks teie Google'i kontole salvestada ja kõigis teie seadmetes kasutada, peab Chromium teie isiku kinnitama. Kui logite kohe välja, siis need andmed (üks üksus) kustutatakse.}other{Selleks et teatud andmeid saaks teie Google'i kontole salvestada ja kõigis teie seadmetes kasutada, peab Chromium teie isiku kinnitama. Kui logite kohe välja, siis need andmed ({count} üksust) kustutatakse.}}</translation>
 <translation id="3013473503895162900">Avage <ph name="URL" /> Chromiumis uuel vahelehel.</translation>
@@ -466,7 +468,6 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="5949225980829865667">Selle järjehoidja ja muu saamiseks kõikidesse oma seadmetesse logige Chromiumi sisse</translation>
 <translation id="5953657885167112863">Muutke Chromium enda omaks</translation>
 <translation id="5960071705175224773">Tundmatu rakendus muutis teie seadeid</translation>
-<translation id="5977420883993828287">Kinnitatud! Järgmine kord saate kontekstipõhiseid toiminguid kasutada tööriistariba kaudu.</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Teie organisatsioon sulgeb Chromiumi automaatselt, kui seda ei kasutata 1 minuti jooksul.}other{Teie organisatsioon sulgeb Chromiumi automaatselt, kui seda ei kasutata # minuti jooksul.}}</translation>
 <translation id="5987687638152509985">Sünkroonimise alustamiseks värskendage Chromiumi</translation>
 <translation id="5990360079535151574">Tööriistariba nupu „Kontekstipõhised toimingud“ kaudu saate kontekstipõhised toimingud uuesti avada, et sirvimise ajal küsimusi esitada.</translation>

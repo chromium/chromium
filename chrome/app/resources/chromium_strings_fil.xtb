@@ -120,6 +120,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2190166659037789668">Error sa pagtingin kung may update: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Alisin ang account sa Chromium</translation>
 <translation id="2201788217099588893">Gamitin ang Chromium app para dalhin ang pinakamahuhusay na tool sa pamimili nang on the go</translation>
+<translation id="2209877494277346829">Ihiwalay ang Chromium sa iba pang app</translation>
 <translation id="2210502920229141283">Manatiling mas ligtas on the go gamit ang Pinahusay na Ligtas na Pag-browse sa Chromium para sa iOS</translation>
 <translation id="2210682093923538346">Mapanganib na site. Inalis ng Chromium ang mga notification.</translation>
 <translation id="2236949375853147973">Aking Aktibidad</translation>
@@ -192,6 +193,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2977470724722393594">Napapanahon ang Chromium</translation>
 <translation id="2977506796191543575">Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chromium sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page</translation>
 <translation id="2981563588585023386">Para manatiling mas ligtas online sa pamamagitan ng mga pinili ng iyong magulang, mag-sign in sa Chromium</translation>
+<translation id="2992577225802060159">Pinoprotektahan ang memory ng Chromium mula sa iba pang application sa iyong computer.</translation>
 <translation id="3003694935412297923">Lahat ng gawain</translation>
 <translation id="3012615494352020668">{count,plural, =1{Kailangang i-verify ng Chromium na ikaw ito bago ma-save ang ilang data sa iyong Google Account at magamit ito sa lahat ng device mo. Kung magsa-sign out ka ngayon, made-delete ang data na ito (1 item).}one{Kailangang i-verify ng Chromium na ikaw ito bago ma-save ang ilang data sa iyong Google Account at magamit ito sa lahat ng device mo. Kung magsa-sign out ka ngayon, made-delete ang data na ito ({count} item).}other{Kailangang i-verify ng Chromium na ikaw ito bago ma-save ang ilang data sa iyong Google Account at magamit ito sa lahat ng device mo. Kung magsa-sign out ka ngayon, made-delete ang data na ito ({count} na item).}}</translation>
 <translation id="3013473503895162900">Buksan ang <ph name="URL" /> sa bagong tab sa Chromium.</translation>
@@ -468,7 +470,6 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="5949225980829865667">Para makuha ang bookmark na ito at higit pa sa lahat ng iyong device, mag-sign in sa Chromium</translation>
 <translation id="5953657885167112863">I-personalize ang Chromium</translation>
 <translation id="5960071705175224773">Binago ng hindi kilalang app ang iyong mga setting</translation>
-<translation id="5977420883993828287">Na-pin na! Gamitin ulit ang Mga Gawaing Batay sa Konteksto mula sa toolbar</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Awtomatikong isinasara ng iyong organisasyon ang Chromium kapag hindi ito nagamit nang 1 minuto.}one{Awtomatikong isinasara ng iyong organisasyon ang Chromium kapag hindi ito nagamit nang # minuto.}other{Awtomatikong isinasara ng iyong organisasyon ang Chromium kapag hindi ito nagamit nang # na minuto.}}</translation>
 <translation id="5987687638152509985">I-update ang Chromium upang simulan ang pag-sync</translation>
 <translation id="5990360079535151574">Mula sa button na "Mga Gawaing Batay sa Konteksto" sa toolbar, mabubuksan mo ulit ang Mga Gawaing Batay sa Konteksto para makapagtanong habang nagba-browse ka</translation>

@@ -6503,6 +6503,17 @@ Ist diese Richtlinie nicht konfiguriert, ist „Formuliere für mich“ auf nich
 <translation id="5081204761483900654">Eingeschränkte verwaltete Gastsitzungen</translation>
 <translation id="5082296146261894974">Ermöglicht Nutzern, auf die Phone Hub-Benachrichtigung zu klicken, um die App „Eche“ zu starten.</translation>
 <translation id="5082572440690475059">Lesezugriff über die File System API auf diesen Websites erlauben</translation>
+<translation id="5084849119584030624">Konfiguriert die Verbindungseinstellungen für <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" />.
+
+Diese Richtlinie wird nicht mehr unterstützt und wird ignoriert. Verwende stattdessen die Richtlinie „<ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />“.
+
+Die Richtlinie konfiguriert die URL der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Webanwendung über <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />. Dies muss eine gültige URL sein, die das HTTPS-Schema verwendet, auf eine <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Domain verweist und keinen Nutzernamen oder kein Passwort enthält. Wenn sie diese Anforderungen nicht erfüllt, wird die Richtlinie ignoriert und <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> bleibt unkonfiguriert.
+
+Ist diese Richtlinie konfiguriert, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> für Nutzer konfiguriert, die mit einem verwalteten Konto oder einem verwalteten Browser angemeldet sind.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht konfiguriert.
+
+Diese Richtlinie steuert nicht die allgemeine <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-Anbindung, die über die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ gesteuert werden kann.</translation>
 <translation id="5085647276663819155">Druckvorschau deaktivieren</translation>
 <translation id="5087922428454325090">Nutzer können Web-Apps nicht über den Browser installieren.</translation>
 <translation id="5087932158260897375">Wenn diese Richtlinie auf „false“ gesetzt ist, sind Berichte zur Diagnose der Domainzuverlässigkeit deaktiviert und es werden keine Daten an Google gesendet.
@@ -8324,25 +8335,6 @@ In Version 114 und höher ist diese Richtlinie optional, wenn die Richtlinie �
 <translation id="6244061205361004687">Nutzern erlauben, VPN-Verbindungen manuell zu trennen oder zu ändern</translation>
 <translation id="6244210204546589761">Beim Start zu öffnende URLs</translation>
 <translation id="6244263962918757383">Einstellungen für Vorschläge in Chrome</translation>
-<translation id="6245828368576563662">Mit dieser Richtlinie lässt sich eine Liste von Regeln definieren, um benutzerdefinierte HTTP-Header in Webanfragen einzuschleusen, die mit bestimmten URL-Mustern übereinstimmen. Header, die durch diese Richtlinie festgelegt werden, haben Vorrang vor Headern, die ursprünglich bereits in der Anfrage vorhanden waren, sowie vor Änderungen, die von Nutzern oder Erweiterungen vorgenommen werden.
-
-Ein häufiger Anwendungsfall für diese Richtlinie ist die Durchsetzung von Mandanten-Zugriffskontrollen durch das Einschleusen benutzerdefinierter Header (z. B. <ph name="EXAMPLE_HEADER_NAME" />).
-
-Die Richtlinie akzeptiert eine Liste von Regeln. Jede Regel enthält:
-
-* <ph name="PATTERNS_KEY" />: Eine Liste von URL-Mustern, die abgeglichen werden sollen. Wie ein URL-Muster formatiert wird, erfährst du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-* <ph name="HEADERS_KEY" />: Eine Liste von Objekten, die die einzufügenden Header repräsentieren. Jedes Objekt enthält:
-
-  * <ph name="HEADER_NAME_KEY" />: Den Namen des einzuschleusenden Headers.
-
-  * <ph name="HEADER_VALUE_KEY" />: Den Wert des einzuschleusenden Headers.
-
-Wenn mehrere Regeln auf eine Anfrage zutreffen, werden Header aus allen übereinstimmenden Regeln angewendet. Falls mehrere Header denselben Namen haben, wird der Header mit dem spezifischsten URL-Muster angewendet. Sind die Muster gleich spezifisch, wird der Header angewendet, der zuletzt in der Liste erscheint.
-
-Headernamen müssen RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616) entsprechen. Headerwerte dürfen keine NUL-, CR- oder LF-Zeichen enthalten. Einzelne Header dürfen eine Größe von 8 KB nicht überschreiten. Ungültige Header und URL-Muster werden ignoriert.
-
-Diese Richtlinie ist auf insgesamt 500 URL-Muster über alle Regeln hinweg begrenzt. Jede Regel darf maximal 20 Header enthalten. Muster und Header, die diese Grenzwerte überschreiten, werden ignoriert.</translation>
 <translation id="624595269193747921">Gibt an, ob die Suche nach dem passenden Drucker auf eine bestimmte Gruppe von Druckern beschränkt werden soll.</translation>
 <translation id="6246290059248303618">Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten im lokalen Netzwerk gestartet wurden</translation>
 <translation id="6247316685259031374">Mit dieser Richtlinie kann die Sandbox für den Audioprozess konfiguriert werden.
@@ -9854,23 +9846,6 @@ Diese Richtlinie wirkt sich nicht auf Passwortmanager von Drittanbietern aus, di
 
       Hinweis: Die Scanfunktion ist derzeit über eine Funktions-Flag standardmäßig deaktiviert. Auch wenn der Nutzer die Funktion über die Funktions-Flag aktiviert, kann sie aufgrund dieser Richtlinie deaktiviert bleiben.</translation>
 <translation id="7115684775550072082">Leerzeichen nur für die MIME-Typen „text“ und „xml“ beibehalten</translation>
-<translation id="7116098886490965998">Deaktiviere die Einmalanmeldung über <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> für die aufgeführten Identitätsanbieter.
-
-Wenn du den Wert „<ph name="POLICY_VALUE_ALL" />“ hinzufügst, werden alle unterstützten Identitätsanbieter für die Einmalanmeldung deaktiviert.
-
-Wenn du den Wert „<ph name="POLICY_VALUE_MICROSOFT" />“ hinzufügst, wird die Unterstützung für die Einmalanmeldung für den Microsoft®-Cloud-Identitätsanbieter in Chrome deaktiviert.
-
-Wenn du diese Richtlinie nicht konfigurierst, werden alle Identitätsanbieter aktiviert, die von <ph name="PRODUCT_NAME" /> unterstützt werden.
-
-Für Identitätsanbieter, die in <ph name="PRODUCT_NAME" /> aktiviert und vom Administrator auf dem Gerät konfiguriert sind, können Nutzer, die sich über diesen Identitätsanbieter einmal in einer Anwendung anmelden, die <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> unterstützt, über diesen Identitätsanbieter automatisch in Web-Properties angemeldet werden. Informationen zu den Authentifizierungsdaten des Nutzers werden bei jedem Authentifizierungsereignis an den Cloud-Identitätsanbieter des Nutzers gesendet.
-
-Hinweise:
-
-<ph name="PRODUCT_NAME" /> unterstützt nicht die Einmalanmeldung über <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> im Inkognito- oder Gastmodus.
-
-<ph name="PRODUCT_NAME" /> unterstützt die Einmalanmeldung über <ph name="EXTENSIBLE_ENTERPRISE_SSO_PRODUCT_NAME" /> nur für die folgenden Identitätsanbieter: Microsoft, Okta.
-
-Diese Funktion ist unter <ph name="MAC_OS_NAME" /> 10.15 und höher verfügbar.</translation>
 <translation id="7119538491527883595">Lokaler Speicher für Nutzerdaten</translation>
 <translation id="7121046543122812054">Diese Richtlinie ist veraltet. Du kannst stattdessen <ph name="BROWSER_SIGNIN_POLICY_NAME" /> verwenden.
 
@@ -12221,6 +12196,17 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 <translation id="8621146428060651659">Randomisierung von Socket-Pools für Proxys zulassen</translation>
 <translation id="862621549134406761">Prüfung der RSA-Schlüsselverwendung aktivieren</translation>
 <translation id="8626826495474944836">Website-Isolierung für jede Website erzwingen</translation>
+<translation id="8628954914373039931">Mit dieser Einstellung können Nutzer im Inhaltsbereich ihres Browserfensters und in Android-Apps zwischen Google-Konten wechseln, nachdem sie sich auf ihrem <ph name="PRODUCT_OS_NAME" />-Gerät angemeldet haben.
+
+      Wenn diese Richtlinie auf „false“ gesetzt ist, wird die Anmeldung in einem anderen Google-Konto über den Inhaltsbereich eines Browsers (außerhalb des Inkognitomodus) sowie über Android-Apps unterbunden.
+
+      Wenn diese Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, wird das Standardverhalten verwendet: Die Anmeldung in einem anderen Google-Konto über den Browser-Inhaltsbereich und Android-Apps ist zulässig, mit Ausnahme von Kinderkonten, bei denen sie für den Inhaltsbereich außerhalb des Inkognitomodus blockiert wird.
+
+      Unter Android wird mit dieser Einstellung festgelegt, ob Nutzer zusätzliche Google-Konten über den Inhaltsbereich von Google-Websites hinzufügen können, während sie in <ph name="PRODUCT_NAME" /> angemeldet sind. Wenn diese Richtlinie auf „false“ gesetzt ist, bieten Google-Websites nicht die Option zum Hinzufügen eines weiteren Google-Kontos an (z. B. über den Button „Weiteres Konto hinzufügen“ im Kontomenü). Wenn diese Richtlinie nicht konfiguriert oder auf „true“ gesetzt ist, ist das Hinzufügen eines weiteren Google-Kontos über Google-Websites zulässig. Diese Richtlinie hindert Nutzer nicht daran, dem Android-Gerät selbst Google-Konten hinzuzufügen.
+
+      Wenn die Anmeldung in einem anderen Konto über den Inkognitomodus nicht zulässig sein soll, können Sie diesen Modus mithilfe der Richtlinie „IncognitoModeAvailability“ blockieren.
+
+      Beachte, dass Nutzer auf Google-Dienste in einem nicht authentifizierten Zustand zugreifen können, indem sie ihre Cookies blockieren.</translation>
 <translation id="8630797597241896082">VC‑Hintergrund basierend auf generativer KI zulassen und KI‑Modelle verbessern</translation>
 <translation id="8631314130868563649">Energieverwaltung zum Umschalten bei Leistungsspitzen deaktivieren</translation>
 <translation id="8631434304112909927">Bis Version <ph name="UNTIL_VERSION" /></translation>

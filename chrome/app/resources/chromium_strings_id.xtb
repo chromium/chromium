@@ -118,6 +118,7 @@
 <translation id="2190166659037789668">Error pemeriksaan update: <ph name="UPDATE_CHECK_ERROR" />.</translation>
 <translation id="2199210295479376551">Hapus akun dari Chromium</translation>
 <translation id="2201788217099588893">Gunakan aplikasi Chromium untuk mendapatkan alat belanja terbaik kapan saja di mana saja</translation>
+<translation id="2209877494277346829">Isolasi Chromium dari aplikasi lain</translation>
 <translation id="2210502920229141283">Tetap aman kapan saja di mana saja dengan Safe Browsing yang Disempurnakan di Chromium untuk iOS</translation>
 <translation id="2210682093923538346">Situs berbahaya. Chromium menghapus izin notifikasi.</translation>
 <translation id="2236949375853147973">Aktivitas Saya</translation>
@@ -190,6 +191,7 @@
 <translation id="2977470724722393594">Chromium sudah diperbarui</translation>
 <translation id="2977506796191543575">Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chromium mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Safe Browsing</translation>
 <translation id="2981563588585023386">Agar tetap aman saat online dengan pilihan orang tuamu, login ke Chromium</translation>
+<translation id="2992577225802060159">Melindungi memori Chromium dari aplikasi lain di komputer Anda.</translation>
 <translation id="3003694935412297923">Semua tugas</translation>
 <translation id="3012615494352020668">{count,plural, =1{Chromium perlu memverifikasi diri Anda sebelum beberapa data dapat disimpan di Akun Google Anda dan digunakan di semua perangkat Anda. Jika Anda logout sekarang, data ini (1 item) akan dihapus.}other{Chromium perlu memverifikasi diri Anda sebelum beberapa data dapat disimpan di Akun Google Anda dan digunakan di semua perangkat Anda. Jika Anda logout sekarang, data ini ({count} item) akan dihapus.}}</translation>
 <translation id="3013473503895162900">Buka <ph name="URL" /> di tab baru di Chromium.</translation>
@@ -466,7 +468,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5949225980829865667">Untuk mendapatkan bookmark ini dan lainnya di semua perangkat Anda, login ke Chromium</translation>
 <translation id="5953657885167112863">Personalisasi Chromium Anda</translation>
 <translation id="5960071705175224773">Setelan Anda diubah oleh aplikasi yang tidak dikenal</translation>
-<translation id="5977420883993828287">Disematkan. Gunakan Tugas Kontekstual lagi dari toolbar</translation>
 <translation id="5986585015444752010">{COUNT,plural, =1{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama 1 menit.}other{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama # menit.}}</translation>
 <translation id="5987687638152509985">Perbarui Chromium untuk memulai sinkronisasi</translation>
 <translation id="5990360079535151574">Dari tombol "Tugas Kontekstual" di toolbar, Anda dapat membuka kembali Tugas Kontekstual untuk mengajukan pertanyaan saat menjelajah</translation>

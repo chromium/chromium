@@ -241,6 +241,7 @@
 <translation id="1668001730617725852">Buksan sa Bagong Grupo ng Tab</translation>
 <translation id="1670861525135254448">I-save ang sasakyan</translation>
 <translation id="1671568970992212376">Mag-save ng mga larawan sa iyong Google Photos at i-access ang mga ito anumang oras.</translation>
+<translation id="1671824312818944549">Tandaan: Mas mahusay na gumagana ang setting na ito sa iOS 27 o mas bago.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> na isasalin sa <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Gumuhit, mag-highlight, o mag-tap sa anumang bagay sa iyong screen para hanapin ito</translation>
 <translation id="1678855624321223424">Batay sa mga patakaran ng iyong organisasyon, posibleng naglalaman ng sensitibong impormasyon ang file na ito</translation>
@@ -324,6 +325,7 @@
 <translation id="1925706052394657380">Buksan ang mga setting ng <ph name="BEGIN_BOLD" />Mga Default na App<ph name="END_BOLD" /> sa iOS</translation>
 <translation id="1938871630297275912">{count,plural, =1{Natanggap ang link}one{{count} link ang natanggap}other{{count} na link ang natanggap}}</translation>
 <translation id="1941314575388338491">I-double tap upang kopyahin.</translation>
+<translation id="1942483019269000450">Para ituloy ang gawain, posibleng ipapunan ng Gemini sa Google Wallet ang impormasyon ng iyong credit card</translation>
 <translation id="1943478190258551035">Menu → Mga Setting</translation>
 <translation id="1944477975050820119">Makakuha ng mga real-time na suhestyon na makakatulong sa iyong makahanap ng mga bagong paraan para mag-browse gamit ang AI. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="1952728750904661634">Mag-sign in gamit ang isang pinamamahalaang account</translation>
@@ -357,12 +359,14 @@
 <translation id="2012723204723845092">Maligayang pagbabalik!</translation>
 <translation id="2015722694326466240">Upang makita ang mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
 <translation id="201759455285471444">I-expand ang grupo ng tab.</translation>
+<translation id="2022431790688770637">Pamahalaan ang mga suhestyon ng Gemini</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Buksan ang grid ng tab</translation>
 <translation id="2044681667265133332">Ang account na <ph name="USER_EMAIL" /> ay pinapamahalaan ng <ph name="HOSTED_DOMAIN" />, na posibleng makakita ng ilang impormasyon. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">bagong item</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> (na) account ang gumagamit ng parehong password</translation>
 <translation id="205013082884273671">Maghanap ng anumang bagay sa iyong screen</translation>
+<translation id="2053311407685904414">Pumili ng address</translation>
 <translation id="2054044186557130763">Mag-sign in bilang si <ph name="NAME" /> <ph name="EMAIL" />, pinapamahalaan ng iyong organisasyon.</translation>
 <translation id="2059166748188874810">Munisipalidad</translation>
 <translation id="2060638295449304809">Mase-save lang ang address na ito sa device na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account na <ph name="USER_EMAIL" /></translation>
@@ -463,6 +467,7 @@
 <translation id="2359043044084662842">I-translate</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2360196772093551345">Hilingin ang Pang-mobile na Site</translation>
+<translation id="2360272811987888433">Manual na mag-sign in</translation>
 <translation id="2362083820973145409">Naka-sign in bilang <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Binubuksan ang mga setting.</translation>
 <translation id="2367025302166767427">Nagkaproblema sa paglalagay ng iyong impormasyon</translation>
 <translation id="2371084566192454134">Mga tab at grupo ng tab</translation>
@@ -623,6 +628,7 @@
 <translation id="2865392654629180917">Magtanong ng kahit ano at makakuha ng mga AI-powered na sagot</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Ipadala ang mga URL ng ilang page na binibisita mo sa Google kapag nanganganib ang iyong seguridad</translation>
+<translation id="2880119244122776372">Bumuo at mag-code</translation>
 <translation id="2883151425485251736">Tingnan at i-edit ang mga paksa na itinago mo mula sa iyong account</translation>
 <translation id="2884437560239137197">Kailangan ng atensyon</translation>
 <translation id="288655811176831528">Isara ang Tab</translation>
@@ -770,6 +776,7 @@
 <translation id="3404232721752787413">I-save sa Google Photos</translation>
 <translation id="3406506285180498376">I-share ang page…</translation>
 <translation id="340669334496430859">Huling Binago</translation>
+<translation id="3407832712016477396">Puwedeng gamitin ng Gemini ang Google Password Manager para mag-sign in para sa iyo</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">Okt 25, 2023</translation>
 <translation id="3419787211763835342">Tumulong na ayusin pa ang pinahusay na autofill</translation>
@@ -1046,6 +1053,8 @@
 <translation id="4290920330097335010">Huwag kailanman payagan</translation>
 <translation id="4293154608148215505">iyong telepono</translation>
 <translation id="4294506173142861371">Mag-sign in bilang si <ph name="FIRST_NAME" />?</translation>
+<translation id="4297031046690565608">Manual na ilagay</translation>
+<translation id="4297418774230471285">Piliin ang personal na impormasyon</translation>
 <translation id="4302061870579014542">Itakda ang posisyon</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4309403553630140242">Mag-double tap para sa higit pang impormasyon</translation>
@@ -1384,6 +1393,7 @@
 <translation id="5315029634103634221">AI ang Gemini at puwede itong magkamali. <ph name="BEGIN_LINK" />Higit pa tungkol sa nauugnay na data na ipinapadala sa Google<ph name="END_LINK" /></translation>
 <translation id="5315870524563628285">Walang ii-import</translation>
 <translation id="5316356981864168850"><ph name="INDEX" /> sa <ph name="NUM_SUGGESTIONS" /></translation>
+<translation id="5316823130598991834">Mag-sign in sa <ph name="SITE_DOMAIN" /></translation>
 <translation id="5317780077021120954">I-save</translation>
 <translation id="5318298563956633672">Sinusubaybayan mo na ang produktong ito.</translation>
 <translation id="5327248766486351172">Pangalan</translation>
@@ -1695,6 +1705,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6301104306974789820">Makakuha ng mga notification sa pagsubaybay sa presyo</translation>
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Piliin ang address bar position</translation>
+<translation id="6305257382500066042">Subukan ito ngayon</translation>
 <translation id="6307241780749477694">I-verify na ikaw ito para makuha ang lahat ng iyong password sa device na ito</translation>
 <translation id="6307792728709337290">I-save ang iyong card sa Google Account mo para i-autofill ito para sa pagbiling ito at mga pagbili sa hinaharap na gagawin sa Chrome.</translation>
 <translation id="6316141353357700666">Piliin ang password na gusto mong gamitin mula sa lalabas na listahan.</translation>
@@ -1848,7 +1859,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6708501134077648845">Mga Opsyon sa Password</translation>
 <translation id="6709964700841491574">Lockdown mode</translation>
 <translation id="6710079714193676716">Pinapamahalaan ng iyong organisasyon. Posibleng hindi available ang ilang feature. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
-<translation id="6712003214447962889">Mas smart at mas mabibilis na sagot</translation>
 <translation id="6713676799463473249">Binago noong <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Mga Natanggap na Tab</translation>
 <translation id="6722638373100589752">Para i-autofill ang iyong impormasyon, i-on ang “Gumamit ng mga pass sa buong Google” sa mga setting ng Wallet</translation>
@@ -2060,7 +2070,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Magpatuloy</translation>
 <translation id="741204030948306876">Oo, sali ako</translation>
-<translation id="7417055777338419059">Mag-code, magsulat, o gumawa ng mga slide</translation>
 <translation id="7419565702166471774">Palaging gumamit ng mga secure na koneksyon</translation>
 <translation id="7423098979219808738">Magtanong muna</translation>
 <translation id="7425053386765766120">Magdagdag ng paraan ng pagbabayad…</translation>
@@ -2110,6 +2119,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7525067979554623046">Gumawa</translation>
 <translation id="75362970626182391">Bagong Grupo ng Tab</translation>
 <translation id="7537586195939242955">Paumahin, hindi ma-install ngayon ang Pass mo sa Passbook.</translation>
+<translation id="7540924742308928499">Mag-brainstorm at magbuod</translation>
 <translation id="754655535278952384">Na-check noong <ph name="TIME" /></translation>
 <translation id="7554645225856321710">Isara Lahat</translation>
 <translation id="7557508262441527045">Nag-sign out</translation>
@@ -2203,6 +2213,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7839994177130598711">Magagamit na ng mga miyembro ng pamilya mo ang iyong username at password kapag ginamit nila ang Google Password Manager para mag-sign in sa <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7841180087127694526">Maghanap para sa kinopyang text</translation>
 <translation id="7841418003178675048">Piliin kung anong mga card ang makikita mo sa iyong page ng bagong tab.</translation>
+<translation id="7842369010458597654">Pinupunan ang impormasyon sa pagbabayad</translation>
 <translation id="7845466610722898">Ipakita ang Listahan ng Babasahin</translation>
 <translation id="7846161022626028328">Nagka-error. Subukan ulit.</translation>
 <translation id="784623644169604270">Walang kamakailang aktibidad</translation>
@@ -2479,7 +2490,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8642417828095157370">Sine-share ang mga tab para sa mga mas nauugnay na sagot</translation>
 <translation id="8643403533759285912">I-delete ang Grupo</translation>
 <translation id="8646357898207744479">Lens</translation>
-<translation id="8647280737650867362">Hindi maihinto ang pagsubaybay sa presyo.</translation>
 <translation id="8654802032646794042">Kanselahin</translation>
 <translation id="8655861111558401309">Piliin ang I-delete ang Data ng Pagba-browse</translation>
 <translation id="8659875081143553823">Sandali lang</translation>

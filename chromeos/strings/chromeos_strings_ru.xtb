@@ -113,7 +113,6 @@
 <translation id="1432110487435300883">Чтобы получить приблизительный результат, разделите значение "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
 <translation id="1442433966118452622">Источник изображения</translation>
 <translation id="1446954767133808402">сапфир</translation>
-<translation id="1449035143498573192">Открыть в Google Поиске</translation>
 <translation id="1451536289672181509">Это клавиатура.</translation>
 <translation id="1452939186874918380">зонтики</translation>
 <translation id="145402479967797468">Элементы управления воспроизведением</translation>
@@ -176,7 +175,6 @@
 <translation id="1664796644829245314">Предварительный просмотр: <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">Встроенная VPN</translation>
 <translation id="1669047024429367828">Доступ</translation>
-<translation id="1670478569471758522">Дополнительная информация, связанная с выделенным текстом</translation>
 <translation id="1672499492233627739">Видеоизображение с веб-камеры</translation>
 <translation id="1676557873873341166">Запись видео…</translation>
 <translation id="1684279041537802716">Цвет элементов</translation>
@@ -560,7 +558,6 @@
 <translation id="353214771040290298">Завершить изменение</translation>
 <translation id="3532980081107202182">Осталось примерно <ph name="MIN_REMAINING" /> мин.</translation>
 <translation id="3533790840489634638">пруд</translation>
-<translation id="3547264467365135390">Формула</translation>
 <translation id="3552832331940389362">Кошка днем сидит на подоконнике, глядя на дождь. Картинка в стиле аниме.</translation>
 <translation id="3557205324756024651">Локальное удостоверение (необязательно)</translation>
 <translation id="3565064564551103223">Разрешенные IP-адреса</translation>
@@ -631,7 +628,6 @@
 <translation id="3866249974567520381">Описание</translation>
 <translation id="3869314628814282185">тюль</translation>
 <translation id="387301095347517405">Количество полных циклов зарядки батареи</translation>
-<translation id="3877066159641251281">Озвучить перевод</translation>
 <translation id="3880601782712134623">автоматически определять отдельные голоса и присваивать каждому из них стандартные обозначения, например "Говорящий 1" и "Говорящий 2";</translation>
 <translation id="38811596981744338">Нарушение законодательства</translation>
 <translation id="3885327323343477505">Изменить заставку</translation>
@@ -924,14 +920,12 @@
 <translation id="5095761549884461003">Чтобы продолжить обновление, отсоедините и снова подключите USB-кабель устройства (<ph name="DEVICE_NAME" />).</translation>
 <translation id="5099354524039520280">вверх</translation>
 <translation id="5107243100836678918">Сочетание без клавиши <ph name="META_KEY" /> может конфликтовать с сочетаниями клавиш некоторых приложений. Нажмите это сочетание клавиш ещё раз, чтобы продолжить его использовать, или выберите новое с клавишей <ph name="KEY" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
-<translation id="5108781503443873320">Синонимы:</translation>
 <translation id="5130848777448318809">пони</translation>
 <translation id="5137451382116112100">Полноэкранный режим</translation>
 <translation id="5139813694804168398">не беспокоить</translation>
 <translation id="5140788690559353412">Если вы больше не сможете пользоваться учебным аккаунтом, то также потеряете доступ к данным в нем, включая письма из Gmail, а также документы, презентации и другие файлы на Google Диске.</translation>
 <translation id="5142961317498132443">Аутентификация</translation>
 <translation id="5144311987923128508">Кнопка "Подтвердить" стала недоступной</translation>
-<translation id="5144887194300568405">Скопировать перевод</translation>
 <translation id="5145081769226915336">Включать тёмную тему автоматически?</translation>
 <translation id="5145331109270917438">Дата изменения</translation>
 <translation id="5154917547274118687">Память</translation>
