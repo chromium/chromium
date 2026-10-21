@@ -550,20 +550,22 @@ if (is_win) {
       "CHROMIUM_CREATOR=$chrome_mac_creator_code",
     ]
 
-    sources = [
-      "app/chrome_exe_main_mac.cc",
-      "app/llvm_profile_util.cc",
-      "app/llvm_profile_util.h",
-    ]
+    sources = [ "app/chrome_exe_main_mac.c" ]
 
     deps = [
       "//base:compiler_specific",
-      "//base/allocator:early_zone_registration_apple",
       "//build:branding_buildflags",
       "//build/config/compiler:compiler_buildflags",
       "//chrome/common:buildflags",
-      "//chrome/common:version_header",
+      "//content/public/app:aperitif",
     ]
+
+    # Links the framework's shared library directly, after libaperitif, so
+    # that the framework's load command follows libaperitif's. `+link` can't
+    # be used: it adds the framework as `-framework`, which the Apple link
+    # rule places before all shared libraries. The framework itself is copied
+    # into the bundle by `:chrome_versioned_bundle_data` in `bundle_deps`.
+    deps += [ ":chrome_framework+link_nested" ]
 
     bundle_deps = [
       ":chrome_app_strings_bundle_data",
@@ -575,21 +577,25 @@ if (is_win) {
       bundle_deps += [ ":chromium_updater_privileged_helper" ]
     }
 
+    ldflags = []
+
     if (enable_stripping) {
       # At link time, preserve the global symbols specified in the .exports
       # file. All other global symbols will be marked as private. The default
       # //build/config/apple:strip_all config will then remove the remaining
       # local and debug symbols.
-      ldflags = [ "-Wl,-exported_symbols_list," +
-                  rebase_path("app/app.exports", root_build_dir) ]
+      ldflags += [ "-Wl,-exported_symbols_list," +
+                   rebase_path("app/app.exports", root_build_dir) ]
     }
 
     if (is_component_build) {
-      # In a component build, the framework is directly linked to the
-      # executable because dlopen() and loading all the dependent dylibs
-      # is time-consuming, see https://crbug.com/40176946.
-      deps += [ ":chrome_framework+link" ]
-      ldflags = [ "-Wl,-rpath,@executable_path/../Frameworks" ]
+      ldflags += [
+        "-Wl,-rpath,@executable_path/../Frameworks",
+
+        # Add an rpath to the Libraries directory in the versioned framework
+        # so that @rpath/libaperitif.dylib resolves.
+        "-Wl,-rpath,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_framework_version/Libraries",
+      ]
 
       # The Framework is packaged inside the .app bundle. But when using the
       # component build, all the dependent shared libraries of :chrome_dll are
@@ -613,6 +619,14 @@ if (is_win) {
         objdump_path,
         "--image",
         rebase_path(inputs[0], root_out_dir),
+        "--exact-match",
+
+        # Do not --allow more libraries here without consulting with the
+        # security team (security-dev@chromium.org).
+        "--allow",
+        "@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_framework_version/Libraries/libaperitif.dylib",
+        "--allow",
+        "@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_framework_version/$chrome_framework_name",
         "--allow",
         "/usr/lib/libSystem.B.dylib",
       ]
