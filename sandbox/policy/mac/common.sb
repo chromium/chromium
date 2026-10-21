@@ -32,6 +32,9 @@
 ; directories and files.
 (define restrict-gpu-darwin-user-dirs "RESTRICT_GPU_DARWIN_USER_DIRS")
 
+; Allows the renderer process to query process-info-pidinfo for other processes.
+(define allow-renderer-pidinfo "ALLOW_RENDERER_PIDINFO")
+
 ; Defined if WebNN model compilation is offloaded to a separate compiler
 ; process.
 (define webnn-compiler-process "WEBNN_COMPILER_PROCESS")

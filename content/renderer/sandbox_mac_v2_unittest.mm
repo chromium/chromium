@@ -75,6 +75,9 @@ void SetParametersForTest(SandboxSerializer* serializer,
 
   CHECK(serializer->SetParameter(sandbox::policy::kParamExecutablePath,
                                  executable_path.value()));
+
+  CHECK(serializer->SetParameter(sandbox::policy::kParamAllowRendererPidinfo,
+                                 "false"));
 }
 
 }  // namespace

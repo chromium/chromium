@@ -20,7 +20,12 @@
 (allow user-preference-read)
 
 ; process-info
-(allow process-info-pidinfo)
+; Only allow arbitrary process-info-pidinfo access if the
+; MacSandboxAllowRendererPidinfo feature is enabled. This feature functions as a
+; killswitch and will be removed (along with the grant below) once we have
+; determined that it is safe to do so (https://crbug.com/574858526).
+(if (param-true? allow-renderer-pidinfo)
+  (allow process-info-pidinfo))
 (allow process-info-setcontrol (target self))
 
 ; File reads.

@@ -57,6 +57,11 @@ namespace content {
 BASE_FEATURE(kMacSandboxRestrictGpuDarwinUserDirs,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, allows the renderer process to query `process-info-pidinfo` for
+// any process rather than only itself.
+BASE_FEATURE(kMacSandboxAllowRendererPidinfo,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 std::optional<base::FilePath>& GetNetworkTestCertsDirectory() {
@@ -235,6 +240,12 @@ void SetupProxyResolverSandboxParameters(
       sandbox::policy::kParamSystemProxyNetworkAccess, /*value=*/false));
 }
 
+void SetupRendererSandboxParameters(sandbox::SandboxSerializer* serializer) {
+  CHECK(serializer->SetBooleanParameter(
+      sandbox::policy::kParamAllowRendererPidinfo,
+      base::FeatureList::IsEnabled(kMacSandboxAllowRendererPidinfo)));
+}
+
 void SetupWebNNModelCompilationSandboxParameters(
     sandbox::SandboxSerializer* serializer) {
   // CoreML requires access to user temporary directories to write intermediate
@@ -254,12 +265,14 @@ bool SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
     case sandbox::mojom::Sandbox::kMirroring:
     case sandbox::mojom::Sandbox::kPrintBackend:
     case sandbox::mojom::Sandbox::kPrintCompositor:
-    case sandbox::mojom::Sandbox::kRenderer:
     case sandbox::mojom::Sandbox::kService:
     case sandbox::mojom::Sandbox::kServiceWithJit:
     case sandbox::mojom::Sandbox::kPlatformRuntime:
     case sandbox::mojom::Sandbox::kUtility:
       // No specialized setup required.
+      break;
+    case sandbox::mojom::Sandbox::kRenderer:
+      SetupRendererSandboxParameters(serializer);
       break;
     case sandbox::mojom::Sandbox::kProxyResolver:
       SetupProxyResolverSandboxParameters(serializer, command_line);

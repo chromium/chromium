@@ -7,6 +7,8 @@
 #import <Cocoa/Cocoa.h>
 #import <Foundation/Foundation.h>
 #include <fcntl.h>
+#include <libproc.h>
+#include <unistd.h>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
@@ -490,6 +492,64 @@ TEST_F(SandboxMacTest, GpuDarwinUserDirsUnrestricted) {
                 sandbox::policy::kParamHelperBundleId, bundle_id));
           },
           extra_data_));
+}
+
+MULTIPROCESS_TEST_MAIN(RendererPidinfoRestrictedProcess) {
+  CheckCreateSeatbeltServer();
+
+  // Ensure the renderer can query `proc_pidinfo` for itself (`(target self)`).
+  proc_bsdinfo bsd_info;
+  CHECK_EQ(
+      proc_pidinfo(getpid(), PROC_PIDTBSDINFO, 0, &bsd_info, sizeof(bsd_info)),
+      static_cast<int>(sizeof(bsd_info)));
+
+  // Ensure the renderer is denied when querying `proc_pidinfo` for another
+  // process (here, the parent process).
+  CHECK_EQ(
+      proc_pidinfo(getppid(), PROC_PIDTBSDINFO, 0, &bsd_info, sizeof(bsd_info)),
+      0);
+  CHECK_EQ(errno, EPERM);
+
+  return 0;
+}
+
+// Verifies that, when `kMacSandboxAllowRendererPidinfo` is disabled, the
+// renderer sandbox allows `proc_pidinfo` on the current process (`getpid()`)
+// while denying `proc_pidinfo` on other processes (`getppid()`) with `EPERM`.
+TEST_F(SandboxMacTest, RendererPidinfoRestricted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kMacSandboxAllowRendererPidinfo);
+
+  ExecuteWithParams("RendererPidinfoRestrictedProcess",
+                    sandbox::mojom::Sandbox::kRenderer);
+}
+
+MULTIPROCESS_TEST_MAIN(RendererPidinfoUnrestrictedProcess) {
+  CheckCreateSeatbeltServer();
+
+  // Ensure the renderer can query `proc_pidinfo` for both itself and another
+  // process (the parent process) when unrestricted `process-info-pidinfo` is
+  // enabled.
+  proc_bsdinfo bsd_info;
+  CHECK_EQ(
+      proc_pidinfo(getpid(), PROC_PIDTBSDINFO, 0, &bsd_info, sizeof(bsd_info)),
+      static_cast<int>(sizeof(bsd_info)));
+  CHECK_EQ(
+      proc_pidinfo(getppid(), PROC_PIDTBSDINFO, 0, &bsd_info, sizeof(bsd_info)),
+      static_cast<int>(sizeof(bsd_info)));
+
+  return 0;
+}
+
+// Verifies that, when `kMacSandboxAllowRendererPidinfo` is enabled, the
+// renderer sandbox allows `proc_pidinfo` on both the current process
+// (`getpid()`) and other processes (`getppid()`).
+TEST_F(SandboxMacTest, RendererPidinfoUnrestricted) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMacSandboxAllowRendererPidinfo);
+
+  ExecuteWithParams("RendererPidinfoUnrestrictedProcess",
+                    sandbox::mojom::Sandbox::kRenderer);
 }
 
 }  // namespace content
