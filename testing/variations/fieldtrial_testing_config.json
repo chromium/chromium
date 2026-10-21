@@ -10088,10 +10088,20 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_CPU_execution",
+                    "name": "Enabled_Main_ANE_InfobarAndChip",
                     "params": {
-                        "allow_gpu_execution": "false",
-                        "enable_on_device_classifier": "true"
+                        "EducationClassifierThreshold": "2.0",
+                        "ForceMessageUiOnly": "false",
+                        "ForceOmniboxChipUiOnly": "false",
+                        "GlobalCapCount": "4",
+                        "GlobalCapDuration": "24h",
+                        "MinPageCountBetweenNudges": "10",
+                        "MinTimeBetweenNudges": "60m",
+                        "ShoppingClassifierThreshold": "0.5",
+                        "allow_gpu_execution": "true",
+                        "enable_on_device_classifier": "true",
+                        "enable_server_model_execution": "true",
+                        "use_title_and_url_only": "true"
                     },
                     "enable_features": [
                         "GeminiContextualSuggestionsCues"
