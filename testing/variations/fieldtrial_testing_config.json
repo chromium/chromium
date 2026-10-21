@@ -8997,27 +8997,6 @@
             ]
         }
     ],
-    "GroupedHistoryAllLocales": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "JourneysLocaleOrLanguageAllowlist": "*"
-                    },
-                    "enable_features": [
-                        "Journeys"
-                    ]
-                }
-            ]
-        }
-    ],
     "GwpAsanIOS2025": [
         {
             "platforms": [

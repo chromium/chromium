@@ -98,7 +98,6 @@ constexpr base::TimeDelta kAllKeywordsCacheRefreshAge = base::Hours(2);
 }  // namespace
 
 HistoryClustersService::HistoryClustersService(
-    const std::string& application_locale,
     history::HistoryService* history_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
@@ -106,8 +105,7 @@ HistoryClustersService::HistoryClustersService(
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     PrefService* prefs)
     : is_journeys_feature_flag_enabled_(
-          GetConfig().is_journeys_enabled_no_locale_check &&
-          IsApplicationLocaleSupportedByJourneys(application_locale)),
+          GetConfig().is_journeys_enabled_no_locale_check),
       history_service_(history_service),
       pref_service_(prefs) {
   if (prefs && is_journeys_feature_flag_enabled_) {

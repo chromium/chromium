@@ -5,10 +5,9 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_CONFIG_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_CONFIG_H_
 
-#include <string>
-
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace history_clusters {
 
@@ -25,11 +24,11 @@ extern const char kShouldShowAllClustersOnProminentUiSurfaces[];
 // GetConfig() (which performs initialization) must be done single threaded on
 // the main thread. After that, Config can be read from any thread.
 struct Config {
-  // The `kJourneys` feature and child params.
+  // Journeys params.
 
-  // True if journeys feature is enabled as per field trial check. Does not
-  // check for any user-specific conditions (such as locales).
-  bool is_journeys_enabled_no_locale_check = false;
+  // True if Journeys is enabled. Journeys is only enabled on desktop platforms.
+  bool is_journeys_enabled_no_locale_check =
+      !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
   // The max number of visits to use for each clustering iteration. This limits
   // the number of visits sent to the clustering backend per batch.
@@ -214,11 +213,11 @@ struct Config {
   // Lonely features without child params.
 
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.
-  // Does nothing if `kJourneys` is disabled.
+  // Does nothing if Journeys is disabled.
   bool non_user_visible_debug = false;
 
   // Enables debug info in user-visible surfaces, like the actual WebUI page.
-  // Does nothing if `kJourneys` is disabled.
+  // Does nothing if Journeys is disabled.
   bool user_visible_debug = false;
 
   // Enables the history clusters internals page.
@@ -238,13 +237,6 @@ struct Config {
   Config(const Config& other);
   ~Config();
 };
-
-// Returns true if |application_locale| is supported by Journeys.
-// This is a costly check: Should be called only if
-// |is_journeys_enabled_no_locale_check| is true, and the result should be
-// cached.
-bool IsApplicationLocaleSupportedByJourneys(
-    const std::string& application_locale);
 
 // Gets the current configuration.
 const Config& GetConfig();

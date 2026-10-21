@@ -7,25 +7,11 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
-#include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace history_clusters {
 
-namespace {
-
-constexpr auto enabled_by_default_desktop_only =
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    base::FEATURE_DISABLED_BY_DEFAULT;
-#else
-    base::FEATURE_ENABLED_BY_DEFAULT;
-#endif
-
-}  // namespace
-
 namespace internal {
-
-BASE_FEATURE(kJourneys, enabled_by_default_desktop_only);
 
 BASE_FEATURE(kJourneysImages, base::FEATURE_ENABLED_BY_DEFAULT);
 

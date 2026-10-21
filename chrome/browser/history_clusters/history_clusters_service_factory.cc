@@ -5,7 +5,6 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -33,8 +32,8 @@ std::unique_ptr<KeyedService> BuildService(content::BrowserContext* context) {
   auto url_loader_factory = context->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
   return std::make_unique<history_clusters::HistoryClustersService>(
-      g_browser_process->GetApplicationLocale(), history_service,
-      url_loader_factory, site_engagement::SiteEngagementService::Get(profile),
+      history_service, url_loader_factory,
+      site_engagement::SiteEngagementService::Get(profile),
       TemplateURLServiceFactory::GetForProfile(profile),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       profile->GetPrefs());

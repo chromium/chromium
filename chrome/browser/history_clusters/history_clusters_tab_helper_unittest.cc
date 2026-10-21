@@ -12,7 +12,6 @@
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -24,7 +23,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
-#include "components/history_clusters/core/features.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
@@ -59,9 +58,9 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   HistoryClustersTabHelperTest() {
-    // This needs to be initialized as early as possible to avoid data races
-    // with tasks on other threads checking if features are enabled.
-    feature_list_.InitAndEnableFeature(history_clusters::internal::kJourneys);
+    history_clusters::Config config;
+    config.is_journeys_enabled_no_locale_check = true;
+    history_clusters::SetConfigForTesting(config);
   }
 
   // ChromeRenderViewHostTestHarness:
@@ -129,8 +128,6 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
                                   const GURL& url) {
     helper_->OnUpdatedHistoryForNavigation(navigation_id, true, timestamp, url);
   }
-
-  base::test::ScopedFeatureList feature_list_;
 
   raw_ptr<HistoryClustersTabHelper, DanglingUntriaged> helper_;
 

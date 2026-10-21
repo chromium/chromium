@@ -3257,10 +3257,6 @@ inline constexpr char kJavascriptHarmonyShippingDescription[] =
     "conflict with the latest JavaScript features. This flag allows disabling "
     "support of those features for compatibility with such pages.";
 
-inline constexpr char kJourneysName[] = "History Journeys";
-inline constexpr char kJourneysDescription[] =
-    "Enables the History Journeys UI.";
-
 inline constexpr char kAnnotatedPageContentExtractionName[] =
     "Enables annotated page content extraction";
 inline constexpr char kAnnotatedPageContentExtractionDescription[] =

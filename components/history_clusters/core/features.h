@@ -18,10 +18,6 @@ namespace history_clusters {
 // put features outside of this internal namespace. See bottom of this file.
 namespace internal {
 
-// Enables Journeys in the Chrome History WebUI. This flag shouldn't be checked
-// directly. Instead use `IsJourneysEnabled()` for the system language filter.
-BASE_DECLARE_FEATURE(kJourneys);
-
 // Enables images for Journeys in UI.
 BASE_DECLARE_FEATURE(kJourneysImages);
 
@@ -29,16 +25,16 @@ BASE_DECLARE_FEATURE(kJourneysImages);
 extern const base::FeatureParam<bool> kJourneysImagesCover;
 
 // Enables the `HistoryClusterProvider` to surface Journeys as a suggestion row
-// instead of an action chip. `kJourneys` must also be enabled for this to take
+// instead of an action chip. Journeys must also be enabled for this to take
 // effect.
 BASE_DECLARE_FEATURE(kOmniboxHistoryClusterProvider);
 
 // Enables debug info in non-user-visible surfaces, like Chrome Inspector.
-// Does nothing if `kJourneys` is disabled.
+// Does nothing if Journeys is disabled.
 BASE_DECLARE_FEATURE(kNonUserVisibleDebug);
 
 // Enables debug info in user-visible surfaces, like the actual WebUI page.
-// Does nothing if `kJourneys` is disabled.
+// Does nothing if Journeys is disabled.
 BASE_DECLARE_FEATURE(kUserVisibleDebug);
 
 // Enables the history clusters internals page.

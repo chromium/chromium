@@ -4,7 +4,6 @@
 
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
-#include "components/history_clusters/core/features.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"
 #include "content/public/test/browser_test.h"
 
@@ -17,7 +16,6 @@ class SidePanelHistoryClustersTest : public WebUIMochaBrowserTest {
   SidePanelHistoryClustersTest() {
     scoped_feature_list_.InitWithFeatures(
         {
-            history_clusters::internal::kJourneys,
             history_embeddings::kHistoryEmbeddings,
 #if BUILDFLAG(IS_CHROMEOS)
             chromeos::features::kFeatureManagementHistoryEmbedding,

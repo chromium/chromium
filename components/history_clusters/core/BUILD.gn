@@ -80,7 +80,6 @@ static_library("core") {
   ]
   deps = [
     "//base",
-    "//base/i18n:language_tag",
     "//components/history/core/browser",
     "//components/history_clusters/public/mojom:mojo_bindings",
     "//components/keyed_service/core",
@@ -107,7 +106,6 @@ source_set("unit_tests") {
     "cluster_interaction_state_processor_unittest.cc",
     "cluster_similarity_heuristics_processor_unittest.cc",
     "clusterer_unittest.cc",
-    "config_unittest.cc",
     "content_visibility_cluster_finalizer_unittest.cc",
     "context_clusterer_history_service_observer_unittest.cc",
     "file_clustering_backend_unittest.cc",

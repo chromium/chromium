@@ -17,7 +17,6 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -29,7 +28,6 @@
 #include "components/history/core/test/visit_annotations_test_utils.h"
 #include "components/history_clusters/core/clustering_backend.h"
 #include "components/history_clusters/core/config.h"
-#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters.h"
@@ -150,7 +148,7 @@ class HistoryClustersServiceTest : public testing::Test {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     prefs::RegisterProfilePrefs(pref_service_->registry());
 
-    ResetHistoryClustersServiceWithLocale("en-US");
+    ResetHistoryClustersService();
   }
 
   void TearDown() override {
@@ -166,9 +164,9 @@ class HistoryClustersServiceTest : public testing::Test {
   HistoryClustersServiceTest& operator=(const HistoryClustersServiceTest&) =
       delete;
 
-  void ResetHistoryClustersServiceWithLocale(const std::string& locale) {
+  void ResetHistoryClustersService() {
     history_clusters_service_ = std::make_unique<HistoryClustersService>(
-        locale, history_service_.get(),
+        history_service_.get(),
         /*url_loader_factory=*/nullptr,
         /*engagement_score_provider=*/nullptr,
         /*template_url_service=*/nullptr,
@@ -416,10 +414,6 @@ class HistoryClustersServiceTest : public testing::Test {
   }
 
  protected:
-  // ScopedFeatureList needs to be declared before TaskEnvironment, so that it
-  // is destroyed after the TaskEnvironment is destroyed, preventing other
-  // threads from accessing the feature list while it's being destroyed.
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
 
   // Used to construct a `HistoryClustersService`.
@@ -442,7 +436,7 @@ TEST_F(HistoryClustersServiceTest, EligibleAndEnabledHistogramRecorded) {
   {
     base::HistogramTester histogram_tester;
     SetJourneysVisible(true);
-    ResetHistoryClustersServiceWithLocale("en-US");
+    ResetHistoryClustersService();
     histogram_tester.ExpectUniqueSample(
         "History.Clusters.JourneysEligibleAndEnabledAtSessionStart", true, 1);
   }
@@ -450,17 +444,9 @@ TEST_F(HistoryClustersServiceTest, EligibleAndEnabledHistogramRecorded) {
   {
     base::HistogramTester histogram_tester;
     SetJourneysVisible(false);
-    ResetHistoryClustersServiceWithLocale("en-US");
+    ResetHistoryClustersService();
     histogram_tester.ExpectUniqueSample(
         "History.Clusters.JourneysEligibleAndEnabledAtSessionStart", false, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-    SetJourneysVisible(true);
-    ResetHistoryClustersServiceWithLocale("garbagelocale");
-    histogram_tester.ExpectTotalCount(
-        "History.Clusters.JourneysEligibleAndEnabledAtSessionStart", 0);
   }
 }
 
@@ -1098,9 +1084,10 @@ TEST_F(HistoryClustersServiceTest,
 class HistoryClustersServiceKeywordTest : public HistoryClustersServiceTest {
  public:
   HistoryClustersServiceKeywordTest() {
-    scoped_feature_list_.InitAndEnableFeature(internal::kJourneys);
-    // Explicitly set the default configuration for testing.
+    // Explicitly set the default configuration with Journeys enabled for
+    // testing.
     Config config;
+    config.is_journeys_enabled_no_locale_check = true;
     SetConfigForTesting(config);
   }
 };
@@ -1463,12 +1450,6 @@ class HistoryClustersServiceJourneysDisabledTest
     : public HistoryClustersServiceTest {
  public:
   HistoryClustersServiceJourneysDisabledTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            internal::kJourneys,
-        });
-
     Config config;
     config.is_journeys_enabled_no_locale_check = false;
     SetConfigForTesting(config);

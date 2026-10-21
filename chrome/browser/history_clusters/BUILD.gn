@@ -47,7 +47,6 @@ source_set("impl") {
   ]
   deps = [
     ":history_clusters",
-    "//chrome/browser:browser_process",
     "//chrome/browser/bookmarks",
     "//chrome/browser/engagement",
     "//chrome/browser/history",

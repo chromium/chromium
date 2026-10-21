@@ -112,7 +112,6 @@
 #include "url/url_util.h"
 
 #if !BUILDFLAG(IS_IOS)
-#include "components/history_clusters/core/config.h"  // nogncheck
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/geolocation_header_service.h"
 #include "components/omnibox/browser/history_cluster_provider.h"
@@ -564,23 +563,12 @@ AutocompleteController::AutocompleteController(
   InitializeAsyncProviders(config_.provider_types);
   InitializeSyncProviders(config_.provider_types);
 
-  // Ideally, we'd check `IsApplicationLocaleSupportedByJourneys()` when
-  // constructing `provider_types`. But that's usually constructed in
-  // `AutocompleteClassifier::DefaultOmniboxProviders` which can't depend on the
-  // browser dir to detect locale. The alternative of piping in the locale from
-  // each call site seems too intrusive for a temporary condition (some call
-  // sites are also in the components dir). All callers of
-  // `DefaultOmniboxProviders` only use it to then construct
-  // `AutocompleteController`, so placing the check here instead has no behavior
-  // change.
   // TODO(manukh): Move this to `InitializeAsyncProviders()`.
 #if !BUILDFLAG(IS_IOS)
   // HistoryClusters is not enabled on iOS.
   if (config_.provider_types &
           static_cast<int>(
               AutocompleteProvider::Type::kHistoryClusterProvider) &&
-      history_clusters::IsApplicationLocaleSupportedByJourneys(
-          provider_client_->GetApplicationLocale()) &&
       search_provider_ && history_url_provider_ && history_quick_provider_) {
     providers_.push_back(base::MakeRefCounted<HistoryClusterProvider>(
         provider_client_.get(), this, search_provider_, history_url_provider_,

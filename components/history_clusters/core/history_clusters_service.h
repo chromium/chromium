@@ -59,7 +59,6 @@ class HistoryClustersService : public base::SupportsUserData,
 
   // `url_loader_factory` is allowed to be nullptr, like in unit tests.
   HistoryClustersService(
-      const std::string& application_locale,
       history::HistoryService* history_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
@@ -210,7 +209,7 @@ class HistoryClustersService : public base::SupportsUserData,
   // Serializes and writes the "all keywords" cache to prefs.
   void WriteAllCacheToPrefs();
 
-  // True if Journeys is enabled based on feature flag and locale checks.
+  // True if Journeys is enabled for this platform.
   // But critically, this does NOT check the pref or policy value to see if
   // either the user or Enterprise has disabled Journeys.
   const bool is_journeys_feature_flag_enabled_;

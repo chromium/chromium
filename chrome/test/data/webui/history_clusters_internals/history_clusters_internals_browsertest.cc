@@ -43,10 +43,6 @@ class HistoryClustersInternalsDisabledBrowserTest
             "runMochaTest('HistoryClustersInternalsTest', '%s');",
             testCase.c_str()));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      history_clusters::internal::kJourneys};
 };
 
 IN_PROC_BROWSER_TEST_F(HistoryClustersInternalsDisabledBrowserTest,

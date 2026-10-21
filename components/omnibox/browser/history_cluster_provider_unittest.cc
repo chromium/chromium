@@ -70,7 +70,7 @@ class HistoryClustersProviderTest : public testing::Test,
 
     history_clusters_service_ =
         std::make_unique<history_clusters::HistoryClustersService>(
-            "en-US", history_service_.get(),
+            history_service_.get(),
             /*url_loader_factory=*/nullptr,
             /*engagement_score_provider=*/nullptr,
             /*template_url_service=*/nullptr,
