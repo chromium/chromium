@@ -143,13 +143,14 @@ const char kLsanDefaultOptions[] =
     "bin/llvm-symbolizer "
 #endif
 
-#if defined(ARCH_CPU_64_BITS)
-    // When pointer compression in V8 is enabled the external pointers in the
-    // heap are guaranteed to be only 4 bytes aligned. So we need this option
-    // in order to ensure that LSAN will find all the external pointers.
-    // TODO(crbug.com/40344974): see updates from 2019.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_64_BITS)
+    // crbug.com/40344974: When pointer compression in V8 is enabled without the
+    // full sandbox (currently the case on Fuchsia - crbug.com/42050478), the
+    // external pointers in the heap are guaranteed to be only 4 bytes aligned.
+    // So we need this option in order to ensure that LSAN will find all the
+    // external pointers.
     "use_unaligned=1 "
-#endif  // ARCH_CPU_64_BITS
+#endif
     ;
 
 SANITIZER_HOOK_ATTRIBUTE const char *__lsan_default_options() {
