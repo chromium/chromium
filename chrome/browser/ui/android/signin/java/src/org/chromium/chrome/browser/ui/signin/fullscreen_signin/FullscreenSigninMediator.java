@@ -233,9 +233,11 @@ public class FullscreenSigninMediator
         assert !mDestroyed;
         if (mContinueButtonProfileDataCache != null) {
             mContinueButtonProfileDataCache.removeObserver(mContinueButtonObserver);
+            mContinueButtonProfileDataCache = null;
         }
         if (mSigninAnimationProfileDataCache != null) {
             mSigninAnimationProfileDataCache.removeObserver(mSigninAnimationObserver);
+            mSigninAnimationProfileDataCache = null;
         }
         if (mForcedSigninStatusProvider != null) {
             mForcedSigninStatusProvider.hideForcedSigninScreen(mForcedSigninToken);

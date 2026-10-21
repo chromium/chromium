@@ -313,6 +313,20 @@ public class FullscreenSigninMediatorTest {
         assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT1);
     }
 
+    @Test
+    public void testChildAccountStatusReadyAfterDestroy() {
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+        createMediator();
+        initializeNative();
+        FullscreenSigninMediator mediator = mMediator;
+
+        destroyMediator();
+        lenient().when(mDelegateMock.getProfileSupplier()).thenReturn(null);
+        mediator.onChildAccountStatusReady(/* isChild= */ false, /* childInfo= */ null);
+
+        assertTrue(mModel.get(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE));
+    }
+
     private void createMediator() {
         mMediator =
                 new FullscreenSigninMediator(
