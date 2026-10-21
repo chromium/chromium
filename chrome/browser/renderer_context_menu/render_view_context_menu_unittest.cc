@@ -3472,6 +3472,41 @@ TEST_F(RenderViewContextMenuOrderTest, LinkMenu_TouchSourceWithLinkTextOrder) {
                            IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
+TEST_F(RenderViewContextMenuOrderTest, LinkMenu_MailtoAndFilteredLinkUrlOrder) {
+  {
+    content::ContextMenuParams mailto_params = CreateParams(MenuItem::LINK);
+    mailto_params.page_url = GURL("https://www.example.com/");
+    mailto_params.link_url = GURL("mailto:someone@example.com");
+    mailto_params.unfiltered_link_url = mailto_params.link_url;
+    std::unique_ptr<TestRenderViewContextMenu> menu =
+        CreateAndInitMenu(mailto_params);
+
+    EXPECT_THAT(
+        GetMenuItemsAndSeparators(menu->menu_model()),
+        testing::ElementsAre(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+                             IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                             IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+                             IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
+                             kSeparatorId, IDC_CONTENT_CONTEXT_SAVELINKAS,
+                             IDC_CONTENT_CONTEXT_COPYLINKLOCATION, kSeparatorId,
+                             IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+  }
+
+  {
+    content::ContextMenuParams js_link_params = CreateParams(0);
+    js_link_params.page_url = GURL("https://www.example.com/");
+    js_link_params.link_url = GURL();
+    js_link_params.unfiltered_link_url = GURL("javascript:void(0)");
+    std::unique_ptr<TestRenderViewContextMenu> menu =
+        CreateAndInitMenu(js_link_params);
+
+    EXPECT_THAT(
+        GetMenuItemsAndSeparators(menu->menu_model()),
+        testing::ElementsAre(IDC_CONTENT_CONTEXT_COPYLINKLOCATION, kSeparatorId,
+                             IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+  }
+}
+
 class RenderViewContextMenuSimplifiedOrderTest
     : public RenderViewContextMenuOrderTest {
  public:
