@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_COMPONENT_UPDATER_AIM_ELIGIBILITY_COMPONENT_INSTALLER_H_
-#define CHROME_BROWSER_COMPONENT_UPDATER_AIM_ELIGIBILITY_COMPONENT_INSTALLER_H_
+#ifndef CHROME_BROWSER_COMPONENT_UPDATER_COMPONENT_EXTENSION_INSTALLER_H_
+#define CHROME_BROWSER_COMPONENT_UPDATER_COMPONENT_EXTENSION_INSTALLER_H_
 
 #include <stdint.h>
 
+#include <array>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_installer.h"
 
@@ -18,15 +20,24 @@ namespace component_updater {
 
 class ComponentUpdateService;
 
-class AimEligibilityComponentInstallerPolicy : public ComponentInstallerPolicy {
- public:
-  AimEligibilityComponentInstallerPolicy();
-  ~AimEligibilityComponentInstallerPolicy() override;
+struct ComponentExtensionInstallerConfig {
+  std::string name;
+  std::string extension_id;
+  std::array<uint8_t, 32> public_key_sha256;
+  base::FilePath relative_install_dir;
+  int bundled_manifest_resource_id;
+};
 
-  AimEligibilityComponentInstallerPolicy(
-      const AimEligibilityComponentInstallerPolicy&) = delete;
-  AimEligibilityComponentInstallerPolicy& operator=(
-      const AimEligibilityComponentInstallerPolicy&) = delete;
+class ComponentExtensionInstallerPolicy : public ComponentInstallerPolicy {
+ public:
+  explicit ComponentExtensionInstallerPolicy(
+      const ComponentExtensionInstallerConfig& config);
+  ~ComponentExtensionInstallerPolicy() override;
+
+  ComponentExtensionInstallerPolicy(const ComponentExtensionInstallerPolicy&) =
+      delete;
+  ComponentExtensionInstallerPolicy& operator=(
+      const ComponentExtensionInstallerPolicy&) = delete;
 
   // ComponentInstallerPolicy:
   bool VerifyInstallation(const base::DictValue& manifest,
@@ -44,11 +55,14 @@ class AimEligibilityComponentInstallerPolicy : public ComponentInstallerPolicy {
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
+
+ private:
+  const ComponentExtensionInstallerConfig config_;
 };
 
-// Manages registration and uninstallation of the component.
-void ManageAimEligibilityComponentRegistration(ComponentUpdateService* cus);
+// Manages registration and uninstallation of the components.
+void ManageComponentExtensionRegistrations(ComponentUpdateService* cus);
 
 }  // namespace component_updater
 
-#endif  // CHROME_BROWSER_COMPONENT_UPDATER_AIM_ELIGIBILITY_COMPONENT_INSTALLER_H_
+#endif  // CHROME_BROWSER_COMPONENT_UPDATER_COMPONENT_EXTENSION_INSTALLER_H_

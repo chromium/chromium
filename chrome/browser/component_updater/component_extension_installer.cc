@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/aim_eligibility_component_installer.h"
+#include "chrome/browser/component_updater/component_extension_installer.h"
 
 #include <stdint.h>
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -45,7 +46,7 @@ constexpr std::array<uint8_t, 32> kAimEligibilityPublicKeySHA256 = {
 constexpr char kAimEligibilityManifestName[] =
     "AIM Eligibility Component Extension";
 
-// The manifest filename of the AIM Eligibility component extension.
+// The manifest filename of the component extension.
 constexpr base::FilePath::CharType kExtensionManifestFilename[] =
     FILE_PATH_LITERAL("extension_manifest.json");
 
@@ -53,11 +54,10 @@ constexpr base::FilePath::CharType kExtensionManifestFilename[] =
 // `extensions::ComponentLoader` will fall back to loading the bundled component
 // extension rather than attempting to load the staged version from disk on the
 // next browser startup.
-void ClearStagedExtensionPrefs() {
+void ClearStagedExtensionPrefs(const std::string& extension_id) {
   if (g_browser_process && g_browser_process->local_state()) {
     extensions::component_loader_prefs::ClearExtension(
-        *g_browser_process->local_state(),
-        extension_misc::kAimEligibilityExtensionId);
+        *g_browser_process->local_state(), extension_id);
   }
 }
 
@@ -75,64 +75,83 @@ std::optional<base::DictValue> LoadExtensionManifest(
 }
 
 // Tries to stage `manifest` in Local State preferences for the next startup.
-void OnExtensionManifestLoaded(const base::FilePath& relative_path,
+void OnExtensionManifestLoaded(const ComponentExtensionInstallerConfig& config,
+                               const base::FilePath& relative_path,
                                std::optional<base::DictValue> manifest) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!g_browser_process || !g_browser_process->local_state()) {
     return;
   }
   if (!extensions::ComponentLoader::MaybeStageExtension(
-          *g_browser_process->local_state(),
-          extension_misc::kAimEligibilityExtensionId,
-          IDR_AIM_ELIGIBILITY_EXTENSION_MANIFEST_JSON, relative_path,
+          *g_browser_process->local_state(), config.extension_id,
+          config.bundled_manifest_resource_id, relative_path,
           std::move(manifest))) {
-    VLOG(1) << "Failed to stage AIM Eligibility extension from "
-            << relative_path;
+    VLOG(1) << "Failed to stage " << config.name << " from " << relative_path;
+  }
+}
+
+void ManageComponentExtensionRegistration(
+    ComponentUpdateService* cus,
+    const ComponentExtensionInstallerConfig& config,
+    bool enabled) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  if (enabled) {
+    VLOG(1) << "Registering " << config.name << ".";
+    base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<ComponentExtensionInstallerPolicy>(config))
+        ->Register(cus, base::OnceClosure());
+  } else {
+    VLOG(1) << "Uninstalling " << config.name << ".";
+    base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<ComponentExtensionInstallerPolicy>(config))
+        ->Uninstall();
   }
 }
 
 }  // namespace
 
-AimEligibilityComponentInstallerPolicy::
-    AimEligibilityComponentInstallerPolicy() = default;
-AimEligibilityComponentInstallerPolicy::
-    ~AimEligibilityComponentInstallerPolicy() = default;
+ComponentExtensionInstallerPolicy::ComponentExtensionInstallerPolicy(
+    const ComponentExtensionInstallerConfig& config)
+    : config_(config) {}
+ComponentExtensionInstallerPolicy::~ComponentExtensionInstallerPolicy() =
+    default;
 
-bool AimEligibilityComponentInstallerPolicy::VerifyInstallation(
+bool ComponentExtensionInstallerPolicy::VerifyInstallation(
     const base::DictValue& /* manifest */,
     const base::FilePath& install_dir) const {
   return base::PathExists(install_dir.Append(kExtensionManifestFilename));
 }
 
-bool AimEligibilityComponentInstallerPolicy::
+bool ComponentExtensionInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
   return true;
 }
 
-bool AimEligibilityComponentInstallerPolicy::RequiresNetworkEncryption() const {
+bool ComponentExtensionInstallerPolicy::RequiresNetworkEncryption() const {
   return false;
 }
 
 update_client::CrxInstaller::Result
-AimEligibilityComponentInstallerPolicy::OnCustomInstall(
+ComponentExtensionInstallerPolicy::OnCustomInstall(
     const base::DictValue& /* manifest */,
     const base::FilePath& /* install_dir */) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
 
-void AimEligibilityComponentInstallerPolicy::OnCustomUninstall() {
+void ComponentExtensionInstallerPolicy::OnCustomUninstall() {
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ClearStagedExtensionPrefs));
+      FROM_HERE,
+      base::BindOnce(&ClearStagedExtensionPrefs, config_.extension_id));
 }
 
-void AimEligibilityComponentInstallerPolicy::ComponentReady(
+void ComponentExtensionInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::DictValue /* manifest */) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
-  VLOG(1) << "AIM Eligibility Component ready, version " << version.GetString()
-          << " in " << install_dir;
+  VLOG(1) << config_.name << " ready, version " << version.GetString() << " in "
+          << install_dir;
 
   base::FilePath relative_path =
       GetRelativeInstallDir().AppendASCII(version.GetString());
@@ -142,43 +161,42 @@ void AimEligibilityComponentInstallerPolicy::ComponentReady(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoadExtensionManifest, install_dir),
-      base::BindOnce(&OnExtensionManifestLoaded, std::move(relative_path)));
+      base::BindOnce(&OnExtensionManifestLoaded, config_,
+                     std::move(relative_path)));
 }
 
-base::FilePath AimEligibilityComponentInstallerPolicy::GetRelativeInstallDir()
+base::FilePath ComponentExtensionInstallerPolicy::GetRelativeInstallDir()
     const {
-  return base::FilePath(extension_misc::kAimEligibilityExtensionDirName);
+  return config_.relative_install_dir;
 }
 
-void AimEligibilityComponentInstallerPolicy::GetHash(
+void ComponentExtensionInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  hash->assign_range(kAimEligibilityPublicKeySHA256);
+  hash->assign_range(config_.public_key_sha256);
 }
 
-std::string AimEligibilityComponentInstallerPolicy::GetName() const {
-  return kAimEligibilityManifestName;
+std::string ComponentExtensionInstallerPolicy::GetName() const {
+  return config_.name;
 }
 
 update_client::InstallerAttributes
-AimEligibilityComponentInstallerPolicy::GetInstallerAttributes() const {
+ComponentExtensionInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
-void ManageAimEligibilityComponentRegistration(ComponentUpdateService* cus) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-  if (base::FeatureList::IsEnabled(
+void ManageComponentExtensionRegistrations(ComponentUpdateService* cus) {
+  ManageComponentExtensionRegistration(
+      cus,
+      {.name = kAimEligibilityManifestName,
+       .extension_id = extension_misc::kAimEligibilityExtensionId,
+       .public_key_sha256 = kAimEligibilityPublicKeySHA256,
+       .relative_install_dir =
+           base::FilePath(extension_misc::kAimEligibilityExtensionDirName),
+       .bundled_manifest_resource_id =
+           IDR_AIM_ELIGIBILITY_EXTENSION_MANIFEST_JSON},
+      base::FeatureList::IsEnabled(
           omnibox::kAimEligibilityComponentExtension) &&
-      omnibox::kAimEligibilityUseComponentUpdater.Get()) {
-    VLOG(1) << "Registering AIM Eligibility component.";
-    base::MakeRefCounted<ComponentInstaller>(
-        std::make_unique<AimEligibilityComponentInstallerPolicy>())
-        ->Register(cus, base::OnceClosure());
-  } else {
-    VLOG(1) << "Uninstalling AIM Eligibility component.";
-    base::MakeRefCounted<ComponentInstaller>(
-        std::make_unique<AimEligibilityComponentInstallerPolicy>())
-        ->Uninstall();
-  }
+          omnibox::kAimEligibilityUseComponentUpdater.Get());
 }
 
 }  // namespace component_updater

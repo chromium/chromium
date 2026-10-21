@@ -55,7 +55,7 @@
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "chrome/browser/component_updater/aim_eligibility_component_installer.h"
+#include "chrome/browser/component_updater/component_extension_installer.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -255,7 +255,7 @@ void RegisterComponentsForUpdate() {
       DeleteHistorySearchStringsComponent(path);
     }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-    ManageAimEligibilityComponentRegistration(cus);
+    ManageComponentExtensionRegistrations(cus);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
