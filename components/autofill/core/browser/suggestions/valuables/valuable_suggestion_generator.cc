@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
@@ -123,13 +124,9 @@ Suggestion CreateLoyaltyCardSuggestion(
 std::vector<Suggestion> CreateSuggestionsFromLoyaltyCards(
     base::span<const LoyaltyCard> loyalty_cards,
     const ValuablesDataManager& valuables_manager) {
-  std::vector<Suggestion> suggestions;
-  suggestions.reserve(loyalty_cards.size());
-  for (const LoyaltyCard& loyalty_card : loyalty_cards) {
-    suggestions.push_back(
-        CreateLoyaltyCardSuggestion(loyalty_card, valuables_manager));
-  }
-  return suggestions;
+  return base::ToVector(loyalty_cards, [&](const LoyaltyCard& loyalty_card) {
+    return CreateLoyaltyCardSuggestion(loyalty_card, valuables_manager);
+  });
 }
 
 // Returns non loyalty cards suggestions which are displayed below loyalty cards
@@ -190,12 +187,11 @@ std::vector<Suggestion> CreateLoyaltyCardSuggestionsForMerge(
   }
 
   std::vector<LoyaltyCard> affiliated_cards;
-  std::copy_if(all_loyalty_cards.begin(), all_loyalty_cards.end(),
-               std::back_inserter(affiliated_cards),
-               [&](const LoyaltyCard& card) {
-                 return card.GetAffiliationCategory(main_frame_url) ==
-                        LoyaltyCard::AffiliationCategory::kAffiliated;
-               });
+  std::ranges::copy_if(all_loyalty_cards, std::back_inserter(affiliated_cards),
+                       [&](const LoyaltyCard& card) {
+                         return card.GetAffiliationCategory(main_frame_url) ==
+                                LoyaltyCard::AffiliationCategory::kAffiliated;
+                       });
   if (affiliated_cards.empty()) {
     return {};
   }
