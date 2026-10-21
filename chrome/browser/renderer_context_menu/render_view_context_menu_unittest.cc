@@ -3409,6 +3409,21 @@ TEST_F(RenderViewContextMenuOrderTest, SubframeMenu_Order) {
           IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
+TEST_F(RenderViewContextMenuOrderTest, DevToolsContainerMenu_Order) {
+  const GURL devtools_url(
+      "devtools://devtools/bundled/devtools_app.html?debugFrontend=true");
+  NavigateAndCommit(devtools_url);
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+  params.page_url = devtools_url;
+  params.selection_text = u"devtools text";
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(GetMenuItemsAndSeparators(menu->menu_model()),
+              testing::ElementsAre(
+                  IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
+                  kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
 class RenderViewContextMenuSimplifiedOrderTest
     : public RenderViewContextMenuOrderTest {
  public:
