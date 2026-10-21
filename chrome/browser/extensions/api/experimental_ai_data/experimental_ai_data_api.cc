@@ -220,13 +220,11 @@ bool ExperimentalAiDataApiFunction::PreRunValidation(std::string* error) {
     return false;
   }
 
-  auto* ai_data_service =
-      AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
-  if (!ai_data_service) {
+  // This API never collects data from an incognito profile.
+  if (browser_context()->IsOffTheRecord()) {
     *error = kIncognitoNotSupportedError;
     return false;
   }
-  CHECK(ai_data_service, base::NotFatalUntil::M161);
 
   return true;
 }
@@ -240,7 +238,8 @@ std::optional<std::string> ExperimentalAiDataApiFunction::StartDataCollection(
   collection_page_guards_.push_back(
       std::make_unique<CollectionPageGuard>(web_contents));
   if (max_tabs_for_text_collection > 0) {
-    tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents);
     BrowserWindowInterface* browser =
         tab ? tab->GetBrowserWindowInterface() : nullptr;
     TabListInterface* tab_list =
@@ -271,6 +270,9 @@ ExperimentalAiDataApiFunction::GetDataCollectionError() const {
       // Deliberately reject the entire response if any observed page changed.
       // The combined result cannot reliably separate data from replaced pages.
       return kPageChangedError;
+    }
+    if (contents->GetBrowserContext()->IsOffTheRecord()) {
+      return kIncognitoNotSupportedError;
     }
     if (IsBlockedByPolicy(*extension(), *contents)) {
       return kPolicyBlockedHostError;
@@ -315,8 +317,7 @@ ExperimentalAiDataGetAiDataFunction::~ExperimentalAiDataGetAiDataFunction() =
 ExtensionFunction::ResponseAction ExperimentalAiDataGetAiDataFunction::Run() {
   auto params = api::experimental_ai_data::GetAiData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  content::WebContents* web_contents =
-      GetTabById(params->tab_id, /*include_incognito=*/true);
+  content::WebContents* web_contents = GetTabById(params->tab_id);
   if (!web_contents) {
     return RespondNow(Error(kInvalidTabError));
   }
@@ -351,8 +352,7 @@ ExperimentalAiDataGetAiDataWithSpecifierFunction::Run() {
   auto params =
       api::experimental_ai_data::GetAiDataWithSpecifier::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  content::WebContents* web_contents =
-      GetTabById(params->tab_id, /*include_incognito=*/true);
+  content::WebContents* web_contents = GetTabById(params->tab_id);
   if (!web_contents) {
     return RespondNow(Error(kInvalidTabError));
   }
@@ -401,11 +401,6 @@ ExperimentalAiDataGetApcSnapshotFunction::Run() {
       api::experimental_ai_data::GetApcSnapshot::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  // This debugging API never collects data from an incognito profile.
-  if (browser_context()->IsOffTheRecord()) {
-    return RespondNow(Error(kIncognitoNotSupportedError));
-  }
-
   using SnapshotType = api::experimental_ai_data::SnapshotType;
   bool capture_apc = false;
   bool capture_screenshot = false;
@@ -427,13 +422,15 @@ ExperimentalAiDataGetApcSnapshotFunction::Run() {
   if (options.max_meta_elements.value_or(0) < 0) {
     return RespondNow(Error(kInvalidMaxMetaElementsError));
   }
-  content::WebContents* web_contents =
-      GetTabById(params->tab_id, /*include_incognito=*/false);
+  content::WebContents* web_contents = GetTabById(params->tab_id);
   if (!web_contents) {
     return RespondNow(Error(kInvalidTabError));
   }
-  if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
-    return RespondNow(Error(kIncognitoNotSupportedError));
+
+  // APC options can omit frames, but screenshots still include their pixels.
+  // Apply the same frame policy checks to every snapshot mode.
+  if (auto error = StartDataCollection(web_contents)) {
+    return RespondNow(Error(*error));
   }
 
   if (capture_screenshot) {
@@ -444,24 +441,19 @@ ExperimentalAiDataGetApcSnapshotFunction::Run() {
     }
   }
 
-  // APC options can omit frames, but screenshots still include their pixels.
-  // Apply the same frame policy checks to every snapshot mode.
-  if (auto error = StartDataCollection(web_contents)) {
-    return RespondNow(Error(*error));
-  }
-
   StartSnapshot(web_contents, capture_apc, capture_screenshot,
                 ToMojoApcOptions(options));
 
   return RespondLater();
 }
 
-content::WebContents* ExperimentalAiDataApiFunction::GetTabById(
-    int tab_id,
-    bool include_incognito) {
+content::WebContents* ExperimentalAiDataApiFunction::GetTabById(int tab_id) {
   content::WebContents* web_contents = nullptr;
+  // This API never collects data from an incognito profile, even if the
+  // extension is enabled in incognito.
   if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(),
-                                    include_incognito, &web_contents)) {
+                                    /*include_incognito=*/false,
+                                    &web_contents)) {
     return nullptr;
   }
   return web_contents;
@@ -588,8 +580,7 @@ ExperimentalAiDataGetTextSurroundingSelectionFunction::Run() {
     return RespondNow(Error(kInvalidMaxLengthError));
   }
 
-  content::WebContents* web_contents = GetTabById(
-      params->tab_id, /*include_incognito=*/include_incognito_information());
+  content::WebContents* web_contents = GetTabById(params->tab_id);
   if (!web_contents) {
     return RespondNow(Error(kInvalidTabError));
   }

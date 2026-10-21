@@ -50,7 +50,8 @@ class PolicyTestFunction : public ExperimentalAiDataGetAiDataFunction {
   ~PolicyTestFunction() override = default;
 
   ResponseAction Run() override {
-    if (auto error = StartDataCollection(contents)) {
+    if (auto error = StartDataCollection(contents,
+                                         /*max_tabs_for_text_collection=*/10)) {
       return RespondNow(Error(*error));
     }
     collection_started = true;
@@ -105,6 +106,27 @@ TEST_F(ExperimentalAiDataPolicyTest, AllowsHostsOutsidePolicyBlocklist) {
   BlockHost("*://unrelated.test/*");
   auto function = CreateFunction();
   EXPECT_TRUE(Run(function.get())) << function->GetError();
+}
+
+TEST_F(ExperimentalAiDataPolicyTest, RejectsIncognitoCallerAndTarget) {
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  auto caller_fn = CreateFunction();
+  EXPECT_EQ("Incognito profile not supported.",
+            api_test_utils::RunFunctionAndReturnError(
+                caller_fn.get(), "[]", otr_profile,
+                api_test_utils::FunctionMode::kIncognito));
+  EXPECT_FALSE(caller_fn->collection_started);
+
+  auto otr_contents = content::WebContents::Create(
+      content::WebContents::CreateParams(otr_profile));
+  auto target_fn = CreateFunction();
+  target_fn->contents = otr_contents.get();
+  EXPECT_EQ("Incognito profile not supported.",
+            api_test_utils::RunFunctionAndReturnError(
+                target_fn.get(), "[]", profile(),
+                api_test_utils::FunctionMode::kIncognito));
+  EXPECT_FALSE(target_fn->collection_started);
 }
 
 TEST_F(ExperimentalAiDataPolicyTest, RejectsBlockedNestedFrame) {

@@ -211,6 +211,16 @@ chrome.test.getConfig(config => {
           await chrome.test.assertPromiseRejects(
               capture({type}), `Error: ${expectedError}`);
         }
+        await chrome.test.assertPromiseRejects(
+            chrome.experimentalAiData.getAiData(0, '', '', tabId),
+            `Error: ${expectedError}`);
+        await chrome.test.assertPromiseRejects(
+            chrome.experimentalAiData.getAiDataWithSpecifier(
+                tabId, new ArrayBuffer(0)),
+            `Error: ${expectedError}`);
+        await chrome.test.assertPromiseRejects(
+            chrome.experimentalAiData.getTextSurroundingSelection(tabId, 8),
+            `Error: ${expectedError}`);
         chrome.test.succeed();
       },
     ]);

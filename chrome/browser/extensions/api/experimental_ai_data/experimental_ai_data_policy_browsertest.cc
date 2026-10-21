@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -71,8 +72,12 @@ class ExperimentalAiDataPolicyBrowserTest
 
   base::expected<base::ListValue, std::string> Collect(
       bool include_tabs = true,
-      int max_tabs_for_text_collection = 10) {
-    const int tab_id = sessions::SessionTabHelper::IdForTab(contents()).id();
+      int max_tabs_for_text_collection = 10,
+      std::optional<int> target_tab_id = std::nullopt,
+      content::BrowserContext* context = nullptr,
+      api_test_utils::FunctionMode mode = api_test_utils::FunctionMode::kNone) {
+    const int tab_id = target_tab_id.value_or(
+        sessions::SessionTabHelper::IdForTab(contents()).id());
     scoped_refptr<ExperimentalAiDataApiFunction> function;
     base::ListValue args;
     if (GetParam() ==
@@ -103,7 +108,7 @@ class ExperimentalAiDataPolicyBrowserTest
     }
     function->set_extension(extension_);
     return api_test_utils::RunFunctionAndReturnExpected(
-        function, std::move(args), GetProfile());
+        function, std::move(args), context ? context : GetProfile(), mode);
   }
 
   void BlockHost(const char* pattern) {
@@ -121,6 +126,35 @@ IN_PROC_BROWSER_TEST_P(ExperimentalAiDataPolicyBrowserTest, RejectsTargetHost) {
   auto result = Collect();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ("Host access is restricted by policy.", result.error());
+}
+
+IN_PROC_BROWSER_TEST_P(ExperimentalAiDataPolicyBrowserTest,
+                       RejectsIncognitoTargetAndCaller) {
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser,
+      embedded_test_server()->GetURL("example.test", "/simple.html")));
+  const int incognito_tab_id =
+      sessions::SessionTabHelper::IdForTab(
+          incognito_browser->GetActiveTabInterface()->GetContents())
+          .id();
+
+  // Regular-profile callers must not resolve incognito tabs, even with
+  // incognito permission enabled.
+  for (auto mode : {api_test_utils::FunctionMode::kNone,
+                    api_test_utils::FunctionMode::kIncognito}) {
+    auto result = Collect(/*include_tabs=*/true, 10, incognito_tab_id,
+                          GetProfile(), mode);
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ("Invalid target tab passed in.", result.error());
+  }
+
+  // Incognito callers must be rejected before tab lookup.
+  auto result = Collect(/*include_tabs=*/true, 10, std::nullopt,
+                        incognito_browser->GetProfile(),
+                        api_test_utils::FunctionMode::kIncognito);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ("Incognito profile not supported.", result.error());
 }
 
 IN_PROC_BROWSER_TEST_P(ExperimentalAiDataPolicyBrowserTest,

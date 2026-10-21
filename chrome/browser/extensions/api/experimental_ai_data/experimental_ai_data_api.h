@@ -48,9 +48,9 @@ class ExperimentalAiDataApiFunction : public ExtensionFunction {
   void OnDataCollected(AiDataKeyedService::AiData browser_collected_data);
   bool PreRunValidation(std::string* error) override;
 
-  // Resolves the target tab. Virtual so unit tests can supply a WebContents
-  // without a browser window.
-  virtual content::WebContents* GetTabById(int tab_id, bool include_incognito);
+  // Resolves the target tab in the caller's regular profile. Virtual so unit
+  // tests can supply a WebContents without a browser window.
+  virtual content::WebContents* GetTabById(int tab_id);
 
  private:
   class CollectionPageGuard;

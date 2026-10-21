@@ -55,7 +55,6 @@ class TestGetApcSnapshotFunction
   }
 
   bool snapshot_started = false;
-  bool included_incognito = false;
   int resolved_tab_id = -1;
   blink::mojom::AIPageContentOptionsPtr apc_options;
   std::optional<page_content_annotations::ScreenshotOptions> screenshot_options;
@@ -69,10 +68,8 @@ class TestGetApcSnapshotFunction
  protected:
   ~TestGetApcSnapshotFunction() override = default;
 
-  content::WebContents* GetTabById(int tab_id,
-                                   bool include_incognito) override {
+  content::WebContents* GetTabById(int tab_id) override {
     resolved_tab_id = tab_id;
-    included_incognito = include_incognito;
     return contents_;
   }
 
@@ -196,7 +193,6 @@ TEST_F(ExperimentalAiDataApcTest,
     EXPECT_TRUE(proto.has_root_node());
     EXPECT_FALSE(result->GetDict().contains("screenshotBase64"));
     EXPECT_EQ(7, function->resolved_tab_id);
-    EXPECT_FALSE(function->included_incognito);
     ASSERT_TRUE(function->apc_options);
     EXPECT_EQ(blink::mojom::AIPageContentMode::kActionableElements,
               function->apc_options->mode);
@@ -261,15 +257,6 @@ TEST_F(ExperimentalAiDataApcTest, MapsExtractionOptions) {
   EXPECT_TRUE(options->non_salient_content_config->exclude_ad_related);
   EXPECT_EQ(12, options->max_meta_elements);
   EXPECT_FALSE(options->node_id_allowlist);
-}
-
-TEST_F(ExperimentalAiDataApcTest, IncognitoAccessDoesNotEnableTabLookup) {
-  auto function = CreateFunction();
-  // Enabling the extension for incognito must not expose incognito targets.
-  EXPECT_TRUE(api_test_utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[7, {}]", profile(),
-      api_test_utils::FunctionMode::kIncognito));
-  EXPECT_FALSE(function->included_incognito);
 }
 
 TEST_F(ExperimentalAiDataApcTest, RejectsIncognitoCaller) {
@@ -506,8 +493,7 @@ class TestGetTextSurroundingSelectionFunction
  protected:
   ~TestGetTextSurroundingSelectionFunction() override = default;
 
-  content::WebContents* GetTabById(int tab_id,
-                                   bool include_incognito) override {
+  content::WebContents* GetTabById(int tab_id) override {
     resolved_tab_id = tab_id;
     return contents_;
   }
