@@ -63,6 +63,52 @@ bool UseCALayerContentsHeadroom() {
   return false;
 }
 
+// Applies hardware `cornerRadius` and `maskedCorners` to `layer` if `rrect` can
+// be represented natively by CALayer (no rounded corners, uniform circular
+// corners on all 4 corners, or a single uniform circular radius on a subset of
+// corners with the remaining corners square). Returns false if `rrect` has
+// elliptical corners or multiple distinct non-zero corner radii.
+bool ApplyCornerRadiusToCALayer(CALayer* layer,
+                                const gfx::RRectF& rrect,
+                                float scale_factor) {
+  if (rrect.GetType() <= gfx::RRectF::Type::kSingle) {
+    static constexpr CACornerMask kAllCorners =
+        kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
+        kCALayerMaxXMaxYCorner | kCALayerMinXMaxYCorner;
+    layer.cornerRadius = rrect.GetSimpleRadius() / scale_factor;
+    layer.maskedCorners = kAllCorners;
+    return true;
+  }
+
+  // Note that corners are already flipped for Apple "Y = 0 is the bottom of the
+  // screen" coordinate system. This makes the RRect corner names misleading.
+  using Corner = gfx::RRectF::Corner;
+  static constexpr std::pair<Corner, CACornerMask> kCorners[] = {
+      {Corner::kUpperLeft, kCALayerMinXMinYCorner},
+      {Corner::kUpperRight, kCALayerMaxXMinYCorner},
+      {Corner::kLowerRight, kCALayerMaxXMaxYCorner},
+      {Corner::kLowerLeft, kCALayerMinXMaxYCorner},
+  };
+  float uniform_radius = 0.0f;
+  CACornerMask masked_corners = 0;
+  for (const auto& [corner, mask] : kCorners) {
+    const gfx::Vector2dF radii = rrect.GetCornerRadii(corner);
+    if (radii.x() != radii.y()) {
+      return false;
+    }
+    if (radii.x() > 0.0f) {
+      if (uniform_radius > 0.0f && uniform_radius != radii.x()) {
+        return false;
+      }
+      uniform_radius = radii.x();
+      masked_corners |= mask;
+    }
+  }
+  layer.cornerRadius = uniform_radius / scale_factor;
+  layer.maskedCorners = masked_corners;
+  return true;
+}
+
 // Clips CALayer `layer`'s to `rrect` using `scale_factor`. Sets all clipping,
 // transform, and corner properties necessary to ensure a correct clip.
 //
@@ -83,45 +129,7 @@ void ClipCALayerToRRectF(CALayer* layer,
   layer.sublayerTransform = CATransform3DMakeTranslation(
       -dip_rounded_corner_bounds.x(), -dip_rounded_corner_bounds.y(), 0);
 
-  // With all one radius no further computation is necessary.
-  if (rrect.GetType() <= gfx::RRectF::Type::kSingle) {
-    static constexpr CACornerMask kAllCorners =
-        kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner |
-        kCALayerMaxXMaxYCorner | kCALayerMinXMaxYCorner;
-    layer.cornerRadius = rrect.GetSimpleRadius() / scale_factor;
-    layer.maskedCorners |= kAllCorners;
-    return;
-  }
-
-  // This RRectF may have some corners with a radius and some without. As long
-  // as the radius is the same for all corners which have one, a CALayer can be
-  // used. Compute and set the appropriate CALayer properties.
-  using Corner = gfx::RRectF::Corner;
-  using CornerInfo = std::tuple<Corner, CACornerMask, std::string_view>;
-  // Note that corners are already flipped for Apple "Y = 0 is the bottom of the
-  // screen" coordinate system. This makes the RRect corner names misleading.
-  static constexpr auto corners = std::to_array(
-      {CornerInfo(Corner::kUpperLeft, kCALayerMinXMinYCorner, "min x min y"),
-       CornerInfo(Corner::kUpperRight, kCALayerMaxXMinYCorner, "max x min y"),
-       CornerInfo(Corner::kLowerRight, kCALayerMaxXMaxYCorner, "max x max y"),
-       CornerInfo(Corner::kLowerLeft, kCALayerMinXMaxYCorner, "min x max y")});
-  layer.cornerRadius = 0.0f;
-  layer.maskedCorners = 0;
-  for (const auto& corner : corners) {
-    const auto radii = rrect.GetCornerRadii(std::get<Corner>(corner));
-    const float radius = radii.x();
-    CHECK_EQ(radius, radii.y())
-        << "Corner " << std::get<std::string_view>(corner)
-        << " (screen coords) is not symmetric.";
-    if (radius > 0.0f) {
-      CHECK(layer.cornerRadius == radius || layer.cornerRadius == 0.0f)
-          << "Not all corner radii match (" << layer.cornerRadius << " vs. "
-          << radius << ")";
-      layer.cornerRadius = radius;
-      layer.maskedCorners |= std::get<CACornerMask>(corner);
-    }
-  }
-  layer.cornerRadius /= scale_factor;
+  CHECK(ApplyCornerRadiusToCALayer(layer, rrect, scale_factor));
 }
 
 class ComparatorSkColor4f {
@@ -515,7 +523,7 @@ void CARendererLayerTree::ContentLayer::UpdateMapAndMatchOldLayers(
           matched_transform_layer->weak_factory_for_new_layer_.GetWeakPtr();
       matched_transform_layer->ca_layer_used_ = true;
     } else {
-      [matched_content_layer->ca_layer_ removeFromSuperlayer];
+      matched_content_layer->RemoveFromSuperlayer();
     }
   }
 
@@ -524,11 +532,11 @@ void CARendererLayerTree::ContentLayer::UpdateMapAndMatchOldLayers(
   }
 
   if (matched_transform_layer != parent_layer_->old_layer_.get()) {
-    [matched_content_layer->ca_layer_ removeFromSuperlayer];
+    matched_content_layer->RemoveFromSuperlayer();
   } else if (matched_content_layer->layer_order_ < last_old_layer_order) {
     // For the content layers with the same superlayer, if the order changes.
     // this matched old layer should be removed from its superlayer first.
-    [matched_content_layer->ca_layer_ removeFromSuperlayer];
+    matched_content_layer->RemoveFromSuperlayer();
     [matched_transform_layer->ca_layer_ removeFromSuperlayer];
     [matched_clip_layer->clipping_ca_layer_ removeFromSuperlayer];
   }
@@ -641,7 +649,7 @@ void CARendererLayerTree::TransformLayer::CALayerFallBack() {
             ++old_layer_child_it;
             break;
           }
-          [old_layer_child->ca_layer_ removeFromSuperlayer];
+          old_layer_child->RemoveFromSuperlayer();
           ++old_layer_child_it;
         }
       } else {
@@ -780,31 +788,21 @@ CARendererLayerTree::TransformLayer::~TransformLayer() {
 
 CARendererLayerTree::ContentLayer::ContentLayer(
     TransformLayer* parent_layer,
-    base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface,
-    base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer,
-    const gfx::RectF& contents_rect,
-    const gfx::Rect& rect,
-    SkColor4f background_color,
-    const gfx::ColorSpace& io_surface_color_space,
-    unsigned edge_aa_mask,
-    float opacity,
-    bool nearest_neighbor_filter,
-    const gfx::HDRMetadata& hdr_metadata,
-    gfx::ProtectedVideoType protected_video_type,
-    bool is_render_pass_draw_quad)
+    const CARendererLayerParams& params)
     : parent_layer_(parent_layer),
-      io_surface_(io_surface),
-      cv_pixel_buffer_(cv_pixel_buffer),
-      contents_rect_(contents_rect),
-      rect_(rect),
-      background_color_(background_color),
-      io_surface_color_space_(io_surface_color_space),
+      io_surface_(params.io_surface),
+      cv_pixel_buffer_(base::apple::ScopedCFTypeRef<CVPixelBufferRef>()),
+      contents_rect_(params.contents_rect),
+      rect_(params.rect),
+      background_color_(params.background_color),
+      io_surface_color_space_(params.io_surface_color_space),
       ca_edge_aa_mask_(0),
-      opacity_(opacity),
-      ca_filter_(nearest_neighbor_filter ? kCAFilterNearest : kCAFilterLinear),
-      hdr_metadata_(hdr_metadata),
-      protected_video_type_(protected_video_type),
-      is_render_pass_draw_quad_(is_render_pass_draw_quad) {
+      opacity_(params.opacity),
+      ca_filter_(params.nearest_neighbor_filter ? kCAFilterNearest
+                                                : kCAFilterLinear),
+      hdr_metadata_(params.hdr_metadata),
+      protected_video_type_(params.protected_video_type),
+      is_render_pass_draw_quad_(params.is_render_pass_draw_quad) {
   // On macOS 10.12, solid color layers are not color converted to the output
   // monitor color space, but IOSurface-backed layers are color converted. Note
   // that this is only the case when the CALayers are shared across processes.
@@ -813,10 +811,10 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   // transparent layers must use real colors to be eligible for low power
   // detachment in fullscreen.
   // https://crbug.com/633805
-  if (!io_surface && !tree()->allow_solid_color_layers_ &&
+  if (!io_surface_ && !tree()->allow_solid_color_layers_ &&
       background_color_ != SkColors::kBlack &&
       background_color_ != SkColors::kTransparent) {
-    solid_color_contents_ = SolidColorContents::Get(background_color);
+    solid_color_contents_ = SolidColorContents::Get(background_color_);
     contents_rect_ = gfx::RectF(0, 0, 1, 1);
   }
 
@@ -828,37 +826,44 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   // without content (solid color layers), the top edge in the AA mask is the
   // top edge on-screen.
   // https://crbug.com/567946
-  if (edge_aa_mask & CALayerEdge::kLayerEdgeLeft)
+  if (params.edge_aa_mask & CALayerEdge::kLayerEdgeLeft) {
     ca_edge_aa_mask_ |= kCALayerLeftEdge;
-  if (edge_aa_mask & CALayerEdge::kLayerEdgeRight)
+  }
+  if (params.edge_aa_mask & CALayerEdge::kLayerEdgeRight) {
     ca_edge_aa_mask_ |= kCALayerRightEdge;
-  if (io_surface || solid_color_contents_) {
-    if (edge_aa_mask & CALayerEdge::kLayerEdgeTop)
+  }
+  if (io_surface_ || solid_color_contents_) {
+    if (params.edge_aa_mask & CALayerEdge::kLayerEdgeTop) {
       ca_edge_aa_mask_ |= kCALayerBottomEdge;
-    if (edge_aa_mask & CALayerEdge::kLayerEdgeBottom)
+    }
+    if (params.edge_aa_mask & CALayerEdge::kLayerEdgeBottom) {
       ca_edge_aa_mask_ |= kCALayerTopEdge;
+    }
   } else {
-    if (edge_aa_mask & CALayerEdge::kLayerEdgeTop)
+    if (params.edge_aa_mask & CALayerEdge::kLayerEdgeTop) {
       ca_edge_aa_mask_ |= kCALayerTopEdge;
-    if (edge_aa_mask & CALayerEdge::kLayerEdgeBottom)
+    }
+    if (params.edge_aa_mask & CALayerEdge::kLayerEdgeBottom) {
       ca_edge_aa_mask_ |= kCALayerBottomEdge;
+    }
   }
 
   // Determine which type of CALayer subclass we should use.
   if (!UseCALayerContentsHeadroom() &&
-      metal::ShouldUseHDRCopier(io_surface.get(), hdr_metadata_,
-                                io_surface_color_space)) {
+      metal::ShouldUseHDRCopier(io_surface_.get(), hdr_metadata_,
+                                io_surface_color_space_)) {
     type_ = CALayerType::kHDRCopier;
-  } else if (io_surface) {
+  } else if (io_surface_) {
     // Only allow YUV frames which fill the layer's contents or protected
     // video to be promoted to AV layers.
     if (tree()->allow_av_sample_buffer_display_layer_) {
-      if (contents_rect == gfx::RectF(0, 0, 1, 1)) {
-        const uint32_t pixel_format = IOSurfaceGetPixelFormat(io_surface.get());
+      if (contents_rect_ == gfx::RectF(0, 0, 1, 1)) {
+        const uint32_t pixel_format =
+            IOSurfaceGetPixelFormat(io_surface_.get());
         if (gfx::IOSurfacePixelFormatCanDisplayAsAVSampleBuffer(pixel_format)) {
           type_ = CALayerType::kVideo;
           if (gfx::IOSurfacePixelFormatMaxBitsPerComponent(pixel_format) <= 8) {
-            video_type_can_downgrade_ = !io_surface_color_space.IsHDR();
+            video_type_can_downgrade_ = !io_surface_color_space_.IsHDR();
           } else {
             video_type_can_downgrade_ = false;
           }
@@ -879,11 +884,11 @@ CARendererLayerTree::ContentLayer::ContentLayer(
     // works around a macOS bug which breaks detached fullscreen playback of
     // slightly distorted videos (https://crbug.com/792632).
     const auto av_rect(
-        cv_pixel_buffer
-            ? gfx::RectF(CVPixelBufferGetWidth(cv_pixel_buffer.get()),
-                         CVPixelBufferGetHeight(cv_pixel_buffer.get()))
-            : gfx::RectF(IOSurfaceGetWidth(io_surface.get()),
-                         IOSurfaceGetHeight(io_surface.get())));
+        cv_pixel_buffer_
+            ? gfx::RectF(CVPixelBufferGetWidth(cv_pixel_buffer_.get()),
+                         CVPixelBufferGetHeight(cv_pixel_buffer_.get()))
+            : gfx::RectF(IOSurfaceGetWidth(io_surface_.get()),
+                         IOSurfaceGetHeight(io_surface_.get())));
     const CGFloat av_ratio = av_rect.width() / av_rect.height();
     const CGFloat layer_ratio = rect_.width() / rect_.height();
     const CGFloat ratio_error = av_ratio / layer_ratio;
@@ -902,8 +907,12 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   }
 }
 
-CARendererLayerTree::ContentLayer::~ContentLayer() {
+void CARendererLayerTree::ContentLayer::RemoveFromSuperlayer() {
   [ca_layer_ removeFromSuperlayer];
+}
+
+CARendererLayerTree::ContentLayer::~ContentLayer() {
+  RemoveFromSuperlayer();
   [update_indicator_layer_ removeFromSuperlayer];
 }
 
@@ -965,12 +974,7 @@ void CARendererLayerTree::ClipAndSortingLayer::AddContentLayer(
 
 void CARendererLayerTree::TransformLayer::AddContentLayer(
     const CARendererLayerParams& params) {
-  content_layers_.emplace_back(
-      this, params.io_surface, base::apple::ScopedCFTypeRef<CVPixelBufferRef>(),
-      params.contents_rect, params.rect, params.background_color,
-      params.io_surface_color_space, params.edge_aa_mask, params.opacity,
-      params.nearest_neighbor_filter, params.hdr_metadata,
-      params.protected_video_type, params.is_render_pass_draw_quad);
+  content_layers_.emplace_back(this, params);
 }
 
 void CARendererLayerTree::RootLayer::CommitToCA(CALayer* superlayer,

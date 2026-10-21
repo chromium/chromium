@@ -231,18 +231,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   class ContentLayer {
    public:
     ContentLayer(TransformLayer* parent_layer,
-                 base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface,
-                 base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer,
-                 const gfx::RectF& contents_rect,
-                 const gfx::Rect& rect,
-                 SkColor4f background_color,
-                 const gfx::ColorSpace& color_space,
-                 unsigned edge_aa_mask,
-                 float opacity,
-                 bool nearest_neighbor_filter,
-                 const gfx::HDRMetadata& hdr_metadata,
-                 gfx::ProtectedVideoType protected_video_type,
-                 bool is_render_pass_draw_quad);
+                 const CARendererLayerParams& params);
 
     ContentLayer(ContentLayer&& layer) = delete;
     ContentLayer(const ContentLayer&) = delete;
@@ -251,6 +240,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // See the behavior of RootLayer for the effects of these functions.
     ~ContentLayer();
     void CommitToCA(CALayer* last_committed_ca_layer);
+    void RemoveFromSuperlayer();
 
     CARendererLayerTree* tree() { return parent_layer_->tree(); }
     void UpdateMapAndMatchOldLayers(CALayerMap& old_ca_layer_map,
