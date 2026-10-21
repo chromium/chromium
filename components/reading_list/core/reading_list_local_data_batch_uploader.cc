@@ -67,8 +67,8 @@ void ReadingListLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
 }
 
 bool ReadingListLocalDataBatchUploader::CanUpload() const {
-  // TODO(crbug.com/354146311): Check GetAccountModelIfSyncing() isn't null
-  return dual_reading_list_model_ && dual_reading_list_model_->loaded();
+  return dual_reading_list_model_ && dual_reading_list_model_->loaded() &&
+         dual_reading_list_model_->GetAccountModelIfSyncing();
 }
 
 syncer::LocalDataItemModel
