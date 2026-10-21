@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 
 #include "base/command_line.h"
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -18,7 +17,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -128,24 +126,7 @@ TEST_F(CanOfferSigninTest, UsernameNotAllowedAndNoSigninCookies) {
                        "foo@gmail.com"));
 }
 
-class CanOfferSigninWithSigninToSyncFeatureTest
-    : public base::test::WithFeatureOverride,
-      public CanOfferSigninTest {
- public:
-  CanOfferSigninWithSigninToSyncFeatureTest()
-      : base::test::WithFeatureOverride(
-            syncer::kReplaceSyncPromosWithSignInPromos) {
-    scoped_feature_list_.InitWithFeatureState(
-        syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
-        IsParamFeatureEnabled());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(CanOfferSigninWithSigninToSyncFeatureTest,
-       OtherProfileAlreadySyncingWithAccount) {
+TEST_F(CanOfferSigninTest, OtherProfileAlreadySyncingWithAccount) {
   const AccountInfo first_account_info = signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(profile()), "foo@gmail.com",
       signin::ConsentLevel::kSync);
@@ -161,8 +142,7 @@ TEST_P(CanOfferSigninWithSigninToSyncFeatureTest,
                        profile()->GetPath()));
 }
 
-TEST_P(CanOfferSigninWithSigninToSyncFeatureTest,
-       OtherProfileAlreadySyncingWithAccountWithBypass) {
+TEST_F(CanOfferSigninTest, OtherProfileAlreadySyncingWithAccountWithBypass) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kBypassAccountAlreadyUsedByAnotherProfileCheck);
 
@@ -178,8 +158,7 @@ TEST_P(CanOfferSigninWithSigninToSyncFeatureTest,
   EXPECT_TRUE(error.IsOk());
 }
 
-TEST_P(CanOfferSigninWithSigninToSyncFeatureTest,
-       OtherProfileAlreadySignedInWithAccount) {
+TEST_F(CanOfferSigninTest, OtherProfileAlreadySignedInWithAccount) {
   const AccountInfo first_account_info = signin::MakePrimaryAccountAvailable(
       IdentityManagerFactory::GetForProfile(profile()), "foo@gmail.com",
       signin::ConsentLevel::kSignin);
@@ -189,20 +168,13 @@ TEST_P(CanOfferSigninWithSigninToSyncFeatureTest,
       CanOfferSignin(second_profile, first_account_info.GetGaiaId(),
                      std::string(first_account_info.GetEmail()),
                      /*allow_account_from_other_profile=*/false);
-  if (IsParamFeatureEnabled()) {
-    EXPECT_FALSE(error.IsOk());
-    EXPECT_EQ(error, SigninUIError::AccountAlreadyUsedByAnotherProfile(
-                         std::string(first_account_info.GetEmail()),
-                         profile()->GetPath()));
-  } else {
-    EXPECT_TRUE(error.IsOk());
-  }
+  EXPECT_FALSE(error.IsOk());
+  EXPECT_EQ(error, SigninUIError::AccountAlreadyUsedByAnotherProfile(
+                       std::string(first_account_info.GetEmail()),
+                       profile()->GetPath()));
 
   EXPECT_TRUE(CanOfferSignin(second_profile, first_account_info.GetGaiaId(),
                              std::string(first_account_info.GetEmail()),
                              /*allow_account_from_other_profile=*/true)
                   .IsOk());
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    CanOfferSigninWithSigninToSyncFeatureTest);
