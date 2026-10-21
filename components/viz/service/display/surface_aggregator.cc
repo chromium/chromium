@@ -2101,11 +2101,9 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
   }
 
   for (auto& resolved_pass : resolved_frame.GetResolvedPasses()) {
-    auto& render_pass = resolved_pass.render_pass();
-
     // Checking for copy requests need to be done after the prewalk because
     // copy requests can get added after damage is computed.
-    if (!render_pass.copy_requests.empty()) {
+    if (resolved_pass.HasCopyOutputRequests()) {
       has_copy_requests_ = true;
       MarkAndPropagateCopyRequestPasses(resolved_pass);
     }

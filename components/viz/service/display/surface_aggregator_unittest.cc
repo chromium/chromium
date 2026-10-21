@@ -2408,6 +2408,120 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RootCopyRequest) {
   EXPECT_THAT(original_pass_list[1]->copy_requests, testing::IsEmpty());
 }
 
+// Verify that a render pass with a CopyOutputRequest on a surface that has a
+// non-zero OffsetTag value still marks the frame as having copy requests and
+// forces full damage on the copy request pass.
+TEST_F(SurfaceAggregatorValidSurfaceTest, CopyRequestWithOffsetTag) {
+  TestSurfaceIdAllocator provider_surface_id(child_sink_->frame_sink_id());
+
+  const OffsetTag tag = OffsetTag::CreateRandom();
+  const OffsetTagDefinition tag_def(
+      tag, SurfaceRange(provider_surface_id),
+      OffsetTagConstraints(-10.0f, 10.0f, -10.0f, 10.0f));
+
+  // Submit provider frame with a non-zero OffsetTagValue.
+  {
+    CompositorFrame provider_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(kSurfaceSize)
+                    .AddSolidColorQuad(gfx::Rect(kSurfaceSize), SkColors::kRed))
+            .AddOffsetTagValue(OffsetTagValue{tag, gfx::Vector2dF(5.0f, 5.0f)})
+            .Build();
+    child_sink_->SubmitCompositorFrame(provider_surface_id.local_surface_id(),
+                                       std::move(provider_frame));
+  }
+
+  constexpr gfx::Rect child_pass_rect(20, 20);
+
+  // Frame 1: Full damage on root surface.
+  {
+    CompositorFrame root_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, child_pass_rect)
+                    .AddSolidColorQuad(child_pass_rect, SkColors::kBlue))
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{2}, kSurfaceSize)
+                    .AddRenderPassQuad(child_pass_rect,
+                                       CompositorRenderPassId{1})
+                    .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                                    SurfaceRange(provider_surface_id))
+                    .SetQuadOffsetTag(tag))
+            .AddOffsetTagDefinition(tag_def)
+            .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(root_frame));
+
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    ASSERT_EQ(aggregated_frame.render_pass_list.size(), 2u);
+  }
+
+  // Frame 2: Root damage does not intersect `child_pass_rect` and no
+  // CopyOutputRequest. The child render pass has no damage.
+  {
+    constexpr gfx::Rect non_intersecting_damage(50, 50, 10, 10);
+    CompositorFrame root_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, child_pass_rect)
+                    .SetDamageRect(gfx::Rect())
+                    .AddSolidColorQuad(child_pass_rect, SkColors::kBlue))
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{2}, kSurfaceSize)
+                    .SetDamageRect(non_intersecting_damage)
+                    .AddRenderPassQuad(child_pass_rect,
+                                       CompositorRenderPassId{1})
+                    .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                                    SurfaceRange(provider_surface_id))
+                    .SetQuadOffsetTag(tag))
+            .AddOffsetTagDefinition(tag_def)
+            .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(root_frame));
+
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    ASSERT_EQ(aggregated_frame.render_pass_list.size(), 2u);
+    EXPECT_THAT(aggregated_frame.render_pass_list[0]->copy_requests,
+                testing::IsEmpty());
+    EXPECT_EQ(aggregated_frame.render_pass_list[0]->damage_rect, gfx::Rect());
+  }
+
+  // Frame 3: Root damage does not intersect `child_pass_rect`, but a
+  // CopyOutputRequest targets the child render pass. The child render pass has
+  // full damage.
+  {
+    constexpr gfx::Rect non_intersecting_damage(50, 50, 10, 10);
+    CompositorFrame root_frame =
+        CompositorFrameBuilder()
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{1}, child_pass_rect)
+                    .SetDamageRect(gfx::Rect())
+                    .AddStubCopyOutputRequest()
+                    .AddSolidColorQuad(child_pass_rect, SkColors::kBlue))
+            .AddRenderPass(
+                RenderPassBuilder(CompositorRenderPassId{2}, kSurfaceSize)
+                    .SetDamageRect(non_intersecting_damage)
+                    .AddRenderPassQuad(child_pass_rect,
+                                       CompositorRenderPassId{1})
+                    .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                                    SurfaceRange(provider_surface_id))
+                    .SetQuadOffsetTag(tag))
+            .AddOffsetTagDefinition(tag_def)
+            .Build();
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(root_frame));
+
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    EXPECT_TRUE(aggregated_frame.has_copy_requests);
+    ASSERT_EQ(aggregated_frame.render_pass_list.size(), 2u);
+    EXPECT_THAT(aggregated_frame.render_pass_list[0]->copy_requests,
+                testing::SizeIs(1));
+    EXPECT_EQ(aggregated_frame.render_pass_list[0]->damage_rect,
+              child_pass_rect);
+  }
+}
+
 TEST_F(SurfaceAggregatorValidSurfaceTest,
        ShouldNotTakeRootCopyRequestIfTakeCopyRequestIsFalse) {
   auto embedded_support = std::make_unique<CompositorFrameSinkSupport>(

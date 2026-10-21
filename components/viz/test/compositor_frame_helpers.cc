@@ -543,6 +543,12 @@ CompositorFrameBuilder& CompositorFrameBuilder::AddOffsetTagDefinition(
   return *this;
 }
 
+CompositorFrameBuilder& CompositorFrameBuilder::AddOffsetTagValue(
+    const OffsetTagValue& value) {
+  frame_->metadata.offset_tag_values.push_back(value);
+  return *this;
+}
+
 CompositorFrameBuilder& CompositorFrameBuilder::AddContentFrameIntervalInfo(
     const ContentFrameIntervalInfo& content_frame_interval_info) {
   frame_->metadata.frame_interval_inputs.content_interval_info.push_back(
