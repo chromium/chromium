@@ -174,6 +174,22 @@ SecurityStatusOr<T> GetNCryptProperty(NCRYPT_HANDLE handle, LPCWSTR property) {
   return base::ok(value);
 }
 
+// Sets a DWORD-valued property. NCryptSetProperty sends sizeof(value) bytes,
+// and the Platform Crypto Provider expects four for the properties set here.
+// `value` must be exactly a DWORD, so a wider or narrower integer fails to
+// compile instead of being silently converted.
+template <typename T>
+SecurityStatusOr<void> SetNCryptProperty(NCRYPT_HANDLE handle,
+                                         LPCWSTR property,
+                                         T value)
+  requires std::same_as<DWORD, T>
+{
+  SECURITY_STATUS status = NCryptSetProperty(
+      handle, property, reinterpret_cast<PBYTE>(&value), sizeof(value), 0);
+  return SUCCEEDED(status) ? SecurityStatusOr<void>()
+                           : base::unexpected(status);
+}
+
 // Logs `status` and `selected_algorithm` to an error histogram capturing that
 // `operation` failed for a TPM-backed key.
 void LogTPMOperationError(TPMOperation operation,
@@ -1270,69 +1286,10 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
                      GetBestSupported(provider.get(), acceptable_algorithms),
                      [] { return nullptr; });
 
-    std::vector<uint8_t> key_id;
-    ScopedNCryptKey key;
-    {
-      SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+    ASSIGN_OR_RETURN(KeyDetails key_details,
+                     GenerateKeyImpl(provider.get(), algo, KeyUsage::kSigning),
+                     [] { return nullptr; });
 
-      SECURITY_STATUS creation_status;
-      if (provider_type_ == ProviderType::kSoftware) {
-        // Windows support for wrapped keys is undocumented, and doesn't seem to
-        // work for the software backend. The API wants Chrome to provide a
-        // label for the key, so we assign one randomly.
-        key_id = crypto::RandBytesAsVector(16);
-        std::u16string key_label = KeyIdToWindowsLabel(key_id);
-        creation_status = NCryptCreatePersistedKey(
-            provider.get(), ScopedNCryptKey::Receiver(key).get(),
-            BCryptAlgorithmFor(algo).value(), base::as_wcstr(key_label),
-            /*dwLegacyKeySpec=*/0, /*dwFlags=*/0);
-      } else {
-        // An empty key name stops the key being persisted to disk.
-        // TODO(crbug.com/398125799): assign labels to these keys instead.
-        creation_status = NCryptCreatePersistedKey(
-            provider.get(), ScopedNCryptKey::Receiver(key).get(),
-            BCryptAlgorithmFor(algo).value(),
-            /*pszKeyName=*/nullptr,
-            /*dwLegacyKeySpec=*/0, /*dwFlags=*/0);
-      }
-      if (FAILED(creation_status)) {
-        LogTPMOperationError(TPMOperation::kNewKeyCreation, creation_status,
-                             algo);
-        return nullptr;
-      }
-
-      // RSA keys don't set `NCRYPT_PCP_RSA_SCHEME_HASH_ALG_PROPERTY`: TPM 1.2
-      // rejects it with `NTE_NOT_SUPPORTED`, and `SignRSA()` already requests
-      // SHA-256 through `BCRYPT_PKCS1_PADDING_INFO`.
-      if (FAILED(NCryptFinalizeKey(key.get(), NCRYPT_SILENT_FLAG))) {
-        return nullptr;
-      }
-    }
-    if (provider_type_ == ProviderType::kTPM) {
-      ASSIGN_OR_RETURN(key_id, ExportKey(key.get(), BCRYPT_OPAQUE_KEY_BLOB),
-                       [&](SECURITY_STATUS status) {
-                         LogTPMOperationError(TPMOperation::kWrappedKeyExport,
-                                              status, algo);
-                         return nullptr;
-                       });
-    }
-
-    ASSIGN_OR_RETURN(
-        std::vector<uint8_t> spki,
-        [&]() -> std::optional<std::vector<uint8_t>> {
-          switch (algo) {
-            case sign::ECDSA_SHA256:
-              return GetP256ECDSASPKI(key.get());
-            case sign::RSA_PKCS1_SHA256:
-              return GetRSASPKI(key.get());
-            default:
-              return std::nullopt;
-          }
-        }(),
-        [] { return nullptr; });
-
-    KeyDetails key_details{std::move(key), std::move(key_id), std::move(spki),
-                           algo};
     switch (algo) {
       case sign::ECDSA_SHA256:
         return std::make_unique<ECDSASigningKey>(provider_type_,
@@ -1345,21 +1302,23 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
     }
   }
 
-  // Generates a TPM 2.0 Attestation Identity Key (AIK) by submitting a raw
-  // TPM2_Create command via TBS and importing the resulting opaque key blob
-  // into the Windows Platform Crypto Provider (PCP).
+  // Generates a TPM 2.0 Attestation Identity Key (AIK).
   //
-  // Windows CNG does not support creating AIKs with modern parameters (e.g.,
-  // ECDSA P-256 with SHA-256) directly through NCryptCreatePersistedKey.
-  // Instead, we construct and issue TPM2_Create directly under the Storage Root
-  // Key (SRK), format the TPM2B_PUBLIC and TPM2B_PRIVATE into a
-  // BCRYPT_OPAQUE_KEY_BLOB (PCP_KEY_BLOB_WIN8), and import it via
-  // NCryptImportKey.
+  // The two algorithms take different routes. An AIK is a restricted signing
+  // key, whose signature scheme and hash algorithm are fixed in its public
+  // template when it is created. The Platform Crypto Provider (PCP) exposes
+  // properties to choose those for RSA, but none for ECC, where it always
+  // fixes the hash at SHA-1. ECDSA AIKs are therefore built by submitting a
+  // raw TPM2_Create over TBS, while RSA AIKs are left to PCP, which avoids
+  // both the hand-built key template and the dependency on the persistent SRK
+  // handle that TPM2_Create needs as a parent.
   std::unique_ptr<UnexportableAttestationKey> GenerateAttestationKeySlowly(
       base::span<const sign::SignatureKind> acceptable_algorithms) override {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::WILL_BLOCK);
 
+    // Both routes yield a restricted signing key, which `AttestationKeyWin`
+    // can only sign with over TBS, so require TBS even on the PCP route.
     if (provider_type_ != ProviderType::kTPM || !IsTbsAvailable() ||
         !IsTpm20Available()) {
       return nullptr;
@@ -1385,10 +1344,27 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
                      GetBestSupported(provider.get(), acceptable_algorithms),
                      [] { return nullptr; });
 
-    // 2. Extract the underlying TBS context handle from the provider.
+    switch (algo) {
+      case sign::ECDSA_SHA256:
+        return GenerateAttestationKeyECDSA(provider.get(), algo);
+      case sign::RSA_PKCS1_SHA256:
+        return GenerateAttestationKeyRSA(provider.get(), algo);
+      default:
+        // `GetBestSupported()` only returns algorithms that
+        // `BCryptAlgorithmFor()` maps, which is exactly these two.
+        NOTREACHED();
+    }
+  }
+
+  // Generates an ECDSA AIK by submitting a raw TPM2_Create command via TBS and
+  // importing the resulting opaque key blob into PCP.
+  std::unique_ptr<UnexportableAttestationKey> GenerateAttestationKeyECDSA(
+      NCRYPT_PROV_HANDLE provider,
+      sign::SignatureKind algo) {
+    // 1. Extract the underlying TBS context handle from the provider.
     ASSIGN_OR_RETURN(TBS_HCONTEXT h_context,
                      GetNCryptProperty<TBS_HCONTEXT>(
-                         provider.get(), NCRYPT_PCP_PLATFORMHANDLE_PROPERTY),
+                         provider, NCRYPT_PCP_PLATFORMHANDLE_PROPERTY),
                      [&](SECURITY_STATUS status) {
                        LogTPMOperationError(
                            TPMOperation::kNewAttestationKeyCreation, status,
@@ -1396,7 +1372,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
                        return nullptr;
                      });
 
-    // 3. Construct and submit the TPM2_Create command to generate the AIK under
+    // 2. Construct and submit the TPM2_Create command to generate the AIK under
     // the Storage Root Key (SRK).
     ASSIGN_OR_RETURN(std::vector<uint8_t> create_cmd,
                      tpm::BuildCreateAikCommand(
@@ -1413,7 +1389,7 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
                                       create_cmd, kMaxTpmResponseSize, algo),
                      [] { return nullptr; });
 
-    // 4. Parse the TPM2_Create response to extract the public and private key
+    // 3. Parse the TPM2_Create response to extract the public and private key
     // areas, falling back to a transient SRK if the persistent one is missing.
     ASSIGN_OR_RETURN(tpm::CreateResponse parsed_create,
                      ToOptionalAndRecordParseMetrics(
@@ -1424,10 +1400,132 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
                              })),
                      [] { return nullptr; });
 
-    // 5. Build a BCRYPT_OPAQUE_KEY_BLOB (PCP_KEY_BLOB_WIN8) from the
+    // 4. Build a BCRYPT_OPAQUE_KEY_BLOB (PCP_KEY_BLOB_WIN8) from the
     // TPM2_Create output and import it to obtain a functional key handle.
     return FromWrappedAttestationKeySlowly(
         BuildWrappedAttestationKey(parsed_create));
+  }
+
+  // Generates an RSA AIK through the Platform Crypto Provider, which builds
+  // the key template itself and parents the key to the Storage Root Key
+  // without Chromium having to name that handle.
+  std::unique_ptr<UnexportableAttestationKey> GenerateAttestationKeyRSA(
+      NCRYPT_PROV_HANDLE provider,
+      sign::SignatureKind algo) {
+    ASSIGN_OR_RETURN(KeyDetails key_details,
+                     GenerateKeyImpl(provider, algo, KeyUsage::kAttestation),
+                     [] { return nullptr; });
+
+    return std::make_unique<AttestationKeyWin>(provider_type_,
+                                               std::move(key_details));
+  }
+
+  // Creates a key of the given `usage` in `provider`. The two usages are
+  // created identically apart from the usage policy that marks a key as an
+  // Attestation Identity Key, and the signature scheme that an AIK, being a
+  // restricted key, has to commit to when it is created.
+  std::optional<KeyDetails> GenerateKeyImpl(NCRYPT_PROV_HANDLE provider,
+                                            sign::SignatureKind algo,
+                                            KeyUsage usage) {
+    const bool is_attestation = usage == KeyUsage::kAttestation;
+    const TPMOperation creation_operation =
+        is_attestation ? TPMOperation::kNewAttestationKeyCreation
+                       : TPMOperation::kNewKeyCreation;
+
+    std::vector<uint8_t> key_id;
+    ScopedNCryptKey key;
+    {
+      SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+
+      SECURITY_STATUS creation_status;
+      if (provider_type_ == ProviderType::kSoftware) {
+        // Windows support for wrapped keys is undocumented, and doesn't seem to
+        // work for the software backend. The API wants Chrome to provide a
+        // label for the key, so we assign one randomly.
+        key_id = crypto::RandBytesAsVector(16);
+        std::u16string key_label = KeyIdToWindowsLabel(key_id);
+        creation_status = NCryptCreatePersistedKey(
+            provider, ScopedNCryptKey::Receiver(key).get(),
+            BCryptAlgorithmFor(algo).value(), base::as_wcstr(key_label),
+            /*dwLegacyKeySpec=*/0, /*dwFlags=*/0);
+      } else {
+        // An empty key name stops the key being persisted to disk.
+        // TODO(crbug.com/398125799): assign labels to these keys instead.
+        creation_status = NCryptCreatePersistedKey(
+            provider, ScopedNCryptKey::Receiver(key).get(),
+            BCryptAlgorithmFor(algo).value(),
+            /*pszKeyName=*/nullptr,
+            /*dwLegacyKeySpec=*/0, /*dwFlags=*/0);
+      }
+      if (FAILED(creation_status)) {
+        LogTPMOperationError(creation_operation, creation_status, algo);
+        return std::nullopt;
+      }
+
+      auto log_error = [&](SECURITY_STATUS status) {
+        LogTPMOperationError(creation_operation, status, algo);
+        return std::nullopt;
+      };
+
+      if (is_attestation) {
+        // Marks the key as an Attestation Identity Key, which restricts it from
+        // being used to sign arbitrary data.
+        RETURN_IF_ERROR(
+            SetNCryptProperty(key.get(), NCRYPT_PCP_KEY_USAGE_POLICY_PROPERTY,
+                              DWORD{NCRYPT_PCP_IDENTITY_KEY}),
+            log_error);
+
+        // Signing keys don't set the RSA scheme properties: TPM 1.2 rejects
+        // them with `NTE_NOT_SUPPORTED`, and `SignRSA()` already requests
+        // SHA-256 through `BCRYPT_PKCS1_PADDING_INFO`. An AIK is a restricted
+        // key, which carries its signature scheme in its public template and
+        // signs with nothing else, so it needs both. Without them PCP defaults
+        // to SHA-1.
+        if (algo == sign::RSA_PKCS1_SHA256) {
+          RETURN_IF_ERROR(
+              SetNCryptProperty(key.get(), NCRYPT_PCP_RSA_SCHEME_PROPERTY,
+                                DWORD{std::to_underlying(tpm::TPM_ALG_RSASSA)}),
+              log_error);
+          RETURN_IF_ERROR(
+              SetNCryptProperty(key.get(),
+                                NCRYPT_PCP_RSA_SCHEME_HASH_ALG_PROPERTY,
+                                DWORD{std::to_underlying(tpm::TPM_ALG_SHA256)}),
+              log_error);
+        }
+      }
+
+      // Finalization is where the TPM actually generates the key.
+      SECURITY_STATUS finalize_status =
+          NCryptFinalizeKey(key.get(), NCRYPT_SILENT_FLAG);
+      if (FAILED(finalize_status)) {
+        return log_error(finalize_status);
+      }
+    }
+    if (provider_type_ == ProviderType::kTPM) {
+      ASSIGN_OR_RETURN(key_id, ExportKey(key.get(), BCRYPT_OPAQUE_KEY_BLOB),
+                       [&](SECURITY_STATUS status) {
+                         LogTPMOperationError(
+                             is_attestation
+                                 ? TPMOperation::kWrappedAttestationKeyExport
+                                 : TPMOperation::kWrappedKeyExport,
+                             status, algo);
+                         return std::nullopt;
+                       });
+    }
+
+    ASSIGN_OR_RETURN(std::vector<uint8_t> spki,
+                     [&]() -> std::optional<std::vector<uint8_t>> {
+                       switch (algo) {
+                         case sign::ECDSA_SHA256:
+                           return GetP256ECDSASPKI(key.get());
+                         case sign::RSA_PKCS1_SHA256:
+                           return GetRSASPKI(key.get());
+                         default:
+                           return std::nullopt;
+                       }
+                     }());
+
+    return KeyDetails{std::move(key), std::move(key_id), std::move(spki), algo};
   }
 
   std::optional<KeyDetails> FromWrappedKeyImpl(
