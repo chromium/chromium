@@ -1959,17 +1959,10 @@ void AccessibilitySection::OnVoicesChanged() {
 }
 
 void AccessibilitySection::UpdateTextToSpeechVoiceSearchTags() {
-  // Start with no text-to-speech voice search tags.
+  // Built-in TTS voices are always available; avoid GetVoices() as it loads
+  // TTS engines.
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.RemoveSearchTags(GetTextToSpeechVoiceSearchConcepts());
-
-  content::TtsController* tts_controller =
-      content::TtsController::GetInstance();
-  std::vector<content::VoiceData> voices;
-  tts_controller->GetVoices(profile(), GURL(), &voices);
-  if (!voices.empty()) {
-    updater.AddSearchTags(GetTextToSpeechVoiceSearchConcepts());
-  }
+  updater.AddSearchTags(GetTextToSpeechVoiceSearchConcepts());
 }
 
 void AccessibilitySection::OnExtensionLoaded(
