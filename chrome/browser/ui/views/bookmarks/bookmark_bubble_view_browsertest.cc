@@ -453,17 +453,9 @@ class BookmarkBubbleViewShoppingCollectionBrowserTest
  public:
   BookmarkBubbleViewShoppingCollectionBrowserTest()
       : BookmarkBubbleViewMigrationBrowserTest(InitializationMode::kDefer) {
-    if (GetParam()) {
-      test_features_.InitWithFeatures(
-          {commerce::kShoppingList, syncer::kReplaceSyncPromosWithSignInPromos,
-           syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
-          {});
-    } else {
-      test_features_.InitWithFeatures(
-          {commerce::kShoppingList},
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
-    }
+    test_features_.InitWithFeatureStates(
+        {{commerce::kShoppingList, true},
+         {syncer::kReplaceSyncPromosWithSignInPromos, GetParam()}});
   }
 
   void SetUpOnMainThread() override {
@@ -559,15 +551,13 @@ IN_PROC_BROWSER_TEST_P(BookmarkBubbleViewShoppingCollectionBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-// The feature `switches::kSyncEnableBookmarksInTransportMode`, prerequisite of
-// `syncer::kReplaceSyncPromosWithSignInPromos`, is disabled for ChromeOS.
-INSTANTIATE_TEST_SUITE_P(All,
-                         BookmarkBubbleViewShoppingCollectionBrowserTest,
-                         testing::Values(false));
-#else
 INSTANTIATE_TEST_SUITE_P(All,
                          BookmarkBubbleViewShoppingCollectionBrowserTest,
                          testing::Bool());
+#else
+INSTANTIATE_TEST_SUITE_P(All,
+                         BookmarkBubbleViewShoppingCollectionBrowserTest,
+                         testing::Values(true));
 #endif
 
 class BookmarkBubbleViewWithAccountBookmarksBrowserTest
