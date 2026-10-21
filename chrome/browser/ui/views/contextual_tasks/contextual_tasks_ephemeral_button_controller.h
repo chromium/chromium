@@ -126,8 +126,14 @@ class ContextualTasksEphemeralButtonController
                       content::WebContents* old_contents,
                       content::WebContents* new_contents);
   base::TimeDelta GetAutoDismissDuration() const;
+  void StartAutoDismissTimerForTab(SessionID tab_id);
   void OnAutoDismissTimerFired(SessionID tab_id);
+  void ClearTabEligibility(SessionID tab_id);
+  bool IsTaskEligibleForEphemeralButton(const base::Uuid& task_id);
+  void HideTaskSidePanel();
+  void MaybeCleanUpUnusedSidePanelWebContents();
   void DismissEphemeralButtonForTab(SessionID tab_id);
+  void DisassociateNavigatedTab();
   void CancelAutoDismissTimersForActiveTask();
   void MarkActiveTaskTabsEligible();
 

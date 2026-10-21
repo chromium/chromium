@@ -1067,7 +1067,40 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
       NavigateWebContents(kFirstTab, GURL(chrome::kChromeUIContextualTasksURL)),
-      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId));
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      Check([this]() {
+        content::WebContents* const web_contents =
+            browser()->GetTabStripModel()->GetWebContentsAt(0);
+        SessionID session_id =
+            sessions::SessionTabHelper::IdForTab(web_contents);
+        return !GetContextualTasksService()
+                    ->GetContextualTaskForTab(session_id)
+                    .has_value();
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
+                       NavigatingWhileSidePanelOpenDoesNotDisassociateTab) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      NavigateWebContents(
+          kFirstTab,
+          embedded_test_server()->GetURL("example.com", "/title2.html")),
+      Check([this]() {
+        content::WebContents* const web_contents =
+            browser()->GetTabStripModel()->GetWebContentsAt(0);
+        SessionID session_id =
+            sessions::SessionTabHelper::IdForTab(web_contents);
+        return GetContextualTasksService()
+            ->GetContextualTaskForTab(session_id)
+            .has_value();
+      }),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
@@ -1988,6 +2021,72 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonAutoDismissInteractiveTest,
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
       FastForwardBy(base::Minutes(120)),
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksEphemeralButtonAutoDismissInteractiveTest,
+    NavigatingTabWhenPanelClosedDismissesButtonForNavigatedTabOnly) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      // Associate the second tab with the same task after the panel closed.
+      Do([this]() {
+        content::WebContents* const tab0 =
+            browser()->GetTabStripModel()->GetWebContentsAt(0);
+        content::WebContents* const tab1 =
+            browser()->GetTabStripModel()->GetWebContentsAt(1);
+        std::optional<contextual_tasks::ContextualTask> task =
+            GetContextualTasksService()->GetContextualTaskForTab(
+                sessions::SessionTabHelper::IdForTab(tab0));
+        ASSERT_TRUE(task.has_value());
+        GetContextualTasksService()->AssociateTabWithTask(
+            task->GetTaskId(), sessions::SessionTabHelper::IdForTab(tab1));
+      }),
+      // Navigate the first tab away while the panel is closed: the first tab
+      // loses the button and is disassociated, while the second tab keeps the
+      // button and gets an auto-dismiss timer.
+      NavigateWebContents(
+          kFirstTab,
+          embedded_test_server()->GetURL("example.com", "/title2.html")),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      Check([this]() {
+        content::WebContents* const tab0 =
+            browser()->GetTabStripModel()->GetWebContentsAt(0);
+        content::WebContents* const tab1 =
+            browser()->GetTabStripModel()->GetWebContentsAt(1);
+        SessionID tab0_id = sessions::SessionTabHelper::IdForTab(tab0);
+        SessionID tab1_id = sessions::SessionTabHelper::IdForTab(tab1);
+        auto* controller =
+            ContextualTasksEphemeralButtonController::From(browser());
+        auto* panel_controller =
+            contextual_tasks::ContextualTasksPanelController::From(browser());
+        return !GetContextualTasksService()
+                    ->GetContextualTaskForTab(tab0_id)
+                    .has_value() &&
+               GetContextualTasksService()
+                   ->GetContextualTaskForTab(tab1_id)
+                   .has_value() &&
+               controller &&
+               !controller->HasAutoDismissTimerForTesting(tab0_id) &&
+               controller->HasAutoDismissTimerForTesting(tab1_id) &&
+               panel_controller &&
+               panel_controller->GetPanelWebContentsList().size() == 1u;
+      }),
+      SelectTab(kTabStripElementId, 1),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      FastForwardBy(base::Minutes(120)),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      Check([this]() {
+        auto* panel_controller =
+            contextual_tasks::ContextualTasksPanelController::From(browser());
+        return panel_controller &&
+               panel_controller->GetPanelWebContentsList().empty();
+      }));
 }
 
 class ContextualTasksEphemeralButtonCloseSidePanelContextMenuInteractiveTest
