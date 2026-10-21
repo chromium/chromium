@@ -11,6 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
 #include "content/browser/renderer_host/media/audio_input_device_manager.h"
@@ -110,6 +112,10 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
         bool enable_agc,
         media::mojom::AudioProcessingConfigPtr processing_config,
         CreateInputStreamCallback created_callback) override {
+      input_observers.emplace_back(std::move(observer));
+      if (last_created_callback) {
+        created_callbacks.push_back(std::move(last_created_callback));
+      }
       last_created_callback = std::move(created_callback);
     }
 
@@ -121,9 +127,15 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
         uint32_t shared_memory_count,
         const base::UnguessableToken& group_id,
         CreateLoopbackStreamCallback created_callback) override {
+      loopback_observers.emplace_back(std::move(observer));
       last_created_loopback_callback = std::move(created_callback);
     }
 
+    std::vector<mojo::Remote<media::mojom::AudioInputStreamObserver>>
+        input_observers;
+    std::vector<mojo::Remote<media::mojom::AudioInputStreamObserver>>
+        loopback_observers;
+    std::vector<CreateInputStreamCallback> created_callbacks;
     CreateInputStreamCallback last_created_callback;
     CreateLoopbackStreamCallback last_created_loopback_callback;
 
@@ -177,12 +189,15 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
         kDeviceName));
   }
 
-  base::UnguessableToken GenerateAudioStream(
+  blink::MediaStreamDevice GenerateAudioStreamDevice(
       blink::mojom::MediaStreamType stream_type,
       const std::string& device_id,
-      const url::Origin& origin) {
+      const url::Origin& origin,
+      int page_request_id = 1,
+      blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr =
+          blink::mojom::StreamSelectionInfo::NewSearchOnlyByDeviceId({})) {
     base::RunLoop run_loop;
-    base::UnguessableToken session_id;
+    blink::MediaStreamDevice audio_device;
 
     blink::StreamControls controls(true /* request_audio */,
                                    false /* request_video */);
@@ -207,12 +222,11 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
         fake_device));
 
     media_stream_manager_->GenerateStreams(
-        main_rfh()->GetGlobalId(), /*requester_id=*/1, /*page_request_id=*/1,
+        main_rfh()->GetGlobalId(), /*requester_id=*/1, page_request_id,
         controls, MediaDeviceSaltAndOrigin("salt", origin),
-        /*user_gesture=*/true,
-        blink::mojom::StreamSelectionInfo::NewSearchOnlyByDeviceId({}),
+        /*user_gesture=*/true, std::move(audio_stream_selection_info_ptr),
         base::BindOnce(
-            [](base::RunLoop* run_loop, base::UnguessableToken* session_id,
+            [](base::RunLoop* run_loop, blink::MediaStreamDevice* audio_device,
                blink::mojom::MediaStreamRequestResult result,
                const std::string& label,
                blink::mojom::StreamDevicesSetPtr stream_devices_set,
@@ -221,16 +235,29 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
               DCHECK_EQ(stream_devices_set->stream_devices.size(), 1u);
               DCHECK(stream_devices_set->stream_devices[0]
                          ->audio_device.has_value());
-              *session_id = stream_devices_set->stream_devices[0]
-                                ->audio_device->session_id();
+              *audio_device =
+                  *stream_devices_set->stream_devices[0]->audio_device;
               run_loop->Quit();
             },
-            &run_loop, &session_id),
+            &run_loop, &audio_device),
         base::DoNothing(), base::DoNothing(), base::DoNothing(),
         base::DoNothing(), base::DoNothing(), base::DoNothing());
 
     run_loop.Run();
-    return session_id;
+    return audio_device;
+  }
+
+  base::UnguessableToken GenerateAudioStream(
+      blink::mojom::MediaStreamType stream_type,
+      const std::string& device_id,
+      const url::Origin& origin,
+      int page_request_id = 1,
+      blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr =
+          blink::mojom::StreamSelectionInfo::NewSearchOnlyByDeviceId({})) {
+    return GenerateAudioStreamDevice(stream_type, device_id, origin,
+                                     page_request_id,
+                                     std::move(audio_stream_selection_info_ptr))
+        .session_id();
   }
 
   const media::AudioParameters kParams =
@@ -359,6 +386,276 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(!!audio_service_stream_factory_.last_created_callback);
+}
+
+TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
+       CloseSession_ClosesCreatedInputStream) {
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactory> factory_remote;
+  RenderFrameAudioInputStreamFactory factory(
+      factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
+      main_rfh());
+
+  url::Origin origin = url::Origin::Create(GURL("https://test.com"));
+  base::UnguessableToken session_id = GenerateAudioStream(
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "", origin);
+
+  FakeRendererAudioInputStreamFactoryClient fake_client;
+  mojo::Receiver<blink::mojom::RendererAudioInputStreamFactoryClient>
+      client_receiver(&fake_client);
+  factory_remote->CreateStream(client_receiver.BindNewPipeAndPassRemote(),
+                               session_id, kParams, kAGC, kSharedMemoryCount,
+                               nullptr);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return audio_service_stream_factory_.input_observers.size() == 1u;
+  }));
+  EXPECT_TRUE(audio_service_stream_factory_.input_observers[0].is_connected());
+
+  audio_input_device_manager()->Close(session_id);
+  audio_service_stream_factory_.input_observers[0].FlushForTesting();
+
+  EXPECT_FALSE(audio_service_stream_factory_.input_observers[0].is_connected());
+}
+
+TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
+       CloseSession_ClosesMultipleCreatedInputStreams) {
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactory> factory_remote;
+  RenderFrameAudioInputStreamFactory factory(
+      factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
+      main_rfh());
+
+  url::Origin origin = url::Origin::Create(GURL("https://test.com"));
+  base::UnguessableToken session_id = GenerateAudioStream(
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "", origin);
+
+  FakeRendererAudioInputStreamFactoryClient fake_client_1;
+  mojo::Receiver<blink::mojom::RendererAudioInputStreamFactoryClient>
+      client_receiver_1(&fake_client_1);
+  factory_remote->CreateStream(client_receiver_1.BindNewPipeAndPassRemote(),
+                               session_id, kParams, kAGC, kSharedMemoryCount,
+                               nullptr);
+
+  FakeRendererAudioInputStreamFactoryClient fake_client_2;
+  mojo::Receiver<blink::mojom::RendererAudioInputStreamFactoryClient>
+      client_receiver_2(&fake_client_2);
+  factory_remote->CreateStream(client_receiver_2.BindNewPipeAndPassRemote(),
+                               session_id, kParams, kAGC, kSharedMemoryCount,
+                               nullptr);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return audio_service_stream_factory_.input_observers.size() == 2u;
+  }));
+  EXPECT_TRUE(audio_service_stream_factory_.input_observers[0].is_connected());
+  EXPECT_TRUE(audio_service_stream_factory_.input_observers[1].is_connected());
+
+  audio_input_device_manager()->Close(session_id);
+  audio_service_stream_factory_.input_observers[0].FlushForTesting();
+  audio_service_stream_factory_.input_observers[1].FlushForTesting();
+
+  EXPECT_FALSE(audio_service_stream_factory_.input_observers[0].is_connected());
+  EXPECT_FALSE(audio_service_stream_factory_.input_observers[1].is_connected());
+}
+
+TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
+       CloseOneOfTwoSessionsOnSameDevice_ClosesOnlyMatchingStream) {
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactory> factory_remote;
+  RenderFrameAudioInputStreamFactory factory(
+      factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
+      main_rfh());
+
+  url::Origin origin = url::Origin::Create(GURL("https://test.com"));
+  base::UnguessableToken session_1 = GenerateAudioStream(
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "", origin,
+      /*page_request_id=*/1);
+  base::UnguessableToken session_2 = GenerateAudioStream(
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "", origin,
+      /*page_request_id=*/2,
+      blink::mojom::StreamSelectionInfo::NewSearchBySessionId(
+          blink::mojom::SearchBySessionId::New()));
+  ASSERT_NE(session_1, session_2);
+
+  FakeRendererAudioInputStreamFactoryClient fake_client_1;
+  mojo::Receiver<blink::mojom::RendererAudioInputStreamFactoryClient>
+      client_receiver_1(&fake_client_1);
+  factory_remote->CreateStream(client_receiver_1.BindNewPipeAndPassRemote(),
+                               session_1, kParams, kAGC, kSharedMemoryCount,
+                               nullptr);
+
+  FakeRendererAudioInputStreamFactoryClient fake_client_2;
+  mojo::Receiver<blink::mojom::RendererAudioInputStreamFactoryClient>
+      client_receiver_2(&fake_client_2);
+  factory_remote->CreateStream(client_receiver_2.BindNewPipeAndPassRemote(),
+                               session_2, kParams, kAGC, kSharedMemoryCount,
+                               nullptr);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return audio_service_stream_factory_.input_observers.size() == 2u;
+  }));
+  EXPECT_TRUE(audio_service_stream_factory_.input_observers[0].is_connected());
+  EXPECT_TRUE(audio_service_stream_factory_.input_observers[1].is_connected());
+
+  audio_input_device_manager()->Close(session_1);
+  audio_service_stream_factory_.input_observers[0].FlushForTesting();
+  audio_service_stream_factory_.input_observers[1].FlushForTesting();
+
+  EXPECT_FALSE(audio_service_stream_factory_.input_observers[0].is_connected());
+  EXPECT_TRUE(audio_service_stream_factory_.input_observers[1].is_connected());
+}
+
+TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
+       CancelRequest_ClosesCreatedInputStream) {
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactory> factory_remote;
+  RenderFrameAudioInputStreamFactory factory(
+      factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
+      main_rfh());
+
+  url::Origin origin = url::Origin::Create(GURL("https://test.com"));
+  base::UnguessableToken session_id = GenerateAudioStream(
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "", origin,
+      /*page_request_id=*/1);
+
+  FakeRendererAudioInputStreamFactoryClient fake_client;
+  mojo::Receiver<blink::mojom::RendererAudioInputStreamFactoryClient>
+      client_receiver(&fake_client);
+  factory_remote->CreateStream(client_receiver.BindNewPipeAndPassRemote(),
+                               session_id, kParams, kAGC, kSharedMemoryCount,
+                               nullptr);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return audio_service_stream_factory_.input_observers.size() == 1u;
+  }));
+  EXPECT_TRUE(audio_service_stream_factory_.input_observers[0].is_connected());
+
+  media_stream_manager_->CancelRequest(main_rfh()->GetGlobalId(),
+                                       /*requester_id=*/1,
+                                       /*page_request_id=*/1);
+  audio_service_stream_factory_.input_observers[0].FlushForTesting();
+
+  EXPECT_FALSE(audio_service_stream_factory_.input_observers[0].is_connected());
+}
+
+TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
+       StopStreamDevice_ClosesCreatedInputStream) {
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactory> factory_remote;
+  RenderFrameAudioInputStreamFactory factory(
+      factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
+      main_rfh());
+
+  url::Origin origin = url::Origin::Create(GURL("https://test.com"));
+  blink::MediaStreamDevice audio_device = GenerateAudioStreamDevice(
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "", origin,
+      /*page_request_id=*/1);
+
+  FakeRendererAudioInputStreamFactoryClient fake_client;
+  mojo::Receiver<blink::mojom::RendererAudioInputStreamFactoryClient>
+      client_receiver(&fake_client);
+  factory_remote->CreateStream(client_receiver.BindNewPipeAndPassRemote(),
+                               audio_device.session_id(), kParams, kAGC,
+                               kSharedMemoryCount, nullptr);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return audio_service_stream_factory_.input_observers.size() == 1u;
+  }));
+  EXPECT_TRUE(audio_service_stream_factory_.input_observers[0].is_connected());
+
+  media_stream_manager_->StopStreamDevice(main_rfh()->GetGlobalId(),
+                                          /*requester_id=*/1, audio_device.id,
+                                          audio_device.session_id());
+  audio_service_stream_factory_.input_observers[0].FlushForTesting();
+
+  EXPECT_FALSE(audio_service_stream_factory_.input_observers[0].is_connected());
+}
+
+TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
+       CloseSession_ClosesCreatedWebContentsCaptureStream) {
+  std::unique_ptr<WebContents> source_contents = CreateTestWebContents();
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactory> factory_remote;
+  RenderFrameAudioInputStreamFactory factory(
+      factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
+      main_rfh());
+
+  RenderFrameHost* main_frame = source_contents->GetPrimaryMainFrame();
+  WebContentsMediaCaptureId capture_id(
+      main_frame->GetProcess()->GetDeprecatedID(), main_frame->GetRoutingID());
+
+  url::Origin origin = url::Origin::Create(GURL("https://test.com"));
+  DesktopMediaID media_id(DesktopMediaID::TYPE_WEB_CONTENTS,
+                          DesktopMediaID::kNullId, capture_id);
+  std::string stream_id = DesktopStreamsRegistry::GetInstance()->RegisterStream(
+      main_rfh()->GetProcess()->GetDeprecatedID(), main_rfh()->GetRoutingID(),
+      origin, media_id, kRegistryStreamTypeTab);
+
+  base::UnguessableToken session_id = GenerateAudioStream(
+      blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE, stream_id, origin);
+
+  FakeRendererAudioInputStreamFactoryClient fake_client;
+  mojo::Receiver<blink::mojom::RendererAudioInputStreamFactoryClient>
+      client_receiver(&fake_client);
+  factory_remote->CreateStream(client_receiver.BindNewPipeAndPassRemote(),
+                               session_id, kParams, kAGC, kSharedMemoryCount,
+                               nullptr);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return audio_service_stream_factory_.loopback_observers.size() == 1u;
+  }));
+  EXPECT_TRUE(
+      audio_service_stream_factory_.loopback_observers[0].is_connected());
+
+  audio_input_device_manager()->Close(session_id);
+  audio_service_stream_factory_.loopback_observers[0].FlushForTesting();
+
+  EXPECT_FALSE(
+      audio_service_stream_factory_.loopback_observers[0].is_connected());
+}
+
+TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
+       CloseSessionBeforeWebContentsCaptureCreated_Fails) {
+  std::unique_ptr<WebContents> source_contents = CreateTestWebContents();
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactory> factory_remote;
+  RenderFrameAudioInputStreamFactory factory(
+      factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
+      main_rfh());
+
+  RenderFrameHost* main_frame = source_contents->GetPrimaryMainFrame();
+  WebContentsMediaCaptureId capture_id(
+      main_frame->GetProcess()->GetDeprecatedID(), main_frame->GetRoutingID());
+
+  url::Origin origin = url::Origin::Create(GURL("https://test.com"));
+  DesktopMediaID media_id(DesktopMediaID::TYPE_WEB_CONTENTS,
+                          DesktopMediaID::kNullId, capture_id);
+  std::string stream_id = DesktopStreamsRegistry::GetInstance()->RegisterStream(
+      main_rfh()->GetProcess()->GetDeprecatedID(), main_rfh()->GetRoutingID(),
+      origin, media_id, kRegistryStreamTypeTab);
+
+  base::UnguessableToken session_id = GenerateAudioStream(
+      blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE, stream_id, origin);
+
+  // Ensure the factory receiver is bound before sending CreateStream.
+  factory_remote.FlushForTesting();
+
+  FakeRendererAudioInputStreamFactoryClient fake_client;
+  mojo::Receiver<blink::mojom::RendererAudioInputStreamFactoryClient>
+      client_receiver(&fake_client);
+  factory_remote->CreateStream(client_receiver.BindNewPipeAndPassRemote(),
+                               session_id, kParams, kAGC, kSharedMemoryCount,
+                               nullptr);
+  bool client_disconnected = false;
+  client_receiver.set_disconnect_handler(
+      base::BindLambdaForTesting([&]() { client_disconnected = true; }));
+
+  // Schedule Close() so that it executes after CreateStream() dispatches the
+  // UI-thread loopback lookup, but before the reply runs CreateLoopbackStream.
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&AudioInputDeviceManager::Close,
+                                base::Unretained(audio_input_device_manager()),
+                                session_id));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return client_disconnected ||
+           !!audio_service_stream_factory_.last_created_loopback_callback;
+  }));
+
+  EXPECT_TRUE(client_disconnected);
+  EXPECT_FALSE(!!audio_service_stream_factory_.last_created_loopback_callback);
 }
 
 }  // namespace content

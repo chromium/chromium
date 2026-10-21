@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_helpers.h"
@@ -73,6 +74,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     void CreateInputStream(
         int render_process_id,
         int render_frame_id,
+        const base::UnguessableToken& session_id,
         const std::string& device_id,
         const media::AudioParameters& params,
         uint32_t shared_memory_count,
@@ -97,12 +99,16 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     void CreateLoopbackStream(
         int render_process_id,
         int render_frame_id,
+        const base::UnguessableToken& session_id,
         AudioStreamBroker::LoopbackSource* loopback_source,
         const media::AudioParameters& params,
         uint32_t shared_memory_count,
         bool mute_source,
         mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
             renderer_factory_client);
+
+    // Closes all active input and loopback streams created for |session_id|.
+    void CloseInputStreamsForSession(const base::UnguessableToken& session_id);
 
     // Sets the muting state for all output streams created through this
     // factory.
@@ -117,6 +123,10 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     // For CleanupOrReparentStreamsBelongingTo.
     friend class ForwardingAudioStreamFactory;
 
+    using InputStreamBrokerMap =
+        base::flat_map<std::unique_ptr<AudioStreamBroker>,
+                       base::UnguessableToken,
+                       base::UniquePtrComparator>;
     using StreamBrokerSet = base::flat_set<std::unique_ptr<AudioStreamBroker>,
                                            base::UniquePtrComparator>;
 
@@ -164,7 +174,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     // Instantiated when |outputs_| should be muted, empty otherwise.
     std::optional<AudioMutingSession> muter_;
 
-    StreamBrokerSet inputs_;
+    InputStreamBrokerMap inputs_;
     StreamBrokerSet outputs_;
     base::flat_set<raw_ptr<AudioStreamBroker::LoopbackSink, CtnExperimental>>
         loopback_sinks_;

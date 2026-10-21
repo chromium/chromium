@@ -77,6 +77,7 @@ ForwardingAudioStreamFactory::Core::AsWeakPtr() {
 void ForwardingAudioStreamFactory::Core::CreateInputStream(
     int render_process_id,
     int render_frame_id,
+    const base::UnguessableToken& session_id,
     const std::string& device_id,
     const media::AudioParameters& params,
     uint32_t shared_memory_count,
@@ -85,17 +86,19 @@ void ForwardingAudioStreamFactory::Core::CreateInputStream(
     mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
         renderer_factory_client) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(!session_id.is_empty());
 
   // |this| owns |inputs_|, so Unretained is safe.
   inputs_
-      .insert(broker_factory_->CreateAudioInputStreamBroker(
-          render_process_id, render_frame_id, device_id, params, group_id_,
-          shared_memory_count, enable_agc, std::move(processing_config),
-          base::BindOnce(&ForwardingAudioStreamFactory::Core::RemoveInput,
-                         base::Unretained(this)),
-          std::move(renderer_factory_client)))
-      .first->get()
-      ->CreateStream(GetFactory());
+      .emplace(
+          broker_factory_->CreateAudioInputStreamBroker(
+              render_process_id, render_frame_id, device_id, params, group_id_,
+              shared_memory_count, enable_agc, std::move(processing_config),
+              base::BindOnce(&ForwardingAudioStreamFactory::Core::RemoveInput,
+                             base::Unretained(this)),
+              std::move(renderer_factory_client)),
+          session_id)
+      .first->first->CreateStream(GetFactory());
 }
 
 void ForwardingAudioStreamFactory::Core::AssociateInputAndOutputForAec(
@@ -134,6 +137,7 @@ void ForwardingAudioStreamFactory::Core::CreateOutputStream(
 void ForwardingAudioStreamFactory::Core::CreateLoopbackStream(
     int render_process_id,
     int render_frame_id,
+    const base::UnguessableToken& session_id,
     AudioStreamBroker::LoopbackSource* loopback_source,
     const media::AudioParameters& params,
     uint32_t shared_memory_count,
@@ -141,6 +145,7 @@ void ForwardingAudioStreamFactory::Core::CreateLoopbackStream(
     mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
         renderer_factory_client) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+  CHECK(!session_id.is_empty());
   CHECK(loopback_source, base::NotFatalUntil::M160);
 
   TRACE_EVENT_BEGIN("audio", "CreateLoopbackStream", "group",
@@ -148,16 +153,28 @@ void ForwardingAudioStreamFactory::Core::CreateLoopbackStream(
 
   // |this| owns |inputs_|, so Unretained is safe.
   inputs_
-      .insert(broker_factory_->CreateAudioLoopbackStreamBroker(
-          render_process_id, render_frame_id, loopback_source, params,
-          shared_memory_count, mute_source,
-          base::BindOnce(&ForwardingAudioStreamFactory::Core::RemoveInput,
-                         base::Unretained(this)),
-          std::move(renderer_factory_client)))
-      .first->get()
-      ->CreateStream(GetFactory());
+      .emplace(
+          broker_factory_->CreateAudioLoopbackStreamBroker(
+              render_process_id, render_frame_id, loopback_source, params,
+              shared_memory_count, mute_source,
+              base::BindOnce(&ForwardingAudioStreamFactory::Core::RemoveInput,
+                             base::Unretained(this)),
+              std::move(renderer_factory_client)),
+          session_id)
+      .first->first->CreateStream(GetFactory());
   TRACE_EVENT_END("audio", "source",
                   loopback_source->GetGroupID().GetLowForSerialization());
+}
+
+void ForwardingAudioStreamFactory::Core::CloseInputStreamsForSession(
+    const base::UnguessableToken& session_id) {
+  CHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  base::EraseIf(inputs_, [&session_id](const auto& pair) {
+    return pair.second == session_id;
+  });
+
+  ResetRemoteFactoryPtrIfIdle();
 }
 
 void ForwardingAudioStreamFactory::Core::SetMuted(bool muted) {
@@ -349,11 +366,10 @@ void ForwardingAudioStreamFactory::Core::CleanupOrReparentStreamsBelongingTo(
                     group_id_.GetLowForSerialization(), "process id",
                     render_process_id);
 
-  auto match_rfh =
-      [render_process_id, render_frame_id](
-          const std::unique_ptr<AudioStreamBroker>& broker) -> bool {
-    return broker->render_process_id() == render_process_id &&
-           broker->render_frame_id() == render_frame_id;
+  auto match_rfh = [render_process_id,
+                    render_frame_id](const auto& pair) -> bool {
+    return pair.first->render_process_id() == render_process_id &&
+           pair.first->render_frame_id() == render_frame_id;
   };
 
   auto match_or_reparent_output =

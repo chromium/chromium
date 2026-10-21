@@ -143,6 +143,7 @@ class RenderFrameAudioInputStreamFactory::Core final
   void CreateLoopbackStream(
       mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
           client,
+      const base::UnguessableToken& session_id,
       const media::AudioParameters& audio_params,
       uint32_t shared_memory_count,
       bool disable_local_echo,
@@ -264,9 +265,22 @@ void RenderFrameAudioInputStreamFactory::Core::CreateStream(
     TRACE_EVENT_INSTANT("audio", "device not found");
     return;
   }
+  // `device` points into AudioInputDeviceManager's storage. Copy what is needed
+  // before calling back into it.
+  const std::string device_id = device->id;
+  const blink::mojom::MediaStreamType device_type = device->type;
+
+  // Tear down every stream created below for `session_id` when the session
+  // closes. Registering before creation is safe: the session is open here, and
+  // CreateLoopbackStream() re-checks it after the UI-thread hop.
+  media_stream_manager_->audio_input_device_manager()->SetSessionClosedCallback(
+      session_id,
+      base::BindOnce(
+          &ForwardingAudioStreamFactory::Core::CloseInputStreamsForSession,
+          forwarding_factory_, session_id));
 
   WebContentsMediaCaptureId capture_id;
-  if (WebContentsMediaCaptureId::Parse(device->id, &capture_id)) {
+  if (WebContentsMediaCaptureId::Parse(device_id, &capture_id)) {
     // For MEDIA_GUM_DESKTOP_AUDIO_CAPTURE, the source is selected from
     // picker window, we do not mute the source audio. For
     // MEDIA_GUM_TAB_AUDIO_CAPTURE, the probable use case is Cast, we mute
@@ -281,24 +295,25 @@ void RenderFrameAudioInputStreamFactory::Core::CreateStream(
                        capture_id.main_render_frame_id),
         base::BindOnce(
             &RenderFrameAudioInputStreamFactory::Core::CreateLoopbackStream,
-            weak_ptr_factory_.GetWeakPtr(), std::move(client), audio_params,
-            shared_memory_count, capture_id.disable_local_echo));
+            weak_ptr_factory_.GetWeakPtr(), std::move(client), session_id,
+            audio_params, shared_memory_count, capture_id.disable_local_echo));
 
-    if (device->type ==
-        blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE)
+    if (device_type ==
+        blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE) {
       IncrementDesktopCaptureCounter(SYSTEM_LOOPBACK_AUDIO_CAPTURER_CREATED);
+    }
     return;
   } else {
     forwarding_factory_->CreateInputStream(
-        process_id_, frame_id_, device->id, audio_params, shared_memory_count,
-        automatic_gain_control, std::move(processing_config),
-        std::move(client));
+        process_id_, frame_id_, session_id, device_id, audio_params,
+        shared_memory_count, automatic_gain_control,
+        std::move(processing_config), std::move(client));
 
     // Only count for captures from desktop media picker dialog and system loop
     // back audio.
-    if (device->type ==
+    if (device_type ==
             blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE &&
-        (media::AudioDeviceDescription::IsLoopbackDevice(device->id))) {
+        (media::AudioDeviceDescription::IsLoopbackDevice(device_id))) {
       IncrementDesktopCaptureCounter(SYSTEM_LOOPBACK_AUDIO_CAPTURER_CREATED);
     }
   }
@@ -307,15 +322,23 @@ void RenderFrameAudioInputStreamFactory::Core::CreateStream(
 void RenderFrameAudioInputStreamFactory::Core::CreateLoopbackStream(
     mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
         client,
+    const base::UnguessableToken& session_id,
     const media::AudioParameters& audio_params,
     uint32_t shared_memory_count,
     bool disable_local_echo,
     AudioStreamBroker::LoopbackSource* loopback_source) {
+  CHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!loopback_source || !forwarding_factory_)
     return;
 
+  // The session may have been closed while GetLoopbackSourceOnUIThread() ran.
+  if (!media_stream_manager_->audio_input_device_manager()->GetOpenedDeviceById(
+          session_id)) {
+    return;
+  }
+
   forwarding_factory_->CreateLoopbackStream(
-      process_id_, frame_id_, loopback_source, audio_params,
+      process_id_, frame_id_, session_id, loopback_source, audio_params,
       shared_memory_count, disable_local_echo, std::move(client));
 }
 

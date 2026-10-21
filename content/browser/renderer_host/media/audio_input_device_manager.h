@@ -16,7 +16,9 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread.h"
@@ -44,6 +46,19 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   // is not opened, otherwise the opened device. Called on IO thread.
   const blink::MediaStreamDevice* GetOpenedDeviceById(
       const base::UnguessableToken& session_id);
+
+  // Sets the callback to run when `session_id` is closed by Close(), replacing
+  // any callback set earlier for the same session. Assumes that all streams of
+  // a session belong to one ForwardingAudioStreamFactory::Core.
+  //
+  // The callback runs synchronously inside Close(), before MediaStreamManager
+  // notifies the renderer and while it iterates its requests. It must not call
+  // back into MediaStreamManager or AudioInputDeviceManager.
+  //
+  // If `session_id` is not open, including a session whose Open() has not
+  // completed yet, `callback` runs immediately.
+  void SetSessionClosedCallback(const base::UnguessableToken& session_id,
+                                base::OnceClosure callback);
 
   // MediaStreamProvider implementation.
   void RegisterListener(MediaStreamProviderListener* listener) override;
@@ -74,6 +89,8 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   // Only accessed on Browser::IO thread.
   base::ObserverList<MediaStreamProviderListener>::Unchecked listeners_;
   blink::MediaStreamDevices devices_;
+  base::flat_map<base::UnguessableToken, base::OnceClosure>
+      session_closed_callbacks_;
 
   // Sessions for which Open() has been called and the asynchronous device
   // query is still in flight. A session is removed from this set either when

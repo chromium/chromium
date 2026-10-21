@@ -2123,10 +2123,9 @@ void MediaStreamManager::CloseDevice(MediaStreamType type,
         // Notify observers that this device is being closed.
         // Note that only one device per type can be opened.
         request->SetState(type, MEDIA_REQUEST_STATE_CLOSING);
-        // AudioInputDeviceManager does not have a mechanism to stop the audio
-        // stream when the session is closed, while VideoCaptureManager does.
-        // To ensure consistent behavior when sessions are closed, use the
-        // stop callback to stop audio streams.
+        // AudioInputDeviceManager::Close() above has already torn down the
+        // browser-side audio streams of this session. Notify the renderer so
+        // that it ends the corresponding tracks.
         if (blink::IsAudioInputMediaType(device.type) &&
             request->device_stopped_callback) {
           request->device_stopped_callback.Run(labeled_request.first, device);

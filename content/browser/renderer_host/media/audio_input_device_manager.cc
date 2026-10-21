@@ -90,6 +90,17 @@ const blink::MediaStreamDevice* AudioInputDeviceManager::GetOpenedDeviceById(
   return &(*device);
 }
 
+void AudioInputDeviceManager::SetSessionClosedCallback(
+    const base::UnguessableToken& session_id,
+    base::OnceClosure callback) {
+  CHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (GetDevice(session_id) == devices_.end()) {
+    std::move(callback).Run();
+    return;
+  }
+  session_closed_callbacks_.insert_or_assign(session_id, std::move(callback));
+}
+
 void AudioInputDeviceManager::RegisterListener(
     MediaStreamProviderListener* listener) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
@@ -148,10 +159,18 @@ void AudioInputDeviceManager::Close(const base::UnguessableToken& session_id) {
     // The asynchronous device query started by Open() may not have completed
     // yet. Drop the session so that OpenedOnIOThread() does not register it.
     pending_open_sessions_.erase(session_id);
+    session_closed_callbacks_.erase(session_id);
     return;
   }
   const blink::mojom::MediaStreamType stream_type = device->type;
   devices_.erase(device);
+
+  auto callback_it = session_closed_callbacks_.find(session_id);
+  if (callback_it != session_closed_callbacks_.end()) {
+    base::OnceClosure callback = std::move(callback_it->second);
+    session_closed_callbacks_.erase(callback_it);
+    std::move(callback).Run();
+  }
 
   // Post a callback through the listener on IO thread since
   // MediaStreamManager is expecting the callback asynchronously.
