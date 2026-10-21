@@ -17,8 +17,8 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/common/extensions/api/odfs_config_private.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/extensions/common/api/odfs_config_private.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/constants.h"
 

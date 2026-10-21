@@ -16,7 +16,7 @@ static_library("upload_office_to_cloud") {
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
-    "//chrome/common/extensions/api",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//chromeos/constants",
     "//components/prefs",
   ]

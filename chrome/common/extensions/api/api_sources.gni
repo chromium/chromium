@@ -122,7 +122,6 @@ if (enable_extensions) {
       "login.webidl",
       "login_screen_storage.webidl",
       "login_state.idl",
-      "odfs_config_private.idl",
       "platform_keys.idl",
       "platform_keys_internal.idl",
       "quick_unlock_private.idl",

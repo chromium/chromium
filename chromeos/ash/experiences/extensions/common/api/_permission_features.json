@@ -111,6 +111,14 @@
       "4B7E9789426EBD1BB3F99D72690DAE303FC042DF"  // AuthX Secure for ChromeOS
     ]
   }],
+  "odfsConfigPrivate": {
+    "channel": "stable",
+    "extension_types": ["extension"],
+    "platforms": ["chromeos"],
+    "allowlist": [
+      "1B1388598AC9A5608F43DE38316D6FB5FAD3574A"  // ODFS extension
+    ]
+  },
   "speechRecognitionPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],

@@ -146,6 +146,11 @@
     "dependencies": ["permission:loginScreenUi"],
     "contexts": ["privileged_extension"]
   },
+  "odfsConfigPrivate": {
+    "dependencies": ["permission:odfsConfigPrivate"],
+    "contexts": ["privileged_extension"],
+    "feature_flag": "ApiOdfsConfigPrivate"
+  },
   "speechRecognitionPrivate": {
     "dependencies": ["permission:speechRecognitionPrivate"],
     "contexts": ["privileged_extension"]

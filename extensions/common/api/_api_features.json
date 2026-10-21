@@ -572,11 +572,6 @@
       "chrome://os-settings/*"
     ]
   }],
-  "odfsConfigPrivate": {
-    "dependencies": ["permission:odfsConfigPrivate"],
-    "contexts": ["privileged_extension"],
-    "feature_flag": "ApiOdfsConfigPrivate"
-  },
   "offscreen": {
     "dependencies": ["permission:offscreen"],
     "contexts": ["privileged_extension"]

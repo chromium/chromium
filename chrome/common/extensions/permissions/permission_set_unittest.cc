@@ -906,7 +906,9 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kWmDesksPrivate);
 #endif
   skip.insert(APIPermissionID::kSystemLog);
+#if BUILDFLAG(IS_CHROMEOS)
   skip.insert(APIPermissionID::kOdfsConfigPrivate);
+#endif
   skip.insert(APIPermissionID::kIndigoPrivate);
   skip.insert(APIPermissionID::kDictationPrivate);
 

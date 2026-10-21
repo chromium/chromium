@@ -18,7 +18,7 @@
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/common/extensions/api/odfs_config_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/odfs_config_private.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/services/app_service/public/cpp/app_types.h"

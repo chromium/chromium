@@ -22,7 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/common/extensions/api/odfs_config_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/odfs_config_private.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"

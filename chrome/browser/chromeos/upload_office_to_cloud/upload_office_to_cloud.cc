@@ -11,7 +11,7 @@
 #include "chrome/browser/chromeos/enterprise/cloud_storage/policy_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/odfs_config_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/odfs_config_private.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 

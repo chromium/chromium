@@ -19,8 +19,8 @@ static_library("odfs_config_private") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/cloud_upload",
-    "//chrome/common/extensions/api",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//chromeos/constants",
   ]
 }
@@ -62,9 +62,9 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
-    "//chrome/common/extensions/api",
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/extensions/common/api",
     "//chromeos/constants",
     "//components/account_id",
     "//components/prefs",

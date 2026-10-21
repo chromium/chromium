@@ -18,6 +18,7 @@ chromeos_schema_sources_ = [
   "image_loader_private.webidl",
   "input_method_private.json",
   "login_screen_ui.webidl",
+  "odfs_config_private.idl",
   "speech_recognition_private.idl",
   "users_private.idl",
   "vpn_provider.idl",

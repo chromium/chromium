@@ -14,5 +14,4 @@ include_rules = [
   "+chrome/browser/chromeos/enterprise/cloud_storage",
   "+chrome/browser/policy/profile_policy_connector.h",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/common",
 ]

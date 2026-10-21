@@ -7,7 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/api/odfs_config_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/odfs_config_private.h"
 #include "components/prefs/pref_service.h"
 
 namespace chromeos::cloud_storage {
