@@ -32,11 +32,11 @@
 
 using base::ASCIIToUTF16;
 
-static const std::u16string kA(u"a");
-static const std::u16string kA1(u"a1");
-static const std::u16string kB(u"b");
-static const std::u16string kB1(u"b1");
-static const std::u16string kManaged(u"managed");
+constexpr char16_t kA[] = u"a";
+constexpr char16_t kA1[] = u"a1";
+constexpr char16_t kB[] = u"b";
+constexpr char16_t kB1[] = u"b1";
+constexpr char16_t kManaged[] = u"managed";
 
 // Base class for keyword editor tests. Creates a profile containing an
 // empty TemplateURLService.

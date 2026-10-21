@@ -89,8 +89,6 @@ source_set("browser_tests") {
     "saved_tab_group_tabs_menu_model_browsertest.cc",
   ]
 
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   deps = [
     ":saved_tab_groups",
     "//chrome/browser/bookmarks",

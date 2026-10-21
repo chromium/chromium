@@ -209,8 +209,6 @@ source_set("browser_tests") {
     "password_generation_popup_view_views_browsertest.cc",
   ]
 
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   deps = [
     ":passwords",
     ":test_support",

@@ -49,7 +49,7 @@ using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::SizeIs;
 
-const std::u16string kNewTitle(u"kNewTitle");
+constexpr char16_t kNewTitle[] = u"kNewTitle";
 
 const TabGroupColorId kNewColor = TabGroupColorId::kRed;
 }  // anonymous namespace

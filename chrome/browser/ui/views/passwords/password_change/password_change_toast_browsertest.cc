@@ -19,9 +19,9 @@
 
 namespace {
 
-const char kTestChangePasswordUrl[] = "https://example.com/change_password";
-const std::u16string kTestUsername = u"testuser";
-const std::u16string kTestPassword = u"password";
+constexpr char kTestChangePasswordUrl[] = "https://example.com/change_password";
+constexpr char16_t kTestUsername[] = u"testuser";
+constexpr char16_t kTestPassword[] = u"password";
 
 class PasswordChangeToastBrowserTest : public UiBrowserTest {
  public:
