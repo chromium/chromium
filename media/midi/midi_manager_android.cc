@@ -13,6 +13,7 @@
 #include "media/midi/midi_output_port_android.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/task_service.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/midi/midi_jni_headers/MidiManagerAndroid_jni.h"
@@ -65,8 +66,8 @@ void MidiManagerAndroid::StartInitialization() {
 
   JNIEnv* env = jni_zero::AttachCurrentThread();
 
-  uintptr_t pointer = reinterpret_cast<uintptr_t>(this);
-  raw_manager_.Reset(Java_MidiManagerAndroid_create(env, pointer));
+  raw_manager_.Reset(
+      Java_MidiManagerAndroid_create(env, jni_zero::MakeRaw(this)));
 
   Java_MidiManagerAndroid_initialize(env, raw_manager_);
 }

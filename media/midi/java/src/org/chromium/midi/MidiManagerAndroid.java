@@ -13,12 +13,17 @@ import android.os.Handler;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,6 +34,9 @@ import java.util.Set;
 @JNINamespace("midi")
 @NullMarked
 class MidiManagerAndroid {
+    @JniType("::midi::MidiManagerAndroid")
+    interface NativeMidiManagerAndroid extends JniTypeToken {}
+
     private static final String TAG = "MidiManagerAndroid";
 
     /** Set true when this instance is successfully initialized. */
@@ -47,13 +55,13 @@ class MidiManagerAndroid {
     private final Handler mHandler;
 
     /** The associated midi::MidiDeviceAndroid instance. */
-    private final long mNativeManagerPointer;
+    private @Nullable JniRawPtr<NativeMidiManagerAndroid> mNativeManagerPointer;
 
     /**
-     * True is this object is stopped.
-     * This is needed because MidiManagerAndroid functions are called from the IO thread but
-     * callbacks are called on the UI thread (because the IO thread doesn't have a Looper). We need
-     * to protect each native function call with a synchronized block that also checks this flag.
+     * True is this object is stopped. This is needed because MidiManagerAndroid functions are
+     * called from the IO thread but callbacks are called on the UI thread (because the IO thread
+     * doesn't have a Looper). We need to protect each native function call with a synchronized
+     * block that also checks this flag.
      */
     private boolean mStopped;
 
@@ -67,17 +75,18 @@ class MidiManagerAndroid {
 
     /**
      * A creation function called by C++.
+     *
      * @param nativeManagerPointer The native pointer to a midi::MidiManagerAndroid object.
      */
     @CalledByNative
-    static MidiManagerAndroid create(long nativeManagerPointer) {
+    static MidiManagerAndroid create(JniRawPtr<NativeMidiManagerAndroid> nativeManagerPointer) {
         return new MidiManagerAndroid(nativeManagerPointer);
     }
 
     /**
      * @param nativeManagerPointer The native pointer to a midi::MidiManagerAndroid object.
      */
-    private MidiManagerAndroid(long nativeManagerPointer) {
+    private MidiManagerAndroid(JniRawPtr<NativeMidiManagerAndroid> nativeManagerPointer) {
         // In production this constructor is invoked from the MIDI IO thread, but the
         // media/midi native unit tests share a single thread that Chromium considers
         // the UI thread. Since this constructor only stashes references, and later
@@ -92,18 +101,18 @@ class MidiManagerAndroid {
 
     void postOnInitializationFailed() {
         mHandler.post(
-            new Runnable() {
-                @Override
-                public void run() {
-                    synchronized (MidiManagerAndroid.this) {
-                        if (mStopped) {
-                            return;
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (MidiManagerAndroid.this) {
+                            if (mStopped || mNativeManagerPointer == null) {
+                                return;
+                            }
+                            MidiManagerAndroidJni.get()
+                                    .onInitializationFailed(mNativeManagerPointer);
                         }
-                        MidiManagerAndroidJni.get()
-                                .onInitializationFailed(mNativeManagerPointer);
                     }
-                }
-            });
+                });
     }
 
     /**
@@ -167,7 +176,7 @@ class MidiManagerAndroid {
         // is safe because callers already invoke initialize() while holding a
         // consistent view of `mPendingDevices`.
         synchronized (this) {
-            if (mStopped) {
+            if (mStopped || mNativeManagerPointer == null) {
                 return;
             }
             if (mPendingDevices.isEmpty() && !mIsInitialized) {
@@ -183,6 +192,10 @@ class MidiManagerAndroid {
     @CalledByNative
     synchronized void stop() {
         mStopped = true;
+        if (mNativeManagerPointer != null) {
+            mNativeManagerPointer.release();
+            mNativeManagerPointer = null;
+        }
     }
 
     private void openDevice(final MidiDeviceInfo info) {
@@ -213,10 +226,11 @@ class MidiManagerAndroid {
 
     /**
      * Called when a midi device is detached.
+     *
      * @param info the detached device information.
      */
     private synchronized void onDeviceRemoved(MidiDeviceInfo info) {
-        if (mStopped) {
+        if (mStopped || mNativeManagerPointer == null) {
             return;
         }
         for (MidiDeviceAndroid device : mDevices) {
@@ -228,7 +242,7 @@ class MidiManagerAndroid {
     }
 
     private synchronized void onDeviceOpened(MidiDevice device, MidiDeviceInfo info) {
-        if (mStopped) {
+        if (mStopped || mNativeManagerPointer == null) {
             return;
         }
         mPendingDevices.remove(info);
@@ -249,12 +263,12 @@ class MidiManagerAndroid {
 
     @NativeMethods
     interface Natives {
-        void onInitialized(long nativeMidiManagerAndroid, MidiDeviceAndroid[] devices);
+        void onInitialized(JniPtr<NativeMidiManagerAndroid> self, MidiDeviceAndroid[] devices);
 
-        void onInitializationFailed(long nativeMidiManagerAndroid);
+        void onInitializationFailed(JniPtr<NativeMidiManagerAndroid> self);
 
-        void onAttached(long nativeMidiManagerAndroid, MidiDeviceAndroid device);
+        void onAttached(JniPtr<NativeMidiManagerAndroid> self, MidiDeviceAndroid device);
 
-        void onDetached(long nativeMidiManagerAndroid, MidiDeviceAndroid device);
+        void onDetached(JniPtr<NativeMidiManagerAndroid> self, MidiDeviceAndroid device);
     }
 }
