@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
+#include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -16,6 +19,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/omnibox/common/logger.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
@@ -660,6 +664,129 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingTest,
                               blink::WebMouseEvent::Button::kLeft);
   EXPECT_EQ("got_submit_response",
             content::EvalJs(GetActiveWebContents(), submit_query_script));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingTest,
+                       LogsServiceWorkerPortMessagesToOmniboxLogger) {
+  struct CapturedLog {
+    std::string tag;
+    std::string message;
+    std::optional<std::string> proto_type;
+  };
+  class TestLoggerObserver : public omnibox::Logger::Observer {
+   public:
+    TestLoggerObserver() {
+      observation_.Observe(omnibox::Logger::GetInstance());
+    }
+    void OnLogMessageAdded(
+        base::Time event_time,
+        const std::string& tag,
+        const std::string& source_file,
+        uint32_t source_line,
+        const std::string& message,
+        const std::optional<std::string>& proto_type,
+        const std::optional<std::string>& proto_base64) override {
+      logs_.push_back({tag, message, proto_type});
+    }
+    const std::vector<CapturedLog>& logs() const { return logs_; }
+
+   private:
+    std::vector<CapturedLog> logs_;
+    base::ScopedObservation<omnibox::Logger, omnibox::Logger::Observer>
+        observation_{this};
+  } logger_observer;
+
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(), GURL("https://google.com/search")));
+
+  // Connect persistent Service Worker port: HandshakePing -> HandshakeResponse
+  // -> InjectChromeInput -> OnSubmitQueryRequest -> OnSubmitQueryResponse.
+  auto* user_data = contextual_tasks::ContextualTasksWebContentsUserData::
+      GetOrCreateForWebContents(GetActiveWebContents());
+  ASSERT_NE(user_data, nullptr);
+  user_data->OnLensThumbnailCreated("data:image/png;base64,zero_iframe_crop");
+
+  std::string port_exchange_script = base::StringPrintf(
+      R"(
+      (async () => {
+        return new Promise((resolve) => {
+          const port = chrome.runtime.connect(
+              '%s', {name: 'chrome-search-channel'});
+          window.__loggedPort = port;
+          let gotPing = false;
+          port.onMessage.addListener((msg) => {
+            if (!msg || msg.type !== 'chrome-search-channel' ||
+                !Array.isArray(msg.payload)) {
+              return;
+            }
+            if (!gotPing && msg.payload[0] === 0x0a) {
+              gotPing = true;
+              port.postMessage({
+                type: 'chrome-search-channel',
+                payload: [0x0a, 0x02, 0x08, 0x01]
+              });
+              return;
+            }
+            if (gotPing && msg.payload[0] === 0x12) {
+              resolve('ready');
+            }
+          });
+        });
+      })()
+      )",
+      extension_misc::kContextualTasksExtensionId);
+  ASSERT_EQ("ready",
+            content::EvalJs(GetActiveWebContents(), port_exchange_script));
+
+  std::string submit_script = R"(
+    (async () => {
+      return new Promise((resolve) => {
+        window.__loggedPort.onMessage.addListener((msg) => {
+          if (msg && msg.type === 'chrome-search-channel' &&
+              Array.isArray(msg.payload) && msg.payload[0] === 0x1a) {
+            resolve('submitted');
+          }
+        });
+        window.__loggedPort.postMessage({
+          type: 'chrome-search-channel',
+          payload: [0x12, 0x00]
+        });
+      });
+    })()
+  )";
+  content::SimulateMouseClick(GetActiveWebContents(), 0,
+                              blink::WebMouseEvent::Button::kLeft);
+  ASSERT_EQ("submitted",
+            content::EvalJs(GetActiveWebContents(), submit_script));
+
+  auto has_log = [&](const std::string& tag, const std::string& substr,
+                     std::optional<std::string> expected_proto = std::nullopt) {
+    for (const auto& entry : logger_observer.logs()) {
+      if (entry.tag == tag && entry.message.find(substr) != std::string::npos &&
+          (!expected_proto.has_value() || entry.proto_type == expected_proto)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  EXPECT_TRUE(has_log("PostServiceWorkerMessage", "HandshakePing",
+                      "lens.chrome.ClientToAimMessage"));
+  EXPECT_TRUE(has_log("OnServiceWorkerMessage", "HandshakeResponse",
+                      "lens.chrome.SearchToClientMessage"));
+  EXPECT_TRUE(has_log("PostServiceWorkerMessage", "InjectChromeInput",
+                      "lens.chrome.ClientToSearchMessage"));
+  EXPECT_TRUE(has_log("OnServiceWorkerMessage", "OnSubmitQueryRequest",
+                      "lens.chrome.SearchToClientMessage"));
+  EXPECT_TRUE(has_log("PostServiceWorkerMessage", "OnSubmitQueryResponse",
+                      "lens.chrome.ClientToSearchMessage"));
+
+  // Ensure none of the Service Worker messages log under legacy webview/iframe
+  // tags.
+  for (const auto& entry : logger_observer.logs()) {
+    EXPECT_NE(entry.tag, "OnWebviewMessage");
+    EXPECT_NE(entry.tag, "PostAimMessage");
+  }
 }
 
 }  // namespace extensions

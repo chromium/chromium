@@ -209,6 +209,7 @@ source_set("impl") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/omnibox/browser",
+    "//components/omnibox/common",
     "//components/omnibox/common:features",
     "//components/optimization_guide/core:model_execution",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -774,7 +775,10 @@ source_set("unit_tests") {
   }
 
   if (enable_extensions_core) {
-    sources += [ "contextual_tasks_url_loader_throttle_unittest.cc" ]
+    sources += [
+      "contextual_tasks_extension_service_worker_handler_unittest.cc",
+      "contextual_tasks_url_loader_throttle_unittest.cc",
+    ]
     if (!is_android) {
       sources += [ "contextual_tasks_extensions_container_unittest.cc" ]
     }
@@ -818,6 +822,7 @@ source_set("unit_tests") {
     "//components/contextual_tasks/public",
     "//components/contextual_tasks/public:test_support",
     "//components/omnibox/browser:test_support",
+    "//components/omnibox/common",
     "//components/omnibox/common:features",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",

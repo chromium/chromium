@@ -12,6 +12,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/omnibox/common/logger.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
@@ -24,6 +25,47 @@ namespace contextual_tasks {
 namespace {
 
 constexpr size_t kMaxSearchMessageBytes = 1024 * 1024;
+constexpr char kPostServiceWorkerMessageTag[] = "PostServiceWorkerMessage";
+
+const char* GetSearchToClientMessageName(
+    const lens::SearchToClientMessage& message) {
+  switch (message.event_message_case()) {
+    case lens::SearchToClientMessage::kHandshakeResponse:
+      return "HandshakeResponse";
+    case lens::SearchToClientMessage::kOnSubmitQueryRequest:
+      return "OnSubmitQueryRequest";
+    case lens::SearchToClientMessage::kUpdateThreadContextLibrary:
+      return "UpdateThreadContextLibrary";
+    case lens::SearchToClientMessage::kOpenLinkInSidePanelMode:
+      return "OpenLinkInSidePanelMode";
+    case lens::SearchToClientMessage::kOnPageChanged:
+      return "OnPageChanged";
+    case lens::SearchToClientMessage::EVENT_MESSAGE_NOT_SET:
+      return "UnknownSearchToClientMessage";
+  }
+  return "UnknownSearchToClientMessage";
+}
+
+const char* GetClientToSearchMessageName(
+    const lens::ClientToSearchMessage& message) {
+  switch (message.event_message_case()) {
+    case lens::ClientToSearchMessage::kHandshakePing:
+      return "HandshakePing";
+    case lens::ClientToSearchMessage::kInjectChromeInput:
+      return "InjectChromeInput";
+    case lens::ClientToSearchMessage::kOnSubmitQueryResponse:
+      return "OnSubmitQueryResponse";
+    case lens::ClientToSearchMessage::kOnSuggestInputsChanged:
+      return "OnSuggestInputsChanged";
+    case lens::ClientToSearchMessage::kOnContextStateChanged:
+      return "OnContextStateChanged";
+    case lens::ClientToSearchMessage::kOpenThreadsView:
+      return "OpenThreadsView";
+    case lens::ClientToSearchMessage::EVENT_MESSAGE_NOT_SET:
+      return "UnknownClientToSearchMessage";
+  }
+  return "UnknownClientToSearchMessage";
+}
 
 }  // namespace
 
@@ -60,8 +102,18 @@ void ContextualTasksExtensionServiceWorkerHandler::GetHandshakeMessage(
     const std::optional<std::string>& document_id,
     GetHandshakeMessageCallback callback) {
   if (!base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksRearchitecture) ||
-      !document_id.has_value() || document_id->empty()) {
+          contextual_tasks::kContextualTasksRearchitecture)) {
+    OMNIBOX_LOG(kPostServiceWorkerMessageTag)
+        << "HandshakePing rejected: feature disabled (document_id="
+        << document_id.value_or("") << ")";
+    std::move(callback).Run(
+        mojo_base::ProtoWrapper(lens::ClientToAimMessage()));
+    return;
+  }
+
+  if (!document_id.has_value() || document_id->empty()) {
+    OMNIBOX_LOG(kPostServiceWorkerMessageTag)
+        << "HandshakePing rejected: missing document_id";
     std::move(callback).Run(
         mojo_base::ProtoWrapper(lens::ClientToAimMessage()));
     return;
@@ -70,6 +122,9 @@ void ContextualTasksExtensionServiceWorkerHandler::GetHandshakeMessage(
   content::RenderFrameHost* rfh =
       GetValidatedMainFrameForDocumentId(*document_id);
   if (!rfh) {
+    OMNIBOX_LOG(kPostServiceWorkerMessageTag)
+        << "HandshakePing rejected: invalid frame (document_id=" << *document_id
+        << ")";
     std::move(callback).Run(
         mojo_base::ProtoWrapper(lens::ClientToAimMessage()));
     return;
@@ -78,6 +133,9 @@ void ContextualTasksExtensionServiceWorkerHandler::GetHandshakeMessage(
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {
+    OMNIBOX_LOG(kPostServiceWorkerMessageTag)
+        << "HandshakePing rejected: missing WebContents (document_id="
+        << *document_id << ")";
     std::move(callback).Run(
         mojo_base::ProtoWrapper(lens::ClientToAimMessage()));
     return;
@@ -92,33 +150,69 @@ void ContextualTasksExtensionServiceWorkerHandler::GetHandshakeMessage(
           &ContextualTasksExtensionServiceWorkerHandler::DispatchSearchMessage,
           weak_ptr_factory_.GetWeakPtr(), *document_id));
 
-  std::move(callback).Run(mojo_base::ProtoWrapper(GetHandshakeMessageProto()));
+  lens::ClientToAimMessage handshake_message = GetHandshakeMessageProto();
+  OMNIBOX_LOG_WITH_PROTO(kPostServiceWorkerMessageTag, handshake_message,
+                         std::string("lens.chrome.ClientToAimMessage"))
+      << "HandshakePing (document_id=" << *document_id << ")";
+  std::move(callback).Run(
+      mojo_base::ProtoWrapper(std::move(handshake_message)));
 }
 
 void ContextualTasksExtensionServiceWorkerHandler::OnWebviewMessage(
     const std::vector<uint8_t>& message,
     const std::optional<std::string>& document_id) {
+  static constexpr char kOnServiceWorkerMessageTag[] = "OnServiceWorkerMessage";
   if (!base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksRearchitecture) ||
-      !document_id.has_value() || document_id->empty()) {
+          contextual_tasks::kContextualTasksRearchitecture)) {
+    OMNIBOX_LOG(kOnServiceWorkerMessageTag)
+        << "SearchToClientMessage dropped: feature disabled (document_id="
+        << document_id.value_or("") << ")";
+    return;
+  }
+
+  if (!document_id.has_value() || document_id->empty()) {
+    OMNIBOX_LOG(kOnServiceWorkerMessageTag)
+        << "SearchToClientMessage dropped: missing document_id";
     return;
   }
 
   if (message.empty() || message.size() > kMaxSearchMessageBytes) {
+    OMNIBOX_LOG(kOnServiceWorkerMessageTag)
+        << "SearchToClientMessage dropped: invalid size=" << message.size()
+        << " (document_id=" << *document_id << ")";
     return;
   }
 
   content::RenderFrameHost* rfh =
       GetValidatedMainFrameForDocumentId(*document_id);
   if (!rfh) {
+    OMNIBOX_LOG(kOnServiceWorkerMessageTag)
+        << "SearchToClientMessage dropped: invalid frame (document_id="
+        << *document_id << ")";
     return;
   }
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {
+    OMNIBOX_LOG(kOnServiceWorkerMessageTag)
+        << "SearchToClientMessage dropped: missing WebContents (document_id="
+        << *document_id << ")";
     return;
   }
+
+  lens::SearchToClientMessage proto;
+  if (!proto.ParseFromArray(message.data(), message.size())) {
+    OMNIBOX_LOG(kOnServiceWorkerMessageTag)
+        << "SearchToClientMessage dropped: failed to parse proto (document_id="
+        << *document_id << ")";
+    return;
+  }
+
+  OMNIBOX_LOG_WITH_PROTO(kOnServiceWorkerMessageTag, proto,
+                         std::string("lens.chrome.SearchToClientMessage"))
+      << GetSearchToClientMessageName(proto) << " (document_id=" << *document_id
+      << ")";
 
   auto* user_data =
       ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
@@ -168,13 +262,24 @@ content::RenderFrameHost* ContextualTasksExtensionServiceWorkerHandler::
 void ContextualTasksExtensionServiceWorkerHandler::DispatchSearchMessage(
     const std::string& document_id,
     const std::vector<uint8_t>& message) {
-  if (!page_) {
-    return;
-  }
   lens::ClientToSearchMessage proto;
   if (!proto.ParseFromArray(message.data(), message.size())) {
+    OMNIBOX_LOG(kPostServiceWorkerMessageTag)
+        << "ClientToSearchMessage dropped: failed to parse proto (document_id="
+        << document_id << ")";
     return;
   }
+  if (!page_) {
+    OMNIBOX_LOG_WITH_PROTO(kPostServiceWorkerMessageTag, proto,
+                           std::string("lens.chrome.ClientToSearchMessage"))
+        << GetClientToSearchMessageName(proto)
+        << " dropped: page remote unbound (document_id=" << document_id << ")";
+    return;
+  }
+  OMNIBOX_LOG_WITH_PROTO(kPostServiceWorkerMessageTag, proto,
+                         std::string("lens.chrome.ClientToSearchMessage"))
+      << GetClientToSearchMessageName(proto) << " (document_id=" << document_id
+      << ")";
   page_->PostSearchMessage(mojo_base::ProtoWrapper(proto), document_id);
 }
 

@@ -2771,6 +2771,7 @@ source_set("browser_tests") {
       "//chrome/browser/ui/webui/location_internals:browser_tests",
       "//chrome/browser/ui/webui/policy:browser_tests",
       "//components/keep_alive_registry",
+      "//components/omnibox/common",
       "//components/webapps/isolated_web_apps/test_support",
     ]
   }
