@@ -17,16 +17,16 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/extensions/launch_util.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/web_applications/web_app_command_scheduler.h",
-  "+chrome/browser/web_applications/web_app_constants.h",
-  "+chrome/browser/web_applications/web_app_helpers.h",
-  "+chrome/browser/web_applications/web_app_management_type.h",
   "+chrome/browser/web_applications/web_app_tab_helper.h",
   "+chrome/browser/web_applications/web_app_utils.h",
 ]
 
 specific_include_rules = {
   ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/web_applications/web_app_command_scheduler.h",
+    "+chrome/browser/web_applications/web_app_constants.h",
+    "+chrome/browser/web_applications/web_app_helpers.h",
+    "+chrome/browser/web_applications/web_app_management_type.h",
     "+chrome/browser/web_applications/web_app_provider.h",
   ],
   "app_time_controller\\.cc": [

@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/policy/uploading",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/grit",
 
@@ -42,6 +41,7 @@ specific_include_rules = {
     "+chrome/browser/extensions/extension_service_test_with_install.h",
     "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
     "+chrome/browser/extensions/test_extension_system.h",
+    "+chrome/browser/policy",
     "+chrome/browser/prefs",
     "+chrome/browser/ui/ash/shelf",
     "+chrome/test/base",
