@@ -336,6 +336,7 @@ if (enable_webui_ntp && !is_android) {
       "//components/keyed_service/content",
       "//components/omnibox/browser",
       "//components/omnibox/common",
+      "//components/omnibox/common:features",
       "//components/prefs",
       "//components/search_engines",
       "//components/signin/public/base",
