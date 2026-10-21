@@ -674,14 +674,11 @@ TEST_F(AccountNameEmailStoreTest,
 }
 #endif  // BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
 class AccountNameEmailStoreSyncTest : public AccountNameEmailStoreTest {
  public:
   AccountNameEmailStoreSyncTest() {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            syncer::kReplaceSyncPromosWithSignInPromos,
-            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+    features_.InitAndDisableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
   }
 };
 
@@ -702,6 +699,7 @@ TEST_F(AccountNameEmailStoreSyncTest, SyncTheFeatureState) {
                   base::UTF8ToUTF16(kTestName1),
                   base::UTF8ToUTF16(kTestEmailAddress1))));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 struct NicknameTestCase {
   std::string account_name_with_nickname;
