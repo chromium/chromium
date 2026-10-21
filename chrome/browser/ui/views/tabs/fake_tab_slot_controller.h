@@ -93,6 +93,8 @@ class FakeTabSlotController : public TabSlotController {
       const tab_groups::TabGroupId& group) const override;
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override;
   std::optional<tab_groups::TabGroupId> GetFocusedGroup() const override;
+  void EnterFocusMode(const tab_groups::TabGroupId& group) override;
+  void ExitFocusMode(std::optional<TabGroupFocusExitReason> reason) override;
   SkColor GetPaintedGroupColor(
       const tab_groups::TabGroupColorId& color_id) const override;
   void ShiftGroupLeft(const tab_groups::TabGroupId& group) override {}

@@ -1438,6 +1438,10 @@ class TabStripModel {
   // tabs not in `indices`.
   void MaybeRemoveSplitsForUpdate(const std::vector<int>& indices);
 
+  // Exits focus mode if ungrouping `indices` would ungroup the entire focused
+  // group or remove the active tab from the focused group.
+  void MaybeExitFocusModeForUpdate(const std::vector<int>& indices);
+
   // Checks if both tabs of a split view are closing simultaneously and, if so,
   // creates a historical split entry in the tab restore service.
   void CreateHistoricalSplitIfClosing(

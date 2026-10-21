@@ -1738,6 +1738,14 @@ std::optional<tab_groups::TabGroupId> TabStrip::GetFocusedGroup() const {
   return controller_->GetFocusedGroup();
 }
 
+void TabStrip::EnterFocusMode(const tab_groups::TabGroupId& group) {
+  controller_->EnterFocusMode(group);
+}
+
+void TabStrip::ExitFocusMode(std::optional<TabGroupFocusExitReason> reason) {
+  controller_->ExitFocusMode(reason);
+}
+
 ui::ListSelectionModel TabStrip::GetSelectionModel() const {
   return controller_->GetSelectionModel();
 }

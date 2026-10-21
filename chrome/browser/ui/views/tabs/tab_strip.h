@@ -314,6 +314,8 @@ class TabStrip : public views::View,
       const tab_groups::TabGroupColorId& color_id) const override;
   void ShiftGroupLeft(const tab_groups::TabGroupId& group) override;
   void ShiftGroupRight(const tab_groups::TabGroupId& group) override;
+  void EnterFocusMode(const tab_groups::TabGroupId& group) override;
+  void ExitFocusMode(std::optional<TabGroupFocusExitReason> reason) override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
 
   // views::View:

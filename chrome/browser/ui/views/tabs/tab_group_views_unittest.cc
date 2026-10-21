@@ -19,9 +19,12 @@
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/focus/focus_search.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 
 class TabGroupViewsTest : public ChromeViewsTestBase {
@@ -429,23 +432,23 @@ TEST_F(TabGroupViewsTest, UnderlineHiddenInFocusMode) {
   EXPECT_TRUE(group_views_->underline()->GetVisible());
 
   // Focus the group and verify underline becomes hidden.
-  tab_strip_controller_->SetFocusedGroup(id_);
+  tab_strip_controller_->EnterFocusMode(id_);
   group_views_->UpdateBounds();
   EXPECT_FALSE(group_views_->underline()->GetVisible());
 
   // Unfocus the group and verify underline becomes visible again.
-  tab_strip_controller_->SetFocusedGroup(std::nullopt);
+  tab_strip_controller_->ExitFocusMode();
   group_views_->UpdateBounds();
   EXPECT_TRUE(group_views_->underline()->GetVisible());
 
   // Focus a different group and verify this group's underline is also hidden.
   tab_groups::TabGroupId other_group = tab_groups::TabGroupId::GenerateNew();
-  tab_strip_controller_->SetFocusedGroup(other_group);
+  tab_strip_controller_->EnterFocusMode(other_group);
   group_views_->UpdateBounds();
   EXPECT_FALSE(group_views_->underline()->GetVisible());
 
   // Unfocus the group and verify underline becomes visible again.
-  tab_strip_controller_->SetFocusedGroup(std::nullopt);
+  tab_strip_controller_->ExitFocusMode();
   group_views_->UpdateBounds();
   EXPECT_TRUE(group_views_->underline()->GetVisible());
 }
@@ -530,7 +533,7 @@ TEST_F(TabGroupViewsTest, FocusOrderInFocusMode) {
   views::View* dummy_focus_traversable_view = nullptr;
 
   // Focus the group so the unfocus button becomes visible.
-  tab_strip_controller_->SetFocusedGroup(id_);
+  tab_strip_controller_->EnterFocusMode(id_);
   group_views_->OnGroupVisualsChanged();
   group_views_->UpdateBounds();
   EXPECT_TRUE(unfocus_button->GetVisible());
@@ -587,7 +590,7 @@ TEST_F(TabGroupViewsTest, AnchorBoundsInFocusMode) {
   ASSERT_NE(nullptr, chip);
 
   header->SetBounds(10, 0, 200, 34);
-  tab_strip_controller_->SetFocusedGroup(id_);
+  tab_strip_controller_->EnterFocusMode(id_);
   group_views_->OnGroupVisualsChanged();
   group_views_->UpdateBounds();
   ASSERT_TRUE(unfocus_button->GetVisible());
@@ -601,4 +604,22 @@ TEST_F(TabGroupViewsTest, AnchorBoundsInFocusMode) {
   EXPECT_GT(anchor_bounds.x(), unfocus_button->GetBoundsInScreen().right());
   EXPECT_EQ(anchor_bounds.y(), header_screen_bounds.y());
   EXPECT_EQ(anchor_bounds.height(), header_screen_bounds.height());
+}
+
+TEST_F(TabGroupViewsTest, UnfocusButtonClickExitsFocusMode) {
+  TabGroupHeader* header = group_views_->header();
+  TabGroupUnfocusButton* unfocus_button = header->unfocus_chip_for_testing();
+  ASSERT_NE(nullptr, unfocus_button);
+
+  tab_strip_controller_->EnterFocusMode(id_);
+  group_views_->OnGroupVisualsChanged();
+  group_views_->UpdateBounds();
+  ASSERT_EQ(id_, tab_strip_controller_->GetFocusedGroup());
+  ASSERT_TRUE(unfocus_button->GetVisible());
+
+  views::test::ButtonTestApi(unfocus_button)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(), 0, 0));
+
+  EXPECT_EQ(std::nullopt, tab_strip_controller_->GetFocusedGroup());
 }

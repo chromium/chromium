@@ -626,7 +626,7 @@ TEST_F(TabContainerTest, StaysInClosingModeWithFocusedGroupBelowStandardWidth) {
   AddTab(tab_container_->GetTabCount());
 
   // Focus the group.
-  tab_strip_controller_->SetFocusedGroup(group);
+  tab_strip_controller_->EnterFocusMode(group);
   tab_container_->CompleteAnimationAndLayout();
 
   const int initial_grouped_tab_width =
@@ -663,7 +663,7 @@ TEST_F(TabContainerTest, ClosingLastVisibleTabInFocusedGroupExitsClosingMode) {
   AddTab(3);
 
   // Focus the group so only tab 2 is visible.
-  tab_strip_controller_->SetFocusedGroup(group);
+  tab_strip_controller_->EnterFocusMode(group);
   tab_container_->CompleteAnimationAndLayout();
 
   // Enter tab closing mode manually.
@@ -703,7 +703,7 @@ TEST_F(TabContainerTest, ClosingTrailingmostVisibleTabInFocusedGroup) {
   AddTab(tab_container_->GetTabCount());
 
   // Focus the group.
-  tab_strip_controller_->SetFocusedGroup(group);
+  tab_strip_controller_->EnterFocusMode(group);
   tab_container_->CompleteAnimationAndLayout();
 
   const int initial_grouped_tab_width =
@@ -1394,12 +1394,12 @@ TEST_F(TabContainerTest, GroupUnderlineHiddenInFocusMode) {
   EXPECT_TRUE(underline->GetVisible());
 
   // Focus the group and verify underline becomes hidden.
-  tab_strip_controller_->SetFocusedGroup(group);
+  tab_strip_controller_->EnterFocusMode(group);
   views[0]->UpdateBounds();
   EXPECT_FALSE(underline->GetVisible());
 
   // Unfocus the group and verify underline becomes visible again.
-  tab_strip_controller_->SetFocusedGroup(std::nullopt);
+  tab_strip_controller_->ExitFocusMode();
   views[0]->UpdateBounds();
   EXPECT_TRUE(underline->GetVisible());
 }
@@ -1428,14 +1428,14 @@ TEST_F(TabContainerTest, MultipleGroupsUnderlineHiddenInFocusMode) {
   EXPECT_TRUE(group3_views->underline()->GetVisible());
 
   // Focus group 2 and verify all group underlines are hidden.
-  tab_strip_controller_->SetFocusedGroup(group2);
+  tab_strip_controller_->EnterFocusMode(group2);
   tab_container_->CompleteAnimationAndLayout();
   EXPECT_FALSE(group1_views->underline()->GetVisible());
   EXPECT_FALSE(group2_views->underline()->GetVisible());
   EXPECT_FALSE(group3_views->underline()->GetVisible());
 
   // Unfocus and verify underlines become visible again.
-  tab_strip_controller_->SetFocusedGroup(std::nullopt);
+  tab_strip_controller_->ExitFocusMode();
   tab_container_->CompleteAnimationAndLayout();
   EXPECT_TRUE(group1_views->underline()->GetVisible());
   EXPECT_TRUE(group2_views->underline()->GetVisible());

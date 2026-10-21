@@ -151,7 +151,6 @@ class TabGroupHeader : public TabSlotView,
   void UpdateAccessibleName();
 
   void OnTabGroupDataChanged();
-  void ExitFocusMode();
   int GetUnfocusChipWidthWithGap() const;
   void MaybeUpdateHoverStatus(const ui::MouseEvent& event);
 

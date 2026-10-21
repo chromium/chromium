@@ -100,7 +100,9 @@ class BrowserTabStripController : public TabStripController,
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override;
 
   std::optional<tab_groups::TabGroupId> GetFocusedGroup() const override;
-  void SetFocusedGroup(std::optional<tab_groups::TabGroupId> group) override;
+  void EnterFocusMode(const tab_groups::TabGroupId& group) override;
+  using TabStripController::ExitFocusMode;
+  void ExitFocusMode(std::optional<TabGroupFocusExitReason> reason) override;
 
   void SetVisualDataForGroup(
       const tab_groups::TabGroupId& group,

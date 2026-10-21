@@ -2121,6 +2121,7 @@ void TabStripModel::RemoveFromGroupImpl(const std::vector<int>& indices) {
   // Tab groups sync may call this function on indices that contain only part of
   // a split. In that case, unsplit those split tabs.
   MaybeRemoveSplitsForUpdate(indices);
+  MaybeExitFocusModeForUpdate(indices);
 
   std::map<tab_groups::TabGroupId, std::vector<int>> indices_per_tab_group;
 
@@ -2133,24 +2134,12 @@ void TabStripModel::RemoveFromGroupImpl(const std::vector<int>& indices) {
 
   for (const auto& [immutable_group_id, immutable_group_indices] :
        indices_per_tab_group) {
-    if (!group_model_->ContainsTabGroup(immutable_group_id)) {
-      continue;
-    }
     auto group_indices = immutable_group_indices;
     const TabGroup* group = group_model_->GetTabGroup(immutable_group_id);
     CHECK(group);
     tabs::TabInterface* first_tab_in_group = group->GetFirstTab();
     CHECK(first_tab_in_group);
     int first_tab_index = GetIndexOfTab(first_tab_in_group);
-
-    if (selection_model_.focused_group() == immutable_group_id &&
-        static_cast<int>(immutable_group_indices.size()) ==
-            group->tab_count()) {
-      ExitFocusMode(TabGroupFocusExitReason::kGroupUngrouped);
-      if (!group_model_->ContainsTabGroup(immutable_group_id)) {
-        continue;
-      }
-    }
 
     tabs::TabInterface* last_tab_in_group = group->GetLastTab();
     int last_tab_index = GetIndexOfTab(last_tab_in_group);
@@ -2172,10 +2161,8 @@ void TabStripModel::RemoveFromGroupImpl(const std::vector<int>& indices) {
 
     MoveTabsAndSetPropertiesImpl(left_of_group, first_tab_index, std::nullopt,
                                  false);
-    if (group_model_->ContainsTabGroup(immutable_group_id)) {
-      MoveTabsAndSetPropertiesImpl(right_of_group, last_tab_index + 1,
-                                   std::nullopt, false);
-    }
+    MoveTabsAndSetPropertiesImpl(right_of_group, last_tab_index + 1,
+                                 std::nullopt, false);
   }
 }
 
@@ -2306,7 +2293,21 @@ void TabStripModel::ExitFocusMode(
   selection_model_.set_focused_group(std::nullopt);
   NotifyTabGroupFocusChanged(old_focused_group);
 
-  if (!closing_all_ && IsEphemeralTabGroup(old_focused_group.value())) {
+  const bool is_ephemeral = IsEphemeralTabGroup(old_focused_group.value());
+  if (reason == TabGroupFocusExitReason::kTabOutsideGroupActivated) {
+    if (ToastController* const toast_controller =
+            ToastController::From(delegate_->GetBrowserWindowInterface())) {
+      ToastParams params(ToastId::kTabGroupFocusExited);
+      if (is_ephemeral) {
+        params.body_string_override = l10n_util::GetPluralStringFUTF16(
+            IDS_NON_GROUP_FOCUS_EXITED_TOAST_BODY,
+            group_model_->GetTabGroup(old_focused_group.value())->tab_count());
+      }
+      toast_controller->MaybeShowToast(std::move(params));
+    }
+  }
+
+  if (!closing_all_ && is_ephemeral) {
     if (const gfx::Range tabs =
             group_model_->GetTabGroup(old_focused_group.value())->ListTabs();
         !tabs.is_empty()) {
@@ -4237,7 +4238,6 @@ TabStripSelectionChange TabStripModel::SetSelection(
     TabStripModelObserver::ChangeReason reason,
     bool triggered_by_other_operation) {
   bool exited_focus = false;
-  std::optional<size_t> exited_ephemeral_group_tab_count;
   if (std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
       focused_group.has_value()) {
     if (!new_model.focused_group().has_value() ||
@@ -4247,11 +4247,7 @@ TabStripSelectionChange TabStripModel::SetSelection(
           !tabs::TabStripModelSelectionState::IsTabValidInFocusedGroup(
               new_model.active_tab(), focused_group);
       if (exited_focus) {
-        if (IsEphemeralTabGroup(*focused_group)) {
-          exited_ephemeral_group_tab_count =
-              group_model_->GetTabGroup(*focused_group)->tab_count();
-        }
-        ExitFocusMode(TabGroupFocusExitReason::kActiveTabGroupOperation);
+        ExitFocusMode(TabGroupFocusExitReason::kTabOutsideGroupActivated);
       }
     }
   }
@@ -4338,19 +4334,6 @@ TabStripSelectionChange TabStripModel::SetSelection(
 
     OnChange(TabStripModelChange(TabStripModelChange::SelectionOnly()),
              selection);
-
-    if (exited_focus) {
-      if (ToastController* const toast_controller =
-              ToastController::From(delegate_->GetBrowserWindowInterface())) {
-        ToastParams params(ToastId::kTabGroupFocusExited);
-        if (exited_ephemeral_group_tab_count.has_value()) {
-          params.body_string_override = l10n_util::GetPluralStringFUTF16(
-              IDS_NON_GROUP_FOCUS_EXITED_TOAST_BODY,
-              exited_ephemeral_group_tab_count.value());
-        }
-        toast_controller->MaybeShowToast(std::move(params));
-      }
-    }
   }
 
   return selection;
@@ -5603,10 +5586,7 @@ void TabStripModel::MoveTabsWithNotifications(
         observer.OnTabPinnedStateChanged(tab, final_index);
       }
     }
-  }
 
-  for (const auto& notification : notifications) {
-    tabs::TabInterface* tab = GetTabAtIndex(GetIndexOfTab(notification.tab));
     MaybeUpdateFocusModeForMovedTab(tab, notification.initial_pinned,
                                     initial_focused_group);
   }
@@ -6155,6 +6135,33 @@ void TabStripModel::MaybeRemoveSplitsForUpdate(
       RemoveSplitImpl(split,
                       SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
     }
+  }
+}
+
+void TabStripModel::MaybeExitFocusModeForUpdate(
+    const std::vector<int>& indices) {
+  std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
+  if (!focused_group.has_value()) {
+    return;
+  }
+
+  int focused_tabs_in_update = 0;
+  bool active_tab_in_update = false;
+  for (int index : indices) {
+    if (GetTabGroupForTab(index) != focused_group) {
+      continue;
+    }
+    focused_tabs_in_update++;
+    if (GetTabAtIndex(index) == selection_model_.active_tab()) {
+      active_tab_in_update = true;
+    }
+  }
+
+  const TabGroup* group = group_model_->GetTabGroup(*focused_group);
+  if (focused_tabs_in_update == group->tab_count()) {
+    ExitFocusMode(TabGroupFocusExitReason::kGroupUngrouped);
+  } else if (active_tab_in_update) {
+    ExitFocusMode(TabGroupFocusExitReason::kActiveTabGroupOperation);
   }
 }
 

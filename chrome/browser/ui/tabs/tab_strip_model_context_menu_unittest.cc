@@ -516,6 +516,7 @@ TEST_F(NonGroupFocusDissolutionTest,
        ActivatingTabOutsideEphemeralGroupDissolvesIt) {
   const tab_groups::TabGroupId ephemeral_group =
       StartNonGroupFocus(/*tab_count=*/2, /*focused_tab_count=*/1);
+  base::HistogramTester histogram_tester;
 
   tab_strip_model()->ActivateTabAt(1);
 
@@ -523,6 +524,9 @@ TEST_F(NonGroupFocusDissolutionTest,
   EXPECT_FALSE(
       tab_strip_model()->group_model()->ContainsTabGroup(ephemeral_group));
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.ExitReason",
+      TabGroupFocusExitReason::kTabOutsideGroupActivated, 1);
 }
 
 TEST_F(NonGroupFocusDissolutionTest,

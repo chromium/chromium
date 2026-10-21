@@ -2775,6 +2775,7 @@ TEST_F(TabStripModelTest, ReorderingTabsInFocusedGroupPreservesFocus) {
 TEST_F(TabStripModelTest, SelectingTabOutsideFocusedGroupUnsetsFocus) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kTabGroupsFocusing);
+  base::HistogramTester histogram_tester;
 
   PrepareTabs(tabstrip(), 4);
   tab_groups::TabGroupId group_id = tabstrip()->AddToNewGroup({1, 2});
@@ -2788,6 +2789,9 @@ TEST_F(TabStripModelTest, SelectingTabOutsideFocusedGroupUnsetsFocus) {
 
   // Focus should be unset because selection is outside the focused group.
   EXPECT_EQ(std::nullopt, tabstrip()->GetFocusedGroup());
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.ExitReason",
+      TabGroupFocusExitReason::kTabOutsideGroupActivated, 1);
 }
 
 TEST_F(TabStripModelTest, ClosingOnlyTabInFocusedGroupUnsetsFocus) {

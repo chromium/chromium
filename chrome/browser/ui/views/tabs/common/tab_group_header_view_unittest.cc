@@ -15,7 +15,9 @@
 #include "build/buildflag.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -27,6 +29,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -810,4 +813,36 @@ TEST_F(TabGroupHeaderViewTest, HideHoverCardOnMouseExitInFocusMode) {
               HideHoverCard(TabSlotController::HoverCardUpdateType::kHover))
       .Times(1);
   MoveMouseTo(generator, header, false);
+}
+
+TEST_F(TabGroupHeaderViewTest, UnfocusButtonCollapsedState) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* button =
+      widget->SetContentsView(std::make_unique<TabGroupUnfocusButton>(
+          TabStripOrientation::kVertical, base::DoNothing()));
+
+  const std::u16string expected_text =
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON);
+  const int collapsed_width =
+      tabs::kVerticalTabStripCollapsedWidth -
+      2 * GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
+
+  // Expanded width: shows text and no icon.
+  button->SetBounds(0, 0, collapsed_width + 20, 24);
+  EXPECT_EQ(button->GetText(), expected_text);
+  EXPECT_FALSE(button->GetImageModel(views::Button::STATE_NORMAL).has_value());
+
+  // Collapsed width: clears text, shows icon, and preserves accessible name.
+  button->SetBounds(0, 0, collapsed_width, 24);
+  EXPECT_TRUE(button->GetText().empty());
+  ASSERT_TRUE(button->GetImageModel(views::Button::STATE_NORMAL).has_value());
+  EXPECT_FALSE(button->GetImageModel(views::Button::STATE_NORMAL)->IsEmpty());
+  EXPECT_EQ(button->GetViewAccessibility().GetCachedName(), expected_text);
+
+  // Expanding again restores text and clears icon.
+  button->SetBounds(0, 0, collapsed_width + 20, 24);
+  EXPECT_EQ(button->GetText(), expected_text);
+  ASSERT_TRUE(button->GetImageModel(views::Button::STATE_NORMAL).has_value());
+  EXPECT_TRUE(button->GetImageModel(views::Button::STATE_NORMAL)->IsEmpty());
 }

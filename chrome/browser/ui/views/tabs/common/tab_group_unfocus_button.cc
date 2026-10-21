@@ -21,6 +21,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -66,9 +67,7 @@ gfx::Size TabGroupUnfocusButton::CalculatePreferredSize(
 
 void TabGroupUnfocusButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   views::LabelButton::OnBoundsChanged(previous_bounds);
-  if (previous_bounds.width() != width()) {
-    UpdateColors();
-  }
+  UpdateCollapsedState();
 }
 
 void TabGroupUnfocusButton::SetGroupColorData(
@@ -83,43 +82,14 @@ void TabGroupUnfocusButton::UpdateColors() {
   if (!GetColorProvider()) {
     return;
   }
-  const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
-  SkColor bg;
-  SkColor fg;
-  if (is_ephemeral_) {
-    bg = GetColorProvider()->GetColor(
-        frame_active ? ui::kColorSysOnHeaderDivider
-                     : ui::kColorSysOnHeaderDividerInactive);
-    fg = GetColorProvider()->GetColor(
-        frame_active ? ui::kColorSysOnSurfacePrimary
-                     : ui::kColorSysOnSurfacePrimaryInactive);
-  } else {
-    bg = GetColorProvider()->GetColor(
-        GetTabGroupTabStripColorId(color_id_, frame_active));
-    fg = color_utils::GetColorWithMaxContrast(bg);
-  }
-  if (IsMouseHovered()) {
-    const SkColor hover_ink =
-        GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
-    bg = color_utils::GetResultingPaintColor(hover_ink, bg);
-  }
+  const SkColor bg = GetBackgroundColor();
+  const SkColor fg = GetForegroundColor();
   SetEnabledTextColors(fg);
 
-  const int collapsed_width =
-      tabs::kVerticalTabStripCollapsedWidth -
-      2 * GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
-  const bool is_collapsed = orientation_ == TabStripOrientation::kVertical &&
-                            width() > 0 && width() <= collapsed_width;
-  if (is_collapsed) {
-    SetText(std::u16string());
-    GetViewAccessibility().SetName(
-        l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON));
+  if (is_collapsed_) {
     SetImageModel(
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(kFilterTiltShiftIcon, fg, kIconSize));
-  } else {
-    SetText(l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON));
-    SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
   }
 
   const float radius = TabGroupStyle::GetFocusedChipCornerRadius(orientation_);
@@ -134,6 +104,67 @@ void TabGroupUnfocusButton::UpdateColors() {
             : gfx::RoundedCornersF(radius, kFlatRadius, kFlatRadius, radius);
   }
   SetBackground(views::CreateRoundedRectBackground(bg, radii));
+}
+
+SkColor TabGroupUnfocusButton::GetBackgroundColor() const {
+  if (!GetColorProvider()) {
+    return gfx::kPlaceholderColor;
+  }
+  const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
+  SkColor bg = is_ephemeral_
+                   ? GetColorProvider()->GetColor(
+                         frame_active ? ui::kColorSysOnHeaderDivider
+                                      : ui::kColorSysOnHeaderDividerInactive)
+                   : GetColorProvider()->GetColor(
+                         GetTabGroupTabStripColorId(color_id_, frame_active));
+  if (IsMouseHovered()) {
+    const SkColor hover_ink =
+        GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
+    bg = color_utils::GetResultingPaintColor(hover_ink, bg);
+  }
+  return bg;
+}
+
+SkColor TabGroupUnfocusButton::GetForegroundColor() const {
+  if (!GetColorProvider()) {
+    return gfx::kPlaceholderColor;
+  }
+  const bool frame_active = GetWidget() && GetWidget()->ShouldPaintAsActive();
+  if (is_ephemeral_) {
+    return GetColorProvider()->GetColor(
+        frame_active ? ui::kColorSysOnSurfacePrimary
+                     : ui::kColorSysOnSurfacePrimaryInactive);
+  }
+  const SkColor bg = GetColorProvider()->GetColor(
+      GetTabGroupTabStripColorId(color_id_, frame_active));
+  return color_utils::GetColorWithMaxContrast(bg);
+}
+
+void TabGroupUnfocusButton::UpdateCollapsedState() {
+  const int collapsed_width =
+      tabs::kVerticalTabStripCollapsedWidth -
+      2 * GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
+  const bool is_collapsed = orientation_ == TabStripOrientation::kVertical &&
+                            width() > 0 && width() <= collapsed_width;
+  if (is_collapsed_ == is_collapsed) {
+    return;
+  }
+  is_collapsed_ = is_collapsed;
+  UpdateTextAndIcon();
+}
+
+void TabGroupUnfocusButton::UpdateTextAndIcon() {
+  if (is_collapsed_) {
+    SetText(std::u16string());
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON));
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      kFilterTiltShiftIcon, GetForegroundColor(), kIconSize));
+  } else {
+    SetText(l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON));
+    SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
+  }
 }
 
 void TabGroupUnfocusButton::OnThemeChanged() {

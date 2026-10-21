@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/tabs/tab_group_features.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -179,8 +178,9 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
       tab_slot_controller_(tab_slot_controller),
       unfocus_chip_(AddChildView(std::make_unique<TabGroupUnfocusButton>(
           TabStripOrientation::kHorizontal,
-          base::BindRepeating(&TabGroupHeader::ExitFocusMode,
-                              base::Unretained(this))))),
+          base::BindRepeating(&TabSlotController::ExitFocusMode,
+                              base::Unretained(tab_slot_controller_),
+                              TabGroupFocusExitReason::kHeaderUnfocusButton)))),
       title_chip_(AddChildView(std::make_unique<views::View>())),
       title_(title_chip_->AddChildView(std::make_unique<views::Label>())),
       sync_icon_(
@@ -917,14 +917,6 @@ void TabGroupHeader::OnTabGroupDataChanged() {
   SetHoverCardDataFrom(tab_group_data);
   UpdateAttentionIndicatorView();
   UpdateAccessibleName();
-}
-
-void TabGroupHeader::ExitFocusMode() {
-  if (BrowserWindowInterface* bwi =
-          tab_slot_controller_->GetBrowserWindowInterface()) {
-    bwi->GetTabStripModel()->ExitFocusMode(
-        TabGroupFocusExitReason::kHeaderUnfocusButton);
-  }
 }
 
 int TabGroupHeader::GetUnfocusChipWidthWithGap() const {

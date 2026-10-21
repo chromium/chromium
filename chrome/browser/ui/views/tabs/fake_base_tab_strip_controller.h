@@ -94,7 +94,9 @@ class FakeBaseTabStripController : public TabStripController {
   BrowserWindowInterface* GetBrowserWindowInterface() override;
 
   std::optional<tab_groups::TabGroupId> GetFocusedGroup() const override;
-  void SetFocusedGroup(std::optional<tab_groups::TabGroupId> group) override;
+  void EnterFocusMode(const tab_groups::TabGroupId& group) override;
+  using TabStripController::ExitFocusMode;
+  void ExitFocusMode(std::optional<TabGroupFocusExitReason> reason) override;
 
  private:
   void SetActiveIndex(int new_index);

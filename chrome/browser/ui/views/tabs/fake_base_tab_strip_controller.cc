@@ -304,9 +304,14 @@ FakeBaseTabStripController::GetFocusedGroup() const {
   return focused_group_;
 }
 
-void FakeBaseTabStripController::SetFocusedGroup(
-    std::optional<tab_groups::TabGroupId> group) {
+void FakeBaseTabStripController::EnterFocusMode(
+    const tab_groups::TabGroupId& group) {
   focused_group_ = group;
+}
+
+void FakeBaseTabStripController::ExitFocusMode(
+    std::optional<TabGroupFocusExitReason> reason) {
+  focused_group_ = std::nullopt;
 }
 
 void FakeBaseTabStripController::SetActiveIndex(int new_index) {
