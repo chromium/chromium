@@ -35,7 +35,7 @@ BlobDataHandle::BlobDataHandleShared::BlobDataHandleShared(
       content_type_(content_type),
       size_(size),
       context_(context->AsWeakPtr()) {
-  context_->IncrementBlobRefCount(uuid);
+  context_->IncrementBlobHandleCount(uuid);
 }
 
 std::unique_ptr<BlobReader> BlobDataHandle::CreateReader() const {
@@ -44,7 +44,7 @@ std::unique_ptr<BlobReader> BlobDataHandle::CreateReader() const {
 
 BlobDataHandle::BlobDataHandleShared::~BlobDataHandleShared() {
   if (context_.get())
-    context_->DecrementBlobRefCount(uuid_);
+    context_->DecrementBlobHandleCount(uuid_);
 }
 
 BlobDataHandle::BlobDataHandle(const std::string& uuid,

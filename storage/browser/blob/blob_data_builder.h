@@ -248,7 +248,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobDataBuilder {
       ::std::ostream* os);
   friend class BlobSliceTest;
 
-  void SliceBlob(const BlobEntry* entry,
+  void SliceBlob(scoped_refptr<const BlobEntry> entry,
                  uint64_t slice_offset,
                  uint64_t slice_size);
 

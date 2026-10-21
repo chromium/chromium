@@ -174,7 +174,7 @@ void BlobDataBuilder::AppendBlob(const std::string& uuid,
                                  uint64_t length,
                                  const BlobStorageRegistry& blob_registry) {
   DCHECK_GT(length, 0ul);
-  const BlobEntry* ref_entry = blob_registry.GetEntry(uuid);
+  scoped_refptr<const BlobEntry> ref_entry = blob_registry.GetEntry(uuid);
 
   // Self-references or non-existing blob references are invalid.
   if (!ref_entry || uuid == uuid_) {
@@ -242,10 +242,10 @@ void BlobDataBuilder::AppendBlob(const std::string& uuid,
     return;
   }
 
-  SliceBlob(ref_entry, offset, length);
+  SliceBlob(std::move(ref_entry), offset, length);
 }
 
-void BlobDataBuilder::SliceBlob(const BlobEntry* source,
+void BlobDataBuilder::SliceBlob(scoped_refptr<const BlobEntry> source,
                                 uint64_t slice_offset,
                                 uint64_t slice_size) {
   const auto& source_items = source->items();
