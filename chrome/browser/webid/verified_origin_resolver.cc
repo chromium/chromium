@@ -7,13 +7,14 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/webid/jni_headers/VerifiedOriginResolver_jni.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/origin.h"
 
 namespace content::webid {
 VerifiedOriginResolver::VerifiedOriginResolver() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_.Reset(Java_VerifiedOriginResolver_create(
-      env, reinterpret_cast<intptr_t>(this)));
+  java_obj_.Reset(
+      Java_VerifiedOriginResolver_create(env, jni_zero::MakeRaw(this)));
 }
 
 VerifiedOriginResolver::~VerifiedOriginResolver() {

@@ -14,12 +14,16 @@ import androidx.browser.customtabs.CustomTabsService;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.url.Origin;
 
@@ -29,23 +33,31 @@ import java.util.List;
 @JNINamespace("content::webid")
 @NullMarked
 public class VerifiedOriginResolver {
+    @JniType("::content::webid::VerifiedOriginResolver")
+    interface NativeVerifiedOriginResolver extends JniTypeToken {}
+
     private static final String TAG = "OriginResolver";
     private static final String FEDCM_BOUND_SERVICE_INTENT_ACTION = "org.w3.FedCM";
 
-    private long mNativeVerifiedOriginResolver;
+    private @Nullable JniRawPtr<NativeVerifiedOriginResolver> mNativeVerifiedOriginResolver;
 
-    private VerifiedOriginResolver(long nativeVerifiedOriginResolver) {
+    private VerifiedOriginResolver(
+            JniRawPtr<NativeVerifiedOriginResolver> nativeVerifiedOriginResolver) {
         mNativeVerifiedOriginResolver = nativeVerifiedOriginResolver;
     }
 
     @CalledByNative
-    private static VerifiedOriginResolver create(long nativeVerifiedOriginResolver) {
+    private static VerifiedOriginResolver create(
+            JniRawPtr<NativeVerifiedOriginResolver> nativeVerifiedOriginResolver) {
         return new VerifiedOriginResolver(nativeVerifiedOriginResolver);
     }
 
     @CalledByNative
     private void destroy() {
-        mNativeVerifiedOriginResolver = 0;
+        if (mNativeVerifiedOriginResolver != null) {
+            mNativeVerifiedOriginResolver.release();
+            mNativeVerifiedOriginResolver = null;
+        }
     }
 
     @CalledByNative
@@ -86,7 +98,7 @@ public class VerifiedOriginResolver {
     }
 
     private void notifyResolved(String packageName, String serviceName) {
-        if (mNativeVerifiedOriginResolver != 0) {
+        if (mNativeVerifiedOriginResolver != null) {
             VerifiedOriginResolverJni.get()
                     .onOriginResolved(mNativeVerifiedOriginResolver, packageName, serviceName);
         }
@@ -105,7 +117,7 @@ public class VerifiedOriginResolver {
     @NativeMethods
     interface Natives {
         void onOriginResolved(
-                long nativeVerifiedOriginResolver,
+                JniPtr<NativeVerifiedOriginResolver> self,
                 @JniType("std::string") String packageName,
                 @JniType("std::string") String serviceName);
     }
