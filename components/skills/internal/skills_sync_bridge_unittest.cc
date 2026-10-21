@@ -4,6 +4,7 @@
 
 #include "components/skills/internal/skills_sync_bridge.h"
 
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -19,8 +20,10 @@
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/sync/test/data_type_store_test_util.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
@@ -34,7 +37,9 @@ namespace {
 
 using base::test::EqualsProto;
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pair;
@@ -598,7 +603,8 @@ TEST_F(SkillsSyncBridgeTest, ApplyIncrementalSyncChanges_IgnoreUnknownSkill) {
             std::nullopt);
 }
 
-TEST_F(SkillsSyncBridgeTest, ApplyIncrementalSyncChanges_IgnoreFirstPartySkill) {
+TEST_F(SkillsSyncBridgeTest,
+       ApplyIncrementalSyncChanges_IgnoreFirstPartySkill) {
   syncer::EntityData entity_data = CreateSkillEntityData();
   entity_data.specifics.mutable_skill()->set_skill_source(
       sync_pb::SKILL_SOURCE_FIRST_PARTY);
@@ -703,6 +709,61 @@ TEST_F(SkillsSyncBridgeTest, ShouldReloadDataOnRestart) {
   EXPECT_CALL(mock_skills_service(),
               LoadInitialSkills(UnorderedElementsAre(
                   Pointee(HasSkill(kSkillId, "name", "icon", "prompt")))));
+  EXPECT_CALL(mock_skills_service(), SyncStatusChanged);
+  ResetBridgeAndWaitForInitialization();
+}
+
+TEST_F(SkillsSyncBridgeTest,
+       ShouldReloadDataOnRestartWithNewlySupportedFieldsFromSyncMetadata) {
+  const std::string kSkillId =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  // Simulate data stored by an older browser version where `description`,
+  // `source_skill_id`, and `enabled` were not yet supported:
+  // `SkillLocalData` only has the previously-known fields, while the newly
+  // supported fields were saved in `EntityMetadata`'s
+  // `possibly_trimmed_base_specifics`.
+  proto::SkillLocalData local_data;
+  sync_pb::SkillSpecifics* local_specifics = local_data.mutable_specifics();
+  local_specifics->set_guid(kSkillId);
+  local_specifics->set_name("name");
+  local_specifics->set_icon("icon");
+  local_specifics->mutable_simple_skill()->set_prompt("prompt");
+  local_specifics->set_skill_source(sync_pb::SKILL_SOURCE_USER_CREATED);
+
+  sync_pb::EntityMetadata metadata;
+  sync_pb::SkillSpecifics* trimmed_specifics =
+      metadata.mutable_possibly_trimmed_base_specifics()->mutable_skill();
+  trimmed_specifics->mutable_simple_skill()->set_description(
+      "newly_supported_description");
+  trimmed_specifics->set_source_skill_id("newly_supported_source_skill_id");
+  trimmed_specifics->set_enabled(false);
+
+  std::unique_ptr<syncer::DataTypeStore::WriteBatch> write_batch =
+      store().CreateWriteBatch();
+  write_batch->WriteData(kSkillId, local_data.SerializeAsString());
+  write_batch->GetMetadataChangeList()->UpdateMetadata(kSkillId, metadata);
+  base::RunLoop commit_loop;
+  store().CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(
+          [](base::RunLoop* loop,
+             const std::optional<syncer::ModelError>& error) {
+            EXPECT_FALSE(error.has_value());
+            loop->Quit();
+          },
+          &commit_loop));
+  commit_loop.Run();
+
+  // Simulate a browser upgrade and restart: the newly supported fields from
+  // sync metadata should be merged with `SkillLocalData` when loading skills.
+  EXPECT_CALL(
+      mock_skills_service(),
+      LoadInitialSkills(UnorderedElementsAre(Pointee(AllOf(
+          HasSkill(kSkillId, "name", "icon", "prompt"),
+          Field(&Skill::description, "newly_supported_description"),
+          Field(&Skill::source_skill_id, "newly_supported_source_skill_id"),
+          Field(&Skill::enabled, false))))));
   EXPECT_CALL(mock_skills_service(), SyncStatusChanged);
   ResetBridgeAndWaitForInitialization();
 }

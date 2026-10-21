@@ -337,6 +337,13 @@ IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest, ShouldMergeRemoteData) {
 // TODO(crbug.com/471795213): add a test to verify that skills can't be created
 // when sync is disabled.
 
+// Verifies that fields unknown to the current client version are preserved when
+// committing local updates back to the server (via sync metadata's
+// `possibly_trimmed_base_specifics`).
+// Note: This does not cover the browser upgrade scenario where a previously
+// unknown field becomes supported after a restart (which relies on
+// `OnReadAllDataAndMetadata()` merging `possibly_trimmed_base_specifics` from
+// sync metadata with `SkillLocalData`, covered by `SkillsSyncBridgeTest`).
 IN_PROC_BROWSER_TEST_P(SingleClientSkillsSyncTest,
                        ShouldPreserveUnknownFields) {
   const std::string kSkillId =

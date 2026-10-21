@@ -20,6 +20,7 @@
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 
@@ -416,24 +417,36 @@ void SkillsSyncBridge::OnReadAllDataAndMetadata(
     return;
   }
 
+  const syncer::EntityMetadataMap& sync_metadata =
+      metadata_batch->GetAllMetadata();
   std::vector<std::unique_ptr<Skill>> loaded_skills;
   for (const syncer::DataTypeStore::Record& record : *entries) {
     proto::SkillLocalData local_data;
     if (!local_data.ParseFromString(record.value)) {
       continue;
     }
-    if (!IsEntityDataValid(SpecificsToEntityData(local_data.specifics()))) {
+
+    // Merge stored specifics with `possibly_trimmed_base_specifics` from sync
+    // metadata so that any fields that were unknown when the entity was stored
+    // (and have since become supported after a browser upgrade) are recovered.
+    sync_pb::SkillSpecifics specifics;
+    if (auto it = sync_metadata.find(record.id); it != sync_metadata.end()) {
+      specifics = it->second->possibly_trimmed_base_specifics().skill();
+    }
+    specifics.MergeFrom(local_data.specifics());
+
+    if (!IsEntityDataValid(SpecificsToEntityData(specifics))) {
       continue;
     }
-    if (!local_data.specifics().has_simple_skill()) {
+    if (!specifics.has_simple_skill()) {
       // Verify this explicitly as `IsEntityDataValid()` does not check for it.
       continue;
     }
-    if (record.id != local_data.specifics().guid()) {
+    if (record.id != specifics.guid()) {
       continue;
     }
 
-    loaded_skills.push_back(SpecificsToSkill(local_data.specifics()));
+    loaded_skills.push_back(SpecificsToSkill(specifics));
   }
 
   skills_service_->LoadInitialSkills(std::move(loaded_skills));
