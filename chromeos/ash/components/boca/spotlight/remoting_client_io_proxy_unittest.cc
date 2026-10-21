@@ -262,7 +262,6 @@ TEST_F(RemotingClientIOProxyImplTest,
   base::OnceClosure second_quit_closure =
       fake_remoting_client_wrapper_->TakeCrdSessionEndedCb();
   std::move(first_quit_closure).Run();
-  task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(first_observer.crd_session_ended_future().Wait());
   EXPECT_FALSE(second_observer.crd_session_ended_future().IsReady());
