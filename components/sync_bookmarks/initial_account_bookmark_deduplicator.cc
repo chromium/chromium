@@ -14,6 +14,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/sync_bookmarks/scoped_bookmark_extensive_changes.h"
 
 namespace sync_bookmarks {
 
@@ -44,10 +45,7 @@ InitialAccountBookmarkDeduplicator::~InitialAccountBookmarkDeduplicator() =
     default;
 
 void InitialAccountBookmarkDeduplicator::Deduplicate() {
-  // Suspend `BookmarkUndoService` undo tracking and notify UI observers of
-  // `BookmarkModel` that significant changes are about to happen so updates
-  // may be batched.
-  bookmark_model_->BeginExtensiveChanges();
+  ScopedBookmarkExtensiveChanges extensive_changes(*bookmark_model_);
 
   for (const auto& [local_permanent_node, account_permanent_node] :
        GetLocalAndAccountPermanentNodePairs(bookmark_model_)) {
@@ -68,8 +66,6 @@ void InitialAccountBookmarkDeduplicator::Deduplicate() {
                      base::flat_set<size_t>(base::sorted_unique,
                                             std::move(indices_to_remove)));
   }
-
-  bookmark_model_->EndExtensiveChanges();
 }
 
 bool InitialAccountBookmarkDeduplicator::
