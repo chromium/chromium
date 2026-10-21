@@ -7,11 +7,16 @@
 
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item_type.h"
 
+@class ComposeboxModelItem;
+
 // Mutator for the Composebox menu.
 @protocol ComposeboxMenuMutator <NSObject>
 
 // Handle an item picked of type `type`.
 - (void)handleItemPickedWithType:(ComposeboxMenuItemType)type;
+
+// Selects the model represented by `item`.
+- (void)selectModelItem:(ComposeboxModelItem*)item;
 
 @end
 
