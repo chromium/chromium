@@ -486,9 +486,10 @@ chromium-metrics-reviews@google.com.
                  downloads"/>
     <variant name="Opened" summary="that have been opened from the browser"/>
     <variant name="UniquifiedDuplicates"
-        summary="whose target path (after stripping a trailing '
-                 (&lt;number&gt;)' uniquifier before the extension)
-                 duplicates another loaded download in the same window"/>
+        summary="whose target path (after stripping a trailing ' (1)'..'
+                 (100)' or ' - YYYY-MM-DDTHHMMSS.mmm' uniquifier before the
+                 extension) duplicates another loaded download in the same
+                 window"/>
   </token>
   <token key="Window" variants="DownloadHistoryWindow"/>
 </histogram>

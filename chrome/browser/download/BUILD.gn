@@ -233,6 +233,7 @@ source_set("impl") {
     "//components/strings",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
+    "//third_party/re2",
     "//ui/base/unowned_user_data",
     "//url",
   ]

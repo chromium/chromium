@@ -719,7 +719,7 @@ TEST_F(DownloadHistoryTest, HeavyProfileHistograms) {
   recent3.tab_url = GURL();
   recent3.start_time = yesterday - base::Days(10) + base::Hours(1);
 
-  InitBasicItem(FILE_PATH_LITERAL("/foo/report (2).pdf"),
+  InitBasicItem(FILE_PATH_LITERAL("/foo/report - 2026-10-15T150004.123.pdf"),
                 "https://alpha.example.com/report.pdf", "",
                 download::DownloadItem::COMPLETE, &last_90_days);
   last_90_days.tab_url = GURL();
@@ -789,6 +789,56 @@ TEST_F(DownloadHistoryTest, HeavyProfileHistograms) {
       "Download.History.HeavyProfile.PercentOpened", 40, 1);
   histogram_tester.ExpectUniqueSample(
       "Download.History.HeavyProfile.PercentUniquifiedDuplicates", 40, 1);
+}
+
+TEST_F(DownloadHistoryTest, GetPathWithoutUniquifier) {
+  auto strip = [](const base::FilePath::CharType* path) {
+    return DownloadHistory::GetPathWithoutUniquifier(base::FilePath(path));
+  };
+
+  // Unmodified paths without uniquifiers.
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report.pdf")), "/foo/report.pdf");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report")), "/foo/report");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/archive (copy).zip")),
+            "/foo/archive (copy).zip");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report ().pdf")),
+            "/foo/report ().pdf");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report (0).pdf")),
+            "/foo/report (0).pdf");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report (01).pdf")),
+            "/foo/report (01).pdf");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report (101).pdf")),
+            "/foo/report (101).pdf");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/Tax (2024).pdf")),
+            "/foo/Tax (2024).pdf");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report (1)extra.pdf")),
+            "/foo/report (1)extra.pdf");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/dir (1)/report.pdf")),
+            "/foo/dir (1)/report.pdf");
+  EXPECT_EQ(
+      strip(FILE_PATH_LITERAL("/foo/dir - 2026-10-15T150004.123/report.pdf")),
+      "/foo/dir - 2026-10-15T150004.123/report.pdf");
+
+  // Numeric uniquifiers.
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report (1).pdf")), "/foo/report.pdf");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report (99).pdf")),
+            "/foo/report.pdf");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report (100).pdf")),
+            "/foo/report.pdf");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report (1)")), "/foo/report");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/archive (1).tar.gz")),
+            "/foo/archive.tar.gz");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report (1) (2).pdf")),
+            "/foo/report (1).pdf");
+
+  // Timestamp uniquifiers.
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report - 2026-10-15T150004.123.pdf")),
+            "/foo/report.pdf");
+  EXPECT_EQ(strip(FILE_PATH_LITERAL("/foo/report - 2026-10-15T150004.123")),
+            "/foo/report");
+  EXPECT_EQ(
+      strip(FILE_PATH_LITERAL("/foo/archive - 2026-10-15T150004.123.tar.gz")),
+      "/foo/archive.tar.gz");
 }
 
 // Test that the OnHistoryQueryComplete() observer method is invoked for an

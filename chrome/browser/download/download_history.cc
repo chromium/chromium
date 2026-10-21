@@ -41,15 +41,16 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
+#include "components/download/public/common/download_path_reservation_tracker.h"
 #include "components/download/public/common/download_utils.h"
 #include "components/history/content/browser/download_conversions.h"
 #include "components/history/core/browser/download_database.h"
@@ -62,6 +63,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -289,32 +291,6 @@ bool ShouldSkipLoadingDownload(const history::DownloadRow& row,
 // Download.History.HeavyProfile.* histograms for that window.
 size_t g_heavy_profile_download_count_threshold = 1000;
 
-// Returns `path` with any trailing " (<number>)" uniquifier before the
-// extension removed (e.g. "/foo/bar (1).pdf" -> "/foo/bar.pdf").
-base::FilePath::StringType GetPathWithoutUniquifier(
-    const base::FilePath& path) {
-  if (!path.value().contains(FILE_PATH_LITERAL(" ("))) {
-    return path.value();
-  }
-  const base::FilePath::StringType without_ext = path.RemoveExtension().value();
-  const size_t open_pos = without_ext.rfind(FILE_PATH_LITERAL(" ("));
-  if (open_pos == base::FilePath::StringType::npos ||
-      !without_ext.ends_with(FILE_PATH_LITERAL(")"))) {
-    return path.value();
-  }
-  const base::FilePath::StringViewType digits =
-      base::FilePath::StringViewType(without_ext)
-          .substr(open_pos + 2, without_ext.size() - open_pos - 3);
-  if (digits.empty() ||
-      !std::ranges::all_of(digits,
-                           &base::IsAsciiDigit<base::FilePath::CharType>)) {
-    return path.value();
-  }
-  return base::StrCat(
-      {base::FilePath::StringViewType(without_ext).substr(0, open_pos),
-       path.Extension()});
-}
-
 // Returns the first valid non-opaque origin among `row.tab_url`,
 // `row.referrer_url`, `row.site_url`, and `row.url_chain`.
 std::optional<url::Origin> GetDownloadOrigin(const history::DownloadRow& row) {
@@ -349,7 +325,7 @@ void RecordHeavyProfileMetrics(
   absl::flat_hash_map<std::string, size_t> origin_counts;
   size_t max_origin_count = 0;
 
-  absl::flat_hash_set<base::FilePath::StringType> unique_stripped_paths;
+  absl::flat_hash_set<std::string> unique_stripped_paths;
 
   absl::flat_hash_map<int64_t, size_t> downloads_per_day;
   size_t max_downloads_in_a_day = 0;
@@ -374,7 +350,8 @@ void RecordHeavyProfileMetrics(
     }
     if (!row->target_path.empty() &&
         !unique_stripped_paths
-             .insert(GetPathWithoutUniquifier(row->target_path))
+             .insert(
+                 DownloadHistory::GetPathWithoutUniquifier(row->target_path))
              .second) {
       ++num_uniquified_duplicates;
     }
@@ -446,6 +423,19 @@ DownloadHistory::Observer::~Observer() = default;
 bool DownloadHistory::IsPersisted(const download::DownloadItem* item) {
   const DownloadHistoryData* data = DownloadHistoryData::Get(item);
   return data && (data->state() == DownloadHistoryData::PERSISTED);
+}
+
+// static
+std::string DownloadHistory::GetPathWithoutUniquifier(
+    const base::FilePath& path) {
+  static_assert(download::DownloadPathReservationTracker::kMaxUniqueFiles ==
+                100);
+  static const base::NoDestructor<re2::RE2> kUniquifierRegex(
+      R"((?: \((?:[1-9]\d?|100)\)| - \d{4}-\d{2}-\d{2}T\d{6}\.\d{3}))"
+      R"((\.[^/\\]*)?$)");
+  std::string result = path.AsUTF8Unsafe();
+  re2::RE2::Replace(&result, *kUniquifierRegex, R"(\1)");
+  return result;
 }
 
 // static
