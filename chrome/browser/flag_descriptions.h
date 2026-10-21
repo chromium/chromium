@@ -8652,6 +8652,12 @@ inline constexpr char kGlicTabGroupsName[] = "Glic Tab Groups";
 inline constexpr char kGlicTabGroupsDescription[] =
     "Enables Glic to integrate with tab groups.";
 
+inline constexpr char kPageColorsSettingsName[] = "Page Colors settings";
+inline constexpr char kPageColorsSettingsDescription[] =
+    "When enabled, shows a Page Colors control in Chrome's accessibility "
+    "settings, which lets users pick a high contrast theme for web content or "
+    "turn forced colors off, independently of the operating system theme.";
+
 inline constexpr char kProfilesReorderingName[] = "Profiles Reordering";
 inline constexpr char kProfilesReorderingDescription[] =
     "Enables profiles reordering in the Profile Picker main view by drag and "

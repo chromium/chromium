@@ -8090,6 +8090,11 @@
     "expiry_milestone": 165
   },
   {
+    "name": "page-colors-settings",
+    "owners": [ "lucasradaelli@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 168
+  },
+  {
     "name": "page-content-cache",
     "owners": [ "haileywang@google.com", "ssid@chromium.org" ],
     "expiry_milestone": 150

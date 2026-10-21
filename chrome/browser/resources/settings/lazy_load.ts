@@ -240,6 +240,7 @@ export type {LanguageSettingsMetricsProxy} from './languages_page/languages_sett
 export type {LanguageHelper, LanguagesModel} from './languages_page/languages_types.js';
 export {SettingsSpellCheckPageElement} from './languages_page/spell_check_page.js';
 export {SettingsTranslatePageElement} from './languages_page/translate_page.js';
+export {PageColors} from './page_colors.mojom-webui.js';
 // </if>
 
 export {SettingsAccountPageElement} from './people_page/account_page.js';

@@ -331,6 +331,13 @@ bool IsAXTreeFixingEnabled() {
   return base::FeatureList::IsEnabled(::features::kAXTreeFixing);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kPageColorsSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsPageColorsSettingsEnabled() {
+  return base::FeatureList::IsEnabled(::features::kPageColorsSettings);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 bool IsScreenAIMainContentExtractionEnabled() {
   return base::FeatureList::IsEnabled(
       ax::mojom::features::kScreenAIMainContentExtractionEnabled);

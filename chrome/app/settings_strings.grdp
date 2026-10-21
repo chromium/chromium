@@ -207,6 +207,43 @@
       <message name="IDS_SETTINGS_ACCESSIBILITY_TOAST_FREQUENCY_DESCRIPTION" desc="Subtitle for a setting that allows you to change the frequency of feedback messages.">
         Shows a confirmation when you copy links, images, or videos
       </message>
+      <!-- The Page Colors theme names below keep translateable="false"
+           because they are the proper names of the Windows 11 high contrast
+           themes that they mimic. The other Page Colors strings are
+           translated and have translation screenshots attached. -->
+      <message name="IDS_SETTINGS_PAGE_COLORS_TITLE" desc="Title for the page colors setting on the accessibility settings page, allowing users to override web page colors with high contrast themes.">
+        Page colors
+      </message>
+      <message name="IDS_SETTINGS_PAGE_COLORS_SUBTITLE" desc="Subtitle for the page colors setting on the accessibility settings page.">
+        Override webpage colors with high-contrast themes or turn off forced colors
+      </message>
+      <message name="IDS_SETTINGS_PAGE_COLORS_OPTION_NO_PREFERENCE" desc="Dropdown option in page colors setting to match the operating system theme.">
+        Default (match system)
+      </message>
+      <message name="IDS_SETTINGS_PAGE_COLORS_OPTION_OFF" desc="Dropdown option in page colors setting to turn off forced colors.">
+        Off
+      </message>
+      <message name="IDS_SETTINGS_PAGE_COLORS_OPTION_DUSK" translateable="false" desc="Dropdown option in page colors setting for the Dusk high contrast theme. Not translated because it is the proper name of a Windows high contrast theme.">
+        Dusk
+      </message>
+      <message name="IDS_SETTINGS_PAGE_COLORS_OPTION_DESERT" translateable="false" desc="Dropdown option in page colors setting for the Desert high contrast theme. Not translated because it is the proper name of a Windows high contrast theme.">
+        Desert
+      </message>
+      <message name="IDS_SETTINGS_PAGE_COLORS_OPTION_NIGHT_SKY" translateable="false" desc="Dropdown option in page colors setting for the Night Sky high contrast theme. Not translated because it is the proper name of a Windows high contrast theme.">
+        Night Sky
+      </message>
+      <message name="IDS_SETTINGS_PAGE_COLORS_OPTION_AQUATIC" translateable="false" desc="Dropdown option in page colors setting for the Aquatic high contrast theme. Not translated because it is the proper name of a Windows high contrast theme.">
+        Aquatic
+      </message>
+      <message name="IDS_SETTINGS_PAGE_COLORS_OPTION_WHITE" translateable="false" desc="Dropdown option in page colors setting for the White high contrast theme. Not translated because it is the proper name of a Windows high contrast theme.">
+        White
+      </message>
+      <message name="IDS_SETTINGS_APPLY_PAGE_COLORS_ONLY_ON_INCREASED_CONTRAST_TITLE" desc="Title for the toggle that restricts the selected page color theme to the times when the operating system reports high contrast. Default page colors means web pages render with their own colors.">
+        Use default page colors when system high contrast is off
+      </message>
+      <message name="IDS_SETTINGS_APPLY_PAGE_COLORS_ONLY_ON_INCREASED_CONTRAST_SUBTITLE" desc="Subtitle for the toggle that restricts the selected page color theme to the times when the operating system reports high contrast.">
+        Your selected page color theme is used only while system high contrast is on
+      </message>
     </if>
 
     <!-- Appearance Page -->

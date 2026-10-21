@@ -44,6 +44,27 @@ export function getHtml(this: SettingsA11yPageElement) {
 </if>
 
 <if expr="not is_chromeos">
+        ${this.showPageColors_ ? html`
+          <div class="cr-row hr">
+            <div class="flex cr-padded-text" aria-hidden="true">
+              <div>$i18n{pageColorsTitle}</div>
+              <div class="secondary">$i18n{pageColorsSubtitle}</div>
+            </div>
+            <settings-dropdown-menu id="pageColorsDropdown"
+                label="$i18n{pageColorsTitle}"
+                sub-label="$i18n{pageColorsSubtitle}"
+                pref-key="settings.a11y.requested_page_colors"
+                .menuOptions="${this.pageColorsOptions_}">
+            </settings-dropdown-menu>
+          </div>
+          <settings-toggle-button id="applyPageColorsOnlyOnIncreasedContrast"
+              class="hr"
+              ?disabled="${!this.isPageColorsThemeSelected_()}"
+              pref-key="settings.a11y.apply_page_colors_only_on_increased_contrast"
+              label="$i18n{applyPageColorsOnlyOnIncreasedContrastTitle}"
+              sub-label="$i18n{applyPageColorsOnlyOnIncreasedContrastSubtitle}">
+          </settings-toggle-button>
+        ` : ''}
         <settings-toggle-button
             class="hr"
             pref-key="settings.a11y.focus_highlight"

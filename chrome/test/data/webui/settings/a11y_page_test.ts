@@ -8,6 +8,8 @@ import 'chrome://settings/lazy_load.js';
 // <if expr="is_win or is_linux or is_macosx">
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsAxAnnotationsSectionElement} from 'chrome://settings/lazy_load.js';
+import {PageColors} from 'chrome://settings/lazy_load.js';
+import type {SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
 import { assertFalse, assertTrue, assertEquals } from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // </if>
@@ -112,6 +114,16 @@ function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
       type: chrome.settingsPrivate.PrefType.STRING,
       value: 'en',
     },
+    {
+      key: 'settings.a11y.requested_page_colors',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: PageColors.kNoPreference,
+    },
+    {
+      key: 'settings.a11y.apply_page_colors_only_on_increased_contrast',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
   ];
 }
 
@@ -125,6 +137,7 @@ suite('A11yPage', () => {
     loadTimeData.overrideValues({
       axTreeFixingEnabled: true,
       mainNodeAnnotationsEnabled: true,
+      pageColorsSettingsEnabled: true,
     });
 
     metrics = fakeMetricsPrivate();
@@ -246,6 +259,77 @@ suite('A11yPage', () => {
         1, metrics.count('Accessibility.FocusHighlight.ToggleEnabled', false));
     assertEquals(
         2, metrics.count('Accessibility.FocusHighlight.ToggleEnabled'));
+  });
+
+  test('page colors dropdown offers every enum value', () => {
+    // A value added to the mojom enum without a matching dropdown option is
+    // caught here.
+    const dropdown =
+        a11yPage.shadowRoot.querySelector<SettingsDropdownMenuElement>(
+            '#pageColorsDropdown');
+    assertTrue(!!dropdown);
+    assertEquals(PageColors.MAX_VALUE + 1, dropdown.menuOptions.length);
+  });
+
+  test('page colors dropdown writes pref', async () => {
+    const dropdown =
+        a11yPage.shadowRoot.querySelector<SettingsDropdownMenuElement>(
+            '#pageColorsDropdown');
+    assertTrue(!!dropdown);
+    assertEquals(
+        PageColors.kNoPreference,
+        prefService.getPref('settings.a11y.requested_page_colors').value);
+
+    const select = dropdown.$.dropdownMenu;
+    select.value = String(PageColors.kNightSky);
+    select.dispatchEvent(new CustomEvent('change'));
+    await microtasksFinished();
+
+    assertEquals(
+        PageColors.kNightSky,
+        prefService.getPref('settings.a11y.requested_page_colors').value);
+  });
+
+  test('increased contrast toggle follows the selected theme', async () => {
+    const toggle =
+        a11yPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
+            '#applyPageColorsOnlyOnIncreasedContrast');
+    assertTrue(!!toggle);
+
+    // With no theme selected the toggle cannot change anything, because
+    // PageColorsController only consults the pref for the theme values.
+    assertTrue(toggle.disabled);
+
+    await prefService.setPrefValue(
+        'settings.a11y.requested_page_colors', PageColors.kDusk);
+    await microtasksFinished();
+    assertFalse(toggle.disabled);
+
+    toggle.click();
+    await microtasksFinished();
+    assertTrue(
+        prefService
+            .getPref<boolean>(
+                'settings.a11y.apply_page_colors_only_on_increased_contrast')
+            .value);
+
+    // "Off" still lets the web theme follow the operating system, so the
+    // toggle has nothing to act on there either.
+    await prefService.setPrefValue(
+        'settings.a11y.requested_page_colors', PageColors.kOff);
+    await microtasksFinished();
+    assertTrue(toggle.disabled);
+  });
+
+  test('page colors hidden when the feature is off', async () => {
+    loadTimeData.overrideValues({pageColorsSettingsEnabled: false});
+    const page = document.createElement('settings-a11y-page');
+    document.body.appendChild(page);
+    await microtasksFinished();
+
+    assertFalse(!!page.shadowRoot.querySelector('#pageColorsDropdown'));
+    assertFalse(!!page.shadowRoot.querySelector(
+        '#applyPageColorsOnlyOnIncreasedContrast'));
   });
   // </if>
 

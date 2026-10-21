@@ -3,7 +3,15 @@
 # found in the LICENSE file.
 
 import("//extensions/buildflags/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//services/screen_ai/buildflags/features.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "page_colors.mojom" ]
+  if (!is_chromeos && !is_android) {
+    webui_module_path = "/"
+  }
+}
 
 source_set("accessibility") {
   public = [
@@ -39,6 +47,7 @@ source_set("accessibility") {
   }
 
   public_deps = [
+    ":mojo_bindings",
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",

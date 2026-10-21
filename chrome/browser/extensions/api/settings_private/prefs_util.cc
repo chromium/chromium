@@ -675,6 +675,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 #endif
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   (*s_allowlist)[::prefs::kToastAlertLevel] = settings_api::PrefType::kNumber;
+  (*s_allowlist)[::prefs::kRequestedPageColors] =
+      settings_api::PrefType::kNumber;
+  (*s_allowlist)[::prefs::kApplyPageColorsOnlyOnIncreasedContrast] =
+      settings_api::PrefType::kBoolean;
 #endif
 
   (*s_allowlist)[::prefs::kCaretBrowsingEnabled] =

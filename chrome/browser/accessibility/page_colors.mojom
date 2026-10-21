@@ -1,0 +1,26 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file contains enums to be used across C++ and TypeScript files.
+module page_colors.mojom;
+
+// The page colors theme requested by the user. Values in this enum are stored
+// in prefs, so if you change them you may need to add migration code.
+enum PageColors {
+  // Web theme forced colors state and CSS color values match the native UI
+  // theme.
+  kNoPreference = 0,
+
+  // Web theme disables forced colors regardless of the native UI theme. The
+  // web theme preferred color scheme tracks that of the native UI theme.
+  kOff = 1,
+
+  // Web theme enables forced colors regardless of the native UI theme. CSS
+  // color values are set corresponding to one of the below themes.
+  kDusk = 2,      // Mimics Win 11 "Dusk"
+  kDesert = 3,    // Mimics Win 11 "Desert"
+  kNightSky = 4,  // Mimics Win 11 "Night Sky"
+  kAquatic = 5,   // Mimics Win 11 "Aquatic"
+  kWhite = 6,     // Mimics Win 10 "High Contrast White"
+};

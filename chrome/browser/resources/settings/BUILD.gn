@@ -720,6 +720,13 @@ build_webui("build") {
 
   mojo_files_deps = [ "//components/autofill/core/browser/data_model/autofill_ai:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/components/autofill/core/browser/data_model/autofill_ai/autofill_ai_enums.mojom-webui.ts" ]
+  if (!is_chromeos) {
+    mojo_files_deps +=
+        [ "//chrome/browser/accessibility:mojo_bindings_ts__generator" ]
+    mojo_files += [
+      "$root_gen_dir/chrome/browser/accessibility/page_colors.mojom-webui.ts",
+    ]
+  }
 
   ts_composite = true
   ts_definitions = [

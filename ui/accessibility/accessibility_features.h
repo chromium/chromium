@@ -278,6 +278,14 @@ AX_BASE_EXPORT bool IsReadAloudServerSynthesizerEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAXTreeFixing);
 AX_BASE_EXPORT bool IsAXTreeFixingEnabled();
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// Shows the Page Colors control in chrome://settings/accessibility, which lets
+// users override the web theme's forced colors independently of the operating
+// system theme. This is not available on Android or ChromeOS.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kPageColorsSettings);
+AX_BASE_EXPORT bool IsPageColorsSettingsEnabled();
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 // Identify and annotate the main node of the AXTree where one was not already
 // provided.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kMainNodeAnnotations);

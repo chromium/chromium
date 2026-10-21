@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsDropdownMenuElement} from './settings_dropdown_menu.js';
 
@@ -13,7 +13,8 @@ ${this.pref?.controlledBy ? html`
   <cr-policy-pref-indicator .pref="${this.pref}"></cr-policy-pref-indicator>
 ` : ''}
 <select class="md-select" id="dropdownMenu" @change="${this.onChange_}"
-    aria-label="${this.label}" part="select"
+    aria-label="${this.label}"
+    aria-description="${this.subLabel || nothing}" part="select"
     ?disabled="${this.shouldDisableMenu_()}">
   ${this.menuOptions.map(item => html`
     <option value="${item.value}" ?hidden="${!!item.hidden}"

@@ -85,6 +85,13 @@ export class SettingsDropdownMenuElement extends
       /** Label for a11y purposes */
       label: {type: String},
 
+      /**
+       * Accessible description for the menu, exposed via aria-description.
+       * Rows that show this text visually usually mark it aria-hidden, so it
+       * has to be passed here as well to reach assistive technology.
+       */
+      subLabel: {type: String},
+
       /** The value of the element if not using |pref|. */
       value: {type: String},
     };
@@ -96,6 +103,7 @@ export class SettingsDropdownMenuElement extends
   accessor noSetPref: boolean = false;
   accessor notFoundValue: string = 'SETTINGS_DROPDOWN_NOT_FOUND_ITEM';
   accessor label: string = '';
+  accessor subLabel: string = '';
   accessor value: string|undefined = undefined;
 
   override updated(changedProperties: PropertyValues) {

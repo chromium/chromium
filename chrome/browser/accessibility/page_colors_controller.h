@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/accessibility/page_colors.mojom-shared.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/native_theme/native_theme.h"
@@ -14,26 +15,10 @@
 class PrefRegistrySimple;
 class PrefService;
 
-// Values in this enum are stored in prefs, so if you change them you may need
-// to add migration code.
-enum class PageColors {
-  // Web theme forced colors state and CSS color values match the UI theme.
-  kNoPreference = 0,
-
-  // Web theme disables forced colors regardless of UI theme. The web theme
-  // preferred color scheme tracks that of the UI theme.
-  kOff = 1,
-
-  // Web theme enables forces colors regardless of the UI theme. CSS color
-  // values are set corresponding to one of the below themes.
-  kDusk = 2,      // Mimics Win 11 "Dusk"
-  kDesert = 3,    // Mimics Win 11 "Desert"
-  kNightSky = 4,  // Mimics Win 11 "Night Sky"
-  kAquatic = 5,   // Mimics Win 11 "Aquatic"
-  kWhite = 6,     // Mimics Win 10 "High Contrast White"
-
-  kMaxValue = kWhite,
-};
+// The enum is defined in chrome/browser/accessibility/page_colors.mojom so
+// that C++ and the WebUI TypeScript share a single definition. Aliased here so
+// that call sites can keep using the unqualified name.
+using PageColors = page_colors::mojom::PageColors;
 
 // Manages the page colors feature, which allows overriding the web theme's
 // forced colors.

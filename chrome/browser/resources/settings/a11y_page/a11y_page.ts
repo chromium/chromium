@@ -16,6 +16,13 @@ import {getCss as getSettingsSharedCss} from '../settings_shared_lit.css.js';
 
 // clang-format off
 
+// <if expr="not is_chromeos">
+import '../controls/settings_dropdown_menu.js';
+
+import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import {PageColors} from '../page_colors.mojom-webui.js';
+
+// </if>
 // <if expr="is_win or is_linux or is_macosx">
 import './ax_annotations_section.js';
 // </if>
@@ -26,6 +33,7 @@ import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_brow
 // </if>
 // clang-format on
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -53,8 +61,23 @@ export enum ToastAlertLevel {
   COUNT = 1,
 }
 
-const SettingsA11yPageElementBase =
-    SettingsViewMixinLit(WebUiListenerMixinLit(CrLitElement));
+// <if expr="not is_chromeos">
+/**
+ * The values that actually force a theme onto web content. For the other
+ * values the web theme follows the operating system, so the "only on increased
+ * contrast" toggle has nothing to act on.
+ */
+const PAGE_COLORS_THEMES: PageColors[] = [
+  PageColors.kDusk,
+  PageColors.kDesert,
+  PageColors.kNightSky,
+  PageColors.kAquatic,
+  PageColors.kWhite,
+];
+// </if>
+
+const SettingsA11yPageElementBase = SettingsViewMixinLit(
+    PrefServiceObserverMixinLit(WebUiListenerMixinLit(CrLitElement)));
 
 // <if expr="not is_chromeos">
 export interface SettingsA11yPageElement {
@@ -84,6 +107,9 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
       // <if expr="not is_chromeos">
       enableLiveCaption_: {type: Boolean},
       numericUncheckedToastAlertValues_: {type: Array},
+      showPageColors_: {type: Boolean},
+      requestedA11yPageColorsPref_: {type: Object},
+      pageColorsOptions_: {type: Array},
       // </if>
 
       /**
@@ -114,6 +140,40 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
       loadTimeData.getBoolean('enableLiveCaption');
   protected accessor numericUncheckedToastAlertValues_: ToastAlertLevel[] =
       [ToastAlertLevel.ACTIONABLE];
+  protected accessor showPageColors_: boolean =
+      loadTimeData.getBoolean('pageColorsSettingsEnabled');
+  protected accessor requestedA11yPageColorsPref_:
+      chrome.settingsPrivate.PrefObject<PageColors>|undefined;
+  protected accessor pageColorsOptions_: DropdownMenuOptionList = [
+    {
+      value: PageColors.kNoPreference,
+      name: loadTimeData.getString('pageColorsOptionNoPreference'),
+    },
+    {
+      value: PageColors.kOff,
+      name: loadTimeData.getString('pageColorsOptionOff'),
+    },
+    {
+      value: PageColors.kDusk,
+      name: loadTimeData.getString('pageColorsOptionDusk'),
+    },
+    {
+      value: PageColors.kDesert,
+      name: loadTimeData.getString('pageColorsOptionDesert'),
+    },
+    {
+      value: PageColors.kNightSky,
+      name: loadTimeData.getString('pageColorsOptionNightSky'),
+    },
+    {
+      value: PageColors.kAquatic,
+      name: loadTimeData.getString('pageColorsOptionAquatic'),
+    },
+    {
+      value: PageColors.kWhite,
+      name: loadTimeData.getString('pageColorsOptionWhite'),
+    },
+  ];
   // </if>
 
   protected accessor hasScreenReader_: boolean = false;
@@ -132,6 +192,14 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
     this.browserProxy_.getScreenReaderState().then(updateScreenReaderState);
     this.addWebUiListener(
         'screen-reader-state-changed', updateScreenReaderState);
+
+    // <if expr="not is_chromeos">
+    if (this.showPageColors_) {
+      this.mirrorPref(
+          'settings.a11y.requested_page_colors',
+          'requestedA11yPageColorsPref_');
+    }
+    // </if>
   }
 
   // <if expr="is_win or is_linux or is_macosx">
@@ -229,6 +297,11 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
             .getPref<number>('settings.toast.alert_level')
             .value,
         ToastAlertLevel.COUNT);
+  }
+
+  protected isPageColorsThemeSelected_(): boolean {
+    return this.requestedA11yPageColorsPref_ !== undefined &&
+        PAGE_COLORS_THEMES.includes(this.requestedA11yPageColorsPref_.value);
   }
   // </if>
 

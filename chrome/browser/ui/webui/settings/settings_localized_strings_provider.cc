@@ -292,6 +292,20 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_ACCESSIBILITY_TOAST_FREQUENCY_TITLE},
       {"toastAlertLevelDescription",
        IDS_SETTINGS_ACCESSIBILITY_TOAST_FREQUENCY_DESCRIPTION},
+      {"pageColorsTitle", IDS_SETTINGS_PAGE_COLORS_TITLE},
+      {"pageColorsSubtitle", IDS_SETTINGS_PAGE_COLORS_SUBTITLE},
+      {"pageColorsOptionNoPreference",
+       IDS_SETTINGS_PAGE_COLORS_OPTION_NO_PREFERENCE},
+      {"pageColorsOptionOff", IDS_SETTINGS_PAGE_COLORS_OPTION_OFF},
+      {"pageColorsOptionDusk", IDS_SETTINGS_PAGE_COLORS_OPTION_DUSK},
+      {"pageColorsOptionDesert", IDS_SETTINGS_PAGE_COLORS_OPTION_DESERT},
+      {"pageColorsOptionNightSky", IDS_SETTINGS_PAGE_COLORS_OPTION_NIGHT_SKY},
+      {"pageColorsOptionAquatic", IDS_SETTINGS_PAGE_COLORS_OPTION_AQUATIC},
+      {"pageColorsOptionWhite", IDS_SETTINGS_PAGE_COLORS_OPTION_WHITE},
+      {"applyPageColorsOnlyOnIncreasedContrastTitle",
+       IDS_SETTINGS_APPLY_PAGE_COLORS_ONLY_ON_INCREASED_CONTRAST_TITLE},
+      {"applyPageColorsOnlyOnIncreasedContrastSubtitle",
+       IDS_SETTINGS_APPLY_PAGE_COLORS_ONLY_ON_INCREASED_CONTRAST_SUBTITLE},
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
       {"overscrollHistoryNavigationTitle",
@@ -303,6 +317,11 @@ void AddA11yStrings(content::WebUIDataSource* html_source) {
       {"axTreeFixingSubtitle", IDS_SETTINGS_AX_TREE_FIXING_SUBTITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  html_source->AddBoolean("pageColorsSettingsEnabled",
+                          features::IsPageColorsSettingsEnabled());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   AddAxAnnotationsSectionStrings(html_source);
   AddCaptionSubpageStrings(html_source);
