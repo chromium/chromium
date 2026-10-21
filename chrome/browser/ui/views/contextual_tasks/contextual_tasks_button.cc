@@ -768,11 +768,15 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
                   kIPHContextualTasksEphemeralToolbarButtonFeature);
         }
       }
-    } else if (!drop_shadow_painted_layer_) {
-      UpdateDropShadow();
+    } else {
+      if (!drop_shadow_painted_layer_) {
+        UpdateDropShadow();
+      }
+      MaybeToggleFeaturePromo();
     }
     SetVisible(will_be_visible);
   }
+  was_panel_open_ = controller->IsPanelOpen();
   UpdateHighlight();
 }
 
@@ -813,8 +817,32 @@ void ContextualTasksButton::RecordShownDuration(std::string_view end_reason) {
       duration);
 }
 
+void ContextualTasksButton::MaybeToggleFeaturePromo() {
+  ContextualTasksEphemeralButtonController* const controller =
+      ContextualTasksEphemeralButtonController::From(browser_window_interface_);
+  if (!controller) {
+    return;
+  }
+  if (controller->IsPanelOpen()) {
+    if (auto* const user_ed =
+            BrowserUserEducationInterface::From(browser_window_interface_)) {
+      user_ed->AbortFeaturePromo(
+          feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature);
+    }
+  } else if (was_panel_open_ &&
+             (!layer() || !layer()->GetAnimator() ||
+              !layer()->GetAnimator()->is_animating())) {
+    MaybeShowFeaturePromo();
+  }
+}
+
 void ContextualTasksButton::MaybeShowFeaturePromo() {
   if (!GetVisible()) {
+    return;
+  }
+  ContextualTasksEphemeralButtonController* const controller =
+      ContextualTasksEphemeralButtonController::From(browser_window_interface_);
+  if (!controller || controller->IsPanelOpen()) {
     return;
   }
   if (auto* const user_ed =

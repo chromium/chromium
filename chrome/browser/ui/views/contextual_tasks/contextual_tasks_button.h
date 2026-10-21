@@ -94,6 +94,7 @@ class ContextualTasksButton
   void MaybeUpdateVisibility();
   void UpdateHighlight();
   void RecordShownDuration(std::string_view end_reason);
+  void MaybeToggleFeaturePromo();
   void MaybeShowFeaturePromo();
   void UpdateDropShadow(bool force_paint = false, float initial_opacity = 1.0f);
   void UpdateDropShadowLayerBounds();
@@ -116,6 +117,11 @@ class ContextualTasksButton
 
   // Timestamp when the ephemeral button most recently became visible.
   base::TimeTicks shown_time_ticks_;
+
+  // Tracks whether the contextual tasks side panel was open during the last
+  // visibility update, so the ephemeral IPH can be triggered when the panel
+  // closes while the button remains visible.
+  bool was_panel_open_ = false;
 
   base::ScopedObservation<
       contextual_tasks::ContextualTasksPanelController,
