@@ -1958,6 +1958,20 @@ TEST_P(StoreSeedDataAllGroupsTest,
   new_seed.set_serial_number("456");
   ASSERT_TRUE(StoreSeedData(seed_store, SerializeSeed(new_seed)));
   EXPECT_EQ("456", seed_store.GetLatestSerialNumber());
+
+  // Simulate a stale or cleared serial number in Local State (e.g. if the app
+  // exited after updating `kVariationsSeedSerialNumber` but before a delayed
+  // seed file write completed) and verify that `LoadSeedSync()` resynchronizes
+  // `kVariationsSeedSerialNumber` with the loaded seed's serial number.
+  prefs_.SetString(prefs::kVariationsSeedSerialNumber, "stale_serial");
+  EXPECT_EQ("stale_serial", seed_store.GetLatestSerialNumber());
+
+  VariationsSeed loaded_seed;
+  std::string loaded_seed_data;
+  std::string loaded_base64_seed_signature;
+  ASSERT_TRUE(seed_store.LoadSeedSync(&loaded_seed, &loaded_seed_data,
+                                      &loaded_base64_seed_signature));
+  EXPECT_EQ("456", seed_store.GetLatestSerialNumber());
 }
 
 TEST_P(StoreSeedDataAllGroupsTest, StoreSeedData_RecordsUmaHistogramTimer) {

@@ -773,6 +773,9 @@ void VariationsSeedStore::VerifyAndParseSeedAndRunCallback(
   if (result == LoadSeedResult::kCorruptProtobuf) {
     ClearPrefs(seed_type);
   }
+  if (seed_type == SeedType::LATEST && result == LoadSeedResult::kSuccess) {
+    StoreLatestSerialNumber(seed.serial_number());
+  }
   LogLoadSeedResult(seed_type, result);
   std::move(done_callback)
       .Run(std::move(read_result.seed_data), std::move(read_result.signature),
