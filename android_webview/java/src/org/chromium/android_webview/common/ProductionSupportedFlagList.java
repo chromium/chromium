@@ -1539,6 +1539,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_PREWARM_DICTIONARY_ON_PRECONNECT,
                 "When enabled, preconnect requests trigger compression dictionary prewarming."),
+        Flag.baseFeature(
+                GwpAsanFeatures.GWP_ASAN_MALLOC_SMART_SAMPLING,
+                "Enables GWP-ASan smart sampling, which prioritizes allocation types that have not"
+                        + " been sampled recently."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
