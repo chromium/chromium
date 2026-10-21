@@ -203,6 +203,23 @@ void HlsDataSourceProviderImpl::DataSourceInitialized(
       if (!response_uri.SchemeIs("data")) {
         stream->TrackOrigin(url::Origin::Create(response_uri));
       }
+      if (response_uri.SchemeIs("file")) {
+        // For a base page loaded via the file:// protocol, the chrome network
+        // stack allows media content loaded directly via src=, but for security
+        // reasons, does not allow arbitrary reads from other file:// urls (ie,
+        // via JS using `fetch()`).
+        // Since HLS provides the ability to play local manifests with variable
+        // substitution, a file:// hosted playlist could theoretically make
+        // range requests to any arbitrary other file:// uri and test for
+        // playback.
+
+        // As a result, the only thing we can do is block HLS from using the
+        // file:// protocol entirely.
+        std::move(callback).Run(base::unexpected(
+            HlsDemuxerStatus{HlsDemuxerStatus::Codes::kInvalidContentScheme}));
+        TRACE_EVENT_END("media", GetTracingTrack(this));
+        return;
+      }
       stream->SetPostRedirectUri(response_uri);
     } else {
       HlsDemuxerStatus error = {HlsDemuxerStatus::Codes::kNetworkReadError,
