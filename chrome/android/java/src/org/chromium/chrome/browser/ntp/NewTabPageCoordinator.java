@@ -1856,8 +1856,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     }
 
     /**
-     * Updates the spacing of the composeplate buttons, which differs between landscape and portrait
-     * modes on phones.
+     * Updates the spacing of the composeplate buttons, which depends on the available window width
+     * on phones, e.g., after a screen rotation or a split-screen resize.
      */
     private void setComposeplateButtonSpacing() {
         if (mComposeplateCoordinator == null) return;
