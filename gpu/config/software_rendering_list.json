@@ -1463,6 +1463,9 @@
       "id": 186,
       "cr_bugs": [442791440, 475935650],
       "description": "Disable webgpu on vk via gl interop",
+      "os": {
+        "type": "linux"
+      },
       "exceptions": [
         {
           "vendor_id": "0x8086",
