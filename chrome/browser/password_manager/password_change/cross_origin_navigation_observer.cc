@@ -85,6 +85,10 @@ void CrossOriginNavigationObserver::NavigationEntryCommitted(
 
 bool CrossOriginNavigationObserver::IsSameOrAffiliatedDomain(
     const GURL& url) const {
+  if (url.scheme() != initial_origin_.scheme() ||
+      url.EffectiveIntPort() != initial_origin_.port()) {
+    return false;
+  }
   std::string domain =
       affiliations::GetExtendedTopLevelDomain(url, psl_extension_list_);
   // An empty domain should not match anything, unless it's the exact same

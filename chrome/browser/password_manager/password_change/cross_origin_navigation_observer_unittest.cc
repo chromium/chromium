@@ -148,6 +148,58 @@ TEST_F(CrossOriginNavigationObserverTest, NavigationToDifferentDomain) {
   NavigateAndCommit(GURL("https://www.bar.com/settings/"));
 }
 
+TEST_F(CrossOriginNavigationObserverTest,
+       NavigationToDifferentSchemeSameDomainTriggersCallback) {
+  base::MockRepeatingClosure on_navigated_to_different_origin;
+  base::RunLoop run_loop;
+  auto barrier = base::BarrierClosure(2, run_loop.QuitClosure());
+
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce([&](auto callback) {
+        std::move(callback).Run(std::vector<std::string>());
+        barrier.Run();
+      });
+  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
+      .WillOnce([&](auto uri, auto callback) {
+        std::move(callback).Run(affiliations::AffiliatedFacets(), true);
+        barrier.Run();
+      });
+  EXPECT_CALL(on_navigated_to_different_origin, Run);
+
+  CrossOriginNavigationObserver observer(
+      web_contents(), web_contents()->GetURL(), &affiliation_service(),
+      on_navigated_to_different_origin.Get());
+  run_loop.Run();
+
+  NavigateAndCommit(GURL("http://www.foo.com/settings/"));
+}
+
+TEST_F(CrossOriginNavigationObserverTest,
+       NavigationToDifferentPortSameDomainTriggersCallback) {
+  base::MockRepeatingClosure on_navigated_to_different_origin;
+  base::RunLoop run_loop;
+  auto barrier = base::BarrierClosure(2, run_loop.QuitClosure());
+
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce([&](auto callback) {
+        std::move(callback).Run(std::vector<std::string>());
+        barrier.Run();
+      });
+  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
+      .WillOnce([&](auto uri, auto callback) {
+        std::move(callback).Run(affiliations::AffiliatedFacets(), true);
+        barrier.Run();
+      });
+  EXPECT_CALL(on_navigated_to_different_origin, Run);
+
+  CrossOriginNavigationObserver observer(
+      web_contents(), web_contents()->GetURL(), &affiliation_service(),
+      on_navigated_to_different_origin.Get());
+  run_loop.Run();
+
+  NavigateAndCommit(GURL("https://www.foo.com:8443/settings/"));
+}
+
 TEST_F(CrossOriginNavigationObserverTest, NavigationToAffiliatedDomain) {
   base::MockRepeatingClosure on_navigated_to_different_origin;
   base::RunLoop run_loop;
