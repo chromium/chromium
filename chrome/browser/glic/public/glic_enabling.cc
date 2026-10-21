@@ -45,6 +45,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -65,6 +66,7 @@
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
+#include "components/variations/synthetic_trials.h"
 #include "content/public/common/content_switches.h"
 #include "ui/base/device_form_factor.h"
 
@@ -1009,6 +1011,40 @@ bool GlicEnabling::HasConsentedForProfile(Profile* profile) {
 }
 
 // static
+void GlicEnabling::RegisterDefaultHotkeyScopeSyntheticTrial(Profile* profile) {
+#if BUILDFLAG(IS_ANDROID)
+  // Hotkeys are only supported on desktop platforms.
+  return;
+#else
+  if (!base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope) ||
+      !g_browser_process || !g_browser_process->local_state()) {
+    return;
+  }
+
+  if (!HasConsentedForProfile(profile)) {
+    return;
+  }
+
+  const int default_scope = g_browser_process->local_state()->GetInteger(
+      prefs::kGlicDefaultHotkeyScope);
+  std::string_view group_name;
+  if (default_scope == std::to_underlying(prefs::DefaultHotkeyScope::kLocal)) {
+    group_name = kGlicHotkeyDefaultLocalScopeGroupName;
+  } else if (default_scope ==
+             std::to_underlying(prefs::DefaultHotkeyScope::kGlobal)) {
+    group_name = kGlicHotkeyDefaultGlobalScopeGroupName;
+  } else {
+    // Intentionally ignore kNotMigrated or any unexpected values.
+    return;
+  }
+
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      kGlicHotkeyDefaultScopeTrialName, group_name,
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+#endif
+}
+
+// static
 bool GlicEnabling::IsEnabledAndConsentForProfile(Profile* profile) {
   return EnablementForProfile(profile).IsEnabledAndConsented();
 }
@@ -1754,6 +1790,7 @@ void GlicEnabling::UpdateEnabledStatus() {
 }
 
 void GlicEnabling::UpdateConsentStatus() {
+  RegisterDefaultHotkeyScopeSyntheticTrial(profile_);
   consent_changed_callback_list_.Notify();
   show_settings_page_changed_callback_list_.Notify();
   MaybeNotifyProfileReadyStateChanged();

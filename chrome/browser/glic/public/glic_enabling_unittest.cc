@@ -80,8 +80,12 @@
 #include "base/android/android_info.h"
 #else
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/test/base/scoped_metrics_service_for_synthetic_trials.h"  // nogncheck
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/local_device_info_provider_impl.h"
+#include "components/variations/active_field_trials.h"
+#include "components/variations/synthetic_trial_registry.h"
+#include "components/variations/variations_test_utils.h"
 #endif
 
 using base::test::FeatureRef;
@@ -1555,6 +1559,146 @@ TEST_F(GlicEnablingProfileEligibilityTest, ConsentChangedCallback) {
       prefs::FreStatus::kIncomplete);
   EXPECT_TRUE(callback_called);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(GlicEnablingProfileEligibilityTest,
+       DefaultHotkeyScopeSyntheticTrial_Unconsented) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
+
+  ScopedMetricsServiceForSyntheticTrials metrics_service(
+      TestingBrowserProcess::GetGlobal());
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  local_state->SetInteger(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kLocal));
+
+  // Without FRE completed, no synthetic trial is registered (even when
+  // GlicKeyedService is constructed).
+  glic::GlicKeyedService::Get(profile());
+  EXPECT_FALSE(variations::ContainsTrialName(
+      metrics_service.Get()
+          ->GetSyntheticTrialRegistry()
+          ->GetCurrentSyntheticFieldTrialsForTest(),
+      kGlicHotkeyDefaultScopeTrialName));
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       DefaultHotkeyScopeSyntheticTrial_ConsentedStartup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
+
+  ScopedMetricsServiceForSyntheticTrials metrics_service(
+      TestingBrowserProcess::GetGlobal());
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  local_state->SetInteger(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kLocal));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      std::to_underlying(prefs::FreStatus::kCompleted));
+
+  // Accessing GlicKeyedService creates it, registering the trial on startup.
+  glic::GlicKeyedService::Get(profile());
+
+  EXPECT_TRUE(variations::ContainsTrialAndGroupName(
+      metrics_service.Get()
+          ->GetSyntheticTrialRegistry()
+          ->GetCurrentSyntheticFieldTrialsForTest(),
+      kGlicHotkeyDefaultScopeTrialName, kGlicHotkeyDefaultLocalScopeGroupName));
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       DefaultHotkeyScopeSyntheticTrial_ConsentTriggersRegistration) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
+
+  ScopedMetricsServiceForSyntheticTrials metrics_service(
+      TestingBrowserProcess::GetGlobal());
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  local_state->SetInteger(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kLocal));
+
+  // Completing FRE triggers UpdateConsentStatus(), which registers the trial.
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kCompleted);
+
+  EXPECT_TRUE(variations::ContainsTrialAndGroupName(
+      metrics_service.Get()
+          ->GetSyntheticTrialRegistry()
+          ->GetCurrentSyntheticFieldTrialsForTest(),
+      kGlicHotkeyDefaultScopeTrialName, kGlicHotkeyDefaultLocalScopeGroupName));
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       DefaultHotkeyScopeSyntheticTrial_GlobalScope) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
+
+  ScopedMetricsServiceForSyntheticTrials metrics_service(
+      TestingBrowserProcess::GetGlobal());
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  local_state->SetInteger(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kGlobal));
+
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kCompleted);
+
+  EXPECT_TRUE(variations::ContainsTrialAndGroupName(
+      metrics_service.Get()
+          ->GetSyntheticTrialRegistry()
+          ->GetCurrentSyntheticFieldTrialsForTest(),
+      kGlicHotkeyDefaultScopeTrialName,
+      kGlicHotkeyDefaultGlobalScopeGroupName));
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       DefaultHotkeyScopeSyntheticTrial_NotMigrated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
+
+  ScopedMetricsServiceForSyntheticTrials metrics_service(
+      TestingBrowserProcess::GetGlobal());
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  local_state->SetInteger(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated));
+
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kCompleted);
+
+  EXPECT_FALSE(variations::ContainsTrialName(
+      metrics_service.Get()
+          ->GetSyntheticTrialRegistry()
+          ->GetCurrentSyntheticFieldTrialsForTest(),
+      kGlicHotkeyDefaultScopeTrialName));
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       DefaultHotkeyScopeSyntheticTrial_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicHotkeyLocalScope);
+
+  ScopedMetricsServiceForSyntheticTrials metrics_service(
+      TestingBrowserProcess::GetGlobal());
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  local_state->SetInteger(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kLocal));
+
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kCompleted);
+
+  EXPECT_FALSE(variations::ContainsTrialName(
+      metrics_service.Get()
+          ->GetSyntheticTrialRegistry()
+          ->GetCurrentSyntheticFieldTrialsForTest(),
+      kGlicHotkeyDefaultScopeTrialName));
+}
+#endif
 
 TEST_F(GlicEnablingProfileReadyStateTestBase,
        GetExperimentalTriggeringState_NonManaged_Ready) {

@@ -53,6 +53,14 @@ enum class ProfileReadyState : int32_t;
 enum class InvocationSource : int32_t;
 }  // namespace mojom
 
+// Trial and group names for the GlicHotkeyDefaultScope synthetic field trial.
+inline constexpr char kGlicHotkeyDefaultScopeTrialName[] =
+    "GlicHotkeyDefaultScope";
+inline constexpr char kGlicHotkeyDefaultLocalScopeGroupName[] =
+    "GlicHotkeyDefaultLocalScope";
+inline constexpr char kGlicHotkeyDefaultGlobalScopeGroupName[] =
+    "GlicHotkeyDefaultGlobalScope";
+
 // Feature flag kGlicCountryFiltering controls whether country filtering is
 // applied client side. Two finch params are used to control this, both are a
 // comma separated string.
@@ -321,6 +329,12 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
 
   // Returns true if the profile has completed the FRE.
   static bool HasConsentedForProfile(Profile* profile);
+
+  // Registers the synthetic trial for default hotkey scope
+  // ("GlicHotkeyDefaultScope") based on the `prefs::kGlicDefaultHotkeyScope`
+  // local state pref if `kGlicHotkeyLocalScope` feature is enabled and the
+  // given profile has completed the First Run Experience (FRE).
+  static void RegisterDefaultHotkeyScopeSyntheticTrial(Profile* profile);
 
   // Returns true if the given profile has Glic enabled and has completed the
   // FRE. True implies that IsEnabledByGlobalCriteria(),

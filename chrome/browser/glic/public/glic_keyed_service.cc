@@ -217,6 +217,8 @@ GlicKeyedService::GlicKeyedService(
   // persisted cohort (or mark `MultiProfileDetected` if profiles conflict).
   GlicMetricsProvider::RegisterPromotionSourceSyntheticTrial(profile);
 
+  GlicEnabling::RegisterDefaultHotkeyScopeSyntheticTrial(profile);
+
   // TODO(crbug.com/450026474): Consider not constructing this metrics
   // instance for multi-instance
   metrics_->RecordGlicProfilePreferences();
