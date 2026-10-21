@@ -482,4 +482,36 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
   EXPECT_FALSE(MustShowOnNextInteraction());
 }
 
+// Browser-initiated fullscreen is user-initiated, and the user commonly opens
+// the app menu while the bubble is still showing. That must not arm a re-show,
+// or the exit instruction unexpectedly reappears on the next interaction. See
+// crbug.com/574452272.
+//
+// Excluded on ChromeOS because browser fullscreen uses immersive mode there and
+// suppresses the exit instruction bubble (see
+// `ShouldUseImmersiveFullscreenForUrl()` in `browser_view.cc`).
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
+                       MenuDuringBrowserFullscreenDoesNotReshowBubble) {
+  GetFullscreenController()->ToggleBrowserFullscreenMode(
+      /*user_initiated=*/true);
+  WaitAndVerifyFullscreenState(/*browser_fullscreen=*/true,
+                               /*tab_fullscreen=*/false);
+  ASSERT_TRUE(GetExclusiveAccessBubbleView());
+
+  ClearMustShowOnNextInteraction();
+  ASSERT_FALSE(MustShowOnNextInteraction());
+
+  OpenMenu();
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+
+  // Let the show time elapse, so the bubble hides while the menu is still open.
+  Wait(ExclusiveAccessBubble::kShowTime * 2);
+  ASSERT_TRUE(GetExclusiveAccessBubbleView());
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+
+  EXPECT_FALSE(MustShowOnNextInteraction());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 #endif  // !BUILDFLAG(IS_MAC)

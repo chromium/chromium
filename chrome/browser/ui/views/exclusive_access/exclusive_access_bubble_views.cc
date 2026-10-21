@@ -442,7 +442,14 @@ void ExclusiveAccessBubbleViews::Hide() {
   // otherwise suppress the exit instruction for the next 15 minutes, don't let
   // a show that may have gone unseen count. Re-show on the next user
   // interaction instead.
-  if (views::MenuController::GetActiveInstance()) {
+  //
+  // This only applies to tab-initiated modes, for the same reason that
+  // `DismissMenusObscuringBubble()` does: browser- and extension-initiated
+  // fullscreen are user-initiated, and the user commonly opens the app menu
+  // shortly after entering them. Re-showing the instruction then is unexpected
+  // noise rather than a security benefit. See crbug.com/574452272.
+  if (IsTabFullscreenType(params_.type) &&
+      views::MenuController::GetActiveInstance()) {
     SetMustShowOnNextInteraction();
   }
 
