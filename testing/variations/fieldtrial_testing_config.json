@@ -7992,6 +7992,23 @@
             ]
         }
     ],
+    "FontDataServiceForCSSLocalFonts": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261021",
+                    "enable_features": [
+                        "FontDataServiceForCSSLocalFonts"
+                    ]
+                }
+            ]
+        }
+    ],
     "FontDataServiceLinux": [
         {
             "platforms": [
