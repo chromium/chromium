@@ -3305,7 +3305,7 @@ deps = {
   # Keep this version (currently 4.33.0) synchronized with the selenium wheel
   # in //vpython.toml.
   'src/third_party/webdriver/pylib':
-    Var('chromium_git') + '/external/github.com/SeleniumHQ/selenium/py.git' + '@' + '6845a0329408f149fafdbe901f480e2bd47be3fb',
+    Var('chromium_git') + '/external/github.com/SeleniumHQ/selenium/py.git' + '@' + 'd4ee125066352f260f5cc9a495b2fefce9a9f095',
 
   'src/third_party/webgl/src':
     Var('chromium_git') + '/external/khronosgroup/webgl.git' + '@' + '714857a28445e8f5d8d6ae1c78498578009534d8',
