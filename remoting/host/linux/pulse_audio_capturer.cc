@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
@@ -22,6 +23,14 @@
 namespace remoting {
 
 namespace {
+
+// Legacy command-line switch passed by `linux_me2me_host.py` in <= M156.
+// Kept for backward compatibility across in-place host upgrades where the
+// existing Python supervisor remains running.
+//
+// TODO: crbug.com/575913707 - Remove once there are sufficiently few Linux
+// hosts running M155 or earlier.
+constexpr char kAudioPipeSwitchName[] = "audio-pipe-name";
 
 base::LazyInstance<scoped_refptr<AudioPipeReader>>::Leaky
     g_pulseaudio_pipe_sink_reader = LAZY_INSTANCE_INITIALIZER;
@@ -35,14 +44,20 @@ bool PulseAudioCapturer::InitializePipeReader(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   scoped_refptr<AudioPipeReader> pipe_reader;
   if (task_runner) {
+    base::FilePath pipe_path;
     std::unique_ptr<base::Environment> env = base::Environment::Create();
     // LINT.IfChange(audio_pipe_env_var)
     std::optional<std::string> env_pipe =
         env->GetVar("CHROME_REMOTE_DESKTOP_AUDIO_PIPE");
     // LINT.ThenChange(//remoting/host/linux/shared_lib.py:audio_pipe_env_var)
     if (env_pipe.has_value() && !env_pipe->empty()) {
-      pipe_reader =
-          AudioPipeReader::Create(task_runner, base::FilePath(*env_pipe));
+      pipe_path = base::FilePath(*env_pipe);
+    } else if (base::CommandLine::InitializedForCurrentProcess()) {
+      pipe_path = base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          kAudioPipeSwitchName);
+    }
+    if (!pipe_path.empty()) {
+      pipe_reader = AudioPipeReader::Create(task_runner, pipe_path);
     }
   }
   g_pulseaudio_pipe_sink_reader.Get() = pipe_reader;
