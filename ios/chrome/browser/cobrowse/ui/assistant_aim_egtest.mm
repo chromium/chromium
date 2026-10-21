@@ -1594,6 +1594,91 @@ void RemoveSharedTab(NSString* title) {
                    /*dismissAfterVerification=*/YES);
 }
 
+// Tests that after sending a follow-up query in Co-browse, navigating to a new
+// URL in the SAME tab and re-focusing the Co-browse omnibox auto-attaches the
+// new page while preserving the previously shared page from the same tab.
+- (void)testCobrowseFollowUpAfterSameTabNavigation {
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.features_enabled.push_back(kComposeboxPlusButtonBottomSheet);
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // 1. Open Co-browse on Tab A (/pony.html).
+  OpenCoBrowse(self.testServer->GetURL(kPonyPagePath));
+
+  // Wait for the assistant to appear in medium detent.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+  WaitForDetent(AssistantContainerDetent::kMedium);
+
+  // 2. Focus the input plate inside the Cobrowse assistant to expand to Large
+  // and trigger auto-attachment of the active tab.
+  id<GREYMatcher> cobrowseOmniboxMedium = grey_allOf(
+      chrome_test_util::Omnibox(),
+      grey_ancestor(
+          grey_accessibilityID(kAssistantContainerDetentMediumIdentifier)),
+      nil);
+  [[EarlGrey selectElementWithMatcher:cobrowseOmniboxMedium]
+      performAction:grey_tap()];
+  WaitForDetent(AssistantContainerDetent::kLarge);
+
+  // Verify that pony.html is auto-attached.
+  VerifySharedTabs(@[ kPonyPageTitle ], @[],
+                   /*dismissAfterVerification=*/YES);
+
+  // 3. Send a followup query in Large detent to interact with Tab A.
+  id<GREYMatcher> cobrowseOmniboxLarge = grey_allOf(
+      chrome_test_util::Omnibox(),
+      grey_ancestor(
+          grey_accessibilityID(kAssistantContainerDetentLargeIdentifier)),
+      nil);
+  [[EarlGrey selectElementWithMatcher:cobrowseOmniboxLarge]
+      performAction:grey_tap()];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"Explain this page" flags:0];
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+
+  id<GREYMatcher> sendButton = grey_allOf(
+      grey_accessibilityID(kComposeboxSendButtonAccessibilityIdentifier),
+      grey_ancestor(
+          grey_accessibilityID(kAssistantContainerDetentLargeIdentifier)),
+      grey_sufficientlyVisible(), nil);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:sendButton];
+  [[EarlGrey selectElementWithMatcher:sendButton] performAction:grey_tap()];
+
+  // 4. Minimize the assistant container.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kAssistantContainerDetentLargeIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  WaitForDetent(AssistantContainerDetent::kMinimized);
+
+  // 5. Navigate to a new URL (/chromium_logo_page.html) in the SAME tab.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kChromiumLogoPagePath)];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // 6. Re-expand the assistant container to Large and focus the input plate.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kAssistantContainerDetentMinimizedIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+  WaitForDetent(AssistantContainerDetent::kLarge);
+
+  [[EarlGrey selectElementWithMatcher:cobrowseOmniboxLarge]
+      performAction:grey_tap()];
+
+  // 7. Verify that BOTH pony.html (preserved from previous turn) and
+  // chromium_logo_page.html (newly auto-attached from the same tab) are shared.
+  VerifySharedTabs(@[ kPonyPageTitle, kChromiumLogoPageTitle ], @[],
+                   /*dismissAfterVerification=*/YES);
+
+  // 8. Remove pony.html (Page A) from Shared Tabs, refocus the omnibox, and
+  // verify that chromium_logo_page.html (Page B) remains in Shared Tabs.
+  RemoveSharedTab(kPonyPageTitle);
+  [[EarlGrey selectElementWithMatcher:cobrowseOmniboxLarge]
+      performAction:grey_tap()];
+  VerifySharedTabs(@[ kChromiumLogoPageTitle ], @[ kPonyPageTitle ],
+                   /*dismissAfterVerification=*/YES);
+}
+
 // Tests that removing an auto-attached tab prevents it from being automatically
 // re-added when refocusing the Co-browse omnibox, and that navigating to a new
 // URL allows the new page to be auto-attached.
