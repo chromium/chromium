@@ -403,7 +403,10 @@ For details, see <https://security.googleblog.com/2016/10/distrusting-wosign-and
 
 ### eMudhra
 
-For details, see <https://groups.google.com/a/mozilla.org/g/dev-security-policy/c/0R3XLJL6FuE/m/0XofdebrAAAJ>
+For details, see
+<https://blog.google/security/protecting-chrome-and-android-users-from-compromised-emudhra-intermediate-ca-certificates/>
+and
+<https://groups.google.com/a/mozilla.org/g/dev-security-policy/c/0R3XLJL6FuE/m/0XofdebrAAAJ>
 
   * [0164d7ceae5bb909c272af151ff44b1177ae9b47d9424b94f1d9558c30934d19.pem](0164d7ceae5bb909c272af151ff44b1177ae9b47d9424b94f1d9558c30934d19.pem)
   * [42c4accd12c4f59597925e1a08a7a90102608543809308d50ec427e118ba1493.pem](42c4accd12c4f59597925e1a08a7a90102608543809308d50ec427e118ba1493.pem)
