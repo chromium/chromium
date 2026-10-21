@@ -8,12 +8,15 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/not_fatal_until.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/blocking_data_type_store_impl.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
@@ -50,6 +53,7 @@ DataTypeStoreImpl::DataTypeStoreImpl(
       storage_type_(storage_type),
       backend_task_runner_(std::move(backend_task_runner)),
       backend_store_(std::move(backend_store)) {
+  CHECK(IsRealDataType(data_type_), base::NotFatalUntil::M162);
   DCHECK(backend_store_);
   DCHECK(backend_task_runner_);
 }

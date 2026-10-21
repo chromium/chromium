@@ -29,6 +29,7 @@ namespace syncer {
 
 namespace {
 
+using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::Not;
 using testing::Pair;
@@ -528,6 +529,22 @@ TEST(DataTypeStoreImplWithTwoStoreTest,
     EXPECT_THAT(*data_records, IsEmpty());
     EXPECT_THAT(metadata_batch, IsEmptyMetadataBatch());
   }
+}
+
+// Verifies that `CreateInMemoryStoreForTest()` with default arguments uses a
+// valid real `DataType` and supports reading and writing records.
+TEST(DataTypeStoreImplDefaultTestUtilTest,
+     CreateInMemoryStoreWithDefaultArguments) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  std::unique_ptr<DataTypeStore> store =
+      DataTypeStoreTestUtil::CreateInMemoryStoreForTest();
+  WriteData(store.get(), "key", "data");
+
+  std::unique_ptr<DataTypeStore::RecordList> data_records;
+  std::unique_ptr<MetadataBatch> metadata_batch;
+  ReadStoreContents(store.get(), &data_records, &metadata_batch);
+  EXPECT_THAT(*data_records, ElementsAre(RecordMatches("key", "data")));
 }
 
 }  // namespace syncer

@@ -7,11 +7,14 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/model/data_type_store_backend.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
@@ -193,6 +196,7 @@ BlockingDataTypeStoreImpl::BlockingDataTypeStoreImpl(
       data_prefix_(FormatDataPrefix(data_type, storage_type)),
       metadata_prefix_(FormatMetaPrefix(data_type, storage_type)),
       global_metadata_key_(FormatGlobalMetadataKey(data_type, storage_type)) {
+  CHECK(IsRealDataType(data_type_), base::NotFatalUntil::M162);
   DCHECK(backend_);
 }
 
@@ -291,8 +295,7 @@ std::optional<ModelError>
 BlockingDataTypeStoreImpl::DeleteAllDataAndMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return backend_->DeleteDataAndMetadataForPrefix(
-      base::StrCat({GetStorageTypePrefix(storage_type_),
-                    DataTypeToStableLowerCaseString(data_type_)}));
+      FormatPrefixForDataTypeAndStorageType(data_type_, storage_type_));
 }
 
 // static
@@ -306,6 +309,7 @@ BlockingDataTypeStoreImpl::CreateWriteBatch(DataType data_type,
 std::string BlockingDataTypeStoreImpl::FormatPrefixForDataTypeAndStorageType(
     DataType data_type,
     StorageType storage_type) {
+  CHECK(IsRealDataType(data_type), base::NotFatalUntil::M162);
   return base::StrCat({GetStorageTypePrefix(storage_type),
                        DataTypeToStableLowerCaseString(data_type)});
 }
