@@ -7,6 +7,8 @@ package org.chromium.components.content_settings;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -19,7 +21,10 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 @JNINamespace("content_settings")
 @NullMarked
 public abstract class ContentSettingsObserver {
-    private final long mNativeAndroidObserver;
+    @JniType("::content_settings::AndroidObserver")
+    public interface NativeAndroidObserver extends JniTypeToken {}
+
+    private final JniUniquePtr<NativeAndroidObserver> mNativeAndroidObserver;
     private boolean mIsDestroyed;
 
     /**
@@ -54,13 +59,12 @@ public abstract class ContentSettingsObserver {
     public void destroy() {
         assert !mIsDestroyed : "This observer is already destroyed.";
         mIsDestroyed = true;
-        ContentSettingsObserverJni.get().destroy(mNativeAndroidObserver);
+        mNativeAndroidObserver.destroy();
     }
 
     @NativeMethods
     interface Natives {
-        long init(ContentSettingsObserver self, BrowserContextHandle contextHandle);
-
-        void destroy(long nativeAndroidObserver);
+        JniUniquePtr<NativeAndroidObserver> init(
+                ContentSettingsObserver self, BrowserContextHandle contextHandle);
     }
 }

@@ -21,18 +21,13 @@ class AndroidObserver : public Observer {
       const base::android::JavaRef<jobject>& obj,
       const base::android::JavaRef<jobject>& jbrowser_context_handle);
 
-  // Destroys the AndroidObserver object. This needs to be called on the java
-  // side when the object is not in use anymore.
-  void Destroy(JNIEnv* env);
+  ~AndroidObserver() override;
 
   // content_settings::Observer:
   void OnContentSettingChanged(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsTypeSet content_type_set) override;
-
- protected:
-  ~AndroidObserver() override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jobject_;

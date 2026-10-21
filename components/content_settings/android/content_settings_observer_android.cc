@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/android/browser_context_handle.h"
+#include "third_party/jni_zero/jni_unique_ptr.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/content_settings/android/content_settings_jni_headers/ContentSettingsObserver_jni.h"
@@ -42,16 +43,12 @@ void AndroidObserver::OnContentSettingChanged(
       static_cast<int>(content_type_set.GetTypeOrDefault()));
 }
 
-void AndroidObserver::Destroy(JNIEnv* env) {
-  delete this;
-}
-
-static int64_t JNI_ContentSettingsObserver_Init(
+static jni_zero::JniUniquePtr<AndroidObserver> JNI_ContentSettingsObserver_Init(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jobject>& jbrowser_context_handle) {
-  return reinterpret_cast<intptr_t>(
-      new AndroidObserver(env, obj, jbrowser_context_handle));
+  return jni_zero::MakeUnique<AndroidObserver>(env, obj,
+                                               jbrowser_context_handle);
 }
 
 }  // namespace content_settings
