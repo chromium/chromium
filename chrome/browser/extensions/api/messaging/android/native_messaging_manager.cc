@@ -8,6 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/common/extension.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 // This JNI header is generated from NativeMessagingManager.java.
@@ -15,12 +16,12 @@
 
 namespace extensions {
 
-static int64_t JNI_NativeMessagingManager_Initialize(
+static jni_zero::JniUniquePtr<NativeMessagingManager>
+JNI_NativeMessagingManager_Initialize(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& j_object,
     Profile* profile) {
-  return reinterpret_cast<intptr_t>(
-      new NativeMessagingManager(env, j_object, profile));
+  return jni_zero::MakeUnique<NativeMessagingManager>(env, j_object, profile);
 }
 
 NativeMessagingManager::NativeMessagingManager(
@@ -32,10 +33,6 @@ NativeMessagingManager::NativeMessagingManager(
 }
 
 NativeMessagingManager::~NativeMessagingManager() = default;
-
-void NativeMessagingManager::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void NativeMessagingManager::OnExtensionUnloaded(
     content::BrowserContext* browser_context,

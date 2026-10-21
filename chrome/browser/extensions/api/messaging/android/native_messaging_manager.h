@@ -38,9 +38,6 @@ class NativeMessagingManager : public ExtensionRegistryObserver {
   NativeMessagingManager(const NativeMessagingManager&) = delete;
   NativeMessagingManager& operator=(const NativeMessagingManager&) = delete;
 
-  // Called by Java to destroy this object. Do not call directly in C++.
-  void Destroy(JNIEnv* env);
-
   // ExtensionRegistryObserver:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
