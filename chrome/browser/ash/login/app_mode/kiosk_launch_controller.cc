@@ -51,6 +51,7 @@
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
 #include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
@@ -62,6 +63,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -324,14 +326,16 @@ class KioskLaunchController::ScopedAcceleratorDisabler {
 
 KioskLaunchController::KioskLaunchController(
     PrefService* local_state,
-    const policy::PolicyService* policy_service,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     LoginDisplayHost* host,
     AppLaunchedCallback app_launched_callback,
     AppLaunchSplashScreen* splash_screen,
     LaunchCompleteCallback done_callback)
     : KioskLaunchController(
           local_state,
-          policy_service,
+          std::move(shared_url_loader_factory),
+          browser_policy_connector_ash,
           host,
           splash_screen,
           /*profile_loader=*/base::BindOnce(&LoadProfile),
@@ -351,7 +355,8 @@ KioskLaunchController::KioskLaunchController(
 
 KioskLaunchController::KioskLaunchController(
     PrefService* local_state,
-    const policy::PolicyService* policy_service,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     LoginDisplayHost* host,
     AppLaunchSplashScreen* splash_screen,
     LoadProfileCallback profile_loader,
@@ -363,7 +368,8 @@ KioskLaunchController::KioskLaunchController(
     std::unique_ptr<NetworkUiController::NetworkMonitor> network_monitor,
     std::unique_ptr<AcceleratorController> accelerator_controller)
     : local_state_(CHECK_DEREF(local_state)),
-      policy_service_(CHECK_DEREF(policy_service)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       host_(host),
       splash_screen_(splash_screen),
       app_launcher_factory_(std::move(app_launcher_factory)),
@@ -378,6 +384,7 @@ KioskLaunchController::KioskLaunchController(
       attempt_relaunch_(std::move(attempt_relaunch)),
       profile_loader_(std::move(profile_loader)),
       accelerator_controller_(std::move(accelerator_controller)) {
+  CHECK(shared_url_loader_factory_);
   if (!host_) {
     CHECK_IS_TEST();
   }
@@ -415,7 +422,8 @@ void KioskLaunchController::Start(KioskApp kiosk_app, bool auto_launch) {
   profile_loader_handle_ =
       std::move(profile_loader_)
           .Run(
-              /*local_state=*/&local_state_.get(), kiosk_app_id().account_id,
+              /*local_state=*/&local_state_.get(), shared_url_loader_factory_,
+              &browser_policy_connector_ash_.get(), kiosk_app_id().account_id,
               kiosk_app_id().type,
               /*on_done=*/
               base::BindOnce(
@@ -597,7 +605,7 @@ void KioskLaunchController::OnAppPrepared() {
   UpdateSplashScreenData(GetSplashScreenAppData());
 
   force_install_observer_ = std::make_unique<app_mode::ForceInstallObserver>(
-      policy_service_.get(), profile_,
+      CHECK_DEREF(browser_policy_connector_ash_->GetPolicyService()), profile_,
       base::BindOnce(&KioskLaunchController::FinishForcedExtensionsInstall,
                      weak_ptr_factory_.GetWeakPtr()));
 }

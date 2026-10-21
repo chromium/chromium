@@ -73,6 +73,8 @@
 #include "extensions/browser/forced_extensions/install_stage_tracker.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
@@ -190,6 +192,10 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
       delete;
 
   void SetUp() override {
+    // `KioskLaunchController` requires a non-null `SharedURLLoaderFactory`.
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+
     session_manager_ = std::make_unique<session_manager::SessionManager>(
         std::make_unique<session_manager::FakeSessionManagerDelegate>());
     user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
@@ -216,10 +222,10 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     accelerator_controller_ = fake_accelerator_controller.get();
     controller_ = std::make_unique<KioskLaunchController>(
         TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
-            ->browser_policy_connector_ash()
-            ->GetPolicyService(),
+            ->browser_policy_connector_ash(),
         /*host=*/nullptr, &screen_, FakeLoadProfileCallback(),
         /*app_launched_callback=*/app_launched_future_.GetCallback(),
         /*done_callback=*/launch_done_future_.GetCallback(),
@@ -257,6 +263,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     policy::BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
     session_manager_.reset();
     user_manager_.Reset();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
   }
 
   KioskLaunchController& controller() { return *controller_; }
@@ -378,8 +385,12 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
   LoadProfileCallback FakeLoadProfileCallback() {
     return base::BindLambdaForTesting(
-        [&](PrefService* local_state, const AccountId& app_account_id,
-            KioskAppType app_type, LoadProfileResultCallback on_done) {
+        [&](PrefService* local_state,
+            scoped_refptr<network::SharedURLLoaderFactory>
+                shared_url_loader_factory,
+            policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+            const AccountId& app_account_id, KioskAppType app_type,
+            LoadProfileResultCallback on_done) {
           on_profile_loaded_callback_ = std::move(on_done);
           return std::unique_ptr<CancellableJob>{};
         });
@@ -417,6 +428,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   raw_ptr<FakeAcceleratorController> accelerator_controller_ = nullptr;
 
   KioskAppId kiosk_app_id_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
 TEST_F(KioskLaunchControllerTest, StartShouldShowAppDataOnSplashScreen) {

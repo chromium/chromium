@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ash/app_mode/cancellable_job.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -19,6 +20,14 @@
 
 class Profile;
 class PrefService;
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 namespace ash::kiosk {
 
@@ -44,9 +53,13 @@ using LoadProfileResultCallback =
 // The returned `unique_ptr` can be destroyed to cancel this task. In that case
 // `on_done` will not be called.
 //
-// `local_state` must be non-null, and must outlive the returned object.
+// `local_state` and `browser_policy_connector_ash` must be non-null, and must
+// outlive the returned object.
+// `shared_url_loader_factory` must be non-null.
 [[nodiscard]] std::unique_ptr<CancellableJob> LoadProfile(
     PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     const AccountId& app_account_id,
     KioskAppType app_type,
     LoadProfileResultCallback on_done);

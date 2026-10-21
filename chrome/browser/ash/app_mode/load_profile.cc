@@ -30,8 +30,6 @@
 #include "chrome/browser/ash/app_mode/retry_runner.h"
 #include "chrome/browser/ash/login/auth/chrome_login_performer.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -41,6 +39,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace ash::kiosk {
@@ -118,11 +117,14 @@ class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
  public:
   static std::unique_ptr<CancellableJob> Run(
       PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       KioskAppType app_type,
       AccountId account_id,
       PerformSigninResultCallback on_done) {
-    auto handle =
-        base::WrapUnique(new SigninPerformer(local_state, std::move(on_done)));
+    auto handle = base::WrapUnique(
+        new SigninPerformer(local_state, std::move(shared_url_loader_factory),
+                            browser_policy_connector_ash, std::move(on_done)));
 
     switch (app_type) {
       case KioskAppType::kChromeApp:
@@ -147,15 +149,20 @@ class SigninPerformer : public LoginPerformer::Delegate, public CancellableJob {
   ~SigninPerformer() override = default;
 
  private:
-  // `local_state` must be non-null, and must outlive `this`.
-  SigninPerformer(PrefService* local_state, PerformSigninResultCallback on_done)
+  // `local_state` and `browser_policy_connector_ash` must be non-null, and must
+  // outlive `this`.
+  // `shared_url_loader_factory` must be non-null.
+  SigninPerformer(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      PerformSigninResultCallback on_done)
       : local_state_(CHECK_DEREF(local_state)),
         on_done_(std::move(on_done)),
         login_performer_(std::make_unique<ChromeLoginPerformer>(
             &local_state_.get(),
-            // TODO(crbug.com/404129026): Avoid using g_browser_process.
-            g_browser_process->shared_url_loader_factory(),
-            g_browser_process->platform_part()->browser_policy_connector_ash(),
+            std::move(shared_url_loader_factory),
+            browser_policy_connector_ash,
             this,
             AuthEventsRecorder::Get())) {}
 
@@ -201,21 +208,32 @@ bool IsRetriableError(const PerformSigninResult& result) {
   return false;
 }
 
-std::unique_ptr<CancellableJob> Signin(PrefService* local_state,
-                                       KioskAppType app_type,
-                                       AccountId account_id,
-                                       PerformSigninResultCallback on_done) {
+// `LoadProfile()` binds the first two arguments to make a
+// `PerformSigninCallback`.
+std::unique_ptr<CancellableJob> Signin(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    PrefService* local_state,
+    KioskAppType app_type,
+    AccountId account_id,
+    PerformSigninResultCallback on_done) {
   return RunUpToNTimes<PerformSigninResult>(
       /*n=*/3,
       /*job=*/
       base::BindRepeating(
-          [](PrefService* local_state, KioskAppType app_type,
-             AccountId account_id,
+          [](PrefService* local_state,
+             scoped_refptr<network::SharedURLLoaderFactory>
+                 shared_url_loader_factory,
+             policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+             KioskAppType app_type, AccountId account_id,
              RetryResultCallback<PerformSigninResult> on_result) {
-            return SigninPerformer::Run(local_state, app_type, account_id,
-                                        std::move(on_result));
+            return SigninPerformer::Run(local_state,
+                                        std::move(shared_url_loader_factory),
+                                        browser_policy_connector_ash, app_type,
+                                        account_id, std::move(on_result));
           },
-          local_state, app_type, account_id),
+          local_state, std::move(shared_url_loader_factory),
+          browser_policy_connector_ash, app_type, account_id),
       /*should_retry=*/base::BindRepeating(&IsRetriableError),
       /*on_done=*/
       std::move(on_done));
@@ -440,14 +458,18 @@ void ProfileLoader::ReturnError(KioskAppLaunchError::Error result) {
 
 }  // namespace
 
-std::unique_ptr<CancellableJob> LoadProfile(PrefService* local_state,
-                                            const AccountId& app_account_id,
-                                            KioskAppType app_type,
-                                            LoadProfileResultCallback on_done) {
+std::unique_ptr<CancellableJob> LoadProfile(
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    const AccountId& app_account_id,
+    KioskAppType app_type,
+    LoadProfileResultCallback on_done) {
   return LoadProfileWithCallbacks(
       local_state, app_account_id, app_type, base::BindOnce(&CheckCryptohome),
-      base::BindOnce(&Signin), base::BindOnce(&SessionStarter::Run),
-      std::move(on_done));
+      base::BindOnce(&Signin, std::move(shared_url_loader_factory),
+                     browser_policy_connector_ash),
+      base::BindOnce(&SessionStarter::Run), std::move(on_done));
 }
 
 std::unique_ptr<CancellableJob> LoadProfileWithCallbacks(
