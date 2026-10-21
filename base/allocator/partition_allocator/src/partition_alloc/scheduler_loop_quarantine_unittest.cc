@@ -196,6 +196,43 @@ TYPED_TEST(SchedulerLoopQuarantineTest, Basic) {
   }
 }
 
+TYPED_TEST(SchedulerLoopQuarantineTest, PurgeHeadroom) {
+  constexpr size_t kHeadroomPercent = 40;
+  QuarantineConfig config = this->GetConfig();
+  config.purge_headroom_percent = kHeadroomPercent;
+  this->GetQuarantineBranch()->Configure(*this->GetQuarantineRoot(), config);
+
+  const size_t capacity_in_bytes =
+      this->GetQuarantineBranch()->GetCapacityInBytes();
+  const size_t headroom_in_bytes = capacity_in_bytes / 100 * kHeadroomPercent;
+
+  void* object = this->GetPartitionRoot()->Alloc(1);
+  const size_t size = this->GetObjectSize(object);
+  ASSERT_GT(headroom_in_bytes, 2 * size);
+
+  // Fill the branch, without purging.
+  const size_t max_count = capacity_in_bytes / size;
+  for (size_t i = 0; i < max_count; i++) {
+    this->Quarantine(object);
+    object = this->GetPartitionRoot()->Alloc(1);
+  }
+  EXPECT_EQ(max_count, this->GetStats().count);
+
+  // The branch is full: quarantining another entry dequarantines enough
+  // entries to make room for `headroom_in_bytes` more bytes.
+  this->Quarantine(object);
+  auto stats = this->GetStats();
+  EXPECT_LE(stats.size_in_bytes, capacity_in_bytes - headroom_in_bytes);
+  EXPECT_GT(stats.size_in_bytes, capacity_in_bytes - headroom_in_bytes - size);
+
+  // Subsequent entries fit without dequarantining anything.
+  const size_t count_after_purge = stats.count;
+  const size_t room_count = (capacity_in_bytes - stats.size_in_bytes) / size;
+  for (size_t i = 1; i <= room_count; i++) {
+    this->Quarantine(this->GetPartitionRoot()->Alloc(1));
+    EXPECT_EQ(count_after_purge + i, this->GetStats().count);
+  }
+}
 TYPED_TEST(SchedulerLoopQuarantineTest, TooLargeAllocation) {
   const size_t kThreshold =
       std::min(this->GetConfig().max_quarantine_size,

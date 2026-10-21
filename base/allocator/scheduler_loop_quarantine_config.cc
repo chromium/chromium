@@ -69,6 +69,7 @@ constexpr char kKeyPauseInBetweenTasks[] = "pause-in-between-tasks";
 constexpr char kKeyExcludeNonIpcTasks[] = "exclude-non-ipc-tasks";
 constexpr char kKeyBranchCapacityInBytes[] = "branch-capacity-in-bytes";
 constexpr char kKeyMaxQuarantineSize[] = "max-quarantine-size";
+constexpr char kKeyPurgeHeadroomPercent[] = "purge-headroom-percent";
 
 struct Match {
   const DictValue* dict;
@@ -222,6 +223,14 @@ GetSchedulerLoopQuarantineConfiguration(
       config_entry->FindInt(kKeyMaxQuarantineSize).value_or(-1);
   if (0 < max_quarantine_size) {
     config.max_quarantine_size = static_cast<size_t>(max_quarantine_size);
+  }
+
+  int purge_headroom_percent =
+      config_entry->FindInt(kKeyPurgeHeadroomPercent).value_or(0);
+  if (0 < purge_headroom_percent) {
+    config.purge_headroom_percent =
+        std::min(static_cast<size_t>(purge_headroom_percent),
+                 ::partition_alloc::internal::kMaxPurgeHeadroomPercent);
   }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

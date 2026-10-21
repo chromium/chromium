@@ -100,9 +100,18 @@ struct SchedulerLoopQuarantineConfig {
   // Accepts allocations up to this bucket size. If the given number does not
   // match bucket size, it is rounded up to next bucket size.
   size_t max_quarantine_size = BucketIndexLookup::kMaxBucketSize;
+  // When the branch is full, dequarantine enough entries to free up this
+  // percentage of the capacity (in addition to the space needed by the
+  // incoming entry), instead of just enough to fit the incoming entry. This
+  // amortizes the cost of purging over multiple quarantined entries, at the
+  // cost of a lower average quarantine occupancy. Clamped to
+  // `kMaxPurgeHeadroomPercent`.
+  size_t purge_headroom_percent = 0;
   // For informational purposes only.
   char branch_name[32] = "";
 };
+
+inline constexpr size_t kMaxPurgeHeadroomPercent = 50;
 
 enum class QuarantineTarget {
   kMiracleObjects = 0,
@@ -335,6 +344,8 @@ class SchedulerLoopQuarantineBranch {
   bool exclude_non_ipc_tasks_ = false;
   int task_nesting_depth_ = 0;
   bool is_outermost_task_mojo_ipc_ = false;
+  // See `SchedulerLoopQuarantineConfig::purge_headroom_percent`.
+  uint8_t purge_headroom_percent_ = 0;
 
   uint16_t largest_bucket_index_ = BucketIndexLookup::kNumBuckets - 1;
 

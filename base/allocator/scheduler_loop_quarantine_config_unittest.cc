@@ -294,6 +294,53 @@ TEST(SchedulerLoopQuarantineConfigTest, WildcardMatching) {
   EXPECT_EQ(100, config.branch_capacity_in_bytes);
 }
 
+constexpr char kPurgeHeadroomConfigJSON[] = R"({
+  "browser": {
+    "main": {
+      "enable-quarantine": true,
+      "purge-headroom-percent": 10
+    },
+    "io": {
+      "enable-quarantine": true,
+      "purge-headroom-percent": 1000
+    },
+    "*": {
+      "enable-quarantine": true,
+      "purge-headroom-percent": -1
+    },
+  },
+})";
+
+TEST(SchedulerLoopQuarantineConfigTest, PurgeHeadroomPercent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      base::features::kPartitionAllocSchedulerLoopQuarantine,
+      {{base::features::kPartitionAllocSchedulerLoopQuarantineConfig.name,
+        kPurgeHeadroomConfigJSON}});
+
+  partition_alloc::internal::SchedulerLoopQuarantineConfig config;
+
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "browser", SchedulerLoopQuarantineBranchType::kMain);
+  EXPECT_EQ(10u, config.purge_headroom_percent);
+
+  // Too large values are clamped.
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "browser", SchedulerLoopQuarantineBranchType::kIO);
+  EXPECT_EQ(partition_alloc::internal::kMaxPurgeHeadroomPercent,
+            config.purge_headroom_percent);
+
+  // Negative values are ignored.
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "browser", SchedulerLoopQuarantineBranchType::kThreadLocalDefault);
+  EXPECT_EQ(0u, config.purge_headroom_percent);
+
+  // Defaults to 0.
+  config = GetSchedulerLoopQuarantineConfiguration(
+      "browser", SchedulerLoopQuarantineBranchType::kGlobal);
+  EXPECT_EQ(0u, config.purge_headroom_percent);
+}
+
 constexpr char kInvalidTestingConfigJSON[] = "nyan";
 
 TEST(SchedulerLoopQuarantineConfigTest, InvalidConfig) {

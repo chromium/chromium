@@ -9,6 +9,7 @@
 // - `no_quarantine`: SLQ disabled (baseline).
 // - `browser_main`: SLQ configured like on the browser main thread on desktop.
 // - `browser_main_unlimited`: `browser_main` with an unlimited capacity.
+// - `browser_main_purge_headroom_10`: `browser_main` with a 10% purge headroom.
 // To reduce the impact of machine noise, configurations run alternately in the
 // same process, `kRounds` times each, and the median is reported.
 //
@@ -75,15 +76,22 @@ constexpr SchedulerLoopQuarantineConfig BrowserMainUnlimitedConfig() {
   return config;
 }
 
+constexpr SchedulerLoopQuarantineConfig BrowserMainPurgeHeadroomConfig() {
+  SchedulerLoopQuarantineConfig config = BrowserMainConfig();
+  config.purge_headroom_percent = 10;
+  return config;
+}
+
 struct Configuration {
   const char* name;
   SchedulerLoopQuarantineConfig config;
 };
 
-constexpr std::array<Configuration, 3> kConfigurations = {{
+constexpr std::array<Configuration, 4> kConfigurations = {{
     {"no_quarantine", SchedulerLoopQuarantineConfig()},
     {"browser_main", BrowserMainConfig()},
     {"browser_main_unlimited", BrowserMainUnlimitedConfig()},
+    {"browser_main_purge_headroom_10", BrowserMainPurgeHeadroomConfig()},
 }};
 
 constexpr int kRounds = 9;
