@@ -25,7 +25,7 @@
 }
 
 #expandButton {
-  --cr-expand-button-icon-size: 16px;
+  --cr-expand-button-icon-size: 20px;
   --cr-expand-button-size: 24px;
   --cr-icon-button-focus-outline-color: transparent;
   --cr-section-vertical-padding: 0;

@@ -62,7 +62,9 @@ export class TabGroupsDelegate implements
     const item: OrganizerListSectionItem<unknown> = {
       title: [loadTimeData.getString('createTabGroup')],
       prefixIcon: {
-        element: html`<cr-icon icon="cr:add"></cr-icon>`,
+        element: html`<cr-icon icon="cr:add"
+            style="--iron-icon-height: 20px; --iron-icon-width: 20px;">
+        </cr-icon>`,
       },
       size: CrUrlListItemSize.COMPACT,
     };
