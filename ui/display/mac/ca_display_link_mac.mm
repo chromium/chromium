@@ -4,6 +4,7 @@
 
 #include "ui/display/mac/ca_display_link_mac.h"
 
+#import <AppKit/AppKit.h>
 #import <CoreGraphics/CoreGraphics.h>
 #import <QuartzCore/QuartzCore.h>
 #import <mach/mach.h>
@@ -288,6 +289,11 @@ void CADisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
   if (@available(macos 14.0, *)) {
     objc_state_->display_link.paused = YES;
   }
+}
+
+// static
+bool WindowServerEventPumpThread::NSAppInitialized() {
+  return NSApp != nil;
 }
 
 // FrameSinkManagerImpl creates and owns WindowServerEventPumpThread when

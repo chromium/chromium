@@ -135,10 +135,14 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
   // interfere with the standard event loop.
   if (ui::DisplayLinkMac::SupportsCADisplayLinkInGPU()) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    if (!command_line->HasSwitch("in-process-gpu") &&
-        !command_line->HasSwitch("single-process") &&
-        !command_line->HasSwitch("single-process-tests") &&
-        !command_line->HasSwitch(switches::kHeadless)) {
+    bool in_process_or_headless_switch =
+        command_line->HasSwitch("in-process-gpu") ||
+        command_line->HasSwitch("single-process") ||
+        command_line->HasSwitch("single-process-tests") ||
+        command_line->HasSwitch(switches::kHeadless);
+    bool in_host_process = gpu_service_ && gpu_service_->in_host_process();
+    if (!in_process_or_headless_switch && !in_host_process &&
+        !ui::WindowServerEventPumpThread::NSAppInitialized()) {
       auto update_vsync_displays_cb =
           base::BindRepeating(&FrameSinkManagerImpl::UpdateVSyncDisplays,
                               weak_factory_.GetWeakPtr());

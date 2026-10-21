@@ -28,6 +28,10 @@ struct ObjCState;
 //     leading to frozen browser windows.
 class DISPLAY_EXPORT WindowServerEventPumpThread : public base::Thread {
  public:
+  // Returns true if an NSApplication instance is initialized in the current
+  // process (e.g. in the browser process).
+  static bool NSAppInitialized();
+
   WindowServerEventPumpThread(
       base::RepeatingCallback<void(int64_t)> update_vsync_displays_cb);
   ~WindowServerEventPumpThread() override;
