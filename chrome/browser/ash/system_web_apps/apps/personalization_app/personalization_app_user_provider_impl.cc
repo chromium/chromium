@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_file_selector.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
@@ -160,6 +161,7 @@ void PersonalizationAppUserProviderImpl::SelectImageFromDisk() {
     return;
   }
   user_image_file_selector_->SelectFile(
+      file_manager::util::GetDownloadsFolderForProfile(profile_),
       base::BindOnce(&PersonalizationAppUserProviderImpl::OnFileSelected,
                      weak_ptr_factory_.GetWeakPtr()),
       base::DoNothing());

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_FILE_SELECTOR_H_
 #define CHROME_BROWSER_ASH_LOGIN_USERS_AVATAR_USER_IMAGE_FILE_SELECTOR_H_
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_ui.h"
@@ -25,7 +26,10 @@ class UserImageFileSelector : public ui::SelectFileDialog::Listener {
   ~UserImageFileSelector() override;
 
   // Opens a file selection dialog to choose user image from file.
+  // `downloads_path` is the user's Downloads directory, which is initially
+  // shown in the dialog.
   virtual void SelectFile(
+      const base::FilePath& downloads_path,
       base::OnceCallback<void(const base::FilePath&)> selected_cb,
       base::OnceClosure canceled_cb);
 

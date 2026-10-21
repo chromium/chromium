@@ -12,8 +12,10 @@ FakeUserImageFileSelector::FakeUserImageFileSelector(content::WebUI* web_ui)
 FakeUserImageFileSelector::~FakeUserImageFileSelector() = default;
 
 void FakeUserImageFileSelector::SelectFile(
+    const base::FilePath& downloads_path,
     base::OnceCallback<void(const base::FilePath&)> selected_cb,
     base::OnceClosure canceled_cb) {
+  downloads_path_ = downloads_path;
   std::move(selected_cb).Run(file_path_);
 }
 

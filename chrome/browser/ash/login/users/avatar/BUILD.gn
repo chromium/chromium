@@ -45,7 +45,6 @@ static_library("avatar") {
     "//chrome/browser/prefs:util",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/select_file_policy",
-    "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/signin:identity_manager_provider",
     "//components/account_id",

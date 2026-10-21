@@ -7,9 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/path_service.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -54,6 +52,7 @@ UserImageFileSelector::~UserImageFileSelector() {
 }
 
 void UserImageFileSelector::SelectFile(
+    const base::FilePath& downloads_path,
     base::OnceCallback<void(const base::FilePath&)> selected_cb,
     base::OnceClosure canceled_cb) {
   // Early return if the select file dialog is already active.
@@ -67,11 +66,6 @@ void UserImageFileSelector::SelectFile(
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui_->GetWebContents()));
-
-  base::FilePath downloads_path;
-  if (!base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &downloads_path)) {
-    return;
-  }
 
   ui::SelectFileDialog::FileTypeInfo file_type_info(GetUserImageFileTypeInfo());
 

@@ -22,13 +22,18 @@ class FakeUserImageFileSelector : public UserImageFileSelector {
 
   ~FakeUserImageFileSelector() override;
 
-  void SelectFile(base::OnceCallback<void(const base::FilePath&)> selected_cb,
+  void SelectFile(const base::FilePath& downloads_path,
+                  base::OnceCallback<void(const base::FilePath&)> selected_cb,
                   base::OnceClosure canceled_cb) override;
 
   void SetFilePath(const base::FilePath& file_path);
 
+  // Returns the `downloads_path` passed to the last SelectFile() call.
+  const base::FilePath& downloads_path() const { return downloads_path_; }
+
  private:
   base::FilePath file_path_;
+  base::FilePath downloads_path_;
 };
 
 }  // namespace ash
