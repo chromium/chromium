@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/frame/shadow_frame_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_controls_view.h"
-#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_view.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -163,22 +162,7 @@ void OrganizerTrayView::UpdatePanelClipAndShadow() {
       std::min(1.0, key_corner / bg->default_radius()));
 }
 
-bool OrganizerTrayView::IsPositionInWindowCaption(const gfx::Point& point) {
-  const auto in_controls =
-      views::View::ConvertPointToTarget(this, controls_view_, point);
-  if (controls_view_->HitTestPoint(in_controls) &&
-      controls_view_->IsPositionInWindowCaption(in_controls)) {
-    return true;
-  }
-
-  if (auto* panel = views::AsViewClass<OrganizerPanelView>(panel_view_)) {
-    const auto in_panel = views::View::ConvertPointToTarget(this, panel, point);
-    if (panel->HitTestPoint(in_panel) &&
-        panel->IsPositionInWindowCaption(in_panel)) {
-      return true;
-    }
-  }
-
+bool OrganizerTrayView::IsPositionInWindowCaption(const gfx::Point&) {
   return false;
 }
 

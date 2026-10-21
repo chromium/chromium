@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
+#include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -204,9 +205,20 @@ TEST_F(OrganizerPanelViewTest, DraggableRegionsInWindowCaption) {
   EXPECT_FALSE(
       organizer_panel_view()->IsPositionInWindowCaption(point_in_view));
 
-  // When vertical tabs is enabled, point inside draggable region is caption.
+  // When vertical tabs is enabled but embedded panel is not supported (e.g.
+  // width is too narrow, so it renders in the tray), this is not caption.
   EXPECT_CALL(*vertical_tab_strip_controller(), ShouldDisplayVerticalTabs)
       .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*vertical_tab_strip_controller(), GetUncollapsedWidth)
+      .WillRepeatedly(testing::Return(0));
+  EXPECT_FALSE(
+      organizer_panel_view()->IsPositionInWindowCaption(point_in_view));
+
+  // When vertical tabs is enabled and embedded panel is supported, point inside
+  // draggable region is caption.
+  EXPECT_CALL(*vertical_tab_strip_controller(), GetUncollapsedWidth)
+      .WillRepeatedly(
+          testing::Return(organizer_panel::kOrganizerPanelMinWidth));
   EXPECT_TRUE(organizer_panel_view()->IsPositionInWindowCaption(point_in_view));
 
   // Point outside draggable region should not be caption even with vertical

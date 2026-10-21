@@ -16,7 +16,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/button/label_button.h"
@@ -62,15 +61,6 @@ OrganizerPanelControlsView::OrganizerPanelControlsView(
 }
 
 OrganizerPanelControlsView::~OrganizerPanelControlsView() = default;
-
-bool OrganizerPanelControlsView::IsPositionInWindowCaption(
-    const gfx::Point& point) {
-  if (organizer_button_ && IsHitInView(organizer_button_, point)) {
-    return false;
-  }
-
-  return true;
-}
 
 void OrganizerPanelControlsView::UpdateTooltipText() {
   auto organizer_button_text =

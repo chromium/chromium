@@ -8,10 +8,6 @@
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/flex_layout_view.h"
 
-namespace gfx {
-class Point;
-}  // namespace gfx
-
 namespace actions {
 class ActionItem;
 }  // namespace actions
@@ -31,8 +27,6 @@ class OrganizerPanelControlsView : public views::FlexLayoutView {
   OrganizerPanelControlsView& operator=(const OrganizerPanelControlsView&) =
       delete;
   ~OrganizerPanelControlsView() override;
-
-  bool IsPositionInWindowCaption(const gfx::Point& point);
 
   // Should be called when the text of the action item for toggling the panel
   // state changes.

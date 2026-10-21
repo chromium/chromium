@@ -15,11 +15,11 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/animations/organizer_panel_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/tabs/organizer/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_host.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -150,9 +150,7 @@ class OrganizerPanelViewImpl : public OrganizerPanelView,
     if (!web_view_) {
       return false;
     }
-    const auto* controller =
-        tabs::VerticalTabStripStateController::From(&browser_.get());
-    if (!controller || !controller->ShouldDisplayVerticalTabs()) {
+    if (!DoesVerticalTabStripSupportEmbeddedOrganizerPanel(browser_.get())) {
       return false;
     }
     const gfx::Point point_in_webview =

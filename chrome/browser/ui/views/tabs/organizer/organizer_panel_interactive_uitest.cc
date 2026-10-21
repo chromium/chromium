@@ -38,6 +38,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/test/ui_controls.h"
@@ -358,6 +359,26 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, OpenClosePanelHorizontalTabs) {
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
+                       TopControlsNotWindowCaptionInHorizontalTabs) {
+  RunTestSequence(
+      SetVerticalTabsEnabled(false), OpenOrganizerPanel(),
+      CheckView(
+          kOrganizerPanelControlsElementId,
+          [this](views::View* controls) {
+            auto* const browser_view =
+                BrowserView::GetBrowserViewForBrowser(browser());
+            gfx::Point point_in_ncv =
+                controls->GetBoundsInScreen().origin() + gfx::Vector2d(10, 10);
+            views::View::ConvertPointFromScreen(
+                browser_view->GetWidget()->non_client_view(), &point_in_ncv);
+            return browser_view->GetWidget()
+                       ->non_client_view()
+                       ->NonClientHitTest(point_in_ncv) == HTCLIENT;
+          }),
+      CloseOrganizerPanel());
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
                        OpenClosePanelHorizontalTabsUsingAccelerator) {
   ui::Accelerator tab_search_accelerator;
   ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
@@ -519,6 +540,28 @@ IN_PROC_BROWSER_TEST_F(
       ExpectPanelLocation(OrganizerPanelLocation::kOrganizerTray),
       CheckPanelVisuals(organizer_panel::kOrganizerPanelMinWidth,
                         /*should_have_rounded_corners=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
+                       PanelAreaNotWindowCaptionInVerticalTabsTray) {
+  RunTestSequence(
+      SetVerticalTabsEnabled(true, /*expand_on_hover_enabled=*/false),
+      CollapseTabStrip(), OpenOrganizerPanel(),
+      ExpectPanelLocation(OrganizerPanelLocation::kOrganizerTray),
+      CheckView(
+          kOrganizerPanelElementId,
+          [this](views::View* panel) {
+            auto* const browser_view =
+                BrowserView::GetBrowserViewForBrowser(browser());
+            gfx::Point point_in_ncv = panel->GetBoundsInScreen().bottom_left() +
+                                      gfx::Vector2d(50, -50);
+            views::View::ConvertPointFromScreen(
+                browser_view->GetWidget()->non_client_view(), &point_in_ncv);
+            return browser_view->GetWidget()
+                       ->non_client_view()
+                       ->NonClientHitTest(point_in_ncv) == HTCLIENT;
+          }),
+      CloseOrganizerPanel());
 }
 
 IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,

@@ -150,3 +150,28 @@ TEST_F(OrganizerTrayViewTest, ClearingPanelHandledGracefully) {
           },
           false));
 }
+
+TEST_F(OrganizerTrayViewTest, NotWindowCaption) {
+  RunTestSequence(
+      ShowPanel(),
+      CheckView(
+          kOrganizerPanelControlsElementId,
+          [this](views::View* controls) {
+            gfx::Point point_in_controls(10, 10);
+            gfx::Point point_in_tray = point_in_controls;
+            views::View::ConvertPointToTarget(controls, tray_view(),
+                                              &point_in_tray);
+            return tray_view()->IsPositionInWindowCaption(point_in_tray);
+          },
+          false),
+      CheckView(
+          kOrganizerPanelElementId,
+          [this](views::View* panel) {
+            gfx::Point point_in_panel(10, 10);
+            gfx::Point point_in_tray = point_in_panel;
+            views::View::ConvertPointToTarget(panel, tray_view(),
+                                              &point_in_tray);
+            return tray_view()->IsPositionInWindowCaption(point_in_tray);
+          },
+          false));
+}
