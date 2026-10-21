@@ -9,10 +9,12 @@
 ++[image] name='star2'
 ++[section]
 === Start Continuation ===
-[document web] focusable focused
+[document web] focusable
 ++[image map] name='star0'
 ++++[link] name='Area' focusable
 ++[static] name=' '
-++[image] name='star2'
+++[image map] name='star2'
+++++[link] name='Area' focusable
+++++[link] name='Area2' focusable focused
 ++[section]
 ++++[static] name='done'

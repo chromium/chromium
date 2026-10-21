@@ -61,20 +61,25 @@ HTMLAreaElement* HTMLMapElement::AreaForPoint(
 HTMLImageElement* HTMLMapElement::ImageElement() {
   HTMLCollection* images = GetDocument().images();
   for (unsigned i = 0; Element* curr = images->item(i); ++i) {
-    // The HTMLImageElement's useMap() value includes the '#' symbol at the
-    // beginning, which has to be stripped off.
     auto& image_element = To<HTMLImageElement>(*curr);
-    const AtomicString& use_map_name_with_hash =
-        image_element.FastGetAttribute(html_names::kUsemapAttr);
-    if (use_map_name_with_hash.length() > 1) {
-      StringView use_map_name(use_map_name_with_hash, 1);
-      if (use_map_name == name_ || use_map_name == GetIdAttribute()) {
-        return &image_element;
-      }
+    if (MatchesUseMap(
+            image_element.FastGetAttribute(html_names::kUsemapAttr))) {
+      return &image_element;
     }
   }
 
   return nullptr;
+}
+
+bool HTMLMapElement::MatchesUseMap(
+    const AtomicString& use_map_name_with_hash) const {
+  // The HTMLImageElement's useMap() value includes the '#' symbol at the
+  // beginning, which has to be stripped off.
+  if (use_map_name_with_hash.length() <= 1) {
+    return false;
+  }
+  StringView use_map_name(use_map_name_with_hash, 1);
+  return use_map_name == name_ || use_map_name == GetIdAttribute();
 }
 
 void HTMLMapElement::ParseAttribute(const AttributeModificationParams& params) {

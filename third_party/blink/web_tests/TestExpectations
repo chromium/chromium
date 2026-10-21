@@ -1484,27 +1484,10 @@ crbug.com/483653 accessibility/scroll-containers.html [ Crash Failure Pass Timeo
 # Temporarily disabled until document marker serialization is enabled for AXInlineTextBox
 crbug.com/1227485 accessibility/spelling-markers.html [ Failure ]
 
-# Reproduction for an image losing its image map crash
-crbug.com/500774800 accessibility/image-map-usemap-removed-crash.html [ Crash ]
-crbug.com/500774800 accessibility/image-map-name-changed-crash.html [ Crash ]
-crbug.com/500774800 accessibility/image-map-usemap-removed-successive-images.html [ Crash ]
-
 # Reproduction for stale slots in customizable select options crash
 crbug.com/500774800 accessibility/customizable-select-option-text-replaced-crash.html [ Crash ]
 crbug.com/500774800 accessibility/customizable-select-option-element-removed-crash.html [ Crash Failure ]
 crbug.com/500774799 accessibility/customizable-select-option-hidden-text-replaced-crash.html [ Crash ]
-
-# Reproductions for an image map moving to another image
-crbug.com/500774800 accessibility/image-map-aria-owns-001.html [ Crash Failure Timeout ]
-crbug.com/500774800 accessibility/image-map-aria-owns-002.html [ Crash Failure Timeout ]
-crbug.com/500774800 accessibility/image-map-identifier-changed-001.html [ Crash Failure Timeout ]
-crbug.com/500774800 accessibility/image-map-identifier-changed-002.html [ Crash Failure Timeout ]
-crbug.com/500774800 accessibility/image-map-inserted-or-removed-001.html [ Failure ]
-crbug.com/500774800 accessibility/image-map-inserted-or-removed-002.html [ Crash Failure Timeout ]
-crbug.com/500774800 accessibility/image-map-inserted-or-removed-003.html [ Crash Failure Timeout ]
-crbug.com/500774800 accessibility/image-map-inserted-or-removed-004.html [ Crash Failure Timeout ]
-crbug.com/500774800 accessibility/image-map-usemap-changed-001.html [ Crash Failure Timeout ]
-crbug.com/500774800 accessibility/image-map-usemap-changed-002.html [ Crash Failure ]
 
 # Temporarily disabled after chromium change
 crbug.com/492511 [ Mac ] virtual/text-antialias/atsui-negative-spacing-features.html [ Failure ]

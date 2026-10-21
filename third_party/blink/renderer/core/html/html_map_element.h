@@ -48,6 +48,7 @@ class CORE_EXPORT HTMLMapElement final : public HTMLElement {
                                 const LayoutObject* container_object);
 
   HTMLImageElement* ImageElement();
+  bool MatchesUseMap(const AtomicString& use_map_name_with_hash) const;
   HTMLCollection* areas();
 
  private:

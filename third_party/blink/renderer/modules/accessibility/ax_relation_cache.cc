@@ -15,7 +15,10 @@
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/html_map_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
@@ -30,6 +33,21 @@ void IdsFromAttribute(const Element& element,
                       const QualifiedName& attr_name) {
   SpaceSplitString split_ids(AXObject::AriaAttribute(element, attr_name));
   ids.append_range(split_ids);
+}
+
+// Return the DOM <map> whose children are cached on |ax_image|.
+HTMLMapElement* GetMapOfCachedChildren(const AXObject* ax_image) {
+  if (!ax_image) {
+    return nullptr;
+  }
+  // In the AX tree, <map> children live under the image.
+  for (AXObject* child : ax_image->CachedChildrenIncludingIgnored()) {
+    // Get the child's DOM node and find its first <map> ancestor.
+    if (Node* child_node = child->GetNode()) {
+      return Traversal<HTMLMapElement>::FirstAncestor(*child_node);
+    }
+  }
+  return nullptr;
 }
 }  // namespace
 
@@ -313,9 +331,96 @@ void AXRelationCache::QueueOwnerToUpdate(AXObject* owner) {
   owner_axids_to_update_.insert(owner->AXObjectID());
 }
 
+void AXRelationCache::MarkImageMapsDirty() {
+  has_dirty_image_maps_ = true;
+  object_cache_->ScheduleAXUpdate();
+}
+
+void AXRelationCache::MaybeMarkImageMapsDirty(const Node& node) {
+  if (IsA<HTMLMapElement>(node) ||
+      (IsA<HTMLImageElement>(node) &&
+       To<Element>(node).FastHasAttribute(html_names::kUsemapAttr))) {
+    MarkImageMapsDirty();
+  }
+}
+
+HeapVector<Member<Element>>
+AXRelationCache::DetachStaleImageMapsWithCleanLayout() {
+  HeapVector<Member<Element>> images_with_changed_map;
+  if (!has_dirty_image_maps_) {
+    return images_with_changed_map;
+  }
+  has_dirty_image_maps_ = false;
+  DetachStaleImageMapsInDocument(object_cache_->GetDocument(),
+                                 images_with_changed_map);
+  if (Document* popup = object_cache_->GetPopupDocumentIfShowing()) {
+    DetachStaleImageMapsInDocument(*popup, images_with_changed_map);
+  }
+  return images_with_changed_map;
+}
+
+void AXRelationCache::DetachStaleImageMapsInDocument(
+    Document& document,
+    HeapVector<Member<Element>>& images_with_changed_map) {
+  HashSet<AtomicString> earlier_usemap_names;
+  auto used_earlier = [&](const AtomicString& name) {
+    return !name.empty() && earlier_usemap_names.Contains(name);
+  };
+
+  // O(N) time complexity to images in the document.
+  for (Element* image : *document.images()) {
+    const AtomicString& usemap =
+        image->FastGetAttribute(html_names::kUsemapAttr);
+    // Look up the image's DOM HTMLMapElement (no AXObject involved).
+    HTMLMapElement* map = AXObject::GetMapForImage(image);
+
+    // Only map->ImageElement() (the first image in the document where
+    // MatchesUseMap() is true) gets the map's children.
+    if (map && (!map->MatchesUseMap(usemap) || used_earlier(map->GetName()) ||
+                used_earlier(map->GetIdAttribute()))) {
+      map = nullptr;
+    }
+    // Record the target name so we can reject later images that point to the
+    // same map.
+    if (usemap.length() > 1) {
+      earlier_usemap_names.insert(AtomicString(StringView(usemap, 1)));
+    }
+    // Get the existing AXObject for the image.
+    AXObject* ax_image = Get(image);
+    // Use the AXObject's children to look up its DOM HTMLMapElement.
+    HTMLMapElement* cached_map = GetMapOfCachedChildren(ax_image);
+
+    // If what the DOM map should be & the DOM map we looked up from the
+    // AXTree agree, then we don't need to do any recalculation.
+    if (cached_map == map) {
+      continue;
+    }
+
+    // If we have an existing map in AX remove stale children now, so that no
+    // queued update reaches them.
+    if (cached_map) {
+      object_cache_->RemoveImageMapChildren(*ax_image);
+    }
+    images_with_changed_map.push_back(image);
+  }
+}
+
+void AXRelationCache::RebuildImageMapsWithCleanLayout(
+    const HeapVector<Member<Element>>& images) {
+  for (Element* image : images) {
+    if (AXObject* ax_image = Get(image)) {
+      object_cache_->ChildrenChangedWithCleanLayout(image, ax_image);
+      // ChildrenChangedWithCleanLayout() defers rebuilding to FinalizeTree().
+      // Rebuild now so any aria-owns in the <map> is queued before relations
+      // are processed.
+      ax_image->UpdateChildrenIfNecessary();
+    }
+  }
+}
+
 bool AXRelationCache::IsDirty() const {
   return !owner_axids_to_update_.empty() ||
-         !child_axids_to_restore_parent_.empty();
+         !child_axids_to_restore_parent_.empty() || has_dirty_image_maps_;
 }
 
 bool AXRelationCache::IsAriaOwned(const AXObject* child, bool check) const {

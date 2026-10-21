@@ -362,6 +362,97 @@ TEST_F(AccessibilityTest,
   EXPECT_EQ(recreated_owner, recreated_target->ParentObject());
 }
 
+TEST_F(AccessibilityTest, ImageMapsNotDirtyOnInitialLoad) {
+  SetBodyInnerHTML(R"HTML(
+      <map id="m" name="m"><area href="#"></map>
+      <img usemap="#m" alt="mapped">
+      <img alt="plain">
+  )HTML");
+  // Initial tree construction attaches <area> children via
+  // AXNodeObject::AddImageMapChildren(), so the initial scan does not mark
+  // image maps dirty.
+  EXPECT_FALSE(GetAXObjectCache().RelationCache()->has_dirty_image_maps_);
+}
+
+TEST_F(AccessibilityTest, ImageMapsNotDirtyWhenPlainImageInsertedOrRemoved) {
+  SetBodyInnerHTML(R"HTML(<img id="img" alt="plain">)HTML");
+  AXRelationCache* relation_cache = GetAXObjectCache().RelationCache();
+
+  Element* added = GetDocument().CreateRawElement(html_names::kImgTag);
+  GetDocument().body()->AppendChild(added);
+  EXPECT_FALSE(relation_cache->has_dirty_image_maps_);
+
+  // Remove both an <img> without an AXObject and one that already has one.
+  added->remove();
+  GetElementById("img")->remove();
+  EXPECT_FALSE(relation_cache->has_dirty_image_maps_);
+}
+
+TEST_F(AccessibilityTest, ImageMapsNotDirtyOnOtherAttributeChanges) {
+  SetBodyInnerHTML(R"HTML(
+      <map id="m" name="m"><area id="area" href="#"></map>
+      <img id="img" usemap="#m" alt="mapped">
+      <div id="div"></div>
+  )HTML");
+  AXRelationCache* relation_cache = GetAXObjectCache().RelationCache();
+
+  // Attributes other than usemap on <img> do not affect which map it uses.
+  Element* img = GetElementById("img");
+  img->setAttribute(html_names::kSrcAttr, AtomicString("about:blank"));
+  img->setAttribute(html_names::kAltAttr, AtomicString("new-alt"));
+  img->setAttribute(html_names::kIdAttr, AtomicString("new-id"));
+  img->setAttribute(html_names::kNameAttr, AtomicString("new-name"));
+  EXPECT_FALSE(relation_cache->has_dirty_image_maps_);
+
+  // Attributes other than id and name on <map> do not affect which image uses
+  // it.
+  GetElementById("m")->setAttribute(html_names::kPopoverAttr, keywords::kAuto);
+  EXPECT_FALSE(relation_cache->has_dirty_image_maps_);
+
+  // id, name, and usemap on elements other than <map> and <img> are ignored.
+  for (const char* id : {"div", "area"}) {
+    Element* el = GetElementById(id);
+    el->setAttribute(html_names::kIdAttr, AtomicString("other-id"));
+    el->setAttribute(html_names::kNameAttr, AtomicString("other-name"));
+    el->setAttribute(html_names::kUsemapAttr, AtomicString("#m"));
+    EXPECT_FALSE(relation_cache->has_dirty_image_maps_);
+  }
+}
+
+// Only <img usemap> and <map> mutations mark image maps dirty, and the next
+// AX update clears the dirty bit.
+TEST_F(AccessibilityTest, ImageMapsDirtyOnMapOrUsemapChanges) {
+  SetBodyInnerHTML(R"HTML(
+      <map id="map" name="m"><area href="#"></map>
+      <img id="img" alt="img">
+  )HTML");
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  AXRelationCache* relation_cache = cache.RelationCache();
+  auto expect_dirty_then_clean = [&]() {
+    EXPECT_TRUE(relation_cache->has_dirty_image_maps_);
+    cache.UpdateAXForAllDocuments();
+    EXPECT_FALSE(relation_cache->has_dirty_image_maps_);
+  };
+
+  Element* img = GetElementById("img");
+  img->setAttribute(html_names::kUsemapAttr, AtomicString("#m"));
+  expect_dirty_then_clean();
+  img->remove();
+  expect_dirty_then_clean();
+  GetDocument().body()->AppendChild(img);
+  expect_dirty_then_clean();
+
+  Element* map = GetElementById("map");
+  map->setAttribute(html_names::kNameAttr, AtomicString("m2"));
+  expect_dirty_then_clean();
+  map->setAttribute(html_names::kIdAttr, AtomicString("m2"));
+  expect_dirty_then_clean();
+  map->remove();
+  expect_dirty_then_clean();
+  GetDocument().body()->AppendChild(map);
+  expect_dirty_then_clean();
+}
+
 class MockAXObject : public AXObject {
  public:
   explicit MockAXObject(AXObjectCacheImpl& ax_object_cache)

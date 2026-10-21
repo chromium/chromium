@@ -813,7 +813,6 @@ static std::string TreeUpdateReasonAsDebugString(
     DEBUG_STRING_CASE(
         kRemoveValidationMessageObjectFromValidationMessageObject);
     DEBUG_STRING_CASE(kRoleChangeFromAriaHasPopup);
-    DEBUG_STRING_CASE(kRoleChangeFromImageMapName);
     DEBUG_STRING_CASE(kRoleChangeFromRoleOrType);
     DEBUG_STRING_CASE(kRoleMaybeChangedFromEventListener);
     DEBUG_STRING_CASE(kRoleMaybeChangedFromHref);
@@ -827,7 +826,6 @@ static std::string TreeUpdateReasonAsDebugString(
     DEBUG_STRING_CASE(kUpdateActiveMenuOption);
     DEBUG_STRING_CASE(kUpdateAriaOwns);
     DEBUG_STRING_CASE(kUpdateTableRole);
-    DEBUG_STRING_CASE(kUseMapAttributeChanged);
     DEBUG_STRING_CASE(kValidationMessageVisibilityChanged);
     DEBUG_STRING_CASE(kChildrenChanged);
     DEBUG_STRING_CASE(kMarkAXObjectDirty);
@@ -1905,6 +1903,10 @@ void AXObjectCacheImpl::Remove(Node* node) {
     ResetPluginTreeSerializer();
   }
 
+  if (relation_cache_) {
+    relation_cache_->MaybeMarkImageMapsDirty(*node);
+  }
+
   Remove(node, /* notify_parent */ true);
 }
 
@@ -2142,6 +2144,18 @@ void AXObjectCacheImpl::RemoveSubtreeInternal(
   if (parent_to_notify) {
     NotifyParentChildrenChanged(parent_to_notify);
   }
+}
+
+void AXObjectCacheImpl::RemoveImageMapChildren(AXObject& image) {
+  // Remove the <area> AXObjects so queued updates don't reach them. Don't
+  // notify yet because queued updates haven't restored missing parents.
+  RemoveSubtree(image.GetNode(), /*remove_root=*/false,
+                /*notify_parent=*/false);
+  // RemoveSubtree() doesn't clear children_ when remove_root is false.
+  image.ClearChildren();
+  // Mark the image and any unincluded ancestors dirty now, and wait for
+  // RebuildImageMapsWithCleanLayout() to run ChildrenChangedWithCleanLayout().
+  InvalidateChildren(&image);
 }
 
 // All generated AXIDs are negative, ranging from kFirstGeneratedRendererNodeID
@@ -2730,6 +2744,7 @@ void AXObjectCacheImpl::NodeIsConnected(Node* node) {
     if (relation_cache_) {
       // Register relation ids so that reverse relations can be computed.
       relation_cache_->CacheRelations(*element);
+      relation_cache_->MaybeMarkImageMapsDirty(*element);
       ScheduleAXUpdate();
     }
     if (AXObject::HasARIAOwns(element)) {
@@ -2876,32 +2891,6 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
       // * Inline text boxes must know their children in order to determine
       //   whether they can be ignored;
       node_to_parse_before_more_tree_updates_ = node;
-    }
-
-    // Rare edge case: if an image is added, it could have changed the order of
-    // images with the same usemap in the document. Only the first image for a
-    // given <map> should have the <area> children. Therefore, get the current
-    // primary image before it's updated, and ensure its children are
-    // recalculated.
-    if (IsA<HTMLImageElement>(node)) {
-      if (HTMLMapElement* map = AXObject::GetMapForImage(node)) {
-        HTMLImageElement* primary_image_element = map->ImageElement();
-        if (node != primary_image_element) {
-          // This is a secondary image for its map, and therefore the map does
-          // not apply to it. Make sure the primary image recomputes its
-          // children.
-          ChildrenChanged(primary_image_element);
-        } else if (AXObject* ax_previous_parent = GetAXImageForMap(*map)) {
-          // This is the primary image for its map and the map's children
-          // were previously parented by an AXObject for an <img>
-          if (ax_previous_parent->GetNode() != node) {
-            // The previous AXObject parent for the maps children does not
-            // match!
-            ChildrenChanged(ax_previous_parent);
-            ax_previous_parent->ClearChildren();
-          }
-        }
-      }
     }
   }
 
@@ -3607,10 +3596,17 @@ bool AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
       // |tree_update_callback_queue_|, and have names like
       // FooBarredWithCleanLayout().
       if (IsDirty()) {
+        // Detach stale <map> children before queued updates can reach an
+        // <area> under its old image. Wait to rebuild the images until queued
+        // updates have finished updating the images and their ancestors.
+        HeapVector<Member<Element>> images_with_changed_map =
+            relation_cache_->DetachStaleImageMapsWithCleanLayout();
         if (GetPopupDocumentIfShowing()) {
           ProcessCleanLayoutCallbacks(*GetPopupDocumentIfShowing());
         }
         ProcessCleanLayoutCallbacks(document);
+        relation_cache_->RebuildImageMapsWithCleanLayout(
+            images_with_changed_map);
       }
     }
 
@@ -4445,7 +4441,6 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
       RemoveValidationMessageObjectWithCleanLayout(node);
       break;
     case TreeUpdateReason::kRoleChangeFromAriaHasPopup:
-    case TreeUpdateReason::kRoleChangeFromImageMapName:
     case TreeUpdateReason::kRoleChangeFromRoleOrType:
       HandleRoleChangeWithCleanLayout(node);
       break;
@@ -4477,9 +4472,6 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
       break;
     case TreeUpdateReason::kUpdateTableRole:
       UpdateTableRoleWithCleanLayout(node);
-      break;
-    case TreeUpdateReason::kUseMapAttributeChanged:
-      HandleUseMapAttributeChangedWithCleanLayout(node);
       break;
     case TreeUpdateReason::kValidationMessageVisibilityChanged:
       HandleValidationMessageVisibilityChangedWithCleanLayout(node);
@@ -5140,6 +5132,10 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
     // `MaybeNewRelationTarget()`, which marks any reverse-relation sources
     // (such as popover invokers) dirty.
     DeferTreeUpdate(TreeUpdateReason::kIdChanged, element);
+    if (attr_name == html_names::kIdAttr && IsA<HTMLMapElement>(element) &&
+        relation_cache_) {
+      relation_cache_->MarkImageMapsDirty();
+    }
   } else if (attr_name == html_names::kClassAttr) {
     MarkElementDirty(element);  // Reserialize the class.
   } else if (attr_name == html_names::kTabindexAttr) {
@@ -5153,9 +5149,13 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
              attr_name == html_names::kStepAttr) {
     MarkElementDirty(element);
   } else if (attr_name == html_names::kUsemapAttr) {
-    DeferTreeUpdate(TreeUpdateReason::kUseMapAttributeChanged, element);
+    if (IsA<HTMLImageElement>(element) && relation_cache_) {
+      relation_cache_->MarkImageMapsDirty();
+    }
   } else if (attr_name == html_names::kNameAttr) {
-    HandleNameAttributeChanged(element);
+    if (IsA<HTMLMapElement>(element) && relation_cache_) {
+      relation_cache_->MarkImageMapsDirty();
+    }
   } else if (attr_name == html_names::kControlsAttr) {
     ChildrenChanged(element);
   } else if (attr_name == html_names::kHrefAttr) {
@@ -5176,48 +5176,6 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
   } else if (attr_name == html_names::kCommandAttr ||
              attr_name == html_names::kPopovertargetactionAttr) {
     MarkElementDirty(element);
-  }
-}
-
-void AXObjectCacheImpl::HandleUseMapAttributeChangedWithCleanLayout(
-    Node* node) {
-  if (!IsA<HTMLImageElement>(node)) {
-    return;
-  }
-  // Get an area (aka image link) from the previous usemap.
-  AXObject* ax_image = Get(node);
-  AXObject* ax_image_link =
-      ax_image ? ax_image->FirstChildIncludingIgnored() : nullptr;
-  HTMLMapElement* previous_map =
-      ax_image_link && ax_image_link->GetNode()
-          ? Traversal<HTMLMapElement>::FirstAncestor(*ax_image_link->GetNode())
-          : nullptr;
-  // Both the old and new image may change image <--> image map.
-  HandleRoleChangeWithCleanLayout(node);
-  if (previous_map)
-    HandleRoleChangeWithCleanLayout(previous_map->ImageElement());
-}
-
-void AXObjectCacheImpl::HandleNameAttributeChanged(Node* node) {
-  HTMLMapElement* map = DynamicTo<HTMLMapElement>(node);
-  if (!map) {
-    return;
-  }
-
-  // Changing a map name can alter an image's role and children.
-  // First update any image that may have used the old map name.
-  if (AXObject* ax_previous_image = GetAXImageForMap(*map)) {
-    DeferTreeUpdate(TreeUpdateReason::kRoleChangeFromImageMapName,
-                    ax_previous_image->GetElement());
-  }
-
-  // Then, update any image which may use the new map name.
-  HTMLImageElement* new_image = map->ImageElement();
-  if (new_image) {
-    if (AXObject* obj = Get(new_image)) {
-      DeferTreeUpdate(TreeUpdateReason::kRoleChangeFromImageMapName,
-                      obj->GetElement());
-    }
   }
 }
 
@@ -5646,7 +5604,6 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
         kRemoveValidationMessageObjectFromValidationMessageObject:
     case TreeUpdateReason::kRestoreParentOrPrune:
     case TreeUpdateReason::kRoleChangeFromAriaHasPopup:
-    case TreeUpdateReason::kRoleChangeFromImageMapName:
     case TreeUpdateReason::kRoleChangeFromRoleOrType:
     case TreeUpdateReason::kRoleMaybeChangedFromEventListener:
     case TreeUpdateReason::kRoleMaybeChangedFromHref:
@@ -5659,7 +5616,6 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
     case TreeUpdateReason::kTextMarkerDataAdded:
     case TreeUpdateReason::kUpdateAriaOwns:
     case TreeUpdateReason::kUpdateTableRole:
-    case TreeUpdateReason::kUseMapAttributeChanged:
       return false;
 
     // These updates are associated with an AXID:

@@ -151,7 +151,6 @@ enum class TreeUpdateReason : uint8_t {
   kRemoveValidationMessageObjectFromValidationMessageObject,
   kRestoreParentOrPrune,
   kRoleChangeFromAriaHasPopup,
-  kRoleChangeFromImageMapName,
   kRoleChangeFromRoleOrType,
   kRoleMaybeChangedFromEventListener,
   kRoleMaybeChangedFromHref,
@@ -162,7 +161,6 @@ enum class TreeUpdateReason : uint8_t {
   kUpdateActiveMenuOption,
   kUpdateAriaOwns,
   kUpdateTableRole,
-  kUseMapAttributeChanged,
   kValidationMessageVisibilityChanged,
 
   // These updates are associated with an AXID:
