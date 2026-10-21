@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/map_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -106,8 +107,9 @@ std::unique_ptr<Commit> Commit::Init(
   // Set extensions activity if bookmark commits are present.
   ExtensionsActivity::Records extensions_activity_buffer;
   if (extensions_activity != nullptr) {
-    ContributionMap::const_iterator it = contributions.find(BOOKMARKS);
-    if (it != contributions.end() && it->second->GetNumEntries() != 0) {
+    CommitContribution* bookmark_contribution =
+        base::FindPtrOrNull(contributions, BOOKMARKS);
+    if (bookmark_contribution && bookmark_contribution->GetNumEntries() != 0) {
       commit_util::AddExtensionsActivityToMessage(
           extensions_activity, &extensions_activity_buffer, commit_message);
     }

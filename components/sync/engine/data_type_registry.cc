@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -39,8 +40,8 @@ void DataTypeRegistry::ConnectDataType(
     DataType type,
     std::unique_ptr<DataTypeActivationResponse> activation_response) {
   DCHECK(ProtocolTypes().Has(type));
-  DCHECK(update_handler_map_.find(type) == update_handler_map_.end());
-  DCHECK(commit_contributor_map_.find(type) == commit_contributor_map_.end());
+  DCHECK(!update_handler_map_.contains(type));
+  DCHECK(!commit_contributor_map_.contains(type));
   DCHECK(activation_response);
   DCHECK(!activation_response->skip_engine_connection);
   DCHECK(activation_response->type_processor);
@@ -65,7 +66,7 @@ void DataTypeRegistry::ConnectDataType(
 }
 
 void DataTypeRegistry::DisconnectDataType(DataType type) {
-  if (update_handler_map_.count(type) == 0) {
+  if (!update_handler_map_.contains(type)) {
     // Type not connected. Simply ignore.
     return;
   }
@@ -74,8 +75,8 @@ void DataTypeRegistry::DisconnectDataType(DataType type) {
            << DataTypeToDebugString(type);
 
   DCHECK(ProtocolTypes().Has(type));
-  DCHECK(update_handler_map_.find(type) != update_handler_map_.end());
-  DCHECK(commit_contributor_map_.find(type) != commit_contributor_map_.end());
+  DCHECK(update_handler_map_.contains(type));
+  DCHECK(commit_contributor_map_.contains(type));
 
   size_t updaters_erased = update_handler_map_.erase(type);
   size_t committers_erased = commit_contributor_map_.erase(type);
@@ -113,13 +114,11 @@ DataTypeSet DataTypeRegistry::GetInitialSyncEndedTypes() const {
 }
 
 const UpdateHandler* DataTypeRegistry::GetUpdateHandler(DataType type) const {
-  auto it = update_handler_map_.find(type);
-  return it == update_handler_map_.end() ? nullptr : it->second;
+  return base::FindPtrOrNull(update_handler_map_, type);
 }
 
 UpdateHandler* DataTypeRegistry::GetMutableUpdateHandler(DataType type) {
-  auto it = update_handler_map_.find(type);
-  return it == update_handler_map_.end() ? nullptr : it->second;
+  return base::FindPtrOrNull(update_handler_map_, type);
 }
 
 UpdateHandlerMap* DataTypeRegistry::update_handler_map() {

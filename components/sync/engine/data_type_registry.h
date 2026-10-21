@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_SYNC_ENGINE_DATA_TYPE_REGISTRY_H_
 #define COMPONENTS_SYNC_ENGINE_DATA_TYPE_REGISTRY_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/base/data_type.h"
@@ -28,9 +28,9 @@ class RequiredPassphraseVerifier;
 class UpdateHandler;
 
 using UpdateHandlerMap =
-    std::map<DataType, raw_ptr<UpdateHandler, CtnExperimental>>;
+    base::flat_map<DataType, raw_ptr<UpdateHandler, CtnExperimental>>;
 using CommitContributorMap =
-    std::map<DataType, raw_ptr<CommitContributor, CtnExperimental>>;
+    base::flat_map<DataType, raw_ptr<CommitContributor, CtnExperimental>>;
 
 // Keeps track of the sets of active update handlers and commit contributors.
 // Lives on the sync sequence.
