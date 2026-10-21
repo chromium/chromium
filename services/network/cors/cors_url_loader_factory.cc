@@ -668,8 +668,7 @@ bool CorsURLLoaderFactory::IsValidRequest(
     // The request value is renderer-controlled, while the factory value is
     // browser-derived. Initial empty documents in opener-retaining popups can
     // legitimately use a factory inherited from their creating subframe.
-    // Canonicalize to the factory's less-privileged value so Network Service
-    // downstream cookie policy does not allow top-level storage-access.
+    // Canonicalize to the factory's less-privileged value.
     request.is_outermost_main_frame = is_outermost_main_frame_;
     UMA_HISTOGRAM_BOOLEAN(
         "NetworkService.CorsURLLoaderFactory.IsOutermostMainFrameClamped",

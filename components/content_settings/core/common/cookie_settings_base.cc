@@ -123,7 +123,6 @@ CookieSettingsBase::GetContentSettingsTypes() {
           ContentSettingsType::COOKIES,
           ContentSettingsType::LEGACY_COOKIE_ACCESS,
           ContentSettingsType::STORAGE_ACCESS,
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
           ContentSettingsType::FEDERATED_IDENTITY_SHARING,
           ContentSettingsType::LEGACY_COOKIE_SCOPE,
       });
@@ -354,17 +353,6 @@ std::optional<bool> CookieSettingsBase::MaybeBlockThirdPartyCookiesPerModifiers(
   }
 }
 
-bool CookieSettingsBase::IsAllowedByTopLevelStorageAccessGrant(
-    const GURL& url,
-    const GURL& first_party_url,
-    net::CookieSettingOverrides overrides) const {
-  return overrides.Has(
-             net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible) &&
-         GetContentSetting(url, first_party_url,
-                           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-                           /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
-}
-
 bool CookieSettingsBase::IsAllowedBySandboxValue(
     const GURL& url,
     const GURL& first_party_url,
@@ -410,11 +398,6 @@ CookieSettingsBase::DecideAccess(const GURL& url,
   }
 
   // Site controlled mechanisms (ex: web APIs, deprecation trial):
-  if (IsAllowedByTopLevelStorageAccessGrant(url, first_party_url, overrides)) {
-    return AllowAllCookies{
-        ThirdPartyCookieAllowMechanism::kAllowByTopLevelStorageAccess,
-    };
-  }
   if (IsAllowedByStorageAccessGrant(url, first_party_url, overrides)) {
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowByStorageAccess,

@@ -62,8 +62,6 @@ net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
       return ExemptionReason::kEnterprisePolicy;
     case AllowMechanism::kAllowByStorageAccess:
       return ExemptionReason::kStorageAccess;
-    case AllowMechanism::kAllowByTopLevelStorageAccess:
-      return ExemptionReason::kTopLevelStorageAccess;
     case AllowMechanism::kNone:
       return ExemptionReason::kNone;
     case AllowMechanism::kAllowByScheme:

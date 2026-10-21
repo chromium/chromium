@@ -100,8 +100,6 @@ enum GrantSource {
   kStorageAccessGrantsEligibleViaAPI,
   // Can use Storage Access permission grants via an HTTP response header.
   kStorageAccessGrantsEligibleViaHeader,
-  // Eligible for TopLevelStorageAccess grants.
-  kTopLevelStorageAccessGrantEligible,
 
   kGrantSourceCount
 };
@@ -201,11 +199,6 @@ class CookieSettingsTestP : public CookieSettingsTestBase,
            GrantSource::kStorageAccessGrantsEligibleViaHeader;
   }
 
-  bool IsTopLevelStorageAccessGrantEligible() const {
-    return std::get<TestVariables::kGrantSource>(GetParam()) ==
-           GrantSource::kTopLevelStorageAccessGrantEligible;
-  }
-
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
     net::CookieSettingOverrides overrides;
     if (IsStorageAccessGrantEligibleViaAPI()) {
@@ -214,10 +207,6 @@ class CookieSettingsTestP : public CookieSettingsTestBase,
     if (IsStorageAccessGrantEligibleViaHeader()) {
       overrides.Put(
           net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
-    }
-    if (IsTopLevelStorageAccessGrantEligible()) {
-      overrides.Put(
-          net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
     }
     return overrides;
   }
@@ -241,15 +230,6 @@ class CookieSettingsTestP : public CookieSettingsTestBase,
     DCHECK(allow == CONTENT_SETTING_ALLOW ||
            allow == CONTENT_SETTING_SESSION_ONLY);
     return IsStorageAccessGrantEligibleViaAPI() ? allow : CONTENT_SETTING_BLOCK;
-  }
-
-  // A version of above that considers Top-Level Storage Access API
-  // grant instead of Storage Access API grant.
-  ContentSetting SettingWithTopLevelSaaOverride() const {
-    // TODO(crbug.com/40246640): Check TopLevelStorageAccessAPI
-    // instead after separating the feature flag.
-    return IsTopLevelStorageAccessGrantEligible() ? CONTENT_SETTING_ALLOW
-                                                  : CONTENT_SETTING_BLOCK;
   }
 };
 
@@ -645,65 +625,6 @@ TEST_P(CookieSettingsTestP, GetCookieSettingSAAUnblocksViaFedCM) {
       ContentSettingsType::COOKIES,
       {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
   settings.set_block_third_party_cookies(true);
-  EXPECT_EQ(settings.GetCookieSetting(url, net::SiteForCookies(), top_level_url,
-                                      GetCookieSettingOverrides(), nullptr),
-            CONTENT_SETTING_BLOCK);
-}
-
-// The Top-Level Storage Access API should unblock storage access that would
-// otherwise be blocked.
-TEST_P(CookieSettingsTestP, GetCookieSettingTopLevelStorageAccessUnblocks) {
-  const GURL top_level_url(kURL);
-  const GURL url(kOtherURL);
-  const GURL third_url(kDomainURL);
-
-  CookieSettings settings;
-  settings.set_content_settings(
-      ContentSettingsType::COOKIES,
-      {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
-  settings.set_block_third_party_cookies(true);
-
-  // Only set the storage access granted by Top-Level Storage Access API.
-  settings.set_content_settings(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-      {CreateSetting(url.GetHost(), top_level_url.GetHost(),
-                     CONTENT_SETTING_ALLOW)});
-
-  // When requesting our setting for the embedder/top-level combination our
-  // grant is for access should be allowed. For any other domain pairs access
-  // should still be blocked.
-  EXPECT_EQ(settings.GetCookieSetting(url, net::SiteForCookies(), top_level_url,
-                                      GetCookieSettingOverrides(), nullptr),
-            SettingWithTopLevelSaaOverride());
-
-  // Check the cookie setting that does not match the top-level storage access
-  // grant--the |top_level_url| granting access to |url| is now being loaded
-  // under |url| as the top level url.
-  EXPECT_EQ(settings.GetCookieSetting(top_level_url, net::SiteForCookies(), url,
-                                      GetCookieSettingOverrides(), nullptr),
-            CONTENT_SETTING_BLOCK);
-
-  // Check the cookie setting that does not match the top-level storage access
-  // grant where a |third_url| is used.
-  EXPECT_EQ(settings.GetCookieSetting(url, net::SiteForCookies(), third_url,
-                                      GetCookieSettingOverrides(), nullptr),
-            CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(
-      settings.GetCookieSetting(third_url, net::SiteForCookies(), top_level_url,
-                                GetCookieSettingOverrides(), nullptr),
-      CONTENT_SETTING_BLOCK);
-
-  // If third-party cookies are blocked, Top-Level Storage Access grant takes
-  // precedence over possible override to allow third-party cookies.
-  EXPECT_EQ(settings.GetCookieSetting(url, net::SiteForCookies(), top_level_url,
-                                      GetCookieSettingOverrides(), nullptr),
-            SettingWithTopLevelSaaOverride());
-
-  // If cookies are globally blocked, Top-Level Storage Access grants and 3PC
-  // override should both be ignored.
-  settings.set_content_settings(
-      ContentSettingsType::COOKIES,
-      {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
   EXPECT_EQ(settings.GetCookieSetting(url, net::SiteForCookies(), top_level_url,
                                       GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
@@ -1404,11 +1325,6 @@ TEST_P(CookieSettingsTestP, IsCookieAccessible_NoneExemptionReason) {
     // Sets the storage access granted by Storage Access API.
     settings.set_content_settings(
         ContentSettingsType::STORAGE_ACCESS,
-        {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
-  } else if (IsTopLevelStorageAccessGrantEligible()) {
-    // Sets the storage access granted by Top-Level Storage Access API.
-    settings.set_content_settings(
-        ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
         {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
   } else {
     // Sets a site-specific setting

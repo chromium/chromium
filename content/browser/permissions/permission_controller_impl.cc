@@ -303,8 +303,6 @@ ContentSettingsType ConvertPermissionTypeForCookieManager(
   switch (permission) {
     case PermissionType::STORAGE_ACCESS_GRANT:
       return ContentSettingsType::STORAGE_ACCESS;
-    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
-      return ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS;
     default:
       NOTREACHED();
   }
@@ -596,16 +594,14 @@ void PermissionControllerImpl::UpdateCookieManagerContentSettings(
     std::optional<PermissionType> permission_to_process,
     base::OnceClosure callback) {
   std::vector<PermissionType> permissions;
-  if (permission_to_process == PermissionType::STORAGE_ACCESS_GRANT ||
-      permission_to_process == PermissionType::TOP_LEVEL_STORAGE_ACCESS) {
+  if (permission_to_process == PermissionType::STORAGE_ACCESS_GRANT) {
     permissions.push_back(permission_to_process.value());
   } else if (!permission_to_process) {
     // A null `permission_to_process` value indicates that a bulk operation
     // like `ResetPermissionOverrides` or `GrantPermissionOverrides` was
     // performed. In such cases, we must update all permissions that require
-    // it, which currently includes both Storage Access API permissions.
-    permissions = {PermissionType::STORAGE_ACCESS_GRANT,
-                   PermissionType::TOP_LEVEL_STORAGE_ACCESS};
+    // it.
+    permissions = {PermissionType::STORAGE_ACCESS_GRANT};
   }
 
   const auto callback_after_ipc =

@@ -113,7 +113,6 @@ TEST(CookieManagerSharedMojomTraitsTest, Roundtrips_CookieExemptionReason) {
            net::CookieInclusionStatus::ExemptionReason::kUserSetting,
            net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy,
            net::CookieInclusionStatus::ExemptionReason::kStorageAccess,
-           net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess,
            net::CookieInclusionStatus::ExemptionReason::kScheme,
            net::CookieInclusionStatus::ExemptionReason::
                kSameSiteNoneCookiesInSandbox,

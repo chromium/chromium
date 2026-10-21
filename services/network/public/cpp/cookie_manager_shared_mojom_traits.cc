@@ -39,8 +39,6 @@ EnumTraits<network::mojom::CookieExemptionReason,
       return network::mojom::CookieExemptionReason::kEnterprisePolicy;
     case net::CookieInclusionStatus::ExemptionReason::kStorageAccess:
       return network::mojom::CookieExemptionReason::kStorageAccess;
-    case net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess:
-      return network::mojom::CookieExemptionReason::kTopLevelStorageAccess;
     case net::CookieInclusionStatus::ExemptionReason::kScheme:
       return network::mojom::CookieExemptionReason::kScheme;
     case net::CookieInclusionStatus::ExemptionReason::
@@ -64,9 +62,6 @@ EnumTraits<network::mojom::CookieExemptionReason,
       return net::CookieInclusionStatus::ExemptionReason::kEnterprisePolicy;
     case network::mojom::CookieExemptionReason::kStorageAccess:
       return net::CookieInclusionStatus::ExemptionReason::kStorageAccess;
-    case network::mojom::CookieExemptionReason::kTopLevelStorageAccess:
-      return net::CookieInclusionStatus::ExemptionReason::
-          kTopLevelStorageAccess;
     case network::mojom::CookieExemptionReason::kScheme:
       return net::CookieInclusionStatus::ExemptionReason::kScheme;
     case network::mojom::CookieExemptionReason::kSameSiteNoneCookiesInSandbox:

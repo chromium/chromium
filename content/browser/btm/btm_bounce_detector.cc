@@ -597,7 +597,6 @@ void Populate3PcExceptions(BrowserContext* browser_context,
           final_url.SchemeIsHTTPOrHTTPS() ? final_url : GURL()));
   net::CookieSettingOverrides overrides({
       net::CookieSettingOverride::kStorageAccessGrantEligible,
-      net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible,
   });
 
   ContentBrowserClient* browser_client = GetContentClient()->browser();

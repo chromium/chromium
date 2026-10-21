@@ -5735,33 +5735,20 @@ TEST_F(StorageAccessHeaderURLLoaderTest,
 class URLLoaderCookieSettingOverridesTest
     : public URLLoaderTest,
       public ::testing::WithParamInterface<
-          std::tuple<bool, bool, net::StorageAccessApiStatus, std::string>> {
+          std::tuple<net::StorageAccessApiStatus, std::string>> {
  public:
   URLLoaderCookieSettingOverridesTest() = default;
 
   ~URLLoaderCookieSettingOverridesTest() override = default;
 
   void SetUpRequest(ResourceRequest& request) {
-    if (IsCors()) {
-      request.mode = network::mojom::RequestMode::kCors;
-    } else {
-      // Request mode is `no-cors` by default.
-      EXPECT_EQ(request.mode, network::mojom::RequestMode::kNoCors);
-    }
-    request.is_outermost_main_frame = IsOuterMostFrame();
     request.storage_access_api_status = StorageAccessApiStatus();
     request.request_initiator = Initiator();
-    context().mutable_factory_params().is_outermost_main_frame =
-        IsOuterMostFrame();
   }
 
   net::CookieSettingOverrides ExpectedCookieSettingOverrides(
       const ResourceRequest& request) const {
     net::CookieSettingOverrides overrides;
-    if (IsCors() && IsOuterMostFrame()) {
-      overrides.Put(
-          net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
-    }
     switch (StorageAccessApiStatus()) {
       case net::StorageAccessApiStatus::kNone:
         break;
@@ -5794,18 +5781,13 @@ class URLLoaderCookieSettingOverridesTest
   }
 
  protected:
-  bool IsCors() const { return std::get<0>(GetParam()); }
-  bool IsOuterMostFrame() const { return std::get<1>(GetParam()); }
   net::StorageAccessApiStatus StorageAccessApiStatus() const {
-    return std::get<2>(GetParam());
+    return std::get<0>(GetParam());
   }
   url::Origin Initiator() const {
     return url::Origin::Create(
-        test_server()->GetURL(std::get<3>(GetParam()), "/"));
+        test_server()->GetURL(std::get<1>(GetParam()), "/"));
   }
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 // This test makes a request to an endpoint which does not redirect.
@@ -5957,8 +5939,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     URLLoaderCookieSettingOverridesTest,
     testing::Combine(
-        testing::Bool(),
-        testing::Bool(),
         testing::Values(net::StorageAccessApiStatus::kNone,
                         net::StorageAccessApiStatus::kAccessViaAPI),
         testing::Values(

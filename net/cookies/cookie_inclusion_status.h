@@ -199,7 +199,6 @@ class NET_EXPORT CookieInclusionStatus {
     // For Enterprise Policy : CookieAllowedForUrls and BlockThirdPartyCookies.
     kEnterprisePolicy,
     kStorageAccess,
-    kTopLevelStorageAccess,
     // Allowed by the scheme.
     kScheme,
     // Allowed by the sandbox 'allow-same-site-none-cookies' value.

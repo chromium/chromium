@@ -14,13 +14,10 @@ namespace net {
 // together. The notion of no overrides is conveyable via an empty set.
 enum class CookieSettingOverride {
   kMinValue = 0,
-  // When specified, third-party cookies may be allowed based on existence of
-  // TopLevelStorageAccess grants.
-  kTopLevelStorageAccessGrantEligible = kMinValue,
   // When present, the caller may use an existing Storage Access API grant (if
   // a matching grant exists) to access third-party cookies. This "opt-in"
   // signal is from script execution, i.e. `document.requestStorageAccess()`.
-  kStorageAccessGrantEligible,
+  kStorageAccessGrantEligible = kMinValue,
   // When specified, third party cookies should be forced disabled.
   // Other cookie exceptions like the storage access API could result in
   // third party cookies still being used when this is forced disabled. This

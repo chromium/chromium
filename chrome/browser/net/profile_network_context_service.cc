@@ -269,7 +269,6 @@ void UpdateAntiAbuseSettings(Profile* profile) {
 bool IsContentSettingsTypeEnabled(ContentSettingsType type) {
   switch (type) {
     case ContentSettingsType::STORAGE_ACCESS:
-    case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
       return true;
     default:
       return content_settings::CookieSettings::GetContentSettingsTypes()
@@ -306,8 +305,7 @@ void UpdateCookieSettings(Profile* profile, ContentSettingsType type) {
   } else {
     settings = HostContentSettingsMapFactory::GetForProfile(profile)
                    ->GetSettingsForOneType(type);
-    if (type == ContentSettingsType::STORAGE_ACCESS ||
-        type == ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS) {
+    if (type == ContentSettingsType::STORAGE_ACCESS) {
       // The network service only cares about "granted" settings, so we don't
       // bother to send any others.
       std::erase_if(settings, [](const auto& setting) {

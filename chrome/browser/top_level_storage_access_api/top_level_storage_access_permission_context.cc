@@ -4,7 +4,6 @@
 
 #include "chrome/browser/top_level_storage_access_api/top_level_storage_access_permission_context.h"
 
-#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -223,14 +222,10 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
           request_data.embedding_origin),
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW, constraints);
 
-  ContentSettingsForOneType top_level_grants =
-      settings_map->GetSettingsForOneType(
-          ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
   ContentSettingsForOneType storage_access_grants =
       settings_map->GetSettingsForOneType(ContentSettingsType::STORAGE_ACCESS);
   // The network service only cares about "granted" settings, so we don't bother
   // to send any others.
-  std::erase_if(top_level_grants, IsNonAllowSetting);
   std::erase_if(storage_access_grants, IsNonAllowSetting);
 
   // TODO(crbug.com/40638427): Ensure that this update of settings doesn't
@@ -244,15 +239,12 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
   auto* cookie_manager = browser_context()
                              ->GetDefaultStoragePartition()
                              ->GetCookieManagerForBrowserProcess();
-  auto barrier = base::BarrierClosure(
-      2, base::BindOnce(std::move(callback),
-                        content::PermissionResult(
-                            blink::mojom::PermissionStatus::GRANTED,
-                            content::PermissionStatusSource::UNSPECIFIED)));
-  cookie_manager->SetContentSettings(ContentSettingsType::STORAGE_ACCESS,
-                                     storage_access_grants, barrier);
   cookie_manager->SetContentSettings(
-      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, top_level_grants, barrier);
+      ContentSettingsType::STORAGE_ACCESS, storage_access_grants,
+      base::BindOnce(std::move(callback),
+                     content::PermissionResult(
+                         blink::mojom::PermissionStatus::GRANTED,
+                         content::PermissionStatusSource::UNSPECIFIED)));
 }
 
 void TopLevelStorageAccessPermissionContext::UpdateSetting(

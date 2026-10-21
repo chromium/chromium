@@ -1066,8 +1066,6 @@ Network::CookieExemptionReason GetProtocolCookieExemptionReason(
       return Network::CookieExemptionReasonEnum::EnterprisePolicy;
     case net::CookieInclusionStatus::ExemptionReason::kStorageAccess:
       return Network::CookieExemptionReasonEnum::StorageAccess;
-    case net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess:
-      return Network::CookieExemptionReasonEnum::TopLevelStorageAccess;
     case net::CookieInclusionStatus::ExemptionReason::kScheme:
       return Network::CookieExemptionReasonEnum::Scheme;
     case net::CookieInclusionStatus::ExemptionReason::

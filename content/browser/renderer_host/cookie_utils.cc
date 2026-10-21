@@ -126,16 +126,6 @@ void PotentiallyRecordCookieOriginMismatch(
   }
 }
 
-void RecordCookiesExemptedByTopLevelStorage(ukm::SourceId source_id,
-                                            int affected_cookies_in_request) {
-  ukm::builders::RequestStorageAccessFor_TopLevelStorageIsExemptionReason(
-      source_id)
-      .SetNumberOfCookies(ukm::GetExponentialBucketMin(
-          affected_cookies_in_request, /*bucket_spacing=*/2.0))
-      .Record(ukm::UkmRecorder::Get());
-}
-
-
 // Records the PartitionedCookiePresentV3 UKM. It ignores prerendering pages.
 void RecordPartitionedCookieUseV3UKM(RenderFrameHost* rfh,
                                      const ukm::SourceId& source_id) {
@@ -300,8 +290,6 @@ void EmitCookieWarningsAndMetrics(
   bool cookie_set_has_empty_name = false;
   bool cookie_set_has_empty_name_and_ambiguous_value = false;
 
-  int cookies_exempted_by_top_level_storage_access = 0;
-
   for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :
        cookie_details->cookie_list) {
     const net::CookieInclusionStatus& status = cookie->access_result.status;
@@ -388,11 +376,6 @@ void EmitCookieWarningsAndMetrics(
         cookie->cookie_or_line->get_cookie().IsHttpOnly() &&
         !cookie->cookie_or_line->get_cookie().IsPartitioned()) {
       httponly_cookie_names.insert(cookie->cookie_or_line->get_cookie().Name());
-    }
-
-    if (cookie->access_result.status.exemption_reason() ==
-        net::CookieInclusionStatus::ExemptionReason::kTopLevelStorageAccess) {
-      cookies_exempted_by_top_level_storage_access++;
     }
 
     if (status.HasWarningReason(
@@ -532,12 +515,6 @@ void EmitCookieWarningsAndMetrics(
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh,
         blink::mojom::WebFeature::kSetCookieWithEmptyNameAndAmbiguousValue);
-  }
-
-  if (cookies_exempted_by_top_level_storage_access) {
-    RecordCookiesExemptedByTopLevelStorage(
-        rfh->GetPageUkmSourceId(),
-        cookies_exempted_by_top_level_storage_access);
   }
 }
 

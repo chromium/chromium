@@ -95,7 +95,7 @@ class CookieSettingsBase {
     // kAllowBy3PCD = 4,  // Deprecated
     // kAllowBy3PCDHeuristics = 5,  // Deprecated
     kAllowByStorageAccess = 6,
-    kAllowByTopLevelStorageAccess = 7,
+    // kAllowByTopLevelStorageAccess = 7,  // Deprecated
     // kAllowByCORSException = 8,  // Deprecated
     // kAllowByTopLevel3PCD = 9,  // Deprecated
     // Allow by Enterprise Policy (SettingSource::kPolicy):
@@ -166,7 +166,7 @@ class CookieSettingsBase {
   };
 
   // Set of types relevant for CookieSettings.
-  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 6>;
+  using CookieSettingsTypeSet = base::fixed_flat_set<ContentSettingsType, 5>;
 
   // ContentSettings listed in this set will be automatically synced to the
   // CookieSettings instance in the network service.
@@ -392,8 +392,8 @@ class CookieSettingsBase {
  private:
   // Returns a content setting for the requested parameters and populates |info|
   // if not null. Implementations might only implement a subset of all
-  // ContentSettingsTypes. Currently only COOKIES, STORAGE_ACCESS,
-  // TOP_LEVEL_STORAGE_ACCESS, and FEDERATED_IDENTITY_SHARING are required.
+  // ContentSettingsTypes. Currently only COOKIES, STORAGE_ACCESS, and
+  // FEDERATED_IDENTITY_SHARING are required.
   virtual ContentSetting GetContentSetting(const GURL& primary_url,
                                            const GURL& secondary_url,
                                            ContentSettingsType content_type,
@@ -405,11 +405,6 @@ class CookieSettingsBase {
   };
 
   bool IsAllowedByStorageAccessGrant(
-      const GURL& url,
-      const GURL& first_party_url,
-      net::CookieSettingOverrides overrides) const;
-
-  bool IsAllowedByTopLevelStorageAccessGrant(
       const GURL& url,
       const GURL& first_party_url,
       net::CookieSettingOverrides overrides) const;

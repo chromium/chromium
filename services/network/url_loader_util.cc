@@ -32,7 +32,6 @@
 #include "services/network/pervasive_resources/shared_resource_checker.h"
 #include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/connection_allowlist_parser.h"
-#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/features.h"
@@ -410,11 +409,6 @@ net::CookieSettingOverrides CalculateCookieSettingOverrides(
     net::CookieSettingOverrides devtools_overrides,
     const ResourceRequest& request) {
   net::CookieSettingOverrides overrides(factory_overrides);
-  if (request.is_outermost_main_frame &&
-      network::cors::IsCorsEnabledRequestMode(request.mode)) {
-    overrides.Put(
-        net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
-  }
 
   // Only apply the DevTools overrides if the request is from devtools enabled
   // context.
