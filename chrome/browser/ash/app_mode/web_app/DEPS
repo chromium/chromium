@@ -10,11 +10,9 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/extensions/extension_special_storage_policy.h",
-  "+chrome/browser/web_applications/externally_managed_app_manager.h",
   "+chrome/browser/web_applications/web_app_helpers.h",
   "+chrome/browser/web_applications/web_app_icon_generator.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
@@ -26,6 +24,7 @@ specific_include_rules = {
   "kiosk_web_app_service_launcher_unittest\\.cc": [
     "+chrome/browser/ui/web_applications",
     "+chrome/browser/web_applications/external_install_options.h",
+    "+chrome/browser/web_applications/externally_managed_app_manager.h",
     "+chrome/browser/web_applications/web_app_constants.h",
     "+chrome/browser/web_applications/web_app_management_type.h",
     "+chrome/browser/web_applications/web_app_provider.h",
@@ -35,5 +34,8 @@ specific_include_rules = {
   ],
   "kiosk_web_app_data_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
+  ],
+  "(kiosk_web_app_manager_unittest\\.cc|kiosk_web_app_service_launcher_unittest\\.cc)": [
+    "+chrome/browser/apps/app_service",
   ],
 }

@@ -8,7 +8,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/app_mode",
   "+chrome/browser/apps/app_service",
-  "+chrome/browser/apps/platform_apps",
   "+chrome/browser/ash/extensions",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/notifications",
@@ -17,7 +16,6 @@ include_rules = [
   "+chrome/browser/ash/policy/enrollment",
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system",
-  "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/extension_special_storage_policy.h",
   "+chrome/browser/extensions/external_loader.h",
   "+chrome/browser/extensions/external_provider_impl.h",
@@ -27,7 +25,6 @@ include_rules = [
   "+chrome/browser/extensions/updater/extension_updater_factory.h",
   "+chrome/browser/lifetime",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/apps",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/extensions",
   "+chrome/browser/ui/web_applications",
@@ -38,7 +35,6 @@ include_rules = [
   "+chrome/browser/web_applications/proto",
   "+chrome/browser/web_applications/web_app_constants.h",
   "+chrome/browser/web_applications/web_app_filter.h",
-  "+chrome/browser/web_applications/web_app_helpers.h",
   "+chrome/browser/web_applications/web_app_management_type.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
@@ -49,9 +45,13 @@ include_rules = [
 specific_include_rules = {
   # Only tests need these //chrome dependencies.
   ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
+    "+chrome/browser/apps/platform_apps",
     "+chrome/browser/ash/browser_delegate",
     "+chrome/browser/devtools",
+    "+chrome/browser/extensions/extension_service.h",
+    "+chrome/browser/ui/apps",
     "+chrome/browser/ui/browser_window/public",
+    "+chrome/browser/web_applications/web_app_helpers.h",
     "+chrome/common/chrome_paths.h",
   ],
   ".*(fake|test|mixin)(_.*)?\\.(cc|h)": [
