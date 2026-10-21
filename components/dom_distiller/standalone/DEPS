@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/dom_distiller/content",
-  "+components/keyed_service/core",
-  "+content/public",
-  "+content/shell",
-  "+net",
-  "+ui",
-]

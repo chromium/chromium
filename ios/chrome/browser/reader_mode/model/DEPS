@@ -18,6 +18,5 @@ include_rules = [
   "+ios/chrome/browser/tabs/model",
   "+ios/chrome/browser/translate/model",
   "+ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h",
-  "+third_party/dom_distiller_js",
   # keep-sorted end
 ]

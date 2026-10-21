@@ -8,12 +8,12 @@
 
 #import "base/strings/utf_string_conversions.h"
 #import "components/dom_distiller/core/extraction_utils.h"
+#import "components/dom_distiller/core/readability_options.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
-#import "third_party/dom_distiller_js/dom_distiller.pb.h"
 #import "url/gurl.h"
 
 class ReaderModeDistillerPageTest : public PlatformTest {
@@ -21,9 +21,8 @@ class ReaderModeDistillerPageTest : public PlatformTest {
   ReaderModeDistillerPageTest() : valid_url_(GURL("https://test.url")) {
     distiller_page_ = std::make_unique<ReaderModeDistillerPage>(&web_state_);
 
-    dom_distiller::proto::DomDistillerOptions options;
-    dom_distiller_script_ =
-        dom_distiller::GetDistillerScriptWithOptions(options);
+    dom_distiller_script_ = dom_distiller::GetReadabilityDistillerScript(
+        dom_distiller::ReadabilityOptions());
 
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     web_frames_manager_ = frames_manager.get();

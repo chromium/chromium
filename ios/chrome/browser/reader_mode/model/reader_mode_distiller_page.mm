@@ -9,7 +9,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/dom_distiller/core/dom_distiller_features.h"
 #import "components/dom_distiller/core/extraction_utils.h"
-#import "components/dom_distiller/ios/distiller_page_utils.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"

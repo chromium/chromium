@@ -6,20 +6,11 @@ source_set("ios") {
   sources = [
     "distilled_page_prefs_observer_bridge.h",
     "distilled_page_prefs_observer_bridge.mm",
-    "distiller_page_ios.h",
-    "distiller_page_ios.mm",
-    "distiller_page_utils.h",
-    "distiller_page_utils.mm",
   ]
 
   deps = [
     "//base",
     "//components/dom_distiller/core",
-    "//components/dom_distiller/core/proto",
-    "//components/favicon/ios",
-    "//ios/web/public",
-    "//ios/web/public/js_messaging",
-    "//url",
   ]
 
   public_deps = [ "//base" ]

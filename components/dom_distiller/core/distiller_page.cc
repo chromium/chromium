@@ -60,17 +60,7 @@ void DistillerPage::DistillPage(const GURL& gurl,
   ready_ = false;
   distiller_page_callback_ = std::move(callback);
 
-  std::string script;
-  switch (GetDistillerType()) {
-    case DistillerType::kReadability:
-      script = GetReadabilityDistillerScript(options.readability);
-      break;
-    case DistillerType::kDOMDistiller:
-      script = GetDistillerScriptWithOptions(options.dom_distiller);
-      break;
-  }
-
-  DistillPageImpl(gurl, script);
+  DistillPageImpl(gurl, GetReadabilityDistillerScript(options.readability));
 }
 
 void DistillerPage::OnDistillationDone(const GURL& page_url,

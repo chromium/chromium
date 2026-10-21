@@ -25,11 +25,6 @@ bool ReadabilityDistillerResultToDomDistillerResult(
     const base::Value& value,
     proto::DomDistillerResult* result);
 
-// Returns the DomDistiller JavaScript web page distillation script with
-// selected distallation `options`.
-std::string GetDistillerScriptWithOptions(
-    const dom_distiller::proto::DomDistillerOptions& options);
-
 // Returns the Readability JavaScript web page distillation script with the
 // given options.
 std::string GetReadabilityDistillerScript(const ReadabilityOptions& options);

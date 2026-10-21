@@ -17,12 +17,10 @@
 #include "components/dom_distiller/core/readability_options.h"
 #include "components/grit/components_resources.h"
 #include "third_party/dom_distiller_js/dom_distiller.pb.h"
-#include "third_party/dom_distiller_js/dom_distiller_json_converter.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace dom_distiller {
 namespace {
-const char* kOptionsPlaceholder = "$$OPTIONS";
 const char* kMinScorePlaceholder = "$$MIN_SCORE_PLACEHOLDER";
 const char* kMinContentLengthPlaceholder = "$$MIN_CONTENT_LENGTH_PLACEHOLDER";
 const char* kAllowedVideoRegexPlaceholder = "$$ALLOWED_VIDEO_REGEX";
@@ -36,23 +34,6 @@ void ReplaceScriptPlaceholder(std::string& script,
   script.replace(offset, strlen(placeholder), replacement);
 }
 }  // namespace
-
-std::string GetDistillerScriptWithOptions(
-    const dom_distiller::proto::DomDistillerOptions& options) {
-  std::string script =
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_DISTILLER_JS);
-  CHECK(!script.empty());
-
-  base::Value options_value =
-      dom_distiller::proto::json::DomDistillerOptions::WriteToValue(options);
-  std::string options_json;
-  if (!base::JSONWriter::Write(options_value, &options_json)) {
-    NOTREACHED();
-  }
-  ReplaceScriptPlaceholder(script, kOptionsPlaceholder, options_json);
-  return script;
-}
 
 std::string GetReadabilityDistillerScript(const ReadabilityOptions& options) {
   std::string script =

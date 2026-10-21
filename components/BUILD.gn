@@ -1322,17 +1322,6 @@ if (use_blink) {
       ]
     }
 
-    if (is_linux || is_chromeos) {
-      # content_extractor_browsertest is a standalone content extraction tool
-      # built as a MANUAL component_browsertest.
-      sources += [ "dom_distiller/standalone/content_extractor_browsertest.cc" ]
-      deps += [
-        "//components/leveldb_proto",
-        "//components/prefs:test_support",
-        "//components/sync_preferences:test_support",
-      ]
-    }
-
     if (is_chromeos) {
       sources += [ "feedback/content/content_tracing_manager_browsertest.cc" ]
       deps += [

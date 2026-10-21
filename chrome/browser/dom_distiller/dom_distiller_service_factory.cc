@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/callback_list.h"
-#include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
@@ -85,19 +84,8 @@ DomDistillerServiceFactory::BuildServiceInstanceForBrowserContext(
 
   std::unique_ptr<DistillerPageFactory> distiller_page_factory(
       new DistillerPageWebContentsFactory(context));
-
-  dom_distiller::proto::DomDistillerOptions options;
-  if (VLOG_IS_ON(1)) {
-    options.set_debug_level(logging::GetVlogLevelHelper(
-        FROM_HERE.file_name(), ::strlen(FROM_HERE.file_name())));
-  }
-  // Options for pagination algorithm:
-  // - "next": detect anchors with "next" text
-  // - "pagenum": detect anchors with numeric page numbers
-  // Default is "next".
-  options.set_pagination_algo("next");
-  std::unique_ptr<DistillerFactory> distiller_factory(
-      new DistillerFactoryImpl(DistillerOptions(options)));
+  std::unique_ptr<DistillerFactory> distiller_factory =
+      std::make_unique<DistillerFactoryImpl>(DistillerOptions());
 
   std::unique_ptr<DistilledPagePrefs> distilled_page_prefs =
       std::make_unique<DistilledPagePrefs>(profile->GetPrefs());

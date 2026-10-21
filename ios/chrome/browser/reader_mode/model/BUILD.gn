@@ -54,7 +54,6 @@ source_set("model") {
     "//base",
     "//components/dom_distiller/core",
     "//components/dom_distiller/core/proto",
-    "//components/dom_distiller/ios",
     "//components/feature_engagement/public",
     "//components/google/core/common",
     "//components/keyed_service/core",

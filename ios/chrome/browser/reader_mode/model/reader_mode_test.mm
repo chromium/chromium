@@ -42,8 +42,6 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/web_state.h"
-#import "third_party/dom_distiller_js/dom_distiller.pb.h"
-#import "third_party/dom_distiller_js/dom_distiller_json_converter.h"
 
 namespace {
 
