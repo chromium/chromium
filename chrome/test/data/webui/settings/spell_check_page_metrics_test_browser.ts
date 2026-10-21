@@ -100,6 +100,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
   suite('MetricsOfficialBuild', function() {
     test('records when selecting basic spell check', async () => {
       prefService.setPrefValue('spellcheck.use_spelling_service', true);
+      await microtasksFinished();
       const basicServiceSelect =
           spellCheckPage.shadowRoot.querySelector<HTMLElement>(
               '#spellingServiceDisable');
@@ -114,6 +115,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
 
     test('records when selecting enhanced spell check', async () => {
       prefService.setPrefValue('spellcheck.use_spelling_service', false);
+      await microtasksFinished();
       const enhancedServiceSelect = spellCheckPage.$.spellingServiceEnable;
       enhancedServiceSelect.click();
       await microtasksFinished();
