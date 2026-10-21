@@ -43,9 +43,6 @@ class OffscreenRenderingManagerAndroid : public content::CompositorClient {
 
   ~OffscreenRenderingManagerAndroid() override;
 
-  // Destroys the manager and its associated compositor.
-  void Destroy(JNIEnv* env);
-
   // Starts offscreen rendering for the given WebContents by attaching its
   // layer to the offscreen compositor's root layer.
   void StartOffscreenRendering(JNIEnv* env,

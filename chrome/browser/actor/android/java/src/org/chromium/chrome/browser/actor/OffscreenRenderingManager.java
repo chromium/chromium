@@ -12,7 +12,10 @@ import android.widget.FrameLayout;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -40,9 +43,12 @@ import java.util.Set;
 @JNINamespace("actor")
 @NullMarked
 public class OffscreenRenderingManager {
+    @JniType("::actor::OffscreenRenderingManagerAndroid")
+    interface NativeOffscreenRenderingManagerAndroid extends JniTypeToken {}
+
     private static @Nullable OffscreenRenderingManager sInstance;
 
-    private long mNativePtr;
+    private @Nullable JniUniquePtr<NativeOffscreenRenderingManagerAndroid> mNativePtr;
     private @Nullable WindowAndroid mOffscreenWindow;
     private final Set<Tab> mOffscreenTabs = new HashSet<>();
     private final Set<WebContents> mOffscreenWebContents = new HashSet<>();
@@ -96,7 +102,7 @@ public class OffscreenRenderingManager {
     }
 
     private void ensureNativeInitialized() {
-        if (mNativePtr != 0) return;
+        if (mNativePtr != null) return;
 
         mOffscreenWindow =
                 new WindowAndroid(
@@ -162,7 +168,7 @@ public class OffscreenRenderingManager {
      */
     public void startOffscreenRendering(Tab tab, int width, int height) {
         ensureNativeInitialized();
-        if (mNativePtr == 0 || mOffscreenTabs.contains(tab)) return;
+        if (mNativePtr == null || mOffscreenTabs.contains(tab)) return;
 
         WebContents webContents = tab.getWebContents();
         if (webContents == null || webContents.isDestroyed()) return;
@@ -188,7 +194,7 @@ public class OffscreenRenderingManager {
     public void startOffscreenRenderingForWebContents(
             WebContents webContents, int width, int height) {
         ensureNativeInitialized();
-        if (mNativePtr == 0
+        if (mNativePtr == null
                 || webContents.isDestroyed()
                 || mOffscreenWebContents.contains(webContents)) {
             return;
@@ -224,7 +230,7 @@ public class OffscreenRenderingManager {
         }
 
         if (!webContents.isDestroyed()) {
-            if (mNativePtr != 0) {
+            if (mNativePtr != null) {
                 OffscreenRenderingManagerJni.get().stopOffscreenRendering(mNativePtr, webContents);
             }
             if (webContents.getTopLevelNativeWindow() == mOffscreenWindow) {
@@ -253,6 +259,7 @@ public class OffscreenRenderingManager {
                         + " rendering.");
         }
 
+        assert mNativePtr != null;
         OffscreenRenderingManagerJni.get().stopOffscreenRendering(mNativePtr, webContents);
 
         tab.removeObserver(mTabObserver);
@@ -278,9 +285,9 @@ public class OffscreenRenderingManager {
             stopOffscreenRendering(webContents);
         }
 
-        if (mNativePtr != 0) {
-            OffscreenRenderingManagerJni.get().destroy(mNativePtr);
-            mNativePtr = 0;
+        if (mNativePtr != null) {
+            mNativePtr.destroy();
+            mNativePtr = null;
         }
         if (mOffscreenWindow != null) {
             mOffscreenWindow.destroy();
@@ -304,18 +311,17 @@ public class OffscreenRenderingManager {
 
     @NativeMethods
     interface Natives {
-        long init(@JniType("ui::WindowAndroid*") WindowAndroid window, int width, int height);
-
-        void destroy(long nativeOffscreenRenderingManagerAndroid);
+        JniUniquePtr<NativeOffscreenRenderingManagerAndroid> init(
+                @JniType("ui::WindowAndroid*") WindowAndroid window, int width, int height);
 
         void startOffscreenRendering(
-                long nativeOffscreenRenderingManagerAndroid,
+                JniPtr<NativeOffscreenRenderingManagerAndroid> self,
                 @JniType("content::WebContents*") WebContents webContents,
                 int width,
                 int height);
 
         void stopOffscreenRendering(
-                long nativeOffscreenRenderingManagerAndroid,
+                JniPtr<NativeOffscreenRenderingManagerAndroid> self,
                 @JniType("content::WebContents*") WebContents webContents);
     }
 }

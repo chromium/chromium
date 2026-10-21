@@ -11,6 +11,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
@@ -61,10 +62,6 @@ OffscreenRenderingManagerAndroid::~OffscreenRenderingManagerAndroid() {
   root_layer_ = nullptr;
 }
 
-void OffscreenRenderingManagerAndroid::Destroy(JNIEnv* env) {
-  delete this;
-}
-
 void OffscreenRenderingManagerAndroid::StartOffscreenRendering(
     JNIEnv* env,
     content::WebContents* web_contents,
@@ -98,12 +95,13 @@ void OffscreenRenderingManagerAndroid::StopOffscreenRendering(
 }  // namespace actor
 
 // JNI Bridge Functions
-static int64_t JNI_OffscreenRenderingManager_Init(JNIEnv* env,
-                                                  ui::WindowAndroid* window,
-                                                  int32_t width,
-                                                  int32_t height) {
-  return reinterpret_cast<intptr_t>(
-      new actor::OffscreenRenderingManagerAndroid(window, width, height));
+static jni_zero::JniUniquePtr<actor::OffscreenRenderingManagerAndroid>
+JNI_OffscreenRenderingManager_Init(JNIEnv* env,
+                                   ui::WindowAndroid* window,
+                                   int32_t width,
+                                   int32_t height) {
+  return jni_zero::MakeUnique<actor::OffscreenRenderingManagerAndroid>(
+      window, width, height);
 }
 
 DEFINE_JNI(OffscreenRenderingManager)

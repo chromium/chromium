@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
@@ -20,6 +19,7 @@ import static org.mockito.Mockito.when;
 import android.Manifest;
 import android.content.pm.PackageManager;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,12 +50,16 @@ public class OffscreenRenderingManagerTest {
     @Mock private Tab mTab;
     @Mock private ViewAndroidDelegate mViewAndroidDelegate;
 
+    @Mock
+    private JniUniquePtr<OffscreenRenderingManager.NativeOffscreenRenderingManagerAndroid>
+            mNativePtr;
+
     private OffscreenRenderingManager mManager;
 
     @Before
     public void setUp() {
         OffscreenRenderingManagerJni.setInstanceForTesting(mNativeMock);
-        when(mNativeMock.init(any(), anyInt(), anyInt())).thenReturn(12345L);
+        when(mNativeMock.init(any(), anyInt(), anyInt())).thenReturn(mNativePtr);
 
         mManager = OffscreenRenderingManager.getInstance();
     }
@@ -74,16 +78,16 @@ public class OffscreenRenderingManagerTest {
         verify(mNativeMock).init(any(), eq(1), eq(1));
         verify(mWebContents1).setSize(800, 600);
         verify(mNativeMock)
-                .startOffscreenRendering(eq(12345L), eq(mWebContents1), eq(800), eq(600));
+                .startOffscreenRendering(eq(mNativePtr), eq(mWebContents1), eq(800), eq(600));
         verify(mWebContents1).setTopLevelNativeWindow(mManager.getOffscreenWindow());
         verify(mWebContents1).updateWebContentsVisibility(Visibility.VISIBLE);
 
         when(mWebContents1.getTopLevelNativeWindow()).thenReturn(mManager.getOffscreenWindow());
         mManager.stopOffscreenRendering(mWebContents1);
 
-        verify(mNativeMock).stopOffscreenRendering(eq(12345L), eq(mWebContents1));
+        verify(mNativeMock).stopOffscreenRendering(eq(mNativePtr), eq(mWebContents1));
         verify(mWebContents1).setTopLevelNativeWindow(isNull());
-        verify(mNativeMock).destroy(eq(12345L));
+        verify(mNativePtr).destroy();
     }
 
     @Test
@@ -94,7 +98,7 @@ public class OffscreenRenderingManagerTest {
 
         verify(mWebContents1).setDelegates(eq(""), any(), isNull(), any(), any());
         verify(mNativeMock)
-                .startOffscreenRendering(eq(12345L), eq(mWebContents1), eq(400), eq(300));
+                .startOffscreenRendering(eq(mNativePtr), eq(mWebContents1), eq(400), eq(300));
     }
 
     @Test
@@ -103,7 +107,7 @@ public class OffscreenRenderingManagerTest {
 
         mManager.startOffscreenRenderingForWebContents(mWebContents1, 400, 300);
 
-        verify(mNativeMock, never()).startOffscreenRendering(anyLong(), any(), anyInt(), anyInt());
+        verify(mNativeMock, never()).startOffscreenRendering(any(), any(), anyInt(), anyInt());
     }
 
     @Test
@@ -115,10 +119,10 @@ public class OffscreenRenderingManagerTest {
         mManager.startOffscreenRenderingForWebContents(mWebContents2, 800, 600);
 
         mManager.stopOffscreenRendering(mWebContents1);
-        verify(mNativeMock, never()).destroy(anyLong());
+        verify(mNativePtr, never()).destroy();
 
         mManager.stopOffscreenRendering(mWebContents2);
-        verify(mNativeMock).destroy(eq(12345L));
+        verify(mNativePtr).destroy();
     }
 
     @Test
@@ -130,15 +134,15 @@ public class OffscreenRenderingManagerTest {
         verify(mNativeMock).init(any(), eq(1), eq(1));
         verify(mWebContents1).setSize(800, 600);
         verify(mNativeMock)
-                .startOffscreenRendering(eq(12345L), eq(mWebContents1), eq(800), eq(600));
+                .startOffscreenRendering(eq(mNativePtr), eq(mWebContents1), eq(800), eq(600));
         verify(mTab).startOffscreenRendering();
         verify(mWebContents1).setTopLevelNativeWindow(any());
 
         mManager.stopOffscreenRendering(mTab);
 
-        verify(mNativeMock).stopOffscreenRendering(eq(12345L), eq(mWebContents1));
+        verify(mNativeMock).stopOffscreenRendering(eq(mNativePtr), eq(mWebContents1));
         verify(mTab).stopOffscreenRendering();
-        verify(mNativeMock).destroy(eq(12345L));
+        verify(mNativePtr).destroy();
     }
 
     @Test
