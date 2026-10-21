@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
 namespace blink {
@@ -51,7 +52,12 @@ std::unique_ptr<protocol::Value> ParseJSON(const String& value) {
   std::vector<uint8_t> cbor;
 
   if (value.Is8Bit()) {
-    crdtp::json::ConvertJSONToCBOR(crdtp::span<uint8_t>(value.Span8()), &cbor);
+    // 8-bit Blink strings are Latin-1, while ConvertJSONToCBOR(span<uint8_t>)
+    // expects UTF-8. StringUtf8Adaptor avoids copying when the string is ASCII
+    // and transcodes Latin-1 (U+0080-U+00FF) to UTF-8 when needed.
+    StringUtf8Adaptor utf8(value);
+    crdtp::json::ConvertJSONToCBOR(
+        crdtp::span<uint8_t>(base::as_byte_span(utf8)), &cbor);
   } else {
     crdtp::json::ConvertJSONToCBOR(crdtp::span<uint16_t>(value.SpanUint16()),
                                    &cbor);

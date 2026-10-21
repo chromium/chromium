@@ -1,0 +1,12 @@
+Tests that WebMCP toolsAdded inputSchema and toolResponded output preserve Latin-1 (U+0080-U+00FF) characters.
+toolsAdded (above_latin1_tool): “30 x 40 cm”
+toolResponded (above_latin1_tool): “30 x 40 cm”
+toolsAdded (ascii_tool): 30 x 40 cm
+toolResponded (ascii_tool): 30 x 40 cm
+toolsAdded (latin1_degree_tool): Angle (°)
+toolResponded (latin1_degree_tool): Angle (°)
+toolsAdded (latin1_times_tool): 30 × 40 cm
+toolResponded (latin1_times_tool): 30 × 40 cm
+toolsAdded (latin1_utf8_lookalike_tool): Ã©
+toolResponded (latin1_utf8_lookalike_tool): Ã©
+
