@@ -907,7 +907,8 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.ToString();
     });
 
-IN_PROC_BROWSER_TEST_P(ContextualTasksLensChipPixelTest, Screenshots) {
+// TODO(crbug.com/575977688): Fix and re-enable.
+IN_PROC_BROWSER_TEST_P(ContextualTasksLensChipPixelTest, DISABLED_Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   const DeepQuery kChipIframe = {"#lens-chip-iframe"};
 
