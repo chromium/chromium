@@ -671,7 +671,12 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
   // Listen to extension unloaded notification.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+  // Set of child session IDs and target IDs suppressed from the extension.
+  std::set<std::string> suppressed_session_ids_;
+  std::set<std::string> suppressed_target_ids_;
+
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+  base::WeakPtrFactory<ExtensionDevToolsClientHost> weak_factory_{this};
 };
 
 ExtensionDevToolsClientHost::ExtensionDevToolsClientHost(
@@ -820,6 +825,30 @@ void ExtensionDevToolsClientHost::SendMessageToBackend(
     const std::string& method,
     SendCommand::Params::CommandParams* command_params,
     std::optional<std::string> session_id) {
+  if (method == "Target.attachToTarget" ||
+      method == "Target.autoAttachRelated") {
+    if (command_params) {
+      if (const std::string* target_id =
+              command_params->additional_properties.FindString("targetId")) {
+        if (scoped_refptr<DevToolsAgentHost> target_host =
+                DevToolsAgentHost::GetForId(*target_id)) {
+          std::string error;
+          if (!ExtensionMayAttachToAgentHost(
+                  *extension_,
+                  util::IsIncognitoEnabled(extension_->id(), profile_),
+                  profile_, *target_host, &error)) {
+            base::DictValue error_dict;
+            base::DictValue inner_error;
+            inner_error.Set("code", -32000);
+            inner_error.Set("message", "Not allowed");
+            error_dict.Set("error", std::move(inner_error));
+            function->SendResponseBody(base::Value(std::move(error_dict)));
+            return;
+          }
+        }
+      }
+    }
+  }
   base::DictValue protocol_request;
   int request_id = ++last_request_id_;
   pending_requests_[request_id] = function;
@@ -903,9 +932,145 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
 
   std::optional<int> id = dictionary.FindInt("id");
   if (!id) {
+    if (const std::string* session_id = dictionary.FindString("sessionId");
+        session_id && suppressed_session_ids_.contains(*session_id)) {
+      return;
+    }
     std::string* method_name = dictionary.FindString("method");
     if (!method_name) {
       return;
+    }
+    base::DictValue* params_dict = dictionary.FindDict("params");
+    if (*method_name == "Target.detachedFromTarget") {
+      if (params_dict) {
+        if (const std::string* session_id = params_dict->FindString("sessionId");
+            session_id && suppressed_session_ids_.erase(*session_id) > 0) {
+          return;
+        }
+      }
+    } else if (*method_name == "Target.receivedMessageFromTarget") {
+      if (params_dict) {
+        if (const std::string* session_id = params_dict->FindString("sessionId");
+            session_id && suppressed_session_ids_.contains(*session_id)) {
+          return;
+        }
+      }
+    } else if (*method_name == "Target.targetDestroyed") {
+      if (params_dict) {
+        if (const std::string* target_id = params_dict->FindString("targetId");
+            target_id && suppressed_target_ids_.erase(*target_id) > 0) {
+          return;
+        }
+      }
+    } else if (*method_name == "Target.targetCrashed") {
+      if (params_dict) {
+        if (const std::string* target_id = params_dict->FindString("targetId");
+            target_id && suppressed_target_ids_.contains(*target_id)) {
+          return;
+        }
+      }
+    } else if (*method_name == "Target.attachedToTarget" ||
+               *method_name == "Target.targetCreated" ||
+               *method_name == "Target.targetInfoChanged") {
+      if (params_dict) {
+        if (base::DictValue* target_info =
+                params_dict->FindDict("targetInfo")) {
+          if (const std::string* target_id =
+                  target_info->FindString("targetId")) {
+            bool suppressed = suppressed_target_ids_.contains(*target_id);
+            bool allowed = !suppressed;
+            if (scoped_refptr<DevToolsAgentHost> target_host =
+                    DevToolsAgentHost::GetForId(*target_id)) {
+              std::string error;
+              allowed = ExtensionMayAttachToAgentHost(
+                  *extension_,
+                  util::IsIncognitoEnabled(extension_->id(), profile_),
+                  profile_, *target_host, &error);
+            }
+            if (*method_name == "Target.attachedToTarget") {
+              if (!allowed) {
+                suppressed_target_ids_.insert(*target_id);
+                if (const std::string* session_id =
+                        params_dict->FindString("sessionId")) {
+                  suppressed_session_ids_.insert(*session_id);
+                  std::string parent_session_id;
+                  if (const std::string* top_session_id =
+                          dictionary.FindString("sessionId")) {
+                    parent_session_id = *top_session_id;
+                  }
+                  bool waiting =
+                      params_dict->FindBool("waitingForDebugger")
+                          .value_or(false);
+                  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                      FROM_HERE,
+                      base::BindOnce(
+                          [](base::WeakPtr<ExtensionDevToolsClientHost> self,
+                             std::string child_session_id,
+                             std::string outer_session_id, bool resume_first) {
+                            if (!self || !self->agent_host_) {
+                              return;
+                            }
+                            if (resume_first) {
+                              base::DictValue resume_request;
+                              resume_request.Set("id",
+                                                 ++self->last_request_id_);
+                              resume_request.Set(
+                                  "method", "Runtime.runIfWaitingForDebugger");
+                              resume_request.Set("sessionId", child_session_id);
+                              std::string resume_json =
+                                  base::WriteJson(resume_request).value_or("");
+                              self->agent_host_->DispatchProtocolMessage(
+                                  self.get(), base::as_byte_span(resume_json));
+                            }
+                            base::DictValue detach_request;
+                            detach_request.Set("id", ++self->last_request_id_);
+                            detach_request.Set("method",
+                                               "Target.detachFromTarget");
+                            if (!outer_session_id.empty()) {
+                              detach_request.Set("sessionId",
+                                                 std::move(outer_session_id));
+                            }
+                            base::DictValue detach_params;
+                            detach_params.Set("sessionId",
+                                              std::move(child_session_id));
+                            detach_request.Set("params",
+                                               std::move(detach_params));
+                            std::string json =
+                                base::WriteJson(detach_request).value_or("");
+                            self->agent_host_->DispatchProtocolMessage(
+                                self.get(), base::as_byte_span(json));
+                          },
+                          weak_factory_.GetWeakPtr(), *session_id,
+                          std::move(parent_session_id), waiting));
+                }
+                return;
+              }
+            } else if (*method_name == "Target.targetCreated") {
+              if (!allowed) {
+                suppressed_target_ids_.insert(*target_id);
+                return;
+              }
+              suppressed_target_ids_.erase(*target_id);
+            } else if (*method_name == "Target.targetInfoChanged") {
+              if (allowed && suppressed) {
+                // Restricted -> Allowed: synthesize Target.targetCreated.
+                suppressed_target_ids_.erase(*target_id);
+                *method_name = "Target.targetCreated";
+              } else if (!allowed && !suppressed) {
+                // Allowed -> Restricted: synthesize Target.targetDestroyed.
+                std::string target_id_copy = *target_id;
+                suppressed_target_ids_.insert(target_id_copy);
+                *method_name = "Target.targetDestroyed";
+                params_dict->clear();
+                params_dict->Set("targetId", std::move(target_id_copy));
+              } else if (!allowed && suppressed) {
+                // Restricted -> Restricted: drop.
+                return;
+              }
+            }
+          }
+        }
+      }
     }
 
     OnEvent::Params params;
