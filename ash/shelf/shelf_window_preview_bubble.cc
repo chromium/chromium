@@ -9,14 +9,18 @@
 
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/window_preview_view.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
+#include "ui/events/event_target.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -25,6 +29,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
@@ -88,25 +93,38 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(150);
 
 }  // namespace
 
-ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(views::MenuItemView* anchor,
-                                                   aura::Window* window)
-    : ShelfWindowPreviewBubble(anchor, window, GetArrowForMenuItem(anchor)) {}
+ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(
+    views::MenuItemView* anchor,
+    aura::Window* window,
+    base::RepeatingClosure dismiss_callback)
+    : ShelfWindowPreviewBubble(anchor,
+                               window,
+                               GetArrowForMenuItem(anchor),
+                               std::move(dismiss_callback)) {}
 
-ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(ShelfBubble* anchor,
-                                                   aura::Window* window)
-    : ShelfWindowPreviewBubble(anchor, window, GetArrowForShelf(anchor)) {}
+ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(
+    ShelfBubble* anchor,
+    aura::Window* window,
+    base::RepeatingClosure dismiss_callback)
+    : ShelfWindowPreviewBubble(anchor,
+                               window,
+                               GetArrowForShelf(anchor),
+                               std::move(dismiss_callback)) {}
 
 ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(
     views::View* anchor,
     aura::Window* window,
-    views::BubbleBorder::Arrow arrow)
+    views::BubbleBorder::Arrow arrow,
+    base::RepeatingClosure dismiss_callback)
     : ShelfBubble(anchor,
                   ShelfAlignment::kBottom,
                   /*for_tooltip=*/false,
                   arrow),
-      window_(window) {
+      window_(window),
+      dismiss_callback_(std::move(dismiss_callback)) {
   CHECK(anchor);
   CHECK(window_);
+  CHECK(dismiss_callback_);
   set_close_on_deactivate(false);
   SetCanActivate(false);
   set_accept_events(false);
@@ -152,9 +170,13 @@ ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
     layer->SetOpacity(1.0f);
   }
+
+  AddPreTargetHandler();
 }
 
-ShelfWindowPreviewBubble::~ShelfWindowPreviewBubble() = default;
+ShelfWindowPreviewBubble::~ShelfWindowPreviewBubble() {
+  RemovePreTargetHandler();
+}
 
 bool ShelfWindowPreviewBubble::ShouldCloseOnPressDown() {
   return true;
@@ -164,8 +186,21 @@ bool ShelfWindowPreviewBubble::ShouldCloseOnMouseExit() {
   return true;
 }
 
+void ShelfWindowPreviewBubble::OnEvent(ui::Event* event) {
+  if (event->type() == ui::EventType::kMousePressed ||
+      event->type() == ui::EventType::kTouchPressed ||
+      event->type() == ui::EventType::kGestureTap) {
+    ProcessPressedEvent(event->AsLocatedEvent());
+    if (event->handled()) {
+      return;
+    }
+  }
+  ShelfBubble::OnEvent(event);
+}
+
 void ShelfWindowPreviewBubble::OnWindowDestroying(aura::Window* window) {
   if (window_ == window) {
+    RemovePreTargetHandler();
     window_observation_.Reset();
     window_ = nullptr;
     RemovePreviewView();
@@ -199,6 +234,7 @@ void ShelfWindowPreviewBubble::UpdateAnchorAndWindow(
 }
 
 void ShelfWindowPreviewBubble::FadeOutAndClose() {
+  RemovePreTargetHandler();
   views::Widget* widget = GetWidget();
   CHECK(widget);
 
@@ -218,6 +254,25 @@ void ShelfWindowPreviewBubble::FadeOutAndClose() {
   animating_layer->SetOpacity(0.0f);
 }
 
+bool ShelfWindowPreviewBubble::IsPointInPreviewRegion(
+    const gfx::Point& screen_point) const {
+  if (!GetWidget()) {
+    return false;
+  }
+  gfx::Rect region = GetWidget()->GetWindowBoundsInScreen();
+  if (views::View* anchor = GetAnchorView()) {
+    if (views::Widget* anchor_widget = anchor->GetWidget()) {
+      region.Union(anchor_widget->GetWindowBoundsInScreen());
+    }
+    if (auto* anchor_bubble = views::AsViewClass<ShelfBubble>(anchor)) {
+      if (views::View* root_anchor = anchor_bubble->GetAnchorView()) {
+        region.Union(root_anchor->GetBoundsInScreen());
+      }
+    }
+  }
+  return region.Contains(screen_point);
+}
+
 void ShelfWindowPreviewBubble::CreatePreviewView() {
   CHECK(!preview_view_);
   CHECK(window_);
@@ -231,6 +286,40 @@ void ShelfWindowPreviewBubble::RemovePreviewView() {
   if (preview_view_) {
     WindowPreviewView* to_remove = preview_view_.ExtractAsDangling();
     RemoveChildViewT(to_remove);
+  }
+}
+
+void ShelfWindowPreviewBubble::ProcessPressedEvent(ui::LocatedEvent* event) {
+  if (!IsPointOverBubble(event->target()->GetScreenLocation(*event))) {
+    return;
+  }
+  aura::Window* window = window_;
+  aura::WindowTracker tracker({window});
+  event->SetHandled();
+  event->StopPropagation();
+  RemovePreTargetHandler();
+  // Running `dismiss_callback_` may synchronously close the widget and delete
+  // `this` (e.g. via `ShelfMenuModelAdapter::Cancel`), so do not access any
+  // members after this call.
+  dismiss_callback_.Run();
+  if (tracker.Contains(window)) {
+    ::wm::ActivateWindow(window);
+  }
+}
+
+void ShelfWindowPreviewBubble::AddPreTargetHandler() {
+  if (!is_pre_target_handler_ && Shell::HasInstance()) {
+    // Use `kSystem` priority so this handler is prepended ahead of
+    // `ShelfTooltipManager` (`kDefault`).
+    Shell::Get()->AddPreTargetHandler(this, ui::EventTarget::Priority::kSystem);
+    is_pre_target_handler_ = true;
+  }
+}
+
+void ShelfWindowPreviewBubble::RemovePreTargetHandler() {
+  if (is_pre_target_handler_ && Shell::HasInstance()) {
+    Shell::Get()->RemovePreTargetHandler(this);
+    is_pre_target_handler_ = false;
   }
 }
 

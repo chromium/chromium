@@ -13,6 +13,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+namespace gfx {
+class Point;
+}  // namespace gfx
+
 namespace views {
 class MenuItemView;
 class View;
@@ -49,6 +53,10 @@ class ASH_EXPORT ShelfBubble : public views::BubbleDialogDelegateView {
   // Returns true if we should disappear when the mouse leaves the anchor's
   // bounds.
   virtual bool ShouldCloseOnMouseExit() = 0;
+
+  // Returns true if `screen_point` is within the bubble's bounds in screen
+  // coordinates.
+  bool IsPointOverBubble(const gfx::Point& screen_point) const;
 
  protected:
   void set_border_radius(int radius) { border_radius_ = radius; }

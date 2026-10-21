@@ -32,10 +32,12 @@
 #include "ui/compositor/layer_observer.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 namespace {
@@ -353,6 +355,84 @@ TEST_F(ShelfTooltipManagerWindowPreviewTest, MultipleWindowsNoPreviewBubble) {
   tooltip_manager_->ShowTooltip(button);
   EXPECT_TRUE(tooltip_manager_->IsVisible());
   EXPECT_EQ(nullptr, tooltip_manager_->preview_bubble());
+}
+
+TEST_F(ShelfTooltipManagerWindowPreviewTest, StaysOpenWhileMouseOverPreview) {
+  const ShelfID id("app_with_one_window");
+  views::View* button = AddAppItem(id);
+  std::unique_ptr<aura::Window> window = CreateWindowForShelfItem(id);
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+  tooltip_manager_->ShowTooltip(button);
+  ASSERT_TRUE(tooltip_manager_->preview_bubble());
+
+  // Moving the mouse from the shelf item through the tooltip onto the preview
+  // bubble keeps both open.
+  generator->MoveMouseTo(GetTooltip()->GetWindowBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(tooltip_manager_->IsVisible());
+  EXPECT_TRUE(tooltip_manager_->preview_bubble());
+
+  const gfx::Rect preview_bounds = tooltip_manager_->preview_bubble()
+                                       ->GetWidget()
+                                       ->GetWindowBoundsInScreen();
+  generator->MoveMouseTo(preview_bounds.CenterPoint());
+  EXPECT_TRUE(tooltip_manager_->IsVisible());
+  EXPECT_TRUE(tooltip_manager_->preview_bubble());
+
+  // Moving the mouse out of the preview bubble closes both.
+  generator->MoveMouseTo(preview_bounds.right_center() + gfx::Vector2d(50, 0));
+  EXPECT_FALSE(tooltip_manager_->IsVisible());
+  EXPECT_FALSE(tooltip_manager_->preview_bubble());
+}
+
+TEST_F(ShelfTooltipManagerWindowPreviewTest, ClickOnPreviewActivatesWindow) {
+  const ShelfID id("app_with_one_window");
+  views::View* button = AddAppItem(id);
+  std::unique_ptr<aura::Window> window = CreateWindowForShelfItem(id);
+  std::unique_ptr<aura::Window> other_window =
+      CreateToplevelTestWindow({400, 100, 300, 200});
+  wm::ActivateWindow(other_window.get());
+  ASSERT_FALSE(wm::IsActiveWindow(window.get()));
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+  tooltip_manager_->ShowTooltip(button);
+  ASSERT_TRUE(tooltip_manager_->preview_bubble());
+
+  generator->MoveMouseTo(tooltip_manager_->preview_bubble()
+                             ->GetWidget()
+                             ->GetWindowBoundsInScreen()
+                             .CenterPoint());
+  generator->ClickLeftButton();
+  EXPECT_TRUE(wm::IsActiveWindow(window.get()));
+  EXPECT_FALSE(tooltip_manager_->IsVisible());
+  EXPECT_FALSE(tooltip_manager_->preview_bubble());
+}
+
+TEST_F(ShelfTooltipManagerWindowPreviewTest, PressingEscapeClosesPreview) {
+  const ShelfID id("app_with_one_window");
+  views::View* button = AddAppItem(id);
+  std::unique_ptr<aura::Window> window = CreateWindowForShelfItem(id);
+
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+  tooltip_manager_->ShowTooltip(button);
+  ASSERT_TRUE(tooltip_manager_->IsVisible());
+  ASSERT_TRUE(tooltip_manager_->preview_bubble());
+
+  // Moving the mouse over the preview keeps it visible.
+  const gfx::Rect preview_bounds = tooltip_manager_->preview_bubble()
+                                       ->GetWidget()
+                                       ->GetWindowBoundsInScreen();
+  generator->MoveMouseTo(preview_bounds.CenterPoint());
+  EXPECT_TRUE(tooltip_manager_->IsVisible());
+  EXPECT_TRUE(tooltip_manager_->preview_bubble());
+
+  // Pressing 'Esc' closes both the preview bubble and the tooltip.
+  generator->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  EXPECT_FALSE(tooltip_manager_->IsVisible());
+  EXPECT_FALSE(tooltip_manager_->preview_bubble());
 }
 
 TEST_F(ShelfTooltipManagerTest, ShelfItemTimer) {

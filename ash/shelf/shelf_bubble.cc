@@ -17,6 +17,8 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -93,6 +95,11 @@ views::BubbleBorder::Arrow ShelfBubble::GetArrowForMenuItem(
     arrow = views::BubbleBorder::horizontal_mirror(arrow);
   }
   return arrow;
+}
+
+bool ShelfBubble::IsPointOverBubble(const gfx::Point& screen_point) const {
+  return GetWidget() &&
+         GetWidget()->GetWindowBoundsInScreen().Contains(screen_point);
 }
 
 void ShelfBubble::CreateBubble() {

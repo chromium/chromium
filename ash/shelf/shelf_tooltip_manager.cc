@@ -23,6 +23,7 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
+#include "ui/events/event_target.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/button/button.h"
@@ -139,7 +140,10 @@ void ShelfTooltipManager::ShowPreviewBubble(aura::Window* window) {
   CHECK(bubble_);
 
   // Anchor the preview bubble to the tooltip bubble so it appears above it.
-  preview_bubble_ = new ShelfWindowPreviewBubble(bubble_, window);
+  preview_bubble_ = new ShelfWindowPreviewBubble(
+      bubble_, window,
+      base::BindRepeating(&ShelfTooltipManager::Close,
+                          weak_factory_.GetWeakPtr(), /*animate=*/true));
   preview_bubble_->RegisterWindowClosingCallback(
       base::BindOnce(&ShelfTooltipManager::OnPreviewBubbleClosing,
                      weak_factory_.GetWeakPtr()));
@@ -171,7 +175,9 @@ void ShelfTooltipManager::OnMouseEvent(ui::MouseEvent* event) {
   }
 
   if (bubble_ && event->type() == ui::EventType::kMouseExited &&
-      bubble_->ShouldCloseOnMouseExit()) {
+      bubble_->ShouldCloseOnMouseExit() &&
+      (!preview_bubble_ || !preview_bubble_->IsPointInPreviewRegion(
+                               event->target()->GetScreenLocation(*event)))) {
     Close();
     return;
   }
@@ -187,6 +193,12 @@ void ShelfTooltipManager::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() != ui::EventType::kMouseMoved || !delegate_view) {
     // Don't show delayed tooltips if the mouse is being active elsewhere.
     timer_.Stop();
+    // Close the preview bubble once the mouse leaves the preview region.
+    if (preview_bubble_ && event->type() == ui::EventType::kMouseMoved &&
+        !preview_bubble_->IsPointInPreviewRegion(
+            event->target()->GetScreenLocation(*event))) {
+      Close();
+    }
     return;
   }
 
@@ -201,7 +213,10 @@ void ShelfTooltipManager::OnMouseEvent(ui::MouseEvent* event) {
   } else if (!IsVisible() && should_show) {
     ShowTooltipWithDelay(view);
   } else if (IsVisible() &&
-             shelf_tooltip_delegate_->ShouldHideTooltip(point, delegate_view)) {
+             shelf_tooltip_delegate_->ShouldHideTooltip(point, delegate_view) &&
+             (!preview_bubble_ ||
+              !preview_bubble_->IsPointInPreviewRegion(
+                  event->target()->GetScreenLocation(*event)))) {
     Close();
   }
 }
@@ -218,6 +233,14 @@ void ShelfTooltipManager::OnScrollEvent(ui::ScrollEvent* event) {
 }
 
 void ShelfTooltipManager::OnKeyEvent(ui::KeyEvent* event) {
+  if (event->type() == ui::EventType::kKeyPressed &&
+      event->key_code() == ui::VKEY_ESCAPE &&
+      (IsVisible() || preview_bubble_)) {
+    Close();
+    event->SetHandled();
+    event->StopPropagation();
+    return;
+  }
   // Close any currently shown bubble.
   Close();
 }

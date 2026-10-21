@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/events/event_handler.h"
 #include "ui/views/view_observer.h"
 
 namespace views {
@@ -33,7 +34,8 @@ class ShelfWindowPreviewBubble;
 // A class wrapping menu operations for ShelfView. Responsible for building,
 // running, and recording histograms.
 class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter,
-                                         public views::ViewObserver {
+                                         public views::ViewObserver,
+                                         public ui::EventHandler {
  public:
   // Delay before showing the window preview bubble or the tooltip bubble when
   // hovering an application menu item.
@@ -71,6 +73,13 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter,
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
 
+  // ui::EventHandler:
+  // Registered as an aura::Env pre-target handler while the preview bubble is
+  // shown, since the menu holds mouse capture and the bubble itself does not
+  // receive events.
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnKeyEvent(ui::KeyEvent* event) override;
+
   // Whether this is showing a menu for |view|.
   bool IsShowingMenuForView(const views::View& view) const;
 
@@ -87,6 +96,9 @@ class ASH_EXPORT ShelfMenuModelAdapter : public AppMenuModelAdapter,
   // Closes the window preview bubble or the tooltip bubble, if any.
   void CloseHoverBubble(bool animate);
   void OnHoverBubbleClosing();
+
+  // Starts the timer to close the hover bubble after kClosePreviewDelay.
+  void StartCloseHoverBubbleTimer();
 
   // True if this adapter was created for the shelf application menu items.
   const bool for_application_menu_items_;
