@@ -332,13 +332,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.GwpAsan.Activated.{Allocator}.{Process}"
-    enum="Boolean" expires_after="2026-08-23">
+    enum="Boolean" expires_after="2027-10-19">
   <owner>mpdenton@chromium.org</owner>
   <owner>kdlee@chromium.org</owner>
   <owner>memory-safety-dev@chromium.org</owner>
   <summary>
     Reports the activation state of {Allocator} GWP-ASan for {Process}. Reported
     once when the memory system initializes.
+
+    Warning: this histogram was expired from 2026-08-23 to 2026-10-19; data may
+    be missing.
   </summary>
   <token key="Allocator">
     <variant name="Malloc"/>
@@ -355,7 +358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.GwpAsan.AllocatorOom.{Allocator}.{Process}"
-    units="allocations" expires_after="2026-06-21">
+    units="allocations" expires_after="2027-10-19">
   <owner>mpdenton@chromium.org</owner>
   <owner>kdlee@chromium.org</owner>
   <owner>memory-safety-dev@chromium.org</owner>
@@ -363,6 +366,9 @@ chromium-metrics-reviews@google.com.
     Reports how many allocations it took for {Allocator} GWP-ASan in {Process}
     to hit OOM. Reported once when GWP-ASan fails to allocate
     `GuardedPageAllocator::kOutOfMemoryCount` times in a row.
+
+    Warning: this histogram was expired from 2026-06-21 to 2026-10-19; data may
+    be missing.
   </summary>
   <token key="Allocator">
     <variant name="Malloc"/>
@@ -379,7 +385,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.GwpAsan.CrashAnalysisResult.{Allocator}"
-    enum="GwpAsanCrashAnalysisResult" expires_after="2026-05-04">
+    enum="GwpAsanCrashAnalysisResult" expires_after="2027-10-19">
   <owner>glazunov@google.com</owner>
   <owner>mpdenton@chromium.org</owner>
   <owner>chrome-memory-tok@google.com</owner>
@@ -387,6 +393,9 @@ chromium-metrics-reviews@google.com.
     Reports the GWP-ASan crash analysis result. That can either be a
     determination that the crash was related to GWP-ASan, not related to
     GWP-ASan, or an error making that determination. Recorded with every crash.
+
+    Warning: this histogram was expired from 2026-05-04 to 2026-10-19; data may
+    be missing.
   </summary>
   <token key="Allocator">
     <variant name="Malloc"/>
