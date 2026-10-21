@@ -140,7 +140,11 @@ WebInputEventResult GestureManager::HandleGestureEventInFrame(
 
   // TODO(https://crbug.com/427503494): Investigate if this code block is
   // exposing internal gesture events as DOM events.
-  if (Node* event_target = hit_test_result.InnerNode()) {
+  Node* event_target = hit_test_result.InnerPossiblyPseudoElement();
+  if (!event_target) {
+    event_target = hit_test_result.InnerNode();
+  }
+  if (event_target) {
     GestureEvent* gesture_dom_event = GestureEvent::Create(
         event_target->GetDocument().domWindow(), gesture_event);
     if (gesture_dom_event) {

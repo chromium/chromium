@@ -441,6 +441,8 @@ external/wpt/html/semantics/popovers/popover-focus-2.html
 # These are flaky on Mac. Judging by the other focus-related test in this list, I'm assuming
 # there is some kind of headless focus problem.
 external/wpt/html/semantics/interestfor/interestfor-invoker-descendants.tentative.html
+# Touch long-press is disabled in TouchEmulator under headless_shell.
+external/wpt/html/semantics/interestfor/interestfor-pseudo-element.tentative.html
 
 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation*
 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-transition*
