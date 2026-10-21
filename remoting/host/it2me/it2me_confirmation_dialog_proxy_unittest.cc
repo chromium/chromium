@@ -148,10 +148,9 @@ TEST_F(It2MeConfirmationDialogProxyTest, Show) {
 
   EXPECT_CALL(*dialog(), OnSetDisableInputs(::testing::_))
       .Times(::testing::AtLeast(2));
-  EXPECT_CALL(*dialog(), OnShow())
-      .WillOnce(InvokeWithoutArgs([confirm_dialog]() {
-        confirm_dialog->ReportResult(It2MeConfirmationDialog::Result::CANCEL);
-      }));
+  EXPECT_CALL(*dialog(), OnShow()).WillOnce([confirm_dialog]() {
+    confirm_dialog->ReportResult(It2MeConfirmationDialog::Result::CANCEL);
+  });
 
   EXPECT_CALL(callback_target,
               OnDialogResult(It2MeConfirmationDialog::Result::CANCEL))
@@ -177,9 +176,9 @@ TEST_F(It2MeConfirmationDialogProxyTest, DrainingAndDisabling) {
   EXPECT_CALL(*dialog(), OnSetDisableInputs(true));
   EXPECT_CALL(*dialog(), OnShow());
   EXPECT_CALL(*dialog(), OnSetDisableInputs(false))
-      .WillOnce(InvokeWithoutArgs([confirm_dialog]() {
+      .WillOnce([confirm_dialog]() {
         confirm_dialog->ReportResult(It2MeConfirmationDialog::Result::OK);
-      }));
+      });
 
   EXPECT_CALL(callback_target,
               OnDialogResult(It2MeConfirmationDialog::Result::OK))
@@ -202,10 +201,9 @@ TEST_F(It2MeConfirmationDialogProxyTest, DrainingAndDisabling) {
   EXPECT_CALL(*dialog(), OnSetDisableInputs(false));
 
   // Setup the default action for OnShow to report the result.
-  ON_CALL(*dialog(), OnShow())
-      .WillByDefault(InvokeWithoutArgs([confirm_dialog]() {
-        confirm_dialog->ReportResult(It2MeConfirmationDialog::Result::OK);
-      }));
+  ON_CALL(*dialog(), OnShow()).WillByDefault([confirm_dialog]() {
+    confirm_dialog->ReportResult(It2MeConfirmationDialog::Result::OK);
+  });
 
   // We expect this call on the main thread.
   EXPECT_CALL(callback_target,
