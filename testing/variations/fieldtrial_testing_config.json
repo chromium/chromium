@@ -8411,6 +8411,26 @@
             ]
         }
     ],
+    "GlicColdWarmingInitiallyHidden": [
+        {
+            "platforms": [
+                "chromeos",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Warming300s_20261021",
+                    "params": {
+                        "glic-warming-delay-ms": "300000"
+                    },
+                    "enable_features": [
+                        "GlicContentsInitiallyHidden",
+                        "GlicWarming"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicConfirmNavigationToNewOrigins": [
         {
             "platforms": [
@@ -8429,22 +8449,6 @@
                     },
                     "enable_features": [
                         "GlicCrossOriginNavigationGating"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GlicContentsInitiallyHidden": [
-        {
-            "platforms": [
-                "chromeos",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicContentsInitiallyHidden"
                     ]
                 }
             ]
