@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/engine/events/protocol_event.h"
@@ -42,12 +43,7 @@ void ProtocolEventBuffer::RecordProtocolEvent(const ProtocolEvent& event) {
 
 std::vector<std::unique_ptr<ProtocolEvent>>
 ProtocolEventBuffer::GetBufferedProtocolEvents() const {
-  std::vector<std::unique_ptr<ProtocolEvent>> ret;
-  for (const std::unique_ptr<ProtocolEvent>& event : buffer_) {
-    ret.push_back(event->Clone());
-  }
-
-  return ret;
+  return base::ToVector(buffer_, &ProtocolEvent::Clone);
 }
 
 }  // namespace syncer
