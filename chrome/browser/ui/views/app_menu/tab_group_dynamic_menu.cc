@@ -240,9 +240,7 @@ void TabGroupDynamicMenu::BuildTabGroupCommands(
             .SetActionId(kActionToggleTabGroupFocus)
             .SetText(l10n_util::GetStringUTF16(
                 IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP))
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled() ? kZoomInMapIcon
-                                                  : kZoomInMapOldIcon))
+            .SetImage(ui::ImageModel::FromVectorIcon(kFilterTiltShiftIcon))
             .SetProperty(AppMenuActionItem::kDisplayTypeKey,
                          AppMenuActionItem::DisplayType::kRow)
             .SetProperty(
@@ -257,11 +255,6 @@ void TabGroupDynamicMenu::BuildTabGroupCommands(
           AppMenuActionItem::kTextOverrideKey,
           std::make_unique<std::u16string>(l10n_util::GetStringUTF16(
               IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP)));
-      focus_item->SetProperty(
-          AppMenuActionItem::kIconOverrideKey,
-          std::make_unique<ui::ImageModel>(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kZoomOutMapIcon
-                                                : kZoomOutMapOldIcon)));
     }
 
     parent_item->AddChild(std::move(focus_item));

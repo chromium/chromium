@@ -142,6 +142,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "file_save_off.icon",
     "file_save_off_chrome_refresh_old.icon",
     "file_save_old.icon",
+    "filter_tilt_shift.icon",
     "find_in_page.icon",
     "fingerprint.icon",
     "fingerprint_old.icon",

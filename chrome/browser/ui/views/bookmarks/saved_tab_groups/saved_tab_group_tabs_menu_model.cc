@@ -131,13 +131,8 @@ void STGTabsMenuModel::Build(
         latest_command_id,
         is_group_focused ? IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP
                          : IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP,
-        ui::ImageModel::FromVectorIcon(
-            is_group_focused ? features::IsRoundedIconsEnabled()
-                                   ? kZoomOutMapIcon
-                                   : kZoomOutMapOldIcon
-            : features::IsRoundedIconsEnabled() ? kZoomInMapIcon
-                                                : kZoomInMapOldIcon,
-            ui::kColorMenuIcon, kUIUpdateIconSize));
+        ui::ImageModel::FromVectorIcon(kFilterTiltShiftIcon, ui::kColorMenuIcon,
+                                       kUIUpdateIconSize));
     SetElementIdentifierAt(GetIndexOfCommandId(latest_command_id).value(),
                            kToggleGroupFocusStateMenuItem);
     command_id_to_action_.emplace(

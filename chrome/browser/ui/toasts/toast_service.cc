@@ -804,9 +804,7 @@ void ToastService::RegisterToasts() {
 
   toast_registry_->RegisterToast(
       ToastId::kTabGroupFocusExited,
-      ToastSpecification::Builder(features::IsRoundedIconsEnabled()
-                                      ? kZoomOutMapIcon
-                                      : kZoomOutMapOldIcon,
+      ToastSpecification::Builder(kFilterTiltShiftIcon,
                                   IDS_TAB_GROUP_FOCUS_EXITED_TOAST_BODY)
           .AddGlobalScoped()
           .Build());
