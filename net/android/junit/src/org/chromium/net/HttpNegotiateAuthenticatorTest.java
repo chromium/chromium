@@ -226,7 +226,7 @@ public class HttpNegotiateAuthenticatorTest {
         // Verify that the broadcast receiver is registered
         Intent intent = new Intent(AccountManager.LOGIN_ACCOUNTS_CHANGED_ACTION);
         ShadowApplication shadowApplication =
-                shadowOf((Application) RuntimeEnvironment.application);
+                shadowOf((Application) RuntimeEnvironment.getApplication());
         List<BroadcastReceiver> receivers = shadowApplication.getReceiversForIntent(intent);
         assertWithMessage("There is one registered broadcast receiver")
                 .that(receivers.size())
@@ -234,7 +234,7 @@ public class HttpNegotiateAuthenticatorTest {
 
         // Send the intent to the receiver.
         BroadcastReceiver receiver = receivers.get(0);
-        receiver.onReceive(RuntimeEnvironment.application.getApplicationContext(), intent);
+        receiver.onReceive(RuntimeEnvironment.getApplication().getApplicationContext(), intent);
 
         // Verify that the auth token is properly requested from the account manager.
         verify(sMockAccountManager)

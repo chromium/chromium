@@ -55,7 +55,7 @@ public class ListMenuItemViewBinderUnitTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         // Hierarchy from list_menu_item.xml:
         // mListItemView (LinearLayout)
         //   - mStartIcon (ImageView)

@@ -30,7 +30,8 @@ public class StateListDrawableBuilderTest {
 
     @Test
     public void testBuild() {
-        StateListDrawableBuilder b = new StateListDrawableBuilder(RuntimeEnvironment.application);
+        StateListDrawableBuilder b =
+                new StateListDrawableBuilder(RuntimeEnvironment.getApplication());
         b.addState(CHECKED_DRAWABLE, android.R.attr.state_checked);
         b.addState(DEFAULT_DRAWABLE, WILDCARD_STATE);
         StateListDrawable result = b.build();

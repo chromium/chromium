@@ -46,7 +46,7 @@ public class ListMenuItemWithSubmenuViewBinderUnitTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mListItemView = new LinearLayout(mContext);
         mStartIcon = new ImageView(mContext);
         mStartIcon.setId(R.id.menu_item_icon);

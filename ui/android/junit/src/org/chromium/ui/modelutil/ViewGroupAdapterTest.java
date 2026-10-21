@@ -38,7 +38,7 @@ public class ViewGroupAdapterTest {
                 }
             };
 
-    private final Context mContext = RuntimeEnvironment.application;
+    private final Context mContext = RuntimeEnvironment.getApplication();
 
     private ModelList mModelList;
     private LinearLayout mLinearLayout;

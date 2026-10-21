@@ -39,7 +39,7 @@ public class SmsProviderGmsTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
 
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(mContext));
     }

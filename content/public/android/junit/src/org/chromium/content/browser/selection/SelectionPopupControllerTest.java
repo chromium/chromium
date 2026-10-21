@@ -233,7 +233,7 @@ public class SelectionPopupControllerTest {
 
         SelectionPopupControllerImpl.setDisableMagnifierForTesting(true);
 
-        mContentResolver = RuntimeEnvironment.application.getContentResolver();
+        mContentResolver = RuntimeEnvironment.getApplication().getContentResolver();
         // To let isDeviceProvisioned() call in showSelectionMenu() return true.
         Settings.Global.putInt(mContentResolver, Settings.Global.DEVICE_PROVISIONED, 1);
 

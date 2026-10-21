@@ -47,7 +47,7 @@ public class SelectionUtilsTest {
 
     @Test
     public void testShare() {
-        Context context = RuntimeEnvironment.application;
+        Context context = RuntimeEnvironment.getApplication();
         SelectionUtils.share(context, "test share");
         Intent intent =
                 Shadows.shadowOf((android.app.Application) context).getNextStartedActivity();
@@ -57,7 +57,7 @@ public class SelectionUtilsTest {
 
     @Test
     public void testWebSearch() {
-        Context context = RuntimeEnvironment.application;
+        Context context = RuntimeEnvironment.getApplication();
         SelectionUtils.webSearch(context, "test search");
         Intent intent = Shadows.shadowOf((Application) context).getNextStartedActivity();
         assertNotNull(intent);
@@ -69,7 +69,7 @@ public class SelectionUtilsTest {
 
     @Test
     public void testWebSearchWithSetPackage() {
-        Context context = RuntimeEnvironment.application;
+        Context context = RuntimeEnvironment.getApplication();
         SelectionUtils.webSearch(context, "test search", /* setPackage= */ true);
         Intent intent = Shadows.shadowOf((Application) context).getNextStartedActivity();
         assertNotNull(intent);
@@ -81,7 +81,7 @@ public class SelectionUtilsTest {
 
     @Test
     public void testTranslate() {
-        Context context = RuntimeEnvironment.application;
+        Context context = RuntimeEnvironment.getApplication();
         SelectionUtils.translate(context, "test translate");
         Intent intent = Shadows.shadowOf((Application) context).getNextStartedActivity();
         assertNotNull(intent);

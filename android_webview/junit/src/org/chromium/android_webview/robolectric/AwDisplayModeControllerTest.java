@@ -59,7 +59,7 @@ public class AwDisplayModeControllerTest {
     @Before
     public void setUp() {
         if (DEBUG) Log.i(TAG, "setUp");
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
 
         // Set up default values.
         mViewWidth = 300;

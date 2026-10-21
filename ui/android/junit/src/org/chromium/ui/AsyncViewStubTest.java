@@ -46,7 +46,7 @@ public class AsyncViewStubTest {
     public void setUp() {
         mMainView =
                 (LinearLayout)
-                        LayoutInflater.from(RuntimeEnvironment.application)
+                        LayoutInflater.from(RuntimeEnvironment.getApplication())
                                 .inflate(MAIN_LAYOUT_RESOURCE_ID, null);
         mAsyncViewStub = mMainView.findViewById(STUB_ID);
         mAsyncViewStub.setLayoutResource(INFLATE_LAYOUT_RESOURCE_ID);
@@ -105,7 +105,7 @@ public class AsyncViewStubTest {
     public void testInflatedIdFromXml() {
         LinearLayout mainView =
                 (LinearLayout)
-                        LayoutInflater.from(RuntimeEnvironment.application)
+                        LayoutInflater.from(RuntimeEnvironment.getApplication())
                                 .inflate(MAIN_WITH_INFLATED_ID_LAYOUT_RESOURCE_ID, null);
         AsyncViewStub asyncViewStub = mainView.findViewById(STUB_WITH_INFLATED_ID_ID);
         asyncViewStub.setLayoutResource(INFLATE_LAYOUT_RESOURCE_ID);

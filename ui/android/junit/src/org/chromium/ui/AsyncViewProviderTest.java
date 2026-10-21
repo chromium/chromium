@@ -44,7 +44,7 @@ public class AsyncViewProviderTest {
     public void setUp() {
         mRoot =
                 (LinearLayout)
-                        LayoutInflater.from(RuntimeEnvironment.application)
+                        LayoutInflater.from(RuntimeEnvironment.getApplication())
                                 .inflate(MAIN_LAYOUT_RESOURCE_ID, null);
         mAsyncViewStub = mRoot.findViewById(STUB_ID);
         mAsyncViewStub.setLayoutResource(INFLATE_LAYOUT_RESOURCE_ID);

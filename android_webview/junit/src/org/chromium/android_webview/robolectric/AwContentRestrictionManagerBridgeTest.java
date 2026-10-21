@@ -74,7 +74,7 @@ public class AwContentRestrictionManagerBridgeTest {
     @Before
     public void setUp() throws Exception {
         mCallbackResult = null;
-        mContext = new ManifestMetadataMockApplicationContext(RuntimeEnvironment.application);
+        mContext = new ManifestMetadataMockApplicationContext(RuntimeEnvironment.getApplication());
         mMetadataServiceName = new ComponentName(mContext, METADATA_HOLDER_SERVICE_NAME);
         ContextUtils.initApplicationContextForTests(mContext);
         AwContentRestrictionManagerBridge.setDelegateForTesting(mFlaggedApiDelegate);

@@ -27,7 +27,8 @@ public class ShadowAppCompatResourcesTest {
     @Test
     public void testShadowAppCompatResources() {
         Drawable drawable =
-                AppCompatResources.getDrawable(RuntimeEnvironment.application, DRAWABLE_RES_ID);
+                AppCompatResources.getDrawable(
+                        RuntimeEnvironment.getApplication(), DRAWABLE_RES_ID);
         assertEquals(DRAWABLE_RES_ID, shadowOf(drawable).getCreatedFromResId());
     }
 }

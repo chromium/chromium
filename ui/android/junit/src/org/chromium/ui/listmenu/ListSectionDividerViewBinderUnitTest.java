@@ -29,7 +29,7 @@ public class ListSectionDividerViewBinderUnitTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mDividerView = new FrameLayout(mContext);
         mDividerInternalView = new View(mContext);
         mDividerInternalView.setId(R.id.divider_view);
