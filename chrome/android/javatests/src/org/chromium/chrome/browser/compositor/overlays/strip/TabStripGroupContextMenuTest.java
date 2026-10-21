@@ -28,6 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -631,14 +632,14 @@ public class TabStripGroupContextMenuTest {
                                 R.plurals.move_group_to_another_window_context_menu_item, 2);
 
         // Click on "Move tab to other window" to open a submenu.
-        onView(withText(moveToAnotherWindow)).perform(click());
+        waitForView(withText(moveToAnotherWindow)).click();
 
         // Sub-menu should be scrollable and should not have excess space.
         onView(withId(R.id.tab_group_action_menu_list)).check(matches(isScrollContainerMatcher));
         onView(withId(R.id.tab_group_action_menu_list)).check(matches(layoutParamsMatcher));
 
         // Go back to the main menu.
-        onView(withText(moveToAnotherWindow)).perform(click());
+        waitForView(withText(moveToAnotherWindow)).click();
 
         // Main menu should not be scrollable again.
         onView(withId(R.id.tab_group_action_menu_list))

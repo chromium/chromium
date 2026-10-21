@@ -28,7 +28,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -81,7 +80,6 @@ public class UmaActivityObserverTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
     public void testMultiWindowMetrics() throws Exception {
         WebPageStation pageInFirstWindow = mCtaTestRule.startOnBlankPage();
 

@@ -759,8 +759,6 @@ public abstract class ChromeFeatureList {
             "ResetNativePointerInCreditCardAuthDialog";
     public static final String RFH_HIDDEN_WHEN_HIDDEN_BUT_PAINTING =
             "RFHHiddenWhenHiddenButPainting";
-    public static final String ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL =
-            "RobustWindowManagementExperimental";
     public static final String SAFETY_FRE_PROMO = "SafetyFrePromo";
     public static final String SAFETY_HUB = "SafetyHub";
     public static final String SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION =
