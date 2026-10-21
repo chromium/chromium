@@ -214,6 +214,8 @@ cr-composebox-voice-search {
  * '#fullContainerOverlay' are 'display: none' when in error state, the ':host'
  * itself must have 'display: block' and '--cr-composebox-width' set so the
  * static 'cr-composebox-voice-search' ('width: 100%') fills the expected width.
+ * 'display: block' is also needed when listening for the parent since this is
+ * absolute; otherwise it will incorrectly collapse.
  */
 :host([in-voice-search-mode][is-listening]) cr-composebox-voice-search {
   inset: 0;
