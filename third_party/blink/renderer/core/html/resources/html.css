@@ -2398,6 +2398,11 @@ select::-internal-select-autofill-preview[popover]:popover-open {
   padding: 0;
   border: 1px solid black;
 }
+select::-internal-select-autofill-preview,
+select::-internal-select-autofill-preview-text {
+  user-select: none !important;
+  -webkit-user-modify: read-only !important;
+}
 select::-internal-select-autofill-preview-text {
   overflow: hidden;
   text-overflow: ellipsis;
