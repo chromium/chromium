@@ -50,8 +50,8 @@ void AnalyserHandler::Process(uint32_t frames_to_process) {
 
   // It's possible that output is not connected. Assign nullptr to indicate
   // such case.
-  AudioBus* output_bus = Output(0).RenderingFanOutCount() > 0
-      ? Output(0).Bus() : nullptr;
+  AudioBus* output_bus =
+      Output(0).IsConnectedDuringRendering() ? Output(0).Bus() : nullptr;
 
   if (!IsInitialized() && output_bus) {
     output_bus->Zero();
@@ -207,8 +207,8 @@ double AnalyserHandler::TailTime() const {
 void AnalyserHandler::PullInputs(uint32_t frames_to_process) {
   DCHECK(Context()->IsAudioThread());
 
-  AudioBus* output_bus = Output(0).RenderingFanOutCount() > 0
-      ? Output(0).Bus() : nullptr;
+  AudioBus* output_bus =
+      Output(0).IsConnectedDuringRendering() ? Output(0).Bus() : nullptr;
 
   Input(0).Pull(output_bus, frames_to_process);
 }
