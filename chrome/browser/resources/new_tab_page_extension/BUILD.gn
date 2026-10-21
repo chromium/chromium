@@ -3,40 +3,135 @@
 # found in the LICENSE file.
 
 import("//extensions/buildflags/buildflags.gni")
-import("//tools/grit/grit_rule.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/webui_features.gni")
 
 assert(enable_webui_ntp)
 assert(enable_extensions_core)
 
-# Packages the NTP component extension.
+# Builds the NTP component extension. The extension reuses elements from
+# chrome://new-tab-page (e.g. <ntp-logo>). Extension pages can't load
+# chrome://new-tab-page, so the NTP modules the extension uses are packaged into
+# the extension and served from its own origin under /ntp/.
 
-generate_grd("build_grd") {
-  visibility = [ ":*" ]
+_ntp_tsc_dir = "$root_gen_dir/chrome/browser/resources/new_tab_page/tsc"
+
+# The extension's TS sources.
+_ts_files = [
+  "app.html.ts",
+  "app.ts",
+]
+
+# The NTP modules the extension imports as /ntp/<path> at runtime, relative to
+# the NTP's compiled output. The build checks that this matches the extension's
+# imports, and that these and the NTP modules they import match
+# ntp_modules.txt.
+_ntp_entry_points = [
+  "logo.js",
+  "new_tab_page_proxy.js",
+  "ntp_searchbox.js",
+]
+
+# Collects the NTP modules the extension depends on and checks them against
+# ntp_modules.txt. In unoptimized builds, also copies them so that the extension
+# serves them as separate files, like the NTP does, rewriting scheme-relative
+# //resources/ URLs to chrome://resources/ so that they don't resolve against
+# the extension's origin. In optimized builds, they are bundled into app.js
+# instead, and this only runs the check.
+action("package_ntp_modules") {
+  script = "package_ntp_modules.py"
+  if (optimize_webui) {
+    _output = "$target_gen_dir/package_ntp_modules.stamp"
+  } else {
+    _output = "$target_gen_dir/package_ntp_modules_manifest.json"
+  }
+  depfile = "$target_gen_dir/package_ntp_modules.d"
+  inputs = [ "ntp_modules.txt" ]
+  outputs = [ _output ]
+  args = [
+           "--in_folder",
+           rebase_path(_ntp_tsc_dir, root_build_dir),
+           "--expected_modules",
+           rebase_path("ntp_modules.txt", root_build_dir),
+           "--depfile",
+           rebase_path(depfile, root_build_dir),
+           "--output",
+           rebase_path(_output, root_build_dir),
+           "--entry_points",
+         ] + _ntp_entry_points + [ "--sources" ]
+  foreach(_ts_file, _ts_files) {
+    args += [ rebase_path(
+            "$target_gen_dir/tsc/" + string_replace(_ts_file, ".ts", ".js"),
+            root_build_dir) ]
+  }
+  if (optimize_webui) {
+    args += [ "--check_only" ]
+  } else {
+    args += [
+      "--out_folder",
+      rebase_path("$target_gen_dir/ntp", root_build_dir),
+    ]
+  }
+  deps = [
+    ":build_ts",
+    "//chrome/browser/resources/new_tab_page:build_ts",
+  ]
+}
+
+if (!optimize_webui) {
+  generate_grd("build_ntp_modules_grdp") {
+    grd_prefix = "new_tab_page_extension_ntp"
+    out_grd = "$target_gen_dir/ntp_modules_resources.grdp"
+    resource_path_prefix = "new_tab_page_extension/ntp"
+    manifest_files = [ "$target_gen_dir/package_ntp_modules_manifest.json" ]
+    deps = [ ":package_ntp_modules" ]
+  }
+}
+
+build_webui("build") {
   grd_prefix = "new_tab_page_extension"
-  out_grd = "$target_gen_dir/resources.grd"
-  input_files = [
+  grd_resource_path_prefix = "new_tab_page_extension"
+
+  static_files = [
     "manifest.json",
     "new_tab_page.html",
   ]
-  input_files_base_dir = rebase_path(".", "//")
-  resource_path_prefix = "new_tab_page_extension"
-}
 
-grit("resources") {
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/resources.grd"
-  deps = [ ":build_grd" ]
-  public_deps = [ "//ui/base:webui_resource_path" ]
+  ts_files = _ts_files
 
-  outputs = [
-    "grit/new_tab_page_extension_resources.h",
-    "grit/new_tab_page_extension_resources_map.cc",
-    "grit/new_tab_page_extension_resources_map.h",
-    "new_tab_page_extension_resources.pak",
+  # Lets :package_ntp_modules depend on :build_ts.
+  ts_composite = true
+
+  css_files = [ "app.css" ]
+
+  ts_deps = [
+    "//chrome/browser/resources/new_tab_page:build_ts",
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 
-  output_dir = "$root_gen_dir/chrome"
+  ts_path_mappings =
+      [ "/ntp/*|" + rebase_path("$_ntp_tsc_dir/*", target_gen_dir) ]
+
+  webui_context_type = "trusted_only"
+
+  optimize = optimize_webui
+  if (optimize) {
+    # The NTP modules the extension imports are bundled into app.js from the
+    # NTP's compiled output.
+    optimize_webui_host = "chrome-extension://hejfefaejbacaldempbfhnjlknekjbja"
+    optimize_webui_in_files = [ "app.js" ]
+    optimize_webui_external_paths =
+        [ "/ntp/|" + rebase_path(_ntp_tsc_dir, root_build_dir) ]
+
+    # Not a grdp: makes the build run the ntp_modules.txt check.
+    extra_grdp_deps = [ ":package_ntp_modules" ]
+    extra_grdp_files = []
+  } else {
+    extra_grdp_deps = [ ":build_ntp_modules_grdp" ]
+    extra_grdp_files = [ "$target_gen_dir/ntp_modules_resources.grdp" ]
+  }
 }

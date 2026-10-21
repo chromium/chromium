@@ -1,0 +1,64 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=chrome
+ * #css_wrapper_metadata_end */
+
+/* Searchbox variables mirror chrome/browser/resources/new_tab_page/app.css. */
+:host {
+  --cr-focus-outline-color: var(--color-new-tab-page-focus-ring);
+  --cr-searchbox-height: 48px;
+  --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
+  --cr-searchbox-icon-left-position: 12px;
+  --cr-searchbox-icon-size-in-searchbox: 20px;
+  --cr-searchbox-icon-top-position: 0;
+  --cr-searchbox-min-width: var(--ntp-search-box-width);
+  --cr-searchbox-results-search-icon-size: 20px;
+  --ntp-search-box-width: 337px;
+  display: block;
+  min-height: 100vh;
+}
+
+@media (min-width: 560px) {
+  :host {
+    --ntp-search-box-width: 449px;
+  }
+}
+
+@media (min-width: 672px) {
+  :host {
+    --ntp-search-box-width: 561px;
+  }
+}
+
+#content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding-top: 72px;
+}
+
+#logo {
+  margin-bottom: var(--ntp-logo-margin-bottom, 38px);
+}
+
+#searchboxContainer {
+  --cr-focus-outline-color: var(--color-searchbox-results-icon-focused-outline);
+  display: inherit;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+/* As on chrome://new-tab-page, the searchbox is hidden until it is shown,
+ * e.g. while the theme is loading. */
+ntp-searchbox {
+  visibility: hidden;
+}
+
+ntp-searchbox[shown] {
+  visibility: visible;
+}

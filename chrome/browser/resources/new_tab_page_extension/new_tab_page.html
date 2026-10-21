@@ -3,7 +3,25 @@
   <head>
     <meta charset="utf-8">
     <title>$i18n{title}</title>
+    <!-- Resolved against the extension origin, as it precedes <base>. -->
+    <script type="module" src="app.js"></script>
+    <!-- Makes scheme-relative //resources/ URLs that are resolved against the
+         document (rather than a module) point to chrome://resources/, as they
+         do on WebUI pages. Module imports are unaffected. Examples in the
+         shared components: url(//resources/...) in their CSS,
+         url(//resources/...) in inline styles built in JS, and icon URLs sent
+         by SearchboxHandler.
+         Any extension-relative URL after this point must be absolute. -->
+    <base href="chrome://resources/">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
   </head>
   <body>
+    <ntp-extension-app></ntp-extension-app>
   </body>
 </html>

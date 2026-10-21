@@ -78,6 +78,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/multistep_filter_internals:build_ts",
     "//chrome/browser/resources/new_tab_footer:build_ts",
     "//chrome/browser/resources/new_tab_page:build_ts",
+    "//chrome/browser/resources/new_tab_page_extension:build_ts",
     "//chrome/browser/resources/new_tab_shared:build_ts",
     "//chrome/browser/resources/omnibox_everywhere:build_ts",
     "//chrome/browser/resources/omnibox_internals/aim_eligibility:build_ts",

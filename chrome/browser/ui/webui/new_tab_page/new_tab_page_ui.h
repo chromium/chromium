@@ -135,7 +135,7 @@ class NewTabPageUI
   static bool IsManagedProfile(Profile* profile);
 
   // Returns the loadTimeData of chrome://new-tab-page, for surfaces that reuse
-  // NTP elements outside of the WebUI (e.g. the NTP Lite component extension).
+  // NTP elements outside of the WebUI (e.g. the NTP component extension).
   static base::DictValue GetLoadTimeData(Profile* profile,
                                          bool session_allows_drag_and_drop);
 

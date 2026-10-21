@@ -1,0 +1,19 @@
+# The chrome://new-tab-page modules that the NTP extension depends on: the NTP
+# modules it imports (see `_ntp_entry_points` in BUILD.gn) and the NTP modules
+# they transitively import. The build fails if this list doesn't match.
+doodle_icons.html.js
+doodle_share_dialog.css.js
+doodle_share_dialog.html.js
+doodle_share_dialog.js
+logo.css.js
+logo.html.js
+logo.js
+new_tab_page.mojom-webui.js
+new_tab_page_proxy.js
+ntp_microsoft_auth_shared_ui.mojom-webui.js
+ntp_searchbox.css.js
+ntp_searchbox.html.js
+ntp_searchbox.js
+ntp_searchbox_contextual_entrypoint.html.js
+utils.js
+window_proxy.js
