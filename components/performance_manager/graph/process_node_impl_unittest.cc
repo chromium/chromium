@@ -145,7 +145,6 @@ using ::testing::_;
 using ::testing::DoAll;
 using ::testing::InSequence;
 using ::testing::Invoke;
-using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 
 }  // namespace
@@ -160,11 +159,10 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
 
   // Remove observers at the head and tail of the list inside a callback, and
   // expect that `obs` is still notified correctly.
-  EXPECT_CALL(head_obs, OnBeforeProcessNodeAdded(_))
-      .WillOnce(InvokeWithoutArgs([&] {
-        graph()->RemoveProcessNodeObserver(&head_obs);
-        graph()->RemoveProcessNodeObserver(&tail_obs);
-      }));
+  EXPECT_CALL(head_obs, OnBeforeProcessNodeAdded(_)).WillOnce([&] {
+    graph()->RemoveProcessNodeObserver(&head_obs);
+    graph()->RemoveProcessNodeObserver(&tail_obs);
+  });
   // `tail_obs` should not be notified as it was removed.
   EXPECT_CALL(tail_obs, OnBeforeProcessNodeAdded(_)).Times(0);
 
@@ -208,10 +206,9 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
   EXPECT_EQ(raw_process_node, obs.TakeNotifiedProcessNode());
 
   // Re-entrant iteration should work.
-  EXPECT_CALL(obs, OnMainThreadTaskLoadIsLow(raw_process_node))
-      .WillOnce(InvokeWithoutArgs([&] {
-        process_node->set_priority(base::Process::Priority::kUserBlocking);
-      }));
+  EXPECT_CALL(obs, OnMainThreadTaskLoadIsLow(raw_process_node)).WillOnce([&] {
+    process_node->set_priority(base::Process::Priority::kUserBlocking);
+  });
   EXPECT_CALL(obs, OnPriorityChanged(raw_process_node, _));
   process_node->SetMainThreadTaskLoadIsLow(false);
 

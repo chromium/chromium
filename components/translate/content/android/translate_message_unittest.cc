@@ -42,7 +42,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::DoAll;
-using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 using testing::MockTranslateClient;
 using testing::MockTranslateRanker;
@@ -197,13 +196,13 @@ class TranslateMessageTest : public ::testing::Test {
         *client_,
         ShowTranslateUI(TRANSLATE_STEP_TRANSLATING, source_language_code,
                         target_language_code, TranslateErrors::NONE, false))
-        .WillOnce(DoAll(InvokeWithoutArgs([this, source_language_code,
-                                           target_language_code]() {
-                          translate_message_->ShowTranslateStep(
-                              TRANSLATE_STEP_TRANSLATING, source_language_code,
-                              target_language_code);
-                        }),
-                        Return(true)));
+        .WillOnce(DoAll(
+            [this, source_language_code, target_language_code]() {
+              translate_message_->ShowTranslateStep(TRANSLATE_STEP_TRANSLATING,
+                                                    source_language_code,
+                                                    target_language_code);
+            },
+            Return(true)));
   }
 
   void FinishTranslation(JNIEnv* env,
@@ -220,13 +219,13 @@ class TranslateMessageTest : public ::testing::Test {
         *client_,
         ShowTranslateUI(TRANSLATE_STEP_AFTER_TRANSLATE, source_language_code,
                         target_language_code, TranslateErrors::NONE, false))
-        .WillOnce(DoAll(InvokeWithoutArgs([this, source_language_code,
-                                           target_language_code]() {
-                          translate_message_->ShowTranslateStep(
-                              TRANSLATE_STEP_AFTER_TRANSLATE,
-                              source_language_code, target_language_code);
-                        }),
-                        Return(true)));
+        .WillOnce(DoAll(
+            [this, source_language_code, target_language_code]() {
+              translate_message_->ShowTranslateStep(
+                  TRANSLATE_STEP_AFTER_TRANSLATE, source_language_code,
+                  target_language_code);
+            },
+            Return(true)));
 
     manager_->PageTranslated(source_language_code, target_language_code,
                              TranslateErrors::NONE);
@@ -476,11 +475,11 @@ TEST_F(TranslateMessageTest, DismissMessageOnDestruction) {
   ShowBeforeTranslationMessage(env, "fr", "en");
 
   EXPECT_CALL(*bridge_, Dismiss(env))
-      .WillOnce(InvokeWithoutArgs([env, message = translate_message_.get()]() {
+      .WillOnce([env, message = translate_message_.get()]() {
         message->HandleDismiss(
             env, static_cast<int32_t>(
                      messages::DismissReason::DISMISSED_BY_FEATURE));
-      }));
+      });
   EXPECT_CALL(*bridge_, ClearNativePointer(env));
 
   translate_message_.reset();
@@ -1638,11 +1637,11 @@ TEST_F(TranslateMessageTest, AutoNeverTranslate) {
     // Click "Undo" on the confirmation.
     EXPECT_CALL(*bridge_, Dismiss(env))
         .WillOnce(
-            InvokeWithoutArgs([env, message = translate_message_.get()]() {
+            [env, message = translate_message_.get()]() {
               message->HandleDismiss(
                   env, static_cast<int32_t>(
                            messages::DismissReason::DISMISSED_BY_FEATURE));
-            }));
+            });
     EXPECT_CALL(*bridge_, ClearNativePointer(env));
     translate_message_->HandlePrimaryAction(env);
 

@@ -123,8 +123,7 @@ TEST_F(MirroringMediaControllerHostTest, FreezeHasDelay) {
 TEST_F(MirroringMediaControllerHostTest, Freeze) {
   base::RunLoop run_loop;
   EXPECT_CALL(*media_controller_, Pause)
-      .WillOnce(testing::InvokeWithoutArgs(
-          [quit = run_loop.QuitClosure()] { quit.Run(); }));
+      .WillOnce([quit = run_loop.QuitClosure()] { quit.Run(); });
   host_->Freeze();
   run_loop.Run();
 }
@@ -135,8 +134,7 @@ TEST_F(MirroringMediaControllerHostTest, FreezeMultipleTimes) {
   base::RunLoop run_loop;
   EXPECT_CALL(*media_controller_, Pause)
       .Times(1)
-      .WillOnce(testing::InvokeWithoutArgs(
-          [quit = run_loop.QuitClosure()] { quit.Run(); }));
+      .WillOnce([quit = run_loop.QuitClosure()] { quit.Run(); });
   host_->Freeze();
   host_->Freeze();
   run_loop.Run();

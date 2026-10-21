@@ -306,7 +306,6 @@ using ::testing::AnyNumber;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Invoke;
-using ::testing::InvokeWithoutArgs;
 using ::testing::WithArg;
 
 // Called repeatedly from a mock FrameNodeObserver. At each call it tries to set
@@ -366,11 +365,10 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
 
   // Remove observers at the head and tail of the list inside a callback, and
   // expect that `obs` is still notified correctly.
-  EXPECT_CALL(head_obs, OnBeforeFrameNodeAdded(_, _, _, _, _))
-      .WillOnce(InvokeWithoutArgs([&] {
-        graph()->RemoveFrameNodeObserver(&head_obs);
-        graph()->RemoveFrameNodeObserver(&tail_obs);
-      }));
+  EXPECT_CALL(head_obs, OnBeforeFrameNodeAdded(_, _, _, _, _)).WillOnce([&] {
+    graph()->RemoveFrameNodeObserver(&head_obs);
+    graph()->RemoveFrameNodeObserver(&tail_obs);
+  });
   // `tail_obs` should not be notified as it was removed.
   EXPECT_CALL(tail_obs, OnBeforeFrameNodeAdded(_, _, _, _, _)).Times(0);
 
@@ -453,11 +451,10 @@ TEST_F(FrameNodeImplTest, ObserverWorks) {
   testing::Mock::VerifyAndClear(&obs);
 
   // Re-entrant iteration should work.
-  EXPECT_CALL(obs, OnFrameVisibilityChanged(raw_frame_node, _))
-      .WillOnce(InvokeWithoutArgs([&] {
-        frame_node->SetPriorityAndReason(PriorityAndReason(
-            base::Process::Priority::kUserBlocking, "test priority"));
-      }));
+  EXPECT_CALL(obs, OnFrameVisibilityChanged(raw_frame_node, _)).WillOnce([&] {
+    frame_node->SetPriorityAndReason(PriorityAndReason(
+        base::Process::Priority::kUserBlocking, "test priority"));
+  });
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(raw_frame_node, _));
   frame_node->SetVisibility(FrameNode::Visibility::kVisible);
   testing::Mock::VerifyAndClear(&obs);

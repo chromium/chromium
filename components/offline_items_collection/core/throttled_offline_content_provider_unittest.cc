@@ -18,7 +18,6 @@
 
 using testing::_;
 using testing::Eq;
-using testing::InvokeWithoutArgs;
 
 namespace offline_items_collection {
 namespace {
@@ -333,26 +332,21 @@ TEST_F(ThrottledOfflineContentProviderTest, TestPokingProviderFlushesQueue) {
   OfflineItem item6(ContentId("6", "F"));
 
   // Set up reentrancy calls back into the provider.
-  EXPECT_CALL(wrapped_provider_, OpenItem(_, _))
-      .WillRepeatedly(InvokeWithoutArgs([=, this]() {
-        wrapped_provider_.NotifyOnItemUpdated(item2, std::nullopt);
-      }));
-  EXPECT_CALL(wrapped_provider_, RemoveItem(_))
-      .WillRepeatedly(InvokeWithoutArgs([=, this]() {
-        wrapped_provider_.NotifyOnItemUpdated(item3, std::nullopt);
-      }));
-  EXPECT_CALL(wrapped_provider_, CancelDownload(_))
-      .WillRepeatedly(InvokeWithoutArgs([=, this]() {
-        wrapped_provider_.NotifyOnItemUpdated(item4, std::nullopt);
-      }));
-  EXPECT_CALL(wrapped_provider_, PauseDownload(_))
-      .WillRepeatedly(InvokeWithoutArgs([=, this]() {
-        wrapped_provider_.NotifyOnItemUpdated(item5, std::nullopt);
-      }));
-  EXPECT_CALL(wrapped_provider_, ResumeDownload(_))
-      .WillRepeatedly(InvokeWithoutArgs([=, this]() {
-        wrapped_provider_.NotifyOnItemUpdated(item6, std::nullopt);
-      }));
+  EXPECT_CALL(wrapped_provider_, OpenItem(_, _)).WillRepeatedly([=, this]() {
+    wrapped_provider_.NotifyOnItemUpdated(item2, std::nullopt);
+  });
+  EXPECT_CALL(wrapped_provider_, RemoveItem(_)).WillRepeatedly([=, this]() {
+    wrapped_provider_.NotifyOnItemUpdated(item3, std::nullopt);
+  });
+  EXPECT_CALL(wrapped_provider_, CancelDownload(_)).WillRepeatedly([=, this]() {
+    wrapped_provider_.NotifyOnItemUpdated(item4, std::nullopt);
+  });
+  EXPECT_CALL(wrapped_provider_, PauseDownload(_)).WillRepeatedly([=, this]() {
+    wrapped_provider_.NotifyOnItemUpdated(item5, std::nullopt);
+  });
+  EXPECT_CALL(wrapped_provider_, ResumeDownload(_)).WillRepeatedly([=, this]() {
+    wrapped_provider_.NotifyOnItemUpdated(item6, std::nullopt);
+  });
 
   {
     EXPECT_CALL(observer, OnItemUpdated(item1, Eq(std::nullopt))).Times(1);

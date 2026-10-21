@@ -64,7 +64,6 @@ using testing::_;
 using testing::AllOf;
 using testing::Contains;
 using testing::Field;
-using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
 using testing::IsNull;
 using testing::Matcher;
@@ -648,8 +647,9 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   void WaitForReadyToSync() {
     ON_CALL(*processor(), IsTrackingMetadata).WillByDefault(Return(true));
     base::RunLoop run_loop;
-    EXPECT_CALL(*processor(), ModelReadyToSync)
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+    EXPECT_CALL(*processor(), ModelReadyToSync).WillOnce([&run_loop]() {
+      run_loop.Quit();
+    });
     run_loop.Run();
   }
 

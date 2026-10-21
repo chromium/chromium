@@ -269,7 +269,7 @@ TEST_F(UserSecuritySignalsServiceTest,
   base::RunLoop run_loop;
   EXPECT_CALL(delegate_, OnReportEventTriggered(_))
       .Times(1)
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
   EXPECT_CALL(policy_service_, AddObserver).Times(1);
   EXPECT_CALL(policy_service_, RemoveObserver).Times(1);
   SetEnabledPolicy(true);

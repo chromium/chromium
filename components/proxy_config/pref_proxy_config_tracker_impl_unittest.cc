@@ -556,7 +556,7 @@ class PrefProxyConfigOverrideRulesTest : public PrefProxyConfigTrackerImplTest {
       base::RunLoop run_loop;
       MockObserver observer;
       EXPECT_CALL(observer, OnProxyConfigChanged(testing::_, testing::_))
-          .WillOnce(testing::InvokeWithoutArgs([&] { run_loop.Quit(); }));
+          .WillOnce([&] { run_loop.Quit(); });
       proxy_config_service_->AddObserver(&observer);
       set_pref();
       run_loop.Run();

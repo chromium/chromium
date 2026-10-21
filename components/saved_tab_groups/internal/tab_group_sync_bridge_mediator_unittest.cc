@@ -38,7 +38,6 @@ using tab_groups::test::HasSavedGroupMetadata;
 using tab_groups::test::HasSharedGroupMetadata;
 using tab_groups::test::HasTabMetadata;
 using testing::_;
-using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
 using testing::Return;
 using testing::UnorderedElementsAre;
@@ -141,7 +140,7 @@ class TabGroupSyncBridgeMediatorTest : public testing::Test {
         model_.get());
     base::RunLoop run_loop;
     EXPECT_CALL(model_observer, SavedTabGroupModelLoaded)
-        .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }))
+        .WillOnce([&run_loop]() { run_loop.Quit(); })
         .RetiresOnSaturation();
     bridge_mediator_ = std::make_unique<TabGroupSyncBridgeMediator>(
         model_.get(), &pref_service_, /*logger=*/nullptr,

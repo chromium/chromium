@@ -2176,8 +2176,7 @@ class MostVisitedSitesWithEnterpriseShortcutsTest
     const std::vector<EnterpriseShortcut> empty_links;
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_enterprise_shortcuts_manager_, GetLinks())
-        .WillOnce(DoAll(testing::InvokeWithoutArgs([&]() { run_loop.Quit(); }),
-                        ReturnRef(empty_links)));
+        .WillOnce(DoAll([&]() { run_loop.Quit(); }, ReturnRef(empty_links)));
     most_visited_sites_->EnableTileTypes(
         MostVisitedSites::EnableTileTypesOptions().with_enterprise_shortcuts(
             true));
@@ -2250,8 +2249,9 @@ TEST_F(MostVisitedSitesWithEnterpriseShortcutsTest,
           MostVisitedURLList{MakeMostVisitedURL(kTestTitle, kTestUrl)}));
   EXPECT_CALL(*mock_custom_links_manager_, IsInitialized())
       .WillRepeatedly(Return(false));
-  EXPECT_CALL(mock_observer_, OnURLsAvailable(_, _))
-      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  EXPECT_CALL(mock_observer_, OnURLsAvailable(_, _)).WillOnce([&run_loop]() {
+    run_loop.Quit();
+  });
   most_visited_sites_->EnableTileTypes(
       MostVisitedSites::EnableTileTypesOptions().with_custom_links(true));
   run_loop.Run();

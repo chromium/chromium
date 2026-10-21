@@ -38,7 +38,6 @@ using syncer::OnceDataTypeStoreFactory;
 using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
-using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
 using testing::IsNull;
 using testing::NotNull;
@@ -104,8 +103,9 @@ class ConsentSyncBridgeImplTest : public testing::Test {
     base::RunLoop loop;
     base::RepeatingClosure quit_closure = loop.QuitClosure();
     // Let the bridge initialize fully, which should run ModelReadyToSync().
-    ON_CALL(*processor(), ModelReadyToSync(_))
-        .WillByDefault(InvokeWithoutArgs([=]() { quit_closure.Run(); }));
+    ON_CALL(*processor(), ModelReadyToSync(_)).WillByDefault([=]() {
+      quit_closure.Run();
+    });
     loop.Run();
     ON_CALL(*processor(), IsTrackingMetadata()).WillByDefault(Return(true));
     ON_CALL(*processor(), TrackedGaiaId()).WillByDefault(Return(gaia_id));

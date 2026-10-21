@@ -305,11 +305,11 @@ TEST_F(PersistentCacheSandboxedFileFactoryAsyncTest, SuccessOnFirstTry) {
       cache_root_path(), base::SingleThreadTaskRunner::GetCurrentDefault());
 
   EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
-      .WillOnce(testing::InvokeWithoutArgs([]() {
+      .WillOnce([]() {
         return base::expected<persistent_cache::PendingBackend,
                               persistent_cache::TransactionError>(
             persistent_cache::PendingBackend());
-      }));
+      });
 
   TestFuture<std::optional<persistent_cache::PendingBackend>> future;
   factory->CreateFilesAsync(
@@ -326,17 +326,17 @@ TEST_F(PersistentCacheSandboxedFileFactoryAsyncTest, RetryOnTransientError) {
   // Expect 1 transient failure, then success.
   testing::InSequence s;
   EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
-      .WillOnce(testing::InvokeWithoutArgs([]() {
+      .WillOnce([]() {
         return base::expected<persistent_cache::PendingBackend,
                               persistent_cache::TransactionError>(
             base::unexpected(persistent_cache::TransactionError::kTransient));
-      }));
+      });
   EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
-      .WillOnce(testing::InvokeWithoutArgs([]() {
+      .WillOnce([]() {
         return base::expected<persistent_cache::PendingBackend,
                               persistent_cache::TransactionError>(
             persistent_cache::PendingBackend());
-      }));
+      });
 
   TestFuture<std::optional<persistent_cache::PendingBackend>> future;
   factory->CreateFilesAsync(
@@ -354,11 +354,11 @@ TEST_F(PersistentCacheSandboxedFileFactoryAsyncTest,
   // Expect 4 transient failures (1 initial + 3 retries).
   EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
       .Times(4)
-      .WillRepeatedly(testing::InvokeWithoutArgs([]() {
+      .WillRepeatedly([]() {
         return base::expected<persistent_cache::PendingBackend,
                               persistent_cache::TransactionError>(
             base::unexpected(persistent_cache::TransactionError::kTransient));
-      }));
+      });
 
   TestFuture<std::optional<persistent_cache::PendingBackend>> future;
   factory->CreateFilesAsync(
@@ -375,11 +375,11 @@ TEST_F(PersistentCacheSandboxedFileFactoryAsyncTest,
 
   // Expect 1 permanent failure, no retries.
   EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
-      .WillOnce(testing::InvokeWithoutArgs([]() {
+      .WillOnce([]() {
         return base::expected<persistent_cache::PendingBackend,
                               persistent_cache::TransactionError>(
             base::unexpected(persistent_cache::TransactionError::kPermanent));
-      }));
+      });
 
   TestFuture<std::optional<persistent_cache::PendingBackend>> future;
   factory->CreateFilesAsync(

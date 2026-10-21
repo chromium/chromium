@@ -71,7 +71,6 @@ using testing::AllOf;
 using testing::Each;
 using testing::ElementsAre;
 using testing::Eq;
-using testing::InvokeWithoutArgs;
 using testing::IsEmpty;
 using testing::IsNull;
 using testing::Not;
@@ -1792,13 +1791,13 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
 
   EXPECT_CALL(mock_model_observer(), SavedTabGroupUpdatedFromSync)
       .Times(2)
-      .WillRepeatedly(InvokeWithoutArgs([this]() {
+      .WillRepeatedly([this]() {
         // Verify that tab updates do not reorder them within a group.
         EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
                     ElementsAre(HasTabUrl("https://google.com/0"),
                                 HasTabUrl("https://google.com/1"),
                                 HasTabUrl("https://google.com/2")));
-      }));
+      });
 
   // Apply updates for the 2 first tabs keeping their unique positions. Keep tab
   // URLs to be able to verify the order during applying updates.

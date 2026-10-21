@@ -56,7 +56,6 @@ using ::exo::test::TestDataSourceDelegate;
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
-using ::testing::InvokeWithoutArgs;
 using ::testing::SaveArg;
 
 namespace exo {
@@ -365,21 +364,20 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
   WindowObserverHookChecker checker(detached_surface->window());
   EXPECT_CALL(checker, OnToplevelWindowVisibilityChanging(_, _))
       .Times(1)
-      .WillOnce(DoAll(
-          SaveArg<0>(&toplevel_window), InvokeWithoutArgs([&]() {
-            auto* toplevel_handler =
-                ash::Shell::Get()->toplevel_window_event_handler();
-            EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
-            EXPECT_TRUE(toplevel_window->GetProperty(ash::kIsDraggingTabsKey));
-          })));
+      .WillOnce(DoAll(SaveArg<0>(&toplevel_window), [&]() {
+        auto* toplevel_handler =
+            ash::Shell::Get()->toplevel_window_event_handler();
+        EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
+        EXPECT_TRUE(toplevel_window->GetProperty(ash::kIsDraggingTabsKey));
+      }));
 
   EXPECT_CALL(checker, OnToplevelWindowVisibilityChanged(_, _))
       .Times(1)
-      .WillOnce(InvokeWithoutArgs([]() {
+      .WillOnce([]() {
         auto* toplevel_handler =
             ash::Shell::Get()->toplevel_window_event_handler();
         EXPECT_TRUE(toplevel_handler->is_drag_in_progress());
-      }));
+      });
 
   // Map the |detached_surface|.
   auto detached_buffer = CreateBuffer({50, 50});

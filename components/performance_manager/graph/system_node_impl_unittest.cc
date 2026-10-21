@@ -45,7 +45,6 @@ namespace {
 
 using testing::_;
 using testing::Invoke;
-using testing::InvokeWithoutArgs;
 
 class MockObserver : public MockSystemNodeObserver {
  public:
@@ -85,11 +84,10 @@ TEST_F(SystemNodeImplTest, ObserverWorks) {
 
   // Remove observers at the head and tail of the list inside a callback, and
   // expect that `obs` is still notified correctly.
-  EXPECT_CALL(head_obs, OnProcessMemoryMetricsAvailable(_))
-      .WillOnce(InvokeWithoutArgs([&] {
-        graph()->RemoveSystemNodeObserver(&head_obs);
-        graph()->RemoveSystemNodeObserver(&tail_obs);
-      }));
+  EXPECT_CALL(head_obs, OnProcessMemoryMetricsAvailable(_)).WillOnce([&] {
+    graph()->RemoveSystemNodeObserver(&head_obs);
+    graph()->RemoveSystemNodeObserver(&tail_obs);
+  });
   // `tail_obs` should not be notified as it was removed.
   EXPECT_CALL(tail_obs, OnProcessMemoryMetricsAvailable(_)).Times(0);
 

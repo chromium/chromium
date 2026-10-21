@@ -42,7 +42,6 @@ class MockObserver : public MockWorkerNodeObserver {
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::InSequence;
-using ::testing::InvokeWithoutArgs;
 
 }  // namespace
 
@@ -244,11 +243,10 @@ TEST_F(WorkerNodeImplTest, ObserverWorks) {
 
   // Remove observers at the head and tail of the list inside a callback, and
   // expect that `obs` is still notified correctly.
-  EXPECT_CALL(head_obs, OnBeforeWorkerNodeAdded(_, _))
-      .WillOnce(InvokeWithoutArgs([&] {
-        graph()->RemoveWorkerNodeObserver(&head_obs);
-        graph()->RemoveWorkerNodeObserver(&tail_obs);
-      }));
+  EXPECT_CALL(head_obs, OnBeforeWorkerNodeAdded(_, _)).WillOnce([&] {
+    graph()->RemoveWorkerNodeObserver(&head_obs);
+    graph()->RemoveWorkerNodeObserver(&tail_obs);
+  });
   // `tail_obs` should not be notified as it was removed.
   EXPECT_CALL(tail_obs, OnBeforeWorkerNodeAdded(_, _)).Times(0);
 
@@ -277,11 +275,10 @@ TEST_F(WorkerNodeImplTest, ObserverWorks) {
   EXPECT_EQ(worker_node, dedicated_worker.get());
 
   // Re-entrant iteration should work.
-  EXPECT_CALL(obs, OnFinalResponseURLDetermined(worker_node))
-      .WillOnce(InvokeWithoutArgs([&] {
-        dedicated_worker->SetPriorityAndReason(PriorityAndReason(
-            base::Process::Priority::kUserBlocking, "test priority"));
-      }));
+  EXPECT_CALL(obs, OnFinalResponseURLDetermined(worker_node)).WillOnce([&] {
+    dedicated_worker->SetPriorityAndReason(PriorityAndReason(
+        base::Process::Priority::kUserBlocking, "test priority"));
+  });
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(worker_node, _));
   dedicated_worker->OnFinalResponseURLDetermined(GURL("https://example.com"));
 
