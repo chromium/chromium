@@ -169,8 +169,9 @@ enum AppLaunchBucket {
 inline constexpr base::FilePath::CharType kAimEligibilityExtensionDirName[] =
     FILE_PATH_LITERAL("aim_eligibility_extension");
 
-// The directory name of the New Tab Page component extension,
-// relative to DIR_RESOURCES.
+// The directory name of the New Tab Page component extension, relative to
+// DIR_COMPONENT_USER, when updated via component updater, or DIR_RESOURCES,
+// when bundled.
 inline constexpr base::FilePath::CharType kNewTabPageExtensionDirName[] =
     FILE_PATH_LITERAL("new_tab_page_extension");
 

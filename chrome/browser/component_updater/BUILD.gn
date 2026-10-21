@@ -11,6 +11,7 @@ import("//media/media_options.gni")
 import("//net/features.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/widevine/cdm/widevine.gni")
+import("//ui/webui/webui_features.gni")
 
 # Header-only target. Only .h files; no sources.
 source_set("component_updater") {
@@ -214,7 +215,11 @@ source_set("impl") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/resources/omnibox_internals/aim_eligibility_extension:resources",
+      "//ui/webui:buildflags",
     ]
+    if (enable_webui_ntp) {
+      deps += [ "//chrome/browser/resources/new_tab_page_extension:resources" ]
+    }
   }
 
   if (!is_android) {
@@ -392,7 +397,14 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/resources/omnibox_internals/aim_eligibility_extension:resources",
+      "//ui/webui:buildflags",
     ]
+    if (enable_webui_ntp) {
+      deps += [
+        "//chrome/browser/resources/new_tab_page_extension:resources",
+        "//components/search",
+      ]
+    }
   }
 
   if (!is_android) {

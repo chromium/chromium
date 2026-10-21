@@ -88,6 +88,29 @@ base::FilePath GetAimEligibilityRelativeInstallDir(std::string_view version) {
       .AppendASCII(version);
 }
 
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+base::DictValue CreateNewTabPageManifest(std::string_view version) {
+  constexpr char kNewTabPageExtensionKey[] =
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAykwjZZvD8VmMLl8zD6+aoJ/"
+      "c3yC3CGNlJwsOVMUrcFYN7PNXcEnbzdYELWakSOUvFONXrg5MLlEYn8JK7R4J6iJTPU8Ch"
+      "ySEU2doBXAB1200QcLo6GL+GW13SyzazqbB4FbSVuez9Gu0LIBHwZcoI/"
+      "a7RG5ffGfm9FSPKRSzb9JRQ5GKywcyGXnM6xEZ0dezHB9aNxt+"
+      "SiVC5iRU3zLY9gxFIrqCYMPywGrHA1OWpFwiF7VrR8EJD73+5W/m/"
+      "oiiSou6yPar9yFXhl/38huIxlypsRggptgKMyMvr0/"
+      "iUO/mmWBxQZIQgtYYb0QRS4QL42u2fvVmmVGolHWESI5c1wIDAQAB";
+  return base::DictValue()
+      .Set("key", kNewTabPageExtensionKey)
+      .Set("version", version)
+      .Set("manifest_version", 3)
+      .Set("name", "NTP Staged");
+}
+
+base::FilePath GetNewTabPageRelativeInstallDir(std::string_view version) {
+  return base::FilePath(extension_misc::kNewTabPageExtensionDirName)
+      .AppendASCII(version);
+}
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+
 class ExtensionUnloadedObserver : public ExtensionRegistryObserver {
  public:
   explicit ExtensionUnloadedObserver(ExtensionRegistry* registry) {
@@ -753,6 +776,64 @@ TEST_F(ComponentLoaderTest, AddNewTabPageExtensionLoadsWhenFeatureEnabled) {
           extension_misc::kNewTabPageExtensionId);
   ASSERT_TRUE(extension);
   EXPECT_EQ(extension->location(), mojom::ManifestLocation::kComponent);
+}
+
+// Verifies the NTP component extension loads the staged version from disk when
+// a newer version is staged in Local State.
+TEST_F(ComponentLoaderTest, AddNewTabPageExtensionLoadsStagedVersionIfNewer) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ntp_features::kNtpComponentExtension);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride path_override(component_updater::DIR_COMPONENT_USER,
+                                         temp_dir.GetPath());
+  base::FilePath relative_path = GetNewTabPageRelativeInstallDir("2.0");
+  ASSERT_TRUE(base::CreateDirectory(temp_dir.GetPath().Append(relative_path)));
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kNewTabPageExtensionId, relative_path,
+      CreateNewTabPageManifest("2.0"));
+
+  AddNewTabPageExtension();
+  component_loader_->LoadAll();
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  const Extension* extension = registry->enabled_extensions().GetByID(
+      extension_misc::kNewTabPageExtensionId);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ(extension->version(), base::Version("2.0"));
+  EXPECT_EQ(extension->name(), "NTP Staged");
+}
+
+// Verifies the NTP component extension falls back to the bundled version when
+// the use_component_updater feature param is disabled.
+TEST_F(ComponentLoaderTest,
+       AddNewTabPageExtensionLoadsBundledIfFeatureParamDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpComponentExtension,
+        {{"use_component_updater", "false"}}}},
+      {});
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kNewTabPageExtensionId,
+      GetNewTabPageRelativeInstallDir("2.0"), CreateNewTabPageManifest("2.0"));
+
+  AddNewTabPageExtension();
+  component_loader_->LoadAll();
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  const Extension* extension = registry->enabled_extensions().GetByID(
+      extension_misc::kNewTabPageExtensionId);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ(extension->version(), base::Version("1.0"));
+  EXPECT_EQ(extension->name(), "New Tab Page");
+  EXPECT_TRUE(component_loader_prefs::GetExtension(
+                  *local_state, extension_misc::kNewTabPageExtensionId)
+                  .has_value());
 }
 
 // Verifies the NTP component extension is not installed when its feature is

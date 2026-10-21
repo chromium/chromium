@@ -99,6 +99,8 @@ BASE_FEATURE(kNtpChromeCartModule,
 // If enabled, loads the experimental NTP component extension, which overrides
 // chrome://newtab.
 BASE_FEATURE(kNtpComponentExtension, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kNtpComponentExtensionUseComponentUpdater{
+    &kNtpComponentExtension, "use_component_updater", true};
 
 // If enabled, customization of Chrome will be promoted on the NTP.
 BASE_FEATURE(kNtpCustomizeChromeAutoOpen, base::FEATURE_ENABLED_BY_DEFAULT);

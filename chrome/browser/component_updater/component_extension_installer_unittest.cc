@@ -31,6 +31,11 @@
 #include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/webui/buildflags.h"
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "components/search/ntp_features.h"
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 namespace component_updater {
 namespace {
@@ -345,6 +350,86 @@ TEST_F(ComponentExtensionInstallerPolicyTest,
                 .has_value();
   }));
 }
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+TEST_F(ComponentExtensionInstallerPolicyTest,
+       RegisterNewTabPageComponentEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpComponentExtension,
+        {{"use_component_updater", "true"}}}},
+      {});
+
+  auto cus = std::make_unique<MockComponentUpdateService>();
+  base::test::TestFuture<void> registered;
+  EXPECT_CALL(*cus, RegisterComponent(
+                        testing::Field(&ComponentRegistration::name,
+                                       "New Tab Page Component Extension")))
+      .WillOnce([&registered](const auto&) {
+        registered.SetValue();
+        return true;
+      });
+
+  ManageComponentExtensionRegistrations(cus.get());
+  EXPECT_TRUE(registered.Wait());
+}
+
+TEST_F(ComponentExtensionInstallerPolicyTest,
+       RegisterNewTabPageComponentDisabledByFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ntp_features::kNtpComponentExtension);
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  base::DictValue staged_manifest;
+  staged_manifest.Set("version", "2.0");
+  extensions::component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kNewTabPageExtensionId,
+      base::FilePath(extension_misc::kNewTabPageExtensionDirName)
+          .AppendASCII("2.0"),
+      std::move(staged_manifest));
+
+  auto cus = std::make_unique<MockComponentUpdateService>();
+  EXPECT_CALL(*cus, RegisterComponent(testing::_)).Times(0);
+
+  ManageComponentExtensionRegistrations(cus.get());
+
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return !extensions::component_loader_prefs::GetExtension(
+                *local_state, extension_misc::kNewTabPageExtensionId)
+                .has_value();
+  }));
+}
+
+TEST_F(ComponentExtensionInstallerPolicyTest,
+       RegisterNewTabPageComponentDisabledByFeatureParam) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{ntp_features::kNtpComponentExtension,
+        {{"use_component_updater", "false"}}}},
+      {});
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  base::DictValue staged_manifest;
+  staged_manifest.Set("version", "2.0");
+  extensions::component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kNewTabPageExtensionId,
+      base::FilePath(extension_misc::kNewTabPageExtensionDirName)
+          .AppendASCII("2.0"),
+      std::move(staged_manifest));
+
+  auto cus = std::make_unique<MockComponentUpdateService>();
+  EXPECT_CALL(*cus, RegisterComponent(testing::_)).Times(0);
+
+  ManageComponentExtensionRegistrations(cus.get());
+
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return !extensions::component_loader_prefs::GetExtension(
+                *local_state, extension_misc::kNewTabPageExtensionId)
+                .has_value();
+  }));
+}
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 TEST_F(ComponentExtensionInstallerPolicyTest, UninstallComponent) {
   PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();

@@ -432,17 +432,22 @@ void ComponentLoader::Load(const ComponentExtensionInfo& info) {
   registrar->AddComponentExtension(extension.get());
 }
 
-bool ComponentLoader::MaybeLoadStagedExtension(PrefService& local_state,
-                                               const ExtensionId& extension_id,
+bool ComponentLoader::MaybeLoadStagedExtension(const ExtensionId& extension_id,
                                                int manifest_resource_id) {
+  PrefService* local_state =
+      g_browser_process ? g_browser_process->local_state() : nullptr;
+  if (!local_state) {
+    return false;
+  }
+
   // Clear staged prefs on any failure return.
   base::ScopedClosureRunner clear_staged_prefs(
       base::BindOnce(&component_loader_prefs::ClearExtension,
-                     std::ref(local_state), extension_id));
+                     std::ref(*local_state), extension_id));
 
   std::optional<component_loader_prefs::StagedComponentExtensionInfo>
       staged_info =
-          component_loader_prefs::GetExtension(local_state, extension_id);
+          component_loader_prefs::GetExtension(*local_state, extension_id);
   if (!staged_info) {
     return false;
   }
@@ -551,11 +556,8 @@ void ComponentLoader::AddAimEligibilityExtension() {
   }
 
   // Try to load a newer version from disk installed by the component updater.
-  PrefService* local_state =
-      g_browser_process ? g_browser_process->local_state() : nullptr;
-  if (local_state && omnibox::kAimEligibilityUseComponentUpdater.Get() &&
-      MaybeLoadStagedExtension(*local_state,
-                               extension_misc::kAimEligibilityExtensionId,
+  if (omnibox::kAimEligibilityUseComponentUpdater.Get() &&
+      MaybeLoadStagedExtension(extension_misc::kAimEligibilityExtensionId,
                                IDR_AIM_ELIGIBILITY_EXTENSION_MANIFEST_JSON)) {
     return;
   }
@@ -571,6 +573,14 @@ void ComponentLoader::AddNewTabPageExtension() {
     return;
   }
 
+  // Try to load a newer version from disk installed by the component updater.
+  if (ntp_features::kNtpComponentExtensionUseComponentUpdater.Get() &&
+      MaybeLoadStagedExtension(extension_misc::kNewTabPageExtensionId,
+                               IDR_NEW_TAB_PAGE_EXTENSION_MANIFEST_JSON)) {
+    return;
+  }
+
+  // Fallback to bundled extension if no newer version exists on disk.
   Add(IDR_NEW_TAB_PAGE_EXTENSION_MANIFEST_JSON,
       base::FilePath(extension_misc::kNewTabPageExtensionDirName));
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)

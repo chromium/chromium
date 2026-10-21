@@ -30,10 +30,21 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/file_util.h"
+#include "ui/webui/buildflags.h"
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "chrome/grit/new_tab_page_extension_resources.h"
+#include "components/search/ntp_features.h"
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 namespace component_updater {
 
 namespace {
+
+// Note that the component ids (derived from `public_key_sha256`) and
+// `extension_id` are independent and are expected to differ. The component
+// (CRX) is signed with its own key and has its own manifest.json, while
+// `extension_id` is derived from the "key" in extension_manifest.json.
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
 // The extension id is: kabpfonokkamggpgbldambnmkliehlbh
@@ -49,6 +60,18 @@ constexpr char kAimEligibilityManifestName[] =
 // The manifest filename of the component extension.
 constexpr base::FilePath::CharType kExtensionManifestFilename[] =
     FILE_PATH_LITERAL("extension_manifest.json");
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+// The SHA256 of the SubjectPublicKeyInfo used to sign the component.
+// The component's id is: pkohanfffhahpakjbppgjidngeadjcfj
+constexpr std::array<uint8_t, 32> kNewTabPagePublicKeySHA256 = {
+    0xfa, 0xe7, 0x0d, 0x55, 0x57, 0x07, 0xf0, 0xa9, 0x1f, 0xf6, 0x98,
+    0x3d, 0x64, 0x03, 0x92, 0x59, 0xf3, 0x78, 0x98, 0x81, 0x72, 0x58,
+    0x18, 0xad, 0xf3, 0x0d, 0xfb, 0x31, 0xfa, 0xaa, 0xc2, 0x07};
+
+// The name of the New Tab Page component.
+constexpr char kNewTabPageManifestName[] = "New Tab Page Component Extension";
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 // Clears the staged extension preferences. This ensures that
 // `extensions::ComponentLoader` will fall back to loading the bundled component
@@ -197,6 +220,20 @@ void ManageComponentExtensionRegistrations(ComponentUpdateService* cus) {
       base::FeatureList::IsEnabled(
           omnibox::kAimEligibilityComponentExtension) &&
           omnibox::kAimEligibilityUseComponentUpdater.Get());
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+  ManageComponentExtensionRegistration(
+      cus,
+      {.name = kNewTabPageManifestName,
+       .extension_id = extension_misc::kNewTabPageExtensionId,
+       .public_key_sha256 = kNewTabPagePublicKeySHA256,
+       .relative_install_dir =
+           base::FilePath(extension_misc::kNewTabPageExtensionDirName),
+       .bundled_manifest_resource_id =
+           IDR_NEW_TAB_PAGE_EXTENSION_MANIFEST_JSON},
+      base::FeatureList::IsEnabled(ntp_features::kNtpComponentExtension) &&
+          ntp_features::kNtpComponentExtensionUseComponentUpdater.Get());
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 }
 
 }  // namespace component_updater
