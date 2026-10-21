@@ -122,8 +122,8 @@ fn test_std_unique_ptr() {
     use ::test_std_types::{CreateUniquePtr, GetValueFromUniquePtr};
 
     // `std::unique_ptr<int>` uses a layout-compatible type from `cc_std`.
-    let mut ptr: unique_ptr<i32> = CreateUniquePtr(123);
-    assert_eq!(*ptr.as_mut(), 123);
+    let ptr: unique_ptr<i32> = CreateUniquePtr(123);
+    assert_eq!(*ptr, 123);
     assert_eq!(GetValueFromUniquePtr(ptr), 123);
 
     // Ownership can move between C++ and Rust.  (Both sides allocate and free
