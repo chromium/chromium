@@ -43,7 +43,6 @@ import tempfile
 
 _PROTOBUF_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 _README_FILENAME = 'README.chromium'
-_PATCHES_DIRECTORY_NAME = 'patches'
 _REQUESTED_REVISION_REF = 'refs/protobuf-roll/requested'
 UPSTREAM_REPOSITORY_URL = 'https://github.com/protocolbuffers/protobuf.git'
 EXIT_CODE_SUCCESS = 0
@@ -116,9 +115,6 @@ DELETED_UPSTREAM_DIRECTORY_PREFIXES = (
     'compatibility/',
 )
 
-_README_REVISION_PATTERN = re.compile(
-    r'^Revision:\s*(\S+)\s*$', re.MULTILINE)
-
 
 class RollProtobufError(Exception):
     """Raised when a git, filesystem, or metadata operation cannot proceed."""
@@ -178,20 +174,14 @@ class TreeVerificationResult:
 
 
 def IsTopLevelChromiumPatchOrNote(relative_path: str) -> bool:
-    """Returns True if relative_path is a top-level patches/*.{patch,md} file.
+    """Returns True for top-level patches/*.patch and patches/*.md files.
 
-    Upstream protobuf stores its own Bazel module patches in subdirectories such
-    as patches/protobuf_v25/*.patch. Chromium stores its patches and companion
-    notes directly under patches/, so any path containing a second '/' belongs
-    to upstream rather than Chromium.
+    Upstream keeps its own Bazel patches in subdirectories such as
+    patches/protobuf_v25/, so a path with a second '/' is upstream's.
     """
-    patches_prefix = _PATCHES_DIRECTORY_NAME + '/'
-    if not relative_path.startswith(patches_prefix):
-        return False
-    filename_in_patches = relative_path[len(patches_prefix):]
-    if not filename_in_patches or '/' in filename_in_patches:
-        return False
-    return filename_in_patches.endswith(('.patch', '.md'))
+    directory, _, filename = relative_path.partition('/')
+    return (directory == 'patches' and '/' not in filename
+            and filename.endswith(('.patch', '.md')))
 
 
 def IsChromiumOwnedFile(relative_path: str) -> bool:
@@ -212,18 +202,7 @@ def IsIntentionallyDeletedUpstreamFile(relative_path: str) -> bool:
 
 
 def ReadReadmeRevision(readme_text: str) -> str:
-    """Extracts the upstream git revision from README.chromium text.
-
-    Args:
-      readme_text: Full text content of //third_party/protobuf/README.chromium.
-
-    Returns:
-      The non-empty revision token following 'Revision:'.
-
-    Raises:
-      RollProtobufError: If no 'Revision:' line is present in readme_text.
-    """
-    match = _README_REVISION_PATTERN.search(readme_text)
+    match = re.search(r'^Revision:\s*(\S+)\s*$', readme_text, re.MULTILINE)
     if match is None:
         raise RollProtobufError(
             f'Could not find a "Revision:" line in {_README_FILENAME}.')
@@ -231,22 +210,10 @@ def ReadReadmeRevision(readme_text: str) -> str:
 
 
 def ReadReadmeRevisionFromDirectory(protobuf_directory: str) -> str:
-    """Reads README.chromium in protobuf_directory and returns its Revision.
-
-    Args:
-      protobuf_directory: Path to the //third_party/protobuf directory.
-
-    Returns:
-      The non-empty revision token following 'Revision:'.
-
-    Raises:
-      RollProtobufError: If README.chromium is missing or lacks a 'Revision:'
-        line.
-    """
     readme_path = os.path.join(protobuf_directory, _README_FILENAME)
     if not os.path.isfile(readme_path):
         raise RollProtobufError(f'Missing {_README_FILENAME} at {readme_path}.')
-    with open(readme_path, 'r', encoding='utf-8') as readme_file:
+    with open(readme_path, encoding='utf-8') as readme_file:
         return ReadReadmeRevision(readme_file.read())
 
 
@@ -396,139 +363,88 @@ def EnsureUpstreamCommitCached(
 def _StreamGitArchiveToDirectory(
         git_archive_command: Sequence[str],
         destination_directory: str) -> tuple[int, str, Exception | None]:
-    """Runs `git archive` and streams stdout into `destination_directory`.
+    """Extracts `git archive` output; returns (exit code, stderr, error).
 
-    Redirects `stderr` to a temporary file rather than an OS pipe so verbose
-    git trace output (such as `GIT_TRACE_PACK_ACCESS=1`) cannot fill the OS
-    pipe buffer and deadlock while `tarfile` drains `stdout`.
-
-    Returns:
-      A `(return_code, stderr_text, extraction_error)` tuple where
-      `extraction_error` is the `tarfile.TarError` or `OSError` raised while
-      streaming `stdout` (or `None` if extraction succeeded).
+    stderr goes to a temporary file, not a pipe: trace output
+    (GIT_TRACE_PACK_ACCESS=1) can fill a pipe and deadlock while tarfile
+    drains stdout. tarfile's 'data' filter rejects unsafe paths and links.
     """
-    extraction_error: Exception | None = None
+    extraction_error = None
     with tempfile.TemporaryFile() as stderr_file:
-        with subprocess.Popen(
-            git_archive_command,
-            env=_IsolatedGitEnvironment(),
-            stdout=subprocess.PIPE,
-            stderr=stderr_file,
-        ) as archive_process:
-            assert archive_process.stdout is not None
+        with subprocess.Popen(git_archive_command,
+                              env=_IsolatedGitEnvironment(),
+                              stdout=subprocess.PIPE,
+                              stderr=stderr_file) as archive_process:
             try:
-                with tarfile.open(
-                        fileobj=archive_process.stdout, mode='r|') as archive:
+                with tarfile.open(fileobj=archive_process.stdout,
+                                  mode='r|') as archive:
                     archive.extractall(destination_directory, filter='data')
-            except (tarfile.TarError, OSError) as caught_error:
-                extraction_error = caught_error
+            except (tarfile.TarError, OSError) as error:
+                extraction_error = error
             finally:
                 archive_process.stdout.close()
-            return_code = archive_process.wait()
         stderr_file.seek(0)
-        stderr_text = stderr_file.read().decode(
-            'utf-8', errors='replace').strip()
-    return return_code, stderr_text, extraction_error
+        stderr = stderr_file.read().decode('utf-8', errors='replace').strip()
+    return archive_process.returncode, stderr, extraction_error
 
 
-def ExtractUpstreamArchive(
-        repository_path: str,
-        commit_revision: str,
-        destination_directory: str) -> None:
-    """Extracts the git tree for commit_revision into destination_directory.
+def ExtractUpstreamArchive(repository_path: str, commit_revision: str,
+                           destination_directory: str) -> None:
+    """Extracts the tree of commit_revision into destination_directory.
 
-    Streams 'git archive --format=tar' directly through Python's tarfile module
-    with the 'data' extraction filter so unsafe paths and links are rejected.
-
-    Args:
-      repository_path: Local git repository path (bare or non-bare).
-      commit_revision: Commit SHA or ref to extract.
-      destination_directory: Directory where archive entries are extracted.
-
-    Raises:
-      RollProtobufError: If git archive fails or tar extraction fails.
+    When extraction fails, git usually dies of SIGPIPE (-13, or 141 behind a
+    shell shim), so the extraction error is reported together with git's
+    stderr instead of keying on the exit code.
     """
-    git_archive_command = _GitCommandForRepository(
-        repository_path,
-        ['archive', '--format=tar', commit_revision],
-    )
-    return_code, stderr_text, extraction_error = _StreamGitArchiveToDirectory(
-        git_archive_command, destination_directory)
+    return_code, git_error, extraction_error = _StreamGitArchiveToDirectory(
+        _GitCommandForRepository(repository_path,
+                                 ['archive', '--format=tar', commit_revision]),
+        destination_directory)
     if extraction_error is not None:
-        git_error_suffix = (
-            f' (git archive failed: {stderr_text})'
-            if return_code != 0 and stderr_text != '' else ''
-        )
+        git_suffix = (f' (git archive failed: {git_error})'
+                      if return_code != 0 and git_error else '')
         raise RollProtobufError(
             f'Failed to extract archive for {commit_revision} from '
-            f'{repository_path}: {extraction_error}{git_error_suffix}'
+            f'{repository_path}: {extraction_error}{git_suffix}'
         ) from extraction_error
     if return_code != 0:
-        raise RollProtobufError(
-            f'git archive failed for {commit_revision} in {repository_path}: '
-            f'{stderr_text}')
+        raise RollProtobufError(f'git archive failed for {commit_revision} in '
+                                f'{repository_path}: {git_error}')
 
 
 def ListTopLevelPatchPaths(protobuf_directory: str) -> list[str]:
-    """Returns sorted absolute paths to top-level patches/*.patch files.
-
-    Args:
-      protobuf_directory: Path to the //third_party/protobuf directory.
-
-    Returns:
-      Lexicographically sorted list of absolute paths to top-level .patch files
-      under <protobuf_directory>/patches, or an empty list if patches/ is
-      absent.
-    """
-    patches_directory = os.path.join(
-        protobuf_directory, _PATCHES_DIRECTORY_NAME)
+    """Returns the paths of patches/*.patch in application (sorted) order."""
+    patches_directory = os.path.join(protobuf_directory, 'patches')
     if not os.path.isdir(patches_directory):
         return []
-    patch_paths: list[str] = []
-    for entry_name in sorted(os.listdir(patches_directory)):
-        if not entry_name.endswith('.patch'):
-            continue
-        full_path = os.path.join(patches_directory, entry_name)
-        if os.path.isfile(full_path):
-            patch_paths.append(full_path)
-    return patch_paths
+    patch_paths = (os.path.join(patches_directory, name)
+                   for name in sorted(os.listdir(patches_directory))
+                   if name.endswith('.patch'))
+    return [path for path in patch_paths if os.path.isfile(path)]
 
 
 def ApplyPatchFile(patch_path: str, target_directory: str) -> str | None:
-    """Applies patch_path to target_directory, returning None on success.
+    """Applies a patch; returns None on success, else git's diagnostics.
 
-    Uses 'git apply -p1 --unidiff-zero' so git extended headers and
-    zero-context hunks (such as 0072-remove-version-stamp.patch) are handled
-    without external tools. Sets GIT_CEILING_DIRECTORIES to the parent of
-    target_directory so git never walks up into an enclosing working tree
-    (which would otherwise cause git apply to silently skip paths that do not
-    begin with the subdirectory prefix).
-
-    Args:
-      patch_path: Path to the .patch file to apply.
-      target_directory: Root directory of the tree to patch.
-
-    Returns:
-      None if the patch applied cleanly, or the diagnostic error message if
-      application failed.
+    `--unidiff-zero` accepts zero-context hunks (0072-remove-version-stamp).
+    GIT_CEILING_DIRECTORIES keeps git from walking up into an enclosing work
+    tree, where `git apply` silently skips paths outside the subdirectory and
+    still exits 0.
     """
-    absolute_patch_path = os.path.abspath(patch_path)
-    real_target_directory = os.path.realpath(target_directory)
-    environment = _IsolatedGitEnvironment()
-    environment['GIT_CEILING_DIRECTORIES'] = os.path.dirname(
-        real_target_directory)
-    git_apply_process = subprocess.run(
-        ['git', 'apply', '-p1', '--unidiff-zero', absolute_patch_path],
-        cwd=real_target_directory,
-        env=environment,
-        stdin=subprocess.DEVNULL,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if git_apply_process.returncode == 0:
+    target_directory = os.path.realpath(target_directory)
+    process = _RunGit(
+        ['git', 'apply', '-p1', '--unidiff-zero',
+         os.path.abspath(patch_path)],
+        env={
+            **_IsolatedGitEnvironment(),
+            'GIT_CEILING_DIRECTORIES':
+            os.path.dirname(target_directory),
+        },
+        cwd=target_directory,
+        accepted_return_codes=None)
+    if process.returncode == 0:
         return None
-    return git_apply_process.stderr.strip()
+    return process.stderr.decode('utf-8', errors='replace').strip()
 
 
 def _ListRegularFilesInDirectory(root_directory: str) -> set[str]:
