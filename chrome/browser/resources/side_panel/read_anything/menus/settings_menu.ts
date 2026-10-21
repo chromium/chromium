@@ -701,11 +701,6 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   private onKeyDown_(e: KeyboardEvent) {
-    if (e.composedPath().some(
-            el => el instanceof HTMLElement && el.tagName === 'CR-DIALOG')) {
-      return;
-    }
-
     const key = e.key;
     if (isVerticalArrow(key) || isForwardArrow(key) || isActivationKey(key)) {
       this.clearOpenTimer_();

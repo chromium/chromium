@@ -29,7 +29,7 @@ export function getHtml(this: GroupedActionMenuElement) {
             ` : ``}
           </div>
           ${group.items.map((item, itemIndex) => html`
-            <button id="${this.getItemId_(groupIndex, itemIndex)}"
+            <button id="group-${groupIndex}-item-${itemIndex}"
                 class="dropdown-item" style="${item.style || nothing}"
                 role="${this.getItemRole_(item)}"
                 title="${item.ariaLabel || item.title}"

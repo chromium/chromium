@@ -28,10 +28,6 @@ export interface AudioMenuElement {
   };
 }
 
-const VOICE_GROUP_INDEX = 0;
-const VOICE_SELECTION_ITEM_INDEX = 0;
-const ACCENT_MENU_ITEM_INDEX = 1;
-
 const AudioMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 
 export class AudioMenuElement extends AudioMenuElementBase implements
@@ -166,7 +162,6 @@ export class AudioMenuElement extends AudioMenuElementBase implements
     event.preventDefault();
     event.stopPropagation();
     this.showAccentMenuDialog_ = false;
-    this.focusMenuItem_(ACCENT_MENU_ITEM_INDEX);
   }
 
   protected onOpenVoiceSelectionDialog_() {
@@ -179,13 +174,6 @@ export class AudioMenuElement extends AudioMenuElementBase implements
     event.stopPropagation();
     this.showVoiceSelectionDialog_ = false;
     this.fire(ToolbarEvent.VOICE_MENU_CLOSE);
-    this.focusMenuItem_(VOICE_SELECTION_ITEM_INDEX);
-  }
-
-  private focusMenuItem_(itemIndex: number) {
-    this.updateComplete.then(() => {
-      this.$.menu.focusItem(VOICE_GROUP_INDEX, itemIndex);
-    });
   }
 }
 
