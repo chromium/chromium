@@ -187,12 +187,12 @@ TextFragmentAnchor* TextFragmentAnchor::TryCreate(const KURL& url,
 
   bool has_internal_scroll_to_text_fragment = false;
   if (frame.Loader().GetDocumentLoader()) {
-    std::optional<String> internal_scroll_to_text_fragment =
+    String internal_scroll_to_text_fragment =
         frame.Loader().GetDocumentLoader()->TakeInternalScrollToTextFragment();
-    if (internal_scroll_to_text_fragment) {
+    if (!internal_scroll_to_text_fragment.IsNull()) {
       has_internal_scroll_to_text_fragment = true;
       if (TextDirective* text_directive =
-              TextDirective::Create(*internal_scroll_to_text_fragment,
+              TextDirective::Create(internal_scroll_to_text_fragment,
                                     TextDirective::Behavior::kScrollOnly)) {
         text_directives.push_back(text_directive);
       }
