@@ -142,12 +142,6 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
   // credentials/info.
   void CreateLocalAndDuplicateServerCreditCard();
 
-  void AddMaskedServerCreditCardWithOffer(std::string guid,
-                                          std::string offer_reward_amount,
-                                          GURL url,
-                                          int64_t id,
-                                          bool offer_expired = false);
-
   // If set to true, then user is capable of using FIDO authentication for
   // card unmasking.
   void SetFidoEligibility(bool is_verifiable);

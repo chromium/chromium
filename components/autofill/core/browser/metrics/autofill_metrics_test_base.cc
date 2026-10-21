@@ -389,40 +389,6 @@ void AutofillMetricsBaseTest::CreateLocalAndDuplicateServerCreditCard() {
       masked_server_credit_card);
 }
 
-void AutofillMetricsBaseTest::AddMaskedServerCreditCardWithOffer(
-    std::string guid,
-    std::string offer_reward_amount,
-    GURL url,
-    int64_t id,
-    bool offer_expired) {
-  CreditCard masked_server_credit_card(
-      CreditCard::RecordType::kMaskedServerCard, "server_id_offer");
-  masked_server_credit_card.set_guid(guid);
-  masked_server_credit_card.set_instrument_id(id);
-  masked_server_credit_card.SetNetworkForMaskedCard(kDiscoverCard);
-  masked_server_credit_card.SetNumber(u"9424");
-  personal_data().test_payments_data_manager().AddServerCreditCard(
-      masked_server_credit_card);
-
-  std::string offer_id = base::NumberToString(id);
-  base::Time expiry = offer_expired ? AutofillClock::Now() - base::Days(2)
-                                    : AutofillClock::Now() + base::Days(2);
-  std::vector<GURL> merchant_origins = {GURL{url}};
-  GURL offer_details_url = GURL(url);
-  DisplayStrings display_strings;
-  display_strings.value_prop_text = "Get 5% off your purchase";
-  display_strings.see_details_text = "See details";
-  display_strings.usage_instructions_text =
-      "Check out with this card to activate";
-  std::vector<int64_t> eligible_instrument_id = {
-      masked_server_credit_card.instrument_id()};
-
-  AutofillOfferData offer_data = AutofillOfferData::GPayCardLinkedOffer(
-      offer_id, expiry, merchant_origins, offer_details_url, display_strings,
-      eligible_instrument_id, offer_reward_amount);
-  personal_data().test_payments_data_manager().AddAutofillOfferData(offer_data);
-}
-
 void AutofillMetricsBaseTest::CreateTestAutofillProfiles() {
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   test::SetProfileInfo(&profile1, test::SetProfileInfoOptionsBuilder()
