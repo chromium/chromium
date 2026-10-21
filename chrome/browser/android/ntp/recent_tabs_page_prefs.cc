@@ -12,22 +12,18 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/RecentTabsPagePrefs_jni.h"
 
-static int64_t JNI_RecentTabsPagePrefs_Init(Profile* profile) {
-  RecentTabsPagePrefs* recent_tabs_page_prefs =
-      new RecentTabsPagePrefs(profile);
-  return reinterpret_cast<intptr_t>(recent_tabs_page_prefs);
+static jni_zero::JniUniquePtr<RecentTabsPagePrefs> JNI_RecentTabsPagePrefs_Init(
+    Profile* profile) {
+  return jni_zero::MakeUnique<RecentTabsPagePrefs>(profile);
 }
 
 RecentTabsPagePrefs::RecentTabsPagePrefs(Profile* profile)
     : profile_(profile) {}
-
-void RecentTabsPagePrefs::Destroy() {
-  delete this;
-}
 
 RecentTabsPagePrefs::~RecentTabsPagePrefs() = default;
 

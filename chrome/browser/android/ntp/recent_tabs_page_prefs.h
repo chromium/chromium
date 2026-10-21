@@ -13,7 +13,7 @@
 class RecentTabsPagePrefs {
  public:
   explicit RecentTabsPagePrefs(Profile* profile);
-  void Destroy();
+  ~RecentTabsPagePrefs();
 
   RecentTabsPagePrefs(const RecentTabsPagePrefs&) = delete;
   RecentTabsPagePrefs& operator=(const RecentTabsPagePrefs&) = delete;
@@ -34,8 +34,6 @@ class RecentTabsPagePrefs {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
-  virtual ~RecentTabsPagePrefs();
-
   raw_ptr<Profile> profile_;  // weak
 };
 
