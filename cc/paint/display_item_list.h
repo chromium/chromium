@@ -184,9 +184,6 @@ class CC_PAINT_EXPORT DisplayItemList
   bool has_draw_text_ops() const {
     return paint_op_buffer_.has_draw_text_ops();
   }
-  bool has_save_layer_ops() const {
-    return paint_op_buffer_.has_save_layer_ops();
-  }
   bool has_save_layer_alpha_ops() const {
     return paint_op_buffer_.has_save_layer_alpha_ops();
   }

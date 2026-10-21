@@ -297,7 +297,6 @@ PaintOpBuffer& PaintOpBuffer::operator=(PaintOpBuffer&& other) {
   has_non_aa_paint_ = other.has_non_aa_paint_;
   has_draw_ops_ = other.has_draw_ops_;
   has_draw_text_ops_ = other.has_draw_text_ops_;
-  has_save_layer_ops_ = other.has_save_layer_ops_;
   has_save_layer_alpha_ops_ = other.has_save_layer_alpha_ops_;
   has_effects_preventing_lcd_text_for_save_layer_alpha_ =
       other.has_effects_preventing_lcd_text_for_save_layer_alpha_;
@@ -337,7 +336,6 @@ void PaintOpBuffer::ResetRetainingBuffer() {
   subrecord_op_count_ = 0;
   has_draw_ops_ = false;
   has_draw_text_ops_ = false;
-  has_save_layer_ops_ = false;
   has_save_layer_alpha_ops_ = false;
   has_effects_preventing_lcd_text_for_save_layer_alpha_ = false;
   has_discardable_images_ = false;

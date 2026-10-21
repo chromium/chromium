@@ -231,7 +231,6 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   bool has_non_aa_paint() const { return has_non_aa_paint_; }
   bool has_draw_ops() const { return has_draw_ops_; }
   bool has_draw_text_ops() const { return has_draw_text_ops_; }
-  bool has_save_layer_ops() const { return has_save_layer_ops_; }
   bool has_save_layer_alpha_ops() const { return has_save_layer_alpha_ops_; }
   bool has_effects_preventing_lcd_text_for_save_layer_alpha() const {
     return has_effects_preventing_lcd_text_for_save_layer_alpha_;
@@ -300,7 +299,6 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
     has_draw_ops_ |= op->IsDrawOp();
     has_draw_text_ops_ |= op->HasDrawTextOps();
-    has_save_layer_ops_ |= op->HasSaveLayerOps();
     has_save_layer_alpha_ops_ |= op->HasSaveLayerAlphaOps();
     has_effects_preventing_lcd_text_for_save_layer_alpha_ |=
         op->HasEffectsPreventingLCDTextForSaveLayerAlpha();
@@ -392,7 +390,6 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   bool has_non_aa_paint_ : 1 = false;
   bool has_draw_ops_ : 1 = false;
   bool has_draw_text_ops_ : 1 = false;
-  bool has_save_layer_ops_ : 1 = false;
   bool has_save_layer_alpha_ops_ : 1 = false;
   bool has_effects_preventing_lcd_text_for_save_layer_alpha_ : 1 = false;
 

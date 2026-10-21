@@ -197,7 +197,6 @@ class PaintOpAppendTest : public ::testing::Test {
 
   void CheckInitialState(PaintOpBuffer* buffer, bool expect_empty_buffer) {
     EXPECT_FALSE(buffer->has_draw_ops());
-    EXPECT_FALSE(buffer->has_save_layer_ops());
     EXPECT_EQ(0u, buffer->size());
     EXPECT_EQ(0u, buffer->total_op_count());
     EXPECT_EQ(0u, buffer->next_op_offset());

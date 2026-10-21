@@ -2519,10 +2519,6 @@ bool DrawRecordOp::HasDrawTextOps() const {
   return record.has_draw_text_ops();
 }
 
-bool DrawRecordOp::HasSaveLayerOps() const {
-  return record.has_save_layer_ops();
-}
-
 bool DrawRecordOp::HasSaveLayerAlphaOps() const {
   return record.has_save_layer_alpha_ops();
 }
@@ -2551,10 +2547,6 @@ bool DrawScrollingContentsOp::HasNonAAPaint() const {
 
 bool DrawScrollingContentsOp::HasDrawTextOps() const {
   return display_item_list->has_draw_text_ops();
-}
-
-bool DrawScrollingContentsOp::HasSaveLayerOps() const {
-  return display_item_list->has_save_layer_ops();
 }
 
 bool DrawScrollingContentsOp::HasSaveLayerAlphaOps() const {

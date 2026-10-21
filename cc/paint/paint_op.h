@@ -235,7 +235,6 @@ class CC_PAINT_EXPORT PaintOp {
 
   bool HasNonAAPaint() const { return false; }
   bool HasDrawTextOps() const { return false; }
-  bool HasSaveLayerOps() const { return false; }
   bool HasSaveLayerAlphaOps() const { return false; }
   // Returns true if effects are present that would break LCD text or be broken
   // by the flags for kSaveLayerAlpha to preserving LCD text.
@@ -321,7 +320,6 @@ class CC_PAINT_EXPORT PaintOpWithFlags : public PaintOp {
     using super::CountSlowPathsFromFlags;                      \
     using super::HasNonAAPaint;                                \
     using super::HasDrawTextOps;                               \
-    using super::HasSaveLayerOps;                              \
     using super::HasSaveLayerAlphaOps;                         \
     using super::HasEffectsPreventingLCDTextForSaveLayerAlpha; \
     using super::HasDiscardableImages;                         \
@@ -832,7 +830,6 @@ class CC_PAINT_EXPORT DrawRecordOp final : public PaintOpBaseInternal {
   int CountSlowPaths() const;
   bool HasNonAAPaint() const;
   bool HasDrawTextOps() const;
-  bool HasSaveLayerOps() const;
   bool HasSaveLayerAlphaOps() const;
   bool HasEffectsPreventingLCDTextForSaveLayerAlpha() const;
   HAS_SERIALIZATION_FUNCTIONS();
@@ -915,7 +912,6 @@ class CC_PAINT_EXPORT DrawScrollingContentsOp final
   int CountSlowPaths() const;
   bool HasNonAAPaint() const;
   bool HasDrawTextOps() const;
-  bool HasSaveLayerOps() const;
   bool HasSaveLayerAlphaOps() const;
   bool HasEffectsPreventingLCDTextForSaveLayerAlpha() const;
   HAS_SERIALIZATION_FUNCTIONS();
@@ -1169,7 +1165,6 @@ class CC_PAINT_EXPORT SaveLayerOp final : public PaintOpWithFlagsBaseInternal {
   // transparent layer) would break LCD text or be broken by the flags for
   // kSaveLayerAlpha to preserve LCD text.
   bool HasEffectsPreventingLCDTextForSaveLayerAlpha() const { return true; }
-  bool HasSaveLayerOps() const { return true; }
   HAS_SERIALIZATION_FUNCTIONS();
 
   SkRect bounds;
@@ -1194,7 +1189,6 @@ class CC_PAINT_EXPORT SaveLayerAlphaOp final : public PaintOpBaseInternal {
                      const PlaybackParams& params);
   bool IsValid() const { return IsValidOrUnsetRect(bounds); }
   bool EqualsForTesting(const SaveLayerAlphaOp& other) const;
-  bool HasSaveLayerOps() const { return true; }
   bool HasSaveLayerAlphaOps() const { return true; }
   HAS_SERIALIZATION_FUNCTIONS();
 
@@ -1227,7 +1221,6 @@ class CC_PAINT_EXPORT SaveLayerFiltersOp final
            filters.size() <= kMaxFiltersPerLayer;
   }
   bool EqualsForTesting(const SaveLayerFiltersOp& other) const;
-  bool HasSaveLayerOps() const { return true; }
   HAS_SERIALIZATION_FUNCTIONS();
 
   SkRect bounds;
