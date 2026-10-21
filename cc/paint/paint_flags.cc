@@ -235,20 +235,19 @@ bool PaintFlags::EqualsForTesting(const PaintFlags& other) const {
          AreValuesEqualForTesting(shader_, other.shader_);  // IN-TEST
 }
 
-bool PaintFlags::HasDiscardableImages(
-    gfx::ContentColorUsage* content_color_usage) const {
-  bool has_discardable_images = false;
+bool PaintFlags::HasDiscardableImages() const {
+  return (shader_ && shader_->HasDiscardableImages()) ||
+         (image_filter_ && image_filter_->has_discardable_images());
+}
+
+void PaintFlags::UnionColorVolumeInto(
+    gfx::ContentColorVolume& color_volume) const {
   if (shader_) {
-    has_discardable_images = shader_->HasDiscardableImages(content_color_usage);
+    shader_->UnionColorVolumeInto(color_volume);
   }
-  if (image_filter_ && image_filter_->has_discardable_images()) {
-    if (content_color_usage) {
-      *content_color_usage =
-          std::max(*content_color_usage, image_filter_->GetContentColorUsage());
-    }
-    has_discardable_images = true;
+  if (image_filter_) {
+    image_filter_->UnionColorVolumeInto(color_volume);
   }
-  return has_discardable_images;
 }
 
 float PaintFlags::DynamicRangeLimitMixture::ComputeEffectiveHdrHeadroom(

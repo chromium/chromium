@@ -346,7 +346,8 @@ gfx::ContentColorUsage GetContentColorUsageForPrioritizedTile(
     const PrioritizedTile& prioritized_tile) {
   return prioritized_tile.raster_source()
       ->GetDisplayItemList()
-      ->content_color_usage();
+      ->content_color_volume()
+      .GetContentColorUsage();
 }
 
 }  // namespace

@@ -372,29 +372,24 @@ gfx::Size PaintImage::GetSize(AuxImage aux_image) const {
   return gfx::SkISizeToSize(GetSkISize(aux_image));
 }
 
-gfx::ContentColorUsage PaintImage::GetContentColorUsage() const {
+void PaintImage::UnionColorVolumeInto(
+    gfx::ContentColorVolume& color_volume) const {
   // Right now, JS paint worklets can only be in sRGB
   if (IsPaintWorklet()) {
-    return gfx::ContentColorUsage::kSRGB;
+    return;
   }
 
-  // Gainmap images are always HDR.
-  if (HasGainmapInfo()) {
-    return gfx::ContentColorUsage::kHDR;
-  }
+  const auto* cs = color_space();
+  color_volume.UnionWith(gfx::ContentColorVolume{
+      .is_wide_color_gamut = cs && !cs->isSRGB(),
+      .hdr_headroom = GetMaximumRenderedHdrHeadroom(),
+  });
+}
 
-  const auto* color_space = GetSkImageInfo().colorSpace();
-  if (gfx::ToneMapUtil::IsHDR(color_space, hdr_metadata_)) {
-    return gfx::ContentColorUsage::kHDR;
-  }
-
-  // Assume the image will be sRGB if we don't know yet.
-  if (!color_space || color_space->isSRGB()) {
-    return gfx::ContentColorUsage::kSRGB;
-  }
-
-  // If it's not HDR and not SRGB, report it as WCG.
-  return gfx::ContentColorUsage::kWideColorGamut;
+gfx::ContentColorUsage PaintImage::GetContentColorUsage() const {
+  gfx::ContentColorVolume color_volume;
+  UnionColorVolumeInto(color_volume);
+  return color_volume.GetContentColorUsage();
 }
 
 const ImageHeaderMetadata* PaintImage::GetImageHeaderMetadata() const {

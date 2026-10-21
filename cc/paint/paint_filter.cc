@@ -255,9 +255,11 @@ OneInputPaintFilter::OneInputPaintFilter(Type type,
 
 OneInputPaintFilter::~OneInputPaintFilter() = default;
 
-gfx::ContentColorUsage OneInputPaintFilter::GetContentColorUsage() const {
-  return has_discardable_images() ? input_->GetContentColorUsage()
-                                  : gfx::ContentColorUsage::kSRGB;
+void OneInputPaintFilter::UnionColorVolumeInto(
+    gfx::ContentColorVolume& color_volume) const {
+  if (input_) {
+    input_->UnionColorVolumeInto(color_volume);
+  }
 }
 
 base::CheckedNumeric<size_t> OneInputPaintFilter::BaseSerializedSize() const {
@@ -282,16 +284,14 @@ TwoInputPaintFilter::TwoInputPaintFilter(Type type,
 
 TwoInputPaintFilter::~TwoInputPaintFilter() = default;
 
-gfx::ContentColorUsage TwoInputPaintFilter::GetContentColorUsage() const {
-  if (!has_discardable_images()) {
-    return gfx::ContentColorUsage::kSRGB;
+void TwoInputPaintFilter::UnionColorVolumeInto(
+    gfx::ContentColorVolume& color_volume) const {
+  if (first_) {
+    first_->UnionColorVolumeInto(color_volume);
   }
-  gfx::ContentColorUsage result =
-      first_ ? first_->GetContentColorUsage() : gfx::ContentColorUsage::kSRGB;
-  if (second_ && result != gfx::ContentColorUsage::kMaxValue) {
-    result = std::max(result, second_->GetContentColorUsage());
+  if (second_) {
+    second_->UnionColorVolumeInto(color_volume);
   }
-  return result;
 }
 
 base::CheckedNumeric<size_t> TwoInputPaintFilter::BaseSerializedSize() const {
@@ -772,8 +772,9 @@ ImagePaintFilter::ImagePaintFilter(PaintImage image,
 
 ImagePaintFilter::~ImagePaintFilter() = default;
 
-gfx::ContentColorUsage ImagePaintFilter::GetContentColorUsage() const {
-  return image_.GetContentColorUsage();
+void ImagePaintFilter::UnionColorVolumeInto(
+    gfx::ContentColorVolume& color_volume) const {
+  image_.UnionColorVolumeInto(color_volume);
 }
 
 size_t ImagePaintFilter::SerializedSize() const {
@@ -872,8 +873,9 @@ RecordPaintFilter::RecordPaintFilter(PaintRecord record,
 
 RecordPaintFilter::~RecordPaintFilter() = default;
 
-gfx::ContentColorUsage RecordPaintFilter::GetContentColorUsage() const {
-  return record_.content_color_usage();
+void RecordPaintFilter::UnionColorVolumeInto(
+    gfx::ContentColorVolume& color_volume) const {
+  color_volume.UnionWith(record_.content_color_volume());
 }
 
 sk_sp<RecordPaintFilter> RecordPaintFilter::CreateScaledPaintRecord(
@@ -950,20 +952,13 @@ MergePaintFilter::MergePaintFilter(base::span<const sk_sp<PaintFilter>> filters,
 
 MergePaintFilter::~MergePaintFilter() = default;
 
-gfx::ContentColorUsage MergePaintFilter::GetContentColorUsage() const {
-  gfx::ContentColorUsage result = gfx::ContentColorUsage::kSRGB;
-  if (!has_discardable_images()) {
-    return result;
-  }
+void MergePaintFilter::UnionColorVolumeInto(
+    gfx::ContentColorVolume& color_volume) const {
   for (const auto& input : inputs_) {
     if (input) {
-      result = std::max(result, input->GetContentColorUsage());
-      if (result == gfx::ContentColorUsage::kMaxValue) {
-        break;
-      }
+      input->UnionColorVolumeInto(color_volume);
     }
   }
-  return result;
 }
 
 size_t MergePaintFilter::SerializedSize() const {
@@ -1123,10 +1118,6 @@ TurbulencePaintFilter::TurbulencePaintFilter(TurbulenceType turbulence_type,
 
 TurbulencePaintFilter::~TurbulencePaintFilter() = default;
 
-gfx::ContentColorUsage TurbulencePaintFilter::GetContentColorUsage() const {
-  return gfx::ContentColorUsage::kSRGB;
-}
-
 size_t TurbulencePaintFilter::SerializedSize() const {
   return (BaseSerializedSize() +
           PaintOpWriter::SerializedSize(turbulence_type_) +
@@ -1159,10 +1150,7 @@ ShaderPaintFilter::ShaderPaintFilter(sk_sp<PaintShader> shader,
                                      PaintFlags::FilterQuality filter_quality,
                                      SkImageFilters::Dither dither,
                                      const CropRect* crop_rect)
-    : PaintFilter(
-          kType,
-          crop_rect,
-          shader->HasDiscardableImages(/*content_color_usage=*/nullptr)),
+    : PaintFilter(kType, crop_rect, shader->HasDiscardableImages()),
       shader_(std::move(shader)),
       alpha_(alpha),
       filter_quality_(filter_quality),
@@ -1184,12 +1172,11 @@ ShaderPaintFilter::ShaderPaintFilter(sk_sp<PaintShader> shader,
 
 ShaderPaintFilter::~ShaderPaintFilter() = default;
 
-gfx::ContentColorUsage ShaderPaintFilter::GetContentColorUsage() const {
-  gfx::ContentColorUsage result = gfx::ContentColorUsage::kSRGB;
-  if (has_discardable_images()) {
-    shader_->HasDiscardableImages(&result);
+void ShaderPaintFilter::UnionColorVolumeInto(
+    gfx::ContentColorVolume& color_volume) const {
+  if (shader_) {
+    shader_->UnionColorVolumeInto(color_volume);
   }
-  return result;
 }
 
 size_t ShaderPaintFilter::SerializedSize() const {

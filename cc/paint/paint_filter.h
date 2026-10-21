@@ -113,7 +113,8 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
                                 : ImageAnalysisState::kNoAnimatedImages;
   }
 
-  virtual gfx::ContentColorUsage GetContentColorUsage() const = 0;
+  virtual void UnionColorVolumeInto(
+      gfx::ContentColorVolume& color_volume) const {}
 
   virtual size_t SerializedSize() const = 0;
 
@@ -171,7 +172,7 @@ class CC_PAINT_EXPORT OneInputPaintFilter : public PaintFilter {
  public:
   const sk_sp<PaintFilter>& input() const { return input_; }
 
-  gfx::ContentColorUsage GetContentColorUsage() const final;
+  void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const final;
 
  protected:
   OneInputPaintFilter(Type type,
@@ -188,7 +189,7 @@ class CC_PAINT_EXPORT OneInputPaintFilter : public PaintFilter {
 // Base class of paint filter classes with two input filters.
 class CC_PAINT_EXPORT TwoInputPaintFilter : public PaintFilter {
  public:
-  gfx::ContentColorUsage GetContentColorUsage() const final;
+  void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const final;
 
  protected:
   TwoInputPaintFilter(Type type,
@@ -505,7 +506,8 @@ class CC_PAINT_EXPORT ImagePaintFilter final : public PaintFilter {
   const SkRect& dst_rect() const { return dst_rect_; }
   PaintFlags::FilterQuality filter_quality() const { return filter_quality_; }
 
-  gfx::ContentColorUsage GetContentColorUsage() const override;
+  void UnionColorVolumeInto(
+      gfx::ContentColorVolume& color_volume) const override;
 
   size_t SerializedSize() const override;
   bool EqualsForTesting(const ImagePaintFilter& other) const;
@@ -546,7 +548,8 @@ class CC_PAINT_EXPORT RecordPaintFilter final : public PaintFilter {
   gfx::SizeF raster_scale() const { return raster_scale_; }
   ScalingBehavior scaling_behavior() const { return scaling_behavior_; }
 
-  gfx::ContentColorUsage GetContentColorUsage() const override;
+  void UnionColorVolumeInto(
+      gfx::ContentColorVolume& color_volume) const override;
 
   size_t SerializedSize() const override;
   bool EqualsForTesting(const RecordPaintFilter& other) const;
@@ -581,7 +584,8 @@ class CC_PAINT_EXPORT MergePaintFilter final : public PaintFilter {
     return inputs_[i].get();
   }
 
-  gfx::ContentColorUsage GetContentColorUsage() const override;
+  void UnionColorVolumeInto(
+      gfx::ContentColorVolume& color_volume) const override;
 
   size_t SerializedSize() const override;
   bool EqualsForTesting(const MergePaintFilter& other) const;
@@ -696,8 +700,6 @@ class CC_PAINT_EXPORT TurbulencePaintFilter final : public PaintFilter {
   SkScalar seed() const { return seed_; }
   SkISize tile_size() const { return tile_size_; }
 
-  gfx::ContentColorUsage GetContentColorUsage() const override;
-
   size_t SerializedSize() const override;
   bool EqualsForTesting(const TurbulencePaintFilter& other) const;
 
@@ -739,7 +741,8 @@ class CC_PAINT_EXPORT ShaderPaintFilter final : public PaintFilter {
   PaintFlags::FilterQuality filter_quality() const { return filter_quality_; }
   SkImageFilters::Dither dither() const { return dither_; }
 
-  gfx::ContentColorUsage GetContentColorUsage() const override;
+  void UnionColorVolumeInto(
+      gfx::ContentColorVolume& color_volume) const override;
 
   size_t SerializedSize() const override;
   bool EqualsForTesting(const ShaderPaintFilter& other) const;

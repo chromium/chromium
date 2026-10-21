@@ -325,11 +325,8 @@ class CC_PAINT_EXPORT PaintFlags final : public CorePaintFlags {
 
   bool EqualsForTesting(const PaintFlags& other) const;
 
-  // If `content_color_usage` is not null, the function should update
-  // `*content_color_usage` to be
-  // max(*content_color_usage, max_content_color_usage_of_the_flags).
-  bool HasDiscardableImages(
-      gfx::ContentColorUsage* content_color_usage = nullptr) const;
+  bool HasDiscardableImages() const;
+  void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const;
 
  private:
   friend class PaintOpReader;

@@ -108,7 +108,8 @@ void PictureLayer::SetForceUpdateRecordingSource() {
 
 bool PictureLayer::RequiresSetNeedsDisplayOnHdrHeadroomChange() const {
   if (const DisplayItemList* display_list = GetDisplayItemList()) {
-    return display_list->content_color_usage() == gfx::ContentColorUsage::kHDR;
+    return display_list->content_color_volume().GetContentColorUsage() ==
+           gfx::ContentColorUsage::kHDR;
   }
   return false;
 }

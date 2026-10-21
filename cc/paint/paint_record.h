@@ -68,8 +68,8 @@ class CC_PAINT_EXPORT PaintRecord {
   bool has_discardable_images() const {
     return buffer_->has_discardable_images();
   }
-  gfx::ContentColorUsage content_color_usage() const {
-    return buffer_->content_color_usage();
+  const gfx::ContentColorVolume& content_color_volume() const {
+    return buffer_->content_color_volume();
   }
   const PaintOp& GetFirstOp() const { return buffer_->GetFirstOp(); }
 

@@ -236,8 +236,8 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     return has_effects_preventing_lcd_text_for_save_layer_alpha_;
   }
   bool has_discardable_images() const { return has_discardable_images_; }
-  gfx::ContentColorUsage content_color_usage() const {
-    return content_color_usage_;
+  const gfx::ContentColorVolume& content_color_volume() const {
+    return content_color_volume_;
   }
   bool NeedsAdditionalInvalidationForLCDText(
       const PaintOpBuffer& old_buffer) const;
@@ -303,9 +303,11 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     has_effects_preventing_lcd_text_for_save_layer_alpha_ |=
         op->HasEffectsPreventingLCDTextForSaveLayerAlpha();
 
-    has_discardable_images_ |= op->HasDiscardableImages(&content_color_usage_);
-    has_discardable_images_ |=
-        op->HasDiscardableImagesFromFlags(&content_color_usage_);
+    has_discardable_images_ |= op->HasDiscardableImages();
+    has_discardable_images_ |= op->HasDiscardableImagesFromFlags();
+
+    op->UnionColorVolumeInto(content_color_volume_);
+    op->UnionColorVolumeFromFlagsInto(content_color_volume_);
   }
 
   size_t GetOpOffsetForTracing(const PaintOp& op) const {
@@ -394,7 +396,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   bool has_effects_preventing_lcd_text_for_save_layer_alpha_ : 1 = false;
 
   bool has_discardable_images_ : 1 = false;
-  gfx::ContentColorUsage content_color_usage_ = gfx::ContentColorUsage::kSRGB;
+  gfx::ContentColorVolume content_color_volume_;
 };
 
 }  // namespace cc

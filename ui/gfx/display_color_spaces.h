@@ -5,6 +5,7 @@
 #ifndef UI_GFX_DISPLAY_COLOR_SPACES_H_
 #define UI_GFX_DISPLAY_COLOR_SPACES_H_
 
+#include <algorithm>
 #include <array>
 #include <optional>
 #include <string>
@@ -42,6 +43,28 @@ enum class ContentColorUsage : uint8_t {
   kWideColorGamut = 1,
   kHDR = 2,
   kMaxValue = kHDR,
+};
+
+struct COLOR_SPACE_EXPORT ContentColorVolume {
+  bool is_wide_color_gamut = false;
+  float hdr_headroom = 0.f;
+
+  ContentColorUsage GetContentColorUsage() const {
+    if (hdr_headroom > 0.f) {
+      return ContentColorUsage::kHDR;
+    }
+    if (is_wide_color_gamut) {
+      return ContentColorUsage::kWideColorGamut;
+    }
+    return ContentColorUsage::kSRGB;
+  }
+
+  void UnionWith(const ContentColorVolume& other) {
+    is_wide_color_gamut |= other.is_wide_color_gamut;
+    hdr_headroom = std::max(hdr_headroom, other.hdr_headroom);
+  }
+
+  bool operator==(const ContentColorVolume& other) const = default;
 };
 
 // This structure is used by a display::Display to specify the color space that

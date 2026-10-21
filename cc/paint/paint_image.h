@@ -347,6 +347,7 @@ class CC_PAINT_EXPORT PaintImage {
   }
   bool GetReinterpretAsSRGB() const { return reinterpret_as_srgb_; }
 
+  void UnionColorVolumeInto(gfx::ContentColorVolume& color_volume) const;
   gfx::ContentColorUsage GetContentColorUsage() const;
 
   // Returns whether this image will be decoded and rendered from YUV data

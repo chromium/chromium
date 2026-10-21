@@ -563,9 +563,11 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
               *new_display_item_list);
       needs_full_invalidation |=
           layer_tree_impl()->GetTargetColorParams(
-              current_display_item_list->content_color_usage()) !=
+              current_display_item_list->content_color_volume()
+                  .GetContentColorUsage()) !=
           layer_tree_impl()->GetTargetColorParams(
-              new_display_item_list->content_color_usage());
+              new_display_item_list->content_color_volume()
+                  .GetContentColorUsage());
       if (needs_full_invalidation) {
         new_invalidation.Union(gfx::Rect(raster_source->size()));
       }
