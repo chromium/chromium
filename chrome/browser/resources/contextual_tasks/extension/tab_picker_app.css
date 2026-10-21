@@ -27,6 +27,12 @@
   --tab-picker-favicon-more-items-color: #474747;
   --tab-picker-favicon-skeleton-color: #e1e3e1;
   --tab-picker-focus-outline-color: #0b57d0;
+  /* Matches the font of the Search page's other (+) menu rows: Arial, as
+   * Search doesn't enable its Google Sans webfont on this surface. CSS doesn't
+   * inherit into an iframe, and the page is cross-origin, so the frame can't
+   * pick up the page's font itself. */
+  --tab-picker-font-family: var(--cr-composebox-context-menu-font-family,
+      Arial, sans-serif);
   --tab-picker-hover-background-color:
       var(--color-context-menu-hover-background, rgba(0, 0, 0, 0.04));
   --tab-picker-menu-background-color: var(--color-composebox-background,
@@ -62,8 +68,7 @@
   color: var(--tab-picker-item-color);
   cursor: pointer;
   display: flex;
-  font-family: var(--cr-composebox-context-menu-font-family,
-      'Google Sans', Roboto, sans-serif);
+  font-family: var(--tab-picker-font-family);
   font-size: 14px;
   font-weight: 400;
   gap: 0;
@@ -160,8 +165,7 @@ composebox-favicon-group {
   color: var(--tab-picker-item-color);
   cursor: pointer;
   display: flex;
-  font-family: var(--cr-composebox-context-menu-font-family,
-      'Google Sans', Roboto, sans-serif);
+  font-family: var(--tab-picker-font-family);
   font-size: 13px;
   font-weight: 400;
   gap: 8px;
@@ -200,8 +204,7 @@ composebox-favicon-group {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  font-family: var(--cr-composebox-context-menu-font-family,
-      'Google Sans', Roboto, sans-serif);
+  font-family: var(--tab-picker-font-family);
   font-size: 12px;
   font-weight: 400;
   height: 20px;

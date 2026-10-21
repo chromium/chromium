@@ -182,6 +182,7 @@ suite('TabPickerTest', () => {
     assertEquals('Add tabs', label.textContent.trim());
 
     const triggerStyle = window.getComputedStyle(app.$.shareTabsTrigger);
+    assertEquals('Arial, sans-serif', triggerStyle.fontFamily);
     assertEquals('14px', triggerStyle.fontSize);
     assertEquals(
         '20px', triggerStyle.getPropertyValue('--iron-icon-height').trim());
@@ -711,6 +712,24 @@ suite('TabPickerTest', () => {
       darkApp?.remove();
       window.history.replaceState({}, '', originalUrl);
     }
+  });
+
+  test('Flyout items and recent suffix use Arial', async () => {
+    app.$.shareTabsTrigger.click();
+    await microtasksFinished();
+    assertTrue(app.$.tabMenu.open);
+
+    const [item0] =
+        app.$.tabMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item');
+    assert(item0);
+    const recentSuffix =
+        item0.querySelector<HTMLElement>('.recent-tabs-suffix');
+    assert(recentSuffix);
+
+    assertEquals(
+        'Arial, sans-serif', window.getComputedStyle(item0).fontFamily);
+    assertEquals(
+        'Arial, sans-serif', window.getComputedStyle(recentSuffix).fontFamily);
   });
 
   test(
