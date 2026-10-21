@@ -152,4 +152,34 @@ describe('ActionDispatcher', () => {
     await dispatchPromise;
     assert.isTrue(dispatchCompleted);
   });
+
+  it('computes multi-click clickCount from simulated tick durations excluding CDP IPC latency', async () => {
+    // Advance wall-clock `performance.now()` by 400ms per CDP command so two
+    // `mousePressed`/`mouseReleased` round-trips exceed the 500ms double-click threshold.
+    let fakeNow = 1000;
+    const nowStub = sinon
+      .stub(performance, 'now')
+      .callsFake(() => (fakeNow += 400));
+
+    try {
+      await dispatcher.dispatchActions([
+        [{id: 'mouse', action: {type: 'pointerDown', button: 0}}],
+        [{id: 'mouse', action: {type: 'pointerUp', button: 0}}],
+        [{id: 'mouse', action: {type: 'pointerDown', button: 0}}],
+        [{id: 'mouse', action: {type: 'pointerUp', button: 0}}],
+      ]);
+    } finally {
+      nowStub.restore();
+    }
+
+    const pressedClickCounts = sendCommand.args
+      .filter(
+        ([method, params]) =>
+          method === 'Input.dispatchMouseEvent' &&
+          (params as {type: string}).type === 'mousePressed',
+      )
+      .map(([, params]) => (params as {clickCount: number}).clickCount);
+
+    assert.deepEqual(pressedClickCounts, [1, 2]);
+  });
 });

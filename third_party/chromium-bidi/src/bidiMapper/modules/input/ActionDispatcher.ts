@@ -108,6 +108,13 @@ export class ActionDispatcher {
 
   #tickStart = 0;
   #tickDuration = 0;
+  // Tracks cumulative tick duration (ms) within this `performActions` sequence
+  // for `ClickContext` double-click threshold checks. Using wall-clock
+  // `performance.now()` would include CDP `Input.dispatchMouseEvent` IPC
+  // round-trip latency between ticks, exceeding the 500ms multi-click window
+  // on slow/debug builds. (`PointerSource.resetClickCount()` resets click state
+  // on each `performActions` call.) See https://crbug.com/575784672.
+  #simulatedTime = 0;
   #inputState: InputState;
   #contextId: string;
   // Holds in-flight CDP `Input.dispatchMouseEvent` (`mouseMoved`) promises for
@@ -198,6 +205,9 @@ export class ActionDispatcher {
       promises.push(this.#flushPendingMovePromises());
     }
     await Promise.all(promises);
+    // Advance simulated time by the tick's specified duration, ignoring actual
+    // CDP command execution time.
+    this.#simulatedTime += this.#tickDuration;
   }
 
   async #dispatchAction({id, action}: Readonly<ActionOption>) {
@@ -303,7 +313,9 @@ export class ActionDispatcher {
             buttons: source.buttons,
             clickCount: source.setClickCount(
               button,
-              new ClickContext(x, y, performance.now()),
+              // Use simulated tick time rather than wall-clock `performance.now()`
+              // so CDP IPC latency between ticks does not reset multi-click counts.
+              new ClickContext(x, y, this.#simulatedTime),
             ),
             pointerType,
             tangentialPressure,
