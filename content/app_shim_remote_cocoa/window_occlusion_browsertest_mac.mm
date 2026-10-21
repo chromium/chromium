@@ -1071,8 +1071,9 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Checks that web contentses are marked kHidden on window miniaturize.
+// TODO(crbug.com/575566703): Flaky on Mac.
 IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
-                       OcclusionDetectionOnWindowMiniaturize) {
+                       DISABLED_OcclusionDetectionOnWindowMiniaturize) {
   InitWindowA();
 
   EXPECT_EQ(WindowAWebContentsVisibility(),
