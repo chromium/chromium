@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -80,7 +80,7 @@ class TrustedVaultDegradedRecoverabilityHandler {
 
   // A "timer" takes care of invoking Refresh() in the future, once after a
   // `current_refresh_period_` delay has elapsed.
-  base::OneShotTimer next_refresh_timer_;
+  base::WallClockTimer next_refresh_timer_;
   base::TimeDelta current_refresh_period_;
   trusted_vault_pb::DegradedRecoverabilityValue degraded_recoverability_value_;
   // The last time Refresh has executed, it's initially null until the first
