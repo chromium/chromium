@@ -62,6 +62,10 @@
 #include "components/policy/core/common/features.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/test/base/scoped_channel_override.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
@@ -207,6 +211,7 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
 #if !BUILDFLAG(IS_ANDROID)
           features::kInitialWebUI,
           features::kWebUIReloadButton,
+          features::kTopChromeWebUISharedRenderer,
           features::kLazyKeyedServiceInstantiation,
 #endif  // !BUILDFLAG(IS_ANDROID)
           features::kTrustSafetySentimentSurvey,
@@ -379,6 +384,29 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
+                       TopChromeWebUIProfile_NeededServices) {
+  Profile* profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_TRUE(profile);
+  TestKeyedProfileServicesActives(profile,
+                                  /*expected_active_services_names=*/{});
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
+                       TopChromeWebUIProfile_ServicesThatCanBeCreated) {
+  Profile* profile = webui::GetTopChromeWebUIProfile();
+  ASSERT_TRUE(profile);
+  ASSERT_TRUE(profile->IsOffTheRecord());
+
+  // Only factories that explicitly allow the Top Chrome WebUI Profile can
+  // create a service for it, and none does.
+  TestKeyedProfileServicesActives(profile,
+                                  /*expected_active_services_names=*/{},
+                                  /*force_create_services=*/true);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 class ProfileKeyedServiceGuestBrowserTest

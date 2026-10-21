@@ -45,7 +45,11 @@ bool IsUserBrowserContext(const content::BrowserContext* browser_context) {
 
 bool IsUserBrowserContextBaseName(const base::FilePath& base_name) {
   const auto& value = base_name.value();
-  return value != kSigninBrowserContextBaseName &&
+  // A user's BrowserContext always has its own directory. An empty
+  // |base_name| is for a BrowserContext without a path, i.e.
+  // TopChromeWebUIProfile, which hosts the Top Chrome WebUIs of the windows
+  // of all users.
+  return !value.empty() && value != kSigninBrowserContextBaseName &&
          value != kLockScreenBrowserContextBaseName &&
          value != kShimlessRmaAppBrowserContextBaseName;
 }

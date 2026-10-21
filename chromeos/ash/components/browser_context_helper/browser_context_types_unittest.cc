@@ -12,6 +12,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+namespace {
+
+// A BrowserContext without a path.
+class NoPathBrowserContext : public content::TestBrowserContext {
+ public:
+  base::FilePath GetPath() const override { return base::FilePath(); }
+};
+
+}  // namespace
 
 TEST(BrowserContextTypeTest, Test) {
   content::BrowserTaskEnvironment env;
@@ -26,6 +35,7 @@ TEST(BrowserContextTypeTest, Test) {
           base::FilePath(kShimlessRmaAppBrowserContextBaseName));
   auto user_browser_context = std::make_unique<content::TestBrowserContext>(
       base::FilePath("test-user"));
+  auto no_path_browser_context = std::make_unique<NoPathBrowserContext>();
 
   EXPECT_FALSE(IsSigninBrowserContext(nullptr));
   EXPECT_TRUE(IsSigninBrowserContext(signin_browser_context.get()));
@@ -53,6 +63,7 @@ TEST(BrowserContextTypeTest, Test) {
   EXPECT_FALSE(IsUserBrowserContext(lock_screen_browser_context.get()));
   EXPECT_FALSE(IsUserBrowserContext(shimless_rma_app_browser_context.get()));
   EXPECT_TRUE(IsUserBrowserContext(user_browser_context.get()));
+  EXPECT_FALSE(IsUserBrowserContext(no_path_browser_context.get()));
 
   EXPECT_FALSE(IsUserBrowserContextBaseName(
       signin_browser_context->GetPath().BaseName()));
@@ -62,6 +73,8 @@ TEST(BrowserContextTypeTest, Test) {
       shimless_rma_app_browser_context->GetPath().BaseName()));
   EXPECT_TRUE(
       IsUserBrowserContextBaseName(user_browser_context->GetPath().BaseName()));
+  EXPECT_FALSE(IsUserBrowserContextBaseName(
+      no_path_browser_context->GetPath().BaseName()));
 }
 
 }  // namespace ash

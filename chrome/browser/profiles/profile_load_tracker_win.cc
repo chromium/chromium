@@ -45,6 +45,8 @@ std::string_view GetHistogramSuffix(
       return "OtherOffTheRecordProfile";
     case profile_metrics::BrowserProfileType::kEnterpriseIsolated:
       return "EnterpriseIsolated";
+    case profile_metrics::BrowserProfileType::kTopChromeWebUIProfile:
+      return "TopChromeWebUIProfile";
   }
   // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/histograms.xml:BrowserProfileType)
 }

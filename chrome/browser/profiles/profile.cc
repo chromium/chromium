@@ -454,6 +454,11 @@ bool Profile::IsSystemProfile() const {
 #endif
 }
 
+bool Profile::IsTopChromeWebUIProfile() const {
+  return profile_metrics::GetBrowserProfileType(this) ==
+         profile_metrics::BrowserProfileType::kTopChromeWebUIProfile;
+}
+
 bool Profile::IsPrimaryOTRProfile() const {
   return otr_profile_id_.has_value() &&
          otr_profile_id_.value() == OTRProfileID::PrimaryID();

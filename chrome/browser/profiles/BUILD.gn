@@ -178,7 +178,12 @@ source_set("misc") {
       "//content/public/browser",
     ]
   } else {
+    sources += [
+      "top_chrome_webui_profile_impl.cc",
+      "top_chrome_webui_profile_impl.h",
+    ]
     deps += [
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/ui/dialogs:browser_dialogs",
       "//chrome/browser/ui/signin",
@@ -1296,6 +1301,7 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/find_bar",
       "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/zoom",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

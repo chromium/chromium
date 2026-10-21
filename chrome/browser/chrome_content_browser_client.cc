@@ -2064,6 +2064,13 @@ bool ChromeContentBrowserClient::ShouldUseSpareRenderProcessHost(
     return false;
   }
 
+  // Top Chrome WebUIs run in a dedicated shared WebUI renderer process and
+  // should not consume a spare renderer intended for general web browsing.
+  if (profile->IsTopChromeWebUIProfile()) {
+    refused_reason = SpareProcessRefusedByEmbedderReason::TopFrameChromeWebUI;
+    return false;
+  }
+
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   // Instant renderers passed by command line should not use a spare process,
   // because they require passing switches::kInstantProcess to the renderer
@@ -3180,24 +3187,32 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     MaybeCopyDisableWebRtcEncryptionSwitch(command_line, browser_command_line,
                                            chrome::GetChannel());
     if (process) {
-      Profile* profile =
-          Profile::FromBrowserContext(process->GetBrowserContext());
-      AppendExtraCommandLineSwitchesFromPrefs(command_line,
-                                              profile->GetPrefs());
+      {
+        Profile* profile =
+            Profile::FromBrowserContext(process->GetBrowserContext());
+        // Renderers of the Top Chrome WebUI profile host WebUIs for windows of
+        // all profiles, so per-profile state cannot be turned into process-wide
+        // switches. Per-profile settings reach these WebUIs via WebPreferences
+        // instead.
+        if (!profile->IsTopChromeWebUIProfile()) {
+          AppendExtraCommandLineSwitchesFromPrefs(command_line,
+                                                  profile->GetPrefs());
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+          InstantService* instant_service =
+              InstantServiceFactory::GetForProfile(profile);
+          if (instant_service &&
+              instant_service->IsInstantProcess(process->GetDeprecatedID()) &&
+              !base::FeatureList::IsEnabled(
+                  features::kInstantUsesSpareRenderer)) {
+            command_line->AppendSwitch(switches::kInstantProcess);
+          }
+#endif
+        }
+      }
 
       if (process->GetUserData(search::kIsNTPProcessKey)) {
         command_line->AppendSwitch(switches::kNtpProcess);
       }
-
-#if BUILDFLAG(ENABLE_WEBUI_NTP)
-      InstantService* instant_service =
-          InstantServiceFactory::GetForProfile(profile);
-      if (instant_service &&
-          instant_service->IsInstantProcess(process->GetDeprecatedID()) &&
-          !base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
-        command_line->AppendSwitch(switches::kInstantProcess);
-      }
-#endif
     }
 
     MaybeAppendBlinkSettingsSwitchForFieldTrial(browser_command_line,

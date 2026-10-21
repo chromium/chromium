@@ -24,7 +24,8 @@ enum class BrowserProfileType {
   kOtherOffTheRecordProfile = 4,
   // Deprecated(10/23): kDeprecatedEphemeralGuest = 5,
   kEnterpriseIsolated = 6,
-  kMaxValue = kEnterpriseIsolated,
+  kTopChromeWebUIProfile = 7,
+  kMaxValue = kTopChromeWebUIProfile,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:BrowserProfileType)
 

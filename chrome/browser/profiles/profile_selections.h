@@ -12,7 +12,7 @@ class Profile;
 
 // A helper function that checks whether Keyed Services should be created for
 // the given `profile` based on the default profile type value. Currently only
-// returns true for a valid System Profile.
+// returns true for a valid System Profile and Top Chrome WebUI Profile.
 // This method is intended to be used only to bypass multiple factory/service
 // checks.
 bool AreKeyedServicesDisabledForProfileByDefault(const Profile* profile);

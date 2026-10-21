@@ -32,6 +32,7 @@ source_set("top_chrome") {
       "preload_candidate_selector.h",
       "preload_context.h",
       "profile_preload_candidate_selector.h",
+      "top_chrome_webui_profile.h",
       "webui_contents_preload_manager.h",
       "webui_contents_preload_state.h",
       "webui_contents_warmup_level.h",
@@ -75,6 +76,7 @@ source_set("impl") {
       "preload_candidate_selector.cc",
       "preload_context.cc",
       "profile_preload_candidate_selector.cc",
+      "top_chrome_webui_profile.cc",
       "webui_contents_preload_manager.cc",
       "webui_contents_preload_state.cc",
       "webui_contents_warmup_level.cc",
@@ -83,6 +85,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/page_load_metrics",
+      "//chrome/browser/profiles:misc",
       "//chrome/browser/task_manager",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:ui_features",

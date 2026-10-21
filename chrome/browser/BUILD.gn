@@ -1510,6 +1510,7 @@ source_set("core") {
       "//chrome/browser/ui/webui/password_manager:password_manager_ui",
       "//chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble:mojo_bindings",
       "//chrome/browser/ui/webui/skills:mojo_bindings",
+      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/user_education_internals",
       "//chrome/browser/ui/webui/webnn_internals",
       "//chrome/browser/ui/webui/webnn_internals:mojo_bindings",

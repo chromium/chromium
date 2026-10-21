@@ -31,6 +31,7 @@ chromium-metrics-reviews@google.com.
   <variant name="OtherOffTheRecordProfile"/>
   <variant name="Regular"/>
   <variant name="System"/>
+  <variant name="TopChromeWebUIProfile"/>
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/profiles/profile_load_tracker_win.cc:BrowserProfileType) -->

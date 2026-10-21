@@ -1375,6 +1375,8 @@ BASE_DECLARE_FEATURE(kWebium);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kWebUIReloadButton);
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kTopChromeWebUISharedRenderer);
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kWebUIReloadButtonMaxCrashRecoveryTimes;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>

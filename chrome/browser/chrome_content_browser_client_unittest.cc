@@ -156,6 +156,7 @@
 #include "chrome/browser/child_module/features.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -2245,6 +2246,20 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
   EXPECT_FALSE(browser_client.ShouldUseSpareRenderProcessHost(
       nullptr, GURL("https://www.example.com"), refused_reason));
   EXPECT_EQ(SpareProcessRefusedByEmbedderReason::NoProfile, refused_reason);
+
+#if !BUILDFLAG(IS_ANDROID)
+  {
+    webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+    Profile* top_chrome_webui_profile = webui::GetTopChromeWebUIProfile();
+    ASSERT_TRUE(top_chrome_webui_profile);
+    ASSERT_TRUE(top_chrome_webui_profile->IsTopChromeWebUIProfile());
+    EXPECT_FALSE(browser_client.ShouldUseSpareRenderProcessHost(
+        top_chrome_webui_profile, GURL("https://www.example.com"),
+        refused_reason));
+    EXPECT_EQ(SpareProcessRefusedByEmbedderReason::TopFrameChromeWebUI,
+              refused_reason);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
   {

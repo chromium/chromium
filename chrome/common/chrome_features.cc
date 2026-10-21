@@ -1999,6 +1999,7 @@ BASE_FEATURE(kWebium, base::FEATURE_DISABLED_BY_DEFAULT);
 // chrome://webui-toolbar.top-chrome will be loaded as the content.
 // crbug.com/444358999
 BASE_FEATURE(kWebUIReloadButton, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTopChromeWebUISharedRenderer, base::FEATURE_DISABLED_BY_DEFAULT);
 // Switches location bar over to a WebUI implementation.
 // See crbug.com/470042732
 BASE_FEATURE(kWebUILocationBar, base::FEATURE_DISABLED_BY_DEFAULT);

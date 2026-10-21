@@ -69,6 +69,8 @@ bool IsUserBrowserContext(const content::BrowserContext* browser_context);
 
 // Returns true if the given |base_name| that is for BrowserContext directory's
 // base name is for a user's (i.e. none of these special BrowserContexts').
+// An empty |base_name|, i.e. a BrowserContext without a path such as
+// TopChromeWebUIProfile, is not a user's.
 COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
 bool IsUserBrowserContextBaseName(const base::FilePath& base_name);
 

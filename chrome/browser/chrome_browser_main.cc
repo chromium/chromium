@@ -167,6 +167,7 @@
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/uma_browsing_activity_observer.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/usb/web_usb_detector.h"
 #include "components/soda/soda_installer.h"
@@ -1708,6 +1709,10 @@ void ChromeBrowserMainParts::PreBrowserStart() {
   // Start the tab manager here so that we give the most amount of time for the
   // other services to start up before we start adjusting the oom priority.
   g_browser_process->GetTabManager()->Start();
+
+  if (base::FeatureList::IsEnabled(features::kTopChromeWebUISharedRenderer)) {
+    webui::CreateTopChromeWebUIProfile();
+  }
 #endif
 
   // The RulesetService will make the filtering rules available to renderers
@@ -2271,6 +2276,9 @@ void ChromeBrowserMainParts::PostMainMessageLoopRun() {
 
   restart_mode_ = browser_shutdown::ShutdownPreThreadsStop();
   browser_process_->StartTearDown();
+
+  // After the user profiles, which may own WebContents in this profile.
+  webui::DestroyTopChromeWebUIProfile();
 
   publisher_host_factory_resetter_.reset();
 #endif  // BUILDFLAG(IS_ANDROID)
