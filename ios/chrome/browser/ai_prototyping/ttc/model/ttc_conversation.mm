@@ -21,6 +21,7 @@
 #import "base/strings/strcat.h"
 #import "base/strings/string_util.h"
 #import "base/strings/stringprintf.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
@@ -230,6 +231,7 @@ void TtcConversation::SendContextUpdate(
     const optimization_guide::proto::AnnotatedPageContent& apc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (backend_) {
+    LogContextUpdateSent(url, title, apc);
     backend_->SendContextUpdate(url, title, apc);
   }
 }
@@ -574,6 +576,48 @@ void TtcConversation::LogToolDefinitionsSent(
                     .Add("count", tool_definitions.size())
                     .Add("tool_names", tool_names_joined)
                     .Build());
+}
+
+void TtcConversation::LogContextUpdateSent(
+    const GURL& url,
+    const std::string& title,
+    const optimization_guide::proto::AnnotatedPageContent& apc) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!journal_) {
+    return;
+  }
+
+  // Uses `title` for concise glanceability in the simplified journal UI,
+  // falling back to `url` host or spec when untitled.
+  const std::string_view label = [&]() -> std::string_view {
+    if (!title.empty()) {
+      return title;
+    }
+    if (url.has_host()) {
+      return url.host();
+    }
+    if (!url.is_empty()) {
+      return url.possibly_invalid_spec();
+    }
+    return "none";
+  }();
+
+  TTCJournalDetailsBuilder details;
+  details.SetSummary(base::StrCat({"Sent APC: ", label}));
+  if (!url.is_empty()) {
+    details.Add("url", url.possibly_invalid_spec());
+  }
+  if (!title.empty()) {
+    details.Add("title", title);
+  }
+  details.Add("size_bytes", apc.ByteSizeLong())
+      .Add("has_tree", apc.has_root_node());
+  if (apc.has_tab_id()) {
+    details.Add("tab_id", apc.tab_id());
+  }
+
+  journal_->Log(TTCJournalComponent::kConversation, "TtcContextUpdateSent",
+                std::move(details).Build());
 }
 
 void TtcConversation::ResetTurnJournalState() {

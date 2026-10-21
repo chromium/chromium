@@ -169,6 +169,13 @@ class TtcConversation : public ttc::TtcBackend::Observer {
   // `tool_definitions` sent to the backend.
   void LogToolDefinitionsSent(
       const std::vector<ttc::ToolDefinition>& tool_definitions);
+  // Logs a `TtcContextUpdateSent` journal entry recording the page context
+  // update (`url`, `title`, and `AnnotatedPageContent` payload metadata) sent
+  // to the backend without serializing the full DOM tree.
+  void LogContextUpdateSent(
+      const GURL& url,
+      const std::string& title,
+      const optimization_guide::proto::AnnotatedPageContent& apc);
   void ResetTurnJournalState();
 
   SEQUENCE_CHECKER(sequence_checker_);
