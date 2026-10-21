@@ -10,9 +10,10 @@
 
 // Singleton that owns ChildAccountService objects and associates
 // them with Profiles.
-class ChildAccountServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                       ChildAccountServiceFactory,
-                                       supervised_user::ChildAccountService> {
+class ChildAccountServiceFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<
+          ChildAccountServiceFactory,
+          supervised_user::ChildAccountService> {
  public:
   explicit ChildAccountServiceFactory(PassKey key);
   static TestingFactory GetDefaultFactory();
@@ -20,7 +21,7 @@ class ChildAccountServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_CHILD_ACCOUNT_SERVICE_FACTORY_H_

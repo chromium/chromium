@@ -12,7 +12,7 @@ namespace origin_gating {
 
 // Singleton that owns all OriginGatingServices and associates them with
 // ProfileIOS.
-class OriginGatingServiceFactory
+class OriginGatingServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<OriginGatingServiceFactory,
                                                 OriginGatingService> {
  public:
@@ -21,7 +21,7 @@ class OriginGatingServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace origin_gating

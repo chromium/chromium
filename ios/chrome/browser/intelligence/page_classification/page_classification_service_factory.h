@@ -12,7 +12,7 @@
 
 // Singleton that owns all PageClassificationService instances and associates
 // them with Profiles.
-class PageClassificationServiceFactory
+class PageClassificationServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           PageClassificationServiceFactory,
           PageClassificationService> {
@@ -24,7 +24,7 @@ class PageClassificationServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_CLASSIFICATION_PAGE_CLASSIFICATION_SERVICE_FACTORY_H_

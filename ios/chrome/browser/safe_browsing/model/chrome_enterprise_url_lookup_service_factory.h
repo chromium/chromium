@@ -12,7 +12,7 @@ namespace safe_browsing {
 
 // Singleton that owns ChromeEnterpriseRealTimeUrlLookupService objects, one for
 // each active profile. It returns nullptr for Incognito profiles.
-class ChromeEnterpriseRealTimeUrlLookupServiceFactory
+class ChromeEnterpriseRealTimeUrlLookupServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           ChromeEnterpriseRealTimeUrlLookupServiceFactory,
           ChromeEnterpriseRealTimeUrlLookupService> {
@@ -22,7 +22,7 @@ class ChromeEnterpriseRealTimeUrlLookupServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace safe_browsing

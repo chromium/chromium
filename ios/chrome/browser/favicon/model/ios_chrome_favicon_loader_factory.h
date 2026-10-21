@@ -10,7 +10,7 @@
 
 // Singleton that owns all FaviconLoaders and associates them with
 // ProfileIOS.
-class IOSChromeFaviconLoaderFactory
+class IOSChromeFaviconLoaderFactory final
     : public TypedProfileKeyedServiceFactoryIOS<IOSChromeFaviconLoaderFactory,
                                                 FaviconLoader> {
  public:
@@ -22,7 +22,7 @@ class IOSChromeFaviconLoaderFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_FAVICON_LOADER_FACTORY_H_

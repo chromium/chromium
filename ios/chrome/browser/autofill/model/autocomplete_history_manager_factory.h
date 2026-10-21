@@ -14,7 +14,7 @@ namespace autofill {
 
 // Singleton that owns all AutocompleteHistoryManagers and associates them with
 // profiles.
-class AutocompleteHistoryManagerFactory
+class AutocompleteHistoryManagerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           AutocompleteHistoryManagerFactory,
           AutocompleteHistoryManager> {
@@ -24,7 +24,7 @@ class AutocompleteHistoryManagerFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace autofill

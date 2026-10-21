@@ -10,7 +10,7 @@
 
 // Singleton that owns all AccountSettingServices and associates them with
 // ProfileIOS.
-class IOSAccountSettingServiceFactory
+class IOSAccountSettingServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSAccountSettingServiceFactory,
           account_settings::AccountSettingService> {
@@ -20,7 +20,7 @@ class IOSAccountSettingServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_ACCOUNT_SETTINGS_MODEL_IOS_ACCOUNT_SETTING_SERVICE_FACTORY_H_

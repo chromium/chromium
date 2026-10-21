@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Factory creating ContextualTasksService and associating them to ProfileIOS.
-class IOSContextualTasksServiceFactory
+class IOSContextualTasksServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSContextualTasksServiceFactory,
           contextual_tasks::ContextualTasksService> {
@@ -19,7 +19,7 @@ class IOSContextualTasksServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_COBROWSE_MODEL_IOS_CONTEXTUAL_TASKS_SERVICE_FACTORY_H_

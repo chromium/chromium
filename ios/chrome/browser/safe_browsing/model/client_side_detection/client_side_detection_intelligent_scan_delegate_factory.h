@@ -12,7 +12,7 @@
 
 // Singleton that owns `IntelligentScanDelegate` objects, one for each active
 // Profile.
-class ClientSideDetectionIntelligentScanDelegateFactory
+class ClientSideDetectionIntelligentScanDelegateFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           ClientSideDetectionIntelligentScanDelegateFactory,
           safe_browsing::IntelligentScanDelegate> {
@@ -22,7 +22,7 @@ class ClientSideDetectionIntelligentScanDelegateFactory
  private:
   // `ProfileKeyedServiceFactoryIOS` implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_CLIENT_SIDE_DETECTION_CLIENT_SIDE_DETECTION_INTELLIGENT_SCAN_DELEGATE_FACTORY_H_

@@ -12,7 +12,7 @@ namespace autofill {
 
 // A factory that associates LogRouter instances with profiles. This returns
 // nullptr for off-the-record profiles.
-class AutofillLogRouterFactory
+class AutofillLogRouterFactory final
     : public TypedProfileKeyedServiceFactoryIOS<AutofillLogRouterFactory,
                                                 LogRouter> {
  public:
@@ -21,7 +21,7 @@ class AutofillLogRouterFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace autofill

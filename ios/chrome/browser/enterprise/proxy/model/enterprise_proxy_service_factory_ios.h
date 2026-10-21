@@ -10,7 +10,7 @@
 
 // Singleton that owns all `EnterpriseProxyService` instances and associates
 // them with `ProfileIOS`.
-class EnterpriseProxyServiceFactoryIOS
+class EnterpriseProxyServiceFactoryIOS final
     : public TypedProfileKeyedServiceFactoryIOS<
           EnterpriseProxyServiceFactoryIOS,
           enterprise_net::EnterpriseProxyService> {
@@ -24,7 +24,7 @@ class EnterpriseProxyServiceFactoryIOS
  private:
   // `ProfileKeyedServiceFactoryIOS` implementation:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_PROXY_MODEL_ENTERPRISE_PROXY_SERVICE_FACTORY_IOS_H_

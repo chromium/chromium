@@ -10,7 +10,7 @@
 
 namespace enterprise {
 
-class ProfileIdServiceFactoryIOS
+class ProfileIdServiceFactoryIOS final
     : public TypedProfileKeyedServiceFactoryIOS<ProfileIdServiceFactoryIOS,
                                                 ProfileIdService> {
  public:
@@ -23,7 +23,7 @@ class ProfileIdServiceFactoryIOS
  private:
   // ProfileKeyedServiceFactoryIOS overrides.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace enterprise

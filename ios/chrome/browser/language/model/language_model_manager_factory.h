@@ -12,16 +12,17 @@
 
 // Manages the language model for each profile. The particular language model
 // provided depends on feature flags.
-class LanguageModelManagerFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                        LanguageModelManagerFactory,
-                                        language::LanguageModelManager> {
+class LanguageModelManagerFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<
+          LanguageModelManagerFactory,
+          language::LanguageModelManager> {
  public:
   explicit LanguageModelManagerFactory(PassKey key);
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_LANGUAGE_MODEL_LANGUAGE_MODEL_MANAGER_FACTORY_H_

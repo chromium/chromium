@@ -12,7 +12,7 @@ namespace ios {
 
 // Singleton that owns all SearchEngineChoiceTriggeringService and associates
 // them with ChromeBrowserState.
-class SearchEngineChoiceTriggeringServiceFactory
+class SearchEngineChoiceTriggeringServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           SearchEngineChoiceTriggeringServiceFactory,
           SearchEngineChoiceTriggeringService> {
@@ -22,7 +22,7 @@ class SearchEngineChoiceTriggeringServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

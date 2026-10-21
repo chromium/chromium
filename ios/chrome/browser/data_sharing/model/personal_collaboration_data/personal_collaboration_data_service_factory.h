@@ -11,7 +11,7 @@
 namespace data_sharing::personal_collaboration_data {
 
 // Factory for PersonalCollaborationDataService.
-class PersonalCollaborationDataServiceFactory
+class PersonalCollaborationDataServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           PersonalCollaborationDataServiceFactory,
           PersonalCollaborationDataService> {
@@ -21,7 +21,7 @@ class PersonalCollaborationDataServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace data_sharing::personal_collaboration_data

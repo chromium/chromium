@@ -10,7 +10,7 @@
 
 // Singleton that owns all AppStoreBundleService and associates them with
 // a ProfileIOS.
-class AppStoreBundleServiceFactory
+class AppStoreBundleServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<AppStoreBundleServiceFactory,
                                                 AppStoreBundleService> {
  public:
@@ -19,7 +19,7 @@ class AppStoreBundleServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_APP_STORE_BUNDLE_MODEL_APP_STORE_BUNDLE_SERVICE_FACTORY_H_

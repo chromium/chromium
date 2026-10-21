@@ -8,7 +8,7 @@
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
-class UnifiedConsentServiceFactory
+class UnifiedConsentServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           UnifiedConsentServiceFactory,
           unified_consent::UnifiedConsentService> {
@@ -18,7 +18,7 @@ class UnifiedConsentServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_UNIFIED_CONSENT_MODEL_UNIFIED_CONSENT_SERVICE_FACTORY_H_

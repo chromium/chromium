@@ -10,7 +10,7 @@
 
 // A factory that owns all BookmarkModelMetricsService and associate
 // the to ProfileIOS instances.
-class BookmarkModelMetricsServiceFactory
+class BookmarkModelMetricsServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           BookmarkModelMetricsServiceFactory,
           BookmarkModelMetricsService> {
@@ -21,7 +21,7 @@ class BookmarkModelMetricsServiceFactory
   // BrowserContextKeyedServiceFactory:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_BOOKMARK_MODEL_METRICS_SERVICE_FACTORY_H_

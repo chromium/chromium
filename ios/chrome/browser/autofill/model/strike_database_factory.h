@@ -14,16 +14,16 @@ namespace autofill {
 
 // Singleton that owns all StrikeDatabases and associates them with
 // ProfileIOS.
-class StrikeDatabaseFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                  StrikeDatabaseFactory,
-                                  strike_database::StrikeDatabase> {
+class StrikeDatabaseFactory final : public TypedProfileKeyedServiceFactoryIOS<
+                                        StrikeDatabaseFactory,
+                                        strike_database::StrikeDatabase> {
  public:
   explicit StrikeDatabaseFactory(PassKey key);
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace autofill

@@ -14,7 +14,7 @@
 // instance per `ProfileIOS`. The `CrossDevicePrefTracker` is responsible for
 // observing and sharing select non-syncing preference values across a user's
 // devices.
-class CrossDevicePrefTrackerFactory
+class CrossDevicePrefTrackerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           CrossDevicePrefTrackerFactory,
           sync_preferences::CrossDevicePrefTracker> {
@@ -24,7 +24,7 @@ class CrossDevicePrefTrackerFactory
  private:
   // `ProfileKeyedServiceFactoryIOS` implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_PREFS_CROSS_DEVICE_PREF_TRACKER_CROSS_DEVICE_PREF_TRACKER_FACTORY_H_

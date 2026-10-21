@@ -13,7 +13,7 @@
 namespace ios {
 // Singleton that owns all PlaceholderServices and associates them with
 // Profile.
-class PlaceholderServiceFactory
+class PlaceholderServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<PlaceholderServiceFactory,
                                                 PlaceholderService> {
  public:
@@ -26,7 +26,7 @@ class PlaceholderServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

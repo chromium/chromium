@@ -10,7 +10,7 @@
 
 // Singleton that owns all LevelUpServices and associates them with
 // profiles.
-class LevelUpServiceFactory
+class LevelUpServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<LevelUpServiceFactory,
                                                 LevelUpService> {
  public:
@@ -19,7 +19,7 @@ class LevelUpServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_LEVEL_UP_MODEL_LEVEL_UP_SERVICE_FACTORY_H_

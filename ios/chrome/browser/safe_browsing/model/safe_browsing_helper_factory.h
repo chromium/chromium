@@ -12,7 +12,7 @@
 
 // Singleton that owns all SafeBrowsingHelpers and associates them with
 // a profile.
-class SafeBrowsingHelperFactory
+class SafeBrowsingHelperFactory final
     : public TypedProfileKeyedServiceFactoryIOS<SafeBrowsingHelperFactory,
                                                 SafeBrowsingHelper> {
  public:
@@ -21,7 +21,7 @@ class SafeBrowsingHelperFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_SAFE_BROWSING_HELPER_FACTORY_H_

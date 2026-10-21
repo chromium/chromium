@@ -10,7 +10,7 @@
 
 // Singleton that owns all PasswordRequirementsService and associates them with
 // ProfileIOS.
-class IOSPasswordRequirementsServiceFactory
+class IOSPasswordRequirementsServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSPasswordRequirementsServiceFactory,
           password_manager::PasswordRequirementsService> {
@@ -20,7 +20,7 @@ class IOSPasswordRequirementsServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_PASSWORD_REQUIREMENTS_SERVICE_FACTORY_H_

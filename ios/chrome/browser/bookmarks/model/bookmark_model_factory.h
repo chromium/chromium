@@ -10,7 +10,7 @@
 
 namespace ios {
 
-class BookmarkModelFactory
+class BookmarkModelFactory final
     : public TypedProfileKeyedServiceFactoryIOS<BookmarkModelFactory,
                                                 bookmarks::BookmarkModel> {
  public:
@@ -21,10 +21,9 @@ class BookmarkModelFactory
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

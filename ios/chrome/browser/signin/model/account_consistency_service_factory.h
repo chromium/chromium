@@ -13,7 +13,7 @@
 namespace ios {
 // Singleton that creates the AccountConsistencyService(s) and associates those
 // services  with profiles.
-class AccountConsistencyServiceFactory
+class AccountConsistencyServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           AccountConsistencyServiceFactory,
           AccountConsistencyService> {
@@ -23,7 +23,7 @@ class AccountConsistencyServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

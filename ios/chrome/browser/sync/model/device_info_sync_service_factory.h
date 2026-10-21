@@ -17,7 +17,7 @@ class DeviceInfoTracker;
 
 // Singleton that owns all DeviceInfoSyncService and associates them with
 // ProfileIOS.
-class DeviceInfoSyncServiceFactory
+class DeviceInfoSyncServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<DeviceInfoSyncServiceFactory,
                                                 syncer::DeviceInfoSyncService> {
  public:
@@ -30,7 +30,7 @@ class DeviceInfoSyncServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_DEVICE_INFO_SYNC_SERVICE_FACTORY_H_

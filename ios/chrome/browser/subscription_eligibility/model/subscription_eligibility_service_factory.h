@@ -10,7 +10,7 @@
 
 // Singleton that owns all SubscriptionEligibilityServices and associates them
 // with ProfileIOS.
-class SubscriptionEligibilityServiceFactory
+class SubscriptionEligibilityServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           SubscriptionEligibilityServiceFactory,
           subscription_eligibility::SubscriptionEligibilityService> {
@@ -20,7 +20,7 @@ class SubscriptionEligibilityServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SUBSCRIPTION_ELIGIBILITY_MODEL_SUBSCRIPTION_ELIGIBILITY_SERVICE_FACTORY_H_

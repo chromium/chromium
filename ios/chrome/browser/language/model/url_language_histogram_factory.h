@@ -14,18 +14,18 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-class UrlLanguageHistogramFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                        UrlLanguageHistogramFactory,
-                                        language::UrlLanguageHistogram> {
+class UrlLanguageHistogramFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<
+          UrlLanguageHistogramFactory,
+          language::UrlLanguageHistogram> {
  public:
   explicit UrlLanguageHistogramFactory(PassKey key);
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 #endif  // IOS_CHROME_BROWSER_LANGUAGE_MODEL_URL_LANGUAGE_HISTOGRAM_FACTORY_H_

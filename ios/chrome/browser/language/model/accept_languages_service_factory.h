@@ -10,16 +10,17 @@
 
 // AcceptLanguagesServiceFactory is a way to associate an
 // AcceptLanguagesService instance to a Profile.
-class AcceptLanguagesServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                          AcceptLanguagesServiceFactory,
-                                          language::AcceptLanguagesService> {
+class AcceptLanguagesServiceFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<
+          AcceptLanguagesServiceFactory,
+          language::AcceptLanguagesService> {
  public:
   explicit AcceptLanguagesServiceFactory(PassKey key);
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_LANGUAGE_MODEL_ACCEPT_LANGUAGES_SERVICE_FACTORY_H_

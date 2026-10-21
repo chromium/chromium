@@ -10,7 +10,7 @@
 
 // Singleton that owns all HttpsUpgradeService and associates them with
 // ProfileIOS.
-class HttpsUpgradeServiceFactory
+class HttpsUpgradeServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<HttpsUpgradeServiceFactory,
                                                 HttpsUpgradeService> {
  public:
@@ -19,7 +19,7 @@ class HttpsUpgradeServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_FACTORY_H_

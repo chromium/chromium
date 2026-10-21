@@ -13,7 +13,7 @@
 namespace commerce {
 
 // Owns all ShoppingService instances and associates them to profiles.
-class ShoppingServiceFactory
+class ShoppingServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<ShoppingServiceFactory,
                                                 ShoppingService> {
  public:
@@ -22,7 +22,7 @@ class ShoppingServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace commerce

@@ -20,10 +20,10 @@ class AutofillWebDataService;
 namespace ios {
 // Singleton that owns all WebDataServiceWrappers and associates them with
 // ProfileIOS.
-class WebDataServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                  WebDataServiceFactory,
-                                  WebDataServiceWrapper,
-                                  RejectImplicitAccessIfIncognito> {
+class WebDataServiceFactory final : public TypedProfileKeyedServiceFactoryIOS<
+                                        WebDataServiceFactory,
+                                        WebDataServiceWrapper,
+                                        RejectImplicitAccessIfIncognito> {
  public:
   explicit WebDataServiceFactory(PassKey key);
 
@@ -54,7 +54,7 @@ class WebDataServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

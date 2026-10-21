@@ -12,7 +12,7 @@
 
 // Singleton that owns all SendTabToSelfSyncService and associates them with
 // ProfileIOS.
-class SendTabToSelfSyncServiceFactory
+class SendTabToSelfSyncServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           SendTabToSelfSyncServiceFactory,
           send_tab_to_self::SendTabToSelfSyncService> {
@@ -26,7 +26,7 @@ class SendTabToSelfSyncServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_SEND_TAB_TO_SELF_SYNC_SERVICE_FACTORY_H_

@@ -10,7 +10,7 @@
 
 namespace enterprise_connectors {
 
-class IOSReportingEventRouterFactory
+class IOSReportingEventRouterFactory final
     : public TypedProfileKeyedServiceFactoryIOS<IOSReportingEventRouterFactory,
                                                 ReportingEventRouter> {
  public:
@@ -19,7 +19,7 @@ class IOSReportingEventRouterFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace enterprise_connectors

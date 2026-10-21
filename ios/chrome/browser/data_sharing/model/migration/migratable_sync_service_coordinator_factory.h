@@ -11,7 +11,7 @@
 namespace data_sharing {
 
 // A factory to create a MigratableSyncServiceCoordinator.
-class MigratableSyncServiceCoordinatorFactory
+class MigratableSyncServiceCoordinatorFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           MigratableSyncServiceCoordinatorFactory,
           MigratableSyncServiceCoordinator> {
@@ -21,7 +21,7 @@ class MigratableSyncServiceCoordinatorFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace data_sharing

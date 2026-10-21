@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Factory for `TTCKeyedService`.
-class TTCKeyedServiceFactory
+class TTCKeyedServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<TTCKeyedServiceFactory,
                                                 TTCKeyedService> {
  public:
@@ -20,7 +20,7 @@ class TTCKeyedServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_TTC_MODEL_TTC_KEYED_SERVICE_FACTORY_H_

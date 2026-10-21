@@ -10,16 +10,17 @@
 
 // Singleton that owns VerdictCacheManager objects, one for each active
 // profile.
-class VerdictCacheManagerFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                       VerdictCacheManagerFactory,
-                                       safe_browsing::VerdictCacheManager> {
+class VerdictCacheManagerFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<
+          VerdictCacheManagerFactory,
+          safe_browsing::VerdictCacheManager> {
  public:
   explicit VerdictCacheManagerFactory(PassKey key);
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_VERDICT_CACHE_MANAGER_FACTORY_H_

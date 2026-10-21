@@ -12,7 +12,7 @@
 
 // A BrowserContextKeyedServiceFactory to construct InvalidationServices wrapped
 // in ProfileInvalidationProviders.
-class IOSChromeProfileInvalidationProviderFactory
+class IOSChromeProfileInvalidationProviderFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSChromeProfileInvalidationProviderFactory,
           invalidation::ProfileInvalidationProvider> {
@@ -22,7 +22,7 @@ class IOSChromeProfileInvalidationProviderFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_INVALIDATION_MODEL_IOS_CHROME_PROFILE_INVALIDATION_PROVIDER_FACTORY_H_

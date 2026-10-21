@@ -12,7 +12,7 @@ namespace ios {
 
 // Singleton that owns all ProviderStateServices and associates them with
 // profiles.
-class ProviderStateServiceFactory
+class ProviderStateServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<ProviderStateServiceFactory,
                                                 ProviderStateService> {
  public:
@@ -21,7 +21,7 @@ class ProviderStateServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

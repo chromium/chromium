@@ -10,7 +10,7 @@
 
 // Keyed service factory for BrowserList.
 // This factory returns the same instance for regular and OTR profiles.
-class DeviceSharingManagerFactory
+class DeviceSharingManagerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<DeviceSharingManagerFactory,
                                                 DeviceSharingManager> {
  public:
@@ -23,7 +23,7 @@ class DeviceSharingManagerFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_DEVICE_SHARING_MODEL_DEVICE_SHARING_MANAGER_FACTORY_H_

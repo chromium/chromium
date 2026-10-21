@@ -10,7 +10,7 @@
 
 // Factory that owns all ProvisionalPushNotificationService instances and
 // associates them to ProfileIOS instances.
-class ProvisionalPushNotificationServiceFactory
+class ProvisionalPushNotificationServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           ProvisionalPushNotificationServiceFactory,
           ProvisionalPushNotificationService> {
@@ -20,7 +20,7 @@ class ProvisionalPushNotificationServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PROVISIONAL_PUSH_NOTIFICATION_SERVICE_FACTORY_H_

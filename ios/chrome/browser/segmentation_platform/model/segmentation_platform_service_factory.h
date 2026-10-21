@@ -17,7 +17,7 @@ class HomeModulesCardRegistry;
 class DeviceSwitcherResultDispatcher;
 
 // Factory for SegmentationPlatformService.
-class SegmentationPlatformServiceFactory
+class SegmentationPlatformServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           SegmentationPlatformServiceFactory,
           SegmentationPlatformService> {
@@ -41,9 +41,8 @@ class SegmentationPlatformServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 }  // namespace segmentation_platform

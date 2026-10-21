@@ -10,7 +10,7 @@
 
 // Owns all SigninProfileInfoUpdater instances and associates them with
 // profiles.
-class SigninProfileInfoUpdaterFactory
+class SigninProfileInfoUpdaterFactory final
     : public TypedProfileKeyedServiceFactoryIOS<SigninProfileInfoUpdaterFactory,
                                                 SigninProfileInfoUpdater> {
  public:
@@ -19,7 +19,7 @@ class SigninProfileInfoUpdaterFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_PROFILE_INFO_UPDATER_FACTORY_H_

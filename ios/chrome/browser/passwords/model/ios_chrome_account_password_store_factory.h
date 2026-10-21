@@ -11,7 +11,7 @@
 
 // Singleton that owns all Gaia-account-scoped PasswordStores and associates
 // them with ProfileIOS.
-class IOSChromeAccountPasswordStoreFactory
+class IOSChromeAccountPasswordStoreFactory final
     : public TypedRefcountedProfileKeyedServiceFactoryIOS<
           IOSChromeAccountPasswordStoreFactory,
           password_manager::PasswordStoreInterface,
@@ -22,7 +22,7 @@ class IOSChromeAccountPasswordStoreFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_ACCOUNT_PASSWORD_STORE_FACTORY_H_

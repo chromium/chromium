@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that creates the Distiller service for a given profile.
-class DistillerServiceFactory
+class DistillerServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<DistillerServiceFactory,
                                                 DistillerService> {
  public:
@@ -18,7 +18,7 @@ class DistillerServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_DOM_DISTILLER_MODEL_DISTILLER_SERVICE_FACTORY_H_

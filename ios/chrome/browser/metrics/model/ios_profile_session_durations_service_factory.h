@@ -10,7 +10,7 @@
 
 // A factory that owns all IOSProfileSessionDurationsService and associate
 // the to ProfileIOS instances.
-class IOSProfileSessionDurationsServiceFactory
+class IOSProfileSessionDurationsServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSProfileSessionDurationsServiceFactory,
           IOSProfileSessionDurationsService> {
@@ -21,7 +21,7 @@ class IOSProfileSessionDurationsServiceFactory
   // BrowserContextKeyedServiceFactory:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PROFILE_SESSION_DURATIONS_SERVICE_FACTORY_H_

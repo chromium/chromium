@@ -11,7 +11,7 @@
 #include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that associates UserEventServices to ProfileIOS.
-class IOSUserEventServiceFactory
+class IOSUserEventServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<IOSUserEventServiceFactory,
                                                 syncer::UserEventService> {
  public:
@@ -20,7 +20,7 @@ class IOSUserEventServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_IOS_USER_EVENT_SERVICE_FACTORY_H_

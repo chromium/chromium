@@ -13,7 +13,7 @@
 
 // Singleton that owns all BackgroundDownloadServiceFactory and associates them
 // with profiles.
-class BackgroundDownloadServiceFactory
+class BackgroundDownloadServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           BackgroundDownloadServiceFactory,
           download::BackgroundDownloadService> {
@@ -25,7 +25,7 @@ class BackgroundDownloadServiceFactory
 
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 
   std::unique_ptr<KeyedService> BuildServiceWithClients(
       ProfileIOS* profile,

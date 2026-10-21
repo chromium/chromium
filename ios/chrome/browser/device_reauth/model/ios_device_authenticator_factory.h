@@ -21,7 +21,7 @@ class DeviceAuthParams;
 
 // Singleton that owns all DeviceAuthenticatorProxy and associates them with
 // profiles.
-class DeviceAuthenticatorProxyFactory
+class DeviceAuthenticatorProxyFactory final
     : public TypedProfileKeyedServiceFactoryIOS<DeviceAuthenticatorProxyFactory,
                                                 DeviceAuthenticatorProxy> {
  public:
@@ -30,7 +30,7 @@ class DeviceAuthenticatorProxyFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 // Creates an `IOSDeviceAuthAvailabilityChecker`. `reauth_module` is the

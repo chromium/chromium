@@ -10,7 +10,7 @@
 
 // Singleton that owns all UserUploadedImageManagers and associates
 // them with profiles.
-class UserUploadedImageManagerFactory
+class UserUploadedImageManagerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<UserUploadedImageManagerFactory,
                                                 UserUploadedImageManager> {
  public:
@@ -19,7 +19,7 @@ class UserUploadedImageManagerFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_USER_UPLOADED_IMAGE_MANAGER_FACTORY_H_

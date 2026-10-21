@@ -10,7 +10,7 @@
 
 // Singleton that owns all `EnterpriseNetworkAuthService` instances and
 // associates them with `ProfileIOS`.
-class EnterpriseNetworkAuthServiceFactoryIOS
+class EnterpriseNetworkAuthServiceFactoryIOS final
     : public TypedProfileKeyedServiceFactoryIOS<
           EnterpriseNetworkAuthServiceFactoryIOS,
           enterprise_net::EnterpriseNetworkAuthService> {
@@ -25,7 +25,7 @@ class EnterpriseNetworkAuthServiceFactoryIOS
  private:
   // `ProfileKeyedServiceFactoryIOS` implementation:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_PROXY_MODEL_ENTERPRISE_NETWORK_AUTH_SERVICE_FACTORY_IOS_H_

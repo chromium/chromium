@@ -9,16 +9,17 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Factory to create one PowerBookmarkService per profile.
-class PowerBookmarkServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                        PowerBookmarkServiceFactory,
-                                        power_bookmarks::PowerBookmarkService> {
+class PowerBookmarkServiceFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<
+          PowerBookmarkServiceFactory,
+          power_bookmarks::PowerBookmarkService> {
  public:
   explicit PowerBookmarkServiceFactory(PassKey key);
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_POWER_BOOKMARKS_MODEL_POWER_BOOKMARK_SERVICE_FACTORY_H_

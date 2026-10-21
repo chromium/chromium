@@ -10,7 +10,7 @@
 
 // Singleton that creates the InactiveTabsService and associates that
 // service with ProfileIOS.
-class InactiveTabsServiceFactory
+class InactiveTabsServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<InactiveTabsServiceFactory,
                                                 InactiveTabsService> {
  public:
@@ -19,7 +19,7 @@ class InactiveTabsServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_MODEL_INACTIVE_TABS_INACTIVE_TABS_SERVICE_FACTORY_H_

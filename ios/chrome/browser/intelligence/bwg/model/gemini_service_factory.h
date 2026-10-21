@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all GeminiServices and associates them with a Profile.
-class GeminiServiceFactory
+class GeminiServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<GeminiServiceFactory,
                                                 GeminiService> {
  public:
@@ -22,7 +22,7 @@ class GeminiServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SERVICE_FACTORY_H_

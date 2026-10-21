@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Factory for retrieving password manager settings.
-class IOSPasswordManagerSettingsServiceFactory
+class IOSPasswordManagerSettingsServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSPasswordManagerSettingsServiceFactory,
           password_manager::PasswordManagerSettingsService> {
@@ -18,7 +18,7 @@ class IOSPasswordManagerSettingsServiceFactory
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_PASSWORD_MANAGER_SETTINGS_SERVICE_FACTORY_H_

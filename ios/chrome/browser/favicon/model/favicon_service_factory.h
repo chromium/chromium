@@ -12,10 +12,10 @@
 namespace ios {
 // Singleton that owns all FaviconServices and associates them with
 // ProfileIOS.
-class FaviconServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                  FaviconServiceFactory,
-                                  favicon::FaviconService,
-                                  RejectImplicitAccessIfIncognito> {
+class FaviconServiceFactory final : public TypedProfileKeyedServiceFactoryIOS<
+                                        FaviconServiceFactory,
+                                        favicon::FaviconService,
+                                        RejectImplicitAccessIfIncognito> {
  public:
   explicit FaviconServiceFactory(PassKey key);
   // Returns the default factory used to build FaviconService. Can be
@@ -25,7 +25,7 @@ class FaviconServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

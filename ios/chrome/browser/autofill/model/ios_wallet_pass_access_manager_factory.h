@@ -12,7 +12,7 @@
 
 // Singleton that owns all WalletPassAccessManagers and associates them with
 // ProfileIOS.
-class IOSWalletPassAccessManagerFactory
+class IOSWalletPassAccessManagerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSWalletPassAccessManagerFactory,
           autofill::WalletPassAccessManager> {
@@ -22,7 +22,7 @@ class IOSWalletPassAccessManagerFactory
  private:
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_IOS_WALLET_PASS_ACCESS_MANAGER_FACTORY_H_

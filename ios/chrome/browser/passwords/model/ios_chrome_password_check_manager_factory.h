@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_refcounted_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns weak pointer to IOSChromePasswordCheckManager.
-class IOSChromePasswordCheckManagerFactory
+class IOSChromePasswordCheckManagerFactory final
     : public TypedRefcountedProfileKeyedServiceFactoryIOS<
           IOSChromePasswordCheckManagerFactory,
           IOSChromePasswordCheckManager> {
@@ -22,7 +22,7 @@ class IOSChromePasswordCheckManagerFactory
  private:
   // RefcountedProfileKeyedServiceFactoryIOS implementation.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_CHECK_MANAGER_FACTORY_H_

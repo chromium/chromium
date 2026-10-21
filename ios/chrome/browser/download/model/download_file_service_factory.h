@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Factory for DownloadFileService.
-class DownloadFileServiceFactory
+class DownloadFileServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<DownloadFileServiceFactory,
                                                 DownloadFileService> {
  public:
@@ -17,7 +17,7 @@ class DownloadFileServiceFactory
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_FILE_SERVICE_FACTORY_H_

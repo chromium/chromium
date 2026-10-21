@@ -12,7 +12,7 @@
 
 // Singleton that owns all BrowsingDataRemovers and associates them with
 // ProfileIOS.
-class BrowsingDataRemoverFactory
+class BrowsingDataRemoverFactory final
     : public TypedProfileKeyedServiceFactoryIOS<BrowsingDataRemoverFactory,
                                                 BrowsingDataRemover> {
  public:
@@ -21,7 +21,7 @@ class BrowsingDataRemoverFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_FACTORY_H_

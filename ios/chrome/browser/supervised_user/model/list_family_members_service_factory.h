@@ -12,7 +12,7 @@ namespace supervised_user {
 
 // Singleton that owns ListFamilyMembersService objects and associates
 // them with Profiles.
-class ListFamilyMembersServiceFactory
+class ListFamilyMembersServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<ListFamilyMembersServiceFactory,
                                                 ListFamilyMembersService> {
  public:
@@ -21,7 +21,7 @@ class ListFamilyMembersServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace supervised_user

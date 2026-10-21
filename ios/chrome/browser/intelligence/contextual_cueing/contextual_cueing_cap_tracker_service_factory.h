@@ -14,7 +14,7 @@ namespace contextual_cueing {
 
 // Singleton that owns all ContextualCueingCapTrackerServices and associates
 // them with ProfileIOS.
-class ContextualCueingCapTrackerServiceFactory
+class ContextualCueingCapTrackerServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           ContextualCueingCapTrackerServiceFactory,
           ContextualCueingCapTrackerService> {
@@ -25,7 +25,7 @@ class ContextualCueingCapTrackerServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace contextual_cueing

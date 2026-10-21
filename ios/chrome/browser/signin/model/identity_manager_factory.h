@@ -10,7 +10,7 @@
 
 // Singleton that owns all IdentityManager instances and associates them with
 // Profiles.
-class IdentityManagerFactory
+class IdentityManagerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<IdentityManagerFactory,
                                                 signin::IdentityManager> {
  public:
@@ -19,9 +19,8 @@ class IdentityManagerFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_IDENTITY_MANAGER_FACTORY_H_

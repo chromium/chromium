@@ -14,7 +14,7 @@ namespace translate {
 
 // TranslateRankerFactory is a way to associate a TranslateRanker instance to
 // a Profile.
-class TranslateRankerFactory
+class TranslateRankerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<TranslateRankerFactory,
                                                 translate::TranslateRanker> {
  public:
@@ -23,7 +23,7 @@ class TranslateRankerFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace translate

@@ -12,7 +12,7 @@
 
 // Singleton that owns all PhotosService-s and associates them with
 // Profile.
-class PhotosServiceFactory
+class PhotosServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<PhotosServiceFactory,
                                                 PhotosService> {
  public:
@@ -24,7 +24,7 @@ class PhotosServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PHOTOS_MODEL_PHOTOS_SERVICE_FACTORY_H_

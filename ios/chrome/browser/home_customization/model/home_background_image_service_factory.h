@@ -10,7 +10,7 @@
 
 // Singleton that owns all HomeBackgroundImageServices and associates them with
 // profile.
-class HomeBackgroundImageServiceFactory
+class HomeBackgroundImageServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           HomeBackgroundImageServiceFactory,
           HomeBackgroundImageService> {
@@ -20,7 +20,7 @@ class HomeBackgroundImageServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_BACKGROUND_IMAGE_SERVICE_FACTORY_H_

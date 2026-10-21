@@ -12,7 +12,7 @@ namespace policy {
 
 class ManagementService;
 
-class BrowserManagementServiceFactory
+class BrowserManagementServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<BrowserManagementServiceFactory,
                                                 BrowserManagementService> {
  public:
@@ -22,7 +22,7 @@ class BrowserManagementServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace policy

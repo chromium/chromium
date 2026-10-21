@@ -10,7 +10,7 @@
 
 // Singleton that owns all DiscoverFeedServices and associates them with
 // Profile.
-class DiscoverFeedServiceFactory
+class DiscoverFeedServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<DiscoverFeedServiceFactory,
                                                 DiscoverFeedService> {
  public:
@@ -19,7 +19,7 @@ class DiscoverFeedServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_DISCOVER_FEED_MODEL_DISCOVER_FEED_SERVICE_FACTORY_H_

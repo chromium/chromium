@@ -11,7 +11,7 @@
 
 // Singleton that owns all PasswordStores and associates them with
 // ProfileIOS.
-class IOSChromeProfilePasswordStoreFactory
+class IOSChromeProfilePasswordStoreFactory final
     : public TypedRefcountedProfileKeyedServiceFactoryIOS<
           IOSChromeProfilePasswordStoreFactory,
           password_manager::PasswordStoreInterface,
@@ -22,7 +22,7 @@ class IOSChromeProfilePasswordStoreFactory
  private:
   // RefcountedProfileKeyedServiceFactoryIOS implementation.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PROFILE_PASSWORD_STORE_FACTORY_H_

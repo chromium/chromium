@@ -10,7 +10,7 @@
 #import "components/sync/invalidations/sync_invalidations_service.h"
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
-class SyncInvalidationsServiceFactory
+class SyncInvalidationsServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           SyncInvalidationsServiceFactory,
           syncer::SyncInvalidationsService> {
@@ -20,7 +20,7 @@ class SyncInvalidationsServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_SYNC_INVALIDATIONS_SERVICE_FACTORY_H_

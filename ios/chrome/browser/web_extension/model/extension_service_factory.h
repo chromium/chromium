@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/web_extension/model/extension_service.h"
 
 // Factory for creating `ExtensionService` for a profile on iOS.
-class ExtensionServiceFactory
+class ExtensionServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<ExtensionServiceFactory,
                                                 ExtensionService> {
  public:
@@ -21,7 +21,7 @@ class ExtensionServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_EXTENSION_MODEL_EXTENSION_SERVICE_FACTORY_H_

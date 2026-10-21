@@ -10,7 +10,7 @@
 
 namespace enterprise_connectors {
 
-class IOSCloudBinaryUploadServiceFactory
+class IOSCloudBinaryUploadServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSCloudBinaryUploadServiceFactory,
           BinaryUploadService> {
@@ -20,7 +20,7 @@ class IOSCloudBinaryUploadServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace enterprise_connectors

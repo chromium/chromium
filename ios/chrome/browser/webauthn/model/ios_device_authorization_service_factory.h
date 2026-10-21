@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that associates `DeviceAuthorizationService` to Profiles.
-class IOSDeviceAuthorizationServiceFactory
+class IOSDeviceAuthorizationServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSDeviceAuthorizationServiceFactory,
           webauthn::DeviceAuthorizationService> {
@@ -21,7 +21,7 @@ class IOSDeviceAuthorizationServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEBAUTHN_MODEL_IOS_DEVICE_AUTHORIZATION_SERVICE_FACTORY_H_

@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // A factory for creating one `FieldClassificationModelHandler` per profile.
-class IOSPasswordFieldClassificationModelHandlerFactory
+class IOSPasswordFieldClassificationModelHandlerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSPasswordFieldClassificationModelHandlerFactory,
           autofill::FieldClassificationModelHandler> {
@@ -19,7 +19,7 @@ class IOSPasswordFieldClassificationModelHandlerFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_PASSWORD_FIELD_CLASSIFICATION_MODEL_HANDLER_FACTORY_H_

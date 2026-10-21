@@ -10,7 +10,7 @@
 
 namespace enterprise_reporting {
 
-class SaasUsageReportingControllerFactoryIOS
+class SaasUsageReportingControllerFactoryIOS final
     : public TypedProfileKeyedServiceFactoryIOS<
           SaasUsageReportingControllerFactoryIOS,
           SaasUsageReportingController> {
@@ -20,7 +20,7 @@ class SaasUsageReportingControllerFactoryIOS
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace enterprise_reporting

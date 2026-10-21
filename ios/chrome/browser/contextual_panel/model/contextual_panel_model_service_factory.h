@@ -10,7 +10,7 @@
 
 // Singleton that owns all ContextualPanelModelServices and associates them with
 // profiles.
-class ContextualPanelModelServiceFactory
+class ContextualPanelModelServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           ContextualPanelModelServiceFactory,
           ContextualPanelModelService> {
@@ -20,7 +20,7 @@ class ContextualPanelModelServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_MODEL_SERVICE_FACTORY_H_

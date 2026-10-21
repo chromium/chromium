@@ -14,7 +14,7 @@ namespace autofill {
 
 // Singleton that owns all AutofillImageFetcherImpls and associates them with
 // profiles.
-class AutofillImageFetcherFactory
+class AutofillImageFetcherFactory final
     : public TypedProfileKeyedServiceFactoryIOS<AutofillImageFetcherFactory,
                                                 AutofillImageFetcherImpl> {
  public:
@@ -23,7 +23,7 @@ class AutofillImageFetcherFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace autofill

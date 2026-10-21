@@ -11,7 +11,7 @@
 #include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Owns all ImpressionLimitService instances and associates them to profiles.
-class ImpressionLimitServiceFactory
+class ImpressionLimitServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<ImpressionLimitServiceFactory,
                                                 ImpressionLimitService> {
  public:
@@ -20,7 +20,7 @@ class ImpressionLimitServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_IMPRESSION_LIMITS_MODEL_IMPRESSION_LIMIT_SERVICE_FACTORY_H_

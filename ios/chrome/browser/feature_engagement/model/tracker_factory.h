@@ -14,7 +14,7 @@ namespace feature_engagement {
 // feature_engagement component. It uses the KeyedService API to
 // expose functions to associate and retrieve a feature_engagement::Tracker
 // object with a given profile.
-class TrackerFactory
+class TrackerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<TrackerFactory, Tracker> {
  public:
   explicit TrackerFactory(PassKey key);
@@ -23,7 +23,7 @@ class TrackerFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace feature_engagement

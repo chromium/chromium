@@ -10,7 +10,7 @@
 
 namespace ios {
 // Singleton that owns the bookmark sync service.
-class LocalOrSyncableBookmarkSyncServiceFactory
+class LocalOrSyncableBookmarkSyncServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           LocalOrSyncableBookmarkSyncServiceFactory,
           sync_bookmarks::BookmarkSyncService> {
@@ -20,7 +20,7 @@ class LocalOrSyncableBookmarkSyncServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

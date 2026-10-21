@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Factory for creating `DeviceTrustService` instances on iOS.
-class DeviceTrustServiceFactoryIOS
+class DeviceTrustServiceFactoryIOS final
     : public TypedProfileKeyedServiceFactoryIOS<
           DeviceTrustServiceFactoryIOS,
           enterprise_connectors::DeviceTrustService> {
@@ -25,7 +25,7 @@ class DeviceTrustServiceFactoryIOS
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_MODEL_DEVICE_TRUST_SERVICE_FACTORY_IOS_H_

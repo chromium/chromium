@@ -12,7 +12,7 @@ namespace supervised_user {
 
 // Singleton that owns SupervisedUserSettingsService object and associates
 // them with ProfileIOS.
-class FamilyLinkSettingsServiceFactory
+class FamilyLinkSettingsServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           FamilyLinkSettingsServiceFactory,
           supervised_user::FamilyLinkSettingsService> {
@@ -21,9 +21,9 @@ class FamilyLinkSettingsServiceFactory
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
-  bool ServiceIsRequiredForContextInitialization() const override;
+  bool ServiceIsRequiredForContextInitialization() const final;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 }  // namespace supervised_user
 

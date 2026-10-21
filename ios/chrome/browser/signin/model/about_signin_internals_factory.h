@@ -11,7 +11,7 @@
 namespace ios {
 // Singleton that owns all AboutSigninInternals and associates them with browser
 // states.
-class AboutSigninInternalsFactory
+class AboutSigninInternalsFactory final
     : public TypedProfileKeyedServiceFactoryIOS<AboutSigninInternalsFactory,
                                                 AboutSigninInternals> {
  public:
@@ -20,9 +20,8 @@ class AboutSigninInternalsFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 }  // namespace ios

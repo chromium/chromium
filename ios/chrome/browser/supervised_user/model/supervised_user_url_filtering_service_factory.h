@@ -14,7 +14,7 @@ namespace supervised_user {
 
 // Singleton that owns SupervisedUserService objects and associates
 // them with Profiles.
-class SupervisedUserUrlFilteringServiceFactory
+class SupervisedUserUrlFilteringServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           SupervisedUserUrlFilteringServiceFactory,
           SupervisedUserUrlFilteringService> {
@@ -24,7 +24,7 @@ class SupervisedUserUrlFilteringServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 }  // namespace supervised_user
 

@@ -12,7 +12,7 @@
 
 // Singleton that owns all TextClassifierModelService(s) and associates them
 // with ProfileIOS.
-class TextClassifierModelServiceFactory
+class TextClassifierModelServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           TextClassifierModelServiceFactory,
           TextClassifierModelService> {
@@ -22,7 +22,7 @@ class TextClassifierModelServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_TEXT_SELECTION_MODEL_TEXT_CLASSIFIER_MODEL_SERVICE_FACTORY_H_

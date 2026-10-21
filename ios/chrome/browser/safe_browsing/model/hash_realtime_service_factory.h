@@ -11,16 +11,17 @@
 
 // Singleton that owns HashRealTimeService objects, one for each active profile.
 // It returns nullptr for incognito profiles.
-class HashRealTimeServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                       HashRealTimeServiceFactory,
-                                       safe_browsing::HashRealTimeService> {
+class HashRealTimeServiceFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<
+          HashRealTimeServiceFactory,
+          safe_browsing::HashRealTimeService> {
  public:
   explicit HashRealTimeServiceFactory(PassKey key);
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_HASH_REALTIME_SERVICE_FACTORY_H_

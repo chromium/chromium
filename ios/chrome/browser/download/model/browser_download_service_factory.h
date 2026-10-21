@@ -10,7 +10,7 @@
 
 // Singleton that creates BrowserDownloadService and associates that service
 // with a Profile.
-class BrowserDownloadServiceFactory
+class BrowserDownloadServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<BrowserDownloadServiceFactory,
                                                 BrowserDownloadService> {
  public:
@@ -22,7 +22,7 @@ class BrowserDownloadServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS overrides:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_BROWSER_DOWNLOAD_SERVICE_FACTORY_H_

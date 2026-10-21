@@ -12,16 +12,17 @@
 
 // This factory helps construct and find the AboutThisSiteService instance for a
 // Profile.
-class AboutThisSiteServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                        AboutThisSiteServiceFactory,
-                                        page_info::AboutThisSiteService> {
+class AboutThisSiteServiceFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<
+          AboutThisSiteServiceFactory,
+          page_info::AboutThisSiteService> {
  public:
   explicit AboutThisSiteServiceFactory(PassKey key);
 
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PAGE_INFO_MODEL_ABOUT_THIS_SITE_SERVICE_FACTORY_H_

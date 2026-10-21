@@ -12,7 +12,7 @@
 
 // Singleton that owns all InstanceIDProfileService and associates them with
 // ProfileIOS.
-class IOSChromeInstanceIDProfileServiceFactory
+class IOSChromeInstanceIDProfileServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSChromeInstanceIDProfileServiceFactory,
           instance_id::InstanceIDProfileService> {
@@ -22,7 +22,7 @@ class IOSChromeInstanceIDProfileServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_GCM_MODEL_INSTANCE_ID_IOS_CHROME_INSTANCE_ID_PROFILE_SERVICE_FACTORY_H_

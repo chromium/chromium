@@ -9,7 +9,7 @@
 #include "ios/chrome/browser/variations/model/client/variations_client_service.h"
 
 // Factory for VariationsClientService.
-class VariationsClientServiceFactory
+class VariationsClientServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<VariationsClientServiceFactory,
                                                 VariationsClientService> {
  public:
@@ -18,7 +18,7 @@ class VariationsClientServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_VARIATIONS_MODEL_CLIENT_VARIATIONS_CLIENT_SERVICE_FACTORY_H_

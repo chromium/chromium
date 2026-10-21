@@ -10,9 +10,10 @@
 
 // Singleton that owns all ManagedBookmarkService and associates them with
 // profiles.
-class ManagedBookmarkServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                          ManagedBookmarkServiceFactory,
-                                          bookmarks::ManagedBookmarkService> {
+class ManagedBookmarkServiceFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<
+          ManagedBookmarkServiceFactory,
+          bookmarks::ManagedBookmarkService> {
  public:
   explicit ManagedBookmarkServiceFactory(PassKey key);
 
@@ -22,7 +23,7 @@ class ManagedBookmarkServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_MODEL_MANAGED_BOOKMARK_SERVICE_FACTORY_H_

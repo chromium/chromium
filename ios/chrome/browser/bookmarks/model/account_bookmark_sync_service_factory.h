@@ -11,7 +11,7 @@
 namespace ios {
 // Owns the bookmark sync service for bookmarks that belong to the associated
 // profile.
-class AccountBookmarkSyncServiceFactory
+class AccountBookmarkSyncServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           AccountBookmarkSyncServiceFactory,
           sync_bookmarks::BookmarkSyncService> {
@@ -21,7 +21,7 @@ class AccountBookmarkSyncServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

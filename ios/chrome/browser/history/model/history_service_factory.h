@@ -11,7 +11,7 @@
 namespace ios {
 // Singleton that owns all HistoryServices and associates them with
 // ProfileIOS.
-class HistoryServiceFactory
+class HistoryServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<HistoryServiceFactory,
                                                 history::HistoryService> {
  public:
@@ -23,7 +23,7 @@ class HistoryServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

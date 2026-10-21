@@ -17,7 +17,7 @@ class PrefRegistrySyncable;
 // Singleton that owns all `AuthenticationServices` and associates them with
 // profiles. Listens for the profile's destruction notification and cleans up
 // the associated `AuthenticationService`.
-class AuthenticationServiceFactory
+class AuthenticationServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<AuthenticationServiceFactory,
                                                 AuthenticationService> {
  public:
@@ -29,9 +29,8 @@ class AuthenticationServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_AUTHENTICATION_SERVICE_FACTORY_H_

@@ -20,7 +20,7 @@ class MiniMapServiceFactory final
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_MINI_MAP_MODEL_MINI_MAP_SERVICE_FACTORY_H_

@@ -12,7 +12,7 @@
 
 // Singleton that owns all EntitySuppressionManagers and associates them with
 // ProfileIOS.
-class IOSAutofillEntitySuppressionManagerFactory
+class IOSAutofillEntitySuppressionManagerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSAutofillEntitySuppressionManagerFactory,
           autofill::EntitySuppressionManager> {
@@ -21,7 +21,7 @@ class IOSAutofillEntitySuppressionManagerFactory
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_IOS_AUTOFILL_ENTITY_SUPPRESSION_MANAGER_FACTORY_H_

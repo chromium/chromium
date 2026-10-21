@@ -10,7 +10,7 @@
 
 namespace client_certificates {
 
-class CertificateProvisioningServiceFactoryIOS
+class CertificateProvisioningServiceFactoryIOS final
     : public TypedProfileKeyedServiceFactoryIOS<
           CertificateProvisioningServiceFactoryIOS,
           CertificateProvisioningServiceIOS> {
@@ -20,7 +20,7 @@ class CertificateProvisioningServiceFactoryIOS
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace client_certificates

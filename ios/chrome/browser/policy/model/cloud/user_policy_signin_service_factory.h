@@ -20,7 +20,7 @@ namespace policy {
 // Warning: ONLY use the service when Enterprise Policy is enabled where
 // the policy system objects are enabled (eg. the BrowserPolicyConnector object
 // was instantiated).
-class UserPolicySigninServiceFactory
+class UserPolicySigninServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<UserPolicySigninServiceFactory,
                                                 UserPolicySigninService> {
  public:
@@ -29,9 +29,8 @@ class UserPolicySigninServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 }  // namespace policy

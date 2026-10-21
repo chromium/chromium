@@ -14,7 +14,7 @@ namespace ios {
 
 // Singleton that owns all AccountReconcilors and associates them with browser
 // states.
-class AccountReconcilorFactory
+class AccountReconcilorFactory final
     : public TypedProfileKeyedServiceFactoryIOS<AccountReconcilorFactory,
                                                 AccountReconcilor> {
  public:
@@ -23,7 +23,7 @@ class AccountReconcilorFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

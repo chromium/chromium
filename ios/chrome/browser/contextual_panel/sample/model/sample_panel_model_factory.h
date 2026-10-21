@@ -10,7 +10,7 @@
 
 // Singleton that owns all SamplePanelModels and associates them with
 // profiles.
-class SamplePanelModelFactory
+class SamplePanelModelFactory final
     : public TypedProfileKeyedServiceFactoryIOS<SamplePanelModelFactory,
                                                 SamplePanelModel> {
  public:
@@ -19,7 +19,7 @@ class SamplePanelModelFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_SAMPLE_MODEL_SAMPLE_PANEL_MODEL_FACTORY_H_

@@ -9,16 +9,17 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns V5SearchHashesCache objects, one for each active profile.
-class V5SearchHashesCacheFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                       V5SearchHashesCacheFactory,
-                                       safe_browsing::V5SearchHashesCache> {
+class V5SearchHashesCacheFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<
+          V5SearchHashesCacheFactory,
+          safe_browsing::V5SearchHashesCache> {
  public:
   explicit V5SearchHashesCacheFactory(PassKey key);
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_V5_SEARCH_HASHES_CACHE_FACTORY_H_

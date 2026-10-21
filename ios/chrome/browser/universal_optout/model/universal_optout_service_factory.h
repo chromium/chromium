@@ -11,7 +11,7 @@
 namespace universal_optout {
 
 // Factory for creating UniversalOptOutService on iOS.
-class UniversalOptOutServiceFactory
+class UniversalOptOutServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<UniversalOptOutServiceFactory,
                                                 UniversalOptOutService> {
  public:
@@ -20,7 +20,7 @@ class UniversalOptOutServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace universal_optout

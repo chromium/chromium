@@ -12,7 +12,7 @@
 
 // Singleton that owns all TabRestoreServices and associates them with
 // ProfileIOS.
-class IOSChromeTabRestoreServiceFactory
+class IOSChromeTabRestoreServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSChromeTabRestoreServiceFactory,
           sessions::TabRestoreService> {
@@ -26,7 +26,7 @@ class IOSChromeTabRestoreServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_MODEL_IOS_CHROME_TAB_RESTORE_SERVICE_FACTORY_H_

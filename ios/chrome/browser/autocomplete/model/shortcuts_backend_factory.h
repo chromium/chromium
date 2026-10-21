@@ -14,7 +14,7 @@ namespace ios {
 
 // Singleton that owns all ShortcutsBackends and associates them with
 // ProfileIOS.
-class ShortcutsBackendFactory
+class ShortcutsBackendFactory final
     : public TypedRefcountedProfileKeyedServiceFactoryIOS<
           ShortcutsBackendFactory,
           ShortcutsBackend> {
@@ -27,7 +27,7 @@ class ShortcutsBackendFactory
  private:
   // RefcountedProfileKeyedServiceFactoryIOS implementation.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

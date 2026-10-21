@@ -10,7 +10,7 @@
 
 // Singleton that owns all JavaScriptConsoleFeatures and associates them with
 // a profile.
-class JavaScriptConsoleFeatureFactory
+class JavaScriptConsoleFeatureFactory final
     : public TypedProfileKeyedServiceFactoryIOS<JavaScriptConsoleFeatureFactory,
                                                 JavaScriptConsoleFeature> {
  public:
@@ -19,7 +19,7 @@ class JavaScriptConsoleFeatureFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_FACTORY_H_

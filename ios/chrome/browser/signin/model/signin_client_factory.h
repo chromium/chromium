@@ -12,7 +12,7 @@
 
 // Singleton that owns all SigninClients and associates them with
 // ProfileIOS.
-class SigninClientFactory
+class SigninClientFactory final
     : public TypedProfileKeyedServiceFactoryIOS<SigninClientFactory,
                                                 SigninClient> {
  public:
@@ -21,7 +21,7 @@ class SigninClientFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_CLIENT_FACTORY_H_

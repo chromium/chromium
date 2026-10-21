@@ -10,7 +10,7 @@
 
 // Singleton that owns all ReaderModeModels and associates them with
 // profiles.
-class ReaderModeModelFactory
+class ReaderModeModelFactory final
     : public TypedProfileKeyedServiceFactoryIOS<ReaderModeModelFactory,
                                                 ReaderModeModel> {
  public:
@@ -19,7 +19,7 @@ class ReaderModeModelFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_MODEL_FACTORY_H_

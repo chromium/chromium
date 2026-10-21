@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that associates PasskeyModel to Profiles.
-class IOSPasskeyModelFactory
+class IOSPasskeyModelFactory final
     : public TypedProfileKeyedServiceFactoryIOS<IOSPasskeyModelFactory,
                                                 webauthn::PasskeyModel> {
  public:
@@ -20,7 +20,7 @@ class IOSPasskeyModelFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEBAUTHN_MODEL_IOS_PASSKEY_MODEL_FACTORY_H_

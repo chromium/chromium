@@ -8,7 +8,7 @@
 #import "components/personal_context/core/personal_context_service.h"
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
-class IOSPersonalContextServiceFactory
+class IOSPersonalContextServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSPersonalContextServiceFactory,
           personal_context::PersonalContextService> {
@@ -19,7 +19,7 @@ class IOSPersonalContextServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PERSONAL_CONTEXT_MODEL_IOS_PERSONAL_CONTEXT_SERVICE_FACTORY_H_

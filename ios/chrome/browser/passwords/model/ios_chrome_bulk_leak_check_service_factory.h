@@ -10,7 +10,7 @@
 
 // Singleton that owns all BulkLeakCheckServices and associates them with
 // profile.
-class IOSChromeBulkLeakCheckServiceFactory
+class IOSChromeBulkLeakCheckServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSChromeBulkLeakCheckServiceFactory,
           password_manager::BulkLeakCheckServiceInterface> {
@@ -20,7 +20,7 @@ class IOSChromeBulkLeakCheckServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_BULK_LEAK_CHECK_SERVICE_FACTORY_H_

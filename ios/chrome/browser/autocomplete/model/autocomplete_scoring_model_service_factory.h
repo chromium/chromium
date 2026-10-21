@@ -12,7 +12,7 @@ namespace ios {
 
 // A factory to create a unique `AutocompleteScoringModelService` per
 // profile. Has a dependency on `OptimizationGuideServiceFactory`.
-class AutocompleteScoringModelServiceFactory
+class AutocompleteScoringModelServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           AutocompleteScoringModelServiceFactory,
           AutocompleteScoringModelService> {
@@ -23,7 +23,7 @@ class AutocompleteScoringModelServiceFactory
   // ProfileKeyedServiceFactoryIOS:
   // Returns nullptr if `OptimizationGuideKeyedService` is null.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

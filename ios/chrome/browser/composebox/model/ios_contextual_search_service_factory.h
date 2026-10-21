@@ -10,7 +10,7 @@
 
 // Singleton that owns all ContextualSearchService and associates them
 // with ProfileIOS.
-class ContextualSearchServiceFactory
+class ContextualSearchServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           ContextualSearchServiceFactory,
           contextual_search::ContextualSearchService> {
@@ -20,7 +20,7 @@ class ContextualSearchServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_MODEL_IOS_CONTEXTUAL_SEARCH_SERVICE_FACTORY_H_

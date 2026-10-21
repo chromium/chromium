@@ -10,7 +10,7 @@
 
 // Singleton that owns all `ProxyServiceController` instances and associates
 // them with `ProfileIOS`.
-class ProxyServiceControllerFactory
+class ProxyServiceControllerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<ProxyServiceControllerFactory,
                                                 ProxyServiceController> {
  public:
@@ -23,7 +23,7 @@ class ProxyServiceControllerFactory
  private:
   // `ProfileKeyedServiceFactoryIOS` implementation:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_PROXY_MODEL_PROXY_SERVICE_CONTROLLER_FACTORY_H_

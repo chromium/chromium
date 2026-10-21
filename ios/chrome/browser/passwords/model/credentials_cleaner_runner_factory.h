@@ -9,7 +9,7 @@
 #include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Creates instances of CredentialsCleanerRunner per Profile.
-class CredentialsCleanerRunnerFactory
+class CredentialsCleanerRunnerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           CredentialsCleanerRunnerFactory,
           password_manager::CredentialsCleanerRunner> {
@@ -19,7 +19,7 @@ class CredentialsCleanerRunnerFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_CREDENTIALS_CLEANER_RUNNER_FACTORY_H_

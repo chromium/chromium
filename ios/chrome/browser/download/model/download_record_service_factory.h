@@ -10,7 +10,7 @@
 
 // A factory to create a unique `DownloadRecordService` per
 // profile.
-class DownloadRecordServiceFactory
+class DownloadRecordServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<DownloadRecordServiceFactory,
                                                 DownloadRecordService> {
  public:
@@ -18,7 +18,7 @@ class DownloadRecordServiceFactory
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_RECORD_SERVICE_FACTORY_H_

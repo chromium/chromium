@@ -14,9 +14,10 @@ class GURL;
 
 // Singleton that owns all SessionSyncService and associates them with
 // ProfileIOS.
-class SessionSyncServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                      SessionSyncServiceFactory,
-                                      sync_sessions::SessionSyncService> {
+class SessionSyncServiceFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<
+          SessionSyncServiceFactory,
+          sync_sessions::SessionSyncService> {
  public:
   explicit SessionSyncServiceFactory(PassKey key);
 
@@ -25,7 +26,7 @@ class SessionSyncServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_SESSION_SYNC_SERVICE_FACTORY_H_

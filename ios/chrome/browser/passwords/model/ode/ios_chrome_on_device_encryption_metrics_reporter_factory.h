@@ -16,7 +16,7 @@ class PrefRegistrySyncable;
 
 // Singleton that creates and owns the OnDeviceEncryptionMetricsReporter for
 // each ProfileIOS.
-class IOSChromeOnDeviceEncryptionMetricsReporterFactory
+class IOSChromeOnDeviceEncryptionMetricsReporterFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSChromeOnDeviceEncryptionMetricsReporterFactory,
           password_manager::OnDeviceEncryptionMetricsReporter> {
@@ -25,10 +25,9 @@ class IOSChromeOnDeviceEncryptionMetricsReporterFactory
 
  private:
   // ProfileKeyedServiceFactoryIOS:
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_ODE_IOS_CHROME_ON_DEVICE_ENCRYPTION_METRICS_REPORTER_FACTORY_H_

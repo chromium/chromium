@@ -11,7 +11,7 @@
 // Singleton that owns all `ExternalFileRemover` and associates them with
 // profiles. Listens for the `ProfileIOS`'s destruction notification and
 // cleans up the associated `ExternalFileRemover`.
-class ExternalFileRemoverFactory
+class ExternalFileRemoverFactory final
     : public TypedProfileKeyedServiceFactoryIOS<ExternalFileRemoverFactory,
                                                 ExternalFileRemover> {
  public:
@@ -20,7 +20,7 @@ class ExternalFileRemoverFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_EXTERNAL_FILES_MODEL_EXTERNAL_FILE_REMOVER_FACTORY_H_

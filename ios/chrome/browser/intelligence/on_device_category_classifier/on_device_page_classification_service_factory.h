@@ -12,7 +12,7 @@
 
 // Singleton that owns all OnDevicePageClassificationServices and associates
 // them with ProfileIOS.
-class OnDevicePageClassificationServiceFactory
+class OnDevicePageClassificationServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           OnDevicePageClassificationServiceFactory,
           OnDevicePageClassificationService> {
@@ -23,7 +23,7 @@ class OnDevicePageClassificationServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ON_DEVICE_CATEGORY_CLASSIFIER_ON_DEVICE_PAGE_CLASSIFICATION_SERVICE_FACTORY_H_

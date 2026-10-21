@@ -10,7 +10,7 @@
 
 // Singleton that creates the TabGroupService and associates that
 // service with ProfileIOS.
-class TabGroupServiceFactory
+class TabGroupServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<TabGroupServiceFactory,
                                                 TabGroupService> {
  public:
@@ -19,7 +19,7 @@ class TabGroupServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAVED_TAB_GROUPS_MODEL_TAB_GROUP_SERVICE_FACTORY_H_

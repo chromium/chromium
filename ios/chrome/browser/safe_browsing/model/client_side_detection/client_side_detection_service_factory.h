@@ -10,7 +10,7 @@
 
 // Singleton that owns `ClientSideDetectionService` objects, one for each
 // active Profile.
-class ClientSideDetectionServiceFactory
+class ClientSideDetectionServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           ClientSideDetectionServiceFactory,
           safe_browsing::ClientSideDetectionService> {
@@ -20,7 +20,7 @@ class ClientSideDetectionServiceFactory
  private:
   // `ProfileKeyedServiceFactoryIOS` implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_CLIENT_SIDE_DETECTION_CLIENT_SIDE_DETECTION_SERVICE_FACTORY_H_

@@ -15,7 +15,7 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 // Factory for creating `DeviceTrustConnectorService` instances on iOS.
-class DeviceTrustConnectorServiceFactoryIOS
+class DeviceTrustConnectorServiceFactoryIOS final
     : public TypedProfileKeyedServiceFactoryIOS<
           DeviceTrustConnectorServiceFactoryIOS,
           enterprise_connectors::DeviceTrustConnectorService> {
@@ -24,11 +24,10 @@ class DeviceTrustConnectorServiceFactoryIOS
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_MODEL_DEVICE_TRUST_CONNECTOR_SERVICE_FACTORY_IOS_H_

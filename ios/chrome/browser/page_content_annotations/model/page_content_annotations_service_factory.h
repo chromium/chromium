@@ -12,7 +12,7 @@
 
 // Singleton that owns all PageContentAnnotationsService(s) and associates them
 // with ProfileIOS. No service is created for incognito profile.
-class PageContentAnnotationsServiceFactory
+class PageContentAnnotationsServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           PageContentAnnotationsServiceFactory,
           page_content_annotations::PageContentAnnotationsService> {
@@ -27,7 +27,7 @@ class PageContentAnnotationsServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PAGE_CONTENT_ANNOTATIONS_MODEL_PAGE_CONTENT_ANNOTATIONS_SERVICE_FACTORY_H_

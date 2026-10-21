@@ -10,7 +10,7 @@
 
 namespace ios {
 
-class TemplateURLPrepopulateDataResolverFactory
+class TemplateURLPrepopulateDataResolverFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           TemplateURLPrepopulateDataResolverFactory,
           TemplateURLPrepopulateData::Resolver> {
@@ -20,7 +20,7 @@ class TemplateURLPrepopulateDataResolverFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

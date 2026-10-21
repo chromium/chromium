@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // iOS factory for creating ProfileMetricsService.
-class IOSProfileMetricsServiceFactory
+class IOSProfileMetricsServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSProfileMetricsServiceFactory,
           metrics::ProfileMetricsService> {
@@ -19,7 +19,7 @@ class IOSProfileMetricsServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PROFILE_METRICS_SERVICE_FACTORY_H_

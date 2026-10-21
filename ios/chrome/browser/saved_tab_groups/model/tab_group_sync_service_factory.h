@@ -12,7 +12,7 @@ namespace tab_groups {
 class SyntheticFieldTrialHelper;
 
 // Factory for the Tab Group Sync service.
-class TabGroupSyncServiceFactory
+class TabGroupSyncServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<TabGroupSyncServiceFactory,
                                                 TabGroupSyncService> {
  public:
@@ -23,7 +23,7 @@ class TabGroupSyncServiceFactory
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 
   // Called to report synthetic field trial on whether the client had a sync
   // tabgroup.

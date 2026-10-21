@@ -10,7 +10,7 @@
 
 // Singleton that owns all CrossPlatformPromosServices and associates them with
 // Profiles.
-class CrossPlatformPromosServiceFactory
+class CrossPlatformPromosServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           CrossPlatformPromosServiceFactory,
           CrossPlatformPromosService> {
@@ -20,7 +20,7 @@ class CrossPlatformPromosServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_CROSS_PLATFORM_PROMOS_MODEL_CROSS_PLATFORM_PROMOS_SERVICE_FACTORY_H_

@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that manages the `SigninMetricsService` service per profile.
-class SigninMetricsServiceFactory
+class SigninMetricsServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<SigninMetricsServiceFactory,
                                                 SigninMetricsService> {
  public:
@@ -20,9 +20,8 @@ class SigninMetricsServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SIGNIN_METRICS_SERVICE_FACTORY_H_

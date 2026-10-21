@@ -11,7 +11,7 @@
 namespace collaboration {
 
 // Factory for CollaborationService.
-class CollaborationServiceFactory
+class CollaborationServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<CollaborationServiceFactory,
                                                 CollaborationService> {
  public:
@@ -20,7 +20,7 @@ class CollaborationServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace collaboration

@@ -12,7 +12,7 @@
 
 // Singleton that owns all AutofillAiModelCaches and associates them with
 // ProfileIOS.
-class IOSAutofillAiModelCacheFactory
+class IOSAutofillAiModelCacheFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSAutofillAiModelCacheFactory,
           autofill::AutofillAiModelCache> {
@@ -22,7 +22,7 @@ class IOSAutofillAiModelCacheFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_IOS_AUTOFILL_AI_MODEL_CACHE_FACTORY_H_

@@ -10,7 +10,7 @@
 
 // Singleton that owns all BackendPromoServices and associates them with
 // profiles.
-class BackendPromoServiceFactory
+class BackendPromoServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<BackendPromoServiceFactory,
                                                 BackendPromoService> {
  public:
@@ -19,7 +19,7 @@ class BackendPromoServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_BACKEND_PROMO_MODEL_BACKEND_PROMO_SERVICE_FACTORY_H_

@@ -13,7 +13,7 @@
 namespace ios {
 // Singleton that owns all TemplateURLServices and associates them with
 // Profile.
-class TemplateURLServiceFactory
+class TemplateURLServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<TemplateURLServiceFactory,
                                                 TemplateURLService> {
  public:
@@ -25,10 +25,9 @@ class TemplateURLServiceFactory
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

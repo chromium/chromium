@@ -11,7 +11,7 @@
 namespace collaboration::messaging {
 
 // Factory for the instant messaging service.
-class InstantMessagingServiceFactory
+class InstantMessagingServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<InstantMessagingServiceFactory,
                                                 InstantMessagingService> {
  public:
@@ -20,7 +20,7 @@ class InstantMessagingServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace collaboration::messaging

@@ -14,7 +14,7 @@ namespace autofill {
 
 // Singleton that owns all PersonalDataManagers and associates them with
 // profiles.
-class PersonalDataManagerFactory
+class PersonalDataManagerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<PersonalDataManagerFactory,
                                                 PersonalDataManager> {
  public:
@@ -23,7 +23,7 @@ class PersonalDataManagerFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace autofill

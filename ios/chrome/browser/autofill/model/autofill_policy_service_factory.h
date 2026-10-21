@@ -10,7 +10,7 @@
 
 namespace autofill {
 
-class AutofillPolicyServiceFactory
+class AutofillPolicyServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<AutofillPolicyServiceFactory,
                                                 AutofillPolicyService> {
  public:
@@ -19,7 +19,7 @@ class AutofillPolicyServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace autofill

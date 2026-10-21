@@ -15,7 +15,7 @@ namespace ios {
 
 // TopSitesFactory is a singleton that associates history::TopSites instance to
 // profiles.
-class TopSitesFactory
+class TopSitesFactory final
     : public TypedRefcountedProfileKeyedServiceFactoryIOS<TopSitesFactory,
                                                           history::TopSites> {
  public:
@@ -24,9 +24,8 @@ class TopSitesFactory
  private:
   // RefcountedProfileKeyedServiceFactoryIOS implementation.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 }  // namespace ios

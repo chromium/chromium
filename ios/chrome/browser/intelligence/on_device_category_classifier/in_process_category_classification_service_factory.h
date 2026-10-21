@@ -12,7 +12,7 @@
 
 // Singleton that owns all InProcessCategoryClassificationServices and
 // associates them with ProfileIOS.
-class InProcessCategoryClassificationServiceFactory
+class InProcessCategoryClassificationServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           InProcessCategoryClassificationServiceFactory,
           InProcessCategoryClassificationService> {
@@ -23,7 +23,7 @@ class InProcessCategoryClassificationServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ON_DEVICE_CATEGORY_CLASSIFIER_IN_PROCESS_CATEGORY_CLASSIFICATION_SERVICE_FACTORY_H_

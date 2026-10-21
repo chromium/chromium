@@ -14,7 +14,7 @@ namespace ios {
 
 // Singleton that owns all InMemoryURLIndex instances and associates them
 // with profiles.
-class InMemoryURLIndexFactory
+class InMemoryURLIndexFactory final
     : public TypedProfileKeyedServiceFactoryIOS<InMemoryURLIndexFactory,
                                                 InMemoryURLIndex> {
  public:
@@ -27,7 +27,7 @@ class InMemoryURLIndexFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

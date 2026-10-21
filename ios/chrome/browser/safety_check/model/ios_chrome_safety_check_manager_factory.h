@@ -12,7 +12,7 @@
 
 // Singleton that owns all IOSChromeSafetyCheckManager(s) and associates them
 // with profiles.
-class IOSChromeSafetyCheckManagerFactory
+class IOSChromeSafetyCheckManagerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSChromeSafetyCheckManagerFactory,
           IOSChromeSafetyCheckManager> {
@@ -23,7 +23,7 @@ class IOSChromeSafetyCheckManagerFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_FACTORY_H_

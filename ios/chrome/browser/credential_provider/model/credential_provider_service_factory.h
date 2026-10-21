@@ -10,7 +10,7 @@
 
 // Singleton that owns all CredentialProviderServices and associates them with
 // profiles.
-class CredentialProviderServiceFactory
+class CredentialProviderServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           CredentialProviderServiceFactory,
           CredentialProviderService> {
@@ -20,7 +20,7 @@ class CredentialProviderServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_CREDENTIAL_PROVIDER_SERVICE_FACTORY_H_

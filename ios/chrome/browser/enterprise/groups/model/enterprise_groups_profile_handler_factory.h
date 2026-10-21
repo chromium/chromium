@@ -10,7 +10,7 @@
 
 namespace enterprise_groups {
 
-class EnterpriseGroupsProfileHandlerFactory
+class EnterpriseGroupsProfileHandlerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           EnterpriseGroupsProfileHandlerFactory,
           policy::EnterpriseGroupsProfileHandler> {
@@ -20,7 +20,7 @@ class EnterpriseGroupsProfileHandlerFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace enterprise_groups

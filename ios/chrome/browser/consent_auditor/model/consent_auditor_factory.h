@@ -10,16 +10,16 @@
 
 // Singleton that owns all ConsentAuditors and associates them with
 // ProfileIOS.
-class ConsentAuditorFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                  ConsentAuditorFactory,
-                                  consent_auditor::ConsentAuditor> {
+class ConsentAuditorFactory final : public TypedProfileKeyedServiceFactoryIOS<
+                                        ConsentAuditorFactory,
+                                        consent_auditor::ConsentAuditor> {
  public:
   explicit ConsentAuditorFactory(PassKey key);
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_CONSENT_AUDITOR_MODEL_CONSENT_AUDITOR_FACTORY_H_

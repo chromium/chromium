@@ -10,7 +10,7 @@
 
 // Singleton that owns all GoogleLogoServices and associates them with
 // profiles.
-class GoogleLogoServiceFactory
+class GoogleLogoServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<GoogleLogoServiceFactory,
                                                 GoogleLogoService> {
  public:
@@ -19,7 +19,7 @@ class GoogleLogoServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_GOOGLE_MODEL_GOOGLE_LOGO_SERVICE_FACTORY_H_

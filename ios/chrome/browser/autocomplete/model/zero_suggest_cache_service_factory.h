@@ -11,7 +11,7 @@
 namespace ios {
 // Singleton that owns all ZeroSuggestCacheServices and associates them with
 // profiles.
-class ZeroSuggestCacheServiceFactory
+class ZeroSuggestCacheServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<ZeroSuggestCacheServiceFactory,
                                                 ZeroSuggestCacheService> {
  public:
@@ -20,7 +20,7 @@ class ZeroSuggestCacheServiceFactory
  private:
   // BrowerStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 }  // namespace ios
 

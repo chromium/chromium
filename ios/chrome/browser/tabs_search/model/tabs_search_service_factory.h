@@ -10,7 +10,7 @@
 
 // Singleton that owns all TabsSearchServices and associates them with
 // ProfileIOS.
-class TabsSearchServiceFactory
+class TabsSearchServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<TabsSearchServiceFactory,
                                                 TabsSearchService> {
  public:
@@ -19,7 +19,7 @@ class TabsSearchServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_TABS_SEARCH_MODEL_TABS_SEARCH_SERVICE_FACTORY_H_

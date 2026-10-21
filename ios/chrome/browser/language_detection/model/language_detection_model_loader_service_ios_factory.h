@@ -14,7 +14,7 @@
 // LanguageDetectionModel scoped by Profile.
 // TODO(crbug.com/40225076): remove this class once
 // LanguageDetectionModelService does this.
-class LanguageDetectionModelLoaderServiceIOSFactory
+class LanguageDetectionModelLoaderServiceIOSFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           LanguageDetectionModelLoaderServiceIOSFactory,
           language_detection::LanguageDetectionModelLoaderServiceIOS> {
@@ -24,7 +24,7 @@ class LanguageDetectionModelLoaderServiceIOSFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_LANGUAGE_DETECTION_MODEL_LANGUAGE_DETECTION_MODEL_LOADER_SERVICE_IOS_FACTORY_H_

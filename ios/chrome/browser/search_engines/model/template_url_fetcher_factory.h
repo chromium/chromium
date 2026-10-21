@@ -11,7 +11,7 @@
 namespace ios {
 // Singleton that owns all TemplateURLFetchers and associates them with
 // Profile.
-class TemplateURLFetcherFactory
+class TemplateURLFetcherFactory final
     : public TypedProfileKeyedServiceFactoryIOS<TemplateURLFetcherFactory,
                                                 TemplateURLFetcher> {
  public:
@@ -19,7 +19,7 @@ class TemplateURLFetcherFactory
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

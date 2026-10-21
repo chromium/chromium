@@ -10,16 +10,17 @@
 
 // Singleton that owns all ImageFetcherService and associates them with
 // profile.
-class ImageFetcherServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                       ImageFetcherServiceFactory,
-                                       image_fetcher::ImageFetcherService> {
+class ImageFetcherServiceFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<
+          ImageFetcherServiceFactory,
+          image_fetcher::ImageFetcherService> {
  public:
   explicit ImageFetcherServiceFactory(PassKey key);
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_IMAGE_FETCHER_MODEL_IMAGE_FETCHER_SERVICE_FACTORY_H_

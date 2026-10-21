@@ -10,7 +10,7 @@
 
 // Singleton that owns V5GetHashProtocolManager objects, one for each active
 // profile.
-class V5GetHashProtocolManagerFactory
+class V5GetHashProtocolManagerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           V5GetHashProtocolManagerFactory,
           safe_browsing::V5GetHashProtocolManager> {
@@ -20,7 +20,7 @@ class V5GetHashProtocolManagerFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_V5_GET_HASH_PROTOCOL_MANAGER_FACTORY_H_

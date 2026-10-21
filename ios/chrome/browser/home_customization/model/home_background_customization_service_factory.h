@@ -10,7 +10,7 @@
 
 // Singleton that owns all HomeBackgroundCustomizationServices and associates
 // them with profiles.
-class HomeBackgroundCustomizationServiceFactory
+class HomeBackgroundCustomizationServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           HomeBackgroundCustomizationServiceFactory,
           HomeBackgroundCustomizationService> {
@@ -20,9 +20,8 @@ class HomeBackgroundCustomizationServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_BACKGROUND_CUSTOMIZATION_SERVICE_FACTORY_H_

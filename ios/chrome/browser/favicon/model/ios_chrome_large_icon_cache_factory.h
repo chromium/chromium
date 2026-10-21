@@ -12,7 +12,7 @@
 
 // Singleton that owns all LargeIconCaches and associates them with
 // ProfileIOS.
-class IOSChromeLargeIconCacheFactory
+class IOSChromeLargeIconCacheFactory final
     : public TypedProfileKeyedServiceFactoryIOS<IOSChromeLargeIconCacheFactory,
                                                 LargeIconCache> {
  public:
@@ -21,7 +21,7 @@ class IOSChromeLargeIconCacheFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_LARGE_ICON_CACHE_FACTORY_H_

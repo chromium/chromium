@@ -10,7 +10,7 @@
 
 namespace ios {
 
-class SearchEngineChoiceServiceFactory
+class SearchEngineChoiceServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           SearchEngineChoiceServiceFactory,
           search_engines::SearchEngineChoiceService> {
@@ -20,9 +20,8 @@ class SearchEngineChoiceServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 }  // namespace ios

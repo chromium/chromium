@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // KeyedServiceFactory for PersonalContextFirstRunService on iOS.
-class IOSPersonalContextFirstRunServiceFactory
+class IOSPersonalContextFirstRunServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSPersonalContextFirstRunServiceFactory,
           personal_context::PersonalContextFirstRunService> {
@@ -19,7 +19,7 @@ class IOSPersonalContextFirstRunServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PERSONAL_CONTEXT_MODEL_IOS_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_FACTORY_H_

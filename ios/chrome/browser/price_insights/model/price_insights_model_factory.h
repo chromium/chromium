@@ -10,7 +10,7 @@
 
 // Singleton that owns all PriceInsightsModels and associates them with
 // profile.
-class PriceInsightsModelFactory
+class PriceInsightsModelFactory final
     : public TypedProfileKeyedServiceFactoryIOS<PriceInsightsModelFactory,
                                                 PriceInsightsModel> {
  public:
@@ -19,7 +19,7 @@ class PriceInsightsModelFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PRICE_INSIGHTS_MODEL_PRICE_INSIGHTS_MODEL_FACTORY_H_

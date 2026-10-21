@@ -10,7 +10,7 @@
 
 namespace ios {
 
-class RegionalCapabilitiesServiceFactory
+class RegionalCapabilitiesServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           RegionalCapabilitiesServiceFactory,
           regional_capabilities::RegionalCapabilitiesService> {
@@ -20,7 +20,7 @@ class RegionalCapabilitiesServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

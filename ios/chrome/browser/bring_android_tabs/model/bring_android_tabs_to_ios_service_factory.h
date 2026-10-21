@@ -14,7 +14,7 @@
 // Note that as the "Bring Android Tabs" feature does not apply in incognito
 // mode, the factory should only create and store services for regular browser
 // states.
-class BringAndroidTabsToIOSServiceFactory
+class BringAndroidTabsToIOSServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           BringAndroidTabsToIOSServiceFactory,
           BringAndroidTabsToIOSService> {
@@ -23,10 +23,9 @@ class BringAndroidTabsToIOSServiceFactory
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_BRING_ANDROID_TABS_MODEL_BRING_ANDROID_TABS_TO_IOS_SERVICE_FACTORY_H_

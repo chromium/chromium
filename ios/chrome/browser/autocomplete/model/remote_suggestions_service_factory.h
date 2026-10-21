@@ -10,7 +10,7 @@
 
 // Singleton that owns all RemoteSuggestionsServices and associates them with
 // ProfileIOS.
-class RemoteSuggestionsServiceFactory
+class RemoteSuggestionsServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<RemoteSuggestionsServiceFactory,
                                                 RemoteSuggestionsService> {
  public:
@@ -19,7 +19,7 @@ class RemoteSuggestionsServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_REMOTE_SUGGESTIONS_SERVICE_FACTORY_H_

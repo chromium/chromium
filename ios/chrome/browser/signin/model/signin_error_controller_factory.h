@@ -11,7 +11,7 @@
 namespace ios {
 // Singleton that owns all SigninErrorControllers and associates them with
 // ProfileIOS.
-class SigninErrorControllerFactory
+class SigninErrorControllerFactory final
     : public TypedProfileKeyedServiceFactoryIOS<SigninErrorControllerFactory,
                                                 SigninErrorController> {
  public:
@@ -20,7 +20,7 @@ class SigninErrorControllerFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

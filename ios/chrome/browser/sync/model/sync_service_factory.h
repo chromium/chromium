@@ -16,7 +16,7 @@ class SyncServiceImpl;
 
 // Singleton that owns all SyncServices and associates them with
 // ProfileIOS.
-class SyncServiceFactory
+class SyncServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<SyncServiceFactory,
                                                 syncer::SyncService> {
  public:
@@ -39,7 +39,7 @@ class SyncServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_SYNC_SERVICE_FACTORY_H_

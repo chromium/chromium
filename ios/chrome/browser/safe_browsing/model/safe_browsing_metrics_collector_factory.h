@@ -10,7 +10,7 @@
 
 // Used to construct a SafeBrowsingMetricsCollector. Returns null for
 // incognito profiles.
-class SafeBrowsingMetricsCollectorFactory
+class SafeBrowsingMetricsCollectorFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           SafeBrowsingMetricsCollectorFactory,
           safe_browsing::SafeBrowsingMetricsCollector> {
@@ -20,7 +20,7 @@ class SafeBrowsingMetricsCollectorFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_SAFE_BROWSING_METRICS_COLLECTOR_FACTORY_H_

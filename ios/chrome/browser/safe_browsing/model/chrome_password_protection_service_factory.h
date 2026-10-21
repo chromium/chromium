@@ -10,7 +10,7 @@
 
 // Singleton that owns ChromePasswordProtectionService objects, one for each
 // active Profile.
-class ChromePasswordProtectionServiceFactory
+class ChromePasswordProtectionServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           ChromePasswordProtectionServiceFactory,
           ChromePasswordProtectionService> {
@@ -20,7 +20,7 @@ class ChromePasswordProtectionServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_CHROME_PASSWORD_PROTECTION_SERVICE_FACTORY_H_

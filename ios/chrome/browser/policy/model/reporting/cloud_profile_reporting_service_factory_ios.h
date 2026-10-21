@@ -10,7 +10,7 @@
 
 namespace enterprise_reporting {
 
-class CloudProfileReportingServiceFactoryIOS
+class CloudProfileReportingServiceFactoryIOS final
     : public TypedProfileKeyedServiceFactoryIOS<
           CloudProfileReportingServiceFactoryIOS,
           CloudProfileReportingServiceIOS> {
@@ -20,7 +20,7 @@ class CloudProfileReportingServiceFactoryIOS
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace enterprise_reporting

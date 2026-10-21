@@ -14,7 +14,7 @@ namespace ios {
 
 // Singleton that owns all AutocompleteClassifiers and associates them with
 // profiles.
-class AutocompleteClassifierFactory
+class AutocompleteClassifierFactory final
     : public TypedProfileKeyedServiceFactoryIOS<AutocompleteClassifierFactory,
                                                 AutocompleteClassifier> {
  public:
@@ -27,7 +27,7 @@ class AutocompleteClassifierFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

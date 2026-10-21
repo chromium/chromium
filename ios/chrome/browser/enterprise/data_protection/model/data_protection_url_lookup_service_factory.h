@@ -13,7 +13,7 @@
 // This service is not created for Incognito profiles as the features
 // it supports (e.g., real-time URL checks for screenshot protection)
 // are not active in Incognito mode.
-class DataProtectionUrlLookupServiceFactory
+class DataProtectionUrlLookupServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           DataProtectionUrlLookupServiceFactory,
           enterprise_data_protection::DataProtectionUrlLookupService> {
@@ -23,7 +23,7 @@ class DataProtectionUrlLookupServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_MODEL_DATA_PROTECTION_URL_LOOKUP_SERVICE_FACTORY_H_

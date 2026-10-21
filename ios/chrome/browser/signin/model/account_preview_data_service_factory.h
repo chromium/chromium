@@ -12,7 +12,7 @@
 
 // KeyedService factory that creates the Profile-associated
 // `AccountPreviewDataService`.
-class AccountPreviewDataServiceFactory
+class AccountPreviewDataServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           AccountPreviewDataServiceFactory,
           signin::AccountPreviewDataService> {
@@ -22,9 +22,8 @@ class AccountPreviewDataServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_PREVIEW_DATA_SERVICE_FACTORY_H_

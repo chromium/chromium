@@ -16,7 +16,7 @@ class DualReadingListModel;
 
 // Singleton that creates the ReadingListModel and associates that service with
 // a profile.
-class ReadingListModelFactory
+class ReadingListModelFactory final
     : public TypedProfileKeyedServiceFactoryIOS<ReadingListModelFactory,
                                                 ReadingListModel> {
  public:
@@ -27,7 +27,7 @@ class ReadingListModelFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_MODEL_READING_LIST_MODEL_FACTORY_H_

@@ -12,7 +12,7 @@
 
 // Singleton that owns the AutofillAiModelExecutor responsible for managing
 // calls to the AutofillAI server model via optimization guide infrastructure.
-class IOSAutofillAiModelExecutorFactory
+class IOSAutofillAiModelExecutorFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSAutofillAiModelExecutorFactory,
           autofill::AutofillAiModelExecutor> {
@@ -22,7 +22,7 @@ class IOSAutofillAiModelExecutorFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_IOS_AUTOFILL_AI_MODEL_EXECUTOR_FACTORY_H_

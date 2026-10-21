@@ -10,7 +10,7 @@
 
 // Singleton that owns all NtpBackgroundServices and associates them with
 // profile.
-class NtpBackgroundServiceFactory
+class NtpBackgroundServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<NtpBackgroundServiceFactory,
                                                 NtpBackgroundService> {
  public:
@@ -19,7 +19,7 @@ class NtpBackgroundServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_NTP_BACKGROUND_SERVICE_FACTORY_H_

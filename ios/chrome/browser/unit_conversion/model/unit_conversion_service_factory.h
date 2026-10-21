@@ -10,7 +10,7 @@
 
 // Singleton that owns all UnitConversionServices and associates them with
 // ProfileIOS.
-class UnitConversionServiceFactory
+class UnitConversionServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<UnitConversionServiceFactory,
                                                 UnitConversionService> {
  public:
@@ -19,7 +19,7 @@ class UnitConversionServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_UNIT_CONVERSION_MODEL_UNIT_CONVERSION_SERVICE_FACTORY_H_

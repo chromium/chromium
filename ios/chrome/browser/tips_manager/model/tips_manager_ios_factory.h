@@ -16,7 +16,7 @@ class PrefRegistrySyncable;
 
 // Singleton that owns all `TipsManagerIOS` objects and associates them
 // with Profiles.
-class TipsManagerIOSFactory
+class TipsManagerIOSFactory final
     : public TypedProfileKeyedServiceFactoryIOS<TipsManagerIOSFactory,
                                                 TipsManagerIOS> {
  public:
@@ -31,9 +31,8 @@ class TipsManagerIOSFactory
   // Creates and returns an `TipsManagerIOS` instance for the given
   // `context`.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 #endif  // IOS_CHROME_BROWSER_TIPS_MANAGER_MODEL_TIPS_MANAGER_IOS_FACTORY_H_

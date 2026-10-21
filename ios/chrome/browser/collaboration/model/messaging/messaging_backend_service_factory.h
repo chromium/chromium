@@ -11,7 +11,7 @@
 namespace collaboration::messaging {
 
 // Factory for the messaging backend service.
-class MessagingBackendServiceFactory
+class MessagingBackendServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<MessagingBackendServiceFactory,
                                                 MessagingBackendService> {
  public:
@@ -20,7 +20,7 @@ class MessagingBackendServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace collaboration::messaging

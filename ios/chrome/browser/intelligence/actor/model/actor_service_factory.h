@@ -12,7 +12,7 @@ namespace actor {
 
 // Singleton that owns all ActorServices and associates them with
 // ProfileIOS.
-class ActorServiceFactory
+class ActorServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<ActorServiceFactory,
                                                 ActorService> {
  public:
@@ -21,7 +21,7 @@ class ActorServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace actor

@@ -12,7 +12,7 @@
 
 // Singleton that owns all OptimizationGuideService objects and associates them
 // with Profiles.
-class OptimizationGuideServiceFactory
+class OptimizationGuideServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<OptimizationGuideServiceFactory,
                                                 OptimizationGuideService> {
  public:
@@ -28,7 +28,7 @@ class OptimizationGuideServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_OPTIMIZATION_GUIDE_SERVICE_FACTORY_H_

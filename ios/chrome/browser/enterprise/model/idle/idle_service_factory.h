@@ -13,7 +13,7 @@ namespace enterprise_idle {
 
 // Singleton that owns all IdleServices and associates them with
 // ProfileIOS.
-class IdleServiceFactory
+class IdleServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<IdleServiceFactory,
                                                 IdleService> {
  public:
@@ -22,10 +22,9 @@ class IdleServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 }  // namespace enterprise_idle

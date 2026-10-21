@@ -8,7 +8,7 @@
 #include "components/private_ai/private_ai_service.h"
 #include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
-class PrivateAiServiceFactory
+class PrivateAiServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<PrivateAiServiceFactory,
                                                 private_ai::PrivateAiService> {
  public:
@@ -17,7 +17,7 @@ class PrivateAiServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PRIVATE_AI_MODEL_PRIVATE_AI_SERVICE_FACTORY_H_

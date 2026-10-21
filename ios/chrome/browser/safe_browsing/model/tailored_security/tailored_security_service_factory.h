@@ -10,7 +10,7 @@
 
 // Singleton that owns TailoredSecurityService objects, one for each active
 // profile. It returns nullptr for Incognito profiles.
-class TailoredSecurityServiceFactory
+class TailoredSecurityServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           TailoredSecurityServiceFactory,
           safe_browsing::TailoredSecurityService> {
@@ -20,7 +20,7 @@ class TailoredSecurityServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_TAILORED_SECURITY_TAILORED_SECURITY_SERVICE_FACTORY_H_

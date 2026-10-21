@@ -13,7 +13,7 @@ namespace ios {
 
 // Singleton that owns all HostContentSettingsMaps and associates them with
 // profiles.
-class HostContentSettingsMapFactory
+class HostContentSettingsMapFactory final
     : public TypedRefcountedProfileKeyedServiceFactoryIOS<
           HostContentSettingsMapFactory,
           HostContentSettingsMap> {
@@ -22,9 +22,9 @@ class HostContentSettingsMapFactory
 
  private:
   // RefcountedProfileKeyedServiceFactoryIOS implementation.
-  bool ServiceIsRequiredForContextInitialization() const override;
+  bool ServiceIsRequiredForContextInitialization() const final;
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

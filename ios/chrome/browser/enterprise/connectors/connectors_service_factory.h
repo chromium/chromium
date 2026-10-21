@@ -10,7 +10,7 @@
 
 namespace enterprise_connectors {
 
-class ConnectorsServiceFactory
+class ConnectorsServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<ConnectorsServiceFactory,
                                                 ConnectorsService> {
  public:
@@ -19,7 +19,7 @@ class ConnectorsServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace enterprise_connectors

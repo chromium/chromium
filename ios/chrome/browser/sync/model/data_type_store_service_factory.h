@@ -10,7 +10,7 @@
 
 // Singleton that owns all DataTypeStoreService and associates them with
 // ProfileIOS.
-class DataTypeStoreServiceFactory
+class DataTypeStoreServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<DataTypeStoreServiceFactory,
                                                 syncer::DataTypeStoreService> {
  public:
@@ -19,7 +19,7 @@ class DataTypeStoreServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_DATA_TYPE_STORE_SERVICE_FACTORY_H_

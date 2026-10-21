@@ -11,7 +11,7 @@
 namespace ios {
 // Singleton that owns all PasswordStores and associates them with
 // profile.
-class PasswordManagerLogRouterFactory
+class PasswordManagerLogRouterFactory final
     : public TypedProfileKeyedServiceFactoryIOS<PasswordManagerLogRouterFactory,
                                                 autofill::LogRouter> {
  public:
@@ -20,7 +20,7 @@ class PasswordManagerLogRouterFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace ios

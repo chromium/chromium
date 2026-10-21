@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Owns all PolicyBlocklistService instances and associate them to profiles.
-class PolicyBlocklistServiceFactory
+class PolicyBlocklistServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<PolicyBlocklistServiceFactory,
                                                 PolicyBlocklistService> {
  public:
@@ -18,7 +18,7 @@ class PolicyBlocklistServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_POLICY_URL_BLOCKING_MODEL_POLICY_URL_BLOCKING_SERVICE_FACTORY_H_

@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // KeyedServiceFactory for PersonalContextEligibilityService on iOS.
-class IOSPersonalContextEligibilityServiceFactory
+class IOSPersonalContextEligibilityServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSPersonalContextEligibilityServiceFactory,
           personal_context::PersonalContextEligibilityService> {
@@ -19,7 +19,7 @@ class IOSPersonalContextEligibilityServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PERSONAL_CONTEXT_MODEL_IOS_PERSONAL_CONTEXT_ELIGIBILITY_SERVICE_FACTORY_H_

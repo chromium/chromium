@@ -11,16 +11,16 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Factory for the components ImageService service which fetches salient images.
-class PageImageServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
-                                    PageImageServiceFactory,
-                                    page_image_service::ImageService> {
+class PageImageServiceFactory final : public TypedProfileKeyedServiceFactoryIOS<
+                                          PageImageServiceFactory,
+                                          page_image_service::ImageService> {
  public:
   explicit PageImageServiceFactory(PassKey key);
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PAGE_IMAGE_MODEL_PAGE_IMAGE_SERVICE_FACTORY_H_

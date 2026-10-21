@@ -10,7 +10,7 @@
 
 namespace data_controls {
 
-class IOSRulesServiceFactory
+class IOSRulesServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<IOSRulesServiceFactory,
                                                 IOSRulesService> {
  public:
@@ -19,7 +19,7 @@ class IOSRulesServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace data_controls

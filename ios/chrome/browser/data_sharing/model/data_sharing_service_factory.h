@@ -11,7 +11,7 @@
 namespace data_sharing {
 
 // Factory for DataSharingService.
-class DataSharingServiceFactory
+class DataSharingServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<DataSharingServiceFactory,
                                                 DataSharingService> {
  public:
@@ -24,7 +24,7 @@ class DataSharingServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace data_sharing

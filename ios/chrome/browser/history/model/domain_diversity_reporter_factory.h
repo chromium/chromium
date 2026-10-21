@@ -14,7 +14,7 @@ class PrefRegistrySyncable;
 
 // Singleton that creates all DomainDiversityReporter instances and associates
 // them with BrowserState.
-class DomainDiversityReporterFactory
+class DomainDiversityReporterFactory final
     : public TypedProfileKeyedServiceFactoryIOS<DomainDiversityReporterFactory,
                                                 DomainDiversityReporter> {
  public:
@@ -22,10 +22,9 @@ class DomainDiversityReporterFactory
 
  private:
   // ProfileKeyedServiceFactoryIOS implementation
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_HISTORY_MODEL_DOMAIN_DIVERSITY_REPORTER_FACTORY_H_

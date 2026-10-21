@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Creates instances of PasswordReceiverService per profile.
-class IOSChromePasswordReceiverServiceFactory
+class IOSChromePasswordReceiverServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSChromePasswordReceiverServiceFactory,
           password_manager::PasswordReceiverService> {
@@ -18,7 +18,7 @@ class IOSChromePasswordReceiverServiceFactory
 
  private:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PASSWORD_RECEIVER_SERVICE_FACTORY_H_

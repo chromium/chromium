@@ -12,7 +12,7 @@
 
 // Singleton that owns all MailtoHandlerServices and associates them with
 // profiles.
-class MailtoHandlerServiceFactory
+class MailtoHandlerServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<MailtoHandlerServiceFactory,
                                                 MailtoHandlerService> {
  public:
@@ -21,7 +21,7 @@ class MailtoHandlerServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_MAILTO_HANDLER_MODEL_MAILTO_HANDLER_SERVICE_FACTORY_H_

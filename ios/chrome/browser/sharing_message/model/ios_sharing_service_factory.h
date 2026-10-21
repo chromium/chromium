@@ -10,7 +10,7 @@
 
 // Singleton that owns all SharingService and associates them with
 // ProfileIOS.
-class IOSSharingServiceFactory
+class IOSSharingServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<IOSSharingServiceFactory,
                                                 SharingService> {
  public:
@@ -19,7 +19,7 @@ class IOSSharingServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARING_MESSAGE_MODEL_IOS_SHARING_SERVICE_FACTORY_H_

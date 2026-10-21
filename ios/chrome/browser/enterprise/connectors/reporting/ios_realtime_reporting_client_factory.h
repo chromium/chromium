@@ -10,7 +10,7 @@
 
 namespace enterprise_connectors {
 
-class IOSRealtimeReportingClientFactory
+class IOSRealtimeReportingClientFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           IOSRealtimeReportingClientFactory,
           IOSRealtimeReportingClient> {
@@ -24,7 +24,7 @@ class IOSRealtimeReportingClientFactory
  private:
   // ProfileKeyedServiceFactoryIOS overrides.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace enterprise_connectors

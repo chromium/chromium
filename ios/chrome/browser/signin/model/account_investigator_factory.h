@@ -14,7 +14,7 @@ namespace ios {
 
 // Singleton that creates the AccountInvestigatorFactory(s) and associates those
 // services with profiles.
-class AccountInvestigatorFactory
+class AccountInvestigatorFactory final
     : public TypedProfileKeyedServiceFactoryIOS<AccountInvestigatorFactory,
                                                 AccountInvestigator> {
  public:
@@ -23,9 +23,8 @@ class AccountInvestigatorFactory
  private:
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const final;
+  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) final;
 };
 
 }  // namespace ios

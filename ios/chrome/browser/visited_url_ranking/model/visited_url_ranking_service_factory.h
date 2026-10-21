@@ -12,7 +12,7 @@
 
 // Factory for the components VisitedURLRankingService service which fetches and
 // ranks visited URL.
-class VisitedURLRankingServiceFactory
+class VisitedURLRankingServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           VisitedURLRankingServiceFactory,
           visited_url_ranking::VisitedURLRankingService> {
@@ -22,7 +22,7 @@ class VisitedURLRankingServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_VISITED_URL_RANKING_MODEL_VISITED_URL_RANKING_SERVICE_FACTORY_H_

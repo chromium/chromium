@@ -12,7 +12,7 @@
 
 namespace client_certificates {
 
-class ClientCertificatesServiceIOSFactory
+class ClientCertificatesServiceIOSFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           ClientCertificatesServiceIOSFactory,
           ClientCertificatesServiceIOS> {
@@ -22,7 +22,7 @@ class ClientCertificatesServiceIOSFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 }  // namespace client_certificates

@@ -10,7 +10,7 @@
 
 // Singleton that creates the PushNotificationProfileService and associates that
 // service with ProfileIOS.
-class PushNotificationProfileServiceFactory
+class PushNotificationProfileServiceFactory final
     : public TypedProfileKeyedServiceFactoryIOS<
           PushNotificationProfileServiceFactory,
           PushNotificationProfileService> {
@@ -25,7 +25,7 @@ class PushNotificationProfileServiceFactory
  private:
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const override;
+      ProfileIOS* profile) const final;
 };
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_PROFILE_SERVICE_FACTORY_H_
