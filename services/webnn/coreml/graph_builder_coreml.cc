@@ -5525,7 +5525,14 @@ GraphBuilderCoreml::AddOperationForTranspose(
   CHECK(context_properties_.data_type_limits.transpose_input.data_types.Has(
       MILDataTypeToOperandType(input_operand_info.mil_data_type)));
 
-  if (input_operand_info.dimensions.size() <= 1) {
+  bool is_identity_permutation = true;
+  for (size_t i = 0; i < permutation.size(); ++i) {
+    if (permutation[i] != i) {
+      is_identity_permutation = false;
+      break;
+    }
+  }
+  if (is_identity_permutation) {
     return AddUnaryOperation(kOpIdentityTypeName, input_operand_id,
                              output_operand_id, block);
   }
