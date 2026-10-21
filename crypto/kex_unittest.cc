@@ -87,10 +87,10 @@ TEST(Kex, X25519Roundtrip) {
   auto their_public_key = crypto::keypair::PublicKey::FromPrivateKey(their_key);
 
   std::array<uint8_t, 32> our_result;
-  crypto::kex::X25519(their_public_key, our_key, our_result);
+  ASSERT_TRUE(crypto::kex::X25519(their_public_key, our_key, our_result));
 
   std::array<uint8_t, 32> their_result;
-  crypto::kex::X25519(our_public_key, their_key, their_result);
+  ASSERT_TRUE(crypto::kex::X25519(our_public_key, their_key, their_result));
 
   EXPECT_EQ(our_result, their_result);
 }
@@ -123,8 +123,17 @@ TEST(Kex, X25519KnownAnswer) {
       crypto::keypair::PublicKey::FromX25519PublicKey(kTheirPublic);
 
   std::array<uint8_t, 32> result;
-  crypto::kex::X25519(their_public, our_key, result);
+  ASSERT_TRUE(crypto::kex::X25519(their_public, our_key, result));
   EXPECT_EQ(kExpectedResult, result);
+}
+
+TEST(Kex, X25519LowOrderPoint) {
+  auto our_key = crypto::keypair::PrivateKey::GenerateX25519();
+  auto their_public = crypto::keypair::PublicKey::FromX25519PublicKey(
+      std::array<uint8_t, 32>{});
+
+  std::array<uint8_t, 32> result;
+  EXPECT_FALSE(crypto::kex::X25519(their_public, our_key, result));
 }
 
 TEST(Kex, EcdhP384KnownAnswer) {

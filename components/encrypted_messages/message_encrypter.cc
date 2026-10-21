@@ -28,7 +28,9 @@ bool GetHkdfSubkeySecret(size_t subkey_length,
                          std::string_view hkdf_label,
                          std::vector<uint8_t>& secret) {
   uint8_t shared_secret[32];
-  crypto::kex::X25519(theirs, ours, shared_secret);
+  if (!crypto::kex::X25519(theirs, ours, shared_secret)) {
+    return false;
+  }
 
   secret.resize(subkey_length);
   crypto::kdf::Hkdf(crypto::hash::kSha256, shared_secret, {},

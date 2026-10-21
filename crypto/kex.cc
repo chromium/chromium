@@ -47,7 +47,7 @@ void EcdhP384(const crypto::keypair::PublicKey& theirs,
   DeriveSharedECDHSecret(theirs, ours, out);
 }
 
-void X25519(const crypto::keypair::PublicKey& theirs,
+bool X25519(const crypto::keypair::PublicKey& theirs,
             const crypto::keypair::PrivateKey& ours,
             base::span<uint8_t, 32> out) {
   CHECK(theirs.IsX25519());
@@ -56,7 +56,7 @@ void X25519(const crypto::keypair::PublicKey& theirs,
   std::array<uint8_t, 32> their_raw = theirs.ToX25519PublicKey();
   std::array<uint8_t, 32> our_raw = ours.ToX25519PrivateKey();
 
-  CHECK_EQ(1, ::X25519(out.data(), our_raw.data(), their_raw.data()));
+  return ::X25519(out.data(), our_raw.data(), their_raw.data()) == 1;
 }
 
 }  // namespace crypto::kex
