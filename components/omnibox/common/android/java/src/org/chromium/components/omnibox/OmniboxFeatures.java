@@ -240,7 +240,7 @@ public class OmniboxFeatures {
             newBooleanParam(sOmniboxMultimodalInput, "use_ask_hint_for_ntp", false);
 
     public static final BooleanCachedFeatureParam sShowNtpPlusButton =
-            newBooleanParam(sOmniboxMultimodalInput, "show_ntp_plus_button", false);
+            newBooleanParam(sOmniboxMultimodalInput, "show_ntp_plus_button", true);
 
     public static final BooleanCachedFeatureParam sFocusFuseboxFromNtpPlusButton =
             newBooleanParam(sOmniboxMultimodalInput, "focus_fusebox_from_ntp_plus_button", false);

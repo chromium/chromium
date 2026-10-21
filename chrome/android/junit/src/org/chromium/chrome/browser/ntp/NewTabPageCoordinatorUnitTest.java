@@ -85,6 +85,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridgeJni;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -157,6 +158,7 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Mock private ComposeplateUtils.Natives mMockComposeplateUtilsJni;
     @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
+    @Mock private ComposeboxQueryControllerBridge.Natives mComposeboxBridgeJni;
     @Mock private HomeModulesRankingHelper.Natives mHomeModulesRankingHelperJniMock;
     @Mock private NewTabPageManager mManager;
     @Mock private Tab mTab;
@@ -233,6 +235,8 @@ public class NewTabPageCoordinatorUnitTest {
         when(mMockComposeplateUtilsJni.isAimEntrypointEligible(mProfile)).thenReturn(true);
         when(mMockComposeplateUtilsJni.isEnabledByPolicy(mProfile)).thenReturn(true);
         ComposeboxQueryControllerBridge.setInstanceForTesting(mComposeboxQueryControllerBridge);
+        ComposeboxQueryControllerBridgeJni.setInstanceForTesting(mComposeboxBridgeJni);
+        when(mComposeboxBridgeJni.isFuseboxEligibleForProfile(any())).thenReturn(true);
         mInputStateSupplier.set(
                 new InputStateBuilder().withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN).build());
         when(mComposeboxQueryControllerBridge.getInputStateSupplier())
