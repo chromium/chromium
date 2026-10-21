@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -46,6 +47,7 @@ import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerJni;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerProvider;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Integration tests for PWA Install bottom sheet UI and vertical scroll offset. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -116,6 +118,8 @@ public class PwaInstallBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
+    // TODO(crbug.com/576314978): Re-enable.
+    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testVerticalScrollOffset() {
         showPwaInstallBottomSheet();
 
