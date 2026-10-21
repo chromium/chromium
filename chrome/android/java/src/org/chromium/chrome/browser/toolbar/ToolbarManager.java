@@ -146,6 +146,7 @@ import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegateImpl;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxControls;
 import org.chromium.chrome.browser.omnibox.status.SiteControlsIphController;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -387,6 +388,7 @@ public class ToolbarManager
     private final ActivityResultTracker mActivityResultTracker;
     private final SnackbarManager mSnackbarManager;
     private final LocationBarModel mLocationBarModel;
+    private final OmniboxResourceProvider mResourceProvider;
     private @Nullable WebappRegistryAppInstalledDelegate mAppInstalledDelegate;
     private NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     private final ValueChangedCallback<@Nullable BookmarkModel> mBookmarkModelSupplierObserver =
@@ -1299,6 +1301,15 @@ public class ToolbarManager
 
         tabObscuringHandler.addObserver(this);
 
+        mResourceProvider =
+                new OmniboxResourceProvider(
+                        mActivity,
+                        OmniboxResourceProvider.getBrandedColorScheme(
+                                mActivity,
+                                mLocationBarModel.isIncognitoBranded(),
+                                mLocationBarModel.getPrimaryColor()),
+                        TabFavicon::getBitmap);
+
         Runnable scrimClickAction = this::onScrimClicked;
         View scrimTarget = mCompositorViewHolder;
         mLocationBarFocusHandler =
@@ -1393,7 +1404,7 @@ public class ToolbarManager
                             ToolbarPositionController.isToolbarPositionCustomizationEnabled(
                                     mActivity, mIsCustomTab),
                             pageZoomManager,
-                            TabFavicon::getBitmap,
+                            mResourceProvider,
                             snackbarManager,
                             bottomContainerView,
                             omniboxChipManager,
@@ -3132,6 +3143,7 @@ public class ToolbarManager
             mLocationBar.destroy();
             mLocationBar = null;
         }
+        mResourceProvider.destroy();
 
         if (mAttachStateChangeListener != null) {
             mToolbar.removeOnAttachStateChangeListener(mAttachStateChangeListener);
