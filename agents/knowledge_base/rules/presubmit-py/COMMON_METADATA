@@ -1,0 +1,7 @@
+agentic_review {
+  capability_groups {
+    path_expression: "(?:.*/)?PRESUBMIT[^/]*\.py"
+    rules: "agents/knowledge_base/rules/presubmit-py/avoid-unnecessary-presubmit-banrule-exemptions.md"
+    rules: "agents/knowledge_base/rules/presubmit-py/match-lowercase-identifiers-in-gn-presubmit-checks.md"
+  }
+}

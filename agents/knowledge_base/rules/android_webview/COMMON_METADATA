@@ -1,0 +1,6 @@
+agentic_review {
+  capability_groups {
+    path_expression: "android_webview/.*"
+    rules: "agents/knowledge_base/rules/android_webview/distinguish-chrome-browser-and-embedding-app-in-webview.md"
+  }
+}

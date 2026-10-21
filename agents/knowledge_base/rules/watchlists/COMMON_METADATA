@@ -1,0 +1,6 @@
+agentic_review {
+  capability_groups {
+    path_expression: "WATCHLISTS"
+    rules: "agents/knowledge_base/rules/watchlists/use-negative-lookahead-to-exclude-subdirectories-in-watchlis.md"
+  }
+}

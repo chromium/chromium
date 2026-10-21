@@ -1,0 +1,6 @@
+agentic_review {
+  capability_groups {
+    path_expression: "agents/.*"
+    rules: "agents/knowledge_base/rules/agents/use-emphatic-imperatives-for-agent-constraints.md"
+  }
+}

@@ -1,0 +1,6 @@
+agentic_review {
+  capability_groups {
+    path_expression: "(?:.*/)?DEPS"
+    rules: "agents/knowledge_base/rules/deps/verify-deps-git-revision-matches-landed-commit.md"
+  }
+}

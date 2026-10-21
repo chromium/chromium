@@ -1,0 +1,13 @@
+agentic_review {
+  capability_groups {
+    path_expression: "components/.*"
+    rules: "agents/knowledge_base/rules/components/support-dynamic-refresh-for-enterprise-policies.md"
+    rules: "agents/knowledge_base/rules/components/update-autofill-heuristics-test-expectations-in-deps.md"
+  }
+  capability_groups {
+    path_expression: "components/.*"
+    content_patterns: "(?i)\\bhistogram\\w*\\b|CreateAllocatorDump"
+    rules: "agents/knowledge_base/rules/components/register-iph-features-in-actions-and-histograms-xml.md"
+    rules: "agents/knowledge_base/rules/components/update-all-child-process-histogram-collection-pipelines.md"
+  }
+}

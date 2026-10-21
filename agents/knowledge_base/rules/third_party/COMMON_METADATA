@@ -1,0 +1,8 @@
+agentic_review {
+  capability_groups {
+    path_expression: "third_party/.*"
+    rules: "agents/knowledge_base/rules/third_party/avoid-transitional-third-party-directories.md"
+    rules: "agents/knowledge_base/rules/third_party/do-not-modify-third-party-submodule-source.md"
+    rules: "agents/knowledge_base/rules/third_party/use-copybara-strictly-for-transformations-in-crowbar.md"
+  }
+}

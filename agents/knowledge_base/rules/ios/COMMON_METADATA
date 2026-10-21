@@ -1,0 +1,6 @@
+agentic_review {
+  capability_groups {
+    path_expression: "(?:ios|base/apple)/.*"
+    rules: "agents/knowledge_base/rules/ios/use-std-function-for-swift-callback-interop.md"
+  }
+}

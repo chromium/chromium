@@ -1,0 +1,6 @@
+agentic_review {
+  capability_groups {
+    path_expression: "(?:mojo|chrome/test/fuzzing)/.*"
+    rules: "agents/knowledge_base/rules/mojo/mojo-callbackrouter-helper-closebindings.md"
+  }
+}
