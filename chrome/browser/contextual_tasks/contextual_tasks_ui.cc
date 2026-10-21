@@ -240,7 +240,6 @@ void AddContextMenuItemEligibilityLoadTimeData(base::DictValue& dict,
 
 std::string EntryPointToString(omnibox::ChromeAimEntryPoint entry_point) {
   switch (entry_point) {
-    case omnibox::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON:
     case omnibox::DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON:
       return "toolbar";
     case omnibox::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION:

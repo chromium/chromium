@@ -475,12 +475,17 @@ void ContextualTasksButton::OnButtonPress() {
 
     if (contextual_tasks::kShowEntryPoint.Get() ==
         contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
-      omnibox::ChromeAimEntryPoint entry_point =
+      controller->Show(
+          /*transition_from_tab=*/false,
           is_pinned ? omnibox::ChromeAimEntryPoint::
                           DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON
-                    : omnibox::ChromeAimEntryPoint::
-                          DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON;
-      controller->Show(/*transition_from_tab=*/false, entry_point);
+                    : omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+          /*use_no_animation=*/false, /*open_time_ticks=*/std::nullopt,
+          is_pinned
+              ? std::nullopt
+              : std::make_optional(
+                    contextual_tasks::ContextualTasksPanelController::
+                        EntrySource::kEphemeralToolbarButton));
     } else {
       controller->OpenInZeroState();
     }

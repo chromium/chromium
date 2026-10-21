@@ -48,6 +48,17 @@ class ContextualTasksPanelController {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
+  // The entry source for the contextual tasks panel.
+  enum class EntrySource {
+    kOther = 0,
+    kLensOverlay = 1,
+    kAiModeLinkClick = 2,
+    kAioToCobr = 3,
+    kAskGoogle = 4,
+    kEphemeralToolbarButton = 5,
+    kMaxValue = kEphemeralToolbarButton,
+  };
+
   // Visibility commands.
   // Show the panel. If |transition_from_tab| is true, trigger the panel content
   // to animate from the active tab content's bounds.
@@ -56,7 +67,8 @@ class ContextualTasksPanelController {
       omnibox::ChromeAimEntryPoint entry_point =
           omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
       bool use_no_animation = false,
-      std::optional<base::TimeTicks> open_time_ticks = std::nullopt) = 0;
+      std::optional<base::TimeTicks> open_time_ticks = std::nullopt,
+      std::optional<EntrySource> entry_source_override = std::nullopt) = 0;
   // Close the panel.
   virtual void Close() = 0;
 
@@ -75,17 +87,6 @@ class ContextualTasksPanelController {
   // Check if the panel is currently opening for ContextualTask as another
   // feature might also show panel.
   virtual bool IsPanelOpenForContextualTask() const = 0;
-
-  // The entry source for the contextual tasks panel.
-  enum class EntrySource {
-    kOther = 0,
-    kLensOverlay = 1,
-    kAiModeLinkClick = 2,
-    kAioToCobr = 3,
-    kAskGoogle = 4,
-    kEphemeralToolbarButton = 5,
-    kMaxValue = kEphemeralToolbarButton,
-  };
 
   // Returns the entry source of the currently active panel.
   virtual EntrySource GetActiveEntrySource() const = 0;

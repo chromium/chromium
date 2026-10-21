@@ -35,7 +35,8 @@ class MockContextualTasksPanelController
               (bool,
                omnibox::ChromeAimEntryPoint,
                bool,
-               std::optional<base::TimeTicks>),
+               std::optional<base::TimeTicks>,
+               std::optional<EntrySource>),
               (override));
   MOCK_METHOD(void, Close, (), (override));
   MOCK_METHOD(void, OpenInZeroState, (), (override));

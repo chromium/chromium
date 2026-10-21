@@ -142,11 +142,12 @@ class ContextualTasksSidePanelCoordinator
   void AddObserver(ContextualTasksPanelController::Observer* observer) override;
   void RemoveObserver(
       ContextualTasksPanelController::Observer* observer) override;
-  void Show(
-      bool transition_from_tab,
-      omnibox::ChromeAimEntryPoint entry_point,
-      bool use_no_animation = false,
-      std::optional<base::TimeTicks> open_time_ticks = std::nullopt) override;
+  void Show(bool transition_from_tab,
+            omnibox::ChromeAimEntryPoint entry_point,
+            bool use_no_animation = false,
+            std::optional<base::TimeTicks> open_time_ticks = std::nullopt,
+            std::optional<EntrySource> entry_source_override =
+                std::nullopt) override;
   void Close() override;
   void OpenInZeroState() override;
   void ShareTabsWithActiveOrNewThread(
@@ -310,8 +311,10 @@ class ContextualTasksSidePanelCoordinator
 
   // Closes any active Lens session on the given tab if it matches an
   // eligibility criteria.
-  void CloseLensSessionIfActive(tabs::TabInterface* tab_interface,
-                                omnibox::ChromeAimEntryPoint entry_point);
+  void CloseLensSessionIfActive(
+      tabs::TabInterface* tab_interface,
+      omnibox::ChromeAimEntryPoint entry_point,
+      ContextualTasksPanelController::EntrySource entry_source);
 
   // Notifies the ActiveTaskContextProvider about the current session state.
   // This checks both the panel and the active tab for a valid session handle.

@@ -5971,8 +5971,10 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelTabStateInteractiveUiTest,
         // Reopen the panel on tab0 as the ephemeral toolbar button does.
         GetPanelController()->Show(
             /*transition_from_tab=*/false,
-            omnibox::ChromeAimEntryPoint::
-                DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+            omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+            /*use_no_animation=*/false, /*open_time_ticks=*/std::nullopt,
+            ContextualTasksPanelController::EntrySource::
+                kEphemeralToolbarButton);
       }),
       WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
         EXPECT_EQ(shared_task_id_, GetTaskIdForTab(0));

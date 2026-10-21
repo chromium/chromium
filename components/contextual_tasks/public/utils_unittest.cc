@@ -17,10 +17,6 @@ namespace contextual_tasks {
 namespace {
 
 TEST(ContextualTasksUtilsTest, GetLensInvocationSourceForAimZeroState) {
-  EXPECT_EQ(
-      GetLensInvocationSourceForAimZeroState(
-          omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON),
-      lens::LensOverlayInvocationSource::kCobrowseToolbarButton);
   EXPECT_EQ(GetLensInvocationSourceForAimZeroState(
                 omnibox::ChromeAimEntryPoint::
                     DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON),
@@ -86,22 +82,6 @@ TEST(ContextualTasksUtilsTest,
   std::string source;
   EXPECT_TRUE(net::GetValueForKeyInQuery(result_url, "source", &source));
   EXPECT_EQ(source, "chrome.crn.obpa");
-}
-
-TEST(ContextualTasksUtilsTest,
-     AppendAimEntryPointParams_CobrowseToolbarButton) {
-  GURL base_url("https://www.google.com");
-  GURL result_url = AppendAimEntryPointParams(
-      base_url,
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
-
-  std::string aep;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(result_url, "aep", &aep));
-  EXPECT_EQ(aep, "130");
-
-  std::string source;
-  EXPECT_TRUE(net::GetValueForKeyInQuery(result_url, "source", &source));
-  EXPECT_EQ(source, "chrome.crn.cct");
 }
 
 TEST(ContextualTasksUtilsTest,

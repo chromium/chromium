@@ -412,10 +412,14 @@ void ContextualTasksSidePanelCoordinator::Show(
     bool transition_from_tab,
     omnibox::ChromeAimEntryPoint entry_point,
     bool use_no_animation,
-    std::optional<base::TimeTicks> open_time_ticks) {
+    std::optional<base::TimeTicks> open_time_ticks,
+    std::optional<EntrySource> entry_source_override) {
   ContextualTasksPanelController::EntrySource entry_source;
-  if (entry_point == omnibox::ChromeAimEntryPoint::
-                         DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT) {
+  if (entry_source_override.has_value()) {
+    entry_source = *entry_source_override;
+  } else if (entry_point ==
+             omnibox::ChromeAimEntryPoint::
+                 DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT) {
     entry_source = ContextualTasksPanelController::EntrySource::kLensOverlay;
   } else if (entry_point ==
              omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_AIO_LINK) {
@@ -430,10 +434,6 @@ void ContextualTasksSidePanelCoordinator::Show(
                  omnibox::ChromeAimEntryPoint::
                      DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP) {
     entry_source = ContextualTasksPanelController::EntrySource::kAskGoogle;
-  } else if (entry_point == omnibox::ChromeAimEntryPoint::
-                                DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON) {
-    entry_source =
-        ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton;
   } else if (transition_from_tab) {
     entry_source =
         ContextualTasksPanelController::EntrySource::kAiModeLinkClick;
@@ -475,7 +475,7 @@ void ContextualTasksSidePanelCoordinator::Show(
   tabs::TabInterface* active_tab_interface =
       TabListInterface::From(browser_window_)->GetActiveTab();
   CHECK(active_tab_interface);
-  CloseLensSessionIfActive(active_tab_interface, entry_point);
+  CloseLensSessionIfActive(active_tab_interface, entry_point, entry_source);
   if (!GetCurrentTask()) {
     // If no task is found, create a new task and associate it with the active
     // tab.
@@ -636,8 +636,12 @@ void ContextualTasksSidePanelCoordinator::OpenInZeroState() {
   Show(/*transition_from_tab=*/false,
        is_pinned ? omnibox::ChromeAimEntryPoint::
                        DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON
-                 : omnibox::ChromeAimEntryPoint::
-                       DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+                 : omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+       /*use_no_animation=*/false, /*open_time_ticks=*/std::nullopt,
+       is_pinned ? std::nullopt
+                 : std::make_optional(
+                       ContextualTasksPanelController::EntrySource::
+                           kEphemeralToolbarButton));
 }
 
 void ContextualTasksSidePanelCoordinator::ShareTabsWithActiveOrNewThread(
@@ -1584,12 +1588,13 @@ void ContextualTasksSidePanelCoordinator::CloseLensSessionForTab(
 
 void ContextualTasksSidePanelCoordinator::CloseLensSessionIfActive(
     tabs::TabInterface* tab_interface,
-    omnibox::ChromeAimEntryPoint entry_point) {
+    omnibox::ChromeAimEntryPoint entry_point,
+    ContextualTasksPanelController::EntrySource entry_source) {
 #if !BUILDFLAG(IS_ANDROID)
   if (entry_point != omnibox::ChromeAimEntryPoint::
                          DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON &&
-      entry_point != omnibox::ChromeAimEntryPoint::
-                         DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON) {
+      entry_source !=
+          ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton) {
     return;
   }
 

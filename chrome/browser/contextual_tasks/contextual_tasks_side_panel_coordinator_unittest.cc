@@ -394,8 +394,9 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, GetActiveEntrySource) {
             coordinator_->GetActiveEntrySource());
 
   coordinator_->Show(
-      false,
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+      false, omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/false, /*open_time_ticks=*/std::nullopt,
+      ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton);
 
   EXPECT_EQ(
       ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton,
@@ -427,15 +428,32 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, ShowSidePanelSetsEntryPoint) {
 
   auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
       ContextualTasksUiServiceFactory::GetForBrowserContext(profile_.get()));
+  EXPECT_CALL(*mock_ui_service,
+              SetInitialEntryPointForTask(
+                  _, omnibox::ChromeAimEntryPoint::
+                         DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON))
+      .Times(1);
+  coordinator_->Show(false, omnibox::ChromeAimEntryPoint::
+                                DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ShowSidePanelEphemeralToolbarButtonDoesNotSetEntryPoint) {
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
+      ContextualTasksUiServiceFactory::GetForBrowserContext(profile_.get()));
   EXPECT_CALL(
       *mock_ui_service,
       SetInitialEntryPointForTask(
-          _,
-          omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON))
+          _, omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT))
       .Times(1);
   coordinator_->Show(
-      false,
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+      false, omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/false, /*open_time_ticks=*/std::nullopt,
+      ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton);
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest, CloseClearsLocalTabUnderlines) {
@@ -566,9 +584,8 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
                   testing::Contains(testing::Pair("Experiment ID", "Arm 1"))))
       .Times(1);
 
-  coordinator_->Show(
-      false,
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  coordinator_->Show(false,
+                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 }
 
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
@@ -591,9 +608,8 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
                   testing::Contains(testing::Pair("Experiment ID", "Arm 5"))))
       .Times(1);
 
-  coordinator_->Show(
-      false,
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  coordinator_->Show(false,
+                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
 }
 #endif
 
@@ -813,7 +829,9 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   SetActiveTab(tab_b);
   coordinator_->Show(
       /*transition_from_tab=*/false,
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/false, /*open_time_ticks=*/std::nullopt,
+      ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton);
   EXPECT_TRUE(ShouldBeOpen());
   EXPECT_EQ(1u, GetNumberOfActiveTasksForTesting(task.GetTaskId()));
 }
@@ -841,7 +859,9 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   // Open the panel from the ephemeral toolbar button and interact with it.
   coordinator_->Show(
       /*transition_from_tab=*/false,
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/false, /*open_time_ticks=*/std::nullopt,
+      ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton);
   coordinator_->OnAiInteraction();
 
   // Closing the panel on tab A doesn't end the session, since tab B still shows
@@ -965,7 +985,9 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 
   coordinator_->Show(
       /*transition_from_tab=*/false,
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/false, /*open_time_ticks=*/std::nullopt,
+      ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton);
 }
 #endif
 
@@ -1268,7 +1290,9 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 
   coordinator_->Show(
       /*transition_from_tab=*/false,
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/false, /*open_time_ticks=*/std::nullopt,
+      ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton);
 
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Session.Duration.EphemeralToolbarButton", 0);
@@ -1311,7 +1335,9 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 
   coordinator_->Show(
       /*transition_from_tab=*/false,
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/false, /*open_time_ticks=*/std::nullopt,
+      ContextualTasksPanelController::EntrySource::kEphemeralToolbarButton);
 
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Session.Duration.EphemeralToolbarButton", 0);
@@ -1691,7 +1717,7 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       *mock_ui_service,
       SetInitialEntryPointForTask(
           new_task.GetTaskId(),
-          omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON))
+          omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT))
       .Times(1);
   EXPECT_CALL(*mock_panel_host_, Show(_)).Times(1);
 

@@ -2399,8 +2399,8 @@ TEST_F(ContextualTasksUiServiceTest,
           aim_eligibility_service_.get()),
       /*cookie_synchronizer=*/nullptr);
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  omnibox::ChromeAimEntryPoint entry_point =
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON;
+  omnibox::ChromeAimEntryPoint entry_point = omnibox::ChromeAimEntryPoint::
+      DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON;
 
   // Set the entry point for the task.
   service.SetInitialEntryPointForTask(task_id, entry_point);
@@ -2413,7 +2413,7 @@ TEST_F(ContextualTasksUiServiceTest,
 
   std::string source_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "source", &source_value));
-  EXPECT_EQ(source_value, "chrome.crn.cct");
+  EXPECT_EQ(source_value, "chrome.crn.ccpt");
 }
 
 TEST_F(ContextualTasksUiServiceTest,

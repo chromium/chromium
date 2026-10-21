@@ -1697,8 +1697,8 @@ TEST_F(ContextualTasksUiTest, IsCoBrowseOmniboxAction_False_OtherEntryPoint) {
 
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   service_for_nav_->SetInitialEntryPointForTask(
-      task_id,
-      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+      task_id, omnibox::ChromeAimEntryPoint::
+                   DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
   controller.SetTaskId(task_id);
 
   EXPECT_FALSE(controller.IsCoBrowseOmniboxAction());
