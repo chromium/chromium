@@ -183,6 +183,7 @@ if (!is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/test:test_support",
       "//chrome/test/base:browser_test_waiters",
       "//components/embedder_support",
@@ -191,6 +192,7 @@ if (!is_android) {
       "//components/privacy_sandbox:features",
       "//components/security_state/content",
       "//components/ukm:test_support",
+      "//ui/views",
     ]
   }
 }
