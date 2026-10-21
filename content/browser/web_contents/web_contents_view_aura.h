@@ -196,8 +196,6 @@ class CONTENT_EXPORT WebContentsViewAura
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            ClampTouchLocationToBrowserObservedPoint);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
-                           TouchDragRequiresTouchOnWebContents);
-  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            StartDraggingMouseRequiresLeftButton);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            RefusedDragDoesNotBlockSubsequentDrags);

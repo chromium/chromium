@@ -29,9 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
-#include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
-#include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/test/env_test_helper.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/test/window_test_api.h"
@@ -44,7 +42,6 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/origin.h"
@@ -102,22 +99,6 @@ class PrivilegedWebContentsDelegate : public WebContentsDelegate {
   // WebContentsDelegate:
   bool IsPrivileged() override { return true; }
 };
-
-// Updates aura's input state as if a touch event at `location_in_screen` had
-// been dispatched to `target`.
-void UpdateTouchState(aura::Window* target,
-                      ui::EventType type,
-                      const gfx::Point& location_in_screen) {
-  aura::Window* root = target->GetRootWindow();
-  gfx::Point location_in_root = location_in_screen;
-  if (auto* client = aura::client::GetScreenPositionClient(root)) {
-    client->ConvertPointFromScreen(root, &location_in_root);
-  }
-  ui::TouchEvent event(type, location_in_root, ui::EventTimeForNow(),
-                       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
-  aura::Env::GetInstance()->env_controller()->UpdateStateForTouchEvent(target,
-                                                                       event);
-}
 
 class TestDragDropClient : public aura::client::DragDropClient {
  public:
@@ -1360,7 +1341,9 @@ TEST_F(WebContentsViewAuraTest, ClampTouchLocationToBrowserObservedPoint) {
   ASSERT_TRUE(bounds.Contains(trusted));
   ASSERT_TRUE(bounds.Contains(spoofed));
 
-  UpdateTouchState(content, ui::EventType::kTouchPressed, trusted);
+  aura::Env* const env = aura::Env::GetInstance();
+  env->SetTouchDown(true);
+  env->SetLastTouchLocation(content, trusted);
 
   DropData drop_data;
   view->StartDragging(*main_rfh(), drop_data,
@@ -1375,48 +1358,7 @@ TEST_F(WebContentsViewAuraTest, ClampTouchLocationToBrowserObservedPoint) {
       << "Renderer-supplied screen location must be clamped to the "
          "browser-observed last touch point.";
 
-  UpdateTouchState(content, ui::EventType::kTouchReleased, trusted);
-}
-
-// A renderer-initiated touch drag must be backed by a touch that was pressed on
-// the web contents itself. A touch on another window, e.g. on the window
-// caption to move the window, must not satisfy the check, even though a touch
-// is down.
-TEST_F(WebContentsViewAuraTest, TouchDragRequiresTouchOnWebContents) {
-  NavigateAndCommit(GURL("https://example.com/"));
-
-  TestDragDropClient drag_drop_client;
-  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
-
-  WebContentsViewAura* view = GetView();
-  // Needed to avoid calling WebContentsViewAura::EndDrag, which results in
-  // NOTREACHED being called in
-  // `RenderWidgetHostViewBase::TransformPointToCoordSpaceForView`.
-  view->drag_in_progress_ = true;
-
-  aura::Window* const content = view->GetContentNativeView();
-  const gfx::Point location = content->GetBoundsInScreen().CenterPoint();
-  const blink::mojom::DragEventSourceInfo event_info(
-      location, ui::mojom::DragEventSource::kTouch);
-  DropData drop_data;
-
-  UpdateTouchState(root_window(), ui::EventType::kTouchPressed, location);
-  ASSERT_TRUE(aura::Env::GetInstance()->is_touch_down());
-  view->StartDragging(
-      *main_rfh(), drop_data, blink::DragOperationsMask::kDragOperationNone,
-      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(), event_info);
-  EXPECT_FALSE(drag_drop_client.GetDragDropData())
-      << "A touch on another window must not allow a web contents drag.";
-  EXPECT_FALSE(view->drag_security_info_.did_initiate());
-  UpdateTouchState(root_window(), ui::EventType::kTouchReleased, location);
-
-  // The same drag is allowed with a touch on the web contents.
-  UpdateTouchState(content, ui::EventType::kTouchPressed, location);
-  view->StartDragging(
-      *main_rfh(), drop_data, blink::DragOperationsMask::kDragOperationNone,
-      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(), event_info);
-  EXPECT_TRUE(drag_drop_client.GetDragDropData());
-  UpdateTouchState(content, ui::EventType::kTouchReleased, location);
+  env->SetTouchDown(false);
 }
 
 // Blink only ever starts a mouse drag from a left-button gesture, so a

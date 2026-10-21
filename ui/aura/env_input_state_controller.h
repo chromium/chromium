@@ -7,16 +7,12 @@
 
 #include <stdint.h>
 
-#include <optional>
-
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_multi_source_observation.h"
 #include "ui/aura/aura_export.h"
-#include "ui/aura/window.h"
-#include "ui/aura/window_observer.h"
-#include "ui/events/pointer_details.h"
-#include "ui/gfx/geometry/point.h"
+
+namespace gfx {
+class Point;
+}
 
 namespace ui {
 class MouseEvent;
@@ -29,56 +25,31 @@ class EnvTestHelper;
 }
 
 class Env;
+class Window;
 
-class AURA_EXPORT EnvInputStateController : public WindowObserver {
+class AURA_EXPORT EnvInputStateController {
  public:
   explicit EnvInputStateController(Env* env);
 
   EnvInputStateController(const EnvInputStateController&) = delete;
   EnvInputStateController& operator=(const EnvInputStateController&) = delete;
 
-  ~EnvInputStateController() override;
+  ~EnvInputStateController();
 
   void UpdateStateForMouseEvent(const Window* window,
                                 const ui::MouseEvent& event);
-  void UpdateStateForTouchEvent(Window* window, const ui::TouchEvent& event);
+  void UpdateStateForTouchEvent(const Window* window,
+                                const ui::TouchEvent& event);
   void SetLastMouseLocation(const Window* root_window,
                             const gfx::Point& location_in_root) const;
   uint32_t touch_ids_down() const { return touch_ids_down_; }
 
-  // See Env::ConsumeTouchForDrag().
-  std::optional<gfx::Point> ConsumeTouchForDrag(const Window* window);
-
  private:
   friend class test::EnvTestHelper;
-
-  // A touch that has been pressed and not yet released or cancelled.
-  struct ActiveTouch {
-    // The window the touch press was dispatched to, or null if that window
-    // has since been destroyed.
-    raw_ptr<Window> target = nullptr;
-    // The most recent location of the touch, in screen coordinates.
-    gfx::Point location_in_screen;
-    // Whether this touch has already been used to start a drag.
-    bool used_for_drag = false;
-  };
-
-  // WindowObserver:
-  void OnWindowDestroying(Window* window) override;
-
-  void AddActiveTouch(ui::PointerId id,
-                      Window* window,
-                      const gfx::Point& location_in_screen);
-  void RemoveActiveTouch(ui::PointerId id);
-  void ResetActiveTouches();
 
   raw_ptr<Env> env_;
   // Touch ids that are currently down.
   uint32_t touch_ids_down_ = 0;
-
-  base::flat_map<ui::PointerId, ActiveTouch> active_touches_;
-  base::ScopedMultiSourceObservation<Window, WindowObserver>
-      target_observations_{this};
 };
 
 }  // namespace aura

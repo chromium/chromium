@@ -40,7 +40,6 @@ class EnvTestHelper {
     env_->is_touch_down_ = false;
     env_->last_mouse_location_ = gfx::Point();
     env_->env_controller_->touch_ids_down_ = 0;
-    env_->env_controller_->ResetActiveTouches();
   }
 
   void SetGestureRecognizer(
