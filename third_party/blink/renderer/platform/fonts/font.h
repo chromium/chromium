@@ -104,7 +104,7 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
 
   // Controls whether CJK characters are excluded from or included in text
   // intercept computation for ink skip decoration line clipping.
-  enum class InkSkipCJKHandling { kExcludeCJK, kIncludeCJK };
+  enum class InkSkipCjkHandling { kExcludeCjk, kIncludeCjk };
 
   // Compute the text intercepts along the axis of the advance and write them
   // into the specified Vector of TextIntercepts. The number of those is zero or
@@ -113,7 +113,7 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
   // a line crossing through the text, parallel to the baseline.
   // TODO(drott): crbug.com/655154 Fix this for upright in vertical.
   void GetTextIntercepts(const TextFragmentPaintInfo&,
-                         InkSkipCJKHandling,
+                         InkSkipCjkHandling,
                          const cc::PaintFlags&,
                          const std::tuple<float, float>& bounds,
                          Vector<TextIntercept>&) const;

@@ -582,7 +582,7 @@ inline float SimpleFontData::ZeroInlineSize() const {
   // 1em when it would be typeset upright (i.e. writing-mode is vertical-rl or
   // vertical-lr and text-orientation is upright).
   SkScalar size = font_.getSize();
-  if (!platform_data_->IsVerticalNonCJKUpright()) {
+  if (!platform_data_->IsVerticalNonCjkUpright()) {
     if (RuntimeEnabledFeatures::CSSChUnitSpecCompliantFallbackEnabled()) {
       return size * 0.5f;
     }

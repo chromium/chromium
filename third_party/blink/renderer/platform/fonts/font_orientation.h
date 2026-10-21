@@ -51,7 +51,7 @@ const uint32_t kFontOrientationAnyUprightMask = 2;
 inline bool IsVerticalAnyUpright(FontOrientation orientation) {
   return static_cast<uint32_t>(orientation) & kFontOrientationAnyUprightMask;
 }
-inline bool IsVerticalNonCJKUpright(FontOrientation orientation) {
+inline bool IsVerticalNonCjkUpright(FontOrientation orientation) {
   return orientation == FontOrientation::kVerticalUpright;
 }
 inline bool IsVerticalUpright(FontOrientation orientation, UChar32 character) {

@@ -582,11 +582,11 @@ void TextPainter::ClipDecorationLine(
   const float upper = decoration_bounds.y() - text_baseline;
   const float stripe_width = decoration_bounds.height();
 
-  Font::InkSkipCJKHandling ink_skip_cjk_handling =
-      Font::InkSkipCJKHandling::kExcludeCJK;
+  Font::InkSkipCjkHandling ink_skip_cjk_handling =
+      Font::InkSkipCjkHandling::kExcludeCjk;
   if (skip_ink == ETextDecorationSkipInk::kAll &&
       RuntimeEnabledFeatures::CSSTextDecorationSkipInkAllEnabled()) {
-    ink_skip_cjk_handling = Font::InkSkipCJKHandling::kIncludeCJK;
+    ink_skip_cjk_handling = Font::InkSkipCjkHandling::kIncludeCjk;
   }
   Vector<Font::TextIntercept> text_intercepts;
   font_.GetTextIntercepts(

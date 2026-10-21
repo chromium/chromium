@@ -342,8 +342,8 @@ class PLATFORM_EXPORT FontDescription {
   bool IsVerticalAnyUpright() const {
     return blink::IsVerticalAnyUpright(Orientation());
   }
-  bool IsVerticalNonCJKUpright() const {
-    return blink::IsVerticalNonCJKUpright(Orientation());
+  bool IsVerticalNonCjkUpright() const {
+    return blink::IsVerticalNonCjkUpright(Orientation());
   }
   bool IsVerticalBaseline() const {
     return blink::IsVerticalBaseline(Orientation());

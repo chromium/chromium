@@ -488,19 +488,19 @@ TEST_F(ScriptRunIteratorTest, QuoteParenChineseParenLatinQuote) {
       {{"\"(萬國碼) ", USCRIPT_HAN}, {"Unicode\"", USCRIPT_LATIN}});
 }
 
-TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens1) {
+TEST_F(ScriptRunIteratorTest, CjkConsecutiveParens1) {
   CHECK_SCRIPT_RUNS({{"「あ", USCRIPT_HIRAGANA},
                      // The consecutive punctuation should not be split.
                      {"国。」", USCRIPT_HAN}});
 }
 
-TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens2) {
+TEST_F(ScriptRunIteratorTest, CjkConsecutiveParens2) {
   CHECK_SCRIPT_RUNS({{"あ「あ", USCRIPT_HIRAGANA},
                      // The consecutive punctuation should not be split.
                      {"国（国）」", USCRIPT_HAN}});
 }
 
-TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens3) {
+TEST_F(ScriptRunIteratorTest, CjkConsecutiveParens3) {
   CHECK_SCRIPT_RUNS({{"国「国", USCRIPT_HAN},
                      {"ア（", USCRIPT_HIRAGANA},
                      {"A", USCRIPT_LATIN},
@@ -508,7 +508,7 @@ TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens3) {
                      {"）」", USCRIPT_HIRAGANA}});
 }
 
-TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens4) {
+TEST_F(ScriptRunIteratorTest, CjkConsecutiveParens4) {
   CHECK_SCRIPT_RUNS({{"A", USCRIPT_LATIN},
                      // CJK puncutuation after non-CJK resolves to Bopomofo,
                      // because it's the first script extension in the Unicode
@@ -523,16 +523,16 @@ TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens4) {
                      {"国）」", USCRIPT_HAN}});
 }
 
-TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens5) {
+TEST_F(ScriptRunIteratorTest, CjkConsecutiveParens5) {
   CHECK_SCRIPT_RUNS({{"「あ", USCRIPT_HIRAGANA},
                      {"国", USCRIPT_HAN},
                      {"A", USCRIPT_LATIN},
                      {"」", USCRIPT_HIRAGANA}});
 }
 
-TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens6) {
+TEST_F(ScriptRunIteratorTest, CjkConsecutiveParens6) {
   CHECK_SCRIPT_RUNS({{"A", USCRIPT_LATIN},
-                     {"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"「", USCRIPT_BOPOMOFO},  // See CjkConsecutiveParens4
                      {"A", USCRIPT_LATIN},
                      {"あ（", USCRIPT_HIRAGANA},
                      {"国）", USCRIPT_HAN},
@@ -540,33 +540,33 @@ TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens6) {
                      {"」", USCRIPT_BOPOMOFO}});
 }
 
-TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens7) {
+TEST_F(ScriptRunIteratorTest, CjkConsecutiveParens7) {
   CHECK_SCRIPT_RUNS({
       {"「あ", USCRIPT_HIRAGANA},
       {"国1」", USCRIPT_HAN},
   });
 }
 
-TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens8) {
+TEST_F(ScriptRunIteratorTest, CjkConsecutiveParens8) {
   CHECK_SCRIPT_RUNS({
       {"A", USCRIPT_LATIN},
-      {"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+      {"「", USCRIPT_BOPOMOFO},  // See CjkConsecutiveParens4
       {"A", USCRIPT_LATIN},
       {"あ（", USCRIPT_HIRAGANA},
       {"国）1」", USCRIPT_HAN},
   });
 }
 
-TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens9) {
+TEST_F(ScriptRunIteratorTest, CjkConsecutiveParens9) {
   CHECK_SCRIPT_RUNS({{"「あ", USCRIPT_HIRAGANA},
                      {"国", USCRIPT_HAN},
                      {"A1", USCRIPT_LATIN},
                      {"」", USCRIPT_HIRAGANA}});
 }
 
-TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens10) {
+TEST_F(ScriptRunIteratorTest, CjkConsecutiveParens10) {
   CHECK_SCRIPT_RUNS({{"A", USCRIPT_LATIN},
-                     {"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"「", USCRIPT_BOPOMOFO},  // See CjkConsecutiveParens4
                      {"A", USCRIPT_LATIN},
                      {"あ（", USCRIPT_HIRAGANA},
                      {"国）", USCRIPT_HAN},
@@ -574,24 +574,24 @@ TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens10) {
                      {"」", USCRIPT_BOPOMOFO}});
 }
 
-TEST_F(ScriptRunIteratorTest, CJKConsecutiveParensLatin1) {
-  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+TEST_F(ScriptRunIteratorTest, CjkConsecutiveParensLatin1) {
+  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CjkConsecutiveParens4
                      {"A", USCRIPT_LATIN},
                      {"「", USCRIPT_BOPOMOFO},
                      {"A", USCRIPT_LATIN},
                      {"」」", USCRIPT_BOPOMOFO}});
 }
 
-TEST_F(ScriptRunIteratorTest, CJKConsecutiveParensLatin2) {
-  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+TEST_F(ScriptRunIteratorTest, CjkConsecutiveParensLatin2) {
+  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CjkConsecutiveParens4
                      {"A", USCRIPT_LATIN},
                      {"（", USCRIPT_BOPOMOFO},
                      {"A", USCRIPT_LATIN},
                      {"）」", USCRIPT_BOPOMOFO}});
 }
 
-TEST_F(ScriptRunIteratorTest, CJKConsecutiveParensLatin3) {
-  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+TEST_F(ScriptRunIteratorTest, CjkConsecutiveParensLatin3) {
+  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CjkConsecutiveParens4
                      {"A", USCRIPT_LATIN},
                      {"（国）」", USCRIPT_HAN}});
 }

@@ -203,7 +203,7 @@ void GetTextInterceptsInternal(const ShapeResultBloberizer::BlobBuffer& blobs,
 }  // anonymous namespace
 
 void Font::GetTextIntercepts(const TextFragmentPaintInfo& text_info,
-                             InkSkipCJKHandling ink_skip_cjk_handling,
+                             InkSkipCjkHandling ink_skip_cjk_handling,
                              const cc::PaintFlags& flags,
                              const std::tuple<float, float>& bounds,
                              Vector<TextIntercept>& intercepts) const {
@@ -211,7 +211,7 @@ void Font::GetTextIntercepts(const TextFragmentPaintInfo& text_info,
     return;
 
   ShapeResultBloberizer::Type intercept_type =
-      ink_skip_cjk_handling == InkSkipCJKHandling::kIncludeCJK
+      ink_skip_cjk_handling == InkSkipCjkHandling::kIncludeCjk
           ? ShapeResultBloberizer::Type::kTextInterceptsAll
           : ShapeResultBloberizer::Type::kTextIntercepts;
   ShapeResultBloberizer::FillGlyphsNG bloberizer(

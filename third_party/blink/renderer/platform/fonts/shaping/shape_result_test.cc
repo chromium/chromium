@@ -41,7 +41,7 @@ class ShapeResultTest : public FontTestBase {
   enum FontType {
     kLatinFont = 0,
     kArabicFont = 1,
-    kCJKFont = 2,
+    kCjkFont = 2,
   };
 
  protected:
@@ -788,7 +788,7 @@ struct CaretPositionForOffsetTestData {
 #else
      {0, 12, 24, 36, 48, 60, 110, 150, 210, 234},
 #endif
-     ShapeResultTest::kCJKFont,
+     ShapeResultTest::kCjkFont,
      AdjustMidCluster::kToStart},
 
     // 13
@@ -800,7 +800,7 @@ struct CaretPositionForOffsetTestData {
 #else
      {0, 12, 24, 36, 48, 60, 110, 150, 210, 234},
 #endif
-     ShapeResultTest::kCJKFont,
+     ShapeResultTest::kCjkFont,
      AdjustMidCluster::kToEnd},
 
     // 14
@@ -812,7 +812,7 @@ struct CaretPositionForOffsetTestData {
 #else
      {234, 222, 210, 198, 186, 174, 124, 84, 24, 0},
 #endif
-     ShapeResultTest::kCJKFont,
+     ShapeResultTest::kCjkFont,
      AdjustMidCluster::kToStart},
 
     // 15
@@ -824,7 +824,7 @@ struct CaretPositionForOffsetTestData {
 #else
      {234, 222, 210, 198, 186, 174, 124, 84, 24, 0},
 #endif
-     ShapeResultTest::kCJKFont,
+     ShapeResultTest::kCjkFont,
      AdjustMidCluster::kToEnd},
 };
 class CaretPositionForOffsetTest
@@ -934,7 +934,7 @@ struct CaretOffsetForHitTestTestData {
       55, 66, 67, 78, 79, 90, 91, 99, 100, 102},
      {0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9},
 #endif
-     ShapeResultTest::kCJKFont},
+     ShapeResultTest::kCjkFont},
 
     {u"楽しいドライブ、0",
      TextDirection::kRtl,
@@ -947,7 +947,7 @@ struct CaretOffsetForHitTestTestData {
       50, 61, 62, 73, 74, 85, 86, 97, 98, 102},
      {9, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0},
 #endif
-     ShapeResultTest::kCJKFont},
+     ShapeResultTest::kCjkFont},
 };
 class CaretOffsetForHitTestTest
     : public ShapeResultTest,

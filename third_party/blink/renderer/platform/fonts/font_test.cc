@@ -193,7 +193,7 @@ TEST_F(FontTest, TextIntercepts) {
   Vector<Font::TextIntercept> text_intercepts;
   // 4 intercept ranges for below baseline p glyphs in the test string
   font->GetTextIntercepts(text_paint_info,
-                          Font::InkSkipCJKHandling::kExcludeCJK, default_paint,
+                          Font::InkSkipCjkHandling::kExcludeCjk, default_paint,
                           below_baseline_bounds, text_intercepts);
   EXPECT_EQ(text_intercepts.size(), 4u);
   for (auto text_intercept : text_intercepts) {
@@ -203,7 +203,7 @@ TEST_F(FontTest, TextIntercepts) {
   std::tuple<float, float> above_baseline_bounds = std::make_tuple(-4, -2);
   // 5 intercept ranges for the above baseline E ACUTE glyphs
   font->GetTextIntercepts(text_paint_info,
-                          Font::InkSkipCJKHandling::kExcludeCJK, default_paint,
+                          Font::InkSkipCjkHandling::kExcludeCjk, default_paint,
                           above_baseline_bounds, text_intercepts);
   EXPECT_EQ(text_intercepts.size(), 5u);
   for (auto text_intercept : text_intercepts) {
