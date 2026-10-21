@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_COMMON_UNPINNED_TAB_CONTAINER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_COMMON_UNPINNED_TAB_CONTAINER_VIEW_H_
 
+#include <optional>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
@@ -12,29 +14,49 @@
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/view.h"
 
 class TabCollectionNode;
 class TabGroupView;
-class UnpinnedTabContainerViewLayout;
 
 // The view class that represents the unpinned tab region for the
 // tab strip. It hosts all the unpinned tabs and serves as the drag target
-// for unpinned tabs which aren't grouped. Layout is managed by
-// UnpinnedTabContainerViewLayout.
+// for unpinned tabs which aren't grouped.
 class UnpinnedTabContainerView
     : public TabCollectionZOrderManager,
       public DraggedTabsContainer,
       public TabCollectionAnimatingLayoutManager::Delegate {
   METADATA_HEADER(UnpinnedTabContainerView, TabCollectionZOrderManager)
-  friend class UnpinnedTabContainerViewLayout;
 
  public:
   explicit UnpinnedTabContainerView(TabCollectionNode* collection_node);
   UnpinnedTabContainerView(const UnpinnedTabContainerView&) = delete;
   UnpinnedTabContainerView& operator=(const UnpinnedTabContainerView&) = delete;
   ~UnpinnedTabContainerView() override;
+
+  class LayoutManager : public views::LayoutManagerBase {
+   public:
+    virtual int GetUnconstrainedPreferredWidth() const;
+
+   protected:
+    // views::LayoutManagerBase:
+    void OnInstalled(views::View* host) override;
+
+    // Casts host_view() to an UnpinnedTabContainerView const ref, using
+    // static_cast. Avoids views::AsViewClass as it incurs overhead when
+    // checking metadata.
+    const class UnpinnedTabContainerView& UnpinnedTabContainerView() const;
+
+    bool IsChildVisibleInContainer(
+        std::optional<tab_groups::TabGroupId> focused_group_id,
+        const views::View* child) const;
+    std::optional<tab_groups::TabGroupId> GetFocusedGroupId() const;
+    std::optional<tab_groups::TabGroupId> GetGroupIdForChild(
+        const views::View* child) const;
+  };
 
   // TabCollectionAnimatingLayoutManager::Delegate:
   bool IsDragging() const override;
@@ -60,6 +82,9 @@ class UnpinnedTabContainerView
   int GetUnconstrainedPreferredWidth() const;
 
  private:
+  friend class UnpinnedTabContainerViewVerticalLayout;
+  friend class UnpinnedTabContainerViewHorizontalLayout;
+
   // DraggedTabsContainer:
   views::ScrollView* GetScrollViewForContainer() const override;
   void UpdateTargetLayoutForDrag(

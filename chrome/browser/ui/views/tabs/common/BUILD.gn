@@ -22,7 +22,6 @@ source_set("common") {
     "tab_strip_view.h",
     "tab_strip_view_layout.h",
     "unpinned_tab_container_view.h",
-    "unpinned_tab_container_view_layout.h",
   ]
 
   deps = [
@@ -85,7 +84,10 @@ source_set("impl") {
     "tab_view_vertical_layout.cc",
     "tab_view_vertical_layout.h",
     "unpinned_tab_container_view.cc",
-    "unpinned_tab_container_view_layout.cc",
+    "unpinned_tab_container_view_horizontal_layout.cc",
+    "unpinned_tab_container_view_horizontal_layout.h",
+    "unpinned_tab_container_view_vertical_layout.cc",
+    "unpinned_tab_container_view_vertical_layout.h",
     "vertical_tab_style_views.cc",
     "vertical_tab_style_views.h",
   ]
