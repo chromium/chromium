@@ -1824,12 +1824,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.InvalidBookmarkSpecifics"
-    enum="InvalidBookmarkSpecificsError" expires_after="2026-05-24">
+    enum="InvalidBookmarkSpecificsError" expires_after="2027-10-20">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
     Records different causes for BookmarkSpecifics to be deemed invalid. Issues
     are recorded upon verifying validity of specifics received from the server.
+    Warning: this histogram was expired from 2026-05-24 to 2026-10-20; data may
+    be missing.
   </summary>
 </histogram>
 
