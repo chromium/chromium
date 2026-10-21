@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_AD_TRACKER_MONKEY_PATCHABLE_API_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_AD_TRACKER_MONKEY_PATCHABLE_API_H_
 
-#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "v8/include/v8.h"
 
@@ -30,24 +29,23 @@ struct MonkeyPatchableApiFunctionInfo {
   v8::MaybeLocal<v8::Function> function;
 
   // True if the API appears to be monkey patched. False if the API appears to
-  // be the native implementation or if an error occurred during the check.
+  // be the native implementation or if it can't be checked.
   bool is_monkey_patched = false;
 };
 
-// Maps a MonkeyPatchableApi enum value to the corresponding property path
-// to access that API, starting from the context's global object.
-CORE_EXPORT base::span<const char* const> GetMonkeyPatchableApiPropertyPath(
-    MonkeyPatchableApi api);
-
 // Finds the V8 function for a given API, checks if it has been monkey patched,
 // and returns both pieces of information.
+//
+// Lookups never invoke getters, Proxy traps or interceptors (see
+// `v8::Object::TryGetWithNoSideEffects()`), so objects that script reaches via
+// accessor properties (e.g., `window.history`) are resolved natively. If the
+// API can't be found this way, it's treated as not monkey patched.
 CORE_EXPORT MonkeyPatchableApiFunctionInfo
 GetMonkeyPatchableApiFunctionInfo(v8::Isolate* isolate, MonkeyPatchableApi api);
 
 // Returns true if `api` is a monkeypatched function (or Proxy) and matches
 // `function` (or the proxy's `apply` trap) in the `isolate`'s current context.
-// Uses DisallowJavascriptExecutionScope during prototype/proxy handler chain
-// traversal to prevent script execution during lookup.
+// Lookups never invoke getters, Proxy traps or interceptors.
 // TODO(jkarlin): This function really wants a context, not an isolate.
 CORE_EXPORT bool IsFunctionAMonkeyPatch(v8::Isolate* isolate,
                                         const v8::Local<v8::Function>& function,
