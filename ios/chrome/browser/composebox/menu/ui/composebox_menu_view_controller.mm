@@ -89,10 +89,15 @@ const CGFloat kEstimatedNavigationItemSpacing = 56.0;
 }
 
 - (CGSize)preferredContentSize {
+  if (self.isViewLoaded && self.view.window) {
+    [self.view layoutIfNeeded];
+  }
+
   ComposeboxMenuPageViewController* topViewController =
       base::apple::ObjCCast<ComposeboxMenuPageViewController>(
           self.topViewController);
-  CGSize size = super.preferredContentSize;
+  CGSize size =
+      [self.view systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
 
   // The secondary menu page displays navigation items on top, so the safe area
   // needs to be taken into account.
@@ -107,12 +112,6 @@ const CGFloat kEstimatedNavigationItemSpacing = 56.0;
   } else {
     size.height = topViewController.contentHeightToFit;
   }
-
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-    return size;
-  }
-  // Width is controlled by preferredControlSize on phones (see.
-  // widthFollowsPreferredContentSizeWhenEdgeAttached).
 
   BOOL isLandscape =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;

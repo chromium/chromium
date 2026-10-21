@@ -595,11 +595,8 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
       .prefersEdgeAttachedInCompactHeight = YES;
   _viewController.sheetPresentationController.preferredCornerRadius =
       kSheetPresentationCornerRadius;
-
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
-    _viewController.sheetPresentationController
-        .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-  }
+  _viewController.sheetPresentationController
+      .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
 
   __weak UIViewController* weakVC = _viewController;
   auto detentResolver = ^CGFloat(
