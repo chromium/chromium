@@ -870,16 +870,6 @@ TEST_F(GCMDriverFunctionalTest, MessagesDeleted) {
   EXPECT_EQ(kTestAppID1, gcm_app_handler()->app_id());
 }
 
-TEST_F(GCMDriverFunctionalTest, LastTokenFetchTime) {
-  // GCM registration has to be performed otherwise GCM will not be started.
-  Register(kTestAppID1, ToSenderList("sender"), GCMDriverTest::WAIT);
-
-  EXPECT_EQ(base::Time(), driver()->GetLastTokenFetchTime());
-  base::Time fetch_time = base::Time::Now();
-  driver()->SetLastTokenFetchTime(fetch_time);
-  EXPECT_EQ(fetch_time, driver()->GetLastTokenFetchTime());
-}
-
 class GCMDriverInstanceIDTest : public GCMDriverTest {
  public:
   GCMDriverInstanceIDTest();

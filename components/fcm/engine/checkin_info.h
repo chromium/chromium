@@ -9,8 +9,8 @@
 
 namespace fcm {
 
-// The check-in info for the device, including android_id, secret (security
-// token), and whether accounts have been set for periodic checkin.
+// The check-in info for the device, including android_id and secret (security
+// token).
 class CheckinInfo {
  public:
   CheckinInfo();
@@ -34,22 +34,12 @@ class CheckinInfo {
   uint64_t secret() const { return secret_; }
   void set_secret(uint64_t secret) { secret_ = secret; }
 
-  // Deprecated: Only used by legacy GCMClientImpl for periodic checkin
-  // scheduling. Not used in FCM.
-  bool accounts_set() const { return accounts_set_; }
-  void set_accounts_set(bool accounts_set) { accounts_set_ = accounts_set; }
-
  private:
   // Android ID of the device as assigned by the server.
   uint64_t android_id_ = 0;
 
   // Security token of the device as assigned by the server.
   uint64_t secret_ = 0;
-
-  // Deprecated: True if accounts were already provided through
-  // SetAccountsForCheckin(), or when last_checkin_accounts was loaded as empty.
-  // Legacy GCM only; not used by FCM.
-  bool accounts_set_ = false;
 };
 
 }  // namespace fcm

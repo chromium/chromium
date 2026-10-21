@@ -16,7 +16,6 @@
 #include "components/fcm/fcm_activity.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/registration_info.h"
-#include "google_apis/gaia/core_account_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom-forward.h"
 
@@ -42,7 +41,6 @@ class SharedURLLoaderFactory;
 
 namespace gcm {
 
-struct AccountMapping;
 class Encryptor;
 
 // Interface that encapsulates the network communications with the Google Cloud
@@ -118,13 +116,6 @@ class GCMClient {
     fcm::RecordedActivities recorded_activities;
   };
 
-  // Information about account.
-  struct AccountTokenInfo {
-    CoreAccountId account_id;
-    std::string email;
-    std::string access_token;
-  };
-
   // A delegate interface that allows the GCMClient instance to interact with
   // its caller, i.e. notifying asynchronous event.
   class Delegate {
@@ -182,11 +173,7 @@ class GCMClient {
     // Called when the GCM becomes ready. To get to this state, GCMClient
     // finished loading from the GCM store and retrieved the device check-in
     // from the server if it hadn't yet.
-    // |account_mappings|: a persisted list of accounts mapped to this GCM
-    //                     client.
-    // |last_token_fetch_time|: time of a last successful token fetch.
-    virtual void OnGCMReady(const std::vector<AccountMapping>& account_mappings,
-                            const base::Time& last_token_fetch_time) = 0;
+    virtual void OnGCMReady() = 0;
 
     // Called when activities are being recorded and a new activity has just
     // been recorded.
@@ -289,22 +276,6 @@ class GCMClient {
 
   // Gets internal states and statistics.
   virtual GCMStatistics GetStatistics() const = 0;
-
-  // Sets a list of accounts with OAuth2 tokens for the next checkin.
-  // |account_tokens|: list of email addresses, account IDs and OAuth2 access
-  //                   tokens.
-  virtual void SetAccountTokens(
-      const std::vector<AccountTokenInfo>& account_tokens) = 0;
-
-  // Persists the |account_mapping| in the store.
-  virtual void UpdateAccountMapping(const AccountMapping& account_mapping) = 0;
-
-  // Removes the account mapping related to |account_id| from the persistent
-  // store.
-  virtual void RemoveAccountMapping(const CoreAccountId& account_id) = 0;
-
-  // Sets last token fetch time in persistent store.
-  virtual void SetLastTokenFetchTime(const base::Time& time) = 0;
 
   // Updates the timer used by the HeartbeatManager for sending heartbeats.
   virtual void UpdateHeartbeatTimer(

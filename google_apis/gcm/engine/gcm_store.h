@@ -15,9 +15,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
-#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gcm/base/gcm_export.h"
-#include "google_apis/gcm/engine/account_mapping.h"
 
 namespace gcm {
 
@@ -36,9 +34,6 @@ class GCM_EXPORT GCMStore {
   using OutgoingMessageMap =
       std::map<std::string, std::unique_ptr<google::protobuf::MessageLite>>;
 
-  // List of account mappings.
-  using AccountMappings = std::vector<AccountMapping>;
-
   // Container for Load(..) results.
   struct GCM_EXPORT LoadResult {
     LoadResult();
@@ -56,8 +51,6 @@ class GCM_EXPORT GCMStore {
     std::map<std::string, std::string> gservices_settings;
     std::string gservices_digest;
     base::Time last_checkin_time;
-    AccountMappings account_mappings;
-    base::Time last_token_fetch_time;
     std::map<std::string, int> heartbeat_intervals;
     std::map<std::string, std::string> instance_id_data;
   };
@@ -134,16 +127,6 @@ class GCM_EXPORT GCMStore {
       const std::map<std::string, std::string>& settings,
       const std::string& settings_digest,
       UpdateCallback callback) = 0;
-
-  // Sets the account information related to device to account mapping.
-  virtual void AddAccountMapping(const AccountMapping& account_mapping,
-                                 UpdateCallback callback) = 0;
-  virtual void RemoveAccountMapping(const CoreAccountId& account_id,
-                                    UpdateCallback callback) = 0;
-
-  // Sets last token fetch time.
-  virtual void SetLastTokenFetchTime(const base::Time& time,
-                                     UpdateCallback callback) = 0;
 
   // Sets the custom client heartbeat interval for a specified scope.
   virtual void AddHeartbeatInterval(const std::string& scope,

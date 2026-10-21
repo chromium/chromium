@@ -35,7 +35,6 @@ namespace gcm {
 class GCMAppHandler;
 class GCMConnectionObserver;
 enum class GCMEncryptionResult;
-struct AccountMapping;
 
 // Provides the InstanceID support via GCMDriver.
 class InstanceIDHandler {
@@ -252,25 +251,6 @@ class GCMDriver {
   // |callback| will be called for new activity.
   virtual void SetGCMRecording(const GCMStatisticsRecordingCallback& callback,
                                bool recording) = 0;
-
-  // sets a list of signed in accounts with OAuth2 access tokens, when GCMDriver
-  // works in context of a signed in entity (e.g. browser profile where user is
-  // signed into sync).
-  // |account_tokens|: list of email addresses, account IDs and OAuth2 access
-  //                   tokens.
-  virtual void SetAccountTokens(
-      const std::vector<GCMClient::AccountTokenInfo>& account_tokens) = 0;
-
-  // Updates the |account_mapping| information in persistent store.
-  virtual void UpdateAccountMapping(const AccountMapping& account_mapping) = 0;
-
-  // Removes the account mapping information reated to |account_id| from
-  // persistent store.
-  virtual void RemoveAccountMapping(const CoreAccountId& account_id) = 0;
-
-  // Getter and setter of last token fetch time.
-  virtual base::Time GetLastTokenFetchTime() = 0;
-  virtual void SetLastTokenFetchTime(const base::Time& time) = 0;
 
   // These methods must only be used by the InstanceID system.
   // The InstanceIDHandler provides an implementation for the InstanceID system.

@@ -109,14 +109,6 @@ MCSMessage BuildDownstreamMessage(
   return MCSMessage(kDataMessageStanzaTag, data_message);
 }
 
-GCMClient::AccountTokenInfo MakeAccountToken(const std::string& email,
-                                             const std::string& token) {
-  GCMClient::AccountTokenInfo account_token;
-  account_token.email = email;
-  account_token.access_token = token;
-  return account_token;
-}
-
 class FakeMCSClient : public MCSClient {
  public:
   FakeMCSClient(base::Clock* clock,
@@ -324,8 +316,7 @@ class GCMClientImplTest : public testing::Test, public GCMClient::Delegate {
       const gcm::GCMClient::SendErrorDetails& send_error_details) override;
   void OnSendAcknowledged(const std::string& app_id,
                           const std::string& message_id) override;
-  void OnGCMReady(const std::vector<AccountMapping>& account_mappings,
-                  const base::Time& last_token_fetch_time) override;
+  void OnGCMReady() override;
   void OnActivityRecorded() override {}
   void OnConnected(const net::IPEndPoint& ip_endpoint) override {}
   void OnDisconnected() override {}
@@ -354,8 +345,6 @@ class GCMClientImplTest : public testing::Test, public GCMClient::Delegate {
     last_registration_id_.clear();
     last_message_id_.clear();
     last_result_ = GCMClient::UNKNOWN_ERROR;
-    last_account_mappings_.clear();
-    last_token_fetch_time_ = base::Time();
   }
 
   LastEvent last_event() const { return last_event_; }
@@ -368,12 +357,6 @@ class GCMClientImplTest : public testing::Test, public GCMClient::Delegate {
   const IncomingMessage& last_message() const { return last_message_; }
   const GCMClient::SendErrorDetails& last_error_details() const {
     return last_error_details_;
-  }
-  const base::Time& last_token_fetch_time() const {
-    return last_token_fetch_time_;
-  }
-  const std::vector<AccountMapping>& last_account_mappings() {
-    return last_account_mappings_;
   }
 
   const GServicesSettings& gservices_settings() const {
@@ -423,8 +406,6 @@ class GCMClientImplTest : public testing::Test, public GCMClient::Delegate {
   GCMClient::Result last_result_;
   IncomingMessage last_message_;
   GCMClient::SendErrorDetails last_error_details_;
-  base::Time last_token_fetch_time_;
-  std::vector<AccountMapping> last_account_mappings_;
 
   std::unique_ptr<GCMClientImpl> gcm_client_;
 
@@ -605,12 +586,8 @@ void GCMClientImplTest::ReceiveOnMessageSentToMCS(
   gcm_client_->OnMessageSentToMCS(0LL, app_id, message_id, status);
 }
 
-void GCMClientImplTest::OnGCMReady(
-    const std::vector<AccountMapping>& account_mappings,
-    const base::Time& last_token_fetch_time) {
+void GCMClientImplTest::OnGCMReady() {
   last_event_ = LOADING_COMPLETED;
-  last_account_mappings_ = account_mappings;
-  last_token_fetch_time_ = last_token_fetch_time;
 }
 
 void GCMClientImplTest::OnMessageReceived(const std::string& registration_id,
@@ -670,7 +647,6 @@ TEST_F(GCMClientImplTest, LoadingCompleted) {
   // Checking freshly loaded CheckinInfo.
   EXPECT_EQ(kDeviceAndroidId, device_checkin_info().android_id());
   EXPECT_EQ(kDeviceSecurityToken, device_checkin_info().secret());
-  EXPECT_TRUE(device_checkin_info().accounts_set());
 }
 
 TEST_F(GCMClientImplTest, LoadingBusted) {
@@ -1240,33 +1216,6 @@ TEST_F(GCMClientImplCheckinTest, LoadGSettingsFromStore) {
             gservices_settings().GetMCSFallbackEndpoint());
 }
 
-// This test only checks that periodic checkin happens.
-TEST_F(GCMClientImplCheckinTest, CheckinWithAccountsEmpty) {
-  std::map<std::string, std::string> settings;
-  settings["checkin_interval"] = base::NumberToString(kSettingsCheckinInterval);
-  settings["checkin_url"] = "http://alternative.url/checkin";
-  settings["gcm_hostname"] = "alternative.gcm.host";
-  settings["gcm_secure_port"] = "7777";
-  settings["gcm_registration_url"] = "http://alternative.url/registration";
-  ASSERT_NO_FATAL_FAILURE(
-      CompleteCheckin(kDeviceAndroidId, kDeviceSecurityToken,
-                      GServicesSettings::CalculateDigest(settings), settings));
-
-  std::vector<GCMClient::AccountTokenInfo> account_tokens;
-  account_tokens.push_back(MakeAccountToken("test_user1@gmail.com", "token1"));
-  account_tokens.push_back(MakeAccountToken("test_user2@gmail.com", "token2"));
-  gcm_client()->SetAccountTokens(account_tokens);
-
-  EXPECT_TRUE(device_checkin_info().accounts_set());
-
-  PumpLoopUntilIdle();
-  ASSERT_NO_FATAL_FAILURE(
-      CompleteCheckin(kDeviceAndroidId, kDeviceSecurityToken,
-                      GServicesSettings::CalculateDigest(settings), settings));
-
-  EXPECT_TRUE(device_checkin_info().accounts_set());
-}
-
 TEST_F(GCMClientImplCheckinTest, ResetStoreWhenCheckinRejected) {
   base::HistogramTester histogram_tester;
   std::map<std::string, std::string> settings;
@@ -1508,43 +1457,6 @@ TEST_F(GCMClientImplStartAndStopTest, DelayedStart) {
   gcm_client()->Start(GCMClient::DELAYED_START);
   PumpLoopUntilIdle();
   EXPECT_EQ(GCMClientImpl::READY, gcm_client_state());
-}
-
-// Test for known account mappings and last token fetching time being passed
-// to OnGCMReady.
-TEST_F(GCMClientImplStartAndStopTest, OnGCMReadyAccountsAndTokenFetchingTime) {
-  // Start the GCM and wait until it is ready.
-  gcm_client()->Start(GCMClient::IMMEDIATE_START);
-  PumpLoopUntilIdle();
-  ASSERT_NO_FATAL_FAILURE(DefaultCompleteCheckin());
-
-  base::Time expected_time = base::Time::Now();
-  gcm_client()->SetLastTokenFetchTime(expected_time);
-  AccountMapping expected_mapping;
-  expected_mapping.account_id = CoreAccountId::FromGaiaId(GaiaId("accId"));
-  expected_mapping.email = "email@gmail.com";
-  expected_mapping.status = AccountMapping::MAPPED;
-  expected_mapping.status_change_timestamp = expected_time;
-  gcm_client()->UpdateAccountMapping(expected_mapping);
-  PumpLoopUntilIdle();
-
-  // Stop the GCM.
-  gcm_client()->Stop();
-  PumpLoopUntilIdle();
-
-  // Restart the GCM.
-  gcm_client()->Start(GCMClient::IMMEDIATE_START);
-  PumpLoopUntilIdle();
-
-  EXPECT_EQ(LOADING_COMPLETED, last_event());
-  EXPECT_EQ(expected_time, last_token_fetch_time());
-  ASSERT_EQ(1UL, last_account_mappings().size());
-  const AccountMapping& actual_mapping = last_account_mappings()[0];
-  EXPECT_EQ(expected_mapping.account_id, actual_mapping.account_id);
-  EXPECT_EQ(expected_mapping.email, actual_mapping.email);
-  EXPECT_EQ(expected_mapping.status, actual_mapping.status);
-  EXPECT_EQ(expected_mapping.status_change_timestamp,
-            actual_mapping.status_change_timestamp);
 }
 
 class GCMClientInstanceIDTest : public GCMClientImplTest {

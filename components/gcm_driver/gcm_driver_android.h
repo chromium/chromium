@@ -69,12 +69,6 @@ class GCMDriverAndroid : public GCMDriver,
                         ClearActivityLogs clear_logs) override;
   void SetGCMRecording(const GCMStatisticsRecordingCallback& callback,
                        bool recording) override;
-  void SetAccountTokens(
-      const std::vector<GCMClient::AccountTokenInfo>& account_tokens) override;
-  void UpdateAccountMapping(const AccountMapping& account_mapping) override;
-  void RemoveAccountMapping(const CoreAccountId& account_id) override;
-  base::Time GetLastTokenFetchTime() override;
-  void SetLastTokenFetchTime(const base::Time& time) override;
   InstanceIDHandler* GetInstanceIDHandlerInternal() override;
   void AddHeartbeatInterval(const std::string& scope, int interval_ms) override;
   void RemoveHeartbeatInterval(const std::string& scope) override;

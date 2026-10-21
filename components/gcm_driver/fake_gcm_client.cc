@@ -19,7 +19,6 @@
 #include "components/fcm/crypto/fcm_decryption_result.h"
 #include "components/fcm/engine/chrome_build_info.h"
 #include "google_apis/gcm/base/encryptor.h"
-#include "google_apis/gcm/engine/account_mapping.h"
 #include "net/base/ip_endpoint.h"
 
 namespace gcm {
@@ -191,19 +190,6 @@ GCMClient::GCMStatistics FakeGCMClient::GetStatistics() const {
   return statistics;
 }
 
-void FakeGCMClient::SetAccountTokens(
-    const std::vector<AccountTokenInfo>& account_tokens) {
-}
-
-void FakeGCMClient::UpdateAccountMapping(
-    const AccountMapping& account_mapping) {
-}
-
-void FakeGCMClient::RemoveAccountMapping(const CoreAccountId& account_id) {}
-
-void FakeGCMClient::SetLastTokenFetchTime(const base::Time& time) {
-}
-
 void FakeGCMClient::UpdateHeartbeatTimer(
     std::unique_ptr<base::RetainingOneShotTimer> timer) {}
 
@@ -265,7 +251,7 @@ void FakeGCMClient::DeleteMessages(const std::string& app_id) {
 }
 
 void FakeGCMClient::Started() {
-  delegate_->OnGCMReady(std::vector<AccountMapping>(), base::Time());
+  delegate_->OnGCMReady();
   delegate_->OnConnected(net::IPEndPoint());
 }
 

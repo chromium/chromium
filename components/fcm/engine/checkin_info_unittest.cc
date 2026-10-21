@@ -25,14 +25,12 @@ TEST(CheckinInfoTest, IsValid) {
 
 TEST(CheckinInfoTest, Reset) {
   CheckinInfo info(12345ULL, 67890ULL);
-  info.set_accounts_set(true);
   ASSERT_TRUE(info.IsValid());
 
   info.Reset();
   EXPECT_FALSE(info.IsValid());
   EXPECT_EQ(0u, info.android_id());
   EXPECT_EQ(0u, info.secret());
-  EXPECT_FALSE(info.accounts_set());
 }
 
 }  // namespace

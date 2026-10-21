@@ -262,7 +262,6 @@ void GCMClientImpl::OnLoadCompleted(
 
   device_checkin_info_.set_android_id(result->device_android_id);
   device_checkin_info_.set_secret(result->device_security_token);
-  device_checkin_info_.set_accounts_set(true);
   last_checkin_time_ = result->last_checkin_time;
   gservices_settings_.UpdateFromLoadResult(*result);
 
@@ -311,17 +310,11 @@ void GCMClientImpl::OnLoadCompleted(
 void GCMClientImpl::StartGCM() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
-  // Taking over the value of account_mappings before passing the ownership of
-  // load result to InitializeMCSClient.
-  std::vector<AccountMapping> account_mappings;
-  account_mappings.swap(load_result_->account_mappings);
-  base::Time last_token_fetch_time = load_result_->last_token_fetch_time;
-
   InitializeMCSClient();
 
   if (device_checkin_info_.IsValid()) {
     SchedulePeriodicCheckin();
-    OnReady(account_mappings, last_token_fetch_time);
+    OnReady();
     return;
   }
 
@@ -363,23 +356,19 @@ void GCMClientImpl::OnFirstTimeDeviceCheckinCompleted(
 
   device_checkin_info_.set_android_id(checkin_info.android_id());
   device_checkin_info_.set_secret(checkin_info.secret());
-  // If accounts were not set by now, we can consider them set (to empty list)
-  // to make sure periodic checkins get scheduled after initial checkin.
-  device_checkin_info_.set_accounts_set(true);
   gcm_store_->SetDeviceCredentials(
       checkin_info.android_id(), checkin_info.secret(),
       base::BindOnce(&GCMClientImpl::SetDeviceCredentialsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  OnReady(std::vector<AccountMapping>(), base::Time());
+  OnReady();
 }
 
-void GCMClientImpl::OnReady(const std::vector<AccountMapping>& account_mappings,
-                            const base::Time& last_token_fetch_time) {
+void GCMClientImpl::OnReady() {
   state_ = READY;
   StartMCSLogin();
 
-  delegate_->OnGCMReady(account_mappings, last_token_fetch_time);
+  delegate_->OnGCMReady();
 }
 
 void GCMClientImpl::StartMCSLogin() {
@@ -409,49 +398,6 @@ void GCMClientImpl::ResetStore() {
   // Destroy the GCM store to start over.
   gcm_store_->Destroy(base::BindOnce(&GCMClientImpl::ResetStoreCallback,
                                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void GCMClientImpl::SetAccountTokens(
-    const std::vector<AccountTokenInfo>& account_tokens) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-
-  bool accounts_set_before = device_checkin_info_.accounts_set();
-  device_checkin_info_.set_accounts_set(true);
-
-  DVLOG(1) << "Set account called with: " << account_tokens.size()
-           << " accounts.";
-
-  if (state_ != READY && state_ != INITIAL_DEVICE_CHECKIN)
-    return;
-
-  if (!accounts_set_before) {
-    SchedulePeriodicCheckin();
-    DVLOG(1) << "Accounts set for the first time. Scheduled periodic checkin.";
-  }
-}
-
-void GCMClientImpl::UpdateAccountMapping(
-    const AccountMapping& account_mapping) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  gcm_store_->AddAccountMapping(
-      account_mapping, base::BindOnce(&GCMClientImpl::DefaultStoreCallback,
-                                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void GCMClientImpl::RemoveAccountMapping(const CoreAccountId& account_id) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  gcm_store_->RemoveAccountMapping(
-      account_id, base::BindOnce(&GCMClientImpl::DefaultStoreCallback,
-                                 weak_ptr_factory_.GetWeakPtr()));
-}
-
-void GCMClientImpl::SetLastTokenFetchTime(const base::Time& time) {
-  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-  gcm_store_->SetLastTokenFetchTime(
-      time,
-      base::BindOnce(&GCMClientImpl::IgnoreWriteResultCallback,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     /*operation_suffix_for_uma=*/"SetLastTokenFetchTime"));
 }
 
 void GCMClientImpl::UpdateHeartbeatTimer(
@@ -589,7 +535,7 @@ void GCMClientImpl::SchedulePeriodicCheckin() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
   // Make sure no checkin is in progress.
-  if (checkin_request_.get() || !device_checkin_info_.accounts_set()) {
+  if (checkin_request_.get()) {
     return;
   }
 
@@ -625,10 +571,6 @@ void GCMClientImpl::SetDeviceCredentialsCallback(bool success) {
 
 void GCMClientImpl::UpdateRegistrationCallback(bool success) {
   // TODO(fgorski): This is one of the signals that store needs a rebuild.
-  DCHECK(success);
-}
-
-void GCMClientImpl::DefaultStoreCallback(bool success) {
   DCHECK(success);
 }
 

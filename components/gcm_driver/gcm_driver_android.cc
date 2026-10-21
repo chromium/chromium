@@ -170,29 +170,6 @@ void GCMDriverAndroid::SetGCMRecording(
   callback.Run(stats);
 }
 
-void GCMDriverAndroid::SetAccountTokens(
-    const std::vector<GCMClient::AccountTokenInfo>& account_tokens) {
-  NOTIMPLEMENTED();
-}
-
-void GCMDriverAndroid::UpdateAccountMapping(
-    const AccountMapping& account_mapping) {
-  NOTIMPLEMENTED();
-}
-
-void GCMDriverAndroid::RemoveAccountMapping(const CoreAccountId& account_id) {
-  NOTIMPLEMENTED();
-}
-
-base::Time GCMDriverAndroid::GetLastTokenFetchTime() {
-  NOTIMPLEMENTED();
-  return base::Time();
-}
-
-void GCMDriverAndroid::SetLastTokenFetchTime(const base::Time& time) {
-  NOTIMPLEMENTED();
-}
-
 InstanceIDHandler* GCMDriverAndroid::GetInstanceIDHandlerInternal() {
   // Not supported for Android.
   return NULL;

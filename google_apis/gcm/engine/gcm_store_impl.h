@@ -89,16 +89,6 @@ class GCM_EXPORT GCMStoreImpl : public GCMStore {
                             const std::string& settings_digest,
                             UpdateCallback callback) override;
 
-  // Sets the account information related to device to account mapping.
-  void AddAccountMapping(const AccountMapping& account_mapping,
-                         UpdateCallback callback) override;
-  void RemoveAccountMapping(const CoreAccountId& account_id,
-                            UpdateCallback callback) override;
-
-  // Sets last token fetch time.
-  void SetLastTokenFetchTime(const base::Time& time,
-                             UpdateCallback callback) override;
-
   // Sets the custom client heartbeat interval for the scope.
   void AddHeartbeatInterval(const std::string& scope,
                             int interval_ms,

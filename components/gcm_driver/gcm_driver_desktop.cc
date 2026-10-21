@@ -29,7 +29,6 @@
 #include "components/gcm_driver/instance_id/instance_id_impl.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "google_apis/gcm/engine/account_mapping.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -65,8 +64,7 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
       const GCMClient::SendErrorDetails& send_error_details) override;
   void OnSendAcknowledged(const std::string& app_id,
                           const std::string& message_id) override;
-  void OnGCMReady(const std::vector<AccountMapping>& account_mappings,
-                  const base::Time& last_token_fetch_time) override;
+  void OnGCMReady() override;
   void OnActivityRecorded() override;
   void OnConnected(const net::IPEndPoint& ip_endpoint) override;
   void OnDisconnected() override;
@@ -99,11 +97,6 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
                         GCMDriver::ClearActivityLogs clear_logs);
   void SetGCMRecording(GetGCMStatisticsCallback callback, bool recording);
 
-  void SetAccountTokens(
-      const std::vector<GCMClient::AccountTokenInfo>& account_tokens);
-  void UpdateAccountMapping(const AccountMapping& account_mapping);
-  void RemoveAccountMapping(const CoreAccountId& account_id);
-  void SetLastTokenFetchTime(const base::Time& time);
   void AddHeartbeatInterval(const std::string& scope, int interval_ms);
   void RemoveHeartbeatInterval(const std::string& scope);
 
@@ -282,12 +275,9 @@ void GCMDriverDesktop::IOWorker::OnSendAcknowledged(
                                 app_id, message_id));
 }
 
-void GCMDriverDesktop::IOWorker::OnGCMReady(
-    const std::vector<AccountMapping>& account_mappings,
-    const base::Time& last_token_fetch_time) {
+void GCMDriverDesktop::IOWorker::OnGCMReady() {
   ui_thread_->PostTask(
-      FROM_HERE, base::BindOnce(&GCMDriverDesktop::GCMClientReady, service_,
-                                account_mappings, last_token_fetch_time));
+      FROM_HERE, base::BindOnce(&GCMDriverDesktop::GCMClientReady, service_));
 }
 
 void GCMDriverDesktop::IOWorker::OnActivityRecorded() {
@@ -412,37 +402,6 @@ void GCMDriverDesktop::IOWorker::SetGCMRecording(
   ui_thread_->PostTask(FROM_HERE, base::BindOnce(std::move(callback), stats));
 }
 
-void GCMDriverDesktop::IOWorker::SetAccountTokens(
-    const std::vector<GCMClient::AccountTokenInfo>& account_tokens) {
-  DCHECK(io_thread_->RunsTasksInCurrentSequence());
-
-  if (gcm_client_)
-    gcm_client_->SetAccountTokens(account_tokens);
-}
-
-void GCMDriverDesktop::IOWorker::UpdateAccountMapping(
-    const AccountMapping& account_mapping) {
-  DCHECK(io_thread_->RunsTasksInCurrentSequence());
-
-  if (gcm_client_)
-    gcm_client_->UpdateAccountMapping(account_mapping);
-}
-
-void GCMDriverDesktop::IOWorker::RemoveAccountMapping(
-    const CoreAccountId& account_id) {
-  DCHECK(io_thread_->RunsTasksInCurrentSequence());
-
-  if (gcm_client_)
-    gcm_client_->RemoveAccountMapping(account_id);
-}
-
-void GCMDriverDesktop::IOWorker::SetLastTokenFetchTime(const base::Time& time) {
-  DCHECK(io_thread_->RunsTasksInCurrentSequence());
-
-  if (gcm_client_)
-    gcm_client_->SetLastTokenFetchTime(time);
-}
-
 void GCMDriverDesktop::IOWorker::AddInstanceIDData(
     const std::string& app_id,
     const std::string& instance_id,
@@ -535,10 +494,6 @@ GCMDriverDesktop::GCMDriverDesktop(
     : GCMDriver(store_path, blocking_task_runner),
       gcm_started_(false),
       connected_(false),
-      // Setting to max, to make sure it does not prompt for token reporting
-      // Before reading a reasonable value from the DB, which might be never,
-      // in which case the fetching will be triggered.
-      last_token_fetch_time_(base::Time::Max()),
       ui_thread_(ui_thread),
       io_thread_(io_thread) {
   // Create and initialize the GCMClient. Note that this does not initiate the
@@ -788,40 +743,6 @@ void GCMDriverDesktop::SetGCMRecording(
       FROM_HERE,
       base::BindOnce(&GCMDriverDesktop::IOWorker::SetGCMRecording,
                      base::Unretained(io_worker_.get()), callback, recording));
-}
-
-void GCMDriverDesktop::UpdateAccountMapping(
-    const AccountMapping& account_mapping) {
-  DCHECK(ui_thread_->RunsTasksInCurrentSequence());
-
-  io_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GCMDriverDesktop::IOWorker::UpdateAccountMapping,
-                     base::Unretained(io_worker_.get()), account_mapping));
-}
-
-void GCMDriverDesktop::RemoveAccountMapping(const CoreAccountId& account_id) {
-  DCHECK(ui_thread_->RunsTasksInCurrentSequence());
-
-  io_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GCMDriverDesktop::IOWorker::RemoveAccountMapping,
-                     base::Unretained(io_worker_.get()), account_id));
-}
-
-base::Time GCMDriverDesktop::GetLastTokenFetchTime() {
-  return last_token_fetch_time_;
-}
-
-void GCMDriverDesktop::SetLastTokenFetchTime(const base::Time& time) {
-  DCHECK(ui_thread_->RunsTasksInCurrentSequence());
-
-  last_token_fetch_time_ = time;
-
-  io_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GCMDriverDesktop::IOWorker::SetLastTokenFetchTime,
-                     base::Unretained(io_worker_.get()), time));
 }
 
 InstanceIDHandler* GCMDriverDesktop::GetInstanceIDHandlerInternal() {
@@ -1170,16 +1091,6 @@ void GCMDriverDesktop::RemoveHeartbeatInterval(const std::string& scope) {
                      base::Unretained(io_worker_.get()), scope));
 }
 
-void GCMDriverDesktop::SetAccountTokens(
-    const std::vector<GCMClient::AccountTokenInfo>& account_tokens) {
-  DCHECK(ui_thread_->RunsTasksInCurrentSequence());
-
-  io_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GCMDriverDesktop::IOWorker::SetAccountTokens,
-                     base::Unretained(io_worker_.get()), account_tokens));
-}
-
 GCMClient::Result GCMDriverDesktop::EnsureStarted(
     GCMClient::StartMode start_mode) {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
@@ -1266,14 +1177,10 @@ void GCMDriverDesktop::SendAcknowledged(const std::string& app_id,
     handler->OnSendAcknowledged(app_id, message_id);
 }
 
-void GCMDriverDesktop::GCMClientReady(
-    const std::vector<AccountMapping>& account_mappings,
-    const base::Time& last_token_fetch_time) {
+void GCMDriverDesktop::GCMClientReady() {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
 
   gcm_started_ = true;
-
-  last_token_fetch_time_ = last_token_fetch_time;
 
   delayed_task_controller_->SetReady();
 }

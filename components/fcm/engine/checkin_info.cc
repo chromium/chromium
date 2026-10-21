@@ -22,7 +22,6 @@ CheckinInfo& CheckinInfo::operator=(CheckinInfo&&) = default;
 void CheckinInfo::Reset() {
   android_id_ = 0;
   secret_ = 0;
-  accounts_set_ = false;
 }
 
 }  // namespace fcm

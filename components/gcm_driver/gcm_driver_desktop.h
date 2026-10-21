@@ -94,12 +94,6 @@ class GCMDriverDesktop : public GCMDriver,
                         ClearActivityLogs clear_logs) override;
   void SetGCMRecording(const GCMStatisticsRecordingCallback& callback,
                        bool recording) override;
-  void SetAccountTokens(
-      const std::vector<GCMClient::AccountTokenInfo>& account_tokens) override;
-  void UpdateAccountMapping(const AccountMapping& account_mapping) override;
-  void RemoveAccountMapping(const CoreAccountId& account_id) override;
-  base::Time GetLastTokenFetchTime() override;
-  void SetLastTokenFetchTime(const base::Time& time) override;
   InstanceIDHandler* GetInstanceIDHandlerInternal() override;
   void AddHeartbeatInterval(const std::string& scope, int interval_ms) override;
   void RemoveHeartbeatInterval(const std::string& scope) override;
@@ -188,8 +182,7 @@ class GCMDriverDesktop : public GCMDriver,
                         const GCMClient::SendErrorDetails& send_error_details);
   void SendAcknowledged(const std::string& app_id,
                         const std::string& message_id);
-  void GCMClientReady(const std::vector<AccountMapping>& account_mappings,
-                      const base::Time& last_token_fetch_time);
+  void GCMClientReady();
   void OnConnected(const net::IPEndPoint& ip_endpoint);
   void OnDisconnected();
   void OnStoreReset();
@@ -219,9 +212,6 @@ class GCMDriverDesktop : public GCMDriver,
   // List of observers to notify when connection state changes.
   base::ObserverList<GCMConnectionObserver, false>::Unchecked
       connection_observer_list_;
-
-  // Time of last token fetching.
-  base::Time last_token_fetch_time_;
 
   scoped_refptr<base::SequencedTaskRunner> ui_thread_;
   scoped_refptr<base::SequencedTaskRunner> io_thread_;

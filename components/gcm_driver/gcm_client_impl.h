@@ -121,11 +121,6 @@ class GCMClientImpl
   void SetRecording(bool recording) override;
   void ClearActivityLogs() override;
   GCMStatistics GetStatistics() const override;
-  void SetAccountTokens(
-      const std::vector<AccountTokenInfo>& account_tokens) override;
-  void UpdateAccountMapping(const AccountMapping& account_mapping) override;
-  void RemoveAccountMapping(const CoreAccountId& account_id) override;
-  void SetLastTokenFetchTime(const base::Time& time) override;
   void UpdateHeartbeatTimer(
       std::unique_ptr<base::RetainingOneShotTimer> timer) override;
   void AddInstanceIDData(const std::string& app_id,
@@ -205,8 +200,7 @@ class GCMClientImpl
   void ResetStore();
   // Sets state to ready. This will initiate the MCS login and notify the
   // delegates.
-  void OnReady(const std::vector<AccountMapping>& account_mappings,
-               const base::Time& last_token_fetch_time);
+  void OnReady();
 
   // Starts a first time device checkin.
   void StartCheckin();
@@ -233,10 +227,6 @@ class GCMClientImpl
 
   // Callback for persisting registration info in the |gcm_store_|.
   void UpdateRegistrationCallback(bool success);
-
-  // Callback for all store operations that do not try to recover, if write in
-  // |gcm_store_| fails.
-  void DefaultStoreCallback(bool success);
 
   // Callback for store operation where result does not matter.
   void IgnoreWriteResultCallback(const std::string& operation_suffix_for_uma,
