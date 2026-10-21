@@ -111,8 +111,6 @@ TEST_F(CrosStateSenderTest, PerformUpdateCrosStateRetrySequence) {
 }
 
 TEST_F(CrosStateSenderTest, UpdatesOnConnected) {
-  feature_list_.InitWithFeatures(/* enabled_features= */ {},
-                                 /* disabled_features= */ {features::kEcheSWA});
   // Set notification feature to be enabled.
   fake_multidevice_setup_client_->SetFeatureState(
       Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
@@ -135,7 +133,8 @@ TEST_F(CrosStateSenderTest, UpdatesOnConnected) {
       secure_channel::ConnectionManager::Status::kConnected);
   EXPECT_TRUE(std::get<0>(fake_message_sender_->GetRecentCrosState()));
   EXPECT_TRUE(std::get<1>(fake_message_sender_->GetRecentCrosState()));
-  EXPECT_EQ(nullptr, std::get<2>(fake_message_sender_->GetRecentCrosState()));
+  EXPECT_EQ(&(fake_attestation_certificate_generator_->CERTS),
+            std::get<2>(fake_message_sender_->GetRecentCrosState()));
   EXPECT_EQ(1u, fake_message_sender_->GetCrosStateCallCount());
 
   // Phone model is populated.
@@ -153,8 +152,6 @@ TEST_F(CrosStateSenderTest, UpdatesOnConnected) {
 }
 
 TEST_F(CrosStateSenderTest, CrosStateMessageIncludesAttestationIfEcheEnabled) {
-  feature_list_.InitWithFeatures(/* enabled_features= */ {features::kEcheSWA},
-                                 /* disabled_features= */ {});
   // Set notification feature to be enabled.
   fake_multidevice_setup_client_->SetFeatureState(
       Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);
@@ -171,8 +168,6 @@ TEST_F(CrosStateSenderTest, CrosStateMessageIncludesAttestationIfEcheEnabled) {
 }
 
 TEST_F(CrosStateSenderTest, ResendOnNewAttestationCertificate) {
-  feature_list_.InitWithFeatures(/* enabled_features= */ {features::kEcheSWA},
-                                 /* disabled_features= */ {});
   // Set notification feature to be enabled.
   fake_multidevice_setup_client_->SetFeatureState(
       Feature::kPhoneHubNotifications, FeatureState::kEnabledByUser);

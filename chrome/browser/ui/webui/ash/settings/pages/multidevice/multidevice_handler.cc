@@ -212,16 +212,14 @@ void MultideviceHandler::OnJavascriptAllowed() {
         base::BindRepeating(&MultideviceHandler::OnNearbySharingEnabledChanged,
                             base::Unretained(this)));
   }
-  if (features::IsEcheSWAEnabled()) {
-    pref_change_registrar_.Add(
-        ash::prefs::kEnableAutoScreenLock,
-        base::BindRepeating(&MultideviceHandler::OnEnableScreenLockChanged,
-                            base::Unretained(this)));
-    pref_change_registrar_.Add(
-        phonehub::prefs::kScreenLockStatus,
-        base::BindRepeating(&MultideviceHandler::OnScreenLockStatusChanged,
-                            base::Unretained(this)));
-  }
+  pref_change_registrar_.Add(
+      ash::prefs::kEnableAutoScreenLock,
+      base::BindRepeating(&MultideviceHandler::OnEnableScreenLockChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      phonehub::prefs::kScreenLockStatus,
+      base::BindRepeating(&MultideviceHandler::OnScreenLockStatusChanged,
+                          base::Unretained(this)));
 }
 
 void MultideviceHandler::OnJavascriptDisallowed() {
@@ -416,7 +414,6 @@ void MultideviceHandler::HandleCancelNotificationSetup(
 }
 
 void MultideviceHandler::HandleAttemptAppsSetup(const base::ListValue& args) {
-  CHECK(features::IsEcheSWAEnabled(), base::NotFatalUntil::M162);
   CHECK(!apps_access_operation_, base::NotFatalUntil::M162);
 
   phonehub::MultideviceFeatureAccessManager::AccessStatus apps_access_status =
@@ -435,7 +432,6 @@ void MultideviceHandler::HandleAttemptAppsSetup(const base::ListValue& args) {
 }
 
 void MultideviceHandler::HandleCancelAppsSetup(const base::ListValue& args) {
-  CHECK(features::IsEcheSWAEnabled(), base::NotFatalUntil::M162);
   CHECK(apps_access_operation_, base::NotFatalUntil::M162);
 
   apps_access_manager_->NotifyAppsAccessCanceled();
@@ -642,12 +638,10 @@ base::DictValue MultideviceHandler::GeneratePageContentDataDictionary() {
       static_cast<int32_t>(
           feature_states
               [multidevice_setup::mojom::Feature::kPhoneHubTaskContinuation]));
-  auto eche_feature_state =
-      base::FeatureList::IsEnabled(ash::features::kEcheSWA)
-          ? feature_states[multidevice_setup::mojom::Feature::kEche]
-          : multidevice_setup::mojom::FeatureState::kNotSupportedByChromebook;
-  page_content_dictionary.Set(kPageContentDataPhoneHubAppsStateKey,
-                              static_cast<int32_t>(eche_feature_state));
+  page_content_dictionary.Set(
+      kPageContentDataPhoneHubAppsStateKey,
+      static_cast<int32_t>(
+          feature_states[multidevice_setup::mojom::Feature::kEche]));
 
   page_content_dictionary.Set(
       kPageContentDataWifiSyncStateKey,

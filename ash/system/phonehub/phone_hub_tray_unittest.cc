@@ -78,7 +78,7 @@ class PhoneHubTrayTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kPhoneHub, features::kEcheSWA},
+        /*enabled_features=*/{features::kPhoneHub},
         /*disabled_features=*/{});
     AshTestBase::SetUp();
 

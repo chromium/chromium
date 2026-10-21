@@ -76,12 +76,8 @@ const cryptauthv2::FeatureMetadata& GenerateFeatureMetadata() {
                   BetterTogetherFeatureMetadata_FeatureName_WIFI_SYNC_CLIENT);
         }
 
-        // Eche is only supported if the associated flag is enabled.
-        if (features::IsEcheSWAEnabled()) {
-          inner_metadata.add_supported_features(
-              cryptauthv2::
-                  BetterTogetherFeatureMetadata_FeatureName_ECHE_CLIENT);
-        }
+        inner_metadata.add_supported_features(
+            cryptauthv2::BetterTogetherFeatureMetadata_FeatureName_ECHE_CLIENT);
 
         // Camera Roll is enabled by default.
         inner_metadata.add_supported_features(

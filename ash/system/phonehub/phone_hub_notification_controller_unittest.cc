@@ -97,8 +97,7 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {features::kPhoneHub, features::kEcheSWA,
-         features::kPhoneHubMonochromeNotificationIcons},
+        {features::kPhoneHub, features::kPhoneHubMonochromeNotificationIcons},
         {});
     AshTestBase::SetUp();
 

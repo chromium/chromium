@@ -123,13 +123,9 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
               message_sender_.get(),
               connection_scheduler_.get())),
       screen_lock_manager_(
-          features::IsEcheSWAEnabled()
-              ? std::make_unique<ScreenLockManagerImpl>(pref_service)
-              : nullptr),
+          std::make_unique<ScreenLockManagerImpl>(pref_service)),
       notification_interaction_handler_(
-          features::IsEcheSWAEnabled()
-              ? std::make_unique<NotificationInteractionHandlerImpl>()
-              : nullptr),
+          std::make_unique<NotificationInteractionHandlerImpl>()),
       notification_manager_(
           std::make_unique<NotificationManagerImpl>(message_sender_.get(),
                                                     user_action_recorder_.get(),
@@ -144,12 +140,10 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
       notification_processor_(
           std::make_unique<NotificationProcessor>(notification_manager_.get())),
       recent_apps_interaction_handler_(
-          features::IsEcheSWAEnabled()
-              ? std::make_unique<RecentAppsInteractionHandlerImpl>(
-                    pref_service,
-                    multidevice_setup_client,
-                    multidevice_feature_access_manager_.get())
-              : nullptr),
+          std::make_unique<RecentAppsInteractionHandlerImpl>(
+              pref_service,
+              multidevice_setup_client,
+              multidevice_feature_access_manager_.get())),
       app_stream_manager_(std::make_unique<AppStreamManager>()),
       phone_status_processor_(std::make_unique<PhoneStatusProcessor>(
           do_not_disturb_controller_.get(),

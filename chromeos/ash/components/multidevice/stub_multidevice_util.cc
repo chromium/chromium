@@ -101,8 +101,7 @@ RemoteDevice CreateStubClientComputer() {
             : SoftwareFeatureState::kNotSupported;
 
     software_features[SoftwareFeature::kEcheClient] =
-        features::IsEcheSWAEnabled() ? SoftwareFeatureState::kSupported
-                                     : SoftwareFeatureState::kNotSupported;
+        SoftwareFeatureState::kSupported;
 
     software_features[SoftwareFeature::kPhoneHubCameraRollClient] =
         SoftwareFeatureState::kSupported;

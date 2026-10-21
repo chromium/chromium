@@ -150,8 +150,7 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
     return;
   }
 
-  if (features::IsEcheSWAEnabled() &&
-      message_type == proto::MessageType::APP_STREAM_UPDATE) {
+  if (message_type == proto::MessageType::APP_STREAM_UPDATE) {
     proto::AppStreamUpdate app_stream_update;
     if (!app_stream_update.ParseFromString(serialized_proto)) {
       PA_LOG(ERROR) << "OnMessageReceived() could not deserialize the "
@@ -162,8 +161,7 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
     return;
   }
 
-  if (features::IsEcheSWAEnabled() &&
-      message_type == proto::MessageType::APP_LIST_UPDATE) {
+  if (message_type == proto::MessageType::APP_LIST_UPDATE) {
     proto::AppListUpdate app_list_update;
     if (!app_list_update.ParseFromString(serialized_proto)) {
       PA_LOG(ERROR) << "OnMessageReceived() could not deserialize the "
@@ -174,8 +172,7 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
     return;
   }
 
-  if (features::IsEcheSWAEnabled() &&
-      message_type == proto::MessageType::APP_LIST_INCREMENTAL_UPDATE) {
+  if (message_type == proto::MessageType::APP_LIST_INCREMENTAL_UPDATE) {
     proto::AppListIncrementalUpdate app_list_incrementalUpdate;
     if (!app_list_incrementalUpdate.ParseFromString(serialized_proto)) {
       PA_LOG(ERROR) << "OnMessageReceived() could not deserialize the "

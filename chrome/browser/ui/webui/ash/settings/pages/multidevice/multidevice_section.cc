@@ -432,17 +432,15 @@ MultiDeviceSection::MultiDeviceSection(
     OnEnabledChanged(nearby_share_settings->GetEnabled());
     RefreshNearbyBackgroundScanningShareSearchConcepts();
   }
-  if (features::IsEcheSWAEnabled()) {
-    pref_change_registrar_.Init(pref_service_);
-    pref_change_registrar_.Add(
-        prefs::kEnableAutoScreenLock,
-        base::BindRepeating(&MultiDeviceSection::OnEnableScreenLockChanged,
-                            base::Unretained(this)));
-    pref_change_registrar_.Add(
-        phonehub::prefs::kScreenLockStatus,
-        base::BindRepeating(&MultiDeviceSection::OnScreenLockStatusChanged,
-                            base::Unretained(this)));
-  }
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      prefs::kEnableAutoScreenLock,
+      base::BindRepeating(&MultiDeviceSection::OnEnableScreenLockChanged,
+                          base::Unretained(this)));
+  pref_change_registrar_.Add(
+      phonehub::prefs::kScreenLockStatus,
+      base::BindRepeating(&MultiDeviceSection::OnScreenLockStatusChanged,
+                          base::Unretained(this)));
 
   // Note: |multidevice_setup_client_| is null when multi-device features are
   // prohibited by policy.
@@ -758,7 +756,7 @@ void MultiDeviceSection::AddLoadTimeData(
       "isNearbyShareSupported",
       NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           profile()));
-  html_source->AddBoolean("isEcheAppEnabled", features::IsEcheSWAEnabled());
+  html_source->AddBoolean("isEcheAppEnabled", true);
   OnEnableScreenLockChanged();
   OnScreenLockStatusChanged();
 

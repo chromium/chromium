@@ -23,10 +23,6 @@ class AppsLaunchInfoProviderTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
-        /*disabled_features=*/{});
-
     handler_ = std::make_unique<EcheConnectionStatusHandler>();
     provider_ = std::make_unique<AppsLaunchInfoProvider>(handler_.get());
   }

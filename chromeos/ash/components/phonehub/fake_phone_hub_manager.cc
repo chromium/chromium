@@ -41,8 +41,7 @@ FakePhoneHubManager::GetMultideviceFeatureAccessManager() {
 
 NotificationInteractionHandler*
 FakePhoneHubManager::GetNotificationInteractionHandler() {
-  return features::IsEcheSWAEnabled() ? &fake_notification_interaction_handler_
-                                      : nullptr;
+  return &fake_notification_interaction_handler_;
 }
 
 NotificationManager* FakePhoneHubManager::GetNotificationManager() {
@@ -64,12 +63,11 @@ PhoneModel* FakePhoneHubManager::GetPhoneModel() {
 
 RecentAppsInteractionHandler*
 FakePhoneHubManager::GetRecentAppsInteractionHandler() {
-  return features::IsEcheSWAEnabled() ? &fake_recent_apps_interaction_handler_
-                                      : nullptr;
+  return &fake_recent_apps_interaction_handler_;
 }
 
 ScreenLockManager* FakePhoneHubManager::GetScreenLockManager() {
-  return features::IsEcheSWAEnabled() ? &fake_screen_lock_manager_ : nullptr;
+  return &fake_screen_lock_manager_;
 }
 
 TetherController* FakePhoneHubManager::GetTetherController() {

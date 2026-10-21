@@ -204,12 +204,11 @@ std::unique_ptr<PhoneHubContentView> PhoneHubUiController::CreateContentView(
 
 void PhoneHubUiController::HandleBubbleOpened() {
   // Make sure Eche window is not shown.
-  if (features::IsEcheSWAEnabled()) {
-    EcheTray* eche_tray = Shell::GetPrimaryRootWindowController()
-                              ->GetStatusAreaWidget()
-                              ->eche_tray();
-    if (eche_tray)
-      eche_tray->CloseBubble();
+  EcheTray* eche_tray = Shell::GetPrimaryRootWindowController()
+                            ->GetStatusAreaWidget()
+                            ->eche_tray();
+  if (eche_tray) {
+    eche_tray->CloseBubble();
   }
 
   if (!phone_hub_manager_)
@@ -446,8 +445,7 @@ PhoneHubUiController::GetUiStateFromPhoneHubManagerInternal() {
       if (phone_model->phone_status_model().has_value()) {
         // Decide to show the Mini Launcher or the main connected phone view.
         return phone_hub_manager_->GetAppStreamLauncherDataModel()
-                           ->GetShouldShowMiniLauncher() &&
-                       features::IsEcheSWAEnabled()
+                       ->GetShouldShowMiniLauncher()
                    ? UiState::kMiniLauncher
                    : UiState::kPhoneConnected;
       }
@@ -485,8 +483,7 @@ void PhoneHubUiController::CleanUpPhoneHubManager() {
 
   phone_hub_manager_->GetFeatureStatusProvider()->RemoveObserver(this);
   phone_hub_manager_->GetOnboardingUiTracker()->RemoveObserver(this);
-  if (features::IsEcheSWAEnabled())
-    phone_hub_manager_->GetAppStreamLauncherDataModel()->RemoveObserver(this);
+  phone_hub_manager_->GetAppStreamLauncherDataModel()->RemoveObserver(this);
   phone_hub_manager_->GetPhoneModel()->RemoveObserver(this);
 }
 

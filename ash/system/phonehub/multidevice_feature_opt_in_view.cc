@@ -46,7 +46,6 @@ PermissionsOnboardingSetUpMode GetPermissionSetupMode(
       phonehub::MultideviceFeatureAccessManager::AccessStatus::
           kAvailableButNotGranted;
   bool can_request_apps_acess =
-      features::IsEcheSWAEnabled() &&
       multidevice_feature_access_manager->IsAccessRequestAllowed(
           Feature::kEche) &&
       multidevice_feature_access_manager->GetAppsAccessStatus() ==

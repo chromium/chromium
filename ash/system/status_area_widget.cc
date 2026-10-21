@@ -136,9 +136,7 @@ void StatusAreaWidget::Initialize() {
 
   media_tray_ = AddTrayButton(std::make_unique<MediaTray>(shelf_));
 
-  if (features::IsEcheSWAEnabled()) {
-    eche_tray_ = AddTrayButton(std::make_unique<EcheTray>(shelf_));
-  }
+  eche_tray_ = AddTrayButton(std::make_unique<EcheTray>(shelf_));
 
   if (features::IsPhoneHubEnabled()) {
     phone_hub_tray_ = AddTrayButton(std::make_unique<PhoneHubTray>(shelf_));

@@ -287,9 +287,7 @@ void AppStreamLauncherView::OnBubbleClose() {
 }
 
 void AppStreamLauncherView::OnAppListChanged() {
-  if (features::IsEcheSWAEnabled()) {
-    UpdateFromDataModel();
-  }
+  UpdateFromDataModel();
 }
 
 void AppStreamLauncherView::CreateListView(

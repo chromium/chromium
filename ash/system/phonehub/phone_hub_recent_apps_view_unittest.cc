@@ -52,10 +52,6 @@ class RecentAppButtonsViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
-        /*disabled_features=*/{});
-
     phone_hub_recent_apps_view_ = std::make_unique<PhoneHubRecentAppsView>(
         &fake_recent_apps_interaction_handler_, &fake_phone_hub_manager_,
         connected_view_);

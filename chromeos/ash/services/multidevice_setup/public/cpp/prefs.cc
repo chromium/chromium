@@ -138,8 +138,7 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
              pref_service->GetBoolean(kWifiSyncAllowedPrefName);
 
     case mojom::Feature::kEche:
-      return features::IsEcheSWAEnabled() &&
-             pref_service->GetBoolean(kEcheAllowedPrefName);
+      return pref_service->GetBoolean(kEcheAllowedPrefName);
 
     default:
       NOTREACHED();

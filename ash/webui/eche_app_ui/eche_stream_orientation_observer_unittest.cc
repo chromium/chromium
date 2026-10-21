@@ -27,9 +27,6 @@ class EcheStreamOrientationObserverTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
-        /*disabled_features=*/{});
     DCHECK(test_web_view_factory_.get());
     AshTestBase::SetUp();
 
@@ -49,8 +46,6 @@ class EcheStreamOrientationObserverTest : public AshTestBase {
   }
 
   EcheTray* eche_tray() { return eche_tray_; }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   raw_ptr<EcheTray> eche_tray_ = nullptr;
@@ -73,21 +68,6 @@ TEST_F(EcheStreamOrientationObserverTest, OnStreamOrientationChanged) {
   OnStreamOrientationChanged(false);
 
   // Should not change
-  EXPECT_EQ(eche_tray()->get_is_landscape_for_test(), false);
-}
-
-TEST_F(EcheStreamOrientationObserverTest, EcheSWAFlagDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kEcheSWA});
-
-  EXPECT_FALSE(eche_tray()->IsInitialized());
-  EXPECT_EQ(eche_tray()->get_is_landscape_for_test(), false);
-
-  OnStreamOrientationChanged(false);
-
-  EXPECT_FALSE(eche_tray()->IsInitialized());
   EXPECT_EQ(eche_tray()->get_is_landscape_for_test(), false);
 }
 

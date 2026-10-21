@@ -328,13 +328,11 @@ void PhoneStatusProcessor::SetReceivedPhoneStatusModelStates(
   find_my_device_controller_->SetPhoneRingingStatusInternal(
       ComputeFindMyDeviceStatus(phone_properties));
 
-  if (features::IsEcheSWAEnabled()) {
-    recent_apps_interaction_handler_->set_user_states(
-        GetUserStates(phone_properties.user_states()));
+  recent_apps_interaction_handler_->set_user_states(
+      GetUserStates(phone_properties.user_states()));
 
-    SetEcheFeatureStatusReceivedFromPhoneHub(
-        phone_properties.eche_feature_status());
-  }
+  SetEcheFeatureStatusReceivedFromPhoneHub(
+      phone_properties.eche_feature_status());
 
   multidevice_feature_access_manager_->SetFeatureSetupRequestSupportedInternal(
       phone_properties.feature_setup_config()
@@ -399,17 +397,15 @@ void PhoneStatusProcessor::OnPhoneStatusSnapshotReceived(
 
   phone_hub_ui_readiness_recorder_->RecordPhoneStatusSnapShotReceived();
 
-  if (features::IsEcheSWAEnabled() && !has_received_first_app_list_update_ &&
+  if (!has_received_first_app_list_update_ &&
       connection_initialized_timestamp_ == base::TimeTicks()) {
     connection_initialized_timestamp_ = base::TimeTicks::Now();
   }
 
   ProcessReceivedNotifications(phone_status_snapshot.notifications());
   SetReceivedPhoneStatusModelStates(phone_status_snapshot.properties());
-  if (features::IsEcheSWAEnabled()) {
-    GenerateAppListWithIcons(phone_status_snapshot.streamable_apps(),
-                             AppListUpdateType::kBoth);
-  }
+  GenerateAppListWithIcons(phone_status_snapshot.streamable_apps(),
+                           AppListUpdateType::kBoth);
   multidevice_feature_access_manager_
       ->UpdatedFeatureSetupConnectionStatusIfNeeded();
 }
@@ -445,9 +441,6 @@ void PhoneStatusProcessor::OnHostStatusChanged(
 
 void PhoneStatusProcessor::OnAppListUpdateReceived(
     const proto::AppListUpdate app_list_update) {
-  if (!features::IsEcheSWAEnabled()) {
-    return;
-  }
   if (app_list_update.has_all_apps()) {
     GenerateAppListWithIcons(app_list_update.all_apps(),
                              AppListUpdateType::kOnlyLauncherApps);

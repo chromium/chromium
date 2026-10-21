@@ -436,9 +436,6 @@ TEST_F(MessageReceiverImplTest, OnPingResponseReceived) {
 }
 
 TEST_F(MessageReceiverImplTest, OnAppStreamUpdateReceived) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEcheSWA);
-
   proto::AppStreamUpdate expected_app_stream_update;
   auto* app = expected_app_stream_update.mutable_foreground_app();
   app->set_user_id(12);
@@ -461,9 +458,6 @@ TEST_F(MessageReceiverImplTest, OnAppStreamUpdateReceived) {
 }
 
 TEST_F(MessageReceiverImplTest, OnAppListUpdateReceived) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEcheSWA);
-
   proto::AppListUpdate expected_app_list_update;
   auto* streamable_apps = expected_app_list_update.mutable_all_apps();
   streamable_apps->add_apps();
@@ -481,9 +475,6 @@ TEST_F(MessageReceiverImplTest, OnAppListUpdateReceived) {
 }
 
 TEST_F(MessageReceiverImplTest, OnAppListUpdateReceivedNoStreamableApps) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEcheSWA);
-
   proto::AppListUpdate expected_app_list_update;
 
   // Simulate receiving a message.
@@ -497,26 +488,7 @@ TEST_F(MessageReceiverImplTest, OnAppListUpdateReceivedNoStreamableApps) {
   EXPECT_FALSE(actual_app_list_update.has_all_apps());
 }
 
-TEST_F(MessageReceiverImplTest, OnAppListUpdateReceivedFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kEcheSWA);
-
-  proto::AppListUpdate expected_app_list_update;
-  auto* streamable_apps = expected_app_list_update.mutable_all_apps();
-  streamable_apps->add_apps();
-
-  // Simulate receiving a message.
-  const std::string expected_message =
-      SerializeMessage(proto::APP_LIST_UPDATE, &expected_app_list_update);
-  fake_connection_manager_->NotifyMessageReceived(expected_message);
-
-  EXPECT_EQ(0u, GetNumAppListUpdateCalls());
-}
-
 TEST_F(MessageReceiverImplTest, OnAppListIncremenatlUpdateReceived) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kEcheSWA);
-
   proto::AppListIncrementalUpdate expected_app_list_incremental_update;
   auto* installed_app =
       expected_app_list_incremental_update.mutable_installed_apps();
@@ -538,29 +510,7 @@ TEST_F(MessageReceiverImplTest, OnAppListIncremenatlUpdateReceived) {
             actual_app_list_incremental_update.installed_apps().apps_size());
 }
 
-TEST_F(MessageReceiverImplTest,
-       OnAppListIncremenatlUpdateReceivedFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kEcheSWA);
-
-  proto::AppListIncrementalUpdate expected_app_list_incremental_update;
-  auto* installed_app =
-      expected_app_list_incremental_update.mutable_installed_apps();
-  installed_app->add_apps();
-
-  // Simulate receiving a message.
-  const std::string expected_message =
-      SerializeMessage(proto::APP_LIST_INCREMENTAL_UPDATE,
-                       &expected_app_list_incremental_update);
-  fake_connection_manager_->NotifyMessageReceived(expected_message);
-
-  EXPECT_EQ(0u, GetNumAppListIncrementalUpdateCalls());
-}
-
 TEST_F(MessageReceiverImplTest, OnMessageReceivedParseFailureStates) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(/*enabled_features=*/{features::kEcheSWA},
-                                /*disabled_features=*/{});
 
   std::string expected_message;
 

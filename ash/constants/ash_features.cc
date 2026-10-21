@@ -509,9 +509,6 @@ BASE_FEATURE(kFeatureManagementDriveFsBulkPinning,
 // Enables authenticating to Wi-Fi networks using EAP-GTC.
 BASE_FEATURE(kEapGtcWifiAuthentication, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the System Web App (SWA) version of Eche.
-BASE_FEATURE(kEcheSWA, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the Debug Mode of Eche.
 BASE_FEATURE(kEcheSWADebugMode, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -1104,18 +1101,6 @@ BASE_FEATURE(kModifierSplit, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables to split left and right modifiers in settings.
 BASE_FEATURE(kMouseImposterCheck, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Time limit before re-attempting a background connection to check if the
-// network is suitable.
-const base::FeatureParam<base::TimeDelta>
-    kEcheBackgroundConnectionAttemptThrottleTimeout{
-        &kEcheSWA,
-        "EcheBackgroundConnectionAttemptThrottleTimeout", base::Seconds(10)};
-
-// Time limit before requiring a new connection check to show apps UI.
-const base::FeatureParam<base::TimeDelta> kEcheConnectionStatusResetTimeout{
-    &kEcheSWA, "EcheConnectionStatusResetTimeout",
-    base::Minutes(10)};
 
 BASE_FEATURE(kEcheShorterScanningDutyCycle, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2170,10 +2155,6 @@ bool IsDemoModeSecondaryGoogleAccountSigninAllowedFalse() {
 
 bool IsSendDeviceInfoToDemoServerEnabled() {
   return base::FeatureList::IsEnabled(kSendDeviceInfoToDemoServer);
-}
-
-bool IsEcheSWAEnabled() {
-  return base::FeatureList::IsEnabled(kEcheSWA);
 }
 
 bool IsEcheSWADebugModeEnabled() {

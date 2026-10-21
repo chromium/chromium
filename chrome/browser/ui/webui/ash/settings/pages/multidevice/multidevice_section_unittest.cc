@@ -81,11 +81,7 @@ class MockWebUIDataSource : public content::WebUIDataSource {
 class MultiDeviceSectionTest : public testing::Test {
  protected:
   MultiDeviceSectionTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
-        /*disabled_features=*/{});
-  }
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
   MultiDeviceSectionTest(const MultiDeviceSectionTest&) = delete;
   MultiDeviceSectionTest& operator=(const MultiDeviceSectionTest&) = delete;
   ~MultiDeviceSectionTest() override = default;

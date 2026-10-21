@@ -250,10 +250,9 @@ void RecentAppsInteractionHandlerImpl::ComputeAndUpdateUiState() {
                              Feature::kEche) == FeatureState::kEnabledByUser;
 
   bool is_apps_access_required =
-      features::IsEcheSWAEnabled() &&
       multidevice_feature_access_manager_->GetAppsAccessStatus() ==
-          phonehub::MultideviceFeatureAccessManager::AccessStatus::
-              kAvailableButNotGranted;
+      phonehub::MultideviceFeatureAccessManager::AccessStatus::
+          kAvailableButNotGranted;
 
   if (!allow_streaming || is_apps_access_required) {
     NotifyRecentAppsViewUiStateUpdated();

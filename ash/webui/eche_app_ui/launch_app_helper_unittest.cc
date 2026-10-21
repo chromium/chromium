@@ -83,9 +83,6 @@ class LaunchAppHelperTest : public ash::AshTestBase {
   // ash::AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
-        /*disabled_features=*/{});
 
     fake_phone_hub_manager_ = std::make_unique<phonehub::FakePhoneHubManager>();
     connection_handler_ = std::make_unique<EcheConnectionStatusHandler>();

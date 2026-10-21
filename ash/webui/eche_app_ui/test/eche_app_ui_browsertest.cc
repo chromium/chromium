@@ -29,9 +29,7 @@ constexpr const char* kTestFiles[] = {
 
 class EcheAppUIBrowserTest : public WebUIMochaBrowserTest {
  public:
-  EcheAppUIBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kEcheSWA);
-  }
+  EcheAppUIBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     SandboxedWebUiAppTestBase::ConfigureDefaultTestRequestHandler(

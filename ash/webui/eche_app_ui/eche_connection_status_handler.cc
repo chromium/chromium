@@ -4,11 +4,23 @@
 
 #include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 
-#include "ash/constants/ash_features.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash::eche_app {
+
+namespace {
+
+// Time limit before re-attempting a background connection to check if the
+// network is suitable.
+constexpr base::TimeDelta kBackgroundConnectionAttemptThrottleTimeout =
+    base::Seconds(10);
+
+// Time limit before requiring a new connection check to show apps UI.
+constexpr base::TimeDelta kConnectionStatusResetTimeout = base::Minutes(10);
+
+}  // namespace
 
 EcheConnectionStatusHandler::EcheConnectionStatusHandler() = default;
 
@@ -120,13 +132,11 @@ void EcheConnectionStatusHandler::CheckConnectionStatusForUi() {
 
   base::TimeDelta time_since_last_check =
       base::Time::Now() - last_update_timestamp_;
-  if (time_since_last_check >
-      features::kEcheBackgroundConnectionAttemptThrottleTimeout.Get()) {
+  if (time_since_last_check > kBackgroundConnectionAttemptThrottleTimeout) {
     PA_LOG(INFO) << __func__ << ": Requesting background connection attempt";
     NotifyRequestBackgroundConnectionAttempt();
   }
-  if (time_since_last_check >
-          features::kEcheConnectionStatusResetTimeout.Get() &&
+  if (time_since_last_check > kConnectionStatusResetTimeout &&
       connection_status_for_ui_ ==
           mojom::ConnectionStatus::kConnectionStatusConnected) {
     PA_LOG(INFO) << __func__ << ": blocking ui";

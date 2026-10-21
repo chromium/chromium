@@ -91,12 +91,10 @@ const base::flat_set<CryptAuthFeatureType>& GetAllCryptAuthFeatureTypes() {
           feature_set.insert(CryptAuthFeatureType::kWifiSyncHostSupported);
           feature_set.insert(CryptAuthFeatureType::kWifiSyncHostEnabled);
         }
-        if (features::IsEcheSWAEnabled()) {
-          feature_set.insert(CryptAuthFeatureType::kEcheClientSupported);
-          feature_set.insert(CryptAuthFeatureType::kEcheClientEnabled);
-          feature_set.insert(CryptAuthFeatureType::kEcheHostSupported);
-          feature_set.insert(CryptAuthFeatureType::kEcheHostEnabled);
-        }
+        feature_set.insert(CryptAuthFeatureType::kEcheClientSupported);
+        feature_set.insert(CryptAuthFeatureType::kEcheClientEnabled);
+        feature_set.insert(CryptAuthFeatureType::kEcheHostSupported);
+        feature_set.insert(CryptAuthFeatureType::kEcheHostEnabled);
         feature_set.insert(
             CryptAuthFeatureType::kPhoneHubCameraRollClientSupported);
         feature_set.insert(
@@ -132,10 +130,8 @@ GetSupportedCryptAuthFeatureTypes() {
           supported_set.insert(CryptAuthFeatureType::kWifiSyncHostSupported);
           supported_set.insert(CryptAuthFeatureType::kWifiSyncClientSupported);
         }
-        if (features::IsEcheSWAEnabled()) {
-          supported_set.insert(CryptAuthFeatureType::kEcheHostSupported);
-          supported_set.insert(CryptAuthFeatureType::kEcheClientSupported);
-        }
+        supported_set.insert(CryptAuthFeatureType::kEcheHostSupported);
+        supported_set.insert(CryptAuthFeatureType::kEcheClientSupported);
         supported_set.insert(
             CryptAuthFeatureType::kPhoneHubCameraRollHostSupported);
         supported_set.insert(
@@ -166,10 +162,8 @@ const base::flat_set<CryptAuthFeatureType>& GetEnabledCryptAuthFeatureTypes() {
           enabled_set.insert(CryptAuthFeatureType::kWifiSyncHostEnabled);
           enabled_set.insert(CryptAuthFeatureType::kWifiSyncClientEnabled);
         }
-        if (features::IsEcheSWAEnabled()) {
-          enabled_set.insert(CryptAuthFeatureType::kEcheHostEnabled);
-          enabled_set.insert(CryptAuthFeatureType::kEcheClientEnabled);
-        }
+        enabled_set.insert(CryptAuthFeatureType::kEcheHostEnabled);
+        enabled_set.insert(CryptAuthFeatureType::kEcheClientEnabled);
         enabled_set.insert(
             CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled);
         enabled_set.insert(

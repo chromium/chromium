@@ -56,9 +56,6 @@ class FeatureSetupResponseProcessorTest : public testing::Test {
         std::make_unique<FakeMultideviceFeatureAccessManager>();
     fake_multidevice_feature_access_manager_
         ->SetFeatureSetupRequestSupportedInternal(true);
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
-        /*disabled_features=*/{});
   }
 
   void CreateFeatureSetupResponseProcessor() {

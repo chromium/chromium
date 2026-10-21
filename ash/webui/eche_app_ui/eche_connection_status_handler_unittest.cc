@@ -87,10 +87,6 @@ class EcheConnectionStatusHandlerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
-        /*disabled_features=*/{});
-
     handler_ = std::make_unique<EcheConnectionStatusHandler>();
     handler_->AddObserver(&fake_observer_);
   }

@@ -28,9 +28,6 @@ namespace eche_app {
 class EcheAppManagerFactoryTest : public ChromeAshTestBase {
  protected:
   EcheAppManagerFactoryTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
-        /*disabled_features=*/{});
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     if (profile_manager_->SetUp()) {
@@ -71,7 +68,6 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
   PhoneHubTray* phone_hub_tray() { return phone_hub_tray_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<EcheConnectionStatusHandler> connection_handler_;
@@ -86,9 +82,6 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
 class EcheAppManagerFactoryWithBackgroundTest : public ChromeAshTestBase {
  protected:
   EcheAppManagerFactoryWithBackgroundTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
-        /*disabled_features=*/{});
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     if (profile_manager_->SetUp()) {

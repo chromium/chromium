@@ -5119,15 +5119,12 @@ class ShelfLayoutManagerWithEcheTest : public ShelfLayoutManagerTestBase {
   template <typename... TaskEnvironmentTraits>
   explicit ShelfLayoutManagerWithEcheTest(TaskEnvironmentTraits&&... traits)
       : ShelfLayoutManagerTestBase(
-            std::forward<TaskEnvironmentTraits>(traits)...) {
-    scoped_feature_list_.InitAndEnableFeature(features::kEcheSWA);
-  }
+            std::forward<TaskEnvironmentTraits>(traits)...) {}
 
  protected:
   void SetUp() override { ShelfLayoutManagerTestBase::SetUp(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   // Calling the factory constructor is enough to set it up.
   TestAshWebViewFactory test_web_view_factory_;
 };

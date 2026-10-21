@@ -55,9 +55,6 @@ class EcheTrayStreamStatusObserverTest : public AshTestBase {
     // fake_phone_hub_manager_.fake_feature_status_provider()->SetStatus(
     //     phonehub::FeatureStatus::kEnabledAndConnected);
     fake_feature_status_provider_.SetStatus(FeatureStatus::kIneligible);
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
-        /*disabled_features=*/{});
     DCHECK(test_web_view_factory_.get());
     AshTestBase::SetUp();
     eche_tray_ =

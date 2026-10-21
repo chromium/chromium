@@ -33,9 +33,7 @@ void EcheStreamOrientationObserver::OnStreamOrientationChanged(
   PA_LOG(INFO) << "echeapi OnStreamOrientationChanged: isLandscape:"
                << is_landscape;
 
-  if (features::IsEcheSWAEnabled()) {
-    GetEcheTray()->OnStreamOrientationChanged(is_landscape);
-  }
+  GetEcheTray()->OnStreamOrientationChanged(is_landscape);
 }
 
 void EcheStreamOrientationObserver::Bind(

@@ -124,17 +124,12 @@ PhoneHubManagerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  std::unique_ptr<AttestationCertificateGeneratorImpl>
-      attestation_certificate_generator = nullptr;
+  auto soft_bind_attestation_flow =
+      std::make_unique<attestation::SoftBindAttestationFlowImpl>();
 
-  if (features::IsEcheSWAEnabled()) {
-    auto soft_bind_attestation_flow =
-        std::make_unique<attestation::SoftBindAttestationFlowImpl>();
-
-    attestation_certificate_generator =
-        std::make_unique<AttestationCertificateGeneratorImpl>(
-            profile, std::move(soft_bind_attestation_flow));
-  }
+  auto attestation_certificate_generator =
+      std::make_unique<AttestationCertificateGeneratorImpl>(
+          profile, std::move(soft_bind_attestation_flow));
 
   auto phone_hub_manager = std::make_unique<PhoneHubManagerImpl>(
       profile->GetPrefs(),

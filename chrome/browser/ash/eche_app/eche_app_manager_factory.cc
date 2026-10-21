@@ -177,8 +177,9 @@ void EcheAppManagerFactory::RegisterProfilePrefs(
 std::unique_ptr<KeyedService>
 EcheAppManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!features::IsPhoneHubEnabled() || !features::IsEcheSWAEnabled())
+  if (!features::IsPhoneHubEnabled()) {
     return nullptr;
+  }
 
   Profile* profile = Profile::FromBrowserContext(context);
   phonehub::PhoneHubManager* phone_hub_manager =

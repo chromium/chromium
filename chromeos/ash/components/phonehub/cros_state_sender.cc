@@ -97,10 +97,9 @@ void CrosStateSender::AttemptUpdateCrosState() {
 }
 
 void CrosStateSender::PerformUpdateCrosState() {
-  // If Eche isn't enabled, or there's no way to generate an attestation
-  // certificate, send the CrosState message without attestation.
-  if (!features::IsEcheSWAEnabled() ||
-      attestation_certificate_generator_ == nullptr) {
+  // If there's no way to generate an attestation certificate, send the
+  // CrosState message without attestation.
+  if (attestation_certificate_generator_ == nullptr) {
     SendCrosStateMessage(nullptr);
     return;
   }

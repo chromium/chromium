@@ -79,10 +79,6 @@ class AppsAccessManagerImplTest : public testing::Test {
     AppsAccessManagerImpl::RegisterPrefs(pref_service_.registry());
     multidevice_setup::RegisterFeaturePrefs(pref_service_.registry());
 
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
-        /*disabled_features=*/{});
-
     fake_eche_connector_ = std::make_unique<FakeEcheConnector>();
     fake_eche_message_receiver_ = std::make_unique<FakeEcheMessageReceiver>();
     fake_feature_status_provider_ = std::make_unique<FakeFeatureStatusProvider>(

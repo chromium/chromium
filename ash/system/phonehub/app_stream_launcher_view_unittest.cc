@@ -37,9 +37,6 @@ class AppStreamLauncherViewTest : public views::ViewsTestBase {
     CreateWidget();
     generator_ =
         std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_));
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA},
-        /*disabled_features=*/{});
   }
 
   // AshTestBase:

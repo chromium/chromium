@@ -63,8 +63,7 @@ class NotificationProcessorTest : public testing::Test {
 
   NotificationProcessorTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA,
-                              features::kPhoneHubCallNotification},
+        /*enabled_features=*/{features::kPhoneHubCallNotification},
         /*disabled_features=*/{});
   }
   NotificationProcessorTest(const NotificationProcessorTest&) = delete;

@@ -22,17 +22,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-class EcheAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
- public:
-  EcheAppIntegrationTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kEcheSWA},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+class EcheAppIntegrationTest : public ash::SystemWebAppIntegrationTest {};
 
 // Test that the Eche App installs and launches correctly. Runs some spot checks
 // on the manifest.

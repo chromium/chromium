@@ -64,7 +64,7 @@ class SystemFeaturesPolicyTestBase : public MixinBasedInProcessBrowserTest {
  public:
   SystemFeaturesPolicyTestBase() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kEcheSWA, ash::features::kConch},
+        /*enabled_features=*/{ash::features::kConch},
         /*disabled_features=*/{});
 
     fake_crostini_features_.set_is_allowed_now(true);

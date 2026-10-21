@@ -100,5 +100,5 @@ gfx::Rect EcheSystemAppDelegate::GetDefaultBounds(ash::BrowserDelegate*) const {
 }
 
 bool EcheSystemAppDelegate::IsAppEnabled() const {
-  return base::FeatureList::IsEnabled(ash::features::kEcheSWA);
+  return true;
 }

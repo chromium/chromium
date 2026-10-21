@@ -208,15 +208,8 @@ void VerifyPageContentDict(
   std::optional<int> phone_hub_apps_state =
       page_content_dict.FindInt("phoneHubAppsState");
   ASSERT_TRUE(phone_hub_apps_state);
-  if (base::FeatureList::IsEnabled(ash::features::kEcheSWA)) {
-    it = feature_states_map.find(multidevice_setup::mojom::Feature::kEche);
-    EXPECT_EQ(static_cast<int>(it->second), *phone_hub_apps_state);
-  } else {
-    EXPECT_EQ(
-        static_cast<int>(
-            multidevice_setup::mojom::FeatureState::kNotSupportedByChromebook),
-        *phone_hub_apps_state);
-  }
+  it = feature_states_map.find(multidevice_setup::mojom::Feature::kEche);
+  EXPECT_EQ(static_cast<int>(it->second), *phone_hub_apps_state);
 
   std::optional<int> wifi_sync_state =
       page_content_dict.FindInt("wifiSyncState");
@@ -929,8 +922,7 @@ TEST_F(MultideviceHandlerTest, NotificationSetupFlow) {
 }
 
 TEST_F(MultideviceHandlerTest, AppsSetupFlow) {
-  InitWithFeatures(/* enabled_features */ {ash::features::kPhoneHub,
-                                           ash::features::kEcheSWA},
+  InitWithFeatures(/* enabled_features */ {ash::features::kPhoneHub},
                    /* disabled_features */ {});
   using Status = eche_app::AppsAccessSetupOperation::Status;
 
@@ -1175,8 +1167,7 @@ TEST_F(MultideviceHandlerTest, LogUmaMetricsForSetUpFinishedScreenSetupMode) {
 }
 
 TEST_F(MultideviceHandlerTest, PageContentData) {
-  InitWithFeatures(/* enabled_features */ {ash::features::kPhoneHub,
-                                           ash::features::kEcheSWA},
+  InitWithFeatures(/* enabled_features */ {ash::features::kPhoneHub},
                    /* disabled_features */ {});
   CallGetPageContentData();
   CallGetPageContentData();
@@ -1245,32 +1236,15 @@ TEST_F(MultideviceHandlerTest, RemoveHostDevice) {
   CallRemoveHostDevice();
 }
 
-TEST_F(MultideviceHandlerTest, PageContentDataWhenEcheSWADisabled) {
-  InitWithFeatures(
-      /* enabled_features */ {ash::features::kPhoneHub},
-      /* disabled_features */ {ash::features::kEcheSWA});
-
-  multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap
-      feature_states_map = GenerateDefaultFeatureStatesMap();
-
-  feature_states_map[multidevice_setup::mojom::Feature::kEche] =
-      multidevice_setup::mojom::FeatureState::kProhibitedByPolicy;
-  SimulateFeatureStatesUpdate(feature_states_map);
-}
-
 TEST_F(MultideviceHandlerTest, EnableScreenLockChanged) {
-  InitWithFeatures(/* enabled_features */ {ash::features::kPhoneHub,
-                                           ash::features::kEcheSWA},
-                   {});
+  InitWithFeatures(/* enabled_features */ {ash::features::kPhoneHub}, {});
   SetUpHandlerWithEmptyManagers();
 
   SimulateEnableScreenLockChanged();
 }
 
 TEST_F(MultideviceHandlerTest, ScreenLockStatusChanged) {
-  InitWithFeatures(/* enabled_features */ {ash::features::kPhoneHub,
-                                           ash::features::kEcheSWA},
-                   {});
+  InitWithFeatures(/* enabled_features */ {ash::features::kPhoneHub}, {});
   SetUpHandlerWithEmptyManagers();
 
   SimulateScreenLockStatusChanged();

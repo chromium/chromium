@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
 #include <optional>
 
 #include "ash/public/cpp/shelf_types.h"
@@ -18,7 +17,6 @@
 #include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -83,14 +81,6 @@ class PhoneHubPixelTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    // TODO(crbug.com/381281980): Eche is disabled due to an animation crashing
-    // despite the permission dialog not being completed. Update these tests to
-    // support Eche and different permission states.
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures(
-        /* enabled_features= */ {},
-        /* disabled_features= */ {features::kEcheSWA});
-
     phone_hub_tray_ =
         GetPrimaryShelf()->GetStatusAreaWidget()->phone_hub_tray();
     phone_hub_tray_->SetPhoneHubManager(&phone_hub_manager_);
@@ -103,7 +93,6 @@ class PhoneHubPixelTest : public AshTestBase {
   // AshTestBase:
   void TearDown() override {
     phone_hub_tray_ = nullptr;
-    scoped_feature_list_->Reset();
     AshTestBase::TearDown();
   }
 
@@ -123,7 +112,6 @@ class PhoneHubPixelTest : public AshTestBase {
   const bool enable_system_blur_;
   raw_ptr<PhoneHubTray> phone_hub_tray_ = nullptr;
   phonehub::FakePhoneHubManager phone_hub_manager_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 // Parameterized test class to set up Pixel Tests when the shelf alignment is
