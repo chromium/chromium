@@ -83,18 +83,17 @@ if (swift_whole_module_optimization == -1) {
 # but it will cause edges to be marked as dirty if the ninja files are
 # regenerated. See https://crbug.com/619083 for details. A proper fix
 # would be to have inputs to tools (https://crbug.com/621119).
-tool_versions = exec_script(
-        "get_tool_mtime.py",
-        rebase_path(
-            [
-              "//build/toolchain/apple/compile_xcassets.py",
-              "//build/toolchain/apple/filter_libtool.py",
-              "//build/toolchain/apple/linker_driver.py",
-              "//build/toolchain/apple/swift_const_gather_protocols.json",
-              "//build/toolchain/apple/swiftc.py",
-            ],
-            root_build_dir),
-        "trim scope")
+_tool_files = [
+  "//build/toolchain/apple/compile_xcassets.py",
+  "//build/toolchain/apple/filter_libtool.py",
+  "//build/toolchain/apple/linker_driver.py",
+  "//build/toolchain/apple/swift_const_gather_protocols.json",
+  "//build/toolchain/apple/swiftc.py",
+]
+tool_versions = exec_script("get_tool_mtime.py",
+                            rebase_path(_tool_files, root_build_dir),
+                            "trim scope",
+                            _tool_files)
 
 # Tools can't declare inputs (https://crbug.com/621119), so version wrapped
 # tool commands by the wrapper files' mtimes, like `tool_versions` above.

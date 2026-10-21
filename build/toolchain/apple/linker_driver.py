@@ -308,7 +308,7 @@ class LinkerDriver(object):
         p = subprocess.run(self._otool_cmd + ['-l', dylib], capture_output=True)
         if p.returncode != 0:
             return
-        if re.match(rb'\s+cmd LC_REEXPORT_DYLIB$', p.stdout, re.MULTILINE):
+        if re.search(rb'^\s+cmd LC_REEXPORT_DYLIB$', p.stdout, re.MULTILINE):
             self._reexport_in_old_module = True
 
     def set_install_name_tool_path(self, install_name_tool_path):
@@ -520,7 +520,7 @@ class LinkerDriver(object):
 
             # Not any LC_ID_DYLIBs? Probably not an MH_DYLIB. Probably fine, we
             # can proceed with ID-less TOC generation.
-            if line == b'      cmd LC_ID_DYLIB':
+            if line.lstrip() == b'cmd LC_ID_DYLIB':
                 if found_id:
                     raise ValueError('Too many LC_ID_DYLIBs in %s' % dylib)
                 toc += line + b'\n'
