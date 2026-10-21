@@ -11,7 +11,6 @@ include_rules = [
   # refactor chromeos codes in //chrome to break these dependencies; see
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
-  "+chrome/browser/extensions/extension_browsertest.h",
   "+chrome/browser/extensions/extension_management.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
@@ -25,10 +24,13 @@ specific_include_rules = {
   "api_guard_delegate_unittest\\.cc": [
     "+chrome/browser/extensions/extension_management_test_util.h",
   ],
-   "base_telemetry_extension_api_guard_function_browsertest\\.cc": [
-      "+chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h",
-   ],
-   "base_telemetry_extension_browser_test\\.cc": [
-      "+chrome/browser/ui/tabs/tab_strip_model.h",
-   ],
+  "base_telemetry_extension_api_guard_function_browsertest\\.cc": [
+    "+chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h",
+  ],
+  "base_telemetry_extension_browser_test\\.cc": [
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+  ],
+  "base_telemetry_extension_browser_test\\.h": [
+    "+chrome/browser/extensions/extension_browsertest.h",
+  ],
 }

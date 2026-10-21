@@ -22,11 +22,9 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/extensions/external_loader.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/wallpaper/wallpaper_ash.h",
-  "+chrome/browser/ui/browser_window.h",
   "+chrome/common",
 ]
 
@@ -42,9 +40,12 @@ specific_include_rules = {
     "+chrome/browser/ash",
   ],
   "info_private_apitest\\.cc": [
-    "+ash",
+    "+chrome/browser/ui/browser_window.h",
   ],
   "wallpaper_api\\.h": [
     "+ash/public/mojom/wallpaper.mojom.h",
+  ],
+  "(info_private_apitest\\.cc|wallpaper_apitest\\.cc)": [
+    "+chrome/browser/extensions/extension_apitest.h",
   ],
 }
