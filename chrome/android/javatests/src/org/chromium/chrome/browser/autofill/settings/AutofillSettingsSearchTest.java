@@ -58,10 +58,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for searching autofill settings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
-    ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
-})
+@EnableFeatures({ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA})
 @Batch(Batch.PER_CLASS)
 public class AutofillSettingsSearchTest {
 

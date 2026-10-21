@@ -55,8 +55,7 @@ import java.util.List;
 @DisableFeatures({
     ChromeFeatureList.AUTOFILL_ENABLE_SEPARATE_PIX_PREFERENCE_ITEM,
     ChromeFeatureList.AUTOFILL_ENABLE_WALLET_REMINDER_NOTICE,
-    ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS,
-    ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    ChromeFeatureList.AUTOFILL_SYNC_EWALLET_ACCOUNTS
 })
 public class AutofillPaymentMethodsFragmentBuyNowPayLaterTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
