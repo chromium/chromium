@@ -364,4 +364,275 @@
   <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ZOOM_LEVELS_ALT3" meaning="Settings search keyword for 'Zoom levels'" desc="Search keyword for the site setting to view and remove custom page zoom levels saved for specific websites. Alternate keyword for: 'Zoom levels'" translateable="false">
     size
   </message>
+
+  <!-- People section. -->
+  <message name="IDS_SETTINGS_TAG_HOME_ALT1" meaning="Settings search keyword for 'Home'" desc="Search keyword for the central Settings Home page for managing Google Account, Chrome profile, quick actions, data import, and default browser. Alternate keyword for: 'Home'" translateable="false">
+    you
+  </message>
+  <message name="IDS_SETTINGS_TAG_HOME_ALT2" meaning="Settings search keyword for 'Home'" desc="Search keyword for the central Settings Home page for managing Google Account, Chrome profile, quick actions, data import, and default browser. Alternate keyword for: 'Home'" translateable="false">
+    google
+  </message>
+  <message name="IDS_SETTINGS_TAG_HOME_ALT3" meaning="Settings search keyword for 'Home'" desc="Search keyword for the central Settings Home page for managing Google Account, Chrome profile, quick actions, data import, and default browser. Alternate keyword for: 'Home'" translateable="false">
+    people
+  </message>
+  <message name="IDS_SETTINGS_TAG_PEOPLE_ALT1" meaning="Settings search keyword for 'You and Google'" desc="Search keyword for the settings page to manage your signed-in Google Account, Chrome profile, and sync preferences. Alternate keyword for: 'You and Google'" translateable="false">
+    home
+  </message>
+  <message name="IDS_SETTINGS_TAG_PEOPLE_ALT2" meaning="Settings search keyword for 'You and Google'" desc="Search keyword for the settings page to manage your signed-in Google Account, Chrome profile, and sync preferences. Alternate keyword for: 'You and Google'" translateable="false">
+    people
+  </message>
+  <message name="IDS_SETTINGS_TAG_PEOPLE_ALT3" meaning="Settings search keyword for 'You and Google'" desc="Search keyword for the settings page to manage your signed-in Google Account, Chrome profile, and sync preferences. Alternate keyword for: 'You and Google'" translateable="false">
+    services
+  </message>
+  <message name="IDS_SETTINGS_TAG_YOUR_ACCOUNT_ALT1" meaning="Settings search keyword for 'Your account in Chrome'" desc="Search keyword for the subpage to manage how your Google Account data, sync settings, and encryption passphrase work in Chrome. Alternate keyword for: 'Your account in Chrome'" translateable="false">
+    sync
+  </message>
+  <message name="IDS_SETTINGS_TAG_YOUR_ACCOUNT_ALT2" meaning="Settings search keyword for 'Your account in Chrome'" desc="Search keyword for the subpage to manage how your Google Account data, sync settings, and encryption passphrase work in Chrome. Alternate keyword for: 'Your account in Chrome'" translateable="false">
+    services
+  </message>
+  <message name="IDS_SETTINGS_TAG_YOUR_ACCOUNT_ALT3" meaning="Settings search keyword for 'Your account in Chrome'" desc="Search keyword for the subpage to manage how your Google Account data, sync settings, and encryption passphrase work in Chrome. Alternate keyword for: 'Your account in Chrome'" translateable="false">
+    people
+  </message>
+  <message name="IDS_SETTINGS_TAG_SYNC_AND_GOOGLE_SERVICES_ALT1" meaning="Settings search keyword for 'Sync and Google services'" desc="Search keyword for the subpage that controls what browsing data syncs across signed-in devices and configures Google service integrations. Alternate keyword for: 'Sync and Google services'" translateable="false">
+    data
+  </message>
+  <message name="IDS_SETTINGS_TAG_SYNC_AND_GOOGLE_SERVICES_ALT2" meaning="Settings search keyword for 'Sync and Google services'" desc="Search keyword for the subpage that controls what browsing data syncs across signed-in devices and configures Google service integrations. Alternate keyword for: 'Sync and Google services'" translateable="false">
+    encryption
+  </message>
+  <message name="IDS_SETTINGS_TAG_SYNC_AND_GOOGLE_SERVICES_ALT3" meaning="Settings search keyword for 'Sync and Google services'" desc="Search keyword for the subpage that controls what browsing data syncs across signed-in devices and configures Google service integrations. Alternate keyword for: 'Sync and Google services'" translateable="false">
+    manage
+  </message>
+  <message name="IDS_SETTINGS_TAG_MANAGE_GOOGLE_ACCOUNT_ALT1" meaning="Settings search keyword for 'Manage Your Google Account'" desc="Search keyword for the link row that opens the Google Account dashboard for security, privacy, and personal info. Alternate keyword for: 'Manage Your Google Account'" translateable="false">
+    security
+  </message>
+  <message name="IDS_SETTINGS_TAG_MANAGE_GOOGLE_ACCOUNT_ALT2" meaning="Settings search keyword for 'Manage Your Google Account'" desc="Search keyword for the link row that opens the Google Account dashboard for security, privacy, and personal info. Alternate keyword for: 'Manage Your Google Account'" translateable="false">
+    privacy
+  </message>
+  <message name="IDS_SETTINGS_TAG_MANAGE_GOOGLE_ACCOUNT_ALT3" meaning="Settings search keyword for 'Manage Your Google Account'" desc="Search keyword for the link row that opens the Google Account dashboard for security, privacy, and personal info. Alternate keyword for: 'Manage Your Google Account'" translateable="false">
+    personal info
+  </message>
+  <message name="IDS_SETTINGS_TAG_CUSTOMIZE_PROFILE_ALT1" meaning="Settings search keyword for 'Customize your Chrome profile'" desc="Search keyword for the subpage to personalize your profile name, theme color, and avatar image. Alternate keyword for: 'Customize your Chrome profile'" translateable="false">
+    theme
+  </message>
+  <message name="IDS_SETTINGS_TAG_CUSTOMIZE_PROFILE_ALT2" meaning="Settings search keyword for 'Customize your Chrome profile'" desc="Search keyword for the subpage to personalize your profile name, theme color, and avatar image. Alternate keyword for: 'Customize your Chrome profile'" translateable="false">
+    color
+  </message>
+  <message name="IDS_SETTINGS_TAG_CUSTOMIZE_PROFILE_ALT3" meaning="Settings search keyword for 'Customize your Chrome profile'" desc="Search keyword for the subpage to personalize your profile name, theme color, and avatar image. Alternate keyword for: 'Customize your Chrome profile'" translateable="false">
+    avatar
+  </message>
+  <message name="IDS_SETTINGS_TAG_SIGN_OUT_ALT1" meaning="Settings search keyword for 'Sign out'" desc="Search keyword for the action to sign out of your Google Account and stop sync on this profile. Alternate keyword for: 'Sign out'" translateable="false">
+    logout
+  </message>
+  <message name="IDS_SETTINGS_TAG_SIGN_OUT_ALT2" meaning="Settings search keyword for 'Sign out'" desc="Search keyword for the action to sign out of your Google Account and stop sync on this profile. Alternate keyword for: 'Sign out'" translateable="false">
+    quit
+  </message>
+  <message name="IDS_SETTINGS_TAG_SIGN_OUT_ALT3" meaning="Settings search keyword for 'Sign out'" desc="Search keyword for the action to sign out of your Google Account and stop sync on this profile. Alternate keyword for: 'Sign out'" translateable="false">
+    exit
+  </message>
+  <message name="IDS_SETTINGS_TAG_IMPORT_DATA_ALT1" meaning="Settings search keyword for 'Import bookmarks and settings'" desc="Search keyword for the dialog to import bookmarks, saved passwords, and browsing history from other browsers. Alternate keyword for: 'Import bookmarks and settings'" translateable="false">
+    safari
+  </message>
+  <message name="IDS_SETTINGS_TAG_IMPORT_DATA_ALT2" meaning="Settings search keyword for 'Import bookmarks and settings'" desc="Search keyword for the dialog to import bookmarks, saved passwords, and browsing history from other browsers. Alternate keyword for: 'Import bookmarks and settings'" translateable="false">
+    edge
+  </message>
+  <message name="IDS_SETTINGS_TAG_IMPORT_DATA_ALT3" meaning="Settings search keyword for 'Import bookmarks and settings'" desc="Search keyword for the dialog to import bookmarks, saved passwords, and browsing history from other browsers. Alternate keyword for: 'Import bookmarks and settings'" translateable="false">
+    firefox
+  </message>
+
+  <!-- Autofill and passwords section. -->
+  <message name="IDS_SETTINGS_TAG_PASSWORD_MANAGER_ALT1" meaning="Settings search keyword for 'Google Password Manager'" desc="Search keyword for the setting to manage and autofill saved passwords, passkeys, and sign-in credentials. Alternate keyword for: 'Google Password Manager'" translateable="false">
+    credentials
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSWORD_MANAGER_ALT2" meaning="Settings search keyword for 'Google Password Manager'" desc="Search keyword for the setting to manage and autofill saved passwords, passkeys, and sign-in credentials. Alternate keyword for: 'Google Password Manager'" translateable="false">
+    sign-in
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSWORD_MANAGER_ALT3" meaning="Settings search keyword for 'Google Password Manager'" desc="Search keyword for the setting to manage and autofill saved passwords, passkeys, and sign-in credentials. Alternate keyword for: 'Google Password Manager'" translateable="false">
+    passkey
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSWORDS_ALT1" meaning="Settings search keyword for 'Passwords'" desc="Search keyword for the setting to manage saved website usernames and passwords stored in Google Password Manager. Alternate keyword for: 'Passwords'" translateable="false">
+    credentials
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSWORDS_ALT2" meaning="Settings search keyword for 'Passwords'" desc="Search keyword for the setting to manage saved website usernames and passwords stored in Google Password Manager. Alternate keyword for: 'Passwords'" translateable="false">
+    passkey
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSWORDS_ALT3" meaning="Settings search keyword for 'Passwords'" desc="Search keyword for the setting to manage saved website usernames and passwords stored in Google Password Manager. Alternate keyword for: 'Passwords'" translateable="false">
+    sign-in
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSKEYS_ALT1" meaning="Settings search keyword for 'Passkeys'" desc="Search keyword for the setting to manage cryptographic passkeys saved on this device for passwordless sign-in. Alternate keyword for: 'Passkeys'" translateable="false">
+    face
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSKEYS_ALT2" meaning="Settings search keyword for 'Passkeys'" desc="Search keyword for the setting to manage cryptographic passkeys saved on this device for passwordless sign-in. Alternate keyword for: 'Passkeys'" translateable="false">
+    fingerprint
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSKEYS_ALT3" meaning="Settings search keyword for 'Passkeys'" desc="Search keyword for the setting to manage cryptographic passkeys saved on this device for passwordless sign-in. Alternate keyword for: 'Passkeys'" translateable="false">
+    sign-in
+  </message>
+  <message name="IDS_SETTINGS_TAG_PAYMENT_METHODS_ALT1" meaning="Settings search keyword for 'Payment methods'" desc="Search keyword for the subpage to save and manage payment cards and billing info for secure checkout. Alternate keyword for: 'Payment methods'" translateable="false">
+    credit cards
+  </message>
+  <message name="IDS_SETTINGS_TAG_PAYMENT_METHODS_ALT2" meaning="Settings search keyword for 'Payment methods'" desc="Search keyword for the subpage to save and manage payment cards and billing info for secure checkout. Alternate keyword for: 'Payment methods'" translateable="false">
+    debit
+  </message>
+  <message name="IDS_SETTINGS_TAG_PAYMENT_METHODS_ALT3" meaning="Settings search keyword for 'Payment methods'" desc="Search keyword for the subpage to save and manage payment cards and billing info for secure checkout. Alternate keyword for: 'Payment methods'" translateable="false">
+    purchase
+  </message>
+  <message name="IDS_SETTINGS_TAG_PAYMENTS_ALT1" meaning="Settings search keyword for 'Payments'" desc="Search keyword for the setting to configure payment methods, credit cards, IBANs, and loyalty cards for checkout. Alternate keyword for: 'Payments'" translateable="false">
+    cards
+  </message>
+  <message name="IDS_SETTINGS_TAG_PAYMENTS_ALT2" meaning="Settings search keyword for 'Payments'" desc="Search keyword for the setting to configure payment methods, credit cards, IBANs, and loyalty cards for checkout. Alternate keyword for: 'Payments'" translateable="false">
+    credit
+  </message>
+  <message name="IDS_SETTINGS_TAG_PAYMENTS_ALT3" meaning="Settings search keyword for 'Payments'" desc="Search keyword for the setting to configure payment methods, credit cards, IBANs, and loyalty cards for checkout. Alternate keyword for: 'Payments'" translateable="false">
+    ibans
+  </message>
+  <message name="IDS_SETTINGS_TAG_CREDIT_AND_DEBIT_CARDS_ALT1" meaning="Settings search keyword for 'Credit &amp; debit cards'" desc="Search keyword for the setting to add, edit, or remove saved credit and debit cards used for checkout autofill. Alternate keyword for: 'Credit &amp; debit cards'" translateable="false">
+    mastercard
+  </message>
+  <message name="IDS_SETTINGS_TAG_CREDIT_AND_DEBIT_CARDS_ALT2" meaning="Settings search keyword for 'Credit &amp; debit cards'" desc="Search keyword for the setting to add, edit, or remove saved credit and debit cards used for checkout autofill. Alternate keyword for: 'Credit &amp; debit cards'" translateable="false">
+    methods
+  </message>
+  <message name="IDS_SETTINGS_TAG_CREDIT_AND_DEBIT_CARDS_ALT3" meaning="Settings search keyword for 'Credit &amp; debit cards'" desc="Search keyword for the setting to add, edit, or remove saved credit and debit cards used for checkout autofill. Alternate keyword for: 'Credit &amp; debit cards'" translateable="false">
+    payment
+  </message>
+  <message name="IDS_SETTINGS_TAG_IBANS_ALT1" meaning="Settings search keyword for 'IBANs'" desc="Search keyword for the setting to save and autofill International Bank Account Numbers (IBANs) for bank payments. Alternate keyword for: 'IBANs'" translateable="false">
+    account
+  </message>
+  <message name="IDS_SETTINGS_TAG_IBANS_ALT2" meaning="Settings search keyword for 'IBANs'" desc="Search keyword for the setting to save and autofill International Bank Account Numbers (IBANs) for bank payments. Alternate keyword for: 'IBANs'" translateable="false">
+    bank
+  </message>
+  <message name="IDS_SETTINGS_TAG_IBANS_ALT3" meaning="Settings search keyword for 'IBANs'" desc="Search keyword for the setting to save and autofill International Bank Account Numbers (IBANs) for bank payments. Alternate keyword for: 'IBANs'" translateable="false">
+    payment
+  </message>
+  <message name="IDS_SETTINGS_TAG_LOYALTY_CARDS_ALT1" meaning="Settings search keyword for 'Loyalty cards'" desc="Search keyword for the setting to manage loyalty and rewards cards linked from Google Wallet for online shopping. Alternate keyword for: 'Loyalty cards'" translateable="false">
+    membership
+  </message>
+  <message name="IDS_SETTINGS_TAG_LOYALTY_CARDS_ALT2" meaning="Settings search keyword for 'Loyalty cards'" desc="Search keyword for the setting to manage loyalty and rewards cards linked from Google Wallet for online shopping. Alternate keyword for: 'Loyalty cards'" translateable="false">
+    rewards
+  </message>
+  <message name="IDS_SETTINGS_TAG_LOYALTY_CARDS_ALT3" meaning="Settings search keyword for 'Loyalty cards'" desc="Search keyword for the setting to manage loyalty and rewards cards linked from Google Wallet for online shopping. Alternate keyword for: 'Loyalty cards'" translateable="false">
+    store
+  </message>
+  <message name="IDS_SETTINGS_TAG_CONTACT_INFO_ALT1" meaning="Settings search keyword for 'Contact info'" desc="Search keyword for the subpage to manage saved contact details including names, phone numbers, email addresses, and street addresses. Alternate keyword for: 'Contact info'" translateable="false">
+    addresses
+  </message>
+  <message name="IDS_SETTINGS_TAG_CONTACT_INFO_ALT2" meaning="Settings search keyword for 'Contact info'" desc="Search keyword for the subpage to manage saved contact details including names, phone numbers, email addresses, and street addresses. Alternate keyword for: 'Contact info'" translateable="false">
+    email
+  </message>
+  <message name="IDS_SETTINGS_TAG_CONTACT_INFO_ALT3" meaning="Settings search keyword for 'Contact info'" desc="Search keyword for the subpage to manage saved contact details including names, phone numbers, email addresses, and street addresses. Alternate keyword for: 'Contact info'" translateable="false">
+    phone
+  </message>
+  <message name="IDS_SETTINGS_TAG_ADDRESSES_AND_MORE_ALT1" meaning="Settings search keyword for 'Addresses and more'" desc="Search keyword for the subpage to autofill street addresses, phone numbers, and email addresses on forms. Alternate keyword for: 'Addresses and more'" translateable="false">
+    autofill
+  </message>
+  <message name="IDS_SETTINGS_TAG_ADDRESSES_AND_MORE_ALT2" meaning="Settings search keyword for 'Addresses and more'" desc="Search keyword for the subpage to autofill street addresses, phone numbers, and email addresses on forms. Alternate keyword for: 'Addresses and more'" translateable="false">
+    shipping
+  </message>
+  <message name="IDS_SETTINGS_TAG_ADDRESSES_AND_MORE_ALT3" meaning="Settings search keyword for 'Addresses and more'" desc="Search keyword for the subpage to autofill street addresses, phone numbers, and email addresses on forms. Alternate keyword for: 'Addresses and more'" translateable="false">
+    home
+  </message>
+  <message name="IDS_SETTINGS_TAG_ADDRESSES_ALT1" meaning="Settings search keyword for 'Addresses'" desc="Search keyword for the setting to save and edit street addresses, zip codes, and locations for automatic form filling. Alternate keyword for: 'Addresses'" translateable="false">
+    address
+  </message>
+  <message name="IDS_SETTINGS_TAG_ADDRESSES_ALT2" meaning="Settings search keyword for 'Addresses'" desc="Search keyword for the setting to save and edit street addresses, zip codes, and locations for automatic form filling. Alternate keyword for: 'Addresses'" translateable="false">
+    billing
+  </message>
+  <message name="IDS_SETTINGS_TAG_ADDRESSES_ALT3" meaning="Settings search keyword for 'Addresses'" desc="Search keyword for the setting to save and edit street addresses, zip codes, and locations for automatic form filling. Alternate keyword for: 'Addresses'" translateable="false">
+    home
+  </message>
+  <message name="IDS_SETTINGS_TAG_IDENTITY_DOCS_ALT1" meaning="Settings search keyword for 'Identity docs'" desc="Search keyword for the subpage to store and autofill official identity documents such as passports and driver's licenses. Alternate keyword for: 'Identity docs'" translateable="false">
+    document
+  </message>
+  <message name="IDS_SETTINGS_TAG_IDENTITY_DOCS_ALT2" meaning="Settings search keyword for 'Identity docs'" desc="Search keyword for the subpage to store and autofill official identity documents such as passports and driver's licenses. Alternate keyword for: 'Identity docs'" translateable="false">
+    drivers
+  </message>
+  <message name="IDS_SETTINGS_TAG_IDENTITY_DOCS_ALT3" meaning="Settings search keyword for 'Identity docs'" desc="Search keyword for the subpage to store and autofill official identity documents such as passports and driver's licenses. Alternate keyword for: 'Identity docs'" translateable="false">
+    id
+  </message>
+  <message name="IDS_SETTINGS_TAG_DRIVERS_LICENSES_ALT1" meaning="Settings search keyword for 'Driver's licenses'" desc="Search keyword for the setting to save driver's license details for autofill on verification and travel forms. Alternate keyword for: 'Driver's licenses'" translateable="false">
+    document
+  </message>
+  <message name="IDS_SETTINGS_TAG_DRIVERS_LICENSES_ALT2" meaning="Settings search keyword for 'Driver's licenses'" desc="Search keyword for the setting to save driver's license details for autofill on verification and travel forms. Alternate keyword for: 'Driver's licenses'" translateable="false">
+    driving
+  </message>
+  <message name="IDS_SETTINGS_TAG_DRIVERS_LICENSES_ALT3" meaning="Settings search keyword for 'Driver's licenses'" desc="Search keyword for the setting to save driver's license details for autofill on verification and travel forms. Alternate keyword for: 'Driver's licenses'" translateable="false">
+    permit
+  </message>
+  <message name="IDS_SETTINGS_TAG_IDENTITY_CARDS_ALT1" meaning="Settings search keyword for 'Identity cards'" desc="Search keyword for the setting to manage national and state identity card numbers for form autofill. Alternate keyword for: 'Identity cards'" translateable="false">
+    document
+  </message>
+  <message name="IDS_SETTINGS_TAG_IDENTITY_CARDS_ALT2" meaning="Settings search keyword for 'Identity cards'" desc="Search keyword for the setting to manage national and state identity card numbers for form autofill. Alternate keyword for: 'Identity cards'" translateable="false">
+    id
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSPORTS_ALT1" meaning="Settings search keyword for 'Passports'" desc="Search keyword for the setting to save passport numbers and expiration dates for airline check-in and travel bookings. Alternate keyword for: 'Passports'" translateable="false">
+    document
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSPORTS_ALT2" meaning="Settings search keyword for 'Passports'" desc="Search keyword for the setting to save passport numbers and expiration dates for airline check-in and travel bookings. Alternate keyword for: 'Passports'" translateable="false">
+    identity
+  </message>
+  <message name="IDS_SETTINGS_TAG_PASSPORTS_ALT3" meaning="Settings search keyword for 'Passports'" desc="Search keyword for the setting to save passport numbers and expiration dates for airline check-in and travel bookings. Alternate keyword for: 'Passports'" translateable="false">
+    travel
+  </message>
+  <message name="IDS_SETTINGS_TAG_TRAVEL_ALT1" meaning="Settings search keyword for 'Travel'" desc="Search keyword for the subpage to manage saved travel preferences, flight details, and vehicle information for autofill. Alternate keyword for: 'Travel'" translateable="false">
+    boarding
+  </message>
+  <message name="IDS_SETTINGS_TAG_TRAVEL_ALT2" meaning="Settings search keyword for 'Travel'" desc="Search keyword for the subpage to manage saved travel preferences, flight details, and vehicle information for autofill. Alternate keyword for: 'Travel'" translateable="false">
+    flights
+  </message>
+  <message name="IDS_SETTINGS_TAG_TRAVEL_ALT3" meaning="Settings search keyword for 'Travel'" desc="Search keyword for the subpage to manage saved travel preferences, flight details, and vehicle information for autofill. Alternate keyword for: 'Travel'" translateable="false">
+    hotel
+  </message>
+  <message name="IDS_SETTINGS_TAG_TRAVEL_INFO_ALT1" meaning="Settings search keyword for 'Travel info'" desc="Search keyword for the setting to manage saved flight, hotel, and reservation details for travel autofill. Alternate keyword for: 'Travel info'" translateable="false">
+    booking
+  </message>
+  <message name="IDS_SETTINGS_TAG_TRAVEL_INFO_ALT2" meaning="Settings search keyword for 'Travel info'" desc="Search keyword for the setting to manage saved flight, hotel, and reservation details for travel autofill. Alternate keyword for: 'Travel info'" translateable="false">
+    documents
+  </message>
+  <message name="IDS_SETTINGS_TAG_TRAVEL_INFO_ALT3" meaning="Settings search keyword for 'Travel info'" desc="Search keyword for the setting to manage saved flight, hotel, and reservation details for travel autofill. Alternate keyword for: 'Travel info'" translateable="false">
+    flights
+  </message>
+  <message name="IDS_SETTINGS_TAG_VEHICLES_ALT1" meaning="Settings search keyword for 'Vehicles'" desc="Search keyword for the setting to save vehicle make, model, license plate, and registration details for forms. Alternate keyword for: 'Vehicles'" translateable="false">
+    car
+  </message>
+  <message name="IDS_SETTINGS_TAG_VEHICLES_ALT2" meaning="Settings search keyword for 'Vehicles'" desc="Search keyword for the setting to save vehicle make, model, license plate, and registration details for forms. Alternate keyword for: 'Vehicles'" translateable="false">
+    license
+  </message>
+  <message name="IDS_SETTINGS_TAG_VEHICLES_ALT3" meaning="Settings search keyword for 'Vehicles'" desc="Search keyword for the setting to save vehicle make, model, license plate, and registration details for forms. Alternate keyword for: 'Vehicles'" translateable="false">
+    plate
+  </message>
+  <message name="IDS_SETTINGS_TAG_AUTOFILL_SETTINGS_ALT1" meaning="Settings search keyword for 'Autofill settings'" desc="Search keyword for the section to configure general autofill behavior and enhanced form-filling suggestions. Alternate keyword for: 'Autofill settings'" translateable="false">
+    behavior
+  </message>
+  <message name="IDS_SETTINGS_TAG_AUTOFILL_SETTINGS_ALT2" meaning="Settings search keyword for 'Autofill settings'" desc="Search keyword for the section to configure general autofill behavior and enhanced form-filling suggestions. Alternate keyword for: 'Autofill settings'" translateable="false">
+    fill
+  </message>
+  <message name="IDS_SETTINGS_TAG_AUTOFILL_SETTINGS_ALT3" meaning="Settings search keyword for 'Autofill settings'" desc="Search keyword for the section to configure general autofill behavior and enhanced form-filling suggestions. Alternate keyword for: 'Autofill settings'" translateable="false">
+    forms
+  </message>
+  <message name="IDS_SETTINGS_TAG_SHOPPING_ALT1" meaning="Settings search keyword for 'Shopping'" desc="Search keyword for the subpage to manage shopping autofill preferences, price tracking, discounts, and order details. Alternate keyword for: 'Shopping'" translateable="false">
+    deals
+  </message>
+  <message name="IDS_SETTINGS_TAG_SHOPPING_ALT2" meaning="Settings search keyword for 'Shopping'" desc="Search keyword for the subpage to manage shopping autofill preferences, price tracking, discounts, and order details. Alternate keyword for: 'Shopping'" translateable="false">
+    discounts
+  </message>
+  <message name="IDS_SETTINGS_TAG_SHOPPING_ALT3" meaning="Settings search keyword for 'Shopping'" desc="Search keyword for the subpage to manage shopping autofill preferences, price tracking, discounts, and order details. Alternate keyword for: 'Shopping'" translateable="false">
+    coupons
+  </message>
+  <message name="IDS_SETTINGS_TAG_SUGGESTIONS_FROM_GEMINI_ALT1" meaning="Settings search keyword for 'Suggestions from Gemini'" desc="Search keyword for the setting that controls AI-powered form filling and autofill predictions provided by Gemini in Chrome. Alternate keyword for: 'Suggestions from Gemini'" translateable="false">
+    ai
+  </message>
+  <message name="IDS_SETTINGS_TAG_SUGGESTIONS_FROM_GEMINI_ALT2" meaning="Settings search keyword for 'Suggestions from Gemini'" desc="Search keyword for the setting that controls AI-powered form filling and autofill predictions provided by Gemini in Chrome. Alternate keyword for: 'Suggestions from Gemini'" translateable="false">
+    autofill
+  </message>
+  <message name="IDS_SETTINGS_TAG_SUGGESTIONS_FROM_GEMINI_ALT3" meaning="Settings search keyword for 'Suggestions from Gemini'" desc="Search keyword for the setting that controls AI-powered form filling and autofill predictions provided by Gemini in Chrome. Alternate keyword for: 'Suggestions from Gemini'" translateable="false">
+    smart
+  </message>
+  <message name="IDS_SETTINGS_TAG_GOOGLE_WALLET_ALT1" meaning="Settings search keyword for 'Google Wallet'" desc="Search keyword for the link row to open Google Wallet to manage payment methods, loyalty cards, passes, and tickets. Alternate keyword for: 'Google Wallet'" translateable="false">
+    loyalty
+  </message>
+  <message name="IDS_SETTINGS_TAG_GOOGLE_WALLET_ALT2" meaning="Settings search keyword for 'Google Wallet'" desc="Search keyword for the link row to open Google Wallet to manage payment methods, loyalty cards, passes, and tickets. Alternate keyword for: 'Google Wallet'" translateable="false">
+    passes
+  </message>
+  <message name="IDS_SETTINGS_TAG_GOOGLE_WALLET_ALT3" meaning="Settings search keyword for 'Google Wallet'" desc="Search keyword for the link row to open Google Wallet to manage payment methods, loyalty cards, passes, and tickets. Alternate keyword for: 'Google Wallet'" translateable="false">
+    payment
+  </message>
 </grit-part>
