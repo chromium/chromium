@@ -14,6 +14,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -668,19 +669,18 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
     const SurfaceRange& range) {
   // Find latest in flight surface and cache that result for the duration of
   // this aggregation, then find ResolvedFrameData for that surface.
-  auto iter = resolved_surface_ranges_.find(range);
-  if (iter == resolved_surface_ranges_.end()) {
-    auto* surface = manager_->GetLatestInFlightSurface(range);
-    SurfaceId surface_id = surface ? surface->surface_id() : SurfaceId();
-    iter = resolved_surface_ranges_.emplace(range, surface_id).first;
-  }
+  const SurfaceId& surface_id =
+      base::GetOrCreate(resolved_surface_ranges_, range, [&] {
+        auto* surface = manager_->GetLatestInFlightSurface(range);
+        return surface ? surface->surface_id() : SurfaceId();
+      });
 
-  if (!iter->second.is_valid()) {
+  if (!surface_id.is_valid()) {
     // There is no surface for `range`.
     return nullptr;
   }
 
-  return GetResolvedFrame(iter->second);
+  return GetResolvedFrame(surface_id);
 }
 
 ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
