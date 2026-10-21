@@ -12820,6 +12820,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_NEW_TAB_IN_GROUP_NO_NAME" desc="The label of a context menu item for adding a new tab into an existing group with no name.">
           {NUM_TABS, plural, =1 {New tab in 1 tab} other {New tab in # tabs}}
         </message>
+        <message name="IDS_NEW_TAB_BUTTON_CXMENU_NEW_TAB" desc="The label of a context menu item for opening a new tab.">
+          New tab
+        </message>
         <message name="IDS_NEW_TAB_GROUP" desc="The label of a context menu item for creating a new tab group.">
           New tab group
         </message>
@@ -12839,6 +12842,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_NEW_TAB_IN_GROUP_NO_NAME" desc="The label of a context menu item for adding a new tab into an existing group with no name.">
           {NUM_TABS, plural, =1 {New Tab in 1 Tab} other {New Tab in # Tabs}}
+        </message>
+        <message name="IDS_NEW_TAB_BUTTON_CXMENU_NEW_TAB" desc="In Title Case: The label of a context menu item for opening a new tab.">
+          New Tab
         </message>
         <message name="IDS_NEW_TAB_GROUP" desc="The label of a context menu item for creating a new tab group.">
           New Tab Group

@@ -10,13 +10,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/views/tabs/shared/new_tab_button_menu_model.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/point.h"
@@ -174,6 +180,19 @@ TEST_F(NewTabButtonTest, MiddleClickIgnoredOnNonLinux) {
             views::InkDropState::ACTION_PENDING);
 }
 #endif
+
+TEST_F(NewTabButtonTest, MenuModelNewTabItemLabel) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip_model(&delegate, profile_.get());
+  ON_CALL(*mock_browser_window_interface_, GetTabStripModel())
+      .WillByDefault(testing::Return(&tab_strip_model));
+
+  NewTabButtonMenuModel model(mock_browser_window_interface_.get());
+  std::optional<size_t> new_tab_index = model.GetIndexOfCommandId(IDC_NEW_TAB);
+  ASSERT_TRUE(new_tab_index.has_value());
+  EXPECT_EQ(model.GetLabelAt(new_tab_index.value()),
+            l10n_util::GetStringUTF16(IDS_NEW_TAB_BUTTON_CXMENU_NEW_TAB));
+}
 
 }  // namespace
 }  // namespace shared
