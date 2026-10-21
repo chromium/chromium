@@ -20,3 +20,39 @@ source_set("contextual_tasks_private") {
     "//extensions/browser",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "contextual_tasks_messaging_browsertest.cc",
+    "contextual_tasks_private_apitest.cc",
+  ]
+
+  data = [ "//chrome/test/data/extensions/api_test/contextual_tasks_private/" ]
+
+  deps = [
+    ":contextual_tasks_private",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/contextual_tasks:test_support",
+    "//chrome/browser/contextual_tasks:ui",
+    "//chrome/browser/contextual_tasks:user_data",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/contextual_tasks/public:feature_list",
+    "//components/omnibox/browser:test_support",
+    "//components/omnibox/common",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//net:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//third_party/omnibox_proto",
+  ]
+}

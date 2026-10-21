@@ -2749,15 +2749,8 @@ source_set("browser_tests") {
       ]
     }
   } else {
-    sources += [
-      "api/contextual_tasks_private/contextual_tasks_messaging_browsertest.cc",
-      "api/contextual_tasks_private/contextual_tasks_private_apitest.cc",
-    ]
-
     deps += [
-      "//chrome/browser/contextual_tasks:test_support",
-      "//chrome/browser/contextual_tasks:ui",
-      "//chrome/browser/contextual_tasks:user_data",
+      "//chrome/browser/extensions/api/contextual_tasks_private:browser_tests",
       "//chrome/browser/ui:browser_command_controller",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_tabstrip",
@@ -2771,7 +2764,6 @@ source_set("browser_tests") {
       "//chrome/browser/ui/webui/location_internals:browser_tests",
       "//chrome/browser/ui/webui/policy:browser_tests",
       "//components/keep_alive_registry",
-      "//components/omnibox/common",
       "//components/webapps/isolated_web_apps/test_support",
     ]
   }
