@@ -19,6 +19,7 @@
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/facilitated_payments/ui/android/internal/jni/FacilitatedPaymentsPaymentMethodsControllerBridge_jni.h"
@@ -257,7 +258,7 @@ FacilitatedPaymentsController::GetJavaObject() {
     JNIEnv* env = base::android::AttachCurrentThread();
     java_object_ = payments::facilitated::
         Java_FacilitatedPaymentsPaymentMethodsControllerBridge_create(
-            env, reinterpret_cast<intptr_t>(this));
+            env, jni_zero::MakeRaw(this));
   }
   return base::android::ScopedJavaLocalRef<jobject>(java_object_);
 }

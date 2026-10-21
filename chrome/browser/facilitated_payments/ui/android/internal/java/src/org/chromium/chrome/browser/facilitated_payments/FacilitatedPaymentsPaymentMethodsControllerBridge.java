@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.facilitated_payments;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.facilitated_payments.core.metrics.AccountLinkingPromptUserAction;
 import org.chromium.components.facilitated_payments.core.metrics.FacilitatedPaymentsType;
 import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
@@ -19,29 +23,36 @@ import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
 @NullMarked
 class FacilitatedPaymentsPaymentMethodsControllerBridge
         implements FacilitatedPaymentsPaymentMethodsComponent.Delegate {
-    private long mNativeFacilitatedPaymentsController;
+    @JniType("::FacilitatedPaymentsController")
+    interface NativeFacilitatedPaymentsController extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeFacilitatedPaymentsController>
+            mNativeFacilitatedPaymentsController;
 
     private FacilitatedPaymentsPaymentMethodsControllerBridge(
-            long nativeFacilitatedPaymentsController) {
+            JniRawPtr<NativeFacilitatedPaymentsController> nativeFacilitatedPaymentsController) {
         mNativeFacilitatedPaymentsController = nativeFacilitatedPaymentsController;
     }
 
     @CalledByNative
     static FacilitatedPaymentsPaymentMethodsControllerBridge create(
-            long nativeFacilitatedPaymentsController) {
+            JniRawPtr<NativeFacilitatedPaymentsController> nativeFacilitatedPaymentsController) {
         return new FacilitatedPaymentsPaymentMethodsControllerBridge(
                 nativeFacilitatedPaymentsController);
     }
 
     @CalledByNative
     private void onNativeDestroyed() {
-        mNativeFacilitatedPaymentsController = 0;
+        if (mNativeFacilitatedPaymentsController != null) {
+            mNativeFacilitatedPaymentsController.release();
+            mNativeFacilitatedPaymentsController = null;
+        }
     }
 
     // FacilitatedPaymentsPaymentMethodsComponent.Delegate
     @Override
     public void onUiEvent(@UiEvent int uiEvent) {
-        if (mNativeFacilitatedPaymentsController != 0) {
+        if (mNativeFacilitatedPaymentsController != null) {
             FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
                     .onUiEvent(mNativeFacilitatedPaymentsController, uiEvent);
         }
@@ -49,7 +60,7 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
 
     @Override
     public void onBankAccountSelected(long instrumentId) {
-        if (mNativeFacilitatedPaymentsController != 0) {
+        if (mNativeFacilitatedPaymentsController != null) {
             FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
                     .onBankAccountSelected(mNativeFacilitatedPaymentsController, instrumentId);
         }
@@ -57,7 +68,7 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
 
     @Override
     public void onEwalletSelected(long instrumentId) {
-        if (mNativeFacilitatedPaymentsController != 0) {
+        if (mNativeFacilitatedPaymentsController != null) {
             FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
                     .onEwalletSelected(mNativeFacilitatedPaymentsController, instrumentId);
         }
@@ -65,7 +76,7 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
 
     @Override
     public void onPaymentAppSelected(String packageName, String activityName) {
-        if (mNativeFacilitatedPaymentsController != 0) {
+        if (mNativeFacilitatedPaymentsController != null) {
             FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
                     .onPaymentAppSelected(
                             mNativeFacilitatedPaymentsController, packageName, activityName);
@@ -74,7 +85,7 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
 
     @Override
     public void onAccountLinkingPromptShown(@FacilitatedPaymentsType int type) {
-        if (mNativeFacilitatedPaymentsController != 0) {
+        if (mNativeFacilitatedPaymentsController != null) {
             FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
                     .onAccountLinkingPromptShown(mNativeFacilitatedPaymentsController, type);
         }
@@ -83,7 +94,7 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
     @Override
     public void onAccountLinkingPromptAction(
             @FacilitatedPaymentsType int type, @AccountLinkingPromptUserAction int action) {
-        if (mNativeFacilitatedPaymentsController != 0) {
+        if (mNativeFacilitatedPaymentsController != null) {
             FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
                     .onAccountLinkingPromptAction(
                             mNativeFacilitatedPaymentsController, type, action);
@@ -92,22 +103,24 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
 
     @NativeMethods
     interface Natives {
-        void onUiEvent(long nativeFacilitatedPaymentsController, @UiEvent int uiEvent);
+        void onUiEvent(JniPtr<NativeFacilitatedPaymentsController> self, @UiEvent int uiEvent);
 
-        void onBankAccountSelected(long nativeFacilitatedPaymentsController, long instrumentId);
+        void onBankAccountSelected(
+                JniPtr<NativeFacilitatedPaymentsController> self, long instrumentId);
 
-        void onEwalletSelected(long nativeFacilitatedPaymentsController, long instrumentId);
+        void onEwalletSelected(JniPtr<NativeFacilitatedPaymentsController> self, long instrumentId);
 
         void onAccountLinkingPromptShown(
-                long nativeFacilitatedPaymentsController, @FacilitatedPaymentsType int type);
+                JniPtr<NativeFacilitatedPaymentsController> self,
+                @FacilitatedPaymentsType int type);
 
         void onAccountLinkingPromptAction(
-                long nativeFacilitatedPaymentsController,
+                JniPtr<NativeFacilitatedPaymentsController> self,
                 @FacilitatedPaymentsType int type,
                 @AccountLinkingPromptUserAction int action);
 
         void onPaymentAppSelected(
-                long nativeFacilitatedPaymentsController,
+                JniPtr<NativeFacilitatedPaymentsController> self,
                 @JniType("std::string") String packageName,
                 @JniType("std::string") String activityName);
     }
