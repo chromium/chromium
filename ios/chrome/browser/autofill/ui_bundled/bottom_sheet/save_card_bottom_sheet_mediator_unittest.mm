@@ -548,10 +548,10 @@ TEST_F(SaveCardBottomSheetMediatorTest,
   base::HistogramTester histogram_tester;
 
   EXPECT_EQ([mediator_ isDismissingForTesting], NO);
-  EXPECT_CALL(*model_, OnAccepted()).WillOnce(testing::InvokeWithoutArgs([&]() {
+  EXPECT_CALL(*model_, OnAccepted()).WillOnce([&]() {
     model_->SetSaveCardStateForTesting(
         autofill::SaveCardBottomSheetModel::SaveCardState::kSaveInProgress);
-  }));
+  });
   [mediator_ didAccept];
 
   [mediator_ onBottomSheetDismissedWithLinkClicked:NO];
@@ -831,10 +831,10 @@ TEST_F(SaveCardBottomSheetMediatorTestForLocalSave,
   base::HistogramTester histogram_tester;
 
   EXPECT_EQ([mediator_ isDismissingForTesting], NO);
-  EXPECT_CALL(*model_, OnAccepted()).WillOnce(testing::InvokeWithoutArgs([&]() {
+  EXPECT_CALL(*model_, OnAccepted()).WillOnce([&]() {
     model_->SetSaveCardStateForTesting(
         autofill::SaveCardBottomSheetModel::SaveCardState::kSaved);
-  }));
+  });
   [mediator_ didAccept];
   EXPECT_EQ(model_->save_card_state(),
             autofill::SaveCardBottomSheetModel::SaveCardState::kSaved);

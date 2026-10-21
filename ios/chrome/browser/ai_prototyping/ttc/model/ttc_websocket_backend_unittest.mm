@@ -27,7 +27,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::InvokeWithoutArgs;
 using ::testing::StrictMock;
 
 constexpr char kTestApiKey[] = "test-api-key";
@@ -456,8 +455,9 @@ TEST_F(TtcWebSocketBackendTest, TestParseStopsWhenClosedMidMessage) {
                                       options:0
                                         error:nil];
 
-  EXPECT_CALL(observer_, OnTranscriptions("Stop now", ""))
-      .WillOnce(InvokeWithoutArgs([this]() { backend_->Close(); }));
+  EXPECT_CALL(observer_, OnTranscriptions("Stop now", "")).WillOnce([this]() {
+    backend_->Close();
+  });
   EXPECT_CALL(observer_, OnAudioOutput(_, _)).Times(0);
   EXPECT_CALL(observer_, OnGenerationStateChanged(_, _, _)).Times(0);
 
@@ -493,7 +493,7 @@ TEST_F(TtcWebSocketBackendTest, TestParseStopsWhenClosedMidMessage) {
                                         error:nil];
 
   EXPECT_CALL(observer_, OnAudioOutput(ElementsAre(0x1020), 0))
-      .WillOnce(InvokeWithoutArgs([this]() { backend_->Close(); }));
+      .WillOnce([this]() { backend_->Close(); });
   EXPECT_CALL(observer_, OnGenerationStateChanged(_, _, _)).Times(0);
 
   backend_->ParseServerMessageForTesting(payload_2);

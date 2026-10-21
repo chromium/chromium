@@ -853,7 +853,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, UploadsPDFFilesWithPDFMimeType) {
   EXPECT_CALL(*raw_mock, StartFileContextUploadFlow(testing::_, testing::_,
                                                     "application/pdf",
                                                     testing::_, testing::_))
-      .WillOnce(testing::InvokeWithoutArgs([&called]() { called = true; }));
+      .WillOnce([&called]() { called = true; });
 
   [test_mediator processFileURL:file_gurl isPDF:YES];
   ASSERT_TRUE(base::test::RunUntil([&]() { return called; }));
@@ -894,7 +894,7 @@ TEST_F(ComposeboxInputPlateMediatorTest, UploadsRawFilesWithDynamicMimeType) {
   EXPECT_CALL(*raw_mock,
               StartFileContextUploadFlow(testing::_, testing::_, "text/plain",
                                          testing::_, testing::_))
-      .WillOnce(testing::InvokeWithoutArgs([&called]() { called = true; }));
+      .WillOnce([&called]() { called = true; });
 
   [test_mediator processFileURL:file_gurl isPDF:NO];
   ASSERT_TRUE(base::test::RunUntil([&]() { return called; }));
@@ -2395,8 +2395,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   bool create_search_url_called = false;
   EXPECT_CALL(*raw_mock_session, CreateSearchUrl(testing::_, testing::_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&create_search_url_called]() { create_search_url_called = true; }));
+      .WillOnce(
+          [&create_search_url_called]() { create_search_url_called = true; });
 
   [mediator sendText:@"test query"];
 
@@ -2474,8 +2474,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 
   bool create_search_url_called = false;
   EXPECT_CALL(*raw_mock_session, CreateSearchUrl(testing::_, testing::_))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&create_search_url_called]() { create_search_url_called = true; }));
+      .WillOnce(
+          [&create_search_url_called]() { create_search_url_called = true; });
 
   [mediator sendText:@"test query"];
   EXPECT_EQ(item.state, ComposeboxInputItemState::kLoading);

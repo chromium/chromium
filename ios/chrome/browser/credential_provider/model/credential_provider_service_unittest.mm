@@ -686,8 +686,9 @@ TEST_F(CredentialProviderServiceTest,
 
   // We expect exactly 1 call to FaviconForPageUrl even though we add two
   // forms with the same URL in the same batch.
-  EXPECT_CALL(favicon_loader_, FaviconForPageUrl)
-      .WillOnce(testing::InvokeWithoutArgs([&]() { favicon_called_ = true; }));
+  EXPECT_CALL(favicon_loader_, FaviconForPageUrl).WillOnce([&]() {
+    favicon_called_ = true;
+  });
 
   password_manager::PasswordForm form1;
   form1.url = GURL("http://g.com");
