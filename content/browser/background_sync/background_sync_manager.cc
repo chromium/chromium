@@ -2158,8 +2158,10 @@ void BackgroundSyncManager::EventCompleteImpl(
         FROM_HERE, std::move(callback));
     return;
   }
-  CHECK_NE(blink::mojom::BackgroundSyncState::PENDING,
-           registration->sync_state(), base::NotFatalUntil::M159);
+  // TODO(crbug.com/573127904): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_NE(blink::mojom::BackgroundSyncState::PENDING,
+            registration->sync_state());
 
   // It's important to update |num_attempts| before we update |delay_until|.
   bool succeeded = status_code == blink::ServiceWorkerStatusCode::kOk;
