@@ -853,10 +853,9 @@ void AppActivityRegistry::NotifyLimitReached(const AppId& app_id,
 
   const std::optional<AppLimit>& limit = activity_registry_.at(app_id).limit;
   CHECK(limit->daily_limit(), base::NotFatalUntil::M160);
-  for (auto& observer : app_state_observers_) {
-    observer.OnAppLimitReached(app_id, limit->daily_limit().value(),
-                               was_active);
-  }
+  app_state_observers_.NotifyAllowReentrancy(
+      &AppStateObserver::OnAppLimitReached, app_id,
+      limit->daily_limit().value(), was_active);
 }
 
 void AppActivityRegistry::SetAppActive(const AppId& app_id,

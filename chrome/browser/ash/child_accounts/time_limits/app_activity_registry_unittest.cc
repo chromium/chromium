@@ -1106,4 +1106,24 @@ TEST_F(AppActivityRegistryTest, GoogleSlidesPaused) {
   CreateAppActivityForApp(google_slides_app_, base::Hours(1));
 }
 
+TEST_F(AppActivityRegistryTest, OnAppLimitReachedReentrancy) {
+  AppStateObserverMock state_observer_mock;
+  registry().AddAppStateObserver(&state_observer_mock);
+
+  const AppId kApp3(apps::AppType::kArc, "4");
+  const AppLimit kZeroLimit(AppRestriction::kTimeLimit, base::Minutes(0),
+                            base::Time::Now());
+
+  EXPECT_CALL(state_observer_mock, OnAppInstalled(kApp3))
+      .WillOnce([&](const AppId& app_id) {
+        registry().SetAppLimit(app_id, kZeroLimit);
+      });
+  EXPECT_CALL(state_observer_mock,
+              OnAppLimitReached(kApp3, base::Minutes(0), /*was_active=*/false))
+      .Times(1);
+
+  registry().OnAppInstalled(kApp3);
+  EXPECT_EQ(registry().GetAppState(kApp3), AppState::kLimitReached);
+}
+
 }  // namespace ash::app_time
