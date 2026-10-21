@@ -51,9 +51,8 @@ namespace views::examples {
 
 TreeViewExample::TreeViewExample()
     : ExampleBase(GetStringUTF8(IDS_TREE_VIEW_SELECT_LABEL).c_str()),
-      model_(std::make_unique<NodeType>(
-          GetStringUTF16(IDS_TREE_VIEW_ROOT_NODE_LABEL),
-          1)) {}
+      model_(std::make_unique<ui::TreeModelNode>(
+          GetStringUTF16(IDS_TREE_VIEW_ROOT_NODE_LABEL))) {}
 
 TreeViewExample::~TreeViewExample() {
   if (tree_view_) {
@@ -65,30 +64,30 @@ TreeViewExample::~TreeViewExample() {
 
 void TreeViewExample::CreateExampleView(View* container) {
   // Add some sample data.
-  NodeType* colors_node = model_.GetRoot()->Add(
-      std::make_unique<NodeType>(GetStringUTF16(IDS_TREE_VIEW_COLOR_NODE_LABEL),
-                                 1),
-      0);
-  colors_node->Add(std::make_unique<NodeType>(
-                       GetStringUTF16(IDS_TREE_VIEW_COLOR_RED_LABEL), 1),
+  ui::TreeModelNode* colors_node =
+      model_.GetRoot()->Add(std::make_unique<ui::TreeModelNode>(
+                                GetStringUTF16(IDS_TREE_VIEW_COLOR_NODE_LABEL)),
+                            0);
+  colors_node->Add(std::make_unique<ui::TreeModelNode>(
+                       GetStringUTF16(IDS_TREE_VIEW_COLOR_RED_LABEL)),
                    0);
-  colors_node->Add(std::make_unique<NodeType>(
-                       GetStringUTF16(IDS_TREE_VIEW_COLOR_GREEN_LABEL), 1),
+  colors_node->Add(std::make_unique<ui::TreeModelNode>(
+                       GetStringUTF16(IDS_TREE_VIEW_COLOR_GREEN_LABEL)),
                    1);
-  colors_node->Add(std::make_unique<NodeType>(
-                       GetStringUTF16(IDS_TREE_VIEW_COLOR_BLUE_LABEL), 1),
+  colors_node->Add(std::make_unique<ui::TreeModelNode>(
+                       GetStringUTF16(IDS_TREE_VIEW_COLOR_BLUE_LABEL)),
                    2);
 
-  NodeType* sheep_node = model_.GetRoot()->Add(
-      std::make_unique<NodeType>(GetStringUTF16(IDS_TREE_VIEW_SHEEP_NODE_LABEL),
-                                 1),
-      0);
-  sheep_node->Add(
-      std::make_unique<NodeType>(GetStringUTF16(IDS_TREE_VIEW_SHEEP1_LABEL), 1),
-      0);
-  sheep_node->Add(
-      std::make_unique<NodeType>(GetStringUTF16(IDS_TREE_VIEW_SHEEP2_LABEL), 1),
-      1);
+  ui::TreeModelNode* sheep_node =
+      model_.GetRoot()->Add(std::make_unique<ui::TreeModelNode>(
+                                GetStringUTF16(IDS_TREE_VIEW_SHEEP_NODE_LABEL)),
+                            0);
+  sheep_node->Add(std::make_unique<ui::TreeModelNode>(
+                      GetStringUTF16(IDS_TREE_VIEW_SHEEP1_LABEL)),
+                  0);
+  sheep_node->Add(std::make_unique<ui::TreeModelNode>(
+                      GetStringUTF16(IDS_TREE_VIEW_SHEEP2_LABEL)),
+                  1);
 
   auto tree_view = std::make_unique<TreeView>();
   tree_view->set_context_menu_controller(this);
@@ -143,25 +142,25 @@ void TreeViewExample::CreateExampleView(View* container) {
 }
 
 void TreeViewExample::AddNewNode() {
-  NodeType* selected_node =
-      static_cast<NodeType*>(tree_view_->GetSelectedNode());
+  ui::TreeModelNode* selected_node = tree_view_->GetSelectedNode();
   if (!selected_node) {
     selected_node = model_.GetRoot();
   }
-  NodeType* new_node = model_.Add(
-      selected_node, std::make_unique<NodeType>(selected_node->GetTitle(), 1));
+  ui::TreeModelNode* new_node = model_.Add(
+      selected_node,
+      std::make_unique<ui::TreeModelNode>(selected_node->GetTitle()));
   tree_view_->SetSelectedNode(new_node);
 }
 
 void TreeViewExample::RemoveSelectedNode() {
-  auto* selected_node = static_cast<NodeType*>(tree_view_->GetSelectedNode());
+  ui::TreeModelNode* selected_node = tree_view_->GetSelectedNode();
   DCHECK(selected_node);
   DCHECK_NE(model_.GetRoot(), selected_node);
   model_.Remove(selected_node->parent(), selected_node);
 }
 
 void TreeViewExample::SetSelectedNodeTitle() {
-  auto* selected_node = static_cast<NodeType*>(tree_view_->GetSelectedNode());
+  ui::TreeModelNode* selected_node = tree_view_->GetSelectedNode();
   DCHECK(selected_node);
   model_.SetTitle(
       selected_node,
@@ -215,8 +214,7 @@ bool TreeViewExample::IsCommandIdEnabled(int command_id) const {
 }
 
 void TreeViewExample::ExecuteCommand(int command_id, int event_flags) {
-  NodeType* selected_node =
-      static_cast<NodeType*>(tree_view_->GetSelectedNode());
+  ui::TreeModelNode* selected_node = tree_view_->GetSelectedNode();
   switch (command_id) {
     case ID_EDIT:
       tree_view_->StartEditing(selected_node);

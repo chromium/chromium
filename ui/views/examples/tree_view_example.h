@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "ui/base/models/tree_node_model.h"
+#include "ui/base/models/tree_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
@@ -77,9 +77,7 @@ class VIEWS_EXAMPLES_EXPORT TreeViewExample
   raw_ptr<LabelButton> remove_ = nullptr;
   raw_ptr<LabelButton> change_title_ = nullptr;
 
-  using NodeType = ui::TreeNodeWithValue<int>;
-
-  ui::TreeNodeModel<NodeType> model_;
+  ui::TreeModel model_;
 
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<MenuRunner> context_menu_runner_;

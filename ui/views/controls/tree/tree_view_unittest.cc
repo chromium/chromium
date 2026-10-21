@@ -20,7 +20,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
-#include "ui/base/models/tree_node_model.h"
+#include "ui/base/models/tree_model.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -35,7 +35,6 @@
 
 using ui::TreeModel;
 using ui::TreeModelNode;
-using ui::TreeNode;
 
 using base::ASCIIToUTF16;
 
@@ -64,16 +63,6 @@ std::string AccessibilityViewAsString(const AXVirtualView& view) {
 
 }  // namespace
 
-class TestNode : public TreeNode<TestNode> {
- public:
-  TestNode() = default;
-
-  TestNode(const TestNode&) = delete;
-  TestNode& operator=(const TestNode&) = delete;
-
-  ~TestNode() override = default;
-};
-
 // Creates the following structure:
 // 'root'
 //   'a'
@@ -82,8 +71,7 @@ class TestNode : public TreeNode<TestNode> {
 //   'c'
 class TreeViewTest : public ViewsTestBase {
  public:
-  TreeViewTest() : model_(std::make_unique<TestNode>()) {
-    static_cast<TestNode*>(model_.GetRoot())->SetTitle(u"root");
+  TreeViewTest() : model_(std::make_unique<TreeModelNode>(u"root")) {
     Add(model_.GetRoot(), 0, "a");
     Add(Add(model_.GetRoot(), 1, "b"), 0, "b1");
     Add(model_.GetRoot(), 2, "c");
@@ -108,7 +96,9 @@ class TreeViewTest : public ViewsTestBase {
                                          const ax::mojom::Event> event) const;
   void ClearAccessibilityEvents();
 
-  TestNode* Add(TestNode* parent, size_t index, const std::string& title);
+  TreeModelNode* Add(TreeModelNode* parent,
+                     size_t index,
+                     const std::string& title);
 
   std::string TreeViewContentsAsString();
 
@@ -141,7 +131,7 @@ class TreeViewTest : public ViewsTestBase {
 
   ViewAXPlatformNodeDelegate* GetTreeAccessibilityView() const;
 
-  TestNode* GetNodeByTitle(const std::string& title);
+  TreeModelNode* GetNodeByTitle(const std::string& title);
 
   const AXVirtualView* GetAccessibilityViewByName(
       const std::string& name) const;
@@ -158,13 +148,14 @@ class TreeViewTest : public ViewsTestBase {
     return static_cast<const TreeView*>(widget_->GetContentsView());
   }
 
-  ui::TreeNodeModel<TestNode> model_;
+  ui::TreeModel model_;
   UniqueWidgetPtr widget_;
 
  private:
   std::string InternalNodeAsString(TreeView::InternalNode* node);
 
-  TestNode* GetNodeByTitleImpl(TestNode* node, const std::u16string& title);
+  TreeModelNode* GetNodeByTitleImpl(TreeModelNode* node,
+                                    const std::u16string& title);
 
   // Keeps a record of all accessibility events that have been fired on the tree
   // view.
@@ -205,12 +196,11 @@ void TreeViewTest::ClearAccessibilityEvents() {
   accessibility_events_.clear();
 }
 
-TestNode* TreeViewTest::Add(TestNode* parent,
-                            size_t index,
-                            const std::string& title) {
-  std::unique_ptr<TestNode> new_node = std::make_unique<TestNode>();
-  new_node->SetTitle(ASCIIToUTF16(title));
-  return model_.Add(parent, std::move(new_node), index);
+TreeModelNode* TreeViewTest::Add(TreeModelNode* parent,
+                                 size_t index,
+                                 const std::string& title) {
+  return model_.Add(
+      parent, std::make_unique<TreeModelNode>(ASCIIToUTF16(title)), index);
 }
 
 std::string TreeViewTest::TreeViewContentsAsString() {
@@ -304,7 +294,7 @@ ViewAXPlatformNodeDelegate* TreeViewTest::GetTreeAccessibilityView() const {
 #endif
 }
 
-TestNode* TreeViewTest::GetNodeByTitle(const std::string& title) {
+TreeModelNode* TreeViewTest::GetNodeByTitle(const std::string& title) {
   return GetNodeByTitleImpl(model_.GetRoot(), ASCIIToUTF16(title));
 }
 
@@ -365,13 +355,13 @@ size_t TreeViewTest::GetRowCount() {
   return tree()->GetRowCount();
 }
 
-TestNode* TreeViewTest::GetNodeByTitleImpl(TestNode* node,
-                                           const std::u16string& title) {
+TreeModelNode* TreeViewTest::GetNodeByTitleImpl(TreeModelNode* node,
+                                                const std::u16string& title) {
   if (node->GetTitle() == title) {
     return node;
   }
   for (auto& child : node->children()) {
-    TestNode* matching_node = GetNodeByTitleImpl(child.get(), title);
+    TreeModelNode* matching_node = GetNodeByTitleImpl(child.get(), title);
     if (matching_node) {
       return matching_node;
     }
@@ -1270,8 +1260,7 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
   // tree) should fire a focus event for the tree view.
   ClearAccessibilityEvents();
   tree()->GetFocusManager()->ClearFocus();
-  ui::TreeNodeModel<TestNode> empty_model(std::make_unique<TestNode>());
-  static_cast<TestNode*>(empty_model.GetRoot())->SetTitle(u"root");
+  ui::TreeModel empty_model(std::make_unique<TreeModelNode>(u"root"));
   tree()->SetModel(&empty_model);
   tree()->SetRootShown(false);
   data.target_node_id = ui::kInvalidAXNodeID;

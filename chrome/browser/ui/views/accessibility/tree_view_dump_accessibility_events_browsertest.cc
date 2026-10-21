@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/views/accessibility/dump_accessibility_events_views_browsertest_base.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
-#include "ui/base/models/tree_node_model.h"
+#include "ui/base/models/tree_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/tree/tree_view.h"
 #include "ui/views/layout/fill_layout.h"
@@ -17,8 +17,6 @@
 
 namespace views {
 namespace {
-
-using TestNode = ui::TreeNodeWithValue<int>;
 
 class TreeViewDumpAccessibilityEventsTestBase
     : public DumpAccessibilityEventsViewsTestBase {
@@ -47,15 +45,14 @@ class TreeViewDumpAccessibilityEventsTestBase
     auto container = std::make_unique<View>();
     container->SetLayoutManager(std::make_unique<FillLayout>());
 
-    auto root = std::make_unique<TestNode>(u"Root", 0);
-    auto child1 = std::make_unique<TestNode>(u"Child 1", 1);
-    auto child2 = std::make_unique<TestNode>(u"Child 2", 2);
-    // A grandchild makes child1 expandable.
-    child1->Add(std::make_unique<TestNode>(u"Grandchild 1", 3), 0);
+    auto root = std::make_unique<ui::TreeModelNode>(u"Root");
+    auto child1 = std::make_unique<ui::TreeModelNode>(u"Child 1");
+    auto child2 = std::make_unique<ui::TreeModelNode>(u"Child 2");
+    child1->Add(std::make_unique<ui::TreeModelNode>(u"Grandchild 1"), 0);
     root->Add(std::move(child1), 0);
     root->Add(std::move(child2), 1);
 
-    model_ = std::make_unique<ui::TreeNodeModel<TestNode>>(std::move(root));
+    model_ = std::make_unique<ui::TreeModel>(std::move(root));
 
     auto tree_view = std::make_unique<TreeView>();
     tree_view->SetModel(model_.get());
@@ -77,7 +74,7 @@ class TreeViewDumpAccessibilityEventsTestBase
 
  protected:
   raw_ptr<TreeView> tree_view_ = nullptr;
-  std::unique_ptr<ui::TreeNodeModel<TestNode>> model_;
+  std::unique_ptr<ui::TreeModel> model_;
 };
 
 class TreeViewDumpAccessibilityEventsTest
