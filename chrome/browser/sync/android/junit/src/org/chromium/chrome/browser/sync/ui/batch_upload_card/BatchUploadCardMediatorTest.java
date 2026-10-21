@@ -11,6 +11,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import androidx.lifecycle.Lifecycle;
@@ -30,6 +31,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
+import org.robolectric.util.ReflectionHelpers;
+import org.robolectric.util.ReflectionHelpers.ClassParameter;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
@@ -47,6 +50,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.ui.batch_upload_card.BatchUploadCardCoordinator.EntryPoint;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
@@ -671,5 +675,104 @@ public class BatchUploadCardMediatorTest {
                         eq(Set.of(DataType.BOOKMARKS, DataType.READING_LIST)),
                         any());
         verify(mReauthenticatorMock, never()).getBiometricAvailabilityStatus();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
+    public void
+            testOnSaveInAccountDialogButtonClicked_noPasswords_doesNotInstantiateReauthenticator()
+                    throws Exception {
+        DeviceAuthAvailabilityCheckerBridge.setBiometricAvailabilityStatusForTesting(
+                BiometricStatus.BIOMETRICS_AVAILABLE);
+        doAnswer(
+                        args -> {
+                            Callback<HashMap<Integer, LocalDataDescription>> callback =
+                                    args.getArgument(1);
+                            callback.onResult(new HashMap<>());
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
+                        MockitoHelper.anyCallback());
+
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        (activity) -> {
+                            mMediator =
+                                    new BatchUploadCardMediator(
+                                            activity,
+                                            (LifecycleOwner) activity,
+                                            mModalDialogManager,
+                                            mProfile,
+                                            mModel,
+                                            mSnackbarManager,
+                                            () -> {},
+                                            EntryPoint.BOOKMARK_MANAGER);
+                        });
+
+        Class<?> gaiaIdClass = Class.forName("org.chromium.google_apis.gaia.GaiaId");
+        Object gaiaId =
+                ReflectionHelpers.callConstructor(
+                        gaiaIdClass, ClassParameter.from(String.class, "gaia_id"));
+        AccountInfo.Builder builder =
+                ReflectionHelpers.callConstructor(
+                        AccountInfo.Builder.class,
+                        ClassParameter.from(String.class, "test@email.com"),
+                        ClassParameter.from(gaiaIdClass, gaiaId));
+        AccountInfo accountInfo = builder.build();
+        when(mIdentityManager.getPrimaryAccountInfo()).thenReturn(accountInfo);
+        when(mSnackbarManager.get()).thenReturn(Mockito.mock(SnackbarManager.class));
+
+        mMediator.onSaveInAccountDialogButtonClicked(Set.of(DataType.BOOKMARKS), 1);
+
+        verifyNoInteractions(mReauthenticatorMock);
+
+        mMediator.destroy();
+
+        verifyNoInteractions(mReauthenticatorMock);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
+    public void testOnSaveInAccountDialogButtonClicked_withPasswords_reauthenticatesAndDestroys() {
+        DeviceAuthAvailabilityCheckerBridge.setBiometricAvailabilityStatusForTesting(
+                BiometricStatus.BIOMETRICS_AVAILABLE);
+        doAnswer(
+                        args -> {
+                            Callback<HashMap<Integer, LocalDataDescription>> callback =
+                                    args.getArgument(1);
+                            callback.onResult(new HashMap<>());
+                            return null;
+                        })
+                .when(mSyncService)
+                .getLocalDataDescriptions(
+                        eq(Set.of(DataType.BOOKMARKS, DataType.PASSWORDS, DataType.READING_LIST)),
+                        MockitoHelper.anyCallback());
+
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        (activity) -> {
+                            mMediator =
+                                    new BatchUploadCardMediator(
+                                            activity,
+                                            (LifecycleOwner) activity,
+                                            mModalDialogManager,
+                                            mProfile,
+                                            mModel,
+                                            mSnackbarManager,
+                                            () -> {},
+                                            EntryPoint.BOOKMARK_MANAGER);
+                        });
+
+        mMediator.onSaveInAccountDialogButtonClicked(Set.of(DataType.PASSWORDS), 1);
+
+        verify(mReauthenticatorMock).reauthenticate(any());
+
+        mMediator.destroy();
+
+        verify(mReauthenticatorMock).destroy();
     }
 }

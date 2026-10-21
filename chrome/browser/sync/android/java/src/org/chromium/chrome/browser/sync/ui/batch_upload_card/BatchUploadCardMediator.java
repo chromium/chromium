@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.sync.ui.batch_upload_card;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.content.Context;
 
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.Lifecycle;
@@ -62,12 +61,12 @@ class BatchUploadCardMediator
             };
 
     private final Lifecycle mLifecycle;
-    private final Context mContext;
+    private final Activity mActivity;
     private final Profile mProfile;
     private final PropertyModel mModel;
     private final ModalDialogManager mDialogManager;
     private final OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
-    private final ReauthenticatorBridge mReauthenticatorBridge;
+    private @Nullable ReauthenticatorBridge mReauthenticatorBridge;
     private final Runnable mBatchUploadCardChangeAction;
     private final @EntryPoint int mEntryPoint;
     private final IdentityManager mIdentityManager;
@@ -96,7 +95,7 @@ class BatchUploadCardMediator
             OneshotSupplier<SnackbarManager> snackbarManagerSupplier,
             Runnable batchUploadCardChangeAction,
             @EntryPoint int entryPoint) {
-        mContext = activity;
+        mActivity = activity;
         mProfile = profile;
         mModel = model;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
@@ -105,21 +104,12 @@ class BatchUploadCardMediator
         mIdentityManager =
                 assumeNonNull(IdentityServicesProvider.get().getIdentityManager(mProfile));
         mProfileDataCache =
-                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext, mIdentityManager);
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity, mIdentityManager);
         mSyncService = SyncServiceFactory.getForProfile(mProfile);
         if (mSyncService != null) {
             mSyncService.addSyncStateChangedListener(this);
         }
 
-        // TODO(crbug.com/574315008): Instantiate the reauthenticator bridge only if biometric
-        // authentication is available/required.
-        mReauthenticatorBridge =
-                ReauthenticatorBridge.create(
-                        activity,
-                        mProfile,
-                        entryPoint == EntryPoint.BOOKMARK_MANAGER
-                                ? DeviceAuthSource.BOOKMARK_BATCH_UPLOAD
-                                : DeviceAuthSource.SETTINGS_BATCH_UPLOAD);
         mDialogManager = modalDialogManager;
 
         mLifecycle = lifecycleOwner.getLifecycle();
@@ -135,7 +125,21 @@ class BatchUploadCardMediator
         }
         if (mReauthenticatorBridge != null) {
             mReauthenticatorBridge.destroy();
+            mReauthenticatorBridge = null;
         }
+    }
+
+    private ReauthenticatorBridge getReauthenticatorBridge() {
+        if (mReauthenticatorBridge == null) {
+            mReauthenticatorBridge =
+                    ReauthenticatorBridge.create(
+                            mActivity,
+                            mProfile,
+                            mEntryPoint == EntryPoint.BOOKMARK_MANAGER
+                                    ? DeviceAuthSource.BOOKMARK_BATCH_UPLOAD
+                                    : DeviceAuthSource.SETTINGS_BATCH_UPLOAD);
+        }
+        return assumeNonNull(mReauthenticatorBridge);
     }
 
     /** Returns whether the batch upload card should be visible. */
@@ -167,12 +171,13 @@ class BatchUploadCardMediator
             return;
         }
         // Uploading passwords requires a reauthentication.
-        mReauthenticatorBridge.reauthenticate(
-                success -> {
-                    if (success) {
-                        uploadLocalDataAndShowSnackbar(types, itemsCount);
-                    }
-                });
+        getReauthenticatorBridge()
+                .reauthenticate(
+                        success -> {
+                            if (success) {
+                                uploadLocalDataAndShowSnackbar(types, itemsCount);
+                            }
+                        });
     }
 
     private void uploadLocalDataAndShowSnackbar(Set<Integer> types, int itemsCount) {
@@ -183,7 +188,8 @@ class BatchUploadCardMediator
         assumeNonNull(accountInfo);
         // TODO(crbug.com/354922852): Handle accounts with non-displayable email address.
         String snackbarMessage =
-                mContext.getResources()
+                mActivity
+                        .getResources()
                         .getQuantityString(
                                 R.plurals.batch_upload_saved_snackbar_message,
                                 itemsCount,
@@ -214,7 +220,7 @@ class BatchUploadCardMediator
         int biometricStatus =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.DEVICE_REAUTH_REFACTOR)
                         ? DeviceAuthAvailabilityCheckerBridge.getBiometricAvailabilityStatus()
-                        : mReauthenticatorBridge.getBiometricAvailabilityStatus();
+                        : getReauthenticatorBridge().getBiometricAvailabilityStatus();
         mSyncService.getLocalDataDescriptions(
                 biometricStatus == BiometricStatus.UNAVAILABLE
                         ? Set.of(DataType.BOOKMARKS, DataType.READING_LIST)
@@ -260,7 +266,7 @@ class BatchUploadCardMediator
                 BatchUploadCardProperties.ON_CLICK_LISTENER,
                 v -> {
                     BatchUploadDialogCoordinator.show(
-                            mContext,
+                            mActivity,
                             mLocalDataDescriptionsMap,
                             mDialogManager,
                             /* displayableProfileData= */ mProfileDataCache.getById(
@@ -285,7 +291,8 @@ class BatchUploadCardMediator
         if (localItemsCountExcludingEntryPointDataType == 0) {
             mModel.set(
                     BatchUploadCardProperties.DESCRIPTION_TEXT,
-                    mContext.getResources()
+                    mActivity
+                            .getResources()
                             .getQuantityString(
                                     mEntryPoint == EntryPoint.BOOKMARK_MANAGER
                                             ? R.plurals.batch_upload_card_description_bookmark
@@ -295,7 +302,8 @@ class BatchUploadCardMediator
         } else if (localDataTypeItemsCount == 0) {
             mModel.set(
                     BatchUploadCardProperties.DESCRIPTION_TEXT,
-                    mContext.getResources()
+                    mActivity
+                            .getResources()
                             .getQuantityString(
                                     R.plurals.batch_upload_card_description_other,
                                     localItemsCountExcludingEntryPointDataType,
@@ -303,7 +311,8 @@ class BatchUploadCardMediator
         } else {
             mModel.set(
                     BatchUploadCardProperties.DESCRIPTION_TEXT,
-                    mContext.getResources()
+                    mActivity
+                            .getResources()
                             .getQuantityString(
                                     mEntryPoint == EntryPoint.BOOKMARK_MANAGER
                                             ? R.plurals
