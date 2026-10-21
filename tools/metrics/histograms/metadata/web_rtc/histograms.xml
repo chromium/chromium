@@ -1243,6 +1243,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.DesktopCapture.Win.WgcWindowFallbackSelectSource"
+    enum="WebRtcFallbackSelectSourceResult" expires_after="2027-10-16">
+  <owner>agpalak@chromium.org</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
+  <summary>
+    Records the combined SelectSource() results of the primary WGC window
+    capturer and the secondary fallback window capturer, on every SelectSource()
+    call of a WGC window capturer with fallback enabled. The primary counts as
+    failed if it failed in this call or permanently failed earlier, in which
+    case it is not called again. Only recorded on Windows when the
+    WebRtcWgcWindowCroppingFallback feature is enabled.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.DesktopCapture.Win.{Capturer}CapturerFrameTime"
     units="ms" expires_after="2027-02-01">
   <owner>alcooper@chromium.org</owner>

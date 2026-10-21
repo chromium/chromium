@@ -464,6 +464,17 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="kExpiredLogFileDuringSession"/>
 </enum>
 
+<enum name="WebRtcFallbackSelectSourceResult">
+  <summary>
+    Combined SelectSource() results of the main and secondary capturers in
+    webrtc::FallbackDesktopCapturerWrapper::SelectSourceResult.
+  </summary>
+  <int value="0" label="MainSucceededSecondarySucceeded"/>
+  <int value="1" label="MainSucceededSecondaryFailed"/>
+  <int value="2" label="MainFailedSecondarySucceeded"/>
+  <int value="3" label="MainFailedSecondaryFailed"/>
+</enum>
+
 <enum name="WebRtcH264DecoderImplEvent">
   <int value="0" label="Init"/>
   <int value="1" label="Error"/>

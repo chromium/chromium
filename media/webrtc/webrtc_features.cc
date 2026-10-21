@@ -25,6 +25,13 @@ BASE_FEATURE(kWebRtcWgcRequireBorder, base::FEATURE_DISABLED_BY_DEFAULT);
 // copies. Clients should process texture in the same sequence as desktop
 // capturer.
 BASE_FEATURE(kWebRtcAllowWgcUsingTexture, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the WGC window capturer switches to a fallback window capturer
+// if WGC fails to select a source or returns a permanent capture error.
+// TODO(crbug.com/567859840): Remove this kill switch once the fallback has
+// shipped.
+BASE_FEATURE(kWebRtcWgcWindowCroppingFallback,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // TODO(crbug.com/40872787): Deactivate the flag gradually before deleting it.

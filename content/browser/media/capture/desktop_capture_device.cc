@@ -1358,6 +1358,8 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
     }
   }
   options.set_allow_wgc_window_capturer(true);
+  options.set_allow_fallback_for_wgc_window_capturer(
+      base::FeatureList::IsEnabled(features::kWebRtcWgcWindowCroppingFallback));
   if (source.type == DesktopMediaID::TYPE_WINDOW) {
     options.set_allow_wgc_zero_hertz(true);
   }
@@ -1385,7 +1387,11 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
                 << ", allow_wgc_window_capturer: "
                 << options.allow_wgc_window_capturer()
                 << ", allow_wgc_zero_hertz: " << options.allow_wgc_zero_hertz()
-                << ", wgc_require_border: " << options.wgc_require_border();
+                << ", wgc_require_border: " << options.wgc_require_border()
+                << ", allow_fallback_for_wgc_window_capturer: "
+                << options.allow_fallback_for_wgc_window_capturer()
+                << ", allow_wgc_using_texture: "
+                << options.allow_wgc_using_texture();
 #endif
   string_stream << "}";
   VLOG(1) << string_stream.str();
