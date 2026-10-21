@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -113,6 +114,23 @@ void OnExtensionManifestLoaded(const ComponentExtensionInstallerConfig& config,
   }
 }
 
+// Called once `installer` has looked for installed versions and registered the
+// component. If no valid installation was found, e.g. because the installed
+// files were removed externally, this clears the staged extension preferences.
+// Otherwise, `extensions::ComponentLoader` would keep loading the extension
+// from a missing directory on every startup, rather than falling back to the
+// bundled extension. If an installation was found, `ComponentReady()` handles
+// it instead, by re-staging the extension from it or clearing the staged
+// extension if its manifest is rejected.
+void OnRegistrationFinished(scoped_refptr<ComponentInstaller> installer,
+                            const std::string& extension_id) {
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  if (!installer->GetInstalledFile(
+          base::FilePath(kExtensionManifestFilename).MaybeAsASCII())) {
+    ClearStagedExtensionPrefs(extension_id);
+  }
+}
+
 void ManageComponentExtensionRegistration(
     ComponentUpdateService* cus,
     const ComponentExtensionInstallerConfig& config,
@@ -120,9 +138,10 @@ void ManageComponentExtensionRegistration(
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (enabled) {
     VLOG(1) << "Registering " << config.name << ".";
-    base::MakeRefCounted<ComponentInstaller>(
-        std::make_unique<ComponentExtensionInstallerPolicy>(config))
-        ->Register(cus, base::OnceClosure());
+    auto installer = base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<ComponentExtensionInstallerPolicy>(config));
+    installer->Register(cus, base::BindOnce(&OnRegistrationFinished, installer,
+                                            config.extension_id));
   } else {
     VLOG(1) << "Uninstalling " << config.name << ".";
     base::MakeRefCounted<ComponentInstaller>(

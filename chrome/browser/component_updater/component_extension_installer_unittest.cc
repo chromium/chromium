@@ -463,4 +463,106 @@ TEST_F(ComponentExtensionInstallerPolicyTest, UninstallComponent) {
   }));
 }
 
+// Verifies that registration clears the staged extension if no valid
+// installation is found, e.g. because the installed files were deleted
+// externally, so that the bundled extension is loaded instead.
+TEST_F(ComponentExtensionInstallerPolicyTest,
+       RegisterClearsStagedExtensionIfNotInstalled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{omnibox::kAimEligibilityComponentExtension,
+        {{"use_component_updater", "true"}}}},
+      {});
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  base::DictValue staged_manifest;
+  staged_manifest.Set("version", "2.0");
+  extensions::component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kAimEligibilityExtensionId,
+      base::FilePath(extension_misc::kAimEligibilityExtensionDirName)
+          .AppendASCII("2.0"),
+      std::move(staged_manifest));
+
+  auto cus = std::make_unique<MockComponentUpdateService>();
+  EXPECT_CALL(*cus, RegisterComponent(
+                        testing::Field(&ComponentRegistration::name,
+                                       "AIM Eligibility Component Extension")))
+      .WillOnce(testing::Return(true));
+
+  ManageComponentExtensionRegistrations(cus.get());
+
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return !extensions::component_loader_prefs::GetExtension(
+                *local_state, extension_misc::kAimEligibilityExtensionId)
+                .has_value();
+  }));
+}
+
+// Verifies that registration keeps the staged extension if a valid installation
+// is found.
+TEST_F(ComponentExtensionInstallerPolicyTest,
+       RegisterKeepsStagedExtensionIfInstalled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{omnibox::kAimEligibilityComponentExtension,
+        {{"use_component_updater", "true"}}}},
+      {});
+
+  base::FilePath relative_path =
+      base::FilePath(extension_misc::kAimEligibilityExtensionDirName)
+          .AppendASCII("2.0");
+  base::FilePath install_dir = user_data_dir_.GetPath().Append(relative_path);
+  ASSERT_TRUE(base::CreateDirectory(install_dir));
+  ASSERT_TRUE(base::WriteFile(
+      install_dir.AppendASCII("manifest.json"),
+      R"({"manifest_version": 2, )"
+      R"("name": "AIM Eligibility Component Extension", "version": "2.0"})"));
+  ASSERT_TRUE(base::WriteFile(
+      install_dir.Append(kExtensionManifestFilename),
+      base::StringPrintf(R"({"name": "AIM Staged", "version": "2.0", )"
+                         R"("manifest_version": 3, "key": "%s"})",
+                         kAimEligibilityExtensionKey)));
+
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  base::DictValue staged_manifest;
+  staged_manifest.Set("version", "2.0");
+  extensions::component_loader_prefs::StageExtension(
+      *local_state, extension_misc::kAimEligibilityExtensionId, relative_path,
+      std::move(staged_manifest));
+
+  auto cus = std::make_unique<MockComponentUpdateService>();
+  base::test::TestFuture<void> registered;
+  EXPECT_CALL(*cus, RegisterComponent(
+                        testing::Field(&ComponentRegistration::name,
+                                       "AIM Eligibility Component Extension")))
+      .WillOnce([&registered](const auto&) {
+        registered.SetValue();
+        return true;
+      });
+
+  ManageComponentExtensionRegistrations(cus.get());
+  EXPECT_TRUE(registered.Wait());
+
+  // Wait for `ComponentReady()` to re-stage the extension from `install_dir`.
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    std::optional<
+        extensions::component_loader_prefs::StagedComponentExtensionInfo>
+        staged = extensions::component_loader_prefs::GetExtension(
+            *local_state, extension_misc::kAimEligibilityExtensionId);
+    return staged && staged->manifest.FindString(
+                         extensions::manifest_keys::kName) != nullptr;
+  }));
+
+  std::optional<
+      extensions::component_loader_prefs::StagedComponentExtensionInfo>
+      staged = extensions::component_loader_prefs::GetExtension(
+          *local_state, extension_misc::kAimEligibilityExtensionId);
+  ASSERT_TRUE(staged.has_value());
+  EXPECT_EQ(staged->relative_path, relative_path);
+  const std::string* name =
+      staged->manifest.FindString(extensions::manifest_keys::kName);
+  ASSERT_TRUE(name);
+  EXPECT_EQ(*name, "AIM Staged");
+}
+
 }  // namespace component_updater
