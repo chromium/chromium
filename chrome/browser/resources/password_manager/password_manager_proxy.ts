@@ -722,7 +722,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   removeCredential(
       id: number, fromStores: chrome.passwordsPrivate.PasswordStoreSet) {
-    chrome.passwordsPrivate.removeCredential(id, fromStores);
+    if (!loadTimeData.getBoolean('enablePasswordManagerMojoApiPhase2')) {
+      chrome.passwordsPrivate.removeCredential(id, fromStores);
+      return;
+    }
+    this.handler.removeCredential(id, toMojoPasswordStoreSet(fromStores));
   }
 
   removeBackupPassword(id: number) {

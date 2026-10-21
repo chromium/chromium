@@ -64,6 +64,10 @@ class PasswordManagerUIHandler
 
   void RemoveBackupPassword(int id) override;
 
+  void RemoveCredential(
+      int id,
+      password_manager::mojom::PasswordStoreSet from_stores) override;
+
   void RemovePasswordException(int id) override;
 
   void StartBulkPasswordCheck() override;

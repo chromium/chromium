@@ -446,6 +446,25 @@ TEST_F(PasswordManagerUIHandlerUnitTest,
   mock_page_.FlushForTesting();
 }
 
+TEST_F(PasswordManagerUIHandlerUnitTest, RemoveCredential_CallsDelegate) {
+  EXPECT_CALL(
+      mock_delegate(),
+      RemoveCredential(
+          42, extensions::api::passwords_private::PasswordStoreSet::kDevice));
+  handler().RemoveCredential(42, mojom::PasswordStoreSet::kDevice);
+
+  EXPECT_CALL(
+      mock_delegate(),
+      RemoveCredential(
+          43, extensions::api::passwords_private::PasswordStoreSet::kAccount));
+  handler().RemoveCredential(43, mojom::PasswordStoreSet::kAccount);
+
+  EXPECT_CALL(mock_delegate(),
+              RemoveCredential(44, extensions::api::passwords_private::
+                                       PasswordStoreSet::kDeviceAndAccount));
+  handler().RemoveCredential(44, mojom::PasswordStoreSet::kDeviceAndAccount);
+}
+
 TEST_F(PasswordManagerUIHandlerUnitTest,
        RemovePasswordException_CallsDelegate) {
   EXPECT_CALL(mock_delegate(), RemovePasswordException(42));

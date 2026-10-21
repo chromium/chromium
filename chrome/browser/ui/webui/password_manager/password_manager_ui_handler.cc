@@ -201,8 +201,8 @@ password_manager::mojom::ImportResultsPtr ToMojomImportResults(
 }
 
 extensions::api::passwords_private::PasswordStoreSet ConvertPasswordStoreSet(
-    password_manager::mojom::PasswordStoreSet to_store) {
-  switch (to_store) {
+    password_manager::mojom::PasswordStoreSet store) {
+  switch (store) {
     case password_manager::mojom::PasswordStoreSet::kDevice:
       return extensions::api::passwords_private::PasswordStoreSet::kDevice;
     case password_manager::mojom::PasswordStoreSet::kAccount:
@@ -251,6 +251,13 @@ void PasswordManagerUIHandler::CopyPlaintextBackupPassword(
 
 void PasswordManagerUIHandler::RemoveBackupPassword(int id) {
   passwords_private_delegate_->RemoveBackupPassword(id);
+}
+
+void PasswordManagerUIHandler::RemoveCredential(
+    int id,
+    password_manager::mojom::PasswordStoreSet from_stores) {
+  passwords_private_delegate_->RemoveCredential(
+      id, ConvertPasswordStoreSet(from_stores));
 }
 
 void PasswordManagerUIHandler::RemovePasswordException(int id) {
