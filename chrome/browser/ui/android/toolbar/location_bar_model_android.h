@@ -28,7 +28,6 @@ class LocationBarModelAndroid : public ChromeLocationBarModelDelegate {
 
   ~LocationBarModelAndroid() override;
 
-  void Destroy();
   std::u16string GetFormattedFullURL();
   std::u16string GetURLForDisplay();
   GURL GetUrlOfVisibleNavigationEntry();

@@ -19,7 +19,10 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -85,6 +88,9 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class LocationBarModel implements ToolbarDataProvider, LocationBarDataProvider {
+    @JniType("::LocationBarModelAndroid")
+    public interface NativeLocationBarModelAndroid extends JniTypeToken {}
+
     private static final int LRU_CACHE_SIZE = 10;
 
     static class SpannableDisplayTextCacheKey {
@@ -186,7 +192,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private boolean mIsOffTheRecord;
     private boolean mIsUsingBrandColor;
 
-    private long mNativeLocationBarModelAndroid;
+    private @Nullable JniUniquePtr<NativeLocationBarModelAndroid> mNativeLocationBarModelAndroid;
     private final ObserverList<LocationBarDataProvider.Observer> mLocationBarDataObservers =
             new ObserverList<>();
     private final ObserverList<ToolbarDataProvider.Observer> mToolbarDataObservers =
@@ -281,9 +287,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
         setAppInstalledDelegate(null);
 
-        if (mNativeLocationBarModelAndroid == 0) return;
-        LocationBarModelJni.get().destroy(mNativeLocationBarModelAndroid);
-        mNativeLocationBarModelAndroid = 0;
+        if (mNativeLocationBarModelAndroid == null) return;
+        mNativeLocationBarModelAndroid.destroy();
+        mNativeLocationBarModelAndroid = null;
     }
 
     /**
@@ -533,7 +539,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     @VisibleForTesting
     UrlBarData buildUrlBarData(
             GURL url, boolean isOfflinePage, String displayText, String editingText) {
-        if (mNativeLocationBarModelAndroid == 0
+        if (mNativeLocationBarModelAndroid == null
                 || TextUtils.isEmpty(displayText)
                 || !shouldEmphasizeUrl()) {
             return UrlBarData.forUrl(url);
@@ -734,7 +740,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public @PageClassification int getPageClassification(boolean prefetch) {
-        if (mNativeLocationBarModelAndroid == 0) return PageClassification.INVALID_SPEC;
+        if (mNativeLocationBarModelAndroid == null) return PageClassification.INVALID_SPEC;
 
         return LocationBarModelJni.get()
                 .getPageClassification(mNativeLocationBarModelAndroid, prefetch);
@@ -822,7 +828,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         // ready if the toolbar refactor is enabled.
         if ((securityLevel == ConnectionSecurityLevel.NONE
                         || securityLevel == ConnectionSecurityLevel.WARNING)
-                && mNativeLocationBarModelAndroid == 0) {
+                && mNativeLocationBarModelAndroid == null) {
             return ToolbarVariationUtils.isToolbarUiRefactorEnabled(mContext)
                     ? Resources.ID_NULL
                     : R.drawable.omnibox_info;
@@ -940,7 +946,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
      * @return The formatted URL suitable for editing.
      */
     protected String calculateFormattedFullUrl() {
-        if (mNativeLocationBarModelAndroid == 0) return "";
+        if (mNativeLocationBarModelAndroid == null) return "";
         return LocationBarModelJni.get().getFormattedFullURL(mNativeLocationBarModelAndroid);
     }
 
@@ -948,13 +954,13 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
      * @return The formatted URL suitable for display only.
      */
     protected String calculateUrlForDisplay() {
-        if (mNativeLocationBarModelAndroid == 0) return "";
+        if (mNativeLocationBarModelAndroid == null) return "";
         return LocationBarModelJni.get().getURLForDisplay(mNativeLocationBarModelAndroid);
     }
 
     @SuppressWarnings("NullAway")
     protected GURL getUrlOfVisibleNavigationEntry() {
-        if (mNativeLocationBarModelAndroid == 0) return GURL.emptyGURL();
+        if (mNativeLocationBarModelAndroid == null) return GURL.emptyGURL();
         if (mNtpDelegate.isCurrentlyVisible()) {
             return getTab().getUrl();
         }
@@ -1009,21 +1015,19 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @NativeMethods
     interface Natives {
-        long init(LocationBarModel self);
-
-        void destroy(long nativeLocationBarModelAndroid);
+        JniUniquePtr<NativeLocationBarModelAndroid> init(LocationBarModel self);
 
         @JniType("std::u16string")
-        String getFormattedFullURL(long nativeLocationBarModelAndroid);
+        String getFormattedFullURL(JniPtr<NativeLocationBarModelAndroid> self);
 
         @JniType("std::u16string")
-        String getURLForDisplay(long nativeLocationBarModelAndroid);
+        String getURLForDisplay(JniPtr<NativeLocationBarModelAndroid> self);
 
         @JniType("GURL")
-        GURL getUrlOfVisibleNavigationEntry(long nativeLocationBarModelAndroid);
+        GURL getUrlOfVisibleNavigationEntry(JniPtr<NativeLocationBarModelAndroid> self);
 
         @PageClassification
-        int getPageClassification(long nativeLocationBarModelAndroid, boolean isPrefetch);
+        int getPageClassification(JniPtr<NativeLocationBarModelAndroid> self, boolean isPrefetch);
     }
 
     @VisibleForTesting

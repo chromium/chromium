@@ -19,6 +19,7 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
+#include "third_party/jni_zero/jni_unique_ptr.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -43,10 +44,6 @@ LocationBarModelAndroid::LocationBarModelAndroid(const JavaRef<jobject>& obj)
       java_object_(obj) {}
 
 LocationBarModelAndroid::~LocationBarModelAndroid() = default;
-
-void LocationBarModelAndroid::Destroy() {
-  delete this;
-}
 
 std::u16string LocationBarModelAndroid::GetFormattedFullURL() {
   return location_bar_model_->GetFormattedFullURL();
@@ -106,8 +103,9 @@ bool LocationBarModelAndroid::IsToolbarUiRefactorEnabled() const {
 }
 
 // static
-static int64_t JNI_LocationBarModel_Init(const JavaRef<jobject>& obj) {
-  return reinterpret_cast<intptr_t>(new LocationBarModelAndroid(obj));
+static jni_zero::JniUniquePtr<LocationBarModelAndroid>
+JNI_LocationBarModel_Init(const JavaRef<jobject>& obj) {
+  return jni_zero::MakeUnique<LocationBarModelAndroid>(obj);
 }
 
 DEFINE_JNI(LocationBarModel)

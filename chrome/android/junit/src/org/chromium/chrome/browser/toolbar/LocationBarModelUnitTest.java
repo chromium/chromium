@@ -20,6 +20,7 @@ import android.view.ContextThemeWrapper;
 
 import androidx.annotation.DrawableRes;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -91,6 +92,11 @@ public class LocationBarModelUnitTest {
 
     @Mock private LocationBarDataProvider.Observer mLocationBarDataObserver;
     @Mock private LocationBarModel.Natives mLocationBarModelJni;
+
+    @Mock
+    private JniUniquePtr<LocationBarModel.NativeLocationBarModelAndroid>
+            mNativeLocationBarModelAndroid;
+
     @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
     @Mock private OmniboxUrlEmphasizerJni mOmniboxUrlEmphasizerJni;
 
@@ -153,7 +159,7 @@ public class LocationBarModelUnitTest {
         when(mIncognitoNonPrimaryTabMock.isIncognito()).thenReturn(true);
         when(mIncognitoNonPrimaryTabMock.getProfile()).thenReturn(mNonPrimaryOtrProfileMock);
 
-        when(mLocationBarModelJni.init(any())).thenReturn(123L);
+        when(mLocationBarModelJni.init(any())).thenReturn(mNativeLocationBarModelAndroid);
         when(mSecurityStateModelJni.isHttpsOnlyModeUpgradedForWebContents(any())).thenReturn(false);
 
         // Bypass OmniboxUrlEmphasizer testing - this code always returns the displayText.
@@ -172,9 +178,7 @@ public class LocationBarModelUnitTest {
         mLocationBarModel.initializeWithNative();
         doReturn(true).when(mRegularTabMock).isInitialized();
         doReturn(true).when(mRegularTabMock).isLoading();
-        doReturn(mExampleGurl)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+        doReturn(mExampleGurl).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
         mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
     }
 
@@ -232,9 +236,7 @@ public class LocationBarModelUnitTest {
         mLocationBarModel.initializeWithNative();
         mLocationBarModel.addObserver(mLocationBarDataObserver);
 
-        doReturn(mExampleGurl)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+        doReturn(mExampleGurl).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
         mLocationBarModel.updateVisibleGurl();
 
         // The visible url should be cached and hasn't changed, so onUrlChanged shouldn't be called
@@ -243,9 +245,7 @@ public class LocationBarModelUnitTest {
 
         // Setting to a new tab with a different url
         GURL exampleGurl2 = new GURL("http://www.example2.com/");
-        doReturn(exampleGurl2)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+        doReturn(exampleGurl2).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
         mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
         verify(mLocationBarDataObserver).onTabChanged(null);
         verify(mLocationBarDataObserver, times(1)).onUrlChanged(true);
@@ -254,9 +254,7 @@ public class LocationBarModelUnitTest {
         GURL exampleGurl3 = new GURL("http://www.example3.com/");
         Tab regularTabMock2 = Mockito.mock(Tab.class);
         when(regularTabMock2.getProfile()).thenReturn(mRegularProfileMock);
-        doReturn(exampleGurl3)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+        doReturn(exampleGurl3).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
         mLocationBarModel.setTab(regularTabMock2, mRegularProfileMock);
         verify(mLocationBarDataObserver).onTabChanged(mRegularTabMock);
         verify(mLocationBarDataObserver, times(2)).onUrlChanged(true);
@@ -280,9 +278,7 @@ public class LocationBarModelUnitTest {
     public void testObserversNotified_setIsShowingTabSwitcher() {
         mLocationBarModel.initializeWithNative();
         mLocationBarModel.addObserver(mLocationBarDataObserver);
-        doReturn(mExampleGurl)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+        doReturn(mExampleGurl).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
         mLocationBarModel.updateVisibleGurl();
 
         verify(mLocationBarDataObserver, never()).onTitleChanged();
@@ -308,29 +304,17 @@ public class LocationBarModelUnitTest {
         doReturn(true).when(mRegularTabMock).isInitialized();
         mLocationBarModel.initializeWithNative();
 
-        doReturn(mExampleGurl)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
-        doReturn(mExampleGurl.getSpec())
-                .when(mLocationBarModelJni)
-                .getFormattedFullURL(Mockito.anyLong());
-        doReturn(mExampleGurl.getSpec())
-                .when(mLocationBarModelJni)
-                .getURLForDisplay(Mockito.anyLong());
+        doReturn(mExampleGurl).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
+        doReturn(mExampleGurl.getSpec()).when(mLocationBarModelJni).getFormattedFullURL(any());
+        doReturn(mExampleGurl.getSpec()).when(mLocationBarModelJni).getURLForDisplay(any());
         Assert.assertTrue(mLocationBarModel.updateVisibleGurl());
         Assert.assertFalse("Update should be suppressed", mLocationBarModel.updateVisibleGurl());
 
         // URL changed, cache is invalid.
         GURL exampleGurl2 = new GURL("http://www.example2.com/");
-        doReturn(exampleGurl2)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
-        doReturn(exampleGurl2.getSpec())
-                .when(mLocationBarModelJni)
-                .getFormattedFullURL(Mockito.anyLong());
-        doReturn(exampleGurl2.getSpec())
-                .when(mLocationBarModelJni)
-                .getURLForDisplay(Mockito.anyLong());
+        doReturn(exampleGurl2).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
+        doReturn(exampleGurl2.getSpec()).when(mLocationBarModelJni).getFormattedFullURL(any());
+        doReturn(exampleGurl2.getSpec()).when(mLocationBarModelJni).getURLForDisplay(any());
         Assert.assertTrue("New url should notify", mLocationBarModel.updateVisibleGurl());
         Assert.assertFalse(
                 "Update should be suppressed again", mLocationBarModel.updateVisibleGurl());
@@ -498,7 +482,7 @@ public class LocationBarModelUnitTest {
         // Internal chrome:// scheme.
         doReturn(new GURL("chrome://flags"))
                 .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+                .getUrlOfVisibleNavigationEntry(any());
         mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
 
         assertResourceIdIs(
@@ -509,7 +493,7 @@ public class LocationBarModelUnitTest {
         // file:// scheme.
         doReturn(new GURL("file:///sdcard/test.html"))
                 .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+                .getUrlOfVisibleNavigationEntry(any());
         mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
 
         assertResourceIdIs(
@@ -576,9 +560,7 @@ public class LocationBarModelUnitTest {
         WebContents webContentsMock = Mockito.mock(WebContents.class);
         when(mRegularTabMock.getWebContents()).thenReturn(webContentsMock);
         doReturn(true).when(mRegularTabMock).isInitialized();
-        doReturn(mExampleGurl)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+        doReturn(mExampleGurl).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
         mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
         when(mSecurityStateModelJni.isHttpsOnlyModeUpgradedForWebContents(webContentsMock))
                 .thenReturn(true);
@@ -705,7 +687,7 @@ public class LocationBarModelUnitTest {
             GURL bookmarksGurl = new GURL(UrlConstants.BOOKMARKS_NATIVE_URL);
             doReturn(bookmarksGurl)
                     .when(mLocationBarModelJni)
-                    .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+                    .getUrlOfVisibleNavigationEntry(any());
 
             model.setTab(mRegularTabMock, mRegularProfileMock);
             model.updateVisibleGurl();
@@ -740,7 +722,7 @@ public class LocationBarModelUnitTest {
             GURL bookmarksGurl = new GURL(UrlConstants.BOOKMARKS_NATIVE_URL);
             doReturn(bookmarksGurl)
                     .when(mLocationBarModelJni)
-                    .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+                    .getUrlOfVisibleNavigationEntry(any());
 
             model.setTab(mRegularTabMock, mRegularProfileMock);
             model.updateVisibleGurl();
@@ -772,9 +754,7 @@ public class LocationBarModelUnitTest {
         try {
             doReturn(true).when(mRegularTabMock).isInitialized();
             GURL historyGurl = new GURL("chrome://history");
-            doReturn(historyGurl)
-                    .when(mLocationBarModelJni)
-                    .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+            doReturn(historyGurl).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
 
             model.setTab(mRegularTabMock, mRegularProfileMock);
             model.updateVisibleGurl();
@@ -807,9 +787,7 @@ public class LocationBarModelUnitTest {
         try {
             doReturn(true).when(mRegularTabMock).isInitialized();
             GURL historyGurl = new GURL("chrome://history");
-            doReturn(historyGurl)
-                    .when(mLocationBarModelJni)
-                    .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
+            doReturn(historyGurl).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
 
             model.setTab(mRegularTabMock, mRegularProfileMock);
             model.updateVisibleGurl();

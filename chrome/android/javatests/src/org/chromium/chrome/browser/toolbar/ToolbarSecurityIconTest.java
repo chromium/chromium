@@ -15,6 +15,7 @@ import androidx.annotation.ColorRes;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -52,7 +53,6 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 /** Instrumentation tests for the toolbar security icon. */
@@ -94,6 +94,10 @@ public final class ToolbarSecurityIconTest {
 
     @Mock private LocationBarModel.Natives mLocationBarModelJni;
 
+    @Mock
+    private JniUniquePtr<LocationBarModel.NativeLocationBarModelAndroid>
+            mNativeLocationBarModelAndroid;
+
     @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
 
     @Mock private Profile mMockProfile;
@@ -110,16 +114,10 @@ public final class ToolbarSecurityIconTest {
         LocationBarModelJni.setInstanceForTesting(mLocationBarModelJni);
 
         GURL exampleUrl = JUnitTestGURLs.EXAMPLE_URL;
-        doReturn(exampleUrl)
-                .when(mLocationBarModelJni)
-                .getUrlOfVisibleNavigationEntry(Mockito.anyLong());
-        doReturn(exampleUrl.getSpec())
-                .when(mLocationBarModelJni)
-                .getFormattedFullURL(Mockito.anyLong());
-        doReturn(exampleUrl.getSpec())
-                .when(mLocationBarModelJni)
-                .getURLForDisplay(Mockito.anyLong());
-        doReturn(new Random().nextLong()).when(mLocationBarModelJni).init(Mockito.any());
+        doReturn(exampleUrl).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
+        doReturn(exampleUrl.getSpec()).when(mLocationBarModelJni).getFormattedFullURL(any());
+        doReturn(exampleUrl.getSpec()).when(mLocationBarModelJni).getURLForDisplay(any());
+        doReturn(mNativeLocationBarModelAndroid).when(mLocationBarModelJni).init(Mockito.any());
 
         Context context =
                 new ContextThemeWrapper(

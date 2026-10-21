@@ -30,6 +30,7 @@ import android.view.ViewStub;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -237,6 +238,11 @@ public class ToolbarManagerUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModelDotInfo mTabModelDotInfo;
     @Mock private LocationBarModel.Natives mLocationBarModelNatives;
+
+    @Mock
+    private JniUniquePtr<LocationBarModel.NativeLocationBarModelAndroid>
+            mNativeLocationBarModelAndroid;
+
     @Mock private FaviconHelper.Natives mFaviconHelperNatives;
     @Mock private LargeIconBridge.Natives mLargeIconBridgeNatives;
     @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
@@ -345,12 +351,12 @@ public class ToolbarManagerUnitTest {
         when(mPaintPreviewTabServiceFactoryNatives.getServiceInstanceForCurrentProfile())
                 .thenReturn(null);
         LocationBarModelJni.setInstanceForTesting(mLocationBarModelNatives);
-        when(mLocationBarModelNatives.init(any())).thenReturn(1L);
+        when(mLocationBarModelNatives.init(any())).thenReturn(mNativeLocationBarModelAndroid);
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
         UserPrefs.setPrefServiceForTesting(mPrefService);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         SceneLayerJni.setInstanceForTesting(mSceneLayerNatives);
-        when(mLocationBarModelNatives.getUrlOfVisibleNavigationEntry(anyLong()))
+        when(mLocationBarModelNatives.getUrlOfVisibleNavigationEntry(any()))
                 .thenAnswer(
                         invocation -> {
                             Tab tab =
@@ -360,8 +366,8 @@ public class ToolbarManagerUnitTest {
                             GURL url = tab != null ? tab.getUrl() : null;
                             return url != null ? url : GURL.emptyGURL();
                         });
-        when(mLocationBarModelNatives.getFormattedFullURL(anyLong())).thenReturn("");
-        when(mLocationBarModelNatives.getURLForDisplay(anyLong())).thenReturn("");
+        when(mLocationBarModelNatives.getFormattedFullURL(any())).thenReturn("");
+        when(mLocationBarModelNatives.getURLForDisplay(any())).thenReturn("");
         TopToolbarSceneLayerJni.setInstanceForTesting(mTopToolbarSceneLayerNatives);
         when(mTopToolbarSceneLayerNatives.init(any()))
                 .thenAnswer(
@@ -1249,7 +1255,7 @@ public class ToolbarManagerUnitTest {
 
     @Test
     public void testOnSendTabToSelfClicked_recordsEvent() {
-        when(mLocationBarModelNatives.getUrlOfVisibleNavigationEntry(anyLong()))
+        when(mLocationBarModelNatives.getUrlOfVisibleNavigationEntry(any()))
                 .thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isInitialized()).thenReturn(true);
