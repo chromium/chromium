@@ -266,14 +266,10 @@ TitleWithIconAfterLabelView::TitleWithIconAfterLabelView(
       window_title, views::style::CONTEXT_DIALOG_TITLE));
   title_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   title_label->SetMultiLine(true);
-  auto* icon_view = AddChildView(CreateIconView(
-      icon_to_show,
-      base::BindRepeating(
-          [](views::View* view) {
-            return ui::ColorVariant(
-                view->GetColorProvider()->GetColor(ui::kColorDialogBackground));
-          },
-          base::Unretained(this))));
+  auto* icon_view = AddChildView(
+      CreateIconView(icon_to_show, base::BindRepeating([]() {
+                       return ui::ColorVariant(ui::kColorDialogBackground);
+                     })));
   icon_view->SetID(DialogViewId::BUBBLE_TITLE_ICON);
 
   // Center the icon against the first line of the title label. This needs to be
