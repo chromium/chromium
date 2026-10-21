@@ -256,9 +256,10 @@ void OfflinePageTabHelper::FinalizeOfflineInfo(
   } else if (navigated_url.SchemeIsHTTPOrHTTPS()) {
     // For http/https URL, commit the provisional offline info if any.
     if (provisional_offline_info_.IsValid()) {
-      CHECK(EqualsIgnoringFragment(navigated_url,
-                                   provisional_offline_info_.offline_page->url),
-            base::NotFatalUntil::M161);
+      // TODO(crbug.com/576010224): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(EqualsIgnoringFragment(
+          navigated_url, provisional_offline_info_.offline_page->url));
       offline_info_ = std::move(provisional_offline_info_);
       provisional_offline_info_.Clear();
     }
