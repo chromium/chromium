@@ -39,9 +39,12 @@ LayoutUnit ComputeInitialLetterBoxBlockOffset(
   const LayoutUnit line_height = paragraph_style.ComputedLineHeightAsFixed();
 
   const int size = std::ceil(initial_letter.Size());
-  const int sink = initial_letter.IsRaise() || initial_letter.IsIntegerSink()
-                       ? initial_letter.Sink()
-                       : size;
+  // Sink() follows the spec, e.g. floor(size) for drop or an omitted sink.
+  const int sink =
+      RuntimeEnabledFeatures::InitialLetterBlockPositioningEnabled() ||
+              initial_letter.IsRaise() || initial_letter.IsIntegerSink()
+          ? initial_letter.Sink()
+          : size;
 
   // Block-axis positioning[1]:
   //   size >= sink: => under alignment with shift (sink - 1) * line_height
