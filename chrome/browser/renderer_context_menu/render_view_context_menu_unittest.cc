@@ -3393,6 +3393,22 @@ TEST_F(RenderViewContextMenuOrderTest, PageMenu_Order) {
           IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
+TEST_F(RenderViewContextMenuOrderTest, SubframeMenu_Order) {
+  content::ContextMenuParams params = CreateParams(MenuItem::FRAME);
+  params.page_url = GURL("https://www.example.com/");
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(
+      GetMenuItemsAndSeparators(menu->menu_model()),
+      testing::ElementsAre(
+          IDC_BACK, IDC_FORWARD, IDC_RELOAD, kSeparatorId, IDC_SAVE_PAGE,
+          IDC_PRINT, IDC_ROUTE_MEDIA, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+          kSeparatorId, IDC_CONTENT_CONTEXT_GENERATE_QR_CODE, kSeparatorId,
+          IDC_CONTENT_CONTEXT_TRANSLATE, kSeparatorId, IDC_VIEW_SOURCE,
+          IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE, IDC_CONTENT_CONTEXT_RELOADFRAME,
+          IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
 class RenderViewContextMenuSimplifiedOrderTest
     : public RenderViewContextMenuOrderTest {
  public:
@@ -3417,5 +3433,21 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest, PageMenu_Order) {
           IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
           IDC_ROUTE_MEDIA, IDC_CONTENT_CONTEXT_GENERATE_QR_CODE,
           IDC_CONTENT_CONTEXT_TRANSLATE, kSeparatorId, IDC_VIEW_SOURCE,
+          IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
+TEST_F(RenderViewContextMenuSimplifiedOrderTest, SubframeMenu_Order) {
+  content::ContextMenuParams params = CreateParams(MenuItem::FRAME);
+  params.page_url = GURL("https://www.example.com/");
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(
+      GetMenuItemsAndSeparators(menu->menu_model()),
+      testing::ElementsAre(
+          IDC_BACK, IDC_FORWARD, IDC_RELOAD, kSeparatorId, IDC_SAVE_PAGE,
+          IDC_PRINT, kSeparatorId, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+          IDC_ROUTE_MEDIA, IDC_CONTENT_CONTEXT_GENERATE_QR_CODE,
+          IDC_CONTENT_CONTEXT_TRANSLATE, kSeparatorId, IDC_VIEW_SOURCE,
+          IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE, IDC_CONTENT_CONTEXT_RELOADFRAME,
           IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
