@@ -224,7 +224,6 @@ BASE_FEATURE_PARAM(int,
                    0);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-
 // Preloads a WebContents with a Top Chrome WebUI on BrowserView initialization,
 // so that it can be shown instantly at a later time when necessary.
 BASE_FEATURE(kPreloadTopChromeWebUI, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -362,7 +361,6 @@ BASE_FEATURE(kManagedProfileRequiredInterstitial,
 BASE_FEATURE(kMigrateManagementPageToWebUIOnMobile,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kViewsJSAppModalDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
@@ -400,6 +398,11 @@ bool IsPageActionsElevatedToolbarEnabled() {
 }
 
 BASE_FEATURE(kByDateHistoryInSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabsFromOtherDevicesSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabsFromOtherDevicesSidePanelPinnedByDefault,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNonMilestoneUpdateToast, base::FEATURE_ENABLED_BY_DEFAULT);
 

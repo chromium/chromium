@@ -3552,7 +3552,7 @@ TEST_F(ActionAppMenuTest, SavedTabGroupsAndSidePanelMetrics) {
   menu.CloseMenu();
 }
 
-TEST_F(ActionAppMenuTest, SendTabToSelfMetrics) {
+TEST_F(ActionAppMenuTest, TabsFromOtherDevicesAndSendTabToSelfMetrics) {
   base::HistogramTester histogram_tester;
 
   ActionAppMenuManager menu_manager(&mock_window_interface_,
@@ -3564,6 +3564,17 @@ TEST_F(ActionAppMenuTest, SendTabToSelfMetrics) {
   histogram_tester.ExpectTotalCount(
       "Sharing.SendTabToSelf.TargetDeviceCount.ShareMenu", 0);
   menu_manager.OnMenuClosed();
+
+  // Logging kActionSidePanelShowTabsFromOtherDevices should record
+  // WrenchMenu.TimeToAction without hitting NOTREACHED().
+  ActionAppMenuMetrics metrics;
+  metrics.OnMenuOpened();
+  auto tabs_from_other_devices =
+      actions::ActionItem::Builder()
+          .SetActionId(kActionSidePanelShowTabsFromOtherDevices)
+          .Build();
+  metrics.LogMenuAction(tabs_from_other_devices.get());
+  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
 }
 
 class MockAppMenuDragAndDropDelegate : public AppMenuDragAndDropDelegate {

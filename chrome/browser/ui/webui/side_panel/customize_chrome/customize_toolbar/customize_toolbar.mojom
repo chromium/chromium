@@ -35,6 +35,7 @@ enum ActionId {
   kSplitTab,
   kContextualTasks,
   kTtc,
+  kShowTabsFromOtherDevices,
 };
 
 // Unique identifiers for categories the actions can belong to.
@@ -80,12 +81,16 @@ interface CustomizeToolbarHandlerFactory {
 interface CustomizeToolbarHandler {
   // Returns the list of all actions that can be pinned to the toolbar.
   ListActions() => (array<Action> actions);
+
   // Returns the list of categories the actions are sorted into.
   ListCategories() => (array<Category> categories);
+
   // Pins the action with id `action_id` to (or unpins it from) the toolbar.
   PinAction(ActionId action_id, bool pinned);
+
   // Returns true if any action items have a non-default pin state.
   GetIsCustomized() => (bool customized);
+
   // Resets the set of pinned action items to default.
   ResetToDefault();
 };
@@ -94,6 +99,7 @@ interface CustomizeToolbarHandler {
 interface CustomizeToolbarClient {
   // Sets the pinned state of the action with id `action_id`.
   SetActionPinned(ActionId action_id, bool pinned);
+
   // Notifies the WebUI that an action has changed and the UI should repopulate.
   NotifyActionsUpdated();
 };

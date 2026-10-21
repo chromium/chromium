@@ -210,7 +210,8 @@ CreateForeignSessionPageHandler(
              const std::vector<const ::sessions::SessionWindow*>& windows) {
             SessionRestore::RestoreForeignSessionWindows(
                 profile, windows.begin(), windows.end(), base::DoNothing());
-          }));
+          }),
+      /*side_panel_ui=*/nullptr);
 }
 
 std::unique_ptr<user_education::mojom::UserEducationMixedTrustHandler>

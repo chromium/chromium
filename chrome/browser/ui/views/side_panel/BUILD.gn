@@ -47,6 +47,10 @@ source_set("side_panel") {
     "side_panel_toolbar_pinning_controller.h",
     "side_panel_web_ui_view.cc",
     "side_panel_web_ui_view.h",
+    "tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.cc",
+    "tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h",
+    "tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics.cc",
+    "tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics.h",
   ]
   public_deps = [
     "//base",
@@ -130,6 +134,7 @@ source_set("side_panel") {
     "//chrome/browser/ui/webui/side_panel/comments",
     "//chrome/browser/ui/webui/side_panel/history",
     "//chrome/browser/ui/webui/side_panel/history_clusters",
+    "//chrome/browser/ui/webui/side_panel/tabs_from_other_devices",
     "//chrome/browser/ui/webui/top_chrome",
     "//chrome/browser/ui/webui_browser:headers",
     "//chrome/common",
@@ -193,6 +198,7 @@ source_set("browser_tests") {
     "history_clusters/history_clusters_side_panel_coordinator_browsertest.cc",
     "side_panel_coordinator_browsertest.cc",
     "side_panel_web_ui_view_browsertest.cc",
+    "tabs_from_other_devices/tabs_from_other_devices_side_panel_browsertest.cc",
   ]
   deps = [
     ":side_panel",
@@ -234,6 +240,20 @@ source_set("interactive_ui_tests") {
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chrome/test/user_education",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics_unittest.cc" ]
+  deps = [
+    ":side_panel",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
 }

@@ -1,0 +1,202 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://tabs-from-other-devices.top-chrome/shared/sp_shared_style.css.js
+ * #scheme=relative
+ * #include=sp-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+}
+
+#search-input {
+  flex-shrink: 0;
+  margin: var(--sp-body-padding);
+  margin-bottom: var(--sp-card-gap);
+  width: auto;
+}
+
+#picker-container {
+  margin: 0 var(--sp-body-padding) 16px;
+}
+
+#picker-button {
+  border-radius: 16px;
+  border: 1px solid var(--cr-separator-color);
+  background-color: var(--cr-card-background-color);
+  color: var(--cr-primary-text-color);
+  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+#picker-button:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+.dropdown-item {
+  background: none;
+  border: none;
+  color: var(--cr-primary-text-color);
+  cursor: pointer;
+  display: block;
+  padding: 8px 16px;
+  text-align: left;
+  width: 100%;
+}
+
+.dropdown-item:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+#tabs {
+  padding: 0 var(--sp-body-padding);
+}
+
+.tab {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  padding: 8px 0 8px 8px;
+}
+
+.tab:hover {
+  background-color: var(--cr-hover-background-color);
+}
+
+.tab-header {
+  display: flex;
+  overflow: hidden;
+}
+
+.tab-favicon-container {
+  background-color: var(--cr-hover-background-color);
+  border-radius: 20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.tab-favicon {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  height: 16px;
+  width: 16px;
+}
+
+.tab-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tab-title {
+  font-size: 13px;
+  line-height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-details {
+  color: var(--cr-secondary-text-color);
+  display: flex;
+  font-size: 11px;
+  line-height: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.tab-url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tab-timestamp-separator {
+  margin: 0 4px;
+}
+
+.tab-timestamp {
+  flex-shrink: 0;
+}
+
+.empty-message {
+  color: var(--cr-secondary-text-color);
+  text-align: center;
+  margin-top: 50px;
+}
+
+/* Grid layout for screenshots */
+#tabs.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 8px;
+}
+
+.tab.grid {
+  align-items: stretch;
+  background-color: var(--cr-card-background-color);
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.tab.grid:hover {
+  background-color: var(--cr-hover-background-color);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.tab.grid .tab-header {
+  align-items: center;
+  padding: 8px;
+}
+
+.tab.grid .tab-favicon-container {
+  margin: 0 8px 0 0;
+  height: 24px;
+  width: 24px;
+}
+
+.tab.grid .tab-info {
+  padding: 0;
+}
+
+.tab-screenshot {
+  aspect-ratio: 3 / 4;
+  background-color: var(--cr-active-background-color);
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+  border: 1px solid var(--cr-separator-color);
+  border-radius: 4px;
+  margin: 0 8px 8px 8px;
+  object-fit: cover;
+  width: calc(100% - 16px);
+}
+
+.tab-screenshot.fallback {
+  background-image: image-set(
+      url('chrome://theme/IDR_DEFAULT_FAVICON_64@1x') 1x,
+      url('chrome://theme/IDR_DEFAULT_FAVICON_64@2x') 2x);
+  background-position: center;
+  background-size: 64px;
+}

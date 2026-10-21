@@ -265,6 +265,8 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
            {kActionSendSharedTabGroupFeedback, "SharedTabGroupFeedbackButton"},
            {kActionTabSearch, "PinnedTabSearchButton"},
            {kActionSidePanelShowGlic, "PinnedGlicButton"},
+           {kActionSidePanelShowTabsFromOtherDevices,
+            "PinnedTabsFromOtherDevicesButton"},
            {kGlicButtonElementId, "GlicButtonElementId"}});
 
   const auto it = identifier_to_action_name_map->find(identifier);

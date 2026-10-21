@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -24,7 +25,7 @@
 namespace sessions {
 struct SessionTab;
 struct SessionWindow;
-}
+}  // namespace sessions
 
 namespace content {
 class WebContents;
@@ -35,7 +36,7 @@ class PrefRegistrySyncable;
 }
 
 class Profile;
-
+class TabsFromOtherDevicesSidePanelUI;
 namespace browser_sync {
 
 // Keep in sync with //chrome/browser/resources/history/constants.js.
@@ -75,7 +76,8 @@ class ForeignSessionHandler : public history::mojom::ForeignSessionPageHandler {
       Profile* profile,
       content::WebContents* web_contents,
       RestoreForeignSessionTabCallback restore_tab_callback,
-      RestoreForeignSessionWindowsCallback restore_windows_callback);
+      RestoreForeignSessionWindowsCallback restore_windows_callback,
+      TabsFromOtherDevicesSidePanelUI* side_panel_ui = nullptr);
 
   ForeignSessionHandler(const ForeignSessionHandler&) = delete;
   ForeignSessionHandler& operator=(const ForeignSessionHandler&) = delete;
@@ -91,12 +93,17 @@ class ForeignSessionHandler : public history::mojom::ForeignSessionPageHandler {
   void DeleteForeignSession(const std::string& session_tag) override;
   void SetForeignSessionCollapsed(const std::string& session_tag,
                                   bool collapsed) override;
+  void ShowUi() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Returns a pointer to the current session model associator or nullptr.
   static sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate(
       Profile* profile);
+
+  // Returns a string used to show the user when a session or tab was last
+  // modified (e.g. "2 hours ago").
+  static std::u16string FormatSessionTime(const base::Time& time);
 
  private:
   void OnForeignSessionUpdated();
@@ -105,13 +112,18 @@ class ForeignSessionHandler : public history::mojom::ForeignSessionPageHandler {
 
   raw_ptr<Profile> profile_;
 
-  // The WebContents that hosts the WebUI.
+  // The WebContents that hosts the WebUI. If opened in a regular tab
+  // (chrome://history/syncedTabs), this corresponds to that tab. If opened in
+  // the side panel, this corresponds to the side panel's contents.
   raw_ptr<content::WebContents> web_contents_;
 
   // Interface to send information to the web ui page.
   mojo::Remote<history::mojom::ForeignSessionPage> page_;
   // Allows handling received messages from the web ui page.
   mojo::Receiver<history::mojom::ForeignSessionPageHandler> receiver_;
+
+  // Non-null if the handler is being used by the side panel UI.
+  raw_ptr<TabsFromOtherDevicesSidePanelUI> side_panel_ui_;
 
   RestoreForeignSessionTabCallback restore_tab_callback_;
   RestoreForeignSessionWindowsCallback restore_windows_callback_;

@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom.h"
@@ -85,6 +86,7 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
+#include "chrome/browser/ui/webui/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals_ui.h"
@@ -148,7 +150,7 @@
 #include "chrome/browser/ui/webui/app_settings/web_app_settings_ui.h"
 // The intro mojom targets exist on ChromeOS but these headers are only
 // compiled on Win/Mac/Linux; gn check is static, so suppress it on ChromeOS.
-#include "chrome/browser/ui/webui/intro/finish_or_continue.mojom.h" // nogncheck
+#include "chrome/browser/ui/webui/intro/finish_or_continue.mojom.h"  // nogncheck
 #include "chrome/browser/ui/webui/intro/intro.mojom.h"  // nogncheck
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/browser/ui/webui/intro/sign_in_celebration.mojom.h"  // nogncheck
@@ -251,8 +253,16 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
     RegisterWebUIControllerInterfaceBinder<history::mojom::PageHandler,
                                            HistoryUI>(map);
   }
-  RegisterWebUIControllerInterfaceBinder<
-      history::mojom::ForeignSessionPageHandlerFactory, HistoryUI>(map);
+  if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
+          Profile::FromBrowserContext(
+              render_frame_host->GetBrowserContext()))) {
+    RegisterWebUIControllerInterfaceBinder<
+        history::mojom::ForeignSessionPageHandlerFactory, HistoryUI,
+        TabsFromOtherDevicesSidePanelUI>(map);
+  } else {
+    RegisterWebUIControllerInterfaceBinder<
+        history::mojom::ForeignSessionPageHandlerFactory, HistoryUI>(map);
+  }
 
   RegisterWebUIControllerInterfaceBinder<
       infobar_internals::mojom::PageHandlerFactory, InfoBarInternalsUI>(map);
@@ -489,9 +499,10 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   // registry.ForWebUI() pattern used in
   // PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop below which
   // eliminates the need to account for feature flag combinations.
-  RegisterWebUIControllerInterfaceBinder<
-      composebox::mojom::PageHandlerFactory, NewTabPageUI, ContextualTasksUI,
-      OmniboxPopupUI, OmniboxEverywhereUI>(map);
+  RegisterWebUIControllerInterfaceBinder<composebox::mojom::PageHandlerFactory,
+                                         NewTabPageUI, ContextualTasksUI,
+                                         OmniboxPopupUI, OmniboxEverywhereUI>(
+      map);
   RegisterWebUIControllerInterfaceBinder<
       plural_string::mojom::PluralStringProvider, NewTabPageUI,
       ContextualTasksUI, OmniboxPopupUI, OmniboxEverywhereUI>(map);

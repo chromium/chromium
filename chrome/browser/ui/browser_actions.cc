@@ -469,6 +469,18 @@ void BrowserActions::InitializeSidePanelActions() {
                                                         : kReadingListOldIcon,
                       kActionSidePanelShowReadingList, bwi, true)
           .Build());
+  if (profile->IsRegularProfile() &&
+      base::FeatureList::IsEnabled(features::kTabsFromOtherDevicesSidePanel)) {
+    root_action_item_->AddChild(
+        SidePanelAction(SidePanelEntryId::kTabsFromOtherDevices,
+                        IDS_SIDE_PANEL_TABS_FROM_OTHER_DEVICES_TITLE,
+                        IDS_SIDE_PANEL_TABS_FROM_OTHER_DEVICES_TITLE,
+                        features::IsRoundedIconsEnabled()
+                            ? kDevicesIcon
+                            : kDevicesChromeRefreshOldIcon,
+                        kActionSidePanelShowTabsFromOtherDevices, bwi, true)
+            .Build());
+  }
   root_action_item_->AddChild(
       SidePanelAction(SidePanelEntryId::kAboutThisSite,
                       IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,

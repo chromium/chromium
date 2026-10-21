@@ -3564,6 +3564,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/qrcode_generator:unit_tests",
       "//chrome/browser/ui/views/send_tab_to_self:unit_tests",
       "//chrome/browser/ui/views/sharing:unit_tests",
+      "//chrome/browser/ui/views/side_panel:unit_tests",
       "//chrome/browser/ui/views/site_data:unit_tests",
       "//chrome/browser/ui/views/tab_contents:unit_tests",
       "//chrome/browser/ui/views/tab_sharing:unit_tests",

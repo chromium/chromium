@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -404,6 +405,19 @@ std::vector<RecentTabItem> RecentTabsBuilder::BuildHistoryEntries(
               : vector_icons::kHistoryChromeRefreshOldIcon,
           ui::kColorMenuIcon, gfx::kFaviconSize));
       items.push_back(std::move(history_side_panel));
+    }
+
+    if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(profile)) {
+      RecentTabItem other_devices(
+          RecentTabItem::Type::kCommand,
+          l10n_util::GetStringUTF16(
+              IDS_SIDE_PANEL_SHOW_TABS_FROM_OTHER_DEVICES));
+      other_devices.set_action_id(kActionSidePanelShowTabsFromOtherDevices);
+      other_devices.set_icon(ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? kDevicesIcon
+                                            : kDevicesChromeRefreshOldIcon,
+          ui::kColorMenuIcon, gfx::kFaviconSize));
+      items.push_back(std::move(other_devices));
     }
   }
 

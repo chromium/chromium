@@ -120,7 +120,6 @@ BASE_DECLARE_FEATURE(kSessionRestoreInfobar);
 BASE_DECLARE_FEATURE_PARAM(bool, kSetDefaultToContinueSession);
 #endif
 
-
 BASE_DECLARE_FEATURE(kPreloadTopChromeWebUI);
 // This enum entry values must be in sync with
 // WebUIContentsPreloadManager::PreloadMode.
@@ -293,7 +292,6 @@ BASE_DECLARE_FEATURE(kManagedProfileRequiredInterstitial);
 // Enables WebUI migration for chrome://management on Android Mobile.
 BASE_DECLARE_FEATURE(kMigrateManagementPageToWebUIOnMobile);
 
-
 // Cocoa to views migration.
 #if BUILDFLAG(IS_MAC)
 BASE_DECLARE_FEATURE(kViewsJSAppModalDialog);
@@ -346,6 +344,13 @@ bool IsPageActionsElevatedToolbarEnabled();
 // If enabled, the by date history will show in the side panel.
 BASE_DECLARE_FEATURE(kByDateHistoryInSidePanel);
 
+// If enabled, the "Tabs from other devices" side panel will be available.
+BASE_DECLARE_FEATURE(kTabsFromOtherDevicesSidePanel);
+
+// If enabled, the "Tabs from other devices" toolbar button will be pinned by
+// default.
+BASE_DECLARE_FEATURE(kTabsFromOtherDevicesSidePanelPinnedByDefault);
+
 #if !BUILDFLAG(IS_ANDROID)
 
 bool IsWebUIReloadButtonEnabled();
@@ -389,7 +394,6 @@ bool IsWebUIToolbarFullyEnabled();
 
 // Controls whether to show a toast for Chrome non milestone update.
 BASE_DECLARE_FEATURE(kNonMilestoneUpdateToast);
-
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAndroidAnimatedProgressBarInBrowser);

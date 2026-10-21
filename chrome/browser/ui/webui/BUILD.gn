@@ -142,6 +142,7 @@ source_set("configs") {
       "//chrome/browser/ui/webui/side_panel/history",
       "//chrome/browser/ui/webui/side_panel/history_clusters",
       "//chrome/browser/ui/webui/side_panel/read_anything",
+      "//chrome/browser/ui/webui/side_panel/tabs_from_other_devices",
       "//chrome/browser/ui/webui/tab_search",
       "//chrome/browser/ui/webui/web_app_internals",
       "//chrome/browser/ui/webui/webnn_internals",
