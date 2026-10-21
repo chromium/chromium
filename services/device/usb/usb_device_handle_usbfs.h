@@ -105,12 +105,20 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
     return task_runner_;
   }
 
-  // Destroys |helper_| and releases ownership of |fd_| without closing it.
+#if BUILDFLAG(IS_ANDROID)
+  // Releases ownership of |fd_| on the blocking task runner without closing it,
+  // then resets |helper_|. Used only on Android where the file descriptor is
+  // owned and closed by the Java UsbDeviceConnection object.
   void ReleaseFileDescriptor(base::OnceClosure callback);
+#endif  // BUILDFLAG(IS_ANDROID)
 
-  // Destroys |helper_| and closes |fd_|. Override to call
-  // ReleaseFileDescriptor() if necessary.
+  // Closes |fd_| and |lifeline_fd_| on the blocking task runner, then resets
+  // |helper_|. Used on Linux and ChromeOS. Subclasses (such as
+  // UsbDeviceHandleAndroid) override to call ReleaseFileDescriptor() instead.
   virtual void FinishClose();
+
+  // Submits |urb| via USBDEVFS_SUBMITURB. Virtual for testing.
+  virtual int SubmitUrb(usbdevfs_urb* urb);
 
  private:
   friend class MockBlockingTaskRunnerHelper;
@@ -123,6 +131,10 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
     mojom::UsbTransferType type;
     raw_ptr<const mojom::UsbInterfaceInfo> interface;
   };
+
+  // Clears remaining |transfers_| after |helper_| has finished releasing or
+  // closing |fd_| on the blocking task runner.
+  void FinishCloseComplete();
 
   void SetConfigurationComplete(int configuration_value,
                                 ResultCallback callback,
@@ -207,7 +219,16 @@ class UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper {
                           base::WeakPtr<UsbDeviceHandleUsbfs> device_handle,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Stops watching and releases ownership of |fd_| without closing it.
+  // Used only on Android where the file descriptor is owned and closed
+  // by the Java UsbDeviceConnection object via JNI.
   void ReleaseFileDescriptor();
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Stops watching and closes |fd_| and |lifeline_fd_|. Used on Linux and
+  // ChromeOS where Chromium owns and must close the file descriptors.
+  void CloseFileDescriptor();
 
   bool SetConfiguration(int configuration_value);
   virtual bool ClaimInterface(int interface_number);
@@ -215,7 +236,7 @@ class UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper {
   virtual bool SetInterface(int interface_number, int alternate_setting);
   virtual bool ResetDevice();
   bool ClearHalt(uint8_t endpoint_address);
-  void DiscardUrb(Transfer* transfer);
+  virtual void DiscardUrb(Transfer* transfer);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   // Detach the interface from a kernel driver before ClaimInterface
