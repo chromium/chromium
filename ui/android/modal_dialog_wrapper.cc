@@ -73,8 +73,8 @@ ModalDialogWrapper::ModalDialogWrapper(
     : dialog_model_(std::move(dialog_model)), window_android_(window_android) {
   dialog_model_->set_host(DialogModelHost::GetPassKey(), this);
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_obj_ = Java_ModalDialogWrapper_create(
-      env, reinterpret_cast<uintptr_t>(this), window_android_->GetJavaObject());
+  java_obj_ = Java_ModalDialogWrapper_create(env, jni_zero::MakeRaw(this),
+                                             window_android_->GetJavaObject());
 }
 
 ModalDialogWrapper::~ModalDialogWrapper() {

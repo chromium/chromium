@@ -18,7 +18,10 @@ import android.view.View;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.JniRepeatingCallback;
@@ -35,8 +38,11 @@ import java.util.ArrayList;
 @JNINamespace("ui")
 @NullMarked
 public class ModalDialogWrapper implements ModalDialogProperties.Controller {
+    @JniType("::ui::ModalDialogWrapper")
+    interface NativeModalDialogWrapper extends JniTypeToken {}
+
     /** The native-side counterpart of this class */
-    private long mNativeDelegatePtr;
+    private @Nullable JniRawPtr<NativeModalDialogWrapper> mNativeDelegatePtr;
 
     private final @Nullable ModalDialogManager mModalDialogManager;
 
@@ -47,17 +53,20 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
     private final ArrayList<JniRepeatingCallback> mLinkCallbacks = new ArrayList<>();
 
     @CalledByNative
-    private static ModalDialogWrapper create(long nativeDelegatePtr, WindowAndroid window) {
+    private static ModalDialogWrapper create(
+            JniRawPtr<NativeModalDialogWrapper> nativeDelegatePtr, WindowAndroid window) {
         return new ModalDialogWrapper(nativeDelegatePtr, window);
     }
 
     @CalledByNative
     private void clearNativePtr() {
-        assert mNativeDelegatePtr != 0;
-        mNativeDelegatePtr = 0;
+        assert mNativeDelegatePtr != null;
+        mNativeDelegatePtr.release();
+        mNativeDelegatePtr = null;
     }
 
-    private ModalDialogWrapper(long nativeDelegatePtr, WindowAndroid window) {
+    private ModalDialogWrapper(
+            JniRawPtr<NativeModalDialogWrapper> nativeDelegatePtr, WindowAndroid window) {
         mNativeDelegatePtr = nativeDelegatePtr;
         mModalDialogManager = window.getModalDialogManager();
         mContext = window.getContext().get();
@@ -155,6 +164,7 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
             Drawable iconDrawable = new BitmapDrawable(mContext.getResources(), icons[i]);
             Runnable callback =
                     () -> {
+                        if (mNativeDelegatePtr == null) return;
                         ModalDialogWrapperJni.get().menuItemClicked(mNativeDelegatePtr, index);
                     };
             menuItems.add(
@@ -172,6 +182,7 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
 
     @Override
     public void onCheckboxChecked(boolean isChecked) {
+        if (mNativeDelegatePtr == null) return;
         ModalDialogWrapperJni.get().checkboxToggled(mNativeDelegatePtr, isChecked);
     }
 
@@ -187,7 +198,7 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
 
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
-        if (mNativeDelegatePtr == 0) return;
+        if (mNativeDelegatePtr == null) return;
 
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
@@ -209,16 +220,17 @@ public class ModalDialogWrapper implements ModalDialogProperties.Controller {
 
     @NativeMethods
     interface Natives {
-        void positiveButtonClicked(long nativeModalDialogWrapper);
+        void positiveButtonClicked(JniPtr<NativeModalDialogWrapper> self);
 
-        void negativeButtonClicked(long nativeModalDialogWrapper);
+        void negativeButtonClicked(JniPtr<NativeModalDialogWrapper> self);
 
-        void checkboxToggled(long nativeModalDialogWrapper, boolean isChecked);
+        void checkboxToggled(JniPtr<NativeModalDialogWrapper> self, boolean isChecked);
 
-        void menuItemClicked(long nativeModalDialogWrapper, int index);
+        void menuItemClicked(JniPtr<NativeModalDialogWrapper> self, int index);
 
-        void dismissed(long nativeModalDialogWrapper, @DialogDismissalCause int dismissalCause);
+        void dismissed(
+                JniPtr<NativeModalDialogWrapper> self, @DialogDismissalCause int dismissalCause);
 
-        void destroy(long nativeModalDialogWrapper);
+        void destroy(JniPtr<NativeModalDialogWrapper> self);
     }
 }
