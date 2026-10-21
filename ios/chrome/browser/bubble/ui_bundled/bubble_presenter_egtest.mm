@@ -10,7 +10,6 @@
 #import "base/time/time.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
@@ -123,8 +122,6 @@ void ReloadFromOmnibox() {
   }
 
   if ([self isRunningTest:@selector(testSendTabToSelfOmniboxIPH)]) {
-    config.features_enabled.push_back(
-        send_tab_to_self::kSendTabToSelfExtraEntryPoints);
     config.additional_args.push_back(base::StrCat({
       "-", test_switches::kAddFakeIdentitiesAtStartup, "=",
           [FakeSystemIdentity

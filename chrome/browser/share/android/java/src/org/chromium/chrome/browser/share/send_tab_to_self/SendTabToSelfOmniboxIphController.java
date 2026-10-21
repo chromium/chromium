@@ -12,7 +12,6 @@ import android.view.View;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge.SendTabToSelfModelObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -51,10 +50,7 @@ public class SendTabToSelfOmniboxIphController implements SendTabToSelfModelObse
     /** Attempts to show the Send Tab to Self Omnibox IPH if eligible. */
     public void maybeShowIph() {
         Tab tab = mTabSupplier.get();
-        if (tab == null
-                || tab.isDestroyed()
-                || tab.isIncognito()
-                || !ChromeFeatureList.sSendTabToSelfExtraEntryPoints.isEnabled()) {
+        if (tab == null || tab.isDestroyed() || tab.isIncognito()) {
             return;
         }
 

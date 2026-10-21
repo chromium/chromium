@@ -26,7 +26,6 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -128,21 +127,16 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
         mIsBottomToolbarEnabled =
                 ToolbarPositionController.isToolbarPositionCustomizationEnabled(
                         context, isCustomTab);
-        boolean isSttsEnabled = ChromeFeatureList.sSendTabToSelfExtraEntryPoints.isEnabled();
-        if (mIsBottomToolbarEnabled || isSttsEnabled) {
-            mOnLongClickListener =
-                    (view) -> {
-                        if (mSuppressLongPressSupplier.getAsBoolean()) {
-                            // Do nothing if we're suppressed, e.g. if the omnibox is focused.
-                            return false;
-                        }
+        mOnLongClickListener =
+                (view) -> {
+                    if (mSuppressLongPressSupplier.getAsBoolean()) {
+                        // Do nothing if suppressed, e.g. if the omnibox is focused.
+                        return false;
+                    }
 
-                        displayMenu(view);
-                        return true;
-                    };
-        } else {
-            mOnLongClickListener = null;
-        }
+                    displayMenu(view);
+                    return true;
+                };
 
         mAppMenuShadowLength =
                 context.getResources().getDimensionPixelSize(R.dimen.app_menu_shadow_length);
@@ -261,9 +255,6 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     }
 
     private void maybeAddSendTabToSelf(ModelList itemList) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)) {
-            return;
-        }
         GURL url = mUrlSupplier.get();
         if (url == null || !mIsSendTabToSelfAvailable.test(url)) {
             return;

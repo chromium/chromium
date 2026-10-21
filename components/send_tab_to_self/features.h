@@ -25,10 +25,6 @@ BASE_DECLARE_FEATURE(kSendTabToSelfPropagateNavigationHistory);
 BASE_DECLARE_FEATURE(kSendTabToSelfSupportAutoOpenInTabGrid);
 #endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
-// If this feature is enabled, "Send to your device" entry points will be added
-// to the Omnibox context menu.
-BASE_DECLARE_FEATURE(kSendTabToSelfExtraEntryPoints);
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // If this feature is enabled, a QR code promo is shown in the Send Tab to Self
 // bubble on desktop when no target devices are found. Guarded to Windows, Mac,

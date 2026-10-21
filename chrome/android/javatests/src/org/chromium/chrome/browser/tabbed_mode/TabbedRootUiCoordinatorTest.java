@@ -1039,7 +1039,6 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testSendTabToSelfOmniboxIphOnStartup() {
         doAnswer(
                         invocation -> {
@@ -1073,7 +1072,6 @@ public class TabbedRootUiCoordinatorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testSendTabToSelfOmniboxIphOnStartup_notEligible() {
         doAnswer(
                         invocation -> {

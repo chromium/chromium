@@ -27,11 +27,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -85,7 +82,6 @@ public class SendTabToSelfOmniboxIphControllerTest {
     // --- Eligible & IPH Shown ---
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testMaybeShowIph_eligible_modelAlreadyReady_showsIphImmediately() {
         doReturn(true).when(mBridgeMock).isModelReady(eq(mProfile));
         doReturn(EntryPointDisplayReason.OFFER_FEATURE)
@@ -100,7 +96,6 @@ public class SendTabToSelfOmniboxIphControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testMaybeShowIph_eligible_modelNotReadyInitially_showsIphWhenReady() {
         doReturn(false).when(mBridgeMock).isModelReady(eq(mProfile));
         long observerPtr = 12345L;
@@ -124,15 +119,6 @@ public class SendTabToSelfOmniboxIphControllerTest {
     // --- Non-Eligible & Invalid State (No IPH Shown) ---
 
     @Test
-    @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
-    public void testMaybeShowIph_notEligible_featureDisabled() {
-        mController.maybeShowIph();
-        verify(mBridgeMock, never()).addModelObserver(any(), any());
-        verify(mTracker, never()).shouldTriggerHelpUi(any());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testMaybeShowIph_notEligible_invalidStateOrTab_noObserver() {
         mCurrentTab = null;
         mController.maybeShowIph();
@@ -150,7 +136,6 @@ public class SendTabToSelfOmniboxIphControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testMaybeShowIph_notEligible_nullDisplayReason() {
         long observerPtr = 12345L;
         doReturn(observerPtr).when(mBridgeMock).addModelObserver(eq(mProfile), eq(mController));
@@ -164,7 +149,6 @@ public class SendTabToSelfOmniboxIphControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testMaybeShowIph_notEligible_offerSignIn() {
         long observerPtr = 12345L;
         doReturn(observerPtr).when(mBridgeMock).addModelObserver(eq(mProfile), eq(mController));
@@ -180,7 +164,6 @@ public class SendTabToSelfOmniboxIphControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testMaybeShowIph_notEligible_informNoTargetDevice() {
         long observerPtr = 12345L;
         doReturn(observerPtr).when(mBridgeMock).addModelObserver(eq(mProfile), eq(mController));
@@ -196,7 +179,6 @@ public class SendTabToSelfOmniboxIphControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testOnModelReady_tabDestroyed_noIph() {
         long observerPtr = 12345L;
         doReturn(observerPtr).when(mBridgeMock).addModelObserver(eq(mProfile), eq(mController));
@@ -215,7 +197,6 @@ public class SendTabToSelfOmniboxIphControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testOnModelReady_activityFinishing_noIph() {
         long observerPtr = 12345L;
         doReturn(observerPtr).when(mBridgeMock).addModelObserver(eq(mProfile), eq(mController));
@@ -236,7 +217,6 @@ public class SendTabToSelfOmniboxIphControllerTest {
     // --- Lifecycle / Cleanup ---
 
     @Test
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testDestroy_removesModelObserver() {
         long observerPtr = 12345L;
         doReturn(observerPtr).when(mBridgeMock).addModelObserver(eq(mProfile), eq(mController));

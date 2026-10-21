@@ -46,7 +46,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -82,10 +81,7 @@ import java.util.function.BooleanSupplier;
 
 /** Unit tests for {@link ToolbarLongPressMenuHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS,
-    ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS
-})
+@DisableFeatures(ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)
 public final class ToolbarLongPressMenuHandlerUnitTest {
     private static final int URLBAR_LEFT = 100;
     private static final int URLBAR_TOP = 20;
@@ -181,12 +177,6 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
     @After
     public void tearDown() throws Exception {
         mSharedPreferencesManager.removeKey(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED);
-    }
-
-    @Test
-    @Config(qualifiers = "ldltr-sw600dp")
-    public void testNoListenerOnTablet() {
-        assertNull(mToolbarLongPressMenuHandler.getOnLongClickListener());
     }
 
     @Test
@@ -501,7 +491,6 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
     @Test
     @Restriction({DeviceFormFactor.PHONE})
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testBuildMenuItemsWithSendTabToSelf() {
         mUrl = JUnitTestGURLs.URL_1;
         ModelList list = mToolbarLongPressMenuHandler.buildMenuItems(true);
@@ -529,7 +518,6 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
     @Test
     @Restriction({DeviceFormFactor.PHONE})
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testBuildMenuItemsWithSendTabToSelf_nullUrl() {
         mUrl = null;
         ModelList list = mToolbarLongPressMenuHandler.buildMenuItems(true);
@@ -544,7 +532,6 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
     @Test
     @Restriction({DeviceFormFactor.PHONE})
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testBuildMenuItemsWithSendTabToSelf_unavailable() {
         ToolbarLongPressMenuHandler handler =
                 new ToolbarLongPressMenuHandler(
@@ -591,7 +578,6 @@ public final class ToolbarLongPressMenuHandlerUnitTest {
 
     @Test
     @Config(qualifiers = "ldltr-sw600dp")
-    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)
     public void testBuildMenuItemsOnTablet() {
         mUrl = JUnitTestGURLs.URL_1;
         assertNotNull(mToolbarLongPressMenuHandler.getOnLongClickListener());

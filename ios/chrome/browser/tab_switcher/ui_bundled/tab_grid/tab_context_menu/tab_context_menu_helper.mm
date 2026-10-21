@@ -11,7 +11,6 @@
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/data_sharing/public/group_data.h"
 #import "components/prefs/pref_service.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
@@ -452,10 +451,6 @@ using tab_groups::SharingState;
 
 // Returns `YES` if the tab `item` can be sent to another device.
 - (BOOL)canSendToYourDeviceForItem:(TabItem*)item {
-  if (!base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfExtraEntryPoints)) {
-    return NO;
-  }
   if (self.incognito) {
     return NO;
   }

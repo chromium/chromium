@@ -21,7 +21,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareUtils;
@@ -207,8 +206,6 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 tabBookmarker.addOrEditBookmark(tab);
                 recordUserActionWithPrefix("AddBookmark");
             } else if (menuId == R.id.send_tab_to_self) {
-                assert ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS);
                 assert !tab.isIncognitoBranded();
                 assumeNonNull(shareDelegateSupplier.get()).sendTabToSelf(tab);
                 recordUserActionWithPrefix("SendTabToSelf");
@@ -297,9 +294,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                             .build());
         }
 
-        if (!isIncognito
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS)) {
+        if (!isIncognito) {
             Integer sendTabToSelfDisplayReason =
                     SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
                             assumeNonNull(mTabModel.getProfile()), tab.getUrl().getSpec());

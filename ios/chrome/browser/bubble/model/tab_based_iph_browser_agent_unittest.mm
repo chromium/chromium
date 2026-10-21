@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 
-#import "base/test/scoped_feature_list.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
@@ -75,8 +73,6 @@ class TabBasedIPHBrowserAgentTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      send_tab_to_self::kSendTabToSelfExtraEntryPoints};
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FakeHelpCommandsHandler* help_handler_;
@@ -140,27 +136,6 @@ TEST_F(TabBasedIPHBrowserAgentTest,
 // active web state.
 TEST_F(TabBasedIPHBrowserAgentTest,
        SendTabToSelfOmniboxIPHNotPresentedWhenNoActiveWebState) {
-  visibility_notifier()->GetNotificationCallback().Run(
-      BrowserViewVisibilityState::kVisible,
-      BrowserViewVisibilityState::kAppearing);
-
-  EXPECT_FALSE(help_handler_.presentSendTabToSelfOmniboxCalled);
-}
-
-// Test that Send Tab to Self omnibox IPH is not presented when entry point
-// feature flag is disabled.
-TEST_F(TabBasedIPHBrowserAgentTest,
-       SendTabToSelfOmniboxIPHDisabledWhenFeatureDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      send_tab_to_self::kSendTabToSelfExtraEntryPoints);
-
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetCurrentURL(GURL("https://www.example.com"));
-  browser_->GetWebStateList()->InsertWebState(
-      std::move(web_state),
-      WebStateList::InsertionParams::AtIndex(0).Activate());
-
   visibility_notifier()->GetNotificationCallback().Run(
       BrowserViewVisibilityState::kVisible,
       BrowserViewVisibilityState::kAppearing);
