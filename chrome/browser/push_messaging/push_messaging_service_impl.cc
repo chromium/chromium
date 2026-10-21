@@ -1494,7 +1494,9 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
-  CHECK(primary_pattern.IsValid(), base::NotFatalUntil::M162);
+  // TODO(crbug.com/576029581): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(primary_pattern.IsValid());
   if (!content_type_set.Contains(ContentSettingsType::NOTIFICATIONS)) {
     return;
   }
