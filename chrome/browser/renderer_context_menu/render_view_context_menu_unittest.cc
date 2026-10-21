@@ -3314,11 +3314,11 @@ class RenderViewContextMenuOrderTest : public RenderViewContextMenuPrefsTest {
   RenderViewContextMenuOrderTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{lens::features::kLensOverlay,
-                              lens::features::kLensStandalone,
                               media::kContextMenuSearchForVideoFrame},
         /*disabled_features=*/{
-            features::kMenuSimplification, features::kReadAnythingImprovedUi,
-            features::kGlic, sharing_hub::kDesktopScreenshots});
+            lens::features::kLensStandalone, features::kMenuSimplification,
+            features::kReadAnythingImprovedUi, features::kGlic,
+            sharing_hub::kDesktopScreenshots});
   }
 
   void SetUp() override {
