@@ -383,8 +383,8 @@ class CORE_EXPORT ContentSecurityPolicy final
       const String& source = g_empty_string,
       const String& source_prefix = g_empty_string,
       std::optional<base::UnguessableToken> issue_id = std::nullopt,
-      std::optional<String> eval_hash = std::nullopt,
-      std::optional<String> url_hash = std::nullopt);
+      const String& eval_hash = String(),
+      const String& url_hash = String());
 
   // Strip a URL to make it safe to report it.
   static String StripURLForUseInReport(const SecurityOrigin* security_origin,

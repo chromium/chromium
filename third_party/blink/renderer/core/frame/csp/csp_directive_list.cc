@@ -138,8 +138,8 @@ void ReportViolation(
     const String& sample = String(),
     const String& sample_prefix = String(),
     std::optional<base::UnguessableToken> issue_id = std::nullopt,
-    std::optional<String> eval_hash = std::nullopt,
-    std::optional<String> url_hash = std::nullopt) {
+    const String& eval_hash = String(),
+    const String& url_hash = String()) {
   String message =
       StrCat({console_message,
               CSPDirectiveListIsReportOnly(csp)
@@ -204,7 +204,7 @@ void ReportEvalViolation(
     const KURL& blocked_url,
     const ContentSecurityPolicy::ExceptionStatus exception_status,
     const String& content,
-    std::optional<String> eval_hash) {
+    const String& eval_hash = String()) {
   String report_message =
       StrCat({message, CSPDirectiveListIsReportOnly(csp)
                            ? " The policy is report-only, so the violation has "
@@ -412,13 +412,10 @@ bool CheckEvalAndReportViolation(
 
   String raw_directive =
       GetRawDirectiveForMessage(csp.raw_directives, directive.type);
-  std::optional<String> hash;
+  String hash;
   if (csp_extended_script_src_hashes_enabled) {
     hash = GetEvalSha256String(content);
-    suffix =
-        StrCat({suffix, " Hash of blocked script: \"", hash.value(), "\"."});
-  } else {
-    hash = std::nullopt;
+    suffix = StrCat({suffix, " Hash of blocked script: \"", hash, "\"."});
   }
 
   // The console message will only be printed inside ReportEvalViolation if the
@@ -668,7 +665,7 @@ void ReportViolationForCheckSource(
   String raw_directive =
       GetRawDirectiveForMessage(csp.raw_directives, directive.type);
 
-  std::optional<String> url_hash;
+  String url_hash;
   if (policy && policy->ScriptSrcExtendedHashesEnabled() &&
       (effective_type == CSPDirectiveName::ScriptSrc ||
        effective_type == CSPDirectiveName::ScriptSrcElem ||
@@ -686,7 +683,7 @@ void ReportViolationForCheckSource(
               "' violates the following Content Security Policy directive: \"",
               raw_directive, "\".", suffix}),
       url_before_redirects, ContentSecurityPolicyViolationType::kURLViolation,
-      String(), String(), std::nullopt, std::nullopt, url_hash);
+      String(), String(), std::nullopt, String(), url_hash);
 }
 
 CSPCheckResult CheckSource(
