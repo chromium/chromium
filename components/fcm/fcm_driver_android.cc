@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "components/fcm/fcm_message.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/fcm/android/jni_headers/FcmBridge_jni.h"
@@ -18,7 +19,7 @@ namespace fcm {
 FcmDriverAndroid::FcmDriverAndroid() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_ref_.Reset(Java_FcmBridge_create(env, reinterpret_cast<intptr_t>(this)));
+  java_ref_.Reset(Java_FcmBridge_create(env, jni_zero::MakeRaw(this)));
   Java_FcmBridge_fetchInstallationId(env, java_ref_);
 }
 

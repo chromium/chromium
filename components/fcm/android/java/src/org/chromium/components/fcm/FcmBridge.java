@@ -8,7 +8,10 @@ import androidx.annotation.WorkerThread;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -28,11 +31,14 @@ import java.util.Map;
 @JNINamespace("fcm")
 @NullMarked
 public class FcmBridge {
+    @JniType("::fcm::FcmDriverAndroid")
+    interface NativeFcmDriverAndroid extends JniTypeToken {}
+
     private static @Nullable FcmBridge sInstance;
 
-    private long mNativeFcmDriverAndroid;
+    private @Nullable JniRawPtr<NativeFcmDriverAndroid> mNativeFcmDriverAndroid;
 
-    private FcmBridge(long nativeFcmDriverAndroid) {
+    private FcmBridge(JniRawPtr<NativeFcmDriverAndroid> nativeFcmDriverAndroid) {
         mNativeFcmDriverAndroid = nativeFcmDriverAndroid;
     }
 
@@ -42,7 +48,7 @@ public class FcmBridge {
      * @param nativeFcmDriverAndroid The C++ object that owns us.
      */
     @CalledByNative
-    static FcmBridge create(long nativeFcmDriverAndroid) {
+    static FcmBridge create(JniRawPtr<NativeFcmDriverAndroid> nativeFcmDriverAndroid) {
         assert sInstance == null : "Already instantiated";
         sInstance = new FcmBridge(nativeFcmDriverAndroid);
         return sInstance;
@@ -63,7 +69,10 @@ public class FcmBridge {
     void destroy() {
         assert sInstance == this;
         sInstance = null;
-        mNativeFcmDriverAndroid = 0;
+        if (mNativeFcmDriverAndroid != null) {
+            mNativeFcmDriverAndroid.release();
+            mNativeFcmDriverAndroid = null;
+        }
     }
 
     /** Returns the global FcmBridge instance if instantiated, or null otherwise. */
@@ -87,7 +96,7 @@ public class FcmBridge {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    if (mNativeFcmDriverAndroid != 0) {
+                    if (mNativeFcmDriverAndroid != null) {
                         FcmBridgeJni.get()
                                 .onInstallationIdRefreshed(mNativeFcmDriverAndroid, installationId);
                     }
@@ -104,28 +113,28 @@ public class FcmBridge {
     public void onMessageReceived(String messageId, Map<String, String> data, byte[] rawData) {
         // TODO(b/546476623): When Android is not in foreground mode, native library may not be
         // loaded or accessible. Handle background message dispatching or native initialization.
-        if (mNativeFcmDriverAndroid == 0) return;
+        if (mNativeFcmDriverAndroid == null) return;
 
         FcmBridgeJni.get().onMessageReceived(mNativeFcmDriverAndroid, messageId, data, rawData);
     }
 
     /** Called when messages are deleted on the server. */
     public void onMessagesDeleted() {
-        if (mNativeFcmDriverAndroid == 0) return;
+        if (mNativeFcmDriverAndroid == null) return;
         FcmBridgeJni.get().onMessagesDeleted(mNativeFcmDriverAndroid);
     }
 
     @NativeMethods
     interface Natives {
         void onInstallationIdRefreshed(
-                long nativeFcmDriverAndroid, @JniType("std::string") String installationId);
+                JniPtr<NativeFcmDriverAndroid> self, @JniType("std::string") String installationId);
 
         void onMessageReceived(
-                long nativeFcmDriverAndroid,
+                JniPtr<NativeFcmDriverAndroid> self,
                 @JniType("std::string") String messageId,
                 @JniType("std::map<std::string, std::string>") Map<String, String> data,
                 @JniType("std::vector<uint8_t>") byte[] rawData);
 
-        void onMessagesDeleted(long nativeFcmDriverAndroid);
+        void onMessagesDeleted(JniPtr<NativeFcmDriverAndroid> self);
     }
 }

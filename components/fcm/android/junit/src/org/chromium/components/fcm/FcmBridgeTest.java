@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,10 +26,10 @@ import java.util.Map;
 /** Unit tests for {@link FcmBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FcmBridgeTest {
-    private static final long NATIVE_DRIVER_PTR = 12345L;
     private static final String TEST_MESSAGE_ID = "test_message_id";
 
     @Mock private FcmBridge.Natives mMockNative;
+    @Mock private JniRawPtr<FcmBridge.NativeFcmDriverAndroid> mNativeDriverPtr;
     @Mock private FcmManager mMockFcmManager;
 
     private FcmBridge mBridge;
@@ -38,7 +39,7 @@ public class FcmBridgeTest {
         MockitoAnnotations.openMocks(this);
         FcmBridgeJni.setInstanceForTesting(mMockNative);
         FcmManager.setInstanceForTesting(mMockFcmManager);
-        mBridge = FcmBridge.create(NATIVE_DRIVER_PTR);
+        mBridge = FcmBridge.create(mNativeDriverPtr);
     }
 
     @After
@@ -61,14 +62,14 @@ public class FcmBridgeTest {
 
         mBridge.onMessageReceived(TEST_MESSAGE_ID, data, rawData);
 
-        verify(mMockNative).onMessageReceived(NATIVE_DRIVER_PTR, TEST_MESSAGE_ID, data, rawData);
+        verify(mMockNative).onMessageReceived(mNativeDriverPtr, TEST_MESSAGE_ID, data, rawData);
     }
 
     @Test
     public void testOnMessagesDeleted() {
         mBridge.onMessagesDeleted();
 
-        verify(mMockNative).onMessagesDeleted(NATIVE_DRIVER_PTR);
+        verify(mMockNative).onMessagesDeleted(mNativeDriverPtr);
     }
 
     @Test
@@ -86,6 +87,6 @@ public class FcmBridgeTest {
         // Wait for the background worker task and the subsequent UI-thread callback to finish.
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
-        verify(mMockNative).onInstallationIdRefreshed(NATIVE_DRIVER_PTR, "test_installation_id");
+        verify(mMockNative).onInstallationIdRefreshed(mNativeDriverPtr, "test_installation_id");
     }
 }
