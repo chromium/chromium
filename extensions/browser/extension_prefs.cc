@@ -2246,6 +2246,7 @@ void ExtensionPrefs::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       pref_names::kExtensionInstallCloudPolicyChecksEnabled,
       /*default_value=*/false);
+  registry->RegisterDictionaryPref(pref_names::kGlobalShortcutsPortalState);
 }
 
 // static

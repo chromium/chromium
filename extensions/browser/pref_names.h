@@ -170,6 +170,11 @@ inline constexpr char kPrefIncognitoContentSettings[] =
 inline constexpr char kGlobalShortcutsUuid[] =
     "extensions.global_shortcuts.uuid";
 
+// A local state dictionary of the global shortcuts that have been offered to
+// org.freedesktop.portal.GlobalShortcuts, for all profiles.
+inline constexpr char kGlobalShortcutsPortalState[] =
+    "extensions.global_shortcuts.portal_state";
+
 // Boolean that specifies whether ExtensionInstallCloudPolicyChecks is enabled.
 // This pref is used by both the profile and the browser, it can be found in the
 // local state as well as the profile prefs.

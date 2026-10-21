@@ -18,6 +18,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "components/dbus/xdg/portal.h"
 #include "components/dbus/xdg/request.h"
@@ -33,6 +34,9 @@
 namespace ui {
 
 namespace {
+
+constexpr char kStateDescriptionKey[] = "description";
+constexpr char kStateStateKey[] = "state";
 
 template <typename T>
 std::optional<T> TakeFromDict(dbus_xdg::Dictionary& dict,
@@ -193,6 +197,7 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
            !global_ids.contains(pair.first);
   };
   std::erase_if(bound_commands_, is_stale);
+  std::erase_if(offered_shortcuts_, is_stale);
   std::erase_if(untracked_shortcuts_, [&](const auto& pair) {
     return pair.first.starts_with(id_prefix);
   });
@@ -206,9 +211,28 @@ void GlobalAcceleratorListenerLinux::OnCommandsChanged(
     bc.command = command;
     bc.accelerator_group_id = accelerator_group_id;
     bc.execute_command = execute_command;
+
+    offered_shortcuts_[id].description = GetDescription(command);
   }
 
+  SaveState();
   MaybeBind();
+}
+
+void GlobalAcceleratorListenerLinux::SetStateStore(
+    std::unique_ptr<StateStore> store) {
+  if (state_store_ || !store) {
+    return;
+  }
+  // The store must be set before any commands are loaded, so that the loaded
+  // state doesn't need to be merged with the commands.
+  CHECK(loaded_prefixes_.empty());
+  CHECK(offered_shortcuts_.empty());
+  state_store_ = std::move(store);
+  LoadState();
+  // Don't bind yet. Shortcuts whose owner isn't loaded don't need to be
+  // activated, and they're included in the bind triggered by the next
+  // OnCommandsChanged().
 }
 
 void GlobalAcceleratorListenerLinux::MaybeBind() {
@@ -295,18 +319,27 @@ void GlobalAcceleratorListenerLinux::OnListShortcuts(
   if (shortcuts) {
     for (auto& [id, properties] : *shortcuts) {
       listed_ids.insert(id);
-      if (IsIdOfLoadedGroup(id)) {
-        // Either a global command of a loaded group, which is bound anyway, or
-        // a non-global command bound by an older version.
+      auto it = offered_shortcuts_.find(id);
+      if (it != offered_shortcuts_.end()) {
+        // The backend already knows this shortcut, so binding it again won't
+        // show a dialog.
+        it->second.state = OfferState::kKnown;
         continue;
       }
-      // A shortcut of a group that isn't loaded, e.g. of another profile. Pass
-      // it through to BindShortcuts so that it isn't removed from the portal.
+      if (IsIdOfLoadedGroup(id)) {
+        // A shortcut of a loaded group that is no longer global, or that was
+        // bound by an older version that also bound non-global commands.
+        continue;
+      }
+      // A shortcut that isn't tracked, e.g. one bound by an older version that
+      // didn't persist offered shortcuts. Pass it through to BindShortcuts so
+      // that it isn't removed from the portal.
       auto description = TakeFromDict<std::string>(properties, "description");
       untracked_shortcuts_[id] =
           description && !description->empty() ? *description : id;
     }
   }
+  SaveState();
 
   const base::flat_set<std::string> ids_to_bind = GetIdsToBind();
   if (ids_to_bind.empty()) {
@@ -355,13 +388,21 @@ void GlobalAcceleratorListenerLinux::BindShortcuts(std::string parent_handle) {
   for (const std::string& id : ids_to_bind) {
     dbus_xdg::Dictionary& props = shortcut_map[id];
     props.clear();
-    const ui::Command& command = bound_commands_.at(id).command;
-    props["description"] =
-        dbus_utils::Variant::Wrap<"s">(GetDescription(command));
-    std::string trigger = AcceleratorToXdgShortcut(command.accelerator());
-    if (set_preferred_trigger_ && !trigger.empty()) {
-      props["preferred_trigger"] =
-          dbus_utils::Variant::Wrap<"s">(std::move(trigger));
+    auto bound_it = bound_commands_.find(id);
+    if (bound_it != bound_commands_.end()) {
+      const ui::Command& command = bound_it->second.command;
+      props["description"] =
+          dbus_utils::Variant::Wrap<"s">(GetDescription(command));
+      std::string trigger = AcceleratorToXdgShortcut(command.accelerator());
+      if (set_preferred_trigger_ && !trigger.empty()) {
+        props["preferred_trigger"] =
+            dbus_utils::Variant::Wrap<"s">(std::move(trigger));
+      }
+    } else {
+      // The owner of the shortcut isn't loaded, so only include it to keep it
+      // stored in the portal.
+      props["description"] = dbus_utils::Variant::Wrap<"s">(
+          std::string(offered_shortcuts_.at(id).description));
     }
   }
 
@@ -398,7 +439,15 @@ void GlobalAcceleratorListenerLinux::OnBindShortcuts(
   base::flat_set<std::string> bound_ids = std::move(pending_bind_ids_);
   pending_bind_ids_.clear();
 
-  if (!results.has_value()) {
+  if (results.has_value()) {
+    for (const std::string& id : bound_ids) {
+      auto it = offered_shortcuts_.find(id);
+      if (it != offered_shortcuts_.end()) {
+        it->second.state = OfferState::kKnown;
+      }
+    }
+    SaveState();
+  } else {
     LOG(ERROR) << "Failed to call BindShortcuts (error code "
                << static_cast<int>(results.error()) << ").";
   }
@@ -446,6 +495,8 @@ void GlobalAcceleratorListenerLinux::OnSignalConnected(
 }
 
 void GlobalAcceleratorListenerLinux::PruneStaleCommands() {
+  // The shortcuts stay in `offered_shortcuts_` so that they remain stored in
+  // the portal while their owner isn't loaded.
   std::erase_if(bound_commands_, [](const auto& pair) {
     return pair.second.execute_command.IsCancelled();
   });
@@ -454,8 +505,8 @@ void GlobalAcceleratorListenerLinux::PruneStaleCommands() {
 base::flat_set<std::string> GlobalAcceleratorListenerLinux::GetIdsToBind()
     const {
   std::vector<std::string> ids;
-  ids.reserve(bound_commands_.size());
-  for (const auto& [id, bound_command] : bound_commands_) {
+  ids.reserve(offered_shortcuts_.size());
+  for (const auto& [id, offered] : offered_shortcuts_) {
     ids.push_back(id);
   }
   return base::flat_set<std::string>(std::move(ids));
@@ -472,6 +523,41 @@ bool GlobalAcceleratorListenerLinux::IsIdOfLoadedGroup(
   return std::ranges::any_of(loaded_prefixes_, [&](const std::string& prefix) {
     return id.starts_with(prefix);
   });
+}
+
+void GlobalAcceleratorListenerLinux::LoadState() {
+  if (!state_store_) {
+    return;
+  }
+  base::DictValue state = state_store_->Load();
+  for (auto [id, value] : state) {
+    const base::DictValue* entry = value.GetIfDict();
+    if (!entry) {
+      continue;
+    }
+    const std::string* description = entry->FindString(kStateDescriptionKey);
+    std::optional<int> state_value = entry->FindInt(kStateStateKey);
+    if (!description || !state_value ||
+        *state_value < static_cast<int>(OfferState::kNew) ||
+        *state_value > static_cast<int>(OfferState::kKnown)) {
+      continue;
+    }
+    offered_shortcuts_[id] = {*description,
+                              static_cast<OfferState>(*state_value)};
+  }
+}
+
+void GlobalAcceleratorListenerLinux::SaveState() {
+  if (!state_store_) {
+    return;
+  }
+  base::DictValue state;
+  for (const auto& [id, offered] : offered_shortcuts_) {
+    state.Set(id, base::DictValue()
+                      .Set(kStateDescriptionKey, offered.description)
+                      .Set(kStateStateKey, static_cast<int>(offered.state)));
+  }
+  state_store_->Save(std::move(state));
 }
 
 }  // namespace ui

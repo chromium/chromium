@@ -43,8 +43,9 @@ namespace ui {
 // Portal backends differ in behavior: some only report shortcuts bound in the
 // current session from ListShortcuts, most require BindShortcuts in every
 // session to activate shortcuts, and every BindShortcuts call replaces the set
-// of shortcuts stored for the app. This class binds only global commands, and
-// keeps listed shortcuts of accelerator groups that aren't loaded.
+// of shortcuts stored for the app. To avoid showing a dialog on every browser
+// start, this class binds the complete, stable set of every global shortcut
+// that has been offered (persisted with a StateStore).
 class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
     GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
  public:
@@ -90,6 +91,21 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
     kBound,
   };
 
+  // The state of a shortcut that has been offered to the portal. The integer
+  // values are persisted, so they must not be changed.
+  enum class OfferState {
+    // Not yet accepted by the portal. Binding it may show a dialog.
+    kNew = 0,
+    // Successfully bound in this or a previous session, or reported by
+    // ListShortcuts. Binding it again should not show a dialog.
+    kKnown = 1,
+  };
+
+  struct OfferedShortcut {
+    std::string description;
+    OfferState state = OfferState::kNew;
+  };
+
   struct BoundCommand {
     BoundCommand();
     ~BoundCommand();
@@ -120,6 +136,7 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
       base::RepeatingCallback<void(const std::string&, const std::string&)>
           execute_command) override;
   void PruneStaleCommands() override;
+  void SetStateStore(std::unique_ptr<StateStore> store) override;
 
   void OnCreateSessionResponse(dbus_xdg::Session* session);
   void OnListShortcuts(
@@ -147,7 +164,10 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
   // shortcuts returned by GetIdsToBind() are bound.
   void MaybeBind();
 
-  // Returns the IDs of the shortcuts that should be bound to the portal.
+  // Returns the IDs of the shortcuts that should be bound to the portal. This
+  // includes shortcuts whose owner isn't currently loaded (e.g. another
+  // profile), since every BindShortcuts call replaces the set of shortcuts that
+  // the portal has stored for the app.
   base::flat_set<std::string> GetIdsToBind() const;
 
   // Returns true if GetIdsToBind() contains an ID that isn't in `ids`.
@@ -156,6 +176,11 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
   // Returns true if `id` belongs to an accelerator group that has been loaded
   // in this session.
   bool IsIdOfLoadedGroup(const std::string& id) const;
+
+  // Loads `offered_shortcuts_` from `state_store_`. Must be called before any
+  // commands are loaded.
+  void LoadState();
+  void SaveState();
 
   // DBus components.
   scoped_refptr<dbus::Bus> bus_;
@@ -174,9 +199,15 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
   // by shortcut ID.
   std::map<std::string, BoundCommand> bound_commands_;
 
-  // Shortcuts reported by ListShortcuts whose accelerator group isn't loaded,
-  // e.g. shortcuts of other profiles. Maps ID to description. These are passed
-  // through to BindShortcuts so they aren't dropped by the portal.
+  // Every global shortcut that has been offered to the portal, keyed by
+  // shortcut ID. This is persisted with `state_store_` so that shortcuts whose
+  // owner isn't loaded are still included in BindShortcuts calls.
+  std::map<std::string, OfferedShortcut> offered_shortcuts_;
+
+  // Shortcuts reported by ListShortcuts that aren't tracked in
+  // `offered_shortcuts_`, e.g. shortcuts registered before
+  // `offered_shortcuts_` was persisted. Maps ID to description. These are
+  // passed through to BindShortcuts so they aren't dropped by the portal.
   std::map<std::string, std::string> untracked_shortcuts_;
 
   // Shortcut ID prefixes (including the trailing "-") of the accelerator
@@ -190,6 +221,8 @@ class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
 
   // IDs sent in the in-flight BindShortcuts call.
   base::flat_set<std::string> pending_bind_ids_;
+
+  std::unique_ptr<StateStore> state_store_;
 
   base::WeakPtrFactory<GlobalAcceleratorListenerLinux> weak_ptr_factory_{this};
 };

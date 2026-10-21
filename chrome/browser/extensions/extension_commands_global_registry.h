@@ -104,6 +104,9 @@ class ExtensionCommandsGlobalRegistry
   // and NULL otherwise.
   raw_ptr<ExtensionKeybindingRegistry> registry_for_active_window_;
 
+  // Whether a StateStore has been passed to the global accelerator listener.
+  bool state_store_set_ = false;
+
   // Must be last.
   base::WeakPtrFactory<ExtensionCommandsGlobalRegistry> weak_ptr_factory_{this};
 };

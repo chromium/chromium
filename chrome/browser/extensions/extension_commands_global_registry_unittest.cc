@@ -7,8 +7,10 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/functional/callback.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -120,6 +122,11 @@ class FakeGlobalAcceleratorListener : public ui::GlobalAcceleratorListener {
 
   void PruneStaleCommands() override {}
 
+  void SetStateStore(std::unique_ptr<StateStore> store) override {
+    ++set_state_store_count_;
+    state_store_ = std::move(store);
+  }
+
   void OnCommandsChanged(const std::string& extension_id,
                          const std::string& profile_id,
                          const ui::CommandMap& commands,
@@ -143,8 +150,13 @@ class FakeGlobalAcceleratorListener : public ui::GlobalAcceleratorListener {
     registration_handled_externally_ = value;
   }
 
+  int set_state_store_count() const { return set_state_store_count_; }
+  StateStore* state_store() { return state_store_.get(); }
+
  private:
   bool registration_handled_externally_ = false;
+  int set_state_store_count_ = 0;
+  std::unique_ptr<StateStore> state_store_;
   ExecuteCommandCallback last_execute_command_callback_;
   ui::CommandMap last_commands_;
 };
@@ -374,6 +386,29 @@ TEST_F(ExtensionCommandsGlobalRegistryTest,
   auto it_hijack = commands.find("hijack_ctrl_t");
   ASSERT_NE(it_hijack, commands.end());
   EXPECT_EQ(ui::VKEY_UNKNOWN, it_hijack->second.accelerator().key_code());
+}
+
+// Tests that the listener is given a StateStore backed by local state once.
+TEST_F(ExtensionCommandsGlobalRegistryTest, SetsStateStoreOnce) {
+  auto extension1 =
+      BuildAndEnableExtension("abcdefghijklmnopabcdefghijklmnop",
+                              std::string(kManifestWithUnsanitizedShortcuts));
+  ASSERT_TRUE(extension1);
+  auto extension2 =
+      BuildAndEnableExtension("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+                              std::string(kManifestWithRegularCommand));
+  ASSERT_TRUE(extension2);
+
+  EnableExternalHandlingAndUpdate(extension1.get());
+  EnableExternalHandlingAndUpdate(extension2.get());
+  EXPECT_EQ(listener().set_state_store_count(), 1);
+
+  auto* store = listener().state_store();
+  ASSERT_TRUE(store);
+  base::DictValue state;
+  state.Set("id", base::DictValue().Set("state", 1));
+  store->Save(state.Clone());
+  EXPECT_EQ(store->Load(), state);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
