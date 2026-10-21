@@ -13,14 +13,16 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_path_override.h"
-#include "base/test/task_environment.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/child_module/child_module_helper.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -65,20 +67,27 @@ class ChildModuleManagerTest : public testing::Test {
         .renderer_binary_path = GetRendererBinaryPath(modules_dir_, version)};
   }
 
+  // Selects and returns a module for a freshly instantiated RenderProcessHost.
+  std::optional<ChildModuleManager::Module> SelectModuleForNewHost() {
+    content::MockRenderProcessHost host(&profile_);
+    return manager_->SelectModuleForProcess(host.GetID()).CopyAsOptional();
+  }
+
   // Stand in for the browser, which sets the directory at startup.
   std::optional<base::ScopedPathOverride> child_module_root_override_{
       chrome::DIR_CHILD_MODULE_ROOT};
   // The directory in which the manager is expected to look for versions.
   const base::FilePath modules_dir_ =
       base::PathService::CheckedGet(chrome::DIR_CHILD_MODULE_ROOT);
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
   std::optional<ChildModuleManager> manager_;
 };
 
 TEST_F(ChildModuleManagerTest, NoVersionsYieldsNullopt) {
   CreateManager();
 
-  EXPECT_EQ(manager_->GetLatestModule(), std::nullopt);
+  EXPECT_EQ(SelectModuleForNewHost(), std::nullopt);
   EXPECT_THAT(manager_->GetAvailableVersionsForTesting(), IsEmpty());
 }
 
@@ -87,7 +96,7 @@ TEST_F(ChildModuleManagerTest, NoModulesDirYieldsNullopt) {
 
   CreateManager();
 
-  EXPECT_EQ(manager_->GetLatestModule(), std::nullopt);
+  EXPECT_EQ(SelectModuleForNewHost(), std::nullopt);
   EXPECT_THAT(manager_->GetAvailableVersionsForTesting(), IsEmpty());
 }
 
@@ -98,7 +107,7 @@ TEST_F(ChildModuleManagerTest, DetectsPreStagedVersionOnStartup) {
   CreateManager();
 
   ASSERT_OK_AND_ASSIGN(ChildModuleManager::Module latest,
-                       manager_->GetLatestModule());
+                       SelectModuleForNewHost());
   EXPECT_EQ(latest, ExpectedModule(kVersion));
   EXPECT_TRUE(modules_dir_.IsParent(latest.renderer_binary_path));
 }
@@ -114,8 +123,7 @@ TEST_F(ChildModuleManagerTest, SelectsHighestVersion) {
 
   CreateManager();
 
-  EXPECT_THAT(manager_->GetLatestModule(),
-              Optional(ExpectedModule(kVersion52)));
+  EXPECT_THAT(SelectModuleForNewHost(), Optional(ExpectedModule(kVersion52)));
   EXPECT_THAT(manager_->GetAvailableVersionsForTesting(),
               ElementsAre(kVersion52, kVersion51, kVersion50));
 }
@@ -139,32 +147,31 @@ TEST_F(ChildModuleManagerTest, IgnoresInvalidDirectories) {
 
   CreateManager();
 
-  EXPECT_EQ(manager_->GetLatestModule(), std::nullopt);
+  EXPECT_EQ(SelectModuleForNewHost(), std::nullopt);
   EXPECT_THAT(manager_->GetAvailableVersionsForTesting(), IsEmpty());
 }
 
 TEST_F(ChildModuleManagerTest, DetectsDynamicallyAddedVersion) {
   const base::Version kVersion("147.0.7727.55");
   CreateManager();
-  EXPECT_EQ(manager_->GetLatestModule(), std::nullopt);
+  EXPECT_EQ(SelectModuleForNewHost(), std::nullopt);
 
   StageVersion(kVersion);
 
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return manager_->GetLatestModule() == ExpectedModule(kVersion);
-  }));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return SelectModuleForNewHost() == ExpectedModule(kVersion); }));
 }
 
 TEST_F(ChildModuleManagerTest, DetectsDynamicallyRemovedVersion) {
   const base::Version kVersion("147.0.7727.55");
   base::FilePath dir = StageVersion(kVersion);
   CreateManager();
-  EXPECT_THAT(manager_->GetLatestModule(), Optional(ExpectedModule(kVersion)));
+  EXPECT_THAT(SelectModuleForNewHost(), Optional(ExpectedModule(kVersion)));
 
   ASSERT_TRUE(base::DeletePathRecursively(dir));
 
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return manager_->GetLatestModule() == std::nullopt; }));
+      [&]() { return SelectModuleForNewHost() == std::nullopt; }));
 }
 
 TEST_F(ChildModuleManagerTest, DetectsDynamicallyRemovedVersionWithFallback) {
@@ -174,13 +181,12 @@ TEST_F(ChildModuleManagerTest, DetectsDynamicallyRemovedVersionWithFallback) {
   StageVersion(kVersion50);
   base::FilePath dir55 = StageVersion(kVersion55);
   CreateManager();
-  EXPECT_THAT(manager_->GetLatestModule(),
-              Optional(ExpectedModule(kVersion55)));
+  EXPECT_THAT(SelectModuleForNewHost(), Optional(ExpectedModule(kVersion55)));
 
   ASSERT_TRUE(base::DeletePathRecursively(dir55));
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return manager_->GetLatestModule() == ExpectedModule(kVersion50);
+    return SelectModuleForNewHost() == ExpectedModule(kVersion50);
   }));
   EXPECT_THAT(manager_->GetAvailableVersionsForTesting(),
               ElementsAre(kVersion50));
@@ -189,19 +195,18 @@ TEST_F(ChildModuleManagerTest, DetectsDynamicallyRemovedVersionWithFallback) {
 TEST_F(ChildModuleManagerTest, DetectsVersionWhenManifestAppearsLater) {
   const base::Version kVersion("147.0.7727.55");
   CreateManager();
-  EXPECT_EQ(manager_->GetLatestModule(), std::nullopt);
+  EXPECT_EQ(SelectModuleForNewHost(), std::nullopt);
 
   // Create version directory without the manifest sentinel.
   base::FilePath dir = StageVersion(kVersion, /*with_manifest=*/false);
-  EXPECT_EQ(manager_->GetLatestModule(), std::nullopt);
+  EXPECT_EQ(SelectModuleForNewHost(), std::nullopt);
 
   // Writing the manifest later must be caught by the recursive watcher and
   // trigger a new scan.
   EXPECT_TRUE(base::WriteFile(GetManifestPath(dir), ""));
 
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return manager_->GetLatestModule() == ExpectedModule(kVersion);
-  }));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return SelectModuleForNewHost() == ExpectedModule(kVersion); }));
 }
 
 TEST_F(ChildModuleManagerTest, IgnoresManifestWhenItIsADirectory) {
@@ -211,7 +216,7 @@ TEST_F(ChildModuleManagerTest, IgnoresManifestWhenItIsADirectory) {
   ASSERT_TRUE(base::CreateDirectory(GetManifestPath(dir)));
 
   CreateManager();
-  EXPECT_EQ(manager_->GetLatestModule(), std::nullopt);
+  EXPECT_EQ(SelectModuleForNewHost(), std::nullopt);
   EXPECT_THAT(manager_->GetAvailableVersionsForTesting(), IsEmpty());
 }
 
@@ -227,7 +232,7 @@ TEST_F(ChildModuleManagerTest, IgnoresSymbolicLinks) {
   ASSERT_TRUE(base::CreateSymbolicLink(target, symlink));
 
   CreateManager();
-  EXPECT_EQ(manager_->GetLatestModule(), std::nullopt);
+  EXPECT_EQ(SelectModuleForNewHost(), std::nullopt);
   EXPECT_THAT(manager_->GetAvailableVersionsForTesting(), IsEmpty());
 }
 #endif  // BUILDFLAG(IS_POSIX)
@@ -237,7 +242,7 @@ TEST_F(ChildModuleManagerTest, NonExistentDirectoryGraceful) {
 
   CreateManager();
 
-  EXPECT_EQ(manager_->GetLatestModule(), std::nullopt);
+  EXPECT_EQ(SelectModuleForNewHost(), std::nullopt);
   EXPECT_THAT(manager_->GetAvailableVersionsForTesting(), IsEmpty());
 }
 
@@ -249,7 +254,7 @@ TEST_F(ChildModuleManagerTest, DisabledByPolicyOnStartup) {
 
   CreateManager();
 
-  EXPECT_EQ(manager_->GetLatestModule(), std::nullopt);
+  EXPECT_EQ(SelectModuleForNewHost(), std::nullopt);
   EXPECT_THAT(manager_->GetAvailableVersionsForTesting(),
               ElementsAre(kVersion));
 }
@@ -262,19 +267,94 @@ TEST_F(ChildModuleManagerTest, DynamicallyToggledByPolicy) {
   StageVersion(kVersion);
 
   CreateManager();
-  EXPECT_THAT(manager_->GetLatestModule(), Optional(ExpectedModule(kVersion)));
+  EXPECT_THAT(SelectModuleForNewHost(), Optional(ExpectedModule(kVersion)));
   EXPECT_THAT(manager_->GetAvailableVersionsForTesting(),
               ElementsAre(kVersion));
 
   local_state->SetBoolean(prefs::kDynamicPatchingEnabled, false);
-  EXPECT_EQ(manager_->GetLatestModule(), std::nullopt);
+  EXPECT_EQ(SelectModuleForNewHost(), std::nullopt);
   EXPECT_THAT(manager_->GetAvailableVersionsForTesting(),
               ElementsAre(kVersion));
 
   local_state->SetBoolean(prefs::kDynamicPatchingEnabled, true);
-  EXPECT_THAT(manager_->GetLatestModule(), Optional(ExpectedModule(kVersion)));
+  EXPECT_THAT(SelectModuleForNewHost(), Optional(ExpectedModule(kVersion)));
   EXPECT_THAT(manager_->GetAvailableVersionsForTesting(),
               ElementsAre(kVersion));
+}
+
+TEST_F(ChildModuleManagerTest, SelectAndGetModuleForProcess) {
+  const base::Version kVersion50("147.0.7727.50");
+  const base::Version kVersion55("147.0.7727.55");
+  StageVersion(kVersion50);
+  CreateManager();
+
+  content::MockRenderProcessHost host(&profile_);
+  EXPECT_EQ(manager_->GetModuleForProcess(host.GetID()).CopyAsOptional(),
+            std::nullopt);
+
+  EXPECT_THAT(manager_->SelectModuleForProcess(host.GetID()).CopyAsOptional(),
+              Optional(ExpectedModule(kVersion50)));
+  EXPECT_THAT(manager_->GetModuleForProcess(host.GetID()).CopyAsOptional(),
+              Optional(ExpectedModule(kVersion50)));
+
+  // Staging a newer version updates subsequent process selections, while `host`
+  // retains the module selected for its launch.
+  StageVersion(kVersion55);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return SelectModuleForNewHost() == ExpectedModule(kVersion55);
+  }));
+  EXPECT_THAT(manager_->GetModuleForProcess(host.GetID()).CopyAsOptional(),
+              Optional(ExpectedModule(kVersion50)));
+}
+
+TEST_F(ChildModuleManagerTest,
+       ReselectingModuleForReusedProcessUpdatesAndClearsAssociation) {
+  const base::Version kVersion50("147.0.7727.50");
+  const base::Version kVersion55("147.0.7727.55");
+  StageVersion(kVersion50);
+  CreateManager();
+
+  content::MockRenderProcessHost host(&profile_);
+  EXPECT_THAT(manager_->SelectModuleForProcess(host.GetID()).CopyAsOptional(),
+              Optional(ExpectedModule(kVersion50)));
+  EXPECT_THAT(manager_->GetModuleForProcess(host.GetID()).CopyAsOptional(),
+              Optional(ExpectedModule(kVersion50)));
+
+  // When a reused RenderProcessHost launches a new renderer process after a
+  // newer version is staged, SelectModuleForProcess() updates its association.
+  StageVersion(kVersion55);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return manager_->GetAvailableVersionsForTesting().contains(kVersion55);
+  }));
+  EXPECT_THAT(manager_->SelectModuleForProcess(host.GetID()).CopyAsOptional(),
+              Optional(ExpectedModule(kVersion55)));
+  EXPECT_THAT(manager_->GetModuleForProcess(host.GetID()).CopyAsOptional(),
+              Optional(ExpectedModule(kVersion55)));
+
+  // If dynamic patching is disabled on a subsequent launch of the same host,
+  // SelectModuleForProcess() clears the previous association.
+  g_browser_process->local_state()->SetBoolean(prefs::kDynamicPatchingEnabled,
+                                               false);
+  EXPECT_EQ(manager_->SelectModuleForProcess(host.GetID()).CopyAsOptional(),
+            std::nullopt);
+  EXPECT_EQ(manager_->GetModuleForProcess(host.GetID()).CopyAsOptional(),
+            std::nullopt);
+}
+
+TEST_F(ChildModuleManagerTest, GetModuleForUnknownProcessIdReturnsNullopt) {
+  const base::Version kVersion("147.0.7727.51");
+  StageVersion(kVersion);
+  CreateManager();
+
+  EXPECT_EQ(manager_->SelectModuleForProcess(content::ChildProcessId())
+                .CopyAsOptional(),
+            std::nullopt);
+  EXPECT_EQ(
+      manager_->GetModuleForProcess(content::ChildProcessId()).CopyAsOptional(),
+      std::nullopt);
+  EXPECT_EQ(manager_->GetModuleForProcess(content::ChildProcessId(999999))
+                .CopyAsOptional(),
+            std::nullopt);
 }
 
 }  // namespace child_module

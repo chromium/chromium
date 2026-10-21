@@ -531,8 +531,7 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
 
   return GetContentClient()->browser()->PreSpawnChild(
       config, sandbox_type_,
-      ContentBrowserClient::ChildSpawnFlags::kChildSpawnFlagNone,
-      /*child_module=*/std::nullopt);
+      ContentBrowserClient::ChildSpawnFlags::kChildSpawnFlagNone);
 }
 
 bool UtilitySandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {

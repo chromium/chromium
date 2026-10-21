@@ -1012,16 +1012,15 @@ std::unique_ptr<NavigationUIData> ContentBrowserClient::GetNavigationUIData(
 
 #if BUILDFLAG(IS_WIN)
 
-bool ContentBrowserClient::PreSpawnChild(
-    sandbox::TargetConfig* config,
-    sandbox::mojom::Sandbox sandbox_type,
-    ChildSpawnFlags flags,
-    base::optional_ref<const ChildModule> child_module) {
+bool ContentBrowserClient::PreSpawnChild(sandbox::TargetConfig* config,
+                                         sandbox::mojom::Sandbox sandbox_type,
+                                         ChildSpawnFlags flags) {
   return true;
 }
 
-std::optional<ContentBrowserClient::ChildModule>
-ContentBrowserClient::GetChildModule() {
+std::optional<ContentBrowserClient::RendererSandboxPolicyExtension>
+ContentBrowserClient::GetRendererSandboxPolicyExtension(
+    ChildProcessId render_process_id) {
   return std::nullopt;
 }
 
@@ -1773,7 +1772,9 @@ bool ContentBrowserClient::IsContentSchemeURLNavigationAllowed(
 }
 #endif
 
-base::FilePath ContentBrowserClient::GetChildProcessPath(int flags) {
+base::FilePath ContentBrowserClient::GetChildProcessPath(
+    int flags,
+    ChildProcessId child_process_id) {
   return base::FilePath();
 }
 

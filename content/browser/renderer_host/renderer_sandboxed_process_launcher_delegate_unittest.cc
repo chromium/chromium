@@ -8,11 +8,11 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/types/optional_ref.h"
-#include "base/version.h"
 #include "base/win/windows_version.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -34,8 +34,6 @@
 namespace content::sandbox::policy {
 
 namespace {
-
-using ::testing::Optional;
 
 class TestAppContainer final : public ::sandbox::AppContainer {
  public:
@@ -103,7 +101,11 @@ class TestTargetConfig : public ::sandbox::TargetConfig {
     return ::sandbox::SBOX_ALL_OK;
   }
   ::sandbox::ResultCode AllowExtraDll(std::wstring_view path) override {
+    allowed_extra_dlls_.emplace_back(path);
     return ::sandbox::SBOX_ALL_OK;
+  }
+  const std::vector<std::wstring>& allowed_extra_dlls() const {
+    return allowed_extra_dlls_;
   }
   ::sandbox::ResultCode SetFakeGdiInit() override {
     return ::sandbox::SBOX_ALL_OK;
@@ -167,6 +169,7 @@ class TestTargetConfig : public ::sandbox::TargetConfig {
  private:
   std::optional<std::wstring> security_attribute_name_;
   std::vector<std::wstring> blocklisted_dlls_;
+  std::vector<std::wstring> allowed_extra_dlls_;
   std::unique_ptr<TestAppContainer> app_container_;
 };
 
@@ -190,27 +193,35 @@ class TestTargetPolicy : public ::sandbox::TargetPolicy {
   TestTargetConfig config_;
 };
 
-class ChildModuleTestBrowserClient : public content::ContentBrowserClient {
+class SandboxPolicyExtensionTestBrowserClient
+    : public content::ContentBrowserClient {
  public:
-  void set_child_module(std::optional<ChildModule> child_module) {
-    child_module_ = std::move(child_module);
+  void set_sandbox_policy_extension(
+      std::optional<RendererSandboxPolicyExtension> extension) {
+    sandbox_policy_extension_ = std::move(extension);
   }
-  const std::optional<ChildModule>& last_pre_spawn_child_module() const {
-    return last_pre_spawn_child_module_;
+  bool pre_spawn_child_called() const { return pre_spawn_child_called_; }
+
+  std::optional<RendererSandboxPolicyExtension>
+  GetRendererSandboxPolicyExtension(
+      content::ChildProcessId render_process_id) override {
+    last_render_process_id_ = render_process_id;
+    return sandbox_policy_extension_;
   }
-  std::optional<ChildModule> GetChildModule() override { return child_module_; }
-  bool PreSpawnChild(
-      ::sandbox::TargetConfig* config,
-      ::sandbox::mojom::Sandbox sandbox_type,
-      ChildSpawnFlags flags,
-      base::optional_ref<const ChildModule> child_module) override {
-    last_pre_spawn_child_module_ = child_module.CopyAsOptional();
+  content::ChildProcessId last_render_process_id() const {
+    return last_render_process_id_;
+  }
+  bool PreSpawnChild(::sandbox::TargetConfig* config,
+                     ::sandbox::mojom::Sandbox sandbox_type,
+                     ChildSpawnFlags flags) override {
+    pre_spawn_child_called_ = true;
     return true;
   }
 
  private:
-  std::optional<ChildModule> child_module_;
-  std::optional<ChildModule> last_pre_spawn_child_module_;
+  std::optional<RendererSandboxPolicyExtension> sandbox_policy_extension_;
+  content::ChildProcessId last_render_process_id_;
+  bool pre_spawn_child_called_ = false;
 };
 
 }  // namespace
@@ -244,7 +255,8 @@ TEST_P(RendererFeatureSandboxWinTest, RendererGeneratedPolicyTest) {
   auto policy = broker->CreatePolicy();
 
   content::RendererSandboxedProcessLauncherDelegateWin test_renderer_delegate(
-      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/false);
+      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/false,
+      content::ChildProcessId());
 
   // PreSpawn
   ::sandbox::ResultCode result =
@@ -309,7 +321,8 @@ TEST_P(RendererSandboxedProcessLauncherDelegateTest,
 
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   content::RendererSandboxedProcessLauncherDelegateWin test_renderer_delegate(
-      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/false);
+      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/false,
+      content::ChildProcessId());
 
   // First verify against the mock target policy, this allows the test to
   // examine the final security attribute name is correct.
@@ -347,8 +360,8 @@ TEST_P(RendererSandboxedProcessLauncherDelegateTest,
   }
 }
 
-TEST_P(RendererSandboxedProcessLauncherDelegateTest, ChildModule) {
-  ChildModuleTestBrowserClient test_browser_client;
+TEST_P(RendererSandboxedProcessLauncherDelegateTest, SandboxPolicyExtension) {
+  SandboxPolicyExtensionTestBrowserClient test_browser_client;
 
   auto* old_browser_client =
       content::SetBrowserClientForTesting(&test_browser_client);
@@ -358,56 +371,87 @@ TEST_P(RendererSandboxedProcessLauncherDelegateTest, ChildModule) {
 
   base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
   content::RendererSandboxedProcessLauncherDelegateWin default_delegate(
-      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/false);
-
-  const content::ContentBrowserClient::ChildModule kChildModule = {
-      .version = base::Version("147.0.7727.51"),
-      .path = base::FilePath(FILE_PATH_LITERAL(
-          "C:\\ChildModules\\147.0.7727.51\\chrome_renderer.dll")),
-  };
-  test_browser_client.set_child_module(kChildModule);
+      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/false,
+      content::ChildProcessId());
 
   EXPECT_EQ(default_delegate.GetSandboxTag(),
             ::sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
                 "renderer", ::sandbox::mojom::Sandbox::kRenderer));
 
+  // When an extension provides only `extra_dll` with an empty `tag_suffix`
+  // (e.g. an unpatched default renderer DLL), the sandbox tag has no trailing
+  // '-' suffix while AllowExtraDll() is still configured.
+  const base::FilePath kDefaultDllPath(
+      FILE_PATH_LITERAL("C:\\Chrome\\chrome_renderer.dll"));
+  test_browser_client.set_sandbox_policy_extension(
+      content::ContentBrowserClient::RendererSandboxPolicyExtension{
+          .extra_dll = kDefaultDllPath,
+      });
+  content::RendererSandboxedProcessLauncherDelegateWin dll_only_delegate(
+      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/false,
+      content::ChildProcessId(41));
+  EXPECT_EQ(dll_only_delegate.GetSandboxTag(),
+            ::sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
+                "renderer", ::sandbox::mojom::Sandbox::kRenderer));
+  TestTargetPolicy dll_only_policy;
+  ASSERT_EQ(::sandbox::ResultCode::SBOX_ALL_OK,
+            ::sandbox::policy::SandboxWin::GeneratePolicyForSandboxedProcess(
+                cmd_line, /*handles_to_inherit=*/{}, &dll_only_delegate,
+                &dll_only_policy));
+  EXPECT_THAT(dll_only_policy.GetTestConfig().allowed_extra_dlls(),
+              ::testing::ElementsAre(kDefaultDllPath.value()));
+
+  const base::FilePath kChildDllPath(FILE_PATH_LITERAL(
+      "C:\\ChildModules\\147.0.7727.51\\chrome_renderer.dll"));
+  test_browser_client.set_sandbox_policy_extension(
+      content::ContentBrowserClient::RendererSandboxPolicyExtension{
+          .tag_suffix = "147.0.7727.51",
+          .extra_dll = kChildDllPath,
+      });
+
+  const content::ChildProcessId kRenderProcessId(42);
   content::RendererSandboxedProcessLauncherDelegateWin standard_delegate(
-      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/false);
+      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/false,
+      kRenderProcessId);
+  EXPECT_EQ(test_browser_client.last_render_process_id(), kRenderProcessId);
   EXPECT_EQ(
       standard_delegate.GetSandboxTag(),
       ::sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
           "renderer-147.0.7727.51", ::sandbox::mojom::Sandbox::kRenderer));
 
   content::RendererSandboxedProcessLauncherDelegateWin jitless_delegate(
-      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/true);
+      cmd_line, /*is_pdf_renderer=*/false, /*is_jit_disabled=*/true,
+      kRenderProcessId);
   EXPECT_EQ(jitless_delegate.GetSandboxTag(),
             ::sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
                 "renderer-jitless-147.0.7727.51",
                 ::sandbox::mojom::Sandbox::kRenderer));
 
   content::RendererSandboxedProcessLauncherDelegateWin pdf_delegate(
-      cmd_line, /*is_pdf_renderer=*/true, /*is_jit_disabled=*/true);
+      cmd_line, /*is_pdf_renderer=*/true, /*is_jit_disabled=*/true,
+      kRenderProcessId);
   EXPECT_EQ(pdf_delegate.GetSandboxTag(),
             ::sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
                 "renderer-pdfium-147.0.7727.51",
                 ::sandbox::mojom::Sandbox::kRenderer));
 
-  // The delegate passes the child module it captured at construction to
-  // PreSpawnChild().
+  // The delegate configures allowed extra DLLs and invokes PreSpawnChild().
   TestTargetPolicy policy;
   ASSERT_EQ(
       ::sandbox::ResultCode::SBOX_ALL_OK,
       ::sandbox::policy::SandboxWin::GeneratePolicyForSandboxedProcess(
           cmd_line, /*handles_to_inherit=*/{}, &standard_delegate, &policy));
-  EXPECT_THAT(test_browser_client.last_pre_spawn_child_module(),
-              Optional(kChildModule));
+  EXPECT_TRUE(test_browser_client.pre_spawn_child_called());
+  EXPECT_THAT(policy.GetTestConfig().allowed_extra_dlls(),
+              ::testing::ElementsAre(kChildDllPath.value()));
 
   TestTargetPolicy default_policy;
   ASSERT_EQ(::sandbox::ResultCode::SBOX_ALL_OK,
             ::sandbox::policy::SandboxWin::GeneratePolicyForSandboxedProcess(
                 cmd_line, /*handles_to_inherit=*/{}, &default_delegate,
                 &default_policy));
-  EXPECT_EQ(test_browser_client.last_pre_spawn_child_module(), std::nullopt);
+  EXPECT_THAT(default_policy.GetTestConfig().allowed_extra_dlls(),
+              ::testing::IsEmpty());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

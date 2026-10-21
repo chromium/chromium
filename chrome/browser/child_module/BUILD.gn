@@ -22,11 +22,13 @@ source_set("child_module") {
   public_deps = [
     "//base",
     "//chrome/common/child_module",
+    "//content/public/common",
   ]
 
   deps = [
     "//chrome/common:constants",
     "//components/prefs",
+    "//content/public/browser",
   ]
 
   if (is_win) {
@@ -51,7 +53,9 @@ source_set("unit_tests") {
     "//chrome/browser:browser_process",
     "//chrome/common:constants",
     "//chrome/common/child_module",
+    "//chrome/test:test_support",
     "//components/prefs:test_support",
+    "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

@@ -24,10 +24,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
-#include "base/types/optional_ref.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
-#include "base/version.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/download/public/common/quarantine_connection.h"
@@ -1689,36 +1687,36 @@ class CONTENT_EXPORT ContentBrowserClient {
     kAppContainerFlagDisableAppContainer = 1 << 0,
   };
 
-  // A child module to use for a child process in place of the one that shipped
-  // with the browser.
-  struct ChildModule {
-    // The version of the child module.
-    base::Version version;
+  // Extension policy applied to the Windows renderer sandbox.
+  struct RendererSandboxPolicyExtension {
+    // Suffix appended to the sandbox tag so processes with different
+    // requirements do not share the same cached TargetConfig.
+    std::string tag_suffix;
 
-    // The path to the child module's binary. A sandbox configuration created
-    // for one child process may be reused for others that use the same
-    // `version`, so the path for a given version must not change.
-    base::FilePath path;
+    // Additional DLL that the sandbox broker must explicitly authorize for
+    // this process via TargetConfig::AllowExtraDll(). Must not be empty.
+    // Requires the embedder to enable
+    // `sandbox::MITIGATION_FORCE_MS_SIGNED_BINS` in `PreSpawnChild()`.
+    base::FilePath extra_dll;
 
-    friend bool operator==(const ChildModule&, const ChildModule&) = default;
+    friend bool operator==(const RendererSandboxPolicyExtension&,
+                           const RendererSandboxPolicyExtension&) = default;
   };
 
   // This may be called on the PROCESS_LAUNCHER thread before the child process
   // configuration is set. It gives the embedder a chance to modify the sandbox
-  // configuration. `child_module`, if present, specifies the child module to
-  // use for this child process. Returns false if configuration is invalid and
-  // the child should not spawn. Only use this for embedder-specific policies,
-  // as standard sandbox policies are configured by the content layer.
-  virtual bool PreSpawnChild(
-      sandbox::TargetConfig* config,
-      sandbox::mojom::Sandbox sandbox_type,
-      ChildSpawnFlags flags,
-      base::optional_ref<const ChildModule> child_module);
+  // configuration. Returns false if configuration is invalid and the child
+  // should not spawn. Only use this for embedder-specific policies, as standard
+  // sandbox policies are configured by the content layer.
+  virtual bool PreSpawnChild(sandbox::TargetConfig* config,
+                             sandbox::mojom::Sandbox sandbox_type,
+                             ChildSpawnFlags flags);
 
-  // Returns the child module to use for a new child process if different from
-  // the one that shipped with the browser, or std::nullopt otherwise. Called on
-  // the UI thread.
-  virtual std::optional<ChildModule> GetChildModule();
+  // Returns embedder-specific policy extensions to apply to a renderer sandbox,
+  // or std::nullopt if no extension is needed. Called on the UI thread during
+  // renderer process initialization.
+  virtual std::optional<RendererSandboxPolicyExtension>
+  GetRendererSandboxPolicyExtension(ChildProcessId render_process_id);
 
   // This may be called on the PROCESS_LAUNCHER thread before the child process
   // is launched. It gives the embedder a chance to indicate that a process will
@@ -2972,10 +2970,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void OnDisplayInsecureContent(WebContents* web_contents) {}
 
   // Returns the executable path to use for a child process with the given
-  // `flags` (from ChildProcessHost), allowing embedders to override the
-  // binary for specific child processes. Return an empty FilePath to use
-  // the default path.
-  virtual base::FilePath GetChildProcessPath(int flags);
+  // `flags` (from ChildProcessHost) and `child_process_id` (which may be null
+  // when called from contexts without a specific process ID), allowing
+  // embedders to override the binary for specific child processes. Return an
+  // empty FilePath to use the default path.
+  virtual base::FilePath GetChildProcessPath(int flags,
+                                             ChildProcessId child_process_id);
 
   // Checks if Isolated Web Apps are enabled, e.g. by feature flag
   // or in any other way.

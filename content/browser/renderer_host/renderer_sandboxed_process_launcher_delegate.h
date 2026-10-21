@@ -15,6 +15,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/common/child_process_id.h"
 #endif
 
 namespace content {
@@ -45,7 +46,8 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
  public:
   RendererSandboxedProcessLauncherDelegateWin(const base::CommandLine& cmd_line,
                                               bool is_pdf_renderer,
-                                              bool is_jit_disabled);
+                                              bool is_jit_disabled,
+                                              ChildProcessId render_process_id);
   ~RendererSandboxedProcessLauncherDelegateWin() override;
 
   // sandbox::policy::SandboxDelegate:
@@ -63,9 +65,9 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
   const bool is_pdf_renderer_ = false;
   const bool restrict_core_sharing_ = false;
   bool dynamic_code_can_be_disabled_ = false;
-  // The child module to use if different from the one that shipped with the
-  // browser, or std::nullopt to use the default browser-versioned module.
-  const std::optional<ContentBrowserClient::ChildModule> child_module_;
+  // The sandbox policy extension captured on the UI thread at construction.
+  const std::optional<ContentBrowserClient::RendererSandboxPolicyExtension>
+      sandbox_policy_extension_;
 };
 #endif  // BUILDFLAG(IS_WIN)
 

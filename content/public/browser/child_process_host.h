@@ -114,11 +114,14 @@ class CONTENT_EXPORT ChildProcessHost {
   // the default child process pathname will be returned.  On most platforms,
   // this will be the same as the currently-executing process.
   //
-  // The |flags| argument accepts one or more flags such as CHILD_ALLOW_SELF.
+  // The `flags` argument accepts one or more flags such as CHILD_ALLOW_SELF.
   // Pass only CHILD_NORMAL if none of these special behaviors are required.
+  // `child_process_id` is the ID of the child process being launched, if known.
   //
   // On failure, returns an empty FilePath.
-  static base::FilePath GetChildPath(int flags);
+  static base::FilePath GetChildPath(
+      int flags,
+      ChildProcessId child_process_id = ChildProcessId());
 
   // Send the shutdown message to the child process.
   virtual void ForceShutdown() = 0;
