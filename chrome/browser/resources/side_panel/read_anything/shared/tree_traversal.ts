@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Maps each <li> in an <ol> to its number, so each list is only numbered once
-// per traversal.
-type ListNumbers = Map<HTMLLIElement, number>;
-
 // Returns all visible text nodes in the subtree, including injected list
 // markers (e.g. "1. ").
 // TODO (crbug.com/507916429): Store text nodes and return them if already
@@ -13,10 +9,9 @@ type ListNumbers = Map<HTMLLIElement, number>;
 export function getReadingModeTextNodes(root: Node): Node[] {
   const textNodes: Node[] = [];
   const walker = createVisibleTreeWalker(root);
-  const listNumbers: ListNumbers = new Map();
   let currentNode;
 
-  while ((currentNode = getNextValidNode(walker, listNumbers))) {
+  while ((currentNode = getNextValidNode(walker))) {
     textNodes.push(currentNode);
   }
   return textNodes;
@@ -54,13 +49,11 @@ function createVisibleTreeWalker(root: Node): TreeWalker {
 
 // Gets the next valid node for reading mode using the given TreeWalker.
 // This includes valid marker elements and text nodes.
-function getNextValidNode(
-    walker: TreeWalker, listNumbers: ListNumbers = new Map()): Node|null {
+function getNextValidNode(walker: TreeWalker): Node|null {
   let currentNode;
   while (currentNode = walker.nextNode()) {
     if (currentNode.nodeType === Node.ELEMENT_NODE) {
-      const marker =
-          addNodeForListElement(currentNode as HTMLElement, listNumbers);
+      const marker = addNodeForListElement(currentNode as HTMLElement);
       if (marker) {
         return marker;
       }
@@ -72,14 +65,13 @@ function getNextValidNode(
   return null;
 }
 
-function addNodeForListElement(
-    element: HTMLElement, listNumbers: ListNumbers): Node|null {
+function addNodeForListElement(element: HTMLElement): Node|null {
   // If there is an ordered list, add the numbers as read aloud nodes, since
   // these aren't considered "text" nodes and won't be spoken by read aloud
   // otherwise.
   if (element.tagName === 'LI' && element.parentElement &&
       element.parentElement.tagName === 'OL') {
-    const number = getLiNumber(element as HTMLLIElement, listNumbers);
+    const number = getLiNumber(element as HTMLLIElement);
 
     if (number > -1) {
       // Create the text node (e.g., "1. "). A newline is added to the
@@ -92,12 +84,7 @@ function addNodeForListElement(
 }
 
 
-function getLiNumber(liElement: HTMLLIElement, listNumbers: ListNumbers) {
-  const cachedNumber = listNumbers.get(liElement);
-  if (cachedNumber !== undefined) {
-    return cachedNumber;
-  }
-
+function getLiNumber(liElement: HTMLLIElement) {
   const ol = liElement.closest('ol');
   if (!ol) {
     // Not in an ordered list.
@@ -108,7 +95,7 @@ function getLiNumber(liElement: HTMLLIElement, listNumbers: ListNumbers) {
   // is set by the developer.
   let counter = ol.start || 1;
 
-  // Number all <li> elements in the <ol>
+  // Iterate through all <li> elements in the <ol>
   for (const item of ol.children) {
     if (item.tagName !== 'LI') {
       // Skip non-<li> elements
@@ -117,15 +104,18 @@ function getLiNumber(liElement: HTMLLIElement, listNumbers: ListNumbers) {
 
     // If the developer set an explicit 'value' on *this* <li>, honor that.
     // If it's 0, it means the attribute isn't set.
-    const li = item as HTMLLIElement;
-    if (li.value > 0) {
-      counter = li.value;
+    if ((item as HTMLLIElement).value > 0) {
+      counter = (item as HTMLLIElement).value;
     }
 
-    listNumbers.set(li, counter);
+    if (item === liElement) {
+      return counter;
+    }
+
+    // It's not the selected <li>, so increment the counter for the next loop
     counter++;
   }
 
-  // Should not be missing.
-  return listNumbers.get(liElement) ?? -1;
+  // Should not happen
+  return -1;
 }
