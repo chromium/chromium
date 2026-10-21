@@ -270,6 +270,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           // override still takes precedence, since it is applied afterwards by
           // UpdateStatusFromBaseFeatures().
           {"DeclarativeWebMCP", blink::features::kWebMCP, kSetOnlyIfOverridden},
+          {"DeviceBoundSessionJsApi", features::kDeviceBoundSessionJsApi},
           {"DocumentPolicyIncludeJSCallStacksInCrashReports",
            blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports,
            kSetOnlyIfOverridden},

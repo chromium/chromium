@@ -15370,6 +15370,25 @@ void RenderFrameHostImpl::BindRestrictedCookieManagerWithOrigin(
       CreateCookieAccessObserver(CookieAccessDetails::Source::kNonNavigation));
 }
 
+void RenderFrameHostImpl::BindRestrictedDeviceBoundSessionManager(
+    mojo::PendingReceiver<network::mojom::RestrictedDeviceBoundSessionManager>
+        receiver) {
+  // Blink asks only when the commit params said the document may use the
+  // API. Like CreateWebUsbService(), treat anything else as a compromised
+  // renderer.
+  if (!CanUseDeviceBoundSessionJsApi()) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(),
+        bad_message::RFH_DEVICE_BOUND_SESSION_JS_API_NOT_AVAILABLE);
+    return;
+  }
+  GetStoragePartition()
+      ->GetNetworkContext()
+      ->GetRestrictedDeviceBoundSessionManager(
+          std::move(receiver), GetLastCommittedOrigin(),
+          GetIsolationInfoForSubresources());
+}
+
 void RenderFrameHostImpl::BindTrustTokenQueryAnswerer(
     mojo::PendingReceiver<network::mojom::TrustTokenQueryAnswerer> receiver) {
   auto top_frame_origin = ComputeTopFrameOrigin(GetLastCommittedOrigin());

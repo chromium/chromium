@@ -136,6 +136,7 @@
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/network/public/mojom/mdns_responder.mojom.h"
+#include "services/network/public/mojom/restricted_device_bound_sessions.mojom-forward.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
@@ -2091,6 +2092,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const net::IsolationInfo& isolation_info,
       const url::Origin& origin,
       net::CookieSettingOverrides cookie_setting_overrides);
+
+  // Binds a RestrictedDeviceBoundSessionManager for the current document.
+  // Blink asks only when CanUseDeviceBoundSessionJsApi() is true, so this
+  // reports a bad message otherwise, like CreateWebUsbService().
+  void BindRestrictedDeviceBoundSessionManager(
+      mojo::PendingReceiver<network::mojom::RestrictedDeviceBoundSessionManager>
+          receiver);
 
   // Requires the following preconditions, reporting a bad message otherwise.
   //

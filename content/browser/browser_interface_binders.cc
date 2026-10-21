@@ -129,6 +129,7 @@
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
+#include "services/network/public/mojom/restricted_device_bound_sessions.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
 #include "services/shape_detection/public/mojom/facedetection_provider.mojom.h"
 #include "services/shape_detection/public/mojom/shape_detection_service.mojom.h"
@@ -1339,6 +1340,12 @@ void PopulateBinderMapWithContext(
          mojo::PendingReceiver<media::mojom::VideoDecodePerfHistory> receiver) {
         host->GetProcess()->BindVideoDecodePerfHistory(std::move(receiver));
       }));
+
+  if (base::FeatureList::IsEnabled(features::kDeviceBoundSessionJsApi)) {
+    map->Add<network::mojom::RestrictedDeviceBoundSessionManager>(
+        &BindRenderFrameHostImpl<
+            &RenderFrameHostImpl::BindRestrictedDeviceBoundSessionManager>);
+  }
 
   map->Add<network::mojom::RestrictedCookieManager>(
       &BindRenderFrameHostImpl<

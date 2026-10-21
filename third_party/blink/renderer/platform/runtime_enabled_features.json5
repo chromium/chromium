@@ -2449,6 +2449,11 @@
       },
     },
     {
+      name: "DeviceBoundSessionJsApi",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "DeviceOrientationRequestPermission",
       status: "stable",
     },

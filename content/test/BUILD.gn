@@ -2319,6 +2319,12 @@ test("content_browsertests") {
           [ "../browser/compute_pressure/pressure_service_browsertest.cc" ]
     }
 
+    if (enable_device_bound_sessions) {
+      sources +=
+          [ "../browser/network/device_bound_session_js_api_browsertest.cc" ]
+      deps += [ "//crypto:test_support" ]
+    }
+
     if (is_chromeos) {
       deps += [ "//ash/constants" ]
     }

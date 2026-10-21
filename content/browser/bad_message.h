@@ -435,6 +435,7 @@ enum BadMessageReason {
   RFHI_WEBMCP_REGISTER_INVALID_TOOL_ID = 407,
   RFH_CREATE_NEW_WINDOW_INVALID_SPLIT_TAB_FEATURES = 408,
   RFH_CREATE_NEW_WINDOW_INVALID_REFERRER = 409,
+  RFH_DEVICE_BOUND_SESSION_JS_API_NOT_AVAILABLE = 410,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
