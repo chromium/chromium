@@ -51,6 +51,9 @@ export interface OrganizerListSectionItemActionButton {
 
   // Accessibility label.
   ariaLabel: string;
+
+  // Optional: Tooltip to display on hover.
+  tooltip?: string;
 }
 
 // Model for a single item in an organizer list section.

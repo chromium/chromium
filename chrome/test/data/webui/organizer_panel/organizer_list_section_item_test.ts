@@ -166,6 +166,7 @@ suite('OrganizerListSectionItemTest', () => {
     assertTrue(!!actionButton);
     assertEquals('cr:close', actionButton.getAttribute('iron-icon'));
     assertEquals('Close tab', actionButton.getAttribute('aria-label'));
+    assertFalse(actionButton.hasAttribute('title'));
 
     // Action button should be hidden when not hovered.
     assertFalse(isVisible(actionButton));
@@ -173,6 +174,23 @@ suite('OrganizerListSectionItemTest', () => {
     // Action button should be displayed when hovered.
     listItem.classList.add('hovered');
     assertTrue(isVisible(actionButton));
+  });
+
+  test('renders hovered action button with tooltip', async () => {
+    listItem.item = {
+      title: ['Tab Group'],
+      hoveredActionButton: {
+        icon: 'cr:more-vert',
+        ariaLabel: 'More options',
+        tooltip: 'Options',
+      },
+    };
+    await microtasksFinished();
+
+    const actionButton =
+        listItem.shadowRoot.querySelector<HTMLElement>('#actionButton')!;
+    assertTrue(!!actionButton);
+    assertEquals('Options', actionButton.getAttribute('title'));
   });
 
   test('switches from trailing icon to action button on hover', async () => {

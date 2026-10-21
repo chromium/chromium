@@ -154,6 +154,7 @@ export class TabGroupsDelegate implements
       hoveredActionButton: {
         icon: 'cr:more-vert',
         ariaLabel: loadTimeData.getString('tabGroupMoreOptions'),
+        tooltip: loadTimeData.getString('options'),
       },
       data: group,
     };

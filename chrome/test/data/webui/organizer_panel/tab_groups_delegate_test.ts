@@ -55,6 +55,7 @@ suite('TabGroupsDelegateTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.resetForTesting({
       createTabGroup: 'Create tab group',
+      options: 'Options',
       tabGroupMoreOptions: 'More options',
       tabGroups: 'Tab Groups',
     });
@@ -99,6 +100,7 @@ suite('TabGroupsDelegateTest', () => {
     assertTrue(!!items[0]!.hoveredActionButton);
     assertEquals('cr:more-vert', items[0]!.hoveredActionButton.icon);
     assertEquals('More options', items[0]!.hoveredActionButton.ariaLabel);
+    assertEquals('Options', items[0]!.hoveredActionButton.tooltip);
 
     const container = document.createElement('div');
     document.body.appendChild(container);
