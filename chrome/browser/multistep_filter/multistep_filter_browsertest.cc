@@ -47,7 +47,6 @@
 #include "components/multistep_filter/core/storage/filter_store.h"
 #include "components/multistep_filter/core/switches.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"

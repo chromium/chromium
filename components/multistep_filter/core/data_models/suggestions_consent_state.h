@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_MULTISTEP_FILTER_CORE_DATA_MODELS_SUGGESTIONS_CONSENT_STATE_H_
 #define COMPONENTS_MULTISTEP_FILTER_CORE_DATA_MODELS_SUGGESTIONS_CONSENT_STATE_H_
 
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/optimization_guide/core/feature_registry/feature_keys.h"
 
 namespace multistep_filter {
 

@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/ml_model/logging/ml_log_router.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"

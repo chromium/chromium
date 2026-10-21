@@ -59,6 +59,7 @@ component("features") {
     # remote model execution / MQLS.
     "feature_registry/enterprise_policy_registry.cc",
     "feature_registry/enterprise_policy_registry.h",
+    "feature_registry/feature_keys.cc",
     "feature_registry/feature_keys.h",
     "feature_registry/feature_registration.cc",
     "feature_registry/feature_registration.h",
@@ -78,8 +79,6 @@ component("features") {
     "optimization_guide_enums.h",
     "optimization_guide_features.cc",
     "optimization_guide_features.h",
-    "optimization_guide_prefs.cc",
-    "optimization_guide_prefs.h",
   ]
   public_deps = [
     "//base",

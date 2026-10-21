@@ -1,14 +1,12 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
-
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
+
 #include "components/prefs/pref_registry_simple.h"
 
-namespace optimization_guide {
-namespace prefs {
+namespace optimization_guide::prefs {
 
 // TODO(b/354704993): Move this to the SettingsUiMetadata.
 // Pref that contains user opt-in state for different features.
@@ -29,7 +27,7 @@ std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature) {
   }
 }
 
-void RegisterSettingsEnabledPrefs(PrefRegistrySimple* registry) {
+void RegisterSettingsUiPrefs(PrefRegistrySimple* registry) {
   for (auto key : kAllUserVisibleFeatureKeys) {
     registry->RegisterIntegerPref(
         GetSettingEnabledPrefName(key),
@@ -37,5 +35,4 @@ void RegisterSettingsEnabledPrefs(PrefRegistrySimple* registry) {
   }
 }
 
-}  // namespace prefs
-}  // namespace optimization_guide
+}  // namespace optimization_guide::prefs

@@ -14,7 +14,6 @@
 #import "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
 #import "components/optimization_guide/core/delivery/prediction_model_download_manager.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
-#import "components/optimization_guide/core/optimization_guide_prefs.h"
 #import "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"

@@ -8,10 +8,14 @@
 #include <array>
 #include <optional>
 #include <ostream>
+#include <string>
 
+#include "base/component_export.h"
 #include "base/notreached.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
+
+class PrefRegistrySimple;
 
 namespace optimization_guide {
 
@@ -262,6 +266,31 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     UserVisibleFeatureKey key) {
   return ToModelExecutionFeatureProto(ToModelBasedCapabilityKey(key));
 }
+
+namespace prefs {
+
+// Value stored in the pref.
+enum class FeatureOptInState {
+  // User has never changed the opt-in state.
+  kNotInitialized = 0,
+
+  // User has explicitly opted-in to the feature.
+  kEnabled = 1,
+
+  // User has explicitly opted-out of the feature.
+  kDisabled = 2
+};
+
+// Returns the name of the pref that stores the user's setting opt-in state for
+// the given `feature`.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature);
+
+// Registers the setting opt-in state prefs.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+void RegisterSettingsUiPrefs(PrefRegistrySimple* registry);
+
+}  // namespace prefs
 
 }  // namespace optimization_guide
 

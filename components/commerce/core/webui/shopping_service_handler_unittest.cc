@@ -27,7 +27,6 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
