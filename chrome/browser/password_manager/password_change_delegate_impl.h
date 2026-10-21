@@ -120,8 +120,11 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate,
 
   void OnCrossOriginNavigationDetected();
 
-  // Resets all helpers. `hidden_executor_` is kept as it is as user might want
-  // to open it.
+  // Marks an ongoing login check as interrupted, cancels the actuator, and
+  // resets all internal helpers.
+  void CancelOngoingFlow();
+
+  // Resets all internal helpers.
   void ResetInternalState();
 
   void ObserveCrossOriginNavigationInOriginator();
