@@ -2218,6 +2218,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
   // deferred update
   object_.GetFrameView()->RemovePendingOpacityUpdate(object_);
   const ComputedStyle& style = object_.Style();
+  const bool was_canvas_drawable =
+      properties_->Effect() && properties_->Effect()->HasCanvasDrawableState();
 
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsEffect()) {
@@ -2421,6 +2423,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       OnClearEffect(properties_->ClearClipPathMask());
       OnClearClip(properties_->ClearMaskClip());
     }
+  }
+
+  // Descendant effect nodes bake `is_in_drawable_canvas_subtree` into their
+  // state, so a change to canvas-drawable state must pierce isolation
+  // boundaries.
+  const bool is_canvas_drawable =
+      properties_->Effect() && properties_->Effect()->HasCanvasDrawableState();
+  if (was_canvas_drawable != is_canvas_drawable) {
+    full_context_.force_subtree_update_reasons |=
+        PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
   }
 
   if (const auto* effect = properties_->Effect()) {
@@ -4655,6 +4667,11 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
     if (properties->HasNode<EffectPaintPropertyNodeOrAlias>()) {
+      if (properties->Effect() &&
+          properties->Effect()->HasCanvasDrawableState()) {
+        context_.force_subtree_update_reasons |=
+            PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
+      }
       UpdatePropertyChange(properties_changed_.effect_changed,
                            PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
