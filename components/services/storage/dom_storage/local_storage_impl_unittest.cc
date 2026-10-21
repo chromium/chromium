@@ -1884,6 +1884,7 @@ INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     LocalStorageImplOnDiskSQLiteRolloutTest,
     testing::Values(DomStorageSqliteRolloutStage::kUseLevelDbOnly,
+                    DomStorageSqliteRolloutStage::kUseLevelDbForNewDatabases,
                     DomStorageSqliteRolloutStage::kUseLevelDbAsControl,
                     DomStorageSqliteRolloutStage::kUseSqliteForNewDatabases,
                     DomStorageSqliteRolloutStage::kUseSqliteOnly),
@@ -1973,6 +1974,43 @@ TEST_P(LocalStorageImplOnDiskSQLiteRolloutTest, PreExistingTaggedLevelDb) {
   // experiment; the other stages emit to "OnDisk".
   histograms.ExpectUniqueSample(
       stage() == DomStorageSqliteRolloutStage::kUseLevelDbAsControl
+          ? "Storage.LocalStorage.OpenDatabase.OnDiskExperimental"
+          : "Storage.LocalStorage.OpenDatabase.OnDisk",
+      /*sample=*/0, /*expected_bucket_count=*/1);
+}
+
+TEST_P(LocalStorageImplOnDiskSQLiteRolloutTest, PreExistingSqliteDb) {
+  auto key = StdStringToUint8Vector("key");
+  auto value = StdStringToUint8Vector("value");
+
+  // Persist data to a SQLite database, mimicking a profile that previously
+  // used SQLite.
+  {
+    base::test::ScopedFeatureList sqlite_feature_list;
+    sqlite_feature_list.InitAndEnableFeature(kDomStorageSqlite);
+    ResetStorage(storage_path());
+    DoTestPut(key, value);
+    ShutDownStorage();
+  }
+  ASSERT_TRUE(base::PathExists(SqliteDbPath()));
+  ASSERT_FALSE(LevelDbDirHasContents());
+
+  // Every stage except the LevelDB-only stages keeps using the existing SQLite
+  // database. The LevelDB-only stages create a new LevelDB, orphaning the
+  // SQLite database and its data.
+  const bool uses_existing_sqlite =
+      stage() != DomStorageSqliteRolloutStage::kUseLevelDbOnly &&
+      stage() != DomStorageSqliteRolloutStage::kUseLevelDbAsControl;
+  base::HistogramTester histograms;
+  ResetStorage(storage_path());
+  EXPECT_EQ(DoTestGet(key),
+            uses_existing_sqlite ? std::optional(value) : std::nullopt);
+  ShutDownStorage();
+
+  EXPECT_TRUE(base::PathExists(SqliteDbPath()));
+  EXPECT_EQ(LevelDbDirHasContents(), !uses_existing_sqlite);
+  histograms.ExpectUniqueSample(
+      IsExperimentalStage()
           ? "Storage.LocalStorage.OpenDatabase.OnDiskExperimental"
           : "Storage.LocalStorage.OpenDatabase.OnDisk",
       /*sample=*/0, /*expected_bucket_count=*/1);

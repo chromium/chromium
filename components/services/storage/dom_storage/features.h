@@ -51,6 +51,9 @@ inline constexpr base::TimeDelta kDomStorageSqliteMigrationInactivityTimeout =
 enum class DomStorageSqliteRolloutStage {
   // Use LevelDB exclusively. All on-disk stores emit metrics to "OnDisk".
   kUseLevelDbOnly,
+  // Use LevelDB for new databases and keep existing SQLite databases on
+  // SQLite. All on-disk stores emit metrics to "OnDisk".
+  kUseLevelDbForNewDatabases,
   // Functionally the same as `kUseLevelDbOnly`. On-disk stores created during
   // this stage emit metrics to "OnDiskExperimental"; previously existing stores
   // emit to "OnDisk".

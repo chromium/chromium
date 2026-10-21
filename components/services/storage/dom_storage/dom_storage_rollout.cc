@@ -47,6 +47,7 @@ DatabaseMetricsType GetMetricsType(DomStorageSqliteRolloutStage stage,
   switch (stage) {
     case DomStorageSqliteRolloutStage::kUseLevelDbOnly:
     case DomStorageSqliteRolloutStage::kUseSqliteOnly:
+    case storage::DomStorageSqliteRolloutStage::kUseLevelDbForNewDatabases:
       return DatabaseMetricsType::kOnDisk;
     case DomStorageSqliteRolloutStage::kUseLevelDbAsControl:
       return (leveldb_state == LevelDbOnDiskState::kNone ||

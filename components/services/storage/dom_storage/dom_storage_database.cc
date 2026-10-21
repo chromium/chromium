@@ -242,6 +242,27 @@ DbStatus VerifySessionStorageMigration(
   return DbStatus::OK();
 }
 
+void DoesSqliteDatabaseExist(StorageType storage_type,
+                             base::FilePath dir_to_open,
+                             base::OnceCallback<void(bool)> callback) {
+  base::FilePath sqlite_path =
+      DomStorageDatabase::GetSqlitePath(storage_type, dir_to_open);
+
+  scoped_refptr<base::SequencedTaskRunner> runner =
+      GetTaskRunnerForDb(sqlite_path);
+
+  if (!runner->RunsTasksInCurrentSequence()) {
+    runner->PostTask(
+        FROM_HERE, base::BindOnce(&DoesSqliteDatabaseExist, storage_type,
+                                  std::move(dir_to_open), std::move(callback)));
+    return;
+  }
+
+  const bool sqlite_exists = CreateFilesystemProxy()->PathExists(
+      DomStorageDatabase::GetSqlitePath(storage_type, dir_to_open));
+  std::move(callback).Run(sqlite_exists);
+}
+
 }  // namespace
 
 DomStorageDatabase::KeyValuePair::KeyValuePair() = default;
@@ -835,6 +856,16 @@ void DomStorageDatabaseFactory::ResolveDatabaseBackend(
     return;
   }
 
+  if (stage == DomStorageSqliteRolloutStage::kUseLevelDbForNewDatabases) {
+    DoesSqliteDatabaseExist(
+        storage_type, dir_to_open,
+        base::BindOnce(&DomStorageDatabaseFactory::
+                           ResolveBackendWhenNewDatabasesUseLeveldb,
+                       storage_type, dir_to_open, std::move(callback),
+                       std::move(destroy_outcome)));
+    return;
+  }
+
   // A non-experimental rollout stage has a fixed backend, so no disk state
   // check is needed.
   const bool is_sqlite = stage == DomStorageSqliteRolloutStage::kUseSqliteOnly;
@@ -905,6 +936,23 @@ void DomStorageDatabaseFactory::ResolveOnDiskExperimentalDatabaseBackend(
                 : DomStorageDatabase::GetLevelDbPath(storage_type, dir_to_open);
   std::move(callback).Run(is_sqlite, write_exp_tag, metrics_type,
                           std::move(path), std::move(destroy_outcome));
+}
+
+// static
+void DomStorageDatabaseFactory::ResolveBackendWhenNewDatabasesUseLeveldb(
+    StorageType storage_type,
+    base::FilePath dir_to_open,
+    OnBackendResolvedCallback callback,
+    std::optional<DestroyOutcome> destroy_outcome,
+    bool sqlite_exists) {
+  base::FilePath path =
+      sqlite_exists
+          ? DomStorageDatabase::GetSqlitePath(storage_type, dir_to_open)
+          : DomStorageDatabase::GetLevelDbPath(storage_type, dir_to_open);
+
+  std::move(callback).Run(sqlite_exists, /*write_exp_tag=*/false,
+                          DatabaseMetricsType::kOnDisk, std::move(path),
+                          std::move(destroy_outcome));
 }
 
 base::PassKey<DomStorageDatabaseFactory>

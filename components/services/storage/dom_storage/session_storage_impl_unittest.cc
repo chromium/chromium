@@ -1307,6 +1307,7 @@ INSTANTIATE_TEST_SUITE_P(
     /*no prefix*/,
     SessionStorageImplOnDiskSQLiteRolloutTest,
     testing::Values(DomStorageSqliteRolloutStage::kUseLevelDbOnly,
+                    DomStorageSqliteRolloutStage::kUseLevelDbForNewDatabases,
                     DomStorageSqliteRolloutStage::kUseLevelDbAsControl,
                     DomStorageSqliteRolloutStage::kUseSqliteForNewDatabases,
                     DomStorageSqliteRolloutStage::kUseSqliteOnly),
@@ -1376,6 +1377,45 @@ TEST_P(SessionStorageImplOnDiskSQLiteRolloutTest, PreExistingUntaggedLevelDb) {
   histograms.ExpectUniqueSample("Storage.SessionStorage.OpenDatabase.OnDisk",
                                 /*sample=*/0,
                                 /*expected_bucket_count=*/1);
+}
+
+TEST_P(SessionStorageImplOnDiskSQLiteRolloutTest, PreExistingSqliteDb) {
+  std::string namespace_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+
+  // Persist data to a SQLite database, mimicking a profile that previously
+  // used SQLite.
+  {
+    base::test::ScopedFeatureList sqlite_feature_list;
+    sqlite_feature_list.InitAndEnableFeature(kDomStorageSqlite);
+    DoTestPut(namespace_id, storage_key, "key", "value",
+              /*should_persist=*/true);
+    ShutDownSessionStorage();
+  }
+  ASSERT_TRUE(base::PathExists(SqliteDbPath()));
+  ASSERT_FALSE(LevelDbDirHasContents());
+
+  // Every stage except the LevelDB-only stages keeps using the existing SQLite
+  // database. The LevelDB-only stages create a new LevelDB, orphaning the
+  // SQLite database and its data.
+  const bool uses_existing_sqlite =
+      stage() != DomStorageSqliteRolloutStage::kUseLevelDbOnly &&
+      stage() != DomStorageSqliteRolloutStage::kUseLevelDbAsControl;
+  base::HistogramTester histograms;
+  EXPECT_EQ(DoTestGet(namespace_id, storage_key, "key"),
+            uses_existing_sqlite
+                ? std::optional(StringViewToUint8Vector("value"))
+                : std::nullopt);
+  ShutDownSessionStorage();
+
+  EXPECT_TRUE(base::PathExists(SqliteDbPath()));
+  EXPECT_EQ(LevelDbDirHasContents(), !uses_existing_sqlite);
+  histograms.ExpectUniqueSample(
+      IsExperimentalStage()
+          ? "Storage.SessionStorage.OpenDatabase.OnDiskExperimental"
+          : "Storage.SessionStorage.OpenDatabase.OnDisk",
+      /*sample=*/0, /*expected_bucket_count=*/1);
 }
 
 TEST_P(SessionStorageImplOnDiskSQLiteRolloutTest, PreExistingTaggedLevelDb) {
