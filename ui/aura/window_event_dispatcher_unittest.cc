@@ -3787,4 +3787,87 @@ TEST_F(WindowEventDispatcherTest, LastTouchPoint) {
   env->RemovePreTargetHandler(&skip_gesture_handler);
 }
 
+// Tests that ConsumeTouchForDrag() only reports a touch that was pressed on the
+// given window, that each touch press can be consumed at most once, and that a
+// new press of the same id (e.g. after a lost release) resets the state.
+TEST_F(WindowEventDispatcherTest, ConsumeTouchForDrag) {
+  class : public ui::EventHandler {
+   public:
+    void OnTouchEvent(ui::TouchEvent* event) override { event->SetHandled(); }
+  } skip_gesture_handler;
+  auto* env = Env::GetInstance();
+  env->AddPreTargetHandler(&skip_gesture_handler);
+
+  base::TimeTicks time = ui::EventTimeForNow();
+  auto dispatch_touch = [&](ui::EventType type, const gfx::Point& location,
+                            int id, int flags = ui::EF_NONE) {
+    // Space the events out to avoid fling generation.
+    time += base::Seconds(1);
+    ui::TouchEvent event(type, location, time,
+                         ui::PointerDetails(ui::EventPointerType::kTouch, id),
+                         flags);
+    DispatchEventUsingWindowDispatcher(&event);
+  };
+
+  test::TestWindowDelegate delegate;
+  std::unique_ptr<aura::Window> window =
+      test::CreateTestWindow({.delegate = &delegate,
+                              .parent = root_window(),
+                              .bounds = {10, 10, 100, 100},
+                              .window_id = 1});
+
+  EXPECT_FALSE(env->ConsumeTouchForDrag(window.get()));
+
+  // A touch outside `window` (on the root window) doesn't count for `window`,
+  // even though a touch is down.
+  constexpr gfx::Point outside(200, 200);
+  dispatch_touch(ui::EventType::kTouchPressed, outside, 1);
+  EXPECT_TRUE(env->is_touch_down());
+  EXPECT_FALSE(env->ConsumeTouchForDrag(window.get()));
+
+  // A touch on `window` can be consumed exactly once, and reports its most
+  // recent location.
+  constexpr gfx::Point location1(20, 20);
+  constexpr gfx::Point location2(30, 30);
+  dispatch_touch(ui::EventType::kTouchPressed, location1, 0);
+  dispatch_touch(ui::EventType::kTouchMoved, location2, 0);
+  EXPECT_EQ(location2, env->ConsumeTouchForDrag(window.get()));
+  EXPECT_FALSE(env->ConsumeTouchForDrag(window.get()));
+  EXPECT_TRUE(env->is_touch_down());
+
+  // A new press of the same id without a release (as happens when a platform
+  // drag loop consumes the release) starts a fresh, unconsumed touch.
+  dispatch_touch(ui::EventType::kTouchPressed, location1, 0);
+  EXPECT_EQ(location1, env->ConsumeTouchForDrag(window.get()));
+
+  // Releasing a touch ends it.
+  dispatch_touch(ui::EventType::kTouchPressed, location1, 0);
+  dispatch_touch(ui::EventType::kTouchReleased, location1, 0);
+  EXPECT_FALSE(env->ConsumeTouchForDrag(window.get()));
+
+  // So does cancelling it.
+  dispatch_touch(ui::EventType::kTouchPressed, location1, 0);
+  dispatch_touch(ui::EventType::kTouchCancelled, location1, 0);
+  EXPECT_FALSE(env->ConsumeTouchForDrag(window.get()));
+
+  // A non-client touch, which may become a window move, doesn't count.
+  dispatch_touch(ui::EventType::kTouchPressed, location1, 0,
+                 ui::EF_IS_NON_CLIENT);
+  EXPECT_TRUE(env->is_touch_down());
+  EXPECT_FALSE(env->ConsumeTouchForDrag(window.get()));
+  dispatch_touch(ui::EventType::kTouchReleased, location1, 0);
+
+  // Destroying the target forgets it.
+  dispatch_touch(ui::EventType::kTouchPressed, location1, 0);
+  const aura::Window* destroyed = window.get();
+  window.reset();
+  EXPECT_FALSE(env->ConsumeTouchForDrag(destroyed));
+
+  dispatch_touch(ui::EventType::kTouchReleased, location1, 0);
+  dispatch_touch(ui::EventType::kTouchReleased, outside, 1);
+  EXPECT_FALSE(env->is_touch_down());
+
+  env->RemovePreTargetHandler(&skip_gesture_handler);
+}
+
 }  // namespace aura

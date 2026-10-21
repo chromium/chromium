@@ -1291,22 +1291,28 @@ void WebContentsViewAura::StartDragging(
     // touch event would reach `::SendInput` via
     // DesktopWindowTreeHostWin::StartTouchDrag and could redirect the
     // synthesized click to an overlapping HWND (e.g. a permission bubble).
-    // Require an in-flight touch or a left mouse button, depending on the
-    // event source, and refuse the drag if the requirement is not met.
-    gfx::Point trusted_location = event_info.location;
+    // Require a touch pressed on the web contents or a left mouse button,
+    // depending on the event source, and refuse the drag if the requirement is
+    // not met.
+    gfx::Point trusted_location;
     aura::Env* env = aura::Env::GetInstance();
-    if ((event_info.source == ui::mojom::DragEventSource::kTouch &&
-         !env->is_touch_down()) ||
-        (event_info.source == ui::mojom::DragEventSource::kMouse &&
-         !env->IsLeftMouseButtonDown())) {
-      EndDrag(std::move(source_rwh_weak_ptr), result_op);
-      return;
-    }
     if (event_info.source == ui::mojom::DragEventSource::kTouch) {
-      trusted_location =
-          env->GetLastPointerPoint(event_info.source, content_native_view,
-                                   /*fallback=*/event_info.location);
+      // A touch elsewhere (e.g. holding the window caption to move the
+      // window), or a touch that already started a drag and whose release was
+      // consumed by the platform drag loop, must not satisfy this check.
+      std::optional<gfx::Point> touch_location =
+          env->ConsumeTouchForDrag(content_native_view);
+      if (!touch_location) {
+        EndDrag(std::move(source_rwh_weak_ptr), result_op);
+        return;
+      }
+      trusted_location = *touch_location;
     } else {
+      if (event_info.source == ui::mojom::DragEventSource::kMouse &&
+          !env->IsLeftMouseButtonDown()) {
+        EndDrag(std::move(source_rwh_weak_ptr), result_op);
+        return;
+      }
       trusted_location = env->last_mouse_location();
     }
     // Make sure event is within the web contents, and the web contents are

@@ -157,6 +157,10 @@ void Env::SetTouchDown(bool is_touch_down) {
   is_touch_down_ = is_touch_down;
 }
 
+std::optional<gfx::Point> Env::ConsumeTouchForDrag(const Window* window) {
+  return env_controller_->ConsumeTouchForDrag(window);
+}
+
 void Env::SetGestureRecognizer(
     std::unique_ptr<ui::GestureRecognizer> gesture_recognizer) {
   gesture_recognizer_ = std::move(gesture_recognizer);
