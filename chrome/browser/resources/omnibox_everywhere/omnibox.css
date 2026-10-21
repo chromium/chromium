@@ -134,22 +134,27 @@
   width: 100%;
 }
 
-cr-searchbox-input::part(searchbox-input) {
-  align-self: center;
+/* Reserve trailing profile-icon clearance on the cr-searchbox-input host rather
+ * than part(searchbox-input) so overriding Writing Direction on the inner
+ * <input> never flips trailing icon clearance to the inline start. */
+cr-searchbox-input {
+  box-sizing: border-box;
   padding-inline-end: 64px;
-  padding-inline-start: 7px;
-  padding-top: 2px;
 }
 
 #inputWrapper:has(#profileIcon[is-enterprise-profile]):not(:has(#composeButton))
-    cr-searchbox-input::part(searchbox-input),
-:host:has(#profileIcon[is-enterprise-profile]):not(:has(#composeButton))
-    cr-searchbox-input::part(searchbox-input) {
+    cr-searchbox-input {
   padding-inline-end: 88px;
 }
 
-:host([compose-button-enabled]) cr-searchbox-input::part(searchbox-input) {
-  padding-inline-end: 8px;
+:host([compose-button-enabled]) cr-searchbox-input {
+  padding-inline-end: 0;
+}
+
+cr-searchbox-input::part(searchbox-input) {
+  align-self: center;
+  padding-inline: 7px;
+  padding-top: 2px;
 }
 
 :host([multi-line-enabled])

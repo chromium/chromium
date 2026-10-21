@@ -1249,6 +1249,45 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     assertEquals('test composebox query', composebox.getInputElement().input);
   });
 
+  test(
+      'composebox input clears cancel icon and flips caret in RTL',
+      async () => {
+        const inputEl = composebox.getInputElement();
+        const textarea = inputEl.shadowRoot.querySelector('textarea')!;
+        const caret = inputEl.shadowRoot.querySelector<HTMLElement>('#caret')!;
+        const cancelIcon = inputEl.shadowRoot.querySelector<HTMLElement>(
+            '[part~="cancel-icon"]')!;
+        assertTrue(!!textarea);
+        assertTrue(!!caret);
+        assertTrue(!!cancelIcon);
+
+        textarea.focus();
+        textarea.dispatchEvent(new FocusEvent('focus'));
+        await microtasksFinished();
+
+        const ltrCaretLeft = caret.getBoundingClientRect().left;
+
+        textarea.dir = 'rtl';
+        await microtasksFinished();
+        const rtlCaretRect = caret.getBoundingClientRect();
+        assertTrue(rtlCaretRect.left > ltrCaretLeft);
+        assertTrue(
+            rtlCaretRect.right <= cancelIcon.getBoundingClientRect().left);
+        assertTrue(
+            textarea.getBoundingClientRect().right <=
+                cancelIcon.getBoundingClientRect().left,
+            'Composebox input overlapped cancel icon in RTL');
+
+        textarea.dir = 'ltr';
+        await microtasksFinished();
+        assertTrue(
+            Math.abs(caret.getBoundingClientRect().left - ltrCaretLeft) < 2);
+        assertTrue(
+            textarea.getBoundingClientRect().right <=
+                cancelIcon.getBoundingClientRect().left,
+            'Composebox input overlapped cancel icon in LTR');
+      });
+
   test('submitting query clears composebox input', async () => {
     composebox.setInputText('test composebox query');
     await microtasksFinished();
@@ -3771,4 +3810,27 @@ suite('OmniboxEverywhereContextMenuTest', () => {
         assertTrue(!!composebox);
         assertFalse(composebox.isPendingScreenshot);
       });
+
+  test('input does not overspill profile icon in RTL or LTR', async () => {
+    const omnibox = app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
+    omnibox.removeAttribute('compose-button-enabled');
+    const profileIcon =
+        omnibox.shadowRoot.querySelector('omnibox-everywhere-profile-icon')!;
+    profileIcon.setAttribute('is-enterprise-profile', '');
+    await microtasksFinished();
+
+    const inputEl = omnibox.$.input.inputElement;
+    assertTrue(!!inputEl);
+
+    for (const inputWritingDirection of ['rtl', 'ltr']) {
+      inputEl.dir = inputWritingDirection;
+      await microtasksFinished();
+      const inputRect = inputEl.getBoundingClientRect();
+      const profileRect = profileIcon.getBoundingClientRect();
+      assertTrue(
+          inputRect.right <= profileRect.left,
+          `Input right (${inputRect.right}) overspilled profile icon left (${
+              profileRect.left}) for dir=${inputWritingDirection}`);
+    }
+  });
 });

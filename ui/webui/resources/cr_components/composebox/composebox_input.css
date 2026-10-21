@@ -22,7 +22,8 @@
   flex-direction: row;
   padding-block-start: var(--cr-composebox-text-container-padding-block-start, 8px);
   padding-block-end: 0;
-  padding-inline: var(--text-input-inline-start-spacing) 0;
+  padding-inline: var(--text-input-inline-start-spacing, 0)
+      max(0px, calc(var(--text-input-inline-end-spacing, 0px) - 12px));
 }
 
 :host-context([use-pec-api]:not([has-allowed-inputs])) #textContainer {
@@ -95,7 +96,7 @@
   font-size: var(--cr-composebox-font-size, inherit);
   line-height: 24px;
   padding-block: var(--text-input-top-spacing) 4px;
-  padding-inline: 12px var(--text-input-inline-end-spacing);
+  padding-inline: 12px;
   width: 100%;
 }
 
@@ -111,12 +112,15 @@
   word-break: break-word;
 }
 
+:host([entrypoint-name='ContextualTasks']) #textContainer {
+  padding-inline-end: var(--text-input-inline-end-spacing, 0);
+}
+
 :host([entrypoint-name='ContextualTasks']) #input,
 :host([entrypoint-name='ContextualTasks']) #mirror,
 :host([entrypoint-name='ContextualTasks']) #smartCompose {
   padding-block: 12px;
-  padding-inline-end: var(--text-input-inline-end-spacing);
-  padding-inline-start: 0;
+  padding-inline: 0;
 }
 
 :host-context(:not([searchbox-next-enabled])) #input {
@@ -166,11 +170,11 @@
   left: anchor(start);
 }
 
-:host-context([dir='rtl']) #caret {
+#caret:dir(rtl) {
   left: anchor(left);
 }
 
-:host-context([dir='rtl']) #caret.at-start {
+#caret.at-start:dir(rtl) {
   left: anchor(right);
 }
 

@@ -783,6 +783,58 @@ suite('ComposeboxCaretGeometry', () => {
     // The last space span should wrap to a line below the first span.
     assertTrue(lastSpanRect.top > firstSpanRect.top);
   });
+
+  test('PerInputDirOverrideUpdatesCaretAndClearsCancelIcon', async () => {
+    setDirection('ltr');
+    inputElement.style.position = 'relative';
+    inputElement.style.width = '400px';
+    inputElement.style.setProperty('--text-input-inline-end-spacing', '80px');
+    const input =
+        inputElement.shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+    const inputWrapper =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#inputWrapper')!;
+    const caret = inputElement.shadowRoot.querySelector<HTMLElement>('#caret')!;
+    const cancelIcon =
+        inputElement.shadowRoot.querySelector<HTMLElement>('#cancelIcon')!;
+
+    input.focus();
+    input.dispatchEvent(new FocusEvent('focus'));
+    await inputElement.updateComplete;
+    await microtasksFinished();
+
+    assertFalse(inputWrapper.hasAttribute('dir'));
+    const ltrCaretLeft = caret.getBoundingClientRect().left;
+
+    input.dir = 'rtl';
+    await microtasksFinished();
+    assertEquals('rtl', inputWrapper.getAttribute('dir'));
+    const rtlCaretRect = caret.getBoundingClientRect();
+    assertTrue(rtlCaretRect.left > ltrCaretLeft);
+    assertTrue(rtlCaretRect.right <= cancelIcon.getBoundingClientRect().left);
+    assertTrue(
+        input.getBoundingClientRect().right <=
+        cancelIcon.getBoundingClientRect().left);
+
+    input.removeAttribute('dir');
+    await microtasksFinished();
+    assertFalse(inputWrapper.hasAttribute('dir'));
+    assertTrue(Math.abs(caret.getBoundingClientRect().left - ltrCaretLeft) < 2);
+
+    // Reverse case: RTL UI (<html dir="rtl">) with per-input dir="ltr"
+    // override. In RTL UI, #cancelIcon sits on the physical left
+    // (inset-inline-end).
+    setDirection('rtl');
+    await microtasksFinished();
+    input.dir = 'ltr';
+    await microtasksFinished();
+    assertEquals('ltr', inputWrapper.getAttribute('dir'));
+    assertTrue(
+        caret.getBoundingClientRect().left >=
+        cancelIcon.getBoundingClientRect().right);
+    assertTrue(
+        input.getBoundingClientRect().left >=
+        cancelIcon.getBoundingClientRect().right);
+  });
 });
 
 suite('ComposeboxSkills', () => {
