@@ -1002,6 +1002,59 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPromoInteractiveTest,
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
       WaitForPromo(
           feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature),
+      CheckView(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+          [](user_education::HelpBubbleView* bubble) {
+            return bubble->arrow();
+          },
+          views::BubbleBorder::TOP_LEFT),
+      PressButton(kContextualTasksEphemeralToolbarButtonElementId),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+class ContextualTasksRightEphemeralButtonPromoInteractiveTest
+    : public ContextualTasksEphemeralButtonPromoInteractiveTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {
+        {contextual_tasks::kContextualTasks,
+         {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
+        {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
+         {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"},
+          {contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
+               .name,
+           "true"}}},
+        {contextual_tasks::kContextualTasksHideCloseButtonInVerticalTabs, {}},
+        {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
+        {contextual_tasks::kContextualTasksEphemeralButtonContextMenu, {}}};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksRightEphemeralButtonPromoInteractiveTest,
+    ShowsPromoWithTopRightArrowWhenEphemeralButtonIsOnRight) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), Do([this]() {
+        ScopedDictPrefUpdate(browser()->GetProfile()->GetPrefs(),
+                             prefs::kSidePanelAlignmentOverrides)
+            ->Set(SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks),
+                  true);
+      }),
+      InstrumentTab(kFirstTab), AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      WaitForPromo(
+          feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature),
+      CheckView(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+          [](user_education::HelpBubbleView* bubble) {
+            return bubble->arrow();
+          },
+          views::BubbleBorder::TOP_RIGHT),
       PressButton(kContextualTasksEphemeralToolbarButtonElementId),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));

@@ -2184,6 +2184,11 @@ void MaybeRegisterChromeFeaturePromos(
               "to smoothly onboard them into the pinning tutorial.")));
 
   // kIPHContextualTasksEphemeralToolbarButtonFeature:
+  const bool is_ephemeral_button_on_right =
+      contextual_tasks::GetEnableRightHandContextualTasksEphemeralButton() ||
+      contextual_tasks::kEnableCircularEphemeralButtonNextToBatterySaver
+          .Get() ||
+      contextual_tasks::IsContextualTasksPinningV2Enabled();
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHContextualTasksEphemeralToolbarButtonFeature,
@@ -2191,7 +2196,9 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH,
           IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER,
           FeaturePromoSpecification::AcceleratorInfo())
-          .SetBubbleArrow(HelpBubbleArrow::kTopLeft)
+          .SetBubbleArrow(is_ephemeral_button_on_right
+                              ? HelpBubbleArrow::kTopRight
+                              : HelpBubbleArrow::kTopLeft)
           .SetMetadata(148, "dianaou@google.com",
                        "Triggered when the ephemeral contextual tasks toolbar "
                        "button is shown after closing the side panel.")));
