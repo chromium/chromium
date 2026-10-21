@@ -718,7 +718,9 @@ void ArcSupportHost::OnMessage(const base::DictValue& message) {
       error_delegate_->OnWindowClosed();
     }
   } else if (*event == kEventOnAgreed || *event == kEventOnCanceled) {
-    CHECK(tos_delegate_, base::NotFatalUntil::M160);
+    // TODO(crbug.com/573571508): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(tos_delegate_);
     std::optional<bool> tos_shown = message.FindBool(kTosShown);
     std::optional<bool> is_metrics_enabled =
         message.FindBool(kIsMetricsEnabled);
