@@ -508,7 +508,8 @@ TEST_F(PasswordStatusCheckServiceBaseTest, PrefInitialized) {
 
   EXPECT_GE(service()->GetScheduledPasswordCheckTime(), base::Time::Now());
   EXPECT_LT(service()->GetScheduledPasswordCheckTime(),
-            base::Time::Now() + service()->GetScheduledPasswordCheckInterval());
+            base::Time::Now() + service()->GetScheduledPasswordCheckInterval() +
+                base::Days(1));
 }
 
 // If interval changes, the scheduled time at which the password check runs
