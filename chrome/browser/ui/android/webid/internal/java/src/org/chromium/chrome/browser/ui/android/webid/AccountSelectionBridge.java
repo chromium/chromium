@@ -9,7 +9,10 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.content.res.Resources;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -41,17 +44,20 @@ import java.util.List;
  */
 @NullMarked
 class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
+    @JniType("::AccountSelectionViewAndroid")
+    interface NativeAccountSelectionViewAndroid extends JniTypeToken {}
+
     /**
      * The size of the maskable icon's safe zone as a fraction of the icon's edge size as defined in
      * https://www.w3.org/TR/appmanifest/
      */
     public static final float MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO = 0.8f;
 
-    private long mNativeView;
+    private @Nullable JniRawPtr<NativeAccountSelectionViewAndroid> mNativeView;
     private final AccountSelectionComponent mAccountSelectionComponent;
 
     private AccountSelectionBridge(
-            long nativeView,
+            JniRawPtr<NativeAccountSelectionViewAndroid> nativeView,
             Tab tab,
             WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController,
@@ -86,14 +92,17 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
 
     @CalledByNative
     private static @Nullable AccountSelectionBridge create(
-            long nativeView,
+            JniRawPtr<NativeAccountSelectionViewAndroid> nativeView,
             @JniType("content::WebContents*") WebContents webContents,
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
             @RpMode.EnumType int rpMode,
             boolean canShowUi) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
-        if (bottomSheetController == null) return null;
+        if (bottomSheetController == null) {
+            nativeView.release();
+            return null;
+        }
         Tab tab = assertNonNull(TabUtils.fromWebContents(webContents));
         return new AccountSelectionBridge(
                 nativeView, tab, windowAndroid, bottomSheetController, rpMode, canShowUi);
@@ -102,7 +111,10 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     @CalledByNative
     private void destroy() {
         mAccountSelectionComponent.close();
-        mNativeView = 0;
+        if (mNativeView != null) {
+            mNativeView.release();
+            mNativeView = null;
+        }
     }
 
     @CalledByNative
@@ -246,14 +258,14 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
 
     @Override
     public void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
-        if (mNativeView != 0) {
+        if (mNativeView != null) {
             AccountSelectionBridgeJni.get().onDismiss(mNativeView, dismissReason);
         }
     }
 
     @Override
     public void onAccountSelected(Account account) {
-        if (mNativeView != 0) {
+        if (mNativeView != null) {
             // This call passes the account fields directly as String and GURL parameters as an
             // optimization to avoid needing multiple JNI getters on the Account class on for each
             // field.
@@ -268,35 +280,35 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
 
     @Override
     public void onLoginToIdP(GURL idpConfigUrl, GURL idpLoginUrl) {
-        if (mNativeView != 0) {
+        if (mNativeView != null) {
             AccountSelectionBridgeJni.get().onLoginToIdP(mNativeView, idpConfigUrl, idpLoginUrl);
         }
     }
 
     @Override
     public void onMoreDetails() {
-        if (mNativeView != 0) {
+        if (mNativeView != null) {
             AccountSelectionBridgeJni.get().onMoreDetails(mNativeView);
         }
     }
 
     @Override
     public void onAccountsDisplayed() {
-        if (mNativeView != 0) {
+        if (mNativeView != null) {
             AccountSelectionBridgeJni.get().onAccountsDisplayed(mNativeView);
         }
     }
 
     @Override
     public void onNativeAppResult(String token) {
-        if (mNativeView != 0) {
+        if (mNativeView != null) {
             AccountSelectionBridgeJni.get().onNativeAppResult(mNativeView, token);
         }
     }
 
     @Override
     public void onNativeAppError(IdentityCredentialTokenError error) {
-        if (mNativeView != 0) {
+        if (mNativeView != null) {
             AccountSelectionBridgeJni.get()
                     .onNativeAppError(mNativeView, error.getCode(), error.getUrl());
         }
@@ -304,7 +316,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
 
     @Override
     public void onNativeAppLoginFinished() {
-        if (mNativeView != 0) {
+        if (mNativeView != null) {
             AccountSelectionBridgeJni.get().onNativeAppLoginFinished(mNativeView);
         }
     }
@@ -327,32 +339,33 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     @NativeMethods
     interface Natives {
         void onAccountSelected(
-                long nativeAccountSelectionViewAndroid,
+                JniPtr<NativeAccountSelectionViewAndroid> self,
                 @JniType("GURL") GURL idpConfigUrl,
                 @JniType("std::string") String accountId,
                 boolean isSignedIn);
 
         void onDismiss(
-                long nativeAccountSelectionViewAndroid,
+                JniPtr<NativeAccountSelectionViewAndroid> self,
                 @IdentityRequestDialogDismissReason int dismissReason);
 
         void onLoginToIdP(
-                long nativeAccountSelectionViewAndroid,
+                JniPtr<NativeAccountSelectionViewAndroid> self,
                 @JniType("GURL") GURL idpConfigUrl,
                 @JniType("GURL") GURL idpLoginUrl);
 
-        void onMoreDetails(long nativeAccountSelectionViewAndroid);
+        void onMoreDetails(JniPtr<NativeAccountSelectionViewAndroid> self);
 
-        void onAccountsDisplayed(long nativeAccountSelectionViewAndroid);
+        void onAccountsDisplayed(JniPtr<NativeAccountSelectionViewAndroid> self);
 
         void onNativeAppResult(
-                long nativeAccountSelectionViewAndroid, @JniType("std::string") String token);
+                JniPtr<NativeAccountSelectionViewAndroid> self,
+                @JniType("std::string") String token);
 
         void onNativeAppError(
-                long nativeAccountSelectionViewAndroid,
+                JniPtr<NativeAccountSelectionViewAndroid> self,
                 @JniType("std::string") String code,
                 @JniType("GURL") GURL url);
 
-        void onNativeAppLoginFinished(long nativeAccountSelectionViewAndroid);
+        void onNativeAppLoginFinished(JniPtr<NativeAccountSelectionViewAndroid> self);
     }
 }

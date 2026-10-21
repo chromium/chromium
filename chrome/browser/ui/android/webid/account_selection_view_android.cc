@@ -17,6 +17,7 @@
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -472,7 +473,7 @@ bool AccountSelectionViewAndroid::MaybeCreateJavaObject(
   }
   JNIEnv* env = AttachCurrentThread();
   java_object_internal_ = Java_AccountSelectionBridge_create(
-      env, reinterpret_cast<intptr_t>(this), delegate_->GetWebContents(),
+      env, jni_zero::MakeRaw(this), delegate_->GetWebContents(),
       delegate_->GetNativeView()->GetWindowAndroid(),
       static_cast<int32_t>(rp_mode.value_or(blink::mojom::RpMode::kPassive)),
       can_show_ui_);
