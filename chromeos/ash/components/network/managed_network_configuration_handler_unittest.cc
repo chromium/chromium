@@ -797,10 +797,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyProhibitedTechnology) {
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, ModifyCustomApns) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(/*enabled_features=*/
-                                       {features::kApnRevamp,
-                                        features::kAllowApnModificationPolicy},
-                                       /*disabled_features=*/{});
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAllowApnModificationPolicy},
+      /*disabled_features=*/{});
   ConfigureCellularService(kTestCellularServicePath, shill::kTypeCellular);
 
   auto custom_apn_list = base::ListValue().Append(
@@ -2292,10 +2291,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, AllowApnModification) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(/*enabled_features=*/
-                                       {features::kApnRevamp,
-                                        features::kAllowApnModificationPolicy},
-                                       /*disabled_features=*/{});
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAllowApnModificationPolicy},
+      /*disabled_features=*/{});
 
   // TODO(b/333100319): When feature is fully enabled, test
   // AllowApnModification() in other unit tests to be consistent.

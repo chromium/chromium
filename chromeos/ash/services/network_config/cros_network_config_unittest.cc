@@ -2057,10 +2057,9 @@ TEST_F(CrosNetworkConfigTest, SetProperties) {
 
 TEST_F(CrosNetworkConfigTest, FillInCustomAPNList) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(/*enabled_features=*/
-                                       {features::kApnRevamp,
-                                        features::kAllowApnModificationPolicy},
-                                       /*disabled_features=*/{});
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAllowApnModificationPolicy},
+      /*disabled_features=*/{});
 
   TestApnData test_apn1;
   test_apn1.access_point_name = kCellularTestApn1;
@@ -2106,64 +2105,8 @@ TEST_F(CrosNetworkConfigTest, FillInCustomAPNList) {
   EXPECT_EQ(shill::kApnTypeDefault, *apn_type);
 }
 
-TEST_F(CrosNetworkConfigTest, CustomAPN) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kApnRevamp);
-  SetupAPNList();
-  // Verify that setting APN to an entry that already exists in apn list
-  // does not update the custom apn list.
-  auto config = mojom::ConfigProperties::New();
-  auto cellular_config = mojom::CellularConfigProperties::New();
-  TestApnData test_apn_data1;
-  test_apn_data1.access_point_name = kCellularTestApn1;
-  test_apn_data1.name = kCellularTestApnName1;
-  test_apn_data1.username = kCellularTestApnUsername1;
-  test_apn_data1.password = kCellularTestApnPassword1;
-  test_apn_data1.attach = kCellularTestApnAttach1;
-  cellular_config->apn = test_apn_data1.AsMojoApn();
-  config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
-      std::move(cellular_config));
-  SetProperties(kCellularGuid, std::move(config));
-  const base::ListValue* apn_list =
-      NetworkHandler::Get()->network_metadata_store()->GetCustomApnList(
-          kCellularGuid);
-  ASSERT_FALSE(apn_list);
-
-  // Verify that custom APN list is updated properly.
-  config = mojom::ConfigProperties::New();
-  cellular_config = mojom::CellularConfigProperties::New();
-  TestApnData test_apn_data3;
-  test_apn_data3.access_point_name = kCellularTestApn3;
-  test_apn_data3.name = kCellularTestApnName3;
-  test_apn_data3.username = kCellularTestApnUsername3;
-  test_apn_data3.password = policy_util::kFakeCredential;
-  test_apn_data3.attach = kCellularTestApnAttach3;
-  cellular_config->apn = test_apn_data3.AsMojoApn();
-  config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
-      std::move(cellular_config));
-  SetProperties(kCellularGuid, std::move(config));
-  apn_list = NetworkHandler::Get()->network_metadata_store()->GetCustomApnList(
-      kCellularGuid);
-  ASSERT_TRUE(apn_list);
-
-  // Verify that custom APN list is returned properly in managed properties.
-  mojom::ManagedPropertiesPtr properties = GetManagedProperties(kCellularGuid);
-  ASSERT_TRUE(properties);
-  ASSERT_EQ(kCellularGuid, properties->guid);
-  ASSERT_TRUE(properties->type_properties->is_cellular());
-  ASSERT_TRUE(
-      properties->type_properties->get_cellular()->custom_apn_list.has_value());
-  ASSERT_EQ(
-      1u, properties->type_properties->get_cellular()->custom_apn_list->size());
-  const mojom::ApnPropertiesPtr& first_apn =
-      properties->type_properties->get_cellular()->custom_apn_list->front();
-  EXPECT_TRUE(test_apn_data3.MojoApnEquals(*first_apn));
-}
-
 TEST_F(CrosNetworkConfigTest,
        CanCreateDisabledAttachApnWithoutExistingDefaultApn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2205,8 +2148,6 @@ TEST_F(CrosNetworkConfigTest,
 }
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2328,8 +2269,6 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
 }
 
 TEST_F(CrosNetworkConfigTest, CreateExclusivelyEnabledCustomApnList) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2460,8 +2399,6 @@ TEST_F(CrosNetworkConfigTest, CreateExclusivelyEnabledCustomApnList) {
 }
 
 TEST_F(CrosNetworkConfigTest, RemoveCustomApnList) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2673,8 +2610,6 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApnList) {
 }
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApn_NoListSaved) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2714,8 +2649,6 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_NoListSaved) {
 }
 
 TEST_F(CrosNetworkConfigTest, ModifyCustomApnList) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2895,8 +2828,6 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApnList) {
 }
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -2983,8 +2914,6 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
 }
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApn_InvalidGuid) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -3021,8 +2950,6 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_InvalidGuid) {
 }
 
 TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -3152,8 +3079,6 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
 }
 
 TEST_F(CrosNetworkConfigTest, CreateCustomApn_MaxAmountAllowed) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -3192,8 +3117,6 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_MaxAmountAllowed) {
 }
 
 TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
 
   // Register an observer to capture values sent to Shill
   TestNetworkConfigurationObserver network_config_observer(
@@ -3406,11 +3329,9 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
 TEST_F(CrosNetworkConfigTest,
        ApnOperationsDisallowApnModificationFlagDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list
-      .InitWithFeatures(/*enabled_features=*/
-                        {features::kApnRevamp},
-                        /*disabled_features=*/{
-                            features::kAllowApnModificationPolicy});
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAllowApnModificationPolicy});
 
   // Register an observer to capture values sent to Shill.
   TestNetworkConfigurationObserver network_config_observer(
@@ -3452,10 +3373,9 @@ TEST_F(CrosNetworkConfigTest,
 
 TEST_F(CrosNetworkConfigTest, ApnOperationsDisallowApnModification) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(/*enabled_features=*/
-                                       {features::kApnRevamp,
-                                        features::kAllowApnModificationPolicy},
-                                       /*disabled_features=*/{});
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAllowApnModificationPolicy},
+      /*disabled_features=*/{});
 
   // Register an observer to capture values sent to Shill.
   TestNetworkConfigurationObserver network_config_observer(
@@ -3544,10 +3464,7 @@ TEST_F(CrosNetworkConfigTest, ApnOperationsDisallowApnModification) {
       1);
 }
 
-TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
-
+TEST_F(CrosNetworkConfigTest, ConnectedAPN) {
   // Configure a cellular network with a last good APN and disconnected
   // as connection status
   helper()->ConfigureService(base::StringPrintf(
@@ -3599,79 +3516,6 @@ TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampEnabled) {
   // Expect the masked password instead of the raw one
   EXPECT_EQ(policy_util::kFakeCredential, connected_apn->password);
   EXPECT_EQ(kCellularTestApnAttach1, connected_apn->attach);
-}
-
-TEST_F(CrosNetworkConfigTest, ConnectedAPN_ApnRevampDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kApnRevamp);
-  // Configure a cellular network with a last good APN and disconnected
-  // as connection status
-  helper()->ConfigureService(base::StringPrintf(
-      kTestApnCellularShillDictFmt, kTestApnCellularGuid, shill::kStateIdle,
-      kCellularTestIccid, NetworkProfileHandler::GetSharedProfilePath().c_str(),
-      CreateApnShillDict().c_str()));
-
-  // Verify the connection state
-  mojom::ManagedPropertiesPtr properties =
-      GetManagedProperties(kTestApnCellularGuid);
-  ASSERT_TRUE(properties);
-  EXPECT_EQ(kTestApnCellularGuid, properties->guid);
-  EXPECT_EQ(mojom::NetworkType::kCellular, properties->type);
-  EXPECT_EQ(mojom::ConnectionStateType::kNotConnected,
-            properties->connection_state);
-  ASSERT_TRUE(properties->type_properties->is_cellular());
-  mojom::ManagedCellularProperties* cellular_props =
-      properties->type_properties->get_cellular().get();
-  ASSERT_TRUE(cellular_props);
-
-  // Check that last_good_apn was set, but not the connected_apn
-  EXPECT_TRUE(cellular_props->last_good_apn);
-  EXPECT_FALSE(cellular_props->connected_apn);
-
-  // Simulate an update where Shill was able to connect to the cellular network
-  helper()->ConfigureService(base::StringPrintf(
-      kTestApnCellularShillDictFmt, kTestApnCellularGuid, shill::kStateReady,
-      kCellularTestIccid, NetworkProfileHandler::GetSharedProfilePath().c_str(),
-      CreateApnShillDict().c_str()));
-
-  // Verify the new connection state
-  properties = GetManagedProperties(kTestApnCellularGuid);
-  ASSERT_TRUE(properties);
-  EXPECT_EQ(kTestApnCellularGuid, properties->guid);
-  EXPECT_EQ(mojom::NetworkType::kCellular, properties->type);
-  EXPECT_EQ(mojom::ConnectionStateType::kConnected,
-            properties->connection_state);
-  EXPECT_TRUE(properties->type_properties->is_cellular());
-
-  // Check that last_good_apn was set, and the connected_apn is still not set
-  cellular_props = properties->type_properties->get_cellular().get();
-  ASSERT_TRUE(cellular_props);
-  EXPECT_TRUE(cellular_props->last_good_apn);
-  EXPECT_FALSE(cellular_props->connected_apn);
-}
-
-TEST_F(CrosNetworkConfigTest, UnrecognizedAttachApnValue) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kApnRevamp);
-  SetupAPNList();
-  const char kUnrecognizedTestApnAttachStr[] = "unrecognized attach value";
-
-  // Verify that custom APN list is updated properly.
-  auto config = mojom::ConfigProperties::New();
-  auto cellular_config = mojom::CellularConfigProperties::New();
-  auto new_apn = mojom::ApnProperties::New();
-
-  new_apn->attach = kUnrecognizedTestApnAttachStr;
-  cellular_config->apn = std::move(new_apn);
-  config->type_config = mojom::NetworkTypeConfigProperties::NewCellular(
-      std::move(cellular_config));
-  SetProperties(kCellularGuid, std::move(config));
-
-  // Unrecognized values are still saved without incident.
-  ASSERT_EQ(kUnrecognizedTestApnAttachStr, GetManagedProperties(kCellularGuid)
-                                               ->type_properties->get_cellular()
-                                               ->custom_apn_list->front()
-                                               ->attach);
 }
 
 TEST_F(CrosNetworkConfigTest, AllowRoaming) {

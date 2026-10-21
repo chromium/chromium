@@ -570,15 +570,13 @@ void CellularNetworkMetricsLogger::OnConnectionResult(
   if (custom_apn_list) {
     custom_apns_count = custom_apn_list->size();
 
-    if (ash::features::IsApnRevampEnabled()) {
-      enabled_custom_apns_count = std::count_if(
-          custom_apn_list->begin(), custom_apn_list->end(),
-          [](const base::Value& apn) -> bool {
-            const std::string* apn_type =
-                apn.GetDict().FindString(::onc::cellular_apn::kState);
-            return *apn_type == ::onc::cellular_apn::kStateEnabled;
-          });
-    }
+    enabled_custom_apns_count = std::count_if(
+        custom_apn_list->begin(), custom_apn_list->end(),
+        [](const base::Value& apn) -> bool {
+          const std::string* apn_type =
+              apn.GetDict().FindString(::onc::cellular_apn::kState);
+          return *apn_type == ::onc::cellular_apn::kStateEnabled;
+        });
   }
 
   // If the connection was successful, log the number of custom APNs the network
@@ -586,7 +584,7 @@ void CellularNetworkMetricsLogger::OnConnectionResult(
   if (!shill_error) {
     base::UmaHistogramCounts100(kCustomApnsCountHistogram, custom_apns_count);
 
-    if (ash::features::IsApnRevampEnabled() && custom_apns_count > 0) {
+    if (custom_apns_count > 0) {
       base::UmaHistogramCounts100(kCustomApnsEnabledCountHistogram,
                                   enabled_custom_apns_count);
       base::UmaHistogramCounts100(
@@ -595,10 +593,7 @@ void CellularNetworkMetricsLogger::OnConnectionResult(
     }
   }
 
-  // For pre-revamp cases, we consider all custom APNs to be enabled.
-  const bool has_enabled_custom_apns = ash::features::IsApnRevampEnabled()
-                                           ? (enabled_custom_apns_count > 0)
-                                           : (custom_apns_count > 0);
+  const bool has_enabled_custom_apns = enabled_custom_apns_count > 0;
   base::UmaHistogramEnumeration(
       has_enabled_custom_apns ? kConnectResultHasEnabledCustomApnsAllHistogram
                               : kConnectResultNoEnabledCustomApnsAllHistogram,

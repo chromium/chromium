@@ -161,9 +161,6 @@ class CrosNetworkConfig
   void SelectCellularMobileNetworkSuccess(int callback_id);
   void SelectCellularMobileNetworkFailure(int callback_id,
                                           const std::string& error_name);
-  void UpdateCustomApnList(
-      const NetworkState* network,
-      const chromeos::network_config::mojom::ConfigProperties* properties);
   std::vector<chromeos::network_config::mojom::ApnPropertiesPtr>
   GetCustomApnList(const std::string& guid);
 

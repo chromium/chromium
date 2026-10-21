@@ -28,7 +28,6 @@ BASE_DECLARE_FEATURE(kAlwaysReinstallSystemWebApps);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kAmbientEQDefaultOff);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kAmbientModeDevUseProdFeature);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kApnRevamp);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kApplyManagedProxyBypassListVerbatim);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kArcAdbSideloadingFeature);
@@ -846,9 +845,6 @@ bool IsEapDefaultCasWithoutSubjectVerificationAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientEQDefaultOff();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeDevUseProdEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowApnModificationPolicyEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsApnRevampAndAllowApnModificationPolicyEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsApnRevampEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsApplyManagedProxyBypassListVerbatimEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsArcInputOverlayAlphaV2Enabled();

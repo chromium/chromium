@@ -288,10 +288,7 @@ export function createRoutes(): OsSettingsRoutes {
   r.HOTSPOT_DETAIL = createSubpage(
       r.INTERNET, routesMojom.HOTSPOT_SUBPAGE_PATH, Subpage.kHotspotDetails);
 
-  if (loadTimeData.getBoolean('isApnRevampEnabled')) {
-    r.APN =
-        createSubpage(r.INTERNET, routesMojom.APN_SUBPAGE_PATH, Subpage.kApn);
-  }
+  r.APN = createSubpage(r.INTERNET, routesMojom.APN_SUBPAGE_PATH, Subpage.kApn);
   r.PASSPOINT_DETAIL = createSubpage(
       r.INTERNET, routesMojom.PASSPOINT_DETAIL_SUBPAGE_PATH,
       Subpage.kPasspointDetails);

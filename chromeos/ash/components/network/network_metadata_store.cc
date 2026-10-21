@@ -515,30 +515,18 @@ bool NetworkMetadataStore::GetHasBadPassword(const std::string& network_guid) {
 
 void NetworkMetadataStore::SetCustomApnList(const std::string& network_guid,
                                             base::ListValue list) {
-  if (ash::features::IsApnRevampEnabled()) {
-    if (!IsApnListValid(list)) {
-      NET_LOG(ERROR) << "network_guid: " << network_guid << std::endl
-                     << "Invalid list passed to SetCustomApnList():" << list;
-      return;
-    }
-
-    SetPref(network_guid, kCustomApnListV2, base::Value(std::move(list)));
+  if (!IsApnListValid(list)) {
+    NET_LOG(ERROR) << "network_guid: " << network_guid << std::endl
+                   << "Invalid list passed to SetCustomApnList():" << list;
     return;
   }
 
-  SetPref(network_guid, kCustomApnList, base::Value(std::move(list)));
+  SetPref(network_guid, kCustomApnListV2, base::Value(std::move(list)));
 }
 
 const base::ListValue* NetworkMetadataStore::GetCustomApnList(
     const std::string& network_guid) {
-  if (ash::features::IsApnRevampEnabled()) {
-    if (const base::Value* pref = GetPref(network_guid, kCustomApnListV2)) {
-      return pref->GetIfList();
-    }
-    return nullptr;
-  }
-
-  if (const base::Value* pref = GetPref(network_guid, kCustomApnList)) {
+  if (const base::Value* pref = GetPref(network_guid, kCustomApnListV2)) {
     return pref->GetIfList();
   }
   return nullptr;
@@ -546,7 +534,6 @@ const base::ListValue* NetworkMetadataStore::GetCustomApnList(
 
 const base::ListValue* NetworkMetadataStore::GetPreRevampCustomApnList(
     const std::string& network_guid) {
-  DCHECK(ash::features::IsApnRevampEnabled());
   if (const base::Value* pref = GetPref(network_guid, kCustomApnList)) {
     return pref->GetIfList();
   }

@@ -42,11 +42,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   // NetworkStateHandlerObserver:
   void NetworkListChanged() override;
 
-  void OnClearPropertiesSuccess(const std::string iccid);
-  void OnClearPropertiesFailure(const std::string iccid,
-                                const std::string guid,
-                                const std::string& error_name);
-
   // Creates an ONC configuration object for the custom APN list Shill property
   // containing |apn_list|, and applies it for the cellular |network|.
   void SetShillCustomApnListForNetwork(const NetworkState& network,

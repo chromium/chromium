@@ -151,24 +151,6 @@ void ApnMigrator::NetworkListChanged() {
       bool has_network_been_migrated =
           managed_cellular_pref_handler_->ContainsApnMigratedIccid(
               network->iccid());
-      if (!ash::features::IsApnRevampEnabled()) {
-        // If the network has been marked as migrated, but the ApnRevamp flag is
-        // disabled, the flag was disabled after being enabled. Clear
-        // CustomApnList so that Shill knows to use legacy APN selection logic.
-        if (has_network_been_migrated) {
-          NET_LOG(EVENT) << "Network has been migrated but the revamp flag is "
-                         << "disabled. Clearing CustomAPNList: "
-                         << network->iccid();
-          network_configuration_handler_->ClearShillProperties(
-              network->path(), {shill::kCellularCustomApnListProperty},
-              base::BindOnce(&ApnMigrator::OnClearPropertiesSuccess,
-                             weak_factory_.GetWeakPtr(), network->iccid()),
-              base::BindOnce(&ApnMigrator::OnClearPropertiesFailure,
-                             weak_factory_.GetWeakPtr(), network->iccid(),
-                             network->guid()));
-        }
-        continue;
-      }
       if (username_hash.empty()) {
         // There's no primary session on the login screen, avoid spamming logs.
         if (primary_session) {
@@ -215,17 +197,6 @@ void ApnMigrator::NetworkListChanged() {
   }
 }
 
-void ApnMigrator::OnClearPropertiesSuccess(const std::string iccid) {
-  NET_LOG(EVENT) << "Successfully cleared CustomAPNList for: " << iccid;
-  shill_updated_iccids_.emplace(iccid);
-}
-
-void ApnMigrator::OnClearPropertiesFailure(const std::string iccid,
-                                           const std::string guid,
-                                           const std::string& error_name) {
-  NET_LOG(ERROR) << "Failed to clear CustomAPNList for: " << iccid;
-}
-
 void ApnMigrator::SetShillCustomApnListForNetwork(
     const NetworkState& network,
     const base::ListValue* apn_list) {
@@ -264,7 +235,6 @@ void ApnMigrator::OnSetShillCustomApnListFailure(
 
 void ApnMigrator::MigrateNetwork(const NetworkState& network,
                                  const std::string& username_hash) {
-  CHECK(ash::features::IsApnRevampEnabled(), base::NotFatalUntil::M161);
   CHECK(!username_hash.empty(), base::NotFatalUntil::M161);
 
   // Return early if the network is already in the process of being migrated.

@@ -84,11 +84,6 @@ class OSSettingsMochaTestWithExistingUser : public OSSettingsMochaTest {
   }
 };
 
-class OSSettingsMochaTestApnRevamp : public OSSettingsMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{ash::features::kApnRevamp};
-};
-
 class OSSettingsCrostiniTest : public OSSettingsMochaTest {
  protected:
   OSSettingsCrostiniTest() { fake_crostini_features_.SetAll(true); }
@@ -514,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, GuestOsSharedUsbDevices) {
   RunSettingsTest("guest_os/guest_os_shared_usb_devices_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnRevamp, InternetPageApnSubpage) {
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageApnSubpage) {
   RunSettingsTest("internet_page/apn_subpage_test.js");
 }
 
@@ -522,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageApnDetailDialog) {
   RunSettingsTest("internet_page/apn_detail_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnRevamp, InternetPage) {
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPage) {
   RunSettingsTest("internet_page/internet_page_test.js");
 }
 
@@ -573,8 +568,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageInternetDetailMenu) {
   RunSettingsTest("internet_page/internet_detail_menu_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnRevamp,
-                       InternetPageInternetDetailSubpage) {
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageInternetDetailSubpage) {
   RunSettingsTest("internet_page/internet_detail_subpage_test.js");
 }
 

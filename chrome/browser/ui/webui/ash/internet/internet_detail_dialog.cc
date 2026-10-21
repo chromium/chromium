@@ -175,7 +175,6 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   source->AddBoolean("showTechnologyBadge",
                      !features::IsSeparateNetworkIconsEnabled());
-  source->AddBoolean("apnRevamp", features::IsApnRevampEnabled());
   cellular_setup::AddNonStringLoadTimeData(source);
   AddInternetStrings(source);
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_DETAIL);

@@ -392,34 +392,22 @@ base::span<const SearchConcept> GetCellularAddESimSearchTerms() {
 
 base::span<const SearchConcept>
 GeActiveCellularNetworkApnSettingsSearchConcepts() {
-  if (ash::features::IsApnRevampEnabled()) {
-    static constexpr auto tags = std::to_array<SearchConcept>(
-        {{IDS_OS_SETTINGS_TAG_CELLULAR_APN_SETTINGS,
-          mojom::kApnSubpagePath,
-          mojom::SearchResultIcon::kCellular,
-          mojom::SearchResultDefaultRank::kMedium,
-          mojom::SearchResultType::kSubpage,
-          {.subpage = mojom::Subpage::kApn},
-          {IDS_OS_SETTINGS_TAG_CELLULAR_APN_SETTINGS_ALT_1,
-           SearchConcept::kAltTagEnd}},
-         {IDS_OS_SETTINGS_TAG_ADD_APN,
-          mojom::kApnSubpagePath,
-          mojom::SearchResultIcon::kCellular,
-          mojom::SearchResultDefaultRank::kMedium,
-          mojom::SearchResultType::kSetting,
-          {.setting = mojom::Setting::kCellularAddApn},
-          {IDS_OS_SETTINGS_TAG_ADD_APN_ALT1, SearchConcept::kAltTagEnd}}});
-    return tags;
-  }
-
-  static constexpr auto tags = std::to_array<SearchConcept>({
-      {IDS_OS_SETTINGS_TAG_CELLULAR_APN,
-       mojom::kCellularDetailsSubpagePath,
-       mojom::SearchResultIcon::kCellular,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kCellularApn}},
-  });
+  static constexpr auto tags = std::to_array<SearchConcept>(
+      {{IDS_OS_SETTINGS_TAG_CELLULAR_APN_SETTINGS,
+        mojom::kApnSubpagePath,
+        mojom::SearchResultIcon::kCellular,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSubpage,
+        {.subpage = mojom::Subpage::kApn},
+        {IDS_OS_SETTINGS_TAG_CELLULAR_APN_SETTINGS_ALT_1,
+         SearchConcept::kAltTagEnd}},
+       {IDS_OS_SETTINGS_TAG_ADD_APN,
+        mojom::kApnSubpagePath,
+        mojom::SearchResultIcon::kCellular,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kCellularAddApn},
+        {IDS_OS_SETTINGS_TAG_ADD_APN_ALT1, SearchConcept::kAltTagEnd}}});
   return tags;
 }
 

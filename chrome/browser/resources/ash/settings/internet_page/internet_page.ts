@@ -231,17 +231,6 @@ export class SettingsInternetPageElement extends
         type: Boolean,
         value: false,
       },
-
-      isApnRevampEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isApnRevampEnabled') &&
-              loadTimeData.getBoolean('isApnRevampEnabled');
-        },
-      },
-
-
-
       /**
        * Page name, if defined, indicating that the next deviceStates update
        * should call attemptShowCellularSetupDialog_().
@@ -381,7 +370,6 @@ export class SettingsInternetPageElement extends
   declare private eSimNetworkState_: NetworkStateProperties;
   declare private globalPolicy_: GlobalPolicy|undefined;
   declare private hasActiveCellularNetwork_: boolean;
-  declare private readonly isApnRevampEnabled_: boolean;
   declare private isConnectedToNonCellularNetwork_: boolean;
   declare private isNumCustomApnsLimitReached_: boolean;
   declare private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;

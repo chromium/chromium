@@ -602,10 +602,6 @@ void ShillToONCTranslator::TranslateApnProperties() {
                            kApnAuthenticationTranslationTable,
                            ::onc::cellular_apn::kAuthentication);
 
-  if (!ash::features::IsApnRevampEnabled()) {
-    return;
-  }
-
   TranslateWithTableAndSet(shill::kApnIpTypeProperty,
                            kApnIpTypeTranslationTable,
                            ::onc::cellular_apn::kIpType);

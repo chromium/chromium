@@ -10,7 +10,6 @@ import {InternetPageBrowserProxyImpl, Router, routes, settingMojom, setUserActio
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
 import type {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import type {NetworkApnListElement} from 'chrome://resources/ash/common/network/network_apnlist.js';
 import type {NetworkChooseMobileElement} from 'chrome://resources/ash/common/network/network_choose_mobile.js';
 import type {NetworkConfigToggleElement} from 'chrome://resources/ash/common/network/network_config_toggle.js';
 import type {NetworkIpConfigElement} from 'chrome://resources/ash/common/network/network_ip_config.js';
@@ -1493,7 +1492,6 @@ suite('<settings-internet-detail-subpage>', () => {
     test(
         'Cellular network on active sim slot, show config sections',
         async () => {
-          loadTimeData.overrideValues({isApnRevampEnabled: true});
           init();
           const TEST_ICCID = '11111111111111111';
 
@@ -1533,7 +1531,6 @@ suite('<settings-internet-detail-subpage>', () => {
     test(
         'Cellular network on non-active sim slot, hide config sections',
         async () => {
-          loadTimeData.overrideValues({isApnRevampEnabled: true});
           init();
           const TEST_ICCID = '11111111111111111';
 
@@ -1695,162 +1692,146 @@ suite('<settings-internet-detail-subpage>', () => {
       assertTrue(macAddress.hidden);
     });
 
-    // Syntactic sugar for running test twice with different values for the
-    // apnRevamp feature flag.
-    [true, false].forEach(isApnRevampEnabled => {
-      test(
-          `Page disabled when inhibited, ApnRevamp enabled is: ${
-              isApnRevampEnabled}`,
-          async () => {
-            loadTimeData.overrideValues({isApnRevampEnabled});
-            init();
+    test('Page disabled when inhibited', async () => {
+      init();
 
-            mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
-            const cellularNetwork = getManagedProperties(
-                NetworkType.kCellular, 'cellular', OncSource.kDevice);
-            // Required for connectDisconnectButton to be rendered.
-            cellularNetwork.connectionState = ConnectionStateType.kConnected;
-            // Required for allowDataRoamingButton to be rendered.
-            cellularNetwork.typeProperties.cellular!.allowRoaming =
-                OncMojo.createManagedBool(false);
-            // Required for advancedFields to be rendered.
-            cellularNetwork.typeProperties.cellular!.networkTechnology = 'LTE';
-            // Required for infoFields to be rendered.
-            cellularNetwork.typeProperties.cellular!.servingOperator = {
-              name: 'name',
-              code: '',
-              country: '',
-            };
-            // Required for deviceFields to be rendered.
-            const TEST_ICCID = '11111111111111111';
-            cellularNetwork.typeProperties.cellular!.iccid = TEST_ICCID;
-            // Required for networkChooseMobile to be rendered.
-            cellularNetwork.typeProperties.cellular!.supportNetworkScan = true;
-            mojoApi.setManagedPropertiesForTest(cellularNetwork);
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+      const cellularNetwork = getManagedProperties(
+          NetworkType.kCellular, 'cellular', OncSource.kDevice);
+      // Required for connectDisconnectButton to be rendered.
+      cellularNetwork.connectionState = ConnectionStateType.kConnected;
+      // Required for allowDataRoamingButton to be rendered.
+      cellularNetwork.typeProperties.cellular!.allowRoaming =
+          OncMojo.createManagedBool(false);
+      // Required for advancedFields to be rendered.
+      cellularNetwork.typeProperties.cellular!.networkTechnology = 'LTE';
+      // Required for infoFields to be rendered.
+      cellularNetwork.typeProperties.cellular!.servingOperator = {
+        name: 'name',
+        code: '',
+        country: '',
+      };
+      // Required for deviceFields to be rendered.
+      const TEST_ICCID = '11111111111111111';
+      cellularNetwork.typeProperties.cellular!.iccid = TEST_ICCID;
+      // Required for networkChooseMobile to be rendered.
+      cellularNetwork.typeProperties.cellular!.supportNetworkScan = true;
+      mojoApi.setManagedPropertiesForTest(cellularNetwork);
 
-            // Start uninhibited.
-            mojoApi.setDeviceStateForTest({
-              ...getDefaultDeviceStateProps(),
-              deviceState: DeviceStateType.kEnabled,
-              // Required for configurable sections to be rendered.
-              simInfos: [{
-                iccid: TEST_ICCID,
-                isPrimary: true,
-                slotId: 0,
-                eid: '',
-              }],
-            });
+      // Start uninhibited.
+      mojoApi.setDeviceStateForTest({
+        ...getDefaultDeviceStateProps(),
+        deviceState: DeviceStateType.kEnabled,
+        // Required for configurable sections to be rendered.
+        simInfos: [{
+          iccid: TEST_ICCID,
+          isPrimary: true,
+          slotId: 0,
+          eid: '',
+        }],
+      });
 
-            internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
 
-            await flushTasks();
+      await flushTasks();
 
-            const connectDisconnectButton = getButton('connectDisconnect');
-            const infoFields = getButton('infoFields');
-            const cellularSimInfoAdvanced =
-                getButton('cellularSimInfoAdvanced');
-            const advancedFields = getButton('advancedFields');
-            const deviceFields = getButton('deviceFields');
-            const toggleBtn =
-                internetDetailPage.shadowRoot!
-                    .querySelector<CellularRoamingToggleButtonElement>(
-                        'cellular-roaming-toggle-button');
-            assertTrue(!!toggleBtn);
-            const allowDataRoamingButton = toggleBtn.getCellularRoamingToggle();
-            const networkChooseMobile =
-                internetDetailPage.shadowRoot!
-                    .querySelector<NetworkChooseMobileElement>(
-                        'network-choose-mobile');
-            let apnElement: CrLinkRowElement|NetworkApnListElement|null =
-                internetDetailPage.shadowRoot!.querySelector<CrLinkRowElement>(
-                    '#apnSubpageButton');
-            if (!isApnRevampEnabled) {
-              apnElement =
-                  internetDetailPage.shadowRoot!
-                      .querySelector<NetworkApnListElement>('network-apnlist');
-            }
-            const networkIpConfig =
-                internetDetailPage.shadowRoot!
-                    .querySelector<NetworkIpConfigElement>('network-ip-config');
-            const networkNameservers =
-                internetDetailPage.shadowRoot!
-                    .querySelector<NetworkNameserversElement>(
-                        'network-nameservers');
-            const networkProxySection =
-                internetDetailPage.shadowRoot!
-                    .querySelector<NetworkProxySectionElement>(
-                        'network-proxy-section');
+      const connectDisconnectButton = getButton('connectDisconnect');
+      const infoFields = getButton('infoFields');
+      const cellularSimInfoAdvanced = getButton('cellularSimInfoAdvanced');
+      const advancedFields = getButton('advancedFields');
+      const deviceFields = getButton('deviceFields');
+      const toggleBtn = internetDetailPage.shadowRoot!
+                            .querySelector<CellularRoamingToggleButtonElement>(
+                                'cellular-roaming-toggle-button');
+      assertTrue(!!toggleBtn);
+      const allowDataRoamingButton = toggleBtn.getCellularRoamingToggle();
+      const networkChooseMobile =
+          internetDetailPage.shadowRoot!
+              .querySelector<NetworkChooseMobileElement>(
+                  'network-choose-mobile');
+      const apnElement =
+          internetDetailPage.shadowRoot!.querySelector<CrLinkRowElement>(
+              '#apnSubpageButton');
+      const networkIpConfig =
+          internetDetailPage.shadowRoot!.querySelector<NetworkIpConfigElement>(
+              'network-ip-config');
+      const networkNameservers =
+          internetDetailPage.shadowRoot!
+              .querySelector<NetworkNameserversElement>('network-nameservers');
+      const networkProxySection =
+          internetDetailPage.shadowRoot!
+              .querySelector<NetworkProxySectionElement>(
+                  'network-proxy-section');
 
-            assertTrue(!!allowDataRoamingButton);
-            assertTrue(!!networkChooseMobile);
-            assertTrue(!!apnElement);
-            assertTrue(!!networkIpConfig);
-            assertTrue(!!networkNameservers);
-            assertTrue(!!networkProxySection);
+      assertTrue(!!allowDataRoamingButton);
+      assertTrue(!!networkChooseMobile);
+      assertTrue(!!apnElement);
+      assertTrue(!!networkIpConfig);
+      assertTrue(!!networkNameservers);
+      assertTrue(!!networkProxySection);
 
-            assertFalse(connectDisconnectButton.disabled);
-            assertFalse(allowDataRoamingButton.disabled);
-            assertFalse(infoFields.disabled);
-            assertFalse(cellularSimInfoAdvanced.disabled);
-            assertFalse(advancedFields.disabled);
-            assertFalse(deviceFields.disabled);
-            assertFalse(networkChooseMobile.disabled);
-            assertFalse(apnElement.disabled);
-            assertFalse(networkIpConfig.disabled);
-            assertFalse(networkNameservers.disabled);
-            assertFalse(networkProxySection.disabled);
+      assertFalse(connectDisconnectButton.disabled);
+      assertFalse(allowDataRoamingButton.disabled);
+      assertFalse(infoFields.disabled);
+      assertFalse(cellularSimInfoAdvanced.disabled);
+      assertFalse(advancedFields.disabled);
+      assertFalse(deviceFields.disabled);
+      assertFalse(networkChooseMobile.disabled);
+      assertFalse(apnElement.disabled);
+      assertFalse(networkIpConfig.disabled);
+      assertFalse(networkNameservers.disabled);
+      assertFalse(networkProxySection.disabled);
 
-            // Mock device being inhibited.
-            mojoApi.setDeviceStateForTest({
-              ...getDefaultDeviceStateProps(),
-              deviceState: DeviceStateType.kEnabled,
-              inhibitReason: InhibitReason.kConnectingToProfile,
-              simInfos: [{
-                iccid: TEST_ICCID,
-                isPrimary: true,
-                slotId: 0,
-                eid: '',
-              }],
-            });
-            await flushTasks();
+      // Mock device being inhibited.
+      mojoApi.setDeviceStateForTest({
+        ...getDefaultDeviceStateProps(),
+        deviceState: DeviceStateType.kEnabled,
+        inhibitReason: InhibitReason.kConnectingToProfile,
+        simInfos: [{
+          iccid: TEST_ICCID,
+          isPrimary: true,
+          slotId: 0,
+          eid: '',
+        }],
+      });
+      await flushTasks();
 
-            assertTrue(connectDisconnectButton.disabled);
-            assertTrue(allowDataRoamingButton.disabled);
-            assertTrue(infoFields.disabled);
-            assertTrue(cellularSimInfoAdvanced.disabled);
-            assertTrue(advancedFields.disabled);
-            assertTrue(deviceFields.disabled);
-            assertTrue(networkChooseMobile.disabled);
-            assertTrue(apnElement.disabled);
-            assertTrue(networkIpConfig.disabled);
-            assertTrue(networkNameservers.disabled);
-            assertTrue(networkProxySection.disabled);
+      assertTrue(connectDisconnectButton.disabled);
+      assertTrue(allowDataRoamingButton.disabled);
+      assertTrue(infoFields.disabled);
+      assertTrue(cellularSimInfoAdvanced.disabled);
+      assertTrue(advancedFields.disabled);
+      assertTrue(deviceFields.disabled);
+      assertTrue(networkChooseMobile.disabled);
+      assertTrue(apnElement.disabled);
+      assertTrue(networkIpConfig.disabled);
+      assertTrue(networkNameservers.disabled);
+      assertTrue(networkProxySection.disabled);
 
-            // Uninhibit.
-            mojoApi.setDeviceStateForTest({
-              ...getDefaultDeviceStateProps(),
-              deviceState: DeviceStateType.kEnabled,
-              simInfos: [{
-                iccid: TEST_ICCID,
-                isPrimary: true,
-                slotId: 0,
-                eid: '',
-              }],
-            });
-            await flushTasks();
+      // Uninhibit.
+      mojoApi.setDeviceStateForTest({
+        ...getDefaultDeviceStateProps(),
+        deviceState: DeviceStateType.kEnabled,
+        simInfos: [{
+          iccid: TEST_ICCID,
+          isPrimary: true,
+          slotId: 0,
+          eid: '',
+        }],
+      });
+      await flushTasks();
 
-            assertFalse(connectDisconnectButton.disabled);
-            assertFalse(allowDataRoamingButton.disabled);
-            assertFalse(infoFields.disabled);
-            assertFalse(cellularSimInfoAdvanced.disabled);
-            assertFalse(advancedFields.disabled);
-            assertFalse(deviceFields.disabled);
-            assertFalse(networkChooseMobile.disabled);
-            assertFalse(apnElement.disabled);
-            assertFalse(networkIpConfig.disabled);
-            assertFalse(networkNameservers.disabled);
-            assertFalse(networkProxySection.disabled);
-          });
+      assertFalse(connectDisconnectButton.disabled);
+      assertFalse(allowDataRoamingButton.disabled);
+      assertFalse(infoFields.disabled);
+      assertFalse(cellularSimInfoAdvanced.disabled);
+      assertFalse(advancedFields.disabled);
+      assertFalse(deviceFields.disabled);
+      assertFalse(networkChooseMobile.disabled);
+      assertFalse(apnElement.disabled);
+      assertFalse(networkIpConfig.disabled);
+      assertFalse(networkNameservers.disabled);
+      assertFalse(networkProxySection.disabled);
     });
 
     test('Cellular page disabled when blocked by policy', async () => {
@@ -1913,81 +1894,71 @@ suite('<settings-internet-detail-subpage>', () => {
           'network-proxy-section'));
     });
 
-    // Syntactic sugar for running test twice with different values for the
-    // apnRevamp feature flag.
-    [true, false].forEach(isApnRevampEnabled => {
-      test('Show/Hide APN row correspondingly to ApnRevamp flag', async () => {
-        loadTimeData.overrideValues({isApnRevampEnabled});
-        init();
-        mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
-        const apnName = 'test';
-        const testIccid = '11111';
-        const cellularNetwork =
-            getManagedProperties(NetworkType.kCellular, 'cellular');
-        cellularNetwork.typeProperties.cellular!.connectedApn = {
-          accessPointName: '',
-          id: '',
-          authentication: ApnAuthenticationType.kAutomatic,
-          language: null,
-          localizedName: null,
-          name: null,
-          password: null,
-          username: null,
-          attach: null,
-          state: ApnState.kEnabled,
-          ipType: ApnIpType.kAutomatic,
-          apnTypes: [],
-          source: ApnSource.kModb,
-        };
-        cellularNetwork.typeProperties.cellular!.connectedApn.accessPointName =
-            apnName;
-        cellularNetwork.typeProperties.cellular!.iccid = testIccid;
-        mojoApi.setManagedPropertiesForTest(cellularNetwork);
-        internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+    test('Show APN row', async () => {
+      init();
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+      const apnName = 'test';
+      const testIccid = '11111';
+      const cellularNetwork =
+          getManagedProperties(NetworkType.kCellular, 'cellular');
+      cellularNetwork.typeProperties.cellular!.connectedApn = {
+        accessPointName: '',
+        id: '',
+        authentication: ApnAuthenticationType.kAutomatic,
+        language: null,
+        localizedName: null,
+        name: null,
+        password: null,
+        username: null,
+        attach: null,
+        state: ApnState.kEnabled,
+        ipType: ApnIpType.kAutomatic,
+        apnTypes: [],
+        source: ApnSource.kModb,
+      };
+      cellularNetwork.typeProperties.cellular!.connectedApn.accessPointName =
+          apnName;
+      cellularNetwork.typeProperties.cellular!.iccid = testIccid;
+      mojoApi.setManagedPropertiesForTest(cellularNetwork);
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
 
-        // Set cellular network as active SIM so that APN row should show up if
-        // the flag is enabled.
-        mojoApi.setDeviceStateForTest({
-          ...getDefaultDeviceStateProps(),
-          deviceState: DeviceStateType.kEnabled,
-          simInfos: [{
-            iccid: testIccid,
-            isPrimary: true,
-            slotId: 0,
-            eid: '',
-          }],
-        });
-        await flushTasks();
-        const getCrLink = () =>
-            internetDetailPage.shadowRoot!.querySelector('#apnSubpageButton');
-        const getApn = () => getCrLink() ?
-            getCrLink()!.shadowRoot!.querySelector('#subLabel') :
-            null;
-        if (isApnRevampEnabled) {
-          assertTrue(!!getApn());
-          assertEquals(apnName, getApn()!.textContent.trim());
-
-          const name = 'name';
-          cellularNetwork.typeProperties.cellular!.connectedApn.name = name;
-          mojoApi.setManagedPropertiesForTest(cellularNetwork);
-          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
-          await flushTasks();
-          assertTrue(!!getApn());
-          assertEquals(name, getApn()!.textContent.trim());
-          assertFalse(getCrLink()!.hasAttribute('warning'));
-
-          // Adding a restricted connectivity state should cause the sublabel to
-          // be a warning.
-          cellularNetwork.portalState = PortalState.kNoInternet;
-          cellularNetwork.connectionState = ConnectionStateType.kPortal;
-          mojoApi.setManagedPropertiesForTest(cellularNetwork);
-          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
-          await flushTasks();
-          assertTrue(getCrLink()!.hasAttribute('warning'));
-        } else {
-          assertNull(getApn());
-        }
+      // Set cellular network as active SIM so that APN row should show up.
+      mojoApi.setDeviceStateForTest({
+        ...getDefaultDeviceStateProps(),
+        deviceState: DeviceStateType.kEnabled,
+        simInfos: [{
+          iccid: testIccid,
+          isPrimary: true,
+          slotId: 0,
+          eid: '',
+        }],
       });
+      await flushTasks();
+      const getCrLink = () =>
+          internetDetailPage.shadowRoot!.querySelector('#apnSubpageButton');
+      const getApn = () => getCrLink() ?
+          getCrLink()!.shadowRoot!.querySelector('#subLabel') :
+          null;
+      assertTrue(!!getApn());
+      assertEquals(apnName, getApn()!.textContent.trim());
+
+      const name = 'name';
+      cellularNetwork.typeProperties.cellular!.connectedApn.name = name;
+      mojoApi.setManagedPropertiesForTest(cellularNetwork);
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+      await flushTasks();
+      assertTrue(!!getApn());
+      assertEquals(name, getApn()!.textContent.trim());
+      assertFalse(getCrLink()!.hasAttribute('warning'));
+
+      // Adding a restricted connectivity state should cause the sublabel to
+      // be a warning.
+      cellularNetwork.portalState = PortalState.kNoInternet;
+      cellularNetwork.connectionState = ConnectionStateType.kPortal;
+      mojoApi.setManagedPropertiesForTest(cellularNetwork);
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+      await flushTasks();
+      assertTrue(getCrLink()!.hasAttribute('warning'));
     });
 
     [true, false].forEach(isApnRevampAndAllowApnModificationPolicyEnabled => {
@@ -1997,7 +1968,6 @@ suite('<settings-internet-detail-subpage>', () => {
                   isApnRevampAndAllowApnModificationPolicyEnabled}`,
           async () => {
             loadTimeData.overrideValues({
-              isApnRevampEnabled: true,
               isApnRevampAndAllowApnModificationPolicyEnabled:
                   isApnRevampAndAllowApnModificationPolicyEnabled,
             });

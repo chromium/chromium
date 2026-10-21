@@ -691,18 +691,11 @@ TEST_F(NetworkMetadataStoreTest, LogHiddenNetworks) {
                            /*sample=*/false, /*expected_count=*/1);
 }
 
-TEST_F(NetworkMetadataStoreTest, CustomApnListGetSet_ApnRevampDisabled) {
-  scoped_feature_list_.InitAndDisableFeature(ash::features::kApnRevamp);
-  TestGetSetCustomApnList();
-}
-
-TEST_F(NetworkMetadataStoreTest, CustomApnListGetSet_ApnRevampEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kApnRevamp);
+TEST_F(NetworkMetadataStoreTest, CustomApnListGetSet) {
   TestGetSetCustomApnList();
 }
 
 TEST_F(NetworkMetadataStoreTest, CustomApnListSetWrongApn) {
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kApnRevamp);
   ConfigureService(kConfigCellular);
   EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
 
@@ -732,116 +725,6 @@ TEST_F(NetworkMetadataStoreTest, CustomApnListSetWrongApn) {
       metadata_store()->GetCustomApnList(kCellularkGuid);
   ASSERT_TRUE(actual_list);
   EXPECT_TRUE(actual_list->empty());
-}
-
-TEST_F(NetworkMetadataStoreTest, CustomApnListFlagChangingValues) {
-  ConfigureService(kConfigCellular);
-  EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
-
-  auto expected_list_feature_disabled =
-      base::ListValue().Append(base::DictValue().Set(
-          ::onc::cellular_apn::kAccessPointName, "test_apn1"));
-
-  auto expected_list_feature_enabled =
-      base::ListValue()
-          .Append(base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
-                                        "test_apn2"))
-          .Append(base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
-                                        "test_apn3"));
-
-  {
-    base::test::ScopedFeatureList disabled_feature_list;
-    disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
-    base::Value not_list(1);
-    // We validate the input only when the flag is enabled.
-    metadata_store()->SetCustomApnList(kCellularkGuid,
-                                       expected_list_feature_disabled.Clone());
-    EXPECT_EQ(expected_list_feature_disabled,
-              *metadata_store()->GetCustomApnList(kCellularkGuid));
-  }
-  {
-    base::test::ScopedFeatureList enabled_feature_list;
-    enabled_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
-    EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
-
-    metadata_store()->SetCustomApnList(kCellularkGuid,
-                                       expected_list_feature_enabled.Clone());
-    EXPECT_EQ(expected_list_feature_enabled,
-              *metadata_store()->GetCustomApnList(kCellularkGuid));
-  }
-  {
-    base::test::ScopedFeatureList disabled_feature_list;
-    disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
-    EXPECT_EQ(expected_list_feature_disabled,
-              *metadata_store()->GetCustomApnList(kCellularkGuid));
-  }
-}
-
-TEST_F(NetworkMetadataStoreTest, GetPreRevampCustomApnList) {
-  ConfigureService(kConfigCellular);
-
-  // Verify that lists are empty
-  {
-    base::test::ScopedFeatureList disabled_feature_list;
-    disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
-    EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
-    EXPECT_DCHECK_DEATH(
-        metadata_store()->GetPreRevampCustomApnList(kCellularkGuid));
-  }
-  {
-    base::test::ScopedFeatureList enabled_feature_list;
-    enabled_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
-    EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
-    EXPECT_EQ(nullptr,
-              metadata_store()->GetPreRevampCustomApnList(kCellularkGuid));
-  }
-
-  auto expected_list_feature_disabled =
-      base::ListValue().Append(base::DictValue().Set(
-          ::onc::cellular_apn::kAccessPointName, "test_apn1"));
-
-  auto expected_list_feature_enabled =
-      base::ListValue()
-          .Append(base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
-                                        "test_apn2"))
-          .Append(base::DictValue().Set(::onc::cellular_apn::kAccessPointName,
-                                        "test_apn3"));
-
-  // Set the custom APN lists
-  {
-    base::test::ScopedFeatureList disabled_feature_list;
-    disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
-    metadata_store()->SetCustomApnList(kCellularkGuid,
-                                       expected_list_feature_disabled.Clone());
-  }
-  {
-    base::test::ScopedFeatureList enabled_feature_list;
-    enabled_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
-    metadata_store()->SetCustomApnList(kCellularkGuid,
-                                       expected_list_feature_enabled.Clone());
-  }
-
-  // Verify that values are returned correctly if the APN revamp flag is
-  // disabled. GetPreRevampCustomApnList should assert in this case.
-  {
-    base::test::ScopedFeatureList disabled_feature_list;
-    disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
-    EXPECT_EQ(expected_list_feature_disabled,
-              *metadata_store()->GetCustomApnList(kCellularkGuid));
-    EXPECT_DCHECK_DEATH(
-        metadata_store()->GetPreRevampCustomApnList(kCellularkGuid));
-  }
-
-  // Verify that values are returned correctly if the APN revamp flag is
-  // enabled. Both called should succeed.
-  {
-    base::test::ScopedFeatureList enabled_feature_list;
-    enabled_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
-    EXPECT_EQ(expected_list_feature_enabled,
-              *metadata_store()->GetCustomApnList(kCellularkGuid));
-    EXPECT_EQ(expected_list_feature_disabled,
-              *metadata_store()->GetPreRevampCustomApnList(kCellularkGuid));
-  }
 }
 
 TEST_F(NetworkMetadataStoreTest, UserTextMessageSuppressionState) {

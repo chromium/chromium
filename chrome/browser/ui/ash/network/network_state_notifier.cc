@@ -612,8 +612,7 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
   if (IsSimLockConnectionFailure(error_name, network)) {
     on_click = base::BindRepeating(&NetworkStateNotifier::ShowSimUnlockSettings,
                                    weak_ptr_factory_.GetWeakPtr());
-  } else if (features::IsApnRevampEnabled() && network &&
-             network->GetError() == shill::kErrorInvalidAPN) {
+  } else if (network && network->GetError() == shill::kErrorInvalidAPN) {
     on_click = base::BindRepeating(&NetworkStateNotifier::ShowApnSettings,
                                    weak_ptr_factory_.GetWeakPtr(), guid);
   } else {
@@ -705,7 +704,6 @@ void NetworkStateNotifier::ShowMobileDataSubpage() {
 }
 
 void NetworkStateNotifier::ShowApnSettings(const std::string& network_id) {
-  CHECK(features::IsApnRevampEnabled());
   if (!system_tray_client_) {
     return;
   }

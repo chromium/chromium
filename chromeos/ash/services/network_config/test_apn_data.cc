@@ -85,13 +85,11 @@ mojom::ApnPropertiesPtr TestApnData::AsMojoApn() const {
   apn->password = password;
   apn->attach = attach;
   apn->authentication = mojo_authentication;
-  if (features::IsApnRevampEnabled()) {
-    apn->id = id.empty() ? std::nullopt : std::optional<std::string>(id);
-    apn->ip_type = mojo_ip_type;
-    apn->apn_types = mojo_apn_types;
-    apn->state = mojo_state;
-    apn->source = mojo_source;
-  }
+  apn->id = id.empty() ? std::nullopt : std::optional<std::string>(id);
+  apn->ip_type = mojo_ip_type;
+  apn->apn_types = mojo_apn_types;
+  apn->state = mojo_state;
+  apn->source = mojo_source;
   return apn;
 }
 
@@ -103,17 +101,16 @@ base::DictValue TestApnData::AsOncApn() const {
   apn.Set(::onc::cellular_apn::kPassword, password);
   apn.Set(::onc::cellular_apn::kAttach, attach);
   apn.Set(::onc::cellular_apn::kAuthentication, onc_authentication);
-  if (features::IsApnRevampEnabled()) {
-    apn.Set(::onc::cellular_apn::kId, id);
-    apn.Set(::onc::cellular_apn::kState, onc_state);
-    apn.Set(::onc::cellular_apn::kIpType, onc_ip_type);
-    apn.Set(::onc::cellular_apn::kSource, onc_source);
+  apn.Set(::onc::cellular_apn::kId, id);
+  apn.Set(::onc::cellular_apn::kState, onc_state);
+  apn.Set(::onc::cellular_apn::kIpType, onc_ip_type);
+  apn.Set(::onc::cellular_apn::kSource, onc_source);
 
-    base::ListValue apn_types;
-    for (const std::string& apn_type : onc_apn_types)
-      apn_types.Append(apn_type);
-    apn.Set(::onc::cellular_apn::kApnTypes, std::move(apn_types));
+  base::ListValue apn_types;
+  for (const std::string& apn_type : onc_apn_types) {
+    apn_types.Append(apn_type);
   }
+  apn.Set(::onc::cellular_apn::kApnTypes, std::move(apn_types));
   return apn;
 }
 
@@ -126,34 +123,32 @@ base::DictValue TestApnData::AsShillApn() const {
   apn.Set(shill::kApnAttachProperty, attach);
   apn.Set(shill::kApnSourceProperty, onc_source);
   apn.Set(kShillApnAuthenticationType, onc_authentication);
-  if (features::IsApnRevampEnabled()) {
-    apn.Set(kShillApnId, id);
+  apn.Set(kShillApnId, id);
 
-    std::string shill_ip_type;
-    if (onc_ip_type == ::onc::cellular_apn::kIpTypeIpv4) {
-      shill_ip_type = shill::kApnIpTypeV4;
-    } else if (onc_ip_type == ::onc::cellular_apn::kIpTypeIpv6) {
-      shill_ip_type = shill::kApnIpTypeV6;
-    } else if (onc_ip_type == shill::kApnIpTypeV4V6) {
-      shill_ip_type = shill::kApnIpTypeV4V6;
-    } else {
-      NOTREACHED() << "An IP type is required";
-    }
-    apn.Set(shill::kApnIpTypeProperty, shill_ip_type);
-
-    std::string apn_types;
-    for (const std::string& apn_type : onc_apn_types) {
-      if (apn_type == ::onc::cellular_apn::kApnTypeDefault) {
-        apn_types += shill::kApnTypeDefault;
-      } else if (apn_type == ::onc::cellular_apn::kApnTypeAttach) {
-        apn_types += shill::kApnTypeIA;
-      }
-      apn_types += ",";
-    }
-    // Remove trailing comma.
-    apn_types.pop_back();
-    apn.Set(shill::kApnTypesProperty, base::Value(apn_types));
+  std::string shill_ip_type;
+  if (onc_ip_type == ::onc::cellular_apn::kIpTypeIpv4) {
+    shill_ip_type = shill::kApnIpTypeV4;
+  } else if (onc_ip_type == ::onc::cellular_apn::kIpTypeIpv6) {
+    shill_ip_type = shill::kApnIpTypeV6;
+  } else if (onc_ip_type == shill::kApnIpTypeV4V6) {
+    shill_ip_type = shill::kApnIpTypeV4V6;
+  } else {
+    NOTREACHED() << "An IP type is required";
   }
+  apn.Set(shill::kApnIpTypeProperty, shill_ip_type);
+
+  std::string apn_types;
+  for (const std::string& apn_type : onc_apn_types) {
+    if (apn_type == ::onc::cellular_apn::kApnTypeDefault) {
+      apn_types += shill::kApnTypeDefault;
+    } else if (apn_type == ::onc::cellular_apn::kApnTypeAttach) {
+      apn_types += shill::kApnTypeIA;
+    }
+    apn_types += ",";
+  }
+  // Remove trailing comma.
+  apn_types.pop_back();
+  apn.Set(shill::kApnTypesProperty, base::Value(apn_types));
   return apn;
 }
 
@@ -178,11 +173,9 @@ bool TestApnData::MojoApnEquals(const mojom::ApnProperties& apn) const {
   ret &= MatchOptionalString(attach, apn.attach);
   ret &= mojo_authentication == apn.authentication;
 
-  if (features::IsApnRevampEnabled()) {
-    ret &= mojo_ip_type == apn.ip_type;
-    ret &= mojo_apn_types == apn.apn_types;
-    ret &= mojo_source == apn.source;
-  }
+  ret &= mojo_ip_type == apn.ip_type;
+  ret &= mojo_apn_types == apn.apn_types;
+  ret &= mojo_source == apn.source;
   return ret;
 }
 
@@ -206,30 +199,29 @@ bool TestApnData::OncApnEquals(const base::DictValue& onc_apn,
   ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kAttach, attach);
   ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kAuthentication,
                           onc_authentication);
-  if (features::IsApnRevampEnabled()) {
-    const std::string* state = onc_apn.FindString(::onc::cellular_apn::kState);
-    if (has_state_field) {
-      ret &= state && onc_state == *state;
-    } else {
-      ret &= !state;
+  const std::string* state = onc_apn.FindString(::onc::cellular_apn::kState);
+  if (has_state_field) {
+    ret &= state && onc_state == *state;
+  } else {
+    ret &= !state;
+  }
+
+  ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kIpType, onc_ip_type);
+
+  const std::string* source = onc_apn.FindString(::onc::cellular_apn::kSource);
+  if (source) {
+    ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kSource, onc_source);
+  }
+
+  if (const base::ListValue* apn_types =
+          onc_apn.FindList(::onc::cellular_apn::kApnTypes)) {
+    if (onc_apn_types.size() != apn_types->size()) {
+      return false;
     }
-
-    ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kIpType, onc_ip_type);
-
-    const std::string* source =
-        onc_apn.FindString(::onc::cellular_apn::kSource);
-    if (source) {
-      ret &=
-          IsPropertyEquals(onc_apn, ::onc::cellular_apn::kSource, onc_source);
-    }
-
-    if (const base::ListValue* apn_types =
-            onc_apn.FindList(::onc::cellular_apn::kApnTypes)) {
-      if (onc_apn_types.size() != apn_types->size())
+    for (size_t i = 0; i < onc_apn_types.size(); i++) {
+      if (onc_apn_types[i] != ((*apn_types)[i]).GetString()) {
         return false;
-      for (size_t i = 0; i < onc_apn_types.size(); i++)
-        if (onc_apn_types[i] != ((*apn_types)[i]).GetString())
-          return false;
+      }
     }
   }
 

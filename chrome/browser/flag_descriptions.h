@@ -7487,11 +7487,6 @@ inline constexpr char kAlwaysEnableHdcpDefault[] = "Default";
 inline constexpr char kAlwaysEnableHdcpType0[] = "Type 0";
 inline constexpr char kAlwaysEnableHdcpType1[] = "Type 1";
 
-inline constexpr char kApnRevampName[] = "APN Revamp";
-inline constexpr char kApnRevampDescription[] =
-    "Enables the ChromeOS APN Revamp, which updates cellular network APN "
-    "system UI and related infrastructure.";
-
 inline constexpr char kArcEnableAttestationName[] = "Enable ARC attestation";
 inline constexpr char kArcEnableAttestationDescription[] =
     "Allow key and ID attestation to run for keymint";

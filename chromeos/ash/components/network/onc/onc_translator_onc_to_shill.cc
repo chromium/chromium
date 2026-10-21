@@ -535,11 +535,6 @@ void LocalTranslator::TranslateApn() {
                              shill::kApnAuthenticationProperty);
   }
 
-  if (!ash::features::IsApnRevampEnabled()) {
-    CopyFieldsAccordingToSignature();
-    return;
-  }
-
   const std::string* ip_type =
       onc_object_->FindString(::onc::cellular_apn::kIpType);
   if (ip_type) {

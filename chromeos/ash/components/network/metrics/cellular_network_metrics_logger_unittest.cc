@@ -152,8 +152,6 @@ class CellularNetworkMetricsLoggerTest : public testing::Test {
 };
 
 TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitionsRevampEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
   SetUpGenericCellularNetwork();
   ApnHistogramCounts counts;
 
@@ -235,79 +233,6 @@ TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitionsRevampEnabled) {
   // Fail to connect from disconnecting to disconnected.
   SetShillError(kCellularServicePath, shill::kErrorConnectFailed);
   AssertHistogramsTotalCount(counts);
-  SetShillState(kCellularServicePath, shill::kStateIdle);
-  counts.has_enabled_custom_apns++;
-  AssertHistogramsTotalCount(counts);
-  AssertCustomApnsStatusBucketCount(ShillConnectResult::kSuccess,
-                                    /*no_enabled_bucket_count=*/1,
-                                    ShillConnectResult::kErrorConnectFailed,
-                                    /*has_enabled_bucket_count=*/1);
-}
-
-TEST_F(CellularNetworkMetricsLoggerTest, AutoStatusTransitionsRevampDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kApnRevamp);
-  SetUpGenericCellularNetwork();
-  ApnHistogramCounts counts;
-  // Successful connect from disconnected to connected.
-  SetShillState(kCellularServicePath, shill::kStateIdle);
-  AssertHistogramsTotalCount(counts);
-  SetShillState(kCellularServicePath, shill::kStateOnline);
-  counts.custom_apns_total_hist_count++;
-  counts.no_enabled_custom_apns++;
-  AssertHistogramsTotalCount(counts);
-  AssertCustomApnsStatusBucketCount(
-      ShillConnectResult::kSuccess, /*no_enabled_bucket_count=*/1,
-      ShillConnectResult::kSuccess, /*has_enabled_bucket_count=*/0);
-  histogram_tester()->ExpectBucketCount(
-      CellularNetworkMetricsLogger::kCustomApnsCountHistogram, 0, 1);
-
-  // Add an APN to the network.
-  auto custom_apn_list = base::ListValue().Append(
-      base::DictValue()
-          .Set(::onc::cellular_apn::kAccessPointName, "apn1")
-          .Set(::onc::cellular_apn::kState,
-               ::onc::cellular_apn::kStateEnabled));
-
-  NetworkHandler::Get()->network_metadata_store()->SetCustomApnList(
-      kCellularGuid, std::move(custom_apn_list));
-
-  // Successful connect from connecting to connected.
-  SetShillState(kCellularServicePath, shill::kStateAssociation);
-  AssertHistogramsTotalCount(counts);
-  SetShillState(kCellularServicePath, shill::kStateOnline);
-  counts.custom_apns_total_hist_count++;
-  counts.has_enabled_custom_apns++;
-  AssertHistogramsTotalCount(counts);
-
-  AssertCustomApnsStatusBucketCount(
-      ShillConnectResult::kSuccess, /*no_enabled_bucket_count=*/1,
-      ShillConnectResult::kSuccess, /*has_enabled_bucket_count=*/1);
-  histogram_tester()->ExpectBucketCount(
-      CellularNetworkMetricsLogger::kCustomApnsCountHistogram, 1, 1);
-
-  // Successful connect from connecting to connected again.
-  SetShillState(kCellularServicePath, shill::kStateAssociation);
-  AssertHistogramsTotalCount(counts);
-  SetShillState(kCellularServicePath, shill::kStateOnline);
-  counts.custom_apns_total_hist_count++;
-  counts.has_enabled_custom_apns++;
-  AssertHistogramsTotalCount(counts);
-
-  AssertCustomApnsStatusBucketCount(
-      ShillConnectResult::kSuccess, /*no_enabled_bucket_count=*/1,
-      ShillConnectResult::kSuccess, /*has_enabled_bucket_count=*/2);
-  histogram_tester()->ExpectBucketCount(
-      CellularNetworkMetricsLogger::kCustomApnsCountHistogram, 1, 2);
-
-  // Fail to connect from connecting to disconnecting, no valid shill error.
-  SetShillState(kCellularServicePath, shill::kStateAssociation);
-  AssertHistogramsTotalCount(counts);
-  SetShillState(kCellularServicePath, shill::kStateDisconnecting);
-  AssertHistogramsTotalCount(counts);
-
-  // Fail to connect from disconnecting to disconnected.
-  SetShillError(kCellularServicePath, shill::kErrorConnectFailed);
   SetShillState(kCellularServicePath, shill::kStateIdle);
   counts.has_enabled_custom_apns++;
   AssertHistogramsTotalCount(counts);

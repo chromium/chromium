@@ -309,8 +309,7 @@
 
   <!-- APN row item -->
   <template is="dom-if" if="[[showConfigurableSections_]]" restamp>
-    <template is="dom-if" if="[[shouldShowApnRow_(managedProperties_,
-        isApnRevampEnabled_)]]">
+    <template is="dom-if" if="[[shouldShowApnRow_(managedProperties_)]]">
       <cr-link-row
           id="apnSubpageButton"
           class="hr"
@@ -459,15 +458,6 @@
                 managed-properties="[[managedProperties_]]"
                 disabled="[[disabled_]]">
             </network-choose-mobile>
-          </template>
-
-          <!-- APN -->
-          <template is="dom-if" if="[[shouldShowApnList_(managedProperties_,
-              isApnRevampEnabled_)]]">
-            <network-apnlist on-apn-change="onApnChange_"
-                managed-properties="[[managedProperties_]]"
-                disabled="[[disabled_]]">
-            </network-apnlist>
           </template>
 
           <!-- IP Config, Nameservers -->

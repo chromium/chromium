@@ -154,9 +154,6 @@ INSTANTIATE_TEST_SUITE_P(
             "shill_l2tpipsec_with_password_variable_non_policy.json")));
 
 TEST_F(ONCTranslatorOncToShillTest, TranslateCellularApnRevamp) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
-
   base::DictValue onc_network =
       test_utils::ReadTestDictionary("cellular_apn_revamp.onc");
   base::DictValue expected_shill_network =
@@ -171,9 +168,6 @@ TEST_F(ONCTranslatorOncToShillTest, TranslateCellularApnRevamp) {
 
 TEST_F(ONCTranslatorOncToShillTest,
        TranslateCellularApnRevampOnApnPoliciesOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
-
   base::DictValue onc_network =
       test_utils::ReadTestDictionary("cellular_apn_policies.onc");
   base::DictValue expected_shill_network = test_utils::ReadTestDictionary(
@@ -288,9 +282,6 @@ INSTANTIATE_TEST_SUITE_P(
                        "translation_of_shill_wifi_with_slaac_ip_config.onc")));
 
 TEST_F(ONCTranslatorShillToOncTest, TranslateCellularApnRevamp) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
-
   base::DictValue shill_network = test_utils::ReadTestDictionary(
       "shill_cellular_with_state_apn_revamp.json");
   base::DictValue expected_onc_network = test_utils::ReadTestDictionary(

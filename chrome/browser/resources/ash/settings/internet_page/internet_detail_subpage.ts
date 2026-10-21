@@ -279,14 +279,6 @@ export class SettingsInternetDetailPageElement extends
         computed: 'computeDisabled_(deviceState_.*)',
       },
 
-      isApnRevampEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('isApnRevampEnabled') &&
-              loadTimeData.getBoolean('isApnRevampEnabled');
-        },
-      },
-
       isApnRevampAndAllowApnModificationPolicyEnabled_: {
         type: Boolean,
         value() {
@@ -373,7 +365,6 @@ export class SettingsInternetDetailPageElement extends
   declare private disabled_: boolean;
   declare private hiddenPref_: chrome.settingsPrivate.PrefObject<boolean>;
   declare private ipAddress_: string;
-  declare private isApnRevampEnabled_: boolean;
   declare private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
   declare private isSecondaryUser_: boolean;
   declare private isWifiSyncEnabled_: boolean;
@@ -1223,8 +1214,7 @@ export class SettingsInternetDetailPageElement extends
   }
 
   private shouldShowApnRow_(): boolean {
-    return this.isApnRevampEnabled_ &&
-        this.isCellular_(this.managedProperties_);
+    return this.isCellular_(this.managedProperties_);
   }
 
   private isApnManaged_(globalPolicy: GlobalPolicy|undefined): boolean {
@@ -1235,11 +1225,6 @@ export class SettingsInternetDetailPageElement extends
       return false;
     }
     return !globalPolicy.allowApnModification;
-  }
-
-  private shouldShowApnList_(): boolean {
-    return !this.isApnRevampEnabled_ &&
-        this.isCellular_(this.managedProperties_);
   }
 
   private shouldShowSuppressTextMessagesToggle_(): boolean {

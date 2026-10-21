@@ -901,7 +901,7 @@ void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
     network_device_handler_->SetAllowCellularSimLock(AllowCellularSimLock());
   }
 
-  if (features::IsApnRevampAndAllowApnModificationPolicyEnabled()) {
+  if (features::IsAllowApnModificationPolicyEnabled()) {
     ModifyCustomAPNs();
   }
 
