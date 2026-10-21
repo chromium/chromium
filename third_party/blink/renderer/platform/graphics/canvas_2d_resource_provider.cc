@@ -433,8 +433,9 @@ Canvas2DResourceProvider::GetOrCreateCanvasImageProvider() {
           kN32_SkColorType);
 
   canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-      cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-      cc::PlaybackImageProvider::RasterMode::kGpu, context_provider_wrapper_);
+      cache_rgba8, cache_f16, image_pool_->GetImageInfo().color_space,
+      GetSharedImageFormat(), cc::PlaybackImageProvider::RasterMode::kGpu,
+      context_provider_wrapper_);
 
   return canvas_image_provider_.get();
 }
@@ -649,9 +650,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
     : is_accelerated_(is_accelerated),
       is_software_(false),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
-      size_(size),
-      format_(format),
-      color_space_(color_space),
       hdr_metadata_(hdr_metadata),
       context_lost_callback_(std::move(context_lost_callback)) {
   CHECK(context_provider_wrapper_);
@@ -745,9 +743,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       is_software_(true),
       shared_image_interface_provider_(
           shared_image_interface_provider->GetWeakPtr()),
-      size_(size),
-      format_(format),
-      color_space_(color_space),
       hdr_metadata_(hdr_metadata),
       context_lost_callback_(std::move(context_lost_callback)) {
   CHECK(shared_image_interface_provider_);

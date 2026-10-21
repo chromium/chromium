@@ -138,7 +138,9 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   bool IsAccelerated() const { return is_accelerated_; }
   bool IsSoftware() const { return is_software_; }
 
-  viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
+  viz::SharedImageFormat GetSharedImageFormat() const {
+    return image_pool_->GetImageInfo().format;
+  }
 
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
   base::ByteSize EstimatedSizeInBytes() const;
@@ -190,8 +192,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   void ClearUnusedResources();
   bool IsGpuContextLost() const;
-  const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
-  gfx::Size Size() const { return size_; }
+  gfx::Size Size() const { return image_pool_->GetImageInfo().size; }
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -274,9 +275,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
 
-  gfx::Size size_;
-  viz::SharedImageFormat format_;
-  gfx::ColorSpace color_space_;
   gfx::HDRMetadata hdr_metadata_;
 
   base::OnceClosure context_lost_callback_;
