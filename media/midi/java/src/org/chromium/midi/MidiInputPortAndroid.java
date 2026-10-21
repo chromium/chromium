@@ -10,6 +10,10 @@ import android.media.midi.MidiReceiver;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -24,11 +28,14 @@ import java.io.IOException;
 @JNINamespace("midi")
 @NullMarked
 class MidiInputPortAndroid {
+    @JniType("::midi::MidiInputPortAndroid")
+    interface NativeMidiInputPortAndroid extends JniTypeToken {}
+
     /** The underlying port. */
     private volatile @Nullable MidiOutputPort mPort;
 
     /** A pointer to a midi::MidiInputPortAndroid object. */
-    private long mNativeReceiverPointer;
+    private @Nullable JniRawPtr<NativeMidiInputPortAndroid> mNativeReceiverPointer;
 
     /** The device this port belongs to. */
     private final MidiDevice mDevice;
@@ -52,12 +59,14 @@ class MidiInputPortAndroid {
     /**
      * Registers this object to the underlying port so as to the C++ function will be called with
      * the given C++ object when data arrives.
+     *
      * @param nativeReceiverPointer a pointer to a midi::MidiInputPortAndroid object.
      * @return true if this operation succeeds or the port is already open.
      */
     @CalledByNative
-    boolean open(long nativeReceiverPointer) {
+    boolean open(JniRawPtr<NativeMidiInputPortAndroid> nativeReceiverPointer) {
         if (mPort != null) {
+            nativeReceiverPointer.release();
             return true;
         }
         @Nullable MidiOutputPort localPort = null;
@@ -71,6 +80,7 @@ class MidiInputPortAndroid {
                         } catch (IOException innerException) {
                             // We can do nothing here. Just ignore the error.
                         }
+                        nativeReceiverPointer.release();
                         return true;
                     }
                     localPort.connect(
@@ -79,7 +89,7 @@ class MidiInputPortAndroid {
                                 public void onSend(
                                         byte[] bs, int offset, int count, long timestamp) {
                                     synchronized (MidiInputPortAndroid.this) {
-                                        if (mPort == null) {
+                                        if (mPort == null || mNativeReceiverPointer == null) {
                                             return;
                                         }
                                         MidiInputPortAndroidJni.get()
@@ -93,6 +103,9 @@ class MidiInputPortAndroid {
                                 }
                             });
                     mPort = localPort;
+                    if (mNativeReceiverPointer != null) {
+                        mNativeReceiverPointer.release();
+                    }
                     mNativeReceiverPointer = nativeReceiverPointer;
                 }
                 return true;
@@ -107,6 +120,7 @@ class MidiInputPortAndroid {
                 }
             }
         }
+        nativeReceiverPointer.release();
         return false;
     }
 
@@ -116,11 +130,14 @@ class MidiInputPortAndroid {
         MidiOutputPort localPort;
 
         synchronized (this) {
+            if (mNativeReceiverPointer != null) {
+                mNativeReceiverPointer.release();
+                mNativeReceiverPointer = null;
+            }
             if (mPort == null) {
                 return;
             }
             localPort = mPort;
-            mNativeReceiverPointer = 0;
             mPort = null;
         }
 
@@ -134,6 +151,10 @@ class MidiInputPortAndroid {
     @NativeMethods
     interface Natives {
         void onData(
-                long nativeMidiInputPortAndroid, byte[] bs, int offset, int count, long timestamp);
+                JniPtr<NativeMidiInputPortAndroid> self,
+                byte[] bs,
+                int offset,
+                int count,
+                long timestamp);
     }
 }

@@ -6,6 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/time/time.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/midi/midi_jni_headers/MidiInputPortAndroid_jni.h"
@@ -27,7 +28,7 @@ MidiInputPortAndroid::~MidiInputPortAndroid() {
 bool MidiInputPortAndroid::Open() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   return Java_MidiInputPortAndroid_open(env, raw_port_,
-                                        reinterpret_cast<int64_t>(this));
+                                        jni_zero::MakeRaw(this));
 }
 
 void MidiInputPortAndroid::Close() {
