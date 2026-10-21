@@ -568,9 +568,9 @@ void BookmarkEditorView::ExpandAndSelect() {
       FindNodeWithID(tree_model_->GetRoot(), folder_id_to_select);
   if (!b_node) {
     // Default to the bookmark bar folder.
-    bool has_title_node =
-        tree_model_->GetRoot()->children().front()->value.type ==
-        EditorNodeData::Type::kTitle;
+    bool has_title_node = EditorTreeModel::AsNode(
+                              tree_model_->GetRoot()->children().front().get())
+                              ->value.type == EditorNodeData::Type::kTitle;
     b_node = FindNodeWithID(tree_model_->GetRoot(),
                             has_title_node
                                 ? bb_model_->account_bookmark_bar_node()->id()
@@ -650,7 +650,8 @@ BookmarkEditorView::EditorNode* BookmarkEditorView::FindNodeWithID(
     return node;
   }
   for (const auto& child : node->children()) {
-    EditorNode* const result = FindNodeWithID(child.get(), id);
+    EditorNode* const result =
+        FindNodeWithID(EditorTreeModel::AsNode(child.get()), id);
     if (result) {
       return result;
     }
@@ -715,7 +716,8 @@ void BookmarkEditorView::ApplyNameChangesAndCreateNewFolders(
   if (parent_source_node == source_node) {
     *parent_target_node = target_node;
   }
-  for (const auto& child_source_node : source_node->children()) {
+  for (const auto& child : source_node->children()) {
+    EditorNode* const child_source_node = EditorTreeModel::AsNode(child.get());
     const BookmarkNode* child_target_node = nullptr;
     switch (child_source_node->value.type) {
       case EditorNodeData::Type::kFolder:
@@ -774,8 +776,7 @@ void BookmarkEditorView::ApplyNameChangesAndCreateNewFolders(
       case EditorNodeData::Type::kRoot:
         NOTREACHED();
     }
-    ApplyNameChangesAndCreateNewFolders(child_target_node,
-                                        child_source_node.get(),
+    ApplyNameChangesAndCreateNewFolders(child_target_node, child_source_node,
                                         parent_source_node, parent_target_node);
   }
 }
@@ -827,11 +828,21 @@ void BookmarkEditorView::ExecuteCommandDelete(
   tree_model_->Remove(node->parent(), node);
 }
 
+BookmarkEditorView::EditorNode::EditorNode(const std::u16string& title,
+                                           const EditorNodeData& value)
+    : ui::TreeModelNode(title), value(value) {}
+
+BookmarkEditorView::EditorNode::~EditorNode() = default;
+
+BookmarkEditorView::EditorNode* BookmarkEditorView::EditorTreeModel::GetRoot() {
+  return AsNode(ui::TreeModel::GetRoot());
+}
+
 void BookmarkEditorView::EditorTreeModel::SetTitle(
     ui::TreeModelNode* node,
     const std::u16string& title) {
   if (!title.empty()) {
-    ui::TreeNodeModel<EditorNode>::SetTitle(node, title);
+    ui::TreeModel::SetTitle(node, title);
   }
 }
 

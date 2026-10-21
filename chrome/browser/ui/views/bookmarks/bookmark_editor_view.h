@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/tree_node_model.h"
+#include "ui/base/models/tree_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/menus/simple_menu_model.h"
@@ -64,17 +64,41 @@ class BookmarkEditorView : public BookmarkEditor,
     // folder before a corresponding entry has been added to the bookmark model.
     int64_t bookmark_node_id = 0;
   };
-  typedef ui::TreeNodeWithValue<EditorNodeData> EditorNode;
+  class EditorNode : public ui::TreeModelNode {
+   public:
+    EditorNode(const std::u16string& title, const EditorNodeData& value);
+    EditorNode(const EditorNode&) = delete;
+    EditorNode& operator=(const EditorNode&) = delete;
+    ~EditorNode() override;
+
+    const EditorNode* parent() const {
+      return static_cast<const EditorNode*>(ui::TreeModelNode::parent());
+    }
+    EditorNode* parent() {
+      return static_cast<EditorNode*>(ui::TreeModelNode::parent());
+    }
+
+    EditorNodeData value;
+  };
 
   // Model for the TreeView. Trivial subclass that doesn't allow titles with
   // empty strings. Public purely for testing.
-  class EditorTreeModel : public ui::TreeNodeModel<EditorNode> {
+  class EditorTreeModel : public ui::TreeModel {
    public:
     explicit EditorTreeModel(std::unique_ptr<EditorNode> root)
-        : ui::TreeNodeModel<EditorNode>(std::move(root)) {}
+        : ui::TreeModel(std::move(root)) {}
 
     EditorTreeModel(const EditorTreeModel&) = delete;
     EditorTreeModel& operator=(const EditorTreeModel&) = delete;
+
+    static EditorNode* AsNode(ui::TreeModelNode* model_node) {
+      return static_cast<EditorNode*>(model_node);
+    }
+    static const EditorNode* AsNode(const ui::TreeModelNode* model_node) {
+      return static_cast<const EditorNode*>(model_node);
+    }
+
+    EditorNode* GetRoot() override;
 
     void SetTitle(ui::TreeModelNode* node,
                   const std::u16string& title) override;

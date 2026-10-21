@@ -116,36 +116,44 @@ class BookmarkEditorViewTest : public testing::Test,
 
   BookmarkEditorView::EditorNode* account_editor_node() {
     CHECK(AreAccountNodesCreated());
-    return editor_root()->children()[0].get();
+    return BookmarkEditorView::EditorTreeModel::AsNode(
+        editor_root()->children()[0].get());
   }
 
   BookmarkEditorView::EditorNode* account_bookmark_bar_editor_node() {
     CHECK(AreAccountNodesCreated());
-    return account_editor_node()->children()[0].get();
+    return BookmarkEditorView::EditorTreeModel::AsNode(
+        account_editor_node()->children()[0].get());
   }
 
   BookmarkEditorView::EditorNode* account_other_editor_node() {
     CHECK(AreAccountNodesCreated());
-    return account_editor_node()->children()[1].get();
+    return BookmarkEditorView::EditorTreeModel::AsNode(
+        account_editor_node()->children()[1].get());
   }
 
   BookmarkEditorView::EditorNode* local_editor_node() {
     CHECK(AreAccountNodesCreated());
-    return editor_root()->children()[1].get();
+    return BookmarkEditorView::EditorTreeModel::AsNode(
+        editor_root()->children()[1].get());
   }
 
   BookmarkEditorView::EditorNode* local_bookmark_bar_editor_node() {
     if (AreAccountNodesCreated()) {
-      return local_editor_node()->children()[0].get();
+      return BookmarkEditorView::EditorTreeModel::AsNode(
+          local_editor_node()->children()[0].get());
     }
-    return editor_root()->children()[0].get();
+    return BookmarkEditorView::EditorTreeModel::AsNode(
+        editor_root()->children()[0].get());
   }
 
   BookmarkEditorView::EditorNode* local_other_editor_node() {
     if (AreAccountNodesCreated()) {
-      return local_editor_node()->children()[1].get();
+      return BookmarkEditorView::EditorTreeModel::AsNode(
+          local_editor_node()->children()[1].get());
     }
-    return editor_root()->children()[1].get();
+    return BookmarkEditorView::EditorTreeModel::AsNode(
+        editor_root()->children()[1].get());
   }
 
   BookmarkEditorView::EditorNode* selected_editor_node() {
@@ -299,17 +307,15 @@ TEST_P(BookmarkEditorViewTest, ModelsMatchWithoutAccountFolders) {
             editor_root()->children().size());
   // Verify the tree structure by directly accessing editor nodes, instead of
   // using helper functions.
-  const BookmarkEditorView::EditorNode* bookmark_bar =
-      editor_root()->children()[0].get();
-  const BookmarkEditorView::EditorNode* other =
-      editor_root()->children()[1].get();
+  const ui::TreeModelNode* bookmark_bar = editor_root()->children()[0].get();
+  const ui::TreeModelNode* other = editor_root()->children()[1].get();
 
   // The bookmark bar node should have 2 nodes: folders F1 and F2.
   ASSERT_EQ(2u, bookmark_bar->children().size());
   ASSERT_EQ(u"F1", bookmark_bar->children()[0]->GetTitle());
   ASSERT_EQ(u"F2", bookmark_bar->children()[1]->GetTitle());
   // F1 should have one child, F11
-  const BookmarkEditorView::EditorNode* F1 = bookmark_bar->children()[0].get();
+  const ui::TreeModelNode* F1 = bookmark_bar->children()[0].get();
   ASSERT_EQ(1u, F1->children().size());
   ASSERT_EQ(u"F11", F1->children()[0]->GetTitle());
   // Other node should have one child (OF1).
@@ -332,8 +338,8 @@ TEST_P(BookmarkEditorViewTest, ModelsMatchWithAccountFolders) {
 
   // The root should have two children: account and local.
   ASSERT_EQ(2u, editor_root()->children().size());
-  BookmarkEditorView::EditorNode* account = editor_root()->children()[0].get();
-  BookmarkEditorView::EditorNode* local = editor_root()->children()[1].get();
+  ui::TreeModelNode* account = editor_root()->children()[0].get();
+  ui::TreeModelNode* local = editor_root()->children()[1].get();
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_BOOKMARKS_ACCOUNT_BOOKMARKS),
             account->GetTitle());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_BOOKMARKS_DEVICE_BOOKMARKS),
@@ -343,18 +349,15 @@ TEST_P(BookmarkEditorViewTest, ModelsMatchWithAccountFolders) {
   // bookmarks, and conditionally mobile bookmarks.
   ASSERT_EQ(model()->account_mobile_node()->IsVisible() ? 3u : 2u,
             account->children().size());
-  const BookmarkEditorView::EditorNode* account_bb =
-      account->children()[0].get();
-  const BookmarkEditorView::EditorNode* account_other =
-      account->children()[1].get();
+  const ui::TreeModelNode* account_bb = account->children()[0].get();
+  const ui::TreeModelNode* account_other = account->children()[1].get();
   // The account bookmark bar node should have 2 child nodes: folders acc_F1 and
   // acc_F2.
   ASSERT_EQ(2u, account_bb->children().size());
   EXPECT_EQ(u"acc_F1", account_bb->children()[0]->GetTitle());
   EXPECT_EQ(u"acc_F2", account_bb->children()[1]->GetTitle());
   // acc_F1 should have one child, acc_F11
-  const BookmarkEditorView::EditorNode* acc_F1 =
-      account_bb->children()[0].get();
+  const ui::TreeModelNode* acc_F1 = account_bb->children()[0].get();
   ASSERT_EQ(1u, acc_F1->children().size());
   EXPECT_EQ(u"acc_F11", acc_F1->children()[0]->GetTitle());
   // Account other node should have one child (acc_OF1).
@@ -365,17 +368,14 @@ TEST_P(BookmarkEditorViewTest, ModelsMatchWithAccountFolders) {
   // bookmarks, and conditionally mobile bookmarks.
   ASSERT_EQ(model()->mobile_node()->IsVisible() ? 3u : 2u,
             local->children().size());
-  const BookmarkEditorView::EditorNode* local_bookmark_bar =
-      local->children()[0].get();
-  const BookmarkEditorView::EditorNode* local_other =
-      local->children()[1].get();
+  const ui::TreeModelNode* local_bookmark_bar = local->children()[0].get();
+  const ui::TreeModelNode* local_other = local->children()[1].get();
   // The local bookmark bar node should have 2 child nodes: folders F1 and F2.
   ASSERT_EQ(2u, local_bookmark_bar->children().size());
   EXPECT_EQ(u"F1", local_bookmark_bar->children()[0]->GetTitle());
   EXPECT_EQ(u"F2", local_bookmark_bar->children()[1]->GetTitle());
   // F1 should have one child, F11
-  const BookmarkEditorView::EditorNode* F1 =
-      local_bookmark_bar->children()[0].get();
+  const ui::TreeModelNode* F1 = local_bookmark_bar->children()[0].get();
   ASSERT_EQ(1u, F1->children().size());
   EXPECT_EQ(u"F11", F1->children()[0]->GetTitle());
   // Local other node should have one child (OF1).
@@ -503,7 +503,8 @@ TEST_P(BookmarkEditorViewTest, MoveToNewParent) {
 
   // Create two nodes: "F21" as a child of "F2" and "F211" as a child of "F21".
   BookmarkEditorView::EditorNode* f2 =
-      local_bookmark_bar_editor_node()->children()[1].get();
+      BookmarkEditorView::EditorTreeModel::AsNode(
+          local_bookmark_bar_editor_node()->children()[1].get());
   BookmarkEditorView::EditorNode* f21 = AddNewFolder(f2);
   f21->SetTitle(u"F21");
   BookmarkEditorView::EditorNode* f211 = AddNewFolder(f21);
@@ -812,7 +813,8 @@ TEST_P(BookmarkEditorViewTest, DISABLED_EditorFullyShown) {
 
   views::TreeView* tree = tree_view();
   BookmarkEditorView::EditorNode* parent_node =
-      editor_root()->children()[1]->children()[0].get();
+      BookmarkEditorView::EditorTreeModel::AsNode(
+          editor_root()->children()[1]->children()[0].get());
   // Add more nodes to exceed the height of the viewport.
   do {
     tree->Expand(parent_node);
