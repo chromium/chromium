@@ -133,6 +133,8 @@ std::string_view GetToastName(ToastId toast_id) {
       return "TtcNoMicrophoneError";
     case ToastId::kTabGroupFocusExited:
       return "TabGroupFocusExited";
+    case ToastId::kEnterpriseCopyFailClosed:
+      return "EnterpriseCopyFailClosed";
   }
 
   NOTREACHED();

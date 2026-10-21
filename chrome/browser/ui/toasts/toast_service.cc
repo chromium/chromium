@@ -742,6 +742,15 @@ void ToastService::RegisterToasts() {
       ToastSpecification::Builder(vector_icons::kDomainIcon,
                                   IDS_ENTERPRISE_COPY_BLOCKED_TOAST_BODY)
           .Build());
+  // Shown when a copy scan couldn't complete and the policy fails closed. It
+  // reuses the fail-closed message of the content analysis dialog so the
+  // wording matches the other access points.
+  toast_registry_->RegisterToast(
+      ToastId::kEnterpriseCopyFailClosed,
+      ToastSpecification::Builder(
+          vector_icons::kDomainIcon,
+          IDS_DEEP_SCANNING_DIALOG_UPLOAD_FAIL_CLOSED_MESSAGE)
+          .Build());
 #endif
   if (base::FeatureList::IsEnabled(dictation::kDictation)) {
     toast_registry_->RegisterToast(

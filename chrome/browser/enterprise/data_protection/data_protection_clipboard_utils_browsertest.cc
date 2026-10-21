@@ -41,6 +41,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
 #include "components/enterprise/data_controls/content/browser/last_replaced_clipboard_data.h"
@@ -3258,6 +3259,104 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(toast_controller->IsShowingToast());
 
   EXPECT_TRUE(future.Wait());
+}
+
+// A scan that can't complete under a fail-closed policy refuses the copy like
+// a block verdict, but tells the user the scan failed instead of blaming the
+// content.
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       Copy_ContentAnalysisFailClosed) {
+  active_user_test_mixin_->SetFakeCookieValue();
+
+  SetupDMToken();
+
+  enterprise_connectors::test::SetAnalysisConnector(
+      browser()->GetProfile()->GetPrefs(),
+      enterprise_connectors::AnalysisConnector::DATA_COPIED,
+      R"(
+        {
+          "service_provider": "google",
+          "enable": [
+            {
+              "url_list": ["*"],
+              "tags": ["dlp"]
+            }
+          ],
+          "block_until_verdict": 1,
+          "default_action": "block"
+        })",
+      machine_scope());
+  // The status callback is irrelevant here: the upload itself fails, so the
+  // fail-closed setting decides the verdict.
+  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
+      base::BindRepeating(
+          &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
+          base::DoNothing(),
+          base::BindRepeating([](const std::string&, const base::FilePath&) {
+            return enterprise_connectors::test::FakeContentAnalysisDelegate::
+                SuccessfulResponse({"dlp"});
+          }),
+          "dm_token"));
+  enterprise_connectors::test::FakeContentAnalysisDelegate::SetResponseResult(
+      enterprise_connectors::ScanRequestUploadResult::kUploadFailure);
+  base::ScopedClosureRunner reset_response_result(base::BindOnce([] {
+    enterprise_connectors::test::FakeContentAnalysisDelegate::SetResponseResult(
+        enterprise_connectors::ScanRequestUploadResult::kSuccess);
+  }));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(contents(), url));
+
+  auto source = content::ClipboardEndpoint::ForFrame(
+      ui::DataTransferEndpoint(url), base::BindLambdaForTesting([this]() {
+        return contents()->GetBrowserContext();
+      }),
+      *contents()->GetPrimaryMainFrame());
+
+  ui::ClipboardMetadata metadata = {
+      .size = 100,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+  };
+  content::ClipboardPasteData data;
+  data.text = std::u16string(100, 'a');
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+
+  data_controls::GetLastReplacedClipboardData() = {};
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  IsClipboardCopyAllowedByPolicy(source, metadata, data, future.GetCallback());
+
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kOngoingScan);
+
+  EXPECT_EQ(future.Get<0>().GetName(), metadata.format_type.GetName());
+  EXPECT_TRUE(future.Get<1>().empty());
+
+  auto replacement = future.Get<2>();
+  ASSERT_TRUE(replacement.has_value());
+  EXPECT_EQ(*replacement,
+            l10n_util::GetStringUTF16(
+                IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_BLOCKED_MESSAGE));
+
+  auto* toast_controller = ToastController::From(browser());
+  ASSERT_TRUE(toast_controller);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return toast_controller->IsShowingToast(); }));
+  EXPECT_EQ(toast_controller->GetCurrentToastId(),
+            ToastId::kEnterpriseCopyFailClosed);
+
+  {
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
+    scw.WriteText(*replacement);
+  }
+
+  EXPECT_EQ(data_controls::GetLastReplacedClipboardData().restriction_level,
+            data_controls::CopyRestrictionLevel::kBlocked);
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,

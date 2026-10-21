@@ -739,8 +739,14 @@ bool ContentAnalysisDelegate::ShowFinalResultInDialog() {
           }
         }
         return false;
-      // TODO(b/325455508): Add separate handling for fail-closed results.
       case FinalContentAnalysisResult::FAIL_CLOSED:
+        // The scan couldn't complete and the policy fails closed, so tell the
+        // user the scan failed rather than that the content itself was
+        // blocked.
+        if (web_contents_) {
+          maybe_show_toast(ToastId::kEnterpriseCopyFailClosed);
+        }
+        return false;
       case FinalContentAnalysisResult::FAILURE:
         if (web_contents_) {
           maybe_show_toast(ToastId::kEnterpriseCopyBlocked);
