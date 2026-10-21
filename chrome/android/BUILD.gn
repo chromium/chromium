@@ -2773,6 +2773,15 @@ if (_is_default_toolchain) {
 
     # Used for binary size monitoring things:
     if (is_official_build && defined(android_app_secondary_abi)) {
+      # Only Chrome is measured for 64-bit (WebView is measured only for
+      # 32-bit) in order to save on build time.
+      write_ssargs("ssargs_chrome_64") {
+        ssargs_path = "$root_build_dir/apks/Chrome64.ssargs"
+        abi_filter = android_app_abi
+        no_java = true
+        chrome_basename = "ChromePublic.minimal.apks"
+      }
+
       write_ssargs("ssargs_chrome_and_webview_64") {
         ssargs_path = "$root_build_dir/apks/ChromeAndWebView64.ssargs"
         abi_filter = android_app_abi
@@ -2781,6 +2790,8 @@ if (_is_default_toolchain) {
         webview_basename = "SystemWebView64.minimal.apks"
       }
 
+      # Used by android-desktop-*-binary-size and diagnose_bloat.py.
+      # android-binary-size builds only chrome_public_minimal_apks for 64-bit.
       group("chrome_and_webview_64_minimal_apks") {
         deps = [
           ":chrome_public_minimal_apks",
@@ -2843,9 +2854,8 @@ if (_is_default_toolchain) {
           webview = "apks/$_webview_32_basename"
         }
         to_resource_sizes_py_64 = {
-          apk_name = "apks/ChromeAndWebView64"
+          apk_name = "apks/Chrome64"
           chrome = "apks/ChromePublic.minimal.apks"
-          webview = "apks/SystemWebView64.minimal.apks"
         }
         supersize_input_file = "apks/$_ssargs_32_filename"
       }
@@ -2853,16 +2863,14 @@ if (_is_default_toolchain) {
       # This one is used when arm32 shows no regression, but arm64 does. In
       # this case supersize is run a second time with this config.
       android_size_bot_config("arm64_resource_size_config") {
-        name = "ChromeAndWebView64"
+        name = "Chrome64"
         mapping_files = []
 
         archive_files = [
           "apks/ChromePublic.minimal.apks",
-          "apks/SystemWebView64.minimal.apks",
           "lib.unstripped/libchrome.so",
-          "lib.unstripped/libwebviewchromium.so",
         ]
-        supersize_input_file = "apks/ChromeAndWebView64.ssargs"
+        supersize_input_file = "apks/Chrome64.ssargs"
       }
     }
   }
