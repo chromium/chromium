@@ -5972,6 +5972,15 @@
       status: "stable",
     },
     {
+      // This sets the background-color of the body inside of the
+      // appearance:auto select popup for windows/linux to Canvas to avoid a
+      // situation with unreadable text in the popup.
+      // https://issues.chromium.org/issues/468205016
+      // Enabled in M157, safe to remove in M161.
+      name: "SelectPopupBackground",
+      status: "stable",
+    },
+    {
       // Removes the forced overflow:hidden rules on the select element's
       // InnerElement unless the author specifies text-overflow:ellipsis. May
       // cause text to overlap with the dropdown indicator.

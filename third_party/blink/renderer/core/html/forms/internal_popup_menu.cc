@@ -407,6 +407,14 @@ void InternalPopupMenu::WriteDocument(SegmentedBuffer& data) {
                                     min_height, std::max(24, min_height)),
                              data);
 
+  if (RuntimeEnabledFeatures::SelectPopupBackgroundEnabled()) {
+    PagePopupClient::AddLiteral(
+        "body {"
+        "background-color:Canvas"
+        "}\n",
+        data);
+  }
+
   PagePopupClient::AddLiteral(
       "</style></head><body><div id=main>Loading...</div><script>\n"
       "window.dialogArguments = {\n",
