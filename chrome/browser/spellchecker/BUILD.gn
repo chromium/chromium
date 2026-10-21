@@ -132,10 +132,6 @@ if (has_spellcheck_panel) {
 source_set("unit_tests") {
   testonly = true
 
-  # spellcheck_service_unittest.cc has file-scope statics of
-  # non-trivial-destructor types, which -Wexit-time-destructors rejects.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   sources = [ "spellcheck_custom_dictionary_unittest.cc" ]
 
   deps = [
@@ -180,10 +176,6 @@ source_set("unit_tests") {
 if (!is_android) {
   source_set("browser_tests") {
     testonly = true
-
-    # spellcheck_service_browsertest.cc has file-scope statics of
-    # non-trivial-destructor types, which -Wexit-time-destructors rejects.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 

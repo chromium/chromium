@@ -803,51 +803,33 @@ class SpellcheckServiceWindowsHybridBrowserTestDelayInit
   base::OnceClosure quit_on_callback_;
 };
 
-// Used for faking the presence of Windows spellcheck dictionaries.
-const std::vector<std::string> kWindowsSpellcheckLanguages = {
-    "fi-FI",  // Finnish has no Hunspell support.
-    "fr-FR",  // French has both Windows and Hunspell support.
-    "pt-BR"   // Portuguese (Brazil) has both Windows and Hunspell support, but
-              // generic pt does not have Hunspell support.
-};
-
 // Used for testing whether primary preferred language is enabled by default for
 // spellchecking.
-const char kAcceptLanguages[] = "fi-FI,fi,ar-AR,fr-FR,fr,hr,ceb,pt-BR,pt";
-const std::vector<std::string> kSpellcheckDictionariesBefore = {
-    // Note that Finnish is initially unset, but has Windows spellcheck
-    // dictionary present.
-    "ar",     // Arabic has no Hunspell support, and its Windows spellcheck
-              // dictionary is not present.
-    "fr-FR",  // French has both Windows and Hunspell support, and its Windows
-              // spellcheck dictionary is present.
-    "fr",     // Generic language should also be toggleable for spellcheck.
-    "hr",     // Croatian has Hunspell support.
-    "ceb",    // Cebuano doesn't have any dictionary support and should be
-              // removed from preferences.
-    "pt-BR",  // Portuguese (Brazil) has both Windows and Hunspell support, and
-              // its Windows spellcheck dictionary is present.
-    "pt"      // Generic language should also be toggleable for spellcheck.
-};
-
-const std::vector<std::string> kSpellcheckDictionariesAfter = {
-    "fi",     // Finnish should have been enabled for spellchecking since
-              // it's the primary language.
-    "fr-FR",  // French should still be there.
-    "fr",     // Should still be entry for generic French.
-    "hr",     // So should Croatian.
-    "pt-BR",  // Portuguese (Brazil) should still be there.
-    "pt"      // Should still be entry for generic Portuguese.
-};
+constexpr char kAcceptLanguages[] = "fi-FI,fi,ar-AR,fr-FR,fr,hr,ceb,pt-BR,pt";
 
 // As a prelude to the next test, sets the initial accept languages and
 // spellcheck language preferences for the test profile.
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTestDelayInit,
                        PRE_WindowsHybridSpellcheckDelayInit) {
+  constexpr std::string_view kSpellcheckDictionariesBefore[] = {
+      // Note that Finnish is initially unset, but has Windows spellcheck
+      // dictionary present.
+      "ar",     // Arabic has no Hunspell support, and its Windows spellcheck
+                // dictionary is not present.
+      "fr-FR",  // French has both Windows and Hunspell support, and its Windows
+                // spellcheck dictionary is present.
+      "fr",     // Generic language should also be toggleable for spellcheck.
+      "hr",     // Croatian has Hunspell support.
+      "ceb",    // Cebuano doesn't have any dictionary support and should be
+                // removed from preferences.
+      "pt-BR",  // Portuguese (Brazil) has both Windows and Hunspell support,
+                // and its Windows spellcheck dictionary is present.
+      "pt"      // Generic language should also be toggleable for spellcheck.
+  };
   GetPrefs()->SetString(language::prefs::kSelectedLanguages, kAcceptLanguages);
   base::ListValue spellcheck_dictionaries_list;
-  for (const auto& dictionary : kSpellcheckDictionariesBefore) {
-    spellcheck_dictionaries_list.Append(std::move(dictionary));
+  for (std::string_view dictionary : kSpellcheckDictionariesBefore) {
+    spellcheck_dictionaries_list.Append(dictionary);
   }
   GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
                       std::move(spellcheck_dictionaries_list));
@@ -878,6 +860,12 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTestDelayInit,
   EXPECT_TRUE(service->windows_spellcheck_dictionary_map_.empty());
 
   // Fake the presence of Windows spellcheck dictionaries.
+  const std::vector<std::string> kWindowsSpellcheckLanguages = {
+      "fi-FI",  // Finnish has no Hunspell support.
+      "fr-FR",  // French has both Windows and Hunspell support.
+      "pt-BR"   // Portuguese (Brazil) has both Windows and Hunspell support,
+                // but generic pt does not have Hunspell support.
+  };
   service->AddSpellcheckLanguagesForTesting(kWindowsSpellcheckLanguages);
 
   service->InitializeDictionaries(
@@ -903,6 +891,15 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTestDelayInit,
   for (const auto& dictionary : dictionaries_list) {
     actual_dictionaries.push_back(dictionary.GetString());
   }
+  const std::vector<std::string> kSpellcheckDictionariesAfter = {
+      "fi",     // Finnish should have been enabled for spellchecking since
+                // it's the primary language.
+      "fr-FR",  // French should still be there.
+      "fr",     // Should still be entry for generic French.
+      "hr",     // So should Croatian.
+      "pt-BR",  // Portuguese (Brazil) should still be there.
+      "pt"      // Should still be entry for generic Portuguese.
+  };
   EXPECT_EQ(kSpellcheckDictionariesAfter, actual_dictionaries);
 
   // It should be safe to call InitializeDictionaries again (it should
