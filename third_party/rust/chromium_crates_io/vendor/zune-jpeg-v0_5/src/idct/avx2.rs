@@ -38,7 +38,7 @@ use core::arch::x86_64::*;
 
 use crate::unsafe_utils::{transpose, YmmRegister};
 
-const SCALE_BITS: i32 = 512 + 65536 + (128 << 17);
+use super::{CONST_BITS, OUTPUT_SHIFT, PASS1_ROUND, PASS1_SHIFT, SCALE_BITS};
 
 // Pack i32 to i16's,
 // clamp them to be between 0-255
@@ -178,16 +178,16 @@ pub unsafe fn idct_avx2(
             // avx one should produce identical code.)
 
             // even part
-            let p1 = (row2 + row6) * 2217;
+            let p1 = (row2 + row6) * 4433;
 
-            let mut t2 = p1 + row6 * -7567;
-            let mut t3 = p1 + row2 * 3135;
+            let mut t2 = p1 + row6 * -15137;
+            let mut t3 = p1 + row2 * 6270;
 
             let mut t0 = YmmRegister {
-                mm256: _mm256_slli_epi32((row0 + row4).mm256, 12),
+                mm256: _mm256_slli_epi32((row0 + row4).mm256, CONST_BITS),
             };
             let mut t1 = YmmRegister {
-                mm256: _mm256_slli_epi32((row0 - row4).mm256, 12),
+                mm256: _mm256_slli_epi32((row0 - row4).mm256, CONST_BITS),
             };
 
             let x0 = t0 + t3 + $SCALE_BITS;
@@ -199,17 +199,17 @@ pub unsafe fn idct_avx2(
             let p4 = row5 + row1;
             let p1 = row7 + row1;
             let p2 = row5 + row3;
-            let p5 = (p3 + p4) * 4816;
+            let p5 = (p3 + p4) * 9633;
 
-            t0 = row7 * 1223;
-            t1 = row5 * 8410;
-            t2 = row3 * 12586;
-            t3 = row1 * 6149;
+            t0 = row7 * 2446;
+            t1 = row5 * 16819;
+            t2 = row3 * 25172;
+            t3 = row1 * 12299;
 
-            let p1 = p5 + p1 * -3685;
-            let p2 = p5 + (p2 * -10497);
-            let p3 = p3 * -8034;
-            let p4 = p4 * -1597;
+            let p1 = p5 + p1 * -7373;
+            let p2 = p5 + (p2 * -20995);
+            let p3 = p3 * -16069;
+            let p4 = p4 * -3196;
 
             t3 += p1 + p4;
             t2 += p2 + p3;
@@ -229,13 +229,13 @@ pub unsafe fn idct_avx2(
     }
 
     // Process rows
-    dct_pass!(512, 10);
+    dct_pass!(PASS1_ROUND, PASS1_SHIFT);
     transpose(
         &mut row0, &mut row1, &mut row2, &mut row3, &mut row4, &mut row5, &mut row6, &mut row7,
     );
 
     // process columns
-    dct_pass!(SCALE_BITS, 17);
+    dct_pass!(SCALE_BITS, OUTPUT_SHIFT);
     transpose(
         &mut row0, &mut row1, &mut row2, &mut row3, &mut row4, &mut row5, &mut row6, &mut row7,
     );
@@ -275,13 +275,13 @@ pub unsafe fn idct_avx2_4x4(
     let mut row7 = YmmRegister { mm256: rw0 };
 
     {
-        row0.mm256 = _mm256_slli_epi32(row0.mm256, 12);
-        row0 += 512;
+        row0.mm256 = _mm256_slli_epi32(row0.mm256, CONST_BITS);
+        row0 += PASS1_ROUND;
 
         let i2 = row2;
 
-        let p1 = i2 * 2217;
-        let p3 = i2 * 5352;
+        let p1 = i2 * 4433;
+        let p3 = i2 * 10703;
 
         let x0 = row0 + p3;
         let x1 = row0 + p1;
@@ -292,26 +292,26 @@ pub unsafe fn idct_avx2_4x4(
         let i4 = row3;
         let i3 = row1;
 
-        let p5 = (i4 + i3) * 4816;
+        let p5 = (i4 + i3) * 9633;
 
-        let p1 = p5 + i3 * -3685;
-        let p2 = p5 + i4 * -10497;
+        let p1 = p5 + i3 * -7373;
+        let p2 = p5 + i4 * -20995;
 
-        let t3 = p5 + i3 * 867;
-        let t2 = p5 + i4 * -5945;
+        let t3 = p5 + i3 * 1730;
+        let t2 = p5 + i4 * -11892;
 
-        let t1 = p2 + i3 * -1597;
-        let t0 = p1 + i4 * -8034;
+        let t1 = p2 + i3 * -3196;
+        let t0 = p1 + i4 * -16069;
 
-        row0.mm256 = _mm256_srai_epi32((x0 + t3).mm256, 10);
-        row1.mm256 = _mm256_srai_epi32((x1 + t2).mm256, 10);
-        row2.mm256 = _mm256_srai_epi32((x2 + t1).mm256, 10);
-        row3.mm256 = _mm256_srai_epi32((x3 + t0).mm256, 10);
+        row0.mm256 = _mm256_srai_epi32((x0 + t3).mm256, PASS1_SHIFT);
+        row1.mm256 = _mm256_srai_epi32((x1 + t2).mm256, PASS1_SHIFT);
+        row2.mm256 = _mm256_srai_epi32((x2 + t1).mm256, PASS1_SHIFT);
+        row3.mm256 = _mm256_srai_epi32((x3 + t0).mm256, PASS1_SHIFT);
 
-        row4.mm256 = _mm256_srai_epi32((x3 - t0).mm256, 10);
-        row5.mm256 = _mm256_srai_epi32((x2 - t1).mm256, 10);
-        row6.mm256 = _mm256_srai_epi32((x1 - t2).mm256, 10);
-        row7.mm256 = _mm256_srai_epi32((x0 - t3).mm256, 10);
+        row4.mm256 = _mm256_srai_epi32((x3 - t0).mm256, PASS1_SHIFT);
+        row5.mm256 = _mm256_srai_epi32((x2 - t1).mm256, PASS1_SHIFT);
+        row6.mm256 = _mm256_srai_epi32((x1 - t2).mm256, PASS1_SHIFT);
+        row7.mm256 = _mm256_srai_epi32((x0 - t3).mm256, PASS1_SHIFT);
     }
 
     transpose(
@@ -322,19 +322,13 @@ pub unsafe fn idct_avx2_4x4(
         let i2 = row2;
         let i0 = row0;
 
-        row0.mm256 = _mm256_slli_epi32(i0.mm256, 12);
+        row0.mm256 = _mm256_slli_epi32(i0.mm256, CONST_BITS);
         let t0 = row0 + SCALE_BITS;
 
-        let t2 = i2 * 2217;
-        let t3 = i2 * 5352;
+        let t2 = i2 * 4433;
+        let t3 = i2 * 10703;
 
-        // constants scaled things up by 1<<12, plus we had 1<<2 from first
-        // loop, plus horizontal and vertical each scale by sqrt(8) so together
-        // we've got an extra 1<<3, so 1<<17 total we need to remove.
-        // so we want to round that, which means adding 0.5 * 1<<17,
-        // aka 65536. Also, we'll end up with -128 to 127 that we want
-        // to encode as 0..255 by adding 128, so we'll add that before the shift
-        // Rounding constant is already added into `t0`
+        // SCALE_BITS rounds the final pass and level-shifts the samples.
         let x0 = t0 + t3;
         let x3 = t0 - t3;
         let x1 = t0 + t2;
@@ -344,25 +338,25 @@ pub unsafe fn idct_avx2_4x4(
         let i3 = row3;
         let i1 = row1;
 
-        let p5 = (i3 + i1) * 4816;
+        let p5 = (i3 + i1) * 9633;
 
-        let p1 = p5 + i1 * -3685;
-        let p2 = p5 + i3 * -10497;
+        let p1 = p5 + i1 * -7373;
+        let p2 = p5 + i3 * -20995;
 
-        let t3 = p5 + i1 * 867;
-        let t2 = p5 + i3 * -5945;
+        let t3 = p5 + i1 * 1730;
+        let t2 = p5 + i3 * -11892;
 
-        let t1 = p2 + i1 * -1597;
-        let t0 = p1 + i3 * -8034;
+        let t1 = p2 + i1 * -3196;
+        let t0 = p1 + i3 * -16069;
 
-        row0.mm256 = _mm256_srai_epi32((x0 + t3).mm256, 17);
-        row1.mm256 = _mm256_srai_epi32((x1 + t2).mm256, 17);
-        row2.mm256 = _mm256_srai_epi32((x2 + t1).mm256, 17);
-        row3.mm256 = _mm256_srai_epi32((x3 + t0).mm256, 17);
-        row4.mm256 = _mm256_srai_epi32((x3 - t0).mm256, 17);
-        row5.mm256 = _mm256_srai_epi32((x2 - t1).mm256, 17);
-        row6.mm256 = _mm256_srai_epi32((x1 - t2).mm256, 17);
-        row7.mm256 = _mm256_srai_epi32((x0 - t3).mm256, 17);
+        row0.mm256 = _mm256_srai_epi32((x0 + t3).mm256, OUTPUT_SHIFT);
+        row1.mm256 = _mm256_srai_epi32((x1 + t2).mm256, OUTPUT_SHIFT);
+        row2.mm256 = _mm256_srai_epi32((x2 + t1).mm256, OUTPUT_SHIFT);
+        row3.mm256 = _mm256_srai_epi32((x3 + t0).mm256, OUTPUT_SHIFT);
+        row4.mm256 = _mm256_srai_epi32((x3 - t0).mm256, OUTPUT_SHIFT);
+        row5.mm256 = _mm256_srai_epi32((x2 - t1).mm256, OUTPUT_SHIFT);
+        row6.mm256 = _mm256_srai_epi32((x1 - t2).mm256, OUTPUT_SHIFT);
+        row7.mm256 = _mm256_srai_epi32((x0 - t3).mm256, OUTPUT_SHIFT);
     }
 
     transpose(

@@ -34,7 +34,7 @@ use core::arch::aarch64::*;
 
 use crate::unsafe_utils::{transpose, YmmRegister};
 
-const SCALE_BITS: i32 = 512 + 65536 + (128 << 17);
+use super::{CONST_BITS, OUTPUT_SHIFT, PASS1_ROUND, PASS1_SHIFT, SCALE_BITS};
 
 #[inline]
 #[target_feature(enable = "neon")]
@@ -141,13 +141,13 @@ pub unsafe fn idct_neon(in_vector: &mut [i32; 64], out_vector: &mut [i16], strid
                 // into multiply-acumulate pairs
 
                 // even part
-                let p1 = (row2 + row6) * 2217;
+                let p1 = (row2 + row6) * 4433;
 
-                let mut t2 = p1 + row6 * -7567;
-                let mut t3 = p1 + row2 * 3135;
+                let mut t2 = p1 + row6 * -15137;
+                let mut t3 = p1 + row2 * 6270;
 
-                let mut t0 = (row0 + row4).const_shl::<12>();
-                let mut t1 = (row0 - row4).const_shl::<12>();
+                let mut t0 = (row0 + row4).const_shl::<CONST_BITS>();
+                let mut t1 = (row0 - row4).const_shl::<CONST_BITS>();
 
                 let x0 = t0 + t3 + $SCALE_BITS;
                 let x3 = t0 - t3 + $SCALE_BITS;
@@ -158,17 +158,17 @@ pub unsafe fn idct_neon(in_vector: &mut [i32; 64], out_vector: &mut [i16], strid
                 let p4 = row5 + row1;
                 let p1 = row7 + row1;
                 let p2 = row5 + row3;
-                let p5 = (p3 + p4) * 4816;
+                let p5 = (p3 + p4) * 9633;
 
-                t0 = row7 * 1223;
-                t1 = row5 * 8410;
-                t2 = row3 * 12586;
-                t3 = row1 * 6149;
+                t0 = row7 * 2446;
+                t1 = row5 * 16819;
+                t2 = row3 * 25172;
+                t3 = row1 * 12299;
 
-                let p1 = p5 + p1 * -3685;
-                let p2 = p5 + (p2 * -10497);
-                let p3 = p3 * -8034;
-                let p4 = p4 * -1597;
+                let p1 = p5 + p1 * -7373;
+                let p2 = p5 + (p2 * -20995);
+                let p3 = p3 * -16069;
+                let p4 = p4 * -3196;
 
                 t3 += p1 + p4;
                 t2 += p2 + p3;
@@ -188,13 +188,13 @@ pub unsafe fn idct_neon(in_vector: &mut [i32; 64], out_vector: &mut [i16], strid
         }
 
         // Process rows
-        dct_pass!(512, 10);
+        dct_pass!(PASS1_ROUND, PASS1_SHIFT);
         transpose(
             &mut row0, &mut row1, &mut row2, &mut row3, &mut row4, &mut row5, &mut row6, &mut row7,
         );
 
         // process columns
-        dct_pass!(SCALE_BITS, 17);
+        dct_pass!(SCALE_BITS, OUTPUT_SHIFT);
         transpose(
             &mut row0, &mut row1, &mut row2, &mut row3, &mut row4, &mut row5, &mut row6, &mut row7,
         );

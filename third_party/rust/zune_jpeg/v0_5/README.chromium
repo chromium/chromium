@@ -9,3 +9,10 @@ Shipped: yes
 Security Critical: yes
 
 Description: A fast, correct and safe jpeg decoder
+
+Local Modifications:
+- Backport raw iMCU and scanline decoding.
+- Carry a single local port of the final raw-input, accurate IDCT, progressive
+  block-smoothing, and raw-publication fixes proposed in
+  https://github.com/etemesi254/zune-image/pull/494.
+  Preserve existing best-effort packed and scanline decoding.

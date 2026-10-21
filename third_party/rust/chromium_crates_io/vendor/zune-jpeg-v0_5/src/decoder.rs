@@ -406,6 +406,12 @@ pub struct JpegDecoder<T> {
     pub(crate) upsampler_scratch: Vec<i16>,
     /// Number of progressive scans committed into `progressive_mcus_buffer`.
     pub(crate) progressive_completed_scans: usize,
+    /// Last input iMCU row before entropy exhaustion in the accepted scan.
+    pub(crate) progressive_last_good_row: usize,
+    /// Pending row position; discarded scans must not change smoothing precision.
+    pub(crate) progressive_scan_last_good_row: usize,
+    /// The first progressive scan has no previous precision to fall back to.
+    pub(crate) progressive_smoothing_first_scan: bool,
     /// Number of committed progressive scans currently rendered as preview
     /// pixels in the output buffer.
     pub(crate) progressive_displayed_scans: usize,
@@ -597,6 +603,7 @@ struct RawPullState {
     entropy_tables:           Option<EntropyTables>,
     layout:                   Option<[PlaneInfo; MAX_COMPONENTS]>,
     rows_per_stripe:          [usize; MAX_COMPONENTS],
+    input_complete:          bool,
     buffered_source_complete: bool
 }
 
@@ -652,6 +659,7 @@ impl Default for RawPullState {
             entropy_tables:           None,
             layout:                   None,
             rows_per_stripe:          [0; MAX_COMPONENTS],
+            input_complete:          false,
             buffered_source_complete: false
         }
     }
@@ -1090,6 +1098,16 @@ impl<T> RawDecodeSession<'_, T>
 where
     T: ZByteReaderTrait
 {
+    /// Signal that no more compressed bytes will be provided for this sequence.
+    ///
+    /// Non-strict decoding may then render best-effort output at the final EOF,
+    /// including available progressive coefficients. Strict decoding continues
+    /// to reject truncated input. Without this signal, EOF remains resumable
+    /// and does not commit an incomplete raw stripe.
+    pub fn set_input_complete(&mut self) {
+        self.decoder.raw_pull_state.input_complete = true;
+    }
+
     /// Number of components in SOF declaration order.
     ///
     /// Returns `None` when headers have not been decoded yet.
@@ -1261,7 +1279,7 @@ where
         let mut output = McuDecodeOutput::RawPlanes(raw_planes);
 
         if let Err(error) = self.decode_pull_phase(&mut output, &layout, n) {
-            if error.is_recoverable_eof() {
+            if error.is_recoverable_eof() && !self.decoder.raw_pull_state.input_complete {
                 return Ok(RawImcuRowStatus::NeedMoreInput);
             }
             return Err(error);
@@ -1946,6 +1964,9 @@ where
             progressive_scan_buffer: core::array::from_fn(|_| Vec::new()),
             upsampler_scratch: Vec::new(),
             progressive_completed_scans: 0,
+            progressive_last_good_row: 0,
+            progressive_scan_last_good_row: 0,
+            progressive_smoothing_first_scan: true,
             progressive_displayed_scans: 0,
             progressive_render_incomplete: false,
             marker_body_scratch:         Vec::new(),
@@ -2154,7 +2175,8 @@ where
     /// Strict mode rejects truncated scans, while incremental mode uses the
     /// error to signal that the caller should provide more input.
     pub(crate) fn scan_eof_is_error(&self) -> bool {
-        self.options.strict_mode() || self.incremental_mode
+        self.options.strict_mode()
+            || (self.incremental_mode && !self.raw_pull_state.input_complete)
     }
 
     /// Return the number of output scanlines known to be stable after the
@@ -3447,7 +3469,9 @@ where
     }
 
     fn abort_raw_pull_sequence(&mut self) {
-        if self.raw_pull_state.owner == RawPullOwner::None {
+        if self.raw_pull_state.owner == RawPullOwner::None
+            && !self.raw_pull_state.input_complete
+        {
             return;
         }
         self.raw_pull_state = RawPullState::default();
@@ -3789,6 +3813,96 @@ mod planar_layout_helpers {
     use crate::color_convert::choose_ycbcr_to_rgb_convert_func;
     use super::{round_up_pow2, JpegDecoder, RawImcuRowStatus, ScanlineReadStatus, ScanlineStatus};
     use crate::idct::{choose_idct_1x1_func, choose_idct_4x4_func, choose_idct_func};
+
+    fn dc_only_progressive_jpeg(with_eoi: bool) -> Vec<u8> {
+        let mut data = vec![0xFF, 0xD8, 0xFF, 0xDB, 0, 67, 0];
+        data.extend_from_slice(&[1; 64]);
+        data.extend_from_slice(&[
+            0xFF, 0xC2, 0, 17, 8, 0, 8, 0, 8, 3,
+            1, 0x11, 0, 2, 0x11, 0, 3, 0x11, 0,
+            0xFF, 0xC4, 0, 20, 0,
+        ]);
+        data.extend_from_slice(&[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+        data.push(0);
+        for component in 1..=3 {
+            data.extend_from_slice(&[
+                0xFF, 0xDA, 0, 8, 1, component, 0, 0, 0, 0, 0x7F,
+            ]);
+        }
+        if with_eoi {
+            data.extend_from_slice(&[0xFF, 0xD9]);
+        }
+        data
+    }
+
+    #[test]
+    fn final_raw_input_renders_truncated_progressive_planes() {
+        let data = dc_only_progressive_jpeg(false);
+        let mut decoder = JpegDecoder::new_with_options(
+            ZCursor::new(&data),
+            DecoderOptions::default().set_strict_mode(false),
+        );
+        decoder.decode_headers().unwrap();
+        let mut raw = decoder.raw_output();
+        let mut y = [0xA5; 8 * 11];
+        let mut u = [0xA5; 8 * 11];
+        let mut v = [0xA5; 8 * 11];
+        assert_eq!(
+            raw.decode_next_imcu_row(&mut [&mut y, &mut u, &mut v], &[11; 3]).unwrap(),
+            RawImcuRowStatus::NeedMoreInput,
+        );
+        assert!(y.iter().chain(u.iter()).chain(v.iter()).all(|&value| value == 0xA5));
+
+        raw.set_input_complete();
+        assert!(matches!(
+            raw.decode_next_imcu_row(&mut [&mut y, &mut u, &mut v], &[11; 3]).unwrap(),
+            RawImcuRowStatus::RowReady { rows_written: [8, 8, 8, 0] },
+        ));
+        for plane in [&y, &u, &v] {
+            for row in plane.chunks_exact(11) {
+                assert_eq!(&row[..8], &[128; 8]);
+                assert_eq!(&row[8..], &[0xA5; 3]);
+            }
+        }
+        assert_eq!(
+            raw.decode_next_imcu_row(&mut [&mut [], &mut [], &mut []], &[11; 3]).unwrap(),
+            RawImcuRowStatus::Complete,
+        );
+    }
+
+    #[test]
+    fn final_raw_input_keeps_strict_eof_an_error() {
+        let data = dc_only_progressive_jpeg(false);
+        let mut decoder = JpegDecoder::new_with_options(
+            ZCursor::new(&data),
+            DecoderOptions::default().set_strict_mode(true),
+        );
+        decoder.decode_headers().unwrap();
+        let mut raw = decoder.raw_output();
+        raw.set_input_complete();
+        let mut y = [0xA5; 64];
+        let mut u = [0xA5; 64];
+        let mut v = [0xA5; 64];
+        assert!(raw
+            .decode_next_imcu_row(&mut [&mut y, &mut u, &mut v], &[8; 3])
+            .unwrap_err()
+            .is_recoverable_eof());
+        assert!(y.iter().chain(u.iter()).chain(v.iter()).all(|&value| value == 0xA5));
+    }
+
+    #[test]
+    fn final_raw_input_does_not_leak_to_pixel_output() {
+        let data = dc_only_progressive_jpeg(false);
+        let mut decoder = JpegDecoder::new_with_options(
+            ZCursor::new(&data),
+            DecoderOptions::default().set_strict_mode(false),
+        );
+        decoder.decode_headers().unwrap();
+        decoder.set_incremental_mode(true);
+        decoder.raw_output().set_input_complete();
+        let mut output = vec![0; decoder.output_buffer_size().unwrap()];
+        assert!(decoder.decode_into(&mut output).unwrap_err().is_recoverable_eof());
+    }
 
     #[test]
     fn div_ceil_basic() {
