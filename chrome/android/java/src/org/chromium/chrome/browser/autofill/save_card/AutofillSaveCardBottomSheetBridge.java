@@ -12,7 +12,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -34,7 +37,11 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class AutofillSaveCardBottomSheetBridge
         implements AutofillSaveCardBottomSheetCoordinator.NativeDelegate {
-    private long mNativeAutofillSaveCardBottomSheetBridge;
+    @JniType("::autofill::AutofillSaveCardBottomSheetBridge")
+    interface NativeAutofillSaveCardBottomSheetBridge extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeAutofillSaveCardBottomSheetBridge>
+            mNativeAutofillSaveCardBottomSheetBridge;
     private final TabModel mTabModel;
     private final @Nullable Context mContext;
     private final @Nullable BottomSheetController mBottomSheetController;
@@ -45,7 +52,8 @@ public class AutofillSaveCardBottomSheetBridge
     @CalledByNative
     @VisibleForTesting
     /*package*/ AutofillSaveCardBottomSheetBridge(
-            long nativeAutofillSaveCardBottomSheetBridge,
+            JniRawPtr<NativeAutofillSaveCardBottomSheetBridge>
+                    nativeAutofillSaveCardBottomSheetBridge,
             @JniType("ui::WindowAndroid*") WindowAndroid window,
             @JniType("TabModel*") TabModel tabModel) {
         mNativeAutofillSaveCardBottomSheetBridge = nativeAutofillSaveCardBottomSheetBridge;
@@ -67,7 +75,7 @@ public class AutofillSaveCardBottomSheetBridge
      */
     @CalledByNative
     public void requestShowContent(AutofillSaveCardUiInfo uiInfo, boolean skipLoadingForFixFlow) {
-        if (mNativeAutofillSaveCardBottomSheetBridge == 0
+        if (mNativeAutofillSaveCardBottomSheetBridge == null
                 || mContext == null
                 || mBottomSheetController == null
                 || mAnchoredDialogCoordinator == null
@@ -95,7 +103,7 @@ public class AutofillSaveCardBottomSheetBridge
      */
     @CalledByNative
     public void hide() {
-        if (mNativeAutofillSaveCardBottomSheetBridge == 0) return;
+        if (mNativeAutofillSaveCardBottomSheetBridge == null) return;
         assumeNonNull(mCoordinator)
                 .hide(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
     }
@@ -103,7 +111,7 @@ public class AutofillSaveCardBottomSheetBridge
     /** Called when the bottom sheet has been shown. */
     @Override
     public void onUiShown() {
-        if (mNativeAutofillSaveCardBottomSheetBridge == 0) return;
+        if (mNativeAutofillSaveCardBottomSheetBridge == null) return;
         AutofillSaveCardBottomSheetBridgeJni.get()
                 .onUiShown(mNativeAutofillSaveCardBottomSheetBridge);
     }
@@ -111,7 +119,7 @@ public class AutofillSaveCardBottomSheetBridge
     /** Called when the confirm button has been clicked. */
     @Override
     public void onUiAccepted() {
-        if (mNativeAutofillSaveCardBottomSheetBridge == 0) return;
+        if (mNativeAutofillSaveCardBottomSheetBridge == null) return;
         AutofillSaveCardBottomSheetBridgeJni.get()
                 .onUiAccepted(mNativeAutofillSaveCardBottomSheetBridge);
     }
@@ -119,7 +127,7 @@ public class AutofillSaveCardBottomSheetBridge
     /** Called when the cancel button is pushed or bottom sheet dismissed (e.g. back press). */
     @Override
     public void onUiCanceled() {
-        if (mNativeAutofillSaveCardBottomSheetBridge == 0) return;
+        if (mNativeAutofillSaveCardBottomSheetBridge == null) return;
         AutofillSaveCardBottomSheetBridgeJni.get()
                 .onUiCanceled(mNativeAutofillSaveCardBottomSheetBridge);
     }
@@ -127,7 +135,7 @@ public class AutofillSaveCardBottomSheetBridge
     /** Called when the the bottom sheet is hidden without interaction with the bottom sheet. */
     @Override
     public void onUiIgnored() {
-        if (mNativeAutofillSaveCardBottomSheetBridge == 0) return;
+        if (mNativeAutofillSaveCardBottomSheetBridge == null) return;
         AutofillSaveCardBottomSheetBridgeJni.get()
                 .onUiIgnored(mNativeAutofillSaveCardBottomSheetBridge);
     }
@@ -135,7 +143,10 @@ public class AutofillSaveCardBottomSheetBridge
     @CalledByNative
     @VisibleForTesting
     /*package*/ void destroy() {
-        mNativeAutofillSaveCardBottomSheetBridge = 0;
+        if (mNativeAutofillSaveCardBottomSheetBridge != null) {
+            mNativeAutofillSaveCardBottomSheetBridge.release();
+            mNativeAutofillSaveCardBottomSheetBridge = null;
+        }
         if (mCoordinator == null) return;
         mCoordinator.hide(BottomSheetController.StateChangeReason.NONE);
         mCoordinator = null;
@@ -143,12 +154,12 @@ public class AutofillSaveCardBottomSheetBridge
 
     @NativeMethods
     interface Natives {
-        void onUiShown(long nativeAutofillSaveCardBottomSheetBridge);
+        void onUiShown(JniPtr<NativeAutofillSaveCardBottomSheetBridge> self);
 
-        void onUiAccepted(long nativeAutofillSaveCardBottomSheetBridge);
+        void onUiAccepted(JniPtr<NativeAutofillSaveCardBottomSheetBridge> self);
 
-        void onUiCanceled(long nativeAutofillSaveCardBottomSheetBridge);
+        void onUiCanceled(JniPtr<NativeAutofillSaveCardBottomSheetBridge> self);
 
-        void onUiIgnored(long nativeAutofillSaveCardBottomSheetBridge);
+        void onUiIgnored(JniPtr<NativeAutofillSaveCardBottomSheetBridge> self);
     }
 }

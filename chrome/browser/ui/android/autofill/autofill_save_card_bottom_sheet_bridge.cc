@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 
 // Must come after headers that provide symbols used by @JniType.
@@ -55,7 +56,7 @@ AutofillSaveCardBottomSheetBridge::AutofillSaveCardBottomSheetBridge(
   CHECK(tab_model);
   java_autofill_save_card_bottom_sheet_bridge_ =
       Java_AutofillSaveCardBottomSheetBridge_Constructor(
-          base::android::AttachCurrentThread(), reinterpret_cast<int64_t>(this),
+          base::android::AttachCurrentThread(), jni_zero::MakeRaw(this),
           window_android, tab_model);
 }
 

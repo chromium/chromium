@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.app.Activity;
 
+import org.jni_zero.JniRawPtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,6 +26,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinatorProvider;
+import org.chromium.chrome.browser.autofill.save_card.AutofillSaveCardBottomSheetBridge.NativeAutofillSaveCardBottomSheetBridge;
 import org.chromium.chrome.browser.layouts.LayoutManagerAppUtils;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -41,9 +43,13 @@ import java.util.Collections;
 /** Unit tests for {@link AutofillSaveCardBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AutofillSaveCardBottomSheetBridgeTest {
-    private static final long NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE = 0xb00fb00fL;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private AutofillSaveCardBottomSheetBridge.Natives mBridgeNatives;
+
+    @Mock
+    private JniRawPtr<NativeAutofillSaveCardBottomSheetBridge>
+            mNativeAutofillSaveCardBottomSheetBridge;
+
     private WindowAndroid mWindow;
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private AnchoredDialogCoordinator mAnchoredDialogCoordinator;
@@ -62,7 +68,7 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
         MockTabModel tabModel = new MockTabModel(mProfile, /* delegate= */ null);
         mBridge =
                 new AutofillSaveCardBottomSheetBridge(
-                        NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE, mWindow, tabModel);
+                        mNativeAutofillSaveCardBottomSheetBridge, mWindow, tabModel);
     }
 
     @After
@@ -120,6 +126,7 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
                         any(AutofillSaveCardBottomSheetContent.class),
                         /* animate= */ eq(true),
                         eq(StateChangeReason.NONE));
+        verify(mNativeAutofillSaveCardBottomSheetBridge).release();
     }
 
     @Test
@@ -127,6 +134,7 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
         mBridge.destroy();
 
         verifyNoInteractions(mBottomSheetController);
+        verify(mNativeAutofillSaveCardBottomSheetBridge).release();
     }
 
     @Test
@@ -134,17 +142,17 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
         requestShowContent();
 
         mBridge.destroy();
-        clearInvocations(mBottomSheetController);
+        clearInvocations(mBottomSheetController, mNativeAutofillSaveCardBottomSheetBridge);
 
         mBridge.destroy();
-        verifyNoInteractions(mBottomSheetController);
+        verifyNoInteractions(mBottomSheetController, mNativeAutofillSaveCardBottomSheetBridge);
     }
 
     @Test
     public void testOnUiShown() {
         mBridge.onUiShown();
 
-        verify(mBridgeNatives).onUiShown(eq(NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE));
+        verify(mBridgeNatives).onUiShown(eq(mNativeAutofillSaveCardBottomSheetBridge));
     }
 
     @Test
@@ -160,7 +168,7 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
     public void testOnUiAccepted() {
         mBridge.onUiAccepted();
 
-        verify(mBridgeNatives).onUiAccepted(eq(NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE));
+        verify(mBridgeNatives).onUiAccepted(eq(mNativeAutofillSaveCardBottomSheetBridge));
     }
 
     @Test
@@ -176,7 +184,7 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
     public void testOnUiCanceled() {
         mBridge.onUiCanceled();
 
-        verify(mBridgeNatives).onUiCanceled(eq(NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE));
+        verify(mBridgeNatives).onUiCanceled(eq(mNativeAutofillSaveCardBottomSheetBridge));
     }
 
     @Test
@@ -192,7 +200,7 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
     public void testOnUiIgnored() {
         mBridge.onUiIgnored();
 
-        verify(mBridgeNatives).onUiIgnored(eq(NATIVE_AUTOFILL_SAVE_CARD_BOTTOM_SHEET_BRIDGE));
+        verify(mBridgeNatives).onUiIgnored(eq(mNativeAutofillSaveCardBottomSheetBridge));
     }
 
     @Test
