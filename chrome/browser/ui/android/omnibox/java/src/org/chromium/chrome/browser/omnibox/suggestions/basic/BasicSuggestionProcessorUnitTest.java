@@ -559,6 +559,33 @@ public class BasicSuggestionProcessorUnitTest {
     }
 
     @Test
+    public void searchSuggestions_primaryTextWrapping() {
+        mProcessor.onNativeInitialized();
+        createSearchSuggestion(OmniboxSuggestionType.SEARCH_SUGGEST, "");
+        assertTrue(mModel.get(SuggestionViewProperties.TEXT_LINE_1_WRAP));
+
+        var templateNoWrap = SuggestTemplateInfo.newBuilder().setWrapPrimaryText(false).build();
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.SEARCH_SUGGEST, "")
+                        .setIsSearch(true)
+                        .setSerializedSuggestTemplate(templateNoWrap.toByteArray())
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+        assertFalse(mModel.get(SuggestionViewProperties.TEXT_LINE_1_WRAP));
+
+        var templateWrap = SuggestTemplateInfo.newBuilder().setWrapPrimaryText(true).build();
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "")
+                        .setIsSearch(false)
+                        .setSerializedSuggestTemplate(templateWrap.toByteArray())
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+        assertTrue(mModel.get(SuggestionViewProperties.TEXT_LINE_1_WRAP));
+    }
+
+    @Test
     public void searchSuggestions_secondaryTextWrapping() {
         mProcessor.onNativeInitialized();
         createSearchSuggestion(OmniboxSuggestionType.SEARCH_SUGGEST, "");

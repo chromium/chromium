@@ -16,8 +16,6 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
-import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -52,16 +50,6 @@ public class EntitySuggestionProcessor extends BasicSuggestionProcessor {
     @Override
     public PropertyModel createModel() {
         return createPropertyModel(EntitySuggestionViewProperties.ALL_KEYS);
-    }
-
-    @Override
-    public void populateModel(
-            AutocompleteInput input,
-            AutocompleteMatch suggestion,
-            PropertyModel model,
-            int position) {
-        super.populateModel(input, suggestion, model, position);
-        model.set(SuggestionViewProperties.TEXT_LINE_1_WRAP, false);
     }
 
     @VisibleForTesting

@@ -37,6 +37,8 @@ typedef NS_ENUM(NSUInteger, SuggestTileType) {
 @property(nonatomic, readonly) NSAttributedString* detailText;
 /// Suggested number of lines to format `detailText`.
 @property(nonatomic, readonly) NSInteger numberOfLines;
+/// Whether `text` should be allowed to wrap to multiple lines.
+@property(nonatomic, readonly) BOOL wrapPrimaryText;
 /// Whether `detailText` should be allowed to wrap to multiple lines.
 @property(nonatomic, readonly) BOOL wrapSecondaryText;
 

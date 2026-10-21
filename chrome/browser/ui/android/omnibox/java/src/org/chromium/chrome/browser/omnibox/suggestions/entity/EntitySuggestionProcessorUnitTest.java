@@ -275,8 +275,23 @@ public class EntitySuggestionProcessorUnitTest {
     }
 
     @Test
-    public void populateModel_suggestionTextDoesNotWrap() {
+    public void populateModel_primaryTextWrapping_default() {
         SuggestionTestHelper suggHelper = createSuggestion("subject", "details", null, SEARCH_URL);
+        processSuggestion(suggHelper);
+        assertTrue(suggHelper.mModel.get(SuggestionViewProperties.TEXT_LINE_1_WRAP));
+    }
+
+    @Test
+    public void populateModel_primaryTextWrapping_disabled() {
+        var template = SuggestTemplateInfo.newBuilder().setWrapPrimaryText(false).build();
+        AutocompleteMatch suggestion =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST_ENTITY)
+                        .setDisplayText("subject")
+                        .setDescription("details")
+                        .setSerializedSuggestTemplate(template.toByteArray())
+                        .build();
+        PropertyModel model = mProcessor.createModel();
+        SuggestionTestHelper suggHelper = new SuggestionTestHelper(suggestion, model);
         processSuggestion(suggHelper);
         assertFalse(suggHelper.mModel.get(SuggestionViewProperties.TEXT_LINE_1_WRAP));
     }

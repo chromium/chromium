@@ -57,6 +57,10 @@
   return 1;
 }
 
+- (BOOL)wrapPrimaryText {
+  return NO;
+}
+
 - (BOOL)wrapSecondaryText {
   return NO;
 }
