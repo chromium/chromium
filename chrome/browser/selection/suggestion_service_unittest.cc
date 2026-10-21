@@ -549,6 +549,212 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithCroppedScreenshot) {
   service().UnregisterTool(&gemini_tool);
 }
 
+// Tests that screenshot downscaling and selection scaling work when
+// `kSmartSelectionServerMaxScreenshotDimension` is non-negative and exceeded.
+TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithDownscaledScreenshot) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSmartSelectionServerSuggestions,
+      {{kSmartSelectionServerMaxScreenshotDimension.name, "100"}});
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  optimization_guide::proto::SmartSelectionSuggestionsResponse response;
+  optimization_guide::proto::SmartSelectionSuggestion* s1 =
+      response.add_suggestions();
+  s1->set_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  s1->set_label("Downscaled Action");
+
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kSmartSelectionSuggestions,
+                           _, _, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            const auto& request =
+                static_cast<const optimization_guide::proto::
+                                SmartSelectionSuggestionsRequest&>(
+                    request_metadata);
+            ASSERT_EQ(request.areas_of_interest().size(), 1);
+            const optimization_guide::proto::AreaOfInterest& proto_aoi =
+                request.areas_of_interest(0);
+            SkBitmap decoded = gfx::PNGCodec::Decode(
+                base::as_byte_span(proto_aoi.image_bytes()));
+            // Original 200x100 downscaled by 0.5 to fit within 100.
+            EXPECT_EQ(decoded.width(), 100);
+            EXPECT_EQ(decoded.height(), 50);
+            EXPECT_EQ(proto_aoi.selection().x(), 10);
+            EXPECT_EQ(proto_aoi.selection().y(), 10);
+            EXPECT_EQ(proto_aoi.selection().width(), 30);
+            EXPECT_EQ(proto_aoi.selection().height(), 20);
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    base::ok(optimization_guide::AnyWrapProto(response)),
+                    /*execution_info=*/nullptr),
+                /*log_entry=*/nullptr);
+          });
+
+  AreaOfInterest aoi;
+  aoi.screenshot.allocN32Pixels(200, 100);
+  aoi.screenshot.eraseColor(SK_ColorRED);
+  aoi.bounds = gfx::Rect(20, 20, 60, 40);
+
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  service().RequestSuggestions(aoi, future.GetCallback());
+
+  EXPECT_THAT(future.Take(),
+              ElementsAre(SuggestionWithLabel(u"Downscaled Action")));
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+// Tests that screenshot is not downscaled when its longest side does not exceed
+// `kSmartSelectionServerMaxScreenshotDimension`.
+TEST_F(SuggestionServiceUnitTest,
+       RequestSuggestionsScreenshotBelowMaxDimensionNotDownscaled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSmartSelectionServerSuggestions,
+      {{kSmartSelectionServerMaxScreenshotDimension.name, "200"}});
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  optimization_guide::proto::SmartSelectionSuggestionsResponse response;
+  optimization_guide::proto::SmartSelectionSuggestion* s1 =
+      response.add_suggestions();
+  s1->set_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  s1->set_label("Not Downscaled Action");
+
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kSmartSelectionSuggestions,
+                           _, _, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            const auto& request =
+                static_cast<const optimization_guide::proto::
+                                SmartSelectionSuggestionsRequest&>(
+                    request_metadata);
+            ASSERT_EQ(request.areas_of_interest().size(), 1);
+            const optimization_guide::proto::AreaOfInterest& proto_aoi =
+                request.areas_of_interest(0);
+            SkBitmap decoded = gfx::PNGCodec::Decode(
+                base::as_byte_span(proto_aoi.image_bytes()));
+            EXPECT_EQ(decoded.width(), 100);
+            EXPECT_EQ(decoded.height(), 80);
+            EXPECT_EQ(proto_aoi.selection().x(), 10);
+            EXPECT_EQ(proto_aoi.selection().y(), 10);
+            EXPECT_EQ(proto_aoi.selection().width(), 20);
+            EXPECT_EQ(proto_aoi.selection().height(), 20);
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    base::ok(optimization_guide::AnyWrapProto(response)),
+                    /*execution_info=*/nullptr),
+                /*log_entry=*/nullptr);
+          });
+
+  AreaOfInterest aoi;
+  aoi.screenshot.allocN32Pixels(100, 80);
+  aoi.screenshot.eraseColor(SK_ColorRED);
+  aoi.bounds = gfx::Rect(10, 10, 20, 20);
+
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  service().RequestSuggestions(aoi, future.GetCallback());
+
+  EXPECT_THAT(future.Take(),
+              ElementsAre(SuggestionWithLabel(u"Not Downscaled Action")));
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+// Tests that screenshot cropping and downscaling work together properly.
+TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithCropAndDownscale) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSmartSelectionServerSuggestions,
+      {{kSmartSelectionServerCropPadding.name, "10"},
+       {kSmartSelectionServerMaxScreenshotDimension.name, "50"}});
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  optimization_guide::proto::SmartSelectionSuggestionsResponse response;
+  optimization_guide::proto::SmartSelectionSuggestion* s1 =
+      response.add_suggestions();
+  s1->set_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  s1->set_label("Cropped and Downscaled Action");
+
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kSmartSelectionSuggestions,
+                           _, _, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            const auto& request =
+                static_cast<const optimization_guide::proto::
+                                SmartSelectionSuggestionsRequest&>(
+                    request_metadata);
+            ASSERT_EQ(request.areas_of_interest().size(), 1);
+            const optimization_guide::proto::AreaOfInterest& proto_aoi =
+                request.areas_of_interest(0);
+            SkBitmap decoded = gfx::PNGCodec::Decode(
+                base::as_byte_span(proto_aoi.image_bytes()));
+            // Original: 200x200, selection (40, 40, 60, 60).
+            // Padded selection with padding 10: (30, 30, 80, 80).
+            // Cropped size: 80x80. Selection relative to crop: (10, 10, 60,
+            // 60). Downscaled to max dimension 50: scale 50 / 80 = 0.625.
+            // Downscaled size: 50x50.
+            // Scaled selection: (round(10 * 0.625), round(10 * 0.625),
+            //                    round(70 * 0.625) - 6, round(70 * 0.625) - 6)
+            //                 = (6, 6, 38, 38).
+            EXPECT_EQ(decoded.width(), 50);
+            EXPECT_EQ(decoded.height(), 50);
+            EXPECT_EQ(proto_aoi.selection().x(), 6);
+            EXPECT_EQ(proto_aoi.selection().y(), 6);
+            EXPECT_EQ(proto_aoi.selection().width(), 38);
+            EXPECT_EQ(proto_aoi.selection().height(), 38);
+            std::move(callback).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    base::ok(optimization_guide::AnyWrapProto(response)),
+                    /*execution_info=*/nullptr),
+                /*log_entry=*/nullptr);
+          });
+
+  AreaOfInterest aoi;
+  aoi.screenshot.allocN32Pixels(200, 200);
+  aoi.screenshot.eraseColor(SK_ColorRED);
+  aoi.bounds = gfx::Rect(40, 40, 60, 60);
+
+  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  service().RequestSuggestions(aoi, future.GetCallback());
+
+  EXPECT_THAT(
+      future.Take(),
+      ElementsAre(SuggestionWithLabel(u"Cropped and Downscaled Action")));
+
+  service().UnregisterTool(&gemini_tool);
+}
+
 // Tests that server errors still complete the suggestion request.
 TEST_F(SuggestionServiceUnitTest, RequestSuggestionsServerError) {
   base::test::ScopedFeatureList feature_list;

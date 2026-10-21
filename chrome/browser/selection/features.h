@@ -23,6 +23,11 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSmartSelectionServerTimeout);
 // the selected area expanded by a padding of this width in pixels.
 BASE_DECLARE_FEATURE_PARAM(int, kSmartSelectionServerCropPadding);
 
+// If non-negative and the screenshot sent to the Model Execution Service
+// exceeds this size, downscales the screenshot so that its longest side is at
+// most this value in pixels.
+BASE_DECLARE_FEATURE_PARAM(int, kSmartSelectionServerMaxScreenshotDimension);
+
 // If in the range [0, 100], encodes the screenshot as JPEG with the given
 // compression quality. Otherwise encodes the screenshot as PNG.
 BASE_DECLARE_FEATURE_PARAM(int, kSmartSelectionServerJpegQuality);
