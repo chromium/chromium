@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -44,6 +45,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -89,6 +91,16 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
             /*eligibility_manager=*/nullptr,
             /*cookie_synchronizer=*/nullptr) {}
   ~MockContextualTasksUiService() override = default;
+
+  bool IsAiUrl(const GURL& url) override {
+    if (ContextualTasksUiService::IsAiUrl(url)) {
+      return true;
+    }
+    std::string udm_value;
+    return url.is_valid() && url.SchemeIsHTTPOrHTTPS() &&
+           net::GetValueForKeyInQuery(url, "udm", &udm_value) &&
+           udm_value == "50";
+  }
 
   MOCK_METHOD(GURL,
               GetContextualTaskUrlForTask,
@@ -279,6 +291,29 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
 
   void CreateCachedWebContentsForTesting(base::Uuid task_id, bool is_open) {
     coordinator_->CreateCachedWebContentsForTesting(task_id, is_open);
+  }
+
+  void CreateCachedWebContentsWithUrlForTesting(base::Uuid task_id,
+                                                bool is_open,
+                                                const GURL& url) {
+    std::unique_ptr<content::WebContents> wc =
+        content::WebContentsTester::CreateTestWebContents(profile_.get(),
+                                                          nullptr);
+    content::WebContents* wc_ptr = wc.get();
+    content::WebContentsTester::For(wc_ptr)->NavigateAndCommit(url);
+    content::WebContentsTester::For(wc_ptr)->SetTitle(u"");
+    coordinator_->task_id_to_web_contents_cache_[task_id] = std::make_unique<
+        ContextualTasksSidePanelCoordinator::WebContentsCacheItem>(
+        std::move(wc), is_open, base::NullCallback());
+  }
+
+  void SetCacheItemLastActiveTimeForTesting(
+      base::Uuid task_id,
+      base::TimeTicks last_active_time_ticks) {
+    auto it = coordinator_->task_id_to_web_contents_cache_.find(task_id);
+    if (it != coordinator_->task_id_to_web_contents_cache_.end()) {
+      it->second->last_active_time_ticks = last_active_time_ticks;
+    }
   }
 
   void CleanUpUnusedWebContents() { coordinator_->CleanUpUnusedWebContents(); }
@@ -2030,5 +2065,156 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   coordinator_->ShareTabsWithActiveOrNewThread({invalid_tab->GetHandle()});
 }
 #endif
+
+TEST_F(
+    ContextualTasksSidePanelCoordinatorTest,
+    GetRecentThreads_OrdersActiveFirstThenByRecencyAndSkipsZeroStateAndCapsAtFive) {
+  base::TimeTicks base_ticks = base::TimeTicks::Now();
+
+  // `about:blank`, non-AI Search SRPs, and zero-state AI URLs must be skipped
+  // before querying task metadata.
+  base::Uuid about_blank_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(about_blank_id, /*is_open=*/false,
+                                           GURL("about:blank"));
+  SetCacheItemLastActiveTimeForTesting(about_blank_id,
+                                       base_ticks + base::Seconds(200));
+
+  base::Uuid non_ai_srp_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(
+      non_ai_srp_id, /*is_open=*/false,
+      GURL("https://www.google.com/search?q=flowers&gsc=2"));
+  SetCacheItemLastActiveTimeForTesting(non_ai_srp_id,
+                                       base_ticks + base::Seconds(150));
+
+  base::Uuid zero_state_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(
+      zero_state_id, /*is_open=*/true,
+      GURL("https://www.g.ai/search?udm=50&aep=1"));
+  SetCacheItemLastActiveTimeForTesting(zero_state_id,
+                                       base_ticks + base::Seconds(100));
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(zero_state_id))
+      .Times(0);
+
+  // Five inactive non-zero-state threads with increasing recency.
+  std::vector<base::Uuid> thread_ids;
+  for (int i = 1; i <= 5; ++i) {
+    base::Uuid id = base::Uuid::GenerateRandomV4();
+    thread_ids.push_back(id);
+    CreateCachedWebContentsWithUrlForTesting(
+        id, /*is_open=*/false,
+        GURL("https://www.google.com/search?udm=50&mtid=" +
+             base::NumberToString(i) + "&q=Thread+" + base::NumberToString(i)));
+    SetCacheItemLastActiveTimeForTesting(id, base_ticks + base::Seconds(i));
+  }
+
+  // Active thread in an open panel with older timestamp should appear first.
+  base::Uuid active_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(
+      active_id, /*is_open=*/true,
+      GURL("https://www.google.com/search?udm=50&mtid=99&q=Active+Thread"));
+  content::WebContents* active_wc = GetWebContentsForTaskForTesting(active_id);
+  SetCacheItemLastActiveTimeForTesting(active_id,
+                                       base_ticks - base::Seconds(10));
+  mock_panel_host_->SetWebContents(active_wc);
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+
+  std::vector<ContextualTasksPanelController::RecentThreadInfo> recent =
+      coordinator_->GetRecentThreads();
+  ASSERT_EQ(recent.size(), 5u);
+  EXPECT_EQ(recent[0].task_id, active_id);
+  EXPECT_EQ(recent[0].title, u"Active Thread");
+  EXPECT_EQ(recent[1].task_id, thread_ids[4]);
+  EXPECT_EQ(recent[1].title, u"Thread 5");
+  EXPECT_EQ(recent[2].task_id, thread_ids[3]);
+  EXPECT_EQ(recent[2].title, u"Thread 4");
+  EXPECT_EQ(recent[3].task_id, thread_ids[2]);
+  EXPECT_EQ(recent[3].title, u"Thread 3");
+  EXPECT_EQ(recent[4].task_id, thread_ids[1]);
+  EXPECT_EQ(recent[4].title, u"Thread 2");
+
+  // Once the side panel is closed, `active_wc` is no longer open, so pure
+  // recency order governs instead of pinning `active_id` first.
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  recent = coordinator_->GetRecentThreads();
+  ASSERT_EQ(recent.size(), 5u);
+  EXPECT_EQ(recent[0].task_id, thread_ids[4]);
+  EXPECT_EQ(recent[4].task_id, thread_ids[0]);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       GetRecentThreads_ResolvesFallbackTitlesAndSkipsUntitled) {
+  base::TimeTicks base_ticks = base::TimeTicks::Now();
+
+  // 1. Thread without `q=` that resolves title via
+  // `ContextualTask::GetThread()`.
+  base::Uuid thread_struct_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(
+      thread_struct_id, /*is_open=*/false,
+      GURL("https://www.google.com/search?udm=50&mtid=1"));
+  SetCacheItemLastActiveTimeForTesting(thread_struct_id,
+                                       base_ticks + base::Seconds(3));
+  SessionID tab_session_1 = SessionID::FromSerializedValue(101);
+  ContextualTask task_with_thread(thread_struct_id);
+  task_with_thread.AddThread(Thread(ThreadType::kAiMode, "server_id_1",
+                                    "Thread Struct Title",
+                                    /*last_turn_time_unix_epoch_millis=*/1));
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(thread_struct_id))
+      .WillOnce(Return(std::vector<SessionID>{tab_session_1}));
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(tab_session_1))
+      .WillOnce(Return(task_with_thread));
+
+  // 2. Thread without `q=` or `Thread` struct that resolves via
+  // `task.GetTitle()`.
+  base::Uuid task_title_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(
+      task_title_id, /*is_open=*/false,
+      GURL("https://www.google.com/search?udm=50&mtid=2"));
+  SetCacheItemLastActiveTimeForTesting(task_title_id,
+                                       base_ticks + base::Seconds(2));
+  SessionID tab_session_2 = SessionID::FromSerializedValue(102);
+  ContextualTask task_with_title(task_title_id);
+  task_with_title.SetTitle("Task Fallback Title");
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(task_title_id))
+      .WillOnce(Return(std::vector<SessionID>{tab_session_2}));
+  EXPECT_CALL(*mock_controller_, GetContextualTaskForTab(tab_session_2))
+      .WillOnce(Return(task_with_title));
+
+  // 3. Zero-state AI URL and non-zero-state `mtid=` threads without `q=` or
+  // `ContextualTask` title are skipped even when `WebContents` has a non-empty
+  // page title.
+  base::Uuid zero_state_titled_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(
+      zero_state_titled_id, /*is_open=*/false,
+      GURL("https://www.google.com/search?udm=50"));
+  content::WebContentsTester::For(
+      GetWebContentsForTaskForTesting(zero_state_titled_id))
+      ->SetTitle(u"Google Search");
+  SetCacheItemLastActiveTimeForTesting(zero_state_titled_id,
+                                       base_ticks + base::Seconds(10));
+  EXPECT_CALL(*mock_controller_,
+              GetTabsAssociatedWithTask(zero_state_titled_id))
+      .Times(0);
+
+  base::Uuid untitled_id = base::Uuid::GenerateRandomV4();
+  CreateCachedWebContentsWithUrlForTesting(
+      untitled_id, /*is_open=*/false,
+      GURL("https://www.google.com/search?udm=50&mtid=4"));
+  content::WebContentsTester::For(GetWebContentsForTaskForTesting(untitled_id))
+      ->SetTitle(u"WebContents Page Title");
+  SetCacheItemLastActiveTimeForTesting(untitled_id,
+                                       base_ticks + base::Seconds(11));
+  EXPECT_CALL(*mock_controller_, GetTabsAssociatedWithTask(untitled_id))
+      .WillOnce(Return(std::vector<SessionID>{}));
+
+  std::vector<ContextualTasksPanelController::RecentThreadInfo> recent =
+      coordinator_->GetRecentThreads();
+  ASSERT_EQ(recent.size(), 2u);
+  EXPECT_EQ(recent[0].task_id, thread_struct_id);
+  EXPECT_EQ(recent[0].title, u"Thread Struct Title");
+  EXPECT_EQ(recent[1].task_id, task_title_id);
+  EXPECT_EQ(recent[1].title, u"Task Fallback Title");
+}
 
 }  // namespace contextual_tasks

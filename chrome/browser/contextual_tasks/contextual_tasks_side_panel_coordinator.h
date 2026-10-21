@@ -152,6 +152,7 @@ class ContextualTasksSidePanelCoordinator
   void OpenInZeroState() override;
   void ShareTabsWithActiveOrNewThread(
       const std::vector<tabs::TabHandle>& tab_handles) override;
+  std::vector<RecentThreadInfo> GetRecentThreads() const override;
   bool IsPanelOpenForContextualTask() const override;
   ContextualTasksPanelController::EntrySource GetActiveEntrySource()
       const override;

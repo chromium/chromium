@@ -32,6 +32,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -47,6 +48,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/buildflags/buildflags.h"
+#include "net/base/url_util.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -491,6 +493,7 @@ void ContextualTasksSidePanelCoordinator::Show(
     auto it = task_id_to_web_contents_cache_.find(task->GetTaskId());
     if (it != task_id_to_web_contents_cache_.end()) {
       it->second->entry_source = entry_source;
+      it->second->last_active_time_ticks = base::TimeTicks::Now();
       it->second->open_time_ticks =
           open_time_ticks.value_or(base::TimeTicks::Now());
       it->second->first_contentful_paint_recorded = false;
@@ -698,6 +701,94 @@ void ContextualTasksSidePanelCoordinator::ShareTabsWithActiveOrNewThread(
     return;
   }
   AttachTabsToTask(task->GetTaskId(), tabs_to_attach);
+}
+
+std::vector<ContextualTasksPanelController::RecentThreadInfo>
+ContextualTasksSidePanelCoordinator::GetRecentThreads() const {
+  constexpr size_t kMaxRecentThreads = 5;
+  struct CandidateThread {
+    base::Uuid task_id;
+    std::u16string title;
+    bool is_active;
+    base::TimeTicks last_active_time_ticks;
+  };
+  std::vector<CandidateThread> candidates;
+  content::WebContents* active_web_contents =
+      IsPanelOpenForContextualTask() ? GetActiveWebContents() : nullptr;
+  ContextualTasksUiService* ui_service = GetUiService();
+
+  for (const auto& [task_id, cache_item] : task_id_to_web_contents_cache_) {
+    if (!cache_item || !cache_item->web_contents) {
+      continue;
+    }
+    content::WebContents* wc = cache_item->web_contents.get();
+    ContextualTasksUIInterface* web_ui_interface = GetWebUiInterface(wc);
+    GURL url = web_ui_interface ? web_ui_interface->GetInnerFrameUrl() : GURL();
+    if (url.is_empty()) {
+      url = wc->GetLastCommittedURL();
+    }
+    if (url.is_empty() || url.IsAboutBlank() || !ui_service ||
+        !ui_service->IsAiUrl(url) ||
+        ContextualTasksUI::IsZeroState(url, ui_service)) {
+      continue;
+    }
+
+    std::u16string title;
+    std::string query_value;
+    if (net::GetValueForKeyInQuery(url, "q", &query_value) &&
+        !query_value.empty()) {
+      title = base::UTF8ToUTF16(query_value);
+    }
+    if (title.empty() && contextual_tasks_service_) {
+      for (SessionID tab_id :
+           contextual_tasks_service_->GetTabsAssociatedWithTask(task_id)) {
+        if (std::optional<ContextualTask> task =
+                contextual_tasks_service_->GetContextualTaskForTab(tab_id)) {
+          if (task->GetThread().has_value() &&
+              !task->GetThread()->title.empty()) {
+            title = base::UTF8ToUTF16(task->GetThread()->title);
+            break;
+          }
+          if (!task->GetTitle().empty()) {
+            title = base::UTF8ToUTF16(task->GetTitle());
+            break;
+          }
+        }
+      }
+    }
+    if (title.empty()) {
+      continue;
+    }
+
+    candidates.push_back(CandidateThread{
+        .task_id = task_id,
+        .title = std::move(title),
+        .is_active = (wc == active_web_contents),
+        .last_active_time_ticks = cache_item->last_active_time_ticks,
+    });
+  }
+
+  std::ranges::sort(
+      candidates, [](const CandidateThread& a, const CandidateThread& b) {
+        if (a.is_active != b.is_active) {
+          return a.is_active > b.is_active;
+        }
+        if (a.last_active_time_ticks != b.last_active_time_ticks) {
+          return a.last_active_time_ticks > b.last_active_time_ticks;
+        }
+        return a.task_id < b.task_id;
+      });
+
+  std::vector<RecentThreadInfo> result;
+  const size_t count = std::min(candidates.size(), kMaxRecentThreads);
+  result.reserve(count);
+  for (size_t i = 0; i < count; ++i) {
+    result.push_back(RecentThreadInfo{
+        .task_id = candidates[i].task_id,
+        .title = std::move(candidates[i].title),
+    });
+  }
+  return result;
 }
 
 bool ContextualTasksSidePanelCoordinator::IsPanelOpenForContextualTask() const {
@@ -1183,6 +1274,10 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
       extensions_container_->SetWebContents(web_contents);
     }
 #endif
+    if (auto* next_cache_item =
+            GetWebContentsCacheItemForWebContents(web_contents)) {
+      next_cache_item->last_active_time_ticks = base::TimeTicks::Now();
+    }
     contextual_tasks_panel_host_->SetWebContents(web_contents);
     NotifyExpandToFullTabStateChanged();
   }
