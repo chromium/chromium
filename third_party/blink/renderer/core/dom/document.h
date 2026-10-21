@@ -1060,6 +1060,9 @@ class CORE_EXPORT Document : public ContainerNode,
   static bool ShouldInheritSecurityOriginFromOwner(const KURL&);
 
   CSSStyleSheet& ElementSheet();
+  // Called when the document's referrer policy changes (e.g. via
+  // <meta name="referrer">) to drop cached parser state that snapshots it.
+  void ReferrerPolicyChanged();
 
   virtual DocumentParser* CreateParser();
   DocumentParser* Parser() const { return parser_.Get(); }

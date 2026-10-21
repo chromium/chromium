@@ -5349,6 +5349,18 @@ CSSStyleSheet& Document::ElementSheet() {
   return *elem_sheet_;
 }
 
+void Document::ReferrerPolicyChanged() {
+  // The element sheet holds no rules; it only carries the CSSParserContext
+  // used for inline style and presentation attributes. That context
+  // snapshots the referrer policy, so drop the sheet and let ElementSheet()
+  // recreate it with the new policy.
+  if (elem_sheet_) {
+    DCHECK(!elem_sheet_->Contents()->RuleCount());
+    elem_sheet_ = nullptr;
+  }
+  GetStyleEngine().ReferrerPolicyChanged();
+}
+
 bool Document::InvalidationDisallowed() const {
   return View() && View()->InvalidationDisallowed();
 }

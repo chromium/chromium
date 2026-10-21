@@ -5042,6 +5042,12 @@ void StyleEngine::BaseURLChanged() {
   fill_or_clip_path_uri_value_cache_.clear();
 }
 
+void StyleEngine::ReferrerPolicyChanged() {
+  // Cached CSSURIValues carry the referrer policy of the element sheet they
+  // were parsed with.
+  fill_or_clip_path_uri_value_cache_.clear();
+}
+
 void StyleEngine::UpdateViewportSize() {
   viewport_size_ =
       CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView());

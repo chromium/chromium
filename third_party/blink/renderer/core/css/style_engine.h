@@ -598,6 +598,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   // Invalidate caches that depends on the base url.
   void BaseURLChanged();
+  // Invalidate caches that depend on the document's referrer policy.
+  void ReferrerPolicyChanged();
 
   unsigned StyleForElementCount() const { return style_for_element_count_; }
   void IncStyleForElementCount() { style_for_element_count_++; }
