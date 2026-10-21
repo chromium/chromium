@@ -124,7 +124,7 @@ CoreAccountInfo GetSigninPrimaryAccount(Profile* profile) {
       signin::ConsentLevel::kSignin);
 }
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Maximum time spent waiting for the account to become available in the cookie
 // jar before giving up on showing the remote consent dialog.
 constexpr base::TimeDelta kWaitForCookiesTimeout = base::Seconds(10);
@@ -390,7 +390,7 @@ void IdentityGetAuthTokenFunction::GetAuthTokenForAccount(
   }
 }
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 void IdentityGetAuthTokenFunction::StartWaitingForCookies() {
   // A tracker from a previous wait, if any, has already reported its result.
   web_signin_tracker_.reset();
@@ -950,7 +950,7 @@ void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
   token_key_account_access_token_fetcher_.reset();
   refresh_tokens_loaded_waiter_.reset();
   scoped_identity_manager_observation_.Reset();
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   web_signin_tracker_.reset();
 #endif
   extensions::IdentityAPI::GetFactoryInstance()
@@ -1025,7 +1025,7 @@ void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
 #endif
 
 void IdentityGetAuthTokenFunction::StartRemoteConsentFlow() {
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // On Android, Gaia session cookies are reconciled asynchronously after
   // sign-in. Defer showing the remote consent dialog until cookies are
   // ready in the cookie jar to prevent loading a blank consent page.
@@ -1189,7 +1189,7 @@ void IdentityGetAuthTokenFunction::RefreshTokensLoadedWaiter::
   std::move(callback_).Run();
 }
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 IdentityGetAuthTokenFunction::ScopedCookieWaiterTimeoutForTesting::
     ScopedCookieWaiterTimeoutForTesting(base::TimeDelta timeout) {
   // Nesting is not supported: the destructor restores the default.

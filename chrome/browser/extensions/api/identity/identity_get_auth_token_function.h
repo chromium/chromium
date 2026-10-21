@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h"
 #include "chrome/browser/extensions/api/identity/identity_mint_queue.h"
@@ -27,7 +28,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "components/signin/public/browser/web_signin_tracker.h"
 #endif
 
@@ -90,7 +91,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
 
   IdentityGetAuthTokenFunction();
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Overrides how long the function waits for the Gaia cookies to be updated
   // before giving up and failing the request. Restores the default value on
   // destruction. Must not be nested.
@@ -176,7 +177,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // might be started.
   void GetAuthTokenForAccount(const GaiaId& gaia_id);
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   void OnWebSigninTrackerResult(signin::WebSigninTracker::Result result);
   void StartWaitingForCookies();
 #endif
@@ -294,7 +295,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // a permissions prompt will be popped up to the user.
   RemoteConsentResolutionData resolution_data_;
   std::unique_ptr<RefreshTokensLoadedWaiter> refresh_tokens_loaded_waiter_;
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Waits for the account to be available in the cookie jar before showing the
   // remote consent dialog. Kept alive after reporting its result, until the
   // next wait.
