@@ -74,4 +74,32 @@ API_AVAILABLE(ios(18.4)) {
   EXPECT_EQ(extension, extension_mgr->GetWKWebExtension());
 }
 
+// Tests that loading the GPC built-in extension grants access to private data.
+TEST_F(ExtensionControllerImplTest, TestGPCExtensionHasAccessToPrivateData)
+API_AVAILABLE(ios(18.4)) {
+  std::unique_ptr<ExtensionController> controller =
+      ExtensionController::Create();
+  ASSERT_TRUE(controller);
+
+  base::test::TestFuture<bool> load_future;
+  controller->LoadBuiltInExtension(BuiltInExtension::kGPC,
+                                   load_future.GetCallback());
+  EXPECT_TRUE(load_future.Get());
+  EXPECT_TRUE(controller->IsBuiltInExtensionLoaded(BuiltInExtension::kGPC));
+
+  auto* impl = static_cast<ExtensionControllerImpl*>(controller.get());
+  WKWebExtension* wk_extension =
+      GPCWebExtension::GetInstance()->GetWKWebExtension();
+  ASSERT_TRUE(wk_extension != nil);
+  WKWebExtensionContext* context = [impl->GetWKWebExtensionController()
+      extensionContextForExtension:wk_extension];
+  ASSERT_TRUE(context != nil);
+  EXPECT_TRUE(context.hasAccessToPrivateData);
+
+  base::test::TestFuture<bool> unload_future;
+  controller->UnloadBuiltInExtension(BuiltInExtension::kGPC,
+                                     unload_future.GetCallback());
+  EXPECT_TRUE(unload_future.Get());
+}
+
 }  // namespace web
