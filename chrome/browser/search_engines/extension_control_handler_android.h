@@ -22,7 +22,6 @@ class ExtensionControlHandler {
   ~ExtensionControlHandler();
 
   void DisableExtension(JNIEnv* env, std::string extension_id);
-  void Destroy(JNIEnv* env);
 
  private:
   raw_ptr<Profile> profile_;

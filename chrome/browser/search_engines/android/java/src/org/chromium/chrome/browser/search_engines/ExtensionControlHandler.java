@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.search_engines;
 
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -18,9 +21,12 @@ import java.util.function.Supplier;
 /** A handler providing extension related controls via JNI. */
 @NullMarked
 public class ExtensionControlHandler {
+    @JniType("::ExtensionControlHandler")
+    public interface NativeExtensionControlHandler extends JniTypeToken {}
+
     private static @Nullable Supplier<ExtensionControlHandler> sFactoryForTesting;
 
-    private long mNativeExtensionControlHandler;
+    private @Nullable JniUniquePtr<NativeExtensionControlHandler> mNativeExtensionControlHandler;
 
     public static ExtensionControlHandler createForProfile(Profile profile) {
         if (sFactoryForTesting != null) {
@@ -41,9 +47,9 @@ public class ExtensionControlHandler {
 
     public void destroy() {
         ThreadUtils.assertOnUiThread();
-        if (mNativeExtensionControlHandler != 0) {
-            ExtensionControlHandlerJni.get().destroy(mNativeExtensionControlHandler);
-            mNativeExtensionControlHandler = 0;
+        if (mNativeExtensionControlHandler != null) {
+            mNativeExtensionControlHandler.destroy();
+            mNativeExtensionControlHandler = null;
         }
     }
 
@@ -54,18 +60,17 @@ public class ExtensionControlHandler {
      */
     public void disableExtension(String extensionId) {
         ThreadUtils.assertOnUiThread();
-        assert mNativeExtensionControlHandler != 0;
+        assert mNativeExtensionControlHandler != null;
         ExtensionControlHandlerJni.get()
                 .disableExtension(mNativeExtensionControlHandler, extensionId);
     }
 
     @NativeMethods
     public interface Natives {
-        long init(@JniType("Profile*") Profile profile);
+        JniUniquePtr<NativeExtensionControlHandler> init(@JniType("Profile*") Profile profile);
 
         void disableExtension(
-                long nativeExtensionControlHandler, @JniType("std::string") String extensionId);
-
-        void destroy(long nativeExtensionControlHandler);
+                JniPtr<NativeExtensionControlHandler> self,
+                @JniType("std::string") String extensionId);
     }
 }

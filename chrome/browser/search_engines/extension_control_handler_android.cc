@@ -11,9 +11,9 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/search_engines/android/jni_headers/ExtensionControlHandler_jni.h"
 
-static int64_t JNI_ExtensionControlHandler_Init(JNIEnv* env, Profile* profile) {
-  ExtensionControlHandler* handler = new ExtensionControlHandler(profile);
-  return reinterpret_cast<int64_t>(handler);
+static jni_zero::JniUniquePtr<ExtensionControlHandler>
+JNI_ExtensionControlHandler_Init(JNIEnv* env, Profile* profile) {
+  return jni_zero::MakeUnique<ExtensionControlHandler>(profile);
 }
 
 ExtensionControlHandler::ExtensionControlHandler(Profile* profile)
@@ -26,10 +26,6 @@ void ExtensionControlHandler::DisableExtension(JNIEnv* env,
   auto* extension_registrar = extensions::ExtensionRegistrar::Get(profile_);
   extension_registrar->DisableExtension(
       extension_id, {extensions::disable_reason::DISABLE_USER_ACTION});
-}
-
-void ExtensionControlHandler::Destroy(JNIEnv* env) {
-  delete this;
 }
 
 DEFINE_JNI(ExtensionControlHandler)
