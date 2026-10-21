@@ -292,18 +292,7 @@ ContextualTasksButton::ContextualTasksButton(
   SetVisible(false);
   SetProperty(views::kElementIdentifierKey,
               kContextualTasksEphemeralToolbarButtonElementId);
-  const std::u16string button_tooltip =
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      (contextual_tasks::kShowEntryPoint.Get() ==
-       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded)
-          ? l10n_util::GetStringUTF16(
-                IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP_V2)
-          : l10n_util::GetStringUTF16(IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP);
-#else
-      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP);
-#endif
-  GetViewAccessibility().SetName(button_tooltip);
-  SetTooltipText(button_tooltip);
+  UpdateTooltipText();
 
   if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
@@ -778,6 +767,7 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
   }
   was_panel_open_ = controller->IsPanelOpen();
   UpdateHighlight();
+  UpdateTooltipText();
 }
 
 void ContextualTasksButton::UpdateHighlight() {
@@ -801,6 +791,31 @@ void ContextualTasksButton::UpdateHighlight() {
   } else {
     anchor_highlight_.reset();
   }
+}
+
+void ContextualTasksButton::UpdateTooltipText() {
+  ContextualTasksEphemeralButtonController* const ephemeral_controller =
+      ContextualTasksEphemeralButtonController::From(browser_window_interface_);
+  auto* const panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(
+          browser_window_interface_);
+  const bool is_panel_open =
+      ephemeral_controller ? (ephemeral_controller->IsPanelOpen() &&
+                              panel_controller &&
+                              panel_controller->IsPanelOpenForContextualTask())
+                           : (panel_controller &&
+                              panel_controller->IsPanelOpenForContextualTask());
+
+  int tooltip_id = IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP;
+  if (contextual_tasks::kShowEntryPoint.Get() ==
+      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    tooltip_id = is_panel_open
+                     ? IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP
+                     : IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP;
+  }
+  const std::u16string button_tooltip = l10n_util::GetStringUTF16(tooltip_id);
+  GetViewAccessibility().SetName(button_tooltip);
+  SetTooltipText(button_tooltip);
 }
 
 void ContextualTasksButton::RecordShownDuration(std::string_view end_reason) {

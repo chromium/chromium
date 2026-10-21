@@ -93,6 +93,7 @@ class ContextualTasksButton
   void OnEligibilityChange(bool is_eligible);
   void MaybeUpdateVisibility();
   void UpdateHighlight();
+  void UpdateTooltipText();
   void RecordShownDuration(std::string_view end_reason);
   void MaybeToggleFeaturePromo();
   void MaybeShowFeaturePromo();

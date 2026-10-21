@@ -1328,6 +1328,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
                        ButtonShowsAndHighlightsWhileSidePanelIsOpen) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
+  const std::u16string expected_open_tooltip = l10n_util::GetStringUTF16(
+      IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP);
+  const std::u16string expected_closed_tooltip =
+      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP);
 
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
@@ -1340,10 +1344,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
                         &ContextualTasksButton::IsHighlighted, true),
+      CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
+                        &views::View::GetTooltipText, expected_open_tooltip),
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
                         &ContextualTasksButton::IsHighlighted, false),
+      CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
+                        &views::View::GetTooltipText, expected_closed_tooltip),
       PressButton(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
         EXPECT_EQ(1, user_action_tester.GetActionCount(
                          "ContextualTasks.EphemeralToolbarButton.UserAction."
@@ -1358,6 +1366,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
       EnsurePresent(kContextualTasksEphemeralToolbarButtonElementId),
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
                         &ContextualTasksButton::IsHighlighted, true),
+      CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
+                        &views::View::GetTooltipText, expected_open_tooltip),
       PressButton(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
         EXPECT_EQ(1, user_action_tester.GetActionCount(
                          "ContextualTasks.EphemeralToolbarButton.UserAction."
@@ -1371,7 +1381,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
       }),
       EnsurePresent(kContextualTasksEphemeralToolbarButtonElementId),
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
-                        &ContextualTasksButton::IsHighlighted, false));
+                        &ContextualTasksButton::IsHighlighted, false),
+      CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
+                        &views::View::GetTooltipText, expected_closed_tooltip));
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -3677,6 +3677,12 @@ If this page isn’t working as expected, try allowing optimization.
       </if>
 
       <!-- Contextual Tasks -->
+      <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CLOSE_TOOL_TIP" desc="The tooltip text used for the contextual task ephemeral toolbar button when the side panel is open.">
+        Close Search in side panel
+      </message>
+      <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_REOPEN_TOOL_TIP" desc="The tooltip text used for contextual task toolbar button">
+        Reopen Search in side panel
+      </message>
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and hiding the side panel.">
         Hide side panel
       </message>
