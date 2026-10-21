@@ -261,8 +261,7 @@ public class PickerVideoPlayer extends FrameLayout
         // size. Post a task, so that size adjustments happen after layout of the video controls has
         // completed (so that the calculations for the view have had time to account for the
         // existence of the nav bar and status bar -- or lack thereof).
-        assumeNonNull(getHandler());
-        getHandler().post(() -> adjustVideoLayoutParamsToOrientation());
+        post(() -> adjustVideoLayoutParamsToOrientation());
         super.onConfigurationChanged(newConfig);
     }
 
@@ -499,8 +498,7 @@ public class PickerVideoPlayer extends FrameLayout
                 // from the top of the screen, the system sends the visibility change event before
                 // the resize has happened, so the new video size isn't known yet. Syncing
                 // immediately would make the overlay controls appear in the wrong location.
-                assumeNonNull(getHandler());
-                getHandler().post(() -> adjustVideoLayoutParamsToOrientation());
+                post(() -> adjustVideoLayoutParamsToOrientation());
                 return;
             }
         } else {
