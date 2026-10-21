@@ -874,15 +874,17 @@ import {WebviewEventManager} from './webview_event_manager.js';
       const channel = new PostMessageChannel();
       channel.init(port);
 
-      channel.registerMessage('apiCall', this.onAPICall_.bind(this, channel));
+      if (!port.isSubframe) {
+        channel.registerMessage('apiCall', this.onAPICall_.bind(this, channel));
+        channel.registerMessage(
+            'scrollInfo', this.onScrollInfo_.bind(this, channel));
+      }
       channel.registerMessage(
           'updatePassword', this.onUpdatePassword_.bind(this, channel));
       channel.registerMessage(
           'pageLoaded', this.onPageLoaded_.bind(this, channel));
       channel.registerMessage(
           'getSAMLFlag', this.onGetSAMLFlag_.bind(this, channel));
-      channel.registerMessage(
-          'scrollInfo', this.onScrollInfo_.bind(this, channel));
     }
 
     sendInitializationSuccess_(channel) {
