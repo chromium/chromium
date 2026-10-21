@@ -1,0 +1,75 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win)
+
+source_set("direct_launch") {
+  public = [
+    "direct_launch_histograms.h",
+    "direct_launch_manager.h",
+  ]
+
+  sources = [ "direct_launch_manager.cc" ]
+
+  public_deps = [
+    ":features",
+    "//base",
+    "//chrome/browser:process_singleton",
+    "//chrome/browser:shell_integration",
+  ]
+
+  deps = [
+    "//build:branding_buildflags",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/installer/util:constants",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  libs = [ "propsys.lib" ]
+}
+
+source_set("features") {
+  public = [ "direct_launch_features.h" ]
+
+  sources = [ "direct_launch_features.cc" ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public = [ "fake_direct_launch_shell.h" ]
+
+  sources = [ "fake_direct_launch_shell.cc" ]
+
+  public_deps = [ "//base" ]
+
+  deps = [ "//ui/gfx" ]
+
+  libs = [ "propsys.lib" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "direct_launch_manager_unittest.cc" ]
+
+  deps = [
+    ":direct_launch",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui/startup",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/installer/util:constants",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//url",
+  ]
+}

@@ -42,6 +42,19 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Notification click (within last 5 seconds)"/>
 </enum>
 
+<!-- LINT.IfChange(DirectLaunchPayloadResult) -->
+
+<enum name="DirectLaunchPayloadResult">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Null buffer"/>
+  <int value="2" label="Declared length smaller than one wchar_t"/>
+  <int value="3" label="Buffer or declared length not aligned to wchar_t"/>
+  <int value="4" label="Declared length beyond the maximum URL length"/>
+  <int value="5" label="Empty URI"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/win/direct_launch/direct_launch_histograms.h:DirectLaunchPayloadResult) -->
+
 <!-- LINT.IfChange(IncognitoForcedStart) -->
 
 <enum name="IncognitoForcedStart">

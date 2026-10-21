@@ -2818,6 +2818,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/version:unit_tests",
       "//chrome/browser/win:unit_tests",
       "//chrome/browser/win/conflicts:unit_tests",
+      "//chrome/browser/win/direct_launch:unit_tests",
       "//chrome/browser/win/isolated_browser:unit_tests",
       "//chrome/services/util_win:unit_tests",
     ]
