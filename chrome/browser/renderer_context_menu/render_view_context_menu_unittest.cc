@@ -3437,6 +3437,22 @@ TEST_F(RenderViewContextMenuOrderTest, ReadingModeSidePanelMenu_Order) {
                   kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
 
+TEST_F(RenderViewContextMenuOrderTest, LinkMenu_StandardHttpLinkOrder) {
+  content::ContextMenuParams params = CreateParams(MenuItem::LINK);
+  params.page_url = GURL("https://www.example.com/");
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(
+      GetMenuItemsAndSeparators(menu->menu_model()),
+      testing::ElementsAre(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+                           IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                           IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+                           IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
+                           kSeparatorId, IDC_CONTENT_CONTEXT_SAVELINKAS,
+                           IDC_CONTENT_CONTEXT_COPYLINKLOCATION, kSeparatorId,
+                           IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
 class RenderViewContextMenuSimplifiedOrderTest
     : public RenderViewContextMenuOrderTest {
  public:
@@ -3478,4 +3494,21 @@ TEST_F(RenderViewContextMenuSimplifiedOrderTest, SubframeMenu_Order) {
           IDC_CONTENT_CONTEXT_TRANSLATE, kSeparatorId, IDC_VIEW_SOURCE,
           IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE, IDC_CONTENT_CONTEXT_RELOADFRAME,
           IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
+TEST_F(RenderViewContextMenuSimplifiedOrderTest, LinkMenu_Order) {
+  content::ContextMenuParams params = CreateParams(MenuItem::LINK);
+  params.page_url = GURL("https://www.example.com/");
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateAndInitMenu(params);
+
+  EXPECT_THAT(
+      GetMenuItemsAndSeparators(menu->menu_model()),
+      testing::ElementsAre(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
+                           IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                           IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW,
+                           IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD,
+                           kSeparatorId, IDC_CONTENT_CONTEXT_SAVELINKAS,
+                           IDC_CONTENT_CONTEXT_COPYLINKLOCATION,
+                           IDC_CONTENT_CONTEXT_ADD_LINK_TO_READING_LIST,
+                           kSeparatorId, IDC_CONTENT_CONTEXT_INSPECTELEMENT));
 }
