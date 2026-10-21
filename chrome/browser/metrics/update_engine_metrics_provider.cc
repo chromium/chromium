@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -17,6 +18,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 
@@ -46,6 +48,13 @@ bool UpdateEngineMetricsProvider::IsConsumerAutoUpdateToggleEligible() {
       session_manager::SessionManager::Get()->GetActiveSession();
   CHECK(active_session);
   const AccountId& account_id = active_session->account_id();
+  // Return early if the user's Profile is not yet created or is already
+  // being destroyed.
+  // TODO(crbug.com/574750695): Handle shutdown properly instead of checking
+  // GetProfilePrefs().
+  if (!CHECK_DEREF(user_manager->FindUser(account_id)).GetProfilePrefs()) {
+    return false;
+  }
   signin::IdentityManager* identity_manager =
       ash::IdentityManagerProvider::Get().Find(account_id);
   if (!identity_manager) {
