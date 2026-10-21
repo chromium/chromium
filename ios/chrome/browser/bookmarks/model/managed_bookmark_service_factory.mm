@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 
+#import <utility>
+
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/managed/managed_bookmark_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

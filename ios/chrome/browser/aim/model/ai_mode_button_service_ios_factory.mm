@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/aim/model/ai_mode_button_service_ios_factory.h"
 
+#import <utility>
+
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/aim/model/ai_mode_button_service_ios.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_ai_mode_button_service_factory.h"

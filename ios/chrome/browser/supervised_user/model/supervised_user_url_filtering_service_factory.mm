@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_url_filtering_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/check_deref.h"
 #import "components/prefs/pref_service.h"

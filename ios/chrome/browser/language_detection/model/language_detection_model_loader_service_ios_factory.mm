@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/language_detection/model/language_detection_model_loader_service_ios_factory.h"
 
+#import <utility>
+
 #import "components/language_detection/core/browser/language_detection_model_service.h"
 #import "components/language_detection/ios/browser/language_detection_model_loader_service_ios.h"
 #import "components/translate/core/common/translate_util.h"

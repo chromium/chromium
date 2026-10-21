@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 
+#import <utility>
+
 #import "components/variations/service/google_groups_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

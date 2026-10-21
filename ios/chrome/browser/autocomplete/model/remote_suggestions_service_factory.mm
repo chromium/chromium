@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
 
+#import <utility>
+
 #import "components/omnibox/browser/remote_suggestions_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"

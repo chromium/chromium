@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/price_insights/model/price_insights_model_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

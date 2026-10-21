@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/language_detection/model/language_detection_model_service_factory.h"
 
+#import <utility>
+
 #import "base/memory/scoped_refptr.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/task_traits.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 
+#import <utility>
+
 #import "base/check_deref.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"

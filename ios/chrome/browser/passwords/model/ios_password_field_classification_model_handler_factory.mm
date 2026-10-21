@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #import "components/password_manager/core/browser/features/password_features.h"

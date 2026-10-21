@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature.h"
 

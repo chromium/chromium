@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 
+#import <utility>
+
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/network/autofill_ai/fake_wallet_pass_access_manager.h"
 #import "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"

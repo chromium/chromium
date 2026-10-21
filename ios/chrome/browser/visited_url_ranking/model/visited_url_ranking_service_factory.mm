@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/visited_url_ranking/model/visited_url_ranking_service_factory.h"
 
+#import <utility>
+
 #import "components/history_clusters/core/config.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/visited_url_ranking/internal/history_url_visit_data_fetcher.h"

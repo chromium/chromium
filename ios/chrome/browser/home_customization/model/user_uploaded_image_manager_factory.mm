@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager_factory.h"
 
+#import <utility>
+
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"

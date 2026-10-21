@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/signin/model/account_investigator_factory.h"
 
+#import <utility>
+
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service_factory.h"
 #import "components/signin/core/browser/account_investigator.h"

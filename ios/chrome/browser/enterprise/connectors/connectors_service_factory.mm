@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"

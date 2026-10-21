@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/push_notification/model/provisional_push_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

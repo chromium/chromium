@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

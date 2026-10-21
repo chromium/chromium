@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_intelligent_scan_delegate_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/check.h"
 #import "base/feature_list.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/subscription_eligibility/model/subscription_eligibility_service_factory.h"
 
+#import <utility>
+
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

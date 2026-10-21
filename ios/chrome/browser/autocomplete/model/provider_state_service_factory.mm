@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autocomplete/model/provider_state_service_factory.h"
 
+#import <utility>
+
 #import "components/omnibox/browser/provider_state_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

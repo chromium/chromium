@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/passwords/model/actor_login/ios_chrome_actor_login_permission_cleaning_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/actor_login/internal/actor_login_permission_cleaning_service.h"

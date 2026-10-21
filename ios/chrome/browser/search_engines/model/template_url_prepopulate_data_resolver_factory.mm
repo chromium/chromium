@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_prepopulate_data_resolver_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/check_deref.h"
 #import "components/search_engines/template_url_prepopulate_data_resolver.h"

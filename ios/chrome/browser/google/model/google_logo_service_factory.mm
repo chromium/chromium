@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/google/model/google_logo_service.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

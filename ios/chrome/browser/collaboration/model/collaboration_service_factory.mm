@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "components/collaboration/internal/collaboration_service_impl.h"
 #import "components/collaboration/internal/empty_collaboration_service.h"

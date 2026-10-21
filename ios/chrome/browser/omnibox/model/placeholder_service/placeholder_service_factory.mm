@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service_factory.h"
 
+#import <utility>
+
 #import "base/check_deref.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"

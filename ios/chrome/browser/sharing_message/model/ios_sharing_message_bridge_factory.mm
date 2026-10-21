@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "components/sharing_message/sharing_message_bridge_impl.h"
 #import "components/sync/base/report_unrecoverable_error.h"

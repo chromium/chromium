@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/safe_browsing/model/chrome_password_protection_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"

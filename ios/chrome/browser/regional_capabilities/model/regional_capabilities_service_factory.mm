@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/check_deref.h"
 #import "base/strings/string_util.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 
+#import <utility>
+
 #import "components/keyed_service/core/service_access_type.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader_impl.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"

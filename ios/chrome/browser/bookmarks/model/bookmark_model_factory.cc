@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 
+#include <utility>
+
 #include "base/containers/extend.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"

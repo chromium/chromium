@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
 
+#import <utility>
+
 #import "base/task/task_traits.h"
 #import "components/power_bookmarks/core/power_bookmark_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"

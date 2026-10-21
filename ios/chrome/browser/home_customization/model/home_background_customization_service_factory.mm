@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 
+#import <utility>
+
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"

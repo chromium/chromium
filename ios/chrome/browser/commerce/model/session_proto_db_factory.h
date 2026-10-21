@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_COMMERCE_MODEL_SESSION_PROTO_DB_FACTORY_H_
 
 #import <memory>
+#import <utility>
 
 #import "base/notreached.h"
 #import "base/task/single_thread_task_runner.h"

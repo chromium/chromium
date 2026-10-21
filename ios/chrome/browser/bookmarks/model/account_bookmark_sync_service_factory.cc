@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 
+#include <utility>
+
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"

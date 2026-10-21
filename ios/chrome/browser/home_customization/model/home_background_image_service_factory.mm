@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/home_customization/model/home_background_image_service.h"
 #import "ios/chrome/browser/home_customization/model/ntp_background_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

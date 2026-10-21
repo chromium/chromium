@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 
+#include <utility>
+
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/passkey_affiliation_source_adapter.h"
 #include "components/sync/base/features.h"

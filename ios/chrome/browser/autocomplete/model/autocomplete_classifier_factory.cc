@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"

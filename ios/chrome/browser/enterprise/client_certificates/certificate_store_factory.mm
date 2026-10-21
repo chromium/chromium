@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/enterprise/client_certificates/certificate_store_factory.h"
 
+#import <utility>
+
 #import "components/enterprise/client_certificates/core/certificate_store.h"
 #import "components/enterprise/client_certificates/core/leveldb_certificate_store.h"
 #import "ios/chrome/browser/enterprise/client_certificates/cert_utils.h"

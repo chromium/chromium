@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/check.h"
 #import "base/feature_list.h"

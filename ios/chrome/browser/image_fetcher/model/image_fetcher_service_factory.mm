@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 
+#import <utility>
+
 #import "base/files/file_path.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"

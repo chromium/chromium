@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/page_image/model/page_image_service_factory.h"
 
+#import <utility>
+
 #import "components/page_image_service/image_service.h"
 #import "components/page_image_service/image_service_impl.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"

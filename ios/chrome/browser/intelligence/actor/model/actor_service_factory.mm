@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/origin_gating/model/origin_gating_service_factory.h"

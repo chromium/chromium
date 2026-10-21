@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/autocomplete/model/zero_suggest_cache_service_factory.h"
 
+#include <utility>
+
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 #include "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/private_ai/model/private_ai_service_factory.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
 #import "components/private_ai/features.h"

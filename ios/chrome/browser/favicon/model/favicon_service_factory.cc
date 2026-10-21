@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 
+#include <utility>
+
 #include "components/favicon/core/favicon_service_impl.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "ios/chrome/browser/favicon/model/favicon_client_impl.h"

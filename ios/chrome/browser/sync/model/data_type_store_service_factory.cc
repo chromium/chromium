@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 
+#include <utility>
+
 #include "components/sync/model/data_type_store_service_impl.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tab_switcher/model/inactive_tabs/inactive_tabs_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/tab_switcher/model/inactive_tabs/inactive_tabs_service.h"

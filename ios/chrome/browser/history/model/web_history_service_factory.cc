@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/history/model/web_history_service_factory.h"
 
+#include <utility>
+
 #include "components/history/core/browser/web_history_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"

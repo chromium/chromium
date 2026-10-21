@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
 
+#include <utility>
+
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

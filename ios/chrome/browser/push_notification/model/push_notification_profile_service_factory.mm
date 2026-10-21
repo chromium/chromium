@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
 
+#import <utility>
+
 #import "base/memory/scoped_refptr.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service_factory.h"
 
+#import <utility>
+
 #import "base/check.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"

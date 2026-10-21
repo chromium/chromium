@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service.h"
 #import "ios/chrome/browser/contextual_panel/sample/model/sample_panel_model.h"

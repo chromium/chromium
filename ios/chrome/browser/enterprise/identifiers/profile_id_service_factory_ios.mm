@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 
+#import <utility>
+
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_delegate_ios_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

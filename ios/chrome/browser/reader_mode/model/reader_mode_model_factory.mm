@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_model_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/reader_mode/model/reader_mode_model.h"
 
 ReaderModeModelFactory::ReaderModeModelFactory(PassKey key)

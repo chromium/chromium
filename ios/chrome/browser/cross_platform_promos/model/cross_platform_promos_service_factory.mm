@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/cross_platform_promos/model/cross_platform_promos_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

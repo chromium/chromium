@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"

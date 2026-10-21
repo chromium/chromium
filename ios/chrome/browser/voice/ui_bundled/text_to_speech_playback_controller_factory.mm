@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/data_sharing/model/migration/migratable_sync_service_coordinator_factory.h"
 
+#import <utility>
+
 #import "components/data_sharing/public/migration/migratable_sync_service_coordinator.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

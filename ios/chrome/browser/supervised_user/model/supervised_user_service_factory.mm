@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 
+#import <utility>
+
 #import "base/check_deref.h"
 #import "components/prefs/pref_service.h"
 #import "components/supervised_user/core/browser/device_parental_controls.h"

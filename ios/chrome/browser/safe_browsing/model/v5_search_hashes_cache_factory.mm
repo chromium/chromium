@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/safe_browsing/model/v5_search_hashes_cache_factory.h"
 
+#import <utility>
+
 #import "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

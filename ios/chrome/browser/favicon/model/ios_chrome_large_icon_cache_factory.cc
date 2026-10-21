@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 
+#include <utility>
+
 #include "ios/chrome/browser/favicon/model/large_icon_cache.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

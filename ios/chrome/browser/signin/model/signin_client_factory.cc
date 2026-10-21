@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/signin/model/signin_client_factory.h"
 
+#include <utility>
+
 #include "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/signin/model/ios_chrome_signin_client.h"

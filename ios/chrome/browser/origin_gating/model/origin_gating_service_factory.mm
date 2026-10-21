@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/origin_gating/model/origin_gating_service_factory.h"
 
+#import <utility>
+
 #import "base/types/pass_key.h"
 #import "components/origin_gating/core/origin_gating_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

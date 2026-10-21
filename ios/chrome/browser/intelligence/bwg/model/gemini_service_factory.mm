@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 
+#import <utility>
+
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_impl.h"
 #import "ios/chrome/browser/intelligence/features/features.h"

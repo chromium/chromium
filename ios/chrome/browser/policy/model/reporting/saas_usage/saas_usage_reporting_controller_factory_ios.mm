@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_reporting_controller_factory_ios.h"
 
 #import <memory>
+#import <utility>
 
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/browser/reporting/pref_url_list_matcher.h"

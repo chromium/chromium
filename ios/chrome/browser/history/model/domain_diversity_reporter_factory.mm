@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/history/model/domain_diversity_reporter_factory.h"
 
+#import <utility>
+
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/time/default_clock.h"

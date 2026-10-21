@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 
+#import <utility>
+
 #import "base/check.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"

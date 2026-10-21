@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/unified_consent/model/url_keyed_data_collection_consent_helper_factory_ios.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/unified_consent/model/url_keyed_data_collection_consent_helper_ios.h"
 

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 
+#import <utility>
+
 #import "components/supervised_user/core/browser/family_link_settings_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

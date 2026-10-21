@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/app_store_bundle/model/app_store_bundle_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/public/provider/chrome/browser/app_store_bundle/app_store_bundle_api.h"
 

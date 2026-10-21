@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_keyed_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"

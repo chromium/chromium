@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/universal_optout/model/universal_optout_service_factory.h"
 
+#import <utility>
+
 #import "base/check_deref.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"

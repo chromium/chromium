@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/signin/model/signin_error_controller_factory.h"
 
+#include <utility>
+
 #include "base/memory/ptr_util.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/signin/core/browser/signin_error_controller.h"

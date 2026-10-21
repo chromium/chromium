@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
 
 #include <memory>
+#include <utility>
 
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"

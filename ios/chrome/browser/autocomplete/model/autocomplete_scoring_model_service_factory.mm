@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scoring_model_service_factory.h"
 
+#import <utility>
+
 #import "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"

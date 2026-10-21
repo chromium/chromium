@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/model/autofill_policy_service_factory.h"
 
+#import <utility>
+
 #import "components/autofill/core/browser/permissions/autofill_policy_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

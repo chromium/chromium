@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_triggering_service_factory.h"
 
+#import <utility>
+
 #import "base/check_deref.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/prefs/pref_service.h"

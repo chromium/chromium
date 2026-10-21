@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 
+#include <utility>
+
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

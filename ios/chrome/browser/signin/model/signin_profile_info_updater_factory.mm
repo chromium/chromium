@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/signin/model/signin_profile_info_updater_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/signin_error_controller_factory.h"

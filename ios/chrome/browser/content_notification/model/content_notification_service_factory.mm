@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/content_notification/model/content_notification_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/content_notification/model/content_notification_configuration.h"
 #import "ios/chrome/browser/content_notification/model/content_notification_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

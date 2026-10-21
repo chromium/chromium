@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

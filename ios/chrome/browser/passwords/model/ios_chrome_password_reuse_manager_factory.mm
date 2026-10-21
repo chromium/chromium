@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
 
+#import <utility>
+
 #import "build/build_config.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_reuse_detector_impl.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_service_factory.h"
 
+#import <utility>
+
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/chrome_tailored_security_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

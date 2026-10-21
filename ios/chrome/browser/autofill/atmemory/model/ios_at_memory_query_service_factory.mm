@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/atmemory/model/ios_at_memory_query_service_factory.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/at_memory/autofill_data_provider.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/data_sharing/model/personal_collaboration_data/personal_collaboration_data_service_factory.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "components/data_sharing/internal/personal_collaboration_data/personal_collaboration_data_service_impl.h"
 #import "components/data_sharing/public/features.h"

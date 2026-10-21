@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
 
 #import <string>
+#import <utility>
 #import <vector>
 
 #import "components/sync/service/sync_service.h"

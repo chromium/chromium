@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/download/model/download_record_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/files/file_path.h"
 #import "ios/chrome/browser/download/model/download_record_service_impl.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/bring_android_tabs/model/bring_android_tabs_to_ios_service_factory.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"

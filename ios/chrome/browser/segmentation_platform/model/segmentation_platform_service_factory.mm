@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "base/hash/hash.h"
 #import "base/scoped_observation.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 
+#import <utility>
+
 #import "base/functional/bind.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/photos/model/photos_service_configuration.h"

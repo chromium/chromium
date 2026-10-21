@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 
 #import <optional>
+#import <utility>
 #import <vector>
 
 #import "base/functional/bind.h"

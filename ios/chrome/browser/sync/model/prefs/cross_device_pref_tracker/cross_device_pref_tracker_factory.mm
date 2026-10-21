@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.h"
 
+#import <utility>
+
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "components/keyed_service/core/keyed_service.h"

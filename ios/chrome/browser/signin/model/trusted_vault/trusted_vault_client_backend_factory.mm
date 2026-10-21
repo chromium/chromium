@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/signin/model/trusted_vault/trusted_vault_client_backend_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/page_content_annotations/model/page_content_annotations_service_factory.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "base/path_service.h"
 #import "base/task/sequenced_task_runner.h"

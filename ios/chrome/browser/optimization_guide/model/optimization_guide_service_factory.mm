@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/memory/weak_ptr.h"

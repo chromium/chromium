@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/discover_feed/model/discover_feed_configuration.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"

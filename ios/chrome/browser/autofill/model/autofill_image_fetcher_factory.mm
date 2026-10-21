@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/model/autofill_image_fetcher_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/autofill/model/autofill_image_fetcher_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"

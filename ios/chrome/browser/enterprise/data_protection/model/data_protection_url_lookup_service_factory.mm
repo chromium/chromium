@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_url_lookup_service_factory.h"
 
+#import <utility>
+
 #import "components/enterprise/data_protection/data_protection_url_lookup_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

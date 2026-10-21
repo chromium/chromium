@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_error_service_factory_ios.h"
 
+#import <utility>
+
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "components/enterprise/net/core/enterprise_proxy_error_service.h"

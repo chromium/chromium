@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/language/core/browser/language_model.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 
+#import <utility>
+
 #import "base/functional/bind.h"
 #import "components/sessions/core/tab_restore_service_impl.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_client.h"

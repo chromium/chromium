@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"

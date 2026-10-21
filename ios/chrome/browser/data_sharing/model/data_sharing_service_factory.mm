@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "components/data_sharing/internal/data_sharing_service_impl.h"

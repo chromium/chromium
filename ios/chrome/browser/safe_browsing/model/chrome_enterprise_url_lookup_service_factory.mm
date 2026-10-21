@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/functional/callback_helpers.h"
 #import "components/enterprise/connectors/core/common.h"

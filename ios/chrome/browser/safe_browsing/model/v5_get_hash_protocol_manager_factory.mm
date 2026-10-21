@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safe_browsing/model/v5_get_hash_protocol_manager_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "build/branding_buildflags.h"
 #import "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"

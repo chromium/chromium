@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 
+#import <utility>
+
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/proto/commerce_subscription_db_content.pb.h"

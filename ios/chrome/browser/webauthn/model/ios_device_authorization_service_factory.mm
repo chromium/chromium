@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/webauthn/model/ios_device_authorization_service_factory.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_features.h"
 #import "components/webauthn/core/browser/device_authorization/device_authorization_service_impl.h"

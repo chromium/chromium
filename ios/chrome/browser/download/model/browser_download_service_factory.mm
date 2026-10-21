@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/download/model/browser_download_service_factory.h"
 
+#import <utility>
+
 #import "base/functional/bind.h"
 #import "ios/chrome/browser/download/model/browser_download_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

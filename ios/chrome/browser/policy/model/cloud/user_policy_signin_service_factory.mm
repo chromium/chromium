@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service_factory.h"
 
+#import <utility>
+
 #import "base/memory/ref_counted.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "components/policy/core/common/policy_pref_names.h"

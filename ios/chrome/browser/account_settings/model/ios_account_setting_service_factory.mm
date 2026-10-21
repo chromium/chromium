@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/account_settings/model/ios_account_setting_service_factory.h"
 
+#import <utility>
+
 #import "base/functional/callback_helpers.h"
 #import "components/account_settings/account_setting_service_impl.h"
 #import "components/account_settings/account_setting_sync_bridge.h"

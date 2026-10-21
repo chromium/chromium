@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 
 #import <string>
+#import <utility>
 
 #import "base/strings/string_util.h"
 #import "components/application_locale_storage/application_locale_storage.h"

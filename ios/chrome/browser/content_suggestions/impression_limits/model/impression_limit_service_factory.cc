@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/content_suggestions/impression_limits/model/impression_limit_service_factory.h"
 
+#import <utility>
+
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"

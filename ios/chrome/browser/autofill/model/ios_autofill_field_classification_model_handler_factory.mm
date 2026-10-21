@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/model/ios_autofill_field_classification_model_handler_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"

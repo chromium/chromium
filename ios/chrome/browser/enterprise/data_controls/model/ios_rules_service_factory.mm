@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

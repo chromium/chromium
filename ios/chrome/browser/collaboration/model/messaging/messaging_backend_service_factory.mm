@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "components/collaboration/internal/messaging/configuration.h"
 #import "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"

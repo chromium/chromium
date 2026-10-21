@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_connector_service_factory_ios.h"
 
+#import <utility>
+
 #import "components/enterprise/device_trust/core/device_trust_connector_service.h"
 #import "components/enterprise/device_trust/prefs.h"
 #import "components/pref_registry/pref_registry_syncable.h"

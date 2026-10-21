@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/history/model/top_sites_factory.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "components/history/core/browser/history_constants.h"

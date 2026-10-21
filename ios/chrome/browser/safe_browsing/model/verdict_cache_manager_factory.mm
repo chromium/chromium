@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/safe_browsing/model/verdict_cache_manager_factory.h"
 
+#import <utility>
+
 #import "components/safe_browsing/core/browser/sync/safe_browsing_sync_observer_impl.h"
 #import "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #import "components/sync/service/sync_service.h"

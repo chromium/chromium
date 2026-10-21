@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/drive/model/drive_service.h"

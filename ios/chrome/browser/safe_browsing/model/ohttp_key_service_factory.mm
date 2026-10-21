@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/safe_browsing/model/ohttp_key_service_factory.h"
 
+#import <utility>
+
 #import "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_configuration.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_receiver_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/functional/bind.h"
 #import "components/keyed_service/core/service_access_type.h"

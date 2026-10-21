@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/check_deref.h"
 #import "components/search_engines/search_engine_choice/search_engine_choice_service.h"

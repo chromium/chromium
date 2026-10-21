@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autocomplete/model/on_device_tail_model_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"

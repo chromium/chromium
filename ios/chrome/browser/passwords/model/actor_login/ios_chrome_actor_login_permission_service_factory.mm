@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/passwords/model/actor_login/ios_chrome_actor_login_permission_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "components/password_manager/core/browser/actor_login/internal/actor_login_permission_service_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

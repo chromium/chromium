@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 
+#import <utility>
+
 #import "base/check_is_test.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"

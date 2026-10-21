@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/search_engines/model/template_url_fetcher_factory.h"
 
+#include <utility>
+
 #include "components/search_engines/template_url_fetcher.h"
 #include "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"

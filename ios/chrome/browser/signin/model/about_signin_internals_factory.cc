@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/signin/model/about_signin_internals_factory.h"
 
+#include <utility>
+
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"

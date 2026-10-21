@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service_factory.h"
 
+#import <utility>
+
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"

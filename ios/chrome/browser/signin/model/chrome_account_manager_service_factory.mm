@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"

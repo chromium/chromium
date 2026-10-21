@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 
+#import <utility>
+
 #import "base/check.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"

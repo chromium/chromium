@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/safe_browsing/model/hash_realtime_service_factory.h"
 
+#import <utility>
+
 #import "base/feature_list.h"
 #import "components/safe_browsing/core/browser/db/v5_search_hashes_cache.h"
 #import "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"

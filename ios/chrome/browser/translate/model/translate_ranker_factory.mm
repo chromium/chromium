@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/translate/model/translate_ranker_factory.h"
 
+#import <utility>
+
 #import "components/translate/core/browser/translate_ranker_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

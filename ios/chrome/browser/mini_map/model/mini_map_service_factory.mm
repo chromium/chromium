@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/mini_map/model/mini_map_service_factory.h"
 
+#import <utility>
+
 #import "base/check.h"
 #import "ios/chrome/browser/mini_map/model/mini_map_service.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"

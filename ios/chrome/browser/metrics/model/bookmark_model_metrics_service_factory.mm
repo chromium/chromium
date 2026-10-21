@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/metrics/model/bookmark_model_metrics_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/metrics/model/bookmark_model_metrics_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

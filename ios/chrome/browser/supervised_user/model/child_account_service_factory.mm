@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/supervised_user/model/child_account_service_factory.h"
 
+#import <utility>
+
 #import "base/check_deref.h"
 #import "base/functional/callback_helpers.h"
 #import "components/supervised_user/core/browser/child_account_service.h"

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/supervised_user/model/supervised_user_metrics_service_factory.h"
 
+#import <utility>
+
 #import "components/supervised_user/core/browser/device_parental_controls.h"
 #import "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

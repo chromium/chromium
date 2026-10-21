@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/omnibox/browser/shortcuts_constants.h"

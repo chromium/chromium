@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/variations/model/client/variations_client_service_factory.h"
 
+#import <utility>
+
 #import "base/functional/bind.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/variations/model/client/variations_client_service.h"

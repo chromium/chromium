@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
 
+#include <utility>
+
 #include "components/undo/bookmark_undo_service.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

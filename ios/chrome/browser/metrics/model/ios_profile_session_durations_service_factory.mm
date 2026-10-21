@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"

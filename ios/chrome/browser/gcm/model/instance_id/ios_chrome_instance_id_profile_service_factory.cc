@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/gcm/model/instance_id/ios_chrome_instance_id_profile_service_factory.h"
 
+#include <utility>
+
 #include "base/memory/ptr_util.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"

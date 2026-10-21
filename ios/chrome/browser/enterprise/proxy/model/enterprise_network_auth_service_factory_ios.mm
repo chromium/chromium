@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_network_auth_service_factory_ios.h"
 
+#import <utility>
+
 #import "base/functional/bind.h"
 #import "components/enterprise/net/core/enterprise_network_auth_service.h"
 #import "components/enterprise/net/core/features.h"

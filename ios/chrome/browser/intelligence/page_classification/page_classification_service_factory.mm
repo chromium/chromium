@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/page_classification/page_classification_service_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/intelligence/page_classification/optimization_guide_page_classification_service.h"
 #import "ios/chrome/browser/intelligence/page_classification/page_classification_service.h"

@@ -4,6 +4,8 @@
 
 #include "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 
+#include <utility>
+
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"

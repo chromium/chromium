@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_helper_factory.h"
 
+#import <utility>
+
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

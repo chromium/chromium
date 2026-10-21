@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/sync/model/sync_invalidations_service_factory.h"
 
+#import <utility>
+
 #import "components/gcm_driver/gcm_profile_service.h"
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #import "components/sync/invalidations/sync_invalidations_service_impl.h"

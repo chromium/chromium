@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/page_info/model/about_this_site_service_factory.h"
 
+#import <utility>
+
 #import "base/metrics/histogram_functions.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/page_info/core/about_this_site_service.h"

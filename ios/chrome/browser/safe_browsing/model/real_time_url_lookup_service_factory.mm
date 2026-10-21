@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/safe_browsing/model/real_time_url_lookup_service_factory.h"
 
+#import <utility>
+
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"

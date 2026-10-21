@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "components/metrics/profile_metrics_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

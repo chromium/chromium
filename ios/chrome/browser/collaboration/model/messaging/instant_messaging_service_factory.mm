@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/collaboration/model/messaging/instant_messaging_service_factory.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/check.h"
 #import "components/collaboration/public/features.h"

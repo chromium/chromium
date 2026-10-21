@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 
+#import <utility>
+
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/tips_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"

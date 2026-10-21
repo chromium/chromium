@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 
+#import <utility>
+
 #import "base/memory/scoped_refptr.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/prefs/pref_service.h"
