@@ -819,6 +819,39 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_FALSE(bridge()->NeedKeystoreKey());
 }
 
+// Tests that bridge is able to decrypt keystore nigori when
+// `keystore_decryptor_token` is not populated.
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldDecryptKeystoreNigoriWithoutKeystoreDecryptorToken) {
+  const KeyParamsForTesting kKeystoreKeyParams =
+      KeystoreKeyParamsForTesting(kRawKeystoreKey);
+
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() = BuildKeystoreNigoriSpecifics(
+      /*keybag_keys_params=*/{kKeystoreKeyParams},
+      /*keystore_decryptor_params=*/kKeystoreKeyParams,
+      /*keystore_key_params=*/kKeystoreKeyParams);
+  entity_data.specifics.mutable_nigori()->clear_keystore_decryptor_token();
+
+  EXPECT_CALL(*observer(), OnPassphraseRequired).Times(0);
+  EXPECT_CALL(*observer(), OnCryptographerStateChanged(
+                               NotNull(), /*has_pending_keys=*/true));
+  EXPECT_CALL(*observer(), OnKeystoreKeysRequired());
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(std::nullopt));
+  EXPECT_TRUE(bridge()->NeedKeystoreKey());
+  EXPECT_THAT(bridge()->GetDataForDebugging(), NotNull());
+
+  EXPECT_CALL(*observer(), OnCryptographerStateChanged(
+                               NotNull(), /*has_pending_keys=*/false));
+  EXPECT_CALL(*observer(), OnKeystoreKeysAccepted());
+  EXPECT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+
+  EXPECT_THAT(*cryptographer(), CanDecryptWith(kKeystoreKeyParams));
+  EXPECT_THAT(*cryptographer(), HasDefaultKeyDerivedFrom(kKeystoreKeyParams));
+  EXPECT_FALSE(bridge()->NeedKeystoreKey());
+}
+
 // Tests that unsuccessful attempt of `pending_keys` decryption ends up in
 // additional OnPassphraseRequired() call. This is allowed because of possible
 // change of `pending_keys` in keystore mode or due to transition from keystore
@@ -2112,6 +2145,23 @@ TEST_F(NigoriSyncBridgeImplTest,
   sync_pb::NigoriLocalData local_data = nigori_local_data();
   // Mimic corrupted cryptographer data state.
   local_data.mutable_nigori_model()->clear_cryptographer_data();
+
+  // Ensure that bridge ignores local state.
+  EXPECT_CALL(*processor(),
+              ModelReadyToSync(NotNull(), IsEmptyMetadataBatch()));
+  MimicRestartWithLocalData(local_data);
+  EXPECT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
+}
+
+TEST_F(
+    NigoriSyncBridgeImplTest,
+    ShouldIgnoreLocalDataWithPendingKeystoreDecryptorTokenWithoutPendingKeys) {
+  ASSERT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
+  sync_pb::NigoriLocalData local_data = nigori_local_data();
+  ASSERT_FALSE(local_data.nigori_model().has_pending_keys());
+  local_data.mutable_nigori_model()
+      ->mutable_pending_keystore_decryptor_token()
+      ->set_blob("token");
 
   // Ensure that bridge ignores local state.
   EXPECT_CALL(*processor(),

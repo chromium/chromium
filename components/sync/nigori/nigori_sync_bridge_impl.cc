@@ -152,14 +152,8 @@ bool IsValidNigoriSpecifics(const NigoriSpecifics& specifics) {
                   << specifics.passphrase_type();
       return false;
     case NigoriSpecifics::IMPLICIT_PASSPHRASE:
-      return true;
     case NigoriSpecifics::KEYSTORE_PASSPHRASE:
-      if (specifics.keystore_decryptor_token().blob().empty()) {
-        DLOG(ERROR) << "Keystore Nigori should have filled "
-                    << "keystore_decryptor_token.";
-        return false;
-      }
-      break;
+      return true;
     case NigoriSpecifics::CUSTOM_PASSPHRASE:
       if (!SpecificsHasValidKeyDerivationParams(specifics)) {
         return false;
@@ -238,6 +232,13 @@ bool IsValidLocalData(const sync_pb::NigoriLocalData& local_data) {
 
   if (!CryptographerImpl::IsLocalProtoValid(
           nigori_model.cryptographer_data())) {
+    return false;
+  }
+
+  if (nigori_model.has_pending_keystore_decryptor_token() &&
+      (!nigori_model.has_pending_keys() ||
+       nigori_model.passphrase_type() !=
+           NigoriSpecifics::KEYSTORE_PASSPHRASE)) {
     return false;
   }
 
@@ -533,7 +534,7 @@ bool NigoriSyncBridgeImpl::NeedKeystoreKey() const {
   // to be non-empty before MergeFullSyncData() call, regardless of passphrase
   // type.
   return state_.keystore_keys_cryptographer->IsEmpty() ||
-         (state_.pending_keystore_decryptor_token.has_value() &&
+         (state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE &&
           state_.pending_keys.has_value());
 }
 
@@ -552,12 +553,10 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
     return false;
   }
 
-  if (state_.pending_keystore_decryptor_token.has_value() &&
+  if (state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE &&
       state_.pending_keys.has_value()) {
     // Newly arrived keystore keys could resolve pending encryption state in
     // keystore mode.
-    DCHECK_EQ(state_.passphrase_type, NigoriSpecifics::KEYSTORE_PASSPHRASE);
-
     std::optional<ModelError> error =
         TryDecryptPendingKeysWith(BuildDecryptionKeyBagForRemoteKeybag());
     if (error.has_value()) {
@@ -688,8 +687,8 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
         GetKeyDerivationParamsFromSpecifics(specifics);
   }
 
-  std::optional<sync_pb::NigoriKey> keystore_decryptor_key;
-  if (state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE) {
+  if (state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE &&
+      !specifics.keystore_decryptor_token().blob().empty()) {
     state_.pending_keystore_decryptor_token =
         specifics.keystore_decryptor_token();
   } else {
