@@ -269,7 +269,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   void SetWindowFeatures(const WebWindowFeatures& features) {
     window_features_ = features;
-    always_on_top_popup_ = features.always_on_top;
   }
   const WebWindowFeatures& GetWindowFeatures() const {
     return window_features_;

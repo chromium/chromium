@@ -2792,9 +2792,11 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop,
   // 1. Without permission, window.alwaysOnTopPopup should return false.
   {
     ui_test_utils::BrowserCreatedObserver observer;
-    ASSERT_TRUE(content::ExecJs(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        "window.open('about:blank', 'popup1', 'alwaysontop=true');"));
+    EXPECT_EQ(false,
+              content::EvalJs(
+                  browser()->tab_strip_model()->GetActiveWebContents(),
+                  "window.open('about:blank', 'popup1', 'alwaysontop=true')"
+                  ".alwaysOnTopPopup;"));
     BrowserWindowInterface* popup_browser = observer.Wait();
     ASSERT_TRUE(popup_browser);
     EXPECT_EQ(popup_browser->GetType(),
@@ -2815,9 +2817,11 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop,
 
   {
     ui_test_utils::BrowserCreatedObserver observer;
-    ASSERT_TRUE(content::ExecJs(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        "window.open('about:blank', 'popup2', 'alwaysontop=true');"));
+    EXPECT_EQ(true,
+              content::EvalJs(
+                  browser()->tab_strip_model()->GetActiveWebContents(),
+                  "window.open('about:blank', 'popup2', 'alwaysontop=true')"
+                  ".alwaysOnTopPopup;"));
     BrowserWindowInterface* popup_browser = observer.Wait();
     ASSERT_TRUE(popup_browser);
     EXPECT_EQ(popup_browser->GetType(),
