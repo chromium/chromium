@@ -248,8 +248,6 @@ std::string TerminalSource::GetContentSecurityPolicy(
         return "frame-src 'self';";
       case network::mojom::CSPDirectiveName::ObjectSrc:
         return "object-src 'self';";
-      case network::mojom::CSPDirectiveName::ScriptSrc:
-        return "script-src 'self' 'wasm-unsafe-eval';";
       case network::mojom::CSPDirectiveName::WorkerSrc:
         return "worker-src 'self';";
       default:
@@ -262,6 +260,8 @@ std::string TerminalSource::GetContentSecurityPolicy(
       return "img-src * data: blob:;";
     case network::mojom::CSPDirectiveName::MediaSrc:
       return "media-src data:;";
+    case network::mojom::CSPDirectiveName::ScriptSrc:
+      return "script-src 'self' 'wasm-unsafe-eval';";
     case network::mojom::CSPDirectiveName::StyleSrc:
       return "style-src * 'unsafe-inline'; font-src *;";
     case network::mojom::CSPDirectiveName::RequireTrustedTypesFor:
