@@ -351,11 +351,11 @@ void JsBinding::Dispose() {
 gin::ObjectTemplateBuilder JsBinding::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<JsBinding>::GetObjectTemplateBuilder(isolate)
-      .SetMethod(kPostMessage, &JsBinding::PostMessage)
-      .SetMethod(kAddEventListener, &JsBinding::AddEventListener)
-      .SetMethod(kRemoveEventListener, &JsBinding::RemoveEventListener)
-      .SetProperty(kOnMessage, &JsBinding::GetOnMessage,
-                   &JsBinding::SetOnMessage);
+      .SetMethod<&JsBinding::PostMessage>(kPostMessage)
+      .SetMethod<&JsBinding::AddEventListener>(kAddEventListener)
+      .SetMethod<&JsBinding::RemoveEventListener>(kRemoveEventListener)
+      .SetProperty<&JsBinding::GetOnMessage, &JsBinding::SetOnMessage>(
+          kOnMessage);
 }
 
 void JsBinding::PostMessage(gin::Arguments* args) {
