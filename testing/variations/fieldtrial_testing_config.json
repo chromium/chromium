@@ -13719,24 +13719,6 @@
             ]
         }
     ],
-    "PaymentRequestMandatoryPaymentAppUi": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PaymentRequestMandatoryPaymentAppUi"
-                    ]
-                }
-            ]
-        }
-    ],
     "PdfAccessibilityHeuristicEnhancements": [
         {
             "platforms": [
