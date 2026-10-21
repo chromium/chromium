@@ -1865,7 +1865,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Memory.Experimental.NetworkService2.Small{ProcessMemoryAllocatorSmall2}"
-    units="KiB" expires_after="2026-07-19">
+    units="KiB" expires_after="2027-04-11">
   <owner>mmenke@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
