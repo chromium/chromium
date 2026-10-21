@@ -1034,7 +1034,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                 settingsLink.getText().toString(),
                 is(
                         "Pix account will be linked to test@gmail.com. To turn off Pix code"
-                                + " detection, go to Chrome settings"));
+                                + " detection, go to Chrome settings."));
 
         ButtonCompat acceptButton = mView.getContentView().findViewById(R.id.accept_button);
         assertThat(acceptButton.getText(), is("Link your account"));
@@ -1102,7 +1102,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                 settingsLink.getText().toString(),
                 is(
                         "Pix account will be linked to test_b@gmail.com. To turn off Pix code"
-                                + " detection, go to Chrome settings"));
+                                + " detection, go to Chrome settings."));
 
         ButtonCompat acceptButton = mView.getContentView().findViewById(R.id.accept_button);
         assertThat(acceptButton.getText(), is("Link your account"));
@@ -1157,7 +1157,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                 settingsLink.getText().toString(),
                 is(
                         "Pix account will be linked to user_c@gmail.com. To turn off Pix code"
-                                + " detection, go to Chrome settings"));
+                                + " detection, go to Chrome settings."));
         android.text.Spanned spannedText = (android.text.Spanned) settingsLink.getText();
         android.text.style.ClickableSpan[] spans =
                 spannedText.getSpans(
