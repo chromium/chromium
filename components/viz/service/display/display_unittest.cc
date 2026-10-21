@@ -1158,6 +1158,149 @@ TEST_F(DisplayTest, DontThrottleWhenParentBlocked) {
   UpdateBeginFrameTime(sub_support.get(), frame_time);
 }
 
+// Tests that a client is not throttled for undrawn frames while the active
+// frame of its embedder references a newer surface of that client. The
+// embedder's frame activated, e.g. at its deadline, without the client's newer
+// surface, so the embedder isn't blocked on it.
+TEST_F(DisplayTest, DontThrottleUndrawnFramesWhileEmbedderAwaitsSurface) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      {features::kNoUndrawnFrameThrottleWhileEmbedderWaits},
+      {features::kNoCompositorFrameAcks});
+  id_allocator_.GenerateId();
+  SetUpGpuDisplay(RendererSettings());
+  display_->Initialize(client_.get(), manager_.surface_manager());
+  display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
+  support_->SetNeedsBeginFrame(true);
+
+  // Both surfaces of the sub client are in the same allocation group.
+  const base::UnguessableToken sub_embed_token =
+      base::UnguessableToken::Create();
+  const LocalSurfaceId sub_local_surface_id(6, sub_embed_token);
+  const LocalSurfaceId sub_local_surface_id2(7, sub_embed_token);
+  const SurfaceId sub_surface_id2(kAnotherFrameSinkId, sub_local_surface_id2);
+
+  MockCompositorFrameSinkClient sub_client;
+  auto sub_support = std::make_unique<CompositorFrameSinkSupport>(
+      &sub_client, &manager_, kAnotherFrameSinkId, /*is_root=*/false);
+  sub_support->SetNeedsBeginFrame(true);
+
+  // Submit kUndrawnFrameLimit+1 undrawn frames, so that the sub client is
+  // throttled.
+  base::TimeTicks frame_time;
+  for (uint32_t i = 0; i < CompositorFrameSinkSupport::kUndrawnFrameLimit + 1;
+       ++i) {
+    frame_time = base::TimeTicks::Now();
+    EXPECT_TRUE(ShouldSendBeginFrame(sub_support.get(), frame_time));
+    UpdateBeginFrameTime(sub_support.get(), frame_time);
+    sub_support->SubmitCompositorFrame(sub_local_surface_id,
+                                       MakeDefaultCompositorFrame());
+    UpdateBeginFrameTime(sub_support.get(), frame_time);
+  }
+  frame_time = base::TimeTicks::Now();
+  EXPECT_FALSE(ShouldSendBeginFrame(sub_support.get(), frame_time));
+  UpdateBeginFrameTime(sub_support.get(), frame_time);
+
+  // The display's frame references only |sub_surface_id2|, which doesn't exist
+  // yet, and has no activation dependencies, so it activates immediately.
+  CompositorFrame frame = CompositorFrameBuilder()
+                              .AddDefaultRenderPass()
+                              .SetReferencedSurfaces({SurfaceRange(
+                                  sub_surface_id2, sub_surface_id2)})
+                              .Build();
+  support_->SubmitCompositorFrame(id_allocator_.GetCurrentLocalSurfaceId(),
+                                  std::move(frame));
+  EXPECT_FALSE(
+      manager_.surface_manager()->HasBlockedEmbedder(kAnotherFrameSinkId));
+
+  // The sub client keeps receiving BeginFrames while it submits undrawn frames
+  // to the older surface.
+  for (uint32_t i = 0; i < CompositorFrameSinkSupport::kUndrawnFrameLimit * 3;
+       ++i) {
+    frame_time = base::TimeTicks::Now();
+    EXPECT_TRUE(ShouldSendBeginFrame(sub_support.get(), frame_time));
+    UpdateBeginFrameTime(sub_support.get(), frame_time);
+    sub_support->SubmitCompositorFrame(sub_local_surface_id,
+                                       MakeDefaultCompositorFrame());
+    UpdateBeginFrameTime(sub_support.get(), frame_time);
+  }
+
+  // If the embedder stops referencing the sub client, throttling resumes.
+  support_->SubmitCompositorFrame(
+      id_allocator_.GetCurrentLocalSurfaceId(),
+      CompositorFrameBuilder().AddDefaultRenderPass().Build());
+  frame_time = base::TimeTicks::Now();
+  EXPECT_FALSE(ShouldSendBeginFrame(sub_support.get(), frame_time));
+  UpdateBeginFrameTime(sub_support.get(), frame_time);
+
+  // Restore the reference so the embedder awaits |sub_surface_id2| again.
+  support_->SubmitCompositorFrame(id_allocator_.GetCurrentLocalSurfaceId(),
+                                  CompositorFrameBuilder()
+                                      .AddDefaultRenderPass()
+                                      .SetReferencedSurfaces({SurfaceRange(
+                                          sub_surface_id2, sub_surface_id2)})
+                                      .Build());
+
+  // Once the sub client submits |sub_surface_id2|, the embedder no longer
+  // awaits a newer surface, and throttling resumes, since nothing was drawn.
+  frame_time = base::TimeTicks::Now();
+  EXPECT_TRUE(ShouldSendBeginFrame(sub_support.get(), frame_time));
+  UpdateBeginFrameTime(sub_support.get(), frame_time);
+  sub_support->SubmitCompositorFrame(sub_local_surface_id2,
+                                     MakeDefaultCompositorFrame());
+  frame_time = base::TimeTicks::Now();
+  EXPECT_FALSE(ShouldSendBeginFrame(sub_support.get(), frame_time));
+  UpdateBeginFrameTime(sub_support.get(), frame_time);
+}
+
+// Tests that when `kNoUndrawnFrameThrottleWhileEmbedderWaits` is disabled, a
+// client is throttled for undrawn frames even though the active frame of its
+// embedder references a newer surface of that client.
+TEST_F(DisplayTest, ThrottleUndrawnFramesWhileEmbedderAwaitsWhenDisabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures(
+      {}, {features::kNoUndrawnFrameThrottleWhileEmbedderWaits,
+           features::kNoCompositorFrameAcks});
+  id_allocator_.GenerateId();
+  SetUpGpuDisplay(RendererSettings());
+  display_->Initialize(client_.get(), manager_.surface_manager());
+  display_->SetLocalSurfaceId(id_allocator_.GetCurrentLocalSurfaceId(), 1.f);
+  support_->SetNeedsBeginFrame(true);
+
+  const base::UnguessableToken sub_embed_token =
+      base::UnguessableToken::Create();
+  const LocalSurfaceId sub_local_surface_id(6, sub_embed_token);
+  const LocalSurfaceId sub_local_surface_id2(7, sub_embed_token);
+  const SurfaceId sub_surface_id2(kAnotherFrameSinkId, sub_local_surface_id2);
+
+  MockCompositorFrameSinkClient sub_client;
+  auto sub_support = std::make_unique<CompositorFrameSinkSupport>(
+      &sub_client, &manager_, kAnotherFrameSinkId, /*is_root=*/false);
+  sub_support->SetNeedsBeginFrame(true);
+
+  CompositorFrame frame = CompositorFrameBuilder()
+                              .AddDefaultRenderPass()
+                              .SetReferencedSurfaces({SurfaceRange(
+                                  sub_surface_id2, sub_surface_id2)})
+                              .Build();
+  support_->SubmitCompositorFrame(id_allocator_.GetCurrentLocalSurfaceId(),
+                                  std::move(frame));
+
+  base::TimeTicks frame_time;
+  for (uint32_t i = 0; i < CompositorFrameSinkSupport::kUndrawnFrameLimit + 1;
+       ++i) {
+    frame_time = base::TimeTicks::Now();
+    EXPECT_TRUE(ShouldSendBeginFrame(sub_support.get(), frame_time));
+    UpdateBeginFrameTime(sub_support.get(), frame_time);
+    sub_support->SubmitCompositorFrame(sub_local_surface_id,
+                                       MakeDefaultCompositorFrame());
+    UpdateBeginFrameTime(sub_support.get(), frame_time);
+  }
+  frame_time = base::TimeTicks::Now();
+  EXPECT_FALSE(ShouldSendBeginFrame(sub_support.get(), frame_time));
+  UpdateBeginFrameTime(sub_support.get(), frame_time);
+}
+
 TEST_F(DisplayTest, DisplayTransformHint) {
   SetUpSoftwareDisplay(RendererSettings());
   display_->Initialize(client_.get(), manager_.surface_manager());

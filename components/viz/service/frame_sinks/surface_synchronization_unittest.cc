@@ -4013,4 +4013,83 @@ TEST_F(SurfaceSynchronizationTest,
   EXPECT_FALSE(child_surface1()->HasUnackedActiveFrame());
 }
 
+// Tests that a child active at an older parent sequence number does not satisfy
+// an active embedder referencing a newer one, until a covering surface arrives.
+TEST_F(SurfaceSynchronizationTest,
+       ActiveEmbedderAwaitsSurfaceWithNewerParentSequenceNumber) {
+  const SurfaceId parent_id = MakeSurfaceId(kParentFrameSink, 1, 1);
+  child_support1().SubmitCompositorFrame(
+      MakeSurfaceId(kChildFrameSink1, 6, 2).local_surface_id(),
+      MakeDefaultCompositorFrame(kBeginFrameSourceId));
+  parent_support().SubmitCompositorFrame(
+      parent_id.local_surface_id(),
+      MakeCompositorFrame(
+          empty_surface_ids(),
+          {SurfaceRange(std::nullopt, MakeSurfaceId(kChildFrameSink1, 7, 1))},
+          {}));
+  EXPECT_TRUE(surface_manager()->HasActiveEmbedderAwaitingNewerSurface(
+      kChildFrameSink1));
+
+  // (7, 2) covers (7, 1).
+  child_support1().SubmitCompositorFrame(
+      MakeSurfaceId(kChildFrameSink1, 7, 2).local_surface_id(),
+      MakeDefaultCompositorFrame(kBeginFrameSourceId));
+  EXPECT_FALSE(surface_manager()->HasActiveEmbedderAwaitingNewerSurface(
+      kChildFrameSink1));
+}
+
+// Tests that an active embedder referencing a surface in a new embed-token
+// allocation group with no active surfaces is awaited.
+TEST_F(SurfaceSynchronizationTest,
+       ActiveEmbedderAwaitsSurfaceInNewAllocationGroup) {
+  const SurfaceId parent_id = MakeSurfaceId(kParentFrameSink, 1, 1);
+  // Child is active in token group A.
+  child_support1().SubmitCompositorFrame(
+      MakeSurfaceId(kChildFrameSink1, 1, 1).local_surface_id(),
+      MakeDefaultCompositorFrame(kBeginFrameSourceId));
+
+  // Parent references a surface with a newly generated embed token B.
+  const SurfaceId child_new_token_id(
+      kChildFrameSink1, LocalSurfaceId(1, base::UnguessableToken::Create()));
+  parent_support().SubmitCompositorFrame(
+      parent_id.local_surface_id(),
+      MakeCompositorFrame(empty_surface_ids(),
+                          {SurfaceRange(std::nullopt, child_new_token_id)},
+                          {}));
+  EXPECT_TRUE(surface_manager()->HasActiveEmbedderAwaitingNewerSurface(
+      kChildFrameSink1));
+
+  // Submitting the awaited surface activates it and satisfies the embedder.
+  child_support1().SubmitCompositorFrame(
+      child_new_token_id.local_surface_id(),
+      MakeDefaultCompositorFrame(kBeginFrameSourceId));
+  EXPECT_FALSE(surface_manager()->HasActiveEmbedderAwaitingNewerSurface(
+      kChildFrameSink1));
+}
+
+// Tests that when an active embedder stops referencing a child surface,
+// the child is no longer considered awaited.
+TEST_F(SurfaceSynchronizationTest, ActiveEmbedderStopsReferencingChildSurface) {
+  const SurfaceId parent_id = MakeSurfaceId(kParentFrameSink, 1, 1);
+  child_support1().SubmitCompositorFrame(
+      MakeSurfaceId(kChildFrameSink1, 1, 1).local_surface_id(),
+      MakeDefaultCompositorFrame(kBeginFrameSourceId));
+  parent_support().SubmitCompositorFrame(
+      parent_id.local_surface_id(),
+      MakeCompositorFrame(
+          empty_surface_ids(),
+          {SurfaceRange(std::nullopt, MakeSurfaceId(kChildFrameSink1, 2, 1))},
+          {}));
+  EXPECT_TRUE(surface_manager()->HasActiveEmbedderAwaitingNewerSurface(
+      kChildFrameSink1));
+
+  // Parent submits a new frame to the same surface without referencing the
+  // child.
+  parent_support().SubmitCompositorFrame(
+      parent_id.local_surface_id(),
+      MakeCompositorFrame(empty_surface_ids(), empty_surface_ranges(), {}));
+  EXPECT_FALSE(surface_manager()->HasActiveEmbedderAwaitingNewerSurface(
+      kChildFrameSink1));
+}
+
 }  // namespace viz

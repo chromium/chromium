@@ -739,6 +739,21 @@ bool SurfaceManager::HasBlockedEmbedder(
   return false;
 }
 
+bool SurfaceManager::HasActiveEmbedderAwaitingNewerSurface(
+    const FrameSinkId& frame_sink_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = frame_sink_id_to_allocation_groups_.find(frame_sink_id);
+  if (it == frame_sink_id_to_allocation_groups_.end()) {
+    return false;
+  }
+  for (SurfaceAllocationGroup* group : it->second) {
+    if (group->HasActiveEmbedderAwaitingNewerSurface()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void SurfaceManager::AggregatedFrameSinksChanged() {
   if (delegate_)
     delegate_->AggregatedFrameSinksChanged();

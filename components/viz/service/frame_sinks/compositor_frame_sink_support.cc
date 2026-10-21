@@ -1604,6 +1604,18 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
   }
 
   if (should_throttle_undrawn_frames) {
+    // An embedder whose frame activated without this client's newer surface,
+    // e.g. at its deadline, shows an older fallback or its background color
+    // until the surface arrives, and producing it takes BeginFrames. Unlike a
+    // blocked embedder, this doesn't override a requested throttle, and it has
+    // no deadline: it lasts until the client produces the surface or no
+    // embedder references it.
+    if (base::FeatureList::IsEnabled(
+            features::kNoUndrawnFrameThrottleWhileEmbedderWaits) &&
+        surface_manager_->HasActiveEmbedderAwaitingNewerSurface(
+            frame_sink_id_)) {
+      return RecordShouldSendBeginFrame("SendAwaitedByEmbedder", true);
+    }
     return RecordShouldSendBeginFrame("ThrottleUndrawnFrames", false);
   }
 

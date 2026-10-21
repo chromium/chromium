@@ -71,6 +71,13 @@ class VIZ_SERVICE_EXPORT SurfaceAllocationGroup {
   // allocation group.
   bool HasBlockedEmbedder() const;
 
+  // Returns whether an embedder's active frame references this group and the
+  // latest active surface doesn't cover the last reference, i.e. isn't the
+  // same as or newer than it. Also true if no surface has activated yet. Until
+  // the submitter catches up, embedders draw an older fallback or their
+  // background color.
+  bool HasActiveEmbedderAwaitingNewerSurface() const;
+
   // Called by |surface| when its newly activated frame references a surface in
   // this allocation group. The embedder will be notified whenever a surface in
   // this allocation group activates for the first time.

@@ -209,6 +209,12 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // |frame_sink_id|.
   bool HasBlockedEmbedder(const FrameSinkId& frame_sink_id) const;
 
+  // Returns whether any allocation group of |frame_sink_id| has an active
+  // embedder awaiting a surface it doesn't have yet. See
+  // SurfaceAllocationGroup::HasActiveEmbedderAwaitingNewerSurface().
+  bool HasActiveEmbedderAwaitingNewerSurface(
+      const FrameSinkId& frame_sink_id) const;
+
   // Indicates that the set of frame sinks being aggregated for display has
   // changed since the previous aggregation.
   void AggregatedFrameSinksChanged();

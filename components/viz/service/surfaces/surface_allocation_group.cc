@@ -8,6 +8,7 @@
 #include <numeric>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
@@ -68,6 +69,20 @@ void SurfaceAllocationGroup::UnregisterBlockedEmbedder(Surface* surface,
 
 bool SurfaceAllocationGroup::HasBlockedEmbedder() const {
   return !blocked_embedders_.empty();
+}
+
+bool SurfaceAllocationGroup::HasActiveEmbedderAwaitingNewerSurface() const {
+  if (active_embedders_.empty() || !last_active_reference_.is_valid()) {
+    return false;
+  }
+  // Normally there is at most one pending surface, so this loop shouldn't take
+  // more than two iterations.
+  for (const Surface* surface : base::Reversed(surfaces_)) {
+    if (surface->HasActiveFrame()) {
+      return !surface->surface_id().IsSameOrNewerThan(last_active_reference_);
+    }
+  }
+  return true;
 }
 
 void SurfaceAllocationGroup::RegisterActiveEmbedder(Surface* surface) {
