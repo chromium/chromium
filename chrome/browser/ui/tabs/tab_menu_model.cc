@@ -422,13 +422,21 @@ void TabMenuModel::Build(int index) {
                             is_focused ? IDS_TAB_CXMENU_UNFOCUS_TAB_GROUP
                                        : IDS_TAB_CXMENU_FOCUS_TAB_GROUP);
       }
-      SetElementIdentifierAt(GetItemCount() - 1, kFocusSelectionMenuItem);
     } else if (base::FeatureList::IsEnabled(features::kNonGroupFocus) &&
                tab_strip_->AreAllUngrouped(indices)) {
       AddItem(TabStripModel::CommandToggleFocusGroup,
               l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_FOCUS_TABS,
                                                num_tabs));
-      SetElementIdentifierAt(GetItemCount() - 1, kFocusSelectionMenuItem);
+    }
+
+    if (std::optional<size_t> focus_index =
+            GetIndexOfCommandId(TabStripModel::CommandToggleFocusGroup)) {
+      SetElementIdentifierAt(*focus_index, kFocusSelectionMenuItem);
+      if (features::IsMenuSimplificationEnabled()) {
+        SetIcon(*focus_index, ui::ImageModel::FromVectorIcon(
+                                  kFilterTiltShiftIcon, ui::kColorMenuIcon,
+                                  ui::SimpleMenuModel::kDefaultIconSize));
+      }
     }
   }
 

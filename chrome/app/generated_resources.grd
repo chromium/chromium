@@ -12346,10 +12346,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Remove from group
         </message>
         <message name="IDS_TAB_CXMENU_FOCUS_TAB_GROUP" desc="The label of the tab context menu item for focusing the tab group containing the tab.">
-          Focus on tab group
+          Focus on group
         </message>
         <message name="IDS_TAB_CXMENU_UNFOCUS_TAB_GROUP" desc="The label of the tab context menu item for unfocusing the tab group containing the tab.">
-          Unfocus tab group
+          Unfocus group
         </message>
         <message name="IDS_TAB_CXMENU_FOCUS_TABS" desc="The label of the tab context menu item for focusing one or more tabs. [ICU Syntax]">
           {NUM_TABS, plural, =1 {Focus on tab} other {Focus on tabs}}
@@ -12485,10 +12485,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
           Remove From Group
         </message>
         <message name="IDS_TAB_CXMENU_FOCUS_TAB_GROUP" desc="In Title Case: The label of the tab context menu item for focusing the tab group containing the tab.">
-          Focus on Tab Group
+          Focus on Group
         </message>
         <message name="IDS_TAB_CXMENU_UNFOCUS_TAB_GROUP" desc="In Title Case: The label of the tab context menu item for unfocusing the tab group containing the tab.">
-          Unfocus Tab Group
+          Unfocus Group
         </message>
         <message name="IDS_TAB_CXMENU_FOCUS_TABS" desc="In Title Case: The label of the tab context menu item for focusing one or more tabs. [ICU Syntax]">
           {NUM_TABS, plural, =1 {Focus on Tab} other {Focus on Tabs}}
