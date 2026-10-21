@@ -21,11 +21,11 @@ namespace gpu {
 class GraphiteSharedContext;
 
 GPU_GLES2_EXPORT
-void GraphiteFlush(GraphiteSharedContext* context,
+bool GraphiteFlush(GraphiteSharedContext* context,
                    skgpu::graphite::Recorder* recorder);
 
 GPU_GLES2_EXPORT
-void GraphiteFlushAndSubmit(GraphiteSharedContext* context,
+bool GraphiteFlushAndSubmit(GraphiteSharedContext* context,
                             skgpu::graphite::Recorder* recorder);
 
 // Synchronously read pixels from a graphite image.

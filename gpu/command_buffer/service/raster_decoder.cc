@@ -899,6 +899,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   std::unique_ptr<SkiaImageRepresentation> shared_image_;
   std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
       scoped_shared_image_write_;
+  bool should_clear_shared_image_ = false;
 
   std::unique_ptr<RasterImageRepresentation> shared_image_raster_;
   std::unique_ptr<RasterImageRepresentation::ScopedWriteAccess>
@@ -2085,12 +2086,13 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
     return;
   }
 
-  shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
+  bool success =
+      shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
   shared_context_state_->SubmitIfNecessary(
       std::move(end_semaphores),
       dest_scoped_access->NeedGraphiteContextSubmit());
 
-  if (!dest_shared_image->IsCleared()) {
+  if (success && !dest_shared_image->IsCleared()) {
     if (gl_api) {
       GLenum error = DrainGLErrors(gl_api);
       if (error != GL_NO_ERROR) {
@@ -2345,12 +2347,13 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
         /*numLevels=*/1, release_proc, graphite_texture_ptr);
   }
 
-  shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
+  bool success =
+      shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
   shared_context_state_->SubmitIfNecessary(
       std::move(end_semaphores),
       dest_scoped_access->NeedGraphiteContextSubmit());
 
-  return written;
+  return written && success;
 }
 
 void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
@@ -2978,9 +2981,13 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
   // incorrect.
   if (needs_clear) {
     raster_canvas_->drawColor(sk_color_4f, SkBlendMode::kSrc);
-    shared_image_->SetCleared();
+    if (graphite_shared_context()) {
+      should_clear_shared_image_ = true;
+    } else {
+      shared_image_->SetCleared();
+    }
   }
-  DCHECK(shared_image_->IsCleared());
+  DCHECK(graphite_shared_context() || shared_image_->IsCleared());
 }
 
 scoped_refptr<Buffer> RasterDecoderImpl::GetShmBuffer(uint32_t shm_id) {
@@ -3160,7 +3167,8 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
     // scoped_shared_image_write_ can be nullptr if sk_surface_ was set by
     // SetUpForRasterCHROMIUMForTest.
     if (scoped_shared_image_write_) {
-      shared_context_state_->FlushWriteAccess(scoped_shared_image_write_.get());
+      bool success = shared_context_state_->FlushWriteAccess(
+          scoped_shared_image_write_.get());
       // Flushing surface will cause vulkan command buffer to be recorded with
       // image layout transitions as necessary. Transitioning layout back to
       // desired need to be happening after.
@@ -3170,6 +3178,9 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
           scoped_shared_image_write_->NeedGraphiteContextSubmit();
       shared_context_state_->SubmitIfNecessary(std::move(end_semaphores_),
                                                need_graphite_submit);
+      if (success && should_clear_shared_image_) {
+        shared_image_->SetCleared();
+      }
     } else {
       DCHECK(end_semaphores_.empty());
     }
@@ -3180,6 +3191,7 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
   scoped_shared_image_write_.reset();
   shared_image_.reset();
   paint_op_shared_image_provider_.reset();
+  should_clear_shared_image_ = false;
 
   // Test only path for SetUpForRasterCHROMIUMForTest.
   sk_surface_for_testing_.reset();

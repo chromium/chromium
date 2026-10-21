@@ -890,12 +890,13 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
       // It's ok to pass in empty GrFlushInfo here since SignalSemaphores()
       // will populate it with semaphores and call GrDirectContext::flush.
+      success = true;
       if (shared_context_state_->gr_context()) {
         skgpu::ganesh::Flush(surface);
       } else {
         DCHECK(shared_context_state_->graphite_shared_context());
         DCHECK(shared_context_state_->gpu_main_graphite_recorder());
-        GraphiteFlushAndSubmit(
+        success = GraphiteFlushAndSubmit(
             shared_context_state_->graphite_shared_context(),
             shared_context_state_->gpu_main_graphite_recorder());
       }
@@ -905,7 +906,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
       SignalSemaphores(std::move(end_semaphores));
 
-      return true;
+      return success;
     }
 
     void WaitForSemaphores(std::vector<GrBackendSemaphore> semaphores) {
@@ -2478,17 +2479,21 @@ bool WebGPUDecoderImpl::ClearSharedImageWithSkia(const Mailbox& mailbox) {
     clear_color = {0, 0, 0, 0};
   }
   canvas->drawColor(clear_color, SkBlendMode::kSrc);
-  representation->SetCleared();
 
   // It's ok to pass in empty GrFlushInfo here since SignalSemaphores()
   // will populate it with semaphores and call GrDirectContext::flush.
+  bool success = true;
   if (shared_context_state_->gr_context()) {
     skgpu::ganesh::Flush(surface);
   } else {
     DCHECK(shared_context_state_->graphite_shared_context());
     DCHECK(shared_context_state_->gpu_main_graphite_recorder());
-    GraphiteFlushAndSubmit(shared_context_state_->graphite_shared_context(),
-                           shared_context_state_->gpu_main_graphite_recorder());
+    success = GraphiteFlushAndSubmit(
+        shared_context_state_->graphite_shared_context(),
+        shared_context_state_->gpu_main_graphite_recorder());
+  }
+  if (success) {
+    representation->SetCleared();
   }
   // Transition the image back to the desired end state. This is used for
   // transitioning the image to the external queue for Vulkan/GL interop.
