@@ -141,27 +141,8 @@ class LiveSignInTest : public LiveSignInTestBase,
                        public testing::WithParamInterface<bool> {
  public:
   LiveSignInTest() {
-    feature_list_.InitWithFeatureStates({
-        {syncer::kReplaceSyncPromosWithSignInPromos, GetParam()},
-        {syncer::kReplaceSyncPromosWithSigninPromosNewSignin, GetParam()},
-    });
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
-// deleted from the codebase. See ConsentLevel::kSync documentation for
-// details.
-class LiveSignInTestFullSync : public LiveSignInTestBase {
- public:
-  LiveSignInTestFullSync() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            syncer::kReplaceSyncPromosWithSignInPromos,
-            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
+    feature_list_.InitWithFeatureState(
+        syncer::kReplaceSyncPromosWithSignInPromos, GetParam());
   }
 
  private:
@@ -362,48 +343,6 @@ IN_PROC_BROWSER_TEST_P(LiveSignInTest, MANUAL_ChromeSignOutWhenPending) {
   AccountsRemovedWaiter accounts_removed_waiter(identity_manager());
   accounts_removed_waiter.Wait();
   EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
-}
-
-// This test can pass. Marked as manual because it TIMED_OUT on Win7.
-// See crbug.com/40107825.
-// Signs in an account on the web. Goes to the Chrome settings to enable Sync
-// but cancels the sync confirmation dialog. Checks that the account is still
-// signed in on the web but Sync is disabled.
-IN_PROC_BROWSER_TEST_F(LiveSignInTestFullSync,
-                       MANUAL_CancelSyncWithWebAccount) {
-  std::optional<TestAccountSigninCredentials> test_account =
-      GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
-  CHECK(test_account.has_value());
-  sign_in_functions.SignInFromWeb(*test_account, 0);
-
-  SignInTestObserver observer(identity_manager(), account_reconcilor());
-  GURL settings_url("chrome://settings");
-  ASSERT_TRUE(AddTabAtIndex(0, settings_url,
-                            ui::PageTransition::PAGE_TRANSITION_TYPED));
-  auto* settings_tab = browser()->GetTabStripModel()->GetActiveWebContents();
-  std::string start_syncing_script = base::StringPrintf(
-      "settings.SyncBrowserProxyImpl.getInstance()."
-      "startSyncingWithEmail(\"%s\", true);",
-      test_account->user);
-  EXPECT_TRUE(content::ExecJs(
-      settings_tab, base::StringPrintf(kSettingsScriptWrapperFormat,
-                                       start_syncing_script.c_str())));
-  EXPECT_TRUE(login_ui_test_utils::CancelSyncConfirmationDialog(
-      browser(), kDialogTimeout));
-  observer.WaitForAccountChanges(1, PrimaryAccountWait::kWaitForCleared);
-
-  const AccountsInCookieJarInfo& accounts_in_cookie_jar =
-      identity_manager()->GetAccountsInCookieJar();
-  EXPECT_TRUE(accounts_in_cookie_jar.AreAccountsFresh());
-  ASSERT_EQ(
-      1u,
-      accounts_in_cookie_jar.GetPotentiallyInvalidSignedInAccounts().size());
-  const gaia::ListedAccount& account =
-      accounts_in_cookie_jar.GetPotentiallyInvalidSignedInAccounts()[0];
-  EXPECT_TRUE(gaia::AreEmailsSame(test_account->user, account.email));
-  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account.id));
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
 }
 
 // This test can pass. Marked as manual because it TIMED_OUT on Win7.
@@ -922,10 +861,12 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionsLiveSignInTest,
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-INSTANTIATE_TEST_SUITE_P(All, LiveSignInTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, LiveSignInTest, testing::Values(true));
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-INSTANTIATE_TEST_SUITE_P(All, LiveSignInGaiaIntegrationTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         LiveSignInGaiaIntegrationTest,
+                         testing::Values(true));
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace

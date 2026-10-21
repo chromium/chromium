@@ -30,7 +30,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1495,18 +1494,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, ProfileSignInBeforeToken) {
                          client_id.c_str(), GetDeviceId().c_str()),
       dice_request_header_);
 
-  // Wait for the Sync confirmation UI and click through. This is only needed
-  // when `syncer::kReplaceSyncPromosWithSignInPromos` is disabled, because
-  // otherwise it is a sign-in flow without involving the Sync confirmation
-  // dialog.
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    EXPECT_EQ(signin::ConsentLevel::kSignin,
-              signin::GetPrimaryAccountConsentLevel(GetIdentityManager()));
-  } else {
-    EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(browser()));
-    EXPECT_EQ(signin::ConsentLevel::kSync,
-              signin::GetPrimaryAccountConsentLevel(GetIdentityManager()));
-  }
+  EXPECT_EQ(signin::ConsentLevel::kSignin,
+            signin::GetPrimaryAccountConsentLevel(GetIdentityManager()));
 
   // The interception bubble should not have been shown.
   histogram_tester.ExpectBucketCount(
@@ -1519,54 +1508,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, ProfileSignInBeforeToken) {
   // recorded.
   histogram_tester.ExpectTotalCount(
       "Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst", 1);
-}
-
-class DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos
-    : public DiceBrowserTest {
- public:
-  DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            syncer::kReplaceSyncPromosWithSignInPromos,
-            syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Verifies that Chrome doesn't crash on browser window close when the sync
-// confirmation dialog is waiting for its size.
-// Regression test for https://crbug.com/40826319.
-IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos,
-                       CloseBrowserWhileInitializingSyncConfirmation) {
-  content::TestNavigationObserver sync_confirmation_url_observer(
-      GURL("chrome://sync-confirmation?style=0&is_sync_promo=true"));
-  sync_confirmation_url_observer.StartWatchingNewWebContents();
-
-  // Signin using the Chrome Sync endpoint.
-  SigninViewController::From(browser())->ShowDiceEnableSyncTab(
-      signin_metrics::AccessPoint::kProfileMenuPrimaryButton,
-      signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
-      /*email_hint=*/std::string());
-
-  // Receive token.
-  SendRefreshTokenResponse();
-  // Receive ENABLE_SYNC.
-  SendEnableSyncResponse();
-
-  WaitForSigninSucceeded();
-  EXPECT_EQ(GetMainAccountID(), GetIdentityManager()->GetPrimaryAccountId(
-                                    signin::ConsentLevel::kSignin));
-
-  // Wait until the sync confirmation webUI is created but not fully loaded
-  // yet. The native dialog is not displayed yet since it waits until the webUI
-  // passes the dialog height back to native.
-  sync_confirmation_url_observer.WaitForNavigationFinished();
-
-  // This should not crash.
-  CloseBrowser();
 }
 
 class DiceBrowserSiginInInterceptionInteractiveTest

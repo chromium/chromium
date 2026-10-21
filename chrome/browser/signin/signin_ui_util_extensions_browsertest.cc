@@ -8,8 +8,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/with_feature_override.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -33,7 +31,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -97,32 +94,7 @@ class SigninUiUtilExtensionsTest : public SigninUiUtilExtensionsTestBase {
   SigninUiUtilExtensionsTest() = default;
 };
 
-class SigninUiUtilExtensionsTest_ReplaceSyncPromosWithSignInPromos
-    : public base::test::WithFeatureOverride,
-      public SigninUiUtilExtensionsTestBase {
- public:
-  SigninUiUtilExtensionsTest_ReplaceSyncPromosWithSignInPromos()
-      : base::test::WithFeatureOverride(
-            syncer::kReplaceSyncPromosWithSignInPromos) {
-    feature_list_.InitWithFeatureState(
-        syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
-        IsParamFeatureEnabled());
-  }
-
-  bool IsReplaceSyncPromosWithSignInPromosEnabled() const {
-    return IsParamFeatureEnabled();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    SigninUiUtilExtensionsTest_ReplaceSyncPromosWithSignInPromos);
-
-IN_PROC_BROWSER_TEST_P(
-    SigninUiUtilExtensionsTest_ReplaceSyncPromosWithSignInPromos,
-    ShowExtensionSigninPrompt) {
+IN_PROC_BROWSER_TEST_F(SigninUiUtilExtensionsTest, ShowExtensionSigninPrompt) {
   const GURL sync_url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
 
   Profile* profile = browser()->GetProfile();

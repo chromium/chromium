@@ -11,9 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
@@ -55,7 +53,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -260,20 +257,9 @@ class SigninUiUtilTest : public SigninUiUtilTestBase {
 };
 
 class SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos
-    : public SigninUiUtilTestBase,
-      public base::test::WithFeatureOverride {
+    : public SigninUiUtilTestBase {
  public:
-  SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos()
-      : base::test::WithFeatureOverride(
-            syncer::kReplaceSyncPromosWithSignInPromos) {
-    feature_list_.InitWithFeatureState(
-        syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
-        IsParamFeatureEnabled());
-  }
-
-  bool IsReplaceSyncPromosWithSignInPromosEnabled() const {
-    return IsParamFeatureEnabled();
-  }
+  SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos() = default;
 
   void ExpectTurnSyncOn(signin_metrics::AccessPoint access_point,
                         signin_metrics::PromoAction promo_action,
@@ -285,11 +271,11 @@ class SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos
                 ShowTurnSyncOnUI(browser()->GetProfile(), access_point,
                                  promo_action, account_id, signin_aborted_mode,
                                  is_sync_promo, user_already_signed_in))
-        .Times(IsReplaceSyncPromosWithSignInPromosEnabled() ? 0 : 1);
+        .Times(0);
     EXPECT_CALL(mock_delegate_,
                 ShowHistorySyncOptinUI(browser()->GetProfile(), account_id,
                                        access_point))
-        .Times(IsReplaceSyncPromosWithSignInPromosEnabled() ? 1 : 0);
+        .Times(1);
   }
 
  protected:
@@ -317,15 +303,9 @@ class SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos
     EXPECT_TRUE(
         GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos);
-
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncWithExistingAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
@@ -362,7 +342,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncWithAccountThatNeedsReauth) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://example.com"),
@@ -418,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncForNewAccountWithNoTab) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
@@ -444,7 +424,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
             active_contents->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncForNewAccountWithNoTabWithExisting) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
@@ -467,7 +447,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncForNewAccountWithOneTab) {
   base::HistogramTester histogram_tester;
   base::UserActionTester user_action_tester;
@@ -694,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
             accounts[2].GetGaiaId());
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        MergeDiceSigninTab) {
   base::UserActionTester user_action_tester;
   EnableSync(CoreAccountInfo(), false);
@@ -812,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
             sign_in_tab->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncWithExistingWebOnlyAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
@@ -840,18 +820,13 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                  .GetCoreAccountInfo(),
              is_default_promo_account);
 
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    histogram_tester.ExpectBucketCount(
-        "Signin.SignIn.Started", signin_metrics::AccessPoint::kBookmarkBubble,
-        1);
-  } else {
-    ExpectNoSigninStartedHistograms(histogram_tester);
-  }
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Started", signin_metrics::AccessPoint::kBookmarkBubble, 1);
   EXPECT_EQ(
       1, user_action_tester.GetActionCount("Signin_Signin_FromBookmarkBubble"));
 }
 
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncPromoWithExistingWebOnlyAccountAvatarBubble) {
   access_point_ = signin_metrics::AccessPoint::kProfileMenuPrimaryButton;
 
@@ -859,7 +834,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
 }
 
 // Checks that sync is treated as a promo for kSettings.
-IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
+IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncPromoWithExistingWebOnlyAccountSettings) {
   access_point_ = signin_metrics::AccessPoint::kSettings;
 
@@ -932,8 +907,6 @@ class SigninUiUtilTest_HistorySyncOptinTest : public SigninUiUtilTestBase {
 
  private:
   base::CallbackListSubscription create_services_subscription_;
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kReplaceSyncPromosWithSignInPromos};
 };
 
 IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
