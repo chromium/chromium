@@ -2713,11 +2713,11 @@ std::optional<int> GetDOMNodeId(content::RenderFrameHost& rfh,
 // Returns the DOMNodeId of the node matched by the given CSS query selector
 // inside the iframe (must be a direct child of main frame, i.e. no nested
 // iframes) identified by subframe_query_selector or std::nullopt if no node
-// matches. Note: This method makes multiple renderer IPC calls (via the
-// devtools protocol) and waits for a result (an IPC back from the renderer)
-// each time.
-std::optional<int> GetDOMNodeIdFromSubframe(
-    RenderFrameHost& rfh,
+// matches. OOPIFs should use GetDOMNodeId instead. Note: This method makes
+// multiple renderer IPC calls (via the devtools protocol) and waits for a
+// result (an IPC back from the renderer) each time.
+std::optional<int> GetDOMNodeIdFromLocalSubframe(
+    RenderFrameHost& parent_rfh,
     std::string_view subframe_query_selector,
     std::string_view query_selector);
 

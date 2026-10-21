@@ -3475,8 +3475,8 @@ class ExecutionEngineSubframeGatingDryRunBrowserTest
     content::RenderFrameHost* parent = frame->GetParent();
     std::optional<int> dom_node_id =
         parent && frame->GetProcess() == parent->GetProcess()
-            ? content::GetDOMNodeIdFromSubframe(*parent, "#child-0",
-                                                "#siteNameHeading")
+            ? content::GetDOMNodeIdFromLocalSubframe(*parent, "#child-0",
+                                                     "#siteNameHeading")
             : content::GetDOMNodeId(*frame, "#siteNameHeading");
     EXPECT_TRUE(dom_node_id);
     std::unique_ptr<ToolRequest> click =

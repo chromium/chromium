@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(ActorTypeToolBrowserTest,
   ASSERT_TRUE(
       ExecJs(subframe, "document.getElementById('input').value = 'foo bar'"));
   std::optional<int> input_id =
-      GetDOMNodeIdFromSubframe(*main_frame(), "#iframe", "#input");
+      GetDOMNodeIdFromLocalSubframe(*main_frame(), "#iframe", "#input");
   ASSERT_TRUE(input_id);
 
   std::string typed_string = "abc";

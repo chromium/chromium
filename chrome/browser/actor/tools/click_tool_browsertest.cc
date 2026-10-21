@@ -1498,8 +1498,8 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolValidationBrowserTest,
   // the last snapshot.
   GetPageApc();
 
-  std::optional<int> button_id =
-      GetDOMNodeIdFromSubframe(*main_frame(), "#iframe", "button#clickable");
+  std::optional<int> button_id = GetDOMNodeIdFromLocalSubframe(
+      *main_frame(), "#iframe", "button#clickable");
   ASSERT_TRUE(button_id);
 
   std::unique_ptr<ToolRequest> action =
@@ -1566,7 +1566,7 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolValidationBrowserTest,
   ASSERT_FALSE(subframe->IsCrossProcessSubframe());
 
   std::optional<int> target_id =
-      GetDOMNodeIdFromSubframe(*main_frame(), "#iframe", "#target");
+      GetDOMNodeIdFromLocalSubframe(*main_frame(), "#iframe", "#target");
   ASSERT_TRUE(target_id);
 
   // Subframe rejection runs before APC lookup, so no snapshot is needed.

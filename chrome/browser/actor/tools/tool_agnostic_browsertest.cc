@@ -237,8 +237,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
   ASSERT_TRUE(subframe);
 
   // Send a click to the button in the subframe.
-  std::optional<int> button_id =
-      GetDOMNodeIdFromSubframe(*subframe, "#iframe", "button#clickable");
+  std::optional<int> button_id = GetDOMNodeIdFromLocalSubframe(
+      *main_frame(), "#iframe", "button#clickable");
   ASSERT_TRUE(button_id);
   std::unique_ptr<ToolRequest> action =
       MakeClickRequest(*subframe, button_id.value());

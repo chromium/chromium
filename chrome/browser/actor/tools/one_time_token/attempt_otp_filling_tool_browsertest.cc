@@ -247,15 +247,11 @@ std::optional<DomNode> GetDomNodeInIframe(content::RenderFrameHost& main_rfh,
           GetOrCreateForCurrentDocument(&iframe_rfh)
               ->serialized_token();
 
-  std::optional<int> node_id = content::GetDOMNodeIdFromSubframe(
-      main_rfh, iframe_selector, query_selector);
-  // Fallback support: Cross-origin iframes run in a separate renderer process
-  // due to Site Isolation, returning `std::nullopt` from same-process lookups.
-  // In that case, querying their renderer process directly via `GetDOMNodeId`
-  // yields the correct node ID.
-  if (!node_id.has_value()) {
-    node_id = GetDOMNodeId(iframe_rfh, query_selector);
-  }
+  std::optional<int> node_id =
+      iframe_rfh.IsCrossProcessSubframe()
+          ? GetDOMNodeId(iframe_rfh, query_selector)
+          : content::GetDOMNodeIdFromLocalSubframe(main_rfh, iframe_selector,
+                                                   query_selector);
   if (!node_id.has_value()) {
     return std::nullopt;
   }

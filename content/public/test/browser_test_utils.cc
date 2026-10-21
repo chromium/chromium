@@ -5028,6 +5028,7 @@ void SetCapturedSurfaceControllerFactoryForTesting(
 
 std::optional<int> GetDOMNodeId(RenderFrameHost& rfh,
                                 std::string_view query_selector) {
+  CHECK(static_cast<RenderFrameHostImpl&>(rfh).is_local_root());
   ScopedTestDevToolsProtocolClient devtools_client(rfh);
 
   // Get the document node.
@@ -5062,11 +5063,12 @@ std::optional<int> GetDOMNodeId(RenderFrameHost& rfh,
   return dom_node_id;
 }
 
-std::optional<int> GetDOMNodeIdFromSubframe(
-    content::RenderFrameHost& rfh,
+std::optional<int> GetDOMNodeIdFromLocalSubframe(
+    content::RenderFrameHost& parent_rfh,
     std::string_view subframe_query_selector,
     std::string_view query_selector) {
-  content::ScopedTestDevToolsProtocolClient devtools_client(rfh);
+  CHECK(static_cast<RenderFrameHostImpl&>(parent_rfh).is_local_root());
+  content::ScopedTestDevToolsProtocolClient devtools_client(parent_rfh);
 
   // Get the main document node.
   const base::DictValue* result =
