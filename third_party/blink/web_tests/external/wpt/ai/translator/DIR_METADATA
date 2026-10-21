@@ -1,3 +1,2 @@
-buganizer_public: {
-  component_id: 1583316
-}
+mixins: "//components/on_device_translation/COMMON_METADATA"
+
