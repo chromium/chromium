@@ -236,6 +236,7 @@ suite('CrComponentsSearchboxIconTest', () => {
     await microtasksFinished();
     assertTrue(isVisible(icon.$.icon));
     assertFalse(isVisible(icon.$.faviconImage));
+    assertEquals('', icon.$.faviconImage.getAttribute('src'));
     assertTrue(icon.hasIconContainerBackground);
     assertTrue(icon.isFeaturedSearch);
   });
@@ -264,6 +265,7 @@ suite('CrComponentsSearchboxIconTest', () => {
     await microtasksFinished();
     assertTrue(isVisible(icon.$.icon));
     assertFalse(isVisible(icon.$.faviconImage));
+    assertEquals('', icon.$.faviconImage.getAttribute('src'));
   });
 
   test(
@@ -284,6 +286,7 @@ suite('CrComponentsSearchboxIconTest', () => {
         await microtasksFinished();
         assertTrue(isVisible(icon.$.icon));
         assertFalse(isVisible(icon.$.faviconImage));
+        assertEquals('', icon.$.faviconImage.getAttribute('src'));
       });
 
   suite('inSearchbox', () => {
