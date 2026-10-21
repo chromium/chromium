@@ -635,7 +635,6 @@ suite('OrganizerListSectionTest', () => {
         assertDeepEquals(['YouTube'], listItems[0]!.item.title);
 
         listSection.onItemsChanged([
-          {title: ['Google'], description: [{text: 'google.com'}]},
           {title: ['Updated Title'], description: [{text: 'example.com'}]},
           {
             title: ['YouTube Music'],
@@ -662,10 +661,57 @@ suite('OrganizerListSectionTest', () => {
 
         listItems = listSection.shadowRoot.querySelectorAll(
             'organizer-list-section-item');
-        assertEquals(3, listItems.length);
-        assertDeepEquals(['Google'], listItems[0]!.item.title);
-        assertDeepEquals(['Updated Title'], listItems[1]!.item.title);
-        assertDeepEquals(['YouTube Music'], listItems[2]!.item.title);
+        assertEquals(2, listItems.length);
+        assertDeepEquals(['Updated Title'], listItems[0]!.item.title);
+        assertDeepEquals(['YouTube Music'], listItems[1]!.item.title);
+      });
+
+  test(
+      'updates filtered items while searching when items are added or removed',
+      async () => {
+        const delegateItems: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Google'], description: [{text: 'google.com'}]},
+          {title: ['YouTube'], description: [{text: 'youtube.com'}]},
+        ];
+        listSection.delegate =
+            new TestSectionDelegate('Open Tabs', delegateItems);
+        await microtasksFinished();
+
+        listSection.searchQuery = 'You';
+        await microtasksFinished();
+
+        let listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(1, listItems.length);
+        assertDeepEquals(['YouTube'], listItems[0]!.item.title);
+        assertFalse(listSection.hidden);
+
+        listSection.onItemsChanged([
+          {title: ['Google'], description: [{text: 'google.com'}]},
+        ]);
+        await microtasksFinished();
+
+        listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(0, listItems.length);
+        assertTrue(listSection.hidden);
+
+        listSection.onItemsChanged([
+          {title: ['Google'], description: [{text: 'google.com'}]},
+          {title: ['YouTube'], description: [{text: 'youtube.com'}]},
+          {
+            title: ['YouTube Music'],
+            description: [{text: 'music.youtube.com'}],
+          },
+        ]);
+        await microtasksFinished();
+
+        listItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(2, listItems.length);
+        assertDeepEquals(['YouTube'], listItems[0]!.item.title);
+        assertDeepEquals(['YouTube Music'], listItems[1]!.item.title);
+        assertFalse(listSection.hidden);
       });
 
   test('hides section only when search query has no matches', async () => {

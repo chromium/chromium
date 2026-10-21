@@ -149,7 +149,9 @@ export class OrganizerListSectionElement extends CrLitElement implements
     }
 
     if (changedProperties.has('searchQuery') ||
-        (changedProperties.has('items') && !this.isSearching_())) {
+        (changedProperties.has('items') &&
+         (!this.isSearching_() ||
+          changedProperties.get('items')?.length !== this.items.length))) {
       this.updateFilteredItems_();
     }
 
