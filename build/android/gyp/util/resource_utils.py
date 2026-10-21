@@ -86,6 +86,26 @@ AAPT_IGNORE_PATTERN = ':'.join(
 )
 
 
+def Aapt2Env():
+    """Returns the environment to use when running aapt2."""
+    # aapt2 makes a huge number of small allocations. Using a larger tcache and
+    # avoiding repeatedly growing / trimming the heap makes "aapt2 link" ~18%
+    # faster for chrome_apk. Unknown tunables are ignored, and non-glibc hosts
+    # ignore the variable altogether.
+    tunables = [
+        'glibc.malloc.tcache_count=65535',
+        'glibc.malloc.top_pad=67108864',
+        'glibc.malloc.trim_threshold=1073741824',
+        'glibc.malloc.hugetlb=1',
+    ]
+    env = os.environ.copy()
+    existing = env.get('GLIBC_TUNABLES')
+    if existing:
+        tunables.append(existing)
+    env['GLIBC_TUNABLES'] = ':'.join(tunables)
+    return env
+
+
 def ToAndroidLocaleName(chromium_locale):
     """Convert a Chromium locale name into a corresponding Android one."""
     # Should be in sync with build/config/locales.gni.

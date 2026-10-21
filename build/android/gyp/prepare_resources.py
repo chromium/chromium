@@ -302,6 +302,7 @@ def _CompileResourceZip(
     # remove them from our build (e.g. it's from a 3rd party library).
     build_utils.CheckOutput(
         compile_command,
+        env=resource_utils.Aapt2Env(),
         stderr_filter=lambda output: build_utils.FilterLines(
             output, r'ignoring configuration .* for (styleable|attribute)'
         ),

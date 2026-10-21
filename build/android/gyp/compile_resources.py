@@ -668,6 +668,7 @@ def _PackageApk(options, build):
         stderr_filter = _FilterAapt2Warnings
     build_utils.CheckOutput(
         link_command,
+        env=resource_utils.Aapt2Env(),
         before_join_callback=before_join,
         stderr_filter=stderr_filter,
     )
@@ -698,7 +699,8 @@ def _PackageApk(options, build):
                 '-o',
                 build.proto_path,
                 build.arsc_path,
-            ]
+            ],
+            env=resource_utils.Aapt2Env(),
         )
 
     # Sanity check that the created resources have the expected package ID.
