@@ -198,8 +198,10 @@ table th.sort-column-reverse::after {
   display: inline-block;
   flex-shrink: 0;
   margin-right: 6px;
+  text-align: center;
   transition: transform 0.15s ease;
   user-select: none;
+  width: 8px;
 }
 
 .toggle-arrow.expanded {
@@ -373,9 +375,31 @@ table th.sort-column-reverse::after {
   padding-left: 28px !important;
 }
 
+.metric-label-container {
+  align-items: center;
+  display: flex;
+}
+
+.expandable-metric-row {
+  cursor: pointer;
+}
+
+.expandable-metric-row .sub-td-label {
+  padding-left: 14px !important;
+}
+
+.sub-metric-td-label {
+  color: var(--cr-secondary-text-color, #5f6368);
+  padding-left: 44px !important;
+}
+
 @media (prefers-color-scheme: dark) {
   .sub-td-label {
     color: var(--cr-primary-text-color, #e8eaed);
+  }
+
+  .sub-metric-td-label {
+    color: var(--cr-secondary-text-color, #9aa0a6);
   }
 }
 

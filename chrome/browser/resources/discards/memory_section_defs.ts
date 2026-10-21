@@ -3,6 +3,19 @@
 // found in the LICENSE file.
 
 /**
+ * Definition of dynamic sub-metrics extracted by matching a prefix on numeric
+ * entry keys of the parent metric's allocator dump.
+ */
+export interface DynamicSubMetricDef {
+  /** Prefix of numeric entry keys to match (e.g. 'creator_identity:'). */
+  prefix: string;
+  /** Prefix prepended to the stripped key to form the user-visible label. */
+  labelPrefix: string;
+  /** Display unit and formatting type. */
+  unit: 'bytes'|'kib'|'count'|'percent';
+}
+
+/**
  * Definition of a single metric entry to be extracted from a ProcessMemoryDump.
  */
 export interface MetricDef {
@@ -18,6 +31,13 @@ export interface MetricDef {
   metricName: string;
   /** Display unit and formatting type. */
   unit: 'bytes'|'kib'|'count'|'percent';
+  /** Optional static sub-metrics displayed when expanding this metric row. */
+  subMetrics?: MetricDef[];
+  /**
+   * Optional dynamic sub-metrics extracted by matching a key prefix in the
+   * allocator dump's numericEntries.
+   */
+  dynamicSubMetrics?: DynamicSubMetricDef;
 }
 
 /**
@@ -307,6 +327,31 @@ export const SECTION_DEFS: SectionDef[] = [
     id: 'components',
     label: 'Breakdown per component',
     metrics: [
+      {
+        label: 'Blob Storage',
+        dumpName: 'site_storage/blob_storage',
+        metricName: 'effective_size',
+        unit: 'bytes',
+        subMetrics: [
+          {
+            label: 'Disk Usage',
+            dumpName: 'site_storage/blob_storage',
+            metricName: 'disk_usage',
+            unit: 'bytes',
+          },
+          {
+            label: 'Blob Count',
+            dumpName: 'site_storage/blob_storage',
+            metricName: 'blob_count',
+            unit: 'count',
+          },
+        ],
+        dynamicSubMetrics: {
+          prefix: 'creator_identity:',
+          labelPrefix: 'Creator: ',
+          unit: 'bytes',
+        },
+      },
       {
         label: 'Skia',
         dumpName: 'skia',

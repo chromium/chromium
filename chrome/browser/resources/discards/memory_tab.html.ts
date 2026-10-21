@@ -49,8 +49,8 @@ export function getHtml(this: MemoryTabElement) {
           <td class="process-desc-col">
             <div class="process-desc-container">
               <span
-                  class="toggle-arrow ${
-                      this.isExpanded_(item.pid) ? 'expanded' : ''}">
+                  class="${
+                      this.getToggleArrowClass_(this.isExpanded_(item.pid))}">
                 ▶
               </span>
               <span class="process-desc-text" title="${item.description}">
@@ -65,7 +65,7 @@ export function getHtml(this: MemoryTabElement) {
           <td class="magnitude-col">
             <div class="magnitude-bar-track">
               <div class="magnitude-bar-fill"
-                  style="width: ${item.magnitudePercent}%;">
+                  style="${this.getMagnitudeStyle_(item.magnitudePercent)}">
               </div>
             </div>
           </td>
@@ -73,16 +73,9 @@ export function getHtml(this: MemoryTabElement) {
             <div class="trend-sparkline">
               ${this.getSparklineBars(item.history, this.maxPrivateFootprintKb_)
                   .map(bar => html`
-                <div
-                    class="sparkline-bar ${bar.isEmpty ? 'empty' : ''} ${
-                        bar.isError ? 'error' : ''}"
+                <div class="${this.getSparklineBarClass_(bar)}"
                     style="height: ${bar.height}px;"
-                    title="${bar.isEmpty ?
-                        '' :
-                        (bar.isError ? 'Memory dump unavailable' :
-                                       (bar.value !== null ?
-                                            bar.value.toLocaleString() :
-                                            ''))}">
+                    title="${this.getSparklineBarTitle_(bar)}">
                 </div>
               `)}
             </div>
@@ -99,10 +92,9 @@ export function getHtml(this: MemoryTabElement) {
                         @click="${this.onSectionRowClick_}">
                       <div class="section-header-title">
                         <span
-                            class="toggle-arrow ${this.isSectionExpanded_(
-                                         item.pid, section.id) ?
-                                'expanded' :
-                                ''}">
+                            class="${this.getToggleArrowClass_(
+                                this.isSectionExpanded_(
+                                    item.pid, section.id))}">
                           ▶
                         </span>
                         <span class="section-label">${section.label}</span>
@@ -125,18 +117,40 @@ export function getHtml(this: MemoryTabElement) {
                           </tr>
                         </thead>
                         <tbody>
-                          ${section.metrics.map(metric => html`
-                            <tr class="sub-table-row">
-                              <td class="sub-td-label">${metric.label}</td>
+                          ${this.getVisibleSectionMetrics_(item.pid, section)
+                              .map(({row, isSubMetric}) => html`
+                            <tr
+                                class="${
+                                    this.getMetricRowClass_(row, isSubMetric)}"
+                                data-pid="${item.pid}"
+                                data-section-id="${section.id}"
+                                data-metric-id="${row.id || ''}"
+                                @click="${this.onMetricRowClick_}">
+                              <td
+                                  class="${
+                                      this.getMetricLabelClass_(isSubMetric)}">
+                                <div class="metric-label-container">
+                                  ${row.subMetrics?.length ? html`
+                                    <span
+                                        class="${this.getToggleArrowClass_(
+                                            this.isMetricExpanded_(
+                                                item.pid, section.id,
+                                                row.id))}">
+                                      ▶
+                                    </span>
+                                  ` : ''}
+                                  <span>${row.label}</span>
+                                </div>
+                              </td>
                               <td class="sub-td-val num-col">
-                                ${metric.valueFormatted}
+                                ${row.valueFormatted}
                               </td>
                               <td class="magnitude-col">
-                                ${metric.magnitudePercent !== null ? html`
+                                ${row.magnitudePercent !== null ? html`
                                   <div class="magnitude-bar-track">
                                     <div class="magnitude-bar-fill"
-                                        style="width: ${
-                                            metric.magnitudePercent}%;">
+                                        style="${this.getMagnitudeStyle_(
+                                            row.magnitudePercent)}">
                                     </div>
                                   </div>
                                 ` : ''}
@@ -144,21 +158,14 @@ export function getHtml(this: MemoryTabElement) {
                               <td class="sub-td-trend trend-col">
                                 <div class="trend-sparkline">
                                   ${this.getSparklineBars(
-                                          metric.history, metric.maxScale)
+                                          row.history, row.maxScale)
                                       .map(bar => html`
                                     <div
-                                        class="sparkline-bar ${
-                                            bar.isEmpty ? 'empty' : ''} ${
-                                            bar.isError ? 'error' : ''}"
+                                        class="${
+                                            this.getSparklineBarClass_(bar)}"
                                         style="height: ${bar.height}px;"
-                                        title="${bar.isEmpty ?
-                                            '' :
-                                            (bar.isError ?
-                                                 'Memory dump unavailable' :
-                                                 (bar.value !== null ?
-                                                      bar.value
-                                                          .toLocaleString() :
-                                                      ''))}">
+                                        title="${
+                                            this.getSparklineBarTitle_(bar)}">
                                     </div>
                                   `)}
                                 </div>

@@ -9,6 +9,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getOrCreateDetailsProvider} from './discards.js';
 import type {DetailsProviderRemote, ProcessDescription} from './discards.mojom-webui.js';
 import type {ProcessMemoryDump} from './memory_instrumentation.mojom-webui.js';
+import type {MetricDef} from './memory_section_defs.js';
 import {SECTION_DEFS} from './memory_section_defs.js';
 import {getCss} from './memory_tab.css.js';
 import {getHtml} from './memory_tab.html.js';
@@ -19,11 +20,13 @@ import {SortedTableMixinLit} from './sorted_table_mixin_lit.js';
  * (e.g. "Allocated Objects", "Main Heap: Old Space").
  */
 export interface ProcessMetricRow {
+  id?: string;
   label: string;
   valueFormatted: string;
   magnitudePercent: number|null;
   history: Array<number|null>;
   maxScale?: number;
+  subMetrics?: ProcessMetricRow[];
 }
 
 /**
@@ -119,6 +122,7 @@ export class MemoryTabElement extends MemoryTabElementBase {
       maxPrivateFootprintKb_: {type: Number},
       expandedPids_: {type: Object},
       expandedSections_: {type: Object},
+      expandedMetrics_: {type: Object},
     };
   }
 
@@ -135,6 +139,9 @@ export class MemoryTabElement extends MemoryTabElementBase {
   protected accessor expandedPids_: Set<number> = new Set();
   // Set of expanded section keys in the format `${pid}:${sectionId}`.
   protected accessor expandedSections_: Set<string> = new Set();
+  // Set of expanded metric keys in the format
+  // `${pid}:${sectionId}:${metricId}`.
+  protected accessor expandedMetrics_: Set<string> = new Set();
 
   // Remote interface for querying memory dump data from the browser process.
   private discardsDetailsProvider_: DetailsProviderRemote;
@@ -233,6 +240,90 @@ export class MemoryTabElement extends MemoryTabElementBase {
 
   protected isSectionExpanded_(pid: number, sectionId: string): boolean {
     return this.expandedSections_.has(`${pid}:${sectionId}`);
+  }
+
+  protected onMetricRowClick_(e: Event) {
+    e.stopPropagation();
+    const target = e.currentTarget as HTMLElement;
+    const pid = Number(target.dataset['pid']);
+    const sectionId = target.dataset['sectionId']!;
+    const metricId = target.dataset['metricId'];
+    if (!metricId) {
+      return;
+    }
+    const key = `${pid}:${sectionId}:${metricId}`;
+    const next = new Set(this.expandedMetrics_);
+    if (next.has(key)) {
+      next.delete(key);
+    } else {
+      next.add(key);
+    }
+    this.expandedMetrics_ = next;
+  }
+
+  protected isMetricExpanded_(
+      pid: number, sectionId: string, metricId?: string): boolean {
+    if (!metricId) {
+      return false;
+    }
+    return this.expandedMetrics_.has(`${pid}:${sectionId}:${metricId}`);
+  }
+
+  protected getVisibleSectionMetrics_(pid: number, section: MetricSection):
+      Array<{row: ProcessMetricRow, isSubMetric: boolean}> {
+    const result: Array<{row: ProcessMetricRow, isSubMetric: boolean}> = [];
+    for (const metric of section.metrics) {
+      result.push({row: metric, isSubMetric: false});
+      if (metric.subMetrics?.length &&
+          this.isMetricExpanded_(pid, section.id, metric.id)) {
+        for (const subMetric of metric.subMetrics) {
+          result.push({row: subMetric, isSubMetric: true});
+        }
+      }
+    }
+    return result;
+  }
+
+  protected getToggleArrowClass_(expanded: boolean): string {
+    return expanded ? 'toggle-arrow expanded' : 'toggle-arrow';
+  }
+
+  protected getMagnitudeStyle_(percent: number): string {
+    return `width: ${percent}%;`;
+  }
+
+  protected getMetricRowClass_(metric: ProcessMetricRow, isSubMetric: boolean):
+      string {
+    if (isSubMetric) {
+      return 'sub-table-row sub-metric-row';
+    }
+    return metric.subMetrics?.length ? 'sub-table-row expandable-metric-row' :
+                                       'sub-table-row';
+  }
+
+  protected getMetricLabelClass_(isSubMetric: boolean): string {
+    return isSubMetric ? 'sub-td-label sub-metric-td-label' : 'sub-td-label';
+  }
+
+  protected getSparklineBarClass_(bar: SparklineBar): string {
+    const classes = ['sparkline-bar'];
+    if (bar.isEmpty) {
+      classes.push('empty');
+    }
+    if (bar.isError) {
+      classes.push('error');
+    }
+    return classes.join(' ');
+  }
+
+  protected getSparklineBarTitle_(bar: SparklineBar): string {
+    if (bar.isEmpty) {
+      return '';
+    }
+    if (bar.isError) {
+      return 'Memory dump unavailable';
+    }
+    return bar.value !== null ? bar.value.toLocaleString() : '';
   }
 
   /**
@@ -338,6 +429,92 @@ export class MemoryTabElement extends MemoryTabElementBase {
     return val !== undefined ? Number(val) : null;
   }
 
+  private buildMetricRow_(
+      def: MetricDef&{defaultToZeroIfDumpPresent?: boolean},
+      dump: ProcessMemoryDump|undefined, hasDump: boolean,
+      privateFootprintKb: number, maxPmfKb: number,
+      pidMetricHistories: Map<string, Array<number|null>>,
+      subMetrics?: ProcessMetricRow[]): ProcessMetricRow|null {
+    let rawVal: number|null = null;
+    let formatted = '--';
+    let magnitudePercent: number|null = null;
+
+    if (hasDump) {
+      if (def.dumpName === '') {
+        if (def.metricName === 'private_footprint_kb') {
+          rawVal = privateFootprintKb;
+          formatted = formatKibInMb(rawVal);
+          magnitudePercent = computeMagnitudePercent(rawVal, maxPmfKb);
+        } else if (def.metricName === 'resident_set_kb') {
+          rawVal = dump!.osDump.residentSetKb;
+          formatted = formatKibInMb(rawVal);
+          magnitudePercent = computeMagnitudePercent(rawVal, maxPmfKb);
+        } else if (def.metricName === 'shared_footprint_kb') {
+          rawVal = dump!.osDump.sharedFootprintKb;
+          formatted = formatKibInMb(rawVal);
+          magnitudePercent = computeMagnitudePercent(rawVal, maxPmfKb);
+        }
+      } else {
+        rawVal =
+            this.getNumericEntryValue_(dump!, def.dumpName, def.metricName);
+        if (rawVal === null && def.defaultToZeroIfDumpPresent &&
+            dump!.chromeAllocatorDumps?.[def.dumpName]?.numericEntries) {
+          rawVal = 0;
+        }
+        if (rawVal !== null) {
+          if (def.unit === 'bytes') {
+            formatted = formatBytesInMb(rawVal);
+            magnitudePercent = computeMagnitudePercent(rawVal / 1024, maxPmfKb);
+          } else if (def.unit === 'kib') {
+            formatted = formatKibInMb(rawVal);
+            magnitudePercent = computeMagnitudePercent(rawVal, maxPmfKb);
+          } else if (def.unit === 'count') {
+            formatted = rawVal.toLocaleString();
+            magnitudePercent = null;
+          } else if (def.unit === 'percent') {
+            formatted = `${rawVal.toFixed(1)}%`;
+            magnitudePercent = null;
+          }
+        }
+      }
+    }
+
+    const metricKey = `${def.dumpName}:${def.metricName}`;
+    let history = pidMetricHistories.get(metricKey) || [];
+    const metricSample =
+        (hasDump && rawVal !== null) ? rawVal : (hasDump ? null : -1);
+    history = [...history.slice(-(HISTORY_LENGTH - 1)), metricSample];
+    pidMetricHistories.set(metricKey, history);
+
+    let maxScale: number|undefined = undefined;
+    if (def.unit === 'kib') {
+      maxScale = maxPmfKb;
+    } else if (def.unit === 'bytes') {
+      maxScale = maxPmfKb * 1024;
+    } else if (def.unit === 'percent') {
+      maxScale = 100;
+    }
+
+    const hasReceivedData = history.some(val => val !== null && val > 0);
+    const hasSubMetrics = Boolean(subMetrics && subMetrics.length > 0);
+    if (!hasReceivedData && !hasSubMetrics) {
+      if (def.defaultToZeroIfDumpPresent) {
+        pidMetricHistories.delete(metricKey);
+      }
+      return null;
+    }
+
+    return {
+      id: hasSubMetrics ? metricKey : undefined,
+      label: def.label,
+      valueFormatted: formatted,
+      magnitudePercent,
+      history,
+      maxScale,
+      subMetrics: hasSubMetrics ? subMetrics : undefined,
+    };
+  }
+
   private processData_(
       dumps: ProcessMemoryDump[], descriptions: ProcessDescription[]) {
     const descMap = new Map<number, string>();
@@ -408,77 +585,82 @@ export class MemoryTabElement extends MemoryTabElementBase {
       for (const sectionDef of SECTION_DEFS) {
         const metricRows: ProcessMetricRow[] = [];
         for (const def of sectionDef.metrics) {
-          let rawVal: number|null = null;
-          let formatted = '--';
-          let magnitudePercent: number|null = null;
+          let subMetrics: ProcessMetricRow[]|undefined = undefined;
 
-          if (hasDump) {
-            if (def.dumpName === '') {
-              if (def.metricName === 'private_footprint_kb') {
-                rawVal = privateFootprintKb;
-                formatted = formatKibInMb(rawVal);
-                magnitudePercent = computeMagnitudePercent(rawVal, maxPmfKb);
-              } else if (def.metricName === 'resident_set_kb') {
-                rawVal = dump!.osDump.residentSetKb;
-                formatted = formatKibInMb(rawVal);
-                magnitudePercent = computeMagnitudePercent(rawVal, maxPmfKb);
-              } else if (def.metricName === 'shared_footprint_kb') {
-                rawVal = dump!.osDump.sharedFootprintKb;
-                formatted = formatKibInMb(rawVal);
-                magnitudePercent = computeMagnitudePercent(rawVal, maxPmfKb);
-              }
-            } else {
-              rawVal = this.getNumericEntryValue_(
-                  dump!, def.dumpName, def.metricName);
-              if (rawVal !== null) {
-                if (def.unit === 'bytes') {
-                  formatted = formatBytesInMb(rawVal);
-                  magnitudePercent =
-                      computeMagnitudePercent(rawVal / 1024, maxPmfKb);
-                } else if (def.unit === 'kib') {
-                  formatted = formatKibInMb(rawVal);
-                  magnitudePercent = computeMagnitudePercent(rawVal, maxPmfKb);
-                } else if (def.unit === 'count') {
-                  formatted = rawVal.toLocaleString();
-                  magnitudePercent = null;
-                } else if (def.unit === 'percent') {
-                  formatted = `${rawVal.toFixed(1)}%`;
-                  magnitudePercent = null;
+          if (def.subMetrics || def.dynamicSubMetrics) {
+            subMetrics = [];
+
+            if (def.subMetrics) {
+              for (const subDef of def.subMetrics) {
+                const subRow = this.buildMetricRow_(
+                    subDef, dump, hasDump, privateFootprintKb, maxPmfKb,
+                    pidMetricHistories);
+                if (subRow) {
+                  subMetrics.push(subRow);
                 }
+              }
+            }
+
+            if (def.dynamicSubMetrics) {
+              const dyn = def.dynamicSubMetrics;
+              const dynamicMetricNames = new Set<string>();
+              if (hasDump && dump!.chromeAllocatorDumps) {
+                const allocatorDump = dump!.chromeAllocatorDumps[def.dumpName];
+                if (allocatorDump && allocatorDump.numericEntries) {
+                  for (const key of Object.keys(allocatorDump.numericEntries)) {
+                    if (key.startsWith(dyn.prefix)) {
+                      dynamicMetricNames.add(key);
+                    }
+                  }
+                }
+              }
+              const historyPrefix = `${def.dumpName}:${dyn.prefix}`;
+              for (const key of pidMetricHistories.keys()) {
+                if (key.startsWith(historyPrefix)) {
+                  dynamicMetricNames.add(
+                      key.substring(def.dumpName.length + 1));
+                }
+              }
+
+              const dynamicRows:
+                  Array<{row: ProcessMetricRow, currentVal: number}> = [];
+              for (const metricName of dynamicMetricNames) {
+                const subLabel = metricName.substring(dyn.prefix.length);
+                const row = this.buildMetricRow_(
+                    {
+                      label: `${dyn.labelPrefix}${subLabel}`,
+                      dumpName: def.dumpName,
+                      metricName,
+                      unit: dyn.unit,
+                      defaultToZeroIfDumpPresent: true,
+                    },
+                    dump, hasDump, privateFootprintKb, maxPmfKb,
+                    pidMetricHistories);
+                if (row) {
+                  const currentVal = hasDump ?
+                      (this.getNumericEntryValue_(
+                           dump!, def.dumpName, metricName) ??
+                       0) :
+                      0;
+                  dynamicRows.push({row, currentVal});
+                }
+              }
+
+              dynamicRows.sort(
+                  (a, b) => b.currentVal - a.currentVal ||
+                      a.row.label.localeCompare(b.row.label));
+              for (const item of dynamicRows) {
+                subMetrics.push(item.row);
               }
             }
           }
 
-          const metricKey = `${def.dumpName}:${def.metricName}`;
-          let history = pidMetricHistories.get(metricKey) || [];
-          const metricSample =
-              (hasDump && rawVal !== null) ? rawVal : (hasDump ? null : -1);
-          history = [...history.slice(-(HISTORY_LENGTH - 1)), metricSample];
-          pidMetricHistories.set(metricKey, history);
-
-          let maxScale: number|undefined = undefined;
-          if (def.unit === 'kib') {
-            maxScale = maxPmfKb;
-          } else if (def.unit === 'bytes') {
-            maxScale = maxPmfKb * 1024;
-          } else if (def.unit === 'percent') {
-            maxScale = 100;
+          const row = this.buildMetricRow_(
+              def, dump, hasDump, privateFootprintKb, maxPmfKb,
+              pidMetricHistories, subMetrics);
+          if (row) {
+            metricRows.push(row);
           }
-
-          // Only include metrics that have received at least one non-zero data
-          // point in their history for this process.
-          const hasReceivedData = history.some(val => val !== null && val > 0);
-          if (!hasReceivedData) {
-            continue;
-          }
-
-          metricRows.push({
-            label: def.label,
-            valueFormatted: formatted,
-            magnitudePercent,
-            history,
-            maxScale,
-          });
         }
 
         // Only include sections that have at least one metric with valid data.

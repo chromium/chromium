@@ -622,6 +622,7 @@ class DiscardsDetailsProviderImpl
             "partition_alloc/partitions/buffer",
             "partition_alloc/partitions/fast_malloc",
             "partition_alloc/partitions/layout",
+            "site_storage/blob_storage",
             "skia",
             "sqlite",
             "v8",
