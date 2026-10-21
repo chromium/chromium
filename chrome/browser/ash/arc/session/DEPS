@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/ash/policy/test_support",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
-  "+chrome/browser/global_features.h",
   "+chrome/browser/net",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
@@ -55,6 +54,7 @@ specific_include_rules = {
 
   "arc_session_manager_unittest\\.cc": [
     "+chrome/browser/consent_auditor",
+    "+chrome/browser/global_features.h",
     "+chrome/browser/signin",
   ],
 

@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/chromeos/arc",
   "+chrome/browser/nearby_sharing",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/sharesheet",
   "+chrome/browser/tab_contents",
@@ -41,6 +40,7 @@ specific_include_rules = {
   ],
   "arc_util_unittest\\.cc": [
     "+chrome/browser/ash/policy/core/device_local_account.h",
+    "+chrome/browser/policy/profile_policy_connector.h",
   ],
   "arc_support_host_unittest\\.cc": [
     "+chrome/browser/consent_auditor",
