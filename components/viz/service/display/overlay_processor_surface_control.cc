@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "base/android/android_info.h"
+#include "base/android/device_info.h"
 #include "base/feature_list.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/features.h"
@@ -83,7 +84,9 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
     // requires an overlay.
     if (candidate.color_space.IsHDR() && !candidate.requires_overlay) {
       if (!base::FeatureList::IsEnabled(
-              features::kAndroidSurfaceControlHdrOverlays)) {
+              features::kAndroidSurfaceControlHdrOverlays) &&
+          // crbug.com/575527489: TV requires HDR overlays.
+          !base::android::device_info::is_tv()) {
         candidate.overlay_handled = false;
         return;
       }
