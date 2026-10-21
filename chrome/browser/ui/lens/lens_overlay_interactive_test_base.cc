@@ -241,10 +241,14 @@ LensOverlayInteractiveTestBase::OpenLensOverlayFromImage() {
   };
 
   return Steps(InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
+               EnsurePresent(kActiveTab, kPathToImg),
                WaitForWebContentsPainted(kActiveTab),
+               WaitForWebContentsReady(kActiveTab, url),
+               WaitForJsResultAt(kActiveTab, kPathToImg,
+                                 "(el) => el.complete && el.naturalWidth > 0"),
 
-               MoveMouseTo(kActiveTab, kPathToImg),
-               ClickMouse(ui_controls::RIGHT),
+               RightClickInWebContents(kActiveTab, kPathToImg),
+               WaitForShow(RenderViewContextMenu::kSearchForImageItem),
                SelectMenuItem(RenderViewContextMenu::kSearchForImageItem,
                               InputType::kMouse));
 }
@@ -268,12 +272,38 @@ LensOverlayInteractiveTestBase::OpenLensOverlayFromVideo() {
 
   return Steps(InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
                EnsurePresent(kActiveTab, kPathToVideo),
+               WaitForWebContentsPainted(kActiveTab),
+               WaitForWebContentsReady(kActiveTab, url),
                ExecuteJsAt(kActiveTab, kPathToVideo, kPlayVideo),
                WaitForStateChange(kActiveTab, video_is_playing),
-               MoveMouseTo(kActiveTab, kPathToVideo),
-               ClickMouse(ui_controls::RIGHT),
+               RightClickInWebContents(kActiveTab, kPathToVideo),
+               WaitForShow(RenderViewContextMenu::kSearchForVideoFrameItem),
                SelectMenuItem(RenderViewContextMenu::kSearchForVideoFrameItem,
                               InputType::kMouse));
+}
+
+ui::test::InteractiveTestApi::StepBuilder
+LensOverlayInteractiveTestBase::RightClickInWebContents(
+    ui::ElementIdentifier web_contents_id,
+    std::optional<DeepQuery> where) {
+  return WithElement(
+      web_contents_id, [where = std::move(where)](ui::TrackedElement* el) {
+        auto* const util = AsInstrumentedWebContents(el);
+        content::WebContents* const web_contents = util->web_contents();
+        content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
+        content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
+        if (where.has_value()) {
+          const gfx::Point point =
+              util->GetElementBoundsInScreen(*where).CenterPoint() -
+              el->GetScreenBounds().OffsetFromOrigin();
+          content::SimulateMouseClickAt(web_contents, /*modifiers=*/0,
+                                        blink::WebMouseEvent::Button::kRight,
+                                        point);
+        } else {
+          content::SimulateMouseClick(web_contents, /*modifiers=*/0,
+                                      blink::WebMouseEvent::Button::kRight);
+        }
+      });
 }
 
 ui::test::InteractiveTestApi::MultiStep
@@ -306,6 +336,9 @@ LensOverlayInteractiveTestBase::FinishScreenshotUpload(int tab_id) {
     auto* controller = LensSearchController::FromTabWebContents(web_contents);
     auto* router = controller->query_router();
     auto file_token = router->overlay_tab_context_file_token();
+    if (!file_token.has_value()) {
+      return;
+    }
 
     router->OnContextUploadStatusChangedForTesting(
         *file_token, lens::MimeType::kImage,

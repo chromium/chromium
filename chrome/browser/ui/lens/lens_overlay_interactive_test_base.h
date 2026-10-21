@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_INTERACTIVE_TEST_BASE_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_INTERACTIVE_TEST_BASE_H_
 
+#include <optional>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -90,6 +91,13 @@ class LensOverlayInteractiveTestBase : public InteractiveFeaturePromoTest {
   InteractiveTestApi::MultiStep OpenLensOverlay();
   InteractiveTestApi::MultiStep OpenLensOverlayFromImage();
   virtual InteractiveTestApi::MultiStep OpenLensOverlayFromVideo();
+
+  // Simulates a right-click directly in the `web_contents_id` renderer (at the
+  // center of `where` if specified, or the center of the WebContents view
+  // otherwise) without using OS-level mouse button input.
+  InteractiveTestApi::StepBuilder RightClickInWebContents(
+      ui::ElementIdentifier web_contents_id,
+      std::optional<DeepQuery> where = std::nullopt);
 
   InteractiveTestApi::MultiStep WaitForScreenshotRendered(
       ui::ElementIdentifier overlayId);
