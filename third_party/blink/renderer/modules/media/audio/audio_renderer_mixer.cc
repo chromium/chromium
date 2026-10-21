@@ -27,7 +27,7 @@ AudioRendererMixer::AudioRendererMixer(
       audio_sink_(std::move(sink)),
       aggregate_converter_(output_params, output_params, true),
       pause_delay_(kPauseDelay),
-      last_play_time_(base::TimeTicks::Now()),
+      pause_deadline_(base::TimeTicks::Now() + kPauseDelay),
       // Initialize `playing_` to true since Start() results in an auto-play.
       playing_(true) {
   DCHECK(audio_sink_);
@@ -58,7 +58,6 @@ void AudioRendererMixer::AddMixerInput(
   base::AutoLock auto_lock(lock_);
   if (!playing_) {
     playing_ = true;
-    last_play_time_ = base::TimeTicks::Now();
     audio_sink_->Play();
   }
 
@@ -104,15 +103,26 @@ void AudioRendererMixer::RemoveMixerInput(
     }
   }
 
+  if (!aggregate_converter_.empty() || !playing_) {
+    return;
+  }
+  // Explicit pauses use the explicit-pause delay when the feature is enabled;
+  // waiting for data (seek or underflow) keeps `pause_delay_`.
+  base::TimeDelta delay = pause_delay_;
   if (pause_reason == media::AudioRendererSink::PauseReason::kPlaybackPaused &&
-      aggregate_converter_.empty() && playing_ &&
       base::FeatureList::IsEnabled(media::kAudioRendererMixerImmediatePause)) {
-    // On explicit playback pauses (`kPlaybackPaused`), immediately pause the
-    // underlying output sink once all active mixer inputs have been removed so
-    // the OS audio stream does not remain active pumping silence.
+    delay = media::kAudioRendererMixerImmediatePauseDelay.Get();
+  }
+  if (!delay.is_positive()) {
+    // Pause the underlying sink now so the OS audio stream does not keep
+    // pumping silence.
     audio_sink_->Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused);
     playing_ = false;
+    return;
   }
+  // Render() pauses the sink once the deadline passes, unless an input is added
+  // first.
+  pause_deadline_ = base::TimeTicks::Now() + delay;
 }
 
 void AudioRendererMixer::AddErrorCallback(AudioRendererMixerInput* input) {
@@ -132,6 +142,7 @@ bool AudioRendererMixer::CurrentThreadIsRenderingThread() {
 void AudioRendererMixer::SetPauseDelayForTesting(base::TimeDelta delay) {
   base::AutoLock auto_lock(lock_);
   pause_delay_ = delay;
+  pause_deadline_ = base::TimeTicks::Now() + delay;
 }
 
 bool AudioRendererMixer::HasSinkError() {
@@ -148,13 +159,11 @@ int AudioRendererMixer::Render(base::TimeDelta delay,
               (delay_timestamp - base::TimeTicks()).InMillisecondsF());
   base::AutoLock auto_lock(lock_);
 
-  // If there are no mixer inputs and we haven't seen one for a while, pause the
+  // If there are no mixer inputs and `pause_deadline_` has passed, pause the
   // sink to avoid wasting resources when media elements are present but remain
   // in the pause state.
-  const base::TimeTicks now = base::TimeTicks::Now();
-  if (!aggregate_converter_.empty()) {
-    last_play_time_ = now;
-  } else if (now - last_play_time_ >= pause_delay_ && playing_) {
+  if (aggregate_converter_.empty() && playing_ &&
+      base::TimeTicks::Now() >= pause_deadline_) {
     audio_sink_->Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused);
     playing_ = false;
   }

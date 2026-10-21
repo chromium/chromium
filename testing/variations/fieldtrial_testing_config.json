@@ -1503,6 +1503,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "delay": "250ms"
+                    },
                     "enable_features": [
                         "AudioRendererMixerImmediatePause"
                     ]

@@ -370,11 +370,17 @@ BASE_FEATURE(kAudioFocusDuckFlash,
 #endif
 );
 
-// Immediately pauses AudioRendererMixer's underlying output sink when all
-// inputs are removed on explicit player pauses instead of waiting for the
-// 10-second mixer pause delay.
+// Pauses AudioRendererMixer's underlying output sink shortly after all inputs
+// are removed on explicit player pauses instead of waiting for the 10-second
+// mixer pause delay.
 BASE_FEATURE(kAudioRendererMixerImmediatePause,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// How long to wait before that pause. Resuming within it keeps the stream
+// running. Zero pauses synchronously.
+const base::FeatureParam<base::TimeDelta>
+    kAudioRendererMixerImmediatePauseDelay{&kAudioRendererMixerImmediatePause,
+                                           "delay", base::TimeDelta()};
 
 // Allows the AutoPictureInPictureTabHelper to automatically enter
 // picture-in-picture when a webpage is occluded by another window.

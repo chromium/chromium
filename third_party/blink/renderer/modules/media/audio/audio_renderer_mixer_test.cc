@@ -16,10 +16,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/fake_audio_render_callback.h"
@@ -430,7 +428,8 @@ class AudioRendererMixerTest
  protected:
   virtual ~AudioRendererMixerTest() = default;
 
-  base::test::SingleThreadTaskEnvironment task_env_;
+  base::test::SingleThreadTaskEnvironment task_env_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<media::MockAudioRendererSink> sink_;
   std::unique_ptr<AudioRendererMixer> mixer_;
   raw_ptr<media::AudioRendererSink::RenderCallback> mixer_callback_;
@@ -445,11 +444,38 @@ class AudioRendererMixerTest
   bool half_fill_;
 };
 
-class AudioRendererMixerBehavioralTest : public AudioRendererMixerTest {};
+class AudioRendererMixerBehavioralTest : public AudioRendererMixerTest {
+ protected:
+  static constexpr base::TimeDelta kTestPauseDelay = base::Milliseconds(500);
+  static constexpr base::TimeDelta kExplicitPauseDelay =
+      base::Milliseconds(250);
 
-ACTION_P(SignalEvent, event) {
-  event->Signal();
-}
+  void EnableExplicitPauseDelay() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        media::kAudioRendererMixerImmediatePause, {{"delay", "250ms"}});
+  }
+
+  void Render() {
+    mixer_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), {},
+                            audio_bus_.get());
+  }
+
+  // Expects no sink pause just before `delay` passes and one once it does.
+  void ExpectPauseAfter(base::TimeDelta delay) {
+    EXPECT_CALL(*sink_.get(), Pause(testing::_)).Times(0);
+    task_env_.FastForwardBy(delay - base::Milliseconds(1));
+    Render();
+    testing::Mock::VerifyAndClearExpectations(sink_.get());
+
+    EXPECT_CALL(*sink_.get(),
+                Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused));
+    task_env_.FastForwardBy(base::Milliseconds(1));
+    Render();
+    testing::Mock::VerifyAndClearExpectations(sink_.get());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // Verify a mixer with no inputs returns silence for all requested frames.
 TEST_P(AudioRendererMixerTest, NoInputs) {
@@ -569,56 +595,25 @@ TEST_P(AudioRendererMixerBehavioralTest, OnRenderErrorPausedInput) {
 }
 
 // Ensure the physical stream is paused after a certain amount of time with no
-// inputs playing when paused with delay. The test will hang if the behavior is
-// incorrect.
+// inputs playing when paused with delay.
 TEST_P(AudioRendererMixerBehavioralTest, MixerPausesStream) {
-  const base::TimeDelta kPauseTime = base::Milliseconds(500);
-  // This value can't be too low or valgrind, tsan will timeout on the bots.
-  const base::TimeDelta kTestTimeout = 10 * kPauseTime;
-  mixer_->SetPauseDelayForTesting(kPauseTime);
-
-  base::WaitableEvent pause_event(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-  EXPECT_CALL(*sink_.get(),
-              Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused))
-      .WillOnce(SignalEvent(&pause_event));
+  mixer_->SetPauseDelayForTesting(kTestPauseDelay);
   InitializeInputs(1);
 
   // Ensure never playing the input results in a sink pause.
-  const base::TimeDelta kSleepTime = base::Milliseconds(100);
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  while (!pause_event.IsSignaled()) {
-    mixer_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), {},
-                            audio_bus_.get());
-    base::PlatformThread::Sleep(kSleepTime);
-    ASSERT_TRUE(base::TimeTicks::Now() - start_time < kTestTimeout);
-  }
-  testing::Mock::VerifyAndClearExpectations(sink_.get());
-  pause_event.Reset();
+  ExpectPauseAfter(kTestPauseDelay);
 
   // Playing the input for the first time should cause a sink play.
   mixer_inputs_[0]->Start();
   EXPECT_CALL(*sink_.get(), Play());
-  EXPECT_CALL(*sink_.get(),
-              Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused))
-      .WillOnce(SignalEvent(&pause_event));
   mixer_inputs_[0]->Play();
+  testing::Mock::VerifyAndClearExpectations(sink_.get());
 
   // Pause(kWaitingForData) should retain the pause delay before pausing the
   // sink.
   mixer_inputs_[0]->Pause(
       media::AudioRendererSink::PauseReason::kWaitingForData);
-  EXPECT_FALSE(pause_event.IsSignaled());
-
-  // Ensure once the input is paused with delay the sink eventually pauses.
-  start_time = base::TimeTicks::Now();
-  while (!pause_event.IsSignaled()) {
-    mixer_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), {},
-                            audio_bus_.get());
-    base::PlatformThread::Sleep(kSleepTime);
-    ASSERT_TRUE(base::TimeTicks::Now() - start_time < kTestTimeout);
-  }
+  ExpectPauseAfter(kTestPauseDelay);
 
   mixer_inputs_[0]->Stop();
 }
@@ -700,20 +695,113 @@ TEST_P(AudioRendererMixerBehavioralTest,
 // Verify that disabling kAudioRendererMixerImmediatePause falls back to the
 // delayed pause behavior on explicit pauses.
 TEST_P(AudioRendererMixerBehavioralTest, ImmediatePauseFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(media::kAudioRendererMixerImmediatePause);
-
+  feature_list_.InitAndDisableFeature(media::kAudioRendererMixerImmediatePause);
+  mixer_->SetPauseDelayForTesting(kTestPauseDelay);
   InitializeInputs(1);
-  EXPECT_CALL(*sink_.get(), Pause(testing::_)).Times(0);
+
+  mixer_inputs_[0]->Start();
+  mixer_inputs_[0]->Play();
+  // Move past the deadline set by SetPauseDelayForTesting().
+  task_env_.FastForwardBy(kTestPauseDelay);
+
+  // With the feature disabled, explicit Pause(kPlaybackPaused) should not
+  // pause before `pause_delay_` passes.
+  mixer_inputs_[0]->Pause(
+      media::AudioRendererSink::PauseReason::kPlaybackPaused);
+  ExpectPauseAfter(kTestPauseDelay);
+
+  mixer_inputs_[0]->Stop();
+}
+
+// Verify that with a positive `delay`, an explicit Pause(kPlaybackPaused) does
+// not pause the sink synchronously, and Render() pauses it once the delay
+// passes.
+TEST_P(AudioRendererMixerBehavioralTest, ExplicitPauseDelayPausesAfterDelay) {
+  EnableExplicitPauseDelay();
+  InitializeInputs(1);
 
   mixer_inputs_[0]->Start();
   mixer_inputs_[0]->Play();
 
-  // With the feature disabled, explicit Pause(kPlaybackPaused) should not
-  // immediately pause.
+  // The sink keeps running until the delay passes.
   mixer_inputs_[0]->Pause(
       media::AudioRendererSink::PauseReason::kPlaybackPaused);
+  ExpectPauseAfter(kExplicitPauseDelay);
+
   mixer_inputs_[0]->Stop();
+}
+
+// Verify that resuming playback before the explicit-pause delay expires cancels
+// the pending pause without stopping or restarting the sink.
+TEST_P(AudioRendererMixerBehavioralTest, ExplicitPauseDelayCancelledByResume) {
+  EnableExplicitPauseDelay();
+  InitializeInputs(1);
+
+  EXPECT_CALL(*sink_.get(), Pause(testing::_)).Times(0);
+  EXPECT_CALL(*sink_.get(), Play()).Times(0);
+
+  mixer_inputs_[0]->Start();
+  mixer_inputs_[0]->Play();
+
+  mixer_inputs_[0]->Pause(
+      media::AudioRendererSink::PauseReason::kPlaybackPaused);
+  task_env_.FastForwardBy(kExplicitPauseDelay / 2);
+  mixer_inputs_[0]->Play();
+
+  // Run past the original deadline.
+  task_env_.FastForwardBy(kExplicitPauseDelay);
+  Render();
+
+  mixer_inputs_[0]->Stop();
+}
+
+// Verify that Pause(kWaitingForData) keeps `pause_delay_` even when a shorter
+// explicit-pause delay is configured.
+TEST_P(AudioRendererMixerBehavioralTest,
+       WaitingForDataIgnoresExplicitPauseDelay) {
+  EnableExplicitPauseDelay();
+  mixer_->SetPauseDelayForTesting(kTestPauseDelay);
+  InitializeInputs(1);
+
+  mixer_inputs_[0]->Start();
+  mixer_inputs_[0]->Play();
+  // Move past the deadline set by SetPauseDelayForTesting().
+  task_env_.FastForwardBy(kTestPauseDelay);
+
+  // No pause at `kTestPauseDelay` - 1ms, well past `kExplicitPauseDelay`.
+  mixer_inputs_[0]->Pause(
+      media::AudioRendererSink::PauseReason::kWaitingForData);
+  ExpectPauseAfter(kTestPauseDelay);
+
+  mixer_inputs_[0]->Stop();
+}
+
+// Verify that with a positive `delay`, pausing one input does not start the
+// countdown while another input is still playing.
+TEST_P(AudioRendererMixerBehavioralTest, ExplicitPauseDelayWaitsForLastInput) {
+  EnableExplicitPauseDelay();
+  InitializeInputs(2);
+
+  mixer_inputs_[0]->Start();
+  mixer_inputs_[1]->Start();
+  mixer_inputs_[0]->Play();
+  mixer_inputs_[1]->Play();
+
+  // The second input keeps the sink running past the delay.
+  EXPECT_CALL(*sink_.get(), Pause(testing::_)).Times(0);
+  mixer_inputs_[0]->Pause(
+      media::AudioRendererSink::PauseReason::kPlaybackPaused);
+  task_env_.FastForwardBy(kExplicitPauseDelay);
+  Render();
+  testing::Mock::VerifyAndClearExpectations(sink_.get());
+
+  // The countdown starts when the last input pauses.
+  mixer_inputs_[1]->Pause(
+      media::AudioRendererSink::PauseReason::kPlaybackPaused);
+  ExpectPauseAfter(kExplicitPauseDelay);
+
+  mixer_inputs_[0]->Stop();
+  mixer_inputs_[1]->Stop();
 }
 
 INSTANTIATE_TEST_SUITE_P(
