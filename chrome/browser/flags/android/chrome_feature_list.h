@@ -364,7 +364,6 @@ BASE_DECLARE_FEATURE(kWebAppShortEdgesCutoutMode);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
 BASE_DECLARE_FEATURE(kWebUiAndroidTheming);
 BASE_DECLARE_FEATURE(kXplatSyncedSetupThemes);
-BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPageAndroid);
 // go/keep-sorted end
 // BASE_DECLARE_FEATURE_END
 

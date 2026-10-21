@@ -10642,11 +10642,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "your-saved-info-settings-page-android",
-    "owners": ["josefraska@google.com", "chrome-autofill-team@google.com"],
-    "expiry_milestone": 160
-  },
-  {
     "name": "your-saved-info-settings-page-ios",
     "owners": ["jsobiech@google.com", "chrome-autofill-team@google.com"],
     "expiry_milestone": 160

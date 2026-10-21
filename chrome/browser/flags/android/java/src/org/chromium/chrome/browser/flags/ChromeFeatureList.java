@@ -908,8 +908,6 @@ public abstract class ChromeFeatureList {
     public static final String WIDE_SCREEN_FEED_FOR_FOLDABLES = "WideScreenFeedForFoldables";
     public static final String XPLAT_SYNCED_SETUP_THEMES = "XplatSyncedSetupThemes";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
-    public static final String YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID =
-            "YourSavedInfoSettingsPageAndroid";
 
     // keep-sorted end
     // LINT.ThenChange(//chrome/browser/flags/android/chrome_feature_list.cc:FeaturesExposedToJava)
