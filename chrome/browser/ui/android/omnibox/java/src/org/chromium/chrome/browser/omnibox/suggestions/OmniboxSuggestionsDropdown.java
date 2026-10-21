@@ -69,7 +69,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private final Handler mHandler;
     private final OmniboxViewHolderFactory mViewHolderFactory;
     private final PreWarmingRecycledViewPool mRecycledViewPool;
+    private final HeaderDecoration mHeaderDecoration;
 
+    private @Nullable SuggestionsOmtOverlayView mOmtOverlayView;
     private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
     private @Nullable GestureObserver mGestureObserver;
     private @Nullable NavigationListener mNavigationListener;
@@ -79,7 +81,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     private @Px int mBaseBottomPadding;
     private @Px int mBaseTopPadding;
-    private final HeaderDecoration mHeaderDecoration;
     private @TraversalMode int mSelectionMode;
 
     /**
@@ -119,6 +120,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         private @Nullable Runnable mSuggestionDropdownOverscrolledToTopListener;
         private @Nullable Callback<Integer> mScrollOffsetListener;
 
+        // TODO(https://crbug.com/568621837): Extract SuggestionLayoutScrollListener out of
+        // OmniboxSuggestionsDropdown into its own top-level file.
         public SuggestionLayoutScrollListener(Context context) {
             super(context);
             mIsScrolledToTop = true;
@@ -283,6 +286,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             mSuggestionDropdownOverscrolledToTopListener = listener;
         }
 
+        /**
+         * @param listener A listener invoked with the computed vertical scroll offset whenever the
+         *     list scrolls vertically.
+         */
         public void setScrollOffsetListener(Callback<Integer> listener) {
             mScrollOffsetListener = listener;
         }
@@ -377,6 +384,23 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         mLayoutScrollListener.updateVisualScrollState();
     }
 
+    @Override
+    protected void onVisibilityChanged(View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+        if (mOmtOverlayView != null) {
+            // onVisibilityChanged is dispatched by the Android framework whenever this dropdown's
+            // visibility changes (via setVisibility) or whenever any ancestor container's
+            // visibility changes (e.g. parent container hidden/shown). Window-level visibility
+            // changes do not require explicit dropdown handling because:
+            // 1. Omnibox coordinator/mediator explicitly dismisses suggestions (setting dropdown
+            //    visibility to GONE) when the window loses focus or the activity pauses.
+            // 2. The overlay is a SurfaceView whose underlying platform surface is automatically
+            //    destroyed via surfaceDestroyed() when the window is hidden, cleanly unregistering
+            //    the native input receiver.
+            mOmtOverlayView.updateOverlayVisualState();
+        }
+    }
+
     /** Get the Android View implementing suggestion list. */
     public ViewGroup getViewGroup() {
         return this;
@@ -384,6 +408,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     /** Clean up resources and remove observers installed by this class. */
     public void destroy() {
+        if (mOmtOverlayView != null) {
+            mOmtOverlayView.destroy();
+            mOmtOverlayView = null;
+        }
         mRecycledViewPool.clear();
         mGestureObserver = null;
     }
@@ -491,6 +519,25 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             getChildAt(i).setAlpha(alpha);
         }
         invalidateItemDecorations();
+    }
+
+    @Override
+    public void dispatchWindowFocusChanged(boolean hasWindowFocus) {
+        // When transferring a touch gesture from the background thread overlay SurfaceControl
+        // to the main Chrome window via transferTouchGesture, a transient window focus loss is
+        // reported on the main window.
+        // Standard View.onWindowFocusChanged(false) reacts to this by clearing the pressed state
+        // and cancelling pending tap runnables (prepress check), causing the first tap to be
+        // dropped.
+        // To prevent this cancellation, we ignore focus loss events on the dropdown subtree
+        // while a touch transfer is active.
+        if (!hasWindowFocus && mOmtOverlayView != null && mOmtOverlayView.isTouchTransferActive()) {
+            return;
+        }
+        super.dispatchWindowFocusChanged(hasWindowFocus);
+        if (mOmtOverlayView != null) {
+            mOmtOverlayView.updateOverlayVisualState();
+        }
     }
 
     @Override
@@ -628,6 +675,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 mGestureObserver.onGesture(eventType == MotionEvent.ACTION_UP, ev.getEventTime());
             }
         }
+        if (mOmtOverlayView != null
+                && (eventType == MotionEvent.ACTION_UP || eventType == MotionEvent.ACTION_CANCEL)) {
+            mOmtOverlayView.onGestureEnded();
+        }
         return super.dispatchTouchEvent(ev);
     }
 
@@ -692,5 +743,14 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     SelectionController getSelectionControllerForTesting() {
         return mSelectionController;
+    }
+
+    /** Sets the active OMT overlay SurfaceView instance. */
+    void setOmtOverlayView(@Nullable SuggestionsOmtOverlayView view) {
+        mOmtOverlayView = view;
+    }
+
+    @Nullable SuggestionsOmtOverlayView getOmtOverlayViewForTesting() {
+        return mOmtOverlayView;
     }
 }

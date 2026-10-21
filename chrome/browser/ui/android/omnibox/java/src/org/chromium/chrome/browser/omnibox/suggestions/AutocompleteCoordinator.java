@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteStopReason;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
@@ -231,6 +232,11 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         mLocationBarEmbedder = locationBarEmbedder;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mViewProvider = new SuggestionListViewHolderProvider(new ModelList());
+        mViewProvider.whenLoaded(
+                (holder) -> {
+                    mContainer = holder.container;
+                    mDropdown = holder.dropdown;
+                });
     }
 
     /** Clean up resources used by this class. */
@@ -302,6 +308,13 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
                     (OmniboxSuggestionsContainer) container;
             OmniboxSuggestionsDropdown dropdown =
                     container.findViewById(R.id.omnibox_suggestions_dropdown);
+
+            if (OmniboxFeatures.isPrefetchSelectedSuggestionsOmtAndroidEnabled()) {
+                SuggestionsOmtOverlayView overlay =
+                        new SuggestionsOmtOverlayView(container.getContext(), dropdown);
+                overlay.attachToParent(suggestionsContainer);
+                dropdown.setOmtOverlayView(overlay);
+            }
 
             dropdown.setModelList(mListItems);
             mHolder = new SuggestionListViewHolder(suggestionsContainer, dropdown);

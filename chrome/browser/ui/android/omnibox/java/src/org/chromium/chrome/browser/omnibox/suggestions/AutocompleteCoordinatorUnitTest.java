@@ -6,13 +6,18 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -26,15 +31,21 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.Supplier;
@@ -79,6 +90,7 @@ public class AutocompleteCoordinatorUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
+    private Context mContext;
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private final MonotonicObservableSupplier<Profile> mProfileObservableSupplier =
             ObservableSuppliers.alwaysNull();
@@ -95,14 +107,14 @@ public class AutocompleteCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        Context context =
+        mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
 
-        mParentView = new FrameLayout(context);
-        mSuggestionsContainer = new TestOmniboxSuggestionsContainer(context);
-        mSuggestionsDropdown = new TestOmniboxSuggestionsDropdown(context);
+        mParentView = new FrameLayout(mContext);
+        mSuggestionsContainer = new TestOmniboxSuggestionsContainer(mContext);
+        mSuggestionsDropdown = new TestOmniboxSuggestionsDropdown(mContext);
 
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(
@@ -194,6 +206,71 @@ public class AutocompleteCoordinatorUnitTest {
 
         mSuggestionsDropdown.mIsShown = true;
         assertTrue(mAutocompleteCoordinator.isServingSuggestions());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_PREFETCH_SELECTED_SUGGESTIONS_OMT_ANDROID)
+    public void testOmtOverlay_notCreatedWhenFeatureDisabled() {
+        AutocompleteCoordinator coordinator = createCoordinatorWithSuggestionsStub();
+
+        OmniboxSuggestionsContainer container = coordinator.getSuggestionsContainer();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNotNull(container);
+        OmniboxSuggestionsDropdown dropdown =
+                (OmniboxSuggestionsDropdown) coordinator.getSuggestionsDropdown();
+        assertNotNull(dropdown);
+        assertNull(dropdown.getOmtOverlayViewForTesting());
+        assertEquals(1, container.getChildCount());
+        assertEquals(dropdown, container.getChildAt(0));
+
+        coordinator.destroy();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_PREFETCH_SELECTED_SUGGESTIONS_OMT_ANDROID)
+    public void testOmtOverlay_createdAndDestroyedWhenFeatureEnabled() throws Exception {
+        AutocompleteCoordinator coordinator = createCoordinatorWithSuggestionsStub();
+
+        OmniboxSuggestionsContainer container = coordinator.getSuggestionsContainer();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNotNull(container);
+        OmniboxSuggestionsDropdown dropdown =
+                (OmniboxSuggestionsDropdown) coordinator.getSuggestionsDropdown();
+        assertNotNull(dropdown);
+        SuggestionsOmtOverlayView overlay = dropdown.getOmtOverlayViewForTesting();
+        assertNotNull(overlay);
+        assertEquals(container, overlay.getParent());
+        assertEquals(2, container.getChildCount());
+        assertTrue(overlay.getInputThreadForTesting().isAlive());
+
+        coordinator.destroy();
+
+        assertNull(coordinator.getSuggestionsContainerForTest());
+        assertNull(dropdown.getOmtOverlayViewForTesting());
+        assertNull(overlay.getParent());
+        overlay.getInputThreadForTesting().join();
+        assertFalse(overlay.getInputThreadForTesting().isAlive());
+    }
+
+    private AutocompleteCoordinator createCoordinatorWithSuggestionsStub() {
+        int inflatedId = View.generateViewId();
+        AsyncViewStub stub = new AsyncViewStub(mContext, null);
+        stub.setLayoutResource(R.layout.suggestions_result_container);
+        stub.setInflatedId(inflatedId);
+        mParentView.addView(stub);
+        when(mLocationBarEmbedder.getSuggestionsContainerStub()).thenReturn(stub);
+        when(mLocationBarEmbedder.getSuggestionsContainerInflatedViewId()).thenReturn(inflatedId);
+        return new AutocompleteCoordinator(
+                mParentView,
+                mAutocompleteMediator,
+                mProfileObservableSupplier,
+                mLocationBarEmbedder,
+                mModalDialogManagerSupplier,
+                mResourceProvider);
     }
 
     private boolean sendKeyDownEvent(int keyCode, int metaState) {
