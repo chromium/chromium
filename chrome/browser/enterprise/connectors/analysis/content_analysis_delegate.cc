@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -752,8 +753,10 @@ bool ContentAnalysisDelegate::ShowFinalResultInDialog() {
         NOTREACHED();
     }
 #else
-    // TODO(b/325455508): Add handling for copy trigger on Android later.
-    return false;
+    // Clipboard copy scanning isn't supported on Android: it is only wired up
+    // behind BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS), so no COPY delegate is
+    // ever created there.
+    NOTREACHED();
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 
