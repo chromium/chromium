@@ -1287,7 +1287,7 @@ class OmniboxPopupPermissionBrowserTest : public InProcessBrowserTest {
     popup_view->presenter()->Show();
     location_bar->GetOmniboxController()->popup_state_manager()->SetPopupState(
         OmniboxPopupState::kClassic);
-    return popup_view->presenter()->get_widget_for_testing();
+    return popup_view->presenter()->GetWidget();
   }
 
   void SetBrowserBounds(const gfx::Rect& bounds) {

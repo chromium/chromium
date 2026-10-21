@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUIFullV2Test,
   ASSERT_TRUE(presenter);
 
   presenter->Show();
-  views::Widget* widget = presenter->get_widget_for_testing();
+  views::Widget* widget = presenter->GetWidget();
   ASSERT_TRUE(widget);
 
   const gfx::Rect location_bar_bounds = location_bar()->BoundsInScreen();
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupDimensionsTest, DimensionsAndAnchoring) {
   auto* presenter = popup_view->presenter();
   ASSERT_TRUE(presenter);
 
-  views::Widget* widget = presenter->get_widget_for_testing();
+  views::Widget* widget = presenter->GetWidget();
   ASSERT_TRUE(widget);
 
   gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, MAYBE_PopupResizeWindow) {
       location_bar()->GetOmniboxPopupView());
   ASSERT_TRUE(popup_view);
 
-  views::Widget* widget = popup_view->presenter()->get_widget_for_testing();
+  views::Widget* widget = popup_view->presenter()->GetWidget();
   ASSERT_TRUE(widget);
 
   // Resize window smaller.

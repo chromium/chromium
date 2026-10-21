@@ -174,8 +174,6 @@ class OmniboxPopupPresenterBase
                                          const gfx::Size& prompt_size) override;
   OmniboxController* GetOmniboxController() override;
 
-  views::Widget* get_widget_for_testing() { return widget_.get(); }
-
   views::Widget* GetWidget() const { return widget_.get(); }
 
   void set_widget_for_testing(std::unique_ptr<views::Widget> widget) {
