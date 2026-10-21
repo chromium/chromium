@@ -41,7 +41,6 @@ namespace {
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Invoke;
-using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::ReturnPointee;
 
@@ -991,10 +990,9 @@ TEST_F(ResultWatcherTest, PollCompletesQuickly) {
 
   MockResultWatcher result_watcher(result_file, 2);
   EXPECT_CALL(result_watcher, WaitWithTimeout(_))
-      .WillOnce(DoAll(InvokeWithoutArgs([&] {
-                        task_environment.AdvanceClock(Milliseconds(1500));
-                      }),
-                      Return(true)));
+      .WillOnce(
+          DoAll([&] { task_environment.AdvanceClock(Milliseconds(1500)); },
+                Return(true)));
 
   Time start = Time::Now();
   ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));

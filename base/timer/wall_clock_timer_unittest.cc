@@ -86,11 +86,10 @@ TEST_F(WallClockTimerTest, UseTimerTwiceInRow) {
   constexpr auto delay = base::Minutes(1);
   wall_clock_timer.Start(FROM_HERE, clock_.Now() + delay, first_callback.Get());
   EXPECT_CALL(first_callback, Run())
-      .WillOnce(::testing::InvokeWithoutArgs(
-          [this, &wall_clock_timer, &second_callback, delay] {
-            wall_clock_timer.Start(FROM_HERE, clock_.Now() + delay,
-                                   second_callback.Get());
-          }));
+      .WillOnce([this, &wall_clock_timer, &second_callback, delay] {
+        wall_clock_timer.Start(FROM_HERE, clock_.Now() + delay,
+                               second_callback.Get());
+      });
 
   FastForwardBy(delay);
   ::testing::Mock::VerifyAndClearExpectations(&first_callback);
