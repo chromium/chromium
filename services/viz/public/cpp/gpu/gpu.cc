@@ -73,6 +73,7 @@ class Gpu::GpuPtrIO {
   void ConnectionError();
   void OnEstablishedGpuChannel(
       int client_id,
+      const mojom::GpuClientType client_type,
       mojo::ScopedMessagePipeHandle channel_handle,
       const gpu::GPUInfo& gpu_info,
       const gpu::GpuFeatureInfo& gpu_feature_info,
@@ -223,6 +224,7 @@ void Gpu::GpuPtrIO::ConnectionError() {
 
 void Gpu::GpuPtrIO::OnEstablishedGpuChannel(
     int client_id,
+    const mojom::GpuClientType client_type,
     mojo::ScopedMessagePipeHandle channel_handle,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info,
@@ -233,8 +235,8 @@ void Gpu::GpuPtrIO::OnEstablishedGpuChannel(
   scoped_refptr<gpu::GpuChannelHost> gpu_channel;
   if (channel_handle.is_valid()) {
     gpu_channel = gpu::GpuChannelHost::Create(
-        client_id, gpu_info, gpu_feature_info, shared_image_capabilities,
-        std::move(channel_handle));
+        client_id, client_type, gpu_info, gpu_feature_info,
+        shared_image_capabilities, std::move(channel_handle));
     // `GPUChannelHost::Create()` can't fail, since we pass in `gpu_info` etc
     // directly instead of requesting the info from the GPU process (which can
     // fail).
@@ -266,6 +268,7 @@ Gpu::Gpu(mojo::PendingRemote<mojom::Gpu> gpu_remote,
 
 void Gpu::PreestablishChannel(
     int client_id,
+    mojom::GpuClientType client_type,
     mojo::ScopedMessagePipeHandle initial_channel_handle,
     gpu::GpuChannelEstablishedCallback callback) {
   CHECK(base::FeatureList::IsEnabled(features::kSendGPUChannelEarly));
@@ -277,8 +280,8 @@ void Gpu::PreestablishChannel(
 
   pending_initial_gpu_channel_builder_ =
       gpu::GpuChannelHost::Builder::CreateAndGetGPUInfo(
-          base::PassKey<Gpu>(), client_id, std::move(initial_channel_handle),
-          io_task_runner_,
+          base::PassKey<Gpu>(), client_id, client_type,
+          std::move(initial_channel_handle), io_task_runner_,
           base::BindOnce(&Gpu::CompleteInitialChannelCreation,
                          weak_ptr_factory_.GetWeakPtr()));
 }
@@ -307,11 +310,12 @@ std::unique_ptr<Gpu> Gpu::CreateWithMessagePipe(
     mojo::PendingRemote<mojom::Gpu> remote,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     int client_id,
+    mojom::GpuClientType client_type,
     mojo::ScopedMessagePipeHandle channel_handle,
     gpu::GpuChannelEstablishedCallback callback) {
   auto gpu =
       base::WrapUnique(new Gpu(std::move(remote), std::move(io_task_runner)));
-  gpu->PreestablishChannel(client_id, std::move(channel_handle),
+  gpu->PreestablishChannel(client_id, client_type, std::move(channel_handle),
                            std::move(callback));
 
   return gpu;

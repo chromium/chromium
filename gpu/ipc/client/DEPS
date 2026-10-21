@@ -4,6 +4,7 @@ include_rules = [
   "+mojo/public",
   "+ui/base",
   "+ui/latency",
+  "+services/viz/privileged/mojom/gl/gpu_client_type.mojom.h",
 ]
 
 specific_include_rules = {

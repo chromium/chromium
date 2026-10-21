@@ -543,7 +543,7 @@ void RenderThreadImpl::Init() {
         command_line.GetSwitchValueASCII(switches::kGpuClientId), &client_id));
     gpu_ = viz::Gpu::CreateWithMessagePipe(
         std::move(remote_gpu), GetIOTaskRunner(), client_id,
-        std::move(initial_gpu_channel),
+        viz::mojom::GpuClientType::kRenderer, std::move(initial_gpu_channel),
         std::move(gpu_channel_established_callback));
   } else {
     // In the standard path, we create a new pipe and ask the browser to

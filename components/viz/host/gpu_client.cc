@@ -220,7 +220,8 @@ void GpuClient::OnEstablishGpuChannel(
 
   if (callback_) {
     // A request is waiting.
-    std::move(callback_).Run(client_id_, std::move(channel_handle), gpu_info,
+    std::move(callback_).Run(client_id_, client_type_,
+                             std::move(channel_handle), gpu_info,
                              gpu_feature_info, shared_image_capabilities);
     return;
   }
@@ -240,9 +241,9 @@ void GpuClient::ClearCallback() {
   if (!callback_)
     return;
   EstablishGpuChannelCallback callback = std::move(callback_);
-  std::move(callback).Run(client_id_, mojo::ScopedMessagePipeHandle(),
-                          gpu::GPUInfo(), gpu::GpuFeatureInfo(),
-                          gpu::SharedImageCapabilities());
+  std::move(callback).Run(
+      client_id_, client_type_, mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
+      gpu::GpuFeatureInfo(), gpu::SharedImageCapabilities());
 }
 
 void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
@@ -263,7 +264,8 @@ void GpuClient::EstablishGpuChannelWithReason(
     //   2) if callback is empty, it's InitializeGpuChannelForNewRenderer()
     //   being called more than once, no need to do anything.
     if (callback) {
-      std::move(callback).Run(client_id_, std::move(channel_handle_), gpu_info_,
+      std::move(callback).Run(client_id_, client_type_,
+                              std::move(channel_handle_), gpu_info_,
                               gpu_feature_info_, shared_image_capabilities_);
       DCHECK(!channel_handle_.is_valid());
     }
@@ -283,8 +285,9 @@ void GpuClient::EstablishGpuChannelWithReason(
 
   if (!gpu_host) {
     if (callback) {
-      std::move(callback).Run(client_id_, mojo::ScopedMessagePipeHandle(),
-                              gpu::GPUInfo(), gpu::GpuFeatureInfo(),
+      std::move(callback).Run(client_id_, client_type_,
+                              mojo::ScopedMessagePipeHandle(), gpu::GPUInfo(),
+                              gpu::GpuFeatureInfo(),
                               gpu::SharedImageCapabilities());
     }
     return;

@@ -154,6 +154,7 @@ IN_PROC_BROWSER_TEST_F(InitialGpuChannelBrowserTest,
   auto ignore_args = [](base::OnceClosure closure) {
     return base::BindOnce(
         [](base::OnceClosure closure, int32_t client_id,
+           viz::mojom::GpuClientType client_type,
            mojo::ScopedMessagePipeHandle channel_handle,
            const gpu::GPUInfo& gpu_info,
            const gpu::GpuFeatureInfo& gpu_feature_info,
@@ -196,6 +197,7 @@ IN_PROC_BROWSER_TEST_F(InitialGpuChannelBrowserTest,
     base::test::TestFuture<bool> establish_future;
     gpu_client->EstablishGpuChannel(base::BindOnce(
         [](base::OnceCallback<void(bool)> callback, int32_t client_id,
+           viz::mojom::GpuClientType client_type,
            mojo::ScopedMessagePipeHandle channel_handle,
            const gpu::GPUInfo& gpu_info,
            const gpu::GpuFeatureInfo& gpu_feature_info,

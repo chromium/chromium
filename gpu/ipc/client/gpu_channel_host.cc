@@ -33,13 +33,14 @@ namespace gpu {
 
 scoped_refptr<GpuChannelHost> GpuChannelHost::Create(
     int channel_id,
+    const viz::mojom::GpuClientType client_type,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const gpu::SharedImageCapabilities& shared_image_capabilities,
     mojo::ScopedMessagePipeHandle handle,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
   auto host = base::WrapRefCounted(new GpuChannelHost(
-      channel_id, std::move(handle), std::move(io_task_runner)));
+      channel_id, client_type, std::move(handle), std::move(io_task_runner)));
   host->SetInfo(gpu_info, gpu_feature_info, shared_image_capabilities);
   return host;
 }
@@ -48,22 +49,24 @@ scoped_refptr<GpuChannelHost> GpuChannelHost::Create(
 GpuChannelHost::Builder GpuChannelHost::Builder::CreateAndGetGPUInfo(
     base::PassKey<viz::Gpu> pass_key,
     int channel_id,
+    const viz::mojom::GpuClientType client_type,
     mojo::ScopedMessagePipeHandle handle,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     base::OnceCallback<void(const gpu::GPUInfo&,
                             const gpu::GpuFeatureInfo&,
                             const gpu::SharedImageCapabilities&)> callback) {
-  Builder builder(channel_id, std::move(handle), io_task_runner);
+  Builder builder(channel_id, client_type, std::move(handle), io_task_runner);
   builder.GetGPUInfo(std::move(callback));
   return builder;
 }
 
 GpuChannelHost::Builder::Builder(
     int channel_id,
+    const viz::mojom::GpuClientType client_type,
     mojo::ScopedMessagePipeHandle handle,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
   host_ = base::WrapRefCounted(new GpuChannelHost(
-      channel_id, std::move(handle),
+      channel_id, client_type, std::move(handle),
       io_task_runner ? io_task_runner
                      : base::SingleThreadTaskRunner::GetCurrentDefault()));
 }
@@ -113,12 +116,14 @@ bool GpuChannelHost::Builder::IsLost() const {
 
 GpuChannelHost::GpuChannelHost(
     int channel_id,
+    const viz::mojom::GpuClientType client_type,
     mojo::ScopedMessagePipeHandle handle,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : io_thread_(io_task_runner
                      ? io_task_runner
                      : base::SingleThreadTaskRunner::GetCurrentDefault()),
       channel_id_(channel_id),
+      client_type_(client_type),
       listener_(nullptr, base::OnTaskRunnerDeleter(io_thread_)),
       connection_tracker_(base::MakeRefCounted<ConnectionTracker>()),
       sync_point_graph_validation_enabled_(

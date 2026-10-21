@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "services/viz/privileged/mojom/gl/gpu_client_type.mojom.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace IPC {
@@ -70,6 +71,7 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
   // will never return nullptr.
   static scoped_refptr<GpuChannelHost> Create(
       int channel_id,
+      const viz::mojom::GpuClientType client_type,
       const gpu::GPUInfo& gpu_info,
       const gpu::GpuFeatureInfo& gpu_feature_info,
       const gpu::SharedImageCapabilities& shared_image_capabilities,
@@ -87,6 +89,7 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
     static Builder CreateAndGetGPUInfo(
         base::PassKey<viz::Gpu> pass_key,
         int channel_id,
+        const viz::mojom::GpuClientType client_type,
         mojo::ScopedMessagePipeHandle handle,
         scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
         base::OnceCallback<void(const gpu::GPUInfo&,
@@ -117,6 +120,7 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
     friend class GpuChannelHost;
 
     Builder(int channel_id,
+            const viz::mojom::GpuClientType client_type,
             mojo::ScopedMessagePipeHandle handle,
             scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
@@ -134,6 +138,7 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
   bool IsLost() const { return !connection_tracker_->is_connected(); }
 
   int channel_id() const { return channel_id_; }
+  viz::mojom::GpuClientType client_type() const { return client_type_; }
 
   const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner() {
     return io_thread_;
@@ -252,6 +257,7 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
 
   GpuChannelHost(
       int channel_id,
+      const viz::mojom::GpuClientType client_type,
       mojo::ScopedMessagePipeHandle handle,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner = nullptr);
 
@@ -365,6 +371,7 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
   const scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
 
   const int channel_id_;
+  const viz::mojom::GpuClientType client_type_;
   gpu::GPUInfo gpu_info_;
   gpu::GpuFeatureInfo gpu_feature_info_;
 

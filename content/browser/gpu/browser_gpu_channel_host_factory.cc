@@ -212,8 +212,9 @@ void BrowserGpuChannelHostFactory::EstablishRequest::OnEstablished(
   if (status == viz::GpuHostImpl::EstablishChannelStatus::kSuccess &&
       channel_handle.is_valid()) {
     gpu_channel_ = gpu::GpuChannelHost::Create(
-        gpu_client_id_, gpu_info, gpu_feature_info, shared_image_capabilities,
-        std::move(channel_handle), GetIOThreadTaskRunner({}));
+        gpu_client_id_, viz::mojom::GpuClientType::kBrowser, gpu_info,
+        gpu_feature_info, shared_image_capabilities, std::move(channel_handle),
+        GetIOThreadTaskRunner({}));
     // `GPUChannelHost::Create()` can't fail, since we pass in `gpu_info` etc
     // directly instead of requesting the info from the GPU process (which can
     // fail).

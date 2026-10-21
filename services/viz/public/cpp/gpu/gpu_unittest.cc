@@ -67,9 +67,9 @@ class TestGpuImpl : public mojom::Gpu {
       gpu_channel_handle_ = std::move(message_pipe.handle1);
     }
 
-    std::move(callback).Run(client_id, std::move(handle), gpu::GPUInfo(),
-                            gpu::GpuFeatureInfo(),
-                            gpu::SharedImageCapabilities());
+    std::move(callback).Run(
+        client_id, mojom::GpuClientType::kRenderer, std::move(handle),
+        gpu::GPUInfo(), gpu::GpuFeatureInfo(), gpu::SharedImageCapabilities());
   }
 
   void BindGpuChannel(mojo::ScopedMessagePipeHandle handle) {
@@ -431,7 +431,8 @@ class InitialGpuChannelTest : public GpuTest {
 
     gpu_ = Gpu::CreateWithMessagePipe(
         GetRemote(), io_thread().task_runner(), /*client_id=*/1,
-        std::move(message_pipe.handle0), base::DoNothingWithBoundArgs());
+        mojom::GpuClientType::kRenderer, std::move(message_pipe.handle0),
+        base::DoNothingWithBoundArgs());
 
     io_thread().task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&TestGpuImpl::BindGpuChannel,

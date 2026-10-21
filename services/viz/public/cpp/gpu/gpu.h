@@ -39,6 +39,7 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
       mojo::PendingRemote<mojom::Gpu> remote,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       int client_id,
+      mojom::GpuClientType client_type,
       mojo::ScopedMessagePipeHandle channel_handle,
       gpu::GpuChannelEstablishedCallback callback);
 
@@ -71,6 +72,7 @@ class Gpu : public gpu::GpuChannelEstablishFactory {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   void PreestablishChannel(int client_id,
+                           mojom::GpuClientType client_type,
                            mojo::ScopedMessagePipeHandle initial_channel_handle,
                            gpu::GpuChannelEstablishedCallback callback);
 

@@ -69,6 +69,7 @@ mojom("mojom") {
     "//gpu/ipc/common:interfaces",
     "//media/mojo/mojom:video_encode",
     "//mojo/public/mojom/base",
+    "//services/viz/privileged/mojom/gl:gpu_client_type",
     "//services/viz/public/mojom/compositing:shared_image_format",
     "//services/viz/public/mojom/compositing/internal:singleplanar_format",
     "//skia/public/mojom",

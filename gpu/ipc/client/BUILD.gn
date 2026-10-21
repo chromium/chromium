@@ -40,5 +40,6 @@ component("client") {
   public_deps = [
     "//gpu/ipc/common",
     "//ipc",
+    "//services/viz/privileged/mojom/gl:gpu_client_type",
   ]
 }

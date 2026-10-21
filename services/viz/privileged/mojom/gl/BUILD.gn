@@ -8,6 +8,8 @@ import("//media/gpu/args.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("gpu_client_type") {
+  generate_blink = true
+  generate_java = true
   sources = [ "gpu_client_type.mojom" ]
 }
 

@@ -33,6 +33,7 @@ class TestGpuChannelHost : public gpu::GpuChannelHost {
  public:
   explicit TestGpuChannelHost(gpu::mojom::GpuChannel& gpu_channel)
       : GpuChannelHost(/*channel_id=*/0,
+                       viz::mojom::GpuClientType::kBrowser,
                        mojo::ScopedMessagePipeHandle(
                            mojo::MessagePipeHandle(mojo::kInvalidHandleValue))),
         gpu_channel_(gpu_channel) {}
