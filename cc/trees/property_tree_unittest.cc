@@ -659,12 +659,12 @@ TEST(PropertyTreeTest, ScreenSpaceOpacityUpdateTest) {
   EXPECT_EQ(tree.MutableNode(child).screen_space_opacity, 1.f);
   tree.MutableNode(parent).opacity = 0.5f;
   tree.set_needs_update(true);
-  draw_property_utils::ComputeEffects(&tree);
+  draw_property_utils::ComputeEffects(&tree, 1.f);
   EXPECT_EQ(tree.MutableNode(child).screen_space_opacity, 0.5f);
 
   tree.MutableNode(child).opacity = 0.5f;
   tree.set_needs_update(true);
-  draw_property_utils::ComputeEffects(&tree);
+  draw_property_utils::ComputeEffects(&tree, 1.f);
   EXPECT_EQ(tree.MutableNode(child).screen_space_opacity, 0.25f);
 }
 
@@ -732,7 +732,7 @@ TEST(EffectTreeTest, CopyOutputRequestsAreTransformed) {
   effect_node.render_surface_reason = RenderSurfaceReason::kTest;
   effect_node.transform_id = contents_root.id;
   effect_node.id = effect_tree.Insert(effect_node, 0);
-  effect_tree.UpdateEffects(effect_node.id);
+  effect_tree.UpdateEffects(effect_node.id, 1.f);
 
   // A CopyOutputRequest with only its area set should be transformed into one
   // that is scaled by two. In this case, by specifying no result selection, the
@@ -829,7 +829,7 @@ TEST(EffectTreeTest, CopyOutputRequestsThatBecomeIllegalAreDropped) {
   effect_node.render_surface_reason = RenderSurfaceReason::kTest;
   effect_node.transform_id = contents_root.id;
   effect_node.id = effect_tree.Insert(effect_node, 0);
-  effect_tree.UpdateEffects(effect_node.id);
+  effect_tree.UpdateEffects(effect_node.id, 1.f);
 
   auto request_in = CopyOutputRequest::CreateStubForTesting();
   request_in->set_area(gfx::Rect(10, 20, 30, 40));
@@ -1334,7 +1334,7 @@ TEST(EffectTreeTest, GetRoundedCornersForHitTestRoundedCornerWithMaskingChild) {
   mask_layer.blend_mode = SkBlendMode::kDstIn;
   const int mask_layer_id =
       helper.InsertEffectNode(rounded_frame_id, mask_layer);
-  helper.effect_tree().UpdateEffects(mask_layer_id);
+  helper.effect_tree().UpdateEffects(mask_layer_id, 1.f);
   ASSERT_TRUE(helper.effect_tree().Node(rounded_frame_id).has_masking_child);
 
   const int current_effect_id = helper.InsertEffectNode(rounded_frame_id);
@@ -1425,7 +1425,7 @@ TEST(EffectTreeTest, AnimationDamageTracking) {
   EXPECT_EQ(tree.Node(child_node.id).opacity, 0.5f);
 
   // Updating effects propagates kCompositorAnimation down the subtree.
-  draw_property_utils::ComputeEffects(&tree);
+  draw_property_utils::ComputeEffects(&tree, 1.f);
   EXPECT_TRUE(tree.Node(grand_child_node.id).effect_changed());
   EXPECT_EQ(tree.Node(grand_child_node.id).damage_reasons(),
             DamageReasonSet{DamageReason::kCompositorAnimation});
@@ -1461,7 +1461,7 @@ TEST(EffectTreeTest, AnimationDamageTracking) {
   tree.MutableNode(grand_child_node.id)
       .SetEffectChanged(DamageReason::kUntracked);
   tree.set_needs_update(true);
-  draw_property_utils::ComputeEffects(&tree);
+  draw_property_utils::ComputeEffects(&tree, 1.f);
   EXPECT_TRUE(tree.Node(grand_child_node.id).effect_changed());
   DamageReasonSet expected_union;
   expected_union.Put(DamageReason::kUntracked);

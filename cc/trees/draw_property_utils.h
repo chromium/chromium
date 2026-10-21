@@ -42,8 +42,10 @@ void CC_EXPORT
 ComputeTransforms(TransformTree* transform_tree,
                   const ViewportPropertyIds& viewport_property_ids);
 
-// Computes screen space opacity for every node in the opacity tree.
-void CC_EXPORT ComputeEffects(EffectTree* effect_tree);
+// Computes effect properties, including surface scales, for every effect node.
+// The caller must invalidate the effect tree when external scale changes.
+void CC_EXPORT ComputeEffects(EffectTree* effect_tree,
+                              float external_page_scale_factor);
 
 void CC_EXPORT UpdatePropertyTrees(LayerTreeHost* layer_tree_host);
 

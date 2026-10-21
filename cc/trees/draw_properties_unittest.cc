@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
@@ -8009,111 +8010,114 @@ TEST_F(DrawPropertiesTest, SublayerScaleWithTransformNodeBetweenTwoTargets) {
   EXPECT_EQ(gfx::Rect(15, 15), test_layer->visible_layer_rect());
 }
 
-// Like page_scale_factor for the main frame, external_page_scale_factor
-// magnifies an OOPIF's raster resolution but not its geometry, so a non-root
-// effect surface (opacity/filter/mask) must be sized at that scale to keep text
-// crisp. The root surface is left unmagnified.
-TEST_F(DrawPropertiesTest, OopifNonRootEffectSurfaceSizedAtExternalPageScale) {
+class OopifEffectSurfaceScaleTest
+    : public DrawPropertiesTest,
+      public testing::WithParamInterface<
+          std::tuple<float, RenderSurfaceReason, float, float, float>> {};
+
+TEST_P(OopifEffectSurfaceScaleTest, UpdatedOnMain) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kSizeOopifEffectSurfacesAtExternalScale);
+  const auto [local_scale, surface_reason, expected_scale_at_1,
+              expected_scale_at_2, expected_scale_at_0_9] = GetParam();
 
-  LayerImpl* root = root_layer();
-  LayerImpl* render_surface = AddLayerInActiveTree<LayerImpl>();
-  LayerImpl* test_layer = AddLayerInActiveTree<LayerImpl>();
-
+  // Main-thread property hierarchy: OOPIF root -> effect surface -> content.
+  auto root = Layer::Create();
+  auto surface = Layer::Create();
+  auto content = Layer::Create();
   root->SetBounds(gfx::Size(30, 30));
-  render_surface->SetBounds(gfx::Size(30, 30));
-  test_layer->SetBounds(gfx::Size(30, 30));
-  test_layer->SetDrawsContent(true);
+  surface->SetBounds(gfx::Size(30, 30));
+  content->SetBounds(gfx::Size(30, 30));
+  content->SetIsDrawable(true);
+  root->AddChild(surface);
+  root->AddChild(content);
+  host()->SetRootLayer(root);
 
-  CopyProperties(root, render_surface);
-  CreateEffectNode(render_surface).render_surface_reason =
-      RenderSurfaceReason::kTest;
-  CopyProperties(render_surface, test_layer);
+  SetupRootProperties(root.get());
+  CopyProperties(root.get(), surface.get());
+  CreateTransformNode(surface.get()).local.Scale(local_scale, local_scale);
+  CreateEffectNode(surface.get()).render_surface_reason = surface_reason;
+  CopyProperties(surface.get(), content.get());
+  UpdateMainDrawProperties();
+  EXPECT_EQ(gfx::Vector2dF(expected_scale_at_1, expected_scale_at_1),
+            GetEffectNode(surface.get())->surface_contents_scale);
 
-  host_impl()->active_tree()->SetExternalPageScaleFactor(2.f);
-  UpdateActiveTreeDrawProperties();
+  // Verify that external-scale changes invalidate and recompute main-thread
+  // surface scales, preserve the root scale, and carry the result through
+  // commit/activation. An explicitly requested impl-side recomputation must
+  // also use the committed scale.
+  for (const auto& [scale, expected_scale] :
+       {std::pair(2.f, expected_scale_at_2),
+        std::pair(0.9f, expected_scale_at_0_9),
+        std::pair(1.f, expected_scale_at_1)}) {
+    SCOPED_TRACE(scale);
+    ASSERT_FALSE(host()->property_trees()->transform_tree().needs_update());
+    ASSERT_FALSE(host()->property_trees()->effect_tree().needs_update());
+    host()->SetExternalPageScaleFactor(
+        scale, /*is_external_pinch_gesture_active=*/false);
+    EXPECT_TRUE(host()->property_trees()->effect_tree().needs_update());
+    EXPECT_FALSE(host()->property_trees()->transform_tree().needs_update());
+    draw_property_utils::UpdatePropertyTrees(host());
+    EXPECT_EQ(gfx::Vector2dF(expected_scale, expected_scale),
+              GetEffectNode(surface.get())->surface_contents_scale);
+    EXPECT_EQ(gfx::Vector2dF(1.f, 1.f),
+              GetEffectNode(root.get())->surface_contents_scale);
 
-  // The non-root effect surface is enlarged by the external page scale factor.
-  EXPECT_EQ(gfx::Vector2dF(2.f, 2.f),
-            GetEffectNode(render_surface)->surface_contents_scale);
-  // The root surface is left unmagnified.
-  EXPECT_EQ(gfx::Vector2dF(1.f, 1.f),
-            GetEffectNode(root)->surface_contents_scale);
+    // Recomputing effects without changing scale must use the same input.
+    host()->property_trees()->effect_tree_mutable().set_needs_update(true);
+    draw_property_utils::UpdatePropertyTrees(host());
+    EXPECT_EQ(gfx::Vector2dF(expected_scale, expected_scale),
+              GetEffectNode(surface.get())->surface_contents_scale);
+
+    CommitAndActivate();
+    EXPECT_EQ(gfx::Vector2dF(expected_scale, expected_scale),
+              GetEffectNode(ImplOf(surface))->surface_contents_scale);
+    EXPECT_EQ(gfx::Vector2dF(1.f, 1.f),
+              GetEffectNode(ImplOf(root))->surface_contents_scale);
+
+    // Effect computation on the impl side takes its external scale from the
+    // committed LayerTreeImpl scalar.
+    EXPECT_FLOAT_EQ(scale,
+                    host_impl()->active_tree()->external_page_scale_factor());
+    host_impl()
+        ->active_tree()
+        ->property_trees()
+        ->effect_tree_mutable()
+        .set_needs_update(true);
+    UpdateActiveTreeDrawProperties();
+    EXPECT_EQ(gfx::Vector2dF(expected_scale, expected_scale),
+              GetEffectNode(ImplOf(surface))->surface_contents_scale);
+  }
+
+  // Setting the external scale to its current value must not invalidate
+  // effects.
+  host()->SetExternalPageScaleFactor(
+      1.f,
+      /*is_external_pinch_gesture_active=*/false);
+  EXPECT_FALSE(host()->property_trees()->effect_tree().needs_update());
+  host()->SetExternalPageScaleFactor(1.f,
+                                     /*is_external_pinch_gesture_active=*/true);
+  EXPECT_FALSE(host()->property_trees()->effect_tree().needs_update());
 }
 
-// The external page scale factor multiplies a non-root effect surface's own
-// scale rather than replacing it.
-TEST_F(DrawPropertiesTest, OopifEffectSurfaceScaleCombinesWithLocalScale) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSizeOopifEffectSurfacesAtExternalScale);
-  LayerImpl* root = root_layer();
-  LayerImpl* render_surface = AddLayerInActiveTree<LayerImpl>();
-  LayerImpl* test_layer = AddLayerInActiveTree<LayerImpl>();
-
-  gfx::Transform scale;
-  scale.Scale(2.f, 2.f);
-
-  root->SetBounds(gfx::Size(30, 30));
-  render_surface->SetBounds(gfx::Size(30, 30));
-  test_layer->SetBounds(gfx::Size(30, 30));
-  test_layer->SetDrawsContent(true);
-
-  CopyProperties(root, render_surface);
-  CreateTransformNode(render_surface).local = scale;
-  CreateEffectNode(render_surface).render_surface_reason =
-      RenderSurfaceReason::kTest;
-  CopyProperties(render_surface, test_layer);
-
-  host_impl()->active_tree()->SetExternalPageScaleFactor(2.f);
-  UpdateActiveTreeDrawProperties();
-
-  // Local 2x transform scale multiplied by the 2x external page scale factor.
-  EXPECT_EQ(gfx::Vector2dF(4.f, 4.f),
-            GetEffectNode(render_surface)->surface_contents_scale);
-}
-
-// A non-root k2DScaleTransformWithCompositedDescendants surface rasters at an
-// integer scale (fractional remainder becomes the draw transform). The external
-// page scale factor is applied *before* that ceil so the magnified raster scale
-// is what gets rounded up. This keeps a magnified OOPIF's effect surface
-// seam-free even when the local scale times the external scale is fractional --
-// ceiling after the multiply guarantees an integer raster scale, whereas
-// ceiling first and then multiplying by a fractional external scale would not.
-TEST_F(DrawPropertiesTest,
-       OopifK2DScaleEffectSurfaceCeilsAfterExternalPageScale) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kSizeOopifEffectSurfacesAtExternalScale);
-  LayerImpl* root = root_layer();
-  LayerImpl* render_surface = AddLayerInActiveTree<LayerImpl>();
-  LayerImpl* test_layer = AddLayerInActiveTree<LayerImpl>();
-
-  gfx::Transform scale;
-  scale.Scale(3.5f, 3.5f);
-
-  root->SetBounds(gfx::Size(30, 30));
-  render_surface->SetBounds(gfx::Size(30, 30));
-  test_layer->SetBounds(gfx::Size(30, 30));
-  test_layer->SetDrawsContent(true);
-
-  CopyProperties(root, render_surface);
-  CreateTransformNode(render_surface).local = scale;
-  CreateEffectNode(render_surface).render_surface_reason =
-      RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants;
-  CopyProperties(render_surface, test_layer);
-
-  host_impl()->active_tree()->SetExternalPageScaleFactor(2.f);
-  UpdateActiveTreeDrawProperties();
-
-  // Local 3.5x scale is multiplied by the 2x external page scale (7.0) and only
-  // then ceiled, so the surface rasters at an integer 7x -- not ceil(3.5)=4
-  // then *2 = 8.
-  EXPECT_EQ(gfx::Vector2dF(7.f, 7.f),
-            GetEffectNode(render_surface)->surface_contents_scale);
-}
+// Parameters are (local scale, render-surface reason, expected_scale_at_1,
+// expected_scale_at_2, expected_scale_at_0_9). The kTest surface cases
+// verify that external scale multiplies the local scale. The k2DScale case
+// verifies that multiplication happens before rounding: ceil(3.5 * 2) is 7,
+// not ceil(3.5) * 2, which is 8.
+INSTANTIATE_TEST_SUITE_P(
+    DrawProperties,
+    OopifEffectSurfaceScaleTest,
+    testing::Values(
+        std::make_tuple(1.f, RenderSurfaceReason::kTest, 1.f, 2.f, 0.9f),
+        std::make_tuple(2.f, RenderSurfaceReason::kTest, 2.f, 4.f, 1.8f),
+        std::make_tuple(
+            3.5f,
+            RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants,
+            4.f,
+            7.f,
+            4.f)));
 
 TEST_F(DrawPropertiesTest, NoisyTransform) {
   LayerImpl* root = root_layer();

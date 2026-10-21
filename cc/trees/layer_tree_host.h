@@ -682,6 +682,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
   // calculations.
   void SetExternalPageScaleFactor(float page_scale_factor,
                                   bool is_external_pinch_gesture_active);
+  float external_page_scale_factor() const {
+    return pending_commit_state()->external_page_scale_factor;
+  }
   bool is_external_pinch_gesture_active_for_testing() {
     return pending_commit_state()->is_external_pinch_gesture_active;
   }

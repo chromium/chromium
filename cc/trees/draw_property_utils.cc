@@ -1593,12 +1593,12 @@ void ComputeTransforms(TransformTree* transform_tree,
   transform_tree->UpdateAllTransforms(viewport_property_ids);
 }
 
-void ComputeEffects(EffectTree* effect_tree) {
+void ComputeEffects(EffectTree* effect_tree, float external_page_scale_factor) {
   if (!effect_tree->needs_update())
     return;
   for (int i = kContentsRootPropertyNodeId;
        i < static_cast<int>(effect_tree->size()); ++i)
-    effect_tree->UpdateEffects(i);
+    effect_tree->UpdateEffects(i, external_page_scale_factor);
   effect_tree->set_needs_update(false);
 }
 
@@ -1613,7 +1613,8 @@ void UpdatePropertyTrees(LayerTreeHost* layer_tree_host) {
 
   ComputeTransforms(&property_trees->transform_tree_mutable(),
                     layer_tree_host->viewport_property_ids());
-  ComputeEffects(&property_trees->effect_tree_mutable());
+  ComputeEffects(&property_trees->effect_tree_mutable(),
+                 layer_tree_host->external_page_scale_factor());
   // Computation of clips uses ToScreen which is updated while computing
   // transforms. So, ComputeTransforms should be before ComputeClips.
   ComputeClips(property_trees);
@@ -1629,7 +1630,8 @@ void UpdatePropertyTreesAndRenderSurfaces(LayerTreeImpl* layer_tree_impl,
 
   ComputeTransforms(&property_trees->transform_tree_mutable(),
                     layer_tree_impl->viewport_property_ids());
-  ComputeEffects(&property_trees->effect_tree_mutable());
+  ComputeEffects(&property_trees->effect_tree_mutable(),
+                 layer_tree_impl->external_page_scale_factor());
   // Computation of clips uses ToScreen which is updated while computing
   // transforms. So, ComputeTransforms should be before ComputeClips.
   ComputeClips(property_trees);
@@ -1782,8 +1784,6 @@ void CalculateDrawProperties(
       gfx::RectF(layer_tree_impl->GetDeviceViewport()));
   property_trees->transform_tree_mutable().SetRootScaleAndTransform(
       layer_tree_impl->device_scale_factor(), layer_tree_impl->DrawTransform());
-  property_trees->transform_tree_mutable().set_external_page_scale_factor(
-      layer_tree_impl->external_page_scale_factor());
   UpdatePropertyTreesAndRenderSurfaces(layer_tree_impl, property_trees);
 
   {

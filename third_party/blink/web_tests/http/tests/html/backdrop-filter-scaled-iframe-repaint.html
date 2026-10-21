@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<meta charset="utf-8">
+<title>Backdrop blur stays clipped after repainting inside a scaled cross-origin iframe</title>
+<link rel="help" href="https://issues.chromium.org/issues/571674322">
+<style>
+  iframe {
+    width: 700px;
+    height: 500px;
+    border: 0;
+    transform: scale(0.9);
+    transform-origin: top left;
+  }
+</style>
+<iframe></iframe>
+<script>
+  const frame = document.querySelector('iframe');
+  const origin = 'http://localhost:8080';
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+  }
+  addEventListener('message', event => {
+    if (event.source === frame.contentWindow && event.origin === origin &&
+        event.data === 'repainted') {
+      if (window.testRunner) {
+        testRunner.notifyDone();
+      }
+    }
+  });
+  frame.src = origin +
+      '/html/resources/backdrop-filter-scaled-iframe-repaint.html';
+</script>
+</html>

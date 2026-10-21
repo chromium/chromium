@@ -105,7 +105,8 @@ class HitTestDataBuilderTest : public LayerTreeImplTestBase,
   void UpdateDrawPropertiesForHitTestData() {
     UpdateDrawProperties(host_impl()->active_tree());
     draw_property_utils::ComputeEffects(
-        &host_impl()->active_tree()->property_trees()->effect_tree_mutable());
+        &host_impl()->active_tree()->property_trees()->effect_tree_mutable(),
+        host_impl()->active_tree()->external_page_scale_factor());
   }
 
   std::optional<viz::HitTestRegionList> BuildHitTestDataAfterUpdate() {
@@ -171,7 +172,8 @@ TEST_F(HitTestDataBuilderTest, BuildHitTestData) {
 
   UpdateDrawProperties(host_impl()->active_tree());
   draw_property_utils::ComputeEffects(
-      &host_impl()->active_tree()->property_trees()->effect_tree_mutable());
+      &host_impl()->active_tree()->property_trees()->effect_tree_mutable(),
+      host_impl()->active_tree()->external_page_scale_factor());
 
   constexpr gfx::Rect kFrameRect(0, 0, 1024, 768);
 

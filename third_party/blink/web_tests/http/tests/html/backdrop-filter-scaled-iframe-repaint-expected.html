@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<meta charset="utf-8">
+<title>Reference: backdrop blur inside a scaled container</title>
+<style>
+  .container {
+    position: relative;
+    width: 700px;
+    height: 500px;
+    overflow: hidden;
+    transform: scale(0.9);
+    transform-origin: top left;
+    will-change: backdrop-filter;
+    background: repeating-linear-gradient(135deg,
+        #6b7b8c 0 30px, #3a4858 30px 60px, #9aa7b5 60px 90px);
+  }
+  .panel {
+    position: absolute;
+    left: 100px;
+    top: 80px;
+    width: 500px;
+    height: 300px;
+    background: #0e232b;
+    box-shadow: 0 26px 80px rgb(0 0 0 / 0%);
+    backdrop-filter: blur(22px);
+  }
+</style>
+<div class="container">
+  <div class="panel"></div>
+</div>
+</html>

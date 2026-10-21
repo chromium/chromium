@@ -1,0 +1,42 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Repainting panel with backdrop blur</title>
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: repeating-linear-gradient(135deg,
+        #6b7b8c 0 30px, #3a4858 30px 60px, #9aa7b5 60px 90px);
+  }
+  .panel {
+    position: absolute;
+    left: 100px;
+    top: 80px;
+    width: 500px;
+    height: 300px;
+    background: #0e232b;
+    /* Expand paint bounds without adding visible pixels. */
+    box-shadow: 0 26px 80px rgb(0 0 0 / 0%);
+    backdrop-filter: blur(22px);
+  }
+</style>
+<div class="panel"></div>
+<script>
+  function waitForAtLeastOneFrame() {
+    return new Promise(resolve => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+  }
+
+  const panel = document.querySelector('.panel');
+  async function repaint() {
+    // Commit new paint after the iframe has already rendered at its fixed scale.
+    await waitForAtLeastOneFrame();
+    for (const color of ['red', '#0e232b', 'red', '#0e232b']) {
+      panel.style.backgroundColor = color;
+      await waitForAtLeastOneFrame();
+    }
+    parent.postMessage('repainted', '*');
+  }
+  addEventListener('load', repaint);
+</script>

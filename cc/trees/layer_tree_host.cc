@@ -1724,7 +1724,12 @@ void LayerTreeHost::SetExternalPageScaleFactor(
     return;
   }
 
-  pending_commit_state()->external_page_scale_factor = page_scale_factor;
+  if (pending_commit_state()->external_page_scale_factor != page_scale_factor) {
+    // External scale affects surface contents scale, but not transform
+    // geometry.
+    property_trees()->effect_tree_mutable().set_needs_update(true);
+    pending_commit_state()->external_page_scale_factor = page_scale_factor;
+  }
   pending_commit_state()->is_external_pinch_gesture_active =
       is_external_pinch_gesture_active;
   SetNeedsCommit();

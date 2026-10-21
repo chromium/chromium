@@ -3441,6 +3441,20 @@
       "katabolism-finch@google.com"
     ]
   },
+  {
+    "prefix": "scaled-oopif-effect-surfaces",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "http/tests/html/backdrop-filter-scaled-iframe-repaint.html"
+    ],
+    "args": [
+      "--enable-threaded-compositing",
+      "--enable-features=SizeOopifEffectSurfacesAtExternalScale",
+      "--disable-features=TreesInViz"
+    ],
+    "owners": ["gerchiko@microsoft.com"],
+    "expires": "Apr 13, 2027"
+  },
   "The threaded virtual suite tests with threaded compositing, which is the",
   "configuration that we ship.  Because this is testing what we ship (in a way",
   "that the default configuration does not), this virtual suite never expires.",

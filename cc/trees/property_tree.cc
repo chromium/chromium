@@ -81,8 +81,7 @@ TransformTree::TransformTree(PropertyTrees* property_trees)
     : PropertyTree<TransformNode>(property_trees),
       page_scale_factor_(1.f),
       device_scale_factor_(1.f),
-      device_transform_scale_factor_(1.f),
-      external_page_scale_factor_(1.f) {
+      device_transform_scale_factor_(1.f) {
   cached_data_.push_back(TransformCachedNodeData());
 }
 
@@ -176,7 +175,6 @@ void TransformTree::clear() {
   page_scale_factor_ = 1.f;
   device_scale_factor_ = 1.f;
   device_transform_scale_factor_ = 1.f;
-  external_page_scale_factor_ = 1.f;
   nodes_affected_by_outer_viewport_bounds_delta_.clear();
   nodes_affected_by_safe_area_inset_bottom_.clear();
   cached_data_.clear();
@@ -259,7 +257,6 @@ void TransformTree::CopyFromPreservingNodes(const TransformTree& other) {
   page_scale_factor_ = other.page_scale_factor_;
   device_scale_factor_ = other.device_scale_factor_;
   device_transform_scale_factor_ = other.device_transform_scale_factor_;
-  external_page_scale_factor_ = other.external_page_scale_factor_;
   nodes_affected_by_outer_viewport_bounds_delta_ =
       other.nodes_affected_by_outer_viewport_bounds_delta_;
   nodes_affected_by_safe_area_inset_bottom_ =
@@ -1093,7 +1090,6 @@ bool TransformTree::operator==(const TransformTree& other) const {
          device_scale_factor_ == other.device_scale_factor() &&
          device_transform_scale_factor_ ==
              other.device_transform_scale_factor() &&
-         external_page_scale_factor_ == other.external_page_scale_factor() &&
          nodes_affected_by_outer_viewport_bounds_delta_ ==
              other.nodes_affected_by_outer_viewport_bounds_delta() &&
          cached_data_ == other.cached_data() &&
@@ -1265,7 +1261,8 @@ void EffectTree::UpdateOnlyDrawsVisibleContent(EffectNode* node,
   }
 }
 
-void EffectTree::UpdateSurfaceContentsScale(EffectNode* effect_node) {
+void EffectTree::UpdateSurfaceContentsScale(EffectNode* effect_node,
+                                            float external_page_scale_factor) {
   if (!effect_node->HasRenderSurface()) {
     effect_node->surface_contents_scale = gfx::Vector2dF(1.0f, 1.0f);
     return;
@@ -1297,8 +1294,7 @@ void EffectTree::UpdateSurfaceContentsScale(EffectNode* effect_node) {
   if (effect_node->id != kContentsRootPropertyNodeId &&
       base::FeatureList::IsEnabled(
           features::kSizeOopifEffectSurfacesAtExternalScale)) {
-    effect_node->surface_contents_scale.Scale(
-        transform_tree.external_page_scale_factor());
+    effect_node->surface_contents_scale.Scale(external_page_scale_factor);
   }
 
   // To avoid seams we apply only scale as draw transform instead of raster
@@ -1373,7 +1369,7 @@ bool EffectTree::OnBackdropFilterAnimated(
   return true;
 }
 
-void EffectTree::UpdateEffects(int id) {
+void EffectTree::UpdateEffects(int id, float external_page_scale_factor) {
   EffectNode& node = MutableNode(id);
   EffectNode* parent_node = HasParent(node) ? &MutableParent(node) : nullptr;
 
@@ -1387,7 +1383,7 @@ void EffectTree::UpdateEffects(int id) {
   UpdateHasMaskingChild(&node, parent_node);
   UpdateOnlyDrawsVisibleContent(&node, parent_node);
   UpdateClosestAncestorSharedElement(&node, parent_node);
-  UpdateSurfaceContentsScale(&node);
+  UpdateSurfaceContentsScale(&node, external_page_scale_factor);
 }
 
 void EffectTree::UpdateClosestAncestorSharedElement(
