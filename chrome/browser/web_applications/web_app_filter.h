@@ -37,6 +37,9 @@ class WebAppFilter {
   // Only consider isolated web apps installed in developer mode, that are not
   // scheduled for uninstallation, like stub ones.
   static WebAppFilter IsDevModeIsolatedApp();
+  // Only consider sub apps of isolated web apps installed in developer mode
+  // (connected via parent_app_id).
+  static WebAppFilter IsDevModeIsolatedSubApp();
   // Only consider force-installed Isolated Web Apps.
   static WebAppFilter PolicyInstalledIsolatedWebApp();
   // Only consider user installed Isolated Web Apps
@@ -136,6 +139,7 @@ class WebAppFilter {
     kIsolatedApp,
     kIsolatedAppDevMode,
     kIsolatedSubApp,
+    kIsolatedSubAppDevMode,
     kOpensInDedicatedWindow,
     kIsPlaceholder
   };

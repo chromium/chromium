@@ -49,6 +49,11 @@ WebAppFilter WebAppFilter::IsIsolatedSubApp() {
 }
 
 // static
+WebAppFilter WebAppFilter::IsDevModeIsolatedSubApp() {
+  return IsTrue(SimpleCondition::kIsolatedSubAppDevMode);
+}
+
+// static
 WebAppFilter WebAppFilter::PolicyInstalledIsolatedWebApp() {
   return IsIsolatedApp() & HasSource(WebAppManagement::kIwaPolicy);
 }

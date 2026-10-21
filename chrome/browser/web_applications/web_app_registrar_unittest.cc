@@ -2312,8 +2312,45 @@ TEST_P(WebAppRegistrarParameterizedTest, Filter_IsIsolatedSubApp) {
 
   EXPECT_TRUE(
       registrar().AppMatches(sub_app_id, WebAppFilter::IsIsolatedSubApp()));
+  EXPECT_FALSE(registrar().AppMatches(sub_app_id,
+                                      WebAppFilter::IsDevModeIsolatedSubApp()));
   EXPECT_EQ(sub_app_id, registrar().FindBestAppWithUrlInScope(
                             sub_app_url, WebAppFilter::IsIsolatedSubApp()));
+}
+
+TEST_P(WebAppRegistrarParameterizedTest, Filter_IsDevModeIsolatedSubApp) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
+  StartWebAppProvider();
+
+  constexpr char kIwaHostname[] =
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+  GURL app_url(base::StrCat({webapps::kIsolatedAppScheme,
+                             url::kStandardSchemeSeparator, kIwaHostname}));
+  auto isolated_web_app = test::CreateWebApp(app_url);
+  const webapps::AppId app_id = isolated_web_app->app_id();
+
+  isolated_web_app->SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/true},
+          *IwaVersion::Create("1.0.0"))
+          .Build());
+  isolated_web_app->SetDisplayMode(DisplayMode::kBrowser);
+  isolated_web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
+  RegisterAppUnsafe(std::move(isolated_web_app));
+
+  GURL sub_app_url(
+      base::StrCat({webapps::kIsolatedAppScheme, url::kStandardSchemeSeparator,
+                    kIwaHostname, "/sub_app/"}));
+  auto isolated_sub_app = test::CreateWebApp(sub_app_url);
+  isolated_sub_app->SetParentAppId(app_id);
+  const webapps::AppId sub_app_id = isolated_sub_app->app_id();
+  RegisterAppUnsafe(std::move(isolated_sub_app));
+
+  EXPECT_TRUE(registrar().AppMatches(sub_app_id,
+                                     WebAppFilter::IsDevModeIsolatedSubApp()));
+  EXPECT_EQ(sub_app_id,
+            registrar().FindBestAppWithUrlInScope(
+                sub_app_url, WebAppFilter::IsDevModeIsolatedSubApp()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

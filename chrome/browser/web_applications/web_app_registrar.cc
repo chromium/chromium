@@ -1014,6 +1014,9 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
               case WebAppFilter::SimpleCondition::kIsolatedSubApp:
                 return app.parent_app_id() &&
                        IsIsolatedApp(*app.parent_app_id());
+              case WebAppFilter::SimpleCondition::kIsolatedSubAppDevMode:
+                return app.parent_app_id() &&
+                       IsIsolatedAppInDevMode(*app.parent_app_id());
               case WebAppFilter::SimpleCondition::kOpensInDedicatedWindow: {
                 DisplayMode display_mode = GetAppEffectiveDisplayMode(app_id);
                 return display_mode != DisplayMode::kBrowser &&
