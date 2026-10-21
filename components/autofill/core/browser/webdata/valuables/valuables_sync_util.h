@@ -16,6 +16,17 @@
 
 namespace autofill {
 
+// Converts the given `offer` into a `syncer::EntityData`.
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromOfferData(
+    const AutofillOfferData& offer,
+    const sync_pb::AutofillValuableSpecifics& base_specifics);
+
+// For a given `AutofillOfferData`, returns the corresponding
+// `sync_pb::AutofillValuableSpecifics`.
+sync_pb::AutofillValuableSpecifics CreateSpecificsFromOfferData(
+    const AutofillOfferData& offer,
+    const sync_pb::AutofillValuableSpecifics& base_specifics);
+
 // Converts the given valuable `specifics` into an equivalent AutofillOfferData
 // instance.
 AutofillOfferData CreateOfferDataFromValuableSpecifics(

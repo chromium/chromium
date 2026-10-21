@@ -64,6 +64,17 @@ std::vector<LoyaltyCard> ExtractLoyaltyCardsFromDataBatch(
   }
   return loyalty_cards;
 }
+
+std::vector<AutofillOfferData> ExtractOffersFromDataBatch(
+    std::unique_ptr<syncer::DataBatch> batch) {
+  std::vector<AutofillOfferData> offers;
+  while (batch->HasNext()) {
+    const syncer::KeyAndData& data_pair = batch->Next();
+    offers.push_back(CreateOfferDataFromValuableSpecifics(
+        data_pair.second->specifics.autofill_valuable()));
+  }
+  return offers;
+}
 #endif  // !BUILDFLAG(IS_IOS)
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromSpecifics(
@@ -206,6 +217,10 @@ class ValuableSyncBridgeTest : public testing::Test {
     // `MergeFullSyncData()` returns an error if it fails.
     return !bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
                                        std::move(entity_data));
+  }
+
+  void AddOffers(const std::vector<AutofillOfferData>& offers) {
+    payments_table_.SetAutofillOffers(offers);
   }
 
   std::vector<AutofillOfferData> GetAllOffersFromTable() {
@@ -737,6 +752,32 @@ TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForLoyaltyCards) {
   std::vector<LoyaltyCard> loyalty_cards =
       ExtractLoyaltyCardsFromDataBatch(bridge().GetAllDataForDebugging());
   EXPECT_THAT(loyalty_cards, UnorderedElementsAre(card1, card2));
+}
+
+// Tests that `GetAllDataForDebugging()` returns all offers.
+TEST_F(ValuableSyncBridgeTest, GetAllDataForDebuggingForOffers) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletDirectOffers};
+  const AutofillOfferData offer1 =
+      CreateOfferDataFromValuableSpecifics(TestOfferSpecifics(kId1));
+  const AutofillOfferData offer2 =
+      CreateOfferDataFromValuableSpecifics(TestOfferSpecifics(kId2));
+  AddOffers({offer1, offer2});
+
+  EXPECT_THAT(ExtractOffersFromDataBatch(bridge().GetAllDataForDebugging()),
+              UnorderedElementsAre(offer1, offer2));
+}
+
+// Tests that `GetAllDataForDebugging()` doesn't return offers if Wallet Direct
+// Offers are disabled.
+TEST_F(ValuableSyncBridgeTest,
+       GetAllDataForDebuggingForOffers_DirectOffersDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillEnableWalletDirectOffers);
+  AddOffers({CreateOfferDataFromValuableSpecifics(TestOfferSpecifics(kId1))});
+
+  EXPECT_FALSE(bridge().GetAllDataForDebugging()->HasNext());
 }
 
 // Tests that trimming `AutofillValuableSpecifics` with only supported values

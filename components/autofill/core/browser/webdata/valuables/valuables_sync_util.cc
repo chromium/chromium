@@ -155,6 +155,42 @@ void TrimOffer(sync_pb::Offer& offer) {
 
 }  // namespace
 
+std::unique_ptr<syncer::EntityData> CreateEntityDataFromOfferData(
+    const AutofillOfferData& offer,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+  AutofillValuableSpecifics offer_specifics =
+      CreateSpecificsFromOfferData(offer, base_specifics);
+  std::unique_ptr<syncer::EntityData> entity_data =
+      std::make_unique<syncer::EntityData>();
+  entity_data->name = offer_specifics.id();
+  *entity_data->specifics.mutable_autofill_valuable() =
+      std::move(offer_specifics);
+
+  return entity_data;
+}
+
+AutofillValuableSpecifics CreateSpecificsFromOfferData(
+    const AutofillOfferData& offer,
+    const sync_pb::AutofillValuableSpecifics& base_specifics) {
+  AutofillValuableSpecifics specifics = base_specifics;
+  specifics.set_id(offer.GetOfferId());
+  specifics.set_pass_view_url(
+      offer.GetOfferDetailsUrl().possibly_invalid_spec());
+  sync_pb::Offer* offer_proto = specifics.mutable_offer();
+  offer_proto->set_offer_code(offer.GetPromoCode());
+  offer_proto->set_offer_short_title(offer.GetOfferRewardAmount());
+  offer_proto->set_description(offer.GetDisplayStrings().value_prop_text);
+  offer_proto->set_expiration_time_unix_epoch_micros(
+      (offer.GetExpiry() - base::Time::UnixEpoch()).InMicroseconds());
+  offer_proto->set_issue_time_unix_epoch_micros(
+      (offer.GetIssueTime() - base::Time::UnixEpoch()).InMicroseconds());
+  for (const GURL& merchant_origin : offer.GetMerchantOrigins()) {
+    *offer_proto->add_issuer_domains() = merchant_origin.spec();
+  }
+
+  return specifics;
+}
+
 AutofillOfferData CreateOfferDataFromValuableSpecifics(
     const sync_pb::AutofillValuableSpecifics& specifics) {
   const sync_pb::Offer& offer_proto = specifics.offer();

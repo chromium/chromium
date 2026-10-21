@@ -206,6 +206,48 @@ TEST(OfferSyncUtilTest, CreateOfferDataFromValuableSpecifics_NoIssueTime) {
       CreateOfferDataFromValuableSpecifics(specifics).GetIssueTime().is_null());
 }
 
+TEST(OfferSyncUtilTest, CreateEntityDataFromOfferData) {
+  const AutofillOfferData offer =
+      CreateOfferDataFromValuableSpecifics(TestOfferSpecifics(kId1));
+  std::unique_ptr<syncer::EntityData> entity_data =
+      CreateEntityDataFromOfferData(offer, /*base_specifics=*/{});
+
+  ASSERT_TRUE(entity_data->specifics.has_autofill_valuable());
+  EXPECT_EQ(kId1, entity_data->name);
+  EXPECT_EQ(offer, CreateOfferDataFromValuableSpecifics(
+                       entity_data->specifics.autofill_valuable()));
+}
+
+TEST(OfferSyncUtilTest, CreateSpecificsFromOfferData) {
+  const AutofillOfferData offer =
+      CreateOfferDataFromValuableSpecifics(TestOfferSpecifics(kId1));
+  const sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromOfferData(offer, /*base_specifics=*/{});
+
+  EXPECT_EQ(kId1, specifics.id());
+  EXPECT_EQ("https://safeway.com/offer-details", specifics.pass_view_url());
+  EXPECT_EQ("SAFEWAY50", specifics.offer().offer_code());
+  EXPECT_EQ("50% off", specifics.offer().offer_short_title());
+  EXPECT_EQ("50% off your next purchase", specifics.offer().description());
+  EXPECT_EQ(123456789, specifics.offer().expiration_time_unix_epoch_micros());
+  EXPECT_EQ(12345678, specifics.offer().issue_time_unix_epoch_micros());
+  EXPECT_THAT(specifics.offer().issuer_domains(),
+              testing::ElementsAre("https://safeway.com/"));
+}
+
+TEST(OfferSyncUtilTest, CreateSpecificsFromOfferData_MergesBaseSpecifics) {
+  sync_pb::AutofillValuableSpecifics base_specifics;
+  AddUnknownFieldToProto(base_specifics, "unknown_field");
+
+  const AutofillOfferData offer =
+      CreateOfferDataFromValuableSpecifics(TestOfferSpecifics(kId1));
+  const sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromOfferData(offer, base_specifics);
+
+  EXPECT_EQ("SAFEWAY50", specifics.offer().offer_code());
+  EXPECT_THAT(specifics, HasUnknownField("unknown_field"));
+}
+
 TEST(ValuableMetadataSyncUtilTest, CreateEntityDataFromValuableMetadata) {
   ValuableMetadata metadata = TestValuableMetadata();
   std::unique_ptr<syncer::EntityData> entity_data =

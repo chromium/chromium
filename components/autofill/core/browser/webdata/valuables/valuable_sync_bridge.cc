@@ -554,9 +554,15 @@ std::unique_ptr<syncer::MutableDataBatch> ValuableSyncBridge::GetData() {
     }
   }
 
-  // TODO(crbug.com/546252995): Add the offers from `PaymentsAutofillTable`.
-  // Without them, offers don't show up in chrome://sync-internals, which reads
-  // this batch through `GetAllDataForDebugging()`.
+  if (IsSyncWalletDirectOffersEnabled(app_locale_)) {
+    std::vector<std::unique_ptr<AutofillOfferData>> offers;
+    GetPaymentsAutofillTable()->GetAutofillOffers(&offers);
+    for (const std::unique_ptr<AutofillOfferData>& offer : offers) {
+      const std::string& id = offer->GetOfferId();
+      batch->Put(id, CreateEntityDataFromOfferData(
+                         *offer, GetPossiblyTrimmedValuableSpecifics(id)));
+    }
+  }
   return batch;
 }
 
