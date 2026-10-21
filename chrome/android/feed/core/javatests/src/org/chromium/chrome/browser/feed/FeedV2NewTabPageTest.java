@@ -247,23 +247,25 @@ public class FeedV2NewTabPageTest {
                         new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
-                                Assert.assertEquals(
-                                        "Feed has been scrolled to target position when NTP"
-                                                + " finished faded out",
-                                        RecyclerView.SCROLL_STATE_IDLE,
-                                        getRecyclerView().getScrollState());
-                                Assert.assertEquals(
-                                        "Feed has been scrolled to target position when NTP"
-                                                + " finished faded out",
-                                        Integer.valueOf(
-                                                FeedSurfaceProvider.RestoringState.RESTORED),
-                                        ntp.getCoordinatorForTesting()
-                                                .getRestoringStateSupplier()
-                                                .get());
                                 callbackHelper.notifyCalled();
                             }
                         });
         callbackHelper.waitForNext();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Feed has been scrolled to target position when NTP finished"
+                                    + " faded out",
+                            getRecyclerView().getScrollState(),
+                            Matchers.is(RecyclerView.SCROLL_STATE_IDLE));
+                    Criteria.checkThat(
+                            "Feed has been scrolled to target position when NTP finished"
+                                    + " faded out",
+                            ntp.getCoordinatorForTesting()
+                                    .getRestoringStateSupplier()
+                                    .get(),
+                            Matchers.is(FeedSurfaceProvider.RestoringState.RESTORED));
+                });
     }
 
     @Test
