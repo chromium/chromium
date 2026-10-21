@@ -72,7 +72,7 @@ class TabContainerController {
   virtual bool CanExtendDragHandle() const = 0;
 
   // Tab closing mode should remain active as long as the mouse is in or near
-  // this view. See `TabContainerImpl::in_tab_close_` for more details on tab
+  // this view. See `TabContainer::in_tab_close_` for more details on tab
   // closing mode.
   virtual const views::View* GetTabClosingModeMouseWatcherHostView() const = 0;
 

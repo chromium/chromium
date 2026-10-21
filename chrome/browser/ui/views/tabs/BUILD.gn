@@ -172,7 +172,6 @@ source_set("tab_style_views_impl") {
 source_set("tab_container") {
   sources = [
     "tab_container.h",
-    "tab_container_impl.h",
     "tab_slot_animation_delegate.h",
     "tab_strip_layout_helper.h",
     "z_orderable_tab_container_element.h",
@@ -197,7 +196,6 @@ source_set("tab_container") {
 source_set("tab_container_impl") {
   sources = [
     "tab_container.cc",
-    "tab_container_impl.cc",
     "tab_slot_animation_delegate.cc",
     "tab_strip_layout_helper.cc",
     "z_orderable_tab_container_element.cc",
