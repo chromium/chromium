@@ -1389,6 +1389,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.InstallFlow.SuccessStepAction"
+    enum="WebAppInstallFlowSuccessStepAction" expires_after="2027-05-27">
+  <owner>aixba@google.com</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the post-install action taken by the user on the final success step
+    of the multi-step web app installation flow dialog (clicking &quot;Open
+    app&quot;, &quot;Close&quot;, or &quot;Show in Finder&quot; on macOS).
+    Measured whenever the user clicks on the accept or cancel/close button on
+    the final stage of the install dialog.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.InstallFromMigrateFromField.Result"
     enum="WebAppInstallFromMigrateFromFieldResult" expires_after="2027-03-06">
   <owner>mek@chromium.org</owner>

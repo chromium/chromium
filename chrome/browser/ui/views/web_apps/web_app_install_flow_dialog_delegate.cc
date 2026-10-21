@@ -299,8 +299,8 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
       // this success step opens the newly installed app.
       base::RecordAction(base::UserMetricsAction("WebAppDialogOpenedApp"));
       base::UmaHistogramEnumeration(
-          "WebApp.InstallConfirmation.CloseReason",
-          views::Widget::ClosedReason::kAcceptButtonClicked);
+          "WebApp.InstallFlow.SuccessStepAction",
+          InstallFlowSuccessStepAction::kOpenAppClicked);
       if (reparent_closure_) {
         std::move(reparent_closure_).Run();
       }
@@ -345,7 +345,6 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
 
     case InstallDialogStep::kProgress: {
       // Trigger the installation.
-      // TODO(crbug.com/508383640): Clean up metrics usage for new install flow.
       OnAccept();
 
       progress_delay_->Start(
@@ -477,6 +476,9 @@ void WebAppInstallFlowDialogDelegate::OnAccept() {
   CHECK(install_tracker_);
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
   received_user_response_ = true;
+  base::UmaHistogramEnumeration(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kAcceptButtonClicked);
 
   bool should_auto_respond_for_test = false;
   InstallDialogTestResponse auto_response =
@@ -501,22 +503,26 @@ void WebAppInstallFlowDialogDelegate::OnAccept() {
 }
 
 void WebAppInstallFlowDialogDelegate::OnCancel() {
-  CHECK(install_tracker_);
-  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kCancelled);
-  received_user_response_ = true;
-  base::UmaHistogramEnumeration(
-      "WebApp.InstallConfirmation.CloseReason",
-      views::Widget::ClosedReason::kCancelButtonClicked);
+  if (!received_user_response_) {
+    CHECK(install_tracker_);
+    install_tracker_->ReportResult(webapps::MlInstallUserResponse::kCancelled);
+    received_user_response_ = true;
+    base::UmaHistogramEnumeration(
+        "WebApp.InstallConfirmation.CloseReason",
+        views::Widget::ClosedReason::kCancelButtonClicked);
+  }
   MeasureMetricsOnDialogClose(/*was_closed_by_user_action=*/true);
 }
 
 void WebAppInstallFlowDialogDelegate::OnClose() {
-  CHECK(install_tracker_);
-  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
-  received_user_response_ = true;
-  base::UmaHistogramEnumeration(
-      "WebApp.InstallConfirmation.CloseReason",
-      views::Widget::ClosedReason::kCloseButtonClicked);
+  if (!received_user_response_) {
+    CHECK(install_tracker_);
+    install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
+    received_user_response_ = true;
+    base::UmaHistogramEnumeration(
+        "WebApp.InstallConfirmation.CloseReason",
+        views::Widget::ClosedReason::kCloseButtonClicked);
+  }
   MeasureMetricsOnDialogClose(/*was_closed_by_user_action=*/true);
 }
 
@@ -524,6 +530,7 @@ void WebAppInstallFlowDialogDelegate::OnDestroyed() {
   if (received_user_response_) {
     return;
   }
+  CHECK(install_tracker_);
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
   base::UmaHistogramEnumeration("WebApp.InstallConfirmation.CloseReason",
                                 views::Widget::ClosedReason::kUnspecified);
@@ -629,8 +636,6 @@ void WebAppInstallFlowDialogDelegate::CloseDialogAsIgnored() {
   if (!dialog_model() || !dialog_model()->host()) {
     return;
   }
-  CHECK(install_tracker_);
-  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kIgnored);
   dialog_model()->host()->Close();
 }
 
@@ -707,8 +712,8 @@ void WebAppInstallFlowDialogDelegate::
 
 // On generic steps/OSes, this triggers standard cancellation of Install Dialog.
 // On macOS during the Success step, this button is relabeled to "Show in
-// Finder". Instead of immediately closing, it triggers an async lookup to
-// reveal the app bundle, then closes the dialog.
+// Finder", which triggers an async lookup to reveal the app bundle before the
+// dialog closes.
 void WebAppInstallFlowDialogDelegate::OnCancelOrCloseClicked() {
   if (current_step_ == InstallDialogStep::kSuccessful) {
     tabs::TabInterface* tab =
@@ -718,24 +723,23 @@ void WebAppInstallFlowDialogDelegate::OnCancelOrCloseClicked() {
     if (helper) {
       helper->MaybeShowIntentPickerIcon();
     }
-  }
 
+    if (os_type_ == InstallOsType::kMac) {
 #if BUILDFLAG(IS_MAC)
-  if (current_step_ == InstallDialogStep::kSuccessful &&
-      os_type_ == InstallOsType::kMac) {
-    internals::GetShortcutIOTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&RevealAppShimInFinder, app_id_));
-
-    if (dialog_model() && dialog_model()->host()) {
+      internals::GetShortcutIOTaskRunner()->PostTask(
+          FROM_HERE, base::BindOnce(&RevealAppShimInFinder, app_id_));
+#endif
       base::RecordAction(
           base::UserMetricsAction("WebAppInstallDialogShowInFinderClicked"));
-      dialog_model()->host()->Close();
+      base::UmaHistogramEnumeration(
+          "WebApp.InstallFlow.SuccessStepAction",
+          InstallFlowSuccessStepAction::kShowInFinderClicked);
+    } else {
+      base::UmaHistogramEnumeration(
+          "WebApp.InstallFlow.SuccessStepAction",
+          InstallFlowSuccessStepAction::kCloseClicked);
     }
-
-    // Prevent standard cancellation logic/metrics from triggering.
-    return;
   }
-#endif
 
   OnCancel();
 }
@@ -881,11 +885,9 @@ void WebAppInstallFlowDialogDelegate::
       success && reparent_closure) {
     std::move(reparent_closure).Run();
   } else {
-    // Decline/Cancel the dialog. Note: Since we are in mock testing and
-    // bypassing standard step transitions, closing the dialog this way
-    // results in metric close reasons of
-    // `views::Widget::ClosedReason::kCancelButtonClicked`. This is expected and
-    // does not affect functional browser tests.
+    // Close the dialog after installation completes when auto-accepting without
+    // launching. Since `OnAccept()` already recorded `kAcceptButtonClicked`,
+    // calling `DeclineForTesting()` here only dismisses the widget.
     DeclineForTesting();  // IN-TEST
   }
 }

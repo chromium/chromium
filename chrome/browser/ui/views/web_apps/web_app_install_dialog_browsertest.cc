@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -353,24 +354,40 @@ INSTANTIATE_TEST_SUITE_P(
 using WebAppInstallDialogClosedTest = WebAppInstallDialogBrowserTest;
 
 IN_PROC_BROWSER_TEST_P(WebAppInstallDialogClosedTest, CancelInIntro) {
+  base::HistogramTester histogram_tester;
   ShowUi("Intro");
   ASSERT_TRUE(widget_);
   views::test::WidgetDestroyedWaiter destruction_waiter(widget_.get());
   widget_->widget_delegate()->AsDialogDelegate()->CancelDialog();
   destruction_waiter.Wait();
   EXPECT_EQ(dialog_accepted_, false);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCancelButtonClicked, 1);
+  histogram_tester.ExpectTotalCount("WebApp.InstallFlow.SuccessStepAction", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppInstallDialogClosedTest, CancelInSuccess) {
+  base::HistogramTester histogram_tester;
   ShowUi("Successful");
   ASSERT_TRUE(widget_);
   views::test::WidgetDestroyedWaiter destruction_waiter(widget_.get());
   widget_->widget_delegate()->AsDialogDelegate()->CancelDialog();
   destruction_waiter.Wait();
   EXPECT_EQ(dialog_accepted_, true);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kAcceptButtonClicked, 1);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstallFlow.SuccessStepAction",
+      GetOsType() == InstallOsType::kMac
+          ? InstallFlowSuccessStepAction::kShowInFinderClicked
+          : InstallFlowSuccessStepAction::kCloseClicked,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppInstallDialogClosedTest, Success) {
+  base::HistogramTester histogram_tester;
   // Accept through all the dialog steps
   // kInstallDialog -> kInstallerOptions -> kProgress -> kSuccessful
   ShowUi("Successful");
@@ -380,6 +397,37 @@ IN_PROC_BROWSER_TEST_P(WebAppInstallDialogClosedTest, Success) {
   destruction_waiter.Wait();
   EXPECT_EQ(dialog_accepted_, true);
   EXPECT_TRUE(dialog_install_info_);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kAcceptButtonClicked, 1);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstallFlow.SuccessStepAction",
+      InstallFlowSuccessStepAction::kOpenAppClicked, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppInstallDialogClosedTest,
+                       CloseInProgressRecordsAcceptCloseReasonOnlyOnce) {
+  base::HistogramTester histogram_tester;
+  ShowUi("Progress");
+  ASSERT_TRUE(widget_);
+  EXPECT_EQ(dialog_accepted_, true);
+  auto* promoter = webapps::MLInstallabilityPromoter::FromWebContents(
+      browser()->GetTabStripModel()->GetActiveWebContents());
+  ASSERT_TRUE(promoter);
+  EXPECT_TRUE(promoter->HasCurrentInstall());
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kAcceptButtonClicked, 1);
+
+  views::test::WidgetDestroyedWaiter destruction_waiter(widget_.get());
+  widget_->Close();
+  destruction_waiter.Wait();
+
+  EXPECT_FALSE(promoter->HasCurrentInstall());
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kAcceptButtonClicked, 1);
+  histogram_tester.ExpectTotalCount("WebApp.InstallFlow.SuccessStepAction", 0);
 }
 
 // Regression tests for crbug.com/570729142. "Learn more" opens the help page in

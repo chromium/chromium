@@ -336,6 +336,10 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
   EXPECT_THAT(
       histogram_tester.GetAllSamples("WebApp.InstallFlow.DropOffStep"),
       base::BucketsAre(base::Bucket(InstallDialogStep::kInstallDialog, 1)));
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kCancelButtonClicked, 1);
+  histogram_tester.ExpectTotalCount("WebApp.InstallFlow.SuccessStepAction", 0);
   EXPECT_EQ(1, action_tester.GetActionCount("WebAppSimpleDialogCancelled"));
 }
 
@@ -372,6 +376,18 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
   EXPECT_THAT(
       histogram_tester.GetAllSamples("WebApp.InstallFlow.DropOffStep"),
       base::BucketsAre(base::Bucket(InstallDialogStep::kSuccessful, 1)));
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstallConfirmation.CloseReason",
+      views::Widget::ClosedReason::kAcceptButtonClicked, 1);
+#if BUILDFLAG(IS_MAC)
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstallFlow.SuccessStepAction",
+      InstallFlowSuccessStepAction::kShowInFinderClicked, 1);
+#else
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.InstallFlow.SuccessStepAction",
+      InstallFlowSuccessStepAction::kCloseClicked, 1);
+#endif
   EXPECT_EQ(1, action_tester.GetActionCount("WebAppSimpleDialogClosed"));
 }
 

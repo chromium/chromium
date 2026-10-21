@@ -59,6 +59,15 @@ enum class InstallDialogStep {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:WebAppInstallFlowStep)
 
+// LINT.IfChange(InstallFlowSuccessStepAction)
+enum class InstallFlowSuccessStepAction {
+  kOpenAppClicked = 0,
+  kCloseClicked = 1,
+  kShowInFinderClicked = 2,
+  kMaxValue = kShowInFinderClicked,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:WebAppInstallFlowSuccessStepAction)
+
 enum class InstallOsType { kMac, kWin, kCros, kOther };
 inline constexpr int kLargeImageSize = 80;
 std::ostream& operator<<(std::ostream& os, InstallOsType type);
