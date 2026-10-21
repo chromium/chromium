@@ -56,6 +56,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.ui.base.ViewUtils;
@@ -232,7 +233,19 @@ public class BookmarkWidgetServiceImpl extends SplitCompatRemoteViewsService.Imp
                         mFavicons.put(bookmarkItem.getId(), icon);
                         taskFinished();
                     };
-            mLargeIconBridge.getLargeIconForUrl(bookmarkItem.getUrl(), mMinIconSizeDp, callback);
+            boolean willRunCallback =
+                    mLargeIconBridge.getLargeIconForUrl(
+                            bookmarkItem.getUrl(), mMinIconSizeDp, callback);
+            // LargeIconBridge does not invoke the callback when it declines the request (e.g. for
+            // NTP or about:blank URLs). Fall back to a generated icon so the pending task still
+            // completes; otherwise the widget never finishes loading.
+            if (!willRunCallback) {
+                callback.onLargeIconAvailable(
+                        /* icon= */ null,
+                        LargeIconBridge.DEFAULT_ICON_FALLBACK_COLOR,
+                        /* isFallbackColorDefault= */ true,
+                        IconType.INVALID);
+            }
         }
 
         @UiThread
