@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
@@ -92,6 +93,7 @@
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -100,6 +102,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
+#include "components/remote_cocoa/browser/window.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -2909,6 +2916,69 @@ IN_PROC_BROWSER_TEST_P(WebInstallFromManifestInstallDialogFeatureBrowserTest,
   EXPECT_EQ(requesting_url, installed_by.front().requesting_url());
   EXPECT_FALSE(installed_by.front().install_api_call_time().is_null());
 }
+
+#if BUILDFLAG(IS_MAC)
+// Regression test for crbug.com/572892450.
+IN_PROC_BROWSER_TEST_P(WebInstallFromManifestInstallDialogFeatureBrowserTest,
+                       FlowDialogSurvivesGracePeriod_FromPWAWindow) {
+  // Test is only relevant to the new flow dialog.
+  if (!base::FeatureList::IsEnabled(features::kWebAppInstallDialog)) {
+    GTEST_SKIP();
+  }
+
+  // Install and launch the caller PWA in an app-shim-hosted window.
+  BrowserWindowInterface* app_browser =
+      web_app::InstallWebAppFromPageGetBrowser(
+          browser(), embedded_https_test_server().GetURL(
+                         "/banners/manifest_test_page.html"));
+  ASSERT_TRUE(app_browser);
+  content::WebContents* app_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(app_contents);
+  ASSERT_TRUE(content::WaitForLoadStop(app_contents));
+
+  views::Widget* app_widget =
+      BrowserView::GetBrowserViewForBrowser(app_browser)->GetWidget();
+  ASSERT_TRUE(app_widget);
+  views::test::WidgetVisibleWaiter(app_widget).Wait();
+  ASSERT_TRUE(remote_cocoa::IsWindowRemote(app_widget->GetNativeWindow()));
+
+  // Invoke `navigator.install` from the PWA.
+  SetPermissionResponse(/*permission_granted=*/true, app_contents);
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppInstallFlowDialog");
+
+  ASSERT_TRUE(FireInstallFromManifestNoResolve(
+      embedded_https_test_server().GetURL(kValidManifestWithId),
+      embedded_https_test_server().GetURL("/some_id"), app_contents));
+
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget);
+  ASSERT_TRUE(remote_cocoa::IsWindowRemote(widget->GetNativeWindow()));
+  base::WeakPtr<views::Widget> weak_widget = widget->GetWeakPtr();
+
+  // Wait for the grace period to expire and verify the dialog stays open.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    if (!weak_widget || weak_widget->IsClosed()) {
+      return true;
+    }
+    return !WebAppInstallFlowDialogDelegate::GetAppShimGraceTimerForTesting(
+                weak_widget.get())
+                .IsRunning();
+  }));
+  ASSERT_TRUE(weak_widget);
+  ASSERT_FALSE(weak_widget->IsClosed());
+  EXPECT_FALSE(ErrorExists(app_contents));
+
+  // Cancel the dialog and verify the install request rejects with AbortError.
+  views::test::WidgetDestroyedWaiter destroyed(widget);
+  views::test::CancelDialog(widget);
+  destroyed.Wait();
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return ErrorExists(app_contents); }));
+  EXPECT_EQ(kAbortError, GetErrorName(app_contents));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_P(WebInstallFromManifestInstallDialogFeatureBrowserTest,
                        AlreadyInstalled_UserAcceptsLaunchDialog_FromPWAWindow) {

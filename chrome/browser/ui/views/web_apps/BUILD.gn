@@ -173,6 +173,7 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/ui/startup",
+      "//components/remote_cocoa/browser",
     ]
   }
   if (is_win || is_mac || is_linux) {

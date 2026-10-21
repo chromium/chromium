@@ -11,8 +11,11 @@
 #include <string>
 #include <variant>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
@@ -128,6 +131,10 @@ class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
   InstallDialogType dialog_type() const { return dialog_type_; }
 
   InstallDialogStep GetCurrentStepForTesting() const { return current_step_; }
+  [[nodiscard]] static base::AutoReset<base::TimeDelta>
+  SetAppShimGracePeriodForTesting(base::TimeDelta period);
+  static base::OneShotTimer& GetAppShimGraceTimerForTesting(
+      views::Widget* widget);
 
  protected:
   InstallDialogStep current_step_ = InstallDialogStep::kInstallDialog;
@@ -137,6 +144,10 @@ class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
   base::WeakPtr<WebAppInstallOptionsView> options_view_;
 
  private:
+  // Helpers for the macOS app-shim bounds workaround.
+  bool IsDialogLayoutSafe(views::Widget* widget) const;
+  void OnAppShimGraceExpired();
+
   void OnLearnMoreButtonClicked();
   void UpdateDialogTitleAndHeader(InstallDialogStep step);
   void UpdateFocusAndAnnounceStep(InstallDialogStep step);
@@ -172,6 +183,14 @@ class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
   bool install_success_ = false;
   std::optional<double> timer_percentage_ = 0.0;
   base::OnceClosure reparent_closure_;
+
+  // State for the macOS app-shim stale bounds workaround.
+  // TODO(crbug.com/572892450): Remove once sequenced geometry updates allow
+  // distinguishing between stale and current bounds.
+  bool use_app_shim_workaround_ = false;
+  base::OneShotTimer app_shim_grace_timer_;
+  base::WeakPtr<views::Widget> dialog_widget_;
+
   base::WeakPtrFactory<WebAppInstallFlowDialogDelegate> weak_ptr_factory_{this};
 };
 

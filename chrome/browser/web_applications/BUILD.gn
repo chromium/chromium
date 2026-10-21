@@ -1458,6 +1458,7 @@ source_set("web_applications_browser_tests") {
   if (is_mac) {
     deps += [
       "//chrome/browser/apps/app_shim",
+      "//components/remote_cocoa/browser",
       "//components/system_media_controls",
     ]
   }

@@ -24,6 +24,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -47,6 +48,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_install_intro_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_options_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_progress_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/web_applications/model/dialog_image_info.h"
@@ -72,12 +74,14 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "ui/base/class_property.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/text_elider.h"
@@ -87,6 +91,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
@@ -106,6 +111,8 @@
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #endif
+
+DEFINE_UI_CLASS_PROPERTY_TYPE(base::OneShotTimer*)
 
 namespace web_app {
 
@@ -139,6 +146,17 @@ std::ostream& operator<<(std::ostream& os, InstallOsType type) {
 }
 
 namespace {
+
+// Startup grace period before layout-based autoclosing. Allows async geometry
+// updates from the app shim to settle before deciding whether to autoclose this
+// dialog based on its bounds.
+constexpr base::TimeDelta kAppShimGracePeriod = base::Seconds(2);
+base::TimeDelta g_app_shim_grace_period = kAppShimGracePeriod;
+
+// Lets API-driven tests access the real timer through the dialog widget.
+DEFINE_UI_CLASS_PROPERTY_KEY(base::OneShotTimer*,
+                             kAppShimGraceTimerKey,
+                             nullptr)
 
 #if BUILDFLAG(IS_CHROMEOS)
 namespace cros_events = metrics::structured::events::v2::cr_os_events;
@@ -236,11 +254,23 @@ WebAppInstallFlowDialogDelegate::WebAppInstallFlowDialogDelegate(
 }
 
 WebAppInstallFlowDialogDelegate::~WebAppInstallFlowDialogDelegate() {
+  if (dialog_widget_) {
+    dialog_widget_->ClearProperty(kAppShimGraceTimerKey);
+  }
   MaybeRestoreFocusToInstallPageAction();
 }
 
 bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
   CHECK(dialog_model() && dialog_model()->host());
+
+  // During the grace period, a clipped dialog may remain open while bounds
+  // settle. Block advancement during this period if the layout is unsafe.
+  if (use_app_shim_workaround_ && app_shim_grace_timer_.IsRunning() &&
+      (current_step_ == InstallDialogStep::kInstallDialog ||
+       current_step_ == InstallDialogStep::kInstallerOptions) &&
+      (!dialog_widget_ || !IsDialogLayoutSafe(dialog_widget_.get()))) {
+    return false;
+  }
 
   // Update install dialog step.
   switch (current_step_) {
@@ -521,6 +551,9 @@ void WebAppInstallFlowDialogDelegate::OnTextFieldChangedMaybeUpdateButton(
 void WebAppInstallFlowDialogDelegate::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
+  if (use_app_shim_workaround_ && app_shim_grace_timer_.IsRunning()) {
+    return;
+  }
   if (IsWidgetCurrentSizeSmallerThanPreferredSize(
           widget, GetMaxAllowedShrinkage(dialog_type_))) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -528,6 +561,68 @@ void WebAppInstallFlowDialogDelegate::OnWidgetBoundsChanged(
         base::BindOnce(&WebAppInstallFlowDialogDelegate::CloseDialogAsIgnored,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+bool WebAppInstallFlowDialogDelegate::IsDialogLayoutSafe(
+    views::Widget* widget) const {
+  // Give the widget a chance to recover to potentially safe bounds before we
+  // check its layout.
+  widget->LayoutRootViewIfNecessary();
+
+  if (widget->GetWindowBoundsInScreen() == gfx::Rect(0, 0, 1, 1) ||
+      IsWidgetCurrentSizeSmallerThanPreferredSize(
+          widget, GetMaxAllowedShrinkage(dialog_type_))) {
+    return false;
+  }
+
+  // Only check the intro step's title and origin here. Other steps rely on the
+  // size checks above.
+  if (current_step_ != InstallDialogStep::kInstallDialog) {
+    return true;
+  }
+
+  views::View* contents_view = widget->GetContentsView();
+  auto* tracker = views::ElementTrackerViews::GetInstance();
+  const ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForWidget(widget);
+
+  auto is_fully_visible = [contents_view](views::View* view) {
+    return view && contents_view->Contains(view) && view->IsDrawn() &&
+           !view->size().IsEmpty() &&
+           view->GetVisibleBounds() == view->GetLocalBounds();
+  };
+
+  return is_fully_visible(tracker->GetFirstMatchingView(
+             kSimpleInstallDialogAppTitle, context,
+             /*require_visible=*/true)) &&
+         is_fully_visible(tracker->GetFirstMatchingView(
+             kSimpleInstallDialogAppInfoLabel, context,
+             /*require_visible=*/true));
+}
+
+void WebAppInstallFlowDialogDelegate::OnAppShimGraceExpired() {
+  if (!dialog_widget_) {
+    return;
+  }
+  if (!IsDialogLayoutSafe(dialog_widget_.get())) {
+    CloseDialogAsIgnored();
+  }
+}
+
+base::AutoReset<base::TimeDelta>
+WebAppInstallFlowDialogDelegate::SetAppShimGracePeriodForTesting(
+    base::TimeDelta period) {
+  CHECK_IS_TEST();
+  CHECK(!period.is_negative());
+  return base::AutoReset<base::TimeDelta>(&g_app_shim_grace_period, period);
+}
+
+base::OneShotTimer&
+WebAppInstallFlowDialogDelegate::GetAppShimGraceTimerForTesting(
+    views::Widget* widget) {
+  CHECK_IS_TEST();
+  CHECK(widget);
+  return CHECK_DEREF(widget->GetProperty(kAppShimGraceTimerKey));
 }
 
 void WebAppInstallFlowDialogDelegate::CloseDialogAsIgnored() {
@@ -872,6 +967,19 @@ WebAppInstallFlowDialogDelegate::Show(
       std::move(callback), std::move(iph_state), prefs, tracker, install_type,
       os_type, std::move(progress_delay));
   auto delegate_weak_ptr = delegate->AsWeakPtr();
+#if BUILDFLAG(IS_MAC)
+  // Enable the app-shim workaround only for simple dialogs in standalone
+  // macOS app windows. Explicitly scope this to the simple dialog, as web
+  // install does not currently support the other dialog types, and
+  // crbug.com/572892450 tracks the all-up fix for all types.
+  if (install_type == InstallDialogType::kSimple &&
+      os_type == InstallOsType::kMac) {
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents);
+    delegate->use_app_shim_workaround_ =
+        tab && AppBrowserController::IsWebApp(tab->GetBrowserWindowInterface());
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   // kInstallDialog
   auto intro_view = WebAppInstallIntroView::Create(
@@ -1019,8 +1127,19 @@ WebAppInstallFlowDialogDelegate::Show(
 
   views::Widget* widget = constrained_window::ShowWebModalDialogViews(
       dialog.release(), web_contents);
-  if (IsWidgetCurrentSizeSmallerThanPreferredSize(
-          widget, GetMaxAllowedShrinkage(install_type))) {
+  if (delegate_weak_ptr->use_app_shim_workaround_) {
+    // The app shim can report pre-banner bounds after the final size is set.
+    // Intentionally defer layout-based autoclosing until the grace period
+    // expires.
+    delegate_weak_ptr->dialog_widget_ = widget->GetWeakPtr();
+    widget->SetProperty(kAppShimGraceTimerKey,
+                        &delegate_weak_ptr->app_shim_grace_timer_);
+    delegate_weak_ptr->app_shim_grace_timer_.Start(
+        FROM_HERE, g_app_shim_grace_period,
+        base::BindOnce(&WebAppInstallFlowDialogDelegate::OnAppShimGraceExpired,
+                       delegate_weak_ptr));
+  } else if (IsWidgetCurrentSizeSmallerThanPreferredSize(
+                 widget, GetMaxAllowedShrinkage(install_type))) {
     delegate_weak_ptr->CloseDialogAsIgnored();
     return nullptr;
   }

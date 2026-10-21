@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <optional>
+
+#include "base/auto_reset.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -12,6 +16,8 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -28,12 +34,14 @@
 #include "chrome/browser/ui/views/web_apps/web_app_install_options_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_progress_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -42,6 +50,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -60,6 +69,12 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "components/permissions/permission_request_manager.h"
+#include "components/remote_cocoa/browser/window.h"
+#include "third_party/blink/public/common/features_generated.h"
+#endif
 
 namespace web_app {
 
@@ -435,6 +450,557 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
             manager->state_for_testing());
   EXPECT_TRUE(manager->IsPromptAvailableForTesting());
 }
+
+#if BUILDFLAG(IS_MAC)
+// Provisional duration to keep the grace period active during test setup.
+constexpr base::TimeDelta kAppShimGracePeriodForTesting = base::Seconds(200);
+
+// A deliberately reduced dialog size used to verify recovery from small bounds.
+constexpr gfx::Size kSmallDialogSize(448, 200);
+class WebAppInstallFlowStartupBrowserTest
+    : public WebAppInstallFlowBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    WebAppInstallFlowBrowserTest::SetUpOnMainThread();
+    // Keep the app-shim grace period long enough that tests can set up dialog
+    // state before it expires. The override lives for the whole test.
+    grace_period_override_ =
+        WebAppInstallFlowDialogDelegate::SetAppShimGracePeriodForTesting(
+            kAppShimGracePeriodForTesting);
+  }
+
+  // Installs the test app and waits for the native app window to appear.
+  // Returns the WebContents of the PWA window, or nullptr.
+  content::WebContents* InstallAndLaunchPwa() {
+    BrowserWindowInterface* app_browser = InstallWebAppFromPageGetBrowser(
+        browser(), embedded_https_test_server().GetURL(
+                       "/banners/manifest_test_page.html"));
+    if (!app_browser) {
+      return nullptr;
+    }
+
+    content::WebContents* app_contents =
+        app_browser->GetTabStripModel()->GetActiveWebContents();
+    if (!content::WaitForLoadStop(app_contents)) {
+      return nullptr;
+    }
+
+    views::Widget* app_widget =
+        BrowserView::GetBrowserViewForBrowser(app_browser)->GetWidget();
+    views::test::WidgetVisibleWaiter(app_widget).Wait();
+    return app_contents;
+  }
+
+  // Fires navigator.install() from `app_contents` and waits for the install
+  // flow dialog to appear. Returns a WeakPtr to the dialog widget, or null if
+  // the dialog never showed.
+  base::WeakPtr<views::Widget> FireInstallAndWaitForFlowDialog(
+      content::WebContents* app_contents) {
+    // Installing from a manifest URL prompts for permission.
+    permissions::PermissionRequestManager::FromWebContents(app_contents)
+        ->set_auto_response_for_test(permissions::PermissionRequestManager::
+                                         AutoResponseType::ACCEPT_ALL);
+
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "WebAppInstallFlowDialog");
+    // Fire and forget so we can inspect the dialog.
+    EXPECT_TRUE(content::ExecJs(
+        app_contents,
+        content::JsReplace(
+            "navigator.install({manifest: $1, manifestId: $2})"
+            ".catch(error => { window.installError = error.name; });",
+            embedded_https_test_server()
+                .GetURL("/banners/manifest_with_id.json")
+                .spec(),
+            embedded_https_test_server().GetURL("/some_id").spec()),
+        content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+    views::Widget* widget = waiter.WaitIfNeededAndGet();
+    if (!widget) {
+      return nullptr;
+    }
+    views::test::WidgetVisibleWaiter(widget).Wait();
+    return widget->GetWeakPtr();
+  }
+
+  // Waits until the install flow dialog's origin label is fully laid out and
+  // visible. Returns false if the dialog is destroyed while waiting.
+  bool WaitForFlowDialogLaidOut() {
+    const bool completed = base::test::RunUntil([this]() {
+      if (!widget_) {
+        return true;
+      }
+      // Force layout when we poll, so we can accurately test clipping.
+      widget_->LayoutRootViewIfNecessary();
+      auto* origin =
+          views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+              kSimpleInstallDialogAppInfoLabel,
+              views::ElementTrackerViews::GetContextForWidget(widget_.get()));
+      return origin && origin->IsDrawn() && !origin->size().IsEmpty() &&
+             origin->GetVisibleBounds() == origin->GetLocalBounds();
+    });
+    return completed && widget_;
+  }
+
+  base::OneShotTimer& GetAppShimGraceTimer() {
+    return WebAppInstallFlowDialogDelegate::GetAppShimGraceTimerForTesting(
+        widget_.get());
+  }
+
+  views::View* GetOriginView() {
+    return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+        kSimpleInstallDialogAppInfoLabel,
+        views::ElementTrackerViews::GetContextForWidget(widget_.get()));
+  }
+
+  bool IsDialogViewVisible(ui::ElementIdentifier id) {
+    return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+        id, views::ElementTrackerViews::GetContextForWidget(widget_.get()),
+        /*require_visible=*/true);
+  }
+
+  base::WeakPtr<views::Widget> widget_;
+
+ private:
+  base::test::ScopedFeatureList web_install_feature_list_{
+      blink::features::kWebAppInstallation};
+  std::optional<base::AutoReset<base::TimeDelta>> grace_period_override_;
+};
+
+// Bounds recovery before the grace period expires prevents dialog dismissal.
+IN_PROC_BROWSER_TEST_F(WebAppInstallFlowStartupBrowserTest,
+                       RecoversFromSmallBoundsBeforeGraceExpires) {
+  content::WebContents* app_contents = InstallAndLaunchPwa();
+  ASSERT_TRUE(app_contents);
+  ASSERT_TRUE(
+      remote_cocoa::IsWindowRemote(app_contents->GetTopLevelNativeWindow()));
+
+  // Execute `navigator.install` from the PWA.
+  widget_ = FireInstallAndWaitForFlowDialog(app_contents);
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(remote_cocoa::IsWindowRemote(widget_->GetNativeWindow()));
+
+  // Wait for the intro layout to settle and verify the grace period is active.
+  ASSERT_TRUE(WaitForFlowDialogLaidOut());
+  EXPECT_TRUE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kIntroViewId));
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+  EXPECT_EQ(kAppShimGracePeriodForTesting,
+            GetAppShimGraceTimer().GetCurrentDelay());
+
+  const base::TimeTicks deadline = GetAppShimGraceTimer().desired_run_time();
+  const gfx::Rect safe_bounds = widget_->GetWindowBoundsInScreen();
+
+  // Simulate a late, stale bounds update from the app shim.
+  widget_->SetSize(kSmallDialogSize);
+  ASSERT_TRUE(widget_);
+  ASSERT_EQ(kSmallDialogSize, widget_->GetSize());
+
+  // The grace period allows the undersized dialog to stay open, but it must not
+  // advance past the intro view or extend the original deadline.
+  AcceptWidgetAndMoveForward(widget_.get());
+  ASSERT_TRUE(widget_);
+  EXPECT_TRUE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kIntroViewId));
+  EXPECT_EQ(deadline, GetAppShimGraceTimer().desired_run_time());
+
+  // Restore safe bounds before the grace period expires.
+  widget_->SetBounds(safe_bounds);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !widget_ || widget_->GetWindowBoundsInScreen() == safe_bounds;
+  }));
+  ASSERT_TRUE(widget_);
+  EXPECT_EQ(deadline, GetAppShimGraceTimer().desired_run_time());
+
+  // End the grace period. The dialog should remain open.
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+  GetAppShimGraceTimer().FireNow();
+  ASSERT_TRUE(widget_);
+
+  // With safe bounds restored, advancing is allowed.
+  AcceptWidgetAndMoveForward(widget_.get());
+  ASSERT_TRUE(widget_);
+  EXPECT_TRUE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kOptionsViewId));
+
+  // Clean up the dialog.
+  views::test::WidgetDestroyedWaiter destroyed(widget_.get());
+  widget_->widget_delegate()->AsDialogDelegate()->CancelDialog();
+  destroyed.Wait();
+}
+
+// A pending resize is applied before checking layout when grace expires.
+IN_PROC_BROWSER_TEST_F(WebAppInstallFlowStartupBrowserTest,
+                       FlushesPendingResizeWhenGraceExpires) {
+  content::WebContents* app_contents = InstallAndLaunchPwa();
+  ASSERT_TRUE(app_contents);
+  ASSERT_TRUE(
+      remote_cocoa::IsWindowRemote(app_contents->GetTopLevelNativeWindow()));
+
+  // Execute `navigator.install` from the PWA.
+  widget_ = FireInstallAndWaitForFlowDialog(app_contents);
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(remote_cocoa::IsWindowRemote(widget_->GetNativeWindow()));
+
+  // Wait for the intro layout to settle and verify the grace period is active.
+  ASSERT_TRUE(WaitForFlowDialogLaidOut());
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+  ASSERT_TRUE(widget_->is_autosized());
+
+  // Increase the preferred height enough so the dialog is temporarily
+  // undersized (the resize task is posted asynchronously).
+  const gfx::Size initial_size = widget_->GetSize();
+  gfx::Size preferred_size = widget_->GetContentsView()->GetPreferredSize();
+  preferred_size.set_height(initial_size.height() + 100);
+  widget_->GetContentsView()->SetPreferredSize(preferred_size);
+  ASSERT_EQ(initial_size, widget_->GetSize());
+  ASSERT_TRUE(IsWidgetCurrentSizeSmallerThanPreferredSize(
+      widget_.get(), GetMaxAllowedShrinkage(InstallDialogType::kSimple)));
+
+  // Expire the grace period before the posted resize task runs. The dialog
+  // should resize synchronously and remain open.
+  GetAppShimGraceTimer().FireNow();
+  ASSERT_TRUE(widget_);
+  ASSERT_FALSE(widget_->IsClosed());
+  EXPECT_FALSE(GetAppShimGraceTimer().IsRunning());
+  EXPECT_GT(widget_->GetSize().height(), initial_size.height());
+  EXPECT_FALSE(IsWidgetCurrentSizeSmallerThanPreferredSize(
+      widget_.get(), GetMaxAllowedShrinkage(InstallDialogType::kSimple)));
+
+  // Wait for queued tasks and verify the intro is still visible.
+  ASSERT_TRUE(WaitForFlowDialogLaidOut());
+  ASSERT_FALSE(widget_->IsClosed());
+  EXPECT_TRUE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kIntroViewId));
+
+  // Clean up the dialog.
+  views::test::WidgetDestroyedWaiter destroyed(widget_.get());
+  widget_->widget_delegate()->AsDialogDelegate()->CancelDialog();
+  destroyed.Wait();
+}
+
+// The grace period must not allow installation from an undersized options view.
+// Once safe bounds are restored, installation can proceed.
+IN_PROC_BROWSER_TEST_F(
+    WebAppInstallFlowStartupBrowserTest,
+    BlocksInstallWhileInstallerOptionsUndersizedDuringGrace) {
+  content::WebContents* app_contents = InstallAndLaunchPwa();
+  ASSERT_TRUE(app_contents);
+  ASSERT_TRUE(
+      remote_cocoa::IsWindowRemote(app_contents->GetTopLevelNativeWindow()));
+
+  // Execute `navigator.install` from the PWA.
+  widget_ = FireInstallAndWaitForFlowDialog(app_contents);
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(remote_cocoa::IsWindowRemote(widget_->GetNativeWindow()));
+
+  // Wait for the intro layout to settle and verify the grace period is active.
+  ASSERT_TRUE(WaitForFlowDialogLaidOut());
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+
+  // Advance to installer options and wait for the dialog to reach safe bounds.
+  AcceptWidgetAndMoveForward(widget_.get());
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kOptionsViewId));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !widget_ || !IsWidgetCurrentSizeSmallerThanPreferredSize(
+                           widget_.get(),
+                           GetMaxAllowedShrinkage(InstallDialogType::kSimple));
+  }));
+  ASSERT_TRUE(widget_);
+
+  // Save the safe bounds and the grace period's deadline, and observe
+  // installation attempts.
+  const gfx::Rect safe_bounds = widget_->GetWindowBoundsInScreen();
+  const base::TimeTicks deadline = GetAppShimGraceTimer().desired_run_time();
+  base::UserActionTester action_tester;
+  WebAppTestInstallObserver install_observer(profile());
+  install_observer.BeginListening();
+
+  // Shrink the options dialog while size-based dismissal is still deferred.
+  widget_->SetSize(kSmallDialogSize);
+  ASSERT_TRUE(widget_);
+  ASSERT_EQ(kSmallDialogSize, widget_->GetSize());
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+  ASSERT_TRUE(IsWidgetCurrentSizeSmallerThanPreferredSize(
+      widget_.get(), GetMaxAllowedShrinkage(InstallDialogType::kSimple)));
+
+  // Accepting undersized options must not start installation, advance to
+  // progress, or extend the grace period's original deadline.
+  AcceptWidgetAndMoveForward(widget_.get());
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kOptionsViewId));
+  EXPECT_FALSE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kProgressViewId));
+  EXPECT_EQ(0, action_tester.GetActionCount("WebAppSimpleDialogAccepted"));
+  EXPECT_EQ(deadline, GetAppShimGraceTimer().desired_run_time());
+
+  // Restore safe bounds before the grace period expires, without changing its
+  // deadline.
+  widget_->SetBounds(safe_bounds);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !widget_ || (widget_->GetWindowBoundsInScreen() == safe_bounds &&
+                        !IsWidgetCurrentSizeSmallerThanPreferredSize(
+                            widget_.get(), GetMaxAllowedShrinkage(
+                                               InstallDialogType::kSimple)));
+  }));
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+  EXPECT_EQ(deadline, GetAppShimGraceTimer().desired_run_time());
+
+  // With safe bounds restored, installation is allowed during the grace period.
+  AcceptWidgetAndMoveForward(widget_.get());
+  ASSERT_TRUE(widget_);
+  EXPECT_FALSE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kOptionsViewId));
+  EXPECT_EQ(1, action_tester.GetActionCount("WebAppSimpleDialogAccepted"));
+  EXPECT_FALSE(install_observer.Wait().empty());
+  ASSERT_TRUE(widget_);
+
+  // Wait for the installed app's success view.
+  AdvanceToSuccessfulStep(widget_.get());
+  ASSERT_TRUE(widget_);
+  EXPECT_TRUE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kSuccessfulViewId));
+  EXPECT_EQ(2u, provider().registrar_unsafe().GetAppIds().size());
+
+  // Clean up the dialog.
+  views::test::WidgetDestroyedWaiter destroyed(widget_.get());
+  widget_->widget_delegate()->AsDialogDelegate()->CancelDialog();
+  destroyed.Wait();
+}
+
+// Hiding the origin during the grace period blocks advancement without
+// disabling the button. Restoring the origin allows advancement again.
+IN_PROC_BROWSER_TEST_F(WebAppInstallFlowStartupBrowserTest,
+                       BlocksAdvanceWhileOriginIsClipped) {
+  content::WebContents* app_contents = InstallAndLaunchPwa();
+  ASSERT_TRUE(app_contents);
+  ASSERT_TRUE(
+      remote_cocoa::IsWindowRemote(app_contents->GetTopLevelNativeWindow()));
+
+  // Execute `navigator.install` from the PWA.
+  widget_ = FireInstallAndWaitForFlowDialog(app_contents);
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(remote_cocoa::IsWindowRemote(widget_->GetNativeWindow()));
+
+  // Wait for the intro layout to settle and verify the grace period is active.
+  ASSERT_TRUE(WaitForFlowDialogLaidOut());
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+
+  // Hide the origin to exercise the visibility guard independently of size.
+  views::View* origin = GetOriginView();
+  ASSERT_NE(origin, nullptr);
+  origin->SetVisible(false);
+
+  // The enabled button must not advance past the intro view while the origin
+  // is invisible, even during the grace period.
+  auto* dialog = widget_->widget_delegate()->AsDialogDelegate();
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  AcceptWidgetAndMoveForward(widget_.get());
+  ASSERT_TRUE(widget_);
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  EXPECT_TRUE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kIntroViewId));
+  EXPECT_FALSE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kOptionsViewId));
+
+  // Restore the origin. With safe layout restored, advancing is allowed.
+  origin->SetVisible(true);
+  widget_->LayoutRootViewIfNecessary();
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::mojom::DialogButton::kOk));
+  AcceptWidgetAndMoveForward(widget_.get());
+  ASSERT_TRUE(widget_);
+  EXPECT_FALSE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kIntroViewId));
+  EXPECT_TRUE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kOptionsViewId));
+
+  // Clean up the dialog.
+  views::test::WidgetDestroyedWaiter destroyed(widget_.get());
+  widget_->widget_delegate()->AsDialogDelegate()->CancelDialog();
+  destroyed.Wait();
+}
+
+// The grace period must not allow advancement when the app title is invisible,
+// even if the origin remains visible.
+IN_PROC_BROWSER_TEST_F(WebAppInstallFlowStartupBrowserTest,
+                       BlocksAdvanceWhileTitleIsClipped) {
+  content::WebContents* app_contents = InstallAndLaunchPwa();
+  ASSERT_TRUE(app_contents);
+  ASSERT_TRUE(
+      remote_cocoa::IsWindowRemote(app_contents->GetTopLevelNativeWindow()));
+
+  // Execute `navigator.install` from the PWA.
+  widget_ = FireInstallAndWaitForFlowDialog(app_contents);
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(remote_cocoa::IsWindowRemote(widget_->GetNativeWindow()));
+
+  // Wait for the intro layout to settle and verify the grace period is active.
+  ASSERT_TRUE(WaitForFlowDialogLaidOut());
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+
+  // Hide the title to exercise its visibility guard independently of size.
+  views::View* title =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kSimpleInstallDialogAppTitle,
+          views::ElementTrackerViews::GetContextForWidget(widget_.get()));
+  ASSERT_NE(title, nullptr);
+  title->SetVisible(false);
+
+  // The enabled button must not advance past the intro view while the title
+  // is invisible, even during the grace period.
+  EXPECT_TRUE(
+      widget_->widget_delegate()->AsDialogDelegate()->IsDialogButtonEnabled(
+          ui::mojom::DialogButton::kOk));
+  AcceptWidgetAndMoveForward(widget_.get());
+  ASSERT_TRUE(widget_);
+  EXPECT_TRUE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kIntroViewId));
+  EXPECT_FALSE(
+      IsDialogViewVisible(WebAppInstallFlowDialogDelegate::kOptionsViewId));
+
+  // Clean up the dialog.
+  views::test::WidgetDestroyedWaiter destroyed(widget_.get());
+  widget_->widget_delegate()->AsDialogDelegate()->CancelDialog();
+  destroyed.Wait();
+}
+
+// An invisible origin when the grace period expires causes dialog dismissal.
+IN_PROC_BROWSER_TEST_F(WebAppInstallFlowStartupBrowserTest,
+                       ClosesIfStillClippedWhenGraceExpires) {
+  content::WebContents* app_contents = InstallAndLaunchPwa();
+  ASSERT_TRUE(app_contents);
+  ASSERT_TRUE(
+      remote_cocoa::IsWindowRemote(app_contents->GetTopLevelNativeWindow()));
+
+  // Execute `navigator.install` from the PWA.
+  widget_ = FireInstallAndWaitForFlowDialog(app_contents);
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(remote_cocoa::IsWindowRemote(widget_->GetNativeWindow()));
+
+  // Wait for the intro layout to settle and verify the grace period is active.
+  ASSERT_TRUE(WaitForFlowDialogLaidOut());
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+
+  // Keep the origin invisible until the grace period expires.
+  views::View* origin = GetOriginView();
+  ASSERT_NE(origin, nullptr);
+  origin->SetVisible(false);
+
+  // End the grace period. The unsafe dialog should be dismissed.
+  views::test::WidgetDestroyedWaiter destroyed(widget_.get());
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+  GetAppShimGraceTimer().FireNow();
+  destroyed.Wait();
+}
+
+// Placeholder 1x1 bounds when the grace period expires cause dialog dismissal.
+IN_PROC_BROWSER_TEST_F(WebAppInstallFlowStartupBrowserTest,
+                       ClosesIfStillOneByOneWhenGraceExpires) {
+  content::WebContents* app_contents = InstallAndLaunchPwa();
+  ASSERT_TRUE(app_contents);
+  ASSERT_TRUE(
+      remote_cocoa::IsWindowRemote(app_contents->GetTopLevelNativeWindow()));
+
+  // Execute `navigator.install` from the PWA.
+  widget_ = FireInstallAndWaitForFlowDialog(app_contents);
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(remote_cocoa::IsWindowRemote(widget_->GetNativeWindow()));
+
+  // Wait for the intro layout to settle and verify the grace period is active.
+  ASSERT_TRUE(WaitForFlowDialogLaidOut());
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+
+  // Simulate the app shim's async kWindowSizeDeterminedLater bounds update.
+  widget_->SetBounds(gfx::Rect(0, 0, 1, 1));
+  ASSERT_TRUE(widget_);
+  ASSERT_EQ(gfx::Size(1, 1), widget_->GetSize());
+
+  views::test::WidgetDestroyedWaiter destroyed(widget_.get());
+  ASSERT_TRUE(widget_);
+
+  // Expire the grace period and verify that the dialog is autoclosed.
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+  GetAppShimGraceTimer().FireNow();
+  destroyed.Wait();
+}
+
+// After the grace period expires, undersized bounds queue a close task.
+IN_PROC_BROWSER_TEST_F(WebAppInstallFlowStartupBrowserTest,
+                       ClosesIfUndersizedAfterGrace) {
+  content::WebContents* app_contents = InstallAndLaunchPwa();
+  ASSERT_TRUE(app_contents);
+  ASSERT_TRUE(
+      remote_cocoa::IsWindowRemote(app_contents->GetTopLevelNativeWindow()));
+
+  // Execute `navigator.install` from the PWA.
+  widget_ = FireInstallAndWaitForFlowDialog(app_contents);
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(remote_cocoa::IsWindowRemote(widget_->GetNativeWindow()));
+
+  // Wait for the intro layout to settle and verify the grace period is active.
+  ASSERT_TRUE(WaitForFlowDialogLaidOut());
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+
+  // End the grace period while the dialog is safely sized.
+  GetAppShimGraceTimer().FireNow();
+  ASSERT_TRUE(widget_);
+
+  // After the grace period, undersized bounds must post the normal close task.
+  views::test::WidgetDestroyedWaiter destroyed(widget_.get());
+  widget_->SetSize(kSmallDialogSize);
+  ASSERT_TRUE(widget_);
+  ASSERT_EQ(kSmallDialogSize, widget_->GetSize());
+
+  // Wait for the posted close task to destroy the dialog.
+  destroyed.Wait();
+}
+
+// Recovery after the grace period cannot rescue a dialog whose unsafe bounds
+// have already caused a close task to be posted.
+IN_PROC_BROWSER_TEST_F(WebAppInstallFlowStartupBrowserTest,
+                       ClosesAfterGraceEvenIfBoundsRecover) {
+  content::WebContents* app_contents = InstallAndLaunchPwa();
+  ASSERT_TRUE(app_contents);
+  ASSERT_TRUE(
+      remote_cocoa::IsWindowRemote(app_contents->GetTopLevelNativeWindow()));
+
+  // Execute `navigator.install` from the PWA.
+  widget_ = FireInstallAndWaitForFlowDialog(app_contents);
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(remote_cocoa::IsWindowRemote(widget_->GetNativeWindow()));
+
+  // Wait for the intro layout to settle and verify the grace period is active.
+  ASSERT_TRUE(WaitForFlowDialogLaidOut());
+  ASSERT_TRUE(widget_);
+  ASSERT_TRUE(GetAppShimGraceTimer().IsRunning());
+
+  // End the grace period while the dialog is safely sized.
+  GetAppShimGraceTimer().FireNow();
+  ASSERT_TRUE(widget_);
+
+  // Save the safe bounds, then shrink the dialog to trigger a close task.
+  const gfx::Rect safe_bounds = widget_->GetWindowBoundsInScreen();
+  views::test::WidgetDestroyedWaiter destroyed(widget_.get());
+  widget_->SetSize(kSmallDialogSize);
+  ASSERT_TRUE(widget_);
+  ASSERT_EQ(kSmallDialogSize, widget_->GetSize());
+
+  // Restoring safe bounds must not cancel an already-posted close task.
+  widget_->SetBounds(safe_bounds);
+  ASSERT_TRUE(widget_);
+  ASSERT_EQ(safe_bounds, widget_->GetWindowBoundsInScreen());
+
+  // The dialog should still be destroyed by the posted close task.
+  destroyed.Wait();
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
 
