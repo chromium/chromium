@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ui/browser_window/public/browser_collection_observer.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
-  "+chrome/browser/web_applications",
   "+chrome/common",
   "+chrome/grit",
   "+chrome/test/base",
@@ -34,10 +33,10 @@ specific_include_rules = {
   # Only tests need these //chrome dependencies.
   ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
     "+chrome/browser/safe_browsing",
+    "+chrome/browser/web_applications",
   ],
-  ".*_browsertest\\.cc": [
+  "cloud_upload_dialog_browsertest\\.cc": [
     "+chrome/browser/ui/browser_window.h",
-    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   ],
 
   "drive_upload_handler_browsertest\\.cc": [

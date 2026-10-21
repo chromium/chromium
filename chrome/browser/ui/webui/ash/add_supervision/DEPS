@@ -17,7 +17,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/apps/app_service",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/dialogs/browser_dialogs.h",
   "+chrome/browser/ui/views/chrome_web_dialog_view.h",
   "+chrome/grit",
@@ -32,6 +31,7 @@ specific_include_rules = {
     "+chrome/browser/browser_process.h",
     "+chrome/browser/global_features.h",
     "+chrome/browser/signin/identity_test_environment_profile_adaptor.h",
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
   ],
 }

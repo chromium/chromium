@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/extensions/extension_tab_util.h",
   "+chrome/browser/profiles",
   "+chrome/browser/speech/extension_api",
-  "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/webui/settings",
   "+chrome/grit",
   "+chrome/test",
@@ -32,5 +31,8 @@ specific_include_rules = {
   ],
   'switch_access_handler\\.cc': [
     "+ash/accessibility/accessibility_controller.h",
-  ]
+  ],
+  "(accessibility_handler_browsertest\\.cc|switch_access_handler_browsertest\\.cc)": [
+    "+chrome/browser/ui/browser_window/public",
+  ],
 }
