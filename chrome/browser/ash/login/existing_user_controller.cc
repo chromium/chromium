@@ -1586,9 +1586,7 @@ void ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin(
       break;
     }
   }
-  // TODO(crbug.com/572624918): CHECK-exclusion: Convert to a CHECK once we
-  // are confident it won't be triggered.
-  DCHECK(!keyboard_layout.empty());
+  CHECK(!keyboard_layout.empty());
   SYSLOG(INFO) << "MGS: Setting keyboard layout '" << keyboard_layout << "'";
   new_user_context.SetPublicSessionInputMethod(keyboard_layout);
 

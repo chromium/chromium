@@ -6,12 +6,15 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/check_deref.h"
 #include "base/compiler_specific.h"
+#include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -28,11 +31,33 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
+#include "ui/base/ime/ash/fake_input_method_delegate.h"
+#include "ui/base/ime/ash/input_method_descriptor.h"
+#include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/ime/ash/mock_component_extension_ime_manager_delegate.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 namespace ash {
 
 namespace {
+
+class TestInputMethodManager : public MockInputMethodManagerWithInputMethods {
+ public:
+  TestInputMethodManager() : util_(&delegate_) {
+    delegate_.set_get_localized_string_callback(
+        base::BindRepeating(&l10n_util::GetStringUTF16));
+  }
+
+  input_method::InputMethodUtil* GetInputMethodUtil() override {
+    return &util_;
+  }
+
+ private:
+  input_method::FakeInputMethodDelegate delegate_;
+  input_method::InputMethodUtil util_;
+};
 
 void VerifyOnlyUILanguages(const base::ListValue& list) {
   for (const auto& value : list) {
@@ -76,7 +101,7 @@ class L10nUtilTest : public testing::Test {
   }
 
  protected:
-  MockInputMethodManagerWithInputMethods input_manager_;
+  TestInputMethodManager input_manager_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -243,6 +268,59 @@ TEST_F(L10nUtilTest, GetUILanguageListWithMostRelevant) {
   VerifyLanguageCode(list, 0, "it");
   VerifyLanguageCode(list, 1, "de");
   VerifyLanguageCode(list, 2, kMostRelevantLanguagesDivider);
+}
+
+TEST_F(L10nUtilTest, GetKeyboardLayoutsForLocaleSelectsLocaleLayout) {
+  const std::string us_ime_id =
+      input_method::InputMethodUtil::GetFallbackInputMethodDescriptor().id();
+  const std::string fr_ime_id =
+      extension_ime_util::GetInputMethodIDByEngineID("xkb:fr::fra");
+  input_manager_.GetInputMethodUtil()->AppendInputMethods(
+      {input_method::InputMethodDescriptor(
+          fr_ime_id, /*name=*/"", /*indicator=*/"FR", /*keyboard_layout=*/"fr",
+          /*language_codes=*/{"fr"}, /*is_login_keyboard=*/true,
+          /*options_page_url=*/GURL(), /*input_view_url=*/GURL(),
+          /*handwriting_language=*/std::nullopt)});
+
+  base::test::TestFuture<base::ListValue> future;
+  GetKeyboardLayoutsForLocale(future.GetCallback(), "fr", &input_manager_);
+
+  const base::ListValue& layouts = future.Get();
+  ASSERT_EQ(2u, layouts.size());
+  EXPECT_EQ(us_ime_id, *layouts[0].GetDict().FindString("value"));
+  EXPECT_FALSE(layouts[0].GetDict().FindBool("selected").value_or(true));
+  EXPECT_EQ(fr_ime_id, *layouts[1].GetDict().FindString("value"));
+  EXPECT_TRUE(layouts[1].GetDict().FindBool("selected").value_or(false));
+}
+
+TEST_F(L10nUtilTest,
+       GetKeyboardLayoutsForLocaleSelectsFallbackWhenNoXkbLayoutForLocale) {
+  const std::string de_ime_id =
+      extension_ime_util::GetInputMethodIDByEngineID("xkb:de::ger");
+  const std::string pinyin_ime_id =
+      extension_ime_util::GetInputMethodIDByEngineID("zh-t-i0-pinyin");
+  input_method::InputMethodUtil* util = input_manager_.GetInputMethodUtil();
+  util->ResetInputMethods(
+      {input_method::InputMethodDescriptor(
+           de_ime_id, /*name=*/"", /*indicator=*/"DE", /*keyboard_layout=*/"de",
+           /*language_codes=*/{"de"}, /*is_login_keyboard=*/true,
+           /*options_page_url=*/GURL(), /*input_view_url=*/GURL(),
+           /*handwriting_language=*/std::nullopt),
+       input_method::InputMethodDescriptor(
+           pinyin_ime_id, /*name=*/"Pinyin", /*indicator=*/"CN",
+           /*keyboard_layout=*/"us", /*language_codes=*/{"zh-CN"},
+           /*is_login_keyboard=*/false, /*options_page_url=*/GURL(),
+           /*input_view_url=*/GURL(),
+           /*handwriting_language=*/std::nullopt)});
+  util->SetHardwareKeyboardLayoutForTesting("xkb:de::ger");
+
+  base::test::TestFuture<base::ListValue> future;
+  GetKeyboardLayoutsForLocale(future.GetCallback(), "zh-CN", &input_manager_);
+
+  const base::ListValue& layouts = future.Get();
+  ASSERT_EQ(1u, layouts.size());
+  EXPECT_EQ(de_ime_id, *layouts[0].GetDict().FindString("value"));
+  EXPECT_TRUE(layouts[0].GetDict().FindBool("selected").value_or(false));
 }
 
 class L10nUtilTestWithFjordOobe : public L10nUtilTest {

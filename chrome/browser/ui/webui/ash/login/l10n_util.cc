@@ -24,6 +24,7 @@
 #include "base/i18n/rtl.h"
 #include "base/i18n/tag_converters.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -298,8 +299,7 @@ void GetAndMergeKeyboardLayoutsForLocale(input_method::InputMethodUtil* util,
   layouts->insert(layouts->end(), layouts_from_locale.begin(),
                   layouts_from_locale.end());
   if (selected_locale->empty() && !layouts_from_locale.empty()) {
-    *selected_locale =
-        util->GetInputMethodDescriptorFromId(layouts_from_locale[0])->id();
+    *selected_locale = layouts_from_locale[0];
   }
 }
 
@@ -320,6 +320,18 @@ void GetKeyboardLayoutsForResolvedLocale(
                                       &layouts);
   GetAndMergeKeyboardLayoutsForLocale(util, resolved_locale, &selected,
                                       &layouts);
+  // `GetAndMergeKeyboardLayoutsForLocale` only considers XKB keyboard layouts.
+  // For locales whose input methods are exclusively non-XKB IMEs (e.g. "hi",
+  // "km", "zh-CN"), `selected` remains empty, so fall back to the first
+  // hardware keyboard layout.
+  if (selected.empty()) {
+    CHECK(!layouts.empty());
+    LOG(WARNING) << "No XKB keyboard layout found for requested_locale='"
+                 << requested_locale << "', resolved_locale='"
+                 << resolved_locale << "'; falling back to '" << layouts[0]
+                 << "'";
+    selected = layouts[0];
+  }
 
   base::ListValue input_methods_list;
   std::set<std::string> input_methods_added;

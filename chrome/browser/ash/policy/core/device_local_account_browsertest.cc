@@ -1985,6 +1985,40 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LocaleWithNoIME) {
                     ->GetNumEnabledInputMethods());
 }
 
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LocaleWithNoKeyboardLayout) {
+  // Specify a locale ("hi") that has only non-keyboard-layout IMEs and no XKB
+  // keyboard layout.
+  constexpr auto kSingleLocaleWithNoKeyboardLayout =
+      std::to_array<std::string_view>({"hi"});
+  auto* input_method_manager = ash::input_method::InputMethodManager::Get();
+  std::vector<std::string> layouts_from_locale;
+  input_method_manager->GetInputMethodUtil()->GetInputMethodIdsFromLanguageCode(
+      kSingleLocaleWithNoKeyboardLayout[0],
+      ash::input_method::kKeyboardLayoutsOnly, &layouts_from_locale);
+  ASSERT_TRUE(layouts_from_locale.empty());
+
+  SetRecommendedLocales(kSingleLocaleWithNoKeyboardLayout);
+  UploadAndInstallDeviceLocalAccountPolicy();
+  AddPublicSessionToDevicePolicy(kAccountId1);
+  EnableAutoLogin();
+
+  WaitForPolicy();
+
+  WaitForSessionStart();
+
+  EXPECT_EQ(kSingleLocaleWithNoKeyboardLayout[0],
+            g_browser_process->GetApplicationLocale());
+  EXPECT_EQ(base::i18n::GetLanguageSubtagUsingLanguageTag(
+                kSingleLocaleWithNoKeyboardLayout[0]),
+            icu::Locale::getDefault().getLanguage());
+  EXPECT_EQ(
+      input_method_manager->GetInputMethodUtil()->GetHardwareInputMethodIds()[0],
+      input_method_manager->GetActiveIMEState()->GetCurrentInputMethod().id());
+  EXPECT_GT(
+      input_method_manager->GetActiveIMEState()->GetNumEnabledInputMethods(),
+      1u);
+}
+
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest,
                        AutoLoginWithoutRecommendedLocales) {
   UploadAndInstallDeviceLocalAccountPolicy();
