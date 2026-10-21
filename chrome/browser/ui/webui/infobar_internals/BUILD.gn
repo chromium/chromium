@@ -73,6 +73,7 @@ source_set("impl") {
     "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/signin",
     "//chrome/browser/ui/startup",
+    "//chrome/browser/ui/tab_sharing",
     "//chrome/browser/ui/views/js_optimization",
     "//chrome/browser/ui/views/site_data",
     "//chrome/browser/ui/views/web_apps:web_app_blocked_migration_infobar_delegate",
@@ -90,6 +91,7 @@ source_set("impl") {
   }
   if (is_win || is_mac || is_linux) {
     deps += [
+      "//chrome/browser/apps/link_capturing",
       "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/browser/ui/views/session_restore_infobar",
       "//chrome/browser/web_applications",

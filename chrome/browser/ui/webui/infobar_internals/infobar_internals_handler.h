@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/webui/infobar_internals/infobar_internals.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+class TabSharingUI;
+
 // The handler for Javascript messages related to the "infobar-internals" page.
 class InfoBarInternalsHandler final
     : public infobar_internals::mojom::PageHandler {
@@ -48,6 +50,10 @@ class InfoBarInternalsHandler final
   // Stores the subscriptions to the ExtensionDevToolsInfoBarDelegate to keep
   // them alive.
   std::vector<base::CallbackListSubscription> subscriptions_;
+
+  // Keeps the TabSharingUI instance alive while the tab sharing infobar is
+  // shown.
+  std::unique_ptr<TabSharingUI> tab_sharing_ui_;
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::unique_ptr<ScopedInstallerDownloaderBypassEligibilityCheck>

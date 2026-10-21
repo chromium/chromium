@@ -38,6 +38,8 @@ namespace apps {
 // Note: This InfoBar is only used on non-CrOS platforms.
 class EnableLinkCapturingInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  EnableLinkCapturingInfoBarDelegate(Profile& profile,
+                                     const webapps::AppId& app_id);
   EnableLinkCapturingInfoBarDelegate(
       const EnableLinkCapturingInfoBarDelegate&) = delete;
   EnableLinkCapturingInfoBarDelegate& operator=(
@@ -71,9 +73,6 @@ class EnableLinkCapturingInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool Cancel() override;
 
  private:
-  EnableLinkCapturingInfoBarDelegate(Profile& profile,
-                                     const webapps::AppId& app_id);
-
   raw_ref<Profile> profile_;
   raw_ref<web_app::WebAppProvider> provider_;
   webapps::AppId app_id_;
