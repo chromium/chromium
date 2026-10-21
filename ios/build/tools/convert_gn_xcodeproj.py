@@ -3,36 +3,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Convert GN Xcode projects to platform and configuration independent targets.
-
-GN generates Xcode projects that build one configuration only. However, typical
-iOS development involves using the Xcode IDE to toggle the platform and
-configuration. This script replaces the 'gn' configuration with 'Debug',
-'Release' and 'Profile', and changes the ninja invocation to honor these
-configurations.
-"""
+"""Generates Xcode scheme files for GN-generated Xcode projects."""
 
 import argparse
 import collections
-import copy
 import filecmp
 import functools
 import hashlib
 import io
 import json
 import os
-import re
 import shutil
 import string
 import subprocess
 import sys
-import tempfile
 import xml.etree.ElementTree
 
 
 LLDBINIT_PATH = '$(PROJECT_DIR)/.lldbinit'
-
-PYTHON_RE = re.compile('[ /]python[23]?$')
 
 XCTEST_PRODUCT_TYPES = frozenset(
   (
@@ -177,21 +165,8 @@ def GenerateSchemeForTarget(
 
 
 class XcodeProject(object):
-  def __init__(self, objects, counter=0):
+  def __init__(self, objects):
     self.objects = objects
-    self.counter = 0
-
-  def AddObject(self, parent_name, obj):
-    while True:
-      self.counter += 1
-      str_id = "%s %s %d" % (parent_name, obj['isa'], self.counter)
-      new_id = CreateIdentifier(str_id)
-
-      # Make sure ID is unique. It's possible there could be an id conflict
-      # since this is run after GN runs.
-      if new_id not in self.objects:
-        self.objects[new_id] = obj
-        return new_id
 
   def IterObjectsByIsa(self, isa):
     """Iterates overs objects of the |isa| type."""
@@ -205,54 +180,6 @@ class XcodeProject(object):
       if obj['productType'] in product_types:
         yield (key, obj)
 
-  def UpdateBuildScripts(self):
-    """Update build scripts to respect configuration and platforms."""
-    for key, obj in self.IterObjectsByIsa('PBXShellScriptBuildPhase'):
-      shell_path = obj['shellPath']
-      shell_code = obj['shellScript']
-      if shell_path.endswith('/sh'):
-        shell_code = shell_code.replace(
-          'ninja -C .',
-          'ninja -C "../${CONFIGURATION}${EFFECTIVE_PLATFORM_NAME}"',
-        )
-      elif PYTHON_RE.search(shell_path):
-        shell_code = shell_code.replace(
-          '''ninja_params = [ '-C', '.' ]''',
-          '''ninja_params = [ '-C', '../' + os.environ['CONFIGURATION']'''
-          ''' + os.environ['EFFECTIVE_PLATFORM_NAME'] ]''',
-        )
-
-      # Replace the build script in the object.
-      obj['shellScript'] = shell_code
-
-  def UpdateBuildConfigurations(self, configurations):
-    """Add new configurations, using the first one as default."""
-
-    # Create a list with all the objects of interest. This is needed
-    # because objects will be added to/removed from the project upon
-    # iterating this list and python dictionaries cannot be mutated
-    # during iteration.
-
-    for key, obj in list(self.IterObjectsByIsa('XCConfigurationList')):
-      # Use the first build configuration as template for creating all the
-      # new build configurations.
-      build_config_template = self.objects[obj['buildConfigurations'][0]]
-      build_config_template['buildSettings']['CONFIGURATION_BUILD_DIR'] = (
-        '$(PROJECT_DIR)/../$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)'
-      )
-
-      # Remove the existing build configurations from the project before
-      # creating the new ones.
-      for build_config_id in obj['buildConfigurations']:
-        del self.objects[build_config_id]
-      obj['buildConfigurations'] = []
-
-      for configuration in configurations:
-        build_config = copy.copy(build_config_template)
-        build_config['name'] = configuration
-        build_config_id = self.AddObject('products', build_config)
-        obj['buildConfigurations'].append(build_config_id)
-
   def GetHostMappingForXCTests(self):
     """Returns a dict from targets to the list of their xctests modules."""
     mapping = collections.defaultdict(list)
@@ -261,8 +188,8 @@ class XcodeProject(object):
       build_configs = self.objects[build_config_lists_id]['buildConfigurations']
 
       # Use the first build configuration to get the name of the host target.
-      # This is arbitrary, but since the build configuration are all identical
-      # after UpdateBuildConfiguration, except for their 'name', it is fine.
+      # This is arbitrary, but since the build configurations are all identical
+      # except for their 'name', it is fine.
       build_config = self.objects[build_configs[0]]
       if obj['productType'] == 'com.apple.product-type.bundle.unit-test':
         # The test_host value will look like this:
@@ -322,32 +249,16 @@ def LoadXcodeProjectAsJSON(project_dir):
   )
 
 
-def WriteXcodeProject(output_path, json_string):
-  """Save Xcode project to |output_path| as XML."""
-  with tempfile.NamedTemporaryFile() as temp_file:
-    temp_file.write(json_string.encode("utf-8"))
-    temp_file.flush()
-    subprocess.check_call(['plutil', '-convert', 'xml1', temp_file.name])
-    CopyFileIfChanged(
-      temp_file.name, os.path.join(output_path, 'project.pbxproj')
-    )
-
-
-def UpdateXcodeProject(project_dir, old_project_dir, configurations, root_dir):
-  """Update inplace Xcode project to support multiple configurations.
+def UpdateXcodeProject(project_dir, old_project_dir, root_dir):
+  """Generates schemes in the Xcode project at `project_dir`.
 
   Args:
     project_dir: path to the input Xcode project
-    configurations: list of string corresponding to the configurations that
-      need to be supported by the tweaked Xcode projects, must contains at
-      least one value.
-    root_dir: path to the root directory used to find markdown files
+    old_project_dir: path to the existing output Xcode project
+    root_dir: path to the root directory used to load scheme templates
   """
   json_data = json.loads(LoadXcodeProjectAsJSON(project_dir))
   project = XcodeProject(json_data['objects'])
-
-  project.UpdateBuildScripts()
-  project.UpdateBuildConfigurations(configurations)
 
   mapping = project.GetHostMappingForXCTests()
 
@@ -384,177 +295,20 @@ def UpdateXcodeProject(project_dir, old_project_dir, configurations, root_dir):
           product_path,
         )
 
-  root_object = project.objects[json_data['rootObject']]
-  main_group = project.objects[root_object['mainGroup']]
 
-  sources = None
-  for child_key in main_group['children']:
-    child = project.objects[child_key]
-    if child.get('name') == 'Source' or child.get('name') == 'Sources':
-      sources = child
-      break
-
-  if sources is None:
-    sources = main_group
-
-  AddMarkdownToProject(project, root_dir, sources, sources is main_group)
-  SortFileReferencesByName(project, sources, root_object.get('productRefGroup'))
-
-  objects = collections.OrderedDict(sorted(project.objects.items()))  # noqa: F841
-  # WriteXcodeProject(project_dir, json.dumps(json_data))
-
-
-def CreateGroup(project, parent_group, group_name, use_relative_paths):
-  group_object = {
-    'children': [],
-    'isa': 'PBXGroup',
-    'sourceTree': '<group>',
-  }
-  if use_relative_paths:
-    group_object['path'] = group_name
-  else:
-    group_object['name'] = group_name
-  parent_group_name = parent_group.get('name', '')
-  group_object_key = project.AddObject(parent_group_name, group_object)
-  parent_group['children'].append(group_object_key)
-  return group_object
-
-
-class ObjectKey(object):
-  """Wrapper around PBXFileReference and PBXGroup for sorting.
-
-  A PBXGroup represents a "directory" containing a list of files in an
-  Xcode project; it can contain references to a list of directories or
-  files.
-
-  A PBXFileReference represents a "file".
-
-  The type is stored in the object "isa" property as a string. Since we
-  want to sort all directories before all files, the < and > operators
-  are defined so that if "isa" is different, they are sorted in the
-  reverse of alphabetic ordering, otherwise the name (or path) property
-  is checked and compared in alphabetic order.
-  """
-
-  def __init__(self, obj, last):
-    self.isa = obj['isa']
-    if 'name' in obj:
-      self.name = obj['name']
-    else:
-      self.name = obj['path']
-    self.last = last
-
-  def __lt__(self, other):
-    if self.last != other.last:
-      return other.last
-    if self.isa != other.isa:
-      return self.isa > other.isa
-    return self.name < other.name
-
-  def __gt__(self, other):
-    if self.last != other.last:
-      return self.last
-    if self.isa != other.isa:
-      return self.isa < other.isa
-    return self.name > other.name
-
-  def __eq__(self, other):
-    return self.isa == other.isa and self.name == other.name
-
-
-def SortFileReferencesByName(project, group_object, products_group_ref):
-  SortFileReferencesByNameWithSortKey(
-    project,
-    group_object,
-    lambda ref: ObjectKey(project.objects[ref], ref == products_group_ref),
-  )
-
-
-def SortFileReferencesByNameWithSortKey(project, group_object, sort_key):
-  group_object['children'].sort(key=sort_key)
-  for key in group_object['children']:
-    child = project.objects[key]
-    if child['isa'] == 'PBXGroup':
-      SortFileReferencesByNameWithSortKey(project, child, sort_key)
-
-
-def AddMarkdownToProject(project, root_dir, group_object, use_relative_paths):
-  list_files_cmd = ['git', '-C', root_dir, 'ls-files', '*.md']
-  paths = check_output(list_files_cmd).splitlines()
-  ios_internal_dir = os.path.join(root_dir, 'ios_internal')
-  if os.path.exists(ios_internal_dir):
-    list_files_cmd = ['git', '-C', ios_internal_dir, 'ls-files', '*.md']
-    ios_paths = check_output(list_files_cmd).splitlines()
-    paths.extend([os.path.join("ios_internal", path) for path in ios_paths])
-  for path in paths:
-    new_markdown_entry = {
-      "fileEncoding": "4",
-      "isa": "PBXFileReference",
-      "lastKnownFileType": "net.daringfireball.markdown",
-      "sourceTree": "<group>",
-    }
-    if use_relative_paths:
-      new_markdown_entry['path'] = os.path.basename(path)
-    else:
-      new_markdown_entry['name'] = os.path.basename(path)
-      new_markdown_entry['path'] = path
-    folder = GetFolderForPath(
-      project, group_object, os.path.dirname(path), use_relative_paths
-    )
-    folder_name = folder.get('name', None)
-    if folder_name is None:
-      folder_name = folder.get('path', 'sources')
-    new_markdown_entry_id = project.AddObject(folder_name, new_markdown_entry)
-    folder['children'].append(new_markdown_entry_id)
-
-
-def GetFolderForPath(project, group_object, path, use_relative_paths):
-  objects = project.objects
-  if not path:
-    return group_object
-  for folder in path.split('/'):
-    children = group_object['children']
-    new_root = None
-    for child_key in children:
-      child = objects[child_key]
-      if child['isa'] == 'PBXGroup':
-        child_name = child.get('name', None)
-        if child_name is None:
-          child_name = child.get('path')
-        if child_name == folder:
-          new_root = child
-          break
-    if not new_root:
-      # If the folder isn't found we could just cram it into the leaf existing
-      # folder, but that leads to folders with tons of README.md inside.
-      new_root = CreateGroup(project, group_object, folder, use_relative_paths)
-    group_object = new_root
-  return group_object
-
-
-def ConvertGnXcodeProject(root_dir, proj_name, input_dir, output_dir, configs):
-  '''Tweak the Xcode project generated by gn to support multiple configurations.
-
-  The Xcode projects generated by "gn gen --ide" only supports a single
-  platform and configuration (as the platform and configuration are set
-  per output directory). This method takes as input such projects and
-  add support for multiple configurations and platforms (to allow devs
-  to select them in Xcode).
+def ConvertGnXcodeProject(root_dir, proj_name, input_dir, output_dir):
+  """Generates schemes for the GN Xcode project and copies it to `output_dir`.
 
   Args:
     root_dir: directory that is the root of the project
     proj_name: name of the Xcode project "file" (usually `all.xcodeproj`)
     input_dir: directory containing the Xcode projects created by "gn gen --ide"
     output_dir: directory where the tweaked Xcode projects will be saved
-    configs: list of string corresponding to the configurations that need to be
-        supported by the tweaked Xcode projects, must contains at least one
-        value.
-  '''
+  """
 
   UpdateXcodeProject(
     os.path.join(input_dir, proj_name),
     os.path.join(output_dir, proj_name),
-    configs,
     root_dir,
   )
 
@@ -565,20 +319,13 @@ def ConvertGnXcodeProject(root_dir, proj_name, input_dir, output_dir, configs):
 
 def Main(args):
   parser = argparse.ArgumentParser(
-    description='Convert GN Xcode projects for iOS.'
+    description='Generate schemes for GN Xcode projects for iOS.'
   )
   parser.add_argument(
     'input', help='directory containing [product|all] Xcode projects.'
   )
   parser.add_argument(
     'output', help='directory where to generate the iOS configuration.'
-  )
-  parser.add_argument(
-    '--add-config',
-    dest='configurations',
-    default=[],
-    action='append',
-    help='configuration to add to the Xcode project',
   )
   parser.add_argument(
     '--root',
@@ -602,13 +349,7 @@ def Main(args):
     sys.stderr.write('Input directory does not contain the Xcode project.\n')
     return 1
 
-  if not args.configurations:
-    sys.stderr.write('At least one configuration required, see --add-config.\n')
-    return 1
-
-  ConvertGnXcodeProject(
-    args.root, args.proj_name, args.input, args.output, args.configurations
-  )
+  ConvertGnXcodeProject(args.root, args.proj_name, args.input, args.output)
 
 
 if __name__ == '__main__':

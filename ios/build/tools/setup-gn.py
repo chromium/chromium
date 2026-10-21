@@ -6,8 +6,6 @@
 import argparse
 import configparser
 import convert_gn_xcodeproj
-import errno  # noqa: F401
-import io  # noqa: F401
 import os
 import platform
 import re
@@ -315,7 +313,7 @@ def FindGn():
 
 
 def GenerateXcodeProject(gn_path, root_dir, proj_name, out_dir, settings):
-  '''Generate Xcode project with Xcode and convert to multi-configurations.'''
+  '''Generate Xcode project with GN and generate schemes.'''
   prefix = os.path.abspath(os.path.join(out_dir, '_temp'))
   temp_path = tempfile.mkdtemp(prefix=prefix)
   try:
@@ -326,7 +324,6 @@ def GenerateXcodeProject(gn_path, root_dir, proj_name, out_dir, settings):
       '%s.xcodeproj' % proj_name,
       os.path.join(temp_path),
       os.path.join(out_dir, 'build'),
-      SUPPORTED_CONFIGS,
     )
   finally:
     if os.path.exists(temp_path):
