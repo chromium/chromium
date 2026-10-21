@@ -3911,16 +3911,20 @@ class FullWebUIOmniboxAimInteractiveTestBase
   auto WaitForAimPopupReady() {
     return Steps(
         WaitForPopupState(OmniboxPopupState::kAim),
+        WaitForPopupTransitionLockout(),
         PollUntil(
             [this]() -> bool {
+              auto* location_bar = GetActiveLocationBar();
               auto* aim_presenter = GetActiveAimPresenter();
               auto* widget =
                   aim_presenter ? aim_presenter->GetWidget() : nullptr;
               auto* content =
                   aim_presenter ? aim_presenter->GetWebUIContent() : nullptr;
-              return aim_presenter && aim_presenter->IsShown() && widget &&
-                     widget->IsVisible() && content && content->GetVisible() &&
-                     content->IsDrawn();
+              return location_bar &&
+                     !location_bar->in_popup_state_transition() &&
+                     aim_presenter && aim_presenter->IsShown() && widget &&
+                     widget->IsVisible() && widget->IsActive() && content &&
+                     content->GetVisible() && content->IsDrawn();
             },
             "WaitForAimPopupViewDrawn"),
         InAnyContext(InstrumentNonTabWebView(kAimPopupWebView,
@@ -3989,16 +3993,17 @@ class FullWebUIOmniboxAimInteractiveTestBase
         InAnyContext(WaitForAimSubmitEnabled(kAimPopupWebView)));
   }
 
-  // Clicks `element` inside the Full WebUI popup with a real mouse click.
+  // Clicks `element` inside a popup WebView (`kPopupWebView` or
+  // `kAimPopupWebView`) with a real mouse click.
   //
   // Readiness is determined by the popup itself rather than by a first-paint
   // signal: the popup presenter shows the widget only once the renderer's
   // visual state is ready, and callers wait for `element` to render before
   // clicking. The mouse is moved directly to the center of `element`.
-  auto ClickPopupElement(const DeepQuery& element) {
-    return Steps(
-        MoveMouseTo(kPopupWebView, DeepQueryToRelativePosition(element)),
-        ClickMouse());
+  auto ClickPopupElement(const ui::ElementIdentifier& contents_id,
+                         const DeepQuery& element) {
+    return Steps(MoveMouseTo(contents_id, DeepQueryToRelativePosition(element)),
+                 ClickMouse());
   }
 
   auto OpenAimPopup() {
@@ -4082,8 +4087,8 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
                   InAnyContext(SendKeyPress(kBrowserViewElementId,
                                             ui::VKEY_ESCAPE, ui::EF_NONE)),
                   WaitForAimPopupHidden(), WaitForWebUIInputValue(kQuery),
-                  WaitForOmniboxFocus(true)),
-      CheckWebUIInputSelection(kQuery.length(), kQuery.length());
+                  WaitForOmniboxFocus(true),
+                  CheckWebUIInputSelection(kQuery.length(), kQuery.length()));
 }
 
 // Dismissing the AIM popup with the "X" button when there is no input in the
@@ -4094,7 +4099,7 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
   RunTestSequence(
       OpenAimPopup(),
       InAnyContext(WaitForElementToRender(kAimPopupWebView, kCancelIcon)),
-      InSameContext(ClickElement(kAimPopupWebView, kCancelIcon)),
+      InSameContext(ClickPopupElement(kAimPopupWebView, kCancelIcon)),
       WaitForAimPopupHidden(), WaitForWebUIInputValue(kOriginalUrl),
       WaitForOmniboxFocus(true),
       // TODO(b/564894332): When a URL is restored to the Omnibox, the cursor
