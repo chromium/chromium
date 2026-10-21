@@ -291,7 +291,24 @@ export class OrganizerListSectionElement extends CrLitElement implements
     if (this.showAll_ || this.isSearching_()) {
       return this.filteredItems_;
     }
-    return this.filteredItems_.slice(0, INITIAL_ITEM_COUNT);
+    const alwaysShowIndices: number[] = [];
+    const regularIndices: number[] = [];
+    for (let i = 0; i < this.filteredItems_.length; i++) {
+      if (this.filteredItems_[i]!.alwaysShow) {
+        alwaysShowIndices.push(i);
+      } else {
+        regularIndices.push(i);
+      }
+    }
+
+    const maxItems = alwaysShowIndices.length > 0 ? INITIAL_ITEM_COUNT + 1 :
+                                                    INITIAL_ITEM_COUNT;
+    const selectedAlwaysShow = alwaysShowIndices.slice(0, maxItems);
+    const selectedRegular =
+        regularIndices.slice(0, maxItems - selectedAlwaysShow.length);
+    const selectedIndices =
+        new Set([...selectedAlwaysShow, ...selectedRegular]);
+    return this.filteredItems_.filter((_, index) => selectedIndices.has(index));
   }
 }
 

@@ -234,18 +234,22 @@ suite('OpenTabsDelegateTest', () => {
     // Audio tabs come first, ordered by MRU within the audio group.
     assertDeepEquals([mutedTab.title], items[0]!.title);
     assertEquals(AUDIO_ICON, items[0]!.trailingIcon);
+    assertTrue(!!items[0]!.alwaysShow);
     assertDeepEquals(
         [{text: 'Currently playing', matchable: false}], items[0]!.description);
     assertDeepEquals([musicTab.title], items[1]!.title);
     assertEquals(AUDIO_ICON, items[1]!.trailingIcon);
+    assertTrue(!!items[1]!.alwaysShow);
     assertDeepEquals(
         [{text: 'Currently playing', matchable: false}], items[1]!.description);
 
     // Remaining tabs keep their MRU order and have no trailing icon.
     assertDeepEquals([youtubeTab.title], items[2]!.title);
     assertEquals(undefined, items[2]!.trailingIcon);
+    assertFalse(!!items[2]!.alwaysShow);
     assertDeepEquals([googleTab.title], items[3]!.title);
     assertEquals(undefined, items[3]!.trailingIcon);
+    assertFalse(!!items[3]!.alwaysShow);
   });
 
   test('shows the audio icon when one split view tab plays audio', async () => {
@@ -345,8 +349,7 @@ suite('OpenTabsDelegateTest', () => {
   });
 
   test(
-      'sorts active tab to the end even when it has an audio alert',
-      async () => {
+      'sorts active tab with audio alert to the top of the list', async () => {
         const activeAudioTab = createTab({
           tabId: 8,
           title: 'Active Audio Tab',
@@ -364,18 +367,60 @@ suite('OpenTabsDelegateTest', () => {
         const items = await delegate.getItems();
         assertEquals(4, items.length);
 
-        // Non-active audio tab comes first.
-        assertDeepEquals([musicTab.title], items[0]!.title);
+        // Audio tabs come first, ordered by MRU. Active audio tab is the most
+        // recent so it comes first.
+        assertDeepEquals([activeAudioTab.title], items[0]!.title);
         assertEquals(AUDIO_ICON, items[0]!.trailingIcon);
+        assertTrue(isActive(items[0]!.data!));
+
+        assertDeepEquals([musicTab.title], items[1]!.title);
+        assertEquals(AUDIO_ICON, items[1]!.trailingIcon);
+
+        // Remaining non-active tabs in MRU order.
+        assertDeepEquals([youtubeTab.title], items[2]!.title);
+        assertDeepEquals([googleTab.title], items[3]!.title);
+      });
+
+  test(
+      'sorts active split view tab with audio alert to the top of the list',
+      async () => {
+        const splitTab1 = createTab({
+          tabId: SPLIT_TAB_1_ID,
+          title: SPLIT_TAB_1_TITLE,
+          url: SPLIT_TAB_1_URL,
+          split: true,
+          splitId: SPLIT_TOKEN,
+          lastActiveTimeTicks: {internalValue: 500n},
+          active: true,
+          alertStates: [TabAlertState.kAudioPlaying],
+        });
+        const splitTab2 = createTab({
+          tabId: SPLIT_TAB_2_ID,
+          title: SPLIT_TAB_2_TITLE,
+          url: SPLIT_TAB_2_URL,
+          split: true,
+          splitId: SPLIT_TOKEN,
+          lastActiveTimeTicks: {internalValue: 450n},
+        });
+
+        mockPageHandler.setResultFor('getProfileData', Promise.resolve({
+          profileData:
+              createProfileData([googleTab, youtubeTab, splitTab1, splitTab2]),
+        }));
+
+        const items = await delegate.getItems();
+        assertEquals(3, items.length);
+
+        // Active split view tab with audio comes first.
+        assertDeepEquals(
+            [loadTimeData.getString('splitView')], items[0]!.title);
+        assertEquals(AUDIO_ICON, items[0]!.trailingIcon);
+        assertTrue(isSplitTab(items[0]!.data!));
+        assertTrue(isActive(items[0]!.data));
 
         // Remaining non-active tabs in MRU order.
         assertDeepEquals([youtubeTab.title], items[1]!.title);
         assertDeepEquals([googleTab.title], items[2]!.title);
-
-        // Active tab is at the end even with audio.
-        assertDeepEquals([activeAudioTab.title], items[3]!.title);
-        assertEquals(AUDIO_ICON, items[3]!.trailingIcon);
-        assertTrue(isActive(items[3]!.data!));
       });
 
   test('notifies client when tabs are changed', async () => {

@@ -249,6 +249,98 @@ suite('OrganizerListSectionTest', () => {
       });
 
   test(
+      'bumps initial count by 1 and prioritizes alwaysShow items up to 4',
+      async () => {
+        // 2 audio tabs and 5 regular tabs -> shows 2 audio and 2 regular.
+        const items: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Audio Tab 1'], alwaysShow: true},
+          {title: ['Audio Tab 2'], alwaysShow: true},
+          {title: ['Tab 1']},
+          {title: ['Tab 2']},
+          {title: ['Tab 3']},
+          {title: ['Tab 4']},
+          {title: ['Tab 5']},
+        ];
+        listSection.delegate =
+            new TestSectionDelegate('Open Tabs', items, undefined, 'open-tabs');
+        await microtasksFinished();
+
+        let renderedItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(4, renderedItems.length);
+        assertDeepEquals(['Audio Tab 1'], renderedItems[0]!.item.title);
+        assertDeepEquals(['Audio Tab 2'], renderedItems[1]!.item.title);
+        assertDeepEquals(['Tab 1'], renderedItems[2]!.item.title);
+        assertDeepEquals(['Tab 2'], renderedItems[3]!.item.title);
+
+        // 1 audio tab and 5 regular tabs -> shows 1 audio and 3 regular.
+        const oneAudioItems: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Audio Tab 1'], alwaysShow: true},
+          {title: ['Tab 1']},
+          {title: ['Tab 2']},
+          {title: ['Tab 3']},
+          {title: ['Tab 4']},
+          {title: ['Tab 5']},
+        ];
+        listSection.delegate = new TestSectionDelegate(
+            'Open Tabs', oneAudioItems, undefined, 'open-tabs');
+        await microtasksFinished();
+
+        renderedItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(4, renderedItems.length);
+        assertDeepEquals(['Audio Tab 1'], renderedItems[0]!.item.title);
+        assertDeepEquals(['Tab 1'], renderedItems[1]!.item.title);
+        assertDeepEquals(['Tab 2'], renderedItems[2]!.item.title);
+        assertDeepEquals(['Tab 3'], renderedItems[3]!.item.title);
+
+        // 4 audio tabs and 5 regular tabs -> shows just the 4 audio tabs.
+        const fourAudioItems: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Audio Tab 1'], alwaysShow: true},
+          {title: ['Audio Tab 2'], alwaysShow: true},
+          {title: ['Audio Tab 3'], alwaysShow: true},
+          {title: ['Audio Tab 4'], alwaysShow: true},
+          {title: ['Tab 1']},
+          {title: ['Tab 2']},
+          {title: ['Tab 3']},
+          {title: ['Tab 4']},
+          {title: ['Tab 5']},
+        ];
+        listSection.delegate = new TestSectionDelegate(
+            'Open Tabs', fourAudioItems, undefined, 'open-tabs');
+        await microtasksFinished();
+
+        renderedItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(4, renderedItems.length);
+        assertDeepEquals(['Audio Tab 1'], renderedItems[0]!.item.title);
+        assertDeepEquals(['Audio Tab 2'], renderedItems[1]!.item.title);
+        assertDeepEquals(['Audio Tab 3'], renderedItems[2]!.item.title);
+        assertDeepEquals(['Audio Tab 4'], renderedItems[3]!.item.title);
+
+        // 5 audio tabs and 1 regular tab -> caps at 4 audio tabs.
+        const fiveAudioItems: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Audio Tab 1'], alwaysShow: true},
+          {title: ['Audio Tab 2'], alwaysShow: true},
+          {title: ['Audio Tab 3'], alwaysShow: true},
+          {title: ['Audio Tab 4'], alwaysShow: true},
+          {title: ['Audio Tab 5'], alwaysShow: true},
+          {title: ['Tab 1']},
+        ];
+        listSection.delegate = new TestSectionDelegate(
+            'Open Tabs', fiveAudioItems, undefined, 'open-tabs');
+        await microtasksFinished();
+
+        renderedItems = listSection.shadowRoot.querySelectorAll(
+            'organizer-list-section-item');
+        assertEquals(4, renderedItems.length);
+        assertDeepEquals(['Audio Tab 1'], renderedItems[0]!.item.title);
+        assertDeepEquals(['Audio Tab 2'], renderedItems[1]!.item.title);
+        assertDeepEquals(['Audio Tab 3'], renderedItems[2]!.item.title);
+        assertDeepEquals(['Audio Tab 4'], renderedItems[3]!.item.title);
+      });
+
+  test(
       'initializes with all items when getSectionState returns showAll true',
       async () => {
         mockHandler.setPromiseResolveFor(

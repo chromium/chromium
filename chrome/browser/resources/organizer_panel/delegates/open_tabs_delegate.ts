@@ -237,20 +237,22 @@ export class OpenTabsDelegate implements
       });
     }
 
-    // The currently active tab is placed at the end of the list so that users
-    // can more easily navigate to their other tabs. Tabs playing or muting
-    // audio are surfaced first, and within each group items are ordered by most
-    // recently used.
+    // Tabs playing or muting audio are surfaced first, ordered by most recently
+    // used. For non-audio tabs, the currently active tab is placed at the end
+    // of the list so that users can more easily navigate to their other tabs,
+    // and items are ordered by most recently used.
     items.sort((a, b) => {
-      const activeA = isActive(a);
-      const activeB = isActive(b);
-      if (activeA !== activeB) {
-        return activeA ? 1 : -1;
-      }
       const audioA = hasAudioAlert(a);
       const audioB = hasAudioAlert(b);
       if (audioA !== audioB) {
         return audioA ? -1 : 1;
+      }
+      if (!audioA) {
+        const activeA = isActive(a);
+        const activeB = isActive(b);
+        if (activeA !== activeB) {
+          return activeA ? 1 : -1;
+        }
       }
       return compareTimeDescending(
           getMostRecentTab(a).lastActiveTimeTicks,
@@ -298,12 +300,14 @@ export class OpenTabsDelegate implements
       description.push({text: item.tabs[0].title}, {text: item.tabs[1].title});
     }
 
+    const hasAudio = hasAudioAlert(item);
     return {
       title,
       description,
       extraSearchTerms,
       prefixIcon,
-      trailingIcon: hasAudioAlert(item) ? AUDIO_ICON : undefined,
+      trailingIcon: hasAudio ? AUDIO_ICON : undefined,
+      alwaysShow: hasAudio,
       hoveredActionButton: {
         icon: 'cr:close',
         ariaLabel: loadTimeData.getString('closeTab'),
