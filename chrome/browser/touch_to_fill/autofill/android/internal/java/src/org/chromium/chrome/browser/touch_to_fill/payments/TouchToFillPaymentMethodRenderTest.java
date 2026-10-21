@@ -37,12 +37,12 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -84,8 +84,8 @@ import java.util.List;
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-// TODO(crbug.com/344662597): Failing when batched, batch this again.
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class TouchToFillPaymentMethodRenderTest {
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParams =
@@ -460,15 +460,20 @@ public class TouchToFillPaymentMethodRenderTest {
     private TouchToFillPaymentMethodCoordinator mCoordinator;
     private WebPageStation mPage;
 
+    private final boolean mNightModeEnabled;
+    private final boolean mUseRtlLayout;
+
     public TouchToFillPaymentMethodRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
-        setRtlForTesting(useRtlLayout);
-        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
-        mRenderTestRule.setNightModeEnabled(nightModeEnabled);
-        mRenderTestRule.setVariantPrefix(useRtlLayout ? "RTL" : "LTR");
+        mNightModeEnabled = nightModeEnabled;
+        mUseRtlLayout = useRtlLayout;
     }
 
     @Before
     public void setUp() throws InterruptedException {
+        setRtlForTesting(mUseRtlLayout);
+        ChromeNightModeTestUtils.setUpNightModeForChromeActivity(mNightModeEnabled);
+        mRenderTestRule.setNightModeEnabled(mNightModeEnabled);
+        mRenderTestRule.setVariantPrefix(mUseRtlLayout ? "RTL" : "LTR");
         mPage = mActivityTestRule.startOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
@@ -506,7 +511,6 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @RequiresRestart("crbug.com/344665938")
     public void testShowsOneCard() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
@@ -921,7 +925,6 @@ public class TouchToFillPaymentMethodRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @RequiresRestart("crbug.com/344665938")
     public void testScanNewCardButtonIsHidden() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
