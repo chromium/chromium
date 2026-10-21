@@ -436,7 +436,14 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavPcm) {
   PlayAudio("bear_pcm.wav");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearWavPcm3kHz) {
+// TODO(crbug.com/382588633): Times out on Android (and hits a SyncSocket
+// timeout DCHECK in DCHECK builds).
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_VideoBearWavPcm3kHz DISABLED_VideoBearWavPcm3kHz
+#else
+#define MAYBE_VideoBearWavPcm3kHz VideoBearWavPcm3kHz
+#endif
+IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_VideoBearWavPcm3kHz) {
   PlayAudio("bear_3kHz.wav");
 }
 

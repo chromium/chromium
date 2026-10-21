@@ -12,9 +12,6 @@
 -WebContentsImplBrowserTest.SameInitialScaleAcrossNavigations
 -WebContentsImplBrowserTest.ToggleFullscreen
 
-# crbug.com/382588633
--Default/MediaTest.VideoBearWavPcm3kHz*
-
 # crbug.com/353818063
 -CrossPlatformAccessibilityBrowserTest.ImplicitRootScroller
 

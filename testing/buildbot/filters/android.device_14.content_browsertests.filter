@@ -15,3 +15,7 @@
 
 # crbug.com/571503676
 -All/NavigationEntryScreenshotCacheHitOrMissReasonBrowserTest.BasicNavigations/CrossOrigin_BFCacheEnabled
+
+# crbug.com/575528236: thread_restrictions DCHECK.
+-GpuHostImplPersistentCacheTest.ClearCacheOnCrash
+-GpuHostImplPersistentCacheTest.SetChannelPersistentCacheFileCalled

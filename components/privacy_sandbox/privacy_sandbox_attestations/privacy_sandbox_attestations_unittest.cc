@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_histograms.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
@@ -246,8 +247,18 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest, EnrolledAndAttested) {
                                        1);
 }
 
+// TODO(crbug.com/575528383): Hits a base::Lock DCHECK on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NonExistentAttestationsFile DISABLED_NonExistentAttestationsFile
+#define MAYBE_TryParseNonExistentAttestationsFileTwice \
+  DISABLED_TryParseNonExistentAttestationsFileTwice
+#else
+#define MAYBE_NonExistentAttestationsFile NonExistentAttestationsFile
+#define MAYBE_TryParseNonExistentAttestationsFileTwice \
+  TryParseNonExistentAttestationsFileTwice
+#endif
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
-       NonExistentAttestationsFile) {
+       MAYBE_NonExistentAttestationsFile) {
   base::RunLoop run_loop;
   PrivacySandboxAttestations::GetInstance()
       ->SetLoadAttestationsDoneCallbackForTesting(run_loop.QuitClosure());
@@ -270,7 +281,7 @@ TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
 // `PrivacySandboxAttestations::Progress::kFinished` but there is no in-memory
 // attestations map. Verify that the second attempt to parse should not crash.
 TEST_P(PrivacySandboxAttestationsFeatureEnabledTest,
-       TryParseNonExistentAttestationsFileTwice) {
+       MAYBE_TryParseNonExistentAttestationsFileTwice) {
   base::RunLoop first_attempt;
   PrivacySandboxAttestations::GetInstance()
       ->SetLoadAttestationsDoneCallbackForTesting(first_attempt.QuitClosure());
