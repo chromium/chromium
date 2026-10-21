@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -64,10 +65,6 @@ SharingService::SharingService(
 
   // Only unregister if sync is disabled (not initializing).
   if (IsSyncDisabledForSharing(sync_service_)) {
-    // Track that unregistration is in progress so `OnStateChanged()` does not
-    // start a new registration before `OnDeviceUnregistered()` completes and
-    // transitions the state to `REGISTERING` or `DISABLED`.
-    state_ = State::UNREGISTERING;
     UnregisterDevice();
   }
 
@@ -202,21 +199,32 @@ void SharingService::OnSyncShutdown(syncer::SyncService* sync) {
 
 void SharingService::OnStateChanged(syncer::SyncService* sync) {
   if (IsSyncEnabledForSharing(sync_service_) && state_ == State::DISABLED) {
-    state_ = State::REGISTERING;
     RegisterDevice();
   } else if (IsSyncDisabledForSharing(sync_service_) &&
              (state_ == State::ACTIVE || state_ == State::REGISTERING)) {
     // Unregister both when already `ACTIVE` and when still `REGISTERING` (e.g.
     // if registration is in flight or waiting for a backoff retry when sync is
     // disabled).
-    state_ = State::UNREGISTERING;
     UnregisterDevice();
   }
 }
 
 void SharingService::RegisterDevice() {
+  // TODO(crbug.com/574368479): Guarantee at most one in-flight registration
+  // (e.g. across rapid Register -> Unregister -> Register transitions).
+  state_ = State::REGISTERING;
   sharing_device_registration_->RegisterDevice(base::BindOnce(
       &SharingService::OnDeviceRegistered, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SharingService::RetryRegisterDevice() {
+  // If state has changed while waiting for a backoff retry, ignore.
+  if (state_ != State::REGISTERING) {
+    return;
+  }
+  CHECK(!IsSyncDisabledForSharing(sync_service_), base::NotFatalUntil::M161);
+
+  RegisterDevice();
 }
 
 void SharingService::RegisterDeviceInTesting(
@@ -228,6 +236,10 @@ void SharingService::RegisterDeviceInTesting(
 }
 
 void SharingService::UnregisterDevice() {
+  // Track that unregistration is in progress so `OnStateChanged()` does not
+  // start a new registration before `OnDeviceUnregistered()` completes and
+  // transitions the state to `REGISTERING` or `DISABLED`.
+  state_ = State::UNREGISTERING;
   sharing_device_registration_->UnregisterDevice(base::BindOnce(
       &SharingService::OnDeviceUnregistered, weak_ptr_factory_.GetWeakPtr()));
   message_sender_->ClearPendingMessages();
@@ -235,37 +247,39 @@ void SharingService::UnregisterDevice() {
 
 void SharingService::OnDeviceRegistered(
     SharingDeviceRegistrationResult result) {
+  if (state_ != State::REGISTERING) {
+    return;
+  }
+  if (IsSyncDisabledForSharing(sync_service_)) {
+    // In case sync is disabled during registration, unregister it.
+    UnregisterDevice();
+    return;
+  }
+
+  backoff_entry_.InformOfRequest(result ==
+                                 SharingDeviceRegistrationResult::kSuccess);
+
   switch (result) {
     case SharingDeviceRegistrationResult::kSuccess:
-      backoff_entry_.InformOfRequest(true);
-      if (state_ == State::REGISTERING) {
-        if (IsSyncEnabledForSharing(sync_service_)) {
-          state_ = State::ACTIVE;
-          fcm_handler_->StartListening();
-        } else if (IsSyncDisabledForSharing(sync_service_)) {
-          // In case sync is disabled during registration, unregister it.
-          state_ = State::UNREGISTERING;
-          UnregisterDevice();
-        }
-      }
+      state_ = State::ACTIVE;
+      fcm_handler_->StartListening();
       break;
     case SharingDeviceRegistrationResult::kFcmTransientError:
     case SharingDeviceRegistrationResult::kSyncServiceError:
-      backoff_entry_.InformOfRequest(false);
       // Transient error - try again after a delay.
       LOG(ERROR) << "Device registration failed with transient error";
       task_runner_->PostDelayedTask(
           FROM_HERE,
-          base::BindOnce(&SharingService::RegisterDevice,
+          base::BindOnce(&SharingService::RetryRegisterDevice,
                          weak_ptr_factory_.GetWeakPtr()),
           backoff_entry_.GetTimeUntilRelease());
       break;
     case SharingDeviceRegistrationResult::kEncryptionError:
     case SharingDeviceRegistrationResult::kFcmFatalError:
     case SharingDeviceRegistrationResult::kInternalError:
-      backoff_entry_.InformOfRequest(false);
       // No need to bother retrying in the case of one of fatal errors.
       LOG(ERROR) << "Device registration failed with fatal error";
+      state_ = State::DISABLED;
       break;
     case SharingDeviceRegistrationResult::kDeviceNotRegistered:
       // Register device cannot return kDeviceNotRegistered.
@@ -277,7 +291,6 @@ void SharingService::OnDeviceUnregistered(
     SharingDeviceRegistrationResult result) {
   if (IsSyncEnabledForSharing(sync_service_)) {
     // In case sync is enabled during un-registration, register it.
-    state_ = State::REGISTERING;
     RegisterDevice();
   } else {
     // Stop listening only after unregistration finishes deleting the FCM

@@ -169,6 +169,7 @@ class SharingService : public KeyedService,
   void OnStateChanged(syncer::SyncService* sync) override;
 
   void RegisterDevice();
+  void RetryRegisterDevice();
   void UnregisterDevice();
 
   void OnDeviceRegistered(SharingDeviceRegistrationResult result);
