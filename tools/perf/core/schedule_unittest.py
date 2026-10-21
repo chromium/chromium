@@ -37,6 +37,25 @@ win-10-perf,2,1
       self.assertIn('win-10-perf', configs)
       self.assertEqual(len(configs), 2)
 
+  def testAllowedBenchmarks(self):
+    with tempfile.TemporaryDirectory() as tmp_dir:
+      disallowed_csv = Path(tmp_dir) / 'speedometer3.crossbench.csv'
+      disallowed_csv.write_text(
+        'bot,repeat,shard\nlinux-rtx4070-perf,1,1\n', encoding='utf-8'
+      )
+      with self.assertRaisesRegex(
+        AssertionError, "Bot 'linux-rtx4070-perf' only allows benchmarks"
+      ):
+        bot_platforms.LoadScheduleFile(disallowed_csv, {})
+
+      allowed_csv = Path(tmp_dir) / 'blink-ai.crossbench.csv'
+      allowed_csv.write_text(
+        'bot,repeat,shard\nlinux-rtx4070-perf,1,1\n', encoding='utf-8'
+      )
+      configs = {}
+      bot_platforms.LoadScheduleFile(allowed_csv, configs)
+      self.assertIn('linux-rtx4070-perf', configs)
+
   def testScheduleFiles(self):
     schedule_dir = FILE_PATH.absolute().parent / 'schedule'
     if not schedule_dir.is_dir():
@@ -76,6 +95,16 @@ win-10-perf,2,1
         f"Bot '{bot}' in {path.name} not found in "
         f"bot_platforms.ALL_PLATFORM_NAMES",
       )
+      allowed_benchmarks = bot_platforms.PLATFORM_INFO[bot].get(
+        'allowed_benchmarks'
+      )
+      if allowed_benchmarks is not None:
+        self.assertIn(
+          path.stem,
+          allowed_benchmarks,
+          f"Bot '{bot}' only allows benchmarks {sorted(allowed_benchmarks)}, "
+          f"cannot schedule '{path.stem}' in {path.name}",
+        )
       self.assertNotIn(bot, bots, f"Duplicate bot '{bot}' in {path}")
       bots.add(bot)
       repeats = row.get('repeat')

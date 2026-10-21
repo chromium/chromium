@@ -1,0 +1,19 @@
+{
+    "0": {
+        "crossbench": {
+            "blink-ai.crossbench": {
+                "crossbench_name": "blink-ai",
+                "arguments": []
+            }
+        },
+        "benchmarks": {}
+    },
+    "extra_infos": {
+        "num_stories": 1,
+        "predicted_min_shard_time": 300,
+        "predicted_min_shard_index": 0,
+        "predicted_max_shard_time": 300,
+        "predicted_max_shard_index": 0,
+        "shard #0": 300
+    }
+}

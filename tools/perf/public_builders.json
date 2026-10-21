@@ -27,6 +27,7 @@
     "linux-perf-rel",
     "linux-r350-processor-perf",
     "linux-r350-perf",
+    "linux-rtx4070-perf",
     "mac-arm-builder-perf",
     "mac-builder-perf",
     "mac-intel-perf",

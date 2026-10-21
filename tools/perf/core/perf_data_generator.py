@@ -165,6 +165,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset(
     'linux-perf-rel',
     'linux-r350-processor-perf',
     'linux-r350-perf',
+    'linux-rtx4070-perf',
     'linux-nvidia-dgx-spark-arm-perf',
     'mac-arm-builder-perf',
     'mac-builder-perf',
@@ -215,6 +216,7 @@ PUBLIC_PERF_BUILDERS = [
   'linux-perf-rel',
   'linux-r350-processor-perf',
   'linux-r350-perf',
+  'linux-rtx4070-perf',
   'mac-arm-builder-perf',
   'mac-builder-perf',
   'mac-intel-perf',
@@ -1055,6 +1057,29 @@ BUILDERS = {
       'os': 'Ubuntu-22.04.5',
       'pool': 'chrome.tests.perf',
       'synthetic_product_name': 'System Product Name [System Version] (Falcon Northwest)',
+    },
+  },
+  # Uses the shared chrome.tests.intelligence pool and is reserved exclusively
+  # for blink-ai.crossbench (enforced via allowed_benchmarks in bot_platforms).
+  'linux-rtx4070-perf': {
+    'tests': [
+      {
+        'isolate': 'performance_test_suite',
+        'extra_args': [
+          '--assert-gpu-compositing',
+        ],
+      },
+    ],
+    # Disable soft device affinity (perf_device_trigger.py) so runs dispatch to
+    # any idle RTX 4070 bot in the shared chrome.tests.intelligence pool rather
+    # than pinning shard 0 to a single bot ID.
+    'perf_trigger': False,
+    'platform': 'linux',
+    'dimension': {
+      'cpu': 'x86-64',
+      'gpu': '10de:2783',
+      'os': 'Ubuntu-24.04',
+      'pool': 'chrome.tests.intelligence',
     },
   },
   'linux-r350-processor-perf': {

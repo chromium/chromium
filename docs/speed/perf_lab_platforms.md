@@ -32,6 +32,7 @@
  * [linux-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-perf): Ubuntu-22.04, Precision 3930 Rack, NVIDIA GeForce GTX 1660.
  * [linux-perf-rel](https://ci.chromium.org/p/chrome/builders/ci/linux-perf-rel): Ubuntu-18.04, 8 core, NVIDIA Quadro P400.
  * [linux-r350-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-r350-perf): Ubuntu-22.04, 16 core.
+ * [linux-rtx4070-perf](https://ci.chromium.org/p/chrome/builders/ci/linux-rtx4070-perf): Ubuntu-24.04, NVIDIA GeForce RTX 4070.
 
 ### Mac
 

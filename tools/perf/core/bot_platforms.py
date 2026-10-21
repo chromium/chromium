@@ -48,6 +48,7 @@ class _PerfPlatform(object):
     pinpoint_only: bool = False,
     executables: Optional[frozenset[ExecutableConfig]] = None,
     crossbench: Optional[frozenset[CrossbenchConfig]] = None,
+    allowed_benchmarks: Optional[frozenset[str]] = None,
   ):
     benchmark_config_set = benchmark_configs.Frozenset()
     self._name = name
@@ -60,6 +61,7 @@ class _PerfPlatform(object):
     self.pinpoint_only = pinpoint_only
     self.executables = executables or frozenset()
     self.crossbench = crossbench or frozenset()
+    self.allowed_benchmarks = allowed_benchmarks
     assert num_shards
     self._num_shards = num_shards
     self._benchmark_configs: frozenset[TelemetryConfig] = frozenset(
@@ -73,6 +75,21 @@ class _PerfPlatform(object):
     assert len(set(benchmark_names)) == len(benchmark_names), (
       'Make sure that a benchmark does not appear twice.'
     )
+    if self.allowed_benchmarks is not None:
+      scheduled_names = {
+        c.name
+        for c in (
+          *self._benchmark_configs,
+          *self.executables,
+          *self.crossbench,
+        )
+      }
+      disallowed = scheduled_names - self.allowed_benchmarks
+      assert not disallowed, (
+        f'Bot {self._name!r} only allows benchmarks '
+        f'{sorted(self.allowed_benchmarks)}, but found disallowed '
+        f'benchmarks: {sorted(disallowed)}'
+      )
 
     base_file_name = name.replace(' ', '_').lower()
     self._timing_file_path = os.path.join(
@@ -977,6 +994,15 @@ PLATFORM_INFO = {
     'platform_os': 'linux',
     'is_fyi': False,
   },
+  # Uses the shared chrome.tests.intelligence pool and is reserved exclusively
+  # for blink-ai.crossbench. Do not schedule other benchmarks on this bot.
+  'linux-rtx4070-perf': {
+    'description': 'Ubuntu-24.04, NVIDIA GeForce RTX 4070',
+    'num_shards': 1,
+    'platform_os': 'linux',
+    'is_fyi': False,
+    'allowed_benchmarks': frozenset({'blink-ai.crossbench'}),
+  },
   'linux-nvidia-dgx-spark-arm-perf': {
     'description': 'Ubuntu-24.04, Nvidia DGX Spark',
     'num_shards': 1,
@@ -1307,6 +1333,7 @@ def LoadAllScheduleFiles() -> set[_PerfPlatform]:
       pinpoint_only=platform_info.get('pinpoint_only', False),
       executables=executable_configs,
       crossbench=crossbench_configs,
+      allowed_benchmarks=platform_info.get('allowed_benchmarks'),
     )
     new_platforms.add(new_platform)
   return new_platforms
@@ -1331,6 +1358,12 @@ def LoadScheduleFile(
       f'Duplicate bot {bot!r} in schedule file {file_path}'
     )
     seen_bots.add(bot)
+    allowed_benchmarks = PLATFORM_INFO.get(bot, {}).get('allowed_benchmarks')
+    if allowed_benchmarks is not None:
+      assert name in allowed_benchmarks, (
+        f'Bot {bot!r} only allows benchmarks {sorted(allowed_benchmarks)}, '
+        f'cannot schedule {name!r} in {file_path}'
+      )
     config = _ParseScheduleConfigRow(row, name, factory, is_telemetry)
     configs.setdefault(bot, []).append(config)
 
