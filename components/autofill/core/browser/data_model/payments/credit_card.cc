@@ -357,6 +357,7 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kLocation:
     case Suggestion::Icon::kLocationSpark:
     case Suggestion::Icon::kLoyaltyPrograms:
+    case Suggestion::Icon::kLoyaltyProgramsSpark:
     case Suggestion::Icon::kMagic:
     case Suggestion::Icon::kMailAsterisk:
     case Suggestion::Icon::kNoIcon:
