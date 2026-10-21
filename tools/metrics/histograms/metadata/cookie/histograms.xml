@@ -358,44 +358,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.FirstPartySets.{Context}.DelayedQueriesCount"
-    units="queries" expires_after="2026-11-29">
-  <owner>cfredric@chromium.org</owner>
-  <owner>kaustubhag@chromium.org</owner>
-  <summary>
-    The number of queries that were delayed (i.e. answered asynchronously
-    instead of synchronously).
-
-    Recorded once during initialization, for each context. (This means once per
-    browser-run in the browser process; and once each time the Network Service
-    is started.) The metric is emitted even when First-Party Sets is disabled.
-  </summary>
-  <token key="Context">
-    <variant name="Browser"/>
-  </token>
-</histogram>
-
-<histogram name="Cookie.FirstPartySets.{Context}.MostDelayedQueryDelta"
-    units="ms" expires_after="2027-04-11">
-  <owner>cfredric@chromium.org</owner>
-  <owner>kaustubhag@chromium.org</owner>
-  <summary>
-    The length of time between when the first asynchronous query was received,
-    and when asynchronous queries started to be answered.
-
-    Recorded once during initialization, for each context. (This means once per
-    browser-run in the browser process; and once each time the Network Service
-    is started.) Recorded for all clients, even those with low-resolution
-    clocks.
-
-    If the context was initialized before any queries were made (including if
-    the feature is disabled entirely), 0 is recorded.
-  </summary>
-  <token key="Context">
-    <variant name="Browser"/>
-  </token>
-</histogram>
-
 <histogram name="Cookie.FromStorageWithValidLength.{CallSite}.Subsampled"
     enum="BooleanValid" expires_after="2026-09-20">
   <owner>awillia@chromium.org</owner>
