@@ -513,7 +513,9 @@ std::optional<api::windows::Window>
 SessionsGetDevicesFunction::CreateWindowModel(
     const sessions::SessionWindow& window,
     const std::string& session_tag) {
-  CHECK(!window.tabs.empty(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/575408483): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!window.tabs.empty());
 
   // Ignore app popup window for now because we do not have a corresponding
   // api::windows::WindowType value.
