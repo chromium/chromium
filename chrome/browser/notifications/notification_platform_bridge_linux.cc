@@ -68,6 +68,7 @@
 #include "components/dbus/utils/connect_to_signal.h"
 #include "components/dbus/utils/read_value.h"
 #include "components/dbus/utils/variant.h"
+#include "components/dbus/xdg/portal.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -108,7 +109,6 @@ const char kMethodRemoveNotification[] = "RemoveNotification";
 // DBus properties / interfaces.
 const char kDBusPropertiesInterface[] = "org.freedesktop.DBus.Properties";
 const char kMethodGet[] = "Get";
-const char kPropertyVersion[] = "version";
 
 // Portal interface versions.
 const uint32_t kPortalMinVersion = 1;
@@ -743,50 +743,29 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     portal_fallback_reason_ = fallback_reason;
     capabilities_.clear();
     notification_proxy_ = nullptr;
-    dbus_utils::CheckForServiceAndStart(
-        bus_, kPortalDesktopName,
-        base::BindOnce(
-            &NotificationPlatformBridgeLinuxImpl::OnPortalServiceStarted,
-            weak_factory_.GetWeakPtr()));
+    // Go through the shared portal setup rather than querying the portal
+    // directly. xdg-desktop-portal associates an app id with a D-Bus
+    // connection on first use, so any portal call made before the systemd
+    // scope is set up and the app is registered would cause the portal to
+    // use the wrong app id for this connection.
+    dbus_xdg::RequestXdgDesktopPortal(
+        bus_.get(), kPortalNotificationInterface,
+        base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnPortalRequested,
+                       weak_factory_.GetWeakPtr()));
   }
 
-  void OnPortalServiceStarted(std::optional<bool> service_started) {
+  void OnPortalRequested(uint32_t version) {
     CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-    if (!service_started.value_or(false)) {
+    // `version` is 0 if the portal or the interface is unavailable.
+    if (version < kPortalMinVersion) {
       OnConnectionInitializationFinished(portal_fallback_reason_.value_or(
           ConnectionInitializationStatusCode::
               NATIVE_NOTIFICATIONS_NOT_SUPPORTED));
       return;
     }
+    portal_version_ = version;
     notification_proxy_ = bus_->GetObjectProxy(
         kPortalDesktopName, dbus::ObjectPath(kPortalDesktopPath));
-
-    dbus_utils::CallMethod<"ss", "v">(
-        notification_proxy_, kDBusPropertiesInterface, kMethodGet,
-        base::BindOnce(
-            &NotificationPlatformBridgeLinuxImpl::OnPortalVersionResponse,
-            weak_factory_.GetWeakPtr()),
-        kPortalNotificationInterface, kPropertyVersion);
-  }
-
-  void OnPortalVersionResponse(
-      dbus_utils::CallMethodResult<dbus_utils::Variant> result) {
-    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-    if (!result.has_value()) {
-      OnConnectionInitializationFinished(portal_fallback_reason_.value_or(
-          ConnectionInitializationStatusCode::
-              NATIVE_NOTIFICATIONS_NOT_SUPPORTED));
-      return;
-    }
-    auto& [variant] = result.value();
-    auto version_opt = std::move(variant).Take<uint32_t>();
-    if (!version_opt || *version_opt < kPortalMinVersion) {
-      OnConnectionInitializationFinished(portal_fallback_reason_.value_or(
-          ConnectionInitializationStatusCode::
-              NATIVE_NOTIFICATIONS_NOT_SUPPORTED));
-      return;
-    }
-    portal_version_ = *version_opt;
 
     if (PortalSupportsSupportedOptions()) {
       dbus_utils::CallMethod<"ss", "v">(

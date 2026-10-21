@@ -27,6 +27,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/dbus/xdg/portal.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "dbus/mock_bus.h"
@@ -492,21 +493,15 @@ class FakePortalNotificationProxy : public dbus::ObjectProxy {
       std::string iface, prop;
       if (reader.PopString(&iface) && reader.PopString(&prop)) {
         if (iface == kPortalNotificationInterface && prop == "version") {
-          if (version_read_should_fail_) {
-            method_call->SetSerial(1);
-            auto error_response = dbus::ErrorResponse::FromMethodCall(
-                method_call, "org.freedesktop.DBus.Error.UnknownProperty",
-                "Property not found");
-            std::move(callback).Run(nullptr, error_response.get());
-            return;
-          }
-          auto response = dbus::Response::CreateEmpty();
-          dbus::MessageWriter writer(response.get());
-          dbus::MessageWriter variant_writer(nullptr);
-          writer.OpenVariant("u", &variant_writer);
-          variant_writer.AppendUint32(portal_version_);
-          writer.CloseContainer(&variant_writer);
-          std::move(callback).Run(response.get(), nullptr);
+          // The version must be obtained through
+          // dbus_xdg::RequestXdgDesktopPortal(), which registers the app with
+          // the portal before the portal is first used.
+          ADD_FAILURE() << "Portal version queried directly";
+          method_call->SetSerial(1);
+          auto error_response = dbus::ErrorResponse::FromMethodCall(
+              method_call, "org.freedesktop.DBus.Error.UnknownProperty",
+              "Property not found");
+          std::move(callback).Run(nullptr, error_response.get());
           return;
         }
         if (iface == kPortalNotificationInterface &&
@@ -633,6 +628,12 @@ class FakePortalNotificationProxy : public dbus::ObjectProxy {
   void SetPortalVersion(uint32_t version) { portal_version_ = version; }
 
   void SetVersionReadShouldFail(bool fail) { version_read_should_fail_ = fail; }
+
+  // The version reported through the shared portal setup. 0 means the
+  // interface is unavailable.
+  uint32_t GetPortalVersionForRegistrar() const {
+    return version_read_should_fail_ ? 0 : portal_version_;
+  }
 
   void SetFailNextAddNotifications(int count) {
     fail_add_notification_count_ = count;
@@ -872,6 +873,7 @@ class NotificationPlatformBridgeLinuxTest : public testing::Test {
     fake_notification_proxy_ = nullptr;
     fake_portal_notification_proxy_ = nullptr;
     mock_bus_ = nullptr;
+    dbus_xdg::SetPortalStateForTesting(dbus_xdg::PortalRegistrarState::kIdle);
   }
 
   void HandleOperation(NotificationOperation operation,
@@ -914,6 +916,20 @@ class NotificationPlatformBridgeLinuxTest : public testing::Test {
 
     fake_portal_notification_proxy_->SetConnectSignals(
         test_params.connect_signals);
+
+    // The bridge sets up the portal through dbus_xdg::RequestXdgDesktopPortal,
+    // so emulate the result of that setup here.
+    if (test_params.portal_name_has_owner || test_params.portal_activatable) {
+      dbus_xdg::SetPortalStateForTesting(
+          dbus_xdg::PortalRegistrarState::kSuccess);
+      dbus_xdg::SetPortalInterfaceVersionForTesting(
+          kPortalNotificationInterface,
+          fake_portal_notification_proxy_->GetPortalVersionForRegistrar());
+    } else {
+      dbus_xdg::SetPortalStateForTesting(
+          dbus_xdg::PortalRegistrarState::kFailed);
+    }
+    EXPECT_CALL(*mock_bus_.get(), AssertOnOriginThread()).WillRepeatedly([] {});
 
     if (test_params.expect_init_success) {
       fake_notification_proxy_->SetServerName(test_params.server_name);
