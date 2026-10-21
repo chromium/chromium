@@ -84,38 +84,10 @@ export class SearchboxIconElement extends CrLitElement {
       },
 
       /**
-       * Whether icon belongs to an answer or not. Used to prevent
-       * the match image from taking size of container.
+       * Whether icon belongs to a featured search match (starter pack or
+       * featured enterprise search).
        */
-
-      /**
-       * Whether icon belongs to a starter pack match.
-       */
-      isStarterPack: {
-        type: Boolean,
-        reflect: true,
-      },
-
-      /**
-       * Whether icon belongs to a featured enterprise search match.
-       */
-      isFeaturedEnterpriseSearch: {
-        type: Boolean,
-        reflect: true,
-      },
-
-      /**
-       * Whether suggestion answer is of answer type weather. Weather answers
-       * don't have the same background as other suggestion answers.
-       */
-
-      /**
-       * Whether suggestion is an enterprise search aggregator people
-       * suggestion. Enterprise search aggregator people suggestions should not
-       * use a set background color when image is missing, unlike other rich
-       * suggestion answers.
-       */
-      isEnterpriseSearchAggregatorPeopleType: {
+      isFeaturedSearch: {
         type: Boolean,
         reflect: true,
       },
@@ -222,9 +194,7 @@ export class SearchboxIconElement extends CrLitElement {
   accessor hasIconContainerBackground: boolean = false;
   accessor inKeywordMode: boolean = false;
   accessor inSearchbox: boolean = false;
-  accessor isStarterPack = false;
-  accessor isFeaturedEnterpriseSearch = false;
-  accessor isEnterpriseSearchAggregatorPeopleType: boolean = false;
+  accessor isFeaturedSearch: boolean = false;
   accessor maskImage: string = '';
   accessor match: AutocompleteMatch|null = null;
   accessor pageUrl: string = '';
@@ -272,11 +242,7 @@ export class SearchboxIconElement extends CrLitElement {
         this.imageLoading_ = !!this.imageSrc_;
         this.imageError_ = false;
       }
-      this.isEnterpriseSearchAggregatorPeopleType =
-          this.computeIsEnterpriseSearchAggregatorPeopleType_();
-      this.isStarterPack = this.computeIsStarterPack_();
-      this.isFeaturedEnterpriseSearch =
-          this.computeIsFeaturedEnterpriseSearch_();
+      this.isFeaturedSearch = this.computeIsFeaturedSearch_();
       this.hasImage_ = this.computeHasImage_();
       this.hasIconContainerBackground =
           this.computeHasIconContainerBackground_();
@@ -399,10 +365,6 @@ export class SearchboxIconElement extends CrLitElement {
 
   private computeHasImage_(): boolean {
     return !!this.match && !!this.match.suggestTemplate.image?.url;
-  }
-
-  private computeIsEnterpriseSearchAggregatorPeopleType_(): boolean {
-    return this.match?.isEnterpriseSearchAggregatorPeopleType || false;
   }
 
   private computeShowIconImg_(): boolean {
@@ -592,18 +554,14 @@ export class SearchboxIconElement extends CrLitElement {
     if (this.match) {
       return this.match.type === PEDAL ||
           this.match.type === HISTORY_CLUSTER_MATCH_TYPE ||
-          this.match.type === CALCULATOR || this.match.type === STARTER_PACK ||
-          this.match.type === FEATURED_ENTERPRISE_SEARCH;
+          this.match.type === CALCULATOR || this.isFeaturedSearch;
     }
     return false;
   }
 
-  private computeIsStarterPack_(): boolean {
-    return this.match?.type === STARTER_PACK;
-  }
-
-  private computeIsFeaturedEnterpriseSearch_(): boolean {
-    return this.match?.type === FEATURED_ENTERPRISE_SEARCH;
+  private computeIsFeaturedSearch_(): boolean {
+    return this.match?.type === STARTER_PACK ||
+        this.match?.type === FEATURED_ENTERPRISE_SEARCH;
   }
 }
 

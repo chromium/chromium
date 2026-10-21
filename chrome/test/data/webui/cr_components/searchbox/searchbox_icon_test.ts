@@ -236,7 +236,23 @@ suite('CrComponentsSearchboxIconTest', () => {
     await microtasksFinished();
     assertTrue(isVisible(icon.$.icon));
     assertFalse(isVisible(icon.$.faviconImage));
+    assertTrue(icon.hasIconContainerBackground);
+    assertTrue(icon.isFeaturedSearch);
   });
+
+  test(
+      'sets isFeaturedSearch for featured enterprise search match',
+      async () => {
+        const match = createAutocompleteMatch();
+        match.isSearchType = false;
+        match.type = 'featured-enterprise-search';
+        match.iconPath = 'enterprise.svg';
+        icon.match = match;
+
+        await microtasksFinished();
+        assertTrue(icon.hasIconContainerBackground);
+        assertTrue(icon.isFeaturedSearch);
+      });
 
   test('suppresses favicon image for pedal match', async () => {
     const match = createAutocompleteMatch();
