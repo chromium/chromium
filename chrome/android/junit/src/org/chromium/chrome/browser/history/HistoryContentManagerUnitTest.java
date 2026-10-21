@@ -100,6 +100,7 @@ public class HistoryContentManagerUnitTest {
     @Mock private SyncService mSyncService;
     @Mock private UserPrefsJni mUserPrefsJni;
     @Mock private PrefChangeRegistrarJni mPrefChangeRegistrarJni;
+    @Mock private BrowsingHistoryBridge.Natives mBrowsingHistoryBridgeJni;
     private final boolean mIsIdentityManagerSourceOfAccounts;
 
     private HistoryContentManager mHistoryContentManager;
@@ -121,6 +122,7 @@ public class HistoryContentManagerUnitTest {
         IdentityServicesProviderJni.setInstanceForTesting(mIdentityServicesProviderJni);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
+        BrowsingHistoryBridgeJni.setInstanceForTesting(mBrowsingHistoryBridgeJni);
         // The actor filter consults GlicEnabling; keep it off so no native call is made.
         GlicEnabling.setEnabledForTesting(false);
 
@@ -198,10 +200,10 @@ public class HistoryContentManagerUnitTest {
     @Features.EnableFeatures({
         ChromeFeatureList.APP_SPECIFIC_HISTORY,
         ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_ACTOR,
-        ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN,
-        ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE
+        ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DOMAIN
     })
     public void testCreateForPageInfo_FilterChipsDisabled() {
+        when(mBrowsingHistoryBridgeJni.isBrowsingHistoryFilterByDeviceEnabled()).thenReturn(true);
         HistoryContentManager pageInfoContentManager =
                 HistoryContentManager.createForPageInfo(
                         mActivity,

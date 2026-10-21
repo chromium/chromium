@@ -813,7 +813,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @return True if history page needs to show client filter UI.
      */
     boolean showClientFilter() {
-        return ChromeFeatureList.sBrowsingHistoryFilterByDevice.isEnabled() && mShowClientFilter;
+        return mShowClientFilter && BrowsingHistoryBridge.isBrowsingHistoryFilterByDeviceEnabled();
     }
 
     /**

@@ -188,6 +188,10 @@ public class BrowsingHistoryBridge implements HistoryProvider {
         }
     }
 
+    public static boolean isBrowsingHistoryFilterByDeviceEnabled() {
+        return BrowsingHistoryBridgeJni.get().isBrowsingHistoryFilterByDeviceEnabled();
+    }
+
     /**
      * Queries the native {@code HistoryService} for the cached page title associated with {@code
      * url}, invoking {@code callback} with the title string or an empty string if unavailable.
@@ -216,6 +220,8 @@ public class BrowsingHistoryBridge implements HistoryProvider {
         long init(BrowsingHistoryBridge self, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeBrowsingHistoryBridge);
+
+        boolean isBrowsingHistoryFilterByDeviceEnabled();
 
         void queryHistory(
                 long nativeBrowsingHistoryBridge,

@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -195,6 +196,7 @@ public class HistoryUiTest {
     @Mock private ApplicationInfo mPackageAppInfo;
     @Mock private GlicEnabling.Natives mGlicEnablingJni;
     @Mock private GlicKeyedService mGlicKeyedService;
+    @Mock private BrowsingHistoryBridge.Natives mBrowsingHistoryBridgeJni;
 
     public static Matcher<Intent> hasData(GURL uri) {
         return IntentMatchers.hasData(uri.getSpec());
@@ -237,6 +239,13 @@ public class HistoryUiTest {
         doReturn(true).when(mGlicEnablingJni).isEnabledAndConsentForProfile(mProfile);
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         doReturn(true).when(mGlicKeyedService).getUserEnabledActuationOnWeb();
+        BrowsingHistoryBridgeJni.setInstanceForTesting(mBrowsingHistoryBridgeJni);
+        doAnswer(
+                        inv ->
+                                ChromeFeatureList.isEnabled(
+                                        ChromeFeatureList.BROWSING_HISTORY_FILTER_BY_DEVICE))
+                .when(mBrowsingHistoryBridgeJni)
+                .isBrowsingHistoryFilterByDeviceEnabled();
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(

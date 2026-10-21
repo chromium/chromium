@@ -1115,7 +1115,7 @@ void BrowsingHistoryService::OnWebHistoryDeleted() {
 
 std::vector<BrowsingHistoryService::ClientGroup>
 BrowsingHistoryService::GetSyncedDevicesForFiltering() const {
-  if (!base::FeatureList::IsEnabled(history::kBrowsingHistoryFilterByDevice)) {
+  if (!IsBrowsingHistoryFilterByDeviceEnabled()) {
     return {};
   }
 

@@ -1219,7 +1219,8 @@ TEST_F(BrowsingHistoryServiceTest, QueryDurationHistogram) {
 
 TEST_F(BrowsingHistoryServiceTest, NoSyncedDevicesWhenFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kBrowsingHistoryFilterByDevice);
+  feature_list.InitWithFeatures({kWebHistoryUseNewApi},
+                                {kBrowsingHistoryFilterByDevice});
 
   EXPECT_CALL(*sync()->GetMockUserSettings(), GetSelectedTypes())
       .WillRepeatedly(testing::Return(
@@ -1237,9 +1238,28 @@ TEST_F(BrowsingHistoryServiceTest, NoSyncedDevicesWhenFeatureDisabled) {
   EXPECT_THAT(service()->GetSyncedDevicesForFiltering(), IsEmpty());
 }
 
+TEST_F(BrowsingHistoryServiceTest,
+       NoSyncedDevicesWhenWebHistoryNewApiDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kBrowsingHistoryFilterByDevice},
+                                {kWebHistoryUseNewApi});
+
+  EXPECT_CALL(*sync()->GetMockUserSettings(), GetSelectedTypes())
+      .WillRepeatedly(testing::Return(
+          syncer::UserSelectableTypeSet{syncer::UserSelectableType::kHistory}));
+
+  device_info_tracker()->Add(syncer::TestDeviceInfoBuilder()
+                                 .WithGuid("guid1")
+                                 .WithClientName("Device A")
+                                 .Build());
+
+  EXPECT_THAT(service()->GetSyncedDevicesForFiltering(), IsEmpty());
+}
+
 TEST_F(BrowsingHistoryServiceTest, NoSyncedDevicesWhenHistorySyncIsOff) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kBrowsingHistoryFilterByDevice);
+  feature_list.InitWithFeatures(
+      {kWebHistoryUseNewApi, kBrowsingHistoryFilterByDevice}, {});
 
   EXPECT_CALL(*sync()->GetMockUserSettings(), GetSelectedTypes())
       .WillRepeatedly(testing::Return(syncer::UserSelectableTypeSet{}));
@@ -1258,7 +1278,8 @@ TEST_F(BrowsingHistoryServiceTest, NoSyncedDevicesWhenHistorySyncIsOff) {
 
 TEST_F(BrowsingHistoryServiceTest, NoSyncedDevicesWhenTrackerIsNull) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kBrowsingHistoryFilterByDevice);
+  feature_list.InitWithFeatures(
+      {kWebHistoryUseNewApi, kBrowsingHistoryFilterByDevice}, {});
 
   EXPECT_CALL(*sync()->GetMockUserSettings(), GetSelectedTypes())
       .WillRepeatedly(testing::Return(
@@ -1273,7 +1294,8 @@ TEST_F(BrowsingHistoryServiceTest, NoSyncedDevicesWhenTrackerIsNull) {
 TEST_F(BrowsingHistoryServiceTest,
        SyncedDevicesAreDeduplicatedByNameAndIsLocalStatus) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kBrowsingHistoryFilterByDevice);
+  feature_list.InitWithFeatures(
+      {kWebHistoryUseNewApi, kBrowsingHistoryFilterByDevice}, {});
 
   EXPECT_CALL(*sync()->GetMockUserSettings(), GetSelectedTypes())
       .WillRepeatedly(testing::Return(

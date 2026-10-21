@@ -332,6 +332,11 @@ static void JNI_BrowsingHistoryBridge_GetPageTitleForUrl(
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
+static bool JNI_BrowsingHistoryBridge_IsBrowsingHistoryFilterByDeviceEnabled(
+    JNIEnv* env) {
+  return history::IsBrowsingHistoryFilterByDeviceEnabled();
+}
+
 static void JNI_BrowsingHistoryBridge_AddPageToHistoryForTesting(
     JNIEnv* env,
     Profile* profile,
