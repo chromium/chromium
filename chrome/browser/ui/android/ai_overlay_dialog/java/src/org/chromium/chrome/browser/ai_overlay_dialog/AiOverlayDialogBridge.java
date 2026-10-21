@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ai_overlay_dialog;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
@@ -108,7 +109,8 @@ public class AiOverlayDialogBridge implements ChromeAndroidTaskFeature {
      * which is bound on that thread.
      */
     @CalledByNative
-    private static void updateAudioEnergy(WindowAndroid window, float energy) {
+    private static void updateAudioEnergy(
+            @JniType("ui::WindowAndroid*") WindowAndroid window, float energy) {
         ThreadUtils.assertOnUiThread();
         AudioEnergyListener listener =
                 AUDIO_ENERGY_LISTENER_KEY.retrieveDataFromHost(window.getUnownedUserDataHost());

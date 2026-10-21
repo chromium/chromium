@@ -112,8 +112,7 @@ void UpdateAudioEnergyJni(BrowserWindowInterface* browser, float energy) {
   }
 
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  Java_AiOverlayDialogBridge_updateAudioEnergy(env, window->GetJavaObject(),
-                                               energy);
+  Java_AiOverlayDialogBridge_updateAudioEnergy(env, window, energy);
 }
 
 }  // namespace ttc
