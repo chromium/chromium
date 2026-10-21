@@ -13,6 +13,7 @@
 #import "base/functional/bind.h"
 #import "base/json/json_writer.h"
 #import "components/device_signals/core/browser/signals_aggregator.h"
+#import "components/device_signals/core/browser/user_permission_service.h"
 #import "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 #import "components/enterprise/browser/reporting/report_generation_config.h"
 #import "components/enterprise/browser/reporting/report_scheduler.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/proxy/model/enterprise_proxy_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/signals/model/ios_signals_aggregator_factory.h"
+#import "ios/chrome/browser/enterprise/signals/model/ios_user_permission_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_management_service.h"
 #import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
@@ -159,9 +161,12 @@ void ConnectorsInternalsPageHandler::GetSignalsReportingState(
 
   PrefService* profile_prefs = profile_->GetPrefs();
 
-  // On iOS, signals collection is governed by administrative policies in
-  // managed contexts.
-  bool can_collect_all_signals = true;
+  const device_signals::UserPermissionService* user_permission_service =
+      IOSUserPermissionServiceFactory::GetForProfile(profile_);
+  bool can_collect_all_signals =
+      user_permission_service &&
+      user_permission_service->CanCollectReportSignals() ==
+          device_signals::UserPermission::kGranted;
 
   enterprise_reporting::CloudProfileReportingServiceIOS*
       profile_reporting_service = enterprise_reporting::
