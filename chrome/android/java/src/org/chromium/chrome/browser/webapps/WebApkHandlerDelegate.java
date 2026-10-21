@@ -10,7 +10,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -23,38 +26,12 @@ import org.chromium.components.webapps.ShortcutSource;
 /** Delegate for retrieving WebApkInfo. */
 @NullMarked
 public class WebApkHandlerDelegate {
-    private long mNativePointer;
+    @JniType("::WebApkHandlerDelegate")
+    interface NativeWebApkHandlerDelegate extends JniTypeToken {}
 
-    @NativeMethods
-    interface Natives {
-        void onWebApkInfoRetrieved(
-                long nativeWebApkHandlerDelegate,
-                @JniType("std::string") @Nullable String name,
-                @JniType("std::string") @Nullable String shortName,
-                @JniType("std::string") @Nullable String packageName,
-                @JniType("std::string") String id,
-                int shellApkVersion,
-                int versionCode,
-                @JniType("std::string") String uri,
-                @JniType("std::string") String scope,
-                @JniType("std::string") @Nullable String manifestUrl,
-                @JniType("std::string") @Nullable String manifestStartUrl,
-                @JniType("std::string") @Nullable String manifestId,
-                int displayMode,
-                int orientation,
-                long themeColor,
-                long backgroundColor,
-                long darkThemeColor,
-                long darkBackgroundColor,
-                long lastUpdateCheckTimeMs,
-                long lastUpdateCompletionTimeMs,
-                boolean relaxUpdates,
-                @JniType("std::string") @Nullable String backingBrowserPackageName,
-                boolean isBackingBrowser,
-                @JniType("std::string") String updateStatus);
-    }
+    private @Nullable JniRawPtr<NativeWebApkHandlerDelegate> mNativePointer;
 
-    private WebApkHandlerDelegate(long nativePointer) {
+    private WebApkHandlerDelegate(JniRawPtr<NativeWebApkHandlerDelegate> nativePointer) {
         mNativePointer = nativePointer;
     }
 
@@ -63,21 +40,24 @@ public class WebApkHandlerDelegate {
      * |nativePointer|.
      */
     @CalledByNative
-    public static WebApkHandlerDelegate create(long nativePointer) {
+    static WebApkHandlerDelegate create(JniRawPtr<NativeWebApkHandlerDelegate> nativePointer) {
         return new WebApkHandlerDelegate(nativePointer);
     }
 
     /** Invalidates the native pointer to WebApkHandlerDelegate. */
     @CalledByNative
     public void reset() {
-        mNativePointer = 0;
+        if (mNativePointer != null) {
+            mNativePointer.release();
+            mNativePointer = null;
+        }
     }
 
     /** Calls the native WebApkHandlerDelegate with information for each installed WebAPK. */
     @CalledByNative
     @SuppressWarnings("QueryPermissionsNeeded")
     public void retrieveWebApks() {
-        if (mNativePointer == 0) {
+        if (mNativePointer == null) {
             return;
         }
         Context context = ContextUtils.getApplicationContext();
@@ -97,7 +77,7 @@ public class WebApkHandlerDelegate {
             PackageInfo packageInfo,
             boolean isBackingBrowser,
             @Nullable String backingBrowserPackageName) {
-        if (mNativePointer == 0) {
+        if (mNativePointer == null) {
             return;
         }
         // Pass non-null URL parameter so that {@link WebApkInfo#create()}
@@ -156,5 +136,34 @@ public class WebApkHandlerDelegate {
                         backingBrowserPackageName,
                         isBackingBrowser,
                         updateStatus);
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onWebApkInfoRetrieved(
+                JniPtr<NativeWebApkHandlerDelegate> self,
+                @JniType("std::string") @Nullable String name,
+                @JniType("std::string") @Nullable String shortName,
+                @JniType("std::string") @Nullable String packageName,
+                @JniType("std::string") String id,
+                int shellApkVersion,
+                int versionCode,
+                @JniType("std::string") String uri,
+                @JniType("std::string") String scope,
+                @JniType("std::string") @Nullable String manifestUrl,
+                @JniType("std::string") @Nullable String manifestStartUrl,
+                @JniType("std::string") @Nullable String manifestId,
+                int displayMode,
+                int orientation,
+                long themeColor,
+                long backgroundColor,
+                long darkThemeColor,
+                long darkBackgroundColor,
+                long lastUpdateCheckTimeMs,
+                long lastUpdateCompletionTimeMs,
+                boolean relaxUpdates,
+                @JniType("std::string") @Nullable String backingBrowserPackageName,
+                boolean isBackingBrowser,
+                @JniType("std::string") String updateStatus);
     }
 }

@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/color_utils_android.h"
 
@@ -17,8 +18,8 @@
 WebApkHandlerDelegate::WebApkHandlerDelegate(const WebApkInfoCallback& callback)
     : callback_(callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  j_obj_.Reset(env, Java_WebApkHandlerDelegate_create(
-                        env, reinterpret_cast<intptr_t>(this)));
+  j_obj_.Reset(env,
+               Java_WebApkHandlerDelegate_create(env, jni_zero::MakeRaw(this)));
 }
 
 WebApkHandlerDelegate::~WebApkHandlerDelegate() {
