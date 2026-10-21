@@ -754,6 +754,15 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextBoxViewport) {
   RunTestsInJsModule("ink2_text_box_viewport_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextIntegration) {
+  // TODO(crbug.com/40268279): Test hangs with GuestView PDF. Remove once
+  // GuestView PDF is fully deprecated.
+  if (!UseOopif()) {
+    GTEST_SKIP();
+  }
+  RunTestsInJsModule("ink2_text_integration_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextSidePanel) {
   // The window must be at least 960px to show the text side panel.
   GetActiveWebContents()->Resize({0, 0, 960, 100});
