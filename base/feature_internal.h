@@ -45,15 +45,26 @@ consteval auto MakeCountryCodeStorage(Args... args) {
 
 }  // namespace base::internal
 
-// Puts a variable into the .data..cr_features ELF section so that SuperSize
-// can distinguish feature flags from mutable constants. __attribute__ is used
-// rather than [[gnu::section]] because C++ attribute syntax cannot appear
-// after declaration specifiers (e.g., `static BASE_FEATURE(...)`).
+// Places feature objects in one section. IsEnabled() writes a feature's cache
+// word on first use, which gives the process a private copy of the page that
+// holds it. Keeping feature objects together limits those copies to a few
+// pages instead of many pages spread across the data section. On ELF, the
+// section also lets SuperSize tell feature flags apart from mutable constants.
+// On Windows, lld-link merges `.data$*` sections into `.data`, ordered by
+// suffix.
+//
+// __attribute__ is used rather than [[gnu::section]] because C++ attribute
+// syntax cannot appear after declaration specifiers (e.g.,
+// `static BASE_FEATURE(...)`).
+// LINT.IfChange(FeatureSection)
 #if defined(__ELF__)
 #define BASE_FEATURE_SECTION __attribute__((section(".data..cr_features")))
+#elif defined(_WIN32)
+#define BASE_FEATURE_SECTION __attribute__((section(".data$cr_features")))
 #else
 #define BASE_FEATURE_SECTION
 #endif
+// LINT.ThenChange(feature.rs:FeatureSection)
 
 // Three-argument version of BASE_FEATURE macro.
 #define BASE_FEATURE_INTERNAL_3_ARGS(is_runtime_mutable, feature, name,     \

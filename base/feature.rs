@@ -254,6 +254,7 @@ macro_rules! base_feature {
     ($id:ident, $default:expr) => {
         #[unsafe(no_mangle)]
         #[allow(non_upper_case_globals)]
+        // LINT.IfChange(FeatureSection)
         #[cfg_attr(
             any(
                 target_os = "android",
@@ -263,6 +264,8 @@ macro_rules! base_feature {
             ),
             unsafe(link_section = ".data..cr_features")
         )]
+        #[cfg_attr(target_os = "windows", unsafe(link_section = ".data$cr_features"))]
+        // LINT.ThenChange(feature_internal.h:FeatureSection)
         pub static $id: $crate::Feature = unsafe {
             // Safety: The string constructed here is explicitly null-terminated.
             $crate::Feature::from_id(
