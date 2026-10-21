@@ -233,6 +233,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                      omnibox::kAskGBlockAutoTabZeroStateSuggestions.Get());
   source->AddBoolean("askGComposeboxPlaceholderEnabled",
                      omnibox::kAskGComposeboxPlaceholder.Get());
+  source->AddBoolean("askGSuggestionSidePanelDescription",
+                     omnibox::kAskGSuggestionSidePanelDescription.Get());
   source->AddBoolean("composeboxShowTypedSuggest",
                      omnibox::kShowComposeboxTypedSuggest.Get());
   source->AddBoolean("composeboxShowZps", omnibox::kShowComposeboxZps.Get());

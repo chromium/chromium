@@ -7,7 +7,8 @@ import 'chrome://new-tab-page/strings.m.js';
 
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from 'chrome://resources/cr_components/searchbox/searchbox_dropdown.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createSuggestTemplateInfo} from './searchbox_test_utils.js';
@@ -18,6 +19,7 @@ suite('SearchboxDropdown', () => {
   let dropdown: SearchboxDropdownElement;
 
   setup(() => {
+    loadTimeData.overrideValues({askGSuggestionSidePanelDescription: false});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     dropdown = document.createElement('cr-searchbox-dropdown');
     document.body.appendChild(dropdown);
@@ -50,4 +52,69 @@ suite('SearchboxDropdown', () => {
     assertEquals(1, matchEls[0]!.matchIndex);
   });
 
+  test(
+      'hides the AskG entrypoint description while a contextual suggestion ' +
+          'with the same description is selected',
+      async () => {
+        // Arrange.
+        const [entrypointEl, contextualEl, otherEl] =
+            await createDescriptionDedupeDropdown(/*dedupe=*/ true);
+        assertTrue(entrypointEl!.hasAttribute('duplicate-description'));
+        assertTrue(contextualEl!.hasAttribute('duplicate-description'));
+        assertFalse(otherEl!.hasAttribute('duplicate-description'));
+        assertEquals('visible', descriptionVisibility(entrypointEl!));
+
+        // Act & Assert.
+        await dropdown.selectIndex(0);
+        assertEquals('visible', descriptionVisibility(entrypointEl!));
+
+        await dropdown.selectIndex(1);
+        assertEquals('hidden', descriptionVisibility(entrypointEl!));
+
+        await dropdown.selectIndex(2);
+        assertEquals('visible', descriptionVisibility(entrypointEl!));
+      });
+
+  test('does not hide descriptions without the param', async () => {
+    const [entrypointEl, contextualEl] =
+        await createDescriptionDedupeDropdown(/*dedupe=*/ false);
+    assertFalse(entrypointEl!.hasAttribute('duplicate-description'));
+    assertFalse(contextualEl!.hasAttribute('duplicate-description'));
+
+    await dropdown.selectIndex(1);
+    assertEquals('visible', descriptionVisibility(entrypointEl!));
+  });
+
+  function descriptionVisibility(matchEl: HTMLElement): string {
+    return getComputedStyle($$(matchEl, '#secondaryText')!).visibility;
+  }
+
+  // Creates a dropdown with an AskG entrypoint-like match and a contextual
+  // suggestion sharing its description, plus a contextual suggestion with a
+  // different description.
+  async function createDescriptionDedupeDropdown(dedupe: boolean) {
+    loadTimeData.overrideValues({askGSuggestionSidePanelDescription: dedupe});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    dropdown = document.createElement('cr-searchbox-dropdown');
+    document.body.appendChild(dropdown);
+
+    const withDescription = (secondaryText: string) =>
+        createSuggestTemplateInfo({secondaryText});
+    dropdown.result = createAutocompleteResultForTesting({
+      matches: [
+        createSearchMatchForTesting(
+            {suggestTemplate: withDescription('Opens in side panel')}),
+        createSearchMatchForTesting({
+          isContextualSuggestion: true,
+          suggestTemplate: withDescription('Opens in side panel'),
+        }),
+        createSearchMatchForTesting({
+          isContextualSuggestion: true,
+          suggestTemplate: withDescription('Ask Google about this page'),
+        }),
+      ],
+    });
+    await microtasksFinished();
+    return dropdown.shadowRoot.querySelectorAll('cr-searchbox-match');
+  }
 });

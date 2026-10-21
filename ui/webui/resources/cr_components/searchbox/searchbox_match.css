@@ -250,6 +250,11 @@
   display: inline;
 }
 
+/* Lets cr-searchbox-dropdown hide a duplicate description. */
+:is(#separator, #secondaryText) {
+  visibility: var(--cr-searchbox-match-description-visibility, visible);
+}
+
 /* Icon in front of the description, e.g. the side panel icon for
  * "Opens in side panel". */
 #secondaryText[has-icon]::before {

@@ -525,4 +525,20 @@ suite('CrComponentsRealboxMatchTest', () => {
                    .getPropertyValue('-webkit-mask-image')
                    .includes('dock_to_right.svg'));
   });
+
+  test('HideDescription', async () => {
+    matchEl.match = createAutocompleteMatch({
+      suggestTemplate:
+          createSuggestTemplateInfo({secondaryText: 'description'}),
+    });
+    await microtasksFinished();
+    assertEquals(
+        'visible', getComputedStyle(matchEl.$.secondaryText).visibility);
+
+    matchEl.style.setProperty(
+        '--cr-searchbox-match-description-visibility', 'hidden');
+    assertEquals(
+        'hidden', getComputedStyle(matchEl.$.secondaryText).visibility);
+    assertEquals('hidden', getComputedStyle(matchEl.$.separator).visibility);
+  });
 });

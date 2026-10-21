@@ -45,6 +45,15 @@ cr-searchbox-match:-webkit-any(:focus-within, [selected]) {
       var(--color-searchbox-results-foreground));
 }
 
+/* Shows one copy of a duplicate description at a time: the hovered contextual
+ * match's, else the keyboard-selected contextual match's. */
+#content:has(cr-searchbox-match[duplicate-description][is-contextual-suggestion_]:hover)
+    cr-searchbox-match[duplicate-description]:not(:hover),
+#content:has(cr-searchbox-match[duplicate-description][is-contextual-suggestion_]:is(:focus-within, [selected]))
+    cr-searchbox-match[duplicate-description]:not([is-contextual-suggestion_]) {
+  --cr-searchbox-match-description-visibility: hidden;
+}
+
 .header {
   align-items: center;
   box-sizing: border-box;

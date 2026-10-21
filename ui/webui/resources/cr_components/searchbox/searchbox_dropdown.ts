@@ -115,6 +115,14 @@ export class SearchboxDropdownElement extends CrLitElement {
       loadTimeData.valueExists('realboxVirtualFocusNavigation') &&
       loadTimeData.getBoolean('realboxVirtualFocusNavigation');
   private accessor showSecondarySide_: boolean = false;
+  // Hiding duplicate descriptions is only needed when the
+  // Omnibox_AskGSuggestionSidePanelDescription param is on, since that's when
+  // the AskG action match and contextual suggestions share a description.
+  private hideDuplicateDescriptions_: boolean =
+      loadTimeData.valueExists('askGSuggestionSidePanelDescription') &&
+      loadTimeData.getBoolean('askGSuggestionSidePanelDescription');
+  // Descriptions shown by both a contextual and a non-contextual match.
+  private duplicateDescriptions_: Set<string> = new Set();
 
   /** The list of selectable match elements. */
   private selectableMatchElements_: SearchboxMatchElement[] = [];
@@ -126,6 +134,7 @@ export class SearchboxDropdownElement extends CrLitElement {
     if (changedProperties.has('result')) {
       this.hasSecondarySide = this.computeHasSecondarySide_();
       this.hasEmptyInput = this.computeHasEmptyInput_();
+      this.duplicateDescriptions_ = this.computeDuplicateDescriptions_();
     }
 
     if (changedProperties.has('result') ||
@@ -301,10 +310,34 @@ export class SearchboxDropdownElement extends CrLitElement {
     return !!this.result && this.result.input === '';
   }
 
+  private computeDuplicateDescriptions_(): Set<string> {
+    const contextual = new Set<string>();
+    const other = new Set<string>();
+    if (this.hideDuplicateDescriptions_) {
+      for (const match of this.result?.matches ?? []) {
+        const description = match.suggestTemplate.secondaryText.text;
+        if (description) {
+          (match.isContextualSuggestion ? contextual : other).add(description);
+        }
+      }
+    }
+    return new Set([...contextual].filter(d => other.has(d)));
+  }
+
   protected isSelected_(match: AutocompleteMatch): boolean {
     const selectedIndex = this.virtualFocusEnabled ? this.selection.line :
                                                      this.selectedMatchIndex;
     return this.matchIndex_(match) === selectedIndex;
+  }
+
+  /**
+   * Whether a match of the other kind (contextual or not) has the same
+   * description as the match. The CSS uses this to show only one copy at a
+   * time.
+   */
+  protected hasDuplicateDescription_(match: AutocompleteMatch): boolean {
+    return this.duplicateDescriptions_.has(
+        match.suggestTemplate.secondaryText.text);
   }
 
   /**
