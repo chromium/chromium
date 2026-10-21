@@ -14439,6 +14439,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPersistentWidgetAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kPersistentWidgetAPI)},
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"cross-fade-bounds-change-animation",
+     flag_descriptions::kCrossFadeBoundsChangeAnimationName,
+     flag_descriptions::kCrossFadeBoundsChangeAnimationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kCrossFadeBoundsChangeAnimation)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

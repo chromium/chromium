@@ -7604,6 +7604,12 @@ inline constexpr char kCrosContentAdjustedRefreshRateName[] =
 inline constexpr char kCrosContentAdjustedRefreshRateDescription[] =
     "Allows the display to adjust the refresh rate in order to match content.";
 
+inline constexpr char kCrossFadeBoundsChangeAnimationName[] =
+    "Cross-fade bounds change animation";
+inline constexpr char kCrossFadeBoundsChangeAnimationDescription[] =
+    "Uses cross-fade animation instead of bounds animation when animating a "
+    "window to a different size.";
+
 inline constexpr char kDesksTemplatesName[] = "Desk Templates";
 inline constexpr char kDesksTemplatesDescription[] =
     "Streamline workflows by saving a group of applications and windows as a "

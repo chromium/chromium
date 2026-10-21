@@ -4,6 +4,7 @@
 
 #include "ash/wm/window_animations.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -16,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
@@ -351,6 +353,53 @@ TEST_F(WindowAnimationsTest, CrossFadeInterrupted) {
   third_layer->GetAnimator()->StopAnimating();
   EXPECT_TRUE(second_layer_checker.destroyed());
   EXPECT_EQ(gfx::Transform(), third_layer->transform());
+}
+
+TEST_F(WindowAnimationsTest, SetBoundsDirectAnimated) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kCrossFadeBoundsChangeAnimation};
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
+  window->SetBounds({5, 10, 320, 240});
+  window->Show();
+
+  Layer* old_layer = window->layer();
+  LayerDestroyedChecker old_layer_checker(old_layer);
+
+  // Animating to a different size uses cross-fade animation (recreates layer).
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({400, 300});
+  EXPECT_TRUE(HasCrossFadeAnimation(window.get()));
+  Layer* second_layer = window->layer();
+  LayerDestroyedChecker second_layer_checker(second_layer);
+  EXPECT_NE(old_layer, second_layer);
+  EXPECT_FALSE(old_layer_checker.destroyed());
+  EXPECT_EQ(gfx::Rect(400, 300), window->bounds());
+  EXPECT_EQ(gfx::Transform(), second_layer->GetTargetTransform());
+
+  // Interrupting an ongoing cross-fade animation with the same target size
+  // still uses cross-fade animation and deletes the previous old layer.
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({10, 20, 400, 300});
+  EXPECT_TRUE(HasCrossFadeAnimation(window.get()));
+  EXPECT_TRUE(old_layer_checker.destroyed());
+  EXPECT_FALSE(second_layer_checker.destroyed());
+  EXPECT_NE(second_layer, window->layer());
+  EXPECT_EQ(gfx::Rect(10, 20, 400, 300), window->bounds());
+
+  window->layer()->GetAnimator()->StopAnimating();
+  EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
+  EXPECT_TRUE(second_layer_checker.destroyed());
+
+  // Animating only position (same size) when not currently cross-fading does
+  // not cross-fade or recreate layer.
+  old_layer = window->layer();
+  WindowState::Get(window.get())->SetBoundsDirectAnimated({20, 30, 400, 300});
+  EXPECT_FALSE(HasCrossFadeAnimation(window.get()));
+  EXPECT_EQ(old_layer, window->layer());
+  EXPECT_EQ(gfx::Rect(20, 30, 400, 300), window->layer()->GetTargetBounds());
+
+  window->layer()->GetAnimator()->StopAnimating();
 }
 
 // Tests that when crossfading from a window which has a transform, the cross

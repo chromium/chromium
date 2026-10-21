@@ -6,8 +6,11 @@
 #define ASH_WM_WINDOW_ANIMATIONS_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "ash/ash_export.h"
+#include "base/time/time.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -41,7 +44,13 @@ ASH_EXPORT void SetTransformForScaleAnimation(
 // from `window`.
 ASH_EXPORT void CrossFadeAnimation(
     aura::Window* window,
-    std::unique_ptr<ui::LayerTreeOwner> old_layer_owner);
+    std::unique_ptr<ui::LayerTreeOwner> old_layer_owner,
+    std::optional<base::TimeDelta> duration = std::nullopt,
+    std::optional<gfx::Tween::Type> tween_type = std::nullopt,
+    std::optional<std::string> histogram_name = std::nullopt);
+
+// Returns true if `window` is currently animating with a cross-fade animation.
+ASH_EXPORT bool HasCrossFadeAnimation(aura::Window* window);
 
 // Implementation of cross fading for floating/unfloating a window. If
 // `to_float` is true, animates to floated state, else animates unfloat.

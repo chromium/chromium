@@ -5150,8 +5150,14 @@ TEST_F(ShellSurfaceTest, DisplayScaleChangeSendsMinimalOcclusionUpdates) {
     surface2->Attach(surface2_buffer_zoom.get());
     surface2->Commit();
   }
+  // Because `surface1` (bottom window) commits its larger post-zoom buffer
+  // before `surface2` (top window), `surface1` temporarily exceeds `window2`'s
+  // pre-zoom opaque region (`host_window()->bounds()`) and flips
+  // OCCLUDED -> VISIBLE -> OCCLUDED. Reset the counter after verifying so
+  // subsequent checks only test their own operations.
   EXPECT_EQ(2, observer1.num_occlusion_state_changes());
   EXPECT_EQ(0, observer2.num_occlusion_state_changes());
+  observer1.Reset();
 
   display_manager->ZoomDisplay(display_id, /*up=*/false);
   {
@@ -5166,7 +5172,7 @@ TEST_F(ShellSurfaceTest, DisplayScaleChangeSendsMinimalOcclusionUpdates) {
   }
   // Should not get any occlusion changes - requires occlusion tracking clip
   // to the root window and that the shelf occlude what is below it, too.
-  EXPECT_EQ(2, observer1.num_occlusion_state_changes());
+  EXPECT_EQ(0, observer1.num_occlusion_state_changes());
   EXPECT_EQ(0, observer2.num_occlusion_state_changes());
 
   // Test Snapped State
@@ -5176,7 +5182,7 @@ TEST_F(ShellSurfaceTest, DisplayScaleChangeSendsMinimalOcclusionUpdates) {
 
   window_state1->OnWMEvent(&snap_event);
   window_state2->OnWMEvent(&snap_event);
-  EXPECT_EQ(2, observer1.num_occlusion_state_changes());
+  EXPECT_EQ(0, observer1.num_occlusion_state_changes());
   EXPECT_EQ(0, observer2.num_occlusion_state_changes());
 
   EXPECT_TRUE(window1->GetTransparent());
@@ -5196,7 +5202,7 @@ TEST_F(ShellSurfaceTest, DisplayScaleChangeSendsMinimalOcclusionUpdates) {
     surface2->Attach(snapped_buffer2.get());
     surface2->Commit();
   }
-  EXPECT_EQ(2, observer1.num_occlusion_state_changes());
+  EXPECT_EQ(0, observer1.num_occlusion_state_changes());
   EXPECT_EQ(0, observer2.num_occlusion_state_changes());
 
   display_manager->ZoomDisplay(display_id, /*up=*/true);
@@ -5211,7 +5217,11 @@ TEST_F(ShellSurfaceTest, DisplayScaleChangeSendsMinimalOcclusionUpdates) {
     surface2->Attach(snapped_buffer2.get());
     surface2->Commit();
   }
-  EXPECT_EQ(4, observer1.num_occlusion_state_changes());
+  // In snapped state, `ZoomDisplay` updates bounds via cross-fade animation,
+  // which recreates layers and updates `host_window()->layer()` bounds to match
+  // the new widget size immediately, so no intermediate occlusion changes
+  // occur.
+  EXPECT_EQ(0, observer1.num_occlusion_state_changes());
   EXPECT_EQ(0, observer2.num_occlusion_state_changes());
 
   display_manager->ZoomDisplay(display_id, /*up=*/false);
@@ -5226,14 +5236,20 @@ TEST_F(ShellSurfaceTest, DisplayScaleChangeSendsMinimalOcclusionUpdates) {
     surface2->Attach(snapped_buffer2.get());
     surface2->Commit();
   }
-  EXPECT_EQ(4, observer1.num_occlusion_state_changes());
+  // When zooming back in (`up=false`), cross-fade immediately shrinks
+  // `window2` and `shell_surface2->host_window()` to the smaller post-zoom
+  // snapped bounds while `surface1->window()` still has its larger pre-zoom
+  // bounds until `surface1->Commit()`, causing `surface1` to flip
+  // OCCLUDED -> VISIBLE -> OCCLUDED. Reset the counter after verifying.
+  EXPECT_EQ(2, observer1.num_occlusion_state_changes());
   EXPECT_EQ(0, observer2.num_occlusion_state_changes());
+  observer1.Reset();
 
   // Make sure the occlusion tracking is working.
   surface2->RemoveSurfaceObserver(&observer2);
   shell_surface2.reset();
 
-  EXPECT_EQ(5, observer1.num_occlusion_state_changes());
+  EXPECT_EQ(1, observer1.num_occlusion_state_changes());
 
   surface1->RemoveSurfaceObserver(&observer1);
 }

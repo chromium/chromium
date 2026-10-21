@@ -5,6 +5,7 @@
 #include "ash/wm/window_restore/window_restore_controller.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -83,13 +84,14 @@ class WindowRestoreControllerTest : public AshTestBase,
   ~WindowRestoreControllerTest() override = default;
 
   // Returns the number of times |window| has been saved to file since the last
-  // ResetSaveWindowsCount call.
-  int GetSaveWindowsCount(aura::Window* window) const {
+  // reset, and resets the count to 0.
+  int GetSaveWindowsCountAndReset(aura::Window* window) {
     const int32_t restore_window_id =
         window->GetProperty(app_restore::kRestoreWindowIdKey);
     if (!fake_window_restore_file_.contains(restore_window_id))
       return 0;
-    return fake_window_restore_file_.at(restore_window_id).call_count;
+    return std::exchange(
+        fake_window_restore_file_.at(restore_window_id).call_count, 0);
   }
 
   // Returns the total number of saves since the last ResetSaveWindowsCount
@@ -334,16 +336,16 @@ TEST_F(WindowRestoreControllerTest, WindowSaveDisabled) {
   // user preference off.
   window1_state->Minimize();
   window2_state->Minimize();
-  EXPECT_EQ(0, GetSaveWindowsCount(window1.get()));
-  EXPECT_EQ(0, GetSaveWindowsCount(window2.get()));
+  EXPECT_EQ(0, GetSaveWindowsCountAndReset(window1.get()));
+  EXPECT_EQ(0, GetSaveWindowsCountAndReset(window2.get()));
 
   // Enable window restore.
   app_restore::AppRestoreInfo::GetInstance()->SetRestorePref(account_id, true);
 
   // Setting the user preference to true should trigger window save
   // immediately.
-  EXPECT_EQ(1, GetSaveWindowsCount(window1.get()));
-  EXPECT_EQ(1, GetSaveWindowsCount(window2.get()));
+  EXPECT_EQ(1, GetSaveWindowsCountAndReset(window1.get()));
+  EXPECT_EQ(1, GetSaveWindowsCountAndReset(window2.get()));
 }
 
 // Tests that data gets saved when changing a window's window state.
@@ -353,25 +355,25 @@ TEST_F(WindowRestoreControllerTest, WindowStateChanged) {
 
   auto* window_state = WindowState::Get(window.get());
   window_state->Minimize();
-  EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(1, GetSaveWindowsCountAndReset(window.get()));
 
   window_state->Unminimize();
-  EXPECT_EQ(2, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(1, GetSaveWindowsCountAndReset(window.get()));
 
   window_state->Activate();
-  EXPECT_EQ(3, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(1, GetSaveWindowsCountAndReset(window.get()));
 
-  // Maximize and restore will invoke two calls to SaveWindows because
+  // Maximize, restore and snap will invoke two calls to SaveWindows because
   // their animations also change the bounds of the window. The actual writing
   // to the database is throttled, so this is ok.
   window_state->Maximize();
-  EXPECT_EQ(5, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(2, GetSaveWindowsCountAndReset(window.get()));
 
   window_state->Restore();
-  EXPECT_EQ(7, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(2, GetSaveWindowsCountAndReset(window.get()));
 
   PerformAcceleratorAction(AcceleratorAction::kWindowCycleSnapLeft, {});
-  EXPECT_EQ(8, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(2, GetSaveWindowsCountAndReset(window.get()));
 }
 
 // Tests that data gets saved when moving a window to another desk.
@@ -391,7 +393,7 @@ TEST_F(WindowRestoreControllerTest, WindowMovedDesks) {
       AcceleratorAction::kDesksMoveActiveItemRight,
       {ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN});
   ASSERT_NE(previous_parent, window->parent());
-  EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(1, GetSaveWindowsCountAndReset(window.get()));
 }
 
 // Tests that data gets saved correctly when assigning a window to all desks.
@@ -407,7 +409,7 @@ TEST_F(WindowRestoreControllerTest, AssignToAllDesks) {
   // Assign |window| to all desks. This should trigger a save.
   window->SetProperty(aura::client::kWindowWorkspaceKey,
                       aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
-  EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(1, GetSaveWindowsCountAndReset(window.get()));
 
   // An all desks window should have a populated `desk_id` but not `desk_guid`.
   std::optional<app_restore::WindowInfo> window_info =
@@ -420,7 +422,7 @@ TEST_F(WindowRestoreControllerTest, AssignToAllDesks) {
   // Unassign |window| from all desks. This should trigger a save.
   window->SetProperty(aura::client::kWindowWorkspaceKey,
                       aura::client::kWindowWorkspaceUnassignedWorkspace);
-  EXPECT_EQ(2, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(1, GetSaveWindowsCountAndReset(window.get()));
 
   // A non-all desks window should not have a populated `desk_id`.
   std::optional<app_restore::WindowInfo> window_info2 =
@@ -443,7 +445,7 @@ TEST_F(WindowRestoreControllerTest, WindowMovedDisplay) {
                            {});
   ASSERT_TRUE(
       gfx::Rect(801, 0, 800, 800).Contains(window->GetBoundsInScreen()));
-  EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(1, GetSaveWindowsCountAndReset(window.get()));
 }
 
 // Tests that data gets saved when dragging a window.
@@ -460,7 +462,7 @@ TEST_F(WindowRestoreControllerTest, WindowDragged) {
     event_generator->MoveMouseBy(15, 15);
   event_generator->ReleaseLeftButton();
 
-  EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(1, GetSaveWindowsCountAndReset(window.get()));
 }
 
 TEST_F(WindowRestoreControllerTest, TabletModeChange) {
@@ -481,13 +483,13 @@ TEST_F(WindowRestoreControllerTest, TabletModeChange) {
   // etc.), we cannot determine exactly how many saves there will be, but there
   // should be more than one per window.
   TabletModeControllerTestApi().EnterTabletMode();
-  EXPECT_GT(GetSaveWindowsCount(window1.get()), 1);
-  EXPECT_GT(GetSaveWindowsCount(window2.get()), 1);
+  EXPECT_GT(GetSaveWindowsCountAndReset(window1.get()), 1);
+  EXPECT_GT(GetSaveWindowsCountAndReset(window2.get()), 1);
 
   ResetSaveWindowsCount();
   TabletModeControllerTestApi().LeaveTabletMode();
-  EXPECT_GT(GetSaveWindowsCount(window1.get()), 1);
-  EXPECT_GT(GetSaveWindowsCount(window2.get()), 1);
+  EXPECT_GT(GetSaveWindowsCountAndReset(window1.get()), 1);
+  EXPECT_GT(GetSaveWindowsCountAndReset(window2.get()), 1);
 }
 
 TEST_F(WindowRestoreControllerTest, DisplayAddRemove) {
@@ -507,15 +509,15 @@ TEST_F(WindowRestoreControllerTest, DisplayAddRemove) {
   // window and activate it, resulting in a double save.
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(primary_info);
-  EXPECT_EQ(0, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(0, GetSaveWindowsCountAndReset(window.get()));
   display_manager()->OnNativeDisplaysChanged(display_info_list);
-  EXPECT_EQ(2, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(2, GetSaveWindowsCountAndReset(window.get()));
 
   // Reconnect the secondary display. PersistentWindowController will move the
   // window back to the secondary display, so a save should be triggered.
   display_info_list.push_back(second_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
-  EXPECT_EQ(3, GetSaveWindowsCount(window.get()));
+  EXPECT_EQ(1, GetSaveWindowsCountAndReset(window.get()));
 }
 
 TEST_F(WindowRestoreControllerTest, Activation) {

@@ -84,6 +84,8 @@ constexpr base::TimeDelta kZeroAnimationMs = base::Milliseconds(300);
 constexpr char kCrossFadeSmoothness[] =
     "Ash.Window.AnimationSmoothness.CrossFade";
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHasCrossFadeAnimationKey, false)
+
 base::TimeDelta GetCrossFadeDuration(aura::Window* window,
                                      const gfx::RectF& old_bounds,
                                      const gfx::Rect& new_bounds) {
@@ -121,6 +123,7 @@ class CrossFadeObserver : public aura::WindowObserver,
       : window_(window),
         layer_(window->layer()),
         layer_owner_(std::move(layer_owner)) {
+    window_->SetProperty(kHasCrossFadeAnimationKey, true);
     window_->AddObserver(this);
 
     smoothness_tracker_ =
@@ -149,6 +152,7 @@ class CrossFadeObserver : public aura::WindowObserver,
     layer_owner_->root()->GetAnimator()->StopAnimating();
 
     window_->RemoveObserver(this);
+    window_->ClearProperty(kHasCrossFadeAnimationKey);
     window_ = nullptr;
     layer_ = nullptr;
   }
@@ -642,11 +646,17 @@ bool AnimateHideWindow(aura::Window* window) {
 }
 
 void CrossFadeAnimation(aura::Window* window,
-                        std::unique_ptr<ui::LayerTreeOwner> old_layer_owner) {
-  CrossFadeAnimationInternal(
-      window, std::move(old_layer_owner), /*animate_old_layer_transform=*/true,
-      /*duration=*/std::nullopt, /*tween_type=*/std::nullopt,
-      /*histogram_name=*/std::nullopt);
+                        std::unique_ptr<ui::LayerTreeOwner> old_layer_owner,
+                        std::optional<base::TimeDelta> duration,
+                        std::optional<gfx::Tween::Type> tween_type,
+                        std::optional<std::string> histogram_name) {
+  CrossFadeAnimationInternal(window, std::move(old_layer_owner),
+                             /*animate_old_layer_transform=*/true, duration,
+                             tween_type, std::move(histogram_name));
+}
+
+bool HasCrossFadeAnimation(aura::Window* window) {
+  return window->GetProperty(kHasCrossFadeAnimationKey);
 }
 
 void CrossFadeAnimationForFloatUnfloat(

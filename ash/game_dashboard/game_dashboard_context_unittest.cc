@@ -2107,10 +2107,12 @@ TEST_F(GameDashboardContextTest, UIVisibilityWithWindowSnapAnimation) {
   ASSERT_FALSE(toolbar_widget->IsVisible());
 
   // Run the animation to completion.
-  animator->StopAnimating();
+  // Note: game_window_->layer() may have been recreated during snapping, so we
+  // retrieve its current animator directly.
+  game_window_->layer()->GetAnimator()->StopAnimating();
 
   // Verify that the animation is complete.
-  ASSERT_FALSE(animator->is_animating());
+  ASSERT_FALSE(game_window_->layer()->GetAnimator()->is_animating());
   // Ensure that the widgets are visible at the conclusion of the animation.
   ASSERT_TRUE(game_dashboard_button_widget->IsVisible());
   ASSERT_TRUE(toolbar_widget->IsVisible());

@@ -35,6 +35,10 @@ class SurfaceObserverForTest : public SurfaceObserver {
   int num_occlusion_state_changes() const {
     return num_occlusion_state_changes_;
   }
+  void Reset() {
+    num_occlusion_changes_ = 0;
+    num_occlusion_state_changes_ = 0;
+  }
 
   MOCK_METHOD(void, ThrottleFrameRate, (bool on), (override));
 

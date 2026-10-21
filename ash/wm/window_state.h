@@ -532,6 +532,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   friend class TabletModeWindowState;
   friend class WorkspaceWindowResizerTest;
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest, CrossFadeToBounds);
+  FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest, SetBoundsDirectAnimated);
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest, CrossFadeHistograms);
   FRIEND_TEST_ALL_PREFIXES(WindowAnimationsTest,
                            CrossFadeToBoundsFromTransform);
