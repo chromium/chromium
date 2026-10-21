@@ -1001,7 +1001,7 @@
             "browser_startup.crossbench": {
                 "crossbench_name": "browser-startup",
                 "arguments": [
-                    "--enable-features=InitialWebUI:high_stream_priority/true,WebUIReloadButton:WebUIReloadButtonDeferBrowserViewShow/true/WebUIReloadButtonKeepVisibleUntilPaint/true/WebUIReloadButtonPrewarmWebUI/true,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit,InitialWebUIWithoutExtensions,WebUIBundledCodeCache,SendGPUChannelEarly",
+                    "--enable-features=InitialWebUI:high_stream_priority/true/without_spellcheck/true/without_translate/true,WebUIReloadButton:WebUIReloadButtonDeferBrowserViewShow/false/WebUIReloadButtonKeepVisibleUntilPaint/true/WebUIReloadButtonPrewarmWebUI/true/WebUIReloadButtonPrewarmWebUIPreNavigate/true,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit,InitialWebUIWithoutExtensions,WebUIBundledCodeCache,SendGPUChannelEarly,InitialWebUISurfaceSync:deadline_in_frames/12000/renderer_commit_delay_ms/100000,BypassOutdatedSurfaceActivation,OnlyUseWindowResizeHelperOnResize",
                     "--enable-field-trials=benchmarking",
                     "--repeat=10"
                 ]

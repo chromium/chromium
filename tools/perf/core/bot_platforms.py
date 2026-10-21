@@ -601,14 +601,20 @@ def _browser_startup_crossbench(
 
   # NOTE: Keep this list in sync with:
   # third_party/crossbench/config/benchmark/browser_startup/browser.config.hjson
+  # The shard maps in tools/perf/core/shard_maps/ also embed these flags, so
+  # update them too.
   INITIAL_WEBUI_FEATURES = (
-    "InitialWebUI:high_stream_priority/true,"
-    "WebUIReloadButton:WebUIReloadButtonDeferBrowserViewShow/true/"
+    "InitialWebUI:high_stream_priority/true/without_spellcheck/true/"
+    "without_translate/true,"
+    "WebUIReloadButton:WebUIReloadButtonDeferBrowserViewShow/false/"
     "WebUIReloadButtonKeepVisibleUntilPaint/true/"
-    "WebUIReloadButtonPrewarmWebUI/true,"
-    "SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,"
-    "InitialWebUISyncNavStartToCommit,InitialWebUIWithoutExtensions,"
-    "WebUIBundledCodeCache,SendGPUChannelEarly"
+    "WebUIReloadButtonPrewarmWebUI/true/"
+    "WebUIReloadButtonPrewarmWebUIPreNavigate/true,"
+    "WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit,"
+    "InitialWebUIWithoutExtensions,WebUIBundledCodeCache,SendGPUChannelEarly,"
+    "InitialWebUISurfaceSync:deadline_in_frames/12000/"
+    "renderer_commit_delay_ms/100000,"
+    "BypassOutdatedSurfaceActivation,OnlyUseWindowResizeHelperOnResize"
   )
   return CrossbenchConfig(
     'browser_startup.crossbench',
