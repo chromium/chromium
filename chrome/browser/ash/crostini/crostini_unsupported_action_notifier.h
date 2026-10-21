@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/system/toast_data.h"
+#include "chrome/browser/profiles/profile.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/display/display_observer.h"
 
