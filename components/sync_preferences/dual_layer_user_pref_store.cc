@@ -517,22 +517,18 @@ bool DualLayerUserPrefStore::ShouldSetValueInAccountStore(
           .GetSyncablePrefMetadata(key);
   CHECK(metadata);
   bool is_pref_type_enabled = false;
-  if (base::FeatureList::IsEnabled(syncer::kSyncPreferencesUseSelectedTypes)) {
-    if (metadata->data_type() == syncer::PREFERENCES ||
-        metadata->data_type() == syncer::PRIORITY_PREFERENCES) {
-      is_pref_type_enabled = GetInterestingUserSelectedTypes().Has(
-          syncer::UserSelectableType::kPreferences);
-    }
-#if BUILDFLAG(IS_CHROMEOS)
-    if (metadata->data_type() == syncer::OS_PREFERENCES ||
-        metadata->data_type() == syncer::OS_PRIORITY_PREFERENCES) {
-      is_pref_type_enabled = GetInterestingUserSelectedOsTypes().Has(
-          syncer::UserSelectableOsType::kOsPreferences);
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  } else {
-    is_pref_type_enabled = active_types_.contains(metadata->data_type());
+  if (metadata->data_type() == syncer::PREFERENCES ||
+      metadata->data_type() == syncer::PRIORITY_PREFERENCES) {
+    is_pref_type_enabled = GetInterestingUserSelectedTypes().Has(
+        syncer::UserSelectableType::kPreferences);
   }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (metadata->data_type() == syncer::OS_PREFERENCES ||
+      metadata->data_type() == syncer::OS_PRIORITY_PREFERENCES) {
+    is_pref_type_enabled = GetInterestingUserSelectedOsTypes().Has(
+        syncer::UserSelectableOsType::kOsPreferences);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (!is_pref_type_enabled &&
       // Checks if the pref already exists in the account store.
       // This is to handle cases where a pref might pre-exist before

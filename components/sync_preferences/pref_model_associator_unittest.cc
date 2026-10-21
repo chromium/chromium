@@ -1054,88 +1054,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
   EXPECT_TRUE(account_pref_store_->GetValues().empty());
 }
 
-class PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes
-    : public PrefModelAssociatorWithPreferencesAccountStorageTest {
- public:
-  PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes() {
-    feature_list_.InitAndDisableFeature(
-        syncer::kSyncPreferencesUseSelectedTypes);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes,
-       DoesNotCommitPrefAddedBeforeMergeDataAndStartSyncing) {
-  pref_service_->SetString(kStringPrefName, "value");
-
-  // Value is not written to the account store because the data types are not
-  // active yet.
-  EXPECT_FALSE(account_pref_store_->GetValue(kStringPrefName, nullptr));
-  ASSERT_TRUE(local_pref_store_->GetValue(kStringPrefName, nullptr));
-
-  MergeDataAndStartSyncing(/*initial_data=*/{});
-
-  // No changes are committed to sync.
-  EXPECT_TRUE(sync_change_processor_->changes().empty());
-}
-
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes,
-       OverridesPrefUpdatedBeforeMergeDataAndStartSyncing) {
-  pref_service_->SetString(kStringPrefName, "new_value");
-
-  // Value is not written to the account store.
-  ASSERT_FALSE(account_pref_store_->GetValue(kStringPrefName, nullptr));
-  ASSERT_TRUE(local_pref_store_->GetValue(kStringPrefName, nullptr));
-
-  syncer::SyncDataList initial_data;
-  initial_data.push_back(
-      CreateRemoteSyncData(kStringPrefName, base::Value("old_value")));
-  MergeDataAndStartSyncing(initial_data);
-
-  // Updated value is hidden by the stale remote value. The remote value is
-  // considered stale because the local value, written before sync init, is more
-  // recent but is still hidden by the account value. See crbug.com/464008640
-  // for more details.
-  EXPECT_EQ(pref_service_->GetString(kStringPrefName), "old_value");
-}
-
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithoutSelectedTypes,
-       OverwritesAccountPrefValueUponMergeDataAndStartSyncing) {
-  // Pre-existing value in the account store.
-  account_pref_store_->SetValue(kStringPrefName, base::Value("new_value"), 0);
-  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "new_value");
-
-  // Listen to pref changes.
-  MockPrefChangeCallback observer(pref_service_.get());
-  PrefChangeRegistrar registrar;
-  registrar.Init(pref_service_.get());
-  registrar.Add(kStringPrefName, observer.GetCallback());
-
-  // Observer should get notified since the effective value changes.
-  EXPECT_CALL(observer, OnPreferenceChanged);
-
-  syncer::SyncDataList initial_data;
-  initial_data.push_back(
-      CreateRemoteSyncData(kStringPrefName, base::Value("old_value")));
-  MergeDataAndStartSyncing(initial_data);
-
-  // Updated value is overwritten by the stale remote value.
-  ASSERT_EQ(pref_service_->GetString(kStringPrefName), "old_value");
-  const base::Value* value = nullptr;
-  account_pref_store_->GetValue(kStringPrefName, &value);
-  EXPECT_THAT(value, Pointee(Eq("old_value")));
-}
-
-class PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes
-    : public PrefModelAssociatorWithPreferencesAccountStorageTest {
- protected:
-  base::test::ScopedFeatureList feature_list_{
-      syncer::kSyncPreferencesUseSelectedTypes};
-};
-
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes,
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
        ShouldCommitPrefAddedBeforeMergeDataAndStartSyncing) {
   pref_service_->SetString(kStringPrefName, "value");
 
@@ -1155,7 +1074,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes,
       CreateLocalSyncData(kStringPrefName, base::Value("value")).ToString());
 }
 
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes,
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
        ShouldCommitPrefUpdatedBeforeMergeDataAndStartSyncing) {
   pref_service_->SetString(kStringPrefName, "new_value");
 
@@ -1183,7 +1102,7 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes,
                 .ToString());
 }
 
-TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTestWithSelectedTypes,
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
        ShouldCommitPreExistingAccountValueUponMergeDataAndStartSyncing) {
   // Load value to account store before initial merge.
   account_pref_store_->SetValue(kStringPrefName, base::Value("new_value"), 0);
