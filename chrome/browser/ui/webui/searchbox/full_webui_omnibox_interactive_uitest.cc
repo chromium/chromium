@@ -114,6 +114,11 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#include "ui/events/test/event_generator.h"
+#endif
+
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPopupWebView);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAimPopupWebView);
@@ -653,6 +658,16 @@ class FullWebUIOmniboxInteractiveTestBase
             }))),
         InSameContextAs(OmniboxPopupPresenter::kRoundedResultsFrame,
                         ClickMouse()));
+  }
+
+  auto TapElement(ui::ElementIdentifier id) {
+    return WithElement(id, [this](ui::TrackedElement* el) {
+      ui::test::EventGenerator generator(
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->GetNativeWindow()
+              ->GetRootWindow());
+      generator.GestureTapAt(el->GetScreenBounds().CenterPoint());
+    });
   }
 #endif  // defined(USE_AURA)
 
@@ -1844,6 +1859,42 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       SendKeyPress(kBrowserViewElementId, ui::VKEY_X, ui::EF_NONE),
       WaitForWebUIInputValue("examplex text"));
 }
+
+#if defined(USE_AURA)
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       TapTopChromeWithDraftKeepsOmniboxFocus) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "TODO(crbug.com/564919981): Clicking top chrome doesn't "
+                    "restore selection.";
+  }
+  RunTestSequence(
+      Do([this]() {
+        // Move the window off the screen origin.
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetWidget()
+            ->SetBounds(gfx::Rect(0, 300, 1000, 450));
+      }),
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      ClearWebUIText(), InputWebUIText("example text"),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      TapElement(kTabStripFrameGrabHandleElementId), WaitForOmniboxFocus(true),
+      WaitForWebUIInputValue("example text"));
+}
+
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       TapOmniboxOpensPopupAndTapPageDismissesIt) {
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      ClickWebPageBody(kTab1),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      UninstrumentWebContents(kPopupWebView), WaitForOmniboxFocus(false),
+      WaitForPopupTransitionLockout(), TapElement(kOmniboxElementId),
+      WaitForPopupReady(), WaitForPopupTransitionLockout(),
+      TapElement(ContentsWebView::kContentsWebViewElementId),
+      InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      WaitForOmniboxFocus(false));
+}
+#endif  // defined(USE_AURA)
 
 // Verifies that switching to another browser window dismisses the popup and
 // reactivating the original window restores omnibox focus and selection.

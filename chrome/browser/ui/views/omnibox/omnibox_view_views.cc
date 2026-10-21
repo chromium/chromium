@@ -1697,26 +1697,11 @@ void OmniboxViewViews::OnMouseReleased(const ui::MouseEvent& event) {
                                   event.IsOnlyLeftMouseButton() &&
                                   click_gesture_requested_zps_;
     click_gesture_requested_zps_ |= should_query_zps;
-    if (location_bar_view_) {
-      // A left click that focuses the omnibox (or one on an empty omnibox)
-      // opens the suggestions dropdown. A right-click should focus the omnibox
-      // and select its text without showing suggestions, since the context menu
-      // follows this release.
-      location_bar_view_->OpenOmniboxPopup(should_query_zps);
-
-      // Transfer selection to the full webui popup (necessary when the popup
-      // is already open and double-click events are forwarded).
-      if (auto* popup_view = location_bar_view_->GetOmniboxPopupView();
-          popup_view && base::FeatureList::IsEnabled(
-                            omnibox::kWebUIOmniboxFullPopupDoubleClick)) {
-        if (preserve_matches) {
-          popup_view->SyncNativeStateToWebUIPreservingMatches();
-        } else {
-          popup_view->SyncNativeStateToWebUI(/*query_zps=*/false,
-                                             /*show_full_url=*/false);
-        }
-      }
-    }
+    // A left click that focuses the omnibox (or one on an empty omnibox)
+    // opens the suggestions dropdown. A right-click should focus the omnibox
+    // and select its text without showing suggestions, since the context menu
+    // follows this release.
+    OpenFullWebUIOmniboxPopup(should_query_zps, preserve_matches);
   }
 }
 
@@ -1787,15 +1772,7 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
 
   if (event->type() == ui::EventType::kGestureTap &&
       IsFullWebUIOmniboxReady()) {
-    if (location_bar_view_) {
-      location_bar_view_->OpenOmniboxPopup(/*query_zps=*/true);
-      if (location_bar_view_->GetOmniboxPopupView() &&
-          base::FeatureList::IsEnabled(
-              omnibox::kWebUIOmniboxFullPopupDoubleClick)) {
-        location_bar_view_->GetOmniboxPopupView()->SyncNativeStateToWebUI(
-            /*query_zps=*/false, /*show_full_url=*/false);
-      }
-    }
+    OpenFullWebUIOmniboxPopup(/*query_zps=*/true);
   }
 }
 
@@ -2656,6 +2633,27 @@ void OmniboxViewViews::TitleWasSet(content::NavigationEntry* entry) {
 
 void OmniboxViewViews::PermitExternalProtocolHandler() {
   ExternalProtocolHandler::PermitLaunchUrl();
+}
+
+void OmniboxViewViews::OpenFullWebUIOmniboxPopup(bool query_zps,
+                                                 bool preserve_matches) {
+  if (!location_bar_view_) {
+    return;
+  }
+  location_bar_view_->OpenOmniboxPopup(query_zps);
+
+  // Transfer selection to the full webui popup (necessary when the popup is
+  // already open and double-click events are forwarded).
+  if (auto* popup_view = location_bar_view_->GetOmniboxPopupView();
+      popup_view && base::FeatureList::IsEnabled(
+                        omnibox::kWebUIOmniboxFullPopupDoubleClick)) {
+    if (preserve_matches) {
+      popup_view->SyncNativeStateToWebUIPreservingMatches();
+    } else {
+      popup_view->SyncNativeStateToWebUI(/*query_zps=*/false,
+                                         /*show_full_url=*/false);
+    }
+  }
 }
 
 void OmniboxViewViews::PerformDrop(

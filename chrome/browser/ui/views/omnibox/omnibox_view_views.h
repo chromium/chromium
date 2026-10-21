@@ -413,6 +413,10 @@ class OmniboxViewViews
   // always be considered "user gesture-triggered", lest it always return BLOCK.
   void PermitExternalProtocolHandler();
 
+  // Opens the full WebUI omnibox popup and syncs native selection state to
+  // WebUI when double-click forwarding is enabled.
+  void OpenFullWebUIOmniboxPopup(bool query_zps, bool preserve_matches = false);
+
   // Drops dragged text and updates `output_drag_op` accordingly.
   void PerformDrop(const ui::DropTargetEvent& event,
                    ui::mojom::DragOperation& output_drag_op,
