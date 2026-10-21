@@ -1,7 +1,7 @@
 timestamp: {
-  seconds: 1791840600
+  seconds: 1792103430
 }
-version: "2.0.10"
+version: "2.0.11"
 compatibility_version: 1
 operators: {
   name: "mtcs.dev Test CA Operator"
@@ -119,6 +119,7 @@ mirrors: {
   realm: REALM_UNTRUSTED_VALIDATION_ONLY
   key_sha256: "4f0be97b157bae43f89d88afded1b5182b7774f112161cc73def7438afb37ea4"
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+  submission_prefix: "https://mirror1.test.mtcs.dev"
 }
 mirrors: {
   friendly_name: "TrustAsia Test Mirror 1"
@@ -140,6 +141,7 @@ mirrors: {
   realm: REALM_UNTRUSTED_VALIDATION_ONLY
   key_sha256: "14ec38a7d66589bd60d24aa88194c2ab8ebbf89c817b8ec12802c4bd5de2d6f1"
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+  submission_prefix: "https://mirror.mtc-staging.trustasia.com"
 }
 mirrors: {
   friendly_name: "Geomys Test Mirror 1"
@@ -161,4 +163,5 @@ mirrors: {
   realm: REALM_UNTRUSTED_VALIDATION_ONLY
   key_sha256: "ed9b91b23c895a940807816c3c1bca85c28d62959bc349e2b571d2c3ea9e4cce"
   signature_algorithm: SIGNATURE_ALGORITHM_ML_DSA44
+  submission_prefix: "https://witness.navigli.sunlight.geomys.org/"
 }
