@@ -138,7 +138,6 @@ public class ProfileDataCacheRenderTest {
                                     /* subscriptionEligibilityService= */ null,
                                     mImageSize,
                                     /* ringThicknessPx= */ 0,
-                                    /* badgeConfig= */ null,
                                     /* aiTierRingEnabled= */ false,
                                     /* brandingDelegate= */ null);
                 });
@@ -182,7 +181,6 @@ public class ProfileDataCacheRenderTest {
                                     /* subscriptionEligibilityService= */ null,
                                     mImageSize,
                                     /* ringThicknessPx= */ 0,
-                                    /* badgeConfig= */ null,
                                     /* aiTierRingEnabled= */ false,
                                     /* brandingDelegate= */ null);
 
@@ -256,7 +254,6 @@ public class ProfileDataCacheRenderTest {
                                     mSubscriptionEligibilityServiceMock,
                                     mImageSize,
                                     RING_THICKNESS,
-                                    /* badgeConfig= */ null,
                                     /* aiTierRingEnabled= */ true,
                                     brandingDelegate);
                     mProfileDataCache.addObserver(mObserver);

@@ -115,7 +115,9 @@ public class ProfileDataCacheWithBadgeRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testProfileDataWithChildBadge() throws IOException {
-        setUpProfileDataCache(R.drawable.ic_account_child_20dp);
+        setUpProfileDataCache();
+        mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");
+        setBadge(R.drawable.ic_account_child_20dp);
         mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
     }
 
@@ -123,48 +125,27 @@ public class ProfileDataCacheWithBadgeRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testProfileDataWithoutBadge() throws IOException {
-        setUpProfileDataCache(0);
+        setUpProfileDataCache();
         mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    public void testProfileDataWithSettingBadgeDynamically() throws IOException {
-        setUpProfileDataCache(0);
-        mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");
-        setBadge(R.drawable.ic_account_child_20dp);
-        mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
     }
 
     @Test
     @MediumTest
     @Feature("RenderTest")
     public void testProfileDataWithRemovingBadgeDynamically() throws IOException {
-        setUpProfileDataCache(0);
+        setUpProfileDataCache();
         setBadge(R.drawable.ic_account_child_20dp);
         mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
         setBadge(0);
         mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");
     }
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    public void testProfileDataWithExistingBadge() throws IOException {
-        setUpProfileDataCache(R.drawable.ic_account_child_20dp);
-        mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
-    }
-
-    private void setUpProfileDataCache(@DrawableRes int badgeResId) {
+    private void setUpProfileDataCache() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfileDataCache =
-                            badgeResId != 0
-                                    ? ProfileDataCache.createWithDefaultImageSize(
-                                            sActivity, mIdentityManager, badgeResId)
-                                    : ProfileDataCache.createWithoutBadge(
-                                            sActivity, mIdentityManager, R.dimen.user_picture_size);
+                            ProfileDataCache.createWithoutBadge(
+                                    sActivity, mIdentityManager, R.dimen.user_picture_size);
                 });
         CriteriaHelper.pollUiThread(
                 () -> {

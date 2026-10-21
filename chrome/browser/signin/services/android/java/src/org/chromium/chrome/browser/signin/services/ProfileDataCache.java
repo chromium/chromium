@@ -20,7 +20,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DimenRes;
-import androidx.annotation.DrawableRes;
 import androidx.annotation.MainThread;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -92,11 +91,6 @@ public class ProfileDataCache
     private final int mImageSize;
     private final int mAvatarSize;
     private final int mTotalPadding;
-    // The badge for a given account is selected as follows:
-    // * If there is a config for that specific account, use that
-    // * Else if there is a default config, use that
-    // * Else do not display a badge.
-    private final @Nullable BadgeConfig mDefaultBadgeConfig;
     private final Map<CoreAccountId, BadgeConfig> mPerAccountBadgeConfig = new HashMap<>();
     private final Drawable mPlaceholderImage;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
@@ -116,7 +110,6 @@ public class ProfileDataCache
             @Nullable SubscriptionEligibilityService subscriptionEligibilityService,
             @Px int imageSize,
             @Px int ringThicknessPx,
-            @Nullable BadgeConfig badgeConfig,
             boolean aiTierRingEnabled,
             @Nullable SubscriptionTierBrandingDelegate brandingDelegate) {
         assert identityManager != null;
@@ -132,7 +125,6 @@ public class ProfileDataCache
         }
         mImageSize = imageSize;
         mRingThicknessPx = ringThicknessPx;
-        mDefaultBadgeConfig = badgeConfig;
         mAiTierRingEnabled = aiTierRingEnabled;
         mBrandingDelegate = brandingDelegate;
         mSubscriptionEligibilityService = subscriptionEligibilityService;
@@ -176,7 +168,6 @@ public class ProfileDataCache
                 subscriptionEligibilityService,
                 imageSize,
                 ringThicknessPx,
-                /* badgeConfig= */ null,
                 /* aiTierRingEnabled= */ true,
                 brandingDelegate);
     }
@@ -195,29 +186,6 @@ public class ProfileDataCache
                 /* subscriptionEligibilityService= */ null,
                 context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
                 /* ringThicknessPx= */ 0,
-                /* badgeConfig= */ null,
-                /* aiTierRingEnabled= */ false,
-                /* brandingDelegate= */ null);
-    }
-
-    /**
-     * @param context Context of the application to extract resources from.
-     * @param badgeResId Resource id of the badge to be attached.
-     * @return A {@link ProfileDataCache} object with default image size(R.dimen.user_picture_size)
-     *     and a badge of given badgeResId provided
-     *     <p>TODO(crbug.com/40798208): remove this method and instead migrate users to set
-     *     per-account badges?
-     */
-    public static ProfileDataCache createWithDefaultImageSize(
-            Context context, IdentityManager identityManager, @DrawableRes int badgeResId) {
-        return new ProfileDataCache(
-                context,
-                AccountManagerFacadeProvider.getInstance(),
-                identityManager,
-                /* subscriptionEligibilityService= */ null,
-                context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
-                /* ringThicknessPx= */ 0,
-                BadgeConfig.create(badgeResId).withDefaultSizeChildAccountConfig().build(context),
                 /* aiTierRingEnabled= */ false,
                 /* brandingDelegate= */ null);
     }
@@ -236,7 +204,6 @@ public class ProfileDataCache
                 /* subscriptionEligibilityService= */ null,
                 context.getResources().getDimensionPixelSize(imageSizeResId),
                 /* ringThicknessPx= */ 0,
-                /* badgeConfig= */ null,
                 /* aiTierRingEnabled= */ false,
                 /* brandingDelegate= */ null);
     }
@@ -318,8 +285,6 @@ public class ProfileDataCache
      *
      * @param accountId The account id for which to set this badge.
      * @param badgeConfig The badge configuration. If null then the current badge is removed.
-     *     <p>If both a per-account and default badge are set, the per-account badge takes
-     *     precedence.
      */
     public void setBadge(CoreAccountId accountId, @Nullable BadgeConfig badgeConfig) {
         if (Objects.equals(mPerAccountBadgeConfig.get(accountId), badgeConfig)) {
@@ -340,7 +305,7 @@ public class ProfileDataCache
     }
 
     public @Nullable BadgeConfig getBadgeConfigForTesting(CoreAccountId accountId) {
-        return getBadgeConfigForAccount(accountId);
+        return mPerAccountBadgeConfig.get(accountId);
     }
 
     /**
@@ -537,7 +502,7 @@ public class ProfileDataCache
                         ? AvatarGenerator.makeRoundAvatar(
                                 mContext.getResources(), accountInfo.getAccountImage(), mAvatarSize)
                         : mPlaceholderImage;
-        BadgeConfig badgeConfig = getBadgeConfigForAccount(accountInfo.getId());
+        BadgeConfig badgeConfig = mPerAccountBadgeConfig.get(accountInfo.getId());
         boolean hasAiTierRing = false;
 
         if (mAiTierRingEnabled) {
@@ -729,12 +694,6 @@ public class ProfileDataCache
         drawable.setBounds(0, 0, imageSize, imageSize);
         drawable.draw(canvas);
         return new BitmapDrawable(context.getResources(), output);
-    }
-
-    private @Nullable BadgeConfig getBadgeConfigForAccount(CoreAccountId accountId) {
-        return mPerAccountBadgeConfig.get(accountId) != null
-                ? mPerAccountBadgeConfig.get(accountId)
-                : mDefaultBadgeConfig;
     }
 
     private class AccountManagerAccountsChangeObserver implements AccountsChangeObserver {
