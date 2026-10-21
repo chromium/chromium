@@ -842,14 +842,13 @@ TEST_F(KeyboardUIControllerTest, OnKeyboardEnabledChangedToEnabled) {
   MockKeyboardControllerObserver mock_observer;
   controller().AddObserver(&mock_observer);
 
-  EXPECT_CALL(mock_observer, OnKeyboardEnabledChanged(true))
-      .WillOnce(testing::InvokeWithoutArgs([]() {
-        auto* controller = KeyboardUIController::Get();
-        ASSERT_TRUE(controller);
-        EXPECT_TRUE(controller->IsEnabled());
-        EXPECT_TRUE(controller->GetKeyboardWindow());
-        EXPECT_TRUE(controller->GetRootWindow());
-      }));
+  EXPECT_CALL(mock_observer, OnKeyboardEnabledChanged(true)).WillOnce([]() {
+    auto* controller = KeyboardUIController::Get();
+    ASSERT_TRUE(controller);
+    EXPECT_TRUE(controller->IsEnabled());
+    EXPECT_TRUE(controller->GetKeyboardWindow());
+    EXPECT_TRUE(controller->GetRootWindow());
+  });
 
   SetTouchKeyboardEnabled(true);
 
@@ -860,14 +859,13 @@ TEST_F(KeyboardUIControllerTest, OnKeyboardEnabledChangedToDisabled) {
   MockKeyboardControllerObserver mock_observer;
   controller().AddObserver(&mock_observer);
 
-  EXPECT_CALL(mock_observer, OnKeyboardEnabledChanged(false))
-      .WillOnce(testing::InvokeWithoutArgs([]() {
-        auto* controller = KeyboardUIController::Get();
-        ASSERT_TRUE(controller);
-        EXPECT_FALSE(controller->IsEnabled());
-        EXPECT_FALSE(controller->GetKeyboardWindow());
-        EXPECT_FALSE(controller->GetRootWindow());
-      }));
+  EXPECT_CALL(mock_observer, OnKeyboardEnabledChanged(false)).WillOnce([]() {
+    auto* controller = KeyboardUIController::Get();
+    ASSERT_TRUE(controller);
+    EXPECT_FALSE(controller->IsEnabled());
+    EXPECT_FALSE(controller->GetKeyboardWindow());
+    EXPECT_FALSE(controller->GetRootWindow());
+  });
 
   SetTouchKeyboardEnabled(false);
 
@@ -880,12 +878,12 @@ TEST_F(KeyboardUIControllerTest, OnFlagChangeObserverIsCalled) {
 
   EXPECT_CALL(mock_observer,
               OnKeyboardConfigChanged(keyboard::KeyboardConfig()))
-      .WillOnce(testing::InvokeWithoutArgs([]() {
+      .WillOnce([]() {
         auto* controller = KeyboardUIController::Get();
         ASSERT_TRUE(controller);
         EXPECT_TRUE(controller->IsEnableFlagSet(
             keyboard::KeyboardEnableFlag::kAccessibilityEnabled));
-      }));
+      });
 
   controller().SetEnableFlag(KeyboardEnableFlag::kAccessibilityEnabled);
   controller().RemoveObserver(&mock_observer);

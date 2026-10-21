@@ -103,8 +103,7 @@ TEST_F(NotificationSwipeControlViewTest, DeleteOnSettingsButtonPressed) {
 
   EXPECT_CALL(*message_view(), OnSettingsButtonPressed(testing::_))
       .WillOnce(testing::DoDefault())
-      .WillOnce(
-          testing::InvokeWithoutArgs([&]() { swipe_control_view.reset(); }));
+      .WillOnce([&]() { swipe_control_view.reset(); });
 
   ui::MouseEvent press(ui::EventType::kMousePressed, gfx::PointF(),
                        gfx::PointF(), ui::EventTimeForNow(),
