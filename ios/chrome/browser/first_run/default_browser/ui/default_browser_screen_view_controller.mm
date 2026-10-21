@@ -29,11 +29,7 @@
   self.view.accessibilityIdentifier =
       first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier;
   self.bannerSize = BannerImageSizeType::kStandard;
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  self.bannerName = kChromeDefaultBrowserScreenBannerImage;
-#else
-  self.bannerName = kChromiumDefaultBrowserScreenBannerImage;
-#endif
+  self.bannerName = [self bannerNameForPromo];
   if (![self.titleText length] || ![self.subtitleText length]) {
     // Sets default promo text if title and subtitle text are not explicitly
     // set.
@@ -91,6 +87,14 @@
 }
 
 #pragma mark - Subclassing
+
+- (NSString*)bannerNameForPromo {
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  return kChromeDefaultBrowserScreenBannerImage;
+#else
+  return kChromiumDefaultBrowserScreenBannerImage;
+#endif
+}
 
 - (NSString*)defaultSubtitleText {
   BOOL usesTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;

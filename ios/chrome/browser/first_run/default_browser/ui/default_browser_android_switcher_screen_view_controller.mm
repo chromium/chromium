@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/first_run/default_browser/ui/default_browser_screen_view_controller+subclassing.h"
 #import "ios/chrome/browser/first_run/public/first_run_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/self_sizing_table_view.h"
+#import "ios/chrome/browser/shared/ui/image/image_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
@@ -84,6 +85,14 @@ UIImage* IconForItemType(SwitcherFeatureItemType item_type) {
 }
 
 #pragma mark - DefaultBrowserScreenViewController (Subclassing)
+
+- (NSString*)bannerNameForPromo {
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  return kChromeDefaultBrowser1pBannerImage;
+#else
+  return kChromiumDefaultBrowser1pBannerImage;
+#endif
+}
 
 - (NSString*)defaultSubtitleText {
   BOOL usesTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;

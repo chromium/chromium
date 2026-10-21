@@ -10,6 +10,10 @@
 // Interface for concrete subclasses of DefaultBrowserScreenViewController.
 @interface DefaultBrowserScreenViewController (Subclassing)
 
+// Returns the banner image name for the promo screen.
+// Subclasses can override this method to provide a custom banner image.
+- (NSString*)bannerNameForPromo;
+
 // Returns the default subtitle text when `subtitleText` is not explicitly set.
 // Subclasses can override this method to provide a custom default subtitle.
 - (NSString*)defaultSubtitleText;
