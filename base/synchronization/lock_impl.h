@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/stack_allocated.h"
@@ -131,8 +132,20 @@ void LockImpl::Unlock() {
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 #if DCHECK_IS_ON()
-BASE_EXPORT void dcheck_trylock_result(int rv);
-BASE_EXPORT void dcheck_unlock_result(int rv);
+BASE_EXPORT void LogTryLockFailure(int rv);
+BASE_EXPORT void LogUnlockFailure(int rv);
+
+ALWAYS_INLINE void dcheck_trylock_result(int rv) {
+  if (rv != 0 && rv != EBUSY) [[unlikely]] {
+    LogTryLockFailure(rv);
+  }
+}
+
+ALWAYS_INLINE void dcheck_unlock_result(int rv) {
+  if (rv != 0) [[unlikely]] {
+    LogUnlockFailure(rv);
+  }
+}
 #endif
 
 bool LockImpl::Try() {

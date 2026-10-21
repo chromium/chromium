@@ -81,13 +81,12 @@ std::string SystemErrorCodeToString(int error_code) {
 
 #if DCHECK_IS_ON()
 // These are out-of-line so that the .h file doesn't have to include ostream.
-void dcheck_trylock_result(int rv) {
-  DCHECK(rv == 0 || rv == EBUSY)
-      << ". " << base::internal::SystemErrorCodeToString(rv);
+void LogTryLockFailure(int rv) {
+  DCHECK(false) << ". " << base::internal::SystemErrorCodeToString(rv);
 }
 
-void dcheck_unlock_result(int rv) {
-  DCHECK_EQ(rv, 0) << ". " << strerror(rv);
+void LogUnlockFailure(int rv) {
+  DCHECK(false) << ". " << strerror(rv);
 }
 #endif
 
