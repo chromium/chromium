@@ -31,7 +31,13 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
   ReadAloudPlaybackSession& operator=(const ReadAloudPlaybackSession&) = delete;
   ~ReadAloudPlaybackSession() override;
 
-  // Called by ReadAloudService to synchronize internal state.
+  // Called by `ReadAloudService` to synchronize internal state.
+  //
+  // If `MediaSession` itself suspended or resumed Read Aloud (`OnSuspend()` or
+  // `OnResume()`), the matching `NotifyPlaybackPaused()` or
+  // `NotifyPlaybackStarted()` only updates local state. `MediaSession` has
+  // already updated its own state, and calling back into it can change its
+  // player list while it is iterating over it (b/572721812).
   void NotifyPlaybackStarted();
   void NotifyPlaybackPaused();
   void NotifyPlaybackStopped();
@@ -51,11 +57,20 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
   bool IsPaused(int player_id) const override;
 
  private:
+  // A suspend or resume initiated by `MediaSession` whose `Notify*()` call has
+  // not happened yet.
+  enum class SessionCommand { kNone, kSuspend, kResume };
+
+  // Returns true and clears `pending_session_command_` if it is `command`.
+  bool ConsumePendingSessionCommand(SessionCommand command);
+
   const raw_ptr<ReadAloudService> service_;
   static constexpr int kPlayerId = 0;
 
   bool is_paused_ = true;
   bool is_playback_in_progress_ = false;
+
+  SessionCommand pending_session_command_ = SessionCommand::kNone;
 
   base::WeakPtrFactory<ReadAloudPlaybackSession> weak_factory_{this};
 };

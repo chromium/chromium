@@ -36,11 +36,14 @@
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/read_aloud_generate_text.pb.h"
+#include "content/public/browser/media_session.h"
+#include "content/public/browser/media_session_player_observer.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/media_switches.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -402,6 +405,60 @@ class FakePlaybackController
   bool set_overview_content_override_ = false;
   bool set_overview_content_success_ = true;
 };
+
+using SuspendType = media_session::mojom::MediaSession::SuspendType;
+
+// A normal MediaSession player that stands in for page audio playing in the
+// same tab as Read Aloud. Unlike a web player, it never reports state changes
+// back to the MediaSession.
+class FakePagePlayer : public content::MediaSessionPlayerObserver {
+ public:
+  explicit FakePagePlayer(content::WebContents* web_contents)
+      : web_contents_(web_contents) {}
+  FakePagePlayer(const FakePagePlayer&) = delete;
+  FakePagePlayer& operator=(const FakePagePlayer&) = delete;
+  ~FakePagePlayer() override {
+    if (content::MediaSession* session =
+            content::MediaSession::GetIfExists(web_contents_)) {
+      session->RemovePlayer(this, kPlayerId);
+    }
+  }
+
+  // Adds this player to the tab's MediaSession as playing. Returns whether
+  // the MediaSession accepted it.
+  bool StartPlaying() {
+    is_paused_ = false;
+    return content::MediaSession::Get(web_contents_)
+        ->AddPlayer(this, kPlayerId);
+  }
+
+  int suspend_count() const { return suspend_count_; }
+  int resume_count() const { return resume_count_; }
+
+  // content::MediaSessionPlayerObserver:
+  void OnSuspend(int player_id, bool triggered_by_user) override {
+    ++suspend_count_;
+    is_paused_ = true;
+  }
+  void OnResume(int player_id, bool triggered_by_user) override {
+    ++resume_count_;
+    is_paused_ = false;
+  }
+  bool HasAudio(int player_id) const override { return true; }
+  bool IsPaused(int player_id) const override { return is_paused_; }
+  content::RenderFrameHost* render_frame_host() const override {
+    return web_contents_->GetPrimaryMainFrame();
+  }
+
+ private:
+  static constexpr int kPlayerId = 0;
+
+  const raw_ptr<content::WebContents> web_contents_;
+  bool is_paused_ = true;
+  int suspend_count_ = 0;
+  int resume_count_ = 0;
+};
+
 }  // namespace
 
 class ReadAloudServiceTest : public ChromeRenderViewHostTestHarness {
@@ -1521,6 +1578,99 @@ TEST_F(ReadAloudServiceTest, PauseForwardedToUtility) {
   service()->Pause();
   run_loop.Run();
   EXPECT_EQ(fake_controller()->pause_count(), 1);
+}
+
+class ReadAloudServiceMediaSessionTest : public ReadAloudServiceTest {
+ public:
+  void SetUp() override {
+    ReadAloudServiceTest::SetUp();
+    // Grants audio focus without calling into the Android AudioManager.
+    audio_focus_feature_list_.InitAndDisableFeature(
+        media::kRequestSystemAudioFocus);
+  }
+
+  content::MediaSession* media_session() {
+    return content::MediaSession::Get(web_contents());
+  }
+
+  // Starts Read Aloud playback, which adds Read Aloud to the tab's
+  // MediaSession as a playing player.
+  void StartReadAloud() {
+    NavigateAndCommit(GURL("https://www.example.com/article"));
+    SetFakeController(std::make_unique<FakePlaybackController>());
+    service()->Initialize(web_contents());
+
+    base::RunLoop run_loop;
+    fake_controller()->set_play_callback(run_loop.QuitClosure());
+    service()->Play(web_contents());
+    run_loop.Run();
+  }
+
+  void SuspendAndWaitForUtilityPause(SuspendType suspend_type) {
+    base::RunLoop run_loop;
+    fake_controller()->set_pause_callback(run_loop.QuitClosure());
+    media_session()->Suspend(suspend_type);
+    run_loop.Run();
+  }
+
+  void ResumeAndWaitForUtilityPlay(SuspendType suspend_type) {
+    base::RunLoop run_loop;
+    fake_controller()->set_play_callback(run_loop.QuitClosure());
+    media_session()->Resume(suspend_type);
+    run_loop.Run();
+  }
+
+ private:
+  base::test::ScopedFeatureList audio_focus_feature_list_;
+};
+
+class ReadAloudServiceMediaSessionSuspendTest
+    : public ReadAloudServiceMediaSessionTest,
+      public testing::WithParamInterface<SuspendType> {};
+
+// Regression test for b/572721812: suspending the MediaSession while page
+// audio and Read Aloud are both playing must not make Read Aloud remove itself
+// from the MediaSession while the MediaSession iterates over its players.
+// Without the fix this crashes in MediaSessionImpl::OnSuspendInternal().
+TEST_P(ReadAloudServiceMediaSessionSuspendTest,
+       SuspendWithPageAudioPausesReadAloud) {
+  MockDelegate* delegate = SetUpMockDelegate();
+  StartReadAloud();
+  FakePagePlayer page_player(web_contents());
+  ASSERT_TRUE(page_player.StartPlaying());
+
+  EXPECT_CALL(*delegate,
+              OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPaused))
+      .Times(1);
+  SuspendAndWaitForUtilityPause(GetParam());
+
+  EXPECT_EQ(fake_controller()->pause_count(), 1);
+  EXPECT_EQ(page_player.suspend_count(), 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReadAloudServiceMediaSessionSuspendTest,
+                         testing::Values(SuspendType::kUI,
+                                         SuspendType::kSystem),
+                         [](const testing::TestParamInfo<SuspendType>& info) {
+                           return info.param == SuspendType::kUI ? "UI"
+                                                                 : "System";
+                         });
+
+// After a suspend with page audio playing, Read Aloud stays in the
+// MediaSession as a paused player, so resuming the session resumes it.
+TEST_F(ReadAloudServiceMediaSessionTest,
+       ResumeWithPageAudioResumesReadAloudAndPageAudio) {
+  StartReadAloud();
+  FakePagePlayer page_player(web_contents());
+  ASSERT_TRUE(page_player.StartPlaying());
+  SuspendAndWaitForUtilityPause(SuspendType::kUI);
+
+  ResumeAndWaitForUtilityPlay(SuspendType::kUI);
+
+  // One Play() from StartReadAloud() and one from the resume.
+  EXPECT_EQ(fake_controller()->play_count(), 2);
+  EXPECT_EQ(page_player.resume_count(), 1);
 }
 
 TEST_F(ReadAloudServiceTest, SetPlaybackRateForwardedToUtility) {

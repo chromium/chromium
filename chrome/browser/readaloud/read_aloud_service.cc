@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
@@ -285,11 +287,19 @@ void ReadAloudService::PrimaryPageChanged(content::Page& page) {
   Stop();
 }
 
+// `OnSessionSuspended()` and `OnSessionResumed()` run synchronously while
+// `MediaSession` iterates over its players. They must not destroy or replace
+// `media_session_`.
 void ReadAloudService::OnSessionSuspended() {
   Pause();
 }
 
 void ReadAloudService::OnSessionResumed() {
+  // `media_session_` observes the same `WebContents` as this service, so
+  // `Play()` does not call `Initialize()`, which would destroy
+  // `media_session_`.
+  CHECK(media_session_);
+  CHECK_EQ(media_session_->web_contents(), web_contents());
   Play(web_contents());
 }
 

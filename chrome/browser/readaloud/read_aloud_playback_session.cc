@@ -27,6 +27,10 @@ ReadAloudPlaybackSession::~ReadAloudPlaybackSession() {
 void ReadAloudPlaybackSession::NotifyPlaybackStarted() {
   is_playback_in_progress_ = true;
   is_paused_ = false;
+  if (ConsumePendingSessionCommand(SessionCommand::kResume)) {
+    // `MediaSession` initiated the resume and already holds audio focus.
+    return;
+  }
   if (web_contents()) {
     if (auto* session = content::MediaSession::Get(web_contents())) {
       session->AddPlayer(this, kPlayerId);
@@ -36,6 +40,10 @@ void ReadAloudPlaybackSession::NotifyPlaybackStarted() {
 
 void ReadAloudPlaybackSession::NotifyPlaybackPaused() {
   is_paused_ = true;
+  if (ConsumePendingSessionCommand(SessionCommand::kSuspend)) {
+    // `MediaSession` initiated the suspend and already updated its own state.
+    return;
+  }
   if (web_contents()) {
     if (auto* session = content::MediaSession::GetIfExists(web_contents())) {
       session->OnPlayerPaused(this, kPlayerId);
@@ -46,6 +54,7 @@ void ReadAloudPlaybackSession::NotifyPlaybackPaused() {
 void ReadAloudPlaybackSession::NotifyPlaybackStopped() {
   is_playback_in_progress_ = false;
   is_paused_ = true;
+  pending_session_command_ = SessionCommand::kNone;
   if (web_contents()) {
     if (auto* session = content::MediaSession::GetIfExists(web_contents())) {
       session->RemovePlayer(this, kPlayerId);
@@ -53,11 +62,21 @@ void ReadAloudPlaybackSession::NotifyPlaybackStopped() {
   }
 }
 
+bool ReadAloudPlaybackSession::ConsumePendingSessionCommand(
+    SessionCommand command) {
+  if (pending_session_command_ != command) {
+    return false;
+  }
+  pending_session_command_ = SessionCommand::kNone;
+  return true;
+}
+
 void ReadAloudPlaybackSession::OnSuspend(int player_id,
                                          bool triggered_by_user) {
   if (player_id != kPlayerId) {
     return;
   }
+  pending_session_command_ = SessionCommand::kSuspend;
   service_->OnSessionSuspended();
 }
 
@@ -65,6 +84,7 @@ void ReadAloudPlaybackSession::OnResume(int player_id, bool triggered_by_user) {
   if (player_id != kPlayerId) {
     return;
   }
+  pending_session_command_ = SessionCommand::kResume;
   service_->OnSessionResumed();
 }
 
