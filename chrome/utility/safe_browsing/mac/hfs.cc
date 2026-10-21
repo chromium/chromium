@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/utility/safe_browsing/mac/hfs.h"
 
 #include <libkern/OSByteOrder.h>
@@ -286,7 +285,12 @@ class HFSBTreeIterator {
 
 HFSIterator::HFSIterator(ReadStream* stream)
     : stream_(stream), volume_header_() {
-  if (base::FeatureList::IsEnabled(kSafeBrowsingRustDmgParser)) {
+  if (stream && base::FeatureList::IsEnabled(kSafeBrowsingRustDmgParser)) {
+    // `new_hfs_iterator` requires a valid, non-null `ReadStream` pointer that
+    // outlives the iterator and any child `ReadStream`s. `stream` is checked to
+    // be non-null above, and the `HFSIterator` constructor contract requires
+    // the caller to ensure `stream` outlives this `HFSIterator` and any streams
+    // returned by `GetReadStream()`.
     rust_iterator_ = rust_ffi::new_hfs_iterator(stream);
   }
 }
@@ -294,6 +298,10 @@ HFSIterator::HFSIterator(ReadStream* stream)
 HFSIterator::~HFSIterator() = default;
 
 bool HFSIterator::Open() {
+  if (!stream_) {
+    return false;
+  }
+
   if (rust_iterator_.has_value()) {
     return (*rust_iterator_)->open();
   }
@@ -414,9 +422,6 @@ std::u16string HFSIterator::GetPath() {
 
 std::unique_ptr<ReadStream> HFSIterator::GetReadStream() {
   if (rust_iterator_.has_value()) {
-    if (!(*rust_iterator_)->has_read_stream()) {
-      return nullptr;
-    }
     return rust_ffi::WrapRustReadStream((*rust_iterator_)->read_stream());
   }
   if (IsDirectory() || IsHardLink()) {

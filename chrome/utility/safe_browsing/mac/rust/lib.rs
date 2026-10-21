@@ -9,7 +9,7 @@
 //! the separate `dmg_ffi_bridge` crate (`ffi.rs`).
 
 use std::cell::RefCell;
-use std::io::{Read, Seek, SeekFrom};
+use std::io::{Read, Seek};
 use std::rc::Rc;
 
 pub mod hfs;
@@ -32,21 +32,4 @@ pub type SharedStream = Rc<RefCell<dyn ReadSeek>>;
 /// Wraps an owned [`ReadSeek`] stream into a [`SharedStream`].
 pub fn share_stream<R: ReadSeek + 'static>(reader: R) -> SharedStream {
     Rc::new(RefCell::new(reader))
-}
-
-/// Adapter that implements [`Read`] and [`Seek`] for a [`SharedStream`] by
-/// borrowing the inner stream mutably for the duration of each operation.
-#[derive(Clone)]
-pub struct SharedReadStream(pub SharedStream);
-
-impl Read for SharedReadStream {
-    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        self.0.borrow_mut().read(buf)
-    }
-}
-
-impl Seek for SharedReadStream {
-    fn seek(&mut self, pos: SeekFrom) -> std::io::Result<u64> {
-        self.0.borrow_mut().seek(pos)
-    }
 }

@@ -374,7 +374,12 @@ size_t& GetMaxDecompressChunkSize() {
 
 UDIFParser::UDIFParser(ReadStream* stream)
     : stream_(stream), block_size_(kSectorSize) {
-  if (base::FeatureList::IsEnabled(kSafeBrowsingRustDmgParser)) {
+  if (stream && base::FeatureList::IsEnabled(kSafeBrowsingRustDmgParser)) {
+    // `new_udif_parser` requires a valid, non-null `ReadStream` pointer that
+    // outlives the parser and any child `ReadStream`s. `stream` is checked to
+    // be non-null above, and the `UDIFParser` constructor contract requires the
+    // caller to ensure `stream` outlives this `UDIFParser` and any streams
+    // returned by `GetPartitionReadStream()`.
     rust_parser_ = rust_ffi::new_udif_parser(stream);
   }
 }
@@ -382,6 +387,10 @@ UDIFParser::UDIFParser(ReadStream* stream)
 UDIFParser::~UDIFParser() = default;
 
 bool UDIFParser::Parse() {
+  if (!stream_) {
+    return false;
+  }
+
   if (rust_parser_.has_value()) {
     if (!(*rust_parser_)->parse()) {
       return false;

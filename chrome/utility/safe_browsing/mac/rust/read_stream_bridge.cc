@@ -32,8 +32,7 @@ class RustReadStreamAdapter : public ReadStream {
 
   bool Read(base::span<uint8_t> buf, size_t* bytes_read) override {
     CHECK(bytes_read);
-    return stream_->read_stream(::rust::Slice<uint8_t>(buf.data(), buf.size()),
-                                *bytes_read);
+    return stream_->read_stream(::rust::Slice<uint8_t>(buf), *bytes_read);
   }
 
   off_t Seek(off_t offset, int whence) override {
@@ -64,9 +63,7 @@ bool RustBridgeRead(ReadStream* stream,
                     ::rust::Slice<uint8_t> buf,
                     size_t& bytes_read) {
   CHECK(stream);
-  base::span<uint8_t> span =
-      buf.empty() ? base::span<uint8_t>() : base::span<uint8_t>(buf);
-  return stream->Read(span, &bytes_read);
+  return stream->Read(base::span<uint8_t>(buf), &bytes_read);
 }
 
 int64_t RustBridgeSeek(ReadStream* stream, int64_t offset, int32_t whence) {
@@ -90,6 +87,9 @@ int64_t RustBridgeSeek(ReadStream* stream, int64_t offset, int32_t whence) {
 
 std::unique_ptr<ReadStream> WrapRustReadStream(
     ::rust::Box<RustReadStream> rust_stream) {
+  if (!rust_stream->is_valid()) {
+    return nullptr;
+  }
   return std::make_unique<RustReadStreamAdapter>(std::move(rust_stream));
 }
 

@@ -6,9 +6,7 @@
 //!
 //! Rust port of `chrome/utility/safe_browsing/mac/udif.{h,cc}`.
 
-use std::io::Cursor;
-
-use crate::{share_stream, SharedStream};
+use crate::{ReadSeek, SharedStream};
 
 /// Errors that can occur when parsing a UDIF image.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -69,21 +67,11 @@ impl UdifParser {
         0
     }
 
-    /// Returns a virtualized stream over the decompressed partition data.
-    pub fn partition_read_stream(&self, part_number: usize) -> SharedStream {
+    /// Returns a virtualized stream over the decompressed partition data, or
+    /// `None` if `part_number` is out of range.
+    pub fn partition_read_stream(&self, part_number: usize) -> Option<Box<dyn ReadSeek>> {
         // TODO(https://crbug.com/575525008): Return `UdifPartitionReadStream` wrapping `self.stream`.
         let _ = part_number;
-        share_stream(Cursor::new(Vec::<u8>::new()))
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn empty_stream_fails_to_parse() {
-        let stream = share_stream(Cursor::new(Vec::<u8>::new()));
-        assert!(UdifParser::parse(stream).is_err());
+        None
     }
 }

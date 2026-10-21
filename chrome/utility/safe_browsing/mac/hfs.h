@@ -39,7 +39,9 @@ class HFSForkReadStream;
 // <https://developer.apple.com/legacy/library/technotes/tn/tn1150.html>.
 class HFSIterator {
  public:
-  // Constructs an iterator from a stream.
+  // Constructs an iterator from a stream. Does not take ownership of `stream`,
+  // which must outlive this `HFSIterator` and any `ReadStream`s obtained from
+  // `GetReadStream()`.
   explicit HFSIterator(ReadStream* stream);
 
   HFSIterator(const HFSIterator&) = delete;

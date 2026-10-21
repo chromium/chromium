@@ -45,7 +45,9 @@ class UDIFBlock;
 //   - http://www.macdisk.com/dmgen.php
 class UDIFParser {
  public:
-  // Constructs an instance from a stream.
+  // Constructs an instance from a stream. Does not take ownership of `stream`,
+  // which must outlive this `UDIFParser` and any `ReadStream`s obtained from
+  // `GetPartitionReadStream()`.
   explicit UDIFParser(ReadStream* stream);
 
   UDIFParser(const UDIFParser&) = delete;

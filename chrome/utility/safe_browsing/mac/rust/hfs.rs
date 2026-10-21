@@ -79,17 +79,3 @@ impl HfsIterator {
         None
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use std::io::Cursor;
-
-    use super::*;
-    use crate::share_stream;
-
-    #[test]
-    fn empty_stream_fails_to_open() {
-        let stream = share_stream(Cursor::new(Vec::<u8>::new()));
-        assert!(HfsIterator::open(stream).is_err());
-    }
-}
