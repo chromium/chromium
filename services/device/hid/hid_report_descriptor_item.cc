@@ -4,13 +4,9 @@
 
 #include "services/device/hid/hid_report_descriptor_item.h"
 
-#include <stdlib.h>
-#include <string.h>
-
+#include "base/bit_cast.h"
 #include "base/check.h"
-#include "base/check_op.h"
-#include "base/compiler_specific.h"
-#include "base/logging.h"
+#include "base/containers/span.h"
 
 namespace device {
 
@@ -21,14 +17,14 @@ struct Header {
   uint8_t type : 2;
   uint8_t tag : 4;
 };
+static_assert(sizeof(Header) == 1);
 
 }  // namespace
 
 HidReportDescriptorItem::HidReportDescriptorItem(
-    base::span<const uint8_t> bytes)
-    : shortData_(0), payload_size_(0) {
-  const auto* header = reinterpret_cast<const Header*>(bytes.data());
-  tag_ = static_cast<Tag>(header->tag << 2 | header->type);
+    base::span<const uint8_t> bytes) {
+  const auto header = base::bit_cast<Header>(bytes[0]);
+  tag_ = static_cast<Tag>(header.tag << 2 | header.type);
 
   if (IsLong()) {
     // In a long item, payload size is the second byte.
@@ -37,11 +33,11 @@ HidReportDescriptorItem::HidReportDescriptorItem(
     }
   } else {
     // As per HID spec, a bSize value of 3 means 4 bytes.
-    payload_size_ = header->size == 0x3 ? 4 : header->size;
-    DCHECK_LE(payload_size_, sizeof(shortData_));
-    if (GetHeaderSize() + payload_size() <= bytes.size()) {
-      UNSAFE_TODO(
-          memcpy(&shortData_, bytes.data() + GetHeaderSize(), payload_size()));
+    payload_size_ = header.size == 0x3 ? 4 : header.size;
+    base::span<const uint8_t> payload = bytes.subspan(GetHeaderSize());
+    if (payload_size() <= payload.size()) {
+      base::byte_span_from_ref(shortData_)
+          .copy_prefix_from(payload.first(payload_size()));
     }
   }
 }

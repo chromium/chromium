@@ -151,8 +151,8 @@ class HidReportDescriptorItem {
   size_t GetHeaderSize() const;
 
   Tag tag_;
-  uint32_t shortData_;
-  size_t payload_size_;
+  uint32_t shortData_ = 0;
+  size_t payload_size_ = 0;
 };
 
 }  // namespace device
