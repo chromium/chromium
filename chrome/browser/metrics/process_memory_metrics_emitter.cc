@@ -452,6 +452,13 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"malloc/partitions", "Malloc.BRPQuarantinedCountPerMinute",
      MetricSize::kTiny, "brp_quarantined_count_per_minute",
      EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions",
+     "Malloc.MaxBRPRefCount",
+     MetricSize::kCustom,
+     "max_brp_ref_count",
+     EmitTo::kSizeInUmaOnly,
+     nullptr,
+     {1 << 12, 1 << 28}},
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"malloc/extreme_lud/large_objects", "Malloc.ExtremeLUD.LargeObjects.Count",
      MetricSize::kTiny, "count", EmitTo::kSizeInUmaOnly, nullptr},

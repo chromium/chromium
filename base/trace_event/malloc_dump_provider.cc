@@ -24,6 +24,7 @@
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 #include "partition_alloc/bucket_lookup.h"           // nogncheck
+#include "partition_alloc/in_slot_metadata.h"        // nogncheck
 #include "partition_alloc/partition_alloc_config.h"  // nogncheck
 #endif
 
@@ -607,6 +608,13 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
       pa_only_committed_size == 0
           ? 0
           : 100 * pa_only_wasted_size / pa_only_committed_size);
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  if (uint32_t max_ref_count = partition_alloc::internal::InSlotMetadata::
+          GetMaxRefCountForReporting();
+      max_ref_count > 0) {
+    partitions_dump->AddScalar("max_brp_ref_count", "count", max_ref_count);
+  }
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
   // The objects allocated out of each partition are reported by the per-bucket
   // dumps below, which are suballocated from their partition. This dump is

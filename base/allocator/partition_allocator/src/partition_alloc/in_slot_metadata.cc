@@ -55,6 +55,20 @@ std::atomic_bool suppress_corruption_detected_crash = false;
 std::atomic<void (*)(uintptr_t)> corruption_detected_fn = nullptr;
 }  // namespace
 
+std::atomic<uint32_t> InSlotMetadata::max_ref_count_{0};
+
+// static
+PA_NOINLINE void InSlotMetadata::UpdateMaxRefCountSlow(uint32_t ref_count) {
+  uint32_t current_max = max_ref_count_.load(std::memory_order_relaxed);
+  while (ref_count > current_max) [[unlikely]] {
+    if (max_ref_count_.compare_exchange_weak(current_max, ref_count,
+                                             std::memory_order_relaxed,
+                                             std::memory_order_relaxed)) {
+      break;
+    }
+  }
+}
+
 // static
 void InSlotMetadata::SetCorruptionDetectedFn(void (*fn)(uintptr_t)) {
   corruption_detected_fn.store(fn, std::memory_order_relaxed);

@@ -5328,6 +5328,50 @@ TEST_P(PartitionAllocTest, RefCountBasic) {
   allocator.root()->Free(ptr3);
 }
 
+TEST_P(PartitionAllocTest, MaxRefCount) {
+  if (!UseBRPPool()) {
+    return;
+  }
+
+  InSlotMetadata::ResetMaxRefCountForTesting();
+  EXPECT_EQ(InSlotMetadata::GetMaxRefCountForReporting(), 0u);
+
+  size_t alloc_size = 64 - ExtraAllocSize(allocator);
+  void* ptr = allocator.root()->Alloc(alloc_size, type_name);
+  ASSERT_TRUE(ptr);
+
+  auto* in_slot_metadata =
+      allocator.root()->InSlotMetadataPointerFromObjectForTesting(ptr);
+
+  // Below 2^12 (4096), max_ref_count_ is not updated.
+  for (size_t i = 0; i < 4095; ++i) {
+    in_slot_metadata->Acquire();
+  }
+  EXPECT_EQ(InSlotMetadata::GetMaxRefCountForReporting(), 0u);
+
+  // Reaching 4096 (2^12) records 4096.
+  in_slot_metadata->Acquire();
+  EXPECT_EQ(InSlotMetadata::GetMaxRefCountForReporting(), 4096u);
+
+  // Non-power-of-2 values above 4096 do not update max_ref_count_.
+  for (size_t i = 4096; i < 8191; ++i) {
+    in_slot_metadata->Acquire();
+  }
+  EXPECT_EQ(InSlotMetadata::GetMaxRefCountForReporting(), 4096u);
+
+  // Reaching 8192 (2^13) updates max_ref_count_ to 8192.
+  in_slot_metadata->Acquire();
+  EXPECT_EQ(InSlotMetadata::GetMaxRefCountForReporting(), 8192u);
+
+  for (size_t i = 0; i < 8192; ++i) {
+    EXPECT_FALSE(in_slot_metadata->Release());
+  }
+  // High-water mark should remain 8192 after releases.
+  EXPECT_EQ(InSlotMetadata::GetMaxRefCountForReporting(), 8192u);
+
+  allocator.root()->Free(ptr);
+}
+
 void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
                                                    size_t new_size) {
   void* ptr1 = allocator.root()->Alloc(orig_size, type_name);

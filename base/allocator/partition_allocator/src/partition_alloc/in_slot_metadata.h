@@ -178,6 +178,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
       SafeShift<CountType>(1, std::countr_zero(kPtrCountMask));
   static constexpr auto kUnprotectedPtrInc =
       SafeShift<CountType>(1, std::countr_zero(kUnprotectedPtrCountMask));
+  // Once 2^12 (4096) raw_ptrs (protected or not) are assigned we start reporting
+  // umas of how many we've seen assigned to a single pointer
+  static constexpr CountType kMinTrackedRefCount = 1u << 12;
 
   PA_ALWAYS_INLINE static InSlotMetadata* From(
       SlotAddressAndSize slot_and_size);
@@ -196,30 +199,14 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // the uint64_t fetch_add on 32bit CPU.
   // https://docs.google.com/document/d/1cSTVDVEE-8l2dXLPcfyN75r6ihMbeiSp1ncL9ae3RZE
   PA_ALWAYS_INLINE void Acquire() {
-    CheckCookieIfSupported();
-
-    CountType old_count = count_.fetch_add(kPtrInc, std::memory_order_relaxed);
-    // Check overflow.
-    PA_CHECK((old_count & kPtrCountMask) != kMaxPtrCount);
-    // Should not allow refcount++ once refcount == 0 and
-    // !kMemoryHeldByAllocator.
-    PA_CHECK((old_count & (kMemoryHeldByAllocatorBit | kPtrCountMask |
-                           kUnprotectedPtrCountMask)) != 0);
+    AcquireCommon<kPtrCountMask, kMaxPtrCount>();
   }
 
   // Similar to |Acquire()|, but for raw_ptr<T, DisableDanglingPtrDetection>
   // instead of raw_ptr<T>.
   PA_ALWAYS_INLINE void AcquireFromUnprotectedPtr() {
 #if PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-    CheckCookieIfSupported();
-    CountType old_count =
-        count_.fetch_add(kUnprotectedPtrInc, std::memory_order_relaxed);
-    // Check overflow.
-    PA_CHECK((old_count & kUnprotectedPtrCountMask) != kMaxUnprotectedPtrCount);
-    // Should not allow refcount++ once refcount == 0 and
-    // !kMemoryHeldByAllocator.
-    PA_CHECK((old_count & (kMemoryHeldByAllocatorBit | kPtrCountMask |
-                           kUnprotectedPtrCountMask)) != 0);
+    AcquireCommon<kUnprotectedPtrCountMask, kMaxUnprotectedPtrCount>();
 #else
     Acquire();
 #endif
@@ -413,7 +400,19 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
   // start to the function, and it may use that for debugging purpose.
   static void SetCorruptionDetectedFn(void (*fn)(uintptr_t));
 
+  // `memory_order_relaxed` is sufficient because `max_ref_count_` is a
+  // standalone metric counter and no other memory accesses are synchronized
+  // through it.
+  static uint32_t GetMaxRefCountForReporting() {
+    return max_ref_count_.load(std::memory_order_relaxed);
+  }
+  static void ResetMaxRefCountForTesting() {
+    max_ref_count_.store(0, std::memory_order_relaxed);
+  }
+
  private:
+  PA_NOINLINE static void UpdateMaxRefCountSlow(uint32_t ref_count);
+
   // If there are some dangling raw_ptr<>. Turn on the error flag, and
   // emit the `DanglingPtrDetected` once to embedders.
   PA_ALWAYS_INLINE void CheckDanglingPointersOnFree(CountType count) {
@@ -443,6 +442,33 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
     partition_alloc::internal::DanglingRawPtrDetected(
         reinterpret_cast<uintptr_t>(this));
 #endif  // PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+  }
+
+  // The common parts shared by Acquire() and AcquireFromUnprotectedPtr().
+  template <CountType kCountMask, CountType kMaxCount>
+  PA_ALWAYS_INLINE void AcquireCommon() {
+    static constexpr auto kCountShift = std::countr_zero(kCountMask);
+    // kInc is a value of 1 shifted up to where the count's bits are.
+    // We need to multiply by kInc to ensure we compare nicely with the
+    // masked read of the ref count.
+    static constexpr auto kInc = SafeShift<CountType>(1, kCountShift);
+
+    CheckCookieIfSupported();
+
+    CountType old_count = count_.fetch_add(kInc, std::memory_order_relaxed);
+    // Should not allow refcount++ once refcount == 0 and
+    // !kMemoryHeldByAllocator.
+    PA_CHECK((old_count & (kMemoryHeldByAllocatorBit | kPtrCountMask |
+                           kUnprotectedPtrCountMask)) != 0);
+    CountType new_masked_count = (old_count & kCountMask) + kInc;
+    if (new_masked_count >= kMinTrackedRefCount * kInc) [[unlikely]] {
+      // Check overflow.
+      PA_CHECK((old_count & kCountMask) != kMaxCount);
+      if (std::has_single_bit(new_masked_count)) [[unlikely]] {
+        UpdateMaxRefCountSlow(
+            static_cast<uint32_t>(new_masked_count >> kCountShift));
+      }
+    }
   }
 
   // The common parts shared by Release() and ReleaseFromUnprotectedPtr().
@@ -502,6 +528,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InSlotMetadata {
       CountType count,
       UntaggedSlotStart slot_start,
       SlotSpanMetadata*);
+
+  static std::atomic<uint32_t> max_ref_count_;
 
   // Note that in free slots, this is overwritten by encoded freelist
   // pointer(s). The way the pointers are encoded on 64-bit little-endian
