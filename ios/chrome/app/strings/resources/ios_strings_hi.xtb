@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">स्टोरेज भर गया है</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1190609913194133056">सूचना केंद्र</translation>
+<translation id="1191987227666124897">इस्तेमाल बंद या सीमित करने का अनुरोध</translation>
 <translation id="1196534270480620381">मुझे इस पेज की कम शब्दों में खास जानकारी दो</translation>
 <translation id="1199631150313925648">मैन्युअल तरीके से डालें</translation>
 <translation id="1199963004393929848">हरे रंग वाली थीम</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">नए टैब ग्रुप में खोलें</translation>
 <translation id="1670861525135254448">वाहन की जानकारी सेव करें</translation>
 <translation id="1671568970992212376">अपनी फ़ोटो Google Photos में सेव करें और किसी भी समय ऐक्सेस करें.</translation>
+<translation id="1671824312818944549">ध्यान दें: यह सेटिंग, iOS 27 या इसके बाद के वर्शन पर और बेहतर तरीके से काम करती है.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> से <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">स्क्रीन पर दिख रहे कॉन्टेंट के बारे में जानकारी खोजने के लिए, उस पर सर्कल बनाएं, उसे हाइलाइट करें या उस पर टैप करें</translation>
 <translation id="1678855624321223424">आपके संगठन की नीतियों के आधार पर, इस फ़ाइल में संवेदनशील जानकारी हो सकती है</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2876369937070532032">आपकी सुरक्षा को खतरा होने पर उन पेज के यूआरएल भेजे जाते हैं जिन पर आप Google के ज़रिए जाते हैं.</translation>
 <translation id="2883151425485251736">अपने खाते से छिपाए गए विषयों को देखें और उनमें बदलाव करें</translation>
+<translation id="2884437560239137197">ध्यान देने की ज़रूरत है</translation>
 <translation id="288655811176831528">टैब बंद करें</translation>
 <translation id="2888631381369839306">कीमत ट्रैक करने से जुड़ी सूचनाएं पाने की सुविधा चालू की गई</translation>
 <translation id="2893168226686371498">डिफ़ॉल्ट ब्राउज़र</translation>
@@ -2178,6 +2181,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7758789811447313947">बैंगनी रंग वाली थीम</translation>
 <translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="7765158879357617694">ले जाएं</translation>
+<translation id="7767651976342854115">डेटा के इस्तेमाल की सेटिंग में कोई गड़बड़ी हुई.</translation>
 <translation id="7768507955883790804">किसी साइट पर जाने पर, वह अपने-आप इस सेटिंग को फ़ॉलो करती है</translation>
 <translation id="7772032839648071052">'पासफ़्रेज' की पुष्टि करें</translation>
 <translation id="7772948288262733182">आपका फिर से स्वागत है</translation>

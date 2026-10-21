@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Hapësira ruajtëse është plot</translation>
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1190609913194133056">Qendra e njoftimeve</translation>
+<translation id="1191987227666124897">Kërkesa për tërheqje</translation>
 <translation id="1196534270480620381">Më jep një përmbledhje të shkurtër të kësaj faqeje</translation>
 <translation id="1199631150313925648">Fut manualisht</translation>
 <translation id="1199963004393929848">Tema e gjelbër</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Hape në një grup të ri skedash</translation>
 <translation id="1670861525135254448">Ruaj automjetin</translation>
 <translation id="1671568970992212376">Ruaj fotografitë te "Fotografitë e Google" dhe qasu tek ato në çdo kohë.</translation>
+<translation id="1671824312818944549">Shënim. Ky cilësim funksionon më mirë me iOS 27 ose një version më të ri.</translation>
 <translation id="1674504678466460478">Nga <ph name="SOURCE_LANGUAGE" /> në <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Vizato, thekso ose trokit te çdo gjë në ekranin tënd për të kërkuar</translation>
 <translation id="1678855624321223424">Bazuar në politikat e organizatës sate, ky skedar mund të përmbajë informacione delikate</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Sajti</translation>
 <translation id="2876369937070532032">Dërgon URL-të e disa faqeve që viziton te Google, kur siguria jote është në rrezik</translation>
 <translation id="2883151425485251736">Shiko dhe modifiko temat që ke fshehur nga llogaria</translation>
+<translation id="2884437560239137197">Nevojitet vëmendje</translation>
 <translation id="288655811176831528">Mbylle skedën</translation>
 <translation id="2888631381369839306">Njoftimet për monitorimin e çmimeve janë aktivizuar</translation>
 <translation id="2893168226686371498">Shfletuesi i parazgjedhur</translation>
@@ -2178,6 +2181,7 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="7758789811447313947">Tema vjollcë</translation>
 <translation id="7759809451544302770">Opsionale</translation>
 <translation id="7765158879357617694">Zhvendos</translation>
+<translation id="7767651976342854115">Cilësimi i përdorimit të të dhënave hasi një gabim.</translation>
 <translation id="7768507955883790804">Sajtet e ndjekin automatikisht këtë cilësim kur i viziton ato</translation>
 <translation id="7772032839648071052">Konfirmo shprehjen e kalimit</translation>
 <translation id="7772948288262733182">Mirë se u ktheve</translation>

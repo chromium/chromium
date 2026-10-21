@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Depolama alanınız dolu</translation>
 <translation id="1181037720776840403">Kaldır</translation>
 <translation id="1190609913194133056">Bildirim Merkezi</translation>
+<translation id="1191987227666124897">Kapsam dışında kalma isteği</translation>
 <translation id="1196534270480620381">Bu sayfayı kısaca özetle</translation>
 <translation id="1199631150313925648">Manuel olarak gir</translation>
 <translation id="1199963004393929848">Yeşil tema</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Yeni Sekme Grubunda Aç</translation>
 <translation id="1670861525135254448">Aracı kaydedin</translation>
 <translation id="1671568970992212376">Fotoğrafları Google Fotoğraflar'ınıza kaydedin ve istediğiniz zaman onlara erişin.</translation>
+<translation id="1671824312818944549">Not: Bu ayar, iOS 27 veya sonraki sürümlerde daha iyi çalışır.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> dilinden <ph name="TARGET_LANGUAGE" /> diline</translation>
 <translation id="1676102443145105381">Aramak için ekranınızdaki herhangi bir öğeyi daire içine alın, vurgulayın veya öğeye dokunun.</translation>
 <translation id="1678855624321223424">Bu dosya, kuruluşunuzun politikaları uyarınca hassas bilgiler içeriyor olabilir</translation>
@@ -550,7 +552,7 @@
 <translation id="2640733327287333451">Kullanıcı Adı Yok ••••••</translation>
 <translation id="264215785133931186">Az önce kontrol edildi</translation>
 <translation id="2647434099613338025">Dil ekle</translation>
-<translation id="2648812801228676606"><ph name="NAME_OR_EMAIL" /> olarak oturumunuz açık kaldı</translation>
+<translation id="2648812801228676606"><ph name="NAME_OR_EMAIL" /> olarak oturumunuz açık kaldı.</translation>
 <translation id="2649592894792404568">Google Şifre Yöneticisi verilerinizi silmek üzeresiniz</translation>
 <translation id="2652129567809778422">Şifreyi seçin</translation>
 <translation id="2658056020748144467">Dosya açılamıyor</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Güvenliğiniz risk altında olduğunda ziyaret ettiğiniz bazı sayfaların URL'lerini Google'a gönderir</translation>
 <translation id="2883151425485251736">Hesabınızda gizlediğiniz konuları görüp düzenleyin</translation>
+<translation id="2884437560239137197">Dikkat edilmesi gerekli</translation>
 <translation id="288655811176831528">Sekmeyi Kapat</translation>
 <translation id="2888631381369839306">Fiyat takibi bildirimleri etkinleştirildi</translation>
 <translation id="2893168226686371498">Varsayılan tarayıcı</translation>
@@ -2178,6 +2181,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7758789811447313947">Mor tema</translation>
 <translation id="7759809451544302770">İsteğe bağlı</translation>
 <translation id="7765158879357617694">Taşı</translation>
+<translation id="7767651976342854115">Veri kullanımı ayarında bir hatayla karşılaşıldı.</translation>
 <translation id="7768507955883790804">Ziyaret ettiğinizde siteler otomatik olarak bu ayarı uygular</translation>
 <translation id="7772032839648071052">Parolayı onayla</translation>
 <translation id="7772948288262733182">Tekrar hoş geldiniz</translation>

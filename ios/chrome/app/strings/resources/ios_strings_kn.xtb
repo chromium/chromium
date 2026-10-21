@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">ನಿಮ್ಮ ಸಂಗ್ರಹಣೆ ಭರ್ತಿಯಾಗಿದೆ</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
 <translation id="1190609913194133056">ಅಧಿಸೂಚನೆಯ ಕೇಂದ್ರ</translation>
+<translation id="1191987227666124897">ಆಯ್ಕೆಯಿಂದ ಹೊರಗುಳಿಯುವ ವಿನಂತಿ</translation>
 <translation id="1196534270480620381">ಈ ಪುಟದ ಸಂಕ್ಷಿಪ್ತ ಸಾರಾಂಶವನ್ನು ನನಗೆ ನೀಡಿ</translation>
 <translation id="1199631150313925648">ಹಸ್ತಚಾಲಿತವಾಗಿ ನಮೂದಿಸಿ</translation>
 <translation id="1199963004393929848">ಹಸಿರು ಥೀಮ್</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="1670861525135254448">ವಾಹನ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="1671568970992212376">ನಿಮ್ಮ Google Photos ನಲ್ಲಿ ಫೋಟೋಗಳನ್ನು ಸೇವ್ ಮಾಡಿ ಮತ್ತು ಅವುಗಳನ್ನು ಯಾವುದೇ ಸಮಯದಲ್ಲಿ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ.</translation>
+<translation id="1671824312818944549">ಗಮನಿಸಿ: ಈ ಸೆಟ್ಟಿಂಗ್ iOS 27 ಅಥವಾ ಹೊಸ ಆವೃತ್ತಿಯೊಂದಿಗೆ ಉತ್ತಮವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ನಿಂದ <ph name="TARGET_LANGUAGE" /> ಗೆ</translation>
 <translation id="1676102443145105381">ಹುಡುಕಲು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಮೇಲೆ ಏನನ್ನಾದರೂ ಬಿಡಿಸಿ, ಹೈಲೈಟ್ ಮಾಡಿ ಅಥವಾ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1678855624321223424">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಗಳನ್ನು ಆಧರಿಸಿ, ಈ ಫೈಲ್ ಸೆನ್ಸಿಟಿವ್ ಮಾಹಿತಿಯನ್ನು ಒಳಗೊಂಡಿರಬಹುದು</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">ಸೈಟ್</translation>
 <translation id="2876369937070532032">ನಿಮ್ಮ ಭದ್ರತೆಯು ಅಪಾಯದಲ್ಲಿದ್ದಾಗ, ನೀವು ಭೇಟಿ ನೀಡುವ ಕೆಲವು ಪುಟಗಳ URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ</translation>
 <translation id="2883151425485251736">ನಿಮ್ಮ ಖಾತೆಯಿಂದ ನೀವು ಮರೆಮಾಡಿರುವ ವಿಷಯಗಳನ್ನು ನೋಡಿ ಮತ್ತು ಎಡಿಟ್ ಮಾಡಿ</translation>
+<translation id="2884437560239137197">ಗಮನಹರಿಸುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="288655811176831528">ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="2888631381369839306">ದರ ಟ್ರ್ಯಾಕಿಂಗ್ ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2893168226686371498">ಡಿಫಾಲ್ಟ್ ಬ್ರೌಸರ್</translation>
@@ -2178,6 +2181,7 @@
 <translation id="7758789811447313947">ನೇರಳೆ ಥೀಮ್</translation>
 <translation id="7759809451544302770">ಐಚ್ಛಿಕ</translation>
 <translation id="7765158879357617694">ಸರಿಸು</translation>
+<translation id="7767651976342854115">ಡೇಟಾ ಬಳಕೆ ಸೆಟ್ಟಿಂಗ್‌ನಲ್ಲಿ ದೋಷ ಎದುರಾಗಿದೆ.</translation>
 <translation id="7768507955883790804">ನೀವು ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿದಾಗ, ಅವು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಅನುಸರಿಸುತ್ತವೆ</translation>
 <translation id="7772032839648071052">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="7772948288262733182">ಮರಳಿ ಸುಸ್ವಾಗತ</translation>

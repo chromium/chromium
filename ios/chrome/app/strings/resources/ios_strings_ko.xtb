@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">저장용량이 가득 참</translation>
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1190609913194133056">알림 센터</translation>
+<translation id="1191987227666124897">거부 요청</translation>
 <translation id="1196534270480620381">이 페이지를 간략하게 요약해 줘</translation>
 <translation id="1199631150313925648">직접 입력</translation>
 <translation id="1199963004393929848">초록색 테마</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">새 탭 그룹에서 열기</translation>
 <translation id="1670861525135254448">차량 저장</translation>
 <translation id="1671568970992212376">Google 포토에 사진을 저장하고 언제든지 액세스하세요.</translation>
+<translation id="1671824312818944549">참고: 이 설정은 iOS 27 이상에서 더 잘 작동합니다.</translation>
 <translation id="1674504678466460478">출발어: <ph name="SOURCE_LANGUAGE" />, 도착어: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">화면에서 무엇이든 그리거나, 강조 표시하거나, 탭하여 검색하세요.</translation>
 <translation id="1678855624321223424">조직의 정책에 따라 이 파일에는 민감한 정보가 포함되어 있을 수 있습니다.</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2876369937070532032">보안상의 위험이 있을 때 일부 방문 페이지의 URL을 Google로 전송합니다.</translation>
 <translation id="2883151425485251736">계정에서 숨긴 주제 확인 및 수정</translation>
+<translation id="2884437560239137197">주의 필요</translation>
 <translation id="288655811176831528">탭 닫기</translation>
 <translation id="2888631381369839306">가격 추적 알림이 사용 설정됨</translation>
 <translation id="2893168226686371498">기본 브라우저</translation>
@@ -2178,6 +2181,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7758789811447313947">보라색 테마</translation>
 <translation id="7759809451544302770">선택사항</translation>
 <translation id="7765158879357617694">이동</translation>
+<translation id="7767651976342854115">데이터 사용 설정에 오류가 발생했습니다.</translation>
 <translation id="7768507955883790804">사이트를 방문할 때 이 설정을 자동으로 따릅니다.</translation>
 <translation id="7772032839648071052">암호 확인</translation>
 <translation id="7772948288262733182">다시 방문해 주셔서 감사합니다</translation>

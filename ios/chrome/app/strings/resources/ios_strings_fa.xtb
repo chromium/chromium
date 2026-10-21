@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">فضای ذخیره‌سازی پر است</translation>
 <translation id="1181037720776840403">برداشتن</translation>
 <translation id="1190609913194133056">مرکز اعلان‌ها</translation>
+<translation id="1191987227666124897">درخواست انصراف دادن</translation>
 <translation id="1196534270480620381">خلاصه کوتاهی از این صفحه به من ارائه بده</translation>
 <translation id="1199631150313925648">وارد کردن به‌صورت دستی</translation>
 <translation id="1199963004393929848">زمینه سبز</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">باز کردن در گروه زبانه جدید</translation>
 <translation id="1670861525135254448">ذخیره کردن وسیله نقلیه</translation>
 <translation id="1671568970992212376">‏عکس‌ها را در Google Photos ذخیره کنید و هر زمان خواستید به آن‌ها دسترسی داشته باشید.</translation>
+<translation id="1671824312818944549">‏توجه: این تنظیم با iOS 27 یا جدیدتر بهتر کار می‌کند.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> به<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">برای جستجو کردن می‌توانید هر چیزی را روی صفحه‌نمایش خود بکشید، برجسته کنید، یا روی آن تک‌ضرب بزنید</translation>
 <translation id="1678855624321223424">براساس خط‌مشی‌های سازمانتان، این فایل ممکن است حاوی اطلاعات حساس باشد</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2876369937070532032">‏اگر امنیتتان درخطر باشد، نشانی وب برخی از صفحه‌هایی را که بازدید می‌کنید به Google می‌فرستد</translation>
 <translation id="2883151425485251736">مشاهده و ویرایش موضوع‌هایی که در حسابتان پنهان کرده‌اید</translation>
+<translation id="2884437560239137197">نیاز به توجه</translation>
 <translation id="288655811176831528">بستن زبانه</translation>
 <translation id="2888631381369839306">اعلان‌های «پیگیری قیمت» روشن شد</translation>
 <translation id="2893168226686371498">مرورگر پیش‌فرض</translation>
@@ -2178,6 +2181,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7758789811447313947">زمینه بنفش</translation>
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7765158879357617694">حرکت دادن</translation>
+<translation id="7767651976342854115">تنظیم مصرف داده با خطا مواجه شد.</translation>
 <translation id="7768507955883790804">وقتی از سایت‌ها بازدید می‌کنید، آن‌ها به‌طور خودکار این تنظیم را دنبال می‌کنند</translation>
 <translation id="7772032839648071052">تأیید گذرعبارت</translation>
 <translation id="7772948288262733182">بازگشتتان را خوشامد می‌گوییم</translation>

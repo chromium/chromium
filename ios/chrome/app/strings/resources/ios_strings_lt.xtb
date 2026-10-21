@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Saugykla pilna</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1190609913194133056">Pranešimų centras</translation>
+<translation id="1191987227666124897">Atsisakymo užklausa</translation>
 <translation id="1196534270480620381">Pateik trumpą šio puslapio apibendrinimą</translation>
 <translation id="1199631150313925648">Įvesti neautomatiškai</translation>
 <translation id="1199963004393929848">Žalia tema</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Atidaryti naujoje skirtukų grupėje</translation>
 <translation id="1670861525135254448">Išsaugokite transporto priemonę</translation>
 <translation id="1671568970992212376">Išsaugokite nuotraukas „Google“ nuotraukose ir bet kada jas pasiekite.</translation>
+<translation id="1671824312818944549">Pastaba: šis nustatymas geriau veikia naudojant 27 ar naujesnės versijos „iOS“.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> į <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Pieškite, paryškinkite arba palieskite bet kurį ekrano objektą, kad atliktumėte paiešką</translation>
 <translation id="1678855624321223424">Pagal jūsų organizacijos politiką šiame faile gali būti neskelbtinos informacijos</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Svetainė</translation>
 <translation id="2876369937070532032">Siunčia „Google“ kai kurių puslapių, kuriuose lankotės, URL, kai kyla pavojus jūsų saugai</translation>
 <translation id="2883151425485251736">Peržiūrėkite ir redaguokite temas, kurias paslėpėte paskyroje</translation>
+<translation id="2884437560239137197">Reikia atkreipti dėmesį</translation>
 <translation id="288655811176831528">Uždaryti skirtuką</translation>
 <translation id="2888631381369839306">Kainų stebėjimo pranešimai įjungti</translation>
 <translation id="2893168226686371498">Numatytoji naršyklė</translation>
@@ -2178,6 +2181,7 @@ Galite bet kada paleisti iš naujo.</translation>
 <translation id="7758789811447313947">Violetinė tema</translation>
 <translation id="7759809451544302770">Pasirenkama</translation>
 <translation id="7765158879357617694">Perkelti</translation>
+<translation id="7767651976342854115">Įkeliant duomenų naudojimo nustatymą įvyko klaida.</translation>
 <translation id="7768507955883790804">Svetainėms automatiškai pritaikomas šis nustatymas, kai jose apsilankote</translation>
 <translation id="7772032839648071052">Patvirtinti slaptafrazę</translation>
 <translation id="7772948288262733182">Sveiki sugrįžę</translation>

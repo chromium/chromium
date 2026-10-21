@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Хранилището ви е пълно</translation>
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1190609913194133056">Център за известия</translation>
+<translation id="1191987227666124897">Заявка за отказ</translation>
 <translation id="1196534270480620381">Дай ми кратко обобщение на тази страница</translation>
 <translation id="1199631150313925648">Ръчно въвеждане</translation>
 <translation id="1199963004393929848">Зелена тема</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Отваряне в нова група раздели</translation>
 <translation id="1670861525135254448">Запазване на превозното средство</translation>
 <translation id="1671568970992212376">Запазвайте снимки в Google Снимки и осъществявайте достъп до тях по всяко време.</translation>
+<translation id="1671824312818944549">Забележка: Тази настройка работи по-добре с iOS 27 или по-нова версия.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Оградете, откройте или докоснете нещо на екрана, за да извършите търсене</translation>
 <translation id="1678855624321223424">Въз основа на правилата на организацията ви този файл може да съдържа поверителна информация</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2876369937070532032">Когато сигурността ви е застрашена, изпраща до Google URL адресите на някои от страниците, които посещавате.</translation>
 <translation id="2883151425485251736">Преглеждайте и редактирайте темите, които сте скрили от профила си</translation>
+<translation id="2884437560239137197">Изисква се внимание</translation>
 <translation id="288655811176831528">Затваряне на раздела</translation>
 <translation id="2888631381369839306">Известията за проследяване на цената са включени</translation>
 <translation id="2893168226686371498">Браузър по подразбиране</translation>
@@ -2178,6 +2181,7 @@
 <translation id="7758789811447313947">Виолетова тема</translation>
 <translation id="7759809451544302770">По избор</translation>
 <translation id="7765158879357617694">Преместване</translation>
+<translation id="7767651976342854115">Възникна грешка в настройката за използване на данни.</translation>
 <translation id="7768507955883790804">Сайтовете автоматично следват тази настройка, когато ги посещавате</translation>
 <translation id="7772032839648071052">Потвърдете пропуска</translation>
 <translation id="7772948288262733182">Добре дошли отново</translation>

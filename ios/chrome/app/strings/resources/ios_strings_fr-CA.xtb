@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Votre espace de stockage est plein</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1190609913194133056">Centre de notification</translation>
+<translation id="1191987227666124897">Demande de désinscription</translation>
 <translation id="1196534270480620381">Fais-moi un bref résumé de cette page</translation>
 <translation id="1199631150313925648">Entrer manuellement</translation>
 <translation id="1199963004393929848">Thème vert</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Ouvrir dans un nouveau groupe d'onglets</translation>
 <translation id="1670861525135254448">Enregistrez le véhicule</translation>
 <translation id="1671568970992212376">Enregistrez des photos dans Google Photos et accédez-y à tout moment.</translation>
+<translation id="1671824312818944549">Remarque : Ce réglage fonctionne mieux avec iOS 27 ou une version ultérieure.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> en <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Dessinez, mettez en évidence ou touchez n'importe quel élément de votre écran pour effectuer une recherche</translation>
 <translation id="1678855624321223424">Selon les politiques de votre organisation, ce fichier peut contenir des informations sensibles</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Envoie des URL de certaines pages que vous visitez à Google, lorsque votre sécurité pourrait être compromise</translation>
 <translation id="2883151425485251736">Affichez et modifiez les sujets que vous avez masqués dans votre compte</translation>
+<translation id="2884437560239137197">Attention requise</translation>
 <translation id="288655811176831528">Fermer l'onglet</translation>
 <translation id="2888631381369839306">Notifications de suivi des prix activées</translation>
 <translation id="2893168226686371498">Navigateur par défaut</translation>
@@ -2178,6 +2181,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="7758789811447313947">Thème violet</translation>
 <translation id="7759809451544302770">Facultatif</translation>
 <translation id="7765158879357617694">Déplacer</translation>
+<translation id="7767651976342854115">Une erreur s'est produite avec le paramètre d'utilisation des données.</translation>
 <translation id="7768507955883790804">Les sites respectent automatiquement ce paramètre quand vous les visitez</translation>
 <translation id="7772032839648071052">Confirmer la phrase de passe</translation>
 <translation id="7772948288262733182">Bon retour</translation>

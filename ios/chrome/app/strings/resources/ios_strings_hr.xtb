@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Pohrana je puna</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1190609913194133056">Centar za obavijesti</translation>
+<translation id="1191987227666124897">Zahtjev za isključivanje</translation>
 <translation id="1196534270480620381">Napiši kratak sažetak ove stranice</translation>
 <translation id="1199631150313925648">Unesi ručno</translation>
 <translation id="1199963004393929848">Zelena tema</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Otvori u novoj grupi kartica</translation>
 <translation id="1670861525135254448">Spremite vozilo</translation>
 <translation id="1671568970992212376">Spremite fotografije na Google fotografije i pristupite im kad god želite.</translation>
+<translation id="1671824312818944549">Napomena: ta postavka bolje funkcionira s iOS-om 27 ili novijom verzijom.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Nacrtajte, istaknite ili dodirnite bilo što na zaslonu da biste to pretražili</translation>
 <translation id="1678855624321223424">Prema pravilima vaše organizacije ova datoteka možda sadrži osjetljive podatke</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Web lokacija</translation>
 <translation id="2876369937070532032">Googleu šalje URL-ove nekih stranica koje posjećujete kada je ugrožena vaša sigurnost</translation>
 <translation id="2883151425485251736">Pregled i uređivanje tema koje ste sakrili na računu</translation>
+<translation id="2884437560239137197">Potrebno je obratiti pozornost</translation>
 <translation id="288655811176831528">Zatvori karticu</translation>
 <translation id="2888631381369839306">Obavijesti o praćenju cijena su uključene</translation>
 <translation id="2893168226686371498">Zadani preglednik</translation>
@@ -2178,6 +2181,7 @@ Možete ponovno pokrenuti bilo kada.</translation>
 <translation id="7758789811447313947">Ljubičasta tema</translation>
 <translation id="7759809451544302770">Izborno</translation>
 <translation id="7765158879357617694">Pomakni</translation>
+<translation id="7767651976342854115">Došlo je do pogreške u postavci upotrebe podataka.</translation>
 <translation id="7768507955883790804">Web-lokacije automatski primjenjuju ovu postavku kad ih posjetite</translation>
 <translation id="7772032839648071052">Potvrdi zaporku</translation>
 <translation id="7772948288262733182">Dobro došli natrag</translation>

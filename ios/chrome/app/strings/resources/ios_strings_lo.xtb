@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">ບ່ອນຈັດເກັບຂໍ້ມູນຂອງທ່ານເຕັມແລ້ວ</translation>
 <translation id="1181037720776840403">ລຶບອອກ</translation>
 <translation id="1190609913194133056">ສູນ​ແຈ້ງ​ເຕືອນ</translation>
+<translation id="1191987227666124897">ຄຳຮ້ອງຂໍການຖອນຕົວຈາກການໃຊ້</translation>
 <translation id="1196534270480620381">ສະຫຼຸບໜ້ານີ້ແບບສັ້ນໆໃຫ້ຂ້ອຍ</translation>
 <translation id="1199631150313925648">ລະບຸດ້ວຍຕົນເອງ</translation>
 <translation id="1199963004393929848">ຮູບແບບສີສັນສີຂຽວ</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">ເປີດໃນກຸ່ມແຖບໃໝ່</translation>
 <translation id="1670861525135254448">ບັນທຶກພາຫະນະ</translation>
 <translation id="1671568970992212376">ບັນທຶກຮູບພາບໃນ Google ຮູບພາບຂອງທ່ານ ແລະ ເຂົ້າເຖິງຮູບພາບເຫຼົ່ານັ້ນໄດ້ທຸກເວລາ.</translation>
+<translation id="1671824312818944549">ໝາຍເຫດ: ການຕັ້ງຄ່ານີ້ຈະເຮັດວຽກໄດ້ດີຂຶ້ນເມື່ອໃຊ້ iOS 27 ຂຶ້ນໄປ.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ເປັນ <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">ແຕ້ມ, ໄຮໄລ້ ຫຼື ແຕະສິ່ງໃດກໍໄດ້ຢູ່ໜ້າຈໍຂອງທ່ານເພື່ອຊອກຫາ</translation>
 <translation id="1678855624321223424">ອີງຕາມນະໂຍບາຍຂອງອົງກອນຂອງທ່ານ, ໄຟລ໌ນີ້ອາດມີຂໍ້ມູນລະອຽດອ່ອນ</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">ເວັບ​ໄຊທ໌</translation>
 <translation id="2876369937070532032">ສົ່ງ URL ຂອງບາງໜ້າເວັບທີ່ທ່ານເຂົ້າເບິ່ງໃຫ້ Google, ເມື່ອຄວາມປອດໄພຂອງທ່ານມີຄວາມສ່ຽງ</translation>
 <translation id="2883151425485251736">ເບິ່ງ ແລະ ແກ້ໄຂຫົວຂໍ້ທີ່ທ່ານເຊື່ອງໄວ້ຈາກບັນຊີຂອງທ່ານ</translation>
+<translation id="2884437560239137197">ຈຳເປັນຕ້ອງດຳເນີນການ</translation>
 <translation id="288655811176831528">ປິດແຖບ</translation>
 <translation id="2888631381369839306">ເປີດການແຈ້ງເຕືອນການຕິດຕາມລາຄາແລ້ວ</translation>
 <translation id="2893168226686371498">ບຣາວ​ເຊີມາດຕະຖານ</translation>
@@ -2178,6 +2181,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7758789811447313947">ຮູບແບບສີສັນສີມ່ວງ</translation>
 <translation id="7759809451544302770">ທາງ​ເລືອກ</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
+<translation id="7767651976342854115">ການຕັ້ງຄ່າການໃຊ້ຂໍ້ມູນພົບຂໍ້ຜິດພາດ.</translation>
 <translation id="7768507955883790804">ເວັບໄຊຈະປະຕິບັດຕາມການຕັ້ງຄ່ານີ້ໂດຍອັດຕະໂນມັດເມື່ອທ່ານເຂົ້າເບິ່ງພວກມັນ</translation>
 <translation id="7772032839648071052">ຢືນ​ຢັນວະລີຜ່ານ</translation>
 <translation id="7772948288262733182">ຍິນດີຕ້ອນຮັບກັບມາ</translation>

@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">مساحة التخزين ممتلئة</translation>
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1190609913194133056">مركز الإشعارات</translation>
+<translation id="1191987227666124897">طلب إيقاف استخدام البيانات</translation>
 <translation id="1196534270480620381">أريد ملخّصًا موجزًا لهذه الصفحة</translation>
 <translation id="1199631150313925648">إدخال البيانات يدويًا</translation>
 <translation id="1199963004393929848">مظهر باللون الأخضر</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">الفتح في مجموعة علامات تبويب جديدة</translation>
 <translation id="1670861525135254448">حفظ بيانات المركبة</translation>
 <translation id="1671568970992212376">‏يمكنك حفظ صورك في "صور Google" للوصول إليها متى شئت.</translation>
+<translation id="1671824312818944549">‏ملاحظة: يعمل هذا الإعداد بشكل أفضل مع الإصدار iOS 27 أو الإصدارات الأحدث.</translation>
 <translation id="1674504678466460478">من <ph name="SOURCE_LANGUAGE" /> إلى <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">يمكنك رسم دائرة حول أي محتوى على شاشتك أو تمييزه أو النقر عليه للبحث عن معلومات حوله</translation>
 <translation id="1678855624321223424">استنادًا إلى سياسات مؤسستك، قد يحتوي هذا الملف على معلومات حساسة</translation>
@@ -550,7 +552,7 @@
 <translation id="2640733327287333451">بلا اسم مستخدم ••••••</translation>
 <translation id="264215785133931186">تم إجراء عملية التحقُّق للتوّ</translation>
 <translation id="2647434099613338025">إضافة لغة</translation>
-<translation id="2648812801228676606">لقد سجّلت الدخول بحساب <ph name="NAME_OR_EMAIL" /> مسبقًا</translation>
+<translation id="2648812801228676606">سبق أن سجّلت الدخول بحساب <ph name="NAME_OR_EMAIL" /></translation>
 <translation id="2649592894792404568">‏أنت على وشك حذف بياناتك في "مدير كلمات المرور في Google"</translation>
 <translation id="2652129567809778422">اختيار كلمة مرور</translation>
 <translation id="2658056020748144467">تعذَّر فتح الملف</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">الموقع</translation>
 <translation id="2876369937070532032">‏يتم إرسال عناوين URL لبعض الصفحات التي تزورها إلى Google، عندما يكون أمانك في خطر</translation>
 <translation id="2883151425485251736">يمكنك الاطّلاع على المواضيع التي تم إخفاؤها عن حسابك وتعديلها.</translation>
+<translation id="2884437560239137197">تنبيه مُهم</translation>
 <translation id="288655811176831528">إغلاق علامة التبويب</translation>
 <translation id="2888631381369839306">تم تفعيل إشعارات ميزة "تتبُّع الأسعار"</translation>
 <translation id="2893168226686371498">المتصفح التلقائي</translation>
@@ -2176,6 +2179,7 @@
 <translation id="7758789811447313947">مظهر باللون البنفسجي</translation>
 <translation id="7759809451544302770">اختياري</translation>
 <translation id="7765158879357617694">نقل</translation>
+<translation id="7767651976342854115">حدث خطأ أثناء تحميل إعدادات استخدام البيانات.</translation>
 <translation id="7768507955883790804">ستتبع المواقع الإلكترونية هذا الإعداد تلقائيًا عند زيارتك لها.</translation>
 <translation id="7772032839648071052">تأكيد عبارة المرور</translation>
 <translation id="7772948288262733182">مرحبًا بك من جديد</translation>

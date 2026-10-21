@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">נפח האחסון שלך מלא</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1190609913194133056">מרכז התראות</translation>
+<translation id="1191987227666124897">בקשה לביטול ההסכמה</translation>
 <translation id="1196534270480620381">תסכם לי בקצרה את הדף הזה</translation>
 <translation id="1199631150313925648">סריקה ידנית</translation>
 <translation id="1199963004393929848">עיצוב ירוק</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">פתיחה בקבוצת כרטיסיות חדשה</translation>
 <translation id="1670861525135254448">לשמור את פרטי הרכב?</translation>
 <translation id="1671568970992212376">‏רוצה לשמור תמונות ב-Google Photos ולגשת אליהן בכל שלב?</translation>
+<translation id="1671824312818944549">‏הערה: ההגדרה הזו פועלת טוב יותר ב-iOS מגרסה 27 ואילך.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ל<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">כדי לחפש באינטרנט משהו שמופיע במסך, צריך לשרטט, להדגיש או ללחוץ עליו</translation>
 <translation id="1678855624321223424">לפי מדיניות הארגון שלך, יכול להיות שהקובץ הזה מכיל מידע רגיש</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">אתר</translation>
 <translation id="2876369937070532032">‏שולחת ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, אם מתגלה סיכון אבטחה</translation>
 <translation id="2883151425485251736">הצגה ועריכה של נושאים שבחרת להסתיר מהחשבון</translation>
+<translation id="2884437560239137197">נדרשת התייחסות</translation>
 <translation id="288655811176831528">סגירת הכרטיסייה</translation>
 <translation id="2888631381369839306">ההתראות על מעקב מחירים הופעלו</translation>
 <translation id="2893168226686371498">דפדפן ברירת מחדל</translation>
@@ -2178,6 +2181,7 @@
 <translation id="7758789811447313947">עיצוב סגול</translation>
 <translation id="7759809451544302770">אופציונלי</translation>
 <translation id="7765158879357617694">העברה</translation>
+<translation id="7767651976342854115">הייתה שגיאה בהגדרת השימוש בנתונים.</translation>
 <translation id="7768507955883790804">אתרים יפעלו לפי ההגדרה הזו באופן אוטומטי בזמן הביקור בהם</translation>
 <translation id="7772032839648071052">אישור משפט-סיסמה</translation>
 <translation id="7772948288262733182">ברוך שובך</translation>

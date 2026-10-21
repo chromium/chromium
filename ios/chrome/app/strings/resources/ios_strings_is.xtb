@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Geymslurýmið þitt er fullt</translation>
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="1190609913194133056">Tilkynningamiðstöð</translation>
+<translation id="1191987227666124897">Beiðni um afþökkun</translation>
 <translation id="1196534270480620381">Gefðu mér stutta samantekt á þessari síðu</translation>
 <translation id="1199631150313925648">Færa inn handvirkt</translation>
 <translation id="1199963004393929848">Grænt þema</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Opna í nýjum flipahóp</translation>
 <translation id="1670861525135254448">Vista bíl</translation>
 <translation id="1671568970992212376">Vistaðu myndir í Google-myndum og opnaðu þær hvenær sem er.</translation>
+<translation id="1671824312818944549">Athugaðu: Þessi stilling virkar betur með iOS 27 eða nýrri útgáfu.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Teiknaðu, yfirstrikaðu eða ýttu á hvað sem er á skjánum til að leita að því</translation>
 <translation id="1678855624321223424">Samkvæmt reglum fyrirtækisins þíns kann þessi skrá að innihalda viðkvæmar upplýsingar</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Vefsvæði</translation>
 <translation id="2876369937070532032">Sendir vefslóð sumra síðna sem þú skoðar til Google, þegar öryggi þitt er í hættu</translation>
 <translation id="2883151425485251736">Skoðaðu og breyttu umfjöllunarefnum sem þú hefur falið á reikningnum þínum</translation>
+<translation id="2884437560239137197">Athygli er krafist</translation>
 <translation id="288655811176831528">Loka flipa</translation>
 <translation id="2888631381369839306">Kveikt er á tilkynningum fyrir verðrakningu</translation>
 <translation id="2893168226686371498">Sjálfgefinn vafri</translation>
@@ -2178,6 +2181,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="7758789811447313947">Fjólublátt þema</translation>
 <translation id="7759809451544302770">Valfrjálst</translation>
 <translation id="7765158879357617694">Færa</translation>
+<translation id="7767651976342854115">Villa kom upp í stillingu gagnanotkunar.</translation>
 <translation id="7768507955883790804">Síður fylgja þessari stillingu sjálfkrafa þegar þú opnar þær</translation>
 <translation id="7772032839648071052">Staðfestu aðgangsorðið</translation>
 <translation id="7772948288262733182">Velkomin(n) aftur</translation>

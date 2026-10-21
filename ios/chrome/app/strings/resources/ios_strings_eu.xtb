@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Biltegia beteta dago</translation>
 <translation id="1181037720776840403">Kendu</translation>
 <translation id="1190609913194133056">Jakinarazpen-zentroa</translation>
+<translation id="1191987227666124897">Ez erabiltzeko eskaera</translation>
 <translation id="1196534270480620381">Eman orri honi buruzko laburpen motz bat</translation>
 <translation id="1199631150313925648">Idatz ezazu eskuz</translation>
 <translation id="1199963004393929848">Gai berdea</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Ireki beste fitxa talde batean</translation>
 <translation id="1670861525135254448">Gorde ibilgailua</translation>
 <translation id="1671568970992212376">Gorde argazkiak Google Argazkiak zerbitzuan eta atzi itzazu nahi duzunean.</translation>
+<translation id="1671824312818944549">Oharra: ezarpen honek hobeto funtzionatzen du iOS 27 edo bertsio berriago batekin.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> - <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Marraztu, nabarmendu edo sakatu pantailako edozer bilatzeko</translation>
 <translation id="1678855624321223424">Zure erakundearen gidalerroen arabera, baliteke fitxategi honek kontuzko informazioa izatea</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Webgunea</translation>
 <translation id="2876369937070532032">Segurtasuna arriskuan dagoenean, ireki dituzun URLetako batzuk bidaltzen dizkio Google-ri</translation>
 <translation id="2883151425485251736">Ikusi eta editatu kontuan ezkutatu dituzun gaiak</translation>
+<translation id="2884437560239137197">Zerbait egin behar duzu</translation>
 <translation id="288655811176831528">Itxi fitxa</translation>
 <translation id="2888631381369839306">Aktibatu dira prezioen jarraipenari buruzko jakinarazpenak</translation>
 <translation id="2893168226686371498">Arakatzaile lehenetsia</translation>
@@ -2178,6 +2181,7 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="7758789811447313947">Bioleta-koloreko gaia</translation>
 <translation id="7759809451544302770">Aukerakoa</translation>
 <translation id="7765158879357617694">Eraman</translation>
+<translation id="7767651976342854115">Datuen erabileraren ezarpenarekin lotutako errore bat gertatu da.</translation>
 <translation id="7768507955883790804">Webguneetan sartzen zarenean, webguneek automatikoki jarraitzen diote ezarpen honi</translation>
 <translation id="7772032839648071052">Berretsi pasaesaldia</translation>
 <translation id="7772948288262733182">Ongi etorri berriro</translation>

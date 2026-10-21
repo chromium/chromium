@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">空き容量がありません</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="1190609913194133056">通知センター</translation>
+<translation id="1191987227666124897">オプトアウト リクエスト</translation>
 <translation id="1196534270480620381">このページを短く要約して</translation>
 <translation id="1199631150313925648">手動で入力</translation>
 <translation id="1199963004393929848">グリーンのテーマ</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">新しいタブグループで開く</translation>
 <translation id="1670861525135254448">車両情報を保存</translation>
 <translation id="1671568970992212376">Google フォトに写真を保存して、いつでもアクセスできます。</translation>
+<translation id="1671824312818944549">注: この設定は iOS 27 以降での使用が推奨されます。</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />から<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">画面上のコンテンツを囲むか、ハイライト表示またはタップして検索します</translation>
 <translation id="1678855624321223424">組織のポリシーによると、このファイルには機密情報が含まれている可能性があります</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">ウェブサイト</translation>
 <translation id="2876369937070532032">セキュリティ上のリスクがある場合に、アクセスした一部のページの URL が Google に送信されます</translation>
 <translation id="2883151425485251736">アカウントで非表示にしたトピックの表示と編集</translation>
+<translation id="2884437560239137197">注意が必要です</translation>
 <translation id="288655811176831528">タブを閉じる</translation>
 <translation id="2888631381369839306">価格トラッキングの通知がオンになりました</translation>
 <translation id="2893168226686371498">デフォルトのブラウザ</translation>
@@ -2178,6 +2181,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7758789811447313947">バイオレットのテーマ</translation>
 <translation id="7759809451544302770">省略可</translation>
 <translation id="7765158879357617694">移動</translation>
+<translation id="7767651976342854115">データ使用の設定でエラーが発生しました。</translation>
 <translation id="7768507955883790804">サイトにアクセスしたときにこの設定の動作を自動的に行います</translation>
 <translation id="7772032839648071052">パスフレーズの確認</translation>
 <translation id="7772948288262733182">おかえりなさい</translation>

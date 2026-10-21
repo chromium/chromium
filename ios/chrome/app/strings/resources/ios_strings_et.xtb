@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Teie salvestusruum on täis</translation>
 <translation id="1181037720776840403">Eemalda</translation>
 <translation id="1190609913194133056">Märguannete keskus</translation>
+<translation id="1191987227666124897">Loobumistaotlus</translation>
 <translation id="1196534270480620381">Tee mulle sellest lehest lühikokkuvõte.</translation>
 <translation id="1199631150313925648">Sisestage käsitsi</translation>
 <translation id="1199963004393929848">Roheline teema</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Ava uues vahelehegrupis</translation>
 <translation id="1670861525135254448">Salvesta sõiduk</translation>
 <translation id="1671568970992212376">Salvestage fotod teenusesse Google Photos, et pääseda neile igal ajal juurde.</translation>
+<translation id="1671824312818944549">Märkus. See seade töötab paremini iOS 27 või uuema versiooniga.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Märgistage otsitavad elemendid ekraanil joonistamise, esiletõstmise või puudutuse abil.</translation>
 <translation id="1678855624321223424">Teie organisatsiooni eeskirjade kohaselt võib see fail sisaldada delikaatset teavet.</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Sait</translation>
 <translation id="2876369937070532032">Saadab mõnede teie külastatud lehtede URL-id Google'ile, kui teie turvalisus ohtu satub</translation>
 <translation id="2883151425485251736">Vaadake ja muutke teemasid, mille olete oma kontol peitnud</translation>
+<translation id="2884437560239137197">Nõuab tähelepanu</translation>
 <translation id="288655811176831528">Sule vaheleht</translation>
 <translation id="2888631381369839306">Hinnajälgimise märguanded on sisse lülitatud</translation>
 <translation id="2893168226686371498">Vaikebrauser</translation>
@@ -2178,6 +2181,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="7758789811447313947">Kannikeselilla teema</translation>
 <translation id="7759809451544302770">Valikuline</translation>
 <translation id="7765158879357617694">Liiguta</translation>
+<translation id="7767651976342854115">Andmete kasutamise seades ilmnes viga.</translation>
 <translation id="7768507955883790804">Saidid järgivad automaatselt seda seadet, kui neid külastate</translation>
 <translation id="7772032839648071052">Kinnitage parool</translation>
 <translation id="7772948288262733182">Tere tulemast tagasi!</translation>

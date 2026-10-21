@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">ਤੁਹਾਡੀ ਸਟੋਰੇਜ ਭਰ ਗਈ ਹੈ</translation>
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1190609913194133056">ਸੂਚਨਾ ਕੇਂਦਰ</translation>
+<translation id="1191987227666124897">ਹਟਣ ਦੀ ਚੋਣ ਸੰਬੰਧੀ ਬੇਨਤੀ</translation>
 <translation id="1196534270480620381">ਮੈਨੂੰ ਇਸ ਪੰਨੇ ਦਾ ਛੋਟਾ ਜਿਹਾ ਸਾਰਾਂਸ਼ ਦਿਓ</translation>
 <translation id="1199631150313925648">ਹੱਥੀਂ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="1199963004393929848">ਹਰਾ ਥੀਮ</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">ਨਵੇਂ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="1670861525135254448">ਕੀ ਵਾਹਨ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1671568970992212376">ਆਪਣੀਆਂ ਫ਼ੋਟੋਆਂ ਨੂੰ Google Photos ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਕਿਸੇ ਵੀ ਸਮੇਂ ਉਨ੍ਹਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰੋ।</translation>
+<translation id="1671824312818944549">ਨੋਟ ਕਰੋ: ਇਹ ਸੈਟਿੰਗ iOS 27 ਜਾਂ ਇਸ ਤੋਂ ਨਵੇਂ ਵਰਜਨਾਂ ਨਾਲ ਬਿਹਤਰ ਕੰਮ ਕਰਦੀ ਹੈ।</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ਤੋਂ <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">ਖੋਜ ਕਰਨ ਲਈ ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਕੁਝ ਵੀ ਉਲੀਕੋ, ਉਜਾਗਰ ਕਰੋ ਜਾਂ ਟੈਪ ਕਰੋ</translation>
 <translation id="1678855624321223424">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀਆਂ ਨੀਤੀਆਂ ਦੇ ਆਧਾਰ 'ਤੇ, ਇਸ ਫ਼ਾਈਲ ਵਿੱਚ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਣਕਾਰੀ ਹੋ ਸਕਦੀ ਹੈ</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">ਸਾਈਟ</translation>
 <translation id="2876369937070532032">ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਜੋਖਮ ਵਿੱਚ ਹੋਣ 'ਤੇ, ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਕੁਝ ਪੰਨਿਆਂ ਦੇ URL Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="2883151425485251736">ਤੁਹਾਡੇ ਵੱਲੋਂ ਤੁਹਾਡੇ ਖਾਤੇ ਤੋਂ ਲੁਕਾਏ ਗਏ ਵਿਸ਼ਿਆਂ ਨੂੰ ਦੇਖੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
+<translation id="2884437560239137197">ਧਿਆਨ ਦੇਣ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="288655811176831528">ਟੈਬ ਬੰਦ ਕਰੋ</translation>
 <translation id="2888631381369839306">ਕੀਮਤ ਸੰਬੰਧੀ ਟਰੈਕਿੰਗ ਸੂਚਨਾਵਾਂ ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2893168226686371498">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ</translation>
@@ -2178,6 +2181,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="7758789811447313947">ਬੈਂਗਣੀ ਥੀਮ</translation>
 <translation id="7759809451544302770">ਵਿਕਲਪਿਕ</translation>
 <translation id="7765158879357617694">ਮੂਵ ਕਰੋ</translation>
+<translation id="7767651976342854115">ਡਾਟਾ ਵਰਤੋਂ ਸੈਟਿੰਗ ਵਿੱਚ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="7768507955883790804">ਜਦੋਂ ਤੁਸੀਂ ਸਾਈਟਾਂ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਤਾਂ ਉਹ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਇਸ ਸੈਟਿੰਗ ਦੀ ਪਾਲਣਾ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="7772032839648071052">ਪਾਸਫਰੇਜ਼ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7772948288262733182">ਮੁੜ ਜੀ ਆਇਆਂ ਨੂੰ</translation>

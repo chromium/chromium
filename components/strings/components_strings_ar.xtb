@@ -400,7 +400,7 @@
 <translation id="1656024727720460136">‏بسَّط Chrome عرض هذه الصفحة لتسهيل قراءتها. استرَدّ Chrome الصفحة الأصلية عبر اتصال آمن.</translation>
 <translation id="1656489000284462475">الاستلام</translation>
 <translation id="1658918301167915956">أجهزة تتضمّن بلوتوث</translation>
-<translation id="1662550410081243962">حفظ طرق الدفع واستخدامها لملء النماذج</translation>
+<translation id="1662550410081243962">حفظ طرق الدفع وملء حقولها</translation>
 <translation id="1662980953334786797">الترتيب نفسه</translation>
 <translation id="1663578299724791827">‏حفظ "رقم المسافر المعروف" (KTN) بأمان</translation>
 <translation id="1663943134801823270">‏يتم أخذ البطاقات والعناوين من Chrome، ويمكنك إدارتها في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
@@ -770,7 +770,7 @@
 <translation id="2277949605527755300">يريد الموقع الإلكتروني <ph name="URL" /> تتبُّع حركات يديك</translation>
 <translation id="22792995594807632">يجب مراجعة الملفات قبل تنزيلها</translation>
 <translation id="2279607542590042584">‏مفتاح المرور • "كلمات السر" في Apple</translation>
-<translation id="2283340219607151381">حفظ العناوين وملؤها</translation>
+<translation id="2283340219607151381">حفظ العناوين وملء حقولها</translation>
 <translation id="2283447177162560884">تم حذف "<ph name="PAGE_TITLE" />".</translation>
 <translation id="2283599456633275070">السفر</translation>
 <translation id="2285709459648658719">جوازات السفر</translation>
@@ -3329,7 +3329,7 @@
 <translation id="6550245281449521513">لا يُسمح بقفل الماوس</translation>
 <translation id="6551737294564628267">‫<ph name="ATTRIBUTE_NAME" />، جديد</translation>
 <translation id="6552244083450538912">قد يظل نشاطك مرئيًا للجهات التالية: المواقع الإلكترونية التي تتم زيارتها، وصاحب العمل أو المؤسسة التعليمية، ومزوّد خدمة الإنترنت</translation>
-<translation id="6552566579578780089">عمليات الدفع</translation>
+<translation id="6552566579578780089">طرق الدفع</translation>
 <translation id="6553777254569586547">‫<ph name="SUGGESTION_TITLE" />، <ph name="SUGGESTION_TYPE" />، وهذا العنصر رقم <ph name="MATCH_POSITION" /> من إجمالي <ph name="NUM_MATCHES_IN_GROUP" /> في المجموعة "<ph name="GROUP_HEADER" />"</translation>
 <translation id="6554732001434021288">تمّت زيارة الموقع الإلكتروني آخر مرّة قبل <ph name="NUM_DAYS" /> يوم.</translation>
 <translation id="6556866813142980365">إعادة</translation>

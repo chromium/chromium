@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Jou berging is vol</translation>
 <translation id="1181037720776840403">Verwyder</translation>
 <translation id="1190609913194133056">Kennisgewingsentrum</translation>
+<translation id="1191987227666124897">Onttrekkingversoek</translation>
 <translation id="1196534270480620381">Gee my ’n kort opsomming van hierdie bladsy</translation>
 <translation id="1199631150313925648">Voer self in</translation>
 <translation id="1199963004393929848">Groen tema</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Maak in nuwe oortjiegroep oop</translation>
 <translation id="1670861525135254448">Stoor voertuig</translation>
 <translation id="1671568970992212376">Stoor foto’s in jou Google Foto’s en kry enige tyd toegang daartoe.</translation>
+<translation id="1671824312818944549">Let wel: Hierdie instelling werk beter met iOS 27 of nuwer.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> na <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Teken, merk of tik enigiets op jou skerm om te soek</translation>
 <translation id="1678855624321223424">Hierdie lêer kan op grond van jou organisasie se beleide sensitiewe inligting bevat</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Werf</translation>
 <translation id="2876369937070532032">Stuur URL'e van sommige bladsye wat jy besoek aan Google wanneer jou sekuriteit bedreig word</translation>
 <translation id="2883151425485251736">Sien en wysig onderwerpe wat jy in jou rekening versteek het</translation>
+<translation id="2884437560239137197">Aandag word benodig</translation>
 <translation id="288655811176831528">Maak oortjie toe</translation>
 <translation id="2888631381369839306">Prysnasporingkennisgewings is aangeskakel</translation>
 <translation id="2893168226686371498">Verstekblaaier</translation>
@@ -2178,6 +2181,7 @@ Jy kan enige tyd herbegin.</translation>
 <translation id="7758789811447313947">Violet tema</translation>
 <translation id="7759809451544302770">Opsioneel</translation>
 <translation id="7765158879357617694">Skuif</translation>
+<translation id="7767651976342854115">Datagebruikinstelling het ’n fout teëgekom.</translation>
 <translation id="7768507955883790804">Werwe volg outomaties hierdie instelling wanneer jy hulle besoek</translation>
 <translation id="7772032839648071052">Bevestig wagfrase</translation>
 <translation id="7772948288262733182">Welkom terug</translation>

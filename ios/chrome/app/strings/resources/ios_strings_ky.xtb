@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Сактагыч толуп калды</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="1190609913194133056">Билдирмелер борбору</translation>
+<translation id="1191987227666124897">Баш тартуу өтүнүчү</translation>
 <translation id="1196534270480620381">Бул беттин мазмунун кыскача айтып бер</translation>
 <translation id="1199631150313925648">Кол менен киргизүү</translation>
 <translation id="1199963004393929848">Жашыл тема</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Жаңы өтмөктөр тобунда ачуу</translation>
 <translation id="1670861525135254448">Унааны сактаңыз</translation>
 <translation id="1671568970992212376">Сүрөттөрдү Google Фотого сактап, каалаган убакта колдонуңуз.</translation>
+<translation id="1671824312818944549">Эскертүү: Бул параметр iOS 27 же андан кийинки версияларда жакшыраак иштейт.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> тилинен <ph name="TARGET_LANGUAGE" /> тилине</translation>
 <translation id="1676102443145105381">Издөө үчүн чийип, бөлүп көрсөтүп же экрандагы каалаган нерсени таптап коюңуз</translation>
 <translation id="1678855624321223424">Уюмуңуздун эрежелерине ылайык бул файлда купуя маалымат болушу мүмкүн</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2876369937070532032">Коопсуздугуңузга коркунуч жаралганда, баш баккан барактарыңыздын URL'дерин Google'га жөнөтөт</translation>
 <translation id="2883151425485251736">Аккаунтуңуздан жашырып койгон темаларды көрүп, түзөтүү</translation>
+<translation id="2884437560239137197">Көңүл буруңуз</translation>
 <translation id="288655811176831528">Өтмөктү жабуу</translation>
 <translation id="2888631381369839306">Бааларга көз салуу билдирмелери күйгүзүлдү</translation>
 <translation id="2893168226686371498">Демейки серепчи</translation>
@@ -2178,6 +2181,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7758789811447313947">Кызгылт көк тема</translation>
 <translation id="7759809451544302770">Кошумча</translation>
 <translation id="7765158879357617694">Жылуу</translation>
+<translation id="7767651976342854115">Маалыматты колдонуу параметринде ката кетти.</translation>
 <translation id="7768507955883790804">Сайттарга киргениңизде, ушул жөндөө автоматтык түрдө колдонулат</translation>
 <translation id="7772032839648071052">Купуя сөз айкашын ырастаңыз</translation>
 <translation id="7772948288262733182">Кайрадан кош келиңиз</translation>

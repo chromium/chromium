@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Хранилище заполнено</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1190609913194133056">Центр уведомлений</translation>
+<translation id="1191987227666124897">Запрос на отказ</translation>
 <translation id="1196534270480620381">Составь краткий пересказ этой страницы</translation>
 <translation id="1199631150313925648">Ввести вручную</translation>
 <translation id="1199963004393929848">Зеленая тема</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Открыть в новой группе вкладок</translation>
 <translation id="1670861525135254448">Сохранить данные о транспортном средстве?</translation>
 <translation id="1671568970992212376">Сохраняйте фотографии в Google Фото, чтобы они всегда были под рукой.</translation>
+<translation id="1671824312818944549">Примечание. Эта настройка лучше работает на iOS 27 и более поздних версий.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Обведите, выделите или нажмите на интересующий вас объект.</translation>
 <translation id="1678855624321223424">Согласно правилам вашей организации этот файл может содержать конфиденциальную информацию</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2876369937070532032">При угрозе безопасности отправлять в Google URL некоторых страниц, которые вы открываете</translation>
 <translation id="2883151425485251736">Просмотр и изменение тем, которые вы скрыли</translation>
+<translation id="2884437560239137197">требуется действие</translation>
 <translation id="288655811176831528">Закрыть вкладку</translation>
 <translation id="2888631381369839306">Уведомления об изменении цен включены.</translation>
 <translation id="2893168226686371498">Браузер по умолчанию</translation>
@@ -2178,6 +2181,7 @@
 <translation id="7758789811447313947">Фиолетовая тема</translation>
 <translation id="7759809451544302770">Необязательно</translation>
 <translation id="7765158879357617694">Перенести</translation>
+<translation id="7767651976342854115">Ошибка настроек для отказа от использования данных.</translation>
 <translation id="7768507955883790804">Когда вы посещаете сайты, эти настройки используются автоматически.</translation>
 <translation id="7772032839648071052">Подтвердите кодовую фразу</translation>
 <translation id="7772948288262733182">С возвращением!</translation>

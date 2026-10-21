@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Lagringsutrymmet är fullt</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1190609913194133056">Meddelandecenter</translation>
+<translation id="1191987227666124897">Begäran om att välja bort</translation>
 <translation id="1196534270480620381">Ge mig en kort sammanfattning av den här sidan</translation>
 <translation id="1199631150313925648">Ange manuellt</translation>
 <translation id="1199963004393929848">Grönt tema</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Öppna i en ny flikgrupp</translation>
 <translation id="1670861525135254448">Spara fordonet</translation>
 <translation id="1671568970992212376">Spara foton i Google Foto och få åtkomst till dem när du vill.</translation>
+<translation id="1671824312818944549">Obs! Den här inställningen fungerar bättre med iOS 27 eller senare.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> till <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Rita, markera eller tryck på något på skärmen för att söka efter det</translation>
 <translation id="1678855624321223424">Utifrån organisationens policyer kan den här filen innehålla känsliga uppgifter</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2876369937070532032">Webbadresser till vissa sidor som du besöker skickas till Google när din säkerhet är utsatt för risk.</translation>
 <translation id="2883151425485251736">Se och redigera ämnen som har dolts i kontot</translation>
+<translation id="2884437560239137197">Åtgärder krävs</translation>
 <translation id="288655811176831528">Stäng fliken</translation>
 <translation id="2888631381369839306">Aviseringar om prisbevakning har aktiverats</translation>
 <translation id="2893168226686371498">Standardwebbläsare</translation>
@@ -2178,6 +2181,7 @@ Du kan starta om när som helst.</translation>
 <translation id="7758789811447313947">Lila tema</translation>
 <translation id="7759809451544302770">Valfritt</translation>
 <translation id="7765158879357617694">Flytta</translation>
+<translation id="7767651976342854115">Ett fel uppstod i inställningen för dataanvändning.</translation>
 <translation id="7768507955883790804">Webbplatser som du besöker följer automatiskt den här inställningen</translation>
 <translation id="7772032839648071052">Bekräfta lösenfras</translation>
 <translation id="7772948288262733182">Välkommen tillbaka</translation>

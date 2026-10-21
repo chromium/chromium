@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">మీ స్టోరేజ్ నిండింది</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1190609913194133056">నోటిఫికేషన్ కేంద్రం</translation>
+<translation id="1191987227666124897">సమ్మతి నిలిపివేత రిక్వెస్ట్</translation>
 <translation id="1196534270480620381">నాకు ఈ పేజీ తాలూకు షార్ట్ సమ్మరీని ఇవ్వు</translation>
 <translation id="1199631150313925648">మాన్యువల్‌గా ఎంటర్ చేయండి</translation>
 <translation id="1199963004393929848">ఆకుపచ్చ రంగు థీమ్</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">కొత్త ట్యాబ్ గ్రూప్‌లో తెరవండి</translation>
 <translation id="1670861525135254448">వెహికిల్ సమాచారాన్ని సేవ్ చేయండి</translation>
 <translation id="1671568970992212376">మీ Google Photosలో ఫోటోలను సేవ్ చేసి, వాటిని ఎప్పుడైనా యాక్సెస్ చేయండి.</translation>
+<translation id="1671824312818944549">గమనిక: ఈ సెట్టింగ్ iOS 27 లేదా అంతకంటే కొత్త వెర్షన్‌తో మెరుగ్గా పని చేస్తుంది.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> నుండి <ph name="TARGET_LANGUAGE" />లోకి</translation>
 <translation id="1676102443145105381">సెర్చ్ చేయడానికి మీ స్క్రీన్‌పై గీయండి, హైలైట్ చేయండి, లేదా ట్యాప్ చేయండి</translation>
 <translation id="1678855624321223424">మీ సంస్థ పాలసీల ప్రకారం, ఈ ఫైల్‌లో గోప్యమైన సమాచారం ఉండవచ్చు</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">సైట్</translation>
 <translation id="2876369937070532032">మీ భద్రతకు ప్రమాదం పొంచి ఉన్నప్పుడు, మీరు సందర్శించే కొన్ని పేజీల URLలను Googleకు పంపుతుంది</translation>
 <translation id="2883151425485251736">మీ ఖాతా నుండి దాచిన టాపిక్‌లను చూడండి, ఎడిట్ చేయండి</translation>
+<translation id="2884437560239137197">దృష్టి సారించాల్సి ఉంది</translation>
 <translation id="288655811176831528">ట్యాబ్‌ని మూసివేయండి</translation>
 <translation id="2888631381369839306">ధర ట్రాకింగ్ నోటిఫికేషన్‌లు ఆన్ చేయబడ్డాయి</translation>
 <translation id="2893168226686371498">ఆటోమేటిక్ బ్రౌజర్</translation>
@@ -1250,7 +1253,7 @@
 <translation id="4913626501929406101">మీ పాస్‌వర్డ్ కాపీని మీ ఫ్యామిలీ గ్రూప్‌లోని ఎవరితోనైనా మీరు సురక్షితంగా షేర్ చేయవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="4917025507570489430">మీరు <ph name="USER_EMAIL" />‌గా సైన్ ఇన్ చేసినప్పుడు, మీరు ఇప్పటికే ఉన్న బ్రౌజింగ్ డేటాను ఉపయోగించవచ్చు. మీ సంస్థ, మీ డేటాను చూడగలదు.</translation>
 <translation id="4918086044614829423">ఆమోదించు</translation>
-<translation id="4930714375720679147">ఆన్ చేయి</translation>
+<translation id="4930714375720679147">ఆన్ చేయండి</translation>
 <translation id="4932733599132424254">తేదీ</translation>
 <translation id="4936354130727646074">ఎప్పటికీ తరలించవద్దు</translation>
 <translation id="4937410517508563815">ఖాతాలో పాస్‌వర్డ్‌లను సేవ్ చేయండి</translation>
@@ -2178,6 +2181,7 @@
 <translation id="7758789811447313947">నీలి ఊదా రంగు థీమ్</translation>
 <translation id="7759809451544302770">ఐచ్ఛికం</translation>
 <translation id="7765158879357617694">తరలించు</translation>
+<translation id="7767651976342854115">డేటా వినియోగ సెట్టింగ్‌లో ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="7768507955883790804">మీరు సైట్‌లను సందర్శించినపుడు, అవి ఆటోమేటిక్‌గా ఈ సెట్టింగ్‌ను ఫాలో అవుతాయి</translation>
 <translation id="7772032839648071052">రహస్య పదబంధాన్ని నిర్ధారించండి</translation>
 <translation id="7772948288262733182">తిరిగి స్వాగతం</translation>

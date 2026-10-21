@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Mae'ch storfa yn llawn</translation>
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1190609913194133056">Canolfan Hysbysiadau</translation>
+<translation id="1191987227666124897">Cais optio allan</translation>
 <translation id="1196534270480620381">Rhowch grynodeb byr i mi o'r dudalen hon</translation>
 <translation id="1199631150313925648">Rhoi yn bwrpasol</translation>
 <translation id="1199963004393929848">Thema werdd</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Agor mewn Grŵp Tabiau Newydd</translation>
 <translation id="1670861525135254448">Cadw'r cerbyd</translation>
 <translation id="1671568970992212376">Cadw lluniau yn eich Google Photos a chael mynediad atynt unrhyw bryd.</translation>
+<translation id="1671824312818944549">Sylwer: Mae'r gosodiad hwn yn gweithio'n well gydag iOS 27 neu fersiwn mwy diweddar.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> i <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Tynnwch lun, amlygwch neu tapiwch unrhyw beth ar eich sgrin i chwilio</translation>
 <translation id="1678855624321223424">Yn seiliedig ar bolisïau eich sefydliad, gall y ffeil hon gynnwys gwybodaeth sensitif</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Gwefan</translation>
 <translation id="2876369937070532032">Yn anfon URL o rai tudalennau rydych yn ymweld â nhw at Google, pan fydd eich diogelwch mewn perygl</translation>
 <translation id="2883151425485251736">Gweld a golygu pynciau rydych wedi'u cuddio o'ch cyfrif</translation>
+<translation id="2884437560239137197">Angen sylw</translation>
 <translation id="288655811176831528">Cau'r Tab</translation>
 <translation id="2888631381369839306">Hysbysiadau olrhain prisiau wedi'u troi ymlaen</translation>
 <translation id="2893168226686371498">Porwr diofyn</translation>
@@ -2178,6 +2181,7 @@ Gallwch ailgychwyn unrhyw bryd.</translation>
 <translation id="7758789811447313947">Thema fioled</translation>
 <translation id="7759809451544302770">Dewisol</translation>
 <translation id="7765158879357617694">Symud</translation>
+<translation id="7767651976342854115">Daeth gosodiad defnydd data ar draws gwall.</translation>
 <translation id="7768507955883790804">Bydd gwefannau'n dilyn y gosodiad hwn yn awtomatig wrth i chi ymweld â nhw</translation>
 <translation id="7772032839648071052">Cadarnhau cyfrinymadrodd</translation>
 <translation id="7772948288262733182">Croeso'n ôl</translation>

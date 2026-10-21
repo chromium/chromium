@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Puno na ang iyong storage</translation>
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1190609913194133056">Notification Center</translation>
+<translation id="1191987227666124897">Request sa pag-opt out</translation>
 <translation id="1196534270480620381">Bigyan ako ng maikling buod ng page na ito</translation>
 <translation id="1199631150313925648">Manual na ilagay</translation>
 <translation id="1199963004393929848">Berdeng tema</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Buksan sa Bagong Grupo ng Tab</translation>
 <translation id="1670861525135254448">I-save ang sasakyan</translation>
 <translation id="1671568970992212376">Mag-save ng mga larawan sa iyong Google Photos at i-access ang mga ito anumang oras.</translation>
+<translation id="1671824312818944549">Tandaan: Mas mahusay na gumagana ang setting na ito sa iOS 27 o mas bago.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> na isasalin sa <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Gumuhit, mag-highlight, o mag-tap sa anumang bagay sa iyong screen para hanapin ito</translation>
 <translation id="1678855624321223424">Batay sa mga patakaran ng iyong organisasyon, posibleng naglalaman ng sensitibong impormasyon ang file na ito</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Ipadala ang mga URL ng ilang page na binibisita mo sa Google kapag nanganganib ang iyong seguridad</translation>
 <translation id="2883151425485251736">Tingnan at i-edit ang mga paksa na itinago mo mula sa iyong account</translation>
+<translation id="2884437560239137197">Kailangan ng atensyon</translation>
 <translation id="288655811176831528">Isara ang Tab</translation>
 <translation id="2888631381369839306">Naka-on ang mga notification sa pagsubaybay sa presyo</translation>
 <translation id="2893168226686371498">Default na browser</translation>
@@ -2178,6 +2181,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7758789811447313947">Violet na tema</translation>
 <translation id="7759809451544302770">Opsyonal</translation>
 <translation id="7765158879357617694">Ilipat</translation>
+<translation id="7767651976342854115">Nagka-error sa setting ng paggamit ng data.</translation>
 <translation id="7768507955883790804">Awtomatikong susundin ng mga site ang setting na ito kapag bumisita ka sa mga ito</translation>
 <translation id="7772032839648071052">Kumpirmahin ang passphrase</translation>
 <translation id="7772948288262733182">Maligayang pagbabalik</translation>

@@ -7341,7 +7341,7 @@ Bu politika, kullanıcının indirme yöneticisi dışında yöntemler kullanara
 <translation id="5490462588616309068">Politika, doğru değerine ayarlanırsa veya ayarlanmadan bırakılırsa korunan içerik tanımlayıcılarının kullanılmasına izin verilir. Bu da korunan içeriklerin daha yüksek kalitede oynatılmasına yardımcı olabilir.
 
 Politika, yanlış değerine ayarlanırsa korunan içerik tanımlayıcılarının kullanılmasına izin verilmez.</translation>
-<translation id="5492713303272131731">Oluşturucu süreci aynı CPU çekirdeğinde çalışırken diğer tüm süreçler aynı CPU çekirdeğinde planlanabilir.</translation>
+<translation id="5492713303272131731">Oluşturucu işlemi aynı CPU çekirdeğinde çalışırken diğer tüm süreçler aynı CPU çekirdeğinde planlanabilir.</translation>
 <translation id="549471902631700911">Güvenli Tarama anketlerini almayı devre dışı bırak</translation>
 <translation id="549625769649876757">Bu politikayı ayarlayarak kullanıcının yüksek doğruluğu olan coğrafi konumuna erişmek için önce izin istemek zorunda olmayan sitelerin belirtildiği URL kalıplarının listesini oluşturabilirsiniz.
 

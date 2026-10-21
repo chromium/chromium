@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Просторот е полн</translation>
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1190609913194133056">Центар за известување</translation>
+<translation id="1191987227666124897">Барање за откажување</translation>
 <translation id="1196534270480620381">Дај ми кратко резиме на страницава</translation>
 <translation id="1199631150313925648">Внесете рачно</translation>
 <translation id="1199963004393929848">Тема во зелена боја</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Отвори во нова група картички</translation>
 <translation id="1670861525135254448">Зачувајте го возилото</translation>
 <translation id="1671568970992212376">Зачувувајте фотографии во вашата „Фотографии на Google“ и пристапувајте до нив кога сакате.</translation>
+<translation id="1671824312818944549">Забелешка: Поставкава функционира подобро со iOS 27 или понова верзија.</translation>
 <translation id="1674504678466460478">Од <ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Нацртајте, нагласете или допрете нешто на екранот за да пребарате</translation>
 <translation id="1678855624321223424">Според правилата на вашата организација, датотекава може да содржи чувствителни податоци</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Локација</translation>
 <translation id="2876369937070532032">Испраќа URL-адреси од некои страници што ги посетувате до Google, во случаите кога ви е загрозена безбедноста</translation>
 <translation id="2883151425485251736">Гледајте и менувајте теми што сте ги сокриле од вашата сметка</translation>
+<translation id="2884437560239137197">Внимание</translation>
 <translation id="288655811176831528">Затвори ја картичката</translation>
 <translation id="2888631381369839306">Известувањата за „Следење цена“ се вклучени</translation>
 <translation id="2893168226686371498">Стандарден прелистувач</translation>
@@ -2178,6 +2181,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7758789811447313947">Тема во виолетова боја</translation>
 <translation id="7759809451544302770">Изборно</translation>
 <translation id="7765158879357617694">Премести</translation>
+<translation id="7767651976342854115">Се јави грешка во поставката за потрошувачка на интернет.</translation>
 <translation id="7768507955883790804">Сајтовите автоматски ја следат оваа поставка кога ги посетувате</translation>
 <translation id="7772032839648071052">Потврди лозинка</translation>
 <translation id="7772948288262733182">Добре дојдовте пак</translation>

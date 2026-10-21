@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">O armazenamento está cheio</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1190609913194133056">Centro de Notificações</translation>
+<translation id="1191987227666124897">Pedido de desativação</translation>
 <translation id="1196534270480620381">Dá-me um breve resumo desta página</translation>
 <translation id="1199631150313925648">Introduzir manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Abrir num novo grupo de separadores</translation>
 <translation id="1670861525135254448">Guarde o veículo</translation>
 <translation id="1671568970992212376">Guarde as fotos no Google Fotos e aceda às fotos em qualquer altura.</translation>
+<translation id="1671824312818944549">Nota: esta definição funciona melhor com o iOS 27 ou posterior.</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Desenhe, realce ou toque em qualquer coisa no ecrã para pesquisar</translation>
 <translation id="1678855624321223424">Com base nas políticas da sua organização, este ficheiro pode conter informações confidenciais</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Quando a sua segurança está em risco, envia para a Google URLs de algumas páginas que visita.</translation>
 <translation id="2883151425485251736">Veja e edite tópicos que ocultou na sua conta</translation>
+<translation id="2884437560239137197">Atenção necessária</translation>
 <translation id="288655811176831528">Fechar separador</translation>
 <translation id="2888631381369839306">Notificações de acompanhamento de preço ativadas</translation>
 <translation id="2893168226686371498">Navegador predefinido</translation>
@@ -2178,6 +2181,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7758789811447313947">Tema violeta</translation>
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7765158879357617694">Mover</translation>
+<translation id="7767651976342854115">A definição de utilização de dados encontrou um erro.</translation>
 <translation id="7768507955883790804">Os sites seguem automaticamente esta definição quando os visita</translation>
 <translation id="7772032839648071052">Confirmar frase de acesso</translation>
 <translation id="7772948288262733182">Damos-lhe as boas-vindas de volta</translation>
@@ -2411,7 +2415,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8449869326050867919">Palavra-passe partilhada</translation>
 <translation id="8461708300275916315">Se tiver menos de 18 anos</translation>
 <translation id="8473815223723723001">Editar imagem com o Gemini</translation>
-<translation id="8473863474539038330">Moradas e mais</translation>
+<translation id="8473863474539038330">Moradas e muito mais</translation>
 <translation id="8474378002946546633">Permitir notificações</translation>
 <translation id="8477178913400731244">Eliminar dados</translation>
 <translation id="8481184073299279701">Toque no botão "Iniciar o registo" para recolher futuros registos da consola de JavaScript e erros de todos os separadores. Os registos serão recolhidos (e armazenados apenas na memória) até fechar esta página ou tocar em "Parar o registo".</translation>

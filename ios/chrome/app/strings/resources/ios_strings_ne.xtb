@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">तपाईंको भण्डारण भरिएको छ</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
 <translation id="1190609913194133056">सूचना केन्द्र</translation>
+<translation id="1191987227666124897">अप्ट-आउट गर्ने अनुरोध</translation>
 <translation id="1196534270480620381">यो पेजको छोटो सारांश बनाउनुहोस्</translation>
 <translation id="1199631150313925648">म्यानुअल रूपमा हाल्नुहोस्</translation>
 <translation id="1199963004393929848">हरियो थिम</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">नयाँ ट्याब समूहमा खोल्नुहोस्</translation>
 <translation id="1670861525135254448">सवारी साधनसम्बन्धी जानकारी सेभ गर्नुहोस्</translation>
 <translation id="1671568970992212376">आफ्नो Google Photos मा फोटोहरू सेभ गर्नुहोस् र जुनसुकै बेला ती फोटो एक्सेस गर्नुहोस्।</translation>
+<translation id="1671824312818944549">ध्यान दिनु पर्ने कुरा: यो सेटिङले iOS 27 वा सोभन्दा नयाँ संस्करणमा अझ राम्रोसँग काम गर्छ।</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> बाट <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">आफ्नो स्क्रिनमा भएको कुनै पनि कुरा खोज्न त्यसमा कोर्नुहोस्, हाइलाइट गर्नुहोस् वा ट्याप गर्नुहोस्</translation>
 <translation id="1678855624321223424">तपाईंको सङ्गठनका नीतिहरूका आधारमा यो फाइलमा संवेदनशील जानकारी समावेश गरिएको हुन सक्छ</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2876369937070532032">यसले तपाईंको सुरक्षा जोखिममा हुँदा तपाईंले भ्रमण गर्ने केही पृष्ठका URL हरू Google मा पठाउँछ</translation>
 <translation id="2883151425485251736">तपाईंले आफ्नो खाताबाट लुकाएका विषयहरू हेर्नुहोस् र बदल्नुहोस्</translation>
+<translation id="2884437560239137197">कारबाही गर्नु पर्ने हुन्छ</translation>
 <translation id="288655811176831528">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="2888631381369839306">मूल्यको ट्र्याकिङसम्बन्धी नोटिफिकेसन प्राप्त गर्ने सुविधा अन गरिएको छ</translation>
 <translation id="2893168226686371498">डिफल्ट ब्राउजर</translation>
@@ -2178,6 +2181,7 @@
 <translation id="7758789811447313947">बैजनी थिम</translation>
 <translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="7765158879357617694">सार्नुहोस्</translation>
+<translation id="7767651976342854115">डेटाको प्रयोगसम्बन्धी सेटिङ लोड गर्ने क्रममा कुनै त्रुटि भयो।</translation>
 <translation id="7768507955883790804">तपाईं कुनै साइटमा जाँदा उक्त साइटमा स्वतः यो सेटिङ लागू हुन्छ</translation>
 <translation id="7772032839648071052">पासफ्रेज पक्का</translation>
 <translation id="7772948288262733182">फेरि स्वागत छ</translation>

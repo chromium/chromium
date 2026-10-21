@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Der er ikke mere lagerplads</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1190609913194133056">Underretningcenter</translation>
+<translation id="1191987227666124897">Anmodning om fravalg</translation>
 <translation id="1196534270480620381">Giv mig en kort opsummering af denne side</translation>
 <translation id="1199631150313925648">Angiv manuelt</translation>
 <translation id="1199963004393929848">Grønt tema</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Åbn i en ny fanegruppe</translation>
 <translation id="1670861525135254448">Gem køretøj</translation>
 <translation id="1671568970992212376">Gem billeder i Google Fotos, og tilgå dem når som helst.</translation>
+<translation id="1671824312818944549">Bemærk! Denne indstilling fungerer bedre med iOS 27 eller nyere.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Markér, tryk på eller tegn rundt om noget på skærmen for at søge efter det</translation>
 <translation id="1678855624321223424">På baggrund af din organisations politikker kan denne fil indeholde følsomme oplysninger</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Website</translation>
 <translation id="2876369937070532032">Sender webadresser på nogle sider, som du besøger, til Google, når din sikkerhed er truet</translation>
 <translation id="2883151425485251736">Se og rediger de emner, du har skjult på din konto</translation>
+<translation id="2884437560239137197">Kræver din opmærksomhed</translation>
 <translation id="288655811176831528">Luk fane</translation>
 <translation id="2888631381369839306">Notifikationer om prissporing er aktiveret</translation>
 <translation id="2893168226686371498">Standardbrowser</translation>
@@ -2178,6 +2181,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="7758789811447313947">Violet tema</translation>
 <translation id="7759809451544302770">Valgfrit</translation>
 <translation id="7765158879357617694">Flyt</translation>
+<translation id="7767651976342854115">Der opstod en fejl med indstillingen for dataforbrug.</translation>
 <translation id="7768507955883790804">Websites følger automatisk denne indstilling, når du besøger dem</translation>
 <translation id="7772032839648071052">Bekræft adgangssætning</translation>
 <translation id="7772948288262733182">Velkommen tilbage</translation>

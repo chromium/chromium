@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Bộ nhớ của bạn đã đầy</translation>
 <translation id="1181037720776840403">Xoá</translation>
 <translation id="1190609913194133056">Trung tâm thông báo</translation>
+<translation id="1191987227666124897">Yêu cầu không sử dụng</translation>
 <translation id="1196534270480620381">Hãy tóm tắt ngắn gọn trang này</translation>
 <translation id="1199631150313925648">Nhập thủ công</translation>
 <translation id="1199963004393929848">Giao diện màu xanh lục</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Mở trong Nhóm thẻ mới</translation>
 <translation id="1670861525135254448">Lưu thông tin xe</translation>
 <translation id="1671568970992212376">Lưu ảnh vào Google Photos để có thể truy cập bất cứ lúc nào.</translation>
+<translation id="1671824312818944549">Lưu ý: Chế độ cài đặt này hoạt động hiệu quả hơn trên iOS 27 trở lên.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> sang <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Vẽ, đánh dấu hoặc nhấn vào nội dung bất kỳ trên màn hình để tìm kiếm</translation>
 <translation id="1678855624321223424">Theo các chính sách của tổ chức bạn, tệp này có thể chứa thông tin nhạy cảm</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Trang web</translation>
 <translation id="2876369937070532032">Gửi URL của một số trang mà bạn truy cập cho Google khi bạn gặp rủi ro về bảo mật</translation>
 <translation id="2883151425485251736">Xem và sửa những chủ đề bạn đã ẩn khỏi tài khoản</translation>
+<translation id="2884437560239137197">Cần chú ý</translation>
 <translation id="288655811176831528">Đóng thẻ</translation>
 <translation id="2888631381369839306">Đã bật thông báo của tính năng theo dõi giá</translation>
 <translation id="2893168226686371498">Trình duyệt mặc định</translation>
@@ -2178,6 +2181,7 @@ Bạn có thể bắt đầu lại bất cứ lúc nào.</translation>
 <translation id="7758789811447313947">Giao diện màu tím</translation>
 <translation id="7759809451544302770">Không bắt buộc</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
+<translation id="7767651976342854115">Đã xảy ra lỗi khi tải chế độ cài đặt sử dụng dữ liệu.</translation>
 <translation id="7768507955883790804">Các trang web sẽ tự động tuân theo chế độ cài đặt này khi bạn truy cập</translation>
 <translation id="7772032839648071052">Xác nhận cụm mật khẩu</translation>
 <translation id="7772948288262733182">Chào mừng bạn quay lại</translation>

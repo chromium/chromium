@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">存储空间已满</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1190609913194133056">通知中心</translation>
+<translation id="1191987227666124897">选择拒绝请求</translation>
 <translation id="1196534270480620381">简要总结此页面的内容</translation>
 <translation id="1199631150313925648">手动输入</translation>
 <translation id="1199963004393929848">绿色主题</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">在新标签页分组中打开</translation>
 <translation id="1670861525135254448">保存车辆信息</translation>
 <translation id="1671568970992212376">将照片保存到 Google 相册，即可随时随地访问。</translation>
+<translation id="1671824312818944549">注意：此设置在 iOS 27 或更高版本上效果更好。</translation>
 <translation id="1674504678466460478">从<ph name="SOURCE_LANGUAGE" />到<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">在屏幕上圈出、选中或点按任何内容，即可开始搜索</translation>
 <translation id="1678855624321223424">根据您所在组织的政策，此文件可能包含敏感信息</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">网站</translation>
 <translation id="2876369937070532032">当您面临安全风险时，将您所访问的部分网页的网址发送给 Google</translation>
 <translation id="2883151425485251736">查看和修改您已在账号中设为隐藏的主题</translation>
+<translation id="2884437560239137197">需要注意</translation>
 <translation id="288655811176831528">关闭标签页</translation>
 <translation id="2888631381369839306">已开启价格跟踪通知</translation>
 <translation id="2893168226686371498">默认浏览器</translation>
@@ -2178,6 +2181,7 @@
 <translation id="7758789811447313947">紫罗兰色主题</translation>
 <translation id="7759809451544302770">选填</translation>
 <translation id="7765158879357617694">移动</translation>
+<translation id="7767651976342854115">数据使用设置遇到错误。</translation>
 <translation id="7768507955883790804">网站会在您访问时自动采用此设置</translation>
 <translation id="7772032839648071052">确认密码</translation>
 <translation id="7772948288262733182">欢迎回来</translation>

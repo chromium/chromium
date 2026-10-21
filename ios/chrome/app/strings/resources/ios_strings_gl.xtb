@@ -67,6 +67,7 @@
 <translation id="1179890706672152411">Tes o espazo de almacenamento cheo</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1190609913194133056">Centro de notificacións</translation>
+<translation id="1191987227666124897">Solicitude de renuncia</translation>
 <translation id="1196534270480620381">Facer un resumo breve desta páxina</translation>
 <translation id="1199631150313925648">Introducir manualmente</translation>
 <translation id="1199963004393929848">Tema verde</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Abrir nun grupo de pestanas novo</translation>
 <translation id="1670861525135254448">Garda o vehículo</translation>
 <translation id="1671568970992212376">Garda fotos en Google Fotos e accede a elas cando queiras.</translation>
+<translation id="1671824312818944549">Nota: Esta opción de configuración funciona mellor con iOS 27 ou versións posteriores.</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Marca co dedo, destaca ou toca calquera cousa da pantalla para buscala</translation>
 <translation id="1678855624321223424">Segundo as políticas da túa organización, este ficheiro pode conter información confidencial</translation>
@@ -625,6 +627,7 @@
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2876369937070532032">Enviar a Google os URL das páxinas que visitas cando a túa seguranza corra perigo</translation>
 <translation id="2883151425485251736">Consulta e edita temas que ocultaches na túa conta</translation>
+<translation id="2884437560239137197">Presta atención</translation>
 <translation id="288655811176831528">Pechar pestana</translation>
 <translation id="2888631381369839306">Activáronse as notificacións de seguimento de prezos</translation>
 <translation id="2893168226686371498">Navegador predeterminado</translation>
@@ -2178,6 +2181,7 @@ Podes reinicialo cando queiras.</translation>
 <translation id="7758789811447313947">Tema violeta</translation>
 <translation id="7759809451544302770">Opcionais</translation>
 <translation id="7765158879357617694">Mover</translation>
+<translation id="7767651976342854115">Produciuse un erro na configuración do uso de datos.</translation>
 <translation id="7768507955883790804">Esta opción de configuración aplicarase automaticamente aos sitios cando os visites</translation>
 <translation id="7772032839648071052">Confirmar frase de acceso</translation>
 <translation id="7772948288262733182">Dámosche a benvida de novo</translation>
