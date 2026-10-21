@@ -8,19 +8,49 @@ description: >-
 # Disabling Chromium Tests
 
 This guide provides instructions on how to disable test cases in Chromium,
-covering C++ tests, WebUI tests, and Android Java tests.
+covering C++ tests, WebUI tests, Android Java tests, and `.filter` files.
 
 ## C++ and WebUI Tests
 
-### Step 1: Confirm Disabling Scope
+### Step 1: Verify Failures at HEAD and Confirm Disabling Scope
 
-Before disabling a test, determine the scope:
+Before disabling a test (including adding entries to `.filter` files), use the
+`luci-test-results` skill
+(`third_party/depot_tools/agents/skills/luci-test-results`) to confirm that it
+is actively failing or flaking at `HEAD` on the target branch and to determine
+the scope:
 
-1. **All Platforms:** The test fails everywhere.
-2. **Platform Specific:** The test fails only on specific platforms (e.g.,
-   Linux, Windows, Mac, ChromeOS, Android).
-3. **Configuration Specific:** The test fails only in specific configurations
-   (e.g., ASAN, MSAN, Debug builds).
+1. **Check CI test history (`--bucket ci`):**
+   ```sh
+   vpython3 third_party/depot_tools/agents/skills/luci-test-results/scripts/test_history.py \
+     --test-id '<Class#method_or_FULL_ID>' --bucket ci [--builder <BUILDER>] [--project <chromium|chrome>]
+   ```
+   (ResultDB structured IDs use `#` between fixture/class and method for both
+   C++ GTests and Java JUnit tests, e.g. `MyTestFixture#MyTestCase`; or pass
+   `--test-substring '<MethodName>'`.) Confirm the test has recent
+   failures/flakes on `ci` at `HEAD` on the target builder — not an issue
+   already fixed, failing only on a different branch or builder configuration,
+   or tryjob noise from CLs under test. (Pass `--raw` if you need a failing
+   `<BUILD_ID>` from `"invocationId": "build-<BUILD_ID>"`.)
+2. **Fetch a failure log and check for batch/fixture state bleed:**
+   ```sh
+   vpython3 third_party/depot_tools/agents/skills/luci-test-results/scripts/check_test.py \
+     --build-id <BUILD_ID> --test-regex '<TEST_REGEX>'
+   vpython3 third_party/depot_tools/agents/skills/luci-test-results/scripts/fetch_log.py \
+     --res '<RES_NAME>'
+   ```
+   Confirm the failure mode matches the bug and is not caused by an earlier test
+   in the same `@Batch` class or fixture — either an explicit
+   `CascadingFailureException` or silent state bleed from a prior passing test
+   (e.g., an unclosed dialog, snackbar, tab, or singleton override; see the
+   `android-test-batching` skill). Disabling a victim of state bleed merely
+   shifts the failure onto the next test in the batch.
+3. **Determine the disabling scope** from the affected builders:
+   - **All Platforms:** The test fails everywhere.
+   - **Platform Specific:** The test fails only on specific platforms (e.g.,
+     Linux, Windows, Mac, ChromeOS, Android).
+   - **Configuration Specific:** The test fails only in specific configurations
+     (e.g., ASAN, MSAN, Debug builds).
 
 **If the user hasn't specified the scope, ask for confirmation before
 proceeding.**
@@ -110,16 +140,24 @@ Common expressions: `is_linux`, `is_win`, `is_macosx`, `is_chromeos`,
 ### Step 4: Documentation Requirement
 
 **ALWAYS** include a `TODO` comment with a link to the Buganizer issue obtained
-in Step 2.
+in Step 2, and include `Test history:` and `Failed build:` lines in the CL
+description for each disabled test:
+
+```text
+Test history: https://ci.chromium.org/ui/test/chromium/<URL_ENCODED_TEST_ID>
+Failed build: https://ci.chromium.org/ui/b/<BUILD_ID>
+```
 
 ### Step 5: Validation
 
 1. **Build** the relevant test target (e.g., `unit_tests`, `browser_tests`,
    `interactive_ui_tests`).
-2. **Run** the test to ensure it is indeed skipped (it should show as `SKIPPED`
-   or `DISABLED` in the output).
+2. **Run the entire test fixture or `@Batch` class** (not just the single
+   disabled test) to confirm the disabled test is skipped (`SKIPPED` or
+   `DISABLED`) AND that skipping it does not cause sibling tests in the same
+   fixture or batch to fail:
    ```sh
-   ./out/Default/browser_tests --gtest_filter=MyTestFixture.MyTestCase
+   ./out/Default/browser_tests --gtest_filter=MyTestFixture.*
    ```
 3. **Run Presubmits** to ensure everything is passing.
    ```sh
@@ -128,10 +166,12 @@ in Step 2.
 
 ## Android Java Tests
 
-Android Java tests use JUnit annotations rather than name prefixes or
-preprocessor macros, and the supported annotations depend on whether the test is
-a host-side Robolectric test or an on-device instrumentation test. Every
-temporary disablement MUST link to a bug (via
+Follow Steps 1, 2, 4, and 5 above to verify failures at `HEAD`, obtain a bug ID,
+include `Test history:` and `Failed build:` in the CL description, and validate
+the full test class. Android Java tests use JUnit annotations rather than name
+prefixes or preprocessor macros, and the supported annotations depend on whether
+the test is a host-side Robolectric test or an on-device instrumentation test.
+Every temporary disablement MUST link to a bug (via
 `message = "https://crbug.com/<BUG_ID>"` where supported, or a comment
 `// https://crbug.com/<BUG_ID>` for annotations like `@DisableIf.Device` that
 have no `message` parameter).
