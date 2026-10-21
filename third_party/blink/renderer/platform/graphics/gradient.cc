@@ -129,15 +129,16 @@ static SkColor4f ResolveStopColorWithMissingParams(
 // (making this logic redundant), but in practice there are rendering diffs;
 // investigate.
 void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
+  // hue-interpolation-method longer/increasing/decreasing hue should not pad
+  // the start, as it would introducing a gradient at position 0..first_stop
+  // and last_stop..end.
+  const bool should_pad =
+      hue_interpolation_method_ == Color::HueInterpolationMethod::kShorter;
   if (stops_.empty()) {
     // A gradient with no stops must be transparent black.
     pos.push_back(0);
     colors.push_back(SkColors::kTransparent);
-  } else if (stops_.front().stop > 0 &&
-             // hue-interpolation-method longer hue should not pad the start, as
-             // it would introducing a gradient at position 0..fist_stop
-             hue_interpolation_method_ !=
-                 Color::HueInterpolationMethod::kLonger) {
+  } else if (stops_.front().stop > 0 && should_pad) {
     // Copy the first stop to 0.0. The first stop position may have a slight
     // rounding error, but we don't care in this float comparison, since
     // 0.0 comes through cleanly and people aren't likely to want a gradient
@@ -203,10 +204,7 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
   // Copy the last stop to 1.0 if needed. See comment above about this float
   // comparison.
   DCHECK(!pos.empty());
-  if (pos.back() < 1 &&
-      // hue-interpolation-method longer hue should not pad the end, as
-      // it would introducing a gradient at position last_stop..end
-      hue_interpolation_method_ != Color::HueInterpolationMethod::kLonger) {
+  if (pos.back() < 1 && should_pad) {
     pos.push_back(1);
     colors.push_back(colors.back());
   }
