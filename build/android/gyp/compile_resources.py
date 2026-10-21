@@ -598,6 +598,9 @@ def _PackageApk(options, build):
     link_command = [
         options.aapt2_path,
         'link',
+        # Use faster (level 1) compression. Shipped artifacts are built from
+        # app bundles, where bundletool handles compression.
+        '-Othroughput',
         '--auto-add-overlay',
         '--no-version-vectors',
         '--no-xml-namespaces',
@@ -694,6 +697,7 @@ def _PackageApk(options, build):
             [
                 options.aapt2_path,
                 'convert',
+                '-Othroughput',
                 '--output-format',
                 'proto',
                 '-o',
