@@ -37,7 +37,6 @@ static const std::optional<base::TimeDelta> kEmptyDelay;
 static const std::optional<base::TimeDelta> kDefaultDelay = base::Seconds(5);
 
 using testing::_;
-using testing::InvokeWithoutArgs;
 using MountFailure = DriveFsSession::MountObserver::MountFailure;
 
 class DriveFsDiskMounterTest : public testing::Test {
@@ -397,7 +396,7 @@ TEST_F(DriveFsSessionTest, OnMountFailed_UnmountInObserver) {
 
   ASSERT_NO_FATAL_FAILURE(StartMounting());
   EXPECT_CALL(*this, OnMountFailed(MountFailure::kInvocation, kEmptyDelay))
-      .WillOnce(testing::InvokeWithoutArgs([&]() { session_.reset(); }));
+      .WillOnce([&]() { session_.reset(); });
   holder_->mounter->CompleteMount({});
   ASSERT_FALSE(session_);
 }
@@ -458,9 +457,9 @@ TEST_F(DriveFsSessionTest, BreakConnectionOnUnmount) {
   ASSERT_NO_FATAL_FAILURE(StartMounting());
   ASSERT_NO_FATAL_FAILURE(FinishMounting());
 
-  EXPECT_CALL(*this, OnUnmounted(kDefaultDelay))
-      .WillOnce(testing::InvokeWithoutArgs(
-          [&]() { holder_->connection->ForceDisconnect(); }));
+  EXPECT_CALL(*this, OnUnmounted(kDefaultDelay)).WillOnce([&]() {
+    holder_->connection->ForceDisconnect();
+  });
   holder_->delegate->OnUnmounted(kDefaultDelay);
   ASSERT_NO_FATAL_FAILURE(DoUnmount());
 }
