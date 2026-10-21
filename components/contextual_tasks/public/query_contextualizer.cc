@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
@@ -175,8 +174,8 @@ std::vector<std::string> QueryContextualizer::ExtractUrlsFromQuery(
   // characters. Explicitly lists allowed characters instead of using ranges
   // like #-; for readability. Allowed characters: alphanumeric, -, ., ~, :,
   // /, ?, #, [, ], @, !, $, &, ', (, ), *, +, ,, ;, =, %
-  static const base::NoDestructor<re2::RE2> url_regex(
-      R"((?i)((?:(?:https?|ftp)://|www\.)[\w#$&%'()*+,\-./:;!=?@\[\]_`{|}~]+))");
+  static constexpr re2::LazyRE2 url_regex = {
+      R"((?i)((?:(?:https?|ftp)://|www\.)[\w#$&%'()*+,\-./:;!=?@\[\]_`{|}~]+))"};
 
   // Use a GURL set to deduplicate URLs, but keep the URLs stored as strings to
   // prevent them from being modified by URL canonicalization.
