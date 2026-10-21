@@ -8403,6 +8403,22 @@
             ]
         }
     ],
+    "GlicContentsInitiallyHidden": [
+        {
+            "platforms": [
+                "chromeos",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicContentsInitiallyHidden"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicCookieSyncOnTokenChange": [
         {
             "platforms": [
