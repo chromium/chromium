@@ -66,12 +66,62 @@ message SecurityAgent {
   }
 }
 
+// A single node in the OS process tree.
+message ProcessNode {
+  int64 process_id = 1;
+  int64 parent_process_id = 2;
+
+  // Sanitized path or binary name of the executable (e.g., /usr/bin/node or
+  // node).
+  string executable_path = 3
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+
+  // Sanitized script path or script command-line argument.
+  string script_path = 4
+      // copybara:datapol_begin
+      // [
+      //   (datapol.semantic_type) = ST_USER_CONTENT
+      // ]
+      // copybara:datapol_end
+      ;
+}
+
+// External process working to actuate CDP commands.
+message ExternalProcessInfo {
+  // Transport layer used by the actor.
+  enum TransportType {
+    TRANSPORT_TYPE_UNSPECIFIED = 0;
+    TRANSPORT_TYPE_PIPE = 1;
+    TRANSPORT_TYPE_WEBSOCKET = 2;
+    TRANSPORT_TYPE_DEVTOOLS_UI = 3;
+  }
+
+  message ExternalProcess {
+    TransportType transport_type = 1;
+
+    // Ordered from immediate connecting process (index 0) up to root ancestor.
+    // Empty when transport_type is TRANSPORT_TYPE_DEVTOOLS_UI.
+    repeated ProcessNode process_nodes = 2;
+  }
+
+  repeated ExternalProcess external_processes = 1;
+}
+
 // Represents the entity that initiated the event.
 message EventInitiatorInfo {
   oneof initiator {
     // Populated when the event was driven by a Chrome extension.
     safe_browsing.ExtensionTelemetryReportRequest.ExtensionInfo
         chrome_extension = 1;
+
+    // Populated when one or more external CDP actors are attached to the
+    // target.
+    ExternalProcessInfo external_process_info = 2;
   }
 }
 
