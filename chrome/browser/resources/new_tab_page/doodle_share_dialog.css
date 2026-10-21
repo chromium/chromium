@@ -20,12 +20,12 @@
 }
 
 #buttons cr-button {
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  --iron-icon-height: 48px;
+  --iron-icon-width: 48px;
   border: none;
   height: 48px;
   min-width: 48px;
+  padding: 0;
   width: 48px;
 }
 
@@ -37,29 +37,10 @@
   margin-inline-end: 12px;
 }
 
-#facebookButton {
-  background-image: url(icons/facebook.svg);
-}
-
-#twitterButton {
-  background-image: url(icons/twitter.svg);
-}
-
-#emailButton {
-  background-image: url(icons/mail.svg);
-}
-
 #url {
   --cr-input-error-display: none;
 }
 
 #copyButton {
-  --cr-icon-image: url(icons/copy_old.svg);
   margin-inline-start: 2px;
-}
-
-:host-context([webui-rounded-icons]) {
-  #copyButton {
-    --cr-icon-image: url(icons/copy.svg);
-  }
 }

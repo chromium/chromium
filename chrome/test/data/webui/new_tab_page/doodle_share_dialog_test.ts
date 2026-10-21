@@ -4,6 +4,7 @@
 
 import type {DoodleShareDialogElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -93,5 +94,39 @@ suite('NewTabPageDoodleShareDialogTest', () => {
 
     // Assert.
     assertFalse(doodleShareDialog.$.dialog.open);
+  });
+
+  test('share buttons show their icons', () => {
+    // Assert.
+    [['facebookButton', 'ntp-doodle:facebook'],
+     ['twitterButton', 'ntp-doodle:twitter'],
+     ['emailButton', 'ntp-doodle:mail'],
+    ].forEach(([buttonId, icon]) => {
+      const crIcon =
+          doodleShareDialog.shadowRoot.querySelector(`#${buttonId} cr-icon`);
+      assertTrue(!!crIcon);
+      assertEquals(icon, crIcon.getAttribute('icon'));
+    });
+  });
+
+  [true, false].forEach(roundedIcons => {
+    test(`copy button icon with rounded icons ${roundedIcons}`, async () => {
+      // Arrange.
+      loadTimeData.overrideValues({webuiRoundedIconsEnabled: roundedIcons});
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+      // Act.
+      doodleShareDialog = document.createElement('ntp-doodle-share-dialog');
+      document.body.appendChild(doodleShareDialog);
+      await microtasksFinished();
+
+      // Assert.
+      const copyButton =
+          doodleShareDialog.shadowRoot.querySelector('#copyButton');
+      assertTrue(!!copyButton);
+      assertEquals(
+          roundedIcons ? 'ntp-doodle:copy' : 'ntp-doodle:copy-old',
+          copyButton.getAttribute('iron-icon'));
+    });
   });
 });
