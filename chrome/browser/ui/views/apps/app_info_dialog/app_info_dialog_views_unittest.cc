@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_footer_panel.h"
@@ -185,7 +186,13 @@ class AppInfoDialogViewsTest : public ChromeViewsTestBase,
 };
 
 // Tests that the dialog closes when the current app is uninstalled.
-TEST_F(AppInfoDialogViewsTest, UninstallingAppClosesDialog) {
+// TODO(crbug.com/573033441): Flaky on ChromeOS ASan/LSan.
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_UninstallingAppClosesDialog DISABLED_UninstallingAppClosesDialog
+#else
+#define MAYBE_UninstallingAppClosesDialog UninstallingAppClosesDialog
+#endif
+TEST_F(AppInfoDialogViewsTest, MAYBE_UninstallingAppClosesDialog) {
   ShowAppInfo(kTestExtensionId);
   ASSERT_TRUE(widget_);
   EXPECT_FALSE(widget_->IsClosed());
