@@ -4644,8 +4644,14 @@ class ContextualTasksEphemeralToolbarInteractiveUiTest
 //  (6) Contextual Tasks side panel reopens and restores the same task and
 //      side panel contents.
 //  (7) Ephemeral toolbar button hides while the side panel is open.
+// TODO(https://crbug.com/576301341): Flaky on ChromeOS debug builders.
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_EphemeralToolbarButtonReopen DISABLED_EphemeralToolbarButtonReopen
+#else
+#define MAYBE_EphemeralToolbarButtonReopen EphemeralToolbarButtonReopen
+#endif
 IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralToolbarInteractiveUiTest,
-                       EphemeralToolbarButtonReopen) {
+                       MAYBE_EphemeralToolbarButtonReopen) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReopenedSidePanelId);
