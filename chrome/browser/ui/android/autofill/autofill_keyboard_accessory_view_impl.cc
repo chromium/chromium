@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_resource_util.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -159,7 +160,7 @@ bool AutofillKeyboardAccessoryViewImpl::Initialize() {
   }
   Java_AutofillKeyboardAccessoryViewBridge_init(
       base::android::AttachCurrentThread(), java_object_,
-      reinterpret_cast<intptr_t>(this), window_android);
+      jni_zero::MakeRaw(this), window_android);
   return true;
 }
 

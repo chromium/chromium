@@ -10,7 +10,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -32,7 +35,11 @@ import java.util.List;
 /** JNI call glue between C++ (AutofillKeyboardAccessoryViewImpl) and Java objects. */
 @JNINamespace("autofill")
 public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
-    private long mNativeAutofillKeyboardAccessory;
+    @JniType("::autofill::AutofillKeyboardAccessoryViewImpl")
+    interface NativeAutofillKeyboardAccessoryViewImpl extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeAutofillKeyboardAccessoryViewImpl>
+            mNativeAutofillKeyboardAccessory;
     private @Nullable MonotonicObservableSupplier<ManualFillingComponent>
             mManualFillingComponentSupplier;
     private @Nullable ManualFillingComponent mManualFillingComponent;
@@ -49,7 +56,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
 
     @Override
     public void dismissed() {
-        if (mNativeAutofillKeyboardAccessory == 0) return;
+        if (mNativeAutofillKeyboardAccessory == null) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
                 .viewDismissed(mNativeAutofillKeyboardAccessory);
     }
@@ -71,28 +78,28 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                 mManualFillingComponent.dismiss();
             }
         }
-        if (mNativeAutofillKeyboardAccessory == 0) return;
+        if (mNativeAutofillKeyboardAccessory == null) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
                 .suggestionAccepted(mNativeAutofillKeyboardAccessory, listIndex, wasObscured);
     }
 
     @Override
     public void deleteSuggestion(int listIndex) {
-        if (mNativeAutofillKeyboardAccessory == 0) return;
+        if (mNativeAutofillKeyboardAccessory == null) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
                 .deletionRequested(mNativeAutofillKeyboardAccessory, listIndex);
     }
 
     @Override
     public void showAutofillAiSuggestionDetails(int listIndex) {
-        if (mNativeAutofillKeyboardAccessory == 0) return;
+        if (mNativeAutofillKeyboardAccessory == null) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
                 .autofillAiSuggestionDetailsRequested(mNativeAutofillKeyboardAccessory, listIndex);
     }
 
     @Override
     public void suggestionSelectionStateChanged(int listIndex, boolean isSelected) {
-        if (mNativeAutofillKeyboardAccessory == 0) return;
+        if (mNativeAutofillKeyboardAccessory == null) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
                 .suggestionSelectionStateChanged(
                         mNativeAutofillKeyboardAccessory, listIndex, isSelected);
@@ -103,19 +110,19 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
 
     @Override
     public void openSettingsForEntityType(@EntityTypeName int entityType) {
-        if (mNativeAutofillKeyboardAccessory == 0) return;
+        if (mNativeAutofillKeyboardAccessory == null) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
                 .openSettingsForEntityType(mNativeAutofillKeyboardAccessory, entityType);
     }
 
     private void onDeletionDialogClosed(boolean confirmed) {
-        if (mNativeAutofillKeyboardAccessory == 0) return;
+        if (mNativeAutofillKeyboardAccessory == null) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
                 .onDeletionDialogClosed(mNativeAutofillKeyboardAccessory, confirmed);
     }
 
     private void onAutofillAiSuppressionDialogClosed(boolean confirmed) {
-        if (mNativeAutofillKeyboardAccessory == 0) return;
+        if (mNativeAutofillKeyboardAccessory == null) return;
         AutofillKeyboardAccessoryViewBridgeJni.get()
                 .onAutofillAiSuppressionDialogClosed(mNativeAutofillKeyboardAccessory, confirmed);
     }
@@ -128,7 +135,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      */
     @CalledByNative
     private void init(
-            long nativeAutofillKeyboardAccessory,
+            JniRawPtr<NativeAutofillKeyboardAccessoryViewImpl> nativeAutofillKeyboardAccessory,
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         mManualFillingComponentSupplier = ManualFillingComponentSupplier.from(windowAndroid);
         if (mManualFillingComponentSupplier != null) {
@@ -144,7 +151,10 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     /** Clears the reference to the native view. */
     @CalledByNative
     private void resetNativeViewPointer() {
-        mNativeAutofillKeyboardAccessory = 0;
+        if (mNativeAutofillKeyboardAccessory != null) {
+            mNativeAutofillKeyboardAccessory.release();
+            mNativeAutofillKeyboardAccessory = null;
+        }
     }
 
     /** Hides the Autofill view. */
@@ -315,26 +325,31 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
 
     @NativeMethods
     interface Natives {
-        void viewDismissed(long nativeAutofillKeyboardAccessoryViewImpl);
+        void viewDismissed(JniPtr<NativeAutofillKeyboardAccessoryViewImpl> self);
 
         void suggestionAccepted(
-                long nativeAutofillKeyboardAccessoryViewImpl, int listIndex, boolean wasObscured);
+                JniPtr<NativeAutofillKeyboardAccessoryViewImpl> self,
+                int listIndex,
+                boolean wasObscured);
 
         void suggestionSelectionStateChanged(
-                long nativeAutofillKeyboardAccessoryViewImpl, int listIndex, boolean isSelected);
+                JniPtr<NativeAutofillKeyboardAccessoryViewImpl> self,
+                int listIndex,
+                boolean isSelected);
 
-        void deletionRequested(long nativeAutofillKeyboardAccessoryViewImpl, int listIndex);
+        void deletionRequested(JniPtr<NativeAutofillKeyboardAccessoryViewImpl> self, int listIndex);
 
         void onDeletionDialogClosed(
-                long nativeAutofillKeyboardAccessoryViewImpl, boolean confirmed);
+                JniPtr<NativeAutofillKeyboardAccessoryViewImpl> self, boolean confirmed);
 
         void autofillAiSuggestionDetailsRequested(
-                long nativeAutofillKeyboardAccessoryViewImpl, int listIndex);
+                JniPtr<NativeAutofillKeyboardAccessoryViewImpl> self, int listIndex);
 
         void onAutofillAiSuppressionDialogClosed(
-                long nativeAutofillKeyboardAccessoryViewImpl, boolean confirmed);
+                JniPtr<NativeAutofillKeyboardAccessoryViewImpl> self, boolean confirmed);
 
         void openSettingsForEntityType(
-                long nativeAutofillKeyboardAccessoryViewImpl, @EntityTypeName int entityType);
+                JniPtr<NativeAutofillKeyboardAccessoryViewImpl> self,
+                @EntityTypeName int entityType);
     }
 }
