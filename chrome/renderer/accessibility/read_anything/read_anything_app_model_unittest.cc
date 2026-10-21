@@ -3089,6 +3089,157 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_EQ(mapping[0].start, 0);
   EXPECT_EQ(mapping[0].end, 15);
 }
+
+TEST_F(ReadAnythingAppModelTest,
+       MapRenderedTextToTree_GapSubstringAlignment_MinAnchorLengthBoundary) {
+  std::u16string a1 = u"Anchor1_________";
+  std::u16string a2 = u"Anchor2_________";
+
+  // In the gap between Anchor1 and Anchor2:
+  // - "RepeatedPrefix_" appears twice (nodes 3 and 4), so it is not locally
+  //   unique.
+  // - "XY" (length 2 < kMinAnchorLength) is locally unique in node 5, but too
+  //   short to anchor.
+  // - "ABC" (length 3 == kMinAnchorLength) is locally unique in node 6 and
+  //   should anchor.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = 1;
+  update.nodes = {test::GenericContainerNode(1),
+                  test::TextNode(2, a1),
+                  test::TextNode(3, u"RepeatedPrefix_1"),
+                  test::TextNode(4, u"RepeatedPrefix_2"),
+                  test::TextNode(5, u"XY"),
+                  test::TextNode(6, u"ABC"),
+                  test::TextNode(7, a2),
+                  test::TextNode(8, u"ABC")};
+  update.nodes[0].child_ids = {2, 3, 4, 5, 6, 7, 8};
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
+  std::vector<std::u16string> blocks = {
+      a1,
+      u"RepeatedPrefix_XY",
+      u"Noise_ABC_Noise",
+      a2,
+  };
+
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
+  model().MapRenderedTextToTree(blocks);
+
+  // Block 1 ("RepeatedPrefix_XY") should ignore the 2-char locally unique "XY"
+  // and map the 15-char "RepeatedPrefix_" via AlignRelativeOrder to node 3.
+  auto mapping1 = model().GetAXMapping(1);
+  ASSERT_EQ(mapping1.size(), 1u);
+  EXPECT_EQ(mapping1[0].id, 3);
+  EXPECT_EQ(mapping1[0].start, 0);
+  EXPECT_EQ(mapping1[0].end, 15);
+
+  // Block 2 ("Noise_ABC_Noise") should anchor the 3-char "ABC" to node 6.
+  auto mapping2 = model().GetAXMapping(2);
+  ASSERT_EQ(mapping2.size(), 1u);
+  EXPECT_EQ(mapping2[0].id, 6);
+  EXPECT_EQ(mapping2[0].start, 6);
+  EXPECT_EQ(mapping2[0].end, 9);
+}
+
+TEST_F(
+    ReadAnythingAppModelTest,
+    MapRenderedTextToTree_GapSubstringAlignment_MergedShuffledOccupiedRanges) {
+  std::u16string title = u"Title___________";
+  std::u16string a1 = u"Anchor1_________";
+  std::u16string shuffled1 = u"Shuffled1_Shared";
+  std::u16string shuffled2 = u"Part_Shuffled2";
+  std::u16string gap_target = u"SharedPart";
+  std::u16string a2 = u"Anchor2_________";
+
+  // In the AXTree, shuffled1 (node 4) and shuffled2 (node 5) are adjacent, so
+  // their boundary forms "SharedPart", while node 6 immediately follows node 5
+  // with an unoccupied "SharedPart".
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = 1;
+  update.nodes = {test::GenericContainerNode(1), test::TextNode(2, title),
+                  test::TextNode(3, a1),         test::TextNode(4, shuffled1),
+                  test::TextNode(5, shuffled2),  test::TextNode(6, gap_target),
+                  test::TextNode(7, a2),         test::TextNode(8, gap_target)};
+  update.nodes[0].child_ids = {2, 3, 4, 5, 6, 7, 8};
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
+  // Place shuffled2 and shuffled1 (in reverse AX order) before a1 so their
+  // occupied ranges are recorded out of order before sorting and merging,
+  // while [a1, a2] is the unique longest increasing anchor subsequence.
+  std::vector<std::u16string> blocks = {
+      title, shuffled2, shuffled1, a1, gap_target, a2,
+  };
+
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
+  model().MapRenderedTextToTree(blocks);
+
+  // "SharedPart" (Block 4) must skip the occupied cross-boundary match in
+  // nodes 4+5 and map to the immediately adjacent unoccupied node 6.
+  auto mapping = model().GetAXMapping(4);
+  ASSERT_EQ(mapping.size(), 1u);
+  EXPECT_EQ(mapping[0].id, 6);
+  EXPECT_EQ(mapping[0].start, 0);
+  EXPECT_EQ(mapping[0].end, 10);
+}
+
+TEST_F(
+    ReadAnythingAppModelTest,
+    MapRenderedTextToTree_AlignRelativeOrder_BinarySearchAndMinLengthBoundary) {
+  std::u16string a1 = u"Anchor1_________________________________________";
+  std::u16string a2 = u"Anchor2_________________________________________";
+
+  // Duplicate nodes in the gap ensure no substring in the gap is locally
+  // unique, forcing AlignSubstring to fall back to AlignRelativeOrder.
+  std::u16string dup_mid = u"RepeatedMatch_";
+  std::u16string dup_five = u"Five5";
+  std::u16string dup_four = u"Four";
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = 1;
+  update.nodes = {test::GenericContainerNode(1), test::TextNode(2, a1),
+                  test::TextNode(3, dup_mid),    test::TextNode(4, dup_mid),
+                  test::TextNode(5, dup_five),   test::TextNode(6, dup_five),
+                  test::TextNode(7, dup_four),   test::TextNode(8, dup_four),
+                  test::TextNode(9, a2)};
+  update.nodes[0].child_ids = {2, 3, 4, 5, 6, 7, 8, 9};
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
+  std::vector<std::u16string> blocks = {
+      a1,
+      dup_mid + u"UnmatchedLongSuffix",
+      dup_five + u"UnmatchedTail",
+      dup_four + u"UnmatchedTail",
+      a2,
+  };
+
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
+  model().MapRenderedTextToTree(blocks);
+
+  // Block 1 binary-searches down to the 14-char prefix in node 3.
+  auto mapping1 = model().GetAXMapping(1);
+  ASSERT_EQ(mapping1.size(), 1u);
+  EXPECT_EQ(mapping1[0].id, 3);
+  EXPECT_EQ(mapping1[0].start, 0);
+  EXPECT_EQ(mapping1[0].end, 14);
+
+  // Block 2 matches at the exact kMinSequentialMatchLength (5) boundary in
+  // node 5.
+  auto mapping2 = model().GetAXMapping(2);
+  ASSERT_EQ(mapping2.size(), 1u);
+  EXPECT_EQ(mapping2[0].id, 5);
+  EXPECT_EQ(mapping2[0].start, 0);
+  EXPECT_EQ(mapping2[0].end, 5);
+
+  // Block 3 only matches 4 chars (< kMinSequentialMatchLength) and must remain
+  // unmapped.
+  EXPECT_TRUE(model().GetAXMapping(3).empty());
+}
 TEST_F(ReadAnythingAppModelTest,
        GetOriginalPageMetrics_ReturnsTrueForHeadings) {
   // Create an AXTreeUpdate with headings.

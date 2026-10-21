@@ -1879,6 +1879,20 @@ ReadAnythingAppModel::FindGloballyUniqueBlocks(
       candidates.emplace_back(i, 0, block.size(), ax_start, ax_end);
     }
   }
+
+  // Sort and merge the occupied ranges so IsAXRangeOccupied() can binary
+  // search them.
+  std::ranges::sort(occupied_ax_ranges_);
+  std::vector<std::pair<size_t, size_t>> merged_ranges;
+  for (const auto& range : occupied_ax_ranges_) {
+    if (!merged_ranges.empty() && range.first <= merged_ranges.back().second) {
+      merged_ranges.back().second =
+          std::max(merged_ranges.back().second, range.second);
+    } else {
+      merged_ranges.push_back(range);
+    }
+  }
+  occupied_ax_ranges_ = std::move(merged_ranges);
   return candidates;
 }
 
@@ -2049,14 +2063,14 @@ ReadAnythingAppModel::FindLongestLocallyUniqueSubstring(
       // Use binary search on the substring length to find the longest locally
       // unique match starting at index 'i'.
       // Only search for lengths longer than our current 'best' to
-      // prune the search space.
-      size_t low = (best_match.block_end - best_match.block_start) + 1;
+      // prune the search space. Shorter than kMinAnchorLength is never used.
+      size_t current_best_len = best_match.block_end - best_match.block_start;
+      size_t low = std::max(current_best_len + 1, kMinAnchorLength);
       size_t high = range.end - i;
 
-      // Skip search if remaining text in this range is shorter than minimum
-      // anchor length or shorter than the current best match.
-      size_t current_best_len = best_match.block_end - best_match.block_start;
-      if (high < kMinAnchorLength || high <= current_best_len) {
+      // Remaining text in this range only shrinks as 'i' advances, so stop
+      // once it can no longer reach 'low'.
+      if (high < low) {
         break;
       }
 
@@ -2124,12 +2138,18 @@ void ReadAnythingAppModel::AlignRelativeOrder(
     size_t start_len = std::min(range.length(), max_possible_len);
 
     // Attempt to find the largest substring of the current block range that
-    // exists in the remaining AXtree gap.
-    for (size_t len = start_len; len >= kMinSequentialMatchLength; --len) {
+    // exists in the remaining AXtree gap. A prefix that occurs at a position
+    // also occurs there at any shorter length, so binary search the length.
+    size_t best_len = 0;
+    size_t best_cand_ax_start = 0;
+    size_t low = kMinSequentialMatchLength;
+    size_t high = start_len;
+    while (low <= high) {
+      size_t len = low + (high - low) / 2;
       std::u16string_view query =
           std::u16string_view(block_text).substr(range.start, len);
       auto occurrences = index.FindRange(query);
-      size_t best_cand_ax_start = std::numeric_limits<size_t>::max();
+      size_t earliest_ax_start = std::numeric_limits<size_t>::max();
 
       for (auto it = occurrences.first; it != occurrences.second; ++it) {
         size_t cand_ax_start = *it;
@@ -2139,33 +2159,40 @@ void ReadAnythingAppModel::AlignRelativeOrder(
         // earliest (chronological) candidate to maintain sequential integrity.
         if (cand_ax_start >= current_ax_cursor && cand_ax_end <= ax_end &&
             !IsAXRangeOccupied(cand_ax_start, cand_ax_end)) {
-          if (cand_ax_start < best_cand_ax_start) {
-            best_cand_ax_start = cand_ax_start;
-          }
+          earliest_ax_start = std::min(earliest_ax_start, cand_ax_start);
         }
       }
-      // Map the match and advance the cursor for the next sequential block.
-      if (best_cand_ax_start != std::numeric_limits<size_t>::max()) {
-        size_t cand_ax_end = best_cand_ax_start + len;
-        auto segments = CreateSegmentsForMatch(best_cand_ax_start, cand_ax_end,
-                                               range.start);
-        auto& block_mappings = text_to_ax_map_[range.block_index];
-        block_mappings.insert(block_mappings.end(), segments.begin(),
-                              segments.end());
 
-        current_ax_cursor = cand_ax_end;
-        break;
+      if (earliest_ax_start != std::numeric_limits<size_t>::max()) {
+        best_len = len;
+        best_cand_ax_start = earliest_ax_start;
+        low = len + 1;
+      } else {
+        high = len - 1;
       }
+    }
+
+    // Map the match and advance the cursor for the next sequential block.
+    if (best_len > 0) {
+      size_t cand_ax_end = best_cand_ax_start + best_len;
+      auto segments =
+          CreateSegmentsForMatch(best_cand_ax_start, cand_ax_end, range.start);
+      auto& block_mappings = text_to_ax_map_[range.block_index];
+      block_mappings.insert(block_mappings.end(), segments.begin(),
+                            segments.end());
+
+      current_ax_cursor = cand_ax_end;
     }
   }
 }
 
 bool ReadAnythingAppModel::IsAXRangeOccupied(size_t ax_start,
                                              size_t ax_end) const {
-  return std::any_of(occupied_ax_ranges_.begin(), occupied_ax_ranges_.end(),
-                     [ax_start, ax_end](const auto& range) {
-                       return ax_start < range.second && ax_end > range.first;
-                     });
+  // The ranges are sorted and disjoint, so only the first range ending after
+  // `ax_start` can overlap.
+  auto it = std::ranges::upper_bound(occupied_ax_ranges_, ax_start, {},
+                                     &std::pair<size_t, size_t>::second);
+  return it != occupied_ax_ranges_.end() && it->first < ax_end;
 }
 
 // TODO: crbug.com/509578412 - Evaluate consolidating logic with existing text

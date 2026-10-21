@@ -1185,7 +1185,7 @@ class ReadAnythingAppModel {
   // assigned to a full distilled block. Needed to ensure GapSubstringAlignment
   // doesn't map something to already mapped text in a gap (Ex: a shuffled
   // unique block not in the monotonic anchor list).
-  // Each pair is [start, end)
+  // Each pair is [start, end). Sorted and disjoint once populated.
   std::vector<std::pair<size_t, size_t>> occupied_ax_ranges_;
 
   // The minimum number of characters required for a substring to be considered
