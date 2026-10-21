@@ -325,7 +325,7 @@ def write_simple_test_results(return_code, output_filepath, benchmark_name):
     json.dump(output_json, fh)
 
 
-def upload_simple_test_results(return_code, benchmark_name):
+def upload_simple_test_results(return_code, benchmark_name, duration=None):
   # TODO(crbug.com/40144432): Fix to upload results for each test rather than
   # this summary.
   try:
@@ -345,18 +345,23 @@ def upload_simple_test_results(return_code, benchmark_name):
     'caseNameComponents': [benchmark_name],
   }
 
-  result_json = {
-    'testResults': [
-      {
-        'testId': benchmark_name,
-        'expected': not return_code,
-        'status': 'FAIL' if return_code else 'PASS',
-        'summaryHtml': summary,
-        'tags': [{'key': 'exit_code', 'value': str(return_code)}],
-        'testIdStructured': struct_test_dict,
-      }
-    ]
+  test_result = {
+    'testId': benchmark_name,
+    'expected': not return_code,
+    'status': 'FAIL' if return_code else 'PASS',
+    'summaryHtml': summary,
+    'tags': [{'key': 'exit_code', 'value': str(return_code)}],
+    'testIdStructured': struct_test_dict,
   }
+  if duration is not None:
+    # Callers measure elapsed time using time.time(), which is a wall-clock
+    # timer (not monotonic) and can jump backward if the system clock is
+    # adjusted (e.g. via NTP). Clamp to 0.0 because ResultSink rejects
+    # negative durations, and format with fixed decimal places to avoid
+    # scientific notation. ResultDB takes duration in seconds.
+    test_result['duration'] = '%.9fs' % max(0.0, float(duration))
+
+  result_json = {'testResults': [test_result]}
 
   res = requests.post(
     url='http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults'
@@ -446,11 +451,15 @@ def execute_gtest_perf_test(
       % output_paths.name
     )
     return_code = 1
+  # time.time() is not monotonic; clamp to 0.0 in case of clock adjustments.
+  duration = max(0.0, time.time() - start)
   write_simple_test_results(
     return_code, output_paths.test_results, output_paths.name
   )
   if not is_unittest:
-    upload_simple_test_results(return_code, output_paths.name)
+    upload_simple_test_results(
+      return_code, output_paths.name, duration=duration
+    )
 
   print_duration(
     'executing gtest %s' % command_generator.executable_name, start
@@ -1184,6 +1193,8 @@ class CrossbenchTest(object):
       print(traceback.format_exc())
       infra_failure = True
 
+    # time.time() is not monotonic; clamp to 0.0 in case of clock adjustments.
+    duration = max(0.0, time.time() - start)
     if self.options.luci_chromium:
       write_simple_test_results(
         return_code, self.options.isolated_script_test_output, display_name
@@ -1193,7 +1204,7 @@ class CrossbenchTest(object):
         return_code, output_paths.test_results, display_name
       )
       if not is_unittest:
-        upload_simple_test_results(return_code, display_name)
+        upload_simple_test_results(return_code, display_name, duration=duration)
 
     print_duration(f'Executing benchmark: {benchmark}', start)
 

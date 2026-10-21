@@ -198,7 +198,7 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     mock_convert,
     mock_run_command,
   ):
-    del mock_open, mock_exists, mock_upload, mock_setup, mock_run_command
+    del mock_open, mock_exists, mock_setup, mock_run_command
     fake_args = _create_crossbench_args() + ['--ignore-benchmark-exit-code']
     options = run_performance_tests.parse_arguments(fake_args)
 
@@ -206,6 +206,10 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
 
     self.assertEqual(rc, 0)
     mock_convert.assert_called()
+    mock_upload.assert_called_once_with(
+      3, 'speedometer3.crossbench', duration=mock.ANY
+    )
+    self.assertIsInstance(mock_upload.call_args.kwargs['duration'], float)
 
   def testCrossbenchTestBenchmarksException(self):
     fake_args = ['./cb.py', '--isolated-script-test-output=output']
@@ -650,6 +654,116 @@ class ArgumentParserTest(unittest.TestCase):
     with mock.patch('sys.stderr', new_callable=io.StringIO):
       with self.assertRaises(SystemExit):
         run_performance_tests.parse_arguments(fake_args)
+
+
+class UploadSimpleTestResultsTest(unittest.TestCase):
+  _FAKE_LUCI_CONTEXT = (
+    '{"result_sink": {"address": "localhost:1234", "auth_token": "tok"}}'
+  )
+
+  @mock.patch.object(run_performance_tests.requests, 'post')
+  @mock.patch.dict(os.environ, {'LUCI_CONTEXT': '/fake/luci_context.json'})
+  @mock.patch(
+    'builtins.open',
+    new_callable=mock.mock_open,
+    read_data=_FAKE_LUCI_CONTEXT,
+  )
+  def testUploadSimpleTestResultsWithDuration(self, mock_open, mock_post):
+    del mock_open
+    run_performance_tests.upload_simple_test_results(
+      0, 'speedometer3.crossbench', duration=42.125
+    )
+
+    mock_post.assert_called_once()
+    payload = json.loads(mock_post.call_args.kwargs['data'])
+    self.assertEqual(len(payload['testResults']), 1)
+    test_result = payload['testResults'][0]
+    self.assertEqual(test_result['testId'], 'speedometer3.crossbench')
+    self.assertEqual(test_result['status'], 'PASS')
+    self.assertTrue(test_result['expected'])
+    self.assertEqual(test_result['duration'], '42.125000000s')
+
+  @mock.patch.object(run_performance_tests.requests, 'post')
+  @mock.patch.dict(os.environ, {'LUCI_CONTEXT': '/fake/luci_context.json'})
+  @mock.patch(
+    'builtins.open',
+    new_callable=mock.mock_open,
+    read_data=_FAKE_LUCI_CONTEXT,
+  )
+  def testUploadSimpleTestResultsWithoutDuration(self, mock_open, mock_post):
+    del mock_open
+    run_performance_tests.upload_simple_test_results(1, 'base_perftests')
+
+    mock_post.assert_called_once()
+    payload = json.loads(mock_post.call_args.kwargs['data'])
+    self.assertEqual(len(payload['testResults']), 1)
+    test_result = payload['testResults'][0]
+    self.assertEqual(test_result['testId'], 'base_perftests')
+    self.assertEqual(test_result['status'], 'FAIL')
+    self.assertFalse(test_result['expected'])
+    self.assertNotIn('duration', test_result)
+
+  @mock.patch.object(run_performance_tests.requests, 'post')
+  @mock.patch.dict(os.environ, {'LUCI_CONTEXT': '/fake/luci_context.json'})
+  @mock.patch(
+    'builtins.open',
+    new_callable=mock.mock_open,
+    read_data=_FAKE_LUCI_CONTEXT,
+  )
+  def testUploadSimpleTestResultsClampsNegativeDuration(
+    self, mock_open, mock_post
+  ):
+    del mock_open
+    # Simulate a negative duration caused by a non-monotonic clock adjustment.
+    run_performance_tests.upload_simple_test_results(
+      0, 'speedometer3.crossbench', duration=-5.25
+    )
+
+    mock_post.assert_called_once()
+    payload = json.loads(mock_post.call_args.kwargs['data'])
+    self.assertEqual(len(payload['testResults']), 1)
+    test_result = payload['testResults'][0]
+    self.assertEqual(test_result['duration'], '0.000000000s')
+
+  @mock.patch.object(run_performance_tests, 'upload_simple_test_results')
+  @mock.patch.object(run_performance_tests, 'write_simple_test_results')
+  @mock.patch.object(
+    run_performance_tests.test_env,
+    'run_command_output_to_handle',
+    return_value=0,
+  )
+  def testExecuteGtestPerfTestPassesDurationToUpload(
+    self, mock_run_command, mock_write_results, mock_upload
+  ):
+    del mock_run_command, mock_write_results
+
+    class FakeCommandGenerator(object):
+      def __init__(self):
+        self.executable_name = 'fake_perftests'
+        self.ignore_shard_env_vars = False
+
+      def generate(self, unused_path):
+        return [self.executable_name]
+
+    tempdir = tempfile.mkdtemp()
+    try:
+      output_paths = run_performance_tests.OutputFilePaths(
+        tempdir, 'fake_perftests'
+      ).SetUp()
+      with open(output_paths.perf_results, 'w') as fh:
+        fh.write('[]')
+      # Simulate a non-monotonic time.time() clock stepping backward from
+      # 100.0s to 95.0s during execution to verify duration is clamped to 0.0.
+      with mock.patch.object(
+        run_performance_tests.time, 'time', side_effect=[100.0, 95.0, 95.0]
+      ):
+        rc = run_performance_tests.execute_gtest_perf_test(
+          FakeCommandGenerator(), output_paths, is_unittest=False
+        )
+      self.assertEqual(rc, 0)
+      mock_upload.assert_called_once_with(0, 'fake_perftests', duration=0.0)
+    finally:
+      shutil.rmtree(tempdir)
 
 
 if __name__ == '__main__':
