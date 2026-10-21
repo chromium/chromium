@@ -6275,8 +6275,9 @@
       // (isolated contexts) rather than via the static flag, so a static
       // dependency would keep this feature off everywhere it matters. Actual
       // exposure is gated by MulticastController's Exposed() clause.
+      // https://chromestatus.com/feature/6208452397498368
       name: "SourceSpecificMulticastInDirectSockets",
-      status: "test",
+      status: "stable",
     },
     {
       // Whether spatial navigation should use cursor inheritance to exclude
