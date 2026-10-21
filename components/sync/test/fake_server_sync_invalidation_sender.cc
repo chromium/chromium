@@ -263,9 +263,9 @@ void FakeServerSyncInvalidationSender::WriteFakeStateToDisk() const {
   }
 
   std::string json_string;
-  if (base::JSONWriter::Write(dict, &json_string)) {
-    base::WriteFile(fake_state_file_path_, json_string);
-  }
+  CHECK(base::JSONWriter::Write(dict, &json_string));
+  CHECK(base::CreateDirectory(fake_state_file_path_.DirName()));
+  CHECK(base::WriteFile(fake_state_file_path_, json_string));
 }
 
 }  // namespace fake_server
