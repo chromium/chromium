@@ -200,8 +200,7 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   // Called when the Reading Mode WebUI reports the result of a distillation
   // attempt. Coordinates any follow-up work that depends on how Reading Mode
-  // was opened (e.g. triggering a pending PDF translation, or logging omnibox
-  // entry point metrics).
+  // was opened (e.g. logging omnibox entry point metrics).
   void OnDistillationStatus(read_anything::mojom::DistillationStatus status,
                             int word_count);
 

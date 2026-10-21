@@ -53,7 +53,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/pdf/pdf_extension_util.h"
-#include "components/translate/content/browser/content_translate_driver.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -894,21 +893,6 @@ void ReadAnythingController::OnDistillationStatus(
     read_anything::mojom::DistillationStatus status,
     int word_count) {
   content::WebContents* web_contents = tab_->GetContents();
-#if BUILDFLAG(ENABLE_PDF)
-  if (last_open_trigger_ == ReadAnythingOpenTrigger::kPdfTranslation &&
-      status == read_anything::mojom::DistillationStatus::kSuccess) {
-    // Target the tab's WebContents because ContentTranslateDriver is attached
-    // to the outer primary tab WebContents, not the inner GuestView
-    // WebContents hosting the PDF.
-    if (web_contents) {
-      auto* driver =
-          translate::ContentTranslateDriver::FromWebContents(web_contents);
-      if (driver) {
-        driver->MaybeTriggerPendingPdfTranslation();
-      }
-    }
-  }
-#endif  // BUILDFLAG(ENABLE_PDF)
   if (last_open_trigger_ == ReadAnythingOpenTrigger::kOmniboxChip) {
     if (status != read_anything::mojom::DistillationStatus::kStillRunning) {
       last_open_trigger_ = ReadAnythingOpenTrigger::kUnknown;

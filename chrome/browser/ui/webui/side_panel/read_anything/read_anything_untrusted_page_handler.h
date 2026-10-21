@@ -380,6 +380,13 @@ class ReadAnythingUntrustedPageHandler :
   // Sends whether the tab is currently translated to the page.
   void SendTranslationState(bool is_translated);
 
+  // Triggers the tab's pending PDF translation, if any. A PDF translation
+  // requested while Reading Mode was closed stays pending on the tab's
+  // ContentTranslateDriver until Reading Mode has distilled the PDF's content,
+  // so that the translation applies to the content it displays. It stays
+  // pending until it's triggered, Reading Mode is closed, or the page changes.
+  void MaybeTriggerPendingPdfTranslation();
+
   void SetUpPdfObserver();
   void CheckIfActiveAXTreeChangedToPdf();
 

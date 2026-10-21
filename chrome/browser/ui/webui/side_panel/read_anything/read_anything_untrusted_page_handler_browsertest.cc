@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -2526,113 +2527,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTranslateEntryPointTest,
   EXPECT_NE(controller->GetTranslateBubble(), nullptr);
 }
 
-class ReadAnythingUntrustedPageHandlerPdfTranslationTest
-    : public ReadAnythingUntrustedPageHandlerTest {
- public:
-  ReadAnythingUntrustedPageHandlerPdfTranslationTest()
-      : ReadAnythingUntrustedPageHandlerTest(
-            {features::kReadAnythingTranslateEntryPoint,
-             translate::kEnableTranslatePdf}) {}
-};
-
-IN_PROC_BROWSER_TEST_F(
-    ReadAnythingUntrustedPageHandlerPdfTranslationTest,
-    OnDistillationStatus_AfterActivateWithPdfTranslation_TriggersTranslation) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Navigate to a PDF so IsPdfTranslation() returns true.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
-
-  handler_ = CreateHandler();
-
-  // Set the open trigger of ReadAnything/SidePanel to kPdfTranslation
-  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kPdfTranslation;
-  Activate(true, &trigger);
-
-  // Set pending translation languages in the tab's language state.
-  ChromeTranslateClient* chrome_translate_client =
-      ChromeTranslateClient::FromWebContents(web_contents);
-  ASSERT_NE(chrome_translate_client, nullptr);
-  translate::LanguageState* language_state =
-      chrome_translate_client->GetTranslateManager()->GetLanguageState();
-  language_state->SetPendingTranslationLanguages(
-      base::i18n::GetKnownLanguageTag("la"),
-      base::i18n::GetKnownLanguageTag("en"));
-
-  // Verify that they are initially set.
-  EXPECT_TRUE(language_state->pending_source_language().has_value());
-  EXPECT_TRUE(language_state->pending_target_language().has_value());
-
-  // Register a side panel agent with the driver so side_panel_agent.is_bound()
-  // is true when MaybeTriggerPendingPdfTranslation is called.
-  mojo::PendingRemote<translate::mojom::TranslateAgent> side_panel_agent;
-  mojo::PendingReceiver<translate::mojom::TranslateAgent>
-      side_panel_agent_receiver =
-          side_panel_agent.InitWithNewPipeAndPassReceiver();
-  translate::LanguageDetectionDetails side_panel_details;
-  side_panel_details.url =
-      GURL("chrome-untrusted://read-anything-side-panel.top-chrome/");
-  side_panel_details.adopted_language = "en";
-  side_panel_details.is_model_reliable = true;
-  chrome_translate_client->translate_driver()->RegisterPage(
-      std::move(side_panel_agent), side_panel_details, true);
-
-  // Call OnDistillationStatus with Success. This should trigger
-  // MaybeTriggerPendingPdfTranslation and clear the pending languages.
-  handler_->OnDistillationStatus(
-      read_anything::mojom::DistillationStatus::kSuccess, 100);
-
-  // Verify that the pending languages are cleared.
-  EXPECT_FALSE(language_state->pending_source_language().has_value());
-  EXPECT_FALSE(language_state->pending_target_language().has_value());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ReadAnythingUntrustedPageHandlerPdfTranslationTest,
-    OnDistillationStatus_AfterActivateWithPdfTranslation_FailedDoesNotTriggerTranslation) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Navigate to a PDF so IsPdfTranslation() returns true.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
-
-  handler_ = CreateHandler();
-
-  // Set the open trigger of ReadAnything/SidePanel to kPdfTranslation
-  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kPdfTranslation;
-  Activate(true, &trigger);
-
-  // Set pending translation languages in the tab's language state.
-  ChromeTranslateClient* chrome_translate_client =
-      ChromeTranslateClient::FromWebContents(web_contents);
-  ASSERT_NE(chrome_translate_client, nullptr);
-  translate::LanguageState* language_state =
-      chrome_translate_client->GetTranslateManager()->GetLanguageState();
-  language_state->SetPendingTranslationLanguages(
-      base::i18n::GetKnownLanguageTag("la"),
-      base::i18n::GetKnownLanguageTag("en"));
-
-  // Verify that they are initially set.
-  EXPECT_TRUE(language_state->pending_source_language().has_value());
-  EXPECT_TRUE(language_state->pending_target_language().has_value());
-
-  // Call OnDistillationStatus with Failed. This should NOT trigger
-  // MaybeTriggerPendingPdfTranslation.
-  handler_->OnDistillationStatus(
-      read_anything::mojom::DistillationStatus::kFailure, 100);
-
-  // Verify that the pending languages are NOT cleared.
-  EXPECT_TRUE(language_state->pending_source_language().has_value());
-  EXPECT_TRUE(language_state->pending_target_language().has_value());
-}
-
 class ReadAnythingUntrustedPageHandlerPdfTranslationStateTest
     : public ReadAnythingUntrustedPageHandlerTest {
  public:
@@ -2771,6 +2665,203 @@ IN_PROC_BROWSER_TEST_F(
   handler_ = CreateHandler();
   TranslateTab();
   FlushAndVerifyPage();
+}
+
+class ReadAnythingUntrustedPageHandlerPendingPdfTranslationTest
+    : public ReadAnythingUntrustedPageHandlerTest {
+ public:
+  ReadAnythingUntrustedPageHandlerPendingPdfTranslationTest()
+      : ReadAnythingUntrustedPageHandlerTest(
+            {features::kReadAnythingTranslateEntryPoint,
+             translate::kEnableTranslatePdf}) {}
+
+ protected:
+  // Loads a PDF in the tab, registers a side panel translate agent with the
+  // tab's driver, creates the handler, and sets pending translation languages
+  // on the tab's language state. Returns the language state.
+  translate::LanguageState* LoadPdfWithPendingTranslation() {
+    EXPECT_TRUE(embedded_test_server()->Start());
+    // Load a PDF so IsPdfTranslation() returns true.
+    EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+    ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
+    EXPECT_NE(chrome_translate_client, nullptr);
+    if (!chrome_translate_client) {
+      return nullptr;
+    }
+
+    // Reading Mode's page isn't loaded in these tests, so register a side panel
+    // agent so that ContentTranslateDriver::MaybeTriggerPendingPdfTranslation()
+    // can translate.
+    mojo::PendingRemote<translate::mojom::TranslateAgent> side_panel_agent;
+    side_panel_agent_receiver_ =
+        side_panel_agent.InitWithNewPipeAndPassReceiver();
+    translate::LanguageDetectionDetails side_panel_details;
+    side_panel_details.url =
+        GURL("chrome-untrusted://read-anything-side-panel.top-chrome/");
+    side_panel_details.adopted_language = "en";
+    side_panel_details.is_model_reliable = true;
+    chrome_translate_client->translate_driver()->RegisterPage(
+        std::move(side_panel_agent), side_panel_details, true);
+
+    handler_ = CreateHandler();
+
+    translate::LanguageState* language_state =
+        chrome_translate_client->GetTranslateManager()->GetLanguageState();
+    language_state->SetPendingTranslationLanguages(
+        base::i18n::GetKnownLanguageTag("la"),
+        base::i18n::GetKnownLanguageTag("en"));
+
+    // Verify that they are initially set.
+    EXPECT_TRUE(language_state->pending_source_language().has_value());
+    EXPECT_TRUE(language_state->pending_target_language().has_value());
+    return language_state;
+  }
+
+ private:
+  mojo::PendingReceiver<translate::mojom::TranslateAgent>
+      side_panel_agent_receiver_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerPendingPdfTranslationTest,
+    DistilledWithContent_AfterShown_TriggersTranslation) {
+  translate::LanguageState* language_state = LoadPdfWithPendingTranslation();
+  ASSERT_TRUE(language_state);
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kPdfTranslation;
+  Activate(true, &trigger);
+
+  // The content isn't distilled yet, so the translation isn't triggered.
+  handler_->OnDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationInProgress);
+  EXPECT_TRUE(language_state->pending_source_language().has_value());
+  EXPECT_TRUE(language_state->pending_target_language().has_value());
+
+  // Once the content is distilled, the translation is triggered, which clears
+  // the pending languages.
+  handler_->OnDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationWithContent);
+  EXPECT_FALSE(language_state->pending_source_language().has_value());
+  EXPECT_FALSE(language_state->pending_target_language().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerPendingPdfTranslationTest,
+    DistilledEmpty_DoesNotTriggerTranslation) {
+  translate::LanguageState* language_state = LoadPdfWithPendingTranslation();
+  ASSERT_TRUE(language_state);
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kPdfTranslation;
+  Activate(true, &trigger);
+
+  handler_->OnDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::kDistillationEmpty);
+
+  EXPECT_TRUE(language_state->pending_source_language().has_value());
+  EXPECT_TRUE(language_state->pending_target_language().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerPendingPdfTranslationTest,
+    DistilledWithContent_AfterTabSwitch_TriggersTranslation) {
+  translate::LanguageState* language_state = LoadPdfWithPendingTranslation();
+  ASSERT_TRUE(language_state);
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kPdfTranslation;
+  Activate(true, &trigger);
+
+  // Switching tabs away and back before the content is distilled shows Reading
+  // Mode again with a different trigger.
+  Activate(false);
+  trigger = SidePanelOpenTrigger::kTabChanged;
+  Activate(true, &trigger);
+
+  handler_->OnDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationWithContent);
+
+  EXPECT_FALSE(language_state->pending_source_language().has_value());
+  EXPECT_FALSE(language_state->pending_target_language().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerPendingPdfTranslationTest,
+    Shown_AlreadyDistilled_TriggersTranslation) {
+  translate::LanguageState* language_state = LoadPdfWithPendingTranslation();
+  ASSERT_TRUE(language_state);
+
+  // The content is distilled before the translation is requested, e.g. while
+  // Reading Mode was open earlier on this page.
+  language_state->ClearPendingTranslationLanguages();
+  handler_->OnDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationWithContent);
+
+  // Requesting the translation leaves it pending until Reading Mode is shown.
+  language_state->SetPendingTranslationLanguages(
+      base::i18n::GetKnownLanguageTag("la"),
+      base::i18n::GetKnownLanguageTag("en"));
+
+  // The distillation state won't change again, so showing Reading Mode
+  // triggers the translation.
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kPdfTranslation;
+  Activate(true, &trigger);
+  EXPECT_FALSE(language_state->pending_source_language().has_value());
+  EXPECT_FALSE(language_state->pending_target_language().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerPendingPdfTranslationTest,
+    Shown_DistilledBeforePageChanged_WaitsForNewDistillation) {
+  translate::LanguageState* language_state = LoadPdfWithPendingTranslation();
+  ASSERT_TRUE(language_state);
+
+  // The previous page's content was distilled, e.g. while Reading Mode was
+  // open on it earlier.
+  language_state->ClearPendingTranslationLanguages();
+  handler_->OnDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationWithContent);
+
+  // The page changes, and a translation is requested on the new page.
+  handler_->OnActiveAXTreeIDChanged();
+  language_state->SetPendingTranslationLanguages(
+      base::i18n::GetKnownLanguageTag("la"),
+      base::i18n::GetKnownLanguageTag("en"));
+
+  // The previous page's distillation doesn't apply to the new page, so showing
+  // Reading Mode doesn't trigger the translation yet.
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kPdfTranslation;
+  Activate(true, &trigger);
+  EXPECT_TRUE(language_state->pending_source_language().has_value());
+  EXPECT_TRUE(language_state->pending_target_language().has_value());
+
+  // Once the new page's content is distilled, the translation is triggered.
+  handler_->OnDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationInProgress);
+  handler_->OnDistillationStateChanged(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationWithContent);
+  EXPECT_FALSE(language_state->pending_source_language().has_value());
+  EXPECT_FALSE(language_state->pending_target_language().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerPendingPdfTranslationTest,
+    DistillationStatusSuccess_DoesNotTriggerTranslation) {
+  translate::LanguageState* language_state = LoadPdfWithPendingTranslation();
+  ASSERT_TRUE(language_state);
+  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kPdfTranslation;
+  Activate(true, &trigger);
+
+  // The distillation status is only a metric signal, so it doesn't trigger
+  // the translation.
+  handler_->OnDistillationStatus(
+      read_anything::mojom::DistillationStatus::kSuccess, 100);
+
+  EXPECT_TRUE(language_state->pending_source_language().has_value());
+  EXPECT_TRUE(language_state->pending_target_language().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
