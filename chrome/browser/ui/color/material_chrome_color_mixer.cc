@@ -504,6 +504,12 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabButtonInkDropFrameInactive] = {
       kColorNewTabButtonInkDropFrameActive};
 
+  // Organizer panel colors.
+  mixer[kColorOrganizerPanelBackground] = {ui::kColorSysSurface2};
+  mixer[kColorOrganizerPanelForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorOrganizerPanelForegroundSubtle] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorOrganizerPanelDivider] = {ui::kColorSysDivider};
+
   // Omnibox chip colors.
   mixer[kColorOmniboxChipInUseActivityIndicatorBackground] = {
       ui::kColorSysPrimary};

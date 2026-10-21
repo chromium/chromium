@@ -21,7 +21,8 @@
 
 #crUrlListItem::part(iconContainer) {
   background: none;
-  color: var(--color-sys-on-surface-subtle);
+  color: var(--color-organizer-panel-foreground-subtle,
+      var(--color-sys-on-surface-subtle));
   margin-inline-end: 6px;
   width: 28px;
 }
@@ -47,6 +48,8 @@
 #trailingIcon {
   --iron-icon-height: var(--organizer-list-section-item-trailing-icon-size_);
   --iron-icon-width: var(--organizer-list-section-item-trailing-icon-size_);
+  color: var(--color-organizer-panel-foreground-subtle,
+      var(--color-sys-on-surface-subtle));
 }
 
 #trailingIcon.has-action-button {
@@ -56,6 +59,8 @@
 }
 
 #actionButton {
+  --cr-icon-button-fill-color: var(--color-organizer-panel-foreground-subtle,
+      var(--cr-secondary-text-color));
   --cr-icon-button-icon-size:
       var(--organizer-list-section-item-trailing-icon-size_);
   --cr-icon-button-margin-end: 0;

@@ -27,9 +27,12 @@
 #expandButton {
   --cr-expand-button-icon-size: 20px;
   --cr-expand-button-size: 24px;
+  --cr-icon-button-fill-color: var(--color-organizer-panel-foreground-subtle,
+      var(--cr-secondary-text-color));
   --cr-icon-button-focus-outline-color: transparent;
   --cr-section-vertical-padding: 0;
-  color: var(--cr-secondary-text-color);
+  color: var(--color-organizer-panel-foreground-subtle,
+      var(--cr-secondary-text-color));
   flex: 1;
   font-size: 9px;
   font-weight: 700;
@@ -57,6 +60,8 @@
 }
 
 #menuButton {
+  --cr-icon-button-fill-color: var(--color-organizer-panel-foreground-subtle,
+      var(--cr-secondary-text-color));
   --cr-icon-button-icon-size: 16px;
   --cr-icon-button-margin-end: 12px;
   --cr-icon-button-margin-start: 0;

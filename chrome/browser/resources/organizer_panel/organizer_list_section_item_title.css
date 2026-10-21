@@ -21,7 +21,7 @@
 }
 
 .title-part {
-  color: var(--cr-primary-text-color);
+  color: var(--color-organizer-panel-foreground, var(--cr-primary-text-color));
   flex: 1;
   font-family: inherit;
   font-size: 12px;
@@ -34,7 +34,7 @@
 }
 
 .separator {
-  color: var(--cr-primary-text-color);
+  color: var(--color-organizer-panel-foreground, var(--cr-primary-text-color));
   flex-shrink: 0;
   font-size: 12px;
   font-weight: 500;

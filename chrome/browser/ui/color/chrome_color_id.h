@@ -555,6 +555,11 @@
   E_CPONLY(kColorOmniboxSelectionForeground) \
   E_CPONLY(kColorOmniboxText) \
   E_CPONLY(kColorOmniboxTextDimmed) \
+  /* Organizer Panel colors. */ \
+  E_CPONLY(kColorOrganizerPanelBackground) \
+  E_CPONLY(kColorOrganizerPanelDivider) \
+  E_CPONLY(kColorOrganizerPanelForeground) \
+  E_CPONLY(kColorOrganizerPanelForegroundSubtle) \
   /* Page Info colors */ \
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIcon) \
   E_CPONLY(kColorPageInfoChosenObjectDeleteButtonIconDisabled) \

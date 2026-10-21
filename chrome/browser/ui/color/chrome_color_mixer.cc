@@ -683,6 +683,24 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       ui::GetResultingPaintColor(kColorQuickAnswersReportQueryButtonBackground,
                                  ui::kColorPrimaryBackground),
       color_utils::kMinimumReadableContrastRatio);
+  mixer[kColorOrganizerPanelBackground] = {ui::kColorFrameActive};
+  const ui::ColorTransform foreground = ui::SelectBasedOnDarkInput(
+      kColorOrganizerPanelBackground,
+      /*output_transform_for_dark_input=*/ui::kColorRefNeutral90,
+      /*output_transform_for_light_input=*/ui::kColorRefNeutral10);
+  const ui::ColorTransform foreground_subtle = ui::SelectBasedOnDarkInput(
+      kColorOrganizerPanelBackground,
+      /*output_transform_for_dark_input=*/ui::kColorRefNeutral80,
+      /*output_transform_for_light_input=*/ui::kColorRefNeutral30);
+  mixer[kColorOrganizerPanelForeground] = ui::BlendForMinContrast(
+      foreground, kColorOrganizerPanelBackground,
+      ui::GetColorWithMaxContrast(kColorOrganizerPanelBackground));
+  mixer[kColorOrganizerPanelForegroundSubtle] = ui::BlendForMinContrast(
+      foreground_subtle, kColorOrganizerPanelBackground,
+      ui::GetColorWithMaxContrast(kColorOrganizerPanelBackground));
+  mixer[kColorOrganizerPanelDivider] =
+      ui::AlphaBlend(kColorOrganizerPanelForeground,
+                     kColorOrganizerPanelBackground, 0.2f * SK_AlphaOPAQUE);
   mixer[kColorScreenshotCapturedImageBackground] = {ui::kColorBubbleBackground};
   mixer[kColorScreenshotCapturedImageBorder] = {ui::kColorMidground};
   mixer[kColorShareThisTabAudioToggleBackground] = {
