@@ -56,11 +56,11 @@ extension ObjectGroup {
             "syncGetNestedArray": [
                 .plain(.jsGoldenEntryMojoArrayMojoArray),
                 .plain(.jsInt32),
-            ] => .jsGoldenPrimary_SyncGetNestedArray_ResponseParams,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncGetNestedArray_ResponseParams),
             "syncGetBools": [
-            ] => .jsGoldenPrimary_SyncGetBools_ResponseParams,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncGetBools_ResponseParams),
             "syncGetStrings": [
-            ] => .jsGoldenPrimary_SyncGetStrings_ResponseParams,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncGetStrings_ResponseParams),
             "getBools": [
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetBools_ResponseParams),
             "getStrings": [

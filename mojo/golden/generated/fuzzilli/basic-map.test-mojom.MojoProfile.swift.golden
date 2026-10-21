@@ -47,7 +47,7 @@ extension ObjectGroup {
                 .plain(.jsInt32),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_PassNestedMap_ResponseParams),
             "getMap": [
-            ] => .jsGoldenPrimary_GetMap_ResponseParams,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetMap_ResponseParams),
         ]
     )
 

@@ -46,7 +46,7 @@ extension ObjectGroup {
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_EnumForEnum_ResponseParams),
             "syncEnumForEnum": [
                 .plain(.jsGoldenPrimary_NestedEnum),
-            ] => .jsGoldenPrimary_SyncEnumForEnum_ResponseParams,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncEnumForEnum_ResponseParams),
         ]
     )
 

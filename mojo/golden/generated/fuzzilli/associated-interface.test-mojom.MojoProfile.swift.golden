@@ -120,9 +120,9 @@ extension ObjectGroup {
             "returnReceiver": [
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_ReturnReceiver_ResponseParams),
             "syncReturnReceiver": [
-            ] => .jsGoldenPrimary_SyncReturnReceiver_ResponseParams,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncReturnReceiver_ResponseParams),
             "syncReturnRemote": [
-            ] => .jsGoldenPrimary_SyncReturnRemote_ResponseParams,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncReturnRemote_ResponseParams),
         ]
     )
 

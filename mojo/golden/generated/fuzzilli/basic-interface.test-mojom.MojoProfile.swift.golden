@@ -52,10 +52,10 @@ extension ObjectGroup {
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_MethodWithEmptyReponse_ResponseParams),
             "syncMethod": [
                 .plain(.boolean),
-            ] => .jsGoldenPrimary_SyncMethod_ResponseParams,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncMethod_ResponseParams),
             "syncMethodWithEmptyReponse": [
                 .plain(.boolean),
-            ] => .jsGoldenPrimary_SyncMethodWithEmptyReponse_ResponseParams,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncMethodWithEmptyReponse_ResponseParams),
         ]
     )
 

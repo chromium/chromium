@@ -99,10 +99,11 @@ class Generator(generator.Generator):
     self.enums = {}
     self.unions = {}
     self.structs = {}
-    # Synchronous methods return JavaScript objects in the JavaScript bindings.
-    # Represent these return values as `mojom.Struct` objects, since we can then
-    # handle them the same way we handle Mojo structs in a few parts of the
-    # templates.
+    # Methods with a response return a Promise that resolves to a JavaScript
+    # object holding the response parameters. Represent these objects as
+    # `mojom.Struct` objects, since we can then handle them the same way we
+    # handle Mojo structs in a few parts of the templates. The lite bindings
+    # have no synchronous calls, so `[Sync]` methods also return a Promise.
     self.response_structs = {}
 
   def GetFilters(self):
@@ -112,7 +113,6 @@ class Generator(generator.Generator):
       "format_unique_name": self._FormatUniqueName,
       "fully_qualified_name": self._FullyQualifiedName,
       "is_array_kind": mojom.IsArrayKind,
-      "is_synchronous_method": self._IsSynchronousMethod,
       "namespace_as_array": self._NamespaceAsArray,
       "to_camel": generator.ToCamel,
     }
@@ -483,9 +483,6 @@ class Generator(generator.Generator):
       f"{self._FormatUniqueName(method.interface)}"
       f"{generator.ToCamel(method.name)}CallbackReceiver"
     )
-
-  def _IsSynchronousMethod(self, method):
-    return method.attributes and method.attributes['Sync']
 
   def _NamespaceAsArray(self, namespace):
     return namespace.split(".")

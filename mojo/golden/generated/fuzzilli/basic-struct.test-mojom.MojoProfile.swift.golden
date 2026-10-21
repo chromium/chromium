@@ -47,7 +47,7 @@ extension ObjectGroup {
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetStruct_ResponseParams),
             "syncGetStruct": [
                 .plain(.string),
-            ] => .jsGoldenPrimary_SyncGetStruct_ResponseParams,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncGetStruct_ResponseParams),
         ]
     )
 

@@ -46,7 +46,7 @@ extension ObjectGroup {
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetUnion_ResponseParams),
             "syncGetUnion": [
                 .plain(.boolean),
-            ] => .jsGoldenPrimary_SyncGetUnion_ResponseParams,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncGetUnion_ResponseParams),
         ]
     )
 

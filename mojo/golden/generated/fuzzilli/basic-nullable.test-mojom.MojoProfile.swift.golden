@@ -87,7 +87,7 @@ extension ObjectGroup {
             "syncGetArrayValue": [
                 .plain(.jsFloatMojoArray),
                 .plain(.jsInt32),
-            ] => .jsGoldenPrimary_SyncGetArrayValue_ResponseParams,
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncGetArrayValue_ResponseParams),
             "syncGetMapValue": [
                 .plain(.jsString_Uint64MojoMap),
                 .plain(.string),

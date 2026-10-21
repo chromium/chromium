@@ -119,11 +119,7 @@ extension ObjectGroup {
             #}
             ] => {{ "" }}
             {%- if method.response_param_struct -%}
-                {%- if method|is_synchronous_method -%}
-                .{{method.response_param_struct|format_il_type}}
-                {%- else -%}
                 .jsPromise(resolvingTo: .{{method.response_param_struct|format_il_type}})
-                {%- endif -%}
             {%- else -%}
                 .undefined
             {%- endif %},
