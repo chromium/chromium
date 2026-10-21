@@ -1,0 +1,25 @@
+agentic_review {
+  capability_groups {
+    path_expression: "testing/.*"
+    rules: "agents/knowledge_base/rules/testing/consistent-naming-for-platform-study-configs.md"
+    rules: "agents/knowledge_base/rules/testing/consolidate-multi-feature-field-trials-in-testing-config.md"
+    rules: "agents/knowledge_base/rules/testing/document-fuzzilli-custom-code-generators.md"
+    rules: "agents/knowledge_base/rules/testing/enable-prerequisite-gating-params-in-testing-config.md"
+    rules: "agents/knowledge_base/rules/testing/exclude-custom-generators-from-fuzzilli-keep-generators.md"
+    rules: "agents/knowledge_base/rules/testing/exclude-dollar-helper-property-from-callback-router-events.md"
+    rules: "agents/knowledge_base/rules/testing/helios-prefix-for-ios-gemini-studies.md"
+    rules: "agents/knowledge_base/rules/testing/inline-fuzzilli-property-and-method-names.md"
+    rules: "agents/knowledge_base/rules/testing/keep-fieldtrial-testing-config-for-default-disabled-features.md"
+    rules: "agents/knowledge_base/rules/testing/list-only-launch-candidate-experiment-in-testing-config.md"
+    rules: "agents/knowledge_base/rules/testing/match-virtual-test-suites-with-field-trial-experiments.md"
+    rules: "agents/knowledge_base/rules/testing/no-afl-fuzzing-engine.md"
+    rules: "agents/knowledge_base/rules/testing/omit-unsupported-platforms-in-fieldtrial-testing-config.md"
+    rules: "agents/knowledge_base/rules/testing/separate-fieldtrial-testing-config-from-large-feature-cls.md"
+    rules: "agents/knowledge_base/rules/testing/use-disable-features-for-default-enabled-features.md"
+  }
+  capability_groups {
+    path_expression: "testing/.*"
+    content_patterns: "\\b(?:BASE_(?:DECLARE_)?FEATURE|FeatureParam|FeatureList)\\b"
+    rules: "agents/knowledge_base/rules/testing/explicitly-override-feature-flags-in-affected-tests.md"
+  }
+}
