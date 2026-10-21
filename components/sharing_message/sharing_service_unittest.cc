@@ -492,6 +492,33 @@ TEST_F(SharingServiceTest, DeviceUnregistrationSyncDisabled) {
             GetSharingService()->GetStateForTesting());
 }
 
+TEST_F(SharingServiceTest, DeviceUnregistrationWhileRegistering) {
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kPreferences});
+
+  ASSERT_EQ(SharingService::State::DISABLED,
+            GetSharingService()->GetStateForTesting());
+
+  // Put SharingService into REGISTERING state via a transient error.
+  sharing_device_registration_->SetResult(
+      SharingDeviceRegistrationResult::kFcmTransientError);
+  test_sync_service_.FireStateChanged();
+  ASSERT_EQ(1, sharing_device_registration_->registration_attempts());
+  ASSERT_EQ(SharingService::State::REGISTERING,
+            GetSharingService()->GetStateForTesting());
+
+  // Signing out while REGISTERING should unregister and transition to DISABLED.
+  sharing_device_registration_->SetResult(
+      SharingDeviceRegistrationResult::kSuccess);
+  test_sync_service_.SetSignedOut();
+  EXPECT_CALL(*fcm_handler_, StopListening());
+  test_sync_service_.FireStateChanged();
+  EXPECT_EQ(1, sharing_device_registration_->unregistration_attempts());
+  EXPECT_EQ(SharingService::State::DISABLED,
+            GetSharingService()->GetStateForTesting());
+}
+
 TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
   test_sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
