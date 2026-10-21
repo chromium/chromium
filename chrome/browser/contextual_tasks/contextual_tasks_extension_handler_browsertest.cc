@@ -4435,4 +4435,324 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(model->lens_crop().has_value());
 }
 
+class ContextualTasksExtensionHandlerTabBasedSuggestionsBrowserTest
+    : public ContextualTasksExtensionHandlerBrowserTestBase {
+ public:
+  ContextualTasksExtensionHandlerTabBasedSuggestionsBrowserTest()
+      : ContextualTasksExtensionHandlerBrowserTestBase(
+            {kContextualTasks, kContextualTasksRearchitecture,
+             kContextualTasksForceEntryPointEligibility,
+             kContextualTasksTabBasedSuggestions},
+            {}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerTabBasedSuggestionsBrowserTest,
+    OnSuggestInputsChanged_ExplicitTabUploadDeleteAndSubmit) {
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser())->GetActiveTab();
+  ASSERT_NE(active_tab, nullptr);
+  int32_t tab_id = active_tab->GetHandle().raw_value();
+
+  ON_CALL(*mock_session_handle_, search_session_id())
+      .WillByDefault(Return("test_suggest_session"));
+
+  // 1. Adding an explicit tab starts uploading: emits CONTEXT_LIBRARY mount
+  // and CONTEXT_STATE_UPLOADING, but does not emit OnSuggestInputsChanged while
+  // the upload is still in flight.
+  base::RunLoop add_run_loop;
+  base::UnguessableToken token1;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_inject_chrome_input());
+        EXPECT_EQ(
+            message->inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
+        EXPECT_TRUE(message->inject_chrome_input().is_active());
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_on_context_state_changed());
+        EXPECT_EQ(message->on_context_state_changed().context_state(),
+                  lens::ClientToSearchMessage::OnContextStateChanged::
+                      CONTEXT_STATE_UPLOADING);
+        add_run_loop.Quit();
+      });
+
+  static_cast<searchbox::mojom::PageHandler*>(handler_)->AddTabContext(
+      tab_id, /*delay_upload=*/false,
+      searchbox::mojom::TabAttachmentSource::kContextMenu,
+      base::BindLambdaForTesting(
+          [&](base::expected<base::UnguessableToken,
+                             contextual_search::ContextUploadErrorType>
+                  result) {
+            ASSERT_TRUE(result.has_value());
+            token1 = result.value();
+          }));
+  add_run_loop.Run();
+
+  // 2. When the explicit tab upload completes with a valid FileInfo and
+  // request_id, Chrome emits CONTEXT_STATE_READY followed by
+  // OnSuggestInputsChanged containing the uploaded tab's AddedContext.
+  contextual_search::FileInfo file_info1;
+  file_info1.file_token = token1;
+  lens::LensOverlayRequestId req_id1;
+  req_id1.set_context_id(999);
+  file_info1.request_id = req_id1;
+  ON_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(
+          Return(std::vector<contextual_search::FileInfo>{file_info1}));
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  base::RunLoop ready_run_loop;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_on_context_state_changed());
+        EXPECT_EQ(message->on_context_state_changed().context_state(),
+                  lens::ClientToSearchMessage::OnContextStateChanged::
+                      CONTEXT_STATE_READY);
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_on_suggest_inputs_changed());
+        const auto& suggest_inputs = message->on_suggest_inputs_changed();
+        ASSERT_EQ(suggest_inputs.added_contexts_size(), 1);
+        EXPECT_EQ(suggest_inputs.added_contexts(0).search_session_id(),
+                  "test_suggest_session");
+        EXPECT_EQ(suggest_inputs.added_contexts(0).request_id().context_id(),
+                  999);
+        EXPECT_EQ(
+            suggest_inputs.added_contexts(0).contextual_input_upload_type(),
+            lens::LensOverlayContextualInputUploadType::
+                CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+        ready_run_loop.Quit();
+      });
+
+  user_data->OnContextUploadStatusChanged(
+      token1, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  ready_run_loop.Run();
+
+  // 3. Deleting the tab context emits CONTEXT_LIBRARY unmount,
+  // CONTEXT_STATE_NONE, and OnSuggestInputsChanged with empty added_contexts.
+  base::RunLoop delete_run_loop;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_inject_chrome_input());
+        EXPECT_FALSE(message->inject_chrome_input().is_active());
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_on_context_state_changed());
+        EXPECT_EQ(message->on_context_state_changed().context_state(),
+                  lens::ClientToSearchMessage::OnContextStateChanged::
+                      CONTEXT_STATE_NONE);
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_on_suggest_inputs_changed());
+        EXPECT_EQ(message->on_suggest_inputs_changed().added_contexts_size(),
+                  0);
+        delete_run_loop.Quit();
+      });
+
+  static_cast<searchbox::mojom::PageHandler*>(handler_)->DeleteTabContext(
+      tab_id);
+  delete_run_loop.Run();
+
+  // 4. Re-add the tab and complete upload -> emits OnSuggestInputsChanged, then
+  // submitting the query clears suggest inputs back to empty added_contexts.
+  base::RunLoop readd_run_loop;
+  base::UnguessableToken token2;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_on_context_state_changed());
+        readd_run_loop.Quit();
+      });
+
+  static_cast<searchbox::mojom::PageHandler*>(handler_)->AddTabContext(
+      tab_id, /*delay_upload=*/false,
+      searchbox::mojom::TabAttachmentSource::kContextMenu,
+      base::BindLambdaForTesting(
+          [&](base::expected<base::UnguessableToken,
+                             contextual_search::ContextUploadErrorType>
+                  result) {
+            ASSERT_TRUE(result.has_value());
+            token2 = result.value();
+          }));
+  readd_run_loop.Run();
+
+  contextual_search::FileInfo file_info2;
+  file_info2.file_token = token2;
+  lens::LensOverlayRequestId req_id2;
+  req_id2.set_context_id(1000);
+  file_info2.request_id = req_id2;
+  ON_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(
+          Return(std::vector<contextual_search::FileInfo>{file_info2}));
+
+  base::RunLoop ready2_run_loop;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_on_context_state_changed());
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_on_suggest_inputs_changed());
+        ASSERT_EQ(message->on_suggest_inputs_changed().added_contexts_size(),
+                  1);
+        EXPECT_EQ(message->on_suggest_inputs_changed()
+                      .added_contexts(0)
+                      .request_id()
+                      .context_id(),
+                  1000);
+        ready2_run_loop.Quit();
+      });
+
+  user_data->OnContextUploadStatusChanged(
+      token2, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  ready2_run_loop.Run();
+
+  base::RunLoop submit_run_loop;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_on_submit_query_response());
+        ASSERT_EQ(message->on_submit_query_response().added_contexts_size(), 1);
+        EXPECT_EQ(message->on_submit_query_response()
+                      .added_contexts(0)
+                      .request_id()
+                      .context_id(),
+                  1000);
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_inject_chrome_input());
+        EXPECT_FALSE(message->inject_chrome_input().is_active());
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_on_context_state_changed());
+        EXPECT_EQ(message->on_context_state_changed().context_state(),
+                  lens::ClientToSearchMessage::OnContextStateChanged::
+                      CONTEXT_STATE_NONE);
+      })
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        ASSERT_TRUE(message->has_on_suggest_inputs_changed());
+        EXPECT_EQ(message->on_suggest_inputs_changed().added_contexts_size(),
+                  0);
+        submit_run_loop.Quit();
+      });
+
+  lens::SearchToClientMessage request;
+  request.mutable_on_submit_query_request();
+  const size_t size = request.ByteSizeLong();
+  std::vector<uint8_t> serialized_message(size);
+  request.SerializeToArray(serialized_message.data(), size);
+
+  SimulateUserInteraction();
+  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  submit_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerTabBasedSuggestionsBrowserTest,
+    ZeroIframes_OnSuggestInputsChangedQueuedUntilHandshake) {
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  // Unregister the primary extension frame handler to simulate 0 extension
+  // iframes mounted in the page (Service Worker Port mode).
+  user_data->UnregisterExtensionFrame(handler_);
+  EXPECT_FALSE(user_data->HasBoundExtensionFrame());
+  user_data->OnDocumentConnected(web_contents_->GetPrimaryMainFrame(),
+                                 base::DoNothing());
+
+  std::vector<lens::ClientToSearchMessage> dispatched_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage& message) {
+        dispatched_messages.push_back(message);
+      }));
+
+  // Attach an explicit tab and finish upload before handshake completes.
+  contextual_search::FileInfo file_info;
+  file_info.file_token = base::UnguessableToken::Create();
+  AttachActiveTab(file_info.file_token);
+  lens::LensOverlayRequestId req_id;
+  req_id.set_context_id(888);
+  file_info.request_id = req_id;
+
+  ON_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(
+          Return(std::vector<contextual_search::FileInfo>{file_info}));
+  ON_CALL(*mock_session_handle_, search_session_id())
+      .WillByDefault(Return("zero_iframe_suggest_session"));
+
+  user_data->OnTabContextUploadStarted(file_info.file_token);
+  user_data->UpdateContextLibraryInputState();
+  user_data->OnContextUploadStatusChanged(
+      file_info.file_token, lens::MimeType::kHtml,
+      contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
+  EXPECT_TRUE(dispatched_messages.empty());
+
+  lens::SearchToClientMessage handshake_resp;
+  handshake_resp.mutable_handshake_response()->set_auth_user_index(0);
+  std::string resp_str;
+  ASSERT_TRUE(handshake_resp.SerializeToString(&resp_str));
+  std::vector<uint8_t> resp_bytes(resp_str.begin(), resp_str.end());
+
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(resp_bytes));
+  ASSERT_EQ(dispatched_messages.size(), 4u);
+  EXPECT_TRUE(dispatched_messages[0].has_inject_chrome_input());
+  EXPECT_EQ(dispatched_messages[0].inject_chrome_input().input_type(),
+            lens::ClientToSearchMessage::InjectChromeInput::CONTEXT_LIBRARY);
+  EXPECT_TRUE(dispatched_messages[0].inject_chrome_input().is_active());
+  ASSERT_TRUE(dispatched_messages[1].has_on_context_state_changed());
+  EXPECT_EQ(dispatched_messages[1].on_context_state_changed().context_state(),
+            lens::ClientToSearchMessage::OnContextStateChanged::
+                CONTEXT_STATE_UPLOADING);
+  ASSERT_TRUE(dispatched_messages[2].has_on_context_state_changed());
+  EXPECT_EQ(
+      dispatched_messages[2].on_context_state_changed().context_state(),
+      lens::ClientToSearchMessage::OnContextStateChanged::CONTEXT_STATE_READY);
+  ASSERT_TRUE(dispatched_messages[3].has_on_suggest_inputs_changed());
+  const auto& suggest_inputs =
+      dispatched_messages[3].on_suggest_inputs_changed();
+  ASSERT_EQ(suggest_inputs.added_contexts_size(), 1);
+  EXPECT_EQ(suggest_inputs.added_contexts(0).search_session_id(),
+            "zero_iframe_suggest_session");
+  EXPECT_EQ(suggest_inputs.added_contexts(0).request_id().context_id(), 888);
+}
+
 }  // namespace contextual_tasks
