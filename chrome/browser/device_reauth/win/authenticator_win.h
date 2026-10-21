@@ -9,6 +9,16 @@
 
 #include "base/functional/callback.h"
 
+// Enum specifying possible states of Windows Hello authentication. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class AuthenticationStateWin {
+  kStarted = 0,
+  kFinished = 1,
+  kCanceledByChrome = 2,
+  kMaxValue = kCanceledByChrome,
+};
+
 // Enum specifying possible states of biometric authentication availability on
 // Windows. These values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused.

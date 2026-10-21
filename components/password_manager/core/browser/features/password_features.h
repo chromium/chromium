@@ -71,6 +71,13 @@ BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 BASE_DECLARE_FEATURE(kCredentialManagementUnifiedUi);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_WIN)
+// Killswitch for invoking the pending callback and recording kCanceledByChrome
+// when DeviceAuthenticatorWin::Cancel() is called.
+// TODO(crbug.com/515090582): Remove in M163.
+BASE_DECLARE_FEATURE(kDeviceAuthenticatorWinCancel);
+#endif  // BUILDFLAG(IS_WIN)
+
 // Killswitch to revert the device reauth refactor that splits availability
 // checking from authentication into `DeviceAuthAvailabilityChecker`.
 BASE_DECLARE_FEATURE(kDeviceReauthRefactor);

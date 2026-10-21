@@ -338,11 +338,9 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Dependencies deps)
 PasswordsPrivateDelegateImpl::~PasswordsPrivateDelegateImpl() {
   saved_passwords_presenter_.RemoveObserver(this);
   install_manager_observation_.Reset();
-#if !BUILDFLAG(IS_WIN)
   if (device_authenticator_) {
     device_authenticator_->Cancel();
   }
-#endif
   device_authenticator_.reset();
 }
 

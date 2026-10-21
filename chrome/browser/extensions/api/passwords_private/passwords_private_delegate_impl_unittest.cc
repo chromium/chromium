@@ -1231,6 +1231,9 @@ TEST_F(PasswordsPrivateDelegateImplTest,
   EXPECT_CALL(*biometric_authenticator_ptr, Cancel).Times(0);
   EXPECT_CALL(result_callback, Run(false));
   delegate->SwitchBiometricAuthBeforeFillingState(result_callback.Get());
+  testing::Mock::VerifyAndClearExpectations(biometric_authenticator_ptr);
+
+  EXPECT_CALL(*biometric_authenticator_ptr, Cancel);
 }
 #endif
 

@@ -4,12 +4,14 @@
 
 #include "chrome/browser/device_reauth/win/device_authenticator_win.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -60,6 +62,8 @@ bool DeviceAuthenticatorWin::CanAuthenticateWithBiometricOrScreenLock() {
 void DeviceAuthenticatorWin::AuthenticateWithMessage(
     const std::u16string& message,
     AuthenticateCallback callback) {
+  // Callers must ensure that previous authentication is finished or canceled.
+  CHECK(!callback_);
   if (!NeedsToAuthenticate()) {
     RecordAuthResultSkipped();
 
@@ -68,15 +72,33 @@ void DeviceAuthenticatorWin::AuthenticateWithMessage(
     return;
   }
 
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceAuthenticatorWinCancel)) {
+    authenticator_->AuthenticateUser(
+        message,
+        base::BindOnce(&DeviceAuthenticatorWin::OnAuthenticationCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  callback_ = std::move(callback);
   authenticator_->AuthenticateUser(
       message,
       base::BindOnce(&DeviceAuthenticatorWin::OnAuthenticationCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), base::NullCallback()));
 }
 
 void DeviceAuthenticatorWin::Cancel() {
-  // TODO(crbug.com/40235610): Add implementation of the Cancel method.
-  NOTIMPLEMENTED();
+  if (callback_) {
+    // Note that `kFinished` will still be recorded when the OS prompt
+    // eventually closes.
+    base::UmaHistogramEnumeration("PasswordManager.AuthenticationStateWin",
+                                  AuthenticationStateWin::kCanceledByChrome);
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    // No code should be run after the callback as the callback could already be
+    // destroying "this".
+    std::move(callback_).Run(/*success=*/false);
+  }
 }
 
 // static
@@ -86,8 +108,20 @@ void DeviceAuthenticatorWin::CacheIfBiometricsAvailable(
 }
 
 void DeviceAuthenticatorWin::OnAuthenticationCompleted(
-    base::OnceCallback<void(bool)> callback,
+    AuthenticateCallback callback,
     bool success) {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceAuthenticatorWinCancel)) {
+    RecordAuthenticationTimeIfSuccessful(success);
+    CHECK(callback);
+    std::move(callback).Run(success);
+    return;
+  }
+  if (!callback_) {
+    return;
+  }
   RecordAuthenticationTimeIfSuccessful(success);
-  std::move(callback).Run(success);
+  // No code should be run after the callback as the callback could already be
+  // destroying "this".
+  std::move(callback_).Run(success);
 }

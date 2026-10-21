@@ -32,9 +32,9 @@ class DeviceAuthenticatorWin : public DeviceAuthenticatorCommon {
   void AuthenticateWithMessage(const std::u16string& message,
                                AuthenticateCallback callback) override;
 
-  // Authentication on Windows is not cancellable. This should not be a problem
-  // since the authentication flow is blocking the browser UI and the user is
-  // forced to interact with it.
+  // Cancels the ongoing authentication if present, invoking `callback_` with
+  // false. Note that the OS authentication dialog on Windows cannot be
+  // dismissed programmatically.
   void Cancel() override;
 
   // Asks Windows if user has configured and enabled biometrics on
@@ -45,12 +45,14 @@ class DeviceAuthenticatorWin : public DeviceAuthenticatorCommon {
       AuthenticatorWinInterface* authenticator);
 
  private:
-  // Records authentication status and executes |callback| with |success|
-  // parameter.
-  void OnAuthenticationCompleted(base::OnceCallback<void(bool)> callback,
-                                 bool success);
+  // Records authentication status and executes `callback` (or `callback_` when
+  // `kDeviceAuthenticatorWinCancel` is enabled) with `success` parameter.
+  void OnAuthenticationCompleted(AuthenticateCallback callback, bool success);
 
   std::unique_ptr<AuthenticatorWinInterface> authenticator_;
+
+  // Callback to be executed after the authentication completes.
+  AuthenticateCallback callback_;
 
   // Factory for weak pointers to this class.
   base::WeakPtrFactory<DeviceAuthenticatorWin> weak_ptr_factory_{this};

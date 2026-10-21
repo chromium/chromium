@@ -205,6 +205,7 @@ chromium-metrics-reviews@google.com.
   <summary>State of authenticating using Windows Hello.</summary>
   <int value="0" label="Authentication was started."/>
   <int value="1" label="Authentication was finished."/>
+  <int value="2" label="Authentication was canceled by Chrome."/>
 </enum>
 
 <enum name="AutoSigninFirstRun">

@@ -14,12 +14,14 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -227,6 +229,63 @@ TEST_F(DeviceAuthenticatorWinTest, RecordFailAuthHistogram) {
 
   histogram_tester().ExpectUniqueSample(kHistogramName, ReauthResult::kFailure,
                                         1);
+}
+
+TEST_F(DeviceAuthenticatorWinTest, CancelOngoingAuthentication) {
+  base::OnceCallback<void(bool)> system_auth_callback;
+  EXPECT_CALL(system_authenticator(), AuthenticateUser)
+      .WillOnce(testing::WithArg<1>(
+          [&](auto callback) { system_auth_callback = std::move(callback); }));
+
+  base::MockCallback<DeviceAuthenticator::AuthenticateCallback> result_callback;
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.",
+      result_callback.Get());
+
+  EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/false));
+  authenticator()->Cancel();
+
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.AuthenticationStateWin",
+      AuthenticationStateWin::kCanceledByChrome, 1);
+
+  // Late OS completion should be ignored and not invoke the callback again or
+  // update the auth validity timestamp.
+  EXPECT_CALL(result_callback, Run).Times(0);
+  std::move(system_auth_callback).Run(/*auth_succeeded=*/true);
+  histogram_tester().ExpectTotalCount(kHistogramName, 0);
+}
+
+TEST_F(DeviceAuthenticatorWinTest, CancelWithoutOngoingAuthentication) {
+  authenticator()->Cancel();
+
+  histogram_tester().ExpectTotalCount("PasswordManager.AuthenticationStateWin",
+                                      0);
+}
+
+TEST_F(DeviceAuthenticatorWinTest, CancelOngoingAuthenticationFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kDeviceAuthenticatorWinCancel);
+
+  base::OnceCallback<void(bool)> system_auth_callback;
+  EXPECT_CALL(system_authenticator(), AuthenticateUser)
+      .WillOnce(testing::WithArg<1>(
+          [&](auto callback) { system_auth_callback = std::move(callback); }));
+
+  base::MockCallback<DeviceAuthenticator::AuthenticateCallback> result_callback;
+  authenticator()->AuthenticateWithMessage(
+      /*message=*/u"Chrome is trying to show passwords.",
+      result_callback.Get());
+
+  EXPECT_CALL(result_callback, Run).Times(0);
+  authenticator()->Cancel();
+
+  histogram_tester().ExpectTotalCount("PasswordManager.AuthenticationStateWin",
+                                      0);
+
+  EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/true));
+  std::move(system_auth_callback).Run(/*auth_succeeded=*/true);
 }
 
 // Verifies that the caching mechanism for BiometricsAvailable works.
