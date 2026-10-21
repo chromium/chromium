@@ -15,7 +15,9 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
@@ -504,6 +506,8 @@ void ClientTagBasedDataTypeProcessor::Put(
   CHECK(bridge_->SupportsIncrementalUpdates());
   CHECK(data) << DataTypeToDebugString(type_);
   CHECK(!data->is_deleted()) << DataTypeToDebugString(type_);
+  CHECK(base::IsStringUTF8(data->name), base::NotFatalUntil::M162)
+      << DataTypeToDebugString(type_);
   CHECK(!data->specifics.has_encrypted()) << DataTypeToDebugString(type_);
   CHECK(!storage_key.empty()) << DataTypeToDebugString(type_);
   CHECK_EQ(type_, GetDataTypeFromSpecifics(data->specifics))
@@ -1204,6 +1208,8 @@ void ClientTagBasedDataTypeProcessor::ConsumeDataBatch(
         entity_tracker_->GetEntityForStorageKey(storage_key);
     // If the entity wasn't deleted or updated with new commit.
     if (entity != nullptr && entity->RequiresCommitData()) {
+      CHECK(base::IsStringUTF8(data->name), base::NotFatalUntil::M162)
+          << DataTypeToDebugString(type_);
       // SetCommitData will update EntityData's fields with values from
       // metadata.
       entity->SetCommitData(std::move(data));
