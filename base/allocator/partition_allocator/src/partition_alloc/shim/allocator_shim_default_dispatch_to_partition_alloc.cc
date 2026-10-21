@@ -104,7 +104,7 @@ class LeakySingleton {
   }
 
  private:
-  T* GetSlowPath();
+  PA_NOINLINE T* GetSlowPath();
 
   std::atomic<T*> instance_;
   // Before C++20, having an initializer here causes a "variable does not have a
