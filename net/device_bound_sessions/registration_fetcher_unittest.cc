@@ -4,8 +4,10 @@
 
 #include "net/device_bound_sessions/registration_fetcher.h"
 
+#include <atomic>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64url.h"
@@ -2009,19 +2011,30 @@ TEST_F(RegistrationTest, ServerErrorReturnOne403ThenSuccess) {
           "auth_cookie", "Domain=.a.test; Path=/; Secure; SameSite=None")));
 }
 
+// Redirects to `path` on `host`. The port comes from `request.base_url`,
+// because `EmbeddedTestServer` assigns it dynamically.
 std::unique_ptr<test_server::HttpResponse> ReturnRedirect(
-    const std::string& location,
+    std::string_view host,
+    std::string_view path,
     const test_server::HttpRequest& request) {
-  if (request.relative_url != "/") {
-    return nullptr;
-  }
-
+  GURL::Replacements replacements;
+  replacements.SetHostStr(host);
+  replacements.SetPathStr(path);
   auto response = std::make_unique<test_server::BasicHttpResponse>();
   response->set_code(HTTP_FOUND);
-  response->AddCustomHeader("Location", location);
-  response->set_content("Redirected");
-  response->set_content_type("text/plain");
-  return std::move(response);
+  response->AddCustomHeader(
+      "Location", request.base_url.ReplaceComponents(replacements).spec());
+  return response;
+}
+
+// Counts requests in `hits` before running `callback`. `hits` is atomic
+// because `EmbeddedTestServer` runs handlers on its own thread.
+std::unique_ptr<test_server::HttpResponse> CountRequest(
+    std::atomic<int>* hits,
+    const test_server::EmbeddedTestServer::HandleRequestCallback& callback,
+    const test_server::HttpRequest& request) {
+  ++*hits;
+  return callback.Run(request);
 }
 
 std::unique_ptr<test_server::HttpResponse> CheckRedirect(
@@ -2039,8 +2052,9 @@ std::unique_ptr<test_server::HttpResponse> CheckRedirect(
 TEST_F(RegistrationTest, FollowHttpsToHttpsRedirect) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   bool followed = false;
-  server_.RegisterRequestHandler(
-      base::BindRepeating(&ReturnRedirect, kRedirectPath));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnForHostAndPath, "a.test", "/",
+      base::BindRepeating(&ReturnRedirect, "a.test", kRedirectPath)));
   server_.RegisterRequestHandler(
       base::BindRepeating(&CheckRedirect, &followed));
   // Required to add a certificate for a.test, which is used below.
@@ -3935,6 +3949,7 @@ TEST_F(RegistrationTest, FederatedTooManyRelying) {
       /*authorization=*/std::nullopt);
   auto session_or_error =
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
+  ASSERT_NE(session_or_error.SessionErrorForTesting(), nullptr);
   EXPECT_EQ(session_or_error.SessionErrorForTesting()->type,
             SessionError::kTooManyRelyingOriginLabels);
 }
@@ -4109,6 +4124,219 @@ TEST_F(RegistrationTest, FederatedTargetOriginNonRegistrableRejected) {
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
   EXPECT_EQ(session_or_error.SessionErrorForTesting()->type,
             SessionError::kTooManyRelyingOriginLabels);
+}
+
+constexpr std::string_view kFederatedRedirectHistogram =
+    "Net.DeviceBoundSessions.FederatedRegistration.Redirect";
+// Buckets of `kFederatedRedirectHistogram`.
+constexpr int kNoRedirectBucket = 0;
+constexpr int kSameOriginBucket = 1;
+constexpr int kCrossOriginBucket = 2;
+
+// Federated registration of https://rp.a.test/redirect with provider.a.test
+// as the provider. Both .well-known files authorize the pair, and a.test lets
+// rp.a.test and other.a.test register the site-wide session in
+// `ReturnSubdomainResponse()`, so only the redirect handlers registered by each
+// test decide the outcome.
+class RegistrationFederatedRedirectTest : public RegistrationTest {
+ protected:
+  RegistrationFederatedRedirectTest() {
+    server_.RegisterRequestHandler(
+        base::BindRepeating(&ReturnForHostAndPath, "provider.a.test",
+                            "/.well-known/device-bound-sessions",
+                            base::BindRepeating(&ReturnWellKnown,
+                                                R"json({
+                                                  "relying_origins": [ "https://rp.a.test:$1" ]
+                                                })json")));
+    server_.RegisterRequestHandler(
+        base::BindRepeating(&ReturnForHostAndPath, "rp.a.test",
+                            "/.well-known/device-bound-sessions",
+                            base::BindRepeating(&ReturnWellKnown,
+                                                R"json({
+                              "provider_origin": "https://provider.a.test:$1"
+                            })json")));
+    // Registered last, because `ReturnForHostAndPath()` also matches the
+    // subdomains of a.test.
+    server_.RegisterRequestHandler(base::BindRepeating(
+        &ReturnForHostAndPath, "a.test", "/.well-known/device-bound-sessions",
+        base::BindRepeating(&ReturnWellKnown,
+                            R"json({
+                              "registering_origins": [
+                                "https://rp.a.test:$1",
+                                "https://other.a.test:$1"
+                              ]
+                            })json")));
+  }
+
+  void AddRedirect(std::string_view from_host,
+                   std::string_view from_path,
+                   std::string_view to_host,
+                   std::string_view to_path) {
+    server_.RegisterRequestHandler(base::BindRepeating(
+        &ReturnForHostAndPath, from_host, from_path,
+        base::BindRepeating(&ReturnRedirect, to_host, to_path)));
+  }
+
+  // Serves `ReturnSubdomainResponse()` at `host` + `path` and counts requests
+  // in `hits`.
+  void AddTarget(std::string_view host,
+                 std::string_view path,
+                 std::atomic<int>* hits) {
+    server_.RegisterRequestHandler(base::BindRepeating(
+        &ReturnForHostAndPath, host, path,
+        base::BindRepeating(
+            &CountRequest, hits,
+            base::BindRepeating(&ReturnSubdomainResponse, &server_))));
+  }
+
+  RegistrationResult Fetch() {
+    return FetchWithFederatedKey(
+        RegistrationRequestParam::CreateForTesting(
+            server_.GetURL("rp.a.test", "/redirect"),
+            /*session_identifier=*/std::nullopt, kChallenge,
+            /*authorization=*/std::nullopt),
+        CreateSigningKey(), server_.GetURL("provider.a.test", "/"));
+  }
+
+  void DisableBlockRedirects() {
+    AddScopedFeatureList().InitAndDisableFeature(
+        features::kDeviceBoundSessionsFederatedRegistrationBlockRedirects);
+  }
+
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider_;
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(RegistrationFederatedRedirectTest, SameOriginBlocked) {
+  std::atomic<int> target_hits = 0;
+  AddRedirect("rp.a.test", "/redirect", "rp.a.test", "/reg");
+  AddTarget("rp.a.test", "/reg", &target_hits);
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result = Fetch();
+  ASSERT_NE(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(result.SessionErrorForTesting()->type,
+            SessionError::kFederatedRegistrationRedirected);
+  EXPECT_EQ(target_hits.load(), 0);
+  histogram_tester_.ExpectUniqueSample(kFederatedRedirectHistogram,
+                                       kSameOriginBucket, 1);
+}
+
+TEST_F(RegistrationFederatedRedirectTest, CrossOriginBlocked) {
+  std::atomic<int> target_hits = 0;
+  AddRedirect("rp.a.test", "/redirect", "other.a.test", "/reg");
+  AddTarget("other.a.test", "/reg", &target_hits);
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result = Fetch();
+  ASSERT_NE(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(result.SessionErrorForTesting()->type,
+            SessionError::kFederatedRegistrationRedirected);
+  EXPECT_EQ(target_hits.load(), 0);
+  histogram_tester_.ExpectUniqueSample(kFederatedRedirectHistogram,
+                                       kCrossOriginBucket, 1);
+}
+
+TEST_F(RegistrationFederatedRedirectTest, RoundTripBlockedAtFirstHop) {
+  std::atomic<int> bounce_hits = 0;
+  AddRedirect("rp.a.test", "/redirect", "other.a.test", "/bounce");
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnForHostAndPath, "other.a.test", "/bounce",
+      base::BindRepeating(
+          &CountRequest, &bounce_hits,
+          base::BindRepeating(&ReturnRedirect, "rp.a.test", "/reg"))));
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result = Fetch();
+  ASSERT_NE(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(result.SessionErrorForTesting()->type,
+            SessionError::kFederatedRegistrationRedirected);
+  EXPECT_EQ(bounce_hits.load(), 0);
+  histogram_tester_.ExpectUniqueSample(kFederatedRedirectHistogram,
+                                       kCrossOriginBucket, 1);
+}
+
+TEST_F(RegistrationFederatedRedirectTest,
+       SameOriginFollowedWithoutBlockRedirects) {
+  DisableBlockRedirects();
+  std::atomic<int> target_hits = 0;
+  AddRedirect("rp.a.test", "/redirect", "rp.a.test", "/reg");
+  AddTarget("rp.a.test", "/reg", &target_hits);
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result = Fetch();
+  EXPECT_EQ(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(target_hits.load(), 1);
+  histogram_tester_.ExpectUniqueSample(kFederatedRedirectHistogram,
+                                       kSameOriginBucket, 1);
+}
+
+TEST_F(RegistrationFederatedRedirectTest,
+       CrossOriginFollowedWithoutBlockRedirects) {
+  DisableBlockRedirects();
+  std::atomic<int> target_hits = 0;
+  AddRedirect("rp.a.test", "/redirect", "other.a.test", "/reg");
+  AddTarget("other.a.test", "/reg", &target_hits);
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result = Fetch();
+  EXPECT_EQ(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(target_hits.load(), 1);
+  histogram_tester_.ExpectUniqueSample(kFederatedRedirectHistogram,
+                                       kCrossOriginBucket, 1);
+}
+
+TEST_F(RegistrationFederatedRedirectTest,
+       RoundTripFollowedWithoutBlockRedirects) {
+  DisableBlockRedirects();
+  std::atomic<int> bounce_hits = 0;
+  std::atomic<int> target_hits = 0;
+  AddRedirect("rp.a.test", "/redirect", "other.a.test", "/bounce");
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnForHostAndPath, "other.a.test", "/bounce",
+      base::BindRepeating(
+          &CountRequest, &bounce_hits,
+          base::BindRepeating(&ReturnRedirect, "rp.a.test", "/reg"))));
+  AddTarget("rp.a.test", "/reg", &target_hits);
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result = Fetch();
+  EXPECT_EQ(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(bounce_hits.load(), 1);
+  EXPECT_EQ(target_hits.load(), 1);
+  histogram_tester_.ExpectUniqueSample(kFederatedRedirectHistogram,
+                                       kCrossOriginBucket, 1);
+}
+
+// Only the first redirect is recorded.
+TEST_F(RegistrationFederatedRedirectTest,
+       MultiHopFollowedWithoutBlockRedirects) {
+  DisableBlockRedirects();
+  std::atomic<int> target_hits = 0;
+  AddRedirect("rp.a.test", "/redirect", "rp.a.test", "/redirect2");
+  AddRedirect("rp.a.test", "/redirect2", "other.a.test", "/reg");
+  AddTarget("other.a.test", "/reg", &target_hits);
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result = Fetch();
+  EXPECT_EQ(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(target_hits.load(), 1);
+  histogram_tester_.ExpectUniqueSample(kFederatedRedirectHistogram,
+                                       kSameOriginBucket, 1);
+}
+
+// The registration endpoint answers directly, so the request is recorded as
+// the baseline.
+TEST_F(RegistrationFederatedRedirectTest, NoRedirectRecorded) {
+  std::atomic<int> target_hits = 0;
+  AddTarget("rp.a.test", "/redirect", &target_hits);
+  ASSERT_TRUE(server_.Start());
+
+  RegistrationResult result = Fetch();
+  EXPECT_EQ(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(target_hits.load(), 1);
+  histogram_tester_.ExpectUniqueSample(kFederatedRedirectHistogram,
+                                       kNoRedirectBucket, 1);
 }
 
 TEST_F(RegistrationTest, RegistrationFailsIfCantSetCookies) {

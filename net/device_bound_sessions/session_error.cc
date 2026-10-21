@@ -102,6 +102,7 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kPreProvisionedKeyNotFound:
     case kAttestationCertificationError:
     case kAttestationSigningError:
+    case kFederatedRegistrationRedirected:
       NOTREACHED();
   }
 }
@@ -187,6 +188,7 @@ bool SessionError::IsServerError() const {
     case kPreProvisionedKeyNotFound:
     case kAttestationCertificationError:
     case kAttestationSigningError:
+    case kFederatedRegistrationRedirected:
       NOTREACHED();
   }
 }
@@ -284,6 +286,7 @@ std::optional<RefreshResult> SessionError::GetRefreshResult() const {
     case kPreProvisionedKeyNotFound:
     case kAttestationCertificationError:
     case kAttestationSigningError:
+    case kFederatedRegistrationRedirected:
       NOTREACHED();
   }
 }

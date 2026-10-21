@@ -5,6 +5,7 @@
 #ifndef NET_DEVICE_BOUND_SESSIONS_URL_FETCHER_H_
 #define NET_DEVICE_BOUND_SESSIONS_URL_FETCHER_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -25,6 +26,11 @@ namespace net::device_bound_sessions {
 
 class NET_EXPORT URLFetcher : public URLRequest::Delegate {
  public:
+  // Returns whether the fetcher may follow the redirect described by the
+  // argument.
+  using ShouldFollowRedirectCallback =
+      base::RepeatingCallback<bool(const RedirectInfo&)>;
+
   // If positive, `timeout` configures a watchdog timer that cancels the request
   // with `net::ERR_TIMED_OUT` if it does not complete within the specified
   // duration. Non-positive durations disable the watchdog timer.
@@ -36,6 +42,11 @@ class NET_EXPORT URLFetcher : public URLRequest::Delegate {
              net::RequestPriority priority,
              base::TimeDelta timeout);
   ~URLFetcher() override;
+
+  // Lets the owner reject a redirect before it is followed. Must be called
+  // before `Start()`. If `callback` returns false, nothing is sent to the
+  // redirect target and the fetch completes with `net::ERR_UNSAFE_REDIRECT`.
+  void SetShouldFollowRedirectCallback(ShouldFollowRedirectCallback callback);
 
   void Start(base::OnceClosure complete_callback);
   std::string TakeDataReceived();
@@ -85,6 +96,7 @@ class NET_EXPORT URLFetcher : public URLRequest::Delegate {
   std::string data_received_;
   int net_error_ = OK;
   base::OnceClosure callback_;
+  ShouldFollowRedirectCallback should_follow_redirect_callback_;
   const url::Origin referring_origin_;
   const base::TimeDelta timeout_;
   base::OneShotTimer watchdog_timer_;

@@ -637,6 +637,16 @@ historical analysis. -->
 
 <!-- LINT.ThenChange(//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionDeletionReason) -->
 
+<!-- LINT.IfChange(DeviceBoundSessionFederatedRegistrationRedirect) -->
+
+<enum name="DeviceBoundSessionFederatedRegistrationRedirect">
+  <int value="0" label="No redirect"/>
+  <int value="1" label="Same origin"/>
+  <int value="2" label="Cross origin"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/device_bound_sessions/registration_fetcher.cc:FederatedRegistrationRedirect) -->
+
 <!-- LINT.IfChange(DeviceBoundSessionPrewarmTrigger) -->
 
 <enum name="DeviceBoundSessionPrewarmTrigger">

@@ -503,6 +503,9 @@ BASE_FEATURE_PARAM(bool,
                    "CheckWellKnown",
                    true);
 
+BASE_FEATURE(kDeviceBoundSessionsFederatedRegistrationBlockRedirects,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDeviceBoundSessionsForRestrictedSites,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

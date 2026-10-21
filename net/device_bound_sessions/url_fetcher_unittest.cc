@@ -4,6 +4,7 @@
 
 #include "net/device_bound_sessions/url_fetcher.h"
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <utility>
@@ -46,6 +47,7 @@
 #include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_redirect_job.h"
 #include "net/url_request/url_request_test_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -56,6 +58,9 @@ using testing::_;
 namespace net::device_bound_sessions {
 
 namespace {
+
+using ::testing::Field;
+using ::testing::Return;
 
 struct FetcherParams {
   raw_ptr<const URLRequestContext> context = nullptr;
@@ -211,6 +216,66 @@ TEST_F(URLFetcherTest, FollowRedirect) {
 
   EXPECT_EQ(fetcher->net_error(), OK);
   EXPECT_EQ(fetcher->data_received(), "target data");
+}
+
+class URLFetcherShouldFollowRedirectTest : public URLFetcherTest {
+ protected:
+  // Serves a redirect from /redirect to /target, and sets `target_requested_`
+  // when /target is requested.
+  void SetUp() override {
+    URLFetcherTest::SetUp();
+    server_.RegisterRequestHandler(base::BindLambdaForTesting(
+        [this](const test_server::HttpRequest& request)
+            -> std::unique_ptr<test_server::HttpResponse> {
+          auto response = std::make_unique<test_server::BasicHttpResponse>();
+          if (request.relative_url == "/target") {
+            target_requested_ = true;
+            return response;
+          }
+          response->set_code(HTTP_FOUND);
+          response->AddCustomHeader("Location", "/target");
+          return response;
+        }));
+    ASSERT_TRUE(server_.Start());
+  }
+
+  // Fetches /redirect with a callback that expects a redirect to /target and
+  // returns `should_follow`.
+  std::unique_ptr<URLFetcher> FetchWithShouldFollowRedirect(
+      bool should_follow) {
+    std::unique_ptr<URLFetcher> fetcher = CreateFetcher(
+        {.context = context(), .url = server_.GetURL("/redirect")});
+    EXPECT_CALL(callback_,
+                Run(Field(&RedirectInfo::new_url, server_.GetURL("/target"))))
+        .WillOnce(Return(should_follow));
+    fetcher->SetShouldFollowRedirectCallback(callback_.Get());
+
+    base::test::TestFuture<void> future;
+    fetcher->Start(future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    return fetcher;
+  }
+
+  // Written on the server's thread and read on the test thread.
+  std::atomic<bool> target_requested_ = false;
+  EmbeddedTestServer server_;
+  base::MockCallback<URLFetcher::ShouldFollowRedirectCallback> callback_;
+};
+
+TEST_F(URLFetcherShouldFollowRedirectTest, FollowsRedirectIfCallbackAllows) {
+  std::unique_ptr<URLFetcher> fetcher =
+      FetchWithShouldFollowRedirect(/*should_follow=*/true);
+
+  EXPECT_EQ(fetcher->net_error(), OK);
+  EXPECT_TRUE(target_requested_.load());
+}
+
+TEST_F(URLFetcherShouldFollowRedirectTest, RejectsRedirectIfCallbackDenies) {
+  std::unique_ptr<URLFetcher> fetcher =
+      FetchWithShouldFollowRedirect(/*should_follow=*/false);
+
+  EXPECT_EQ(fetcher->net_error(), ERR_UNSAFE_REDIRECT);
+  EXPECT_FALSE(target_requested_.load());
 }
 
 TEST_F(URLFetcherTest, RedirectSecureSpecCompliantMetadataSynchronization) {

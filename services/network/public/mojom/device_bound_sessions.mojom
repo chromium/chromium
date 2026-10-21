@@ -213,6 +213,7 @@ enum DeviceBoundSessionError {
   kPreProvisionedKeyNotFound = 87,
   kAttestationCertificationError = 88,
   kAttestationSigningError = 89,
+  kFederatedRegistrationRedirected = 90,
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError)

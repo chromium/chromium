@@ -2016,6 +2016,10 @@ String BuildProtocolDeviceBoundSessionFetchResult(
         kAttestationSigningError:
       return protocol::Network::DeviceBoundSessionFetchResultEnum::
           AttestationSigningError;
+    case net::device_bound_sessions::SessionError::ErrorType::
+        kFederatedRegistrationRedirected:
+      return protocol::Network::DeviceBoundSessionFetchResultEnum::
+          FederatedRegistrationRedirected;
   }
 }
 // LINT.ThenChange(//third_party/blink/public/devtools_protocol/domains/Network.pdl:DeviceBoundSessionFetchResult)

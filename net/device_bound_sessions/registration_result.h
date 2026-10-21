@@ -54,6 +54,7 @@ class NET_EXPORT RegistrationResult {
   // Test-only accessors
   const Session& SessionForTesting() const;
   NoSessionConfigChange NoSessionConfigChangeForTesting() const;
+  // Returns null if `this` doesn't hold an error.
   const SessionError* SessionErrorForTesting() const;
 
   CookieAndLineAccessResultList TakeStoredCookies();

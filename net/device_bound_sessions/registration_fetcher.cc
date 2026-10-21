@@ -48,6 +48,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_event_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request_context.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -62,6 +63,19 @@ constexpr char kJwtSessionHeaderName[] = "Secure-Session-Response";
 
 constexpr base::TimeDelta kInteractiveFetchTimeout = base::Seconds(20);
 constexpr base::TimeDelta kBackgroundFetchTimeout = base::Seconds(30);
+
+// Whether a federated registration request got redirected and, if so, where
+// the first redirect points to relative to the registration endpoint. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+// LINT.IfChange(FederatedRegistrationRedirect)
+enum class FederatedRegistrationRedirect {
+  kNoRedirect = 0,
+  kSameOrigin = 1,
+  kCrossOrigin = 2,
+  kMaxValue = kCrossOrigin,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionFederatedRegistrationRedirect)
 
 void RecordHttpResponseOrErrorCode(std::string_view metric_name,
                                    int net_error,
@@ -662,6 +676,12 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
           kJwtSessionHeaderName, last_registration_token_.value(),
           /*overwrite=*/true);
     }
+    if (IsForFederatedRegistration()) {
+      // `this` owns `url_fetcher_`, so it's safe to use `base::Unretained`.
+      url_fetcher_->SetShouldFollowRedirectCallback(base::BindRepeating(
+          &RegistrationFetcherImpl::ShouldFollowFederatedRedirect,
+          base::Unretained(this)));
+    }
     // `this` owns `url_fetcher_`, so it's safe to use `base::Unretained`.
     url_fetcher_->Start(base::BindOnce(
         &RegistrationFetcherImpl::OnRequestComplete, base::Unretained(this)));
@@ -715,8 +735,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
           SessionError::kSessionProviderWellKnownHasProviderOrigin);
     }
 
-    // TODO(crbug.com/511776603): Evaluate whether to use the final redirect URL
-    // instead of the original URL here in a follow-up.
+    // While `kDeviceBoundSessionsFederatedRegistrationBlockRedirects` is
+    // enabled, `ShouldFollowFederatedRedirect()` blocks every redirect, so the
+    // registration is never served by any other origin.
     return CheckRelyingOrigin(params.relying_origins,
                               url::Origin::Create(fetcher_endpoint_));
   }
@@ -760,8 +781,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
           SessionError::kRelyingPartyWellKnownHasRelyingOrigins);
     }
 
-    // TODO(crbug.com/511776603): Evaluate whether to use the final redirect URL
-    // instead of the original URL here in a follow-up.
+    // While `kDeviceBoundSessionsFederatedRegistrationBlockRedirects` is
+    // enabled, `ShouldFollowFederatedRedirect()` blocks every redirect, so this
+    // relying party is the one that serves the registration.
     if (!params.provider_origin.has_value() ||
         url::Origin::Create(provider_url_).Serialize() !=
             *params.provider_origin) {
@@ -909,6 +931,23 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     const int response_code = headers ? headers->response_code() : 0;
     RecordNetworkResultMetrics(IsForRefreshRequest(), attempts_made_,
                                url_fetcher_->net_error(), response_code);
+
+    if (IsForFederatedRegistration()) {
+      base::UmaHistogramEnumeration(
+          "Net.DeviceBoundSessions.FederatedRegistration.Redirect",
+          federated_redirect_);
+
+      // The fetch fails with `ERR_UNSAFE_REDIRECT` when a redirect isn't
+      // followed, e.g. because `ShouldFollowFederatedRedirect()` blocked it or
+      // because it downgrades to HTTP. This is a policy decision, not a network
+      // error, so report the specific error instead of `kNetError`.
+      if (url_fetcher_->net_error() == ERR_UNSAFE_REDIRECT) {
+        RunCallback(CreateErrorRegistrationResult(
+            SessionError(SessionError::kFederatedRegistrationRedirected)));
+        // `this` may be deleted.
+        return;
+      }
+    }
 
     // Proxy errors are treated the same way as network errors.
     if (url_fetcher_->net_error() != OK || response_code == 407) {
@@ -1152,6 +1191,29 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   // for a registration request.
   bool IsForRefreshRequest() const { return session_identifier_.has_value(); }
 
+  // Returns true if we're fetching for a federated registration request.
+  bool IsForFederatedRegistration() const { return !provider_url_.is_empty(); }
+
+  // Returns whether a federated registration request may follow a redirect,
+  // and remembers the first redirect for UMA. The registration request carries
+  // a JWT signed with the provider's key, so its mere arrival tells the
+  // redirect target that the provider key matched. Hence every redirect is
+  // blocked while `kDeviceBoundSessionsFederatedRegistrationBlockRedirects` is
+  // enabled.
+  bool ShouldFollowFederatedRedirect(const RedirectInfo& redirect_info) {
+    if (federated_redirect_ == FederatedRegistrationRedirect::kNoRedirect) {
+      const bool is_same_origin = url::Origin::Create(fetcher_endpoint_)
+                                      .IsSameOriginWith(redirect_info.new_url);
+      federated_redirect_ = is_same_origin
+                                ? FederatedRegistrationRedirect::kSameOrigin
+                                : FederatedRegistrationRedirect::kCrossOrigin;
+    }
+
+    // The kill switch restores the old behavior of following every redirect.
+    return !base::FeatureList::IsEnabled(
+        features::kDeviceBoundSessionsFederatedRegistrationBlockRedirects);
+  }
+
   // Returns true if the fetcher should retry on transient network error.
   bool ShouldRetryOnTransientError() const {
     return IsForRefreshRequest() && attempts_made_ == 1 &&
@@ -1191,6 +1253,12 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   std::optional<std::string> current_challenge_;
   std::optional<std::string> current_authorization_;
   size_t number_of_challenges_ = 0;
+
+  // The first redirect of the federated registration request. Recorded in UMA
+  // once the request completes, because blocked redirects never make it into
+  // the URL chain.
+  FederatedRegistrationRedirect federated_redirect_ =
+      FederatedRegistrationRedirect::kNoRedirect;
 
   size_t attempts_made_ = 0;
   std::optional<RegistrationToken> last_registration_token_;

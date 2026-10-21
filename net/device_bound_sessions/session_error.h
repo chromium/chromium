@@ -111,7 +111,8 @@ struct NET_EXPORT SessionError {
     kPreProvisionedKeyNotFound = 87,
     kAttestationCertificationError = 88,
     kAttestationSigningError = 89,
-    kMaxValue = kAttestationSigningError,
+    kFederatedRegistrationRedirected = 90,
+    kMaxValue = kFederatedRegistrationRedirected,
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DeviceBoundSessionError,//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionError)
 

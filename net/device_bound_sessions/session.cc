@@ -654,6 +654,7 @@ void Session::InformOfRefreshResult(bool was_proactive,
     case kPreProvisionedKeyNotFound:
     case kAttestationCertificationError:
     case kAttestationSigningError:
+    case kFederatedRegistrationRedirected:
       NOTREACHED();
   }
 

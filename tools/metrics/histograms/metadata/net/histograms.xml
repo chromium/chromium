@@ -1901,6 +1901,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.FederatedRegistration.Redirect"
+    enum="DeviceBoundSessionFederatedRegistrationRedirect"
+    expires_after="2027-04-11">
+  <owner>jdoerrie@chromium.org</owner>
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether a federated Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) registration
+    request got redirected and, if so, whether the first redirect points to the
+    same origin as the registration endpoint. Logged once per registration
+    request, whether or not the redirect is followed. Redirects that the network
+    stack itself rejects as unsafe (e.g. to an unsupported scheme) are not
+    logged.
+  </summary>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.GoogleRegistrationIsFromStandard"
     enum="Boolean" expires_after="2027-03-28">
   <owner>thefrog@chromium.org</owner>

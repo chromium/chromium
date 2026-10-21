@@ -419,6 +419,9 @@ struct EnumTraits<network::mojom::DeviceBoundSessionError,
       case kAttestationSigningError:
         return network::mojom::DeviceBoundSessionError::
             kAttestationSigningError;
+      case kFederatedRegistrationRedirected:
+        return network::mojom::DeviceBoundSessionError::
+            kFederatedRegistrationRedirected;
     }
   }
 
@@ -616,6 +619,9 @@ struct EnumTraits<network::mojom::DeviceBoundSessionError,
         return kAttestationCertificationError;
       case network::mojom::DeviceBoundSessionError::kAttestationSigningError:
         return kAttestationSigningError;
+      case network::mojom::DeviceBoundSessionError::
+          kFederatedRegistrationRedirected:
+        return kFederatedRegistrationRedirected;
     }
     NOTREACHED();
   }

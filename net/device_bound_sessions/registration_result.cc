@@ -47,7 +47,7 @@ RegistrationResult::NoSessionConfigChangeForTesting() const {
   return std::get<NoSessionConfigChange>(storage_);
 }
 const SessionError* RegistrationResult::SessionErrorForTesting() const {
-  return &(std::get<SessionError>(storage_));
+  return std::get_if<SessionError>(&storage_);
 }
 
 }  // namespace net::device_bound_sessions
