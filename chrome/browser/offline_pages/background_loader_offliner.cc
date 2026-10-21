@@ -142,7 +142,9 @@ bool BackgroundLoaderOffliner::LoadAndSave(
 }
 
 bool BackgroundLoaderOffliner::Cancel(CancelCallback callback) {
-  CHECK(pending_request_, base::NotFatalUntil::M161);
+  // TODO(crbug.com/575156065): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(pending_request_);
   // We ignore the case where pending_request_ is not set, but given the checks
   // in RequestCoordinator this should not happen.
   if (!pending_request_) {
