@@ -223,6 +223,17 @@ The Chromium CQ supports a variety of options that can change what it checks.
   Specifies the number of compilation failures each trybot should collect before
   terminating the build (0 means infinity).
 
+* `Missing-Deps: <mode>`
+
+  Configures how Siso handles missing dependencies (passing
+  `-missing_deps=<mode>` to Siso). `<mode>` must be one of:
+  * `ignore`: Skip missing dependency checks.
+  * `warn`: Print warnings on missing dependencies without failing the build.
+  * `error`: Print errors on missing dependencies and continue running remaining
+    steps, then fail the build at completion.
+  * `fatal`: Fail the build step immediately upon detecting missing
+    dependencies.
+
 ## Google-internal CQ Builders
 
 A small subset of builders on the CQ are "Google-internal". This means they
