@@ -8,7 +8,7 @@ import {browserProxyFactory} from 'chrome://actor-overlay/actor_overlay.mojom-we
 import type {ActorOverlayPageRemote} from 'chrome://actor-overlay/actor_overlay.mojom-webui.js';
 import type {ActorOverlayAppElement} from 'chrome://actor-overlay/app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -447,17 +447,15 @@ suite('MagicCursor', function() {
     await testRemote.triggerClickAnimation();
     await microtasksFinished();
 
-    // Verify the class is added, CSS variables are set, and abort signal is
-    // active while animation is still running.
+    // Verify the class is added and the abort signal is active while the
+    // animation is still running.
     assertTrue(magicCursor.classList.contains('clicking'));
-    assertEquals('100px', magicCursor.style.getPropertyValue('--cursor-x'));
-    assertEquals('150px', magicCursor.style.getPropertyValue('--cursor-y'));
     const signal = page.getClickAnimationAbortSignal();
     assertTrue(!!signal);
     assertFalse(signal.aborted);
 
     // Finish animation and verify cleanup.
-    magicCursor.dispatchEvent(new Event('animationend'));
+    page.$.cursorImage.dispatchEvent(new Event('animationend'));
     await microtasksFinished();
     assertFalse(magicCursor.classList.contains('clicking'));
     assertFalse(signal.aborted);
@@ -513,7 +511,7 @@ suite('MagicCursor', function() {
     assertFalse(secondSignal.aborted);
 
     // Dispatching animationend once finishes the restarted animation.
-    magicCursor.dispatchEvent(new Event('animationend'));
+    page.$.cursorImage.dispatchEvent(new Event('animationend'));
     await microtasksFinished();
     assertFalse(magicCursor.classList.contains('clicking'));
     assertFalse(secondSignal.aborted);
@@ -541,7 +539,7 @@ suite('MagicCursor', function() {
     const magicCursor = page.$.magicCursor;
 
     magicCursor.classList.add('clicking');
-    const style = magicCursor.computedStyleMap();
+    const style = page.$.cursorImage.computedStyleMap();
 
     assertEquals(0.4, (style.get('animation-duration') as CSSUnitValue).value);
     assertEquals(
@@ -549,6 +547,33 @@ suite('MagicCursor', function() {
         (style.get('animation-timing-function') as CSSKeywordValue).value);
     assertTrue((style.get('animation-name') as CSSKeywordValue)
                    .value.includes('cursor-click'));
+  });
+
+  test('ClickAnimationDoesNotScaleCursorChip', async function() {
+    await moveCursorAndWait(100, 150);
+    testRemote.setCursorChip('Searching');
+    await microtasksFinished();
+    const cursorChip =
+        page.shadowRoot.querySelector<HTMLElement>('#cursorChip');
+    assertTrue(!!cursorChip);
+
+    await testRemote.triggerClickAnimation();
+    await microtasksFinished();
+    const clickAnimation = page.shadowRoot.getAnimations().find(
+        a => a instanceof CSSAnimation && a.animationName === 'cursor-click');
+    assertTrue(!!clickAnimation);
+    clickAnimation.pause();
+
+    // Read both states in one task so the running move transition cannot
+    // shift the chip between reads. 160ms is the 40% keyframe.
+    clickAnimation.currentTime = 0;
+    const imageAtRest = page.$.cursorImage.getBoundingClientRect();
+    const chipAtRest = cursorChip.getBoundingClientRect();
+    clickAnimation.currentTime = 160;
+    assertTrue(
+        page.$.cursorImage.getBoundingClientRect().width < imageAtRest.width);
+    assertDeepEquals(
+        chipAtRest.toJSON(), cursorChip.getBoundingClientRect().toJSON());
   });
 
   test('CursorImageStructure', function() {
@@ -688,7 +713,7 @@ suite('MagicCursor', function() {
     assertFalse(magicCursor.classList.contains('loading'));
 
     // Finish click animation
-    magicCursor.dispatchEvent(new Event('animationend'));
+    page.$.cursorImage.dispatchEvent(new Event('animationend'));
     await flushTasks();
 
     // Wait 250ms, which should complete the new timer, verifying that we are in
@@ -770,7 +795,7 @@ suite('MagicCursor', function() {
 
     // Verify click still occurs.
     assertTrue(magicCursor.classList.contains('clicking'));
-    magicCursor.dispatchEvent(new Event('animationend'));
+    page.$.cursorImage.dispatchEvent(new Event('animationend'));
     await flushTasks();
     assertFalse(magicCursor.classList.contains('clicking'));
 

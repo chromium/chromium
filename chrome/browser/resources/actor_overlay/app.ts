@@ -16,7 +16,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 
 export interface ActorOverlayAppElement {
-  $: {magicCursor: HTMLDivElement};
+  $: {magicCursor: HTMLDivElement, cursorImage: HTMLDivElement};
 }
 
 export class ActorOverlayAppElement extends CrLitElement {
@@ -203,11 +203,9 @@ export class ActorOverlayAppElement extends CrLitElement {
     this.cancelClickAnimation_();
 
     cursor.classList.remove('loading');
-    cursor.style.setProperty('--cursor-x', `${Math.round(this.currentX_)}px`);
-    cursor.style.setProperty('--cursor-y', `${Math.round(this.currentY_)}px`);
 
     this.clickAnimationAbortController_ = new AbortController();
-    cursor.addEventListener('animationend', () => {
+    this.$.cursorImage.addEventListener('animationend', () => {
       this.clickAnimationAbortController_ = null;
       cursor.classList.remove('clicking');
       this.startLoadingTimer_();
