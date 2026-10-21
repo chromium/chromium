@@ -117,6 +117,13 @@ IN_PROC_BROWSER_TEST_F(HistoryTest, WebuiRefresh2026) {
   RunTest("history/history_app_test.js", "runMochaSuite('WebuiRefresh2026')");
 }
 
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(HistoryTest, HistoryAppTestAndroid) {
+  RunTest("history/history_app_test.js",
+          "runMochaSuite('HistoryAppTestAndroid')");
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 class HistoryListTest : public HistoryUIBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {

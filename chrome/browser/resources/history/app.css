@@ -14,6 +14,9 @@
   color: var(--cr-primary-text-color);
   display: flex;
   flex-direction: column;
+<if expr="is_android">
+  font-family: 'Google Sans Text', Arial, sans-serif;
+</if>
   height: 100%;
   line-height: 1.54;  /* 20px. */
   overflow: hidden;

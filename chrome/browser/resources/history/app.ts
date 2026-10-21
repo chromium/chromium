@@ -281,12 +281,19 @@ export class HistoryAppElement extends HistoryAppElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
+    // <if expr="is_android">
+    this.addThemedColors_();
+    ColorChangeUpdater.forDocument().start();
+    // </if>
+
+    // <if expr="not is_android">
     const enableWebuiRefresh2026 =
         loadTimeData.getString('webuiRefresh2026') !== '';
     if (enableWebuiRefresh2026) {
       this.addThemedColors_();
       ColorChangeUpdater.forDocument().start();
     }
+    // </if>
 
     this.eventTracker_.add(document, 'click', onDocumentClick);
     this.eventTracker_.add(document, 'auxclick', onDocumentClick);

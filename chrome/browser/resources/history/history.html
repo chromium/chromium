@@ -12,6 +12,11 @@
     html {
       /* Remove 300ms delay for 'click' event, when using touch interface. */
       touch-action: manipulation;
+<if expr="is_android">
+      /* Falls back to --md-background-color before colors.css loads. */
+      background: var(--color-sys-surface-container,
+          var(--md-background-color));
+</if>
     }
 
     html,
@@ -25,6 +30,7 @@
       cursor: default;
     }
 
+<if expr="not is_android">
     @media (prefers-color-scheme: dark) {
       html {
         background: var(--md-background-color);
@@ -34,6 +40,7 @@
     html[webui-refresh-2026] {
       background: var(--color-webui-page-background);
     }
+</if>
 
     /* Minimal styling required to display app shim. */
     .loading history-app {
