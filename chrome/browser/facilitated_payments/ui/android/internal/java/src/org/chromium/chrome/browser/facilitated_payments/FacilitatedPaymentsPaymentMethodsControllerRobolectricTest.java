@@ -1572,6 +1572,16 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                 contentView.findViewById(
                         org.chromium.chrome.browser.facilitated_payments.R.id
                                 .prompt_b_value_prop_message_1));
+
+        org.chromium.ui.widget.TextViewWithClickableSpans settingsLink =
+                contentView.findViewById(
+                        org.chromium.chrome.browser.facilitated_payments.R.id
+                                .pix_code_detection_settings_link);
+        assertNotNull(settingsLink);
+        assertThat(settingsLink.getClickableSpans().length, is(1));
+        assertThat(
+                settingsLink.getClickableSpans()[0].getClass(),
+                is((Object) org.chromium.ui.text.ChromeClickableSpan.class));
     }
 
     @Test
@@ -1584,7 +1594,7 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         verify(mBottomSheetController).requestShowContent(contentCaptor.capture(), anyBoolean());
         android.view.View contentView = contentCaptor.getValue().getContentView();
 
-        android.widget.TextView promptBValueProp1 =
+        org.chromium.ui.widget.TextViewWithClickableSpans promptBValueProp1 =
                 contentView.findViewById(
                         org.chromium.chrome.browser.facilitated_payments.R.id
                                 .prompt_b_value_prop_message_1);
@@ -1592,10 +1602,45 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertThat(
                 promptBValueProp1.getText().toString(),
                 is("Pay without copying and pasting Pix code. See how it works"));
+        assertThat(promptBValueProp1.getClickableSpans().length, is(1));
+        assertThat(
+                promptBValueProp1.getClickableSpans()[0].getClass(),
+                is((Object) org.chromium.ui.text.ChromeClickableSpan.class));
         assertNull(
                 contentView.findViewById(
                         org.chromium.chrome.browser.facilitated_payments.R.id
                                 .value_prop_message_1));
+
+        org.chromium.ui.widget.TextViewWithClickableSpans settingsLink =
+                contentView.findViewById(
+                        org.chromium.chrome.browser.facilitated_payments.R.id
+                                .pix_code_detection_settings_link);
+        assertNotNull(settingsLink);
+        assertThat(settingsLink.getClickableSpans().length, is(1));
+        assertThat(
+                settingsLink.getClickableSpans()[0].getClass(),
+                is((Object) org.chromium.ui.text.ChromeClickableSpan.class));
+    }
+
+    @Test
+    @EnableFeatures({"EnablePixAccountLinkingNative:prompt_variant/VariationC"})
+    public void testPixAccountLinkingPrompt_VariantCShowsSettingsLink() {
+        mCoordinator.showPixAccountLinkingPrompt(0, TestAccounts.ACCOUNT1.getEmail());
+
+        org.mockito.ArgumentCaptor<BottomSheetContent> contentCaptor =
+                org.mockito.ArgumentCaptor.forClass(BottomSheetContent.class);
+        verify(mBottomSheetController).requestShowContent(contentCaptor.capture(), anyBoolean());
+        android.view.View contentView = contentCaptor.getValue().getContentView();
+
+        org.chromium.ui.widget.TextViewWithClickableSpans settingsLink =
+                contentView.findViewById(
+                        org.chromium.chrome.browser.facilitated_payments.R.id
+                                .pix_code_detection_settings_link);
+        assertNotNull(settingsLink);
+        assertThat(settingsLink.getClickableSpans().length, is(1));
+        assertThat(
+                settingsLink.getClickableSpans()[0].getClass(),
+                is((Object) org.chromium.ui.text.ChromeClickableSpan.class));
     }
 
     @Test
