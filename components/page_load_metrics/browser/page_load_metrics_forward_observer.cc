@@ -456,19 +456,6 @@ void PageLoadMetricsForwardObserver::OnStorageAccessed(
 void PageLoadMetricsForwardObserver::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {}
 
-void PageLoadMetricsForwardObserver::OnSharedStorageWorkletHostCreated() {
-  if (!parent_observer_)
-    return;
-  parent_observer_->OnSharedStorageWorkletHostCreated();
-}
-
-void PageLoadMetricsForwardObserver::OnSharedStorageSelectURLCalled() {
-  if (!parent_observer_) {
-    return;
-  }
-  parent_observer_->OnSharedStorageSelectURLCalled();
-}
-
 void PageLoadMetricsForwardObserver::OnCustomUserTimingMarkObserved(
     const std::vector<mojom::CustomUserTimingMarkPtr>& timings) {
   // This new API doesn't support FORWARD_OBSERVING that is discouraged for new

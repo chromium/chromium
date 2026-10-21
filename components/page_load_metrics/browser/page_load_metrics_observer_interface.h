@@ -643,13 +643,6 @@ class PageLoadMetricsObserverInterface {
   virtual void DidActivatePrerenderedPage(
       content::NavigationHandle* navigation_handle) = 0;
 
-  // Called when a `SharedStorageWorkletHost` is created.
-  virtual void OnSharedStorageWorkletHostCreated() = 0;
-
-  // Called when `sharedStorage.selectURL()` is called for some frame on the
-  // page tracked.
-  virtual void OnSharedStorageSelectURLCalled() = 0;
-
   // Called when `performance.mark()` is emitted in the main frame except for
   // the standard UserTiming marks `mark_fully_loaded`, `mark_fully_visible`,
   // and `mark_interactive` occur. Those are managed in PageLoadTiming

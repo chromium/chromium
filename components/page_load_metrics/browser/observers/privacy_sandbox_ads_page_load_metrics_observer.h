@@ -28,7 +28,6 @@ class PrivacySandboxAdsPageLoadMetricsObserver
     kFencedFrames,
     kProtectedAudienceRunAdAuction,
     kProtectedAudienceJoinAdInterestGroup,
-    kSharedStorage,
     kTopics,
 
     kMinValue = kFencedFrames,

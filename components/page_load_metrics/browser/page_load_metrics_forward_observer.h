@@ -186,8 +186,6 @@ class PageLoadMetricsForwardObserver final
                          StorageType access_type) override;
   void DidActivatePrerenderedPage(
       content::NavigationHandle* navigation_handle) override;
-  void OnSharedStorageWorkletHostCreated() override;
-  void OnSharedStorageSelectURLCalled() override;
   void OnCustomUserTimingMarkObserved(
       const std::vector<mojom::CustomUserTimingMarkPtr>& timings) override;
 

@@ -8981,24 +8981,6 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
   return nullptr;
 }
 
-void ChromeContentBrowserClient::OnSharedStorageWorkletHostCreated(
-    content::RenderFrameHost* rfh) {
-  if (auto* observer =
-          page_load_metrics::MetricsWebContentsObserver::FromWebContents(
-              WebContents::FromRenderFrameHost(rfh))) {
-    observer->OnSharedStorageWorkletHostCreated(rfh);
-  }
-}
-
-void ChromeContentBrowserClient::OnSharedStorageSelectURLCalled(
-    content::RenderFrameHost* main_rfh) {
-  if (auto* observer =
-          page_load_metrics::MetricsWebContentsObserver::FromWebContents(
-              WebContents::FromRenderFrameHost(main_rfh))) {
-    observer->OnSharedStorageSelectURLCalled(main_rfh);
-  }
-}
-
 bool ChromeContentBrowserClient::ShouldSendOutermostOriginToRenderer(
     const url::Origin& outermost_origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

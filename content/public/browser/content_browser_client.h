@@ -2936,13 +2936,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       content::BrowserContext* browser_context,
       int32_t error_code);
 
-  // Called when a `SharedStorageWorkletHost` is created for `rfh`.
-  virtual void OnSharedStorageWorkletHostCreated(RenderFrameHost* rfh) {}
-
-  // Called when `sharedStorage.selectURL()` is called for some frame on a page
-  // whose main frame is `main_rfh`.
-  virtual void OnSharedStorageSelectURLCalled(RenderFrameHost* main_rfh) {}
-
   // Whether the outermost origin should be sent to the renderer. This is
   // needed if the outermost origin is an extension, but for normal pages
   // we do not want to expose this.

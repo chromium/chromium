@@ -437,13 +437,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // Called when the page tracked was just activated after being prerendered.
   void DidActivatePrerenderedPage(content::NavigationHandle* navigation_handle);
 
-  // Called when a `SharedStorageWorkletHost` is created.
-  void OnSharedStorageWorkletHostCreated();
-
-  // Called when `sharedStorage.selectURL()` is called for some frame on the
-  // page tracked.
-  void OnSharedStorageSelectURLCalled();
-
   // Checks if this tracker is for outermost pages.
   bool IsOutermostTracker() const { return !parent_tracker_; }
 

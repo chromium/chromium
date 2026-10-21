@@ -1326,30 +1326,6 @@ void MetricsWebContentsObserver::RemoveLifecycleObserver(
   lifecycle_observers_.RemoveObserver(observer);
 }
 
-void MetricsWebContentsObserver::OnSharedStorageWorkletHostCreated(
-    content::RenderFrameHost* rfh) {
-  if (!rfh) {
-    return;
-  }
-
-  if (PageLoadTracker* tracker = GetPageLoadTracker(rfh)) {
-    tracker->OnSharedStorageWorkletHostCreated();
-  }
-}
-
-void MetricsWebContentsObserver::OnSharedStorageSelectURLCalled(
-    content::RenderFrameHost* main_rfh) {
-  if (!main_rfh) {
-    return;
-  }
-
-  if (PageLoadTracker* tracker = GetPageLoadTracker(main_rfh)) {
-    tracker->OnSharedStorageSelectURLCalled();
-  }
-}
-
-
-
 base::TimeTicks MetricsWebContentsObserver::GetCreated() {
   return created_;
 }

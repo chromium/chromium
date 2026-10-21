@@ -1428,18 +1428,6 @@ void PageLoadTracker::OnRestoreFromBackForwardCache(
   page_end_time_ = base::TimeTicks();
 }
 
-void PageLoadTracker::OnSharedStorageWorkletHostCreated() {
-  for (const auto& observer : observers_) {
-    observer->OnSharedStorageWorkletHostCreated();
-  }
-}
-
-void PageLoadTracker::OnSharedStorageSelectURLCalled() {
-  for (const auto& observer : observers_) {
-    observer->OnSharedStorageSelectURLCalled();
-  }
-}
-
 void PageLoadTracker::UpdateMetrics(
     content::RenderFrameHost* render_frame_host,
     mojom::PageLoadTimingPtr new_timing,
