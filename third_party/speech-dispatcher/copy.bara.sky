@@ -1,0 +1,14 @@
+load("//crowbar", "crowbar_workflow")
+
+crowbar_workflow(
+    origin_files = glob([
+        "COPYING.LGPL",
+        "include/speechd_types.h",
+        "src/api/c/libspeechd.h",
+    ]),
+    transformations = [
+        core.move("src/include/speechd_types.h", "src/speechd_types.h"),
+        core.move("src/src/api/c/libspeechd.h", "src/libspeechd.h"),
+        patch.apply(patches = ["patches/0001-drop-libspeechd-version-include.patch"]),
+    ],
+)

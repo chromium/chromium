@@ -1,7 +1,7 @@
 Name: Speech Dispatcher
 URL: https://github.com/brailcom/speechd
-Version: 0.11.5
-Revision: 0680c0f92c43bd43aa2ac111c8ec478d8a4f94cc
+Version: N/A
+Revision: b35065742929bded706dfbe71495a2b69b1d2a39
 Update Mechanism: Manual
 License: LGPL-2.1
 License File: src/COPYING.LGPL
@@ -12,6 +12,10 @@ Description:
 Speech Dispatcher project provides a high-level device independent layer for
 access to speech synthesis through a simple, stable and well documented
 interface.
+
+Update instructions:
+Update commit hashes in crowbar.txtpb, then run from this directory:
+crowbar build --no-dry-run ./
 
 Local Modifications:
 Merged
@@ -24,4 +28,5 @@ install it into a different location (${includedir}/speech-dispatcher instead of
 ${includedir}) and we still need to support older versions.
 
 libspeechd_version is not imported as it is generated upstream
-(libspeechd_version.h.in) and does not appear necessary for library loading.
+(libspeechd_version.h.in) and does not appear necessary for library loading;
+patches/0001-drop-libspeechd-version-include.patch drops its #include.
