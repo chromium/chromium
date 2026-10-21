@@ -26,6 +26,12 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 
@@ -48,11 +54,13 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -68,6 +76,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -1172,35 +1181,24 @@ public class ExtensionsToolbarTest {
         "in-product-help-demo-mode-choice=IPH_ExtensionsPinnedByDefault",
         "disable-user-education-rate-limiting"
     })
-    @org.chromium.base.test.util.Features.EnableFeatures({
+    @EnableFeatures({
         "ExtensionsPinnedByDefault",
         "kExtensionsPinnedByDefault",
         "IPH_ExtensionsPinnedByDefault"
     })
     public void testPinnedByDefaultIphShowsOnExtensionInstall() throws IOException {
-        org.chromium.components.feature_engagement.Tracker tracker =
-                org.mockito.Mockito.mock(org.chromium.components.feature_engagement.Tracker.class);
-        org.mockito.Mockito.when(tracker.shouldTriggerHelpUi(org.mockito.Mockito.anyString()))
-                .thenReturn(false);
-        org.mockito.Mockito.when(
-                        tracker.shouldTriggerHelpUi(
-                                org.mockito.Mockito.eq("IPH_ExtensionsPinnedByDefault")))
-                .thenReturn(true);
-        org.mockito.Mockito.when(tracker.wouldTriggerHelpUi(org.mockito.Mockito.anyString()))
-                .thenReturn(false);
-        org.mockito.Mockito.when(
-                        tracker.wouldTriggerHelpUi(
-                                org.mockito.Mockito.eq("IPH_ExtensionsPinnedByDefault")))
-                .thenReturn(true);
-        org.mockito.Mockito.doAnswer(
+        Tracker tracker = mock(Tracker.class);
+        when(tracker.shouldTriggerHelpUi(anyString())).thenReturn(false);
+        when(tracker.shouldTriggerHelpUi(eq("IPH_ExtensionsPinnedByDefault"))).thenReturn(true);
+        when(tracker.wouldTriggerHelpUi(anyString())).thenReturn(false);
+        when(tracker.wouldTriggerHelpUi(eq("IPH_ExtensionsPinnedByDefault"))).thenReturn(true);
+        doAnswer(
                         invocation -> {
-                            invocation
-                                    .<org.chromium.base.Callback<Boolean>>getArgument(0)
-                                    .onResult(true);
+                            invocation.<Callback<Boolean>>getArgument(0).onResult(true);
                             return null;
                         })
                 .when(tracker)
-                .addOnInitializedCallback(org.mockito.Mockito.any());
+                .addOnInitializedCallback(any());
         TrackerFactory.setTrackerForTests(tracker);
         // Enable the pinned by default preference so that the IPH appears.
         ThreadUtils.runOnUiThreadBlocking(

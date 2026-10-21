@@ -22,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -117,7 +116,7 @@ public final class ToolbarSecurityIconTest {
         doReturn(exampleUrl).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
         doReturn(exampleUrl.getSpec()).when(mLocationBarModelJni).getFormattedFullURL(any());
         doReturn(exampleUrl.getSpec()).when(mLocationBarModelJni).getURLForDisplay(any());
-        doReturn(mNativeLocationBarModelAndroid).when(mLocationBarModelJni).init(Mockito.any());
+        doReturn(mNativeLocationBarModelAndroid).when(mLocationBarModelJni).init(any());
 
         Context context =
                 new ContextThemeWrapper(

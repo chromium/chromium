@@ -17,7 +17,6 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -267,8 +266,8 @@ public class ToolbarTabControllerImplTest {
     public void testUsingCorrectTabSupplier_doesNotUseRegularTabSupplier() {
         setUpUsingCorrectTabSupplier();
 
-        Assert.assertFalse(mToolbarTabController.back());
-        Assert.assertFalse(mToolbarTabController.canGoBack());
+        assertFalse(mToolbarTabController.back());
+        assertFalse(mToolbarTabController.canGoBack());
     }
 
     @Test

@@ -39,7 +39,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -270,7 +269,7 @@ public class ToolbarTest {
 
         // Load new tab page.
         mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
-        Assert.assertEquals(getOriginalNativeNtpUrl(), ChromeTabUtils.getUrlStringOnUiThread(tab));
+        assertEquals(getOriginalNativeNtpUrl(), ChromeTabUtils.getUrlStringOnUiThread(tab));
         assertFalse(isErrorPage(tab));
 
         // Stop the server and also disconnect the network.
@@ -279,7 +278,7 @@ public class ToolbarTest {
                 () -> NetworkChangeNotifier.forceConnectivityState(false));
 
         mActivityTestRule.loadUrl(testUrl);
-        Assert.assertEquals(testUrl, ChromeTabUtils.getUrlStringOnUiThread(tab));
+        assertEquals(testUrl, ChromeTabUtils.getUrlStringOnUiThread(tab));
         assertTrue(isErrorPage(tab));
     }
 
@@ -386,7 +385,7 @@ public class ToolbarTest {
         checkTabStripHeightOnUiThread(tabStripHeightResource);
         ComponentCallbacks tabStripCallback =
                 mActivity.getToolbarManager().getTabStripTransitionCoordinator();
-        Assert.assertNotNull("Tab strip transition callback is null.", tabStripCallback);
+        assertNotNull("Tab strip transition callback is null.", tabStripCallback);
 
         // Set the screen width bucket and trigger an configuration change to force toggle tab strip
         // visibility. This is an test only strategy, as we don't want to actually change the
@@ -748,7 +747,7 @@ public class ToolbarTest {
         mPage = mPage.loadWebPageProgrammatically(testUrl);
 
         ToolbarManager toolbarManager = mActivity.getToolbarManager();
-        Assert.assertNotNull(toolbarManager);
+        assertNotNull(toolbarManager);
 
         // Start a gesture
         ThreadUtils.runOnUiThreadBlocking(

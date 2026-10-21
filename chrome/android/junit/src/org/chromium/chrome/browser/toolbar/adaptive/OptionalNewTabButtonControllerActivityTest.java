@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -20,7 +21,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -66,14 +66,14 @@ public class OptionalNewTabButtonControllerActivityTest {
 
     @Before
     public void setUp() {
-        Profile originalProfile = Mockito.mock(Profile.class);
-        Profile incognitoProfile = Mockito.mock(Profile.class);
+        Profile originalProfile = mock(Profile.class);
+        Profile incognitoProfile = mock(Profile.class);
         when(originalProfile.getOriginalProfile()).thenReturn(originalProfile);
         when(incognitoProfile.isOffTheRecord()).thenReturn(true);
 
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
-        GlicKeyedService glicKeyedService = Mockito.mock(GlicKeyedService.class);
+        GlicKeyedService glicKeyedService = mock(GlicKeyedService.class);
         GlicKeyedServiceFactory.setForTesting(glicKeyedService);
         GlicEnabling.setEnabledForTesting(false);
 
@@ -93,7 +93,7 @@ public class OptionalNewTabButtonControllerActivityTest {
                         (id, incognito) -> {
                             Profile profile = incognito ? incognitoProfile : originalProfile;
                             MockTab tab = spy(MockTab.createAndInitialize(id, profile));
-                            doReturn(Mockito.mock(WebContents.class)).when(tab).getWebContents();
+                            doReturn(mock(WebContents.class)).when(tab).getWebContents();
                             return tab;
                         });
         OptionalNewTabButtonController.setActiveTabSupplierForTesting(

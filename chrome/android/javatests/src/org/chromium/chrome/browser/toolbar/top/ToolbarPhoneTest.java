@@ -17,7 +17,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,7 +49,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -172,7 +173,7 @@ public class ToolbarPhoneTest {
                             return TemplateUrlServiceFactory.getForProfile(
                                     ProfileManager.getLastUsedRegularProfile());
                         });
-        mTemplateUrlService = Mockito.spy(originalService);
+        mTemplateUrlService = spy(originalService);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         mToolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         mToolbarButtonsContainer = mToolbar.findViewById(R.id.toolbar_buttons);
@@ -234,7 +235,7 @@ public class ToolbarPhoneTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true")
     public void testBackButtonVisibility_ntp() {
         mPage.openNewTabFast();
-        BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
+        BackButtonCoordinator mockBackButtonCoordinator = mock(BackButtonCoordinator.class);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -252,7 +253,7 @@ public class ToolbarPhoneTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true")
     public void testBackButtonVisibility_regularPage() {
-        BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
+        BackButtonCoordinator mockBackButtonCoordinator = mock(BackButtonCoordinator.class);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -270,7 +271,7 @@ public class ToolbarPhoneTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true")
     public void testBackButtonVisibility_focused() {
-        BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
+        BackButtonCoordinator mockBackButtonCoordinator = mock(BackButtonCoordinator.class);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -289,7 +290,7 @@ public class ToolbarPhoneTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":keep_app_menu_in_toolbar/true")
     public void testBackButtonVisibility_urlExpansion() {
-        BackButtonCoordinator mockBackButtonCoordinator = Mockito.mock(BackButtonCoordinator.class);
+        BackButtonCoordinator mockBackButtonCoordinator = mock(BackButtonCoordinator.class);
         mToolbar.setBackButtonCoordinatorForTesting(mockBackButtonCoordinator);
         when(mockBackButtonCoordinator.isVisible()).thenReturn(true);
 

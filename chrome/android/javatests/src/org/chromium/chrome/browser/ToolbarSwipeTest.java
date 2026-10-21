@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
 import static org.chromium.ui.test.util.ViewUtils.createMotionEvent;
 
 import android.content.pm.ActivityInfo;
@@ -13,7 +16,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -272,7 +274,7 @@ public class ToolbarSwipeTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertFalse(
+                    assertFalse(
                             "Keyboard should be hidden while swiping",
                             mActivityTestRule.getKeyboardDelegate().isKeyboardShowing(urlBar));
                     swipeHandler.onSwipeFinished();
@@ -313,7 +315,6 @@ public class ToolbarSwipeTest {
     }
 
     private static void assertSelectedTabIndex(WebPageStation station, int selectedIndex) {
-        Assert.assertEquals(
-                selectedIndex, ChromeTabUtils.getIndexOnUiThread(station.getTabModel()));
+        assertEquals(selectedIndex, ChromeTabUtils.getIndexOnUiThread(station.getTabModel()));
     }
 }

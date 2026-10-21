@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.junit.Assert.assertEquals;
+
 import android.graphics.Color;
 import android.os.Build;
 import android.text.TextUtils;
@@ -11,7 +13,6 @@ import android.text.TextUtils;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -153,7 +154,7 @@ public class BrandColorTest {
                             .onThemeColorChanged(mDefaultColor, false);
                     // Since the color should change instantly, there is no need to use the criteria
                     // helper.
-                    Assert.assertEquals(
+                    assertEquals(
                             mToolbarDataProvider.getPrimaryColor(),
                             mToolbar.getBackgroundDrawable().getColor());
                 });

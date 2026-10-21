@@ -19,6 +19,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -61,7 +62,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
@@ -1343,7 +1343,7 @@ public final class ToolbarTabletUnitTest {
 
         // Perform context click (right-click) and verify longClickListener is called again.
         actionChip.performContextClick();
-        verify(mockLongClickListener, Mockito.times(2)).onLongClick(actionChip);
+        verify(mockLongClickListener, times(2)).onLongClick(actionChip);
 
         // Hide the action chip and verify visibility.
         mToolbarTablet.setGlicActionChipVisibility(
@@ -1446,8 +1446,7 @@ public final class ToolbarTabletUnitTest {
 
         mToolbarTablet.setGlicActionChipVisibility(
                 /* visible= */ false, mockClickListener, mockLongClickListener);
-        verify(mHomeButtonCoordinator, Mockito.times(2))
-                .updateVisibility(anyInt(), anyInt(), anyInt());
+        verify(mHomeButtonCoordinator, times(2)).updateVisibility(anyInt(), anyInt(), anyInt());
     }
 
     @Test

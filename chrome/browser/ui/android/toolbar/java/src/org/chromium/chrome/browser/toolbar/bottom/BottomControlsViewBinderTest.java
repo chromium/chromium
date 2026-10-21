@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.bottom;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -21,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -87,7 +87,7 @@ public class BottomControlsViewBinderTest {
                 new BottomControlsViewBinder.ViewHolder(mRootView, mSceneLayer),
                 BottomControlsViewBinder::bind);
 
-        Mockito.clearInvocations(mSceneLayer, mResourceAdapter);
+        clearInvocations(mSceneLayer, mResourceAdapter);
     }
 
     @Test

@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -18,7 +21,6 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -120,7 +122,7 @@ public class LocationBarModelTest {
     @Feature({"Android-Toolbar"})
     @MediumTest
     public void testClosingLastTabReflectedInModel() {
-        Assert.assertNotSame(
+        assertNotSame(
                 "No current tab",
                 Tab.INVALID_TAB_ID,
                 getCurrentTabId(mActivityTestRule.getActivity()));
@@ -427,7 +429,7 @@ public class LocationBarModelTest {
                 "Never saw a same-document DidFinishNavigation with hasCommitted() == false");
         ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(navObserver));
 
-        Assert.assertTrue(
+        assertTrue(
                 "onDidFinishNavigationEnd() was never dispatched for the aborted navigation,"
                         + " so LocationBarModel's same-document debounce stays latched.",
                 sawNavigationEndAfterAbort.get());
@@ -516,7 +518,7 @@ public class LocationBarModelTest {
      */
     public static int getCurrentTabId(final ChromeTabbedActivity activity) {
         ToolbarLayout toolbar = activity.findViewById(R.id.toolbar);
-        Assert.assertNotNull("Toolbar is null", toolbar);
+        assertNotNull("Toolbar is null", toolbar);
 
         ToolbarDataProvider dataProvider = toolbar.getToolbarDataProvider();
         Tab tab = dataProvider.getTab();

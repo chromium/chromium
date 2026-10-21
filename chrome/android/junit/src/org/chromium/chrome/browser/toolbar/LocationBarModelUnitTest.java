@@ -5,11 +5,15 @@
 package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,13 +26,11 @@ import androidx.annotation.DrawableRes;
 
 import org.jni_zero.JniUniquePtr;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -186,33 +188,33 @@ public class LocationBarModelUnitTest {
     public void getProfile_RegularTab_ReturnsRegularProfile() {
         mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
         Profile profile = mLocationBarModel.getProfile();
-        Assert.assertEquals(mRegularProfileMock, profile);
+        assertEquals(mRegularProfileMock, profile);
     }
 
     @Test
     public void getProfile_IncognitoTab_ReturnsPrimaryOtrProfile() {
         mLocationBarModel.setTab(mIncognitoTabMock, mPrimaryOtrProfileMock);
         Profile otrProfile = mLocationBarModel.getProfile();
-        Assert.assertEquals(mPrimaryOtrProfileMock, otrProfile);
+        assertEquals(mPrimaryOtrProfileMock, otrProfile);
     }
 
     @Test
     public void getProfile_IncognitoTab_ReturnsNonPrimaryOtrProfile() {
         mLocationBarModel.setTab(mIncognitoNonPrimaryTabMock, mNonPrimaryOtrProfileMock);
         Profile otrProfile = mLocationBarModel.getProfile();
-        Assert.assertEquals(mNonPrimaryOtrProfileMock, otrProfile);
+        assertEquals(mNonPrimaryOtrProfileMock, otrProfile);
     }
 
     @Test
     public void getProfile_NullTab() {
         mLocationBarModel.setTab(null, mRegularProfileMock);
-        Assert.assertEquals(mRegularProfileMock, mLocationBarModel.getProfile());
+        assertEquals(mRegularProfileMock, mLocationBarModel.getProfile());
 
         mLocationBarModel.setTab(null, mPrimaryOtrProfileMock);
-        Assert.assertEquals(mPrimaryOtrProfileMock, mLocationBarModel.getProfile());
+        assertEquals(mPrimaryOtrProfileMock, mLocationBarModel.getProfile());
 
         mLocationBarModel.setTab(null, mNonPrimaryOtrProfileMock);
-        Assert.assertEquals(mNonPrimaryOtrProfileMock, mLocationBarModel.getProfile());
+        assertEquals(mNonPrimaryOtrProfileMock, mLocationBarModel.getProfile());
     }
 
     @Test
@@ -241,7 +243,7 @@ public class LocationBarModelUnitTest {
 
         // The visible url should be cached and hasn't changed, so onUrlChanged shouldn't be called
         mLocationBarModel.notifyUrlChanged(false);
-        verify(mLocationBarDataObserver, never()).onUrlChanged(Mockito.anyBoolean());
+        verify(mLocationBarDataObserver, never()).onUrlChanged(anyBoolean());
 
         // Setting to a new tab with a different url
         GURL exampleGurl2 = new GURL("http://www.example2.com/");
@@ -252,7 +254,7 @@ public class LocationBarModelUnitTest {
 
         // Setting to another new tab with a different url
         GURL exampleGurl3 = new GURL("http://www.example3.com/");
-        Tab regularTabMock2 = Mockito.mock(Tab.class);
+        Tab regularTabMock2 = mock(Tab.class);
         when(regularTabMock2.getProfile()).thenReturn(mRegularProfileMock);
         doReturn(exampleGurl3).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
         mLocationBarModel.setTab(regularTabMock2, mRegularProfileMock);
@@ -282,7 +284,7 @@ public class LocationBarModelUnitTest {
         mLocationBarModel.updateVisibleGurl();
 
         verify(mLocationBarDataObserver, never()).onTitleChanged();
-        verify(mLocationBarDataObserver, never()).onUrlChanged(Mockito.anyBoolean());
+        verify(mLocationBarDataObserver, never()).onUrlChanged(anyBoolean());
         verify(mLocationBarDataObserver, never()).onPrimaryColorChanged();
         verify(mLocationBarDataObserver, never()).onSecurityStateChanged();
 
@@ -290,8 +292,8 @@ public class LocationBarModelUnitTest {
 
         // The omnibox is not showing, and we have not switched to a new tab yet, so don't expect
         // notifications of a url change
-        verify(mLocationBarDataObserver, never()).onUrlChanged(Mockito.anyBoolean());
-        Assert.assertEquals(mLocationBarModel.getCurrentGurl(), mExampleGurl);
+        verify(mLocationBarDataObserver, never()).onUrlChanged(anyBoolean());
+        assertEquals(mLocationBarModel.getCurrentGurl(), mExampleGurl);
 
         verify(mLocationBarDataObserver).onTitleChanged();
         verify(mLocationBarDataObserver).onPrimaryColorChanged();
@@ -307,17 +309,16 @@ public class LocationBarModelUnitTest {
         doReturn(mExampleGurl).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
         doReturn(mExampleGurl.getSpec()).when(mLocationBarModelJni).getFormattedFullURL(any());
         doReturn(mExampleGurl.getSpec()).when(mLocationBarModelJni).getURLForDisplay(any());
-        Assert.assertTrue(mLocationBarModel.updateVisibleGurl());
-        Assert.assertFalse("Update should be suppressed", mLocationBarModel.updateVisibleGurl());
+        assertTrue(mLocationBarModel.updateVisibleGurl());
+        assertFalse("Update should be suppressed", mLocationBarModel.updateVisibleGurl());
 
         // URL changed, cache is invalid.
         GURL exampleGurl2 = new GURL("http://www.example2.com/");
         doReturn(exampleGurl2).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
         doReturn(exampleGurl2.getSpec()).when(mLocationBarModelJni).getFormattedFullURL(any());
         doReturn(exampleGurl2.getSpec()).when(mLocationBarModelJni).getURLForDisplay(any());
-        Assert.assertTrue("New url should notify", mLocationBarModel.updateVisibleGurl());
-        Assert.assertFalse(
-                "Update should be suppressed again", mLocationBarModel.updateVisibleGurl());
+        assertTrue("New url should notify", mLocationBarModel.updateVisibleGurl());
+        assertFalse("Update should be suppressed again", mLocationBarModel.updateVisibleGurl());
     }
 
     @Test
@@ -331,7 +332,7 @@ public class LocationBarModelUnitTest {
                         /* displayText= */ "Alphabet",
                         /* editingText= */ null);
 
-        Assert.assertEquals("https://www.abc.xyz", data.displayText);
+        assertEquals("https://www.abc.xyz", data.displayText);
     }
 
     @Test
@@ -345,7 +346,7 @@ public class LocationBarModelUnitTest {
                         /* displayText= */ null,
                         /* editingText= */ null);
 
-        Assert.assertEquals("https://www.abc.xyz", data.displayText);
+        assertEquals("https://www.abc.xyz", data.displayText);
     }
 
     @Test
@@ -359,7 +360,7 @@ public class LocationBarModelUnitTest {
                         /* displayText= */ "Alphabet",
                         /* editingText= */ null);
 
-        Assert.assertEquals("https://www.abc.xyz", data.displayText);
+        assertEquals("https://www.abc.xyz", data.displayText);
     }
 
     @Test
@@ -374,7 +375,7 @@ public class LocationBarModelUnitTest {
                         /* displayText= */ "Alphabet",
                         /* editingText= */ null);
 
-        Assert.assertEquals("Alphabet", data.displayText);
+        assertEquals("Alphabet", data.displayText);
     }
 
     @Test
@@ -557,7 +558,7 @@ public class LocationBarModelUnitTest {
     public void getSecurityIconResource_connectionWarning_httpsFirstWarning_returnsNoEncryption() {
         mLocationBarModel.initializeWithNative();
 
-        WebContents webContentsMock = Mockito.mock(WebContents.class);
+        WebContents webContentsMock = mock(WebContents.class);
         when(mRegularTabMock.getWebContents()).thenReturn(webContentsMock);
         doReturn(true).when(mRegularTabMock).isInitialized();
         doReturn(mExampleGurl).when(mLocationBarModelJni).getUrlOfVisibleNavigationEntry(any());
@@ -678,7 +679,7 @@ public class LocationBarModelUnitTest {
                         url -> url.getSpec(),
                         OFFLINE_STATUS,
                         ObservableSuppliers.createNonNull(ControlsPosition.TOP));
-        model = Mockito.spy(model);
+        model = spy(model);
         doReturn(true).when(model).isNonMultiDisplayContextOnTablet();
         model.initializeWithNative();
 
@@ -713,7 +714,7 @@ public class LocationBarModelUnitTest {
                         url -> url.getSpec(),
                         OFFLINE_STATUS,
                         ObservableSuppliers.createNonNull(ControlsPosition.TOP));
-        model = Mockito.spy(model);
+        model = spy(model);
         doReturn(false).when(model).isNonMultiDisplayContextOnTablet();
         model.initializeWithNative();
 
@@ -747,7 +748,7 @@ public class LocationBarModelUnitTest {
                         url -> url.getSpec(),
                         OFFLINE_STATUS,
                         ObservableSuppliers.createNonNull(ControlsPosition.TOP));
-        model = Mockito.spy(model);
+        model = spy(model);
         doReturn(true).when(model).isNonMultiDisplayContextOnTablet();
         model.initializeWithNative();
 
@@ -780,7 +781,7 @@ public class LocationBarModelUnitTest {
                         url -> url.getSpec(),
                         OFFLINE_STATUS,
                         ObservableSuppliers.createNonNull(ControlsPosition.TOP));
-        model = Mockito.spy(model);
+        model = spy(model);
         doReturn(false).when(model).isNonMultiDisplayContextOnTablet();
         model.initializeWithNative();
 
@@ -806,19 +807,19 @@ public class LocationBarModelUnitTest {
         mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
 
         // Default theme color (e.g. tablet or unthemed page) -> emphasize HTTPS scheme.
-        Assert.assertFalse(mLocationBarModel.isUsingBrandColor());
-        Assert.assertTrue(mLocationBarModel.shouldEmphasizeHttpsScheme());
+        assertFalse(mLocationBarModel.isUsingBrandColor());
+        assertTrue(mLocationBarModel.shouldEmphasizeHttpsScheme());
 
         // Custom brand color on regular web page -> do not emphasize HTTPS scheme.
         mLocationBarModel.setPrimaryColor(android.graphics.Color.RED);
-        Assert.assertTrue(mLocationBarModel.isUsingBrandColor());
-        Assert.assertFalse(mLocationBarModel.shouldEmphasizeHttpsScheme());
+        assertTrue(mLocationBarModel.isUsingBrandColor());
+        assertFalse(mLocationBarModel.shouldEmphasizeHttpsScheme());
 
         // Native page ignores brand color -> emphasize HTTPS scheme.
         doReturn(true).when(mRegularTabMock).isNativePage();
         mLocationBarModel.setPrimaryColor(android.graphics.Color.RED);
-        Assert.assertFalse(mLocationBarModel.isUsingBrandColor());
-        Assert.assertTrue(mLocationBarModel.shouldEmphasizeHttpsScheme());
+        assertFalse(mLocationBarModel.isUsingBrandColor());
+        assertTrue(mLocationBarModel.shouldEmphasizeHttpsScheme());
 
         // Incognito tab -> never emphasize HTTPS scheme.
         doReturn(true).when(mPrimaryOtrProfileMock).isIncognitoBranded();
@@ -826,7 +827,7 @@ public class LocationBarModelUnitTest {
         doReturn(mUserDataHost).when(mIncognitoTabMock).getUserDataHost();
         mLocationBarModel.setTab(mIncognitoTabMock, mPrimaryOtrProfileMock);
         mLocationBarModel.setPrimaryColor(android.graphics.Color.RED);
-        Assert.assertFalse(mLocationBarModel.isUsingBrandColor());
-        Assert.assertFalse(mLocationBarModel.shouldEmphasizeHttpsScheme());
+        assertFalse(mLocationBarModel.isUsingBrandColor());
+        assertFalse(mLocationBarModel.shouldEmphasizeHttpsScheme());
     }
 }
