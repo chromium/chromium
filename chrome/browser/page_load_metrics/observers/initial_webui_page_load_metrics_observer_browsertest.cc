@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
@@ -13,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -59,6 +61,10 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/base/ui_base_features.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -167,8 +173,16 @@ class InitialWebUIPageLoadMetricsObserverBrowserTest
     : public InProcessBrowserTest {
  public:
   InitialWebUIPageLoadMetricsObserverBrowserTest() {
+    std::vector<base::test::FeatureRef> disabled_features;
+#if BUILDFLAG(IS_WIN)
+    // Native window occlusion is calculated asynchronously, so an occlusion
+    // update can arrive after a test calls WasHidden() and make the tab visible
+    // again via WebContents::UpdateWebContentsVisibility().
+    disabled_features.push_back(features::kCalculateNativeWinOcclusion);
+#endif  // BUILDFLAG(IS_WIN)
     feature_list_.InitWithFeatures(
-        {features::kInitialWebUI, features::kWebUIReloadButton}, {});
+        {features::kInitialWebUI, features::kWebUIReloadButton},
+        disabled_features);
   }
 
   InitialWebUIPageLoadMetricsObserverBrowserTest(
