@@ -339,6 +339,10 @@ void AnchoredMessageBubbleView::AnimateOut() {
   }
   closing_bounds_ = BubbleDialogDelegate::GetBubbleBounds();
   is_closing_ = true;
+  if (menu_runner_ && menu_runner_->IsRunning()) {
+    menu_runner_->Cancel();
+  }
+  menu_model_ = nullptr;
 
   const base::TimeDelta duration =
       gfx::Animation::RichAnimationDuration(kAnchoredMessageAnimateOutDuration);
@@ -532,6 +536,7 @@ void AnchoredMessageBubbleView::OnWidgetDestroying(views::Widget* widget) {
     menu_runner_->Cancel();
   }
   menu_runner_ = nullptr;
+  menu_model_ = nullptr;
   BubbleDialogDelegate::OnWidgetDestroying(widget);
 }
 

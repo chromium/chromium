@@ -167,6 +167,11 @@ void PageActionView::SetAnchoredMessageDowngradeCallback(
 }
 
 void PageActionView::OnNewActiveController(PageActionController* controller) {
+  // No-op if the active tab hasn't changed (e.g. LocationBarView::Update()).
+  if (controller == current_controller_) {
+    return;
+  }
+  current_controller_ = controller;
   chip_shown_metric_recorded_ = false;
   observation_.Reset();
   action_item_controller_subscription_ = {};
@@ -282,6 +287,7 @@ void PageActionView::HandleSuggestionChipTransition(
 
 void PageActionView::OnPageActionModelWillBeDeleted(
     const PageActionModelInterface& model) {
+  current_controller_ = nullptr;
   anchored_message_ = nullptr;
   anchored_message_widget_ = nullptr;
   observation_.Reset();
@@ -490,6 +496,7 @@ const gfx::Insets PageActionView::GetInsetsForNonVectorIcon() const {
 }
 
 void PageActionView::SetModel(PageActionModelInterface* model) {
+  current_controller_ = nullptr;
   observation_.Reset();
   observation_.Observe(model);
   UpdateTooltipText();

@@ -119,19 +119,26 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
             .SetActionId(kTestPageActionId)
             .SetImage(image)
             .Build());
-    test_page_action_view_ = std::make_unique<PageActionView>(
-        action_item_,
-        PageActionViewParams{
-            .icon_size = kDefaultIconSize,
-            .icon_label_bubble_delegate = &icon_label_view_delegate_,
-        },
-        PageActionIconType::kLensOverlay, ui::ElementIdentifier());
+    widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    widget_->SetBounds(gfx::Rect(0, 0, 800, 600));
+    widget_->Show();
+
+    test_page_action_view_ =
+        widget_->SetContentsView(std::make_unique<PageActionView>(
+            action_item_,
+            PageActionViewParams{
+                .icon_size = kDefaultIconSize,
+                .icon_label_bubble_delegate = &icon_label_view_delegate_,
+            },
+            PageActionIconType::kLensOverlay, ui::ElementIdentifier()));
 
     pinned_actions_model_ =
         std::make_unique<PinnedToolbarActionsModel>(&profile_);
   }
 
   void TearDown() override {
+    test_page_action_view_ = nullptr;
+    widget_.reset();
     ChromeViewsTestBase::TearDown();
     action_item_ = nullptr;
     actions::ActionManager::Get().ResetActions();
@@ -154,7 +161,8 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
   TestingProfile profile_;
 
  private:
-  std::unique_ptr<PageActionView> test_page_action_view_;
+  std::unique_ptr<views::Widget> widget_;
+  raw_ptr<PageActionView> test_page_action_view_;
   raw_ptr<actions::ActionItem> action_item_;
 
   testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
@@ -330,27 +338,101 @@ TEST_F(PageActionViewWithControllerTest, NoActiveController) {
   EXPECT_FALSE(view->GetVisible());
 }
 
+TEST_F(PageActionViewWithControllerTest,
+       AnchoredMessagePersistsOnSameActiveController) {
+  AlwaysActiveTabInterface tab_a;
+  AlwaysActiveTabInterface tab_b;
+  auto controller_a = NewPageActionController(tab_a);
+  auto controller_b = NewPageActionController(tab_b);
+
+  actions::ActionItem* item = action_item();
+  item->SetEnabled(true);
+  item->SetVisible(true);
+  item->SetText(kTestText);
+
+  PageActionView* view = page_action_view();
+  view->OnNewActiveController(controller_a.get());
+  controller_a->Show(kTestPageActionId);
+  controller_a->SetAnchoredMessageText(kTestPageActionId, kTestText);
+  controller_a->ShowAnchoredMessage(kTestPageActionId, {});
+
+  AnchoredMessageBubbleView* bubble = view->GetAnchoredMessageForTesting();
+  ASSERT_TRUE(bubble);
+  EXPECT_TRUE(view->IsAnchoredMessageVisible());
+
+  view->OnNewActiveController(controller_a.get());
+  EXPECT_TRUE(view->IsAnchoredMessageVisible());
+  ASSERT_EQ(view->GetAnchoredMessageForTesting(), bubble);
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble->GetWidget());
+  view->OnNewActiveController(controller_b.get());
+  EXPECT_FALSE(view->GetAnchoredMessageForTesting());
+  destroyed_waiter.Wait();
+}
+
 // Verifies that if an animation ends after the active controller has
 // been reset to nullptr, the deferred task does not crash.
-TEST_F(PageActionViewTest, AnimationEndedAfterControllerResetDoesNotCrash) {
-  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
-  page_action_view()->OnPageActionModelChanged(*model());
-  EXPECT_TRUE(page_action_view()->GetVisible());
-  EXPECT_TRUE(page_action_view()->IsChipVisible());
+TEST_F(PageActionViewWithControllerTest,
+       AnimationEndedAfterControllerResetDoesNotCrash) {
+  AlwaysActiveTabInterface tab(&profile_);
+  auto controller = NewPageActionController(tab);
 
-  page_action_view()->OnNewActiveController(nullptr);
-  EXPECT_FALSE(page_action_view()->GetVisible());
+  actions::ActionItem* item = action_item();
+  item->SetEnabled(true);
+  item->SetVisible(true);
+  item->SetText(kTestText);
 
-  page_action_view()->AnimationEnded(nullptr);
+  PageActionView* view = page_action_view();
+  view->OnNewActiveController(controller.get());
+  controller->Show(kTestPageActionId);
+  controller->ShowSuggestionChip(kTestPageActionId, {.should_animate = false});
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_TRUE(view->IsChipVisible());
+
+  view->OnNewActiveController(nullptr);
+  EXPECT_FALSE(view->GetVisible());
+
+  view->AnimationEnded(nullptr);
 
   // Post a callback to the same sequence.
   base::test::TestFuture<void> future;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, future.GetCallback());
   EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(PageActionViewWithControllerTest,
+       HiddenAnchoredMessageClosesOnControllerChange) {
+  gfx::ScopedAnimationDurationScaleMode non_zero(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  FakeTabInterface tab(&profile_);
+  tab.Activate();
+  auto controller = NewPageActionController(tab);
+
+  actions::ActionItem* item = action_item();
+  item->SetEnabled(true);
+  item->SetVisible(true);
+  item->SetText(kTestText);
+
+  PageActionView* view = page_action_view();
+  view->OnNewActiveController(controller.get());
+  controller->Show(kTestPageActionId);
+  controller->SetAnchoredMessageText(kTestPageActionId, kTestText);
+  controller->ShowAnchoredMessage(kTestPageActionId, {});
+
+  AnchoredMessageBubbleView* bubble = view->GetAnchoredMessageForTesting();
+  ASSERT_TRUE(bubble);
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble->GetWidget());
+
+  // Simulates the tab being deactivated while the message should still show.
+  tab.Deactivate();
+  EXPECT_FALSE(view->IsAnchoredMessageVisible());
+  EXPECT_EQ(view->GetAnchoredMessageForTesting(), bubble);
+
+  view->OnNewActiveController(nullptr);
+  EXPECT_FALSE(view->GetAnchoredMessageForTesting());
+  destroyed_waiter.Wait();
 }
 
 TEST_F(PageActionViewTest, Visibility) {
@@ -867,30 +949,6 @@ TEST_F(PageActionViewTest, AnchoredMessageAnimatesOutWhenPageActionHidden) {
   EXPECT_EQ(frame->layer()->GetTargetOpacity(), 0.0f);
 
   frame->layer()->GetAnimator()->StopAnimating();
-  destroyed_waiter.Wait();
-}
-
-TEST_F(PageActionViewTest, HiddenAnchoredMessageClosesOnControllerChange) {
-  gfx::ScopedAnimationDurationScaleMode non_zero(
-      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
-  AnchoredMessageBubbleView* bubble = ShowTestAnchoredMessage();
-  ASSERT_TRUE(bubble);
-  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble->GetWidget());
-
-  base::MockCallback<base::RepeatingClosure> close_callback;
-  page_action_view()->SetAnchoredMessageCloseCallback(close_callback.Get());
-
-  // Simulates the tab being deactivated while the message should still show.
-  EXPECT_CALL(close_callback, Run());
-  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(false));
-  page_action_view()->OnPageActionModelChanged(*model());
-  testing::Mock::VerifyAndClearExpectations(&close_callback);
-  EXPECT_FALSE(page_action_view()->IsAnchoredMessageVisible());
-  EXPECT_EQ(page_action_view()->GetAnchoredMessageForTesting(), bubble);
-
-  page_action_view()->OnNewActiveController(nullptr);
-  EXPECT_FALSE(page_action_view()->GetAnchoredMessageForTesting());
   destroyed_waiter.Wait();
 }
 

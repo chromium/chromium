@@ -199,6 +199,7 @@ class PageActionView : public IconLabelBubbleView,
   void CloseWidgetDeferred(base::WeakPtr<views::Widget> widget_to_close);
 
   base::WeakPtr<actions::ActionItem> action_item_ = nullptr;
+  raw_ptr<PageActionController> current_controller_ = nullptr;
   base::ScopedObservation<PageActionModelInterface, PageActionModelObserver>
       observation_{this};
 
