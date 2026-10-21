@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -131,6 +133,94 @@ TEST_P(HTMLDocumentParserLoadingTest,
   // and the element created by the deferred script to be present.
   EXPECT_TRUE(GetElementById("helloDiv"));
   EXPECT_TRUE(GetElementById("worldDiv"));
+}
+
+TEST_P(HTMLDocumentParserLoadingTest, PreloadWaitsForAllCSPMetaTags) {
+  if (GetParam() == kForceSynchronousParsing) {
+    GTEST_SKIP() << "Preload scanner queue timing is only exercised with "
+                    "deferred parsing.";
+  }
+
+  ScopedAllowPreloadingWithCSPMetaTagForTest scoped_feature(true);
+
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimSubresourceRequest script("https://example.com/block.js",
+                               "application/javascript");
+  SimSubresourceRequest image("https://example.com/image.png", "image/png");
+
+  LoadURL("https://example.com/test.html");
+
+  main_resource.Write(R"HTML(
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self', object-src 'none'">
+    <script src="block.js"></script>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'">
+    <link rel="preload" as="image" href="image.png">
+  )HTML");
+
+  const KURL script_url("https://example.com/block.js");
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetDocument().Fetcher()->AllResources().Contains(script_url);
+  }));
+
+  const KURL image_url("https://example.com/image.png");
+  EXPECT_FALSE(GetDocument().Fetcher()->AllResources().Contains(image_url));
+  const bool image_requested_early =
+      GetDocument().Fetcher()->AllResources().Contains(image_url);
+
+  script.Complete("");
+  main_resource.Finish();
+
+  if (!image_requested_early) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return GetDocument().Fetcher()->AllResources().Contains(image_url);
+    }));
+  }
+  image.Complete(TestImage());
+}
+
+TEST_P(HTMLDocumentParserLoadingTest, PreloadDoesntCountTemplateCSPMetaTags) {
+  if (GetParam() == kForceSynchronousParsing) {
+    GTEST_SKIP() << "Preload scanner queue timing is only exercised with "
+                    "deferred parsing.";
+  }
+
+  ScopedAllowPreloadingWithCSPMetaTagForTest scoped_feature(true);
+
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  SimSubresourceRequest script("https://example.com/block.js",
+                               "application/javascript");
+  SimSubresourceRequest image("https://example.com/image.png", "image/png");
+  LoadURL("https://example.com/test.html");
+
+  main_resource.Write(R"HTML(
+    <template>
+      <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+    </template>
+    <script src="block.js"></script>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'">
+    <link rel="preload" as="image" href="image.png">
+  )HTML");
+
+  const KURL script_url("https://example.com/block.js");
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetDocument().Fetcher()->AllResources().Contains(script_url);
+  }));
+
+  const KURL image_url("https://example.com/image.png");
+  EXPECT_FALSE(GetDocument().Fetcher()->AllResources().Contains(image_url));
+  const bool image_requested_early =
+      GetDocument().Fetcher()->AllResources().Contains(image_url);
+
+  script.Complete("");
+  main_resource.Finish();
+
+  if (!image_requested_early) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return GetDocument().Fetcher()->AllResources().Contains(image_url);
+    }));
+  }
+  image.Complete(TestImage());
 }
 
 TEST_P(HTMLDocumentParserLoadingTest, IFrameDoesNotRenterParser) {

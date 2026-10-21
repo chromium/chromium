@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -82,6 +83,19 @@ namespace {
 
 inline bool IsHTMLSpaceOrReplacementCharacter(UChar character) {
   return IsHTMLSpace<UChar>(character) || character == kReplacementCharacter;
+}
+
+bool IsCSPMetaTagForPreload(AtomicHTMLToken* token) {
+  DCHECK_EQ(token->GetType(), HTMLToken::kStartTag);
+  if (token->GetHTMLTag() != HTMLTag::kMeta) {
+    return false;
+  }
+
+  Attribute* equiv_attribute =
+      token->GetAttributeItem(html_names::kHttpEquivAttr);
+  return equiv_attribute &&
+         EqualIgnoringAsciiCase(equiv_attribute->Value(),
+                                http_names::kContentSecurityPolicy);
 }
 
 enum class FeatureResetMode {
@@ -3012,11 +3026,17 @@ bool HTMLTreeBuilder::ProcessStartTagForInHead(AtomicHTMLToken* token) {
     case HTMLTag::kBasefont:
     case HTMLTag::kBgsound:
     case HTMLTag::kLink:
-    case HTMLTag::kMeta:
+    case HTMLTag::kMeta: {
+      const bool is_csp_meta_for_preload =
+          !IsParsingTemplateContents() && IsCSPMetaTagForPreload(token);
       tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
+      if (is_csp_meta_for_preload) {
+        parser_->DidProcessCSPMetaTagForPreload();
+      }
       // Note: The custom processing for the <meta> tag is done in
       // HTMLMetaElement::process().
       return true;
+    }
     case html_names::HTMLTag::kCommand:
       if (RuntimeEnabledFeatures::HTMLCommandElementRemovalEnabled()) {
         return false;

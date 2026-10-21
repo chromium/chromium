@@ -1906,17 +1906,13 @@ bool HTMLDocumentParser::AllowPreloading() {
     }
 
     // Only allows preloads if all seen meta tags have been processed.
-    int processed_meta_policies = 0;
-    for (const auto& policy : csp->GetParsedPolicies()) {
-      if (policy->header->source ==
-          network::mojom::blink::ContentSecurityPolicySource::kMeta) {
-        ++processed_meta_policies;
-      }
-    }
-    return processed_meta_policies == seen_csp_meta_tags_;
-  } else {
-    return false;
+    return processed_csp_meta_tags_ == seen_csp_meta_tags_;
   }
+  return false;
+}
+
+void HTMLDocumentParser::DidProcessCSPMetaTagForPreload() {
+  ++processed_csp_meta_tags_;
 }
 
 }  // namespace blink

@@ -120,6 +120,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   ~HTMLDocumentParser() override;
   void Trace(Visitor*) const override;
 
+  void DidProcessCSPMetaTagForPreload();
+
   static void ParseDocumentFragment(
       const String&,
       DocumentFragment*,
@@ -342,10 +344,13 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // Set to true if PumpTokenizer() was called at least once.
   bool did_pump_tokenizer_ = false;
 
-  // Counts how many CSP meta tags have been seen (but not necessarily processed
-  // yet). This is used to compare the number of seen tags with the number of
-  // processed CSP tags in order to decide if resources can be preloaded.
+  // Counts CSP meta tags seen by the preload scanner but not necessarily
+  // processed by the main parser yet.
   int seen_csp_meta_tags_ = 0;
+
+  // Counts CSP meta tags processed by the main parser. This is compared against
+  // `seen_csp_meta_tags_` before releasing preloads delayed by CSP meta tags.
+  int processed_csp_meta_tags_ = 0;
 
   // TODO(crbug.com/416543903): If true, it pauses the parser until the
   // performance.mark() as a resuming signal is called.
