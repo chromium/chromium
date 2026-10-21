@@ -228,6 +228,11 @@ cr-searchbox-icon {
   pointer-events: none;
 }
 
+:host([in-keyword-mode]) cr-searchbox-icon {
+  --color-searchbox-search-icon-background:
+      var(--color-omnibox-keyword-selected);
+}
+
 @media (forced-colors: active) {
   cr-searchbox-icon {
     border-radius: 4px;
