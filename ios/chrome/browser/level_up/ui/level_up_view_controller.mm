@@ -98,14 +98,17 @@ const CGFloat kTasksCellHeight = 350.0;
   _level = level;
   _remainingTasksForNextLevel = remainingTasksForNextLevel;
   _totalTasksForNextLevel = totalTasksForNextLevel;
+  [self reconfigureItemWithIdentifier:kProgressItemIdentifier];
 }
 
 - (void)setRecommendedTasks:(NSArray<LevelUpTask*>*)tasks {
   _tasks = [tasks copy];
+  [self reconfigureItemWithIdentifier:kTasksItemIdentifier];
 }
 
 - (void)setStats:(NSArray<LevelUpStat*>*)stats {
   _stats = [stats copy];
+  [self updateStatSection];
 }
 
 - (void)setProgressUpdatesEnabled:(BOOL)enabled {
@@ -115,6 +118,7 @@ const CGFloat kTasksCellHeight = 350.0;
 
 - (void)setNewTasksNotificationEnabled:(BOOL)enabled {
   _newTasksNotificationEnabled = enabled;
+  [self reconfigureItemWithIdentifier:kProgressItemIdentifier];
 }
 
 #pragma mark - LevelUpProfileConsumer
@@ -123,7 +127,7 @@ const CGFloat kTasksCellHeight = 350.0;
              userAvatar:(UIImage*)userAvatar {
   _userFullName = userFullName;
   _userAvatar = userAvatar;
-  [self applyDataSnapshotAnimated:YES];
+  [self reconfigureItemWithIdentifier:kWelcomeItemIdentifier];
 }
 
 #pragma mark - LevelUpTaskCollectionViewCellDelegate
@@ -406,9 +410,42 @@ const CGFloat kTasksCellHeight = 350.0;
   [snapshot appendItemsWithIdentifiers:@[ kTasksItemIdentifier ]
              intoSectionWithIdentifier:kTasksSectionIdentifier];
 
-  [snapshot reconfigureItemsWithIdentifiers:@[ kWelcomeItemIdentifier ]];
-
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:animated];
+}
+
+// Updates a single cell in the collection view diffable snapshot specified by
+// the item identifier.
+- (void)reconfigureItemWithIdentifier:(NSString*)identifier {
+  if (!_diffableDataSource) {
+    return;
+  }
+  NSDiffableDataSourceSnapshot<NSString*, NSString*>* snapshot =
+      [_diffableDataSource snapshot];
+  [snapshot reconfigureItemsWithIdentifiers:@[ identifier ]];
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+// Rebuilds the stats cell in the diffable data source snapshot.
+- (void)updateStatSection {
+  if (!_diffableDataSource) {
+    return;
+  }
+  NSDiffableDataSourceSnapshot<NSString*, NSString*>* snapshot =
+      [_diffableDataSource snapshot];
+  NSArray<NSString*>* existingStatIdentifiers =
+      [snapshot itemIdentifiersInSectionWithIdentifier:kStatSectionIdentifier];
+  [snapshot deleteItemsWithIdentifiers:existingStatIdentifiers];
+
+  NSMutableArray<NSString*>* statIdentifiers = [[NSMutableArray alloc] init];
+  for (LevelUpStat* stat in _stats) {
+    NSString* statIdentifier =
+        [NSString stringWithFormat:@"StatCardItem_%d", stat.type];
+    [statIdentifiers addObject:statIdentifier];
+  }
+  [snapshot appendItemsWithIdentifiers:statIdentifiers
+             intoSectionWithIdentifier:kStatSectionIdentifier];
+  [snapshot reconfigureItemsWithIdentifiers:statIdentifiers];
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
 // Returns the collection layout section configuration for a given index path.

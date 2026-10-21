@@ -21,6 +21,9 @@ source_set("model") {
     "level_up_service.mm",
     "level_up_service_factory.h",
     "level_up_service_factory.mm",
+    "level_up_service_observer.h",
+    "level_up_service_observer_bridge.h",
+    "level_up_service_observer_bridge.mm",
   ]
   public_deps = [
     ":task_info",

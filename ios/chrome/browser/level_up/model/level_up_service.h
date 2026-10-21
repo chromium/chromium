@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -22,6 +23,7 @@ class BrowserList;
 class IOSChromePasswordCheckManager;
 class PrefService;
 class SessionRestorationService;
+class LevelUpServiceObserver;
 
 // Service that manages the "Level Up" feature, tracking user progress and
 // stats. It also holds the definitions of all tasks.
@@ -90,9 +92,19 @@ class LevelUpService : public KeyedService {
   // Registers profile preferences.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // Adds/Removes LevelUpServiceObserver observers.
+  void AddObserver(LevelUpServiceObserver* observer);
+  void RemoveObserver(LevelUpServiceObserver* observer);
+
  private:
   class LevelUpPasswordCheckObserver;
   class LevelUpTabGroupObserver;
+
+  // Notifies observers of the level up level and pref changes.
+  void NotifyObserversOfTaskComplete();
+
+  // Notifies observers of stat value changes.
+  void NotifyObserversOfStatUpdate();
 
   // Populates the map of available tasks.
   void PopulateTasks();
@@ -130,6 +142,7 @@ class LevelUpService : public KeyedService {
   // Stored as strings rather than TaskType enums to support storing unknown
   // tasks received via sync from newer versions of the app.
   std::vector<std::string> completed_tasks_;
+  base::ObserverList<LevelUpServiceObserver> observers_;
   int current_level_ = 1;
   bool is_ui_enabled_ = true;
 };

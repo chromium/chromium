@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/level_up/coordinator/level_up_mediator.h"
 
+#import <memory>
+#import <set>
+#import <vector>
+
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -15,6 +19,7 @@
 #import "ios/chrome/browser/level_up/coordinator/level_up_stat.h"
 #import "ios/chrome/browser/level_up/coordinator/level_up_task.h"
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
+#import "ios/chrome/browser/level_up/model/level_up_service_observer_bridge.h"
 #import "ios/chrome/browser/level_up/model/task_info.h"
 #import "ios/chrome/browser/level_up/model/task_types.h"
 #import "ios/chrome/browser/level_up/ui/level_up_consumer.h"
@@ -29,7 +34,9 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface LevelUpMediator () <IdentityManagerObserving, PrefObserverDelegate>
+@interface LevelUpMediator () <IdentityManagerObserving,
+                               PrefObserverDelegate,
+                               LevelUpServiceObserving>
 @end
 
 @implementation LevelUpMediator {
@@ -53,6 +60,14 @@
   PrefChangeRegistrar _prefChangeRegistrar;
   // Bridge to listen to Pref changes.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Bridge to listen to LevelUpService changes.
+  std::unique_ptr<LevelUpServiceObserverBridge> _levelUpServiceObserverBridge;
+  // The active level variable.
+  int _level;
+  // The number of remaining tasks to reach the next level.
+  int _remainingTasksForNextLevel;
+  // The list of recommended tasks.
+  NSMutableArray<LevelUpTask*>* _recommendedTasks;
 }
 
 - (instancetype)
@@ -77,6 +92,10 @@
                                                      &_prefChangeRegistrar);
     _prefObserverBridge->ObserveChangesForPreference(prefs::kLevelUpOptIn,
                                                      &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kLevelUpNewTasksNotificationEnabled, &_prefChangeRegistrar);
+    _levelUpServiceObserverBridge =
+        std::make_unique<LevelUpServiceObserverBridge>(_levelUpService, self);
   }
   return self;
 }
@@ -113,18 +132,110 @@
     [self.consumer setNewTasksNotificationEnabled:newTasksNotificationEnabled];
   }
 
-  int level = _levelUpService->GetCurrentLevel();
+  _level = _levelUpService->GetCurrentLevel();
 
   auto [remainingTasksForNextLevel, totalTasksForNextLevel] =
       _levelUpService->GetTasksRemainingForNextLevel();
+  _remainingTasksForNextLevel = remainingTasksForNextLevel;
+
   if ([self.consumer
           respondsToSelector:@selector(setLevel:remainingTasksForNextLevel:
                                        totalTasksForNextLevel:)]) {
-    [self.consumer setLevel:level
-        remainingTasksForNextLevel:remainingTasksForNextLevel
+    [self.consumer setLevel:_level
+        remainingTasksForNextLevel:_remainingTasksForNextLevel
             totalTasksForNextLevel:totalTasksForNextLevel];
   }
+  [self updateTasks];
+  [self createRecommendedTasks];
+  [self configureTaskStat];
+}
 
+- (void)configureAllTasksConsumer:(id<LevelUpConsumer>)allTasksConsumer {
+  if ([allTasksConsumer respondsToSelector:@selector(addCategoryCard:)]) {
+    for (LevelUpCategory* category in _categories) {
+      [allTasksConsumer addCategoryCard:category];
+    }
+  }
+}
+
+- (void)disconnect {
+  _identityManagerObserverBridge.reset();
+  _prefObserverBridge.reset();
+  _levelUpServiceObserverBridge.reset();
+  _prefChangeRegistrar.Reset();
+  _authService = nullptr;
+  _identityManager = nullptr;
+  _levelUpService = nullptr;
+  _prefService = nullptr;
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == prefs::kLevelUpUIEnabled) {
+    BOOL updatesEnabled = _prefService->GetBoolean(prefs::kLevelUpUIEnabled);
+    if ([self.consumer
+            respondsToSelector:@selector(setProgressUpdatesEnabled:)]) {
+      [self.consumer setProgressUpdatesEnabled:updatesEnabled];
+    }
+  } else if (preferenceName == prefs::kLevelUpOptIn) {
+    if (_prefService && !_prefService->GetBoolean(prefs::kLevelUpOptIn)) {
+      [self.delegate levelUpMediatorWantsToBeDismissed:self];
+    }
+  } else if (preferenceName == prefs::kLevelUpNewTasksNotificationEnabled) {
+    BOOL newTasksNotificationEnabled =
+        _prefService->GetBoolean(prefs::kLevelUpNewTasksNotificationEnabled);
+    if ([self.consumer
+            respondsToSelector:@selector(setNewTasksNotificationEnabled:)]) {
+      [self.consumer
+          setNewTasksNotificationEnabled:newTasksNotificationEnabled];
+    }
+  }
+}
+
+#pragma mark - LevelUpServiceObserving
+
+- (void)levelUpServiceDidCompleteTask:(LevelUpService*)service {
+  [self updateConsumer];
+  // TODO(crbug.com/571654448): Sync task updates to the All Tasks page.
+}
+
+- (void)levelUpServiceDidUpdateStats:(LevelUpService*)service {
+  [self configureTaskStat];
+}
+
+#pragma mark - Private
+
+// Updates the consumer with the latest data from the LevelUpService.
+- (void)updateConsumer {
+  if (!self.consumer) {
+    return;
+  }
+
+  int currentLevel = _levelUpService->GetCurrentLevel();
+
+  auto [remainingTasksForNextLevel, totalTasksForNextLevel] =
+      _levelUpService->GetTasksRemainingForNextLevel();
+
+  if (_level != currentLevel ||
+      _remainingTasksForNextLevel != remainingTasksForNextLevel) {
+    _level = currentLevel;
+    _remainingTasksForNextLevel = remainingTasksForNextLevel;
+    if ([self.consumer
+            respondsToSelector:@selector(setLevel:remainingTasksForNextLevel:
+                                         totalTasksForNextLevel:)]) {
+      [self.consumer setLevel:_level
+          remainingTasksForNextLevel:_remainingTasksForNextLevel
+              totalTasksForNextLevel:totalTasksForNextLevel];
+    }
+    [self updateTasks];
+    [self updateRecommendedTasks];
+    [self configureTaskStat];
+  }
+}
+
+// Populates tasks into categories and updates the consumer.
+- (void)updateTasks {
   NSMutableArray<LevelUpTask*>* productivityTasks =
       [[NSMutableArray alloc] init];
   NSMutableArray<LevelUpTask*>* safetyTasks = [[NSMutableArray alloc] init];
@@ -149,20 +260,6 @@
     }
   }
 
-  NSMutableArray<LevelUpTask*>* recommendedTasks =
-      [[NSMutableArray alloc] init];
-  const auto recommendedTaskInfos = _levelUpService->GetRecommendedTasks();
-  for (const TaskInfo* info : recommendedTaskInfos) {
-    BOOL completed = _levelUpService->IsTaskCompleted(info->GetTaskType());
-    [recommendedTasks
-        addObject:[[LevelUpTask alloc] initWithTaskInfo:info
-                                              completed:completed]];
-  }
-
-  if ([self.consumer respondsToSelector:@selector(setRecommendedTasks:)]) {
-    [self.consumer setRecommendedTasks:recommendedTasks];
-  }
-
   _categories = @[
     [[LevelUpCategory alloc]
         initWithTitle:l10n_util::GetNSString(
@@ -181,44 +278,52 @@
       [self.consumer addCategoryCard:category];
     }
   }
-  [self configureTaskStat];
 }
 
-- (void)configureAllTasksConsumer:(id<LevelUpConsumer>)allTasksConsumer {
-  if ([allTasksConsumer respondsToSelector:@selector(addCategoryCard:)]) {
-    for (LevelUpCategory* category in _categories) {
-      [allTasksConsumer addCategoryCard:category];
-    }
+// Creates four random recommended tasks in "All tasks" section. If there are
+// less than four new tasks available, backfill with completed tasks.
+- (void)createRecommendedTasks {
+  _recommendedTasks = [[NSMutableArray alloc] init];
+  const auto recommendedTaskInfos = _levelUpService->GetRecommendedTasks();
+  for (const TaskInfo* info : recommendedTaskInfos) {
+    BOOL completed = _levelUpService->IsTaskCompleted(info->GetTaskType());
+    [_recommendedTasks
+        addObject:[[LevelUpTask alloc] initWithTaskInfo:info
+                                              completed:completed]];
+  }
+  if ([self.consumer respondsToSelector:@selector(setRecommendedTasks:)]) {
+    [self.consumer setRecommendedTasks:_recommendedTasks];
   }
 }
 
-- (void)disconnect {
-  _identityManagerObserverBridge.reset();
-  _prefObserverBridge.reset();
-  _prefChangeRegistrar.Reset();
-  _authService = nullptr;
-  _identityManager = nullptr;
-  _levelUpService = nullptr;
-  _prefService = nullptr;
-}
-
-#pragma mark - PrefObserverDelegate
-
-- (void)onPreferenceChanged:(const std::string&)preferenceName {
-  if (preferenceName == prefs::kLevelUpUIEnabled) {
-    BOOL updatesEnabled = _prefService->GetBoolean(prefs::kLevelUpUIEnabled);
-    if ([self.consumer
-            respondsToSelector:@selector(setProgressUpdatesEnabled:)]) {
-      [self.consumer setProgressUpdatesEnabled:updatesEnabled];
-    }
-  } else if (preferenceName == prefs::kLevelUpOptIn) {
-    if (_prefService && !_prefService->GetBoolean(prefs::kLevelUpOptIn)) {
-      [self.delegate levelUpMediatorWantsToBeDismissed:self];
+// Replaces completed task(s) with new task(s) in the "All tasks" section.
+// If there are less than four new tasks available, keep the completed tasks
+// in completed status.
+- (void)updateRecommendedTasks {
+  const auto& tasks = _levelUpService->GetTasks();
+  std::set<TaskType> recommendedTaskTypes;
+  for (LevelUpTask* task in _recommendedTasks) {
+    recommendedTaskTypes.insert(task.taskInfo->GetTaskType());
+  }
+  for (NSUInteger i = 0; i < _recommendedTasks.count; ++i) {
+    if (_levelUpService->IsTaskCompleted(
+            _recommendedTasks[i].taskInfo->GetTaskType())) {
+      _recommendedTasks[i].completed = YES;
+      for (const auto& [type, info] : tasks) {
+        if (!_levelUpService->IsTaskCompleted(type) &&
+            !recommendedTaskTypes.contains(type)) {
+          _recommendedTasks[i] =
+              [[LevelUpTask alloc] initWithTaskInfo:info.get() completed:NO];
+          recommendedTaskTypes.insert(type);
+          break;
+        }
+      }
     }
   }
+  if ([self.consumer respondsToSelector:@selector(setRecommendedTasks:)]) {
+    [self.consumer setRecommendedTasks:_recommendedTasks];
+  }
 }
-
-#pragma mark - Private
 
 // Configures the task stats sorted in reverse order of their associated task's
 // completion recency (most recent first).

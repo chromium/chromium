@@ -16,6 +16,7 @@
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "ios/chrome/browser/level_up/model/level_up_service_observer.h"
 #import "ios/chrome/browser/level_up/model/tasks/task_factories.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_observer.h"
@@ -349,6 +350,7 @@ void LevelUpService::MarkTaskCompleted(TaskType task_type) {
     UpdateLevelAndPref();
     pref_service_->SetInteger(
         prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness, 0);
+    NotifyObserversOfTaskComplete();
   }
 }
 
@@ -523,6 +525,7 @@ void LevelUpService::IncrementStatValue(LevelUpTaskStatType stat_type,
   const char* pref_name = GetPrefNameForStatType(stat_type);
   int current = GetStatValue(stat_type);
   pref_service_->SetInteger(pref_name, current + delta);
+  NotifyObserversOfStatUpdate();
 }
 
 const std::map<TaskType, std::unique_ptr<TaskInfo>>& LevelUpService::GetTasks()
@@ -614,6 +617,26 @@ int LevelUpService::CalculateLevel(size_t completed_count) const {
     }
   }
   return kMaxLevel;
+}
+
+void LevelUpService::AddObserver(LevelUpServiceObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void LevelUpService::RemoveObserver(LevelUpServiceObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void LevelUpService::NotifyObserversOfTaskComplete() {
+  for (LevelUpServiceObserver& observer : observers_) {
+    observer.OnTaskCompleted();
+  }
+}
+
+void LevelUpService::NotifyObserversOfStatUpdate() {
+  for (LevelUpServiceObserver& observer : observers_) {
+    observer.OnStatValueChanged();
+  }
 }
 
 // static
