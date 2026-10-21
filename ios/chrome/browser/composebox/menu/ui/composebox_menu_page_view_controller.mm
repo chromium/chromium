@@ -667,6 +667,10 @@ std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
     cell.accessibilityTraits &= ~UIAccessibilityTraitSelected;
   }
 
+  if (item.type == ComposeboxMenuItemType::kMoreOptionsSubmenu) {
+    [accessories addObject:[[UICellAccessoryDisclosureIndicator alloc] init]];
+  }
+
   if (item.type == ComposeboxMenuItemType::kAttachmentSharedTabs) {
     [accessories addObject:[[UICellAccessoryDisclosureIndicator alloc] init]];
     // TODO(crbug.com/568743843): Update `ComposeboxFaviconsAccordionView` badge
