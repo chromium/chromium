@@ -204,6 +204,13 @@ class EnrollmentScreenBaseTest : public testing::Test {
         });
   }
 
+  void ExpectDeviceAttributeUpdateSuccess() {
+    EXPECT_CALL(mock_enrollment_launcher_, UpdateDeviceAttributes(_, _))
+        .WillOnce([this](const std::string&, const std::string&) {
+          enrollment_screen_->OnDeviceAttributeUploadCompleted(/*success=*/true);
+        });
+  }
+
   void ExpectSuccessScreen() {
     EXPECT_CALL(mock_view_, ShowEnrollmentStatus(
                                 policy::EnrollmentStatus::ForEnrollmentCode(
@@ -481,6 +488,28 @@ TEST_P(EnrollmentScreenManualFlowTest, OobeConfigSkipEnrollmentSuccessScreen) {
   ExpectShowViewWithLogin();
   ExpectManualEnrollmentAndReportEnrolled();
   ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/false);
+  ExpectSuccessScreenIsNotShown();
+  SetupClearAuthExpectationsOnSuccess();
+
+  SetUpEnrollmentScreen(config);
+  ShowEnrollmentScreen();
+
+  EXPECT_EQ(last_screen_result(), EnrollmentScreen::Result::COMPLETED);
+  EXPECT_EQ(local_state().GetInteger(ash::prefs::kDeviceRegistered), 1);
+}
+
+TEST_P(EnrollmentScreenManualFlowTest,
+       OobeConfigSkipEnrollmentSuccessScreenWithDeviceAttributes) {
+  wizard_context().configuration.Set(
+      configuration::kSkipEnrollmentSuccessScreen, true);
+  wizard_context().configuration.Set(configuration::kEnrollmentAutoAttributes,
+                                     true);
+  const policy::EnrollmentConfig config = GetEnrollmentConfig();
+
+  ExpectShowViewWithLogin();
+  ExpectManualEnrollmentAndReportEnrolled();
+  ExpectGetDeviceAttributeUpdatePermission(/*permission_granted=*/true);
+  ExpectDeviceAttributeUpdateSuccess();
   ExpectSuccessScreenIsNotShown();
   SetupClearAuthExpectationsOnSuccess();
 

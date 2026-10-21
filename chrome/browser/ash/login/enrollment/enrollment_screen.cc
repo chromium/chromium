@@ -763,13 +763,12 @@ void EnrollmentScreen::OnDeviceAttributeUpdatePermission(bool granted) {
 void EnrollmentScreen::OnDeviceAttributeUploadCompleted(bool success) {
   if (success) {
     // If the device attributes have been successfully uploaded, fetch policy.
-    browser_policy_connector_ash_->GetDeviceCloudPolicyManager()
-        ->core()
-        ->RefreshSoon(policy::PolicyFetchReason::kDeviceEnrollment);
-    if (view_) {
-      view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForEnrollmentCode(
-          policy::EnrollmentStatus::Code::kSuccess));
+    if (auto* policy_manager =
+            browser_policy_connector_ash_->GetDeviceCloudPolicyManager()) {
+      policy_manager->core()->RefreshSoon(
+          policy::PolicyFetchReason::kDeviceEnrollment);
     }
+    ShowEnrollmentStatusOnSuccess();
   } else if (view_) {
     view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForEnrollmentCode(
         policy::EnrollmentStatus::Code::kAttributeUpdateFailed));
@@ -800,13 +799,16 @@ void EnrollmentScreen::ShowAttributePromptScreen() {
     }
   }
 
-  policy::CloudPolicyStore* store = policy_manager->core()->store();
+  if (policy_manager) {
+    policy::CloudPolicyStore* store = policy_manager->core()->store();
 
-  const enterprise_management::PolicyData* policy = store->policy();
+    const enterprise_management::PolicyData* policy =
+        store ? store->policy() : nullptr;
 
-  if (policy) {
-    asset_id = policy->annotated_asset_id();
-    location = policy->annotated_location();
+    if (policy) {
+      asset_id = policy->annotated_asset_id();
+      location = policy->annotated_location();
+    }
   }
 
   if (!context()->configuration.empty()) {

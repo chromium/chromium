@@ -819,6 +819,7 @@ class WizardControllerDeviceMigrationTest : public WizardControllerTest {
     "welcomeNext": true,
     "skipHidScreen": true,
     "skipUpdateOptOutScreen": true,
+    "skipEnrollmentSuccessScreen": true,
     "networkConfig": "{\"NetworkConfigurations\":[{
      \"GUID\":\"wpa-psk-network-guid\",
      \"Type\": \"WiFi\",
