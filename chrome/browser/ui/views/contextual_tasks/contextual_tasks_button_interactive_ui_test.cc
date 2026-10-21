@@ -1664,6 +1664,9 @@ class ContextualTasksEphemeralButtonAutoDismissInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonAutoDismissInteractiveTest,
                        AutoDismissHidesButtonAndDisassociatesTaskAfterTimeout) {
+  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
+
   RunTestSequence(
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
@@ -1676,6 +1679,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonAutoDismissInteractiveTest,
       // the ephemeral button.
       FastForwardBy(base::Minutes(1440)),
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      Do([&]() {
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton."
+                         "AutoDismissed"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.AutoDismissed", 1440, 1);
+      }),
       Check([this]() {
         content::WebContents* const web_contents =
             browser()->GetTabStripModel()->GetWebContentsAt(0);

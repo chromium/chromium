@@ -113,6 +113,7 @@ class ContextualTasksEphemeralButtonController
                       content::WebContents* old_contents,
                       content::WebContents* new_contents);
   base::TimeDelta GetAutoDismissDuration() const;
+  void OnAutoDismissTimerFired(SessionID tab_id);
   void DismissEphemeralButtonForTab(SessionID tab_id);
   void CancelAutoDismissTimersForActiveTask();
 
