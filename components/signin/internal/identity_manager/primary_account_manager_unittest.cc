@@ -1196,17 +1196,8 @@ class PrimaryAccountManagerExplicitSigninNewFeatureTest
       public testing::WithParamInterface<bool> {
  public:
   PrimaryAccountManagerExplicitSigninNewFeatureTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {syncer::kReplaceSyncPromosWithSigninPromosNewSignin},
-          /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
-          /*disabled_features=*/{
-              syncer::kReplaceSyncPromosWithSigninPromosNewSignin});
-    }
+    scoped_feature_list_.InitWithFeatureState(
+        syncer::kReplaceSyncPromosWithSignInPromos, !GetParam());
   }
 
  private:
@@ -1257,7 +1248,10 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
 
-  EXPECT_TRUE(
+  const bool expected_other_opt_in =
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
+  EXPECT_EQ(
+      expected_other_opt_in,
       SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(other_gaia_id));
 
   // Verify histograms as well that this was for a new opt-in.
@@ -1266,7 +1260,8 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       /*sample=*/true, /*expected_bucket_count=*/1);
   histogram_tester_.ExpectUniqueSample(
       "Signin.Extensions.ExplicitSigninFromAnyAccessPoint",
-      /*sample=*/true, /*expected_bucket_count=*/2);
+      /*sample=*/true,
+      /*expected_bucket_count=*/expected_other_opt_in ? 2 : 1);
 
   // Sign out, then sign in again through the extensions install bubble.
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
@@ -1284,7 +1279,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       /*sample=*/false, /*expected_count=*/1);
   histogram_tester_.ExpectBucketCount(
       "Signin.Extensions.ExplicitSigninFromAnyAccessPoint",
-      /*sample=*/true, /*expected_count=*/2);
+      /*sample=*/true, /*expected_count=*/expected_other_opt_in ? 2 : 1);
   histogram_tester_.ExpectBucketCount(
       "Signin.Extensions.ExplicitSigninFromAnyAccessPoint",
       /*sample=*/false, /*expected_count=*/1);
@@ -1321,7 +1316,8 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
 
-  EXPECT_TRUE(
+  EXPECT_EQ(
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled(),
       SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(other_gaia_id));
 
   // Quickly verify that the pref is still true for `gaia_id`.
@@ -1340,7 +1336,7 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
   manager_->SetPrimaryAccountInfo(
       account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kChromeSigninInterceptBubble);
+      signin_metrics::AccessPoint::kBookmarkBubble);
 
   ASSERT_TRUE(SigninPrefs(*prefs()).GetBookmarksExplicitBrowserSignin(gaia_id));
 
@@ -1358,10 +1354,8 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
       /*sample=*/true, /*expected_bucket_count=*/1);
 }
 
-// Tests for users already signed `ExplicitSigninExtensionsPref` is only set to
-// true if the user belongs to the group with
-// `kReplaceSyncPromosWithSignInPromos` enabled but
-// `kReplaceSyncPromosWithSigninPromosNewSignin` disabled.
+// Tests for users already signed in `ExplicitSigninExtensionsPref` is only set
+// to true if `kReplaceSyncPromosWithSignInPromos` is enabled.
 TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
        ExplicitSigninExtensionsPref_AlreadySignedIn) {
   GaiaId gaia_id("gaia_id");
@@ -1378,10 +1372,8 @@ TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
             SigninPrefs(*prefs()).GetExtensionsExplicitBrowserSignin(gaia_id));
 }
 
-// Tests for users already signed `ExplicitSigninBookmarksPref` is only set to
-// true if the user belongs to the group with
-// `kReplaceSyncPromosWithSignInPromos` enabled but
-// `kReplaceSyncPromosWithSigninPromosNewSignin` disabled.
+// Tests for users already signed in `ExplicitSigninBookmarksPref` is only set
+// to true if `kReplaceSyncPromosWithSignInPromos` is enabled.
 TEST_P(PrimaryAccountManagerExplicitSigninNewFeatureTest,
        ExplicitSigninBookmarksPref_AlreadySignedIn) {
   GaiaId gaia_id("gaia_id");
