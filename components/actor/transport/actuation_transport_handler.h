@@ -50,6 +50,13 @@ class ActuationTransportHandler : public browser_actuator::TransportHandler {
                           const std::string& task_id_str,
                           bool success);
 
+  void HandlePerformActions(const std::string& request_id,
+                            std::string_view task_id_str,
+                            const proto::PerformActionsRequest& request);
+  void OnActComplete(const std::string& request_id,
+                     const std::string& task_id_str,
+                     proto::PerformActionsResponse response);
+
   std::unique_ptr<ActuationDelegate> delegate_;
   base::flat_set<TaskId> active_tasks_;
   base::WeakPtrFactory<ActuationTransportHandler> weak_ptr_factory_{this};

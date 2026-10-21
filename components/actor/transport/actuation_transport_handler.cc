@@ -15,6 +15,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/actor/core/task_id.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/transport_session.h"
@@ -66,8 +67,8 @@ void ActuationTransportHandler::OnMessage(
       HandleStartTask(message.request_id(), message.start_task());
       break;
     case proto::ServerToBrowserPayload::kPerformActions:
-      // TODO(crbug.com/574548021): Route perform actions payloads.
-      NOTIMPLEMENTED();
+      HandlePerformActions(message.request_id(), message.task_id(),
+                           message.perform_actions());
       break;
     case proto::ServerToBrowserPayload::kStopTask:
       HandleStopTask(message.request_id(), message.task_id(),
@@ -132,6 +133,37 @@ void ActuationTransportHandler::OnStopTaskComplete(
   upstream.mutable_stop_task()->set_status(
       success ? proto::StopTaskResponse::STATUS_OK
               : proto::StopTaskResponse::STATUS_FAILED);
+  std::ignore =
+      SendUpstreamMessage(browser_actuator::PayloadType::kActuation, upstream);
+}
+
+void ActuationTransportHandler::HandlePerformActions(
+    const std::string& request_id,
+    std::string_view task_id_str,
+    const proto::PerformActionsRequest& request) {
+  std::optional<TaskId> task_id = ParseTaskId(task_id_str);
+  if (!task_id || !active_tasks_.contains(*task_id)) {
+    proto::PerformActionsResponse response;
+    response.set_status(proto::PerformActionsResponse::STATUS_TAB_DISCONNECTED);
+    response.set_action_status_code(
+        static_cast<int32_t>(mojom::ActionResultCode::kTaskWentAway));
+    OnActComplete(request_id, std::string(task_id_str), std::move(response));
+    return;
+  }
+  delegate_->Act(*task_id, request,
+                 base::BindOnce(&ActuationTransportHandler::OnActComplete,
+                                weak_ptr_factory_.GetWeakPtr(), request_id,
+                                std::string(task_id_str)));
+}
+
+void ActuationTransportHandler::OnActComplete(
+    const std::string& request_id,
+    const std::string& task_id_str,
+    proto::PerformActionsResponse response) {
+  proto::BrowserToServerPayload upstream;
+  upstream.set_task_id(task_id_str);
+  upstream.set_request_id(request_id);
+  *upstream.mutable_perform_actions() = std::move(response);
   std::ignore =
       SendUpstreamMessage(browser_actuator::PayloadType::kActuation, upstream);
 }

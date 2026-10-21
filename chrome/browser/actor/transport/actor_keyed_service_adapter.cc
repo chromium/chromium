@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/actor/core/task_source_info.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 
@@ -64,11 +66,33 @@ void ActorKeyedServiceAdapter::StopTask(TaskId task_id,
   std::move(callback).Run(true);
 }
 
-void ActorKeyedServiceAdapter::Act(
-    const optimization_guide::proto::Actions& actions,
-    ActCallback callback) {
-  actor_keyed_service_proto_wrapper_.PerformActions(actions,
-                                                    std::move(callback));
+void ActorKeyedServiceAdapter::Act(TaskId task_id,
+                                   const proto::PerformActionsRequest& request,
+                                   ActCallback callback) {
+  optimization_guide::proto::Actions actions;
+  actions.set_task_id(task_id.value());
+  *actions.mutable_actions() = request.actions();
+  // TODO(crbug.com/571106281): Apply observation_config and populate
+  // observations in PerformActionsResponse.
+  actor_keyed_service_proto_wrapper_.PerformActions(
+      actions,
+      base::BindOnce(
+          [](ActCallback callback,
+             optimization_guide::proto::ActionsResult result) {
+            proto::PerformActionsResponse response;
+            response.set_status(
+                result.action_result() ==
+                        static_cast<int32_t>(mojom::ActionResultCode::kOk)
+                    ? proto::PerformActionsResponse::STATUS_OK
+                    : proto::PerformActionsResponse::STATUS_ACTION_FAILED);
+            response.set_action_status_code(result.action_result());
+            if (result.has_index_of_failed_action() &&
+                result.index_of_failed_action() >= 0) {
+              response.set_failed_action_index(result.index_of_failed_action());
+            }
+            std::move(callback).Run(std::move(response));
+          },
+          std::move(callback)));
 }
 
 void ActorKeyedServiceAdapter::OnTabAddedToTask(

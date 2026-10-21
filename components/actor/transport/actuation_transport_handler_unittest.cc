@@ -15,12 +15,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "components/actor/core/task_id.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/actor/transport/actuation_delegate.h"
 #include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/browser_actuator/public/common.h"
 #include "components/browser_actuator/public/payload_type_mapping.h"
 #include "components/browser_actuator/public/transport_session.h"
-#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor {
@@ -81,8 +81,13 @@ class FakeActuationDelegate : public ActuationDelegate {
     std::move(callback).Run(true);
   }
 
-  void Act(const optimization_guide::proto::Actions& actions,
-           ActCallback callback) override {}
+  void Act(TaskId task_id,
+           const proto::PerformActionsRequest& request,
+           ActCallback callback) override {
+    last_act_task_id_ = task_id;
+    last_perform_actions_request_ = request;
+    pending_act_callback_ = std::move(callback);
+  }
 
   const std::optional<proto::StartTaskRequest>& last_start_request() const {
     return last_start_request_;
@@ -101,6 +106,15 @@ class FakeActuationDelegate : public ActuationDelegate {
     return stopped_task_ids_;
   }
 
+  const std::optional<TaskId>& last_act_task_id() const {
+    return last_act_task_id_;
+  }
+  const std::optional<proto::PerformActionsRequest>&
+  last_perform_actions_request() const {
+    return last_perform_actions_request_;
+  }
+  ActCallback TakeActCallback() { return std::move(pending_act_callback_); }
+
  private:
   std::optional<proto::StartTaskRequest> last_start_request_;
   StartTaskCallback pending_start_callback_;
@@ -108,6 +122,10 @@ class FakeActuationDelegate : public ActuationDelegate {
   std::optional<TaskId> last_stop_task_id_;
   std::optional<proto::StopTaskRequest> last_stop_request_;
   std::vector<TaskId> stopped_task_ids_;
+
+  std::optional<TaskId> last_act_task_id_;
+  std::optional<proto::PerformActionsRequest> last_perform_actions_request_;
+  ActCallback pending_act_callback_;
 };
 
 class ActuationTransportHandlerTest : public testing::Test {
@@ -239,6 +257,58 @@ TEST_F(ActuationTransportHandlerTest, StopTaskRejectsUnownedOrInvalidTask) {
             proto::StopTaskResponse::STATUS_FAILED);
 }
 
+TEST_F(ActuationTransportHandlerTest, ActForwardsOwnedTaskAndSendsResponse) {
+  StartSessionTask(7);
+
+  proto::ServerToBrowserPayload downstream;
+  downstream.set_task_id("7");
+  downstream.set_request_id("req_act_1");
+  downstream.mutable_perform_actions()->add_actions()->mutable_wait();
+
+  handler_->OnMessage(browser_actuator::PayloadType::kActuation,
+                      downstream.SerializeAsString());
+
+  ASSERT_TRUE(delegate_->last_act_task_id().has_value());
+  EXPECT_EQ(*delegate_->last_act_task_id(), TaskId(7));
+  ASSERT_TRUE(delegate_->last_perform_actions_request().has_value());
+  EXPECT_EQ(delegate_->last_perform_actions_request()->actions_size(), 1);
+
+  proto::PerformActionsResponse act_response;
+  act_response.set_status(proto::PerformActionsResponse::STATUS_OK);
+  act_response.set_action_status_code(0);
+  delegate_->TakeActCallback().Run(std::move(act_response));
+
+  ASSERT_EQ(session_.sent_messages().size(), 2u);
+  const auto& upstream = session_.sent_messages()[1];
+  EXPECT_EQ(upstream.task_id(), "7");
+  EXPECT_EQ(upstream.request_id(), "req_act_1");
+  ASSERT_TRUE(upstream.has_perform_actions());
+  EXPECT_EQ(upstream.perform_actions().status(),
+            proto::PerformActionsResponse::STATUS_OK);
+  EXPECT_EQ(upstream.perform_actions().action_status_code(), 0);
+}
+
+TEST_F(ActuationTransportHandlerTest, ActRejectsUnownedTask) {
+  proto::ServerToBrowserPayload downstream;
+  downstream.set_task_id("99");
+  downstream.set_request_id("req_act_unowned");
+  downstream.mutable_perform_actions();
+
+  handler_->OnMessage(browser_actuator::PayloadType::kActuation,
+                      downstream.SerializeAsString());
+
+  EXPECT_FALSE(delegate_->last_act_task_id().has_value());
+  ASSERT_EQ(session_.sent_messages().size(), 1u);
+  const auto& upstream = session_.sent_messages()[0];
+  EXPECT_EQ(upstream.task_id(), "99");
+  EXPECT_EQ(upstream.request_id(), "req_act_unowned");
+  ASSERT_TRUE(upstream.has_perform_actions());
+  EXPECT_EQ(upstream.perform_actions().status(),
+            proto::PerformActionsResponse::STATUS_TAB_DISCONNECTED);
+  EXPECT_EQ(upstream.perform_actions().action_status_code(),
+            static_cast<int32_t>(mojom::ActionResultCode::kTaskWentAway));
+}
+
 TEST_F(ActuationTransportHandlerTest,
        IgnoresInvalidPayloadOrNonActuationPayloadType) {
   handler_->OnMessage(browser_actuator::PayloadType::kControl, "invalid_bytes");
@@ -252,6 +322,7 @@ TEST_F(ActuationTransportHandlerTest,
 
   EXPECT_FALSE(delegate_->last_start_request().has_value());
   EXPECT_FALSE(delegate_->last_stop_task_id().has_value());
+  EXPECT_FALSE(delegate_->last_act_task_id().has_value());
   EXPECT_TRUE(session_.sent_messages().empty());
 }
 

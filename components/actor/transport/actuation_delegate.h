@@ -9,15 +9,12 @@
 #include "components/actor/core/task_id.h"
 
 namespace chrome::aix::autobrowse::proto {
+class PerformActionsRequest;
+class PerformActionsResponse;
 class StartTaskRequest;
 class StartTaskResponse;
 class StopTaskRequest;
 }  // namespace chrome::aix::autobrowse::proto
-
-namespace optimization_guide::proto {
-class Actions;
-class ActionsResult;
-}  // namespace optimization_guide::proto
 
 namespace actor {
 
@@ -38,9 +35,9 @@ class ActuationDelegate {
                         const proto::StopTaskRequest& request,
                         StopTaskCallback callback) = 0;
 
-  using ActCallback =
-      base::OnceCallback<void(optimization_guide::proto::ActionsResult)>;
-  virtual void Act(const optimization_guide::proto::Actions& actions,
+  using ActCallback = base::OnceCallback<void(proto::PerformActionsResponse)>;
+  virtual void Act(TaskId task_id,
+                   const proto::PerformActionsRequest& request,
                    ActCallback callback) = 0;
 };
 

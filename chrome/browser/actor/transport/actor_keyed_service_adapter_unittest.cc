@@ -81,14 +81,12 @@ TEST_F(ActorKeyedServiceAdapterTest, StopTaskReturnsFalseForUnknownTask) {
 }
 
 TEST_F(ActorKeyedServiceAdapterTest, ActRejectsUnknownTask) {
-  optimization_guide::proto::Actions unknown_actions;
-  unknown_actions.set_task_id(9999);
-  unknown_actions.add_actions()->mutable_wait()->set_wait_time_ms(0);
+  proto::PerformActionsRequest unknown_request;
+  unknown_request.add_actions()->mutable_wait()->set_wait_time_ms(0);
 
-  base::test::TestFuture<optimization_guide::proto::ActionsResult>
-      unknown_future;
-  adapter_.Act(unknown_actions, unknown_future.GetCallback());
-  EXPECT_EQ(unknown_future.Get().action_result(),
+  base::test::TestFuture<proto::PerformActionsResponse> unknown_future;
+  adapter_.Act(TaskId(9999), unknown_request, unknown_future.GetCallback());
+  EXPECT_EQ(unknown_future.Get().action_status_code(),
             static_cast<int32_t>(mojom::ActionResultCode::kTaskWentAway));
 }
 
@@ -98,18 +96,16 @@ TEST_F(ActorKeyedServiceAdapterTest, ActRejectsInvalidActionArguments) {
   adapter_.StartTask(start_request, start_future.GetCallback());
   TaskId task_id = std::get<0>(start_future.Get());
 
-  optimization_guide::proto::Actions actions;
-  actions.set_task_id(task_id.value());
-  actions.add_actions()->mutable_click()->set_tab_id(1);
+  proto::PerformActionsRequest request;
+  request.add_actions()->mutable_click()->set_tab_id(1);
 
-  base::test::TestFuture<optimization_guide::proto::ActionsResult> act_future;
-  adapter_.Act(actions, act_future.GetCallback());
+  base::test::TestFuture<proto::PerformActionsResponse> act_future;
+  adapter_.Act(task_id, request, act_future.GetCallback());
 
-  const auto& result = act_future.Get();
-  EXPECT_EQ(result.action_result(),
+  const auto& response = act_future.Get();
+  EXPECT_EQ(response.action_status_code(),
             static_cast<int32_t>(mojom::ActionResultCode::kClickMissingTarget));
-  ASSERT_TRUE(result.has_index_of_failed_action());
-  EXPECT_EQ(result.index_of_failed_action(), 0);
+  EXPECT_EQ(response.failed_action_index(), 0);
 }
 
 TEST_F(ActorKeyedServiceAdapterTest, ActExecutesWaitActionAndBuildsResult) {
@@ -118,18 +114,17 @@ TEST_F(ActorKeyedServiceAdapterTest, ActExecutesWaitActionAndBuildsResult) {
   adapter_.StartTask(start_request, start_future.GetCallback());
   TaskId task_id = std::get<0>(start_future.Get());
 
-  optimization_guide::proto::Actions actions;
-  actions.set_task_id(task_id.value());
-  actions.add_actions()->mutable_wait()->set_wait_time_ms(0);
+  proto::PerformActionsRequest request;
+  request.add_actions()->mutable_wait()->set_wait_time_ms(0);
 
-  base::test::TestFuture<optimization_guide::proto::ActionsResult> act_future;
-  adapter_.Act(actions, act_future.GetCallback());
+  base::test::TestFuture<proto::PerformActionsResponse> act_future;
+  adapter_.Act(task_id, request, act_future.GetCallback());
 
-  const auto& result = act_future.Get();
-  EXPECT_EQ(result.action_result(),
+  const auto& response = act_future.Get();
+  EXPECT_EQ(response.status(), proto::PerformActionsResponse::STATUS_OK);
+  EXPECT_EQ(response.action_status_code(),
             static_cast<int32_t>(mojom::ActionResultCode::kOk));
-  EXPECT_FALSE(result.has_index_of_failed_action());
-  EXPECT_GE(result.latency_information().latency_steps_size(), 1);
+  EXPECT_FALSE(response.has_failed_action_index());
 }
 
 }  // namespace
