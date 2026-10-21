@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Multi-pass aria-owns update with deferred parent restoration preserves cycle check</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="keeper" aria-owns="wrap"></div>
+<div id="group2" role="switch" aria-owns="relay1 panel"></div>
+
+<div id="panel" aria-hidden="true">
+  <div id="group1" role="group" aria-disabled="true"></div>
+  <div id="guard2" aria-owns="relay2"></div>
+  <div id="relay2"></div>
+  <div id="wrap">
+    <div id="guard1" aria-owns="relay1"></div>
+    <div id="relay1"></div>
+    <div id="owner1" aria-owns="item"></div>
+  </div>
+</div>
+
+<div id="box" aria-hidden="true">
+  <div id="item">
+    <div id="mid" aria-owns="leaf"></div>
+  </div>
+</div>
+
+<div id="leaf" aria-owns="relay2 box">
+  <div id="probe"></div>
+</div>
+<div id="extra"></div>
+
+<script>
+function nextFrame() {
+  return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+promise_test(async () => {
+  assert_true(!!window.accessibilityController);
+  accessibilityController.rootElement;
+  await nextFrame();
+
+  panel.removeAttribute('aria-hidden');
+  box.removeAttribute('aria-hidden');
+  keeper.removeAttribute('aria-owns');
+  accessibilityController.rootElement;
+  await nextFrame();
+
+  group1.setAttribute('aria-owns', 'wrap');
+  accessibilityController.rootElement;
+  await nextFrame();
+
+  probe.setAttribute('aria-owns', 'extra');
+  accessibilityController.rootElement;
+}, 'Multi-pass aria-owns update with deferred parent restoration rejects ancestor cycle');
+</script>

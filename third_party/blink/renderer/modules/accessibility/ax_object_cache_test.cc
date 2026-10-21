@@ -2334,4 +2334,73 @@ TEST_F(AccessibilityTest, PopoverInvokerUpdatedWhenTargetConnectedOrModified) {
   EXPECT_TRUE(found_uncollapsed_button);
 }
 
+TEST_F(AccessibilityTest, RemoveSubtreeWithNestedAriaOwnsParentRestoration) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="c0" aria-owns="target1 target2"></div>
+    <div id="subtree_root" aria-owns="c0 c2"></div>
+    <div id="c2">
+      <div id="target1">Item 1</div>
+      <div id="target2">Item 2</div>
+    </div>
+    <div id="outer_owner" aria-live="polite"></div>
+  )HTML");
+
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  UpdateAllLifecyclePhasesForTest();
+  cache.UpdateAXForAllDocuments();
+
+  AXObject* subtree_root = GetAXObjectByElementId("subtree_root");
+  AXObject* c0 = GetAXObjectByElementId("c0");
+  AXObject* c2 = GetAXObjectByElementId("c2");
+  AXObject* target1 = GetAXObjectByElementId("target1");
+  AXObject* target2 = GetAXObjectByElementId("target2");
+  ASSERT_NE(nullptr, subtree_root);
+  ASSERT_NE(nullptr, c0);
+  ASSERT_NE(nullptr, c2);
+  ASSERT_NE(nullptr, target1);
+  ASSERT_NE(nullptr, target2);
+  ASSERT_EQ(2u, subtree_root->CachedChildrenIncludingIgnored().size());
+  ASSERT_EQ(c0, target1->ParentObjectIfPresent());
+  ASSERT_EQ(c0, target2->ParentObjectIfPresent());
+
+  c0->ClearChildren();
+  target1->SetParent(c0);
+  target2->SetParent(c0);
+  GetElementById("outer_owner")
+      ->setAttribute(html_names::kAriaOwnsAttr,
+                     AtomicString("target1 subtree_root"));
+
+  UpdateAllLifecyclePhasesForTest();
+  cache.UpdateAXForAllDocuments();
+
+  EXPECT_NE(nullptr, GetAXObjectByElementId("subtree_root"));
+  EXPECT_NE(nullptr, GetAXObjectByElementId("c2"));
+  EXPECT_NE(nullptr, GetAXObjectByElementId("target1"));
+  EXPECT_NE(nullptr, GetAXObjectByElementId("target2"));
+}
+
+TEST_F(AccessibilityTest, SnapshotWithNestedAriaOwnsRestoringParent) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="outer" role="group" aria-disabled="true"
+         aria-owns="owner1 leaf parent_of_leaf"></div>
+    <div id="owner1" role="group" aria-live="polite" aria-owns="target"></div>
+    <div id="target" role="group" aria-owns="child1 child2"></div>
+    <div id="child1" role="group" aria-owns="leaf"></div>
+    <div id="child2" role="group">2</div>
+    <div id="parent_of_leaf" role="group">
+      <div id="leaf" role="group">Leaf</div>
+    </div>
+  )HTML");
+
+  Member<AXObjectCache> snapshot_cache = AXObjectCache::CreateSnapshotter(
+      GetDocument(), ui::AXMode(ui::AXMode::kPDFPrinting));
+  ui::AXTreeUpdate response;
+  std::set<ui::AXSerializationErrorFlag> out_error;
+  snapshot_cache->SerializeEntireTreeAndDispose(
+      /*max_nodes=*/1000, base::TimeDelta::FiniteMax(), &response, &out_error);
+
+  EXPECT_FALSE(response.nodes.empty());
+  EXPECT_TRUE(out_error.empty());
+}
+
 }  // namespace blink

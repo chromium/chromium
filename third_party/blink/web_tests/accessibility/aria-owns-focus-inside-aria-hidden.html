@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Focus inside aria-hidden ancestor after former aria-owns owner changes role</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="owner" role="group" aria-owns="action_btn"></div>
+<div id="wrap" aria-hidden="true">
+  <span id="sibling">Label text</span>
+  <button id="action_btn">Continue</button>
+</div>
+
+<script>
+function nextFrames() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => requestAnimationFrame(resolve));
+  });
+}
+
+promise_test(async t => {
+  await nextFrames();
+  accessibilityController.rootElement;
+
+  owner.setAttribute('role', 'img');
+  action_btn.focus();
+
+  const wrapAx = accessibilityController.accessibleElementById('wrap');
+  const siblingAx = accessibilityController.accessibleElementById('sibling');
+  const btnAx = accessibilityController.accessibleElementById('action_btn');
+
+  assert_true(Boolean(wrapAx), 'Ancestor container should exist in AX tree');
+  assert_false(wrapAx.isIgnored, 'aria-hidden on ancestor of focus should be discarded');
+  assert_true(Boolean(siblingAx), 'Sibling inside unhidden ancestor should exist in AX tree');
+  assert_false(siblingAx.isIgnored, 'Sibling inside unhidden ancestor should not be ignored');
+  assert_true(Boolean(btnAx), 'Focused button should exist in AX tree');
+  assert_false(btnAx.isIgnored, 'Focused button must not remain ignored under aria-hidden');
+}, 'Focused element restored from removed aria-owns owner discards ancestor aria-hidden');
+</script>

@@ -168,6 +168,10 @@ class AXRelationCache {
   // of them.
   void ProcessUpdatesWithCleanLayout();
 
+  // Restores the natural parent (or prunes the subtree) of any formerly
+  // aria-owned children whose owners were removed during `RemoveSubtree()`.
+  void RestorePendingParents();
+
   // Determines the set of child nodes that this object owns due to aria-owns
   // (fully validating that the ownership is legal and free of cycles).
   // If that differs from the previously cached set of owned children,
@@ -387,6 +391,13 @@ class AXRelationCache {
   // will be computed, and if it's different than before, ChildrenChanged
   // will be fired on all affected nodes.
   HashSet<DOMNodeId> owner_axids_to_update_;
+
+  // A set of formerly aria-owned child IDs whose owners were removed and whose
+  // natural parents need to be restored (or their subtrees pruned) once the
+  // removal finishes or in `ProcessUpdatesWithCleanLayout()`.
+  HashSet<DOMNodeId> child_axids_to_restore_parent_;
+
+  bool is_restoring_parents_ = false;
 
   // For each DOM node, the most recent id attribute value processed.
   HashMap<DOMNodeId, AtomicString> registered_id_attributes_;

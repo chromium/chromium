@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Radio button group cache removal during subtree removal must not mark peers dirty while a former aria-owns child is unparented</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="wrapper">
+  <div id="owner1" role="group" aria-owns="bridge"></div>
+  <input id="radio1" type="radio" name="rg">
+</div>
+
+<div id="bridge_parent">
+  <div id="not_bridge" role="group">
+    <input id="radio2" type="radio" name="rg" style="visibility:hidden">
+  </div>
+</div>
+
+<div id="label_el" role="group"></div>
+
+<script>
+test(() => {
+  assert_own_property(window, 'accessibilityController',
+                      'This test requires accessibilityController');
+
+  // Build the initial accessibility tree and populate the radio button group.
+  accessibilityController.rootElement;
+  accessibilityController.accessibleElementById('radio1');
+
+  // 1. Queue kIdChanged on not_bridge -> "bridge" so Callback 1 causes owner1
+  //    to claim bridge via aria-owns (leaving owner1's cached children_ empty).
+  not_bridge.id = 'bridge';
+
+  // 2. Queue a role change on wrapper so Callback 2 runs RemoveSubtree(wrapper)
+  //    removing owner1 and radio1 in sequence.
+  wrapper.setAttribute('role', 'group');
+
+  // 3. Make radio2 dirty with an inclusion change (referenced by aria-labelledby
+  //    so ComputeIsUsedForLabelOrDescription becomes true while visibility:hidden)
+  //    queued after Callback 2, without marking bridge's children dirty first.
+  label_el.setAttribute('aria-labelledby', 'radio2');
+
+  const axBridge = accessibilityController.accessibleElementById('bridge');
+  assert_true(Boolean(axBridge));
+}, 'Removing a radio button during RemoveSubtree must not mark peers dirty while a former aria-owns child is still unparented');
+</script>

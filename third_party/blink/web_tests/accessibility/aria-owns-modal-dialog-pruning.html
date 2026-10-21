@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Active aria-modal dialog restored to natural parent preserves background pruning</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="owner" role="group" aria-owns="dialog"></div>
+<div id="dialog_host">
+  <div id="dialog" role="dialog" aria-modal="true" tabindex="-1" aria-label="Settings">
+    <button id="confirm_btn">Save</button>
+  </div>
+</div>
+<button id="background_btn">Outside</button>
+
+<script>
+if (window.internals) {
+  internals.settings.setAriaModalPrunesAXTree(true);
+}
+
+function nextFrames() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => requestAnimationFrame(resolve));
+  });
+}
+
+promise_test(async t => {
+  await nextFrames();
+  accessibilityController.rootElement;
+
+  confirm_btn.focus();
+  accessibilityController.rootElement;
+  await nextFrames();
+
+  dialog.focus();
+  accessibilityController.rootElement;
+  await nextFrames();
+
+  owner.setAttribute('role', 'img');
+  await nextFrames();
+
+  const bgAx = accessibilityController.accessibleElementById('background_btn');
+  const bgExposed = Boolean(bgAx && !bgAx.isIgnored);
+  assert_false(bgExposed, 'Background controls outside active aria-modal dialog should stay pruned');
+}, 'Active aria-modal dialog remains active when former aria-owns owner changes role');
+</script>

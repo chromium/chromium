@@ -1367,6 +1367,13 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // by MarkAriaRadioGroupMembersDirty() before the tree is finalized.
   HashSet<AXID> aria_radiogroups_with_changed_membership_;
 
+  // HTML radio button peers whose group had a member removed during immediate
+  // tree updates. Deferred to `MarkAriaRadioGroupMembersDirty()` so peer
+  // invalidation does not mutate ancestor subtrees during `RemoveSubtree()`.
+  HashSet<AXID> dirty_radio_button_peers_;
+
+  bool in_remove_subtree_ = false;
+
   // Marks all radios in each radiogroup in
   // `aria_radiogroups_with_changed_membership_` dirty, then clears it.
   void MarkAriaRadioGroupMembersDirty();

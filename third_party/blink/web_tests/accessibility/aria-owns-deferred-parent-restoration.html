@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Deferring aria-owns parent restoration during removal must not detach a pending owner</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="outer" role="group" aria-disabled="true"></div>
+<div id="common" aria-owns="owner2_parent">
+  <div id="wrapper">
+    <div id="owner1" aria-owns="owner2"></div>
+  </div>
+</div>
+<div id="owner2_parent">
+  <div id="owner2"></div>
+</div>
+
+<script>
+test(() => {
+  assert_own_property(window, 'accessibilityController',
+                      'This test requires accessibilityController');
+
+  // Builds the initial tree where common owns owner2_parent and contains
+  // owner1, which owns owner2.
+  accessibilityController.rootElement;
+
+  // Include "owner2" so RemoveAXID(owner1) requeues owner2 in
+  // owner_axids_to_update_ regardless of HashSet iteration order.
+  owner2.setAttribute('aria-owns', 'owner2 common');
+
+  // Reparenting wrapper under a disabled group removes wrapper's descendants
+  // during clean-layout relation updates, detaching owner2 from owner1.
+  outer.setAttribute('aria-owns', 'wrapper');
+
+  const axOuter = accessibilityController.accessibleElementById('outer');
+  assert_true(!!axOuter, 'The outer group should remain in the tree');
+  assert_equals(axOuter.childrenCount, 1);
+}, 'Removing an aria-owns owner during relation updates must not leave a pending owner parentless');
+</script>

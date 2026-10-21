@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Modal dialog role update with image map area owner leaves clean relation cache</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<img id="nav_img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" usemap="#nav_map" alt="map" width="10" height="10">
+<map name="nav_map">
+  <area id="map_group" role="group">
+</map>
+<div id="item_box" style="display:none">
+  <div id="item">Item</div>
+</div>
+<div id="owner" role="group" aria-owns="dialog"></div>
+<div id="dialog_host">
+  <div id="dialog" role="dialog" aria-modal="true" tabindex="-1" aria-label="Details">
+    <button id="confirm_btn">OK</button>
+  </div>
+</div>
+<button id="background_btn">Outside</button>
+
+<script>
+if (window.internals) {
+  internals.settings.setAriaModalPrunesAXTree(true);
+}
+
+function nextFrames() {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => requestAnimationFrame(resolve));
+  });
+}
+
+promise_test(async t => {
+  await nextFrames();
+  accessibilityController.rootElement;
+
+  confirm_btn.focus();
+  accessibilityController.rootElement;
+  await nextFrames();
+
+  dialog.focus();
+  map_group.setAttribute('aria-owns', 'item owner');
+  accessibilityController.rootElement;
+  await nextFrames();
+
+  owner.setAttribute('role', 'img');
+  accessibilityController.rootElement;
+  await nextFrames();
+
+  const bgAx = accessibilityController.accessibleElementById('background_btn');
+  const bgExposed = Boolean(bgAx && !bgAx.isIgnored);
+  assert_false(bgExposed, 'Background controls outside active aria-modal dialog should stay pruned');
+}, 'Modal dialog restoration before MarkDocumentDirty avoids dirtying AXRelationCache via image map');
+</script>

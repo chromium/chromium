@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Role change on aria-owns owner leaves relation cache clean during finalization</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="grand" role="group" aria-owns="holder">
+  <div id="wrapper" role="group">
+    <div id="owner1" role="group" aria-owns="bridge"></div>
+  </div>
+</div>
+<div id="holder">
+  <div id="bridge">
+    <div id="sub_owner" role="group" aria-owns="item"></div>
+  </div>
+</div>
+<div id="item" role="button">Action</div>
+
+<script>
+promise_test(async () => {
+  if (window.accessibilityController) {
+    accessibilityController.rootElement;
+  }
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  owner1.appendChild(document.createElement('span'));
+  owner1.setAttribute('role', 'img');
+
+  if (window.accessibilityController) {
+    const axSub = accessibilityController.accessibleElementById('sub_owner');
+    assert_true(Boolean(axSub), 'sub_owner must exist in accessibility tree');
+    assert_equals(axSub.childrenCount, 1, 'sub_owner must own item');
+  }
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}, 'Deferred parent restoration during role change must restore nested aria-owns subtree without leaving AXRelationCache dirty during FinalizeTree');
+</script>
