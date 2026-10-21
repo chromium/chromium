@@ -5,5 +5,4 @@
 ../../../build/android/gyp/util/build_utils.py
 ../../../build/gn_helpers.py
 ../../../build/zip_helpers.py
-../../../third_party/jdk/java_home.py
 jar_src.py

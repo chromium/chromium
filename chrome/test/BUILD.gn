@@ -2132,7 +2132,6 @@ group("telemetry_perf_unittests_base") {
     # For tests in tools/perf/process_perf_results_unittest.py
     "//build/android/pylib/",
     "//build/util/",
-    "//third_party/jdk/java_home.py",
     "//third_party/logdog/logdog",
   ]
 

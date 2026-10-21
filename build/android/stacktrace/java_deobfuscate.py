@@ -14,8 +14,6 @@ import sys
 DIR_SOURCE_ROOT = os.path.normpath(
     os.path.join(os.path.dirname(__file__), '../../../')
 )
-sys.path.append(os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk'))
-import java_home  # noqa: E402
 
 
 def main():
@@ -31,7 +29,9 @@ def main():
             DIR_SOURCE_ROOT, 'third_party', 'r8', 'cipd', 'lib', 'r8.jar'
         ),
     ]
-    java_path = os.path.join(java_home.JAVA_HOME, 'bin', 'java')
+    java_path = os.path.join(
+        DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current', 'bin', 'java'
+    )
 
     cmd = [
         java_path,

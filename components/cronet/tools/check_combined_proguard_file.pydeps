@@ -3,7 +3,6 @@
 ../../../build/android/gyp/util/__init__.py
 ../../../build/android/gyp/util/build_utils.py
 ../../../build/gn_helpers.py
-../../../third_party/jdk/java_home.py
 ../__init__.py
 __init__.py
 check_combined_proguard_file.py

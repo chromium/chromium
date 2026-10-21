@@ -15,7 +15,6 @@ import("//build/toolchain/kythe.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/util/generate_wrapper.gni")
 import("//build_overrides/build.gni")
-import("//third_party/jdk/jdk.gni")
 if (current_toolchain == default_toolchain) {
   import("//build/toolchain/concurrent_links.gni")
 }
@@ -2992,7 +2991,7 @@ if (enable_java_templates) {
       if (invoker.use_turbine) {
         script = "//build/android/gyp/turbine.py"
         inputs = [
-          "$android_jdk_home/bin/java",
+          "//third_party/jdk/current/bin/java",
           android_sdk_jar,
         ]
       } else if (invoker.enable_errorprone) {

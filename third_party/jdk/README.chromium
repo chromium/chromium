@@ -11,7 +11,7 @@ Shipped: no
 
 Description:
 The Java Development Kit (JDK) is a software development environment used for
-developing Java applications and applets. (linux-x64, mac-arm64)
+developing Java applications and applets. (linux-x64)
 
 Check Current Version:
  * run ./print_version.sh

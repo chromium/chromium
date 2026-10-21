@@ -30,7 +30,9 @@ BUILD_PATH = os.path.join(DIR_SOURCE_ROOT, 'build')
 BUILD_UTIL_PATH = os.path.join(DIR_SOURCE_ROOT, 'build', 'util')
 
 DEVIL_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'catapult', 'devil')
-JAVA_PATH = os.path.join(constants.JAVA_HOME, 'bin')
+JAVA_PATH = os.path.join(
+    DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current', 'bin'
+)
 TRACING_PATH = os.path.join(
     DIR_SOURCE_ROOT, 'third_party', 'catapult', 'tracing'
 )

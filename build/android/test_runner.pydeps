@@ -87,7 +87,6 @@
 ../../third_party/colorama/src/colorama/initialise.py
 ../../third_party/colorama/src/colorama/win32.py
 ../../third_party/colorama/src/colorama/winterm.py
-../../third_party/jdk/java_home.py
 ../../third_party/jinja2/__init__.py
 ../../third_party/jinja2/_identifier.py
 ../../third_party/jinja2/async_utils.py

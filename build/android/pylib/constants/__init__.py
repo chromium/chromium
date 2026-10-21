@@ -8,7 +8,6 @@
 import glob
 import logging
 import os
-import sys
 
 import devil.android.sdk.keyevent
 from devil.android.constants import chrome
@@ -29,10 +28,7 @@ DIR_SOURCE_ROOT = os.environ.get(
         )
     ),
 )
-sys.path.append(os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk'))
-import java_home  # noqa: E402
-
-JAVA_HOME = java_home.JAVA_HOME
+JAVA_HOME = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'jdk', 'current')
 
 PACKAGE_INFO = dict(chrome.PACKAGE_INFO)
 PACKAGE_INFO.update(
