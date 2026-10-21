@@ -29,7 +29,7 @@ Exit codes:
   2: Invalid command-line usage (reported by argparse).
 """
 
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Collection, Iterable, Sequence
 import argparse
 import dataclasses
 import filecmp
@@ -44,12 +44,8 @@ import tempfile
 _PROTOBUF_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 _README_FILENAME = 'README.chromium'
 _PATCHES_DIRECTORY_NAME = 'patches'
-_DEFAULT_XDG_CACHE_SUBDIRECTORY = 'chromium-protobuf-roll'
-_BUILD_DIRECTORY_CACHE_SUBDIRECTORY = '.protobuf_roll'
-_UPSTREAM_CACHE_REPOSITORY_NAME = 'upstream-protobuf'
-
+_REQUESTED_REVISION_REF = 'refs/protobuf-roll/requested'
 UPSTREAM_REPOSITORY_URL = 'https://github.com/protocolbuffers/protobuf.git'
-
 EXIT_CODE_SUCCESS = 0
 EXIT_CODE_ERROR = 1
 
@@ -122,8 +118,6 @@ DELETED_UPSTREAM_DIRECTORY_PREFIXES = (
 
 _README_REVISION_PATTERN = re.compile(
     r'^Revision:\s*(\S+)\s*$', re.MULTILINE)
-_FULL_COMMIT_HASH_PATTERN = re.compile(r'[0-9a-f]{40}')
-_REQUESTED_REVISION_REF = 'refs/protobuf-roll/requested'
 
 
 class RollProtobufError(Exception):
@@ -257,157 +251,101 @@ def ReadReadmeRevisionFromDirectory(protobuf_directory: str) -> str:
 
 
 def _IsolatedGitEnvironment() -> dict[str, str]:
-    """Returns os.environ without inherited GIT_* repository overrides.
+    """Returns os.environ minus the variables that override '-C <repo>'.
 
-    When git hooks or wrapper scripts set GIT_DIR or GIT_WORK_TREE, child git
-    invocations ignore '-C <repository>' unless those variables are cleared.
+    Git hooks and wrapper scripts set these, and child git commands would then
+    ignore the repository they were pointed at.
     """
-    environment = os.environ.copy()
-    for variable_name in (
-        'GIT_ALTERNATE_OBJECT_DIRECTORIES',
-        'GIT_COMMON_DIR',
-        'GIT_DIR',
-        'GIT_INDEX_FILE',
-        'GIT_OBJECT_DIRECTORY',
-        'GIT_WORK_TREE',
-    ):
-        environment.pop(variable_name, None)
-    return environment
+    overrides = ('GIT_ALTERNATE_OBJECT_DIRECTORIES', 'GIT_COMMON_DIR',
+                 'GIT_DIR', 'GIT_INDEX_FILE', 'GIT_OBJECT_DIRECTORY',
+                 'GIT_WORK_TREE')
+    return {
+        name: value
+        for name, value in os.environ.items() if name not in overrides
+    }
 
 
-def _GitCommandForRepository(
-        repository_path: str,
-        git_arguments: Sequence[str]) -> list[str]:
-    """Builds a git command targeting either a working-tree or bare repository.
+def _GitCommandForRepository(repository_path: str,
+                             git_arguments: Sequence[str]) -> list[str]:
+    """Returns a git command line for a working-tree or bare repository.
 
-    Developer environments with 'safe.bareRepository = explicit' reject
-    'git -C <bare_repository>' unless '--git-dir=<bare_repository>' is passed
-    explicitly. Non-bare repositories and git worktrees contain a '.git' entry
-    in repository_path and use '-C'.
+    With `safe.bareRepository=explicit`, `git -C <bare repository>` fails, so
+    repositories without a '.git' entry get `--git-dir=` instead.
     """
-    dot_git_entry = os.path.join(repository_path, '.git')
-    if os.path.exists(dot_git_entry):
+    if os.path.exists(os.path.join(repository_path, '.git')):
         return ['git', '-C', repository_path, *git_arguments]
     return ['git', f'--git-dir={repository_path}', *git_arguments]
 
 
-def _IsValidGitRepository(repository_path: str) -> bool:
-    """Returns True if repository_path is an initialized git repository."""
-    if not os.path.isdir(repository_path):
-        return False
-    completed_process = subprocess.run(
-        _GitCommandForRepository(repository_path, ['rev-parse', '--git-dir']),
-        env=_IsolatedGitEnvironment(),
+def _RunGit(command: Sequence[str],
+            *,
+            env: dict[str, str] | None = None,
+            input_bytes: bytes | None = None,
+            accepted_return_codes: Collection[int] | None = (0, ),
+            failure_message: str | None = None,
+            cwd: str | None = None) -> subprocess.CompletedProcess:
+    """Runs a git command line and returns the process, with byte output.
+
+    Raises RollProtobufError, with git's stderr, if the exit code is not in
+    accepted_return_codes (None accepts any exit code).
+    """
+    process = subprocess.run(
+        command,
+        env=env if env is not None else _IsolatedGitEnvironment(),
+        input=input_bytes,
+        stdin=None if input_bytes is not None else subprocess.DEVNULL,
         capture_output=True,
-        text=True,
-        check=False,
-    )
-    return completed_process.returncode == 0
+        cwd=cwd,
+        check=False)
+    if (accepted_return_codes is not None
+            and process.returncode not in accepted_return_codes):
+        message = failure_message or f'{" ".join(command)} failed'
+        stderr = process.stderr.decode('utf-8', errors='replace').strip()
+        raise RollProtobufError(f'{message}: {stderr}')
+    return process
 
 
 def _ResolveCommitHash(repository_path: str, revision: str) -> str | None:
-    """Returns the resolved commit SHA if revision exists in repository_path."""
-    completed_process = subprocess.run(
-        _GitCommandForRepository(
-            repository_path,
-            ['rev-parse', '--verify', '--quiet', f'{revision}^{{commit}}'],
-        ),
-        env=_IsolatedGitEnvironment(),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if completed_process.returncode != 0:
-        return None
-    return completed_process.stdout.strip()
+    process = _RunGit(_GitCommandForRepository(
+        repository_path,
+        ['rev-parse', '--verify', '--quiet', f'{revision}^{{commit}}']),
+                      accepted_return_codes=None)
+    return process.stdout.decode().strip() if process.returncode == 0 else None
+
+
+def _IsValidGitRepository(repository_path: str) -> bool:
+    return os.path.isdir(repository_path) and _RunGit(
+        _GitCommandForRepository(repository_path, ['rev-parse', '--git-dir']),
+        accepted_return_codes=None).returncode == 0
 
 
 def ResolveDefaultCacheDirectory(
         build_directory: str | None = None,
-        environment: Mapping[str, str] | None = None) -> str:
-    """Returns the default bare upstream cache repository path.
+        environment: dict[str, str] | None = None) -> str:
+    """Returns the default path of the bare upstream cache repository.
 
-    When build_directory is supplied, stores the upstream cache at
-    <build_directory>/.protobuf_roll/upstream-protobuf. Otherwise, uses
-    $XDG_CACHE_HOME/chromium-protobuf-roll/upstream-protobuf when XDG_CACHE_HOME
-    is set and non-empty, or falls back to
-    ~/.cache/chromium-protobuf-roll/upstream-protobuf. Keeping the cache under
-    XDG_CACHE_HOME or the build directory avoids writing inside src/.git/ while
-    preserving the cache across reboots and branch switches.
-
-    Args:
-      build_directory: Optional GN build output directory.
-      environment: Optional environment dictionary for resolving XDG_CACHE_HOME
-        (defaults to os.environ).
-
-    Returns:
-      Absolute path to the default upstream cache repository directory.
+    That is <build_directory>/.protobuf_roll/upstream-protobuf with -C, and
+    otherwise chromium-protobuf-roll/upstream-protobuf under $XDG_CACHE_HOME
+    (default ~/.cache; environment defaults to os.environ). Either survives
+    reboots and branch switches without writing inside src/.git/.
     """
     if build_directory is not None:
-        return os.path.join(
-            os.path.abspath(build_directory),
-            _BUILD_DIRECTORY_CACHE_SUBDIRECTORY,
-            _UPSTREAM_CACHE_REPOSITORY_NAME,
-        )
-    active_environment = os.environ if environment is None else environment
-    xdg_cache_home = active_environment.get('XDG_CACHE_HOME', '').strip()
-    if xdg_cache_home:
-        cache_base_directory = os.path.abspath(
-            os.path.expanduser(xdg_cache_home))
-    else:
-        cache_base_directory = os.path.abspath(
-            os.path.expanduser('~/.cache'))
-    return os.path.join(
-        cache_base_directory,
-        _DEFAULT_XDG_CACHE_SUBDIRECTORY,
-        _UPSTREAM_CACHE_REPOSITORY_NAME,
-    )
+        return os.path.join(os.path.abspath(build_directory), '.protobuf_roll',
+                            'upstream-protobuf')
+    environment = os.environ if environment is None else environment
+    cache_home = environment.get('XDG_CACHE_HOME', '').strip() or '~/.cache'
+    return os.path.join(os.path.abspath(os.path.expanduser(cache_home)),
+                        'chromium-protobuf-roll', 'upstream-protobuf')
 
 
-def _CloneBareUpstreamRepository(
-        upstream_url: str,
-        cache_directory: str) -> None:
-    """Clones upstream_url as a bare repository into cache_directory."""
-    parent_directory = os.path.dirname(os.path.abspath(cache_directory))
-    os.makedirs(parent_directory, exist_ok=True)
-    completed_process = subprocess.run(
-        ['git', 'clone', '--bare', upstream_url, cache_directory],
-        env=_IsolatedGitEnvironment(),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if completed_process.returncode != 0:
-        raise RollProtobufError(
-            f'Failed to clone upstream protobuf from {upstream_url} into '
-            f'{cache_directory}: {completed_process.stderr.strip()}')
-
-
-def _FetchRevisionIntoCache(
-        cache_directory: str,
-        upstream_url: str,
-        revision: str) -> None:
-    """Fetches revision and tags from upstream_url into cache_directory."""
-    completed_process = subprocess.run(
-        _GitCommandForRepository(
-            cache_directory,
-            [
-                'fetch',
-                '--tags',
-                '--force',
-                upstream_url,
-                f'+{revision}:{_REQUESTED_REVISION_REF}',
-            ],
-        ),
-        env=_IsolatedGitEnvironment(),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if completed_process.returncode != 0:
-        raise RollProtobufError(
-            f'Failed to fetch revision {revision} from {upstream_url} into '
-            f'{cache_directory}: {completed_process.stderr.strip()}')
+def _FetchRevisionIntoCache(cache_directory: str, upstream_url: str,
+                            revision: str) -> None:
+    _RunGit(_GitCommandForRepository(cache_directory, [
+        'fetch', '--tags', '--force', upstream_url,
+        f'+{revision}:{_REQUESTED_REVISION_REF}'
+    ]),
+            failure_message=(f'Failed to fetch revision {revision} from '
+                             f'{upstream_url} into {cache_directory}'))
 
 
 def EnsureUpstreamCommitCached(
@@ -416,63 +354,43 @@ def EnsureUpstreamCommitCached(
         cache_directory: str | None = None,
         build_directory: str | None = None,
         upstream_url: str = UPSTREAM_REPOSITORY_URL) -> tuple[str, str]:
-    """Ensures revision is cached and returns (repository_path, commit_sha).
+    """Returns (repository_path, commit ID) for an upstream revision.
 
-    When upstream_repository_path is supplied, that local repository is used
-    directly without cloning or network fetches. Otherwise, a bare clone at
-    cache_directory (defaulting to ResolveDefaultCacheDirectory) is created
-    and fetched on demand when revision is not already a cached 40-character
-    commit hash. Concurrent invocations against the same cache_directory are
-    not supported because _REQUESTED_REVISION_REF is updated in place.
-
-    Args:
-      revision: Commit SHA, tag, or ref to resolve.
-      upstream_repository_path: Optional path to an existing local upstream git
-        repository (bare or non-bare).
-      cache_directory: Optional path to the bare cache repository directory.
-      build_directory: Optional GN build output directory.
-      upstream_url: Remote URL used when initializing or fetching the cache.
-
-    Returns:
-      A (repository_path, resolved_commit_sha) tuple.
-
-    Raises:
-      RollProtobufError: If the repository cannot be initialized or revision
-        cannot be resolved to a commit.
+    An upstream_repository_path (bare or not) is used as is, without network
+    access. Otherwise a bare clone of upstream_url at cache_directory (default:
+    ResolveDefaultCacheDirectory(build_directory)) is created on demand and
+    fetched unless revision is a full commit ID it already has. Concurrent runs
+    on one cache are unsupported: the fetch moves _REQUESTED_REVISION_REF.
     """
     if upstream_repository_path is not None:
         repository_path = os.path.abspath(upstream_repository_path)
         if not _IsValidGitRepository(repository_path):
             raise RollProtobufError(
-                f'Upstream repository path is not a git repository: '
+                'Upstream repository path is not a git repository: '
                 f'{repository_path}')
-        resolved_commit = _ResolveCommitHash(repository_path, revision)
-        if resolved_commit is None:
-            raise RollProtobufError(
-                f'Revision {revision} not found in upstream repository '
-                f'{repository_path}.')
-        return repository_path, resolved_commit
+        commit = _ResolveCommitHash(repository_path, revision)
+        if commit is None:
+            raise RollProtobufError(f'Revision {revision} not found in '
+                                    f'upstream repository {repository_path}.')
+        return repository_path, commit
 
-    resolved_cache_directory = (
-        os.path.abspath(cache_directory)
-        if cache_directory is not None
-        else ResolveDefaultCacheDirectory(build_directory=build_directory))
-    if not _IsValidGitRepository(resolved_cache_directory):
-        _CloneBareUpstreamRepository(upstream_url, resolved_cache_directory)
-
-    resolved_commit = None
-    if _FULL_COMMIT_HASH_PATTERN.fullmatch(revision):
-        resolved_commit = _ResolveCommitHash(resolved_cache_directory, revision)
-    if resolved_commit is None:
-        _FetchRevisionIntoCache(
-            resolved_cache_directory, upstream_url, revision)
-        resolved_commit = _ResolveCommitHash(
-            resolved_cache_directory, _REQUESTED_REVISION_REF)
-    if resolved_commit is None:
+    cache = (os.path.abspath(cache_directory) if cache_directory is not None
+             else ResolveDefaultCacheDirectory(build_directory))
+    if not _IsValidGitRepository(cache):
+        os.makedirs(os.path.dirname(cache), exist_ok=True)
+        _RunGit(['git', 'clone', '--bare', upstream_url, cache],
+                failure_message=(f'Failed to clone upstream protobuf from '
+                                 f'{upstream_url} into {cache}'))
+    commit = None
+    if re.fullmatch(r'[0-9a-f]{40}', revision):
+        commit = _ResolveCommitHash(cache, revision)
+    if commit is None:
+        _FetchRevisionIntoCache(cache, upstream_url, revision)
+        commit = _ResolveCommitHash(cache, _REQUESTED_REVISION_REF)
+    if commit is None:
         raise RollProtobufError(
-            f'Revision {revision} could not be resolved in cache '
-            f'{resolved_cache_directory}.')
-    return resolved_cache_directory, resolved_commit
+            f'Revision {revision} could not be resolved in cache {cache}.')
+    return cache, commit
 
 
 def _StreamGitArchiveToDirectory(
