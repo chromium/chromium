@@ -123,7 +123,8 @@ public class VoiceRecognitionUtil {
         ResettersForTesting.register(() -> sIsVoiceSearchEnabledForTesting = null);
     }
 
-    static void setHasRecognitionIntentHandlerForTesting(@Nullable Boolean hasIntentHandler) {
+    public static void setHasRecognitionIntentHandlerForTesting(
+            @Nullable Boolean hasIntentHandler) {
         var oldValue = sHasRecognitionIntentHandler;
         sHasRecognitionIntentHandler = hasIntentHandler;
         ResettersForTesting.register(() -> sHasRecognitionIntentHandler = oldValue);

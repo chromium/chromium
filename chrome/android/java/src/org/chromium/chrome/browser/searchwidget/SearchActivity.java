@@ -42,6 +42,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -523,6 +524,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     @VisibleForTesting
     void finishDeferredInitialization() {
+        DeferredStartupHandler.getInstance().queueDeferredTasksOnIdleHandler();
         mSearchUiCoordinator
                 .getSearchBox()
                 .onDeferredStartup(mCurrentSession.searchType, assertNonNull(getWindowAndroid()));

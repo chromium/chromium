@@ -503,6 +503,13 @@ public class ProcessInitializationHandler {
 
         // Needed for field trial metrics to be properly collected in minimal browser mode.
         ChromeCachedFlags.getInstance().cacheMinimalBrowserFlags();
+
+        DeferredStartupHandler.getInstance()
+                .addDeferredTask(
+                        () -> {
+                            SearchWidgetProvider.initialize();
+                            QuickActionSearchWidgetProvider.initialize();
+                        });
     }
 
     public final void initNetworkChangeNotifier() {
@@ -710,11 +717,6 @@ public class ProcessInitializationHandler {
                             new ApplicationStatusAccessibilityStateVisibilityManager());
                 });
         tasks.add(TabPersistentStoreImpl::onDeferredStartup);
-        tasks.add(
-                () -> {
-                    SearchWidgetProvider.initialize();
-                    QuickActionSearchWidgetProvider.initialize();
-                });
     }
 
     /**

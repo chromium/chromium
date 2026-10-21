@@ -13,8 +13,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -39,6 +39,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -49,15 +50,20 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefChangeRegistrarJni;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.url.GURL;
 
 import java.util.function.Consumer;
@@ -65,10 +71,16 @@ import java.util.function.Consumer;
 /** Tests for {@link SearchActivityPreferencesManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SearchActivityPreferencesManagerTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    private static final long FAKE_PREF_REGISTRAR = 1L;
+
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Mock private TemplateUrlService mTemplateUrlServiceMock;
     @Mock private TemplateUrl mTemplateUrlMock;
     @Mock private Profile mProfile;
+    @Mock private PrefService mPrefs;
+    @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
     @Mock private LensController mLensController;
     @Mock private IdentityManager mIdentityManager;
 
@@ -94,6 +106,11 @@ public class SearchActivityPreferencesManagerTest {
         LensController.setInstanceForTesting(mLensController);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlServiceMock);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
+        UserPrefs.setPrefServiceForTesting(mPrefs);
+        PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
+        lenient().doReturn(FAKE_PREF_REGISTRAR).when(mPrefChangeRegistrarJni).init(any(), any());
+        lenient().doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
+        VoiceRecognitionUtil.setHasRecognitionIntentHandlerForTesting(true);
         IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
         ComposeplateUtils.setIsEnabledForTesting(false);
 
@@ -107,7 +124,8 @@ public class SearchActivityPreferencesManagerTest {
                         .setAiModeAvailable(true)
                         .build();
 
-        doAnswer(
+        lenient()
+                .doAnswer(
                         invocation -> {
                             mTemplateUrlServiceLoadListener =
                                     (LoadListener) invocation.getArguments()[0];
@@ -116,7 +134,8 @@ public class SearchActivityPreferencesManagerTest {
                 .when(mTemplateUrlServiceMock)
                 .registerLoadListener(any());
 
-        doAnswer(
+        lenient()
+                .doAnswer(
                         invocation -> {
                             mTemplateUrlServiceObserver =
                                     (TemplateUrlServiceObserver) invocation.getArguments()[0];
@@ -303,7 +322,6 @@ public class SearchActivityPreferencesManagerTest {
 
         // Confirm no crash if we don't have no DSE at the time of first call.
         // Confirm that we deregister load observer since it should no longer be needed.
-        doReturn(true).when(mTemplateUrlServiceMock).isLoaded();
         mTemplateUrlServiceLoadListener.onTemplateUrlServiceLoaded();
         verify(mTemplateUrlServiceMock, times(1)).getDefaultSearchEngineTemplateUrl();
         verify(mTemplateUrlServiceMock, times(1))
@@ -341,10 +359,6 @@ public class SearchActivityPreferencesManagerTest {
 
         // Simulate the event where we had everything readily available when TemplateUrlService is
         // loaded.
-        doReturn(true).when(mTemplateUrlServiceMock).isLoaded();
-        doReturn(mTemplateUrlMock)
-                .when(mTemplateUrlServiceMock)
-                .getDefaultSearchEngineTemplateUrl();
         mTemplateUrlServiceLoadListener.onTemplateUrlServiceLoaded();
 
         // Confirm data is available and update is pushed.
@@ -466,5 +480,44 @@ public class SearchActivityPreferencesManagerTest {
         assertEquals("Engine", newData.searchEngineName);
         // We only expect origin: no path, no query.
         assertEquals("https://www.engine.com/", newData.searchEngineUrl.getSpec());
+    }
+
+    @Test
+    public void onNativeLibraryReady_propagatesAudioCapturePolicy() {
+        Consumer<SearchActivityPreferences> listener = mockPrefsConsumer();
+        SearchActivityPreferencesManager.addObserver(listener);
+        clearPrefsConsumerInvocations(listener);
+
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
+        SearchActivityPreferencesManager.onNativeLibraryReady();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertFalse(SearchActivityPreferencesManager.getCurrent().voiceSearchAvailable);
+        verify(listener).accept(any());
+    }
+
+    @Test
+    public void onVoiceSearchAvailabilityChanged_updatesOnPolicyChange() {
+        Consumer<SearchActivityPreferences> listener = mockPrefsConsumer();
+        SearchActivityPreferencesManager.addObserver(listener);
+        SearchActivityPreferencesManager.onNativeLibraryReady();
+        RobolectricUtil.runAllBackgroundAndUi();
+        clearPrefsConsumerInvocations(listener);
+        assertTrue(SearchActivityPreferencesManager.getCurrent().voiceSearchAvailable);
+
+        // Policy changes from allowed to disallowed.
+        doReturn(false).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
+        SearchActivityPreferencesManager.get().onVoiceSearchAvailabilityChanged();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertFalse(SearchActivityPreferencesManager.getCurrent().voiceSearchAvailable);
+        verify(listener).accept(any());
+        clearPrefsConsumerInvocations(listener);
+
+        // Policy changes from disallowed back to allowed.
+        doReturn(true).when(mPrefs).getBoolean(Pref.AUDIO_CAPTURE_ALLOWED);
+        SearchActivityPreferencesManager.get().onVoiceSearchAvailabilityChanged();
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(SearchActivityPreferencesManager.getCurrent().voiceSearchAvailable);
+        verify(listener).accept(any());
     }
 }
