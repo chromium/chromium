@@ -8,7 +8,6 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"

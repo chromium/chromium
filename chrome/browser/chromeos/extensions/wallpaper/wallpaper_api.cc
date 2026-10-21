@@ -19,7 +19,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_ash.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"

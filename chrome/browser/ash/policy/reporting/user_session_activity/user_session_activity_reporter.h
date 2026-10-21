@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/power/ml/idle_event_notifier.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/user_session_activity.pb.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user_manager.h"
 
 namespace reporting {

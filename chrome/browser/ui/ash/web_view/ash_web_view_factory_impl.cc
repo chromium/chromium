@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/web_view/ash_web_view_factory_impl.h"
 
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/web_view/ash_web_view_impl.h"
 
 AshWebViewFactoryImpl::AshWebViewFactoryImpl() = default;

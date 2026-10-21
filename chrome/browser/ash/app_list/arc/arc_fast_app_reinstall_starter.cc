@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_fast_app_reinstall_starter.h"
 
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"

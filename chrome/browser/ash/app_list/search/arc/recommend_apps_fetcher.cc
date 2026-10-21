@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/app_list/search/arc/recommend_apps_fetcher.h"
 
 #include "chrome/browser/ash/app_list/search/arc/recommend_apps_fetcher_impl.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/storage_partition.h"
 

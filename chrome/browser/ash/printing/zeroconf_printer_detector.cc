@@ -19,7 +19,6 @@
 #include "base/synchronization/lock.h"
 #include "chrome/browser/local_discovery/service_discovery_device_lister.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/obsolete/md5.h"
 

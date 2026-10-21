@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/system/automatic_reboot_manager_observer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"

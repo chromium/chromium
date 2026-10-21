@@ -6,7 +6,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_vpn_provider_manager.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 
 namespace app_list {
