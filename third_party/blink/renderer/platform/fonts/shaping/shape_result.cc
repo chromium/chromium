@@ -2657,35 +2657,47 @@ wtf_size_t ShapeResult::CachedPreviousSafeToBreakOffset(
   return start_index_;
 }
 
-void ShapeResult::AddRunInfoRanges(const ShapeResultRun& run_info,
+void ShapeResult::AddRunInfoRanges(const GlyphDataRange& range,
+                                   wtf_size_t char_index_offset,
+                                   wtf_size_t num_characters,
+                                   float width,
                                    float offset,
                                    Vector<CharacterRange>* ranges) {
-  Vector<float> character_widths(run_info.num_characters_);
-  if (run_info.glyph_data_.IsCompact()) [[unlikely]] {
-    const float advance = run_info.glyph_data_.CompactAdvance().ToFloat();
-    const unsigned num_glyphs =
-        std::min(run_info.glyph_data_.size(), run_info.num_characters_);
-    std::fill_n(character_widths.begin(), num_glyphs, advance);
+  Vector<float, 256> character_widths(num_characters);
+  if (range.IsCompactSource()) [[unlikely]] {
+    if (!range.IsEmpty()) {
+      const float advance = range.CompactSourceAdvance().ToFloat();
+      const wtf_size_t start =
+          range.CompactStartCharacterIndex() - char_index_offset;
+      CHECK_LE(start, num_characters);
+      const wtf_size_t num_glyphs =
+          std::min(range.size(), num_characters - start);
+      std::ranges::fill(base::span(character_widths).subspan(start, num_glyphs),
+                        advance);
+    }
   } else {
-    const auto& glyphs = run_info.glyph_data_.NonCompactGlyphs();
+    const auto glyphs = range.NonCompactGlyphs();
     std::for_each(
         glyphs.data(), base::to_address(glyphs.end()), [&](const auto& glyph) {
+          const wtf_size_t character_index =
+              glyph.character_index - char_index_offset;
           // TODO(crbug.com/40156449): This should not happen, but crash logs
           // indicate that this is happening.
-          if (glyph.character_index >= character_widths.size()) [[unlikely]] {
+          if (character_index >= character_widths.size()) [[unlikely]] {
             NOTREACHED();
           }
-          character_widths[glyph.character_index] += glyph.advance.ToFloat();
+          character_widths[character_index] += glyph.advance.ToFloat();
         });
   }
 
-  if (run_info.IsRtl()) {
-    offset += run_info.width_;
+  const bool is_rtl = range.GetRun()->IsRtl();
+  if (is_rtl) {
+    offset += width;
   }
 
   for (float character_width : character_widths) {
     float start = offset;
-    offset += character_width * (run_info.IsRtl() ? -1 : 1);
+    offset += character_width * (is_rtl ? -1 : 1);
     float end = offset;
 
     // To match getCharacterRange we flip ranges to ensure start <= end.
@@ -2703,11 +2715,13 @@ Vector<CharacterRange> ShapeResult::IndividualCharacterRanges() const {
   if (IsRtl()) {
     for (const auto& run : std::views::reverse(runs_)) {
       current_x -= run->width_;
-      AddRunInfoRanges(*run, current_x, &ranges);
+      AddRunInfoRanges(GlyphDataRange(*run), /*char_index_offset=*/0,
+                       run->num_characters_, run->width_, current_x, &ranges);
     }
   } else {
     for (const auto& run : runs_) {
-      AddRunInfoRanges(*run, current_x, &ranges);
+      AddRunInfoRanges(GlyphDataRange(*run), /*char_index_offset=*/0,
+                       run->num_characters_, run->width_, current_x, &ranges);
       current_x += run->width_;
     }
   }

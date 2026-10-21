@@ -66,6 +66,7 @@ namespace blink {
 
 struct CharacterRange;
 class Font;
+class GlyphDataRange;
 struct GlyphIndexResult;
 struct ShapeResultRun;
 class ShapeResultSpacing;
@@ -512,7 +513,10 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   friend class StretchyOperatorShaper;
   friend struct CharacterRangeContext;
 
-  static void AddRunInfoRanges(const ShapeResultRun& run_info,
+  static void AddRunInfoRanges(const GlyphDataRange& range,
+                               wtf_size_t char_index_offset,
+                               wtf_size_t num_characters,
+                               float width,
                                float offset,
                                Vector<CharacterRange>* ranges);
 

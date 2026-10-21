@@ -757,4 +757,83 @@ TEST_F(ShapeResultViewTest, EmptyGlyphRangePreservesRun) {
   EXPECT_TRUE(glyphs.empty());
 }
 
+TEST_F(ShapeResultViewTest, IndividualCharacterRangesMatchesCreateShapeResult) {
+  auto verify_matches_create_shape_result = [](const ShapeResultView* view) {
+    const Vector<CharacterRange> view_ranges =
+        view->IndividualCharacterRanges();
+    const Vector<CharacterRange> result_ranges =
+        view->CreateShapeResult()->IndividualCharacterRanges();
+    ASSERT_EQ(view_ranges.size(), result_ranges.size());
+    for (wtf_size_t i = 0; i < view_ranges.size(); ++i) {
+      EXPECT_FLOAT_EQ(view_ranges[i].start, result_ranges[i].start)
+          << "i=" << i;
+      EXPECT_FLOAT_EQ(view_ranges[i].end, result_ranges[i].end) << "i=" << i;
+      EXPECT_FLOAT_EQ(view_ranges[i].ascent, result_ranges[i].ascent)
+          << "i=" << i;
+      EXPECT_FLOAT_EQ(view_ranges[i].descent, result_ranges[i].descent)
+          << "i=" << i;
+    }
+  };
+
+  Font* font = MakeGarbageCollected<Font>(font_description);
+
+  // 1. LTR single run and sub-ranges.
+  HarfBuzzShaper ltr_shaper(
+      To16Bit("Test run with multiple words and breaking opportunities."));
+  const ShapeResult* ltr_result = ltr_shaper.Shape(font, TextDirection::kLtr);
+  verify_matches_create_shape_result(ShapeResultView::Create(ltr_result));
+  verify_matches_create_shape_result(
+      ShapeResultView::Create(ltr_result, 0, 22));
+  verify_matches_create_shape_result(
+      ShapeResultView::Create(ltr_result, 14, 41));
+  verify_matches_create_shape_result(
+      ShapeResultView::Create(ltr_result, 33, 56));
+
+  // 2. RTL single run and sub-ranges.
+  HarfBuzzShaper rtl_shaper(To16Bit("عربى نص"));
+  const ShapeResult* rtl_result = rtl_shaper.Shape(font, TextDirection::kRtl);
+  verify_matches_create_shape_result(ShapeResultView::Create(rtl_result));
+  verify_matches_create_shape_result(ShapeResultView::Create(rtl_result, 0, 4));
+  verify_matches_create_shape_result(ShapeResultView::Create(rtl_result, 4, 7));
+
+  // 3. Multi-run and multi-segment composite views (LTR and RTL).
+  ShapeResult* multi_ltr =
+      MakeGarbageCollected<ShapeResult>(0, 0, TextDirection::kLtr);
+  HarfBuzzShaper(To16Bit("hello"))
+      .Shape(font, TextDirection::kLtr)
+      ->CopyRange(0u, 5u, multi_ltr);
+  HarfBuzzShaper(To16Bit(" world!"))
+      .Shape(font, TextDirection::kLtr)
+      ->CopyRange(0u, 7u, multi_ltr);
+  ShapeResultView::Segment ltr_segments[] = {
+      {multi_ltr, 0, 8},
+      {multi_ltr, 5, 12},
+  };
+  verify_matches_create_shape_result(ShapeResultView::Create(ltr_segments));
+
+  ShapeResult* multi_rtl =
+      MakeGarbageCollected<ShapeResult>(0, 0, TextDirection::kRtl);
+  rtl_result->CopyRange(0u, 4u, multi_rtl);
+  rtl_result->CopyRange(4u, 7u, multi_rtl);
+  ShapeResultView::Segment rtl_segments[] = {
+      {multi_rtl, 0, 5},
+      {multi_rtl, 2, 7},
+  };
+  verify_matches_create_shape_result(ShapeResultView::Create(rtl_segments));
+
+  // 4. Compact monospace run and sub-ranges.
+  ScopedMonospaceGlyphCompactionForTest scoped_compact(true);
+  Font* ahem = test::CreateAhemFont(12);
+  HarfBuzzShaper compact_shaper(String("0123456789abcdef"));
+  const ShapeResult* compact_result =
+      compact_shaper.Shape(ahem, TextDirection::kLtr);
+  verify_matches_create_shape_result(ShapeResultView::Create(compact_result));
+  verify_matches_create_shape_result(
+      ShapeResultView::Create(compact_result, 0, 5));
+  verify_matches_create_shape_result(
+      ShapeResultView::Create(compact_result, 5, 12));
+  verify_matches_create_shape_result(
+      ShapeResultView::Create(compact_result, 12, 16));
+}
+
 }  // namespace blink

@@ -312,12 +312,12 @@ void AddIntListAttributeFromOffsetVector(
     ax::mojom::blink::IntListAttribute attr,
     const Vector<int>& offsets,
     ui::AXNodeData* node_data) {
-  std::vector<int32_t> offset_values;
-  for (int offset : offsets)
-    offset_values.push_back(static_cast<int32_t>(offset));
   DCHECK(node_data);
-  if (!offset_values.empty())
-    node_data->AddIntListAttribute(attr, offset_values);
+  if (offsets.empty()) {
+    return;
+  }
+  node_data->intlist_attributes.Set(
+      attr, std::vector<int32_t>(offsets.begin(), offsets.end()));
 }
 
 const QualifiedName& DeprecatedAriaColtextAttrName() {
@@ -1690,8 +1690,9 @@ void AXObject::SerializeInlineTextBox(ui::AXNodeData* node_data) const {
   SerializeLineAttributes(node_data);
   SerializeMarkerAttributes(node_data);
   SerializeBoundingBoxAttributes(*node_data);
-  if (GetTextDirection() != ax::mojom::blink::WritingDirection::kNone) {
-    node_data->SetTextDirection(GetTextDirection());
+  const auto text_direction = GetTextDirection();
+  if (text_direction != ax::mojom::blink::WritingDirection::kNone) {
+    node_data->SetTextDirection(text_direction);
   }
 
   Vector<int> character_offsets;
@@ -1699,16 +1700,6 @@ void AXObject::SerializeInlineTextBox(ui::AXNodeData* node_data) const {
   AddIntListAttributeFromOffsetVector(
       ax::mojom::blink::IntListAttribute::kCharacterOffsets, character_offsets,
       node_data);
-
-  // TODO(kevers): This data can be calculated on demand from the text content
-  // and should not need to be serialized.
-  Vector<int> word_starts;
-  Vector<int> word_ends;
-  GetWordBoundaries(word_starts, word_ends);
-  AddIntListAttributeFromOffsetVector(
-      ax::mojom::blink::IntListAttribute::kWordStarts, word_starts, node_data);
-  AddIntListAttributeFromOffsetVector(
-      ax::mojom::blink::IntListAttribute::kWordEnds, word_ends, node_data);
 
   // TODO(accessibility) Only need these editable states on ChromeOS, which
   // should be able to infer them from the static text parent.
@@ -1724,6 +1715,19 @@ void AXObject::SerializeInlineTextBox(ui::AXNodeData* node_data) const {
   String name = GetName(name_from, &name_objects, nullptr);
   DCHECK_EQ(name_from, ax::mojom::blink::NameFrom::kContents);
   node_data->SetNameFrom(ax::mojom::blink::NameFrom::kContents);
+
+  // TODO(kevers): This data can be calculated on demand from the text content
+  // and should not need to be serialized.
+  if (!name.ContainsOnlyWhitespaceOrEmpty()) {
+    Vector<int> word_starts;
+    Vector<int> word_ends;
+    GetWordBoundariesForText(word_starts, word_ends, name);
+    AddIntListAttributeFromOffsetVector(
+        ax::mojom::blink::IntListAttribute::kWordStarts, word_starts,
+        node_data);
+    AddIntListAttributeFromOffsetVector(
+        ax::mojom::blink::IntListAttribute::kWordEnds, word_ends, node_data);
+  }
 
   DCHECK(parent_);
   DCHECK(parent_->GetLayoutObject()->IsText());

@@ -439,9 +439,8 @@ void AXBlockFlowIterator::GetCharacterLayoutPixelOffsets(Vector<int>& offsets) {
     return;
   }
 
-  const ShapeResult* shape_result = shape_result_view->CreateShapeResult();
   const Vector<CharacterRange> ranges =
-      shape_result->IndividualCharacterRanges();
+      shape_result_view->IndividualCharacterRanges();
   float width_so_far = 0.0;
   for (wtf_size_t i = 0; i < offsets.size(); ++i) {
     if (i < ranges.size()) {

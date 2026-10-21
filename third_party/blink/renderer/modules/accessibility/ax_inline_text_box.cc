@@ -111,14 +111,12 @@ void AXInlineTextBox::TextCharacterOffsets(Vector<int>& offsets) const {
 void AXInlineTextBox::GetWordBoundaries(Vector<int>& word_starts,
                                         Vector<int>& word_ends) const {
   ax::mojom::blink::NameFrom name_not_used;
-  if (GetName(name_not_used, /*name_objects=*/nullptr, /*name_sources=*/nullptr)
-          .ContainsOnlyWhitespaceOrEmpty()) {
+  const String text = GetName(name_not_used, /*name_objects=*/nullptr,
+                              /*name_sources=*/nullptr);
+  if (text.ContainsOnlyWhitespaceOrEmpty()) {
     return;
   }
-
-  AXBlockFlowIterator it(ParentObject());
-  it.MoveToIndex(fragment_index_);
-  GetWordBoundariesForText(word_starts, word_ends, it.GetText());
+  GetWordBoundariesForText(word_starts, word_ends, text);
 }
 
 int AXInlineTextBox::TextOffsetInFormattingContext(int offset) const {

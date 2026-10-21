@@ -128,6 +128,7 @@ class PLATFORM_EXPORT ShapeResultView final
 
   wtf_size_t NumGlyphs() const;
   HeapHashSet<Member<const SimpleFontData>> UsedFonts() const;
+  Vector<CharacterRange> IndividualCharacterRanges() const;
 
   wtf_size_t PreviousSafeToBreakOffset(wtf_size_t index) const;
 

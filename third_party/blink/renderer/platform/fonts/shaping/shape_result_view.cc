@@ -10,6 +10,7 @@
 #include <ranges>
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_bounds_accumulator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
@@ -405,6 +406,30 @@ HeapHashSet<Member<const SimpleFontData>> ShapeResultView::UsedFonts() const {
     }
   }
   return used_fonts;
+}
+
+Vector<CharacterRange> ShapeResultView::IndividualCharacterRanges() const {
+  Vector<CharacterRange> ranges;
+  ranges.reserve(num_characters_);
+  float current_x = 0;
+
+  if (IsRtl()) {
+    for (const auto& part : std::views::reverse(parts_)) {
+      current_x -= part.Width();
+      ShapeResult::AddRunInfoRanges(part.range_, part.offset_,
+                                    part.num_characters_, part.width_,
+                                    current_x, &ranges);
+    }
+  } else {
+    for (const auto& part : parts_) {
+      ShapeResult::AddRunInfoRanges(part.range_, part.offset_,
+                                    part.num_characters_, part.width_,
+                                    current_x, &ranges);
+      current_x += part.Width();
+    }
+  }
+
+  return ranges;
 }
 
 template <bool kHasNonZeroGlyphOffsets>
