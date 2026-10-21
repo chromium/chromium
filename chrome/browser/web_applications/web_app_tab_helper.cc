@@ -250,6 +250,24 @@ void WebAppTabHelper::DidFinishNavigation(
     return;
   }
 
+  // `ReadyToCommitNavigation` provisionally updates `app_id_` before a
+  // cross-document navigation commits. If that navigation subsequently fails or
+  // is aborted without committing (or if overlapping navigations complete out
+  // of order), reconcile `app_id_` with the last committed URL so `app_id_`
+  // cannot remain stuck on an uncommitted navigation's app.
+  // Same-document navigations are excluded to preserve existing semantics
+  // (renderer-initiated ones never run `ReadyToCommitNavigation`). Only call
+  // `SetAppId` when `app_id_` actually differs from `committed_app_id` to avoid
+  // re-triggering `ScheduleManifestAppliedUseCounter()` on matching IDs.
+  if (!navigation_handle->IsSameDocument()) {
+    std::optional<webapps::AppId> committed_app_id =
+        WebAppTabHelper::FindAppIdForUrl(provider_->registrar_unsafe(),
+                                         web_contents()->GetLastCommittedURL());
+    if (app_id_ != committed_app_id) {
+      SetAppId(std::move(committed_app_id));
+    }
+  }
+
   provider_->ui_manager().NotifyDidFinishNavigation(navigation_handle);
 }
 
@@ -303,6 +321,12 @@ WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
 }
 
 bool WebAppTabHelper::CanBeUsedForFocusExisting() const {
+  if (!app_id_.has_value() ||
+      !provider_->registrar_unsafe().IsUrlInAppExtendedScope(
+          web_contents()->GetLastCommittedURL(), *app_id_)) {
+    return false;
+  }
+
   // Origins, not URL scopes, are the Web's security boundary. A document served
   // with `Content-Security-Policy: sandbox` (without `allow-same-origin`)
   // commits an opaque origin, which is cross-origin to the app that served it,

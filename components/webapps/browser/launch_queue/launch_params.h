@@ -43,7 +43,17 @@ class LaunchParams {
   void set_started_new_navigation(bool started_new_navigation) {
     started_new_navigation_ = started_new_navigation;
   }
-  void set_app_id(webapps::AppId app_id) { app_id_ = std::move(app_id); }
+  // Setting a different `app_id` after one was already populated clears any
+  // file or directory handles (`paths_`, `can_write_`, `dir_`), which are
+  // capabilities scoped to the original app. (`scope_` is Android-only scope
+  // validation metadata, not a capability.)
+  void set_app_id(webapps::AppId app_id) {
+    if (!app_id_.empty() && app_id_ != app_id) {
+      clear_paths();
+      clear_dir();
+    }
+    app_id_ = std::move(app_id);
+  }
   void set_target_url(GURL target_url) { target_url_ = std::move(target_url); }
   void set_dir(base::FilePath dir) { dir_ = std::move(dir); }
   void set_paths(std::vector<base::FilePath> paths) {

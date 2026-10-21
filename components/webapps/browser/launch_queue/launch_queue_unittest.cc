@@ -298,4 +298,61 @@ TEST_F(LaunchQueueTest, OpaqueOriginReceivesNothingAfterNavigation) {
   EXPECT_FALSE(fake_launch_service_.enqueue_called());
 }
 
+// Regression test for https://crbug.com/574232164: relabeling `LaunchParams` to
+// a different `app_id` (e.g. when a launch navigation redirects into another
+// app's scope) must clear any file or directory handles scoped to the original
+// app.
+TEST_F(LaunchQueueTest, LaunchParamsClearsFilesAndDirOnAppIdChange) {
+  LaunchParams params;
+  params.set_paths_with_permissions(
+      {base::FilePath(FILE_PATH_LITERAL("secret.txt"))}, {true});
+  params.set_dir(base::FilePath(FILE_PATH_LITERAL("secret_dir")));
+
+  // Initial population of `app_id` preserves previously set paths and dir.
+  params.set_app_id("app_a");
+  EXPECT_EQ("app_a", params.app_id());
+  EXPECT_EQ(1u, params.paths().size());
+  EXPECT_EQ(1u, params.can_write().size());
+  EXPECT_FALSE(params.dir().empty());
+
+  // Setting the same `app_id` is a no-op for paths and dir.
+  params.set_app_id("app_a");
+  EXPECT_EQ(1u, params.paths().size());
+  EXPECT_EQ(1u, params.can_write().size());
+  EXPECT_FALSE(params.dir().empty());
+
+  // Relabeling to a different `app_id` clears paths, permissions, and dir.
+  params.set_app_id("app_b");
+  EXPECT_EQ("app_b", params.app_id());
+  EXPECT_TRUE(params.paths().empty());
+  EXPECT_TRUE(params.can_write().empty());
+  EXPECT_TRUE(params.dir().empty());
+}
+
+// Regression test for https://crbug.com/574231826: if `SendLaunchParams` is
+// reached when the WebContents' last committed URL is not in scope of
+// `launch_params`, it must bail out gracefully without minting file handles or
+// dispatching launch params to the out-of-scope document.
+TEST_F(LaunchQueueTest, OutOfScopeCurrentUrlReceivesNothing) {
+  GURL committed_url("https://unrelated.example/page");
+  CommitNavigation(committed_url, /*sandboxed=*/false);
+
+  GURL launch_url("https://example.com/launch");
+  LaunchParams params =
+      CreateLaunchParams(launch_url, /*started_new_navigation=*/false);
+  params.set_paths({base::FilePath(FILE_PATH_LITERAL("test_file.txt"))});
+  params.set_dir(base::FilePath(FILE_PATH_LITERAL("test_dir")));
+
+  EXPECT_CALL(*delegate_, IsInScope(testing::_, launch_url))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*delegate_, IsInScope(testing::_, committed_url))
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(*delegate_, GetPathInfo(testing::_)).Times(0);
+
+  launch_queue_->Enqueue(std::move(params));
+  launch_queue_->FlushForTesting();
+
+  EXPECT_FALSE(fake_launch_service_.enqueue_called());
+}
+
 }  // namespace webapps

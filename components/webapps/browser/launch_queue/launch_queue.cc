@@ -117,10 +117,15 @@ void LaunchQueue::FlushForTesting() const {
 
 void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
                                    const GURL& current_url) {
-  // TODO(dmurph): Figure out why this is failing.
-  // https://crbug.com/2546057
-  DCHECK(delegate_->IsInScope(launch_params, current_url))
-      << current_url.spec();
+  // Verify at dispatch time that the currently committed document is still in
+  // scope of the target app (https://crbug.com/574231826). This is a runtime
+  // conditional rather than a DCHECK because a tab's committed URL can diverge
+  // from a pending launch or uncommitted navigation, and an out-of-scope
+  // document must not have file handles minted for its origin or receive
+  // `EnqueueLaunchParams`.
+  if (!delegate_->IsInScope(launch_params, current_url)) {
+    return;
+  }
   CHECK(launch_params.target_url().is_valid());
 
   // Launch params are routed to a document by URL scope (see

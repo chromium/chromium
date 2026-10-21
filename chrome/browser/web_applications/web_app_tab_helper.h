@@ -83,9 +83,10 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   // Sets the app id for this web contents. Ideally the app id would always be
   // equal to the id of whatever app the last committed primary main frame URL
-  // is in scope for (and WebAppTabHelper resets it to that any time a
-  // navigation commits), but for legacy reasons sometimes the app id is set
-  // explicitly from elsewhere.
+  // is in scope for (`ReadyToCommitNavigation` provisionally sets it for the
+  // target URL, and `DidFinishNavigation` reconciles it to
+  // `GetLastCommittedURL()` for non-same-document navigations), but for legacy
+  // reasons sometimes the app id is set explicitly from elsewhere.
   void SetAppId(std::optional<webapps::AppId> app_id);
 
   // Called by `WebAppBrowserController` and `KioskWebAppBrowserController`'s
@@ -137,7 +138,10 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   //   InstallState::SUGGESTED_FROM_ANOTHER_DEVICE state.
   //
   // Note: This is populated on construction from the current tab's
-  // `GetLastCommittedURL()`, and afterwards only after navigation is committed.
+  // `GetLastCommittedURL()`, provisionally updated at
+  // `ReadyToCommitNavigation()` for primary main-frame navigations, and
+  // reconciled to `GetLastCommittedURL()` at `DidFinishNavigation()` for
+  // non-same-document primary main-frame navigations.
   //
   // Note: If we are in an app window, this is not guaranteed to match
   // `window_app_id()` - for example, if the web contents of an app navigates
@@ -204,7 +208,9 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // is the single eligibility rule for in-place reuse, consulted by both
   // navigation capturing and direct app launches (`WebAppLaunchProcess`).
   //
-  // Returns `true` only if both:
+  // Returns `true` only if all of the following hold:
+  //  - The tab is associated with an `app_id_` and its last committed URL is in
+  //    that app's extended scope.
   //  - The committed origin is not opaque. A document that committed an opaque
   //    origin (e.g. one served with `Content-Security-Policy: sandbox`, or an
   //    error page) is cross-origin to the app even when its URL is in scope,
