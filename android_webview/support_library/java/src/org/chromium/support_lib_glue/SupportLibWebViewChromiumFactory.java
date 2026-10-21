@@ -167,6 +167,7 @@ public class SupportLibWebViewChromiumFactory
                 Features.THEME_COLOR_CALLBACK + Features.DEV_SUFFIX,
                 Features.NAVIGATION_LISTENER_NAVIGATION_STATE,
                 Features.HEADER_INTERCEPTOR + Features.DEV_SUFFIX,
+                Features.GOOGLE_ACCOUNTS_CALLBACK + Features.DEV_SUFFIX,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The one
                 // exception is when adding a new method to an interface that extends from
@@ -428,6 +429,11 @@ public class SupportLibWebViewChromiumFactory
         ApiCall.PAGE_SNAPSHOT_STATE,
         ApiCall.PROFILE_ADD_HEADER_INTERCEPTOR,
         ApiCall.WEBVIEW_ADD_HEADER_INTERCEPTOR,
+        ApiCall.SET_GOOGLE_ACCOUNTS_CALLBACK,
+        ApiCall.CLEAR_GOOGLE_ACCOUNTS_CALLBACK,
+        ApiCall.GOOGLE_ACCOUNTS_EVENT_GET_ACTION_TYPE,
+        ApiCall.GOOGLE_ACCOUNTS_EVENT_GET_CONTINUE_URL,
+        ApiCall.GOOGLE_ACCOUNTS_EVENT_IS_OUTERMOST_MAIN_FRAME,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -671,8 +677,13 @@ public class SupportLibWebViewChromiumFactory
         int PAGE_SNAPSHOT_STATE = 233;
         int PROFILE_ADD_HEADER_INTERCEPTOR = 234;
         int WEBVIEW_ADD_HEADER_INTERCEPTOR = 235;
+        int SET_GOOGLE_ACCOUNTS_CALLBACK = 236;
+        int CLEAR_GOOGLE_ACCOUNTS_CALLBACK = 237;
+        int GOOGLE_ACCOUNTS_EVENT_GET_ACTION_TYPE = 238;
+        int GOOGLE_ACCOUNTS_EVENT_GET_CONTINUE_URL = 239;
+        int GOOGLE_ACCOUNTS_EVENT_IS_OUTERMOST_MAIN_FRAME = 240;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 236;
+        int COUNT = 241;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

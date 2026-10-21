@@ -554,4 +554,8 @@ public class Features {
     // WebViewCompat.addHeaderInterceptor
     // Profile.addHeaderInterceptor
     public static final String HEADER_INTERCEPTOR = "HEADER_INTERCEPTOR";
+
+    // WebViewCompat.setGoogleAccountsCallback
+    // WebViewCompat.clearGoogleAccountsCallback
+    public static final String GOOGLE_ACCOUNTS_CALLBACK = "GOOGLE_ACCOUNTS_CALLBACK_V1";
 }

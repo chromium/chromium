@@ -1010,6 +1010,11 @@ chromium-metrics-reviews@google.com.
   <int value="233" label="Page.snapshotState"/>
   <int value="234" label="Profile.addHeaderInterceptor"/>
   <int value="235" label="WebViewCompat.addHeaderInterceptor"/>
+  <int value="236" label="WebViewCompat.setGoogleAccountsCallback"/>
+  <int value="237" label="WebViewCompat.clearGoogleAccountsCallback"/>
+  <int value="238" label="GoogleAccountsEvent.getActionType"/>
+  <int value="239" label="GoogleAccountsEvent.getContinueUrl"/>
+  <int value="240" label="GoogleAccountsEvent.isOutermostMainFrame"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

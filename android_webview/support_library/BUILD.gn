@@ -9,6 +9,7 @@ android_library("support_lib_glue_java") {
   sources = [
     "java/src/org/chromium/support_lib_glue/RequestMatcherBuilder.java",
     "java/src/org/chromium/support_lib_glue/SupportLibDropDataContentProviderAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibGoogleAccountsEventAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibHeaderInterceptorAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibHttpCache.java",
     "java/src/org/chromium/support_lib_glue/SupportLibJsReplyProxyAdapter.java",
@@ -69,6 +70,7 @@ android_library("support_lib_glue_java") {
     "//build/android:build_java",
     "//components/embedder_support/android:util_java",
     "//components/js_injection/common:enum_mojom_java",
+    "//components/signin/core/browser:signin_enums_java",
     "//components/webauthn/android:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:org_jspecify_jspecify_java",

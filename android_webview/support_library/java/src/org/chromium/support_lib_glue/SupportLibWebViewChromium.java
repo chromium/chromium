@@ -15,6 +15,8 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.annotation.NonNull;
+
 import com.android.webview.chromium.CallbackConverter;
 import com.android.webview.chromium.SharedWebViewChromium;
 import com.android.webview.chromium.SharedWebViewRendererClientAdapter;
@@ -635,6 +637,52 @@ class SupportLibWebViewChromium implements WebViewProviderBoundaryInterface {
                                     requestMatcherBuilder.getUrlPatterns());
 
             return new SupportLibWebViewHeaderInterceptorHandle(mSharedWebViewChromium, id);
+        }
+    }
+
+    @Override
+    public void setGoogleAccountsCallback(
+            @NonNull String accountId,
+            Executor executor,
+            Consumer</* GoogleAccountsEvent */ InvocationHandler> consumer) {
+        ThreadUtils.checkUiThread();
+        if (executor == null || consumer == null) {
+            throw new IllegalArgumentException("Executor and consumer must not be null");
+        }
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_GOOGLE_ACCOUNTS_CALLBACK")) {
+            recordApiCall(ApiCall.SET_GOOGLE_ACCOUNTS_CALLBACK);
+            SharedWebViewChromium sharedWebViewChromium = mSharedWebViewChromium.get();
+            if (sharedWebViewChromium == null) {
+                throw new IllegalStateException(
+                        "Support lib method called on WebView that no longer exists.");
+            }
+            sharedWebViewChromium
+                    .getAwContents()
+                    .configureGoogleAccountMirroring(
+                            accountId,
+                            googleAccountsEvent -> {
+                                /* GoogleAccountsEvent */ InvocationHandler handler =
+                                        BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                                new SupportLibGoogleAccountsEventAdapter(
+                                                        googleAccountsEvent));
+                                executor.execute(() -> consumer.accept(handler));
+                            });
+        }
+    }
+
+    @Override
+    public void clearGoogleAccountsCallback() {
+        ThreadUtils.checkUiThread();
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.AndroidX.CLEAR_GOOGLE_ACCOUNTS_CALLBACK")) {
+            recordApiCall(ApiCall.CLEAR_GOOGLE_ACCOUNTS_CALLBACK);
+            SharedWebViewChromium sharedWebViewChromium = mSharedWebViewChromium.get();
+            if (sharedWebViewChromium == null) {
+                throw new IllegalStateException(
+                        "Support lib method called on WebView that no longer exists.");
+            }
+            sharedWebViewChromium.getAwContents().configureGoogleAccountMirroring("", null);
         }
     }
 }

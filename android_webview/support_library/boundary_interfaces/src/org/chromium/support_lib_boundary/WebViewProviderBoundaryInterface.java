@@ -124,4 +124,11 @@ public interface WebViewProviderBoundaryInterface {
     Runnable addHeaderInterceptor(
             Consumer<BiConsumer<@RequestMatcherConfig Integer, Object>> buildRequestMatcherConfig,
             Function<WebResourceRequest, Map<String, @Nullable String>> headerInterceptor);
+
+    void setGoogleAccountsCallback(
+            String accountId,
+            Executor executor,
+            Consumer</* GoogleAccountsEvent */ InvocationHandler> consumer);
+
+    void clearGoogleAccountsCallback();
 }
