@@ -30,7 +30,6 @@ using namespace sql_query_grammar;
 // 2. Add functionality to start with a specific database so that the
 // fuzzer doesn't waste so much time getting a sufficiently complicated
 // database.
-// 3. FTS3 Corpus
 
 namespace {
 constexpr int kMinNumInsertions = 15;

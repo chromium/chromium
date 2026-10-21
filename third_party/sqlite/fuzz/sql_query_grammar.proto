@@ -4,8 +4,6 @@
 
 syntax = "proto2";
 
-import "icu_codes.proto";
-
 package sql_query_grammar;
 
 /* Generates SQL queries in protobuf format, using enums for the tables and
@@ -19,14 +17,14 @@ package sql_query_grammar;
 */
 
 message SQLQuery {
+  reserved 5, 6, 24 to 26;
+
   // No comments generated, nor EXPLAIN queries
   oneof query_oneof {
     Select select = 1;
     CreateTable create_table = 2;
     Insert insert = 3;
     Delete delete = 4;
-    CreateFTS3Table fts3_table = 5;
-    FTS3SpecificQuery fts_query = 6;
     BeginTransaction begin_txn = 7;
     CommitTransaction commit_txn = 8;
     RollbackStatement rollback_stmt = 9;
@@ -44,220 +42,7 @@ message SQLQuery {
     AlterTable alter_table = 21;
     AttachDatabase attach_db = 22;
     DetachDatabase detach_db = 23;
-    FTS3HiddenTableInsert fts3_insert = 24;
-    FTS3HiddenTableUpdate fts3_update = 25;
-    FTS3HiddenTableDelete fts3_delete = 26;
   }
-}
-
-// ~~~~FTS3~~~
-
-message FTS3SpecificQuery {
-  oneof query_oneof {
-    FTS3SpecialCommand command = 1;
-    // The following exists to increase the probability of hitting MATCH
-    // queries.
-    FTS3SelectMatch select = 2;
-  }
-}
-
-message FTS3SelectMatch {
-  // SELECT * FROM |table| WHERE |col| MATCH |match_pattern|
-  required FTS3Table table = 1;
-  required Column col = 2;
-  required FTS3MatchFormat match_pattern = 3;
-}
-
-message FTS3SpecialCommand {
-  // INSERT INTO xyz(xyz) VALUES('optimize');
-  // is a special command that optimizes FTS table xyz.
-  required FTS3Table table = 1;
-  enum Command {
-    OPTIMIZE = 0;
-    REBUILD = 1;
-    INTEGRITY_CHECK = 2;
-    MERGE = 3;
-    AUTOMERGE = 4;
-  }
-  required Command command = 2;
-  required uint32 val1 = 3;
-  required uint32 val2 = 4;
-}
-
-message ICULocale {
-  required IsoLangCode iso_lang_code = 1;
-  // least significant 2 bytes will each be clamped to within 'A' and
-  // 'Z' and then concatenated together to form a country code.
-  required uint32 country_code = 2;
-  // TODO(mpdenton) generate anything else here? Will sqlite care?
-}
-
-enum TokenizerType {
-  TT_SIMPLE = 0;
-  TT_PORTER = 1;
-  TT_ICU = 2;
-  TT_UNICODE61 = 3;  // FIXME in the future: remove_diacritics, separators,
-                     // token_chars.... (not supported in Chrome)
-}
-
-// FIXME in the future: maybe also fuzz the tokenizer type/icu locales with
-// random strings???
-message CreateFTS3Table {
-  required bool if_not_exists = 1;
-  optional Schema schema = 6;
-  required FTS3Table table = 2;
-  optional ColumnList col_list = 3;
-  optional TokenizerType tokenizer_type = 4;
-  required ICULocale locale = 5;  // used if tokenizer_type == TT_ICU.
-}
-
-message FTS3Table {
-  required uint32 table = 1;
-}
-
-// TODO(mpdenton) query by row id?
-
-message FTS3MatchFormat {
-  repeated FTS3MatchCompoundFormat ft = 1;
-}
-
-message FTS3MatchCompoundFormat {
-  required FTS3MatchFormatCore core = 1;
-  repeated FTS3CompoundAndCore compound_and_cores = 2;
-}
-
-message FTS3CompoundAndCore {
-  enum CompoundOp {
-    OR = 0;
-    // Chrome does not enable the enhanced query syntax. FIXME in the future.
-    // AND = 1;
-    // NOT = 2;
-  }
-  required CompoundOp op = 1;
-  required FTS3MatchFormatCore core = 2;
-}
-
-message FTS3MatchFormatCore {
-  oneof ft_oneof {
-    FTS3PhraseQuery pq = 1;
-    FTS3NearQuery nq = 2;
-  }
-  required FTS3MatchToken mt_fallback = 3;
-}
-
-message FTS3NearQuery {
-  // May generate into another NEAR query, this is fine.
-  required FTS3MatchFormatCore format_core1 = 1;
-  optional uint32 num_tokens_near = 2;
-  required FTS3MatchFormatCore format_core2 = 3;
-}
-
-message FTS3PhraseQuery {
-  required FTS3MatchToken mt = 1;
-  repeated FTS3MatchToken extra_mts = 2;
-}
-
-message FTS3MatchToken {
-  optional Column col = 1;  // search in this column specifically
-  required bool negate = 4;
-  required string token = 2;  // token (or prefix) to search for
-  required bool prefix = 3;   // append star to end
-}
-
-// FIXME in the future: https://www.sqlite.org/fts3.html Section 8.2: Query
-// tokenizers themselves. Unsupported by Chrome.
-
-message FTS3OffsetsFn {
-  required FTS3Table table = 1;
-}
-
-message FTS3SnippetsFn {
-  required FTS3Table table = 1;
-  enum NumArgs {
-    A0 = 0;
-    A1 = 1;
-    A2 = 2;
-    A3 = 3;
-    A4 = 4;
-    A5 = 5;
-  }
-  required NumArgs num_optional_args = 2;
-  required string start_match = 3;
-  required string end_match = 4;
-  required string ellipses = 5;
-  optional uint32 col_number = 6;  // capped by KMaxColumnNumber
-  required uint32 num_tokens = 7;  // in [-64, 64].
-}
-
-message FTS3MatchInfoFn {
-  required FTS3Table table = 1;
-
-  // The following will be wrapped to any of the characters p,c,n,a,,l,s,x,y,b.
-  repeated uint32 chars = 2;
-}
-
-// FTS3 Auxiliary function format
-message FTS3AuxiliaryFn {
-  required FTS3OffsetsFn offsets_fallback = 1;
-  oneof fts_aux_fn_oneof {
-    FTS3SnippetsFn snippets = 2;
-    FTS3MatchInfoFn matchinfo = 3;
-  }
-}
-
-// Types of hidden tables in FTS3
-message FTS3HiddenTable {
-  enum HiddenTableVal {
-    // CONTENT = 0; // Taken care of in |Table|
-    SEGDIR = 1;
-    SEGMENTS = 2;
-    // stat and docsize are FTS4
-  }
-  required HiddenTableVal htv = 1;
-  required FTS3Table table = 2;
-}
-
-// The different columns that go into the FTS3 hidden tables above
-enum FTS3HiddenTableColumn {
-  FTS3_HT_BLOCKID = 0;
-  FTS3_HT_BLOCK = 1;
-  FTS3_HT_LEVEL = 2;
-  FTS3_HT_IDX = 3;
-  FTS3_HT_START_BLOCK = 4;
-  FTS3_HT_LEAVES_END_BLOCK = 5;
-  FTS3_HT_END_BLOCK = 6;
-  FTS3_HT_ROOT = 7;
-}
-
-// Some extra stuff to modify the FTS3 Hidden tables, only used for FTS3
-// Fuzzing.
-
-// Used to insert single values in.
-message FTS3HiddenTableInsert {
-  required FTS3HiddenTable fht = 1;
-  repeated FTS3HiddenTableColumnValue col_vals = 2;
-}
-
-message FTS3HiddenTableUpdate {
-  required FTS3HiddenTable fht = 1;
-  repeated FTS3HiddenTableColumnValue col_vals = 2;
-
-  // mini WHERE clause with some BinOp
-  optional FTS3HiddenTableColumn col_where = 3;
-  required BinaryOperator bin_op = 4;
-  required Expr comp_expr = 5;
-}
-
-message FTS3HiddenTableDelete {
-  required FTS3HiddenTable fht = 1;
-  optional FTS3HiddenTableColumn col_where = 2;
-  required BinaryOperator bin_op = 3;
-  required Expr comp_expr = 4;
-}
-
-message FTS3HiddenTableColumnValue {
-  required FTS3HiddenTableColumn col = 1;
-  required Expr expr = 2;
 }
 
 // ~~~~TRANSACTIONs~~~~
@@ -763,12 +548,13 @@ message ExprColAlias {
 }
 
 message ResultColumn {
+  reserved 4;
+
   oneof result_col_oneof {
     Column col = 1;
     ExprColAlias eca = 2;
     Table table_star = 3;
-    FTS3AuxiliaryFn fts3_fn = 4;  // Only emitted when FUZZ_FTS3 enabled
-  }                               // if nothing, use star *
+  }  // if nothing, use star *
 }
 
 message SelectStatementCore {
@@ -869,18 +655,16 @@ message Schema {
 }
 
 message Table {
+  reserved 2;
+
   required uint32 table = 1;
-  optional bool fts3_content_table = 2;  // only used for FTS3 fuzzing
 }
 
 message Column {
+  reserved 3, 4;
+
   required uint32 column = 1;
   optional bool rowid = 2;  // can also have "rowid" column
-
-  // FTS has a hidden column with the same name as the table.
-  optional FTS3Table fts3_table = 3;
-  // FTS3 tables have "docid" as an alias for "rowid".
-  optional bool fts3_docid = 4;
 }
 
 message WindowName {
@@ -1015,13 +799,11 @@ enum BinaryOperator {
 }
 
 message BinaryExpr {
+  reserved 4;
+
   required Expr lhs = 1;
   required BinaryOperator op = 2;
   required Expr rhs = 3;
-
-  // In FUZZ_FTS3 mode, if |fmt| exists we will use it instead of rhs to
-  // help generate better MATCH queries.
-  optional FTS3MatchFormat fmt = 4;
 }
 
 // Used to inflate the probability that we get a comparison of a column with an
@@ -1036,12 +818,11 @@ message ExprComparisonHighProbability {
 // Special version of expr that only generates predicates with a column on the
 // left.
 message ColumnComparison {
+  reserved 4;
+
   required ExprSchemaTableColumn col = 1;
   required BinaryOperator op = 2;
   required Expr expr = 3;
-  // In FUZZ_FTS3 mode, if |fmt| exists we will use it instead of rhs to
-  // help generate better MATCH queries.
-  optional FTS3MatchFormat fmt = 4;
 }
 
 message ExprSchemaTableColumn {
@@ -1204,9 +985,10 @@ message ParenthesesExpr {
 }
 
 message Fn {
+  reserved 2;
+
   oneof fn_oneof {
     SimpleFn simple_fn = 1;
-    FTS3AuxiliaryFn fts_aux_fn = 2;
     DateAndTimeFn dat_fn = 3;
     AggregateFn aggregate_fn = 4;
     Printf printf = 5;

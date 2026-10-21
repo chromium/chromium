@@ -33,7 +33,7 @@ stack trace will be displayed in the "Detailed report".
 
 SQLite authors and non-Chromium contributors may need more data in order to
 reproduce SQLite bugs originating from Chromium fuzzers if:
-* The fuzzer is not public (ex. LPM-based fuzzers, including fts_lpm), or
+* The fuzzer is not public (ex. LPM-based fuzzers), or
 * The fuzzer's content is serialized in a custom manner, like via protobuf
   (ex. LPM-based fuzzers as well).
 
@@ -43,9 +43,9 @@ deserializing the fuzzer reproduce testcase.
 
 To reproduce the testcase:
 
-1. `export FUZZER_NAME=sqlite3_fts3_lpm_fuzzer  # FUZZER_NAME is listed in the bug as the "Fuzz Target"`
+1. `export FUZZER_NAME=sqlite3_lpm_fuzzer  # FUZZER_NAME is listed in the bug as the "Fuzz Target"`
 2. Download the ClusterFuzz minimized testcase.
-3. `export CLUSTERFUZZ_TESTCASE=./clusterfuzz-testcase-minimized-sqlite3_fts3_lpm_fuzzer-5756437473656832  # Set the ClusterFuzz testcase path to CLUSTERFUZZ_TESTCASE`
+3. `export CLUSTERFUZZ_TESTCASE=/path/to/downloaded-testcase  # Set the ClusterFuzz testcase path to CLUSTERFUZZ_TESTCASE`
 3. `gn args out/Fuzzer  # Set arguments to match those in the ClusterFuzz "Detailed report"'s "GN CONFIG (ARGS.GN)" section`
 4. `autoninja -C out/Fuzzer/ ${FUZZER_NAME}  # Build the fuzzer target`
 5. `./out/Fuzzer/${FUZZER_NAME} ${CLUSTERFUZZ_TESTCASE}  # Verify repro by running fuzzer (for memory leaks, try setting "ASAN_OPTIONS=detect_leaks=1")`
@@ -54,10 +54,7 @@ After this, to obtain a shareable SQLite query testcase:
 
 1. `LPM_DUMP_NATIVE_INPUT=1 SQL_SKIP_QUERIES=AlterTable ./out/Fuzzer/${FUZZER_NAME} ${CLUSTERFUZZ_TESTCASE}  # Try using different args to get SQL statements that will repro the bug`
 SQL_SKIP_QUERIES can help minimize the repro, LPM_DUMP_NATIVE_INPUT can dump a
-SQLite query as output from a LPM fuzzer testcase, and DUMP_NATIVE_INPUT can
-dump a SQLite query as output from a
-[shadow_table_fuzzer](https://source.chromium.org/chromium/chromium/src/+/main:third_party/sqlite/fuzz/shadow_table_fuzzer.cc)
-testcase.
+SQLite query as output from a LPM fuzzer testcase.
 2. Optionally, minimize the testcase further using the `-minimize_crash`
 [flag](https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/reproducing.md#minimizing-a-crash-input-optional).
 3. Optionally, take output from (2) into a repro.sql file for further testing.

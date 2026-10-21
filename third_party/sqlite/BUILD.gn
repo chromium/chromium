@@ -496,38 +496,6 @@ fuzzer_test("sqlite3_lpm_fuzzer") {
   is_fuzztest_compatible = false
 }
 
-# FTS3-focused LPM-based fuzzer test.
-fuzzer_test("sqlite3_fts3_lpm_fuzzer") {
-  sources = [
-    "fuzz/sql_fuzzer.cc",
-    "fuzz/sql_query_proto_to_string.cc",
-    "fuzz/sql_query_proto_to_string.h",
-  ]
-  deps = [
-    ":sqlite3_lpm_fuzzer_core",
-    ":sqlite3_lpm_fuzzer_input_fuzzable",
-    "//base",
-    "//third_party/libprotobuf-mutator",
-  ]
-  additional_configs = [
-    ":sqlite_warnings",
-    ":sqlite3_fts3_lpm_fuzzer_config",
-  ]
-  libfuzzer_options = [
-    "max_len=2111000",
-    "len_control=0",
-  ]
-
-  # TODO(crbug.com/505034799): Migrate to FUZZ_TEST.
-  is_fuzztest_compatible = false
-}
-
-fuzzer_test("sqlite3_shadow_table_fuzzer") {
-  sources = [ "fuzz/shadow_table_fuzzer.cc" ]
-  deps = [ ":sqlite" ]
-  additional_configs = [ ":sqlite_warnings" ]
-}
-
 fuzzer_test("sqlite3_select_printf_lpm_fuzzer") {
   sources = [
     "fuzz/sql_printf_fuzzer.cc",
@@ -585,10 +553,6 @@ fuzzer_test("sqlite3_select_expr_lpm_fuzzer") {
   is_fuzztest_compatible = false
 }
 
-config("sqlite3_fts3_lpm_fuzzer_config") {
-  defines = [ "FUZZ_FTS3" ]
-}
-
 config("lpm_fuzzer_omit_non_websql") {
   defines = [
     "FUZZ_OMIT_SAVEPOINT",
@@ -598,7 +562,6 @@ config("lpm_fuzzer_omit_non_websql") {
 
 fuzzable_proto_library("sqlite3_lpm_fuzzer_input") {
   sources = [
-    "fuzz/icu_codes.proto",
     "fuzz/sql_queries.proto",
     "fuzz/sql_query_grammar.proto",
   ]

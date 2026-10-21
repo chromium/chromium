@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/no_destructor.h"
-#include "third_party/sqlite/fuzz/icu_codes.pb.h"
 #include "third_party/sqlite/fuzz/sql_queries.pb.h"
 #include "third_party/sqlite/fuzz/sql_query_grammar.pb.h"
 #include "third_party/sqlite/fuzz/sql_query_proto_to_string.h"
@@ -30,9 +29,7 @@ namespace sql_fuzzer {
 
 namespace {
 constexpr uint32_t kMaxColumnNumber = 20;
-#if !defined(FUZZ_FTS3)
 constexpr uint32_t kMaxTableNumber = 8;
-#endif
 constexpr uint32_t kMaxSchemaNumber = 4;
 constexpr uint32_t kMaxWindowNumber = 5;
 
@@ -40,9 +37,6 @@ constexpr uint32_t kMaxColumnConstraintNumber = 10;
 constexpr uint32_t kMaxTableConstraintNumber = 10;
 
 constexpr uint32_t kMaxIndexNumber = 10;
-
-// should be less than kMaxTableNumber
-constexpr uint32_t kMaxFTS3TableNumber = 2;
 
 constexpr uint32_t kMaxStrLength =
     200;  // So these are readable and somewhat performant, keep a maximum
@@ -61,10 +55,6 @@ static base::NoDestructor<std::set<std::string>> disabled_queries_;
 CONV_FN(Expr, expr);
 CONV_FN(Select, select);
 CONV_FN(TableOrSubquery, tos);
-CONV_FN(FTS3Table, ft);
-CONV_FN(FTS3NearQuery, fnq);
-CONV_FN(FTS3AuxiliaryFn, faf);
-CONV_FN(FTS3MatchFormat, fmf);
 CONV_FN(DateAndTimeFn, sfn);
 CONV_FN(ExprSchemaTableFn, estf);
 
@@ -74,12 +64,6 @@ CONV_FN(ExprSchemaTableFn, estf);
 CONV_FN(Column, col) {
   if (col.has_rowid() && col.rowid())
     return "rowid";
-#if defined(FUZZ_FTS3)
-  if (col.has_fts3_docid() && col.fts3_docid())
-    return "docid";
-  if (col.has_fts3_table())
-    return FTS3TableToString(col.fts3_table());
-#endif
   std::string ret("Col");
   ret += std::to_string(col.column() % kMaxColumnNumber);
   return ret;
@@ -88,14 +72,7 @@ CONV_FN(Column, col) {
 // WARNING does not include space at the end
 CONV_FN(Table, table) {
   std::string ret("Table");
-#if defined(FUZZ_FTS3)
-  // only fuzzing FTS3 tables, clamp to the max FTS3 table num.
-  ret += std::to_string(table.table() & kMaxFTS3TableNumber);
-  if (table.fts3_content_table())
-    ret += "_content";
-#else
   ret += std::to_string(table.table() % kMaxTableNumber);
-#endif
   return ret;
 }
 
@@ -482,19 +459,13 @@ CONV_FN(BinaryOperator, bop) {
   }
 }
 
-// TODO(mpdenton) generate better REGEXP queries in non-fts3 case. (in
+// TODO(mpdenton) generate better REGEXP queries. (in
 // ColumnComparison as well)
-// TODO(mpdenton) generate better MATCH queries in non-fts3 case.
+// TODO(mpdenton) generate better MATCH queries.
 CONV_FN(BinaryExpr, bexpr) {
   std::string ret;
   ret += ExprToString(bexpr.lhs());
   ret += BinaryOperatorToString(bexpr.op());
-#if defined(FUZZ_FTS3)
-  if (bexpr.op() == BINOP_MATCH && bexpr.has_fmt()) {
-    ret += FTS3MatchFormatToString(bexpr.fmt());
-    return ret;
-  }
-#endif
   ret += ExprToString(bexpr.rhs());
   return ret;
 }
@@ -687,12 +658,6 @@ CONV_FN(Fn, fn) {
   // oneof
   if (fn.has_simple_fn()) {
     return SimpleFnToString(fn.simple_fn());
-  } else if (fn.has_fts_aux_fn()) {
-#if defined(FUZZ_FTS3)
-    return FTS3AuxiliaryFnToString(fn.fts_aux_fn()) + " ";
-#else
-    return "changes() ";
-#endif
   } else if (fn.has_dat_fn()) {
     return DateAndTimeFnToString(fn.dat_fn());
   } else if (fn.has_aggregate_fn()) {
@@ -1150,9 +1115,6 @@ CONV_FN(CreateTableOpt1, opt1) {
 
 CONV_FN(CreateTable, create_table) {
   RETURN_IF_DISABLED_QUERY(CreateTable);
-#if defined(FUZZ_FTS3)
-  return "";  // Don't create normal tables in FTS3 fuzzing mode.
-#else
   std::string ret("CREATE ");
   if (create_table.has_temp_modifier()) {
     ret += EnumStrReplaceUnderscores(
@@ -1182,7 +1144,6 @@ CONV_FN(CreateTable, create_table) {
   }
 
   return ret;  // TODO(mpdenton)
-#endif
 }
 
 // ~~~~For INSERT and SELECT~~~~
@@ -1227,12 +1188,6 @@ CONV_FN(ColumnComparison, cc) {
   std::string ret;
   ret += ExprSchemaTableColumnToString(cc.col());
   ret += BinaryOperatorToString(cc.op());
-#if defined(FUZZ_FTS3)
-  if (cc.op() == BINOP_MATCH && cc.has_fmt()) {
-    ret += FTS3MatchFormatToString(cc.fmt());
-    return ret;
-  }
-#endif
   ret += ExprToString(cc.expr());
   return ret;
 }
@@ -1447,12 +1402,6 @@ CONV_FN(ResultColumn, rc) {
     return ExprColAliasToString(rc.eca());
   } else if (rc.has_table_star()) {
     return TableToString(rc.table_star()) + ".*";
-  } else if (rc.has_fts3_fn()) {
-#if defined(FUZZ_FTS3)
-    return FTS3AuxiliaryFnToString(rc.fts3_fn());
-#else
-    return "*";
-#endif
   } else {
     return "*";
   }
@@ -1759,365 +1708,6 @@ CONV_FN(Select, select) {
   }
   if (select.has_limit()) {
     ret += LimitStatementToString(select.limit());
-  }
-  return ret;
-}
-
-// ~~~~FTS3~~~~
-
-// CORPUS currently relying on normal SELECTs to generate good compound
-// queries for FTS, like AND, OR, and NOT. Generate a corpus entry with a lot of
-// creative FTS queries.
-
-CONV_FN(FTS3Table, ft) {
-  // std::string ret("FTS3Table");
-  std::string ret(
-      "Table");  // for now, use the same naming scheme as normal tables.
-  ret += std::to_string(ft.table() % kMaxFTS3TableNumber);
-  return ret;
-}
-
-CONV_FN(FTS3MatchToken, fmt) {
-  std::string ret;
-  if (fmt.has_col()) {
-    ret += ColumnToString(fmt.col());
-    ret += ":";
-  }
-  if (fmt.negate()) {
-    ret += "-";
-  }
-  if (fmt.token().length() == 0)
-    ret += "a";
-  else
-    ret += ConvertToSqlString(
-        fmt.token());  // TODO(mpdenton) good enough? Need something better????
-  if (fmt.prefix())
-    ret += "*";
-  return ret;
-}
-
-CONV_FN(FTS3PhraseQuery, fpq) {
-  std::string ret("\"");
-  ret += FTS3MatchTokenToString(fpq.mt());
-  for (int i = 0; i < fpq.extra_mts_size(); i++) {
-    ret += " ";
-    ret += FTS3MatchTokenToString(fpq.extra_mts(i));
-  }
-  ret += "\"";
-  return ret;
-}
-
-CONV_FN(FTS3MatchFormatCore, fmfc) {
-  // oneof
-  if (fmfc.has_pq()) {
-    return FTS3PhraseQueryToString(fmfc.pq());
-  } else if (fmfc.has_nq()) {
-    return FTS3NearQueryToString(fmfc.nq());
-  } else {
-    return FTS3MatchTokenToString(fmfc.mt_fallback());
-  }
-}
-
-CONV_FN(FTS3NearQuery, fnq) {
-  std::string ret = FTS3MatchFormatCoreToString(fnq.format_core1());
-  ret += " NEAR";
-  if (fnq.has_num_tokens_near()) {
-    ret += "/";
-    ret += std::to_string(fnq.num_tokens_near());
-  }
-  ret += " ";
-  ret += FTS3MatchFormatCoreToString(fnq.format_core2());
-  return ret;
-}
-
-CONV_FN(FTS3CompoundAndCore, fcac) {
-  std::string ret(" ");
-  ret += FTS3CompoundAndCore_CompoundOp_Name(fcac.op());
-  ret += " ";
-  ret += FTS3MatchFormatCoreToString(fcac.core());
-  return ret;
-}
-
-CONV_FN(FTS3MatchCompoundFormat, fmcf) {
-  std::string ret = FTS3MatchFormatCoreToString(fmcf.core());
-  for (int i = 0; i < fmcf.compound_and_cores_size(); i++) {
-    ret += FTS3CompoundAndCoreToString(fmcf.compound_and_cores(i));
-  }
-  return ret;
-}
-
-CONV_FN(FTS3MatchFormat, fmf) {
-  std::string ret("\'");
-  if (fmf.ft_size() > 0) {
-    ret += FTS3MatchCompoundFormatToString(fmf.ft(0));
-  }
-  for (int i = 1; i < fmf.ft_size(); i++) {
-    ret += " ";
-    ret += FTS3MatchCompoundFormatToString(fmf.ft(i));
-  }
-  ret += "\'";
-  return ret;
-}
-
-CONV_FN(FTS3SpecialCommand, fsc) {
-  RETURN_IF_DISABLED_QUERY(FTS3SpecialCommand);
-  std::string ret("INSERT INTO ");
-  ret += FTS3TableToString(fsc.table());
-  ret += "(";
-  ret += FTS3TableToString(fsc.table());
-  ret += ") VALUES(\'";
-  switch (fsc.command()) {
-    case FTS3SpecialCommand::OPTIMIZE:
-      ret += "optimize";
-      break;
-    case FTS3SpecialCommand::REBUILD:
-      ret += "rebuild";
-      break;
-    case FTS3SpecialCommand::INTEGRITY_CHECK:
-      ret += "integrity-check";
-      break;
-    case FTS3SpecialCommand::MERGE:
-      ret += "merge=";
-      ret += std::to_string(fsc.val1());
-      ret += ",";
-      ret += std::to_string(fsc.val2());
-      break;
-    case FTS3SpecialCommand::AUTOMERGE:
-      ret += "automerge=";
-      ret += std::to_string(fsc.val1() % 16);
-      break;
-  }
-  ret += "\')";
-  return ret;
-}
-
-// WARNING no space at end
-CONV_FN(FTS3SelectMatch, fsm) {
-  RETURN_IF_DISABLED_QUERY(FTS3SelectMatch);
-  std::string ret("SELECT * FROM ");
-  ret += FTS3TableToString(fsm.table());
-  ret += " WHERE ";
-  ret += ColumnToString(fsm.col());
-  ret += " MATCH ";
-  ret += FTS3MatchFormatToString(fsm.match_pattern());
-  return ret;
-}
-
-CONV_FN(FTS3SpecificQuery, fsq) {
-  RETURN_IF_DISABLED_QUERY(FTS3SpecificQuery);
-#if defined(FUZZ_FTS3)
-  // oneof
-  if (fsq.has_command()) {
-    return FTS3SpecialCommandToString(fsq.command());
-  } else if (fsq.has_select()) {
-    return FTS3SelectMatchToString(fsq.select());
-  } else {
-    return "";
-  }
-
-#else
-  return "";
-#endif
-}
-
-CONV_FN(ICULocale, il) {
-  std::string ret;
-  std::string lc = IsoLangCode_Name(il.iso_lang_code());
-  lc.erase(0, std::string("ISO_LANG_CODE_").length());
-  ret += lc;
-  ret += "_";
-  // extract country code from integer
-  ret += (char)((il.country_code() & 0xFF) % 26) + 'A';
-  ret += (char)(((il.country_code() & 0xFF00) >> 8) % 26) + 'A';
-  return ret;
-}
-
-CONV_FN(CreateFTS3Table, cft) {
-  RETURN_IF_DISABLED_QUERY(CreateFTS3Table);
-  std::string ret("CREATE VIRTUAL TABLE ");
-  if (cft.if_not_exists())
-    ret += "IF NOT EXISTS ";
-  if (cft.has_schema()) {
-    ret += SchemaToString(cft.schema());
-    ret += ".";
-  }
-  ret += FTS3TableToString(cft.table());
-  ret += " USING fts3(";
-  // TODO(mpdenton) not using schema here, should I???
-  if (cft.has_col_list()) {
-    ret += ColumnListToString(cft.col_list());
-    if (cft.has_tokenizer_type())
-      ret += ", ";
-  }
-  if (cft.has_tokenizer_type()) {
-    ret += "tokenize=";
-    std::string tt = TokenizerType_Name(cft.tokenizer_type());
-    tt.erase(0, std::string("TT_").length());
-    tt = StrToLower(tt);
-#if defined(SQLITE_DISABLE_FTS3_UNICODE)
-    if (tt == "unicode61")
-      tt = "porter";
-#endif
-    ret += tt;
-    // now generate locales for ICU
-    if (cft.tokenizer_type() == TokenizerType::TT_ICU) {
-      ret += " ";
-      ret += ICULocaleToString(cft.locale());
-    } else if (cft.tokenizer_type() == TokenizerType::TT_UNICODE61) {
-      // Chrome does not actually enable this option. FIXME in the future.
-    }
-  }
-  ret += ")";
-  return ret;
-}
-
-// WARNING no space at end
-CONV_FN(FTS3OffsetsFn, fof) {
-  return "offsets(" + FTS3TableToString(fof.table()) + ")";
-}
-
-// WARNING no space at end
-CONV_FN(FTS3SnippetsFn, fsf) {
-  std::string ret("snippets(");
-  ret += FTS3TableToString(fsf.table());
-  // Now (possibly) emit the five optional arguments.
-  int num_args = (int)fsf.num_optional_args();
-  if (num_args >= 1) {
-    ret += ", \'";
-    ret += ConvertToSqlString(fsf.start_match());
-    ret += "\'";
-  }
-  if (num_args >= 2) {
-    ret += ", \'";
-    ret += ConvertToSqlString(fsf.end_match());
-    ret += "\'";
-  }
-  if (num_args >= 3) {
-    ret += ", \'";
-    ret += ConvertToSqlString(fsf.ellipses());
-    ret += "\'";
-  }
-  if (num_args >= 4) {
-    ret += ", ";
-    if (fsf.has_col_number()) {
-      ret += std::to_string(fsf.col_number() % kMaxColumnNumber);
-    } else {
-      ret += "-1";
-    }
-  }
-  if (num_args >= 5) {
-    ret += ", ";
-    ret +=
-        std::to_string((fsf.num_tokens() % 129) - 64);  // clamp into [-64, 64]
-  }
-  ret += ")";
-  return ret;
-}
-
-// WARNING no space at end
-CONV_FN(FTS3MatchInfoFn, fmi) {
-  constexpr static char matchinfo_chars[] = {
-      'p', 'c', 's', 'x', 'y', 'b',
-      // 'n', 'a', 'l', // These characters only available for FTS4.
-  };
-  std::string ret("matchinfo(");
-  ret += FTS3TableToString(fmi.table());
-  if (fmi.chars_size() > 0) {
-    ret += ", \'";
-    for (int i = 0; i < fmi.chars_size(); i++) {
-      ret += matchinfo_chars[fmi.chars(i) % sizeof(matchinfo_chars)];
-    }
-    ret += "\'";
-  }
-  ret += ")";
-  return ret;
-}
-
-// WARNING no space at end
-CONV_FN(FTS3AuxiliaryFn, faf) {
-  if (faf.has_snippets()) {
-    return FTS3SnippetsFnToString(faf.snippets());
-  } else if (faf.has_matchinfo()) {
-    return FTS3MatchInfoFnToString(faf.matchinfo());
-  } else {
-    return FTS3OffsetsFnToString(faf.offsets_fallback());
-  }
-}
-
-CONV_FN(FTS3HiddenTable, fht) {
-  std::string tab = FTS3HiddenTable_HiddenTableVal_Name(fht.htv());
-  tab = StrToLower(tab);
-  return FTS3TableToString(fht.table()) + "_" + tab;
-}
-
-CONV_FN(FTS3HiddenTableColumn, fhtc) {
-  std::string tab = FTS3HiddenTableColumn_Name(fhtc);
-  tab = tab.erase(0, std::string("FTS3_HT_").length());
-  tab = StrToLower(tab);
-  return tab;
-}
-
-CONV_FN(FTS3HiddenTableInsert, fi) {
-  RETURN_IF_DISABLED_QUERY(FTS3HiddenTableInsert);
-  std::string ret("INSERT INTO ");
-  ret += FTS3HiddenTableToString(fi.fht());
-  if (fi.col_vals_size() == 0) {
-    ret += " DEFAULT VALUES";
-    return ret;
-  }
-  ret += "(";
-  ret += FTS3HiddenTableColumnToString(fi.col_vals(0).col());
-  for (int i = 1; i < fi.col_vals_size(); i++) {
-    ret += ", ";
-    ret += FTS3HiddenTableColumnToString(fi.col_vals(i).col());
-  }
-  ret += ") VALUES(";
-  ret += ExprToString(fi.col_vals(0).expr());
-  for (int i = 0; i < fi.col_vals_size(); i++) {
-    ret += ", ";
-    ret += ExprToString(fi.col_vals(i).expr());
-  }
-  ret += ")";
-  return ret;
-}
-
-CONV_FN(FTS3HiddenTableUpdate, fu) {
-  RETURN_IF_DISABLED_QUERY(FTS3HiddenTableUpdate);
-  std::string ret("UPDATE ");
-  ret += FTS3HiddenTableToString(fu.fht());
-  ret += " ";
-  if (fu.col_vals_size() == 0) {
-    ret += "start_block = 0";
-    return ret;
-  }
-  ret += "SET ";
-  ret += FTS3HiddenTableColumnToString(fu.col_vals(0).col());
-  ret += " = ";
-  ret += ExprToString(fu.col_vals(0).expr());
-  for (int i = 1; i < fu.col_vals_size(); i++) {
-    ret += ", ";
-    ret += FTS3HiddenTableColumnToString(fu.col_vals(i).col());
-    ret += " = ";
-    ret += ExprToString(fu.col_vals(i).expr());
-  }
-  if (fu.has_col_where()) {
-    ret += " WHERE ";
-    ret += FTS3HiddenTableColumnToString(fu.col_where());
-    ret += BinaryOperatorToString(fu.bin_op());
-    ret += ExprToString(fu.comp_expr());
-  }
-  return ret;
-}
-
-CONV_FN(FTS3HiddenTableDelete, fd) {
-  RETURN_IF_DISABLED_QUERY(FTS3HiddenTableDelete);
-  std::string ret("DELETE FROM ");
-  ret += FTS3HiddenTableToString(fd.fht());
-  if (fd.has_col_where()) {
-    ret += " WHERE ";
-    ret += FTS3HiddenTableColumnToString(fd.col_where());
-    ret += BinaryOperatorToString(fd.bin_op());
-    ret += ExprToString(fd.comp_expr());
   }
   return ret;
 }
@@ -2648,10 +2238,6 @@ CONV_FN(SQLQuery, query) {
       return InsertToString(query.insert());
     case QueryType::kDelete:
       return DeleteToString(query.delete_());
-    case QueryType::kFts3Table:
-      return CreateFTS3TableToString(query.fts3_table());
-    case QueryType::kFtsQuery:
-      return FTS3SpecificQueryToString(query.fts_query());
     case QueryType::kBeginTxn:
       return BeginTransactionToString(query.begin_txn());
     case QueryType::kCommitTxn:
@@ -2688,14 +2274,6 @@ CONV_FN(SQLQuery, query) {
       return AttachDatabaseToString(query.attach_db());
     case QueryType::kDetachDb:
       return DetachDatabaseToString(query.detach_db());
-#if defined(FUZZ_FTS3)
-    case QueryType::kFts3Insert:
-      return FTS3HiddenTableInsertToString(query.fts3_insert());
-    case QueryType::kFts3Update:
-      return FTS3HiddenTableUpdateToString(query.fts3_update());
-    case QueryType::kFts3Delete:
-      return FTS3HiddenTableDeleteToString(query.fts3_delete());
-#endif
     default:
       return "";
   }
