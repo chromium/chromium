@@ -15,6 +15,7 @@ import android.webkit.URLUtil;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -255,14 +256,18 @@ public final class ContextMenuUtils {
     }
 
     /**
-     * Checks if the context menu should be displayed as a mouse driven popup or if it was opened
-     * from a shared highlight.
+     * Checks if the context menu should be displayed as an anchored popup (when triggered by a
+     * mouse, keyboard, or shared highlight).
      *
      * @param params The {@link ContextMenuParams} for the context menu.
      * @return True if the menu should be displayed as a popup, false otherwise.
      */
     public static boolean isMouseOrHighlightPopup(ContextMenuParams params) {
-        return params.getSourceType() == MenuSourceType.MOUSE || params.getOpenedFromHighlight();
+        return params.getSourceType() == MenuSourceType.MOUSE
+                || params.getOpenedFromHighlight()
+                || (params.getSourceType() == MenuSourceType.KEYBOARD
+                        && ContentFeatureMap.isEnabled(
+                                BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU));
     }
 
     /**

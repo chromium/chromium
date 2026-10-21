@@ -25,6 +25,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.ui.KeyboardUtils;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -39,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.task_manager.TaskManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.device.gamepad.GamepadList;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.util.KeyEventUtils;
@@ -870,6 +872,9 @@ public class KeyboardShortcuts {
                 // the default app search UI, which locks up Chrome.
                 return true;
             case KeyEvent.KEYCODE_MENU:
+                if (ContentFeatureMap.isEnabled(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)) {
+                    break;
+                }
                 if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.show_menu, false);
                 }
@@ -1093,6 +1098,20 @@ public class KeyboardShortcuts {
             MenuOrKeyboardActionController menuOrKeyboardActionController) {
         int keyCode = event.getKeyCode();
         if (event.getRepeatCount() != 0 || KeyEvent.isModifierKey(keyCode)) {
+            return false;
+        }
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            if (KeyboardUtils.getMetaState(event) == NO_MODIFIER
+                    && ContentFeatureMap.isEnabled(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)) {
+                if (isCurrentTabVisible
+                        && menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                                R.id.open_tab_strip_context_menu, /* fromMenu= */ false)) {
+                    return true;
+                }
+                menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                        R.id.show_menu, /* fromMenu= */ false);
+                return true;
+            }
             return false;
         }
         if (KeyEvent.isGamepadButton(keyCode)) {

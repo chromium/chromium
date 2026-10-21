@@ -30,7 +30,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -155,6 +157,39 @@ public class KeyboardShortcutsUnitTest {
 
         assertTrue(onKeyDown(KeyEvent.KEYCODE_BUTTON_B));
         verify(mController).onMenuOrKeyboardAction(eq(R.id.close_tab), eq(false));
+    }
+
+    @Test
+    @EnableFeatures(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)
+    public void testKeycodeMenu_DispatchKeyEvent_DeferredWhenFeatureEnabled() {
+        assertNull(dispatchKeyEvent(KeyEvent.KEYCODE_MENU));
+        verify(mController, never()).onMenuOrKeyboardAction(anyInt(), anyBoolean());
+    }
+
+    @Test
+    @DisableFeatures(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)
+    public void testKeycodeMenu_DispatchKeyEvent_HandledWhenFeatureDisabled() {
+        assertTrue(dispatchKeyEvent(KeyEvent.KEYCODE_MENU));
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.show_menu), eq(false));
+    }
+
+    @Test
+    @EnableFeatures(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)
+    public void testKeycodeMenu_OnKeyDown_OpensTabStripContextMenuWhenFocused() {
+        doReturn(true)
+                .when(mController)
+                .onMenuOrKeyboardAction(eq(R.id.open_tab_strip_context_menu), eq(false));
+
+        assertTrue(onKeyDown(KeyEvent.KEYCODE_MENU));
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.open_tab_strip_context_menu), eq(false));
+        verify(mController, never()).onMenuOrKeyboardAction(eq(R.id.show_menu), eq(false));
+    }
+
+    @Test
+    @EnableFeatures(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)
+    public void testKeycodeMenu_OnKeyDown_OpensAppMenu() {
+        assertTrue(onKeyDown(KeyEvent.KEYCODE_MENU));
+        verify(mController).onMenuOrKeyboardAction(eq(R.id.show_menu), eq(false));
     }
 
     private static KeyEvent createKeyEvent(int keyCode, int metaState) {

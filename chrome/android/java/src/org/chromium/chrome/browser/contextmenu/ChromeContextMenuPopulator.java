@@ -44,6 +44,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -107,6 +108,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.BrowserStartupController;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.WindowAndroid;
@@ -479,13 +481,16 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @VisibleForTesting
     boolean shouldShowEmptySpaceContextMenu() {
-        // Enable empty space context menu from mouse-right click on all device form factors.
+        // Enable empty space context menu from mouse-right click on all device form factors, and
+        // from keyboard when keyboard context menu support is enabled.
         // Limit long press (touch) as trigger only when desktop agent is used, because
         //   * some phones always identify as having a touchpad (crbug.com/429262357), and
         //   * known web compatibility issue on tablet devices (crbug.com/45188879).
         return (mParams.getSourceType() == MenuSourceType.MOUSE
-                || (TabUtils.isUsingDesktopUserAgent(mItemDelegate.getWebContents())
-                        && mParams.getSourceType() == MenuSourceType.LONG_PRESS));
+                || (mParams.getSourceType() == MenuSourceType.KEYBOARD
+                        && ContentFeatureMap.isEnabled(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU))
+                || (mParams.getSourceType() == MenuSourceType.LONG_PRESS
+                        && TabUtils.isUsingDesktopUserAgent(mItemDelegate.getWebContents())));
     }
 
     @VisibleForTesting

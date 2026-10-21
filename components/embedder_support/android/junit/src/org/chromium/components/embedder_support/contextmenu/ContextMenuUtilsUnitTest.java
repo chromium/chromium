@@ -39,6 +39,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.blink_public.common.ContextMenuDataMediaFlags;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils.HeaderInfo;
@@ -516,6 +517,49 @@ public class ContextMenuUtilsUnitTest {
         assertFalse(
                 "Should return false if neither mouse nor highlight.",
                 ContextMenuUtils.isMouseOrHighlightPopup(params));
+    }
+
+    @Test
+    @EnableFeatures({BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU})
+    public void isMouseOrHighlightPopup_keyboardFeatureEnabled() {
+        ContextMenuParams params = createKeyboardContextMenuParams();
+
+        assertTrue(
+                "Should return true if source type is KEYBOARD and feature is enabled.",
+                ContextMenuUtils.isMouseOrHighlightPopup(params));
+    }
+
+    @Test
+    @DisableFeatures({BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU})
+    public void isMouseOrHighlightPopup_keyboardFeatureDisabled() {
+        ContextMenuParams params = createKeyboardContextMenuParams();
+
+        assertFalse(
+                "Should return false if source type is KEYBOARD and feature is disabled.",
+                ContextMenuUtils.isMouseOrHighlightPopup(params));
+    }
+
+    private ContextMenuParams createKeyboardContextMenuParams() {
+        return new ContextMenuParams(
+                0,
+                mMenuModelBridge,
+                ContextMenuDataMediaType.NONE,
+                ContextMenuDataMediaFlags.MEDIA_NONE,
+                GURL.emptyGURL(),
+                GURL.emptyGURL(),
+                sLinkText,
+                GURL.emptyGURL(),
+                new GURL(sSrcUrl),
+                ALT_TEXT,
+                null,
+                false,
+                0,
+                0,
+                MenuSourceType.KEYBOARD,
+                false,
+                /* openedFromInterestFor= */ false,
+                /* interestForNodeID= */ 0,
+                /* additionalNavigationParams= */ null);
     }
 
     @Test

@@ -76,6 +76,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.blink_public.common.ContextMenuDataMediaFlags;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.R;
@@ -4172,6 +4173,29 @@ public class ChromeContextMenuPopulatorTest {
                 /* additionalNavigationParams= */ null);
     }
 
+    private ContextMenuParams getKeyboardPageParams() {
+        return new ContextMenuParams(
+                0,
+                mMenuModelBridge,
+                ContextMenuDataMediaType.NONE,
+                ContextMenuDataMediaFlags.MEDIA_NONE,
+                new GURL(PAGE_URL),
+                GURL.emptyGURL(),
+                "",
+                GURL.emptyGURL(),
+                GURL.emptyGURL(),
+                "",
+                null,
+                false,
+                0,
+                0,
+                MenuSourceType.KEYBOARD,
+                false,
+                false,
+                0,
+                /* additionalNavigationParams= */ null);
+    }
+
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.ENABLE_DOWNLOAD_SAVE_AS_CONTEXT_MENU)
@@ -4236,6 +4260,28 @@ public class ChromeContextMenuPopulatorTest {
                 ChromeContextMenuItem.getTitle(
                                 context, mProfile, ChromeContextMenuItem.Item.SAVE_VIDEO, false)
                         .toString());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)
+    public void testShouldShowEmptySpaceContextMenu_KeyboardEnabled() {
+        initializePopulator(
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL, getKeyboardPageParams());
+        doCallRealMethod().when(mPopulator).shouldShowEmptySpaceContextMenu();
+        assertTrue(mPopulator.shouldShowEmptySpaceContextMenu());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @DisableFeatures(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)
+    public void testShouldShowEmptySpaceContextMenu_KeyboardDisabled() {
+        initializePopulator(
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL, getKeyboardPageParams());
+        doCallRealMethod().when(mPopulator).shouldShowEmptySpaceContextMenu();
+        assertFalse(mPopulator.shouldShowEmptySpaceContextMenu());
     }
 
     @Test

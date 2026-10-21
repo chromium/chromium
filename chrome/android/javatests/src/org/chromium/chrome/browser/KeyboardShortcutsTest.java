@@ -39,6 +39,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.ui.KeyboardUtils;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -442,6 +443,42 @@ public class KeyboardShortcutsTest {
         // Ensure we trigger the caret browsing dialog
         verify(mMenuOrKeyboardActionController)
                 .onMenuOrKeyboardAction(eq(R.id.toggle_caret_browsing), eq(false));
+    }
+
+    /** Tests that KEYCODE_MENU is not consumed before reaching web content when flag is enabled. */
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)
+    public void testKeycodeMenuNotHandledBeforeWebContent() {
+        assertNull(dispatchKeyEvent(KeyEvent.KEYCODE_MENU, 0));
+
+        verify(mMenuOrKeyboardActionController, never())
+                .onMenuOrKeyboardAction(eq(R.id.show_menu), eq(false));
+    }
+
+    /**
+     * Tests that an unhandled KEYCODE_MENU opens the tab strip context menu when a tab strip item
+     * has focus, and otherwise falls back to opening the app menu.
+     */
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(BlinkFeatures.ANDROID_KEYBOARD_CONTEXT_MENU)
+    public void testOpenMenuViaKeycodeMenu() {
+        // When a tab strip item has focus, open_tab_strip_context_menu handles the action.
+        assertTrue(keyDown(KeyEvent.KEYCODE_MENU, 0, true));
+        verify(mMenuOrKeyboardActionController)
+                .onMenuOrKeyboardAction(eq(R.id.open_tab_strip_context_menu), eq(false));
+        verify(mMenuOrKeyboardActionController, never())
+                .onMenuOrKeyboardAction(eq(R.id.show_menu), eq(false));
+
+        // When no tab strip item has focus, fall back to opening the 3-dot app menu.
+        clearInvocations(mMenuOrKeyboardActionController);
+        when(mMenuOrKeyboardActionController.onMenuOrKeyboardAction(
+                        eq(R.id.open_tab_strip_context_menu), eq(false)))
+                .thenReturn(false);
+        assertTrue(keyDown(KeyEvent.KEYCODE_MENU, 0, true));
+        verify(mMenuOrKeyboardActionController)
+                .onMenuOrKeyboardAction(eq(R.id.show_menu), eq(false));
     }
 
     /** Tests that pressing F1 from an alphabetic keyboard triggers the help action. */

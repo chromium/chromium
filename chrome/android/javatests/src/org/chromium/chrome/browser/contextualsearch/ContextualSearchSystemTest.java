@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import android.os.SystemClock;
 import android.view.KeyEvent;
 
 import androidx.test.filters.SmallTest;
@@ -55,9 +56,27 @@ public class ContextualSearchSystemTest extends ContextualSearchInstrumentationB
     // App Menu suppression support
     // ============================================================================================
 
-    /** Simulates pressing the App Menu button. */
+    /** Simulates pressing the App Menu shortcut (Alt + E). */
     private void pressAppMenuKey() {
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_MENU);
+        long eventTime = SystemClock.uptimeMillis();
+        InstrumentationRegistry.getInstrumentation()
+                .sendKeySync(
+                        new KeyEvent(
+                                eventTime,
+                                eventTime,
+                                KeyEvent.ACTION_DOWN,
+                                KeyEvent.KEYCODE_E,
+                                0,
+                                KeyEvent.META_ALT_ON));
+        InstrumentationRegistry.getInstrumentation()
+                .sendKeySync(
+                        new KeyEvent(
+                                eventTime,
+                                eventTime,
+                                KeyEvent.ACTION_UP,
+                                KeyEvent.KEYCODE_E,
+                                0,
+                                KeyEvent.META_ALT_ON));
     }
 
     /** Simulates pressing back button. */
