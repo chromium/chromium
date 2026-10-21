@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import textwrap
+import time
 import unittest
 import zipfile
 
@@ -24,6 +25,7 @@ from pylib import constants
 sys.path.insert(1,
                 constants.host_paths.ANDROID_PLATFORM_DEVELOPMENT_SCRIPTS_PATH)
 import stack
+import stack_core
 
 # Use Python-based zipalign so that these tests can run on the Presubmit bot.
 sys.path.insert(
@@ -329,6 +331,60 @@ class StackDecodeTest(unittest.TestCase):
       00000174   chrome::Func_174         chrome.cc:1:1
       ''')
     self._RunCase(input_trace, expected_decode, apks)
+
+  def test_LongNonMatchingLines(self):
+    apks = {
+        'chrome.apk': ['libchrome.so'],
+    }
+    # Long non-matching logcat lines (command-line switches, quoted JSON logs,
+    # and hex payloads) should not cause superlinear regex backtracking.
+    cmd_line = 'I/CommandLine: ' + ('--some-flag=value ' * 500)
+    json_line = 'I/chromium: [INFO:CONSOLE(1)] ' + ('"key":"value", ' * 600)
+    hex_line = 'I/chromium: payload="' + ('0123456789abcdef' * 16) + '"'
+    noise_lines = [cmd_line, json_line, hex_line] * 15
+    input_trace = '\n'.join(
+        noise_lines
+        + [
+            'DEBUG : #01 pc 00000174  /path==/base.apk!libchrome.so'
+            ' (offset 0x00001000)',
+            'I/DEBUG: #02 0x00000274 /path/libchrome.so+0x00000274',
+        ]
+    )
+    expected_decode = textwrap.dedent('''
+      00000174   chrome::Func_174         chrome.cc:1:1
+      00000274   chrome::Func_274         chrome.cc:1:1
+      ''')
+    start_time = time.perf_counter()
+    self._RunCase(input_trace, expected_decode, apks)
+    self.assertLess(time.perf_counter() - start_time, 5.0)
+
+  def test_RegexMatchingAndFalsePositives(self):
+    # Thread and Dalvik headers preserve capture group 1 with or without a
+    # leading logcat prefix.
+    thread_line = 'I/DEBUG ( 65): ' + ('--- ' * 15) + '---\n'
+    self.assertEqual(
+        stack_core._THREAD_LINE.search(thread_line).group(1),
+        'I/DEBUG ( 65): ',
+    )
+    jni_line = 'I/art ( 123): "main" prio=5 tid=1 NATIVE\n'
+    self.assertEqual(
+        stack_core._DALVIK_JNI_THREAD_LINE.search(jni_line).group(1),
+        '"main" prio=5 tid=1 NATIVE',
+    )
+    native_line = '"RenderThread" sysTid=456 nice=0\n'
+    self.assertEqual(
+        stack_core._DALVIK_NATIVE_THREAD_LINE.search(native_line).group(1),
+        '"RenderThread" sysTid=456 nice=0',
+    )
+
+    # Space-separated 5-word 'code around' lines match _CODE_LINE, while
+    # single 40-char SHA-1 / 64-char SHA-256 hex tokens do not.
+    code_line = 'I/DEBUG ( 65): 801cf40c ffffc4cc 00b2f2c5 00b2f1c7 00c1e1a8\n'
+    self.assertIsNotNone(stack_core._CODE_LINE.match(code_line))
+    sha1_line = 'I/chromium: commit e063be79adf127cce301fe5948273102a33012b6\n'
+    self.assertIsNone(stack_core._CODE_LINE.match(sha1_line))
+    sha256_line = 'I/chromium: hash=' + ('0123456789abcdef' * 4) + '\n'
+    self.assertIsNone(stack_core._CODE_LINE.match(sha256_line))
 
 
 if __name__ == '__main__':
