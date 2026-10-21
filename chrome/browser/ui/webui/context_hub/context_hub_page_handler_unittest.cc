@@ -82,6 +82,8 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/context_hub/record_replay/skill_recording_service.h"  // nogncheck
+#include "chrome/browser/context_hub/record_replay/skill_recording_service_factory.h"  // nogncheck
 #include "chrome/browser/glic/glic_pref_names.h"                    // nogncheck
 #include "chrome/browser/glic/glic_profile_manager.h"               // nogncheck
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"    // nogncheck
@@ -319,6 +321,7 @@ class ContextHubPageHandlerTest : public testing::Test {
          browser::context_hub::mojom::kTopics,
 #if !BUILDFLAG(IS_ANDROID)
          browser::context_hub::mojom::kMemoryBanksSearchPalette,
+         browser::context_hub::mojom::kRecordReplay,
 #endif
          optimization_guide::features::kOptimizationHints},
         {});
@@ -4653,6 +4656,43 @@ TEST_F(ContextHubPageHandlerTest,
       base::ReadFileToString(content_result_files[0].path, &written_content));
   EXPECT_TRUE(base::IsStringUTF8(written_content));
   EXPECT_EQ(written_content.size(), kTargetSize);
+}
+
+TEST_F(ContextHubPageHandlerTest, StartAndStopSkillRecording) {
+  SkillRecordingService* service =
+      SkillRecordingServiceFactory::GetForProfile(&profile_);
+  ASSERT_NE(service, nullptr);
+  EXPECT_FALSE(service->is_recording());
+
+  handler_->StartSkillRecording();
+  EXPECT_TRUE(service->is_recording());
+
+  base::test::TestFuture<
+      browser::context_hub::mojom::SkillRecordingSessionDataPtr>
+      future;
+  handler_->StopSkillRecording(future.GetCallback());
+  auto session_data = future.Take();
+  ASSERT_TRUE(session_data);
+  EXPECT_TRUE(session_data->actions.empty());
+  EXPECT_FALSE(service->is_recording());
+}
+
+TEST_F(ContextHubPageHandlerTest, StartAndStopSkillRecording_ServiceDisabled) {
+  base::test::ScopedFeatureList disabled_feature_list;
+  disabled_feature_list.InitAndDisableFeature(
+      browser::context_hub::mojom::kRecordReplay);
+
+  ASSERT_EQ(SkillRecordingServiceFactory::GetForProfile(&profile_), nullptr);
+
+  handler_->StartSkillRecording();
+
+  base::test::TestFuture<
+      browser::context_hub::mojom::SkillRecordingSessionDataPtr>
+      future;
+  handler_->StopSkillRecording(future.GetCallback());
+  auto session_data = future.Take();
+  ASSERT_TRUE(session_data);
+  EXPECT_TRUE(session_data->actions.empty());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

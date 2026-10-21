@@ -3028,6 +3028,7 @@ test("unit_tests") {
       "//chrome/browser/autofill/actor:unit_tests",
       "//chrome/browser/background:unit_tests",
       "//chrome/browser/child_module:unit_tests",
+      "//chrome/browser/context_hub/record_replay:unit_tests",
       "//chrome/browser/contextual_cueing:unit_tests",
       "//chrome/browser/contextual_search:unit_tests",
       "//chrome/browser/desktop_to_mobile_promos:unit_tests",

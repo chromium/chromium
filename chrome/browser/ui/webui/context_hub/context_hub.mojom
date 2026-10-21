@@ -524,6 +524,17 @@ struct MemoryBankFileAttachment {
   string content;
 };
 
+// Represents a single recorded action during a skill recording session.
+struct SkillRecordingAction {
+  string description;
+  mojo_base.mojom.TimeDelta timestamp;
+};
+
+// Data collected during a skill recording session.
+struct SkillRecordingSessionData {
+  array<SkillRecordingAction> actions;
+};
+
 // Provides access to context hub features.
 // The WebUI page (caller) uses this to interact with the browser
 // process (callee).
@@ -778,4 +789,12 @@ interface PageHandler {
   [RuntimeFeature=kMemoryBanksSearchPalette]
   CopyAttachmentsToClipboard(array<MemoryBankFileAttachment> files)
       => (CopyAttachmentsToClipboardStatus status);
+
+  // Starts a skill recording session.
+  [RuntimeFeature=kRecordReplay]
+  StartSkillRecording();
+
+  // Stops a skill recording session and returns the recorded data.
+  [RuntimeFeature=kRecordReplay]
+  StopSkillRecording() => (SkillRecordingSessionData data);
 };

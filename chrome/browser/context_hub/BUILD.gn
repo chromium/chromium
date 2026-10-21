@@ -65,6 +65,7 @@ source_set("context_hub") {
 
   if (!is_android) {
     public_deps += [
+      "//chrome/browser/context_hub/record_replay",
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
     ]

@@ -78,6 +78,8 @@
 #include "base/path_service.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/context_hub/record_replay/skill_recording_service.h"
+#include "chrome/browser/context_hub/record_replay/skill_recording_service_factory.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"  // nogncheck
 #include "chrome/browser/glic/host/glic.mojom.h"                  // nogncheck
 #include "chrome/browser/glic/public/glic_enabling.h"             // nogncheck
@@ -1838,3 +1840,29 @@ void ContextHubPageHandler::OnCopyAttachmentsToClipboardWritten(
       browser::context_hub::mojom::CopyAttachmentsToClipboardStatus::kSuccess);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+void ContextHubPageHandler::StartSkillRecording() {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  if (context_hub::SkillRecordingService* service =
+          SkillRecordingServiceFactory::GetForProfile(profile_)) {
+    service->StartRecording();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ContextHubPageHandler::StopSkillRecording(
+    StopSkillRecordingCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  if (context_hub::SkillRecordingService* service =
+          SkillRecordingServiceFactory::GetForProfile(profile_)) {
+    std::move(callback).Run(service->StopRecording());
+    return;
+  }
+  std::move(callback).Run(
+      browser::context_hub::mojom::SkillRecordingSessionData::New());
+#endif  // !BUILDFLAG(IS_ANDROID)
+}

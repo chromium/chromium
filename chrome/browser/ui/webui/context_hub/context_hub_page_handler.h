@@ -203,6 +203,8 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
       std::vector<browser::context_hub::mojom::MemoryBankFileAttachmentPtr>
           files,
       CopyAttachmentsToClipboardCallback callback) override;
+  void StartSkillRecording() override;
+  void StopSkillRecording(StopSkillRecordingCallback callback) override;
 
  private:
   // Gathers the Topics, history visits since `window_start`, unresolvable
