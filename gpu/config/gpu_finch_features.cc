@@ -556,13 +556,6 @@ bool IsSkiaGraphiteSupportedByDevice() {
 #if BUILDFLAG(IS_APPLE)
   return UsePassthroughCommandDecoder();
 #elif BUILDFLAG(IS_ANDROID)
-  // Desktop Android isn't ready to pick up the fieldtrial_testing_config.json
-  // change that enables graphite. However, it's the same platform as regular
-  // Android and does. Skip enabling the feature there for now.
-  if (base::android::device_info::is_desktop()) {
-    return false;
-  }
-
   // Graphite on Android uses the Dawn Vulkan backend. Only enable Graphite if
   // device would already be using Ganesh/Vulkan.
   return IsUsingVulkan();
