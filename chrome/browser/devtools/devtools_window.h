@@ -611,6 +611,9 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   raw_ptr<Throttle> throttle_ = nullptr;
   bool open_new_window_for_popups_ = false;
   raw_ptr<infobars::InfoBar> sharing_infobar_ = nullptr;
+  // Whether `sharing_infobar_` was created by `infobars::BrowserInfoBarManager`
+  // rather than `ProcessSharingInfobarDelegate`.
+  bool is_sharing_infobar_migrated_ = false;
   int checked_sharing_process_id_ = content::ChildProcessHost::kInvalidUniqueID;
 
 #if BUILDFLAG(IS_ANDROID)

@@ -168,6 +168,8 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -5689,6 +5691,71 @@ IN_PROC_BROWSER_TEST_P(DevToolsProcessPerSiteTest,
   ASSERT_EQ(undocked_infobar_manager->infobars().size(), 1u);
   ASSERT_EQ(undocked_infobar_manager->infobars()[0]->GetIdentifier(),
             infobars::InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE);
+
+  // Accepting the infobar in the undocked DevTools window must parent the
+  // restart dialog to the inspected browser window, not the DevTools window.
+  views::NamedWidgetShownWaiter dialog_waiter(
+      views::test::AnyWidgetTestPasskey{}, "ProcessSharingAppRestart");
+  auto* confirm_delegate = undocked_infobar_manager->infobars()[0]
+                               ->delegate()
+                               ->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(confirm_delegate);
+  confirm_delegate->Accept();
+  views::Widget* dialog_widget = dialog_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(dialog_widget);
+  EXPECT_EQ(dialog_widget->parent(), views::Widget::GetWidgetForNativeWindow(
+                                         browser1->GetTabStripModel()
+                                             ->GetActiveWebContents()
+                                             ->GetTopLevelNativeWindow()));
+  dialog_widget->CloseWithReason(
+      views::Widget::ClosedReason::kCancelButtonClicked);
+  DevToolsWindowTesting::CloseDevToolsWindowSync(window);
+}
+
+IN_PROC_BROWSER_TEST_P(DevToolsProcessPerSiteTest,
+                       TablessInspectedWebContentsFallback) {
+  const GURL url = embedded_test_server()->GetURL("foo.test", "/hello.html");
+
+  BrowserWindowInterface* browser1 = CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, url));
+
+  // Create a tabless WebContents (no tabs::TabInterface) that shares the
+  // renderer process with `browser1`'s tab.
+  std::unique_ptr<content::WebContents> tabless_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  infobars::ContentInfoBarManager::CreateForWebContents(tabless_contents.get());
+  ASSERT_TRUE(content::NavigateToURL(tabless_contents.get(), url));
+  ASSERT_EQ(tabs::TabInterface::MaybeGetFromContents(tabless_contents.get()),
+            nullptr);
+  ASSERT_EQ(browser1->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetPrimaryMainFrame()
+                ->GetProcess(),
+            tabless_contents->GetPrimaryMainFrame()->GetProcess());
+
+  // Trigger PrimaryPageChanged while DevToolsWindow is still in its initial
+  // docked state on the tabless WebContents (before ScheduleShow switches it to
+  // undocked), exercising the legacy fallback in MaybeShowSharedProcessInfobar
+  // and subsequent cleanup in RemoveSharingInfoBar.
+  DevToolsWindowCreationObserver creation_observer(
+      base::BindLambdaForTesting([&](DevToolsWindow* devtools_window) {
+        static_cast<content::WebContentsObserver*>(devtools_window)
+            ->PrimaryPageChanged(tabless_contents->GetPrimaryPage());
+      }));
+
+  DevToolsWindow::OpenDevToolsWindow(tabless_contents.get(),
+                                     DevToolsOpenedByAction::kUnknown);
+  DevToolsWindow* window = creation_observer.devtools_window();
+  ASSERT_TRUE(window);
+  auto* tabless_infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(tabless_contents.get());
+  ASSERT_EQ(tabless_infobar_manager->infobars().size(), 1u);
+  EXPECT_EQ(tabless_infobar_manager->infobars()[0]->GetIdentifier(),
+            infobars::InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE);
+
+  DevToolsWindowTesting::CloseDevToolsWindowSync(window);
+  EXPECT_EQ(tabless_infobar_manager->infobars().size(), 0u);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

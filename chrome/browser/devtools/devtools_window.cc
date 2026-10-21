@@ -37,6 +37,7 @@
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_features.h"
+#include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/policy/chrome_policy_blocklist_service_factory.h"
 #include "chrome/browser/policy/developer_tools_policy_checker.h"
 #include "chrome/browser/policy/developer_tools_policy_checker_factory.h"
@@ -2250,16 +2251,29 @@ void DevToolsWindow::MaybeShowSharedProcessInfobar() {
           is_docked_ ? inspected_web_contents : main_web_contents_.get());
     }
 
-    if (tab) {
+    is_sharing_infobar_migrated_ = !!tab;
+    if (is_sharing_infobar_migrated_) {
       RegisterProcessSharingInfoBarSpec(*browser_infobar_manager);
+      infobars::InfoBarShowParams params;
+      params.ok_button_callback = base::BindRepeating(
+          [](base::WeakPtr<content::WebContents> inspected_web_contents,
+             content::WebContents*) {
+            if (inspected_web_contents) {
+              ShowProcessSharingRestartDialog(inspected_web_contents.get());
+            }
+          },
+          inspected_web_contents->GetWeakPtr());
       sharing_infobar_ = browser_infobar_manager->Show(
-          tab, infobars::InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE);
-    } else {
-      sharing_infobar_ = GetInfoBarManager()->AddInfoBar(
+          tab, infobars::InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE,
+          std::move(params));
+    } else if (auto* infobar_manager = GetInfoBarManager()) {
+      sharing_infobar_ = infobar_manager->AddInfoBar(
           CreateConfirmInfoBar(std::make_unique<ProcessSharingInfobarDelegate>(
               inspected_web_contents)));
     }
-    GetInfoBarManager()->AddObserver(this);
+    if (sharing_infobar_) {
+      sharing_infobar_->owner()->AddObserver(this);
+    }
 #else
     NOTIMPLEMENTED();
 #endif
@@ -2272,11 +2286,13 @@ void DevToolsWindow::RemoveSharingInfoBar() {
     return;
   }
 
-  auto* browser_infobar_manager =
-      infobars::BrowserInfoBarManager::From(g_browser_process);
-  if (browser_infobar_manager &&
-      infobars::IsInfoBarMigrated(
-          infobars::InfoBarDelegate::DEV_TOOLS_SHARED_PROCESS_DELEGATE)) {
+  // Dispatch on how the infobar was created, not on the feature state: a
+  // migrated prompt for a tabless WebContents falls back to the legacy
+  // delegate, which Hide() must not be handed.
+  if (is_sharing_infobar_migrated_) {
+    auto* browser_infobar_manager =
+        infobars::BrowserInfoBarManager::From(g_browser_process);
+    CHECK(browser_infobar_manager);
     browser_infobar_manager->Hide(sharing_infobar_.get());
   } else {
     sharing_infobar_->RemoveSelf();
@@ -2303,6 +2319,7 @@ void DevToolsWindow::OnInfoBarRemoved(infobars::InfoBar* infobar,
   if (sharing_infobar_ == infobar) {
     infobar->owner()->RemoveObserver(this);
     sharing_infobar_ = nullptr;
+    is_sharing_infobar_migrated_ = false;
   }
 }
 

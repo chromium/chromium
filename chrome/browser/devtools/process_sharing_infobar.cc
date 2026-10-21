@@ -28,6 +28,9 @@ namespace {
 
 void OptOutAndRestart(base::WeakPtr<content::WebContents> web_contents) {
 #if BUILDFLAG(IS_CHROMEOS)
+  if (!web_contents) {
+    return;
+  }
   PrefService* prefs =
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetPrefs();
