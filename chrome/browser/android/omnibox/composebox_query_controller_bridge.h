@@ -42,7 +42,6 @@ class ComposeboxQueryControllerBridge
       Profile* profile,
       content::WebContents* web_contents);
   ~ComposeboxQueryControllerBridge() override;
-  void Destroy();
   void NotifySessionStarted();
   void NotifySessionAbandoned();
   std::string AddFile(JNIEnv* env,

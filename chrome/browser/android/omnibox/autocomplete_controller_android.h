@@ -97,7 +97,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
 
   // Pass an instance of the ComposeboxQueryControllerBridge to improve Suggest.
   void SetComposeboxQueryControllerBridge(
-      uintptr_t composebox_controller_bridge_ptr);
+      ComposeboxQueryControllerBridge* composebox_controller_bridge);
 
   // Pass detected voice matches down to VoiceSuggestionsProvider.
   void SetVoiceMatches(const std::vector<std::u16string>& voice_matches,

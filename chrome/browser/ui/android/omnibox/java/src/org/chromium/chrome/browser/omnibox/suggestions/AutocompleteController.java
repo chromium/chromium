@@ -8,6 +8,7 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -17,6 +18,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
+import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge.NativeComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionIntentHandler.VoiceResult;
 import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -369,7 +371,7 @@ public class AutocompleteController {
         if (mNativeController == 0) return;
         AutocompleteControllerJni.get()
                 .setComposeboxQueryControllerBridge(
-                        mNativeController, bridge == null ? 0L : bridge.getNativeInstance());
+                        mNativeController, bridge == null ? null : bridge.getNativeInstance());
     }
 
     /**
@@ -528,7 +530,8 @@ public class AutocompleteController {
 
         void setComposeboxQueryControllerBridge(
                 long nativeAutocompleteControllerAndroid,
-                long nativeComposeboxQueryControllerBridge);
+                @Nullable JniPtr<NativeComposeboxQueryControllerBridge>
+                        composeboxQueryControllerBridge);
 
         void setVoiceMatches(
                 long nativeAutocompleteControllerAndroid,

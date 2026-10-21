@@ -520,16 +520,14 @@ void AutocompleteControllerAndroid::EnsureFactoryBuilt() {
 }
 
 void AutocompleteControllerAndroid::SetComposeboxQueryControllerBridge(
-    uintptr_t composebox_controller_ptr) {
-  if (!composebox_controller_ptr) {
+    ComposeboxQueryControllerBridge* composebox_controller_bridge) {
+  if (!composebox_controller_bridge) {
     composebox_query_controller_bridge_.reset();
     return;
   }
 
   composebox_query_controller_bridge_ =
-      reinterpret_cast<ComposeboxQueryControllerBridge*>(
-          composebox_controller_ptr)
-          ->AsWeakPtr();
+      composebox_controller_bridge->AsWeakPtr();
 }
 
 void AutocompleteControllerAndroid::SetVoiceMatches(
