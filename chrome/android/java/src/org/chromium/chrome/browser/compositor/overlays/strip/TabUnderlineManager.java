@@ -6,11 +6,16 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksBridge;
 import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -23,6 +28,9 @@ import java.util.Set;
 @JNINamespace("android")
 @NullMarked
 public class TabUnderlineManager {
+    @JniType("::android::TabUnderlineManager")
+    public interface NativeTabUnderlineManager extends JniTypeToken {}
+
     /** An observer for tab underline state changes across Android UI surfaces. */
     public interface Observer {
         /**
@@ -46,7 +54,7 @@ public class TabUnderlineManager {
     private final Callback<ContextualTasksBridge> mContextualTasksBridgeObserver;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    private long mNativePtr;
+    private @Nullable JniUniquePtr<NativeTabUnderlineManager> mNativePtr;
     private boolean mContextualTasksBridgeInitialized;
 
     public TabUnderlineManager(WindowAndroid windowAndroid) {
@@ -87,9 +95,9 @@ public class TabUnderlineManager {
             ContextualTasksBridge.getSupplier(mWindowAndroid)
                     .removeObserver(mContextualTasksBridgeObserver);
         }
-        if (mNativePtr != 0) {
-            TabUnderlineManagerJni.get().destroy(mNativePtr);
-            mNativePtr = 0;
+        if (mNativePtr != null) {
+            mNativePtr.destroy();
+            mNativePtr = null;
         }
     }
 
@@ -105,7 +113,7 @@ public class TabUnderlineManager {
 
     /** Track a tab in the native manager. */
     public void registerTab(Tab tab) {
-        if (mNativePtr == 0) return;
+        if (mNativePtr == null) return;
         if (!mContextualTasksBridgeInitialized) {
             mTabsPendingContextualTasksBridge.add(tab);
             return;
@@ -115,7 +123,7 @@ public class TabUnderlineManager {
 
     /** Stop tracking a tab. */
     public void unregisterTab(int tabId) {
-        if (mNativePtr == 0) return;
+        if (mNativePtr == null) return;
         mTabsPendingContextualTasksBridge.removeIf(tab -> tab.getId() == tabId);
         if (mContextualTasksBridgeInitialized) {
             TabUnderlineManagerJni.get().unregisterTab(mNativePtr, tabId);
@@ -138,12 +146,10 @@ public class TabUnderlineManager {
 
     @NativeMethods
     interface Natives {
-        long init(TabUnderlineManager caller);
+        JniUniquePtr<NativeTabUnderlineManager> init(TabUnderlineManager caller);
 
-        void destroy(long nativeTabUnderlineManager);
+        void registerTab(JniPtr<NativeTabUnderlineManager> self, Tab tab);
 
-        void registerTab(long nativeTabUnderlineManager, Tab tab);
-
-        void unregisterTab(long nativeTabUnderlineManager, int tabId);
+        void unregisterTab(JniPtr<NativeTabUnderlineManager> self, int tabId);
     }
 }

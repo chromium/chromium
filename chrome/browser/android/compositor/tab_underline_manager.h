@@ -23,9 +23,6 @@ class TabUnderlineManager {
   TabUnderlineManager(const TabUnderlineManager&) = delete;
   TabUnderlineManager& operator=(const TabUnderlineManager&) = delete;
 
-  // Destroy the native manager.
-  void Destroy(JNIEnv* env);
-
   // Register a tab to be tracked for underlines.
   void RegisterTab(JNIEnv* env, const jni_zero::JavaRef<jobject>& jtab);
 

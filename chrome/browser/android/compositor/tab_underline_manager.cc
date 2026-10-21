@@ -59,10 +59,6 @@ TabUnderlineManager::TabIndicatorContext::TabIndicatorContext(
     std::unique_ptr<UiDelegateImpl> d)
     : delegate(std::move(d)), controller(std::move(c)) {}
 
-void TabUnderlineManager::Destroy(JNIEnv* env) {
-  delete this;
-}
-
 void TabUnderlineManager::RegisterTab(JNIEnv* env,
                                       const jni_zero::JavaRef<jobject>& jtab) {
   // TODO(crbug.com/500128552): Maybe switch to the UserDataHost pattern instead
@@ -106,10 +102,10 @@ void TabUnderlineManager::ResetAnimationCycle(int tab_id) {
   Java_TabUnderlineManager_resetAnimationCycle(env, java_obj_, tab_id);
 }
 
-static int64_t JNI_TabUnderlineManager_Init(
+static jni_zero::JniUniquePtr<TabUnderlineManager> JNI_TabUnderlineManager_Init(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& obj) {
-  return reinterpret_cast<intptr_t>(new TabUnderlineManager(env, obj));
+  return jni_zero::MakeUnique<TabUnderlineManager>(env, obj);
 }
 
 }  // namespace android

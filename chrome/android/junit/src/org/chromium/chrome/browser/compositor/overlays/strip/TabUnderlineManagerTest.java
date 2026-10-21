@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
@@ -15,6 +14,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,11 +47,11 @@ public class TabUnderlineManagerTest {
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
+    @Mock private JniUniquePtr<TabUnderlineManager.NativeTabUnderlineManager> mNativePtr;
 
     private final UnownedUserDataHost mUserDataHost = new UnownedUserDataHost();
     private TabUnderlineManager mManager;
 
-    private static final long NATIVE_PTR = 12345L;
     private static final int TAB_ID_1 = 1;
     private static final int TAB_ID_2 = 2;
     private static final int TAB_ID_3 = 3;
@@ -59,7 +59,7 @@ public class TabUnderlineManagerTest {
     @Before
     public void setUp() {
         TabUnderlineManagerJni.setInstanceForTesting(mMockJni);
-        when(mMockJni.init(any())).thenReturn(NATIVE_PTR);
+        when(mMockJni.init(any())).thenReturn(mNativePtr);
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUserDataHost);
         when(mTab1.getId()).thenReturn(TAB_ID_1);
         when(mTab2.getId()).thenReturn(TAB_ID_2);
@@ -80,10 +80,10 @@ public class TabUnderlineManagerTest {
         verify(mMockJni).init(mManager);
 
         mManager.registerTab(mTab1);
-        verify(mMockJni).registerTab(NATIVE_PTR, mTab1);
+        verify(mMockJni).registerTab(mNativePtr, mTab1);
 
         mManager.unregisterTab(TAB_ID_1);
-        verify(mMockJni).unregisterTab(NATIVE_PTR, TAB_ID_1);
+        verify(mMockJni).unregisterTab(mNativePtr, TAB_ID_1);
     }
 
     @Test
@@ -92,15 +92,15 @@ public class TabUnderlineManagerTest {
 
         mManager.registerTab(mTab1);
         mManager.registerTab(mTab2);
-        verify(mMockJni, never()).registerTab(anyLong(), any());
+        verify(mMockJni, never()).registerTab(any(), any());
 
         simulateContextualTasksBridgeReady();
 
-        verify(mMockJni).registerTab(NATIVE_PTR, mTab1);
-        verify(mMockJni).registerTab(NATIVE_PTR, mTab2);
+        verify(mMockJni).registerTab(mNativePtr, mTab1);
+        verify(mMockJni).registerTab(mNativePtr, mTab2);
 
         mManager.registerTab(mTab3);
-        verify(mMockJni).registerTab(NATIVE_PTR, mTab3);
+        verify(mMockJni).registerTab(mNativePtr, mTab3);
     }
 
     @Test
@@ -109,12 +109,12 @@ public class TabUnderlineManagerTest {
         mManager.registerTab(mTab2);
         mManager.unregisterTab(TAB_ID_1);
 
-        verify(mMockJni, never()).unregisterTab(anyLong(), anyInt());
+        verify(mMockJni, never()).unregisterTab(any(), anyInt());
 
         simulateContextualTasksBridgeReady();
 
-        verify(mMockJni).registerTab(NATIVE_PTR, mTab2);
-        verify(mMockJni, never()).registerTab(eq(NATIVE_PTR), eq(mTab1));
+        verify(mMockJni).registerTab(mNativePtr, mTab2);
+        verify(mMockJni, never()).registerTab(eq(mNativePtr), eq(mTab1));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class TabUnderlineManagerTest {
     @Test
     public void testDestroy() {
         mManager.destroy();
-        verify(mMockJni).destroy(NATIVE_PTR);
+        verify(mNativePtr).destroy();
 
         // Verify observers are cleared after destroy.
         mManager.setUnderlineState(TAB_ID_1, /* isUnderlined= */ true);
@@ -150,12 +150,12 @@ public class TabUnderlineManagerTest {
 
         // Verify double destroy is safe.
         mManager.destroy();
-        verify(mMockJni, times(1)).destroy(NATIVE_PTR);
+        verify(mNativePtr, times(1)).destroy();
 
         // Verify registering tab after destroy does nothing.
         clearInvocations(mMockJni);
         mManager.registerTab(mTab1);
-        verify(mMockJni, never()).registerTab(anyLong(), any());
+        verify(mMockJni, never()).registerTab(any(), any());
     }
 
     private void simulateContextualTasksBridgeReady() {
