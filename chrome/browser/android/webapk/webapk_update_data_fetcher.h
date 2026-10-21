@@ -27,7 +27,7 @@ struct InstallableData;
 
 // WebApkUpdateDataFetcher is the C++ counterpart of
 // org.chromium.chrome.browser's WebApkUpdateDataFetcher in Java. It is created
-// via a JNI (Initialize) call and MUST BE DESTROYED via Destroy().
+// via a JNI (Initialize) call and is destroyed by Java through JniUniquePtr.
 class WebApkUpdateDataFetcher : public content::WebContentsObserver {
  public:
   WebApkUpdateDataFetcher(JNIEnv* env,
@@ -40,21 +40,18 @@ class WebApkUpdateDataFetcher : public content::WebContentsObserver {
   WebApkUpdateDataFetcher(const WebApkUpdateDataFetcher&) = delete;
   WebApkUpdateDataFetcher& operator=(const WebApkUpdateDataFetcher&) = delete;
 
+  ~WebApkUpdateDataFetcher() override;
+
   // Replaces the WebContents that is being observed.
   void ReplaceWebContents(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& java_web_contents);
-
-  // Called by the Java counterpart to destroy its native half.
-  void Destroy(JNIEnv* env);
 
   // Called by the Java counterpart to start checking web manifest changes.
   void Start(JNIEnv* env,
              const base::android::JavaRef<jobject>& java_web_contents);
 
  private:
-  ~WebApkUpdateDataFetcher() override;
-
   // content::WebContentsObserver:
   void DidStopLoading() override;
 
