@@ -53,23 +53,6 @@ export class OrganizerListElement extends CrLitElement {
     this.allSectionsHidden_ =
         sections.length > 0 && sections.every(s => s.hidden);
   }
-
-  areAllSectionsExpanded(): boolean {
-    const sections = this.getSections_();
-    return sections.length > 0 && sections.every(s => s.expanded);
-  }
-
-  expandAll() {
-    for (const section of this.getSections_()) {
-      section.setExpanded(true);
-    }
-  }
-
-  collapseAll() {
-    for (const section of this.getSections_()) {
-      section.setExpanded(false);
-    }
-  }
 }
 
 declare global {

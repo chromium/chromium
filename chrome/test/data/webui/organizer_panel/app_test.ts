@@ -7,7 +7,6 @@ import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerPanelAppElement, OrganizerPanelPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {browserProxyFactory, foreignTabsBrowserProxyFactory, ForeignTabsPageHandlerRemote, organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, PageHandlerRemote, RecentTabsDelegate, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {isMac} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -29,15 +28,11 @@ suite('OrganizerPanelAppTest', () => {
       cjkWordBoundaryEnabled: false,
       clearSearch: 'Clear search',
       closeTab: 'Close tab',
-      closeTabSearch: isMac ? 'Close Tab Search' : 'Close tab search',
       collapse: 'Collapse',
-      collapseAll: isMac ? 'Collapse All' : 'Collapse all',
       createTabGroup: 'Create tab group',
       currentlyPlaying: 'Currently playing',
       expand: 'Expand',
-      expandAll: isMac ? 'Expand All' : 'Expand all',
       foreignTabsEnabled: false,
-      goBackToOpenTabs: isMac ? 'Go Back to Open Tabs' : 'Go back to open tabs',
       isIncognitoMode: false,
       noRecentlyClosedTabs: 'No recently closed tabs',
       noResults: 'No results',
@@ -234,204 +229,45 @@ suite('OrganizerPanelAppTest', () => {
     assertEquals(listRect.bottom, dragRegionRect.top);
   });
 
-  test('right clicking app shows context menu', async () => {
-    assertFalse(app.$.menu.open);
+  test(
+      'right clicking app prevents default and does not show context menu',
+      async () => {
+        const event = new MouseEvent('contextmenu', {
+          bubbles: true,
+          cancelable: true,
+          clientX: 50,
+          clientY: 100,
+        });
+        window.dispatchEvent(event);
+        await microtasksFinished();
 
-    const event = new MouseEvent('contextmenu', {
-      bubbles: true,
-      cancelable: true,
-      clientX: 50,
-      clientY: 100,
-    });
-    app.dispatchEvent(event);
-    await microtasksFinished();
-
-    assertTrue(event.defaultPrevented);
-    assertTrue(app.$.menu.open);
-
-    const expandAllButton =
-        app.$.menu.querySelector<HTMLButtonElement>('#expandAllButton');
-    assertTrue(!!expandAllButton);
-    assertEquals(
-        isMac ? 'Expand All' : 'Expand all',
-        expandAllButton.textContent.trim());
-
-    const closeButton =
-        app.$.menu.querySelector<HTMLButtonElement>('#closeTabSearchButton');
-    assertTrue(!!closeButton);
-    assertEquals(
-        isMac ? 'Close Tab Search' : 'Close tab search',
-        closeButton.textContent.trim());
-
-    remotePage.onVerticalTabsEnabledChanged(true);
-    await microtasksFinished();
-    assertEquals(
-        isMac ? 'Go Back to Open Tabs' : 'Go back to open tabs',
-        closeButton.textContent.trim());
-
-    remotePage.onVerticalTabsEnabledChanged(false);
-    await microtasksFinished();
-    assertEquals(
-        isMac ? 'Close Tab Search' : 'Close tab search',
-        closeButton.textContent.trim());
-  });
-
-  test('right clicking drag region does not show menu', async () => {
-    const event = new MouseEvent('contextmenu', {
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-      clientX: 50,
-      clientY: 100,
-    });
-    app.$.dragRegion.dispatchEvent(event);
-    await microtasksFinished();
-
-    assertTrue(event.defaultPrevented);
-    assertFalse(app.$.menu.open);
-  });
+        assertTrue(event.defaultPrevented);
+      });
 
   test(
-      'clicking expand all in context menu calls expandAll on list',
-      async () => {
-        let expandAllCalled = false;
-        app.$.list.expandAll = () => {
-          expandAllCalled = true;
+      'right clicking item without context menu prevents default', async () => {
+        const item = {
+          title: ['Open Tab'],
         };
+        const listSection =
+            app.$.list.shadowRoot.querySelector('organizer-list-section')!;
+        listSection.items = [item];
+        await microtasksFinished();
 
-        app.dispatchEvent(new MouseEvent('contextmenu', {
+        const listItem = listSection.shadowRoot.querySelector(
+            'organizer-list-section-item')!;
+        const event = new MouseEvent('contextmenu', {
           bubbles: true,
           cancelable: true,
+          composed: true,
           clientX: 50,
           clientY: 100,
-        }));
-        await microtasksFinished();
-        assertTrue(app.$.menu.open);
-
-        const expandAllButton =
-            app.$.menu.querySelector<HTMLButtonElement>('#expandAllButton')!;
-        expandAllButton.click();
+        });
+        listItem.$.crUrlListItem.dispatchEvent(event);
         await microtasksFinished();
 
-        assertTrue(expandAllCalled);
-        assertFalse(app.$.menu.open);
+        assertTrue(event.defaultPrevented);
       });
-
-  test(
-      'shows collapse all in context menu when all sections are expanded and ' +
-          'clicking it calls collapseAll on list',
-      async () => {
-        app.$.list.expandAll();
-        await microtasksFinished();
-
-        let collapseAllCalled = false;
-        app.$.list.collapseAll = () => {
-          collapseAllCalled = true;
-        };
-
-        app.dispatchEvent(new MouseEvent('contextmenu', {
-          bubbles: true,
-          cancelable: true,
-          clientX: 50,
-          clientY: 100,
-        }));
-        await microtasksFinished();
-        assertTrue(app.$.menu.open);
-
-        assertEquals(
-            null,
-            app.$.menu.querySelector<HTMLButtonElement>('#expandAllButton'));
-        const collapseAllButton =
-            app.$.menu.querySelector<HTMLButtonElement>('#collapseAllButton');
-        assertTrue(!!collapseAllButton);
-        assertEquals(
-            isMac ? 'Collapse All' : 'Collapse all',
-            collapseAllButton.textContent.trim());
-
-        collapseAllButton.click();
-        await microtasksFinished();
-
-        assertTrue(collapseAllCalled);
-        assertFalse(app.$.menu.open);
-      });
-
-  test(
-      'disables expand and collapse all in context menu when search is active',
-      async () => {
-        const expandAllButton =
-            app.$.menu.querySelector<HTMLButtonElement>('#expandAllButton')!;
-        assertFalse(expandAllButton.disabled);
-
-        app.$.searchField.setValue('test search');
-        await microtasksFinished();
-        assertTrue(expandAllButton.disabled);
-
-        app.$.searchField.setValue('');
-        await microtasksFinished();
-        assertFalse(expandAllButton.disabled);
-
-        app.$.list.expandAll();
-        app.dispatchEvent(new MouseEvent('contextmenu', {
-          bubbles: true,
-          cancelable: true,
-          clientX: 50,
-          clientY: 100,
-        }));
-        await microtasksFinished();
-
-        const collapseAllButton =
-            app.$.menu.querySelector<HTMLButtonElement>('#collapseAllButton')!;
-        assertFalse(collapseAllButton.disabled);
-
-        app.$.searchField.setValue('test search');
-        await microtasksFinished();
-        assertTrue(collapseAllButton.disabled);
-
-        app.$.searchField.setValue('');
-        await microtasksFinished();
-        assertFalse(collapseAllButton.disabled);
-      });
-
-  test(
-      'clicking close tab search in context menu calls closePanel',
-      async () => {
-        app.dispatchEvent(new MouseEvent('contextmenu', {
-          bubbles: true,
-          cancelable: true,
-          clientX: 50,
-          clientY: 100,
-        }));
-        await microtasksFinished();
-        assertTrue(app.$.menu.open);
-
-        const closeButton = app.$.menu.querySelector<HTMLButtonElement>(
-            '#closeTabSearchButton')!;
-        closeButton.click();
-        await microtasksFinished();
-
-        assertEquals(1, mockOrganizerPanelHandler.getCallCount('closePanel'));
-        assertFalse(app.$.menu.open);
-      });
-
-  test('captured contextmenu does not show app context menu', async () => {
-    assertFalse(app.$.menu.open);
-
-    const child = document.createElement('div');
-    app.appendChild(child);
-    child.addEventListener('contextmenu', (e) => {
-      e.stopPropagation();
-    });
-
-    child.dispatchEvent(new MouseEvent('contextmenu', {
-      bubbles: true,
-      cancelable: true,
-      clientX: 50,
-      clientY: 100,
-    }));
-    await microtasksFinished();
-
-    assertFalse(app.$.menu.open);
-  });
 
   test('resets search query and scroll position on hidden', async () => {
     app.style.height = '100px';

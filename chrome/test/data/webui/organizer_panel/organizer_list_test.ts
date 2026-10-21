@@ -136,39 +136,4 @@ suite('OrganizerListTest', () => {
         assertTrue(isVisible(dividers[0]!));
         assertTrue(isVisible(dividers[1]!));
       });
-
-  test(
-      'expandAll, collapseAll, and areAllSectionsExpanded update section states',
-      async () => {
-        list.sectionDelegates = [
-          new TestSectionDelegate('Section 1'),
-          new TestSectionDelegate('Section 2'),
-        ];
-        await microtasksFinished();
-
-        const sections =
-            list.shadowRoot.querySelectorAll('organizer-list-section');
-        assertEquals(2, sections.length);
-        assertTrue(sections[0]!.expanded);
-        assertTrue(sections[1]!.expanded);
-        assertTrue(list.areAllSectionsExpanded());
-
-        sections[0]!.setExpanded(false);
-        await microtasksFinished();
-        assertFalse(sections[0]!.expanded);
-        assertTrue(sections[1]!.expanded);
-        assertFalse(list.areAllSectionsExpanded());
-
-        list.expandAll();
-        await microtasksFinished();
-        assertTrue(sections[0]!.expanded);
-        assertTrue(sections[1]!.expanded);
-        assertTrue(list.areAllSectionsExpanded());
-
-        list.collapseAll();
-        await microtasksFinished();
-        assertFalse(sections[0]!.expanded);
-        assertFalse(sections[1]!.expanded);
-        assertFalse(list.areAllSectionsExpanded());
-      });
 });
