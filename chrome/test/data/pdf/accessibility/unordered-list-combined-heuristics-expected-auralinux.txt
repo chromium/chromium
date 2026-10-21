@@ -4,13 +4,13 @@
 ++++++[static] name='Introductory paragraph line one. Introductory paragraph line two. '
 ++++[list]
 ++++++[list item]
-++++++++[static]
+++++++++[static] name='• '
 ++++++++[static] name='First list item line one. First list item line two. '
 ++++++[list item]
-++++++++[static]
+++++++++[static] name='• '
 ++++++++[static] name='Second list item. '
 ++++++[list item]
-++++++++[static]
+++++++++[static] name='• '
 ++++++++[static] name='Third list item. '
 ++++[paragraph]
 ++++++[static] name='Trailing paragraph after list.'

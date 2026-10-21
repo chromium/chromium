@@ -254,8 +254,10 @@ void CheckParagraph(const ui::AXNode* node, std::string_view expected_text) {
             static_text->GetStringAttribute(ax::mojom::StringAttribute::kName));
 }
 
-void CheckUnorderedList(const ui::AXNode* list,
-                        base::span<const std::string_view> expected_items) {
+void CheckUnorderedList(
+    const ui::AXNode* list,
+    base::span<const std::string_view> expected_items,
+    base::span<const std::string_view> expected_marker_names) {
   ASSERT_NE(nullptr, list);
   EXPECT_EQ(ax::mojom::Role::kList, list->GetRole());
   EXPECT_EQ("ul",
@@ -263,6 +265,7 @@ void CheckUnorderedList(const ui::AXNode* list,
   EXPECT_TRUE(
       list->GetBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject));
   ASSERT_EQ(expected_items.size(), list->GetChildCount());
+  ASSERT_EQ(expected_items.size(), expected_marker_names.size());
 
   for (size_t i = 0; i < expected_items.size(); ++i) {
     const ui::AXNode* item = list->GetChildAtIndex(i);
@@ -279,8 +282,8 @@ void CheckUnorderedList(const ui::AXNode* list,
     EXPECT_EQ(ax::mojom::Role::kListMarker, marker->GetRole());
     EXPECT_EQ("::marker",
               marker->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag));
-    EXPECT_TRUE(
-        marker->GetStringAttribute(ax::mojom::StringAttribute::kName).empty());
+    EXPECT_EQ(expected_marker_names[i],
+              marker->GetStringAttribute(ax::mojom::StringAttribute::kName));
     EXPECT_EQ(0u, marker->GetChildCount());
     EXPECT_FALSE(marker->data().relative_bounds.bounds.IsEmpty());
 
@@ -293,6 +296,14 @@ void CheckUnorderedList(const ui::AXNode* list,
     EXPECT_EQ(ax::mojom::Role::kInlineTextBox,
               item_static_text->GetChildAtIndex(0u)->GetRole());
   }
+}
+
+void CheckUnorderedList(const ui::AXNode* list,
+                        base::span<const std::string_view> expected_items,
+                        std::string_view expected_marker_name) {
+  std::vector<std::string_view> marker_names(expected_items.size(),
+                                             expected_marker_name);
+  CheckUnorderedList(list, expected_items, marker_names);
 }
 
 // This class overrides PdfAccessibilityActionHandler to record received
@@ -5109,9 +5120,9 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedList) {
   ASSERT_EQ(2u, page->GetChildCount());
 
   CheckParagraph(page->GetChildAtIndex(0u), "Shopping list:");
-  CheckUnorderedList(
-      page->GetChildAtIndex(1u),
-      {"Apples", "Bananas", "Cherries", "Dates", "Elderberries"});
+  CheckUnorderedList(page->GetChildAtIndex(1u),
+                     {"Apples", "Bananas", "Cherries", "Dates", "Elderberries"},
+                     {"• ", "● ", "• ", "▪ ", "○ "});
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByLargeGap) {
@@ -5135,7 +5146,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByLargeGap) {
   ASSERT_EQ(2u, page->GetChildCount());
 
   CheckUnorderedList(page->GetChildAtIndex(0u),
-                     {"First item line 1First item line 2", "Second item"});
+                     {"First item line 1First item line 2", "Second item"},
+                     "• ");
   CheckParagraph(page->GetChildAtIndex(1u), "Following paragraph");
 }
 
@@ -5155,7 +5167,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListTerminatedByOutdent) {
   ASSERT_NE(nullptr, page);
   ASSERT_EQ(2u, page->GetChildCount());
 
-  CheckUnorderedList(page->GetChildAtIndex(0u), {"Indented item"});
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Indented item"}, "• ");
   CheckParagraph(page->GetChildAtIndex(1u), "Outdented paragraph");
 }
 
@@ -5177,7 +5189,7 @@ TEST_F(PdfAccessibilityTreeTest,
   ASSERT_NE(nullptr, page);
   ASSERT_EQ(1u, page->GetChildCount());
 
-  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2"});
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2"}, "• ");
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListMixedMarkerRuns) {
@@ -5198,7 +5210,8 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListMixedMarkerRuns) {
   ASSERT_NE(nullptr, page);
   ASSERT_EQ(1u, page->GetChildCount());
 
-  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2", "Item 3"});
+  CheckUnorderedList(page->GetChildAtIndex(0u), {"Item 1", "Item 2", "Item 3"},
+                     "• ");
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListCombinedRuns) {
@@ -5220,7 +5233,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListCombinedRuns) {
 
   CheckParagraph(page->GetChildAtIndex(0u), "Preceding paragraph");
   const ui::AXNode* list = page->GetChildAtIndex(1u);
-  CheckUnorderedList(list, {"Alpha", "Beta", "Gamma"});
+  CheckUnorderedList(list, {"Alpha", "Beta", "Gamma"}, "• ");
 
   for (size_t i = 0; i < 3; ++i) {
     const ui::AXNode* item = list->GetChildAtIndex(i);
@@ -5258,7 +5271,35 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListCombinedRunWrapsLine) {
   ASSERT_EQ(1u, page->GetChildCount());
 
   CheckUnorderedList(page->GetChildAtIndex(0u),
-                     {"First item line 1First item line 2", "Second"});
+                     {"First item line 1First item line 2", "Second"}, "• ");
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicUnorderedListPrivateUseMarkerNames) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  const ui::AXNode* page = SetUpUniformHeuristicPage(
+      {"\uF0B7", "Symbol item", "\uF0A7", "Wingdings item", "●",
+       "Black circle item", "\xEF\x82\xB7 Combined item"},
+      {
+          gfx::RectF(30.0f, 44.0f, 4.0f, 4.0f),    // U+F0B7 marker
+          gfx::RectF(45.0f, 40.0f, 80.0f, 12.0f),  // "Symbol item"
+          gfx::RectF(30.0f, 57.0f, 4.0f, 4.0f),    // U+F0A7 marker
+          gfx::RectF(45.0f, 53.0f, 80.0f, 12.0f),  // "Wingdings item"
+          gfx::RectF(30.0f, 70.0f, 4.0f, 4.0f),    // ● marker
+          gfx::RectF(45.0f, 66.0f, 80.0f, 12.0f),  // "Black circle item"
+          gfx::RectF(30.0f, 79.0f, 120.0f,
+                     12.0f),  // "\xEF\x82\xB7 Combined item"
+      });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+
+  CheckUnorderedList(
+      page->GetChildAtIndex(0u),
+      {"Symbol item", "Wingdings item", "Black circle item", "Combined item"},
+      {"• ", "▪ ", "● ", "• "});
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeuristicMidLineBulletNotList) {
@@ -5678,7 +5719,7 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicSortBlockNodesMovesListAsOneBlock) {
   ASSERT_EQ(3u, page->GetChildCount());
 
   CheckParagraph(page->GetChildAtIndex(0u), "Intro");
-  CheckUnorderedList(page->GetChildAtIndex(1u), {"Item 1", "Item 2"});
+  CheckUnorderedList(page->GetChildAtIndex(1u), {"Item 1", "Item 2"}, "• ");
   CheckParagraph(page->GetChildAtIndex(2u), "Closing");
 }
 

@@ -6,16 +6,16 @@ pdfRoot name='PDF document containing 1 page' restriction=readOnly
 ++++++++inlineTextBox name='Introductory paragraph line two. ' restriction=readOnly
 ++++list restriction=readOnly
 ++++++listItem restriction=readOnly
-++++++++listMarker restriction=readOnly
+++++++++listMarker name='• ' restriction=readOnly
 ++++++++staticText name='First list item line one. First list item line two. ' restriction=readOnly
 ++++++++++inlineTextBox name='First list item line one. ' restriction=readOnly
 ++++++++++inlineTextBox name='First list item line two. ' restriction=readOnly
 ++++++listItem restriction=readOnly
-++++++++listMarker restriction=readOnly
+++++++++listMarker name='• ' restriction=readOnly
 ++++++++staticText name='Second list item. ' restriction=readOnly
 ++++++++++inlineTextBox name='Second list item. ' restriction=readOnly
 ++++++listItem restriction=readOnly
-++++++++listMarker restriction=readOnly
+++++++++listMarker name='• ' restriction=readOnly
 ++++++++staticText name='Third list item. ' restriction=readOnly
 ++++++++++inlineTextBox name='Third list item. ' restriction=readOnly
 ++++paragraph restriction=readOnly

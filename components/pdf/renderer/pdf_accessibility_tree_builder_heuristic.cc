@@ -18,6 +18,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
@@ -184,6 +185,18 @@ constexpr auto kUnorderedListMarkers = std::to_array<std::string_view>({
     "\xEF\x82\xB7",  // U+F0B7 (Symbol font bullet)
     "\xEF\x82\xA7",  // U+F0A7 (Wingdings square bullet)
 });
+
+// Maps private-use bullets that PDFium produces for common authoring fonts in
+// `kUnorderedListMarkers` to their standard Unicode equivalents so screen
+// readers announce them properly. All other markers in `kUnorderedListMarkers`
+// are already valid standard Unicode characters and do not need remapping.
+constexpr auto kPrivateUseBulletMap =
+    base::MakeFixedFlatMap<uint32_t, uint32_t>({
+        // Wingdings square bullet -> ▪ U+25AA
+        {0xF0A7, 0x25AA},
+        // Symbol font bullet -> • U+2022
+        {0xF0B7, 0x2022},
+    });
 
 enum class HeaderFooterRole {
   kNone,
@@ -1494,6 +1507,37 @@ ListMarkerPrefix GetListMarkerPrefix(
   return prefix;
 }
 
+// Returns the accessible name for the unordered list marker that starts
+// `chars`: the marker character followed by a space, matching Blink's list
+// markers (e.g. "• "). Symbol and Wingdings private-use bullets are mapped to
+// their Unicode equivalents so they are spoken and rendered correctly.
+std::string GetUnorderedListMarkerName(
+    base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
+  CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+  for (const auto& char_info : chars) {
+    if (base::IsUnicodeWhitespace(char_info.unicode_character)) {
+      continue;
+    }
+    uint32_t code_point = char_info.unicode_character;
+    if (const auto it = kPrivateUseBulletMap.find(code_point);
+        it != kPrivateUseBulletMap.end()) {
+      code_point = it->second;
+    }
+    std::string name;
+    base::WriteUnicodeCharacter(static_cast<base_icu::UChar32>(code_point),
+                                &name);
+    // Without the space, the marker and item text concatenate into a single
+    // token (e.g. "•Item"), preventing word-by-word navigation from separating
+    // them and causing speech synthesis to run them together without a pause.
+    name += ' ';
+    return name;
+  }
+  // Only called for runs that `ClassifyListMarker()` matched, whose trimmed
+  // text starts with a non-whitespace marker from `kUnorderedListMarkers`, so
+  // `chars` always contains a non-whitespace character.
+  NOTREACHED();
+}
+
 // Returns the total visual width of `chars`.
 float GetCharsWidth(base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
   float width = 0.0f;
@@ -1956,7 +2000,8 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
         marker_bounds.set_width(prefix.marker_width);
       }
 
-      AddListMarkerToNode(marker_bounds, block_node);
+      AddListMarkerToNode(GetUnorderedListMarkerName(run_context.chars),
+                          marker_bounds, block_node);
       // Standalone runs consist solely of the marker, so proceed to the next
       // run. Combined runs fall through to process the remaining item text.
       if (marker_kind == ListMarkerKind::kStandaloneUnordered) {
@@ -2253,11 +2298,13 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
 }
 
 void PdfAccessibilityTreeBuilderHeuristic::AddListMarkerToNode(
+    const std::string& name,
     const gfx::RectF& bounds,
     ui::AXNodeData* item_node) {
   CHECK(current_list_node_);
   ui::AXNodeData* marker = builder_->CreateAndAppendNode(
       ax::mojom::Role::kListMarker, ax::mojom::Restriction::kReadOnly);
+  marker->AddStringAttribute(ax::mojom::StringAttribute::kName, name);
   marker->AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "::marker");
   // Text run bounds are relative to the page, so offset them by the page node
   // bounds, matching inline text boxes.

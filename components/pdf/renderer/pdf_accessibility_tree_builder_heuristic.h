@@ -184,9 +184,11 @@ class PdfAccessibilityTreeBuilderHeuristic {
   ui::AXNodeData* CreateLineBreakingNode(ax::mojom::Role role,
                                          const std::string& language);
 
-  // Appends a list marker node with `bounds` to `item_node` and updates the
-  // bounds of `item_node` and `current_list_node_`.
-  void AddListMarkerToNode(const gfx::RectF& bounds, ui::AXNodeData* item_node);
+  // Appends a list marker node with `name` and `bounds` to `item_node` and
+  // updates the bounds of `item_node` and `current_list_node_`.
+  void AddListMarkerToNode(const std::string& name,
+                           const gfx::RectF& bounds,
+                           ui::AXNodeData* item_node);
 
   // Appends inline text box and static text nodes for the text run at
   // `text_run_index` to `parent_node`. For combined marker+text runs,
