@@ -100,13 +100,16 @@ TEST_F(LensSuggestionToolTest, RegistersAndUnregistersWithService) {
   const LensSuggestionTool second_tool{other_tab};
 }
 
-TEST_F(LensSuggestionToolTest, CreateSuggestionWithEmptyLabelReturnsNullptr) {
+TEST_F(LensSuggestionToolTest, CreateSuggestionWithEmptyLabelUsesFallback) {
   ::selection::AreaOfInterest aoi;
   aoi.bounds = gfx::Rect(10, 20, 30, 40);
   optimization_guide::proto::SmartSelectionSuggestion server_suggestion;
   server_suggestion.set_label("");
 
-  EXPECT_EQ(tool().CreateSuggestion(aoi, server_suggestion), nullptr);
+  std::unique_ptr<::selection::Suggestion> suggestion =
+      tool().CreateSuggestion(aoi, server_suggestion);
+  ASSERT_NE(suggestion, nullptr);
+  EXPECT_EQ(suggestion->GetLabel(), u"Search with Google Lens");
 }
 
 TEST_F(LensSuggestionToolTest, CreateSuggestionWithEmptyBoundsReturnsNullptr) {

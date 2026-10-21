@@ -149,12 +149,14 @@ if (!is_android) {
       "//chrome/browser/selection",
     ]
     deps = [
+      "//chrome/app:generated_resources",
       "//chrome/browser/ui/lens",
       "//components/lens",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/tabs:public",
       "//content/public/browser",
       "//skia",
+      "//ui/base",
       "//ui/gfx/geometry",
     ]
   }

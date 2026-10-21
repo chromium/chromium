@@ -10265,6 +10265,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_LENS_COBROWSE_CURRENT_TAB_IPH_DESCRIPTION" desc="Informs user that the content and URL of their current tab is shared with Google to get more relevant answers.">
         The page title, URL, and content of your current tab is shared with Google to give you more relevant answers. You can add or remove tabs as you browse.
       </message>
+      <!-- TODO(crbug.com/576221905): Mark as translatable. -->
+      <message name="IDS_LENS_SELECTION_SUGGESTION_DEFAULT_LABEL" desc="Default label for the Google Lens smart selection suggestion." translateable="false">
+        Search with Google Lens
+      </message>
 
       <!--Tooltip strings -->
       <message name="IDS_TOOLTIP_BACK" desc="The tooltip for back button">

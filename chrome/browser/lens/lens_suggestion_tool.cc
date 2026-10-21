@@ -20,11 +20,13 @@
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -148,12 +150,15 @@ std::unique_ptr<::selection::Suggestion> LensSuggestionTool::CreateSuggestion(
     const optimization_guide::proto::SmartSelectionSuggestion&
         server_suggestion) {
   const gfx::Rect bounds = GetBoundsRect(processed_area.bounds);
-  if (server_suggestion.label().empty() || bounds.IsEmpty()) {
+  if (bounds.IsEmpty()) {
     return nullptr;
   }
-  return std::make_unique<LensSuggestion>(
-      *tab_, base::UTF8ToUTF16(server_suggestion.label()), bounds,
-      processed_area.screenshot);
+  std::u16string label = server_suggestion.label().empty()
+                             ? l10n_util::GetStringUTF16(
+                                   IDS_LENS_SELECTION_SUGGESTION_DEFAULT_LABEL)
+                             : base::UTF8ToUTF16(server_suggestion.label());
+  return std::make_unique<LensSuggestion>(*tab_, std::move(label), bounds,
+                                          processed_area.screenshot);
 }
 
 }  // namespace lens
