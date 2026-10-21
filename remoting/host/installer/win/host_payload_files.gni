@@ -4,6 +4,46 @@
 
 import("//third_party/icu/config.gni")
 
+# Canonical list of Native Messaging Hosts registered on Windows.
+# Each entry defines:
+# - browser: Target browser ("chrome" or "firefox").
+# - host_name: Name of the native messaging host recognized by the browser.
+# - manifest_name: Name of the JSON manifest file in the installation directory.
+#
+# Shared by:
+# 1. remoting_win_host_payload_files (below), ensuring manifest files are
+#    staged into installer archives and directory payload lists.
+# 2. //remoting/host/installer/win/setup/BUILD.gn (payload_files_header),
+#    generating <native_messaging_entries.h> containing `kNativeMessagingEntries`
+#    for the native installer's registry setup logic.
+remoting_win_native_messaging_entries = [
+  {
+    browser = "chrome"
+    host_name = "com.google.chrome.remote_assistance"
+    manifest_name = "com.google.chrome.remote_assistance.json"
+  },
+  {
+    browser = "firefox"
+    host_name = "com.google.chrome.remote_assistance"
+    manifest_name = "com.google.chrome.remote_assistance-firefox.json"
+  },
+  {
+    browser = "chrome"
+    host_name = "com.google.chrome.remote_desktop"
+    manifest_name = "com.google.chrome.remote_desktop.json"
+  },
+  {
+    browser = "firefox"
+    host_name = "com.google.chrome.remote_desktop"
+    manifest_name = "com.google.chrome.remote_desktop-firefox.json"
+  },
+  {
+    browser = "chrome"
+    host_name = "com.google.chrome.remote_webauthn"
+    manifest_name = "com.google.chrome.remote_webauthn.json"
+  },
+]
+
 # Canonical list of payload file names installed into the Chrome Remote Desktop
 # installation directory on Windows.
 #
@@ -35,12 +75,11 @@ remoting_win_host_payload_files = [
   "remoting_start_host.exe",
   "CREDITS.txt",
   "chromoting.ico",
-  "com.google.chrome.remote_assistance.json",
-  "com.google.chrome.remote_assistance-firefox.json",
-  "com.google.chrome.remote_desktop.json",
-  "com.google.chrome.remote_desktop-firefox.json",
-  "com.google.chrome.remote_webauthn.json",
 ]
+
+foreach(_entry, remoting_win_native_messaging_entries) {
+  remoting_win_host_payload_files += [ _entry.manifest_name ]
+}
 
 if (icu_use_data_file) {
   remoting_win_host_payload_files += [ "icudtl.dat" ]
