@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
@@ -71,20 +72,9 @@ const RE2* Re2RegExCache::GetRegEx(std::string_view pattern) {
   // For thread safety, acquire a lock to prevent concurrent access.
   base::AutoLock lock(lock_);
 
-  auto it = regex_map_.find(pattern);
-  if (it != regex_map_.end()) {
-    const RE2* regex = it->second.get();
-    return regex;
-  }
-
-  // Build the expression and verify it is correct.
-  auto regex_ptr = BuildRegExFromPattern(pattern);
-
-  // Insert the expression into the map, check the success and return the
-  // pointer.
-  auto result = regex_map_.emplace(pattern, std::move(regex_ptr));
-  DCHECK(result.second);
-  return result.first->second.get();
+  return base::GetOrCreate(regex_map_, pattern,
+                           [&] { return BuildRegExFromPattern(pattern); })
+      .get();
 }
 
 std::unique_ptr<const RE2> BuildRegExFromPattern(std::string_view pattern) {

@@ -4,9 +4,8 @@
 
 #include "components/autofill/core/common/autofill_regexes.h"
 
-#include <tuple>
-
 #include "base/check.h"
+#include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/i18n/unicodestring.h"
@@ -119,16 +118,10 @@ AutofillRegexCache::~AutofillRegexCache() {
 const icu::RegexPattern* AutofillRegexCache::GetRegexPattern(
     std::u16string_view regex) {
   auto GetOrCreate = [&] {
-    auto it = cache_.find(regex);
-    if (it == cache_.end()) {
-      bool success;
-      std::tie(it, success) =
-          cache_.emplace(std::u16string(regex), CompileRegex(regex));
-      DCHECK(success);
-    }
-    CHECK(it != cache_.end());
-    DCHECK(it->second.get());
-    return it->second.get();
+    const auto& pattern =
+        base::GetOrCreate(cache_, regex, [&] { return CompileRegex(regex); });
+    DCHECK(pattern.get());
+    return pattern.get();
   };
   if (!thread_safe_) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
