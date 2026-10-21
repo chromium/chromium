@@ -29,7 +29,7 @@ Exit codes:
   2: Invalid command-line usage (reported by argparse).
 """
 
-from collections.abc import Collection, Iterable, Sequence
+from collections.abc import Collection, Sequence
 import argparse
 import dataclasses
 import filecmp
@@ -48,10 +48,8 @@ UPSTREAM_REPOSITORY_URL = 'https://github.com/protocolbuffers/protobuf.git'
 EXIT_CODE_SUCCESS = 0
 EXIT_CODE_ERROR = 1
 
-# Top-level files in //third_party/protobuf that belong to Chromium rather than
-# the upstream protobuf release archive. Kept in one place so roll verification
-# and automation tooling share a single inventory matching README.chromium
-# step 2.
+# Top-level files that belong to Chromium rather than upstream. Must be exactly
+# the files README.chromium roll step 2 restores (roll_protobuf_test.py checks).
 CHROMIUM_OWNED_FILES = frozenset({
     'BUILD.gn',
     'DEPS',
@@ -72,10 +70,9 @@ CHROMIUM_OWNED_FILES = frozenset({
     'roll_protobuf_test.py',
 })
 
-# Files under src/ and python/ regenerated in roll step 4 by
-# gen_extra_chromium_files.py using Chromium's patched protoc binary. The C++
-# outputs legitimately differ from upstream's unpatched copies, and the Python
-# outputs do not exist in the raw upstream git archive at all.
+# Regenerated in roll step 4 by gen_extra_chromium_files.py with Chromium's
+# patched protoc. The C++ outputs legitimately differ from upstream's copies;
+# the Python outputs are not in the upstream archive at all.
 BOOTSTRAP_GENERATED_FILES = frozenset({
     'src/google/protobuf/descriptor.pb.h',
     'src/google/protobuf/descriptor.pb.cc',
@@ -86,91 +83,22 @@ BOOTSTRAP_GENERATED_FILES = frozenset({
     'python/google/protobuf/internal/python_edition_defaults.py',
 })
 
-# Upstream bundles pre-generated C++ sources for the Well-Known Types (except
-# descriptor.proto and compiler/plugin.proto, which remain bootstrapped).
-# Chromium deletes these in gen_extra_chromium_files.py and compiles them from
-# .proto files via //third_party/protobuf:well_known_type_protos instead.
-WELL_KNOWN_TYPE_NAMES = (
-    'any',
-    'api',
-    'duration',
-    'empty',
-    'field_mask',
-    'source_context',
-    'struct',
-    'timestamp',
-    'type',
-    'wrappers',
-)
-
+# Upstream ships pre-generated C++ for the Well-Known Types. Chromium deletes
+# them in gen_extra_chromium_files.py and builds them from the .proto files
+# (//third_party/protobuf:well_known_type_protos) instead.
+WELL_KNOWN_TYPE_NAMES = ('any', 'api', 'duration', 'empty', 'field_mask',
+                         'source_context', 'struct', 'timestamp', 'type',
+                         'wrappers')
 DELETED_WELL_KNOWN_TYPE_GENERATED_FILES = frozenset(
-    f'src/google/protobuf/{well_known_type_name}.pb.{extension}'
-    for well_known_type_name in WELL_KNOWN_TYPE_NAMES
-    for extension in ('h', 'cc')
-)
+    f'src/google/protobuf/{name}.pb.{extension}'
+    for name in WELL_KNOWN_TYPE_NAMES for extension in ('h', 'cc'))
 
-# Upstream directories removed intentionally during rolls because they contain
-# large historical test artifacts that trip Chromium presubmit checks.
-DELETED_UPSTREAM_DIRECTORY_PREFIXES = (
-    'compatibility/',
-)
+# Deleted during rolls: large historical test artifacts trip presubmit checks.
+DELETED_UPSTREAM_DIRECTORY_PREFIXES = ('compatibility/', )
 
 
 class RollProtobufError(Exception):
     """Raised when a git, filesystem, or metadata operation cannot proceed."""
-
-
-@dataclasses.dataclass(frozen=True)
-class TreeVerificationResult:
-    """Outcome of comparing //third_party/protobuf against patched upstream.
-
-    Attributes:
-      upstream_revision: Commit SHA or ref extracted from README.chromium.
-      applied_patches: Tuple of top-level patches/*.patch filenames that applied
-        cleanly prior to completion or failure.
-      failing_patch: Filename of the first patch that failed to apply, or None
-        if every patch in patches/*.patch applied cleanly.
-      failing_patch_error: Diagnostic output from git apply when failing_patch
-        is set, or None otherwise.
-      modified_files: Files present in both trees (tracked, or untracked but
-        not git-ignored, on the Chromium side) whose byte contents differ,
-        excluding Chromium-owned and bootstrap-generated files.
-      chromium_only_files: Files in //third_party/protobuf absent from the
-        expected patched upstream tree, excluding Chromium-owned files
-        (CHROMIUM_OWNED_FILES and top-level patches/*.{patch,md}) and
-        bootstrap-generated files.
-      upstream_only_files: Files in the expected patched upstream tree absent
-        from //third_party/protobuf, excluding intentionally deleted upstream
-        files and paths git-ignored in //third_party/protobuf.
-    """
-
-    upstream_revision: str
-    applied_patches: tuple[str, ...]
-    failing_patch: str | None = None
-    failing_patch_error: str | None = None
-    modified_files: tuple[str, ...] = ()
-    chromium_only_files: tuple[str, ...] = ()
-    upstream_only_files: tuple[str, ...] = ()
-
-    def IsClean(self) -> bool:
-        """Returns True if all patches applied and no unexpected diffs exist."""
-        return (self.failing_patch is None
-                and not self.modified_files
-                and not self.chromium_only_files
-                and not self.upstream_only_files)
-
-    def ToDictionary(self) -> dict[str, object]:
-        """Returns a JSON-serializable dictionary representation."""
-        return {
-            'is_clean': self.IsClean(),
-            'upstream_revision': self.upstream_revision,
-            'applied_patches': list(self.applied_patches),
-            'failing_patch': self.failing_patch,
-            'failing_patch_error': self.failing_patch_error,
-            'modified_files': list(self.modified_files),
-            'chromium_only_files': list(self.chromium_only_files),
-            'upstream_only_files': list(self.upstream_only_files),
-        }
 
 
 def IsTopLevelChromiumPatchOrNote(relative_path: str) -> bool:
@@ -185,18 +113,11 @@ def IsTopLevelChromiumPatchOrNote(relative_path: str) -> bool:
 
 
 def IsChromiumOwnedFile(relative_path: str) -> bool:
-    """Returns True if relative_path belongs to Chromium, not upstream."""
     return (relative_path in CHROMIUM_OWNED_FILES
             or IsTopLevelChromiumPatchOrNote(relative_path))
 
 
-def IsBootstrapGeneratedFile(relative_path: str) -> bool:
-    """Returns True if gen_extra_chromium_files.py generates relative_path."""
-    return relative_path in BOOTSTRAP_GENERATED_FILES
-
-
 def IsIntentionallyDeletedUpstreamFile(relative_path: str) -> bool:
-    """Returns True if relative_path is removed from upstream during rolls."""
     return (relative_path.startswith(DELETED_UPSTREAM_DIRECTORY_PREFIXES)
             or relative_path in DELETED_WELL_KNOWN_TYPE_GENERATED_FILES)
 
@@ -511,127 +432,67 @@ def _ListChromiumProtobufFiles(protobuf_directory: str) -> set[str]:
     return present_paths
 
 
-def _FindGitIgnoredUpstreamPaths(
-        protobuf_directory: str,
-        candidate_paths: Iterable[str]) -> set[str]:
-    """Returns the subset of `candidate_paths` ignored by git in protobuf.
+def _FindGitIgnoredPaths(protobuf_directory: str,
+                         candidate_paths: set[str]) -> set[str]:
+    """Returns the candidate_paths that git ignores in protobuf_directory.
 
-    When an upstream release archive is added to Chromium's repository via
-    `git add third_party/protobuf`, Chromium's `.gitignore` excludes a small set
-    of C# and Xcode project files (`*.targets`, `*.props`, `*.sln`, and
-    `*.xcodeproj/*`). Querying `git check-ignore -z --stdin` (without
-    `--no-index`) filters those untracked repository-ignored paths while still
-    flagging any tracked upstream file that matches a `.gitignore` pattern (such
-    as `src/solaris/libstdc++.la` matching `*.la`) if it is deleted from disk.
-    Passing `-c core.excludesFile=/dev/null` neutralizes the developer's global
-    gitignore while keeping in-tree `.gitignore` files and repository-local
-    `$GIT_DIR/info/exclude` rules active.
+    Chromium's .gitignore drops 21 upstream C# and Xcode files (*.targets,
+    *.props, *.sln, *.xcodeproj/*) when a release is `git add`ed. Without
+    `--no-index`, a *tracked* file matching a pattern (src/solaris/libstdc++.la
+    matches *.la) is still reported when it is deleted. Only the global
+    `core.excludesFile` is neutralized; in-tree .gitignore files and
+    $GIT_DIR/info/exclude stay active.
     """
-    sorted_candidates = sorted(candidate_paths)
-    if not sorted_candidates:
+    if not candidate_paths:
         return set()
-
-    completed_process = subprocess.run(
+    process = _RunGit(
         [
-            'git',
-            '-C',
-            protobuf_directory,
-            '-c',
-            f'core.excludesFile={os.devnull}',
-            'check-ignore',
-            '-z',
-            '--stdin',
+            'git', '-C', protobuf_directory, '-c',
+            f'core.excludesFile={os.devnull}', 'check-ignore', '-z', '--stdin'
         ],
-        env=_IsolatedGitEnvironment(),
-        input='\0'.join(sorted_candidates) + '\0',
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if completed_process.returncode not in (0, 1):
-        raise RollProtobufError(
-            f'git check-ignore failed in {protobuf_directory}: '
-            f'{completed_process.stderr.strip()}')
-    return {
-        ignored_path.replace('\\', '/')
-        for ignored_path in completed_process.stdout.split('\0')
-        if ignored_path
-    }
+        input_bytes=''.join(f'{path}\0'
+                            for path in sorted(candidate_paths)).encode(
+                                'utf-8', errors='surrogateescape'),
+        accepted_return_codes=(0, 1),
+        failure_message=f'git check-ignore failed in {protobuf_directory}')
+    return set(_SplitNulSeparatedPaths(process.stdout))
 
 
-def _FindModifiedFiles(
-        patched_upstream_directory: str,
-        protobuf_directory: str,
-        expected_upstream_files: set[str],
-        chromium_files: set[str]) -> tuple[str, ...]:
-    """Returns sorted shared files whose contents differ unexpectedly."""
-    modified_files: list[str] = []
-    for relative_path in sorted(expected_upstream_files & chromium_files):
-        if (IsBootstrapGeneratedFile(relative_path)
-                or IsChromiumOwnedFile(relative_path)):
-            continue
-        upstream_file_path = os.path.join(
-            patched_upstream_directory, relative_path)
-        chromium_file_path = os.path.join(protobuf_directory, relative_path)
-        if not filecmp.cmp(
-                upstream_file_path, chromium_file_path, shallow=False):
-            modified_files.append(relative_path)
-    return tuple(modified_files)
+@dataclasses.dataclass(frozen=True)
+class TreeVerificationResult:
+    """Outcome of comparing //third_party/protobuf with patched upstream.
 
+    modified_files and chromium_only_files omit Chromium-owned and
+    bootstrap-generated files; upstream_only_files omits intentionally deleted
+    and git-ignored files.
+    """
 
-def _FindUnexpectedChromiumOnlyFiles(
-        expected_upstream_files: set[str],
-        chromium_files: set[str]) -> tuple[str, ...]:
-    """Returns sorted Chromium-only files not in known exception lists."""
-    return tuple(
-        sorted(
-            relative_path
-            for relative_path in (chromium_files - expected_upstream_files)
-            if not IsChromiumOwnedFile(relative_path)
-            and not IsBootstrapGeneratedFile(relative_path)
-        ))
+    upstream_revision: str  # README.chromium's Revision.
+    # Patches that applied before the first failure, or all of them.
+    applied_patches: tuple[str, ...]
+    # The first patch that failed to apply, and `git apply`'s diagnostics.
+    failing_patch: str | None = None
+    failing_patch_error: str | None = None
+    modified_files: tuple[str, ...] = ()  # In both trees, bytes differ.
+    chromium_only_files: tuple[str, ...] = ()
+    upstream_only_files: tuple[str, ...] = ()
 
+    def IsClean(self) -> bool:
+        return (self.failing_patch is None and not self.modified_files
+                and not self.chromium_only_files
+                and not self.upstream_only_files)
 
-def _FindMissingUpstreamFiles(
-        protobuf_directory: str,
-        expected_upstream_files: set[str],
-        chromium_files: set[str]) -> tuple[str, ...]:
-    """Returns sorted expected upstream files absent from Chromium."""
-    upstream_only_candidates = expected_upstream_files - chromium_files
-    git_ignored_upstream_files = _FindGitIgnoredUpstreamPaths(
-        protobuf_directory, upstream_only_candidates)
-    return tuple(
-        sorted(upstream_only_candidates - git_ignored_upstream_files))
-
-
-def _ComparePatchedUpstreamWithChromium(
-        patched_upstream_directory: str,
-        protobuf_directory: str,
-        upstream_revision: str,
-        applied_patches: Sequence[str]) -> TreeVerificationResult:
-    """Compares a patched upstream tree against //third_party/protobuf."""
-    raw_upstream_files = _ListRegularFilesInDirectory(
-        patched_upstream_directory)
-    expected_upstream_files = {
-        relative_path
-        for relative_path in raw_upstream_files
-        if not IsIntentionallyDeletedUpstreamFile(relative_path)
-    }
-    chromium_files = _ListChromiumProtobufFiles(protobuf_directory)
-    return TreeVerificationResult(
-        upstream_revision=upstream_revision,
-        applied_patches=tuple(applied_patches),
-        modified_files=_FindModifiedFiles(
-            patched_upstream_directory,
-            protobuf_directory,
-            expected_upstream_files,
-            chromium_files,
-        ),
-        chromium_only_files=_FindUnexpectedChromiumOnlyFiles(
-            expected_upstream_files, chromium_files),
-        upstream_only_files=_FindMissingUpstreamFiles(
-            protobuf_directory, expected_upstream_files, chromium_files),
-    )
+    def ToDictionary(self) -> dict[str, object]:
+        return {
+            'is_clean': self.IsClean(),
+            'upstream_revision': self.upstream_revision,
+            'applied_patches': list(self.applied_patches),
+            'failing_patch': self.failing_patch,
+            'failing_patch_error': self.failing_patch_error,
+            'modified_files': list(self.modified_files),
+            'chromium_only_files': list(self.chromium_only_files),
+            'upstream_only_files': list(self.upstream_only_files),
+        }
 
 
 def CheckTreeMatchesPatchedUpstream(
@@ -640,61 +501,60 @@ def CheckTreeMatchesPatchedUpstream(
         cache_directory: str | None = None,
         build_directory: str | None = None,
         upstream_url: str = UPSTREAM_REPOSITORY_URL) -> TreeVerificationResult:
-    """Verifies //third_party/protobuf matches upstream Revision + patches/*.
+    """Verifies that upstream at Revision plus patches/*.patch is the tree.
 
-    Extracts the upstream commit recorded in `README.chromium`, replays all
-    top-level `patches/*.patch` files in lexicographic order, and compares the
-    regular file byte contents of the patched upstream tree against
-    `protobuf_directory` (file modes and symlinks are not compared).
-
-    Args:
-      protobuf_directory: Path to //third_party/protobuf.
-      upstream_repository_path: Optional path to an existing local upstream git
-        repository.
-      cache_directory: Optional path to the bare cache repository directory.
-      build_directory: Optional GN build output directory passed via -C.
-      upstream_url: Remote URL used when initializing or fetching the cache.
-
-    Returns:
-      A TreeVerificationResult describing applied patches and any unexplained
-      differences.
+    Extracts the upstream commit on README.chromium's 'Revision:' line,
+    applies the top-level patches in sorted order, and compares the bytes of
+    regular files with protobuf_directory (modes and symlinks are not
+    compared). The other arguments are as for EnsureUpstreamCommitCached.
     """
-    absolute_protobuf_directory = os.path.abspath(protobuf_directory)
-    revision = ReadReadmeRevisionFromDirectory(absolute_protobuf_directory)
-    repository_path, resolved_commit = EnsureUpstreamCommitCached(
-        revision=revision,
-        upstream_repository_path=upstream_repository_path,
-        cache_directory=cache_directory,
-        build_directory=build_directory,
-        upstream_url=upstream_url,
-    )
-
+    protobuf_directory = os.path.abspath(protobuf_directory)
+    revision = ReadReadmeRevisionFromDirectory(protobuf_directory)
+    repository_path, commit = EnsureUpstreamCommitCached(
+        revision, upstream_repository_path, cache_directory, build_directory,
+        upstream_url)
     with tempfile.TemporaryDirectory(
-            prefix='protobuf_roll_check_') as temporary_directory:
-        ExtractUpstreamArchive(
-            repository_path=repository_path,
-            commit_revision=resolved_commit,
-            destination_directory=temporary_directory,
-        )
-
-        applied_patches: list[str] = []
-        for patch_path in ListTopLevelPatchPaths(absolute_protobuf_directory):
-            patch_filename = os.path.basename(patch_path)
-            patch_error = ApplyPatchFile(patch_path, temporary_directory)
+            prefix='protobuf_roll_check_') as upstream_directory:
+        ExtractUpstreamArchive(repository_path, commit, upstream_directory)
+        applied_patches = []
+        for patch_path in ListTopLevelPatchPaths(protobuf_directory):
+            patch_name = os.path.basename(patch_path)
+            patch_error = ApplyPatchFile(patch_path, upstream_directory)
             if patch_error is not None:
-                return TreeVerificationResult(
-                    upstream_revision=revision,
-                    applied_patches=tuple(applied_patches),
-                    failing_patch=patch_filename,
-                    failing_patch_error=patch_error,
-                )
-            applied_patches.append(patch_filename)
+                return TreeVerificationResult(revision,
+                                              tuple(applied_patches),
+                                              failing_patch=patch_name,
+                                              failing_patch_error=patch_error)
+            applied_patches.append(patch_name)
 
-        return _ComparePatchedUpstreamWithChromium(
-            patched_upstream_directory=temporary_directory,
-            protobuf_directory=absolute_protobuf_directory,
+        upstream_files = {
+            path
+            for path in _ListRegularFilesInDirectory(upstream_directory)
+            if not IsIntentionallyDeletedUpstreamFile(path)
+        }
+        chromium_files = _ListChromiumProtobufFiles(protobuf_directory)
+        # Never compared, but only exempt on the Chromium side: a deleted
+        # upstream descriptor.pb.h is still reported as missing.
+        exempt_files = {
+            path
+            for path in upstream_files | chromium_files
+            if IsChromiumOwnedFile(path) or path in BOOTSTRAP_GENERATED_FILES
+        }
+        upstream_only_files = upstream_files - chromium_files
+        return TreeVerificationResult(
             upstream_revision=revision,
-            applied_patches=applied_patches,
+            applied_patches=tuple(applied_patches),
+            modified_files=tuple(
+                path for path in sorted((upstream_files & chromium_files) -
+                                        exempt_files)
+                if not filecmp.cmp(os.path.join(upstream_directory, path),
+                                   os.path.join(protobuf_directory, path),
+                                   shallow=False)),
+            chromium_only_files=tuple(
+                sorted(chromium_files - upstream_files - exempt_files)),
+            upstream_only_files=tuple(
+                sorted(upstream_only_files - _FindGitIgnoredPaths(
+                    protobuf_directory, upstream_only_files))),
         )
 
 
