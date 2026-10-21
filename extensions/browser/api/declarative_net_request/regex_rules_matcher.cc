@@ -37,13 +37,14 @@ bool IsExtraHeadersMatcherInternal(
 
 // Helper to check if the `rule` metadata matches the given request `params`.
 bool DoesRuleMetadataMatchRequest(const flat_rule::UrlRule& rule,
-                                  const RequestParams& params) {
-  // Evaluates `element_type`, `method`, `is_third_party` and
-  // `embedder_conditions_matcher`.
+                                  const RequestParams& params,
+                                  const ExtensionId& extension_id) {
+  // Evaluates `element_type`, `method`, `is_third_party` and embedder
+  // conditions.
   if (!url_pattern_index::DoesRuleFlagsMatch(
           rule, params.element_type, flat_rule::ActivationType_NONE,
           params.method, params.is_third_party,
-          params.embedder_conditions_matcher)) {
+          params.GetEmbedderConditionsMatcher(extension_id))) {
     return false;
   }
 
@@ -236,12 +237,14 @@ RegexRulesMatcher::MatchHelper::GetPotentialMatches(
   // We prune the set of potential matches even further by matching request
   // metadata.
   std::vector<RegexRuleInfo> potential_matches;
+  const ExtensionId& extension_id = regex_match_key_.first->extension_id();
   for (int re2_id : potential_re2_ids) {
     auto it = re2_id_to_rules_map_.find(re2_id);
     CHECK(it != re2_id_to_rules_map_.end());
 
     const flat::RegexRule* rule = it->second;
-    if (!DoesRuleMetadataMatchRequest(*rule->url_rule(), params)) {
+    if (!DoesRuleMetadataMatchRequest(*rule->url_rule(), params,
+                                      extension_id)) {
       continue;
     }
 

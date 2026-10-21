@@ -63,9 +63,32 @@ struct RequestParams {
   // ID of the parent RenderFrameHost.
   content::GlobalRenderFrameHostId parent_routing_id;
 
-  // Matcher for `flat::UrlRule::embedder_conditions`.
+  // Returns whether `extension_id` has host access to this request.
+  bool HasHostAccess(const ExtensionId& extension_id) const {
+    auto it = has_host_access.find(extension_id);
+    return it != has_host_access.end() && it->second;
+  }
+
+  // Returns the matcher for `flat::UrlRule::embedder_conditions` to use for
+  // `extension_id`.
+  const url_pattern_index::UrlPatternIndexMatcher::EmbedderConditionsMatcher&
+  GetEmbedderConditionsMatcher(const ExtensionId& extension_id) const {
+    return HasHostAccess(extension_id)
+               ? embedder_conditions_matcher_with_host_access
+               : embedder_conditions_matcher_without_host_access;
+  }
+
+  // Matchers for `flat::UrlRule::embedder_conditions`. Use
+  // `GetEmbedderConditionsMatcher()` instead of accessing these directly.
   url_pattern_index::UrlPatternIndexMatcher::EmbedderConditionsMatcher
-      embedder_conditions_matcher;
+      embedder_conditions_matcher_with_host_access;
+  url_pattern_index::UrlPatternIndexMatcher::EmbedderConditionsMatcher
+      embedder_conditions_matcher_without_host_access;
+
+  // A map from an extension ID to whether the extension has host access to this
+  // request (i.e. PageAccess::kAllowed). If there is no entry for an extension
+  // ID, it defaults to false (via `HasHostAccess`).
+  mutable base::flat_map<ExtensionId, bool> has_host_access;
 
   // A map from an extension ID to its CompositeMatcher's highest priority
   // matching allow or allowAllRequests rule (for the request associated with

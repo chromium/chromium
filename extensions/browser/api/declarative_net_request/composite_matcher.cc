@@ -159,6 +159,16 @@ ActionInfo CompositeMatcher::GetAction(
            page_access == PermissionsData::PageAccess::kWithheld);
   }
 
+  // Rules with response header conditions that require host permissions are
+  // skipped during matching (rather than having their action dropped after
+  // matching) if the extension doesn't have host access to the request. This
+  // ensures that such rules can't affect which action is chosen at all, e.g. by
+  // masking lower priority rules.
+  // TODO(crbug.com/576028199): Set `notify_request_withheld` if a rule with
+  // response header value conditions is skipped because `page_access` is
+  // `PageAccess::kWithheld`.
+  params.has_host_access[extension_id_] = page_access == PageAccess::kAllowed;
+
   // Get the max priority allow action for this extension, or implicitly assign
   // it as nullopt in `params.max_priority_allow_action` if there isn't one.
   auto& max_priority_allow_action_for_extension =
@@ -215,6 +225,11 @@ std::vector<RequestAction> CompositeMatcher::GetModifyHeadersActions(
     RulesetMatchingStage stage) const {
   std::vector<RequestAction> modify_headers_actions;
 
+  // `GetAction()` must be called before `GetModifyHeadersActions()`, which
+  // populates `params.has_host_access` and `params.max_priority_allow_action`
+  // for this extension.
+  CHECK(params.has_host_access.contains(extension_id_));
+
   // The priority of the highest priority matching allow or allowAllRequests
   // rule within this matcher, or 0 if no such rule exists (the minimum priority
   // for a rule, specified in `kMinValidPriority`, is 1.)
@@ -265,9 +280,13 @@ void CompositeMatcher::OnRenderFrameDeleted(content::RenderFrameHost* host) {
 }
 
 void CompositeMatcher::OnDidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
+    content::NavigationHandle* navigation_handle,
+    PermissionsData::PageAccess page_access_for_navigation) {
   for (auto& matcher : matchers_) {
-    matcher->OnDidFinishNavigation(navigation_handle);
+    matcher->OnDidFinishNavigation(
+        navigation_handle,
+        /*has_host_access_for_navigation=*/page_access_for_navigation ==
+            PageAccess::kAllowed);
   }
 }
 

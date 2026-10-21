@@ -259,7 +259,8 @@ void RulesetMatcherBase::OnRenderFrameDeleted(content::RenderFrameHost* host) {
 }
 
 void RulesetMatcherBase::OnDidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
+    content::NavigationHandle* navigation_handle,
+    bool has_host_access_for_navigation) {
   content::RenderFrameHost* host = navigation_handle->GetRenderFrameHost();
 
   // Note: we only start tracking frames on navigation, since a document only
@@ -284,6 +285,7 @@ void RulesetMatcherBase::OnDidFinishNavigation(
   if (!is_error_document) {
     RequestParams params(host, navigation_handle->IsPost(),
                          /*response_headers=*/nullptr);
+    params.has_host_access[extension_id_] = has_host_access_for_navigation;
 
     // Find the highest priority allowAllRequests action corresponding to this
     // frame for rules that match in the onBeforeRequest request stage.
@@ -307,6 +309,12 @@ void RulesetMatcherBase::OnDidFinishNavigation(
       RequestParams params_with_headers(
           host, navigation_handle->IsPost(),
           navigation_handle->GetResponseHeaders());
+      // Rules with response header conditions that require host permissions
+      // must not allowlist the frame if the extension doesn't have host access
+      // to the navigation, since allowlisting the frame would bypass
+      // subresource rules and leak whether the header value matched.
+      params_with_headers.has_host_access[extension_id_] =
+          has_host_access_for_navigation;
       // Take the matching allowAllRequests action with the highest priority
       // between all ruleset matching stages that this navigation request can be
       // matched against.

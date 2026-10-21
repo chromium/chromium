@@ -78,7 +78,8 @@ class RulesetMatcher {
 
   void OnRenderFrameCreated(content::RenderFrameHost* host);
   void OnRenderFrameDeleted(content::RenderFrameHost* host);
-  void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
+  void OnDidFinishNavigation(content::NavigationHandle* navigation_handle,
+                             bool has_host_access_for_navigation);
 
   // ID of the ruleset. Each extension can have multiple rulesets with
   // their own unique ids.

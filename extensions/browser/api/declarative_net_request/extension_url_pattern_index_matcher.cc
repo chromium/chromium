@@ -196,8 +196,8 @@ const flat_rule::UrlRule* ExtensionUrlPatternIndexMatcher::GetMatchingRule(
   return matchers[index].FindMatch(
       *params.url, params.first_party_origin, params.element_type,
       flat_rule::ActivationType_NONE, params.method, params.is_third_party,
-      kDisableGenericRules, params.embedder_conditions_matcher, strategy,
-      disabled_rule_ids_);
+      kDisableGenericRules, params.GetEmbedderConditionsMatcher(extension_id()),
+      strategy, disabled_rule_ids_);
 }
 
 std::vector<const url_pattern_index::flat::UrlRule*>
@@ -216,7 +216,7 @@ ExtensionUrlPatternIndexMatcher::GetAllMatchingRules(
   return matchers[index].FindAllMatches(
       *params.url, params.first_party_origin, params.element_type,
       flat_rule::ActivationType_NONE, params.method, params.is_third_party,
-      kDisableGenericRules, params.embedder_conditions_matcher,
+      kDisableGenericRules, params.GetEmbedderConditionsMatcher(extension_id()),
       disabled_rule_ids_);
 }
 

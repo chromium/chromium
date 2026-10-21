@@ -158,6 +158,13 @@ BASE_DECLARE_FEATURE(kComponentExtensionAllowWorkerChromeResources);
 // extensions.
 BASE_DECLARE_FEATURE(kCWSReviewPromptingNativeUI);
 
+// If enabled, declarative net request rules that match on the values of
+// response headers (other than CORS-safelisted response headers and
+// Content-Encoding) only match requests that the extension has host permissions
+// for. If disabled (kill switch), rule matching conditions can match against
+// requests the extension does not have host permissions for.
+BASE_DECLARE_FEATURE(kDeclarativeNetRequestRestrictResponseHeaderValueMatching);
+
 // If enabled, <webview>s will be allowed to request permission from an
 // embedding Chrome App to request access to Human Interface Devices.
 BASE_DECLARE_FEATURE(kEnableWebHidInWebView);

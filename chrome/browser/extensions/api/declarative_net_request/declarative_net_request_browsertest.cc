@@ -7525,7 +7525,8 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, BlockRequests) {
            {TestHeaderCondition("set-cookie", {}, {})})},
   };
 
-  // Load the extension.
+  // Load the extension. Host permissions are required since the allow rule
+  // matches on the value of the set-cookie header.
   std::vector<TestRule> rules;
   for (const auto& rule_data : rules_data) {
     TestRule rule = CreateGenericRule(rule_data.id);
@@ -7537,7 +7538,8 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, BlockRequests) {
     rule.condition->response_headers = rule_data.response_header_condition;
     rules.push_back(std::move(rule));
   }
-  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(std::move(rules)));
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
+      std::move(rules), "test_extension", {URLPattern::kAllUrlsPattern}));
 
   struct {
     std::string hostname;
@@ -7572,6 +7574,80 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, BlockRequests) {
                              ? net::OK
                              : net::ERR_BLOCKED_BY_CLIENT;
     EXPECT_EQ(expected_code, nav_observer.last_net_error_code());
+  }
+}
+
+// Test that rules which match on the values of response headers (other than
+// CORS-safelisted response headers and Content-Encoding) are not matched if the
+// extension doesn't have host permissions for the request. Otherwise, whether
+// the request was blocked could reveal the header's value to the extension.
+IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
+                       HeaderValueMatchingRequiresHostPermissions) {
+  // A rule that allows all requests to setcookie.com if the set-cookie header
+  // is present with value "cookie=oreo". This requires host permissions.
+  TestRule allow_rule = CreateGenericRule(kMinValidID);
+  allow_rule.action->type = std::string("allow");
+  allow_rule.condition->url_filter = std::string("setcookie.com");
+  allow_rule.condition->resource_types =
+      std::vector<std::string>({"main_frame"});
+  allow_rule.condition->response_headers = std::vector<TestHeaderCondition>(
+      {TestHeaderCondition("set-cookie", {"cookie=oreo"}, {})});
+
+  // A rule that blocks all requests to setcookie.com if the set-cookie header
+  // is present. This doesn't require host permissions since it doesn't check
+  // the value of the response header.
+  TestRule block_rule = CreateGenericRule(kMinValidID + 1);
+  block_rule.condition->url_filter = std::string("setcookie.com");
+  block_rule.condition->resource_types =
+      std::vector<std::string>({"main_frame"});
+  block_rule.condition->response_headers = std::vector<TestHeaderCondition>(
+      {TestHeaderCondition("set-cookie", {}, {})});
+
+  // A rule that blocks requests to contenttype.com with an HTML content type.
+  // This doesn't require host permissions since content-type is a
+  // CORS-safelisted response header.
+  TestRule content_type_rule = CreateGenericRule(kMinValidID + 2);
+  content_type_rule.condition->url_filter = std::string("contenttype.com");
+  content_type_rule.condition->resource_types =
+      std::vector<std::string>({"main_frame"});
+  content_type_rule.condition->response_headers =
+      std::vector<TestHeaderCondition>(
+          {TestHeaderCondition("Content-Type", {"text/html*"}, {})});
+
+  // Load the extension without any host permissions.
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRules({allow_rule, block_rule, content_type_rule}));
+
+  struct {
+    std::string hostname;
+    std::string path;
+    bool expect_main_frame_loaded;
+  } test_cases[] = {
+      // Not blocked since there is no set-cookie header.
+      {"setcookie.com", "/pages_with_script/index.html", true},
+      // Blocked by `block_rule`.
+      {"setcookie.com", "/set-cookie?cookie=sugar", false},
+      // Also blocked by `block_rule`, since `allow_rule` can't be matched
+      // without host permissions. The outcome is the same regardless of the
+      // set-cookie header's value.
+      {"setcookie.com", "/set-cookie?cookie=oreo", false},
+      // Blocked by `content_type_rule`.
+      {"contenttype.com", "/pages_with_script/index.html", false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    GURL url =
+        embedded_test_server()->GetURL(test_case.hostname, test_case.path);
+    SCOPED_TRACE(base::StringPrintf("Testing %s", url.spec().c_str()));
+
+    content::TestNavigationObserver nav_observer(GetActiveWebContents());
+    NavigateToURL(url);
+    EXPECT_EQ(test_case.expect_main_frame_loaded ? content::PAGE_TYPE_NORMAL
+                                                 : content::PAGE_TYPE_ERROR,
+              GetPageType());
+    EXPECT_EQ(test_case.expect_main_frame_loaded ? net::OK
+                                                 : net::ERR_BLOCKED_BY_CLIENT,
+              nav_observer.last_net_error_code());
   }
 }
 
@@ -7872,6 +7948,9 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, AllowAllRequests) {
   std::vector<TestHeaderCondition> blank_header_condition =
       std::vector<TestHeaderCondition>(
           {TestHeaderCondition("nonsense-header", {}, {})});
+  std::vector<TestHeaderCondition> header_value_condition =
+      std::vector<TestHeaderCondition>(
+          {TestHeaderCondition("nonsense-header", {"value"}, {})});
 
   struct RuleData {
     int id;
@@ -7883,7 +7962,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, AllowAllRequests) {
     std::optional<std::vector<TestHeaderCondition>>
         excluded_response_header_condition = std::nullopt;
   } rule_data[] = {
-      // Create 3 allowAllRequests rules:
+      // Create 4 allowAllRequests rules:
       // One with priority 3 that matches the main frame, in the onBeforeRequest
       // stage.
       {1, 3, "allowAllRequests", "page_with_two_frames.html", false,
@@ -7895,12 +7974,18 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, AllowAllRequests) {
       // One with priority 7 that matches frame 2, in the onBeforeRequest stage.
       {3, 7, "allowAllRequests", "frame=2", true,
        std::vector<std::string>({"sub_frame"})},
+      // One with priority 8 that matches frame 1 in the onHeadersReceived
+      // stage, but requires host permissions because it matches on a
+      // non-allowlisted header value (so it won't match since the extension is
+      // loaded without host permissions).
+      {4, 8, "allowAllRequests", "frame=1", true,
+       std::vector<std::string>({"sub_frame"}), header_value_condition},
 
       // Create 3 block rules, each blocking only a particular image file, with
       // different priorities.
-      {4, 2, "block", "image.png", true, std::vector<std::string>({"image"})},
-      {5, 4, "block", "image_2.png", true, std::vector<std::string>({"image"})},
-      {6, 6, "block", "image_3.png", true, std::vector<std::string>({"image"})},
+      {5, 2, "block", "image.png", true, std::vector<std::string>({"image"})},
+      {6, 4, "block", "image_2.png", true, std::vector<std::string>({"image"})},
+      {7, 6, "block", "image_3.png", true, std::vector<std::string>({"image"})},
   };
 
   std::vector<TestRule> rules;
@@ -7969,7 +8054,8 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, AllowAllRequests) {
   // Attempt to add images onto `frame_1`. `image.png` and `image_2.png` should
   // be added since the max priority matching allowAllRequests rule for
   // `frame_1` has id 2 (it "wins" over the rule with id 1 that has a lower
-  // priority), and its priority exceeds that of the block rules for `image.png`
+  // priority, while the rule with id 4 requires host permissions so it does not
+  // match), and its priority exceeds that of the block rules for `image.png`
   // and `image_2.png`.
   content::RenderFrameHost* frame_1 = GetFrameByName("frame1");
   EXPECT_TRUE(test_image_added(frame_1, "subresources/image.png"));

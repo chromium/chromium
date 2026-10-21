@@ -38,6 +38,7 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "services/network/public/cpp/cors/cors.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 
 namespace extensions::declarative_net_request {
@@ -51,7 +52,7 @@ namespace flat_rule = url_pattern_index::flat;
 // url_pattern_index.fbs. Whenever an extension with an indexed ruleset format
 // version different from the one currently used by Chrome is loaded, the
 // extension ruleset will be reindexed.
-constexpr int kIndexedRulesetFormatVersion = 36;
+constexpr int kIndexedRulesetFormatVersion = 37;
 
 // This static assert is meant to catch cases where
 // url_pattern_index::kUrlPatternIndexFormatVersion is incremented without
@@ -930,6 +931,15 @@ bool IsResponseHeaderMatchingEnabled() {
 bool IsHeaderSubstitutionEnabled() {
   return base::FeatureList::IsEnabled(
       extensions_features::kDeclarativeNetRequestHeaderSubstitution);
+}
+
+bool CanMatchResponseHeaderValuesWithoutHostPermissions(
+    std::string_view header_name) {
+  // Content-Encoding is not CORS-safelisted, but its values are determined by
+  // the server's configuration and the browser's Accept-Encoding header rather
+  // than the user.
+  return network::cors::IsCorsSafelistedResponseHeaderName(header_name) ||
+         base::EqualsCaseInsensitiveASCII(header_name, "content-encoding");
 }
 
 }  // namespace extensions::declarative_net_request

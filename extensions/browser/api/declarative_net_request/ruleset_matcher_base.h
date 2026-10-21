@@ -73,7 +73,8 @@ class RulesetMatcherBase {
 
   void OnRenderFrameCreated(content::RenderFrameHost* host);
   void OnRenderFrameDeleted(content::RenderFrameHost* host);
-  void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
+  void OnDidFinishNavigation(content::NavigationHandle* navigation_handle,
+                             bool has_host_access_for_navigation);
 
   // Returns the tracked highest priority matching allowsAllRequests action, if
   // any, for `host`.

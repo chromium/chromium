@@ -846,5 +846,79 @@ TEST_F(CompositeMatcherResponseHeadersTest, AllowRuleMatchedAcrossStages) {
   }
 }
 
+// Tests that rules matching on response header values that require host
+// permissions are skipped during matching (instead of having their actions
+// dropped) if the extension doesn't have host access to the request. In
+// particular, such a redirect rule must not mask lower priority rules, since
+// that would reveal whether the header value matched.
+TEST_F(CompositeMatcherResponseHeadersTest,
+       HeaderValueMatchingRequiresHostAccess) {
+  TestRule redirect_rule = CreateGenericRule(kMinValidID);
+  redirect_rule.priority = 2;
+  redirect_rule.condition->url_filter = std::string("secret.test");
+  redirect_rule.condition->response_headers = std::vector<TestHeaderCondition>(
+      {TestHeaderCondition("set-cookie", {"sid=a*"}, {})});
+  redirect_rule.action->type = std::string("redirect");
+  redirect_rule.action->redirect.emplace();
+  redirect_rule.action->redirect->url = std::string("http://redirected.test");
+
+  TestRule block_rule = CreateGenericRule(kMinValidID + 1);
+  block_rule.priority = 1;
+  block_rule.condition->url_filter = std::string("secret.test");
+  block_rule.condition->response_headers = std::vector<TestHeaderCondition>(
+      {TestHeaderCondition("set-cookie", {}, {})});
+
+  std::unique_ptr<RulesetMatcher> matcher;
+  ASSERT_TRUE(CreateVerifiedMatcher({redirect_rule, block_rule},
+                                    CreateTemporarySource(), &matcher));
+  CompositeMatcher::MatcherList matchers;
+  matchers.push_back(std::move(matcher));
+  auto composite_matcher = std::make_unique<CompositeMatcher>(
+      std::move(matchers), /*extension_id=*/"extensionid",
+      HostPermissionsAlwaysRequired::kFalse);
+
+  struct {
+    std::string set_cookie_value;
+    PageAccess page_access;
+    int expected_rule_id;
+  } test_cases[] = {
+      // With host access, the redirect rule is matched iff the cookie matches.
+      {"sid=abc", PageAccess::kAllowed, *redirect_rule.id},
+      {"sid=xyz", PageAccess::kAllowed, *block_rule.id},
+
+      // Without host access, the block rule is always matched.
+      {"sid=abc", PageAccess::kWithheld, *block_rule.id},
+      {"sid=xyz", PageAccess::kWithheld, *block_rule.id},
+      {"sid=abc", PageAccess::kDenied, *block_rule.id},
+      {"sid=xyz", PageAccess::kDenied, *block_rule.id},
+  };
+
+  GURL url("http://secret.test");
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("Testing %s with page access %d",
+                                    test_case.set_cookie_value.c_str(),
+                                    static_cast<int>(test_case.page_access)));
+
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders("HTTP/1.0 200 OK\r\nSet-Cookie: " +
+                                          test_case.set_cookie_value + "\r\n"));
+    RequestParams params = CreateRequestWithResponseHeaders(url, headers.get());
+
+    // Match in OnBeforeRequest first to mirror the request matching flow.
+    EXPECT_FALSE(composite_matcher
+                     ->GetAction(params, RulesetMatchingStage::kOnBeforeRequest,
+                                 test_case.page_access)
+                     .action);
+
+    ActionInfo action_info = composite_matcher->GetAction(
+        params, RulesetMatchingStage::kOnHeadersReceived,
+        test_case.page_access);
+    ASSERT_TRUE(action_info.action);
+    EXPECT_EQ(test_case.expected_rule_id,
+              static_cast<int>(action_info.action->rule_id));
+    EXPECT_FALSE(action_info.notify_request_withheld);
+  }
+}
+
 }  // namespace
 }  // namespace extensions::declarative_net_request

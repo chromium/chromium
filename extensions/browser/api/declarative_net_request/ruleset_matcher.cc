@@ -336,9 +336,12 @@ void RulesetMatcher::OnRenderFrameDeleted(content::RenderFrameHost* host) {
 }
 
 void RulesetMatcher::OnDidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  url_matcher_.OnDidFinishNavigation(navigation_handle);
-  regex_matcher_.OnDidFinishNavigation(navigation_handle);
+    content::NavigationHandle* navigation_handle,
+    bool has_host_access_for_navigation) {
+  url_matcher_.OnDidFinishNavigation(navigation_handle,
+                                     has_host_access_for_navigation);
+  regex_matcher_.OnDidFinishNavigation(navigation_handle,
+                                       has_host_access_for_navigation);
 }
 
 std::optional<RequestAction>

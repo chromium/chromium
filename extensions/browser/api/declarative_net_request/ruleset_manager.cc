@@ -18,6 +18,9 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/web_cache/browser/web_cache_manager.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/constants.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
@@ -274,8 +277,31 @@ void RulesetManager::OnRenderFrameDeleted(content::RenderFrameHost* host) {
 
 void RulesetManager::OnDidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  content::RenderFrameHost* host = navigation_handle->GetRenderFrameHost();
+  DCHECK(host);
+
+  int tab_id = extension_misc::kUnknownTabId;
+  int window_id_unused = extension_misc::kUnknownWindowId;
+  ExtensionsBrowserClient::Get()->GetTabAndWindowIdForWebContents(
+      content::WebContents::FromRenderFrameHost(host), &tab_id,
+      &window_id_unused);
+  const WebRequestResourceType resource_type =
+      host->GetParentOrOuterDocument() ? WebRequestResourceType::SUB_FRAME
+                                       : WebRequestResourceType::MAIN_FRAME;
+
   for (ExtensionRulesetData& ruleset : rulesets_) {
-    ruleset.matcher->OnDidFinishNavigation(navigation_handle);
+    // For navigation requests, `CanExtensionAccessURL` only checks host
+    // permissions for the URL, not the initiator. However, the initiator is
+    // still passed in so that navigations initiated by policy-blocked or
+    // user-restricted hosts are denied access.
+    PageAccess page_access_for_navigation =
+        WebRequestPermissions::CanExtensionAccessURL(
+            permission_helper_, ruleset.extension_id,
+            host->GetLastCommittedURL(), tab_id, /*crosses_incognito=*/false,
+            WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL,
+            navigation_handle->GetInitiatorOrigin(), resource_type);
+    ruleset.matcher->OnDidFinishNavigation(navigation_handle,
+                                           page_access_for_navigation);
   }
 }
 

@@ -94,7 +94,8 @@ class CompositeMatcher {
 
   // Returns all matching RequestActions for the request corresponding to
   // modifyHeaders rules matched from this extension, sorted in descending order
-  // by rule priority.
+  // by rule priority. `GetAction()` must be called on `params` before calling
+  // this method.
   std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
       RulesetMatchingStage stage) const;
@@ -104,7 +105,9 @@ class CompositeMatcher {
 
   void OnRenderFrameCreated(content::RenderFrameHost* host);
   void OnRenderFrameDeleted(content::RenderFrameHost* host);
-  void OnDidFinishNavigation(content::NavigationHandle* navigation_handle);
+  void OnDidFinishNavigation(
+      content::NavigationHandle* navigation_handle,
+      PermissionsData::PageAccess page_access_for_navigation);
 
   // Returns if this extension has any rulesets with rules that are matched in
   // the corresponding matching `stage`.

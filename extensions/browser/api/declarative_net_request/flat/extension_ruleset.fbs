@@ -108,6 +108,17 @@ table EmbedderConditions {
   /// especially if future components may reuse these conditions.
   response_headers: [HeaderCondition];
   excluded_response_headers: [HeaderCondition];
+
+  /// Whether matching this rule requires host permissions for the request. This
+  /// is true if any condition in `response_headers` or
+  /// `excluded_response_headers` matches on the values of a header for which
+  /// this requires host permissions (since the match result could leak the
+  /// header's value to the extension), and false otherwise (including for rules
+  /// without response header conditions). Note: this defaults to true so that
+  /// if the field is ever missing from a rule, e.g. due to an indexing bug, the
+  /// rule fails closed instead of exposing header values to extensions without
+  /// host permissions.
+  requires_host_permissions: bool = true;
 }
 
 /// This provides a mapping from an index type to its index within

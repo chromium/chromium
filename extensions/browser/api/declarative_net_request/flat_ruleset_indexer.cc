@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/declarative_net_request/flat_ruleset_indexer.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/check_op.h"
@@ -271,6 +272,26 @@ FlatVectorOffset<flat::HeaderCondition> BuildHeaderConditionsOffset(
   return builder->CreateVector(flat_header_infos);
 }
 
+// Returns whether `indexed_rule` has any matching condition that requires host
+// permissions (see `CanMatchResponseHeaderValuesWithoutHostPermissions`).
+// Note: empty value lists are not stored in the flatbuffer (see
+// `BuildVectorOfSharedStringsImpl`), so conditions with empty value lists only
+// match on the header's presence.
+bool HasConditionRequiringHostPermissions(const IndexedRule& indexed_rule) {
+  auto requires_host_permissions = [](const dnr_api::HeaderInfo& info) {
+    bool matches_on_values =
+        (info.values && !info.values->empty()) ||
+        (info.excluded_values && !info.excluded_values->empty());
+    return matches_on_values &&
+           !CanMatchResponseHeaderValuesWithoutHostPermissions(info.header);
+  };
+
+  return std::ranges::any_of(indexed_rule.response_headers,
+                             requires_host_permissions) ||
+         std::ranges::any_of(indexed_rule.excluded_response_headers,
+                             requires_host_permissions);
+}
+
 FlatOffset<flatbuffers::Vector<uint8_t>> BuildEmbedderConditionsOffset(
     flatbuffers::FlatBufferBuilder* builder,
     const IndexedRule& indexed_rule) {
@@ -305,7 +326,9 @@ FlatOffset<flatbuffers::Vector<uint8_t>> BuildEmbedderConditionsOffset(
     auto nested_flatbuffer_root_offset = flat::CreateEmbedderConditions(
         nested_builder, tab_ids_included_offset, tab_ids_excluded_offset,
         top_domains_included_offset, top_domains_excluded_offset,
-        response_headers_offset, excluded_response_headers_offset);
+        response_headers_offset, excluded_response_headers_offset,
+        /*requires_host_permissions=*/
+        HasConditionRequiringHostPermissions(indexed_rule));
     nested_builder.Finish(nested_flatbuffer_root_offset,
                           kEmbedderConditionsBufferIdentifier);
   }

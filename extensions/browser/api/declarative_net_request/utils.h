@@ -10,6 +10,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -220,6 +221,14 @@ bool IsResponseHeaderMatchingEnabled();
 // Returns if the browser has enabled regex substitutions (and filtering) for
 // modifyHeaders rules.
 bool IsHeaderSubstitutionEnabled();
+
+// Returns whether the values of the response header `header_name` can be
+// matched by a rule's `responseHeaders` or `excludedResponseHeaders` conditions
+// even if the extension doesn't have host permissions for the request. Since
+// this is called at indexing time, any changes for this function requires
+// updating the `kIndexedRulesetFormatVersion`.
+bool CanMatchResponseHeaderValuesWithoutHostPermissions(
+    std::string_view header_name);
 
 }  // namespace declarative_net_request
 }  // namespace extensions
