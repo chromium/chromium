@@ -5,12 +5,10 @@
 #include "components/enterprise/browser/reporting/user_security_signals_service.h"
 
 #include "base/run_loop.h"
-#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
@@ -156,14 +154,6 @@ class UserSecuritySignalsServiceTest : public testing::Test {
     }
   }
 
-  // Note: Cadence unit is hours.
-  void OverrideSecurityUploadCadence(base::TimeDelta new_cadence) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        enterprise_signals::features::kProfileSignalsReportingEnabled,
-        {{enterprise_signals::features::kProfileSignalsReportingInterval.name,
-          base::ToString(new_cadence.InHours()) + "h"}});
-  }
-
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -172,7 +162,6 @@ class UserSecuritySignalsServiceTest : public testing::Test {
   network::TestCookieManager test_cookie_manager_;
   testing::StrictMock<policy::MockPolicyService> policy_service_;
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<UserSecuritySignalsService> service_ = nullptr;
 };
 
@@ -567,83 +556,6 @@ TEST_F(UserSecuritySignalsServiceTest, DefaultCadenceIsFourHours) {
   histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
                                        SecurityReportTrigger::kTimer,
                                        ExpectedInitialTimerReportCount() + 1);
-}
-
-// Test that verifies if the feature flag param overrides the upload cadence
-// correctly.
-TEST_F(UserSecuritySignalsServiceTest, FlagOverrideCadence) {
-  auto default_security_upload_cadence =
-      UserSecuritySignalsService::GetSecurityUploadCadence();
-
-  // Overwrite the feature flag parameter to double the upload interval.
-  OverrideSecurityUploadCadence(default_security_upload_cadence * 2);
-
-  SetEnabledPolicy(true);
-
-  CreateAndRunSignalsService();
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  // Fast forwarding should not trigger another upload, since the interval is
-  // overwritten.
-  EXPECT_CALL(delegate_, OnReportEventTriggered(_)).Times(0);
-  FastForwardCustomTime(default_security_upload_cadence);
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  // Fast forwarding again should trigger another upload.
-  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
-      .Times(1);
-  FastForwardCustomTime(default_security_upload_cadence);
-
-  histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
-                                       SecurityReportTrigger::kTimer,
-                                       ExpectedInitialTimerReportCount() + 1);
-}
-
-// Test that verifies if the feature flag param overrides the upload cadence
-// correctly, even when the timer has already started. Note that this affects
-// the timer on next upload while the currently running timer is unaffected.
-TEST_F(UserSecuritySignalsServiceTest, FlagOverrideCadenceWhileRunning) {
-  auto default_security_upload_cadence =
-      UserSecuritySignalsService::GetSecurityUploadCadence();
-
-  SetEnabledPolicy(true);
-
-  CreateAndRunSignalsService();
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  // Fast forwarding should trigger another upload, since the interval is still
-  // at default value.
-  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
-      .Times(1);
-  FastForwardCustomTime(default_security_upload_cadence);
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  // Overwrite the feature flag parameter to double the upload interval.
-  OverrideSecurityUploadCadence(default_security_upload_cadence * 2);
-
-  // Fast forwarding should trigger another upload because the timer started
-  // before we overwrite the interval, so it would be using the old value (i.e
-  // not doubled).
-  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
-      .Times(1);
-  FastForwardCustomTime(default_security_upload_cadence);
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  // No upload trigger on first fast forward because interval is already
-  // doubled now.
-  EXPECT_CALL(delegate_, OnReportEventTriggered(_)).Times(0);
-  FastForwardCustomTime(default_security_upload_cadence);
-  Mock::VerifyAndClearExpectations(&delegate_);
-
-  // Fast forward again should trigger an upload since we reached the new,
-  // doubled upload deadline.
-  EXPECT_CALL(delegate_, OnReportEventTriggered(SecurityReportTrigger::kTimer))
-      .Times(1);
-  FastForwardCustomTime(default_security_upload_cadence);
-
-  histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
-                                       SecurityReportTrigger::kTimer,
-                                       ExpectedInitialTimerReportCount() + 3);
 }
 
 TEST_F(UserSecuritySignalsServiceTest, ObserverSafety) {

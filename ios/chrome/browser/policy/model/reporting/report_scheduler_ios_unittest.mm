@@ -12,7 +12,6 @@
 #import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
-#import "components/device_signals/core/common/signals_features.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
@@ -692,12 +691,8 @@ TEST_F(ProfileReportSchedulerIOSTest,
 // Profile reporting and security signals reporting are enabled with cookies.
 TEST_F(ProfileReportSchedulerIOSTest,
        UploadReportOnProfileOpen_WithSecuritySignalsAndCookies) {
-  base::test::ScopedFeatureList signals_feature_list;
-  signals_feature_list.InitWithFeatures(
-      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
-                            enterprise_signals::features::
-                                kProfileSignalsReportingEnabled},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList signals_feature_list(
+      enterprise_reporting::kIOSSignalSharingEnabled);
 
   EXPECT_CALL_SetupRegistrationWithSetDMToken();
   EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
@@ -733,12 +728,8 @@ TEST_F(ProfileReportSchedulerIOSTest,
 // Profile reporting is disabled, but security signals reporting is enabled.
 TEST_F(ProfileReportSchedulerIOSTest,
        UploadReportOnProfileOpen_OnlySecuritySignals) {
-  base::test::ScopedFeatureList signals_feature_list;
-  signals_feature_list.InitWithFeatures(
-      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
-                            enterprise_signals::features::
-                                kProfileSignalsReportingEnabled},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList signals_feature_list(
+      enterprise_reporting::kIOSSignalSharingEnabled);
 
   EXPECT_CALL_SetupRegistrationWithSetDMToken();
   EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
@@ -838,12 +829,8 @@ TEST_F(ProfileReportSchedulerIOSTest,
 // enabled and kIOSSignalSharingEnabled is enabled, but cookie-based
 // authentication is disabled by default.
 TEST_F(ProfileReportSchedulerIOSTest, UserSecuritySignalsReportingPolicyEnabled) {
-  base::test::ScopedFeatureList signals_feature_list;
-  signals_feature_list.InitWithFeatures(
-      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
-                           enterprise_signals::features::
-                               kProfileSignalsReportingEnabled},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList signals_feature_list(
+      enterprise_reporting::kIOSSignalSharingEnabled);
 
   ToggleCloudReport(true);
   profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
@@ -859,12 +846,8 @@ TEST_F(ProfileReportSchedulerIOSTest, UserSecuritySignalsReportingPolicyEnabled)
 // are enabled.
 TEST_F(ProfileReportSchedulerIOSTest,
        UserSecurityAuthenticatedReportingPolicyEnabled) {
-  base::test::ScopedFeatureList signals_feature_list;
-  signals_feature_list.InitWithFeatures(
-      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
-                           enterprise_signals::features::
-                               kProfileSignalsReportingEnabled},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList signals_feature_list(
+      enterprise_reporting::kIOSSignalSharingEnabled);
 
   ToggleCloudReport(true);
   profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
@@ -880,10 +863,8 @@ TEST_F(ProfileReportSchedulerIOSTest,
 // even if UserSecuritySignalsReporting policy is enabled.
 TEST_F(ProfileReportSchedulerIOSTest, IOSSignalSharingFeatureDisabled) {
   base::test::ScopedFeatureList signals_feature_list;
-  signals_feature_list.InitWithFeatures(
-      /*enabled_features=*/{enterprise_signals::features::
-                               kProfileSignalsReportingEnabled},
-      /*disabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled});
+  signals_feature_list.InitAndDisableFeature(
+      enterprise_reporting::kIOSSignalSharingEnabled);
 
   ToggleCloudReport(true);
   profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
@@ -896,12 +877,8 @@ TEST_F(ProfileReportSchedulerIOSTest, IOSSignalSharingFeatureDisabled) {
 // Tests that OnReportEventTriggered runs the callback with
 // ReportTrigger::kTriggerSecurity when security reports are enabled.
 TEST_F(ProfileReportSchedulerIOSTest, OnReportEventTriggered) {
-  base::test::ScopedFeatureList signals_feature_list;
-  signals_feature_list.InitWithFeatures(
-      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
-                           enterprise_signals::features::
-                               kProfileSignalsReportingEnabled},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList signals_feature_list(
+      enterprise_reporting::kIOSSignalSharingEnabled);
 
   ToggleCloudReport(true);
   profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
@@ -918,12 +895,8 @@ TEST_F(ProfileReportSchedulerIOSTest, OnReportEventTriggered) {
 // reports are disabled.
 TEST_F(ProfileReportSchedulerIOSTest,
        OnReportEventTriggered_SecurityReportsDisabled) {
-  base::test::ScopedFeatureList signals_feature_list;
-  signals_feature_list.InitWithFeatures(
-      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
-                           enterprise_signals::features::
-                               kProfileSignalsReportingEnabled},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList signals_feature_list(
+      enterprise_reporting::kIOSSignalSharingEnabled);
 
   ToggleCloudReport(true);
   profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, false);
@@ -938,12 +911,8 @@ TEST_F(ProfileReportSchedulerIOSTest,
 
 // Tests that OnReportEventTriggered does not crash when the callback is null.
 TEST_F(ProfileReportSchedulerIOSTest, OnReportEventTriggered_NullCallback) {
-  base::test::ScopedFeatureList signals_feature_list;
-  signals_feature_list.InitWithFeatures(
-      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
-                           enterprise_signals::features::
-                               kProfileSignalsReportingEnabled},
-      /*disabled_features=*/{});
+  base::test::ScopedFeatureList signals_feature_list(
+      enterprise_reporting::kIOSSignalSharingEnabled);
 
   ToggleCloudReport(true);
   profile_->GetPrefs()->SetBoolean(kUserSecuritySignalsReporting, true);
@@ -968,9 +937,7 @@ TEST_F(ProfileReportSchedulerIOSTest,
        InitializationTriggersSecurityReportWhenSignalSharingEnabled) {
   base::test::ScopedFeatureList signals_feature_list;
   signals_feature_list.InitWithFeatures(
-      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled,
-                            enterprise_signals::features::
-                                kProfileSignalsReportingEnabled},
+      /*enabled_features=*/{enterprise_reporting::kIOSSignalSharingEnabled},
       /*disabled_features=*/{enterprise_reporting::kUploadReportOnProfileOpen});
 
   EXPECT_CALL_SetupRegistrationWithSetDMToken();

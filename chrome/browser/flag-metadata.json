@@ -8496,15 +8496,6 @@
     "expiry_milestone": 158
   },
   {
-    "name": "profile-signals-reporting-enabled",
-    "owners": [
-      "seblalancette@google.com",
-      "xzonghan@google.com",
-      "zmin@google.com"
-    ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "profiles-reordering",
     "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
     "expiry_milestone": 146

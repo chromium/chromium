@@ -172,11 +172,8 @@ class ReportSchedulerTest : public ::testing::Test {
   ~ReportSchedulerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{enterprise_signals::features::kProfileSignalsReportingEnabled,
-          profile_security_signals_enabled()},
-         {kUploadReportOnProfileOpen,
-          upload_report_on_profile_open_enabled()}});
+    scoped_feature_list_.InitWithFeatureState(
+        kUploadReportOnProfileOpen, upload_report_on_profile_open_enabled());
     ASSERT_TRUE(profile_manager_.SetUp());
     client_ptr_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_ = client_ptr_.get();
@@ -311,7 +308,6 @@ class ReportSchedulerTest : public ::testing::Test {
 
   // This function is virtual to allow derived classes to override it and test
   // the behavior with the feature enabled/disabled.
-  virtual bool profile_security_signals_enabled() { return false; }
   virtual bool upload_report_on_profile_open_enabled() { return false; }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -1021,12 +1017,15 @@ TEST_F(ReportSchedulerTest, UploadReportSucceededForProfileReporting) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Profile security signals are not supported on ChromeOS.
-class EnabledProfileSecuritySignalsReportSchedulerTest
+class UploadReportOnProfileOpenReportSchedulerTest
     : public ReportSchedulerTest {
  protected:
-  bool profile_security_signals_enabled() override { return true; }
   bool upload_report_on_profile_open_enabled() override { return true; }
+};
 
+class EnabledProfileSecuritySignalsReportSchedulerTest
+    : public UploadReportOnProfileOpenReportSchedulerTest {
+ protected:
   void SetCloudProfileReportingPolicy(TestingProfile* profile, bool enabled) {
     profile->GetTestingPrefService()->SetManagedPref(
         kCloudProfileReportingEnabled, base::Value(enabled));
@@ -1043,12 +1042,6 @@ class EnabledProfileSecuritySignalsReportSchedulerTest
           kUserSecurityAuthenticatedReporting, base::Value(*use_cookies));
     }
   }
-};
-
-class UploadReportOnProfileOpenReportSchedulerTest
-    : public ReportSchedulerTest {
- protected:
-  bool upload_report_on_profile_open_enabled() override { return true; }
 };
 
 // Profile reporting does not support ChromeOS.

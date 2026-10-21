@@ -39,7 +39,7 @@ UserSecuritySignalsService::~UserSecuritySignalsService() {
 }
 
 base::TimeDelta UserSecuritySignalsService::GetSecurityUploadCadence() {
-  return enterprise_signals::features::kProfileSignalsReportingInterval.Get();
+  return base::Hours(4);
 }
 
 void UserSecuritySignalsService::Start() {
@@ -83,9 +83,6 @@ void UserSecuritySignalsService::OnReportUploaded() {
 
 void UserSecuritySignalsService::OnCookieChange(
     const net::CookieChangeInfo& change) {
-  if (!enterprise_signals::features::kTriggerOnCookieChange.Get()) {
-    return;
-  }
   // Only trigger a new upload if the cookie change could result in a new or
   // updated session.
   if (change.cause == net::CookieChangeCause::INSERTED) {

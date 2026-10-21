@@ -8,7 +8,6 @@
 
 #import "base/strings/strcat.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/device_signals/core/common/signals_features.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
 #import "components/enterprise/browser/reporting/reporting_features.h"
 #import "components/enterprise/connectors/core/features.h"
@@ -103,7 +102,6 @@ bool IsDeviceSignalsDisclosureEnabled(PrefService* profile_prefs,
                                       PrefService* local_state) {
   return base::FeatureList::IsEnabled(
              enterprise_reporting::kIOSSignalSharingEnabled) &&
-         enterprise_signals::features::IsProfileSignalsReportingEnabled() &&
          (IsBrowserReportingEnabled(local_state) ||
           IsProfileReportingEnabled(profile_prefs));
 }

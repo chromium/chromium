@@ -8,7 +8,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/reporting_util.h"
-#include "components/device_signals/core/common/signals_features.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_service.h"
@@ -20,8 +19,7 @@ ReportSchedulerAndroid::ReportSchedulerAndroid()
     : profile_(nullptr), prefs_(g_browser_process->local_state()) {}
 ReportSchedulerAndroid::ReportSchedulerAndroid(Profile* profile)
     : profile_(profile), prefs_(profile_->GetPrefs()) {
-  if (profile &&
-      enterprise_signals::features::IsProfileSignalsReportingEnabled()) {
+  if (profile) {
     user_security_signals_service_ =
         std::make_unique<UserSecuritySignalsService>(
             prefs_, this,

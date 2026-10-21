@@ -19,7 +19,6 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/policy_service.h"
@@ -56,12 +55,10 @@ ReportSchedulerDesktop::ReportSchedulerDesktop()
 ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile)
     : profile_(profile), prefs_(profile->GetPrefs()) {
   if (profile) {
-    if (enterprise_signals::features::IsProfileSignalsReportingEnabled()) {
-      user_security_signals_service_ =
-          std::make_unique<UserSecuritySignalsService>(
-              prefs_, this,
-              profile->GetProfilePolicyConnector()->policy_service());
-    }
+    user_security_signals_service_ =
+        std::make_unique<UserSecuritySignalsService>(
+            prefs_, this,
+            profile->GetProfilePolicyConnector()->policy_service());
   }
 }
 
