@@ -98,10 +98,19 @@ TEST_F(GlicZoomControllerTest, ZoomInStepsThroughFactorsAndClamps) {
   EXPECT_EQ(user_actions.GetActionCount("Glic.ZoomIn"), 5);
   EXPECT_EQ(user_actions.GetActionCount("Glic.ZoomInAtMax"), 1);
   histograms.ExpectBucketCount("Glic.ZoomAction", GlicZoomAction::kZoomIn, 5);
+  histograms.ExpectBucketCount("Glic.Consumer.ZoomAction",
+                               GlicZoomAction::kZoomIn, 5);
+  histograms.ExpectTotalCount("Glic.Enterprise.ZoomAction", 0);
   histograms.ExpectBucketCount("Glic.ZoomAction", GlicZoomAction::kZoomInAtMax,
                                1);
+  histograms.ExpectBucketCount("Glic.Consumer.ZoomAction",
+                               GlicZoomAction::kZoomInAtMax, 1);
+  histograms.ExpectTotalCount("Glic.Enterprise.ZoomAction", 0);
   histograms.ExpectBucketCount("Glic.ZoomAction.Hotkey",
                                GlicZoomAction::kZoomIn, 5);
+  histograms.ExpectBucketCount("Glic.Consumer.ZoomAction.Hotkey",
+                               GlicZoomAction::kZoomIn, 5);
+  histograms.ExpectTotalCount("Glic.Enterprise.ZoomAction.Hotkey", 0);
 }
 
 TEST_F(GlicZoomControllerTest, ZoomOutStepsThroughFactorsAndClamps) {
@@ -143,10 +152,19 @@ TEST_F(GlicZoomControllerTest, ZoomOutStepsThroughFactorsAndClamps) {
   EXPECT_EQ(user_actions.GetActionCount("Glic.ZoomOut"), 5);
   EXPECT_EQ(user_actions.GetActionCount("Glic.ZoomOutAtMin"), 1);
   histograms.ExpectBucketCount("Glic.ZoomAction", GlicZoomAction::kZoomOut, 5);
+  histograms.ExpectBucketCount("Glic.Consumer.ZoomAction",
+                               GlicZoomAction::kZoomOut, 5);
+  histograms.ExpectTotalCount("Glic.Enterprise.ZoomAction", 0);
   histograms.ExpectBucketCount("Glic.ZoomAction", GlicZoomAction::kZoomOutAtMin,
                                1);
+  histograms.ExpectBucketCount("Glic.Consumer.ZoomAction",
+                               GlicZoomAction::kZoomOutAtMin, 1);
+  histograms.ExpectTotalCount("Glic.Enterprise.ZoomAction", 0);
   histograms.ExpectBucketCount("Glic.ZoomAction.Scroll",
                                GlicZoomAction::kZoomOut, 5);
+  histograms.ExpectBucketCount("Glic.Consumer.ZoomAction.Scroll",
+                               GlicZoomAction::kZoomOut, 5);
+  histograms.ExpectTotalCount("Glic.Enterprise.ZoomAction.Scroll", 0);
 }
 
 TEST_F(GlicZoomControllerTest, ZoomReset) {
@@ -166,8 +184,14 @@ TEST_F(GlicZoomControllerTest, ZoomReset) {
 
   EXPECT_EQ(user_actions.GetActionCount("Glic.ZoomReset"), 1);
   histograms.ExpectBucketCount("Glic.ZoomAction", GlicZoomAction::kReset, 1);
+  histograms.ExpectBucketCount("Glic.Consumer.ZoomAction",
+                               GlicZoomAction::kReset, 1);
+  histograms.ExpectTotalCount("Glic.Enterprise.ZoomAction", 0);
   histograms.ExpectBucketCount("Glic.ZoomAction.HotkeyWithShift",
                                GlicZoomAction::kReset, 1);
+  histograms.ExpectBucketCount("Glic.Consumer.ZoomAction.HotkeyWithShift",
+                               GlicZoomAction::kReset, 1);
+  histograms.ExpectTotalCount("Glic.Enterprise.ZoomAction.HotkeyWithShift", 0);
 }
 
 TEST_F(GlicZoomControllerTest, ZoomIsIsolatedFromHost) {

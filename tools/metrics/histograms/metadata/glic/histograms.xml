@@ -1921,20 +1921,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Selection.Action.{FreState}" enum="GlicSelectionAction"
-    expires_after="2027-03-07">
-  <owner>gklassen@chromium.org</owner>
-  <owner>vollick@chromium.org</owner>
-  <summary>
-    Records the actions taken on the Glic selection affordance (nudge or
-    widget). This includes when the affordance is shown and when it is clicked.
-  </summary>
-  <token key="FreState">
-    <variant name="PostFre" summary="User has accepted the FRE"/>
-    <variant name="PreFre" summary="User has not accepted the FRE"/>
-  </token>
-</histogram>
-
 <histogram name="Glic.Selection.InlineCueMenuEnabled" enum="BooleanEnabled"
     expires_after="2026-12-31">
   <owner>wusirui@google.com</owner>
@@ -1966,62 +1952,6 @@ chromium-metrics-reviews@google.com.
     per profile initialization. This logs the number of blocked origin site
     exceptions for the inline cue.
   </summary>
-</histogram>
-
-<histogram name="Glic.Selection.WidgetClicked.SelectionLength.{FreState}"
-    units="characters" expires_after="2027-03-07">
-  <owner>gklassen@chromium.org</owner>
-  <owner>vollick@chromium.org</owner>
-  <summary>
-    Records the length of the selected text (in characters) when the Glic
-    selection widget is clicked.
-  </summary>
-  <token key="FreState">
-    <variant name="PostFre" summary="User has accepted the FRE"/>
-    <variant name="PreFre" summary="User has not accepted the FRE"/>
-  </token>
-</histogram>
-
-<histogram name="Glic.Selection.WidgetClicked.SelectionWordCount.{FreState}"
-    units="words" expires_after="2027-03-07">
-  <owner>wusirui@google.com</owner>
-  <owner>naai-xfn@google.com</owner>
-  <summary>
-    Records the number of words in the selected text when the inline cue is
-    clicked by the user. Recorded once per click on any widget action button.
-  </summary>
-  <token key="FreState">
-    <variant name="PostFre" summary="User has accepted the FRE"/>
-    <variant name="PreFre" summary="User has not accepted the FRE"/>
-  </token>
-</histogram>
-
-<histogram name="Glic.Selection.WidgetShown.SelectionLength.{FreState}"
-    units="characters" expires_after="2027-03-07">
-  <owner>wusirui@google.com</owner>
-  <owner>naai-xfn@google.com</owner>
-  <summary>
-    Records the length of the selected text (in characters) whenever the inline
-    cue is shown to the user.
-  </summary>
-  <token key="FreState">
-    <variant name="PostFre" summary="User has accepted the FRE"/>
-    <variant name="PreFre" summary="User has not accepted the FRE"/>
-  </token>
-</histogram>
-
-<histogram name="Glic.Selection.WidgetShown.SelectionWordCount.{FreState}"
-    units="words" expires_after="2026-12-31">
-  <owner>wusirui@google.com</owner>
-  <owner>naai-xfn@google.com</owner>
-  <summary>
-    Records the number of words in the selected text whenever the inline cue is
-    shown to the user.
-  </summary>
-  <token key="FreState">
-    <variant name="PostFre" summary="User has accepted the FRE"/>
-    <variant name="PreFre" summary="User has not accepted the FRE"/>
-  </token>
 </histogram>
 
 <histogram name="Glic.SetAltOSIcon.OnChromeStart" enum="BooleanEnabled"
@@ -2156,74 +2086,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.WarmingPool.ContainerCreationReason"
-    enum="GlicContainerCreationReason" expires_after="2027-03-01">
-  <owner>acondor@chromium.org</owner>
-  <owner>bryantchandler@chromium.org</owner>
-  <owner>glic-dev@google.com</owner>
-  <summary>
-    Logged when a Glic WebContents warming container is created in the warming
-    pool. Differentiates the reason or source of the EnsurePreload call.
-  </summary>
-</histogram>
-
-<histogram name="Glic.WarmingPool.HitStatus" enum="GlicWarmingPoolStatus"
-    expires_after="2027-03-01">
-  <owner>harringtond@chromium.org</owner>
-  <owner>glic-dev@google.com</owner>
-  <summary>
-    Logged when the Glic WebContents warming pool is used to provide a
-    pre-warmed WebContents. Reports whether the container was pre-warmed (hit),
-    not pre-warmed (cold), pre-warmed but expired before use, pre-warmed but
-    crashed before use, not pre-warmed because the pool was disabled by memory
-    pressure, or not pre-warmed because a backfill was still pending.
-  </summary>
-</histogram>
-
-<histogram name="Glic.WarmingPool.ReloadAfterExpiry"
-    enum="GlicReloadAfterExpiryStatus" expires_after="2027-03-01">
-  <owner>harringtond@chromium.org</owner>
-  <owner>glic-dev@google.com</owner>
-  <summary>
-    Logged when a WebContents container in the warming pool expires. Reports why
-    the container was or was not automatically reloaded.
-  </summary>
-</histogram>
-
-<histogram name="Glic.WarmingPool.TimeSinceCreatedAtHit" units="ms"
-    expires_after="2027-03-01">
-  <owner>harringtond@chromium.org</owner>
-  <owner>glic-dev@google.com</owner>
-  <summary>
-    Logged when the Glic WebContents warming pool reports a 'Hit' status.
-    Records the time elapsed since the container was initially created.
-  </summary>
-</histogram>
-
-<histogram name="Glic.WarmingPool.TimeSinceCreatedAtMiss" units="ms"
-    expires_after="2027-03-01">
-  <owner>harringtond@chromium.org</owner>
-  <owner>glic-dev@google.com</owner>
-  <summary>
-    Logged when the Glic WebContents warming pool reports a miss (Cold, Expired,
-    or Crashed) but a creation timestamp for a previous container was available.
-    Records the time elapsed since that container was initially created.
-  </summary>
-</histogram>
-
-<histogram name="Glic.WarmingPool.WarmedContainerFate"
-    enum="GlicWarmedContainerFate" expires_after="2027-03-01">
-  <owner>harringtond@chromium.org</owner>
-  <owner>glic-dev@google.com</owner>
-  <summary>
-    Tracks the fate of each warmed container in the Glic warming pool. Logged
-    when the container is used, expires, crashes, or is deleted on chrome
-    closed. Note that containers created and immediately returned from
-    TakeContainer are not tracked. This only covers containers that were warmed
-    before being taken.
-  </summary>
-</histogram>
-
 <histogram name="Glic.WarmingScheduler.SchedulingMethod"
     enum="GlicWarmingSchedulerSchedulingMethod" expires_after="2027-03-01">
   <owner>bryantchandler@chromium.org</owner>
@@ -2295,32 +2157,6 @@ chromium-metrics-reviews@google.com.
     metric logged on YT pages to understand if the button was found and how many
     tries (max is 2) it took to find it.
   </summary>
-</histogram>
-
-<histogram name="Glic.ZoomAction" enum="GlicZoomAction"
-    expires_after="2027-03-28">
-  <owner>cuianthony@chromium.org</owner>
-  <owner>glic-dev@google.com</owner>
-  <summary>
-    The zoom action taken by the user in the Glic UI. Recorded when the user
-    presses the zoom in, zoom out, or reset zoom keyboard shortcuts while the
-    Glic panel is focused, or uses scroll controls to zoom.
-  </summary>
-</histogram>
-
-<histogram name="Glic.ZoomAction.{GlicZoomSourceModifier}"
-    enum="GlicZoomAction" expires_after="2027-04-18">
-  <owner>cuianthony@chromium.org</owner>
-  <owner>glic-dev@google.com</owner>
-  <summary>
-    The zoom action taken by the user on the Glic UI. Recorded for
-    {GlicZoomSourceModifier}.
-  </summary>
-  <token key="GlicZoomSourceModifier">
-    <variant name="Hotkey" summary="hotkeys without the Shift modifier"/>
-    <variant name="HotkeyWithShift" summary="hotkeys with the Shift modifier"/>
-    <variant name="Scroll" summary="scrolling (e.g. using mouse wheel)"/>
-  </token>
 </histogram>
 
 <histogram name="Glic.ZoomLevel.SteadyState" units="%"
@@ -3600,6 +3436,87 @@ chromium-metrics-reviews@google.com.
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram name="Glic{GlicProvider}.Selection.Action.{FreState}"
+    enum="GlicSelectionAction" expires_after="2027-03-07">
+  <owner>gklassen@chromium.org</owner>
+  <owner>vollick@chromium.org</owner>
+  <summary>
+    Records the actions taken on the Glic selection affordance (nudge or
+    widget). This includes when the affordance is shown and when it is clicked.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="FreState">
+    <variant name="PostFre" summary="User has accepted the FRE"/>
+    <variant name="PreFre" summary="User has not accepted the FRE"/>
+  </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Selection.WidgetClicked.SelectionLength.{FreState}"
+    units="characters" expires_after="2027-03-07">
+  <owner>gklassen@chromium.org</owner>
+  <owner>vollick@chromium.org</owner>
+  <summary>
+    Records the length of the selected text (in characters) when the Glic
+    selection widget is clicked. Scope: {GlicProvider}.
+  </summary>
+  <token key="FreState">
+    <variant name="PostFre" summary="User has accepted the FRE"/>
+    <variant name="PreFre" summary="User has not accepted the FRE"/>
+  </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Selection.WidgetClicked.SelectionWordCount.{FreState}"
+    units="words" expires_after="2027-03-07">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Records the number of words in the selected text when the inline cue is
+    clicked by the user. Recorded once per click on any widget action button.
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="FreState">
+    <variant name="PostFre" summary="User has accepted the FRE"/>
+    <variant name="PreFre" summary="User has not accepted the FRE"/>
+  </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Selection.WidgetShown.SelectionLength.{FreState}"
+    units="characters" expires_after="2027-03-07">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Records the length of the selected text (in characters) whenever the inline
+    cue is shown to the user. Scope: {GlicProvider}.
+  </summary>
+  <token key="FreState">
+    <variant name="PostFre" summary="User has accepted the FRE"/>
+    <variant name="PreFre" summary="User has not accepted the FRE"/>
+  </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Selection.WidgetShown.SelectionWordCount.{FreState}"
+    units="words" expires_after="2026-12-31">
+  <owner>wusirui@google.com</owner>
+  <owner>naai-xfn@google.com</owner>
+  <summary>
+    Records the number of words in the selected text whenever the inline cue is
+    shown to the user. Scope: {GlicProvider}.
+  </summary>
+  <token key="FreState">
+    <variant name="PostFre" summary="User has accepted the FRE"/>
+    <variant name="PreFre" summary="User has not accepted the FRE"/>
+  </token>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.Skills.Invoke.Funnel"
     enum="SkillsInvokeFunnel" expires_after="2027-04-04">
   <owner>michelleabreo@google.com</owner>
@@ -3876,6 +3793,113 @@ chromium-metrics-reviews@google.com.
     and the input mode (Text or Audio). Recorded at the end of each turn. Scope:
     {GlicProvider}.
   </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.WarmingPool.ContainerCreationReason"
+    enum="GlicContainerCreationReason" expires_after="2027-03-01">
+  <owner>acondor@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logged when a Glic WebContents warming container is created in the warming
+    pool. Differentiates the reason or source of the EnsurePreload call. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.WarmingPool.HitStatus"
+    enum="GlicWarmingPoolStatus" expires_after="2027-03-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logged when the Glic WebContents warming pool is used to provide a
+    pre-warmed WebContents. Reports whether the container was pre-warmed (hit),
+    not pre-warmed (cold), pre-warmed but expired before use, pre-warmed but
+    crashed before use, not pre-warmed because the pool was disabled by memory
+    pressure, or not pre-warmed because a backfill was still pending. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.WarmingPool.ReloadAfterExpiry"
+    enum="GlicReloadAfterExpiryStatus" expires_after="2027-03-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logged when a WebContents container in the warming pool expires. Reports why
+    the container was or was not automatically reloaded. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.WarmingPool.TimeSinceCreatedAtHit"
+    units="ms" expires_after="2027-03-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logged when the Glic WebContents warming pool reports a 'Hit' status.
+    Records the time elapsed since the container was initially created. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.WarmingPool.TimeSinceCreatedAtMiss"
+    units="ms" expires_after="2027-03-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logged when the Glic WebContents warming pool reports a miss (Cold, Expired,
+    or Crashed) but a creation timestamp for a previous container was available.
+    Records the time elapsed since that container was initially created. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.WarmingPool.WarmedContainerFate"
+    enum="GlicWarmedContainerFate" expires_after="2027-03-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Tracks the fate of each warmed container in the Glic warming pool. Logged
+    when the container is used, expires, crashes, or is deleted on chrome
+    closed. Note that containers created and immediately returned from
+    TakeContainer are not tracked. This only covers containers that were warmed
+    before being taken. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.ZoomAction" enum="GlicZoomAction"
+    expires_after="2027-03-28">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    The zoom action taken by the user in the Glic UI. Recorded when the user
+    presses the zoom in, zoom out, or reset zoom keyboard shortcuts while the
+    Glic panel is focused, or uses scroll controls to zoom. Scope:
+    {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.ZoomAction.{GlicZoomSourceModifier}"
+    enum="GlicZoomAction" expires_after="2027-04-18">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    The zoom action taken by the user on the Glic UI. Recorded for
+    {GlicZoomSourceModifier}. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicZoomSourceModifier">
+    <variant name="Hotkey" summary="hotkeys without the Shift modifier"/>
+    <variant name="HotkeyWithShift" summary="hotkeys with the Shift modifier"/>
+    <variant name="Scroll" summary="scrolling (e.g. using mouse wheel)"/>
+  </token>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 

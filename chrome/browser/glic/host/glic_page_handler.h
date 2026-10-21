@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -30,8 +31,7 @@ namespace glic {
 class GlicKeyedService;
 
 // Handles the Mojo requests coming from the Glic WebUI.
-class GlicPageHandler : public glic::mojom::PageHandler,
-                        public Host::Observer {
+class GlicPageHandler : public glic::mojom::PageHandler, public Host::Observer {
  public:
   GlicPageHandler(content::WebContents* webui_contents,
                   Host* host,
@@ -112,6 +112,7 @@ class GlicPageHandler : public glic::mojom::PageHandler,
   raw_ptr<Host> host_;
   raw_ptr<content::WebContents> webui_contents_;
   raw_ptr<content::BrowserContext> browser_context_;
+  GlicMetricReporter metric_reporter_;
   mojo::Receiver<glic::mojom::PageHandler> receiver_;
   mojo::Remote<glic::mojom::Page> page_;
   mojo::Remote<glic::mojom::WebClient> web_client_;

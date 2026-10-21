@@ -19,7 +19,9 @@ enum class GlicSettingsSection { kGemini, kGeminiEnterprise };
 class GlicProviderSpec;
 
 // Returns GlicKeyedService::Get(profile)->provider_spec() when the service
-// exists, else a static Consumer spec. Handles profile == nullptr.
+// exists, else a static spec chosen via geic::IsGeicEnabled(profile) for
+// regular profiles (or a static Consumer spec when profile is null or
+// non-regular).
 const GlicProviderSpec& GetGlicProviderSpec(Profile* profile);
 
 class GlicProviderSpec {

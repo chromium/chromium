@@ -6,8 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/utils.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -16,7 +16,9 @@
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/glic_webui_contents_manager.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
@@ -50,6 +52,8 @@ GlicWebContentsWarmingPool::ContainerCreationReason ToContainerCreationReason(
 
 class GlicWebContentsWarmingPool::Metrics {
  public:
+  explicit Metrics(Profile* profile) : metric_reporter_(profile) {}
+
   using WarmedContainerFate = GlicWebContentsWarmingPool::WarmedContainerFate;
 
   void RecordWarmingBlockedByMemoryPressure() {
@@ -58,19 +62,22 @@ class GlicWebContentsWarmingPool::Metrics {
 
   void OnReloadAfterExpiry(
       GlicWebContentsWarmingPool::ReloadAfterExpiryStatus status) {
-    base::UmaHistogramEnumeration("Glic.WarmingPool.ReloadAfterExpiry", status);
+    // Resolved per call: this pool is built during GlicKeyedService
+    // construction, when GetGlicProviderSpec() still returns the Consumer
+    // fallback (b/574535435).
+    metric_reporter_.RecordEnumeration("WarmingPool.ReloadAfterExpiry", status);
   }
 
   void OnWarmedContentCreated(
       GlicWebContentsWarmingPool::ContainerCreationReason reason) {
-    base::UmaHistogramEnumeration("Glic.WarmingPool.ContainerCreationReason",
-                                  reason);
+    metric_reporter_.RecordEnumeration("WarmingPool.ContainerCreationReason",
+                                       reason);
     warmed_container_creation_time_ = base::TimeTicks::Now();
     miss_status_ = WarmingPoolStatus::kCold;
   }
 
   void RecordWarmedContainerFate(WarmedContainerFate fate) {
-    base::UmaHistogramEnumeration("Glic.WarmingPool.WarmedContainerFate", fate);
+    metric_reporter_.RecordEnumeration("WarmingPool.WarmedContainerFate", fate);
   }
 
   GlicWebContentsWarmingPool::WarmingPoolStatus RecordTakeContainerStatus(
@@ -86,7 +93,7 @@ class GlicWebContentsWarmingPool::Metrics {
       status = miss_status_;
     }
 
-    base::UmaHistogramEnumeration("Glic.WarmingPool.HitStatus", status);
+    metric_reporter_.RecordEnumeration("WarmingPool.HitStatus", status);
     RecordTimeSinceCreatedAt(status);
 
     miss_status_ = WarmingPoolStatus::kCold;
@@ -133,9 +140,9 @@ class GlicWebContentsWarmingPool::Metrics {
     }
     const char* histogram_name =
         status == GlicWebContentsWarmingPool::WarmingPoolStatus::kHit
-            ? "Glic.WarmingPool.TimeSinceCreatedAtHit"
-            : "Glic.WarmingPool.TimeSinceCreatedAtMiss";
-    base::UmaHistogramLongTimes(
+            ? "WarmingPool.TimeSinceCreatedAtHit"
+            : "WarmingPool.TimeSinceCreatedAtMiss";
+    metric_reporter_.RecordLongTimes(
         histogram_name,
         base::TimeTicks::Now() - *warmed_container_creation_time_);
     warmed_container_creation_time_.reset();
@@ -147,6 +154,8 @@ class GlicWebContentsWarmingPool::Metrics {
   // Creation time of the warmed_container_. For misses, this is preserved
   // from the most recently destroyed container until reported.
   std::optional<base::TimeTicks> warmed_container_creation_time_;
+
+  GlicMetricReporter metric_reporter_;
 };
 
 GlicWebContentsWarmingPool::GlicWebContentsWarmingPool(Profile* profile,
@@ -161,7 +170,7 @@ GlicWebContentsWarmingPool::GlicWebContentsWarmingPool(Profile* profile,
                   ? features::kGlicWebContentsWarmingDelay.Get()
                   : base::Seconds(20),
       }),
-      metrics_(std::make_unique<Metrics>()) {
+      metrics_(std::make_unique<Metrics>(profile)) {
   CHECK(enabling_);
   profile_observation_.Observe(profile_);
   if (base::FeatureList::IsEnabled(features::kGlicWebContentsWarming)) {

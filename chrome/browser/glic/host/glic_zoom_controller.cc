@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/metrics/histogram_functions.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_webui.mojom.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
@@ -24,6 +26,8 @@ namespace {
 
 class Metrics {
  public:
+  explicit Metrics(Profile* profile) : metric_reporter_(profile) {}
+
   void RecordZoomIn(bool at_max, ZoomSource source) {
     GlicZoomAction action =
         at_max ? GlicZoomAction::kZoomInAtMax : GlicZoomAction::kZoomIn;
@@ -47,24 +51,26 @@ class Metrics {
 
  private:
   void RecordAction(GlicZoomAction action, ZoomSource source) {
-    base::UmaHistogramEnumeration("Glic.ZoomAction", action);
+    metric_reporter_.RecordEnumeration("ZoomAction", action);
 
     const char* source_histogram = nullptr;
     switch (source) {
       case ZoomSource::kHotkey:
-        source_histogram = "Glic.ZoomAction.Hotkey";
+        source_histogram = "ZoomAction.Hotkey";
         break;
       case ZoomSource::kHotkeyWithShift:
-        source_histogram = "Glic.ZoomAction.HotkeyWithShift";
+        source_histogram = "ZoomAction.HotkeyWithShift";
         break;
       case ZoomSource::kScroll:
-        source_histogram = "Glic.ZoomAction.Scroll";
+        source_histogram = "ZoomAction.Scroll";
         break;
     }
     if (source_histogram) {
-      base::UmaHistogramEnumeration(source_histogram, action);
+      metric_reporter_.RecordEnumeration(source_histogram, action);
     }
   }
+
+  GlicMetricReporter metric_reporter_;
 };
 
 std::optional<double> FindNextZoomInFactor(double current_zoom) {
@@ -160,7 +166,9 @@ void GlicZoomController::Zoom(mojom::ZoomAction zoom_action,
   double current_factor = GetCurrentZoomFactor();
   int current_percent = static_cast<int>(std::round(current_factor * 100.0));
 
-  Metrics metrics;
+  Metrics metrics(web_contents() ? Profile::FromBrowserContext(
+                                       web_contents()->GetBrowserContext())
+                                 : nullptr);
   std::optional<double> target_factor;
 
   switch (zoom_action) {

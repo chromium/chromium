@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 
@@ -94,6 +95,7 @@ class GlicSelectionWidgetController
 
   base::WeakPtr<content::WebContents> web_contents_;
   const raw_ref<GlicSelectionWidgetControllerDelegate> delegate_;
+  GlicMetricReporter metric_reporter_;
   raw_ptr<GlicKeyedService> glic_keyed_service_;
 
   // True if a dismissal metric has already been recorded for the shown widget.

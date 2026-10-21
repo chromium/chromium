@@ -75,6 +75,12 @@ TEST_F(GlicWebContentsWarmingPoolTest, MaybeStartWarming) {
       "Glic.WarmingPool.ContainerCreationReason",
       GlicWebContentsWarmingPool::ContainerCreationReason::kInitialColdWarming,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.ContainerCreationReason",
+      GlicWebContentsWarmingPool::ContainerCreationReason::kInitialColdWarming,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.ContainerCreationReason", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerCreatesContainer) {
@@ -88,11 +94,21 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerCreatesContainer) {
   EXPECT_TRUE(container);
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
                                       WarmingPoolStatus::kCold, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Consumer.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kCold, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
   histogram_tester.ExpectUniqueSample(
       "Glic.WarmingPool.ContainerCreationReason",
       GlicWebContentsWarmingPool::ContainerCreationReason::
           kUserTriggeredColdStart,
       1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.ContainerCreationReason",
+      GlicWebContentsWarmingPool::ContainerCreationReason::
+          kUserTriggeredColdStart,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.ContainerCreationReason", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerUsesPreloadedContainer) {
@@ -108,8 +124,15 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerUsesPreloadedContainer) {
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
                                       WarmingPoolStatus::kHit, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Consumer.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kHit, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
   histogram_tester.ExpectTotalCount("Glic.WarmingPool.TimeSinceCreatedAtHit",
                                     1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Consumer.WarmingPool.TimeSinceCreatedAtHit", 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.TimeSinceCreatedAtHit", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerTriggersDelayedWarming) {
@@ -127,6 +150,11 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerTriggersDelayedWarming) {
   histogram_tester.ExpectBucketCount(
       "Glic.WarmingPool.ContainerCreationReason",
       GlicWebContentsWarmingPool::ContainerCreationReason::kRefill, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.WarmingPool.ContainerCreationReason",
+      GlicWebContentsWarmingPool::ContainerCreationReason::kRefill, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.ContainerCreationReason", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerRecordsExpiredStatus) {
@@ -154,9 +182,17 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerRecordsExpiredStatus) {
   EXPECT_TRUE(warming_pool.TakeContainer());
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
                                       WarmingPoolStatus::kExpired, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Consumer.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kExpired, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
   histogram_tester.ExpectUniqueSample(
       "Glic.WarmingPool.ReloadAfterExpiry",
       ReloadAfterExpiryStatus::kNotReloadedFeatureDisabled, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.ReloadAfterExpiry",
+      ReloadAfterExpiryStatus::kNotReloadedFeatureDisabled, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.ReloadAfterExpiry", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerReloadsAfterExpiry) {
@@ -187,8 +223,16 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerReloadsAfterExpiry) {
   // HitStatus should be kHit because it was reloaded, not Cold or Expired.
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
                                       WarmingPoolStatus::kHit, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Consumer.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kHit, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.ReloadAfterExpiry",
                                       ReloadAfterExpiryStatus::kReloaded, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.ReloadAfterExpiry",
+      ReloadAfterExpiryStatus::kReloaded, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.ReloadAfterExpiry", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerLimitsReloadCount) {
@@ -220,12 +264,28 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerLimitsReloadCount) {
   histogram_tester.ExpectBucketCount("Glic.WarmingPool.ReloadAfterExpiry",
                                      ReloadAfterExpiryStatus::kReloaded, 4);
   histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.WarmingPool.ReloadAfterExpiry",
+      ReloadAfterExpiryStatus::kReloaded, 4);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.ReloadAfterExpiry", 0);
+  histogram_tester.ExpectBucketCount(
       "Glic.WarmingPool.ReloadAfterExpiry",
       ReloadAfterExpiryStatus::kNotReloadedLimitReached, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.WarmingPool.ReloadAfterExpiry",
+      ReloadAfterExpiryStatus::kNotReloadedLimitReached, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.ReloadAfterExpiry", 0);
   histogram_tester.ExpectBucketCount(
       "Glic.WarmingPool.ContainerCreationReason",
       GlicWebContentsWarmingPool::ContainerCreationReason::kReloadAfterExpiry,
       4);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.WarmingPool.ContainerCreationReason",
+      GlicWebContentsWarmingPool::ContainerCreationReason::kReloadAfterExpiry,
+      4);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.ContainerCreationReason", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerReplacesCrashedContainer) {
@@ -249,8 +309,16 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerReplacesCrashedContainer) {
   EXPECT_FALSE(taken->active_web_contents()->IsCrashed());
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
                                       WarmingPoolStatus::kCrashed, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Consumer.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kCrashed, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate",
                                       WarmedContainerFate::kCrashed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kCrashed, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.WarmedContainerFate", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerReplacesErroredContainer) {
@@ -274,8 +342,16 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerReplacesErroredContainer) {
   EXPECT_FALSE(taken->ShouldReloadOnShow());
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
                                       WarmingPoolStatus::kLoadError, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Consumer.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kLoadError, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate",
                                       WarmedContainerFate::kLoadError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kLoadError, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.WarmedContainerFate", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest,
@@ -296,6 +372,11 @@ TEST_F(GlicWebContentsWarmingPoolTest,
       [&]() { return !warming_pool.HasWarmedContainerForTesting(); }));
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate",
                                       WarmedContainerFate::kCrashed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kCrashed, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.WarmedContainerFate", 0);
 
   // A subsequent non-critical memory pressure update must not trigger backfill
   // because should_warm_when_memory_allows_ was cleared.
@@ -305,6 +386,9 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   warming_pool.TakeContainer();
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
                                       WarmingPoolStatus::kCrashed, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Consumer.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kCrashed, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest,
@@ -324,6 +408,11 @@ TEST_F(GlicWebContentsWarmingPoolTest,
       [&]() { return !warming_pool.HasWarmedContainerForTesting(); }));
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate",
                                       WarmedContainerFate::kLoadError, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kLoadError, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.WarmedContainerFate", 0);
 
   // A subsequent non-critical memory pressure update must not trigger backfill.
   warming_pool.OnUpdateMemoryLimit(base::kNoMemoryPressureThreshold);
@@ -332,6 +421,9 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   warming_pool.TakeContainer();
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
                                       WarmingPoolStatus::kLoadError, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Consumer.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kLoadError, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, WarmingDelayTooLongAndNotScheduled) {
@@ -353,13 +445,22 @@ TEST_F(GlicWebContentsWarmingPoolTest, TakeContainerBeforeWarmingComplete) {
   EXPECT_TRUE(warming_pool.TakeContainer());
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
                                       WarmingPoolStatus::kCold, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Consumer.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kCold, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
 
   // Call it again quickly while the backfill delay timer is running.
   EXPECT_TRUE(warming_pool.TakeContainer());
   histogram_tester.ExpectBucketCount("Glic.WarmingPool.HitStatus",
                                      WarmingPoolStatus::kCold, 1);
+  histogram_tester.ExpectBucketCount("Glic.Consumer.WarmingPool.HitStatus",
+                                     WarmingPoolStatus::kCold, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
   histogram_tester.ExpectBucketCount("Glic.WarmingPool.HitStatus",
                                      WarmingPoolStatus::kPendingBackfill, 1);
+  histogram_tester.ExpectBucketCount("Glic.Consumer.WarmingPool.HitStatus",
+                                     WarmingPoolStatus::kPendingBackfill, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
 
   EXPECT_FALSE(warming_pool.HasWarmedContainerForTesting());
   task_environment_.FastForwardBy(features::kGlicWebContentsWarmingDelay.Get() -
@@ -392,6 +493,9 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   EXPECT_TRUE(warming_pool.TakeContainer());
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.HitStatus",
                                       WarmingPoolStatus::kPendingBackfill, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Consumer.WarmingPool.HitStatus",
+                                      WarmingPoolStatus::kPendingBackfill, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, Shutdown) {
@@ -407,6 +511,11 @@ TEST_F(GlicWebContentsWarmingPoolTest, Shutdown) {
   histogram_tester.ExpectUniqueSample(
       "Glic.WarmingPool.WarmedContainerFate",
       WarmedContainerFate::kDeletedOnChromeClosed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kDeletedOnChromeClosed, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.WarmedContainerFate", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Used) {
@@ -420,6 +529,11 @@ TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Used) {
 
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate",
                                       WarmedContainerFate::kUsed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kUsed, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.WarmedContainerFate", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Expired) {
@@ -444,6 +558,11 @@ TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Expired) {
 
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate",
                                       WarmedContainerFate::kExpired, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kExpired, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.WarmedContainerFate", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Crashed) {
@@ -466,6 +585,11 @@ TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Crashed) {
 
   histogram_tester.ExpectUniqueSample("Glic.WarmingPool.WarmedContainerFate",
                                       WarmedContainerFate::kCrashed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kCrashed, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.WarmedContainerFate", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, ShutdownClearsContainer) {
@@ -480,6 +604,11 @@ TEST_F(GlicWebContentsWarmingPoolTest, ShutdownClearsContainer) {
   histogram_tester.ExpectUniqueSample(
       "Glic.WarmingPool.WarmedContainerFate",
       WarmedContainerFate::kDeletedOnChromeClosed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kDeletedOnChromeClosed, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.WarmedContainerFate", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest,
@@ -557,6 +686,11 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   histogram_tester.ExpectUniqueSample(
       "Glic.WarmingPool.WarmedContainerFate",
       WarmedContainerFate::kDeletedOnMemoryPressure, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.WarmedContainerFate",
+      WarmedContainerFate::kDeletedOnMemoryPressure, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.WarmedContainerFate", 0);
 
   // TakeContainer() should still create and return a container synchronously
   // so UI launch doesn't fail, but should NOT schedule a background refill.
@@ -566,6 +700,10 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   histogram_tester.ExpectUniqueSample(
       "Glic.WarmingPool.HitStatus",
       GlicWebContentsWarmingPool::WarmingPoolStatus::kMemoryPressure, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.HitStatus",
+      GlicWebContentsWarmingPool::WarmingPoolStatus::kMemoryPressure, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
 
   // When memory pressure subsides, the delayed refill should start because the
   // pool became active.
@@ -605,6 +743,13 @@ TEST_F(GlicWebContentsWarmingPoolTest,
       GlicWebContentsWarmingPool::ContainerCreationReason::
           kMemoryPressureRecovery,
       1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.WarmingPool.ContainerCreationReason",
+      GlicWebContentsWarmingPool::ContainerCreationReason::
+          kMemoryPressureRecovery,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.Enterprise.WarmingPool.ContainerCreationReason", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest,
@@ -666,6 +811,10 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   histogram_tester.ExpectUniqueSample(
       "Glic.WarmingPool.HitStatus",
       GlicWebContentsWarmingPool::WarmingPoolStatus::kMemoryPressure, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WarmingPool.HitStatus",
+      GlicWebContentsWarmingPool::WarmingPoolStatus::kMemoryPressure, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest,
@@ -679,6 +828,10 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   histogram_tester.ExpectBucketCount(
       "Glic.WarmingPool.HitStatus",
       GlicWebContentsWarmingPool::WarmingPoolStatus::kCold, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.WarmingPool.HitStatus",
+      GlicWebContentsWarmingPool::WarmingPoolStatus::kCold, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
 
   // Critical memory pressure arrives, cancelling the refill timer.
   warming_pool.OnUpdateMemoryLimit(base::kCriticalMemoryPressureThreshold);
@@ -690,6 +843,10 @@ TEST_F(GlicWebContentsWarmingPoolTest,
   histogram_tester.ExpectBucketCount(
       "Glic.WarmingPool.HitStatus",
       GlicWebContentsWarmingPool::WarmingPoolStatus::kMemoryPressure, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.WarmingPool.HitStatus",
+      GlicWebContentsWarmingPool::WarmingPoolStatus::kMemoryPressure, 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 0);
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest,

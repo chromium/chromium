@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -346,4 +348,32 @@ IN_PROC_BROWSER_TEST_F(GlicWarmingDisabledBrowserTest, NoWarming) {
   EXPECT_FALSE(pool().HasWarmedContainerForTesting());
 }
 
+class GlicWarmingPoolGeicBrowserTest : public GlicWarmingPoolBrowserTest {
+ public:
+  GlicWarmingPoolGeicBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGeic, {{"geic-guest-url", "https://www.example.com/geic"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// TODO(b/496609005): Skip on ChromeOS due to profile ineligibility timeouts.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TakeContainerRecordsEnterpriseMetrics \
+  DISABLED_TakeContainerRecordsEnterpriseMetrics
+#else
+#define MAYBE_TakeContainerRecordsEnterpriseMetrics \
+  TakeContainerRecordsEnterpriseMetrics
+#endif
+IN_PROC_BROWSER_TEST_F(GlicWarmingPoolGeicBrowserTest,
+                       MAYBE_TakeContainerRecordsEnterpriseMetrics) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<GlicWebContentsManager> container = pool().TakeContainer();
+  EXPECT_TRUE(container);
+  histogram_tester.ExpectTotalCount("Glic.WarmingPool.HitStatus", 1);
+  histogram_tester.ExpectTotalCount("Glic.Enterprise.WarmingPool.HitStatus", 1);
+  histogram_tester.ExpectTotalCount("Glic.Consumer.WarmingPool.HitStatus", 0);
+}
 }  // namespace glic

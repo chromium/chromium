@@ -196,12 +196,16 @@ TEST_P(GlicProviderMetricsTest, ConsumerFallback) {
                       -> std::unique_ptr<KeyedService> { return nullptr; })}});
   ASSERT_FALSE(GlicKeyedService::Get(no_service_profile));
 
-  GlicMetricReporter reporter(no_service_profile);
-  EXPECT_EQ("Consumer", reporter.infix());
 
+
+  std::string provider_str = GetParam() ? "Enterprise" : "Consumer";
+  EXPECT_EQ(provider_str, GlicMetricReporter(no_service_profile).infix());
+
+  GlicMetricReporter reporter(no_service_profile);
   base::HistogramTester histogram_tester;
   reporter.RecordBoolean("Fallback", true);
-  histogram_tester.ExpectUniqueSample("Glic.Consumer.Fallback", true, 1);
+  histogram_tester.ExpectUniqueSample("Glic." + provider_str + ".Fallback",
+                                      true, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, GlicProviderMetricsTest, testing::Bool());

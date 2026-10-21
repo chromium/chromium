@@ -62,6 +62,11 @@ const GlicProviderSpec& GetGlicProviderSpec(Profile* profile) {
     if (auto* service = GlicKeyedService::Get(profile)) {
       return service->provider_spec();
     }
+    if (profile->IsRegularProfile() && geic::IsGeicEnabled(profile)) {
+      static base::NoDestructor<GeminiEnterpriseGlicProviderSpec>
+          enterprise_spec;
+      return *enterprise_spec;
+    }
   }
   static base::NoDestructor<GeminiGlicProviderSpec> fallback_spec;
   return *fallback_spec;
