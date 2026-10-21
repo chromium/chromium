@@ -894,8 +894,18 @@ inline LayoutStateAssistantPassKey PassKey() {
 }
 
 - (void)navigateToPageForItem:(web::NavigationItem*)item {
-  // App bar does not have web navigation functionality in its button menus.
-  NOTREACHED();
+  if (!IsFiveButtonAppBarLayoutEnabled()) {
+    // App bar does not have web navigation functionality in its button menus.
+    return;
+  }
+  web::WebState* activeWebState = [self activeWebState];
+  if (!activeWebState) {
+    return;
+  }
+
+  int index = activeWebState->GetNavigationManager()->GetIndexOfItem(item);
+  DCHECK_NE(index, -1);
+  activeWebState->GetNavigationManager()->GoToIndex(index);
 }
 
 #pragma mark - AuthenticationServiceObserving
@@ -1061,7 +1071,7 @@ inline LayoutStateAssistantPassKey PassKey() {
     WebNavigationBrowserAgent* navigationBrowserAgent =
         incognito ? _incognitoNavigationBrowserAgent
                   : _regularNavigationBrowserAgent;
-    if (navigationBrowserAgent) {
+    if (activeWebState && navigationBrowserAgent) {
       [self.consumer
           setCanNavigateBack:navigationBrowserAgent->CanGoBack(activeWebState)
                      forward:navigationBrowserAgent->CanGoForward(
@@ -1090,18 +1100,20 @@ inline LayoutStateAssistantPassKey PassKey() {
   }
 
   if (IsFiveButtonAppBarLayoutEnabled()) {
-    [self.consumer
-              setMenu:[buttonMenuFactory
-                          menuForNavigationButton:activeWebState
-                                                      ->GetNavigationManager()
-                                                      ->GetBackwardItems()]
-        forButtonType:AppBarButtonTypeBack];
-    [self.consumer
-              setMenu:[buttonMenuFactory
-                          menuForNavigationButton:activeWebState
-                                                      ->GetNavigationManager()
-                                                      ->GetForwardItems()]
-        forButtonType:AppBarButtonTypeForward];
+    if (activeWebState) {
+      [self.consumer
+                setMenu:[buttonMenuFactory
+                            menuForNavigationButton:activeWebState
+                                                        ->GetNavigationManager()
+                                                        ->GetBackwardItems()]
+          forButtonType:AppBarButtonTypeBack];
+      [self.consumer
+                setMenu:[buttonMenuFactory
+                            menuForNavigationButton:activeWebState
+                                                        ->GetNavigationManager()
+                                                        ->GetForwardItems()]
+          forButtonType:AppBarButtonTypeForward];
+    }
   }
 
   [self.consumer setMenu:[buttonMenuFactory menuForNewTabButton]
