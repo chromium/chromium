@@ -4,9 +4,14 @@
 
 #include "content/browser/file_system_access/file_system_access_file_modification_host_impl.h"
 
+#include <limits>
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -41,6 +46,52 @@ int64_t RequestCapacityChangeSync(
   return granted_capacity;
 }
 
+// MockQuotaManagerProxy that can defer delivery of GetUsageAndQuota() results.
+// The usage and quota are computed when the request is made, but the callback
+// is only run once RunDeferredCallbacks() is called. This simulates multiple
+// capacity requests racing against stale quota usage information.
+class DeferringQuotaManagerProxy : public storage::MockQuotaManagerProxy {
+ public:
+  using storage::MockQuotaManagerProxy::MockQuotaManagerProxy;
+
+  using storage::MockQuotaManagerProxy::GetUsageAndQuota;
+  void GetUsageAndQuota(
+      const blink::StorageKey& storage_key,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      storage::QuotaManager::UsageAndQuotaCallback callback) override {
+    if (!defer_callbacks_) {
+      storage::MockQuotaManagerProxy::GetUsageAndQuota(
+          storage_key, std::move(callback_task_runner), std::move(callback));
+      return;
+    }
+    storage::MockQuotaManagerProxy::GetUsageAndQuota(
+        storage_key, std::move(callback_task_runner),
+        base::BindLambdaForTesting([this, callback = std::move(callback)](
+                                       blink::mojom::QuotaStatusCode status,
+                                       int64_t usage, int64_t quota) mutable {
+          deferred_callbacks_.push_back(
+              base::BindOnce(std::move(callback), status, usage, quota));
+        }));
+  }
+
+  void set_defer_callbacks(bool defer) { defer_callbacks_ = defer; }
+
+  void RunDeferredCallbacks() {
+    std::vector<base::OnceClosure> callbacks;
+    callbacks.swap(deferred_callbacks_);
+    for (auto& callback : callbacks) {
+      std::move(callback).Run();
+    }
+  }
+
+ protected:
+  ~DeferringQuotaManagerProxy() override = default;
+
+ private:
+  bool defer_callbacks_ = false;
+  std::vector<base::OnceClosure> deferred_callbacks_;
+};
+
 }  // namespace
 
 class FileSystemAccessFileModificationHostImplTest : public testing::Test {
@@ -57,7 +108,7 @@ class FileSystemAccessFileModificationHostImplTest : public testing::Test {
         /*is_incognito=*/false, data_dir_.GetPath(),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         special_storage_policy_);
-    quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
+    quota_manager_proxy_ = base::MakeRefCounted<DeferringQuotaManagerProxy>(
         quota_manager(), base::SingleThreadTaskRunner::GetCurrentDefault());
     file_system_context_ = storage::CreateFileSystemContextForTesting(
         quota_manager_proxy(), data_dir_.GetPath());
@@ -70,18 +121,12 @@ class FileSystemAccessFileModificationHostImplTest : public testing::Test {
         file_system_context_, chrome_blob_context_, &permission_context_,
         /*off_the_record=*/false);
 
-    auto test_file_url = file_system_context_->CreateCrackedFileSystemURL(
+    test_file_url_ = file_system_context_->CreateCrackedFileSystemURL(
         kTestStorageKey, storage::kFileSystemTypeTemporary,
         base::FilePath::FromUTF8Unsafe("test"));
-    test_file_url.SetBucket(
+    test_file_url_.SetBucket(
         storage::BucketLocator::ForDefaultBucket(kTestStorageKey));
-    mojo::Remote<blink::mojom::FileSystemAccessFileModificationHost>
-        allocation_host_remote;
-    allocation_host_ =
-        std::make_unique<FileSystemAccessFileModificationHostImpl>(
-            manager_.get(), test_file_url,
-            base::PassKey<FileSystemAccessFileModificationHostImplTest>(),
-            allocation_host_remote.BindNewPipeAndPassReceiver(), 0);
+    allocation_host_ = CreateHost(/*file_size=*/0);
   }
 
   void TearDown() override {
@@ -90,13 +135,21 @@ class FileSystemAccessFileModificationHostImplTest : public testing::Test {
   }
 
  protected:
+  std::unique_ptr<FileSystemAccessFileModificationHostImpl> CreateHost(
+      int64_t file_size) {
+    mojo::Remote<blink::mojom::FileSystemAccessFileModificationHost> remote;
+    return std::make_unique<FileSystemAccessFileModificationHostImpl>(
+        manager_.get(), test_file_url_,
+        base::PassKey<FileSystemAccessFileModificationHostImplTest>(),
+        remote.BindNewPipeAndPassReceiver(), file_size);
+  }
+
   storage::MockQuotaManager* quota_manager() {
     return static_cast<storage::MockQuotaManager*>(quota_manager_.get());
   }
 
-  storage::MockQuotaManagerProxy* quota_manager_proxy() {
-    return static_cast<storage::MockQuotaManagerProxy*>(
-        quota_manager_proxy_.get());
+  DeferringQuotaManagerProxy* quota_manager_proxy() {
+    return static_cast<DeferringQuotaManagerProxy*>(quota_manager_proxy_.get());
   }
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
@@ -111,6 +164,7 @@ class FileSystemAccessFileModificationHostImplTest : public testing::Test {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
+  storage::FileSystemURL test_file_url_;
 
   std::unique_ptr<FileSystemAccessFileModificationHostImpl> allocation_host_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
@@ -159,4 +213,58 @@ TEST_F(FileSystemAccessFileModificationHostImplTest,
   EXPECT_EQ("A file's size cannot be negative or out of bounds",
             bad_message_observer.WaitForBadMessage());
 }
+
+TEST_F(FileSystemAccessFileModificationHostImplTest,
+       RequestCapacityChange_IllegalPositiveCapacityOverflow) {
+  const int64_t initial_capacity = std::numeric_limits<int64_t>::max() - 10;
+  auto host = CreateHost(initial_capacity);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  int64_t granted_capacity = RequestCapacityChangeSync(host.get(), 20);
+  EXPECT_EQ(granted_capacity, 0);
+  EXPECT_EQ(host->granted_capacity(), initial_capacity);
+  EXPECT_EQ(quota_manager_proxy_->notify_bucket_modified_count(), 0);
+  EXPECT_EQ("A file's size cannot be negative or out of bounds",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(FileSystemAccessFileModificationHostImplTest,
+       RequestCapacityChange_ConcurrentPositiveCapacityOverflow) {
+  // Both requests pass the initial bounds check and observe the same (stale)
+  // usage, but granting both would overflow `granted_capacity_`.
+  const int64_t large_delta = std::numeric_limits<int64_t>::max() / 2 + 10;
+  quota_manager_proxy()->set_defer_callbacks(true);
+
+  base::test::TestFuture<int64_t> future1;
+  base::test::TestFuture<int64_t> future2;
+  allocation_host_->RequestCapacityChange(large_delta, future1.GetCallback());
+  allocation_host_->RequestCapacityChange(large_delta, future2.GetCallback());
+  quota_manager_proxy()->RunDeferredCallbacks();
+
+  EXPECT_EQ(future1.Get(), large_delta);
+  EXPECT_EQ(future2.Get(), 0);
+  EXPECT_EQ(allocation_host_->granted_capacity(), large_delta);
+  EXPECT_EQ(quota_manager_proxy_->notify_bucket_modified_count(), 1);
+}
+
+TEST_F(FileSystemAccessFileModificationHostImplTest,
+       RequestCapacityChange_ConcurrentNegativeCapacityBelowZero) {
+  // Both requests pass the initial bounds check, but granting both would make
+  // `granted_capacity_` negative.
+  auto host = CreateHost(/*file_size=*/50);
+  quota_manager_proxy()->set_defer_callbacks(true);
+
+  base::test::TestFuture<int64_t> future1;
+  base::test::TestFuture<int64_t> future2;
+  host->RequestCapacityChange(-40, future1.GetCallback());
+  host->RequestCapacityChange(-40, future2.GetCallback());
+  quota_manager_proxy()->RunDeferredCallbacks();
+
+  EXPECT_EQ(future1.Get(), -40);
+  EXPECT_EQ(future2.Get(), 0);
+  EXPECT_EQ(host->granted_capacity(), 10);
+  EXPECT_EQ(quota_manager_proxy_->notify_bucket_modified_count(), 1);
+}
+
 }  // namespace content

@@ -5,6 +5,7 @@
 #include "content/browser/file_system_access/file_system_access_file_modification_host_impl.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/checked_math.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -78,16 +79,14 @@ void FileSystemAccessFileModificationHostImpl::RequestCapacityChange(
     RequestCapacityChangeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (capacity_delta < 0) {
-    int64_t new_granted_capacity;
-    bool usage_within_bounds = base::CheckAdd(granted_capacity_, capacity_delta)
-                                   .AssignIfValid(&new_granted_capacity);
-    if (!usage_within_bounds || new_granted_capacity < 0) {
-      mojo::ReportBadMessage(
-          "A file's size cannot be negative or out of bounds");
-      std::move(callback).Run(0);
-      return;
-    }
+  int64_t new_granted_capacity;
+  bool capacity_within_bounds =
+      base::CheckAdd(granted_capacity_, capacity_delta)
+          .AssignIfValid(&new_granted_capacity);
+  if (!capacity_within_bounds || new_granted_capacity < 0) {
+    mojo::ReportBadMessage("A file's size cannot be negative or out of bounds");
+    std::move(callback).Run(0);
+    return;
   }
 
   quota_manager_proxy()->GetUsageAndQuota(
@@ -114,7 +113,19 @@ void FileSystemAccessFileModificationHostImpl::DidGetUsageAndQuota(
     std::move(callback).Run(0);
     return;
   }
-  granted_capacity_ += capacity_delta;
+
+  // `granted_capacity_` may have changed since `RequestCapacityChange()`
+  // validated `capacity_delta`, since other requests may have completed while
+  // the quota lookup was in flight. Re-validate against the current value.
+  int64_t new_granted_capacity;
+  bool capacity_within_bounds =
+      base::CheckAdd(granted_capacity_, capacity_delta)
+          .AssignIfValid(&new_granted_capacity);
+  if (!capacity_within_bounds || new_granted_capacity < 0) {
+    std::move(callback).Run(0);
+    return;
+  }
+  granted_capacity_ = new_granted_capacity;
   quota_manager_proxy()->NotifyBucketModified(
       storage::QuotaClientType::kFileSystem, *url_.bucket(), capacity_delta,
       base::Time::Now(), base::SequencedTaskRunner::GetCurrentDefault(),
