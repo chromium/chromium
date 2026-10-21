@@ -42,6 +42,8 @@ export interface SettingsTravelPageElement {
   };
 }
 
+const TRAVEL_OPTED_IN_PREF_KEY = 'synthetic.settings.autofill.travel_opted_in';
+
 const SettingsTravelPageElementBase =
     SettingsViewMixinLit(PrefServiceObserverMixinLit(CrLitElement));
 
@@ -85,7 +87,7 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
        * is enabled (clickable). If toggle is disabled then the value is
        * overridden to be shown as false even if the preference is true.
        */
-      travelOptedIn_: {type: Object},
+      travelOptedInPref_: {type: Object},
     };
   }
 
@@ -107,12 +109,8 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   private accessor canEnableOrDisableAutofillAi_: boolean =
       loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
 
-  protected accessor travelOptedIn_:
-      chrome.settingsPrivate.PrefObject<boolean> = {
-    key: 'fake',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: false,
-  };
+  protected accessor travelOptedInPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
 
   private accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
       loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
@@ -129,7 +127,10 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.mirrorPref('autofill.profile_enabled', 'profileEnabledPref_');
+    this.mirrorPrefs({
+      'autofill.profile_enabled': 'profileEnabledPref_',
+      [TRAVEL_OPTED_IN_PREF_KEY]: 'travelOptedInPref_',
+    });
 
     const updateOptedIn = () => this.updateTravelOptedIn_();
     this.addPrefObserver(
@@ -154,7 +155,7 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   private updateTravelOptedIn_() {
     const prefService = PrefService.getInstance();
     const fakePref: chrome.settingsPrivate.PrefObject<boolean> = {
-      ...this.travelOptedIn_,
+      ...prefService.getPref<boolean>(TRAVEL_OPTED_IN_PREF_KEY),
       value:
           prefService
               .getPref<boolean>('autofill.autofill_ai.travel_entities_enabled')
@@ -175,13 +176,13 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
         prefService.getPref<TypesBlockedEntry[]>('autofill.types_blocked'),
         AutofillPolicyDataCategory.TRAVEL);
 
-    this.travelOptedIn_ = fakePref;
+    prefService.setSyntheticPref(fakePref);
   }
 
   protected onOptInToggleSettingsBooleanControlChange_() {
     // If the preference is enforced by enterprise policy, do not allow the user
     // to toggle or mutate the underlying preference value.
-    if (this.$.optInToggle.pref?.enforcement ===
+    if (this.travelOptedInPref_?.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED) {
       return;
     }

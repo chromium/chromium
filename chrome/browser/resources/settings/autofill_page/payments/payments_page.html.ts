@@ -20,14 +20,15 @@ export function getHtml(this: SettingsPaymentsPageElement) {
 <settings-toggle-button id="autofillCreditCardToggle"
     no-extension-indicator label="$i18n{enableCreditCardsLabel}"
     sub-label="$i18n{enableCreditCardsSublabel}"
-    .pref="${this.creditCardEnabledSyntheticPref_}"
+    pref-key="synthetic.settings.autofill.credit_card_enabled"
+    no-set-pref
     @settings-boolean-control-change="${
         this.onCreditCardToggleSettingsBooleanControlChange_}">
 </settings-toggle-button>
 
 <!-- Extension-override indicator for payments autofill enable/disable; this
      MUST come immediately after the autofillCreditCardToggle toggle. -->
-${this.creditCardEnabledSyntheticPref_.extensionId ? html`
+${this.creditCardEnabledSyntheticPref_?.extensionId ? html`
   <div class="cr-row continuation">
     <extension-controlled-indicator class="flex"
         id="autofillExtensionIndicator"
@@ -61,7 +62,7 @@ ${this.cvcStorageAvailable_ ? html`
       no-extension-indicator label="$i18n{enableCvcStorageLabel}"
       .ariaLabel="${this.getCvcStorageAriaLabel_()}"
       sub-label-with-link="${this.getCvcStorageSublabel_()}"
-      ?disabled="${!this.creditCardEnabledSyntheticPref_.value}"
+      ?disabled="${!this.creditCardEnabledSyntheticPref_?.value}"
       @sub-label-link-clicked="${this.onCvcStorageSubLabelLinkClicked_}"
       pref-key="autofill.payment_cvc_storage">
   </settings-toggle-button>
@@ -72,7 +73,7 @@ ${this.cvcStorageAvailable_ ? html`
     no-extension-indicator label="$i18n{cardBenefitsLabel}"
     sub-label-with-link="$i18n{cardBenefitsToggleSublabel}"
     @sub-label-link-clicked="${this.onCardBenefitsSubLabelLinkClicked_}"
-    ?disabled="${!this.creditCardEnabledSyntheticPref_.value}"
+    ?disabled="${!this.creditCardEnabledSyntheticPref_?.value}"
     pref-key="autofill.payment_card_benefits">
 </settings-toggle-button>
 
@@ -82,7 +83,7 @@ ${this.shouldShowPayOverTimeSettings_ ? html`
       no-extension-indicator label="$i18n{autofillPayOverTimeSettingsLabel}"
       sub-label-with-link="$i18n{autofillPayOverTimeSettingsSublabel}"
       @sub-label-link-clicked="${this.onPayOverTimeSubLabelLinkClicked_}"
-      ?disabled="${!this.creditCardEnabledSyntheticPref_.value}"
+      ?disabled="${!this.creditCardEnabledSyntheticPref_?.value}"
       pref-key="autofill.bnpl_enabled">
   </settings-toggle-button>
 ` : ''}
@@ -113,14 +114,14 @@ ${this.shouldShowPayOverTimeSettings_ ? html`
     <cr-button id="addCreditCard" class="header-aligned-button"
         @click="${this.onAddCreditCardClick_}"
         aria-label="$i18n{addCreditCardTitle}"
-        ?disabled="${!this.creditCardEnabledSyntheticPref_.value}">
+        ?disabled="${!this.creditCardEnabledSyntheticPref_?.value}">
       $i18n{add}
     </cr-button>
   ` : html`
     <cr-button class="header-aligned-button"
         id="addPaymentMethods" @click="${this.onAddPaymentMethodClick_}"
         aria-label="$i18n{addPaymentMethods}"
-        ?disabled="${!this.creditCardEnabledSyntheticPref_.value}">
+        ?disabled="${!this.creditCardEnabledSyntheticPref_?.value}">
       $i18n{add}
       <cr-icon icon="cr:arrow-drop-down" class="arrow-icon-down"></cr-icon>
     </cr-button>

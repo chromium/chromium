@@ -79,6 +79,9 @@ export interface SettingsPaymentsPageElement {
   };
 }
 
+const CREDIT_CARD_ENABLED_SYNTHETIC_PREF_KEY =
+    'synthetic.settings.autofill.credit_card_enabled';
+
 const SettingsPaymentsPageElementBase = PrefServiceObserverMixinLit(
     SettingsViewMixinLit(I18nMixinLit(CrLitElement)));
 
@@ -176,11 +179,7 @@ export class SettingsPaymentsPageElement extends
   private accessor showIbanSettingsEnabled_: boolean =
       loadTimeData.getBoolean('showIbansSettings');
   protected accessor creditCardEnabledSyntheticPref_:
-      chrome.settingsPrivate.PrefObject<boolean> = {
-    key: 'autofill.credit_card_enabled',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: false,
-  };
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
   private accessor autofillEnableWalletBrandingEnabled_: boolean =
       loadTimeData.getBoolean('autofillEnableWalletBranding');
   protected accessor activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|
@@ -210,6 +209,9 @@ export class SettingsPaymentsPageElement extends
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
 
   override connectedCallback() {
+    this.mirrorPref(
+        CREDIT_CARD_ENABLED_SYNTHETIC_PREF_KEY,
+        'creditCardEnabledSyntheticPref_');
     this.addPrefObserver(
         'autofill.credit_card_enabled',
         () => this.updateCreditCardEnabledSyntheticPref_());
@@ -298,8 +300,10 @@ export class SettingsPaymentsPageElement extends
         PrefService.getInstance().getPref<TypesBlockedEntry[]>(
             'autofill.types_blocked'),
         AutofillPolicyDataCategory.PAYMENTS);
-    assert(effectivePref);
-    this.creditCardEnabledSyntheticPref_ = effectivePref;
+    PrefService.getInstance().setSyntheticPref({
+      ...effectivePref,
+      key: CREDIT_CARD_ENABLED_SYNTHETIC_PREF_KEY,
+    });
   }
 
   /**
@@ -311,7 +315,7 @@ export class SettingsPaymentsPageElement extends
   protected onCreditCardToggleSettingsBooleanControlChange_(event: Event) {
     // If the preference is enforced by enterprise policy, do not allow the user
     // to toggle or mutate the underlying preference value.
-    if (this.creditCardEnabledSyntheticPref_.enforcement ===
+    if (this.creditCardEnabledSyntheticPref_?.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED) {
       return;
     }
@@ -608,7 +612,7 @@ export class SettingsPaymentsPageElement extends
       return true;
     }
 
-    const creditCardEnabled = this.creditCardEnabledSyntheticPref_.value ||
+    const creditCardEnabled = this.creditCardEnabledSyntheticPref_?.value ||
         PrefService.getInstance()
             .getPref<boolean>('autofill.credit_card_enabled')
             .value;

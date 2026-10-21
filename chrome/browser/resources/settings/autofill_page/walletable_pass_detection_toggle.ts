@@ -12,6 +12,7 @@ import '../internal/icons.html.js';
 
 // </if>
 
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {getCss as getCrIconsCss} from 'chrome://resources/cr_elements/cr_icons_lit.css.js';
 import {getCss as getCrSharedStyleCss} from 'chrome://resources/cr_elements/cr_shared_style_lit.css.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -28,6 +29,9 @@ export interface SettingsWalletablePassDetectionToggleElement {
     toggle: SettingsToggleButtonElement,
   };
 }
+
+const WALLETABLE_PASS_DETECTION_OPTED_IN_PREF_KEY =
+    'synthetic.settings.autofill.walletable_pass_detection_opted_in';
 
 export class SettingsWalletablePassDetectionToggleElement extends CrLitElement {
   static get is() {
@@ -49,31 +53,26 @@ export class SettingsWalletablePassDetectionToggleElement extends CrLitElement {
 
   static override get properties() {
     return {
-      walletablePassDetectionOptedIn_: {type: Object},
       ineligibleUser_: {type: Boolean},
     };
   }
 
-  // Does not correspond to an actual pref - this is faked to allow
-  // writing it into a GAIA-id keyed dictionary of opt-ins.
-  protected accessor walletablePassDetectionOptedIn_:
-      chrome.settingsPrivate.PrefObject<boolean> = {
-    key: '',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: false,
-  };
   protected accessor ineligibleUser_: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
 
-    EntityDataManagerProxyImpl.getInstance()
-        .getWalletablePassDetectionOptInStatus()
-        .then(optedIn => {
-          this.walletablePassDetectionOptedIn_ = {
-            ...this.walletablePassDetectionOptedIn_,
-            value: optedIn,
-          };
+    // Does not correspond to an actual pref - this is faked to allow
+    // writing it into a GAIA-id keyed dictionary of opt-ins.
+    Promise
+        .all([
+          EntityDataManagerProxyImpl.getInstance()
+              .getWalletablePassDetectionOptInStatus(),
+          PrefService.getInstance().whenInitialized(),
+        ])
+        .then(([optedIn]) => {
+          PrefService.getInstance().setPrefValue(
+              WALLETABLE_PASS_DETECTION_OPTED_IN_PREF_KEY, optedIn);
         });
   }
 
@@ -88,10 +87,8 @@ export class SettingsWalletablePassDetectionToggleElement extends CrLitElement {
     const eligibleUser = await EntityDataManagerProxyImpl.getInstance()
                         .setWalletablePassDetectionOptInStatus(toggle.checked);
     if (!eligibleUser) {
-      this.walletablePassDetectionOptedIn_ = {
-        ...this.walletablePassDetectionOptedIn_,
-        value: false,
-      };
+      PrefService.getInstance().setPrefValue(
+          WALLETABLE_PASS_DETECTION_OPTED_IN_PREF_KEY, false);
       this.ineligibleUser_ = true;
     }
   }

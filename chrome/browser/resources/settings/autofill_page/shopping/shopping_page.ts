@@ -41,6 +41,9 @@ export interface SettingsShoppingPageElement {
   };
 }
 
+const SHOPPING_OPTED_IN_PREF_KEY =
+    'synthetic.settings.autofill.shopping_opted_in';
+
 const SettingsShoppingPageElementBase =
     SettingsViewMixinLit(PrefServiceObserverMixinLit(CrLitElement));
 
@@ -78,7 +81,7 @@ export class SettingsShoppingPageElement extends
        * is enabled (clickable). If toggle is disabled then the value is
        * overridden to be shown as false even if the preference is true.
        */
-      shoppingOptedIn_: {type: Object},
+      shoppingOptedInPref_: {type: Object},
 
       showSuggestionsFromGeminiSettings_: {type: Boolean},
     };
@@ -98,12 +101,8 @@ export class SettingsShoppingPageElement extends
   private accessor canEnableOrDisableAutofillAi_: boolean =
       loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
 
-  protected accessor shoppingOptedIn_:
-      chrome.settingsPrivate.PrefObject<boolean> = {
-    key: 'fake',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: false,
-  };
+  protected accessor shoppingOptedInPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
 
   private accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
       loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
@@ -120,7 +119,10 @@ export class SettingsShoppingPageElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.mirrorPref('autofill.profile_enabled', 'profileEnabledPref_');
+    this.mirrorPrefs({
+      'autofill.profile_enabled': 'profileEnabledPref_',
+      [SHOPPING_OPTED_IN_PREF_KEY]: 'shoppingOptedInPref_',
+    });
 
     const updateOptedIn = () => this.updateShoppingOptedIn_();
     this.addPrefObserver(
@@ -145,7 +147,7 @@ export class SettingsShoppingPageElement extends
   private updateShoppingOptedIn_() {
     const prefService = PrefService.getInstance();
     const fakePref: chrome.settingsPrivate.PrefObject<boolean> = {
-      ...this.shoppingOptedIn_,
+      ...prefService.getPref<boolean>(SHOPPING_OPTED_IN_PREF_KEY),
       value: prefService
                  .getPref<boolean>(
                      'autofill.autofill_ai.shopping_entities_enabled')
@@ -166,13 +168,13 @@ export class SettingsShoppingPageElement extends
         prefService.getPref<TypesBlockedEntry[]>('autofill.types_blocked'),
         AutofillPolicyDataCategory.SHOPPING);
 
-    this.shoppingOptedIn_ = fakePref;
+    prefService.setSyntheticPref(fakePref);
   }
 
   protected onOptInToggleSettingsBooleanControlChange_() {
     // If the preference is enforced by enterprise policy, do not allow the user
     // to toggle or mutate the underlying preference value.
-    if (this.$.optInToggle.pref?.enforcement ===
+    if (this.shoppingOptedInPref_?.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED) {
       return;
     }

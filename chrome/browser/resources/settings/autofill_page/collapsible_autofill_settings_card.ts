@@ -22,6 +22,7 @@ import './walletable_pass_detection_toggle.js';
 
 // </if>
 
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -40,6 +41,9 @@ export interface CollapsibleAutofillSettingsCardElement {
     optInToggle: SettingsToggleButtonElement,
   };
 }
+
+const ENHANCED_AUTOFILL_OPTED_IN_PREF_KEY =
+    'synthetic.settings.autofill.enhanced_autofill_opted_in';
 
 const CollapsibleAutofillSettingsCardElementBase =
     PrefServiceObserverMixinLit(CrLitElement);
@@ -83,14 +87,6 @@ export class CollapsibleAutofillSettingsCardElement extends
       autofillAiReauthOnViewingSensitiveDataEnabled_: {type: Boolean},
       // </if>
 
-      /**
-         A "fake" preference object that reflects the state of the opt-in
-         toggle for Enhanced Autofill and the presence/absence of an enterprise
-         policy. This allows leveraging the settings-toggle-button component
-         to reflect enterprise enabled/disabled states.
-       */
-      enhancedAutofillOptedIn_: {type: Object},
-
       isUserEligibleForWalletablePassDetection_: {type: Boolean},
 
       /**
@@ -112,14 +108,6 @@ export class CollapsibleAutofillSettingsCardElement extends
   protected accessor autofillAiReauthOnViewingSensitiveDataEnabled_: boolean =
       loadTimeData.getBoolean('autofillAiReauthOnViewingSensitiveDataEnabled');
   // </if>
-  protected accessor enhancedAutofillOptedIn_:
-      chrome.settingsPrivate.PrefObject<boolean> = {
-    // Does not correspond to an actual pref - this is done to allow
-    // writing it into a GAIA-id keyed dictionary of opt-ins.
-    key: '',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: false,
-  };
   protected accessor isUserEligibleForWalletablePassDetection_: boolean =
       loadTimeData.getBoolean('isUserEligibleForWalletablePassDetection');
   protected accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
@@ -178,10 +166,8 @@ export class CollapsibleAutofillSettingsCardElement extends
         (await this.entityDataManager_.setOptInStatus(
             this.$.optInToggle.checked));
     if (!this.enhancedAutofillEligibleUser_) {
-      this.enhancedAutofillOptedIn_ = {
-        ...this.enhancedAutofillOptedIn_,
-        value: false,
-      };
+      PrefService.getInstance().setPrefValue(
+          ENHANCED_AUTOFILL_OPTED_IN_PREF_KEY, false);
     }
   }
 
@@ -223,13 +209,15 @@ export class CollapsibleAutofillSettingsCardElement extends
       return;
     }
     const addressAutofillEnabled = this.profileEnabledPref_;
+    const prefService = PrefService.getInstance();
 
     if (!this.autofillSettingsEnterprisePolicyEnabled_ &&
         addressAutofillEnabled.enforcement ===
             chrome.settingsPrivate.Enforcement.ENFORCED &&
         !addressAutofillEnabled.value) {
-      this.enhancedAutofillOptedIn_ = {
-        ...this.enhancedAutofillOptedIn_,
+      prefService.setSyntheticPref({
+        key: ENHANCED_AUTOFILL_OPTED_IN_PREF_KEY,
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
         enforcement: addressAutofillEnabled.enforcement,
         controlledBy: addressAutofillEnabled.controlledBy,
         // We need to check addressAutofillEnabled.value here.
@@ -238,36 +226,39 @@ export class CollapsibleAutofillSettingsCardElement extends
         // refreshed only after page reload.
         value:
             this.enhancedAutofillEligibleUser_ && addressAutofillEnabled.value,
-      };
+      });
       return;
     }
 
     const autofillAiPolicyValue = this.autofillAiEnterprisePolicyPref_.value;
 
     if (autofillAiPolicyValue === ModelExecutionEnterprisePolicyValue.DISABLE) {
-      this.enhancedAutofillOptedIn_ = {
-        ...this.enhancedAutofillOptedIn_,
+      prefService.setSyntheticPref({
+        key: ENHANCED_AUTOFILL_OPTED_IN_PREF_KEY,
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
         enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
         controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
         value: false,
-      };
+      });
     } else {
-      this.enhancedAutofillOptedIn_ = {
-        ...this.enhancedAutofillOptedIn_,
-        enforcement: undefined,
-        controlledBy: undefined,
-      };
+      const currentValue =
+          prefService.getPref<boolean>(ENHANCED_AUTOFILL_OPTED_IN_PREF_KEY)
+              .value;
+      prefService.setSyntheticPref({
+        key: ENHANCED_AUTOFILL_OPTED_IN_PREF_KEY,
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: currentValue,
+      });
 
       const enhancedAutofillOptedIn =
           await this.entityDataManager_.getOptInStatus();
 
-      this.enhancedAutofillOptedIn_ = {
-        ...this.enhancedAutofillOptedIn_,
-        value: this.autofillSettingsEnterprisePolicyEnabled_ ?
-            this.enhancedAutofillEligibleUser_ && enhancedAutofillOptedIn :
-            this.enhancedAutofillEligibleUser_ && enhancedAutofillOptedIn &&
-                addressAutofillEnabled.value,
-      };
+      prefService.setPrefValue(
+          ENHANCED_AUTOFILL_OPTED_IN_PREF_KEY,
+          this.autofillSettingsEnterprisePolicyEnabled_ ?
+              this.enhancedAutofillEligibleUser_ && enhancedAutofillOptedIn :
+              this.enhancedAutofillEligibleUser_ && enhancedAutofillOptedIn &&
+                  addressAutofillEnabled.value);
     }
   }
 

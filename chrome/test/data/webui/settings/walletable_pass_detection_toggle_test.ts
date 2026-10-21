@@ -7,19 +7,26 @@ import 'chrome://settings/settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {loadTimeData} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsWalletablePassDetectionToggleElement} from 'chrome://settings/lazy_load.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 // clang-format on
 
 suite('WalletablePassDetectionToggleTest', function() {
   let entityDataManager: TestEntityDataManagerProxy;
+  let prefService: PrefService;
   let toggleComponent: SettingsWalletablePassDetectionToggleElement;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    PrefsBrowserProxy.setInstance(new TestPrefsBrowserProxy([]));
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
@@ -79,10 +86,11 @@ suite('WalletablePassDetectionToggleTest', function() {
 
     // Verify the toggle is unchecked (reverted).
     assertFalse(toggle.checked);
-    assertFalse((toggleComponent as unknown as {
-                  walletablePassDetectionOptedIn_:
-                      chrome.settingsPrivate.PrefObject<boolean>,
-                }).walletablePassDetectionOptedIn_.value);
+    assertFalse(
+        prefService
+            .getPref<boolean>(
+                'synthetic.settings.autofill.walletable_pass_detection_opted_in')
+            .value);
     assertTrue(toggle.disabled);
   });
 });

@@ -51,15 +51,11 @@ export function isTypeGloballyBlocked(
  * Otherwise, returns the unmodified user preference.
  */
 export function computeEffectiveAutofillPref(
-    userPref: chrome.settingsPrivate.PrefObject<boolean>|undefined,
+    userPref: chrome.settingsPrivate.PrefObject<boolean>,
     typesBlockedPref: chrome.settingsPrivate.PrefObject<TypesBlockedEntry[]>|
     undefined,
     category: AutofillPolicyDataCategory):
-    chrome.settingsPrivate.PrefObject<boolean>|undefined {
-  if (!userPref) {
-    return undefined;
-  }
-
+    chrome.settingsPrivate.PrefObject<boolean> {
   const isBlocked = isTypeGloballyBlocked(typesBlockedPref, category);
 
   if (isBlocked) {
@@ -111,9 +107,7 @@ export function checkAutofillPoliciesAndModifyPrefIfNecessary(
   // category globally, enforce it and disable the toggle in Settings.
   const effectivePref =
       computeEffectiveAutofillPref(pref, typesBlockedPref, category);
-  if (effectivePref) {
-    pref.enforcement = effectivePref.enforcement;
-    pref.controlledBy = effectivePref.controlledBy;
-    pref.value = effectivePref.value;
-  }
+  pref.enforcement = effectivePref.enforcement;
+  pref.controlledBy = effectivePref.controlledBy;
+  pref.value = effectivePref.value;
 }

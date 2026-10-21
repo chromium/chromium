@@ -55,12 +55,54 @@ const CATEGORY_DEFAULT_SYNTHETIC_PREFS: string[] = [
 ];
 
 function getSyntheticPrefs(): chrome.settingsPrivate.PrefObject[] {
-  return CATEGORY_DEFAULT_SYNTHETIC_PREFS.map(
-      category => ({
-        key: `synthetic.settings.category_default.${category}`,
-        type: chrome.settingsPrivate.PrefType.STRING,
-        value: 'default',
-      }));
+  return [
+    ...CATEGORY_DEFAULT_SYNTHETIC_PREFS.map(
+        category => ({
+          key: `synthetic.settings.category_default.${category}`,
+          type: chrome.settingsPrivate.PrefType.STRING,
+          value: 'default',
+        })),
+    {
+      key: 'synthetic.settings.autofill.credit_card_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.autofill.enhanced_autofill_opted_in',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.autofill.identity_docs_opted_in',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.autofill.otp_filling',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.autofill.profile_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.autofill.shopping_opted_in',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.autofill.travel_opted_in',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    {
+      key: 'synthetic.settings.autofill.walletable_pass_detection_opted_in',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+  ];
 }
 
 export class PrefService {

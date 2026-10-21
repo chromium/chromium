@@ -22,7 +22,8 @@ export function getHtml(this: CollapsibleAutofillSettingsCardElement) {
       @settings-boolean-control-change="${
           this.onOptInToggleSettingsBooleanControlChange_}"
       ?disabled="${this.optInToggleDisabled_()}"
-      .pref="${this.enhancedAutofillOptedIn_}" no-extension-indicator
+      pref-key="synthetic.settings.autofill.enhanced_autofill_opted_in"
+      no-extension-indicator
       label="$i18n{autofillAiPageTitle}"
       sub-label="$i18n{autofillAiToggleSubLabel}">
   </settings-toggle-button>

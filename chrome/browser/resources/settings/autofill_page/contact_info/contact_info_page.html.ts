@@ -16,7 +16,8 @@ export function getHtml(this: SettingsContactInfoPageElement) {
       <settings-toggle-button id="autofillProfileToggle"
           no-extension-indicator label="$i18n{enableProfilesLabel}"
           sub-label="$i18n{enableProfilesSublabel}"
-          .pref="${this.profileEnabledSyntheticPref_}"
+          pref-key="synthetic.settings.autofill.profile_enabled"
+          no-set-pref
           @settings-boolean-control-change="${
               this.onAutofillProfileToggleSettingsBooleanControlChange_}">
       </settings-toggle-button>
@@ -43,7 +44,7 @@ export function getHtml(this: SettingsContactInfoPageElement) {
               this.onGmailOtpFillingSubLabelLinkClicked_}"
           @settings-boolean-control-change="${
               this.onAutofillOtpFillingToggleSettingsBooleanControlChange_}"
-          .pref="${this.otpFillingTogglePref_}"
+          pref-key="synthetic.settings.autofill.otp_filling"
           no-set-pref>
       </settings-toggle-button>
       ${this.profileEnabledSyntheticPref_?.extensionId ? html`

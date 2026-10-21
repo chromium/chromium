@@ -16,7 +16,8 @@ export function getHtml(this: SettingsTravelPageElement) {
         ?disabled="${this.optInToggleDisabled_()}"
         @settings-boolean-control-change="${
             this.onOptInToggleSettingsBooleanControlChange_}"
-        .pref="${this.travelOptedIn_}"
+        pref-key="synthetic.settings.autofill.travel_opted_in"
+        no-set-pref
         no-extension-indicator
         label="$i18n{travelOptInToggleLabel}"
         sub-label="$i18n{travelOptInToggleSubLabel}">
@@ -48,7 +49,7 @@ export function getHtml(this: SettingsTravelPageElement) {
         page-name="Travel"
         .allowedEntityTypes="${this.allowedEntityTypes_}"
         .metricEntityTypes="${this.metricEntityTypes_}"
-        .allowNewEntitiesAdditionPref="${this.travelOptedIn_}">
+        .allowNewEntitiesAdditionPref="${this.travelOptedInPref_}">
     </settings-autofill-ai-entries-list>
   </div>
 

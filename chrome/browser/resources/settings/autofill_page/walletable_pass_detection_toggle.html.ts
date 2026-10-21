@@ -10,7 +10,7 @@ export function getHtml(this: SettingsWalletablePassDetectionToggleElement) {
   return html`<!--_html_template_start_-->
 <settings-toggle-button id="toggle"
     @settings-boolean-control-change="${this.onSettingsBooleanControlChange_}"
-    .pref="${this.walletablePassDetectionOptedIn_}"
+    pref-key="synthetic.settings.autofill.walletable_pass_detection_opted_in"
     ?disabled="${this.ineligibleUser_}"
     no-extension-indicator
     label="$i18n{walletablePassDetectionToggleLabel}"

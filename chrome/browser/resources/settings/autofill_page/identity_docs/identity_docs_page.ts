@@ -41,6 +41,9 @@ export interface SettingsIdentityDocsPageElement {
   };
 }
 
+const IDENTITY_DOCS_OPTED_IN_PREF_KEY =
+    'synthetic.settings.autofill.identity_docs_opted_in';
+
 const SettingsIdentityDocsPageElementBase =
     SettingsViewMixinLit(PrefServiceObserverMixinLit(CrLitElement));
 
@@ -82,7 +85,7 @@ export class SettingsIdentityDocsPageElement extends
        * value is overridden to be shown as false even if the preference is
        * true.
        */
-      identityDocsOptedIn_: {type: Object},
+      identityDocsOptedInPref_: {type: Object},
 
       metricEntityTypes_: {type: Object},
       profileEnabledPref_: {type: Object},
@@ -106,12 +109,8 @@ export class SettingsIdentityDocsPageElement extends
   private accessor canEnableOrDisableAutofillAi_: boolean =
       loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
 
-  protected accessor identityDocsOptedIn_:
-      chrome.settingsPrivate.PrefObject<boolean> = {
-    key: 'fake',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: false,
-  };
+  protected accessor identityDocsOptedInPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
 
   private accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
       loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
@@ -128,7 +127,10 @@ export class SettingsIdentityDocsPageElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.mirrorPref('autofill.profile_enabled', 'profileEnabledPref_');
+    this.mirrorPrefs({
+      'autofill.profile_enabled': 'profileEnabledPref_',
+      [IDENTITY_DOCS_OPTED_IN_PREF_KEY]: 'identityDocsOptedInPref_',
+    });
 
     const updateOptedIn = () => this.updateIdentityDocsOptedIn_();
     this.addPrefObserver(
@@ -153,7 +155,7 @@ export class SettingsIdentityDocsPageElement extends
   private updateIdentityDocsOptedIn_() {
     const prefService = PrefService.getInstance();
     const fakePref: chrome.settingsPrivate.PrefObject<boolean> = {
-      ...this.identityDocsOptedIn_,
+      ...prefService.getPref<boolean>(IDENTITY_DOCS_OPTED_IN_PREF_KEY),
       value: prefService
                  .getPref<boolean>(
                      'autofill.autofill_ai.identity_entities_enabled')
@@ -174,13 +176,13 @@ export class SettingsIdentityDocsPageElement extends
         prefService.getPref<TypesBlockedEntry[]>('autofill.types_blocked'),
         AutofillPolicyDataCategory.IDENTITY_DOCS);
 
-    this.identityDocsOptedIn_ = fakePref;
+    prefService.setSyntheticPref(fakePref);
   }
 
   protected onOptInToggleSettingsBooleanControlChange_() {
     // If the preference is enforced by enterprise policy, do not allow the user
     // to toggle or mutate the underlying preference value.
-    if (this.$.optInToggle.pref?.enforcement ===
+    if (this.identityDocsOptedInPref_?.enforcement ===
         chrome.settingsPrivate.Enforcement.ENFORCED) {
       return;
     }
