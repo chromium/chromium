@@ -877,11 +877,13 @@ namespace {
 void AddKeyframeToCurve(cc::KeyframedFilterAnimationCurve& curve,
                         Keyframe::PropertySpecificKeyframe* keyframe,
                         const CompositorKeyframeValue* value,
-                        const TimingFunction& keyframe_timing_function) {
+                        const TimingFunction& keyframe_timing_function,
+                        bool is_backdrop_filter) {
   FilterEffectBuilder builder(gfx::RectF(), std::nullopt, 1, Color::kBlack,
                               mojom::blink::ColorScheme::kLight);
   CompositorFilterOperations operations = builder.BuildFilterOperations(
-      To<CompositorKeyframeFilterOperations>(value)->Operations());
+      To<CompositorKeyframeFilterOperations>(value)->Operations(),
+      is_backdrop_filter);
   std::unique_ptr<cc::FilterKeyframe> filter_keyframe =
       cc::FilterKeyframe::Create(base::Seconds(keyframe->Offset()),
                                  operations.ReleaseCcFilterOperations(),
@@ -1019,7 +1021,8 @@ void CompositorAnimations::GetAnimationOnCompositor(
       case CSSPropertyID::kFilter:
       case CSSPropertyID::kBackdropFilter: {
         auto filter_curve = cc::KeyframedFilterAnimationCurve::Create();
-        AddKeyframesToCurve(*filter_curve, values);
+        AddKeyframesToCurve(*filter_curve, values,
+                            css_property_id == CSSPropertyID::kBackdropFilter);
         filter_curve->SetTimingFunction(timing.timing_function->CloneToCC());
         filter_curve->set_scaled_duration(scale);
         curve = std::move(filter_curve);
