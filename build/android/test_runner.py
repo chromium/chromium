@@ -1226,13 +1226,13 @@ def AddPythonTestOptions(parser):
     )
 
 
-def _CreateClassToFileNameDict(test_apk):
-    """Creates a dict mapping classes to file names from size-info apk."""
+def _CreateClassToFileNameDict(suite_name_or_path):
+    """Creates a dict mapping classes to file names from size-info."""
     constants.CheckOutputDirectory()
     test_apk_size_info = os.path.join(
         constants.GetOutDirectory(),
         'size-info',
-        os.path.basename(test_apk) + '.jar.info',
+        os.path.basename(suite_name_or_path) + '.jar.info',
     )
 
     class_to_file_dict = {}
@@ -1240,7 +1240,7 @@ def _CreateClassToFileNameDict(test_apk):
     # tests. This means the apk may not have been built by the system and hence
     # no size info file exists.
     if not os.path.exists(test_apk_size_info):
-        logging.debug('Apk size file not found. %s', test_apk_size_info)
+        logging.debug('Size info file not found. %s', test_apk_size_info)
         return class_to_file_dict
 
     with open(test_apk_size_info, 'r') as f:
@@ -1253,6 +1253,19 @@ def _CreateClassToFileNameDict(test_apk):
                 )
 
     return class_to_file_dict
+
+
+def _GetTestFileName(test_name, class_to_file_dict):
+    """Returns the source file for |test_name|, or None if unknown.
+
+    Args:
+      test_name: e.g. org.chromium.chrome.page_info.PageInfoViewTest#testFoo
+      class_to_file_dict: Result of _CreateClassToFileNameDict().
+    """
+    test_class = test_name.split('#', 1)[0]
+    # .jar.info only lists top-level classes, so fall back to the outer class
+    # for tests defined in nested classes (Outer$Inner).
+    return class_to_file_dict.get(test_class.split('$', 1)[0])
 
 
 def _RunPythonTests(args):
@@ -1631,23 +1644,23 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
                 )
 
             test_class_to_file_name_dict = {}
-            # Test Location is only supported for instrumentation tests as it
-            # requires the size-info file.
+            # Test Location requires the size-info file, which is generated
+            # for instrumentation and junit tests.
             if test_instance.TestType() == 'instrumentation':
                 test_class_to_file_name_dict = _CreateClassToFileNameDict(
                     args.test_apk
+                )
+            elif test_instance.TestType() == 'junit':
+                test_class_to_file_name_dict = _CreateClassToFileNameDict(
+                    test_instance.suite
                 )
 
             if result_sink_client:
                 for run in all_raw_results:
                     for results in run:
                         for r in results.GetAll():
-                            # Matches chrome.page_info.PageInfoViewTest#testChromePage
-                            match = re.search(r'^(.+\..+)#', r.GetName())
-                            test_file_name = (
-                                test_class_to_file_name_dict.get(match.group(1))
-                                if match
-                                else None
+                            test_file_name = _GetTestFileName(
+                                r.GetName(), test_class_to_file_name_dict
                             )
                             _SinkTestResult(
                                 r,

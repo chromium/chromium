@@ -379,9 +379,14 @@ class ParamsJson(dict):
         return self.type in _MERGES_MANIFESTS_TYPES
 
     def needs_full_javac_classpath(self):
-        """Returns True if the target type runs manifest_merger.py."""
+        """Returns True if the target type requires the non-interface transitive classpath."""
         return (
-            self.type in ('android_apk', 'android_app_bundle_module')
+            self.type
+            in (
+                'android_apk',
+                'android_app_bundle_module',
+                'robolectric_binary',
+            )
             or (
                 self.is_library()
                 and self.get('needs_full_javac_classpath', False)
