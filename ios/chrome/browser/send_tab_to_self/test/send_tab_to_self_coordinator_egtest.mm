@@ -515,7 +515,8 @@ void DismissSendTabToSelfModal() {
 // snackbar toast.
 - (void)testShareTabViaDirectTargetInShareSheetAndVerifySuccessSnackbar {
   [self setupHistogramTester];
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity =
+      [FakeSystemIdentity fakeIdentityWithMissingNames];
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
   LoadActivePage(self.testServer);
@@ -565,7 +566,8 @@ void DismissSendTabToSelfModal() {
 // Tests that when network connectivity is lost, attempting to share a tab via a
 // direct target in the Share Sheet displays an error snackbar toast.
 - (void)testShareTabViaDirectTargetAndVerifyErrorSnackbarOnNetworkFailure {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* fakeIdentity =
+      [FakeSystemIdentity fakeIdentityWithMissingNames];
   [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
                          lastUpdatedTimestamp:base::Time::Now()];
   LoadActivePage(self.testServer);

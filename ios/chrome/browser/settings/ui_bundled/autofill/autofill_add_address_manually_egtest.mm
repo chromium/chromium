@@ -173,8 +173,8 @@ UIViewController* TopPresentedViewController() {
 // Helper to open the "add address" bottom sheet.
 - (void)openAddAddressView:(BOOL)signIn {
   if (signIn) {
-    [SigninEarlGreyUI
-        signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+    [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity
+                                                 fakeIdentityWithMissingNames]];
     [ChromeEarlGrey
         waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
   }
