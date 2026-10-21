@@ -1090,15 +1090,3 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDefaultSettingsAlignedScalingSettingsTest,
                        SetScaling) {
   RunTestCase("SetScaling");
 }
-
-// TODO(crbug.com/440516024): Fix flakiness on Linux and re-enable.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_InputNotDisabledOnValidityChange \
-  DISABLED_InputNotDisabledOnValidityChange
-#else
-#define MAYBE_InputNotDisabledOnValidityChange InputNotDisabledOnValidityChange
-#endif
-IN_PROC_BROWSER_TEST_F(PrintPreviewScalingSettingsTest,
-                       MAYBE_InputNotDisabledOnValidityChange) {
-  RunTestCase("InputNotDisabledOnValidityChange");
-}

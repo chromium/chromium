@@ -66,6 +66,21 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPagesSettingsFocusTest,
   RunTestCase("EnterOnInputTriggersPrint");
 }
 
+class PrintPreviewScalingSettingsFocusTest : public PrintPreviewFocusTest {
+ protected:
+  void RunTestCase(const std::string& testCase) {
+    PrintPreviewFocusTest::RunTest(
+        "print_preview/scaling_settings_test.js",
+        base::StringPrintf("runMochaTest('ScalingSettingsTest', '%s');",
+                           testCase.c_str()));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewScalingSettingsFocusTest,
+                       InputNotDisabledOnValidityChange) {
+  RunTestCase("InputNotDisabledOnValidityChange");
+}
+
 class PrintPreviewDestinationDialogFocusTest : public PrintPreviewFocusTest {
  protected:
   void RunTestCase(const std::string& testCase) {
