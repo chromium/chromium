@@ -15786,6 +15786,21 @@
             ]
         }
     ],
+    "ScreencastForceEnableServerSideSpeechRecognition": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ForceEnableServerSideSpeechRecognition"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScrollJankHoldback": [
         {
             "platforms": [
