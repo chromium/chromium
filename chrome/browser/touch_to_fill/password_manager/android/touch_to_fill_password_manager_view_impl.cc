@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "url/android/gurl_android.h"
@@ -177,8 +178,7 @@ bool TouchToFillPasswordManagerViewImpl::RecreateJavaObject() {
                                                   java_object_internal_);
   }
   java_object_internal_ = Java_TouchToFillPasswordManagerBridge_create(
-      AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-      controller_->GetProfile(),
+      AttachCurrentThread(), jni_zero::MakeRaw(this), controller_->GetProfile(),
       controller_->GetNativeView()->GetWindowAndroid());
   return !!java_object_internal_;
 }

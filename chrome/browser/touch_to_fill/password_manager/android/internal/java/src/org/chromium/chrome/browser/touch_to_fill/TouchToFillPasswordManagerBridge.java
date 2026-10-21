@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.touch_to_fill;
 import android.content.Context;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -31,11 +34,14 @@ import java.util.Arrays;
  */
 @NullMarked
 class TouchToFillPasswordManagerBridge implements TouchToFillComponent.Delegate {
-    private long mNativeView;
+    @JniType("::TouchToFillPasswordManagerViewImpl")
+    interface NativeTouchToFillPasswordManagerViewImpl extends JniTypeToken {}
+
+    private @Nullable JniRawPtr<NativeTouchToFillPasswordManagerViewImpl> mNativeView;
     private final TouchToFillComponent mTouchToFillComponent;
 
     private TouchToFillPasswordManagerBridge(
-            long nativeView,
+            JniRawPtr<NativeTouchToFillPasswordManagerViewImpl> nativeView,
             Profile profile,
             WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController) {
@@ -53,19 +59,25 @@ class TouchToFillPasswordManagerBridge implements TouchToFillComponent.Delegate 
 
     @CalledByNative
     private static @Nullable TouchToFillPasswordManagerBridge create(
-            long nativeView,
+            JniRawPtr<NativeTouchToFillPasswordManagerViewImpl> nativeView,
             @JniType("Profile*") Profile profile,
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
-        if (bottomSheetController == null) return null;
+        if (bottomSheetController == null) {
+            nativeView.release();
+            return null;
+        }
         return new TouchToFillPasswordManagerBridge(
                 nativeView, profile, windowAndroid, bottomSheetController);
     }
 
     @CalledByNative
     private void destroy() {
-        mNativeView = 0;
+        if (mNativeView != null) {
+            mNativeView.release();
+            mNativeView = null;
+        }
         mTouchToFillComponent.cleanUp();
     }
 
@@ -137,12 +149,12 @@ class TouchToFillPasswordManagerBridge implements TouchToFillComponent.Delegate 
 
     @Override
     public void onDismissed() {
-        if (mNativeView != 0) TouchToFillPasswordManagerBridgeJni.get().onDismiss(mNativeView);
+        if (mNativeView != null) TouchToFillPasswordManagerBridgeJni.get().onDismiss(mNativeView);
     }
 
     @Override
     public void onManagePasswordsSelected(boolean passkeysShown) {
-        if (mNativeView != 0) {
+        if (mNativeView != null) {
             TouchToFillPasswordManagerBridgeJni.get()
                     .onManagePasswordsSelected(mNativeView, passkeysShown);
         }
@@ -150,21 +162,21 @@ class TouchToFillPasswordManagerBridge implements TouchToFillComponent.Delegate 
 
     @Override
     public void onHybridSignInSelected() {
-        if (mNativeView != 0) {
+        if (mNativeView != null) {
             TouchToFillPasswordManagerBridgeJni.get().onHybridSignInSelected(mNativeView);
         }
     }
 
     @Override
     public void onCredentialSelected(Credential credential) {
-        if (mNativeView != 0) {
+        if (mNativeView != null) {
             TouchToFillPasswordManagerBridgeJni.get().onCredentialSelected(mNativeView, credential);
         }
     }
 
     @Override
     public void onWebAuthnCredentialSelected(WebauthnCredential credential) {
-        if (mNativeView != 0) {
+        if (mNativeView != null) {
             TouchToFillPasswordManagerBridgeJni.get()
                     .onWebAuthnCredentialSelected(mNativeView, credential);
         }
@@ -172,25 +184,26 @@ class TouchToFillPasswordManagerBridge implements TouchToFillComponent.Delegate 
 
     @Override
     public void onShowMorePasskeysSelected() {
-        if (mNativeView == 0) return;
+        if (mNativeView == null) return;
         TouchToFillPasswordManagerBridgeJni.get().onShowCredManSelected(mNativeView);
     }
 
     @NativeMethods
     interface Natives {
         void onCredentialSelected(
-                long nativeTouchToFillPasswordManagerViewImpl, Credential credential);
+                JniPtr<NativeTouchToFillPasswordManagerViewImpl> self, Credential credential);
 
         void onWebAuthnCredentialSelected(
-                long nativeTouchToFillPasswordManagerViewImpl, WebauthnCredential credential);
+                JniPtr<NativeTouchToFillPasswordManagerViewImpl> self,
+                WebauthnCredential credential);
 
         void onManagePasswordsSelected(
-                long nativeTouchToFillPasswordManagerViewImpl, boolean passkeysShown);
+                JniPtr<NativeTouchToFillPasswordManagerViewImpl> self, boolean passkeysShown);
 
-        void onHybridSignInSelected(long nativeTouchToFillPasswordManagerViewImpl);
+        void onHybridSignInSelected(JniPtr<NativeTouchToFillPasswordManagerViewImpl> self);
 
-        void onShowCredManSelected(long nativeTouchToFillPasswordManagerViewImpl);
+        void onShowCredManSelected(JniPtr<NativeTouchToFillPasswordManagerViewImpl> self);
 
-        void onDismiss(long nativeTouchToFillPasswordManagerViewImpl);
+        void onDismiss(JniPtr<NativeTouchToFillPasswordManagerViewImpl> self);
     }
 }
