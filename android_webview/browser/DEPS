@@ -55,6 +55,9 @@ include_rules = [
   "+components/security_state/content",
   "+components/security_state/core",
   "+components/sensitive_content",
+  "+components/signin/core/browser",
+  "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
   "+components/spellcheck/browser",
   "+components/spellcheck/common",
   "+components/strings",
@@ -181,4 +184,5 @@ include_rules = [
   # For Chrome's API keys in WebView.
   "+google_apis/common/api_key_request_util.h",
   "+google_apis/google_api_keys.h",
+  "+google_apis/gaia",
 ]

@@ -39,6 +39,7 @@
 #include "android_webview/browser/permission/permission_request_handler.h"
 #include "android_webview/browser/permission/simple_permission_request.h"
 #include "android_webview/browser/prefetch/aw_preloading_utils.h"
+#include "android_webview/browser/signin/aw_google_accounts_delegate.h"
 #include "android_webview/browser/state_serializer.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
@@ -91,6 +92,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/sensitive_content/android/android_sensitive_content_client.h"
+#include "components/signin/core/browser/signin_header_helper.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/android/message_payload.h"
@@ -471,6 +473,18 @@ AwContents::~AwContents() {
   // Corresponds to "WebView Instance" in AwContents's constructor.
   TRACE_EVENT_END("android_webview.timeline",
                   perfetto::NamedTrack::FromPointer("WebView Instance", this));
+}
+
+void AwContents::OnGoogleAccountsRequest(
+    const signin::ManageAccountsParams& params,
+    bool is_outermost_main_frame) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // TODO(b/571522191): Implemented in follow-up CL.
+}
+
+std::string AwContents::GetGaiaId() {
+  // TODO(b/571522191): Implemented in follow-up CL.
+  return std::string();
 }
 
 base::android::ScopedJavaLocalRef<jobject> AwContents::GetWebContents(

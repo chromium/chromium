@@ -24,6 +24,7 @@
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_ui_manager.h"
+#include "android_webview/browser/signin/aw_google_accounts_delegate.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/circular_deque.h"
@@ -43,6 +44,10 @@ class SkBitmap;
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace signin {
+struct ManageAccountsParams;
+}
 
 namespace android_webview {
 
@@ -73,7 +78,8 @@ class AwContents : public FindHelper::Listener,
                    public content::WebContentsObserver,
                    public AwSafeBrowsingUIManager::UIManagerClient,
                    public VisibilityMetricsLogger::Client,
-                   public AwSafeBrowsingAllowlistSetObserver {
+                   public AwSafeBrowsingAllowlistSetObserver,
+                   public AwGoogleAccountsDelegate {
  public:
   // Returns the AwContents instance associated with |web_contents|, or NULL.
   static AwContents* FromWebContents(content::WebContents* web_contents);
@@ -82,7 +88,7 @@ class AwContents : public FindHelper::Listener,
 
   static std::string GetLocaleList();
 
-  AwContents(std::unique_ptr<content::WebContents> web_contents);
+  explicit AwContents(std::unique_ptr<content::WebContents> web_contents);
 
   AwContents(const AwContents&) = delete;
   AwContents& operator=(const AwContents&) = delete;
@@ -92,6 +98,11 @@ class AwContents : public FindHelper::Listener,
   AwRenderViewHostExt* render_view_host_ext() {
     return render_view_host_ext_.get();
   }
+
+  // AwGoogleAccountsDelegate:
+  void OnGoogleAccountsRequest(const signin::ManageAccountsParams& params,
+                               bool is_outermost_main_frame) override;
+  std::string GetGaiaId() override;
 
   // |handler| is an instance of
   // org.chromium.android_webview.AwHttpAuthHandler.
