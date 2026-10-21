@@ -1468,20 +1468,13 @@ base::TimeDelta SchedulerStateMachine::GetMainFrameThrottledInterval(
     return base::TimeDelta();
   }
   features::SetIsEligibleForThrottleMainFrameTo60Hz(true);
-#if BUILDFLAG(IS_ANDROID)
-  const base::Feature& feature = is_webview
-                                     ? features::kThrottleMainFrameTo60HzWebView
-                                     : features::kThrottleMainFrameTo60Hz;
-#else
-  const base::Feature& feature = features::kThrottleMainFrameTo60Hz;
-#endif
   // Here as well, use a slack factor, to make sure that small timing
   // variations don't result in uneven pacing.
   //
   // Use interval / 2 rather than an actual interval as refresh rates are
   // not necessarily 120: it could be something really close, or it could be
   // 144Hz for instance.
-  return base::FeatureList::IsEnabled(feature)
+  return features::IsThrottleMainFrameTo60HzEnabled(is_webview)
              ? ThrottledFrameRateWithSlack(frame_interval, 2)
              : base::TimeDelta();
 }

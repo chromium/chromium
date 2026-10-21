@@ -82,12 +82,21 @@ class LayerTreeHostProxyTestSetNeedsCommitUrgent
   LayerTreeHostProxyTestSetNeedsCommitUrgent() = default;
   LayerTreeHostProxyTestSetNeedsCommitUrgent(
       const LayerTreeHostProxyTestSetNeedsCommitUrgent&) = delete;
-  ~LayerTreeHostProxyTestSetNeedsCommitUrgent() override = default;
+  ~LayerTreeHostProxyTestSetNeedsCommitUrgent() override {
+    features::SetIsEligibleForThrottleMainFrameTo60Hz(false);
+  }
 
   LayerTreeHostProxyTestSetNeedsCommitUrgent& operator=(
       const LayerTreeHostProxyTestSetNeedsCommitUrgent&) = delete;
 
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    LayerTreeHostProxyTest::InitializeSettings(settings);
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kThrottleMainFrameTo60Hz);
+  }
+
   void BeginTest() override {
+    features::SetIsEligibleForThrottleMainFrameTo60Hz(false);
     EXPECT_EQ(ProxyMain::NO_PIPELINE_STAGE,
               GetProxyMain()->max_requested_pipeline_stage());
     EXPECT_FALSE(GetProxyMain()->has_sent_urgent_commit_request());
@@ -95,6 +104,12 @@ class LayerTreeHostProxyTestSetNeedsCommitUrgent
     proxy()->SetNeedsCommit(/*urgent=*/false);
     EXPECT_EQ(ProxyMain::COMMIT_PIPELINE_STAGE,
               GetProxyMain()->max_requested_pipeline_stage());
+    // When not eligible for 60Hz main frame throttling, urgent requests do not
+    // post a second commit request.
+    proxy()->SetNeedsCommit(/*urgent=*/true);
+    EXPECT_FALSE(GetProxyMain()->has_sent_urgent_commit_request());
+
+    features::SetIsEligibleForThrottleMainFrameTo60Hz(true);
     proxy()->SetNeedsCommit(/*urgent=*/true);
     EXPECT_TRUE(GetProxyMain()->has_sent_urgent_commit_request());
   }
@@ -112,6 +127,9 @@ class LayerTreeHostProxyTestSetNeedsCommitUrgent
               GetProxyMain()->current_pipeline_stage());
     EndTest();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostProxyTestSetNeedsCommitUrgent);

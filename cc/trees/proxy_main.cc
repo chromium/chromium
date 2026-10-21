@@ -1134,6 +1134,17 @@ bool ProxyMain::SendCommitRequestToImplThreadIfNeeded(
   // no correctness issue.
   bool next_frame_may_be_throttled =
       GetThrottlingFactor(consecutive_no_damage_main_frames_ + 2);
+
+  // Urgent commit requests, while mainly used when 60Hz throttling is enabled,
+  // can also be used to end independent throttling. Always forward them in this
+  // case.
+  bool main_frame_may_be_throttled =
+      next_frame_may_be_throttled ||
+      features::IsThrottleMainFrameTo60HzEnabled(
+          layer_tree_host_->GetSettings()
+              .using_synchronous_renderer_compositor);
+  urgent = urgent && main_frame_may_be_throttled;
+
   if (already_posted && (!urgent || has_sent_urgent_commit_request_) &&
       (!next_frame_may_be_throttled || !unthrottle_next ||
        has_sent_unthrottled_commit_request_)) {
