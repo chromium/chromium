@@ -9,7 +9,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AddSiteDialogElement, SettingsEditExceptionDialogElement, SiteException, SiteListElement} from 'chrome://settings/lazy_load.js';
 import {CookiesExceptionType, ContentSetting, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD, SiteSettingSource, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, loadTimeData, Router} from 'chrome://settings/settings.js';
+import {loadTimeData, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -458,14 +458,6 @@ suite('SiteListEmbargoedOrigin', function() {
    */
   let browserProxy: TestSiteSettingsBrowserProxy;
 
-  suiteSetup(function() {
-    CrSettingsPrefs.setInitialized();
-  });
-
-  suiteTeardown(function() {
-    CrSettingsPrefs.resetForTesting();
-  });
-
   // Initialize a site-list before each test.
   setup(function() {
     populateTestExceptions();
@@ -530,14 +522,6 @@ suite('SiteListCookiesExceptionTypes', function() {
    * The mock proxy object to use during test.
    */
   let browserProxy: TestSiteSettingsBrowserProxy;
-
-  suiteSetup(function() {
-    CrSettingsPrefs.setInitialized();
-  });
-
-  suiteTeardown(function() {
-    CrSettingsPrefs.resetForTesting();
-  });
 
   // Initialize a site-list before each test.
   setup(function() {
@@ -626,14 +610,6 @@ suite('SiteListPopulatedWhileHidden', function() {
    * The mock proxy object to use during test.
    */
   let browserProxy: TestSiteSettingsBrowserProxy;
-
-  suiteSetup(function() {
-    CrSettingsPrefs.setInitialized();
-  });
-
-  suiteTeardown(function() {
-    CrSettingsPrefs.resetForTesting();
-  });
 
   // Initialize a site-list inside a hidden container before each test. This
   // mimics Settings stamping a view into a <cr-view-manager> view that has not
@@ -728,16 +704,6 @@ suite('DISABLED_SiteList', function() {
    */
   let browserProxy: TestSiteSettingsBrowserProxy;
 
-  suiteSetup(function() {
-    // clang-format off
-    CrSettingsPrefs.setInitialized();
-    // clang-format on
-  });
-
-  suiteTeardown(function() {
-    CrSettingsPrefs.resetForTesting();
-  });
-
   // Initialize a site-list before each test.
   setup(function() {
     populateTestExceptions();
@@ -812,16 +778,6 @@ suite('SiteList', function() {
    * The mock proxy object to use during test.
    */
   let browserProxy: TestSiteSettingsBrowserProxy;
-
-  suiteSetup(function() {
-    // clang-format off
-    CrSettingsPrefs.setInitialized();
-    // clang-format on
-  });
-
-  suiteTeardown(function() {
-    CrSettingsPrefs.resetForTesting();
-  });
 
   // Initialize a site-list before each test.
   setup(function() {
@@ -1659,14 +1615,6 @@ suite('SiteListSearchTests', function() {
 
   /** The mock proxy object to use during test. */
   let browserProxy: TestSiteSettingsBrowserProxy;
-
-  suiteSetup(function() {
-    CrSettingsPrefs.setInitialized();
-  });
-
-  suiteTeardown(function() {
-    CrSettingsPrefs.resetForTesting();
-  });
 
   // Initialize a site-list before each test.
   setup(function() {

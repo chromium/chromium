@@ -11,7 +11,6 @@
   }
 </style>
 
-<settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
 <cr-view-manager id="viewManager" class="cr-centered-card-container"
     show-all$="[[shouldShowAll]]">
 
@@ -483,7 +482,7 @@
       update-when-false>
     <settings-sound-page slot="view"
         id="siteSettingsSound" data-parent-view-id="privacy"
-        prefs="{{prefs}}" route-path$="[[routes_.SITE_SETTINGS_SOUND.path]]">
+        route-path$="[[routes_.SITE_SETTINGS_SOUND.path]]">
     </settings-sound-page>
   </template>
 

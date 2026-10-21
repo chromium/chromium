@@ -9,7 +9,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {FileSystemGrant, OriginFileSystemGrants} from 'chrome://settings/lazy_load.js';
 import {FileSystemSiteDetailsElement, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, loadTimeData, Router, routes} from 'chrome://settings/settings.js';
+import {loadTimeData, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
@@ -48,8 +48,6 @@ suite('FileSystemSettings_EnablePersistentPermissions_SiteDetails', function() {
   const FILE_SYSTEM_GRANTS_EMPTY: OriginFileSystemGrants[] = [];
 
   suiteSetup(function() {
-    CrSettingsPrefs.setInitialized();
-
     loadTimeData.overrideValues({
       enablePersistentPermissions: true,
     });

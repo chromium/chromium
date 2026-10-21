@@ -7,8 +7,7 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {CaptionsBrowserProxyImpl, getLanguageHelperInstance, LanguageHelperImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsAddLanguagesDialogElement, SettingsLiveCaptionElement} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -49,7 +48,6 @@ function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
 
 suite('LiveCaptionSection', function() {
   let liveCaptionSection: SettingsLiveCaptionElement;
-  let settingsPrefs: SettingsPrefsElement;
   let browserProxy: TestCaptionsBrowserProxy;
   let dialog: SettingsAddLanguagesDialogElement|null = null;
   let prefService: PrefService;
@@ -86,11 +84,6 @@ suite('LiveCaptionSection', function() {
     PrefService.resetInstanceForTesting();
     prefService = PrefService.getInstance();
     await prefService.whenInitialized();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    settingsPrefs.initialize(prefsBrowserProxy.fakeApi);
-    document.body.appendChild(settingsPrefs);
-    await CrSettingsPrefs.initialized;
 
     LanguageHelperImpl.resetInstanceForTesting();
     const languageHelper = getLanguageHelperInstance();

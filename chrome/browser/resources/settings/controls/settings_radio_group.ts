@@ -8,7 +8,7 @@
  * control a supplied preference.
  *
  * Example:
- *      <settings-radio-group pref="{{prefs.settings.foo}}"
+ *      <settings-radio-group pref-key="settings.foo"
  *          label="Foo Options." buttons="{{fooOptionsList}}">
  *      </settings-radio-group>
  */

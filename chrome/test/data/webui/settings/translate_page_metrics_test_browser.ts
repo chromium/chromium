@@ -4,7 +4,7 @@
 
 import type {LanguageHelper, SettingsAddLanguagesDialogElement, SettingsTranslatePageElement} from 'chrome://settings/lazy_load.js';
 import {getLanguageHelperInstance, LanguageHelperImpl, LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -34,10 +34,6 @@ suite('TranslatePageMetricsBrowser', function() {
     assertTrue(!!dialog);
     return dialog;
   }
-
-  suiteSetup(function() {
-    CrSettingsPrefs.deferInitialization = true;
-  });
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

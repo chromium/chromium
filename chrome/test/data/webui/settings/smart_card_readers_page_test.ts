@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import type {SettingsSmartCardReadersPageElement} from 'chrome://settings/lazy_load.js';
 import {ChooserType, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, loadTimeData, resetRouterForTesting} from 'chrome://settings/settings.js';
+import {loadTimeData, resetRouterForTesting} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
@@ -18,8 +18,6 @@ suite('SmartCardReadersPageSettings', function() {
   let browserProxy: TestSiteSettingsBrowserProxy;
 
   suiteSetup(function() {
-    CrSettingsPrefs.setInitialized();
-
     loadTimeData.overrideValues({
       enableSmartCardReadersContentSetting: true,
     });

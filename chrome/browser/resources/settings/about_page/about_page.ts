@@ -7,7 +7,6 @@
  * information.
  */
 
-import '/shared/settings/prefs/prefs.js';
 // <if expr="not is_chromeos">
 import '../relaunch_confirmation_dialog.js';
 // </if>

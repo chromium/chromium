@@ -16,7 +16,7 @@ import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {AccessibilityBrowserProxy, SettingsA11yPageElement} from 'chrome://settings/lazy_load.js';
 import {AccessibilityBrowserProxyImpl, getLanguageHelperInstance, LanguageHelperImpl, ToastAlertLevel} from 'chrome://settings/lazy_load.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -136,11 +136,6 @@ suite('A11yPage', () => {
     PrefService.resetInstanceForTesting();
     prefService = PrefService.getInstance();
     await prefService.whenInitialized();
-
-    const settingsPrefs = document.createElement('settings-prefs');
-    settingsPrefs.initialize(prefsBrowserProxy.fakeApi);
-    document.body.appendChild(settingsPrefs);
-    await CrSettingsPrefs.initialized;
 
     // Set up languages helper.
     LanguageHelperImpl.resetInstanceForTesting();

@@ -6,7 +6,7 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AllSitesElement, SiteGroup} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl, SortMethod} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, DeleteBrowsingDataAction, loadTimeData, MetricsBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
+import {DeleteBrowsingDataAction, loadTimeData, MetricsBrowserProxyImpl, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -51,14 +51,6 @@ suite('WithoutRelatedWebsiteSetsData', function() {
    * The mock proxy object to use during test.
    */
   let browserProxy: TestSiteSettingsBrowserProxy;
-
-  suiteSetup(function() {
-    CrSettingsPrefs.setInitialized();
-  });
-
-  suiteTeardown(function() {
-    CrSettingsPrefs.resetForTesting();
-  });
 
   // Initialize a site-list before each test.
   setup(function() {
@@ -1134,15 +1126,6 @@ suite('EnableRelatedWebsiteSets', function() {
     assertTrue(!!testElement);
     document.body.appendChild(testElement);
   }
-
-  suiteSetup(function() {
-    CrSettingsPrefs.setInitialized();
-  });
-
-  suiteTeardown(function() {
-    CrSettingsPrefs.resetForTesting();
-  });
-
 
   // Initialize a site-list before each test.
   setup(function() {

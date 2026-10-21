@@ -5,7 +5,7 @@
 // clang-format off
 import type {SettingsEditDictionaryPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -19,10 +19,6 @@ import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 suite('EditDictionaryPage', function() {
   let editDictPage: SettingsEditDictionaryPageElement;
   let languageSettingsPrivate: FakeLanguageSettingsPrivate;
-
-  suiteSetup(function() {
-    CrSettingsPrefs.deferInitialization = true;
-  });
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -169,10 +165,6 @@ suite('EditDictionaryPage', function() {
 suite('EditDictionaryPageFocus', function() {
   let editDictPage: SettingsEditDictionaryPageElement;
   let languageSettingsPrivate: FakeLanguageSettingsPrivate;
-
-  suiteSetup(function() {
-    CrSettingsPrefs.deferInitialization = true;
-  });
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

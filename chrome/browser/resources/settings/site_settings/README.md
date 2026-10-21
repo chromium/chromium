@@ -72,7 +72,7 @@ Examples:
 ```
 <settings-toggle-button id="toggle" class="two-line"
   label="$i18n{siteSettingsPdfDownloadPdfs}"
-  pref="{{prefs.plugins.always_open_pdf_externally}}">
+  pref-key="plugins.always_open_pdf_externally">
 </settings-toggle-button>
 ```
 

@@ -5,7 +5,7 @@
 // clang-format off
 import type {LanguageHelper} from 'chrome://settings/lazy_load.js';
 import {LanguageHelperImpl, LanguagesBrowserProxyImpl, getLanguageHelperInstance} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, isTranslateBaseLanguage, getBaseLanguage, convertLanguageCodeForTranslate, convertLanguageCodeForChrome, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import {isTranslateBaseLanguage, getBaseLanguage, convertLanguageCodeForTranslate, convertLanguageCodeForChrome, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import type {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
@@ -27,10 +27,6 @@ suite('settings-languages', function() {
   let browserProxy: TestLanguagesBrowserProxy;
   let languageHelper: LanguageHelper;
   let languageSettingsPrivate: FakeLanguageSettingsPrivate;
-
-  suiteSetup(function() {
-    CrSettingsPrefs.deferInitialization = true;
-  });
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

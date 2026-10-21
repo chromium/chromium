@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsPrivacyPageIndexElement, SyncStatus} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrefService, PrefsBrowserProxy, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, routes, Router, StatusAction} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, PrefService, PrefsBrowserProxy, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, routes, Router, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -26,7 +26,6 @@ suite('PrivacyGuidePromoVisibility', () => {
   let prefService: PrefService;
 
   suiteSetup(function() {
-    CrSettingsPrefs.deferInitialization = true;
     loadTimeData.overrideValues({showPrivacyGuide: true});
     resetRouterForTesting();
   });
@@ -58,10 +57,6 @@ suite('PrivacyGuidePromoVisibility', () => {
 
     page = document.createElement('settings-privacy-page-index');
     document.body.appendChild(page);
-    // TODO(crbug.com/40184479): Needed until settings-privacy-page-index is
-    // migrated to PrefService (it still observes `prefs.privacy_guide.viewed`).
-    page.$.prefs.initialize(prefsBrowserProxy.fakeApi);
-    await CrSettingsPrefs.initialized;
     await flushTasks();
 
     // Necessary for isChildVisible() calls below to not behave flakily.
@@ -112,10 +107,6 @@ suite('PrivacyGuidePromoVisibility', () => {
     assertTrue(isChildVisible(page, '#privacyGuidePromo'));
     assertFalse(prefService.getPref<boolean>('privacy_guide.viewed').value);
 
-    // Reset PrefService to simulate the case where it has not been initialized
-    // yet when the button is clicked.
-    PrefService.resetInstanceForTesting();
-
     // Click the no thanks button.
     const privacyGuidePromo = page.shadowRoot!.querySelector<HTMLElement>(
         '#privacyGuidePromo settings-privacy-guide-promo');
@@ -129,7 +120,6 @@ suite('PrivacyGuidePromoVisibility', () => {
 
     // The privacy guide should be marked as seen and the promo no longer
     // visible.
-    prefService = PrefService.getInstance();
     assertTrue(prefService.getPref<boolean>('privacy_guide.viewed').value);
     assertFalse(isChildVisible(page, '#privacyGuidePromo'));
   });

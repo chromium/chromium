@@ -6,7 +6,7 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {CrIconButtonElement, LanguageHelper, SettingsAddLanguagesDialogElement, SettingsTranslatePageElement} from 'chrome://settings/lazy_load.js';
 import {LanguageHelperImpl, LanguagesBrowserProxyImpl, getLanguageHelperInstance} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -26,12 +26,8 @@ suite('TranslatePage', function() {
   const alwaysTranslatePref = 'translate_allowlists';
   const neverTranslatePref = 'translate_blocked_languages';
 
-  suiteSetup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    CrSettingsPrefs.deferInitialization = true;
-  });
-
   setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const prefsBrowserProxy = new TestPrefsBrowserProxy(getFakeLanguagePrefs());
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
@@ -49,10 +45,6 @@ suite('TranslatePage', function() {
     translatePage = document.createElement('settings-translate-page');
     document.body.appendChild(translatePage);
     await microtasksFinished();
-  });
-
-  teardown(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   suite('TranslateSettings', function() {

@@ -5,7 +5,7 @@
 // clang-format off
 import type {LanguageHelper, SettingsSpellCheckPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguageHelperImpl, LanguagesBrowserProxyImpl, getLanguageHelperInstance} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 // <if expr="not is_macosx">
 import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -37,12 +37,8 @@ suite('SpellCheck', function() {
   let prefsBrowserProxy: TestPrefsBrowserProxy;
   let prefService: PrefService;
 
-  suiteSetup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    CrSettingsPrefs.deferInitialization = true;
-  });
-
   setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     prefsBrowserProxy = new TestPrefsBrowserProxy(getFakeLanguagePrefs());
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
@@ -59,10 +55,6 @@ suite('SpellCheck', function() {
 
     spellcheckPage = document.createElement('settings-spell-check-page');
     document.body.appendChild(spellcheckPage);
-  });
-
-  teardown(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   suite('AllBuilds', function() {
