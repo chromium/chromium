@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.ui.autofill;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -22,6 +25,8 @@ import android.widget.TextView;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.test.core.app.ApplicationProvider;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,7 +52,8 @@ public class AutofillProgressDialogBridgeTest {
     private static final String PROGRESS_DIALOG_MESSAGE = "Contacting your bank...";
     private static final String PROGRESS_DIALOG_CONFIRMATION = "Your card is confirmed";
     private static final String PROGRESS_DIALOG_BUTTON_LABEL = "Cancel";
-    private static final long NATIVE_AUTOFILL_PROGRESS_DIALOG_VIEW = 100L;
+    private JniRawPtr<AutofillProgressDialogBridge.NativeAutofillProgressDialogViewAndroid>
+            mNativeAutofillProgressDialogView;
 
     @Mock private AutofillProgressDialogBridge.Natives mNativeMock;
 
@@ -65,12 +71,18 @@ public class AutofillProgressDialogBridgeTest {
         reset(mNativeMock);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.TAB);
         mResources = ApplicationProvider.getApplicationContext().getResources();
+        mNativeAutofillProgressDialogView = spy(JniRawPtr.createForTesting(100L));
         mAutofillProgressDialogBridge =
                 new AutofillProgressDialogBridge(
-                        NATIVE_AUTOFILL_PROGRESS_DIALOG_VIEW,
+                        mNativeAutofillProgressDialogView,
                         mModalDialogManager,
                         ApplicationProvider.getApplicationContext());
         AutofillProgressDialogBridgeJni.setInstanceForTesting(mNativeMock);
+    }
+
+    @After
+    public void tearDown() {
+        mAutofillProgressDialogBridge.destroy();
     }
 
     @Test
@@ -81,7 +93,7 @@ public class AutofillProgressDialogBridgeTest {
         mAutofillProgressDialogBridge.dismiss();
         // Verify that no dialog is shown and that the callback is triggered on dismissal.
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
-        verify(mNativeMock, times(1)).onDismissed(NATIVE_AUTOFILL_PROGRESS_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).onDismissed(mNativeAutofillProgressDialogView);
     }
 
     @Test
@@ -109,7 +121,7 @@ public class AutofillProgressDialogBridgeTest {
         mAutofillProgressDialogBridge.dismiss();
         // Verify that no dialog is shown and that the callback is triggered on dismissal.
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
-        verify(mNativeMock, times(1)).onDismissed(NATIVE_AUTOFILL_PROGRESS_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).onDismissed(mNativeAutofillProgressDialogView);
     }
 
     @Test
@@ -118,7 +130,18 @@ public class AutofillProgressDialogBridgeTest {
 
         mModalDialogManager.clickNegativeButton();
 
-        verify(mNativeMock, times(1)).onDismissed(NATIVE_AUTOFILL_PROGRESS_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).onDismissed(mNativeAutofillProgressDialogView);
+    }
+
+    @Test
+    public void testDestroy() {
+        showProgressDialog();
+
+        mAutofillProgressDialogBridge.destroy();
+        verify(mNativeAutofillProgressDialogView).release();
+
+        mModalDialogManager.clickNegativeButton();
+        verify(mNativeMock, never()).onDismissed(any());
     }
 
     @Test

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
@@ -91,7 +92,7 @@ bool AutofillProgressDialogViewAndroid::ShowDialog(
   }
 
   java_object_.Reset(Java_AutofillProgressDialogBridge_create(
-      env, reinterpret_cast<intptr_t>(this), window_android));
+      env, jni_zero::MakeRaw(this), window_android));
 
   if (controller_) {
     Java_AutofillProgressDialogBridge_showDialog(
