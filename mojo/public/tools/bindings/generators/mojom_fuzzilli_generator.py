@@ -86,9 +86,14 @@ class Generator(generator.Generator):
     self.primary_interface = None
     self.interface_remotes = {}
     self.interface_receivers = {}
-    # An interface may appear as both associated and non-associated
-    self.associated_interfaces = set()
-    self.non_associated_interfaces = set()
+
+    # The following track which pending endpoint types are used from the JS
+    # side.
+    self.interface_pending_remotes = set()
+    self.interface_associated_pending_remotes = set()
+    self.interface_pending_receivers = set()
+    self.interface_associated_pending_receivers = set()
+
     self.arrays = {}
     self.maps = {}
     self.enums = {}
@@ -110,8 +115,6 @@ class Generator(generator.Generator):
       "is_synchronous_method": self._IsSynchronousMethod,
       "namespace_as_array": self._NamespaceAsArray,
       "to_camel": generator.ToCamel,
-      "uses_associated_endpoints": self._UsesAssociatedEndpoints,
-      "uses_non_associated_endpoints": self._UsesNonAssociatedEndpoints,
     }
 
   @staticmethod
@@ -129,6 +132,14 @@ class Generator(generator.Generator):
       "primary": self.primary_interface,
       "interface_remotes": list(self.interface_remotes.values()),
       "interface_receivers": list(self.interface_receivers.values()),
+      "interface_pending_remotes": list(self.interface_pending_remotes),
+      "interface_associated_pending_remotes": list(
+        self.interface_associated_pending_remotes
+      ),
+      "interface_pending_receivers": list(self.interface_pending_receivers),
+      "interface_associated_pending_receivers": list(
+        self.interface_associated_pending_receivers
+      ),
       "arrays": list(self.arrays.values()),
       "maps": list(self.maps.values()),
       "enums": list(self.enums.values()),
@@ -209,14 +220,11 @@ class Generator(generator.Generator):
       interface = kind
     name = self._FormatUniqueName(interface)
 
-    # TODO(crbug.com/570073119): Separately track which interfaces are only
-    # ever sent from the browser to avoid emitting unnecessary types (e.g.,
-    # currently emits unused *PendingReceiver when getting a pending_remote
-    # from the browser).
-    if self._IsPendingAssociatedKind(kind):
-      self.associated_interfaces.add(name)
-    elif is_pending_remote or is_pending_receiver:
-      self.non_associated_interfaces.add(name)
+    # Track the pending endpoints used from the JS side. A pending remote passed
+    # from the browser side is used directly as a `Remote`, so it is not
+    # tracked.
+    if is_pending_receiver or (is_pending_remote and is_in_js):
+      self._TrackPendingInterfaces(kind)
 
     # TODO(crbug.com/522372048): this check prevents interfaces from being
     # registered as both remotes and receivers. Rewrite the logic to
@@ -433,16 +441,25 @@ class Generator(generator.Generator):
     file_name = "%s.MojoProfile.swift" % self.module.path
     self.WriteWithComment(self._GenerateFuzzilliModule(), file_name)
 
-  def _IsPendingAssociatedKind(self, kind):
-    return mojom.IsPendingAssociatedRemoteKind(
-      kind
-    ) or mojom.IsPendingAssociatedReceiverKind(kind)
-
-  def _UsesAssociatedEndpoints(self, interface):
-    return self._FormatUniqueName(interface) in self.associated_interfaces
-
-  def _UsesNonAssociatedEndpoints(self, interface):
-    return self._FormatUniqueName(interface) in self.non_associated_interfaces
+  # Stores the interface of a pending kind used from the JS side in the
+  # dictionary matching that pending kind.
+  #
+  # Note: takes the Mojom pending kind as it is used. So, this method should
+  # receive the kind `pending_remote<Foo>`, not the kind `Foo`.
+  def _TrackPendingInterfaces(self, pending_kind):
+    interface = pending_kind.kind
+    if mojom.IsPendingRemoteKind(pending_kind):
+      self.interface_pending_remotes.add(interface)
+    elif mojom.IsPendingAssociatedRemoteKind(pending_kind):
+      self.interface_associated_pending_remotes.add(interface)
+    elif mojom.IsPendingReceiverKind(pending_kind):
+      self.interface_pending_receivers.add(interface)
+    elif mojom.IsPendingAssociatedReceiverKind(pending_kind):
+      self.interface_associated_pending_receivers.add(interface)
+    else:
+      assert False, (
+        f"Expected pending interface kind, received: {pending_kind}."
+      )
 
   def _IsAnyPendingRemoteKind(self, kind):
     return mojom.IsPendingRemoteKind(

@@ -60,10 +60,7 @@ extension ILType {
         withMethods: [
           "close",
           "isBound",
-          "associateAndPassReceiver",
         ])
-    fileprivate static let jsGoldenRemoteFromBrowserPendingAssociatedReceiver: ILType = .object(
-        ofGroup: "golden.RemoteFromBrowserPendingAssociatedReceiver")
 
     // RemoteFromJs
     fileprivate static let jsGoldenRemoteFromJsCallbackRouter: ILType = .object(
@@ -77,6 +74,8 @@ extension ILType {
           "closeBindings",
           "associateAndPassRemote",
         ])
+    fileprivate static let jsGoldenRemoteFromJsPendingAssociatedReceiver: ILType = .object(
+        ofGroup: "golden.RemoteFromJsPendingAssociatedReceiver")
     fileprivate static let jsGoldenRemoteFromJsPendingAssociatedRemote: ILType = .object(
         ofGroup: "golden.RemoteFromJsPendingAssociatedRemote",
         withProperties: ["$"])
@@ -87,8 +86,6 @@ extension ILType {
           "isBound",
           "associateAndPassReceiver",
         ])
-    fileprivate static let jsGoldenRemoteFromJsPendingAssociatedReceiver: ILType = .object(
-        ofGroup: "golden.RemoteFromJsPendingAssociatedReceiver")
 
     // ReceiverFromBrowser
     fileprivate static let jsGoldenReceiverFromBrowserCallbackRouter: ILType = .object(
@@ -100,17 +97,6 @@ extension ILType {
         ofGroup: "golden.ReceiverFromBrowserCallbackRouterReceiverHelper",
         withMethods: [
           "closeBindings",
-          "associateAndPassRemote",
-        ])
-    fileprivate static let jsGoldenReceiverFromBrowserPendingAssociatedRemote: ILType = .object(
-        ofGroup: "golden.ReceiverFromBrowserPendingAssociatedRemote",
-        withProperties: ["$"])
-    fileprivate static let jsGoldenReceiverFromBrowserRemoteWrapper: ILType = .object(
-        ofGroup: "golden.ReceiverFromBrowserRemoteWrapper",
-        withMethods: [
-          "close",
-          "isBound",
-          "associateAndPassReceiver",
         ])
     fileprivate static let jsGoldenReceiverFromBrowserPendingAssociatedReceiver: ILType = .object(
         ofGroup: "golden.ReceiverFromBrowserPendingAssociatedReceiver")
@@ -188,14 +174,7 @@ extension ObjectGroup {
         methods: [
             "close": [] => .undefined,
             "isBound": [] => .boolean,
-            "associateAndPassReceiver": [] => .jsGoldenRemoteFromBrowserPendingAssociatedReceiver,
         ])
-    fileprivate static let goldenRemoteFromBrowserPendingAssociatedReceiver = ObjectGroup(
-        name: "golden.RemoteFromBrowserPendingAssociatedReceiver",
-        instanceType: .jsGoldenRemoteFromBrowserPendingAssociatedReceiver,
-        properties: [:],
-        methods: [:]
-    )
 
     // RemoteFromJs
     fileprivate static let goldenRemoteFromJsCallbackRouter = ObjectGroup(
@@ -206,7 +185,6 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
-
     fileprivate static let goldenRemoteFromJsCallbackRouterReceiverHelper = ObjectGroup(
         name: "golden.RemoteFromJsCallbackRouterReceiverHelper",
         instanceType: .jsGoldenRemoteFromJsCallbackRouterReceiverHelper,
@@ -215,14 +193,18 @@ extension ObjectGroup {
             "closeBindings": [] => .undefined,
             "associateAndPassRemote": [] => .jsGoldenRemoteFromJsPendingAssociatedRemote,
         ])
-
+    fileprivate static let goldenRemoteFromJsPendingAssociatedReceiver = ObjectGroup(
+        name: "golden.RemoteFromJsPendingAssociatedReceiver",
+        instanceType: .jsGoldenRemoteFromJsPendingAssociatedReceiver,
+        properties: [:],
+        methods: [:]
+    )
     fileprivate static let goldenRemoteFromJsPendingAssociatedRemote = ObjectGroup(
         name: "golden.RemoteFromJsPendingAssociatedRemote",
         instanceType: .jsGoldenRemoteFromJsPendingAssociatedRemote,
         properties: ["$": .jsGoldenRemoteFromJsRemoteWrapper],
         methods: [:]
     )
-
     fileprivate static let goldenRemoteFromJsRemoteWrapper = ObjectGroup(
         name: "golden.RemoteFromJsRemoteWrapper",
         instanceType: .jsGoldenRemoteFromJsRemoteWrapper,
@@ -233,13 +215,6 @@ extension ObjectGroup {
             "associateAndPassReceiver": [] => .jsGoldenRemoteFromJsPendingAssociatedReceiver,
         ])
 
-    fileprivate static let goldenRemoteFromJsPendingAssociatedReceiver = ObjectGroup(
-        name: "golden.RemoteFromJsPendingAssociatedReceiver",
-        instanceType: .jsGoldenRemoteFromJsPendingAssociatedReceiver,
-        properties: [:],
-        methods: [:]
-    )
-
     // ReceiverFromBrowser
     fileprivate static let goldenReceiverFromBrowserCallbackRouter = ObjectGroup(
         name: "golden.ReceiverFromBrowserCallbackRouter",
@@ -249,33 +224,13 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
-
     fileprivate static let goldenReceiverFromBrowserCallbackRouterReceiverHelper = ObjectGroup(
         name: "golden.ReceiverFromBrowserCallbackRouterReceiverHelper",
         instanceType: .jsGoldenReceiverFromBrowserCallbackRouterReceiverHelper,
         properties: [:],
         methods: [
             "closeBindings": [] => .undefined,
-            "associateAndPassRemote": [] => .jsGoldenReceiverFromBrowserPendingAssociatedRemote,
         ])
-
-    fileprivate static let goldenReceiverFromBrowserPendingAssociatedRemote = ObjectGroup(
-        name: "golden.ReceiverFromBrowserPendingAssociatedRemote",
-        instanceType: .jsGoldenReceiverFromBrowserPendingAssociatedRemote,
-        properties: ["$": .jsGoldenReceiverFromBrowserRemoteWrapper],
-        methods: [:]
-    )
-
-    fileprivate static let goldenReceiverFromBrowserRemoteWrapper = ObjectGroup(
-        name: "golden.ReceiverFromBrowserRemoteWrapper",
-        instanceType: .jsGoldenReceiverFromBrowserRemoteWrapper,
-        properties: [:],
-        methods: [
-            "close": [] => .undefined,
-            "isBound": [] => .boolean,
-            "associateAndPassReceiver": [] => .jsGoldenReceiverFromBrowserPendingAssociatedReceiver,
-        ])
-
     fileprivate static let goldenReceiverFromBrowserPendingAssociatedReceiver = ObjectGroup(
         name: "golden.ReceiverFromBrowserPendingAssociatedReceiver",
         instanceType: .jsGoldenReceiverFromBrowserPendingAssociatedReceiver,
@@ -407,17 +362,14 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .goldenReceiverFromJsPendingAssociatedReceiver,
     .goldenRemoteFromBrowserRemote,
     .goldenRemoteFromBrowserRemoteWrapper,
-    .goldenRemoteFromBrowserPendingAssociatedReceiver,
     .goldenRemoteFromJsCallbackRouter,
     .goldenRemoteFromJsCallbackRouterReceiverHelper,
-    .goldenRemoteFromJsPendingAssociatedRemote,
     .goldenRemoteFromJsPendingAssociatedReceiver,
+    .goldenRemoteFromJsPendingAssociatedRemote,
     .goldenRemoteFromJsRemoteWrapper,
     .goldenReceiverFromBrowserCallbackRouter,
     .goldenReceiverFromBrowserCallbackRouterReceiverHelper,
-    .goldenReceiverFromBrowserPendingAssociatedRemote,
     .goldenReceiverFromBrowserPendingAssociatedReceiver,
-    .goldenReceiverFromBrowserRemoteWrapper,
     .goldenPrimaryReturnRemoteResponseParams,
     .goldenPrimaryReturnReceiverResponseParams,
     .goldenPrimarySyncReturnReceiverResponseParams,
