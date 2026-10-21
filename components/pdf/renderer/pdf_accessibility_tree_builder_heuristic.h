@@ -35,7 +35,6 @@ struct AXNodeData;
 namespace pdf {
 
 class PdfAccessibilityTreeBuilder;
-enum class HeadingClassifier;
 
 // Heuristic-based accessibility tree building for untagged PDFs.
 //
@@ -175,11 +174,13 @@ class PdfAccessibilityTreeBuilderHeuristic {
   void BuildPageTree();
 
  private:
-  ui::AXNodeData* CreateBlockLevelNode(
+  // Result of `CreateBlockLevelNode()`.
+  struct BlockLevelNodeResult;
+
+  BlockLevelNodeResult CreateBlockLevelNode(
       const TextRunContext& run_context,
       const HeuristicPageProperties& page_properties,
-      const chrome_pdf::AccessibilityFormGraphicInfo* graphic,
-      HeadingClassifier* out_heading_classifier);
+      const chrome_pdf::AccessibilityFormGraphicInfo* graphic);
 
   ui::AXNodeData* CreateLineBreakingNode(ax::mojom::Role role,
                                          const std::string& language);
