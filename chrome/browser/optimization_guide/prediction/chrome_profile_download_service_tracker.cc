@@ -4,6 +4,8 @@
 
 #include "chrome/browser/optimization_guide/prediction/chrome_profile_download_service_tracker.h"
 
+#include <algorithm>
+
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,6 +34,17 @@ ChromeProfileDownloadServiceTracker::~ChromeProfileDownloadServiceTracker() {
 void ChromeProfileDownloadServiceTracker::OnProfileAdded(Profile* profile) {
   if (profile->IsOffTheRecord() || profile->IsSystemProfile() ||
       !profile->AllowsBrowserWindows()) {
+    return;
+  }
+  // This can be called twice for the same profile when the tracker is
+  // constructed from inside another `ProfileManagerObserver::OnProfileAdded()`
+  // callback:
+  //   1. The constructor finds `profile` in `GetLoadedProfiles()` and calls
+  //      `OnProfileAdded()` for it.
+  //   2. `ProfileManager` is still notifying observers about `profile`, and
+  //      the notification also reaches this newly registered observer.
+  // Skip the second call so that each profile is observed exactly once.
+  if (std::ranges::contains(observed_profiles_, profile)) {
     return;
   }
   observed_profiles_.push_back(profile);

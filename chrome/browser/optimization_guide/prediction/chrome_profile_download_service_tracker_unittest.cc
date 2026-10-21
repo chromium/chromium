@@ -4,11 +4,17 @@
 
 #include "chrome/browser/optimization_guide/prediction/chrome_profile_download_service_tracker.h"
 
+#include <memory>
+
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -98,6 +104,51 @@ TEST_F(ChromeProfileDownloadServiceTrackerTest,
 
   EXPECT_EQ(service_tracker->GetBackgroundDownloadService(),
             GetBackgroundDownloadServiceForProfile(foo_profile));
+}
+
+// Verify that constructing `ChromeProfileDownloadServiceTracker` from within
+// another `ProfileManagerObserver::OnProfileAdded()` callback does not
+// register the tracker as a `ProfileObserver` for the same profile twice.
+TEST_F(ChromeProfileDownloadServiceTrackerTest,
+       ServiceTrackerCreatedDuringOnProfileAdded) {
+  class LazyTrackerCreatorObserver : public ProfileManagerObserver {
+   public:
+    explicit LazyTrackerCreatorObserver(ProfileManager* profile_manager) {
+      observation_.Observe(profile_manager);
+    }
+
+    // ProfileManagerObserver:
+    void OnProfileAdded(Profile* profile) override {
+      if (!service_tracker_) {
+        service_tracker_ =
+            std::make_unique<ChromeProfileDownloadServiceTracker>();
+      }
+    }
+
+    ChromeProfileDownloadServiceTracker* service_tracker() {
+      return service_tracker_.get();
+    }
+
+   private:
+    base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+        observation_{this};
+    std::unique_ptr<ChromeProfileDownloadServiceTracker> service_tracker_;
+  };
+
+  LazyTrackerCreatorObserver observer(profile_manager_.profile_manager());
+  auto* foo_profile = profile_manager_.CreateTestingProfile(kProfileFoo);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_NE(observer.service_tracker(), nullptr);
+  EXPECT_EQ(observer.service_tracker()->GetBackgroundDownloadService(),
+            GetBackgroundDownloadServiceForProfile(foo_profile));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  profile_manager_.DeleteTestingProfile(kProfileFoo);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.service_tracker()->GetBackgroundDownloadService(),
+            nullptr);
+#endif
 }
 
 }  // namespace optimization_guide
