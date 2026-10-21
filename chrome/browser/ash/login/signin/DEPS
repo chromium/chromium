@@ -14,14 +14,11 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
   "+chrome/browser/profiles",
   "+chrome/browser/sync",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/multi_user",
-  "+chrome/browser/ui/scoped_tabbed_browser_displayer.h",
   "+chrome/browser/ui/webui/ash/login",
-  "+chrome/browser/ui/webui/signin/ash",
   "+chrome/grit",
 ]
 
@@ -42,7 +39,10 @@ specific_include_rules = {
   ],
 
   ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
     "+chrome/browser/signin",
+    "+chrome/browser/ui/scoped_tabbed_browser_displayer.h",
+    "+chrome/browser/ui/webui/signin/ash",
   ],
 
   # The keyed-service factory is the //chrome seam: it DependsOn() the
