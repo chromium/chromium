@@ -4,13 +4,13 @@
 
 #include "components/supervised_user/test_support/account_repository.h"
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -78,16 +78,19 @@ TestAccountRepository::~TestAccountRepository() = default;
 namespace test_accounts {
 
 std::optional<Feature> ParseFeature(std::string_view feature_name) {
-  static std::map<std::string_view, Feature> features{
-      {"REGULAR", Feature::REGULAR},
-      {"DMA_ELIGIBLE_WITH_CONSENT", Feature::DMA_ELIGIBLE_WITH_CONSENT},
-      {"DMA_ELIGIBLE_WITHOUT_CONSENT", Feature::DMA_ELIGIBLE_WITHOUT_CONSENT},
-      {"DMA_INELIGIBLE", Feature::DMA_INELIGIBLE},
-  };
-  if (features.count(feature_name) == 0) {
+  static constexpr auto kFeatures =
+      base::MakeFixedFlatMap<std::string_view, Feature>({
+          {"REGULAR", Feature::REGULAR},
+          {"DMA_ELIGIBLE_WITH_CONSENT", Feature::DMA_ELIGIBLE_WITH_CONSENT},
+          {"DMA_ELIGIBLE_WITHOUT_CONSENT",
+           Feature::DMA_ELIGIBLE_WITHOUT_CONSENT},
+          {"DMA_INELIGIBLE", Feature::DMA_INELIGIBLE},
+      });
+  const auto it = kFeatures.find(feature_name);
+  if (it == kFeatures.end()) {
     return std::nullopt;
   }
-  return features.at(feature_name);
+  return it->second;
 }
 
 void Repository::RegisterJSONConverter(
@@ -122,18 +125,22 @@ void FamilyMember::RegisterJSONConverter(
 // LINT.IfChange(family_role_parser)
 bool FamilyMember::ParseRole(std::string_view value,
                              kidsmanagement::FamilyRole* role) {
-  static std::map<std::string_view, kidsmanagement::FamilyRole> roles{
-      {"UNKNOWN_FAMILY_ROLE", kidsmanagement::FamilyRole::UNKNOWN_FAMILY_ROLE},
-      {"HEAD_OF_HOUSEHOLD", kidsmanagement::FamilyRole::HEAD_OF_HOUSEHOLD},
-      {"PARENT", kidsmanagement::FamilyRole::PARENT},
-      {"MEMBER", kidsmanagement::FamilyRole::MEMBER},
-      {"CHILD", kidsmanagement::FamilyRole::CHILD},
-      {"UNCONFIRMED_MEMBER", kidsmanagement::FamilyRole::UNCONFIRMED_MEMBER},
-  };
-  if (roles.count(value) == 0) {
+  static constexpr auto kRoles =
+      base::MakeFixedFlatMap<std::string_view, kidsmanagement::FamilyRole>({
+          {"UNKNOWN_FAMILY_ROLE",
+           kidsmanagement::FamilyRole::UNKNOWN_FAMILY_ROLE},
+          {"HEAD_OF_HOUSEHOLD", kidsmanagement::FamilyRole::HEAD_OF_HOUSEHOLD},
+          {"PARENT", kidsmanagement::FamilyRole::PARENT},
+          {"MEMBER", kidsmanagement::FamilyRole::MEMBER},
+          {"CHILD", kidsmanagement::FamilyRole::CHILD},
+          {"UNCONFIRMED_MEMBER",
+           kidsmanagement::FamilyRole::UNCONFIRMED_MEMBER},
+      });
+  const auto it = kRoles.find(value);
+  if (it == kRoles.end()) {
     return false;
   }
-  *role = roles.at(value);
+  *role = it->second;
   return true;
 }
 // LINT.ThenChange(//components/supervised_user/core/browser/proto/families_common.proto:family_role)

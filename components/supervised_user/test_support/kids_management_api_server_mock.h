@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_KIDS_MANAGEMENT_API_SERVER_MOCK_H_
 #define COMPONENTS_SUPERVISED_USER_TEST_SUPPORT_KIDS_MANAGEMENT_API_SERVER_MOCK_H_
 
-#include <map>
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -36,8 +36,18 @@ MATCHER_P(SetsRegionCode, region_code, "") {
   return request.region_code() == region_code;
 }
 
-extern const std::multimap<kidsmanagement::FamilyRole, std::string>
-    kSimpsonFamily;
+struct SimpsonFamilyMember {
+  kidsmanagement::FamilyRole role;
+  std::string_view email;
+};
+
+inline constexpr auto kSimpsonFamily = std::to_array<SimpsonFamilyMember>({
+    {kidsmanagement::HEAD_OF_HOUSEHOLD, "marge@gmail.com"},
+    {kidsmanagement::PARENT, "homer@gmail.com"},
+    {kidsmanagement::MEMBER, "abraham@gmail.com"},
+    {kidsmanagement::CHILD, "lisa@gmail.com"},
+    {kidsmanagement::CHILD, "bart@gmail.com"},
+});
 
 // Component of `KidsManagementApiServerMock`. Implements ClassifyUrl as both
 // mock and fake, allowing to account the calls but also providing a default

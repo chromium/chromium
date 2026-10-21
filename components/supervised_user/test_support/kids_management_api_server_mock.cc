@@ -20,14 +20,6 @@
 
 namespace supervised_user {
 
-const std::multimap<kidsmanagement::FamilyRole, std::string> kSimpsonFamily = {
-    {kidsmanagement::HEAD_OF_HOUSEHOLD, "marge@gmail.com"},
-    {kidsmanagement::PARENT, "homer@gmail.com"},
-    {kidsmanagement::MEMBER, "abraham@gmail.com"},
-    {kidsmanagement::CHILD, "lisa@gmail.com"},
-    {kidsmanagement::CHILD, "bart@gmail.com"},
-};
-
 namespace {
 
 std::unique_ptr<net::test_server::HttpResponse> FromProtoData(

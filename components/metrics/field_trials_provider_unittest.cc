@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/runtime_field_trial_overrides.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "components/variations/active_field_trials.h"
@@ -18,8 +19,6 @@
 #include "components/variations/synthetic_trials.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
-
-using ActiveGroup = base::FieldTrial::ActiveGroup;
 
 namespace variations {
 
@@ -35,18 +34,23 @@ namespace {
 
 constexpr const char* kSuffix = "UKM";
 
-const auto kFieldTrials = std::to_array<ActiveGroup>({
+struct TrialGroup {
+  std::string_view trial_name;
+  std::string_view group_name;
+};
+
+constexpr auto kFieldTrials = std::to_array<TrialGroup>({
     {"Trial1", "Group1"},
     {"Trial2", "Group2"},
     {"Trial3", "Group3"},
 });
-const auto kSyntheticFieldTrials = std::to_array<ActiveGroup>({
+constexpr auto kSyntheticFieldTrials = std::to_array<TrialGroup>({
     {"Synthetic1", "SyntheticGroup1"},
     {"Synthetic2", "SyntheticGroup2"},
 });
 
-ActiveGroupId ToActiveGroupId(ActiveGroup active_group,
-                              std::string suffix = "");
+ActiveGroupId ToActiveGroupId(TrialGroup active_group,
+                              std::string_view suffix = "");
 
 const auto kFieldTrialIds = std::to_array<ActiveGroupId>({
     ToActiveGroupId(kFieldTrials[0]),
@@ -80,9 +84,10 @@ void CheckFieldTrialsInSystemProfile(
   }
 }
 
-ActiveGroupId ToActiveGroupId(ActiveGroup active_group, std::string suffix) {
-  return MakeActiveGroupId(active_group.trial_name + suffix,
-                           active_group.group_name + suffix);
+ActiveGroupId ToActiveGroupId(TrialGroup active_group,
+                              std::string_view suffix) {
+  return MakeActiveGroupId(base::StrCat({active_group.trial_name, suffix}),
+                           base::StrCat({active_group.group_name, suffix}));
 }
 
 }  // namespace
@@ -96,7 +101,7 @@ class FieldTrialsProviderTest : public ::testing::Test {
  protected:
   void SetUp() override {
     // Register the field trials.
-    for (const ActiveGroup& trial : kFieldTrials) {
+    for (const TrialGroup& trial : kFieldTrials) {
       base::FieldTrial* field_trial = base::FieldTrialList::CreateFieldTrial(
           trial.trial_name, trial.group_name);
       // Call Activate() to finalize and mark the field trial as active.
@@ -106,7 +111,7 @@ class FieldTrialsProviderTest : public ::testing::Test {
 
   // Register trials which should get recorded.
   void RegisterExpectedSyntheticTrials() {
-    for (const ActiveGroup& trial : kSyntheticFieldTrials) {
+    for (const TrialGroup& trial : kSyntheticFieldTrials) {
       registry_.RegisterSyntheticFieldTrial(SyntheticTrialGroup(
           trial.trial_name, trial.group_name,
           /*annotation_mode=*/
