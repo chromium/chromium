@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_factory_ios.h"
 
+#include <memory>
 #include <string_view>
 
 #include "base/notreached.h"
@@ -13,6 +14,8 @@
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+
+// LINT.IfChange(ProfileKeyedServiceFactoryIOSTest)
 
 namespace {
 
@@ -239,3 +242,5 @@ TEST_P(ProfileKeyedServiceFactoryIOSTest, OffTheRecordProfile) {
       break;
   }
 }
+
+// LINT.ThenChange(//ios/chrome/browser/shared/model/profile/internal/refcounted_profile_keyed_service_factory_ios_unittest.cc:RefcountedProfileKeyedServiceFactoryIOSTest)

@@ -10,6 +10,8 @@
 #include "ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_utils.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
+// LINT.IfChange(RefcountedProfileKeyedServiceFactoryIOS)
+
 namespace {
 
 // Wraps `testing_factory` as a RefcountedKeyedServiceFactory::TestingFactory.
@@ -121,3 +123,5 @@ RefcountedProfileKeyedServiceFactoryIOS::
   CHECK(service_creation != ServiceCreation::kCreateWithProfile ||
         testing_creation_ == TestingCreation::kNoServiceForTests);
 }
+
+// LINT.ThenChange(//ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_factory_ios.cc:ProfileKeyedServiceFactoryIOS)

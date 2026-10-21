@@ -15,6 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
+// LINT.IfChange(RefcountedProfileKeyedServiceFactoryIOSTest)
+
 namespace {
 
 // A dummy RefcountedKeyedService.
@@ -56,7 +58,7 @@ class DummyServiceFactory final
   }
 };
 
-// Parameter for ProfileKeyedServiceFactoryIOSTest.
+// Parameter for RefcountedProfileKeyedServiceFactoryIOSTest.
 using Param = std::tuple<ProfileSelection, ServiceCreation, TestingCreation>;
 
 // Used to generate test name from Param.
@@ -249,3 +251,5 @@ TEST_P(RefcountedProfileKeyedServiceFactoryIOSTest, OffTheRecordProfile) {
       break;
   }
 }
+
+// LINT.ThenChange(//ios/chrome/browser/shared/model/profile/internal/profile_keyed_service_factory_ios_unittest.cc:ProfileKeyedServiceFactoryIOSTest)
