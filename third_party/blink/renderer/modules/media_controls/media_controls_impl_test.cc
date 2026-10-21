@@ -16,8 +16,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
@@ -1916,7 +1919,8 @@ TEST_F(MediaControlsImplTest, TextTrackElementsAreReadOnly) {
       video::-webkit-media-text-track-container,
       video::-webkit-media-text-track-region,
       video::-webkit-media-text-track-region-container,
-      video::-webkit-media-text-track-display {
+      video::-webkit-media-text-track-display,
+      video::cue {
         -webkit-user-modify: read-write;
       }
     </style>
@@ -1931,6 +1935,13 @@ TEST_F(MediaControlsImplTest, TextTrackElementsAreReadOnly) {
       V8TextTrackKind(V8TextTrackKind::Enum::kSubtitles), AtomicString("sub"),
       AtomicString("en"), ASSERT_NO_EXCEPTION);
   track->SetModeEnum(TextTrackMode::kShowing);
+
+  auto* vtt_sheet_contents = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  vtt_sheet_contents->ParseString("* div { -webkit-user-modify: read-write; }");
+  HeapVector<Member<CSSStyleSheet>> vtt_sheets;
+  vtt_sheets.push_back(MakeGarbageCollected<CSSStyleSheet>(vtt_sheet_contents));
+  track->SetCSSStyleSheets(std::move(vtt_sheets));
 
   auto* cue = VTTCue::Create(GetDocument(), 0.0, 2.0, "cue text");
   track->addCue(cue);
@@ -1954,7 +1965,7 @@ TEST_F(MediaControlsImplTest, TextTrackElementsAreReadOnly) {
   for (const char* pseudo_id :
        {"-webkit-media-text-track-container", "-webkit-media-text-track-region",
         "-webkit-media-text-track-region-container",
-        "-webkit-media-text-track-display"}) {
+        "-webkit-media-text-track-display", "cue"}) {
     Element* element = GetElementByShadowPseudoId(*shadow_root, pseudo_id);
     ASSERT_TRUE(element) << pseudo_id;
     ASSERT_TRUE(element->GetComputedStyle()) << pseudo_id;

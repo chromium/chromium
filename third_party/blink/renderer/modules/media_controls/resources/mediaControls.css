@@ -1348,6 +1348,7 @@ video::-webkit-media-text-track-container {
 video::cue {
     display: inline;
     line-height: normal;
+    -webkit-user-modify: read-only !important;
 
     background-color: rgba(0, 0, 0, 0.8);
 }
