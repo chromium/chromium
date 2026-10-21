@@ -1,1 +1,1 @@
-mixins: "//chrome/browser/resources/password_manager/COMMON_METADATA"
+mixins: "//components/password_manager/COMMON_METADATA"

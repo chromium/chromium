@@ -1,6 +1,1 @@
-monorail: {
-  component: "UI>Settings"
-}
-buganizer_public: {
-  component_id: 1457080
-}
+mixins: "//components/password_manager/COMMON_METADATA"

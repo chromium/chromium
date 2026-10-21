@@ -1,6 +1,1 @@
-monorail: {
-  component: "UI>Browser>Passwords"
-}
-buganizer_public: {
-  component_id: 1457410
-}
+mixins: "//components/password_manager/COMMON_METADATA"
