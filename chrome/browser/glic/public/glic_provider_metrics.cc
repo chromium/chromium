@@ -4,26 +4,39 @@
 
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 
-#include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
+#include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace glic {
 
 namespace {
 
-// "X" -> "Glic.X".
-std::string GlicCombinedMetricName(std::string_view name) {
-  return base::StrCat({"Glic.", name});
-}
+// Emits both "Glic.<infix>.<name>" and "Glic.<name>" using a single
+// stack-allocated buffer (falling back to the heap if > 128 chars).
+void RecordBoth(std::string_view infix,
+                std::string_view name,
+                base::FunctionRef<void(std::string_view)> fn) {
+  constexpr std::string_view kPrefix = "Glic.";
+  const size_t total_len = kPrefix.size() + infix.size() + 1 + name.size();
+  absl::InlinedVector<char, 128> buf(total_len);
+  base::span<char> span(buf);
 
-// ("Consumer", "X") -> "Glic.Consumer.X".
-std::string GlicProviderMetricName(std::string_view infix,
-                                   std::string_view name) {
-  return base::StrCat({"Glic.", infix, ".", name});
+  span.first(kPrefix.size()).copy_from(kPrefix);
+  span.subspan(kPrefix.size(), infix.size()).copy_from(infix);
+  span[kPrefix.size() + infix.size()] = '.';
+  span.subspan(kPrefix.size() + infix.size() + 1).copy_from(name);
+
+  fn(base::as_string_view(span));
+
+  base::span<char> combined = span.subspan(infix.size() + 1);
+  combined.first(kPrefix.size()).copy_from(kPrefix);
+  fn(base::as_string_view(combined));
 }
 
 }  // namespace
@@ -33,26 +46,30 @@ GlicMetricReporter::GlicMetricReporter(Profile* profile)
 
 void GlicMetricReporter::RecordBoolean(std::string_view name,
                                        bool sample) const {
-  base::UmaHistogramBoolean(GlicCombinedMetricName(name), sample);
-  base::UmaHistogramBoolean(GlicProviderMetricName(infix_, name), sample);
+  RecordBoth(infix_, name, [&](std::string_view full_name) {
+    base::UmaHistogramBoolean(full_name, sample);
+  });
 }
 
 void GlicMetricReporter::RecordCounts100(std::string_view name,
                                          int sample) const {
-  base::UmaHistogramCounts100(GlicCombinedMetricName(name), sample);
-  base::UmaHistogramCounts100(GlicProviderMetricName(infix_, name), sample);
+  RecordBoth(infix_, name, [&](std::string_view full_name) {
+    base::UmaHistogramCounts100(full_name, sample);
+  });
 }
 
 void GlicMetricReporter::RecordCounts1000(std::string_view name,
                                           int sample) const {
-  base::UmaHistogramCounts1000(GlicCombinedMetricName(name), sample);
-  base::UmaHistogramCounts1000(GlicProviderMetricName(infix_, name), sample);
+  RecordBoth(infix_, name, [&](std::string_view full_name) {
+    base::UmaHistogramCounts1000(full_name, sample);
+  });
 }
 
 void GlicMetricReporter::RecordCounts10000(std::string_view name,
                                            int sample) const {
-  base::UmaHistogramCounts10000(GlicCombinedMetricName(name), sample);
-  base::UmaHistogramCounts10000(GlicProviderMetricName(infix_, name), sample);
+  RecordBoth(infix_, name, [&](std::string_view full_name) {
+    base::UmaHistogramCounts10000(full_name, sample);
+  });
 }
 
 void GlicMetricReporter::RecordCustomTimes(std::string_view name,
@@ -60,48 +77,51 @@ void GlicMetricReporter::RecordCustomTimes(std::string_view name,
                                            base::TimeDelta min,
                                            base::TimeDelta max,
                                            int buckets) const {
-  base::UmaHistogramCustomTimes(GlicCombinedMetricName(name), sample, min, max,
-                                buckets);
-  base::UmaHistogramCustomTimes(GlicProviderMetricName(infix_, name), sample,
-                                min, max, buckets);
+  RecordBoth(infix_, name, [&](std::string_view full_name) {
+    base::UmaHistogramCustomTimes(full_name, sample, min, max, buckets);
+  });
 }
 
 void GlicMetricReporter::RecordExactLinear(std::string_view name,
                                            int sample,
                                            int exclusive_max) const {
-  base::UmaHistogramExactLinear(GlicCombinedMetricName(name), sample,
-                                exclusive_max);
-  base::UmaHistogramExactLinear(GlicProviderMetricName(infix_, name), sample,
-                                exclusive_max);
+  RecordBoth(infix_, name, [&](std::string_view full_name) {
+    base::UmaHistogramExactLinear(full_name, sample, exclusive_max);
+  });
 }
 
 void GlicMetricReporter::RecordLongTimes(std::string_view name,
                                          base::TimeDelta sample) const {
-  base::UmaHistogramLongTimes(GlicCombinedMetricName(name), sample);
-  base::UmaHistogramLongTimes(GlicProviderMetricName(infix_, name), sample);
+  RecordBoth(infix_, name, [&](std::string_view full_name) {
+    base::UmaHistogramLongTimes(full_name, sample);
+  });
 }
 
 void GlicMetricReporter::RecordMediumTimes(std::string_view name,
                                            base::TimeDelta sample) const {
-  base::UmaHistogramMediumTimes(GlicCombinedMetricName(name), sample);
-  base::UmaHistogramMediumTimes(GlicProviderMetricName(infix_, name), sample);
+  RecordBoth(infix_, name, [&](std::string_view full_name) {
+    base::UmaHistogramMediumTimes(full_name, sample);
+  });
 }
 
 void GlicMetricReporter::RecordMemoryLargeMB(std::string_view name,
                                              int sample) const {
-  base::UmaHistogramMemoryLargeMB(GlicCombinedMetricName(name), sample);
-  base::UmaHistogramMemoryLargeMB(GlicProviderMetricName(infix_, name), sample);
+  RecordBoth(infix_, name, [&](std::string_view full_name) {
+    base::UmaHistogramMemoryLargeMB(full_name, sample);
+  });
 }
 
 void GlicMetricReporter::RecordSparse(std::string_view name, int sample) const {
-  base::UmaHistogramSparse(GlicCombinedMetricName(name), sample);
-  base::UmaHistogramSparse(GlicProviderMetricName(infix_, name), sample);
+  RecordBoth(infix_, name, [&](std::string_view full_name) {
+    base::UmaHistogramSparse(full_name, sample);
+  });
 }
 
 void GlicMetricReporter::RecordTimes(std::string_view name,
                                      base::TimeDelta sample) const {
-  base::UmaHistogramTimes(GlicCombinedMetricName(name), sample);
-  base::UmaHistogramTimes(GlicProviderMetricName(infix_, name), sample);
+  RecordBoth(infix_, name, [&](std::string_view full_name) {
+    base::UmaHistogramTimes(full_name, sample);
+  });
 }
 
 }  // namespace glic
