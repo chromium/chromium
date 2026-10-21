@@ -43,6 +43,50 @@ std::unique_ptr<TemplateURL> CreateTemplateURL(const std::u16string& short_name,
 
 }  // namespace
 
+// Test that engines are sorted alphabetically, ignoring case.
+TEST(OrderTemplateUrlsAlphabeticallyTest, BasicAlphabeticalSorting) {
+  internal::OrderTemplateUrlsAlphabetically comparator;
+  auto bing = CreateTemplateURL(u"Bing", u"bing.com",
+                                "https://bing.com/search?q={searchTerms}");
+  auto lower_google = CreateTemplateURL(
+      u"google", u"google.com", "https://google.com/search?q={searchTerms}");
+  auto yahoo = CreateTemplateURL(u"Yahoo", u"yahoo.com",
+                                 "https://yahoo.com/search?q={searchTerms}");
+
+  EXPECT_TRUE(comparator(bing.get(), lower_google.get()));
+  EXPECT_TRUE(comparator(lower_google.get(), yahoo.get()));
+  EXPECT_TRUE(comparator(bing.get(), yahoo.get()));
+
+  EXPECT_FALSE(comparator(lower_google.get(), bing.get()));
+  EXPECT_FALSE(comparator(yahoo.get(), lower_google.get()));
+  EXPECT_FALSE(comparator(yahoo.get(), bing.get()));
+}
+
+// Test that managed engines are not prioritized.
+TEST(OrderTemplateUrlsAlphabeticallyTest, ManagedEnginesNotPrioritized) {
+  internal::OrderTemplateUrlsAlphabetically comparator;
+  auto managed_yahoo = CreateTemplateURL(
+      u"Yahoo", u"yahoo.com", "https://yahoo.com/search?q={searchTerms}",
+      /*created_by_policy=*/true);
+  auto regular_bing = CreateTemplateURL(
+      u"Bing", u"bing.com", "https://bing.com/search?q={searchTerms}");
+
+  EXPECT_TRUE(comparator(regular_bing.get(), managed_yahoo.get()));
+  EXPECT_FALSE(comparator(managed_yahoo.get(), regular_bing.get()));
+}
+
+// Test that the keyword is used to order engines with the same short name.
+TEST(OrderTemplateUrlsAlphabeticallyTest, FallbackToKeyword) {
+  internal::OrderTemplateUrlsAlphabetically comparator;
+  auto engine_a = CreateTemplateURL(u"Search", u"a.com",
+                                    "https://a.com/search?q={searchTerms}");
+  auto engine_b = CreateTemplateURL(u"Search", u"b.com",
+                                    "https://b.com/search?q={searchTerms}");
+
+  EXPECT_TRUE(comparator(engine_a.get(), engine_b.get()));
+  EXPECT_FALSE(comparator(engine_b.get(), engine_a.get()));
+}
+
 // Test fixture for the internal sorting logic
 class OrderTemplateUrlsByManagedAndAlphabeticallyTest : public testing::Test {
  public:

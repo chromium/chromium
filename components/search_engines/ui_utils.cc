@@ -66,13 +66,10 @@ std::string GetShortNameSortKey(const icu::Collator& collator,
   return std::string(reinterpret_cast<const char*>(buffer), sort_key_length);
 }
 
-// Helper function that returns the base sort key tuple used by
-// OrderTemplateUrlsByManagedAndAlphabetically.
-auto GetBaseManagedAndAlphaSortKey(const TemplateURL* engine,
-                                   const icu::Collator* collator) {
+// Helper function that returns the sort key tuple used by
+// OrderTemplateUrlsAlphabetically.
+auto GetAlphaSortKey(const TemplateURL* engine, const icu::Collator* collator) {
   return std::make_tuple(
-      // Enterprise search engines are shown before other engines.
-      !engine->CreatedByNonDefaultSearchProviderPolicy(),
       // Try to compare short names ignoring case and diacriticals.
       collator ? GetShortNameSortKey(*collator, engine->short_name())
                : std::string(),
@@ -83,7 +80,33 @@ auto GetBaseManagedAndAlphaSortKey(const TemplateURL* engine,
       engine->keyword());
 }
 
+// Helper function that returns the base sort key tuple used by
+// OrderTemplateUrlsByManagedAndAlphabetically.
+auto GetBaseManagedAndAlphaSortKey(const TemplateURL* engine,
+                                   const icu::Collator* collator) {
+  return std::tuple_cat(
+      // Enterprise search engines are shown before other engines.
+      std::make_tuple(!engine->CreatedByNonDefaultSearchProviderPolicy()),
+      GetAlphaSortKey(engine, collator));
+}
+
 }  // namespace
+
+// --- OrderTemplateUrlsAlphabetically ---
+OrderTemplateUrlsAlphabetically::OrderTemplateUrlsAlphabetically()
+    : collator_(CreateCollator()) {}
+
+OrderTemplateUrlsAlphabetically::OrderTemplateUrlsAlphabetically(
+    const OrderTemplateUrlsAlphabetically& other)
+    : collator_(other.collator_ ? other.collator_->clone() : nullptr) {}
+
+OrderTemplateUrlsAlphabetically::~OrderTemplateUrlsAlphabetically() = default;
+
+bool OrderTemplateUrlsAlphabetically::operator()(const TemplateURL* lhs,
+                                                 const TemplateURL* rhs) const {
+  return GetAlphaSortKey(lhs, collator_.get()) <
+         GetAlphaSortKey(rhs, collator_.get());
+}
 
 // --- OrderTemplateUrlsByManagedAndAlphabetically ---
 OrderTemplateUrlsByManagedAndAlphabetically::

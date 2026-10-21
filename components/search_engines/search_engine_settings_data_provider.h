@@ -202,7 +202,8 @@ class SearchEngineSettingsDataProvider {
   // dialog in settings.
   DefaultSearchEnginePickerData GetDefaultSearchEnginePickerData() const;
 
-  // Returns all prepopulated engines, sorted alphabetically.
+  // Returns all prepopulated engines, sorted alphabetically. Neither regional
+  // nor policy engines are prioritized.
   AllPrepopulatedSearchEnginesData GetAllPrepopulatedSearchEngines() const;
 
   // Returns template URLs filtered by `category` and sorted appropriately

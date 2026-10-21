@@ -276,6 +276,11 @@ SearchEngineSettingsDataProvider::GetAllPrepopulatedSearchEngines() const {
     }
   }
 
+  // Sort all engines alphabetically, without prioritizing regional or policy
+  // engines.
+  std::ranges::sort(data.engines,
+                    ::internal::OrderTemplateUrlsAlphabetically());
+
   return data;
 }
 

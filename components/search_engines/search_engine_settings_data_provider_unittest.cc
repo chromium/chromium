@@ -935,6 +935,43 @@ TEST_F(SearchEngineSettingsDataProviderNonSplitRegionTest,
             1);
 }
 
+TEST_F(SearchEngineSettingsDataProviderNonSplitRegionTest,
+       GetAllPrepopulatedSearchEngines_SortsAlphabetically) {
+  template_url_service().Load();
+
+  // A policy-created engine reusing a non-regional `prepopulate_id`, named so
+  // that it is not listed first when sorted alphabetically.
+  TemplateURL* policy_engine = AddTemplateURL(
+      u"ZZZ Policy Engine", u"zzz_policy", TemplateURLPrepopulateData::naver.id,
+      /*created_by_policy=*/true);
+  ASSERT_TRUE(policy_engine);
+  ASSERT_TRUE(policy_engine->CreatedByPolicy());
+
+  auto provider = CreateProvider();
+  AllPrepopulatedSearchEnginesData data =
+      provider->GetAllPrepopulatedSearchEngines();
+  ASSERT_GT(data.engines.size(), 1u);
+  ASSERT_THAT(data.engines, testing::Contains(policy_engine));
+
+  // All engines, including the policy one, are sorted alphabetically.
+  EXPECT_TRUE(std::ranges::is_sorted(
+      data.engines, internal::OrderTemplateUrlsAlphabetically()));
+
+  // Policy engines are not prioritized.
+  EXPECT_NE(data.engines.front(), policy_engine);
+
+  // Regional engines are not prioritized: a non-regional engine is listed
+  // before at least one regional engine.
+  auto is_regional = [&](const TemplateURL* engine) {
+    return prepopulate_data_resolver().GetPrepopulatedEngine(
+               engine->prepopulate_id()) != nullptr;
+  };
+  auto first_non_regional = std::ranges::find_if_not(data.engines, is_regional);
+  ASSERT_NE(first_non_regional, data.engines.end());
+  EXPECT_TRUE(
+      std::any_of(first_non_regional + 1, data.engines.end(), is_regional));
+}
+
 TEST_F(
     SearchEngineSettingsDataProviderNonSplitRegionTest,
     GetAllPrepopulatedSearchEngines_MatchesSelectionWhenDuplicatePrepopulateId) {
