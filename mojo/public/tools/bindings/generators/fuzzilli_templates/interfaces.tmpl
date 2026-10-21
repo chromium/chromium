@@ -46,7 +46,7 @@ extension ILType {
     fileprivate static let js{{receiver|format_unique_name}}CallbackRouterReceiverHelper: ILType = .object(
         ofGroup: "{{receiver|fully_qualified_name}}CallbackRouterReceiverHelper",
         withMethods: [
-          "closeBindings",
+          "close",
           {%- if receiver in interface_pending_remotes %}
           "bindNewPipeAndPassRemote",
           {%- endif %}
@@ -180,7 +180,7 @@ extension ObjectGroup {
         instanceType: .js{{receiver|format_unique_name}}CallbackRouterReceiverHelper,
         properties: [:],
         methods: [
-            "closeBindings": [] => .undefined,
+            "close": [] => .undefined,
             {%- if receiver in interface_pending_remotes %}
             "bindNewPipeAndPassRemote": [] => .js{{receiver|format_unique_name}}PendingRemote,
             {%- endif %}

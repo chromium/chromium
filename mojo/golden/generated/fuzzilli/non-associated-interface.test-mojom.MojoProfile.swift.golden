@@ -71,7 +71,7 @@ extension ILType {
     fileprivate static let jsGoldenRemoteFromJsCallbackRouterReceiverHelper: ILType = .object(
         ofGroup: "golden.RemoteFromJsCallbackRouterReceiverHelper",
         withMethods: [
-          "closeBindings",
+          "close",
           "bindNewPipeAndPassRemote",
         ])
     fileprivate static let jsGoldenRemoteFromJsPendingReceiver: ILType = .object(
@@ -96,7 +96,7 @@ extension ILType {
     fileprivate static let jsGoldenReceiverFromBrowserCallbackRouterReceiverHelper: ILType = .object(
         ofGroup: "golden.ReceiverFromBrowserCallbackRouterReceiverHelper",
         withMethods: [
-          "closeBindings",
+          "close",
         ])
     fileprivate static let jsGoldenReceiverFromBrowserPendingReceiver: ILType = .object(
         ofGroup: "golden.ReceiverFromBrowserPendingReceiver")
@@ -190,7 +190,7 @@ extension ObjectGroup {
         instanceType: .jsGoldenRemoteFromJsCallbackRouterReceiverHelper,
         properties: [:],
         methods: [
-            "closeBindings": [] => .undefined,
+            "close": [] => .undefined,
             "bindNewPipeAndPassRemote": [] => .jsGoldenRemoteFromJsPendingRemote,
         ])
     fileprivate static let goldenRemoteFromJsPendingReceiver = ObjectGroup(
@@ -229,7 +229,7 @@ extension ObjectGroup {
         instanceType: .jsGoldenReceiverFromBrowserCallbackRouterReceiverHelper,
         properties: [:],
         methods: [
-            "closeBindings": [] => .undefined,
+            "close": [] => .undefined,
         ])
     fileprivate static let goldenReceiverFromBrowserPendingReceiver = ObjectGroup(
         name: "golden.ReceiverFromBrowserPendingReceiver",
