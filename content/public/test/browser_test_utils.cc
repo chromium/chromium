@@ -5349,19 +5349,33 @@ void ShowPopupWidgetWaiter::DidShowPopupMenu(const gfx::Rect& bounds) {
 #endif
 
 RequestCloseWidgetInterceptor::RequestCloseWidgetInterceptor(
-    RenderWidgetHost* render_widget_host)
-    : swapped_impl_(static_cast<RenderWidgetHostImpl*>(render_widget_host)
-                        ->popup_widget_host_receiver_for_testing(),
-                    this) {}
+    RenderWidgetHost* render_widget_host) {
+  swapped_impl_.emplace(static_cast<RenderWidgetHostImpl*>(render_widget_host)
+                            ->popup_widget_host_receiver_for_testing(),
+                        this);
+  widget_observation_.Observe(render_widget_host);
+}
 
 RequestCloseWidgetInterceptor::~RequestCloseWidgetInterceptor() = default;
 
 blink::mojom::PopupWidgetHost*
 RequestCloseWidgetInterceptor::GetForwardingInterface() {
-  return swapped_impl_.old_impl();
+  // `RenderWidgetHostDestroyed()` removes the interception, so nothing should
+  // reach this once the popup widget is gone.
+  CHECK(swapped_impl_);
+  return swapped_impl_->old_impl();
 }
 
 void RequestCloseWidgetInterceptor::RequestClosePopup() {}
+
+void RequestCloseWidgetInterceptor::RenderWidgetHostDestroyed(
+    RenderWidgetHost* widget_host) {
+  // The widget is going away, taking its PopupWidgetHost receiver with it.
+  // Restore the original implementation now, while the receiver still exists,
+  // so the destructor doesn't touch freed memory.
+  widget_observation_.Reset();
+  swapped_impl_.reset();
+}
 
 void SimulateCharTyped(WebContents* web_contents, char16_t character) {
   ui::DomKey dom_key;

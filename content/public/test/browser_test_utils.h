@@ -2834,18 +2834,33 @@ class ShowPopupWidgetWaiter
 // discards the message. Individual test should override `RequestClosePopup()`
 // to customize the behavior.
 class RequestCloseWidgetInterceptor
-    : public blink::mojom::PopupWidgetHostInterceptorForTesting {
+    : public blink::mojom::PopupWidgetHostInterceptorForTesting,
+      public RenderWidgetHostObserver {
  public:
   explicit RequestCloseWidgetInterceptor(RenderWidgetHost* render_widget_host);
   ~RequestCloseWidgetInterceptor() override;
 
   // `blink::mojom::PopupWidgetHostInterceptorForTesting`:
+  // Must not be called once the popup widget has been destroyed.
   blink::mojom::PopupWidgetHost* GetForwardingInterface() override;
   void RequestClosePopup() override;
 
+  // `RenderWidgetHostObserver`:
+  // The browser can destroy the popup widget without the renderer ever sending
+  // `RequestClosePopup()`, e.g. when the owning RenderWidgetHostView loses
+  // focus to another views::Widget. Removes the interception then, while the
+  // receiver still exists, so this object may safely outlive the widget. Tests
+  // waiting for `RequestClosePopup()` should also watch for the widget
+  // disappearing.
+  void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) final;
+
  private:
-  mojo::test::ScopedSwapImplForTesting<blink::mojom::PopupWidgetHost>
+  // Engaged while the popup widget is alive.
+  std::optional<
+      mojo::test::ScopedSwapImplForTesting<blink::mojom::PopupWidgetHost>>
       swapped_impl_;
+  base::ScopedObservation<RenderWidgetHost, RenderWidgetHostObserver>
+      widget_observation_{this};
 };
 
 // Crash the process associated with `adapter`. Waits for the crash to be seen
