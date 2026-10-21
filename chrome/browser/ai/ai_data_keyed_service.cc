@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/base64.h"
@@ -20,7 +21,6 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -735,13 +735,13 @@ bool AiDataKeyedService::IsExtensionAllowlistedForActions(
     return false;
   }
 
-  static const base::NoDestructor<std::vector<std::string>>
-      kHardcodedAllowlistedExtensions({
+  static constexpr auto kHardcodedAllowlistedExtensions =
+      base::MakeFixedFlatSet<std::string_view>({
           // For testing for
           // api_test/experimental_actor/manifest.json
           "kbanhggbnnaciicfpdkheonkpkeakfal",
       });
-  if (std::ranges::contains(*kHardcodedAllowlistedExtensions, extension_id)) {
+  if (kHardcodedAllowlistedExtensions.contains(extension_id)) {
     return true;
   }
 
@@ -769,8 +769,9 @@ bool AiDataKeyedService::IsExtensionAllowlistedForStable(
   }
 
   // And the extension must be on this list.
-  static const base::NoDestructor<std::vector<std::string>>
-      kStableChannelAllowlistedIds({// https://issues.chromium.org/427296150
-                                    "mofldjifenhadohlkkngamgbifiofbnd"});
-  return std::ranges::contains(*kStableChannelAllowlistedIds, extension_id);
+  static constexpr auto kStableChannelAllowlistedIds =
+      base::MakeFixedFlatSet<std::string_view>(
+          {// https://issues.chromium.org/427296150
+           "mofldjifenhadohlkkngamgbifiofbnd"});
+  return kStableChannelAllowlistedIds.contains(extension_id);
 }
