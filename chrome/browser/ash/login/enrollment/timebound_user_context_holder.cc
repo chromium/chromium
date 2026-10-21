@@ -6,9 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/login/screens/account_selection_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash {
@@ -46,17 +44,6 @@ void TimeboundUserContextHolder::OnTimeout() {
   if (context) {
     context->timebound_user_context_holder.reset();
   }
-  WizardController* controller =
-      LoginDisplayHost::default_host()->GetWizardController();
-  if (!controller) {
-    return;
-  }
-  AccountSelectionScreen* screen =
-      controller->GetScreen<AccountSelectionScreen>();
-  if (!screen) {
-    return;
-  }
-  screen->OnCredentialsExpiredCallback();
 }
 
 void TimeboundUserContextHolder::ClearUserContext() {

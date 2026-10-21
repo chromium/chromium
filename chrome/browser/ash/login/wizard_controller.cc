@@ -62,7 +62,6 @@
 #include "chrome/browser/ash/login/quickstart_controller.h"
 // Make sure to include new screen to all relevant metric enums.
 // LINT.IfChange(UsageMetrics)
-#include "chrome/browser/ash/login/screens/account_selection_screen.h"
 #include "chrome/browser/ash/login/screens/add_child_screen.h"
 #include "chrome/browser/ash/login/screens/ai_intro_screen.h"
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
@@ -165,7 +164,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
-#include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
@@ -1100,13 +1098,6 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnFactorSetupSuccessScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  if (features::IsOobeAddUserDuringEnrollmentEnabled()) {
-    append(std::make_unique<AccountSelectionScreen>(
-        oobe_ui->GetView<AccountSelectionScreenHandler>()->AsWeakPtr(),
-        base::BindRepeating(&WizardController::OnAccountSelectionScreenExit,
-                            weak_factory_.GetWeakPtr())));
-  }
-
   append(std::make_unique<AppLaunchSplashScreen>(
       oobe_ui->GetView<AppLaunchSplashScreenHandler>()->AsWeakPtr(),
       oobe_ui->GetErrorScreen(),
@@ -1509,10 +1500,6 @@ void WizardController::ShowCryptohomeRecoveryScreen(
   SetCurrentScreen(GetScreen(CryptohomeRecoveryScreenView::kScreenId));
 }
 
-void WizardController::ShowAccountSelectionScreen() {
-  SetCurrentScreen(GetScreen(AccountSelectionScreenView::kScreenId));
-}
-
 void WizardController::ShowAppLaunchSplashScreen() {
   SetCurrentScreen(GetScreen(AppLaunchSplashScreenView::kScreenId));
   MaybeNotifyFjordOobeStateManager(
@@ -1565,12 +1552,7 @@ void WizardController::OnUserCreationScreenExit(
       }
       break;
     case UserCreationScreen::Result::SKIPPED:
-      if (features::IsOobeAddUserDuringEnrollmentEnabled() &&
-          wizard_context_->timebound_user_context_holder) {
-        ShowAccountSelectionScreen();
-      } else {
-        AdvanceToScreen(GaiaView::kScreenId);
-      }
+      AdvanceToScreen(GaiaView::kScreenId);
       break;
     case UserCreationScreen::Result::ADD_CHILD:
       MaybeAbortQuickStartFlow(
@@ -2187,17 +2169,6 @@ void WizardController::OnDisplaySizeScreenExit(
     case DisplaySizeScreen::Result::kNotApplicable:
     case DisplaySizeScreen::Result::kNext:
       ShowThemeSelectionScreen();
-  }
-}
-
-void WizardController::OnAccountSelectionScreenExit(
-    AccountSelectionScreen::Result result) {
-  OnScreenExit(AccountSelectionScreenView::kScreenId,
-               AccountSelectionScreen::GetResultString(result));
-  switch (result) {
-    case AccountSelectionScreen::Result::kNotApplicable:
-    case AccountSelectionScreen::Result::kGaiaFallback:
-      AdvanceToScreen(GaiaView::kScreenId);
   }
 }
 

@@ -49,7 +49,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/about/about_ui.h"
-#include "chrome/browser/ui/webui/ash/login/account_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/ai_intro_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
@@ -353,9 +352,6 @@ void CreateAndAddOobeUIDataSource(const PrefService& local_state,
   source->AddBoolean("isSplitModifierKeyboardInfoEnabled",
                      features::IsOobeSplitModifierKeyboardInfoEnabled());
 
-  source->AddBoolean("isOobeAddUserDuringEnrollmentEnabled",
-                     features::IsOobeAddUserDuringEnrollmentEnabled());
-
   source->AddBoolean("isOobeDevOverlayEnabled",
                      command_line->HasSwitch(switches::kShowOobeDevOverlay));
 
@@ -603,10 +599,6 @@ void OobeUI::ConfigureOobeDisplay(
   AddScreenHandler(std::make_unique<CryptohomeRecoveryScreenHandler>());
 
   AddScreenHandler(std::make_unique<SplitModifierKeyboardInfoScreenHandler>());
-
-  if (features::IsOobeAddUserDuringEnrollmentEnabled()) {
-    AddScreenHandler(std::make_unique<AccountSelectionScreenHandler>());
-  }
 
   AddScreenHandler(std::make_unique<RemoteActivityNotificationScreenHandler>());
 
