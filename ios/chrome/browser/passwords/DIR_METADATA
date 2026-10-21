@@ -6,3 +6,4 @@ os: IOS
 buganizer_public: {
   component_id: 1457410
 }
+agentic_review: {}
