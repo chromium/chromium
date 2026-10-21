@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 
+#include <algorithm>
+#include <optional>
+#include <utility>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,6 +29,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -193,12 +198,31 @@ void CastDeviceSelectorView::ShowDevices() {
   CHECK(!is_expanded_);
   is_expanded_ = true;
   UpdateVisibility();
+
+  // Move focus into the device list so that keyboard and screen reader users
+  // can interact with it right away.
+  FocusFirstEntry();
+  // Devices are often not available yet. Try again on the first update.
+  focus_first_entry_on_update_ = !GetFocusedViewInside();
 }
 
 void CastDeviceSelectorView::HideDevices() {
   CHECK(is_expanded_);
+  focus_first_entry_on_update_ = false;
+  const bool had_focus = GetFocusedViewInside();
   is_expanded_ = false;
+  // Update the visibility first so that the start casting button has its new
+  // accessible name when it gets focus.
   UpdateVisibility();
+  if (had_focus) {
+    if (media_item_ui_updated_view_) {
+      media_item_ui_updated_view_->FocusStartCastingButton();
+    }
+    // Do not leave focus on a hidden view.
+    if (GetFocusedViewInside() && GetFocusManager()) {
+      GetFocusManager()->AdvanceFocusIfNecessary();
+    }
+  }
 }
 
 bool CastDeviceSelectorView::IsDeviceSelectorExpanded() {
@@ -210,7 +234,28 @@ bool CastDeviceSelectorView::IsDeviceSelectorExpanded() {
 
 void CastDeviceSelectorView::OnDevicesUpdated(
     std::vector<global_media_controls::mojom::DevicePtr> devices) {
+  // Remember where focus is in order to restore it after the entries are
+  // rebuilt.
+  std::optional<std::string> focused_device_id;
+  bool content_had_focus = false;
+  {
+    // Scoped so that `focused_view` does not dangle once the entries are
+    // removed.
+    const views::View* focused_view = GetFocusedViewInside();
+    const auto& entries = device_container_view_->children();
+    CHECK_EQ(entries.size(), device_ids_.size());
+    for (size_t i = 0; i < entries.size(); ++i) {
+      if (entries[i]->Contains(focused_view)) {
+        focused_device_id = device_ids_[i];
+        break;
+      }
+    }
+    content_had_focus =
+        focused_device_id || permission_rejected_view_->Contains(focused_view);
+  }
+
   device_container_view_->RemoveAllChildViews();
+  device_ids_.clear();
   has_permission_rejected_issue_ = false;
   has_device_issue_ = false;
   for (const auto& device : devices) {
@@ -220,8 +265,35 @@ void CastDeviceSelectorView::OnDevicesUpdated(
         device->icon, base::UTF8ToUTF16(device->name),
         base::UTF8ToUTF16(device->status_text));
     device_container_view_->AddChildView(std::move(device_view));
+    device_ids_.push_back(device->id);
   }
   UpdateVisibility();
+
+  // If the updated device list is empty, the selector view is hidden. Do not
+  // leave focus on a hidden view.
+  if (!GetVisible()) {
+    if (GetFocusedViewInside() && GetFocusManager()) {
+      GetFocusManager()->AdvanceFocusIfNecessary();
+    }
+    return;
+  }
+  // `ConsumePendingFocus()` goes first so that the request is always cleared.
+  if (ConsumePendingFocus() && !content_had_focus) {
+    FocusFirstEntry();
+    return;
+  }
+  if (!content_had_focus) {
+    return;
+  }
+  if (focused_device_id) {
+    auto it = std::ranges::find(device_ids_, *focused_device_id);
+    if (it != device_ids_.end()) {
+      device_container_view_->children()[it - device_ids_.begin()]
+          ->RequestFocus();
+      return;
+    }
+  }
+  FocusFirstEntry();
 }
 
 void CastDeviceSelectorView::OnPermissionRejected() {
@@ -230,6 +302,10 @@ void CastDeviceSelectorView::OnPermissionRejected() {
           media_router::prefs::kSuppressLocalDiscoveryPermissionError)) {
     return;
   }
+  // The device entries are about to be hidden, so remember whether one of them
+  // has focus in order to move focus to a visible view afterwards.
+  const bool device_had_focus =
+      device_container_view_->Contains(GetFocusedViewInside());
   has_permission_rejected_issue_ = true;
   media_router::MediaRouterMetrics::
       RecordMediaRouterUiPermissionRejectedViewEvents(
@@ -284,6 +360,10 @@ void CastDeviceSelectorView::OnPermissionRejected() {
 #endif
 
   UpdateVisibility();
+
+  if (ConsumePendingFocus() || device_had_focus) {
+    FocusFirstEntry();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -381,6 +461,33 @@ void CastDeviceSelectorView::CloseButtonPressed() {
   }
 
   HideDevices();
+}
+
+const views::View* CastDeviceSelectorView::GetFocusedViewInside() const {
+  const views::FocusManager* focus_manager = GetFocusManager();
+  if (!focus_manager) {
+    return nullptr;
+  }
+  const views::View* focused_view = focus_manager->GetFocusedView();
+  return Contains(focused_view) ? focused_view : nullptr;
+}
+
+void CastDeviceSelectorView::FocusFirstEntry() {
+  if (device_container_view_->GetVisible() &&
+      !device_container_view_->children().empty()) {
+    device_container_view_->children().front()->RequestFocus();
+  } else {
+    close_button_->RequestFocus();
+  }
+}
+
+bool CastDeviceSelectorView::ConsumePendingFocus() {
+  if (!std::exchange(focus_first_entry_on_update_, false)) {
+    return false;
+  }
+  // Don't steal focus from a view that the user has already moved to.
+  const views::FocusManager* focus_manager = GetFocusManager();
+  return focus_manager && !focus_manager->GetFocusedView();
 }
 
 bool CastDeviceSelectorView::IsDeviceSelectorAvailable() {

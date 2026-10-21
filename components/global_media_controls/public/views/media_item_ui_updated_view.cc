@@ -574,6 +574,10 @@ void MediaItemUIUpdatedView::UpdateDeviceSelectorIssue(bool has_issue) {
                                           : vector_icons::kCastOldIcon);
 }
 
+void MediaItemUIUpdatedView::FocusStartCastingButton() {
+  start_casting_button_->RequestFocus();
+}
+
 MediaActionButton* MediaItemUIUpdatedView::CreateMediaActionButton(
     views::View* parent,
     int button_id,

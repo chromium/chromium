@@ -117,6 +117,10 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   void UpdateFooterView(std::unique_ptr<MediaItemUIFooter> footer_view);
   void UpdateDeviceSelectorIssue(bool has_issue);
 
+  // Moves focus to the start casting button, e.g. when the device list is
+  // closed from within.
+  void FocusStartCastingButton();
+
   MediaActionButton* GetMediaActionButton(
       media_session::mojom::MediaSessionAction action);
 

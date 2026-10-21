@@ -123,6 +123,7 @@ source_set("unit_tests") {
     "//components/global_media_controls",
     "//components/global_media_controls:test_support",
     "//components/media_message_center",
+    "//components/media_message_center:test_support",
     "//components/media_router/browser:test_support",
     "//testing/gmock",
     "//testing/gtest",

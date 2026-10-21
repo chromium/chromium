@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_CAST_DEVICE_SELECTOR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_CAST_DEVICE_SELECTOR_VIEW_H_
 
+#include <string>
+#include <vector>
+
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom.h"
 #include "components/global_media_controls/public/views/media_action_button.h"
@@ -106,6 +109,18 @@ class CastDeviceSelectorView
   // Callback for when the close button is pressed.
   void CloseButtonPressed();
 
+  // Returns the focused view if it is inside this view, or nullptr otherwise.
+  const views::View* GetFocusedViewInside() const;
+
+  // Moves focus to the first device entry, or to the close button if there is
+  // no device entry shown.
+  void FocusFirstEntry();
+
+  // Clears the pending focus request. Returns true if a request was pending
+  // and nothing in the widget has focus, so that focus can move into the
+  // device list without stealing focus from other views.
+  bool ConsumePendingFocus();
+
   // Returns true if there are available devices or
   // `has_permission_rejected_issue_` is True.
   bool IsDeviceSelectorAvailable();
@@ -125,6 +140,14 @@ class CastDeviceSelectorView
   raw_ptr<global_media_controls::MediaActionButton> close_button_ = nullptr;
   raw_ptr<views::BoxLayoutView> device_container_view_ = nullptr;
   raw_ptr<views::BoxLayoutView> permission_rejected_view_ = nullptr;
+
+  // IDs of the devices shown in `device_container_view_`, in the same order as
+  // its children.
+  std::vector<std::string> device_ids_;
+
+  // Whether to move focus into the device list on the next update, because
+  // the list had no entries to focus when it was first shown.
+  bool focus_first_entry_on_update_ = false;
 
   mojo::Remote<global_media_controls::mojom::DeviceListHost> device_list_host_;
   mojo::Receiver<global_media_controls::mojom::DeviceListClient>
