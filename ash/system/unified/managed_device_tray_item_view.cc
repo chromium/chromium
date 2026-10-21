@@ -49,11 +49,6 @@ void ManagedDeviceTrayItemView::OnDeviceEnterpriseInfoChanged() {
 
 void ManagedDeviceTrayItemView::OnEnterpriseAccountDomainChanged() {}
 
-void ManagedDeviceTrayItemView::OnThemeChanged() {
-  TrayItemView::OnThemeChanged();
-  UpdateIcon();
-}
-
 void ManagedDeviceTrayItemView::HandleLocaleChange() {
   UpdateTooltipText();
 }
