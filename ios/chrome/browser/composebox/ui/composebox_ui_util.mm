@@ -23,6 +23,8 @@ UIImage* ImageForIconResourceId(omnibox::IconResourceIds icon_id,
                                  point_size);
     case omnibox::IconResourceIds::BOLT:
       return SymbolWithPointSize(SymbolBolt, point_size);
+    case omnibox::IconResourceIds::ACUTE:
+      return SymbolWithPointSize(SymbolAcute, point_size);
     case omnibox::IconResourceIds::ATTACH_FILE:
       return SymbolWithPointSize(SymbolPaperclip, point_size);
     case omnibox::IconResourceIds::ADD_PHOTO_ALTERNATE:
