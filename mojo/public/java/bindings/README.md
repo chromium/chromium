@@ -124,7 +124,10 @@ A Mojo connection that's bound to an implementation object will keep that object
 alive. The connection is maintained by Mojo so long as the other (remote) end is
 alive (bound or unbound). Note that calling the `close()` method on your
 interface implementation yourself won't stop calls from coming in! In java, the
-receiver generally isn't able to unilaterally end a connection cleanly.
+receiver object itself doesn't have a method to end a connection (as it's just
+implementing a Java interface). If you need to sever a connection on the
+receiving side, you will need to hold a reference to and close the connection's
+`Router` object.
 
 A Proxy object will keep any connection it's bound to alive until you call
 `close()` on it.
@@ -136,6 +139,11 @@ objects may produce warnings in log output such as
 `java.lang.IllegalStateException: Warning: Router objects should be explicitly closed when no longer required otherwise you may leak handles.`.
 Failing to close InterfaceRequests may produce `Handle was not closed.`
 warnings.
+
+Do not assume that a navigation or document change will automatically sever your
+Mojo connections. Also, as of writing, mechanisms such as DocumentService are
+not implemented for Java. This may be important to consider for security, as it
+likely means the renderer controls Mojo connection lifetimes by default.
 
 # Types
 
@@ -429,10 +437,10 @@ conceptually confusing if you continue to use a `Closeable` that may have been
 closed.
 
 Note that a Mojo connection that's bound to an implementation object will keep
-that implementation object alive. However, your implementation object has no
-inherent influence over the lifetime of the connection (after all, you're just
-implementing an interface).
-
+that implementation object alive. However, your implementation object itself
+doesn't implicitly influence the lifetime of the connection (after all, you're
+just implementing an interface). It may hold onto a `Router` object if it needs
+to forcibly sever a connection.
 
 ## Result<T,E> return methods
 
@@ -599,9 +607,10 @@ However, if you're passing pending_receivers around as part of the IPC calls of
 your interfaces, you will need to do the binding yourself, as described in the
 next sections.
 
-
-
-
+Interface brokers discard the references to `Router` objects that
+could be used to sever connections from the receiver's side. This isn't due to
+any hard technical limitation, and if it was useful in future then Routers could
+be passed to the receiver interface's implementation upon binding.
 
 ## Passing interfaces through IPC calls (pending_receivers and pending_remotes)
 
@@ -637,10 +646,16 @@ class KitchenImpl implements Kitchen {
     public void requestCoffeeAccess(
             InterfaceRequest<CoffeeMachine> interfaceRequest) {
         CoffeeMachine coffeeMachine = new CoffeeMachineImpl();
-        CoffeeMachine.MANAGER.bind(coffeeMachine, interfaceRequest);
+        Router router =
+                CoffeeMachine.MANAGER.bind(coffeeMachine, interfaceRequest);
     }
 }
 ```
+
+The `Router` object returned from `MANAGER.bind` can be `close()`ed to sever the
+connection. Note that closing a router from within an IPC call may lead to
+confusing synchronous triggering of callbacks or exceptions; you should consider
+doing this via posting a task to the current sequence if you need to do this.
 
 If you do not intend to bind an implementation to an InterfaceRequest and
 instead wish to just discard it, you should `close()` it.
